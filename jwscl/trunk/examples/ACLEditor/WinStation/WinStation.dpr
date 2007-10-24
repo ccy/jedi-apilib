@@ -6,7 +6,7 @@ uses
   Interfaces, // this includes the LCL widgetset
 {$ENDIF FPC}
   MainForm in 'MainForm.pas' {Form1},
-  JwsclWinStations in '..\..\..\JwsclWinStations.pas';
+  JwsclWinStations;
 
 
 

@@ -90,12 +90,12 @@ MaxStackSize=1048576
 ImageBase=4194304
 ExeDescription=
 [Directories]
-OutputDir=
-UnitOutputDir=
-PackageDLLOutputDir=
-PackageDCPOutputDir=
-SearchPath=..\..\source
-Packages=Vcl50;Vclx50;VclSmp50;Vcldb50;vclado50;ibevnt50;Vclbde50;
+OutputDir=bin
+UnitOutputDir=bin
+PackageDLLOutputDir=bin
+PackageDCPOutputDir=bin
+SearchPath=
+Packages=Vcl50;Vclx50;VclSmp50;Vcldb50;vclado50;ibevnt50;Vclbde50
 Conditionals=
 DebugSourceDirs=
 UsePackages=0
@@ -108,6 +108,7 @@ DebugCWD=
 [Language]
 ActiveLang=
 ProjectLang=
+RootDir=
 [Version Info]
 IncludeVerInfo=0
 AutoIncBuild=0
@@ -122,3 +123,18 @@ Private=0
 DLL=0
 Locale=1031
 CodePage=1252
+[HistoryLists\hlUnitAliases]
+Count=1
+Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
+[HistoryLists\hlUnitOutputDirectory]
+Count=1
+Item0=bin
+[HistoryLists\hlOutputDirectorry]
+Count=1
+Item0=bin
+[HistoryLists\hlBPLOutput]
+Count=1
+Item0=bin
+[HistoryLists\hlDCPOutput]
+Count=1
+Item0=bin

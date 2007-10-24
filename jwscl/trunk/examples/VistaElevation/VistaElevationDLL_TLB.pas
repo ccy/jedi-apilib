@@ -12,10 +12,10 @@ unit VistaElevationDLL_TLB;
 // ************************************************************************ //
 
 // PASTLWTR : 1.2
-// Datei generiert am 12.10.2007 16:51:10 aus der unten beschriebenen Typbibliothek.
+// Datei generiert am 24.10.2007 16:48:04 aus der unten beschriebenen Typbibliothek.
 
 // ************************************************************************  //
-// Typbib: P:\Eigene Dateien\Dezipaitor\Projekte\Delphi\7\SecurityManager\examples\VistaElevation\VistaElevationDLL.tlb (1)
+// Typbib: P:\Eigene Dateien\Dezipaitor\Projekte\Delphi\7\jedi-api-lib\jwscl\trunk\examples\VistaElevation\VistaElevationDLL.tlb (1)
 // LIBID: {C822DA82-0CA4-436C-B451-04A4AA57E7E3}
 // LCID: 0
 // Hilfedatei: 
