@@ -3261,7 +3261,7 @@ begin
 (*{$IFDEF SL_OMIT_SECTIONS}JwsclLibrary.{$ELSE}
     JwsclTypes.
 {$ENDIF}     *)
-    JwaVista.TokenPrimaryGroup, Pointer(ID));
+    JwaVista.TokenSessionId, Pointer(ID));
   try
     Result := ID^;
   finally
@@ -3284,7 +3284,7 @@ begin
     PrivilegeEnabled[SE_TCB_NAME] := True;
 
     if (not SetTokenInformation(
-      fTokenHandle, jwaWindows.TokenPrimaryGroup, Pointer(@SessionID),
+      fTokenHandle, jwaWindows.TokenSessionId, Pointer(@SessionID),
       sizeof(SessionID))) then
       raise EJwsclWinCallFailedException.CreateFmtEx(
         RsWinCallFailed,
