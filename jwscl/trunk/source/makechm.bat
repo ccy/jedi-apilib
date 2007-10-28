@@ -1,10 +1,13 @@
+REM to use this script you need the Microsoft HTML Help Compiler
+REM 
+
 call makehelp.bat -O htmlhelp
-del ".\doc\Security Manager Suite.chm"
+del "..\documentation\JWSCL help.chm"
 
 REM call html help compiler
-"C:\Programme\HTML Help Workshop\hhc.exe" ".\pasdoc\Security Manager Suite.hhp"
+"C:\Programme\HTML Help Workshop\hhc.exe" ".\pasdoc\JWSCL help.hhp"
 
-copy /Y ".\pasdoc\Security Manager Suite.chm" .\doc
+copy /Y ".\pasdoc\JWSCL help.chm" ..\documentation
 pause
-start hh.exe ".\pasdoc\Security Manager Suite.chm"
+start hh.exe "..\documentation\JWSCL help.chm"
 pause

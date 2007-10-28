@@ -37,7 +37,7 @@ uses
   TextTestRunner,
   Windows,
   Classes,
-  UMessageForm in '..\source\UMessageForm.pas' {frmMessage},
+  UMessageForm in '..\..\source\UMessageForm.pas' {frmMessage},
   JwsclResource,
   JwsclAcl,
   JwsclConstants,
@@ -59,14 +59,16 @@ uses
   JwsclTypes,
   JwsclUtils,
   JwsclVersion,
+  JwsclEnumerations,
   JwsclWinStations,
   JwsclEncryption,
   JwsclPrivileges,
+  JwsclTerminalServer,
   JwsclSecurePrivateObjects,
   JwsclSecureUserObjects in '..\..\source\JwsclSecureUserObjects.pas',
   
   JwsclAclTests in '..\source\JwsclAclTests.pas',
-  JwsclDescriptorTests in ..\source\JwsclDescriptorTests.pas',
+  JwsclDescriptorTests in '..\source\JwsclDescriptorTests.pas',
   JwsclDesktopsTests in '..\source\JwsclDesktopsTests.pas',
   JwsclExceptionsTests in '..\source\JwsclExceptionsTests.pas',
   JwsclMappingTests in '..\source\JwsclMappingTests.pas',
@@ -77,9 +79,8 @@ uses
   JwsclTokenTests in '..\source\JwsclTokenTests.pas',
   JwsclUnitUtilsTests in '..\source\JwsclUnitUtilsTests.pas',
   JwsclSecurePrivateObjectsTests in '..\source\JwsclSecurePrivateObjectsTests.pas',
-  JwsclEnumerations in '..\JwsclEnumerations.pas',
-  
-  
+
+
   JwaVista in '..\..\jwaUnits\Win32API\JwaVista.pas';
 
 //never ever use JwsclLibrary and one of the Jwscl units at the same time!!

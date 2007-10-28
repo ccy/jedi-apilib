@@ -22,8 +22,9 @@ Portions created by Christian Wimmer are Copyright (C) Christian Wimmer. All rig
 }
 {$IFNDEF SL_OMIT_SECTIONS}
 unit JwsclTypes;
-{$I Jwscl.inc}
 // Last modified: $Date: 2007-09-10 10:00:00 +0100 $
+{$I Jwscl.inc}
+
 
 interface
 
@@ -37,7 +38,7 @@ uses
 {$IFNDEF SL_IMPLEMENTATION_SECTION}
 type
 {$IFNDEF COMPILER_6_UP}
-  //delphi 5 does not know these types
+  {@Name is defined for Delphi 5 because it does not know this types}
   PCardinal = ^Cardinal;
 {$ENDIF COMPILER_6_UP}
 
@@ -48,7 +49,7 @@ type
 {$ENDIF DELPHI_6_UP}
 
 
-  //@Name is the type of a token handle
+  {@Name is the type of a token handle}
   TJwTokenHandle   = Cardinal;
   //@Name is the type of an access mask
   TJwAccessMask    = Cardinal;
@@ -58,8 +59,8 @@ type
   TJwProcessHandle = Cardinal;
   //@Name is the type of a last error code
   TJwLastError     = Cardinal;
-
-  TJwTokenAccessMask = Cardinal;
+  //@Name defines the access mask of a token
+  TJwTokenAccessMask = TJwAccessMask;
 
 
   TJwAceFlag  = (//e.g. inherit ACE to this folder and its sub files
