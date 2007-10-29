@@ -47,10 +47,6 @@ type
 
   TJwSecurityWindowStationArray = array of TJwSecurityWindowStation;
 
-
-
-  TJwSessionID = Cardinal;
-
   {@Name provides access to window station api.}
   TJwSecurityWindowStation = class(TPersistent)
   private

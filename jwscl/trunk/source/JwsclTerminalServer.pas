@@ -23,70 +23,91 @@ Portions created by Remko Weijnen are Copyright (C) Remko Weijnen. All rights re
 {$IFNDEF SL_OMIT_SECTIONS}
 unit JwsclTerminalServer;
 {$I Jwscl.inc}
-// Last modified: $Date: 2007-26-10 10:00:00 +0100 $
 
 interface
 
-uses JwaWtsApi32, JwsclWinStations;
+uses Classes, Contnrs,
+  JwaWindows,
+  jwsclTypes, JwsclStrings;
 
 {$ENDIF SL_OMIT_SECTIONS}
 
 {$IFNDEF SL_IMPLEMENTATION_SECTION}
-const WinStationInformation = 8;
-
 type
-  TJwTerminalServer = class;
 
-  TJwTWtsSession = class(TPersistent)
+  { forward declarations }
+  TJwTerminalServer = class;
+  TJwWtsSession = class;
+  TJwWtsSessionList = class;
+  TJwWtsProcess = class;
+  TJwWtsProcessList = class;
+
+  TJwTerminalServer = class(TPersistent)
   private
+    FSessions: TJwWtsSessionList;
+    FServer: TJwString;
+    hServer: THandle;
+    procedure SetServer(const Value: TJwString);
   protected
-    FOwner: TJwTWtsSessionList;
-    FSessionId: TJwSessionID;
-    FState: DWORD;
-    FWinStationName: string;
-    procedure SetSessionId(const Value: TJwSessionID);
-    procedure SetState(const Value: DWORD);
-    procedure SetWinStationName(const Value: string);
+    function Open: THandle;
+    procedure Close;
   published
+    property Server: TJwString read FServer write SetServer;
     constructor Create; reintroduce;
+    function Enumerate: boolean;
   end;
 
-  TJwWtsSessionList = class(TPersistent)
+  TJwWtsSession = class(TPersistent)
+  private
   protected
-    function    GetItem(AIndex: integer): TJwTWtsSession;
-    function    GetOwner: TJwTerminalServer;
+    FOwner: TJwWtsSessionList;
+    SessionId: TJwSessionId;
+    WinStationName: TjwString;
+    State: TJwState;
+  published
+    constructor Create(AOwner: TjwWTSSessionList; ASessionId: TJwSessionId; AWinStationName: TJwString;
+      AState: TjwState); reintroduce;
+  end;
+
+  TJwWtsSessionList = class(TObjectList)
+  private
+  protected
+    FOwner: TjwTerminalServer;
+    function GetOwner: TJwTerminalServer;
+
+    //    function GetItem(AIndex: integer): TJwTWtsSession;
+//    function GetOwner: TJwTerminalServer;
   public
-    constructor Create(AOwner: TPersistent); override;
-    procedure   Delete(Index: integer); override;
-    procedure   Refresh; override;
-    function    GetSession(ASessionId: TJwSessionID): TJwTWtsSession; overload;
-    function    GetSession(AClientName: string): TJwTWtsSession; overload;
-    function    GetSession(AUserName: string) : TJwTWtsSession; overload;
-    property    Items[AIndex: integer]: TJwTWtsSession read GetItem; default;
+    constructor Create(AOwner: TJwTerminalServer);
+//    procedure Delete(Index: integer); reintroduce;
+//    procedure Refresh;
+//    function FindSession(ASessionId: TJwSessionID): TJwTWtsSession;
+//    function FindClientSession(AClientName: TJwString): TJwTWtsSession;
+//    function FindUser(AUserName: TJwString) : TJwTWtsSession;
+//    property Items[AIndex: integer]: TJwTWtsSession read GetItem; default;
   end;
 
   TJwWtsProcess = class(TPersistent)
   private
-    FOwner:       TjwWtsProcessList;
-    FSessionId:   TJwSessionID;
-    FProcessId:   DWORD;
-    FProcessName: string;
+    FOwner: TjwWtsProcessList;
+    FSessionId: TJwSessionID;
+    FProcessId: TJwProcessID;
+    FProcessName: TJwString;
   protected
   public
-  published
   end;
 
   TJwWtsProcessList = class(TPersistent)
   protected
-    function    GetItem(AIndex: integer): TJwWtsProcess;
-    function    GetOwner: TJwTerminalServer;
+//    function GetItem(AIndex: integer): TJwWtsProcess;
+//    function GetOwner: TJwTerminalServer; override;
   public
-    constructor Create(AOwner: TPersistent); override;
-    procedure   Delete(Index: integer); override;
-    procedure   Refresh; override;
-    function    GetProcess(AProcessName: string): TJwWtsProcess; overload;
-    function    GetProcess(AProcessId: DWORD): TJwWtsProcess; overload;
-    property    Items[AIndex: integer]: TJwWtsProcess read GetItem; default;
+//    constructor Create(AOwner: TPersistent);
+//    procedure Delete(Index: integer);
+//    procedure Refresh;
+//    function GetProcess(AProcessName: TJwString): TJwWtsProcess; overload;
+//    function GetProcess(AProcessId: DWORD): TJwWtsProcess; overload;
+//    property Items[AIndex: integer]: TJwWtsProcess read GetItem; default;
   end;
 
   _WINSTATIONQUERYINFORMATIONW = record
@@ -108,13 +129,97 @@ type
   end;
 
   PJwWtsSessionInfoAArray = ^TJwWtsSessionInfoAArray;
-  TJwWtsSessionInfoAArray = array[0..ANYSIZE_ARRAY] of WTS_SESSION_INFOA;
+  TJwWtsSessionInfoAArray = array[0..ANYSIZE_ARRAY-1] of WTS_SESSION_INFOA;
+
+  PJwWtsSessionInfoWArray = ^TJwWtsSessionInfoWArray;
+  TJwWtsSessionInfoWArray = array[0..ANYSIZE_ARRAY-1] of WTS_SESSION_INFOW;
+
 {$ENDIF SL_IMPLEMENTATION_SECTION}
 
 {$IFNDEF SL_OMIT_SECTIONS}
 
 implementation
-
 {$ENDIF SL_OMIT_SECTIONS}
 
+constructor TJwTerminalServer.Create;
+begin
+  inherited Create;
+  FSessions.Create(Self);
+end;
+
+procedure TJwTerminalServer.SetServer(const Value: TJwString);
+begin
+  FServer := Value;
+end;
+
+function TJwTerminalServer.Enumerate: boolean;
+var SessionInfoPtr: {$IFDEF UNICODE}PJwWtsSessionInfoWArray;
+  {$ELSE}PJwWtsSessionInfoAArray;{$ENDIF UNICODE}
+  pCount: Cardinal;
+  i: integer;
+  Res: Longbool;
+  ASession: TjwWTSSession;
+begin
+  Open;
+  Res :=
+  {$IFDEF UNICODE}
+    WtsEnumerateSessionsW(hServer, 0, 1, PWTS_SESSION_INFOW(SessionInfoPtr),
+      pCount);
+  {$ELSE}
+    WtsEnumerateSessions(hServer, 0, 1, PWTS_SESSION_INFOA(SessionInfoPtr),
+      pCount);
+  {$ENDIF UNICODE}
+
+  // Clear the sessionslist
+  FSessions.Clear;
+
+  // Add all sessions
+  for i := 0 to pCount - 1 do
+  begin
+    ASession := TJwWTSSession.Create(FSessions, SessionInfoPtr^[i].SessionId,
+      SessionInfoPtr^[i].pWinStationName, TJwState(SessionInfoPtr^[i].State));
+  end;
+
+  // Pass the result
+  Result := Res;
+  Close;
+end;
+
+function TJwTerminalServer.Open: THandle;
+begin
+  if FServer = '' then
+  begin
+    Result := WTS_CURRENT_SERVER_HANDLE;
+  end
+  else begin
+    {$IFDEF UNICODE}
+      Result := WTSOpenServerW(PWideChar(WideString(FServer)));
+    {$ELSE}
+      Result := WTSOpenServer(PChar(FServer));
+    {$ENDIF}
+  end;
+end;
+
+procedure TJwTerminalServer.Close;
+begin
+  if hServer <> WTS_CURRENT_SERVER_HANDLE then
+  begin
+    WTSCloseServer(hServer);
+  end;
+end;
+
+constructor TJwWtsSessionList.Create(AOwner: TjwTerminalServer);
+begin
+  FOwner := AOwner;
+end;
+
+function TJwWtsSessionList.GetOwner;
+begin
+  Result := FOwner;
+end;
+
+constructor TJwWtsSession.Create(AOwner: TjwWTSSessionList; ASessionId: Cardinal; AWinStationName: string; AState: TJwState);
+begin
+//  handle
+end;
 end.
