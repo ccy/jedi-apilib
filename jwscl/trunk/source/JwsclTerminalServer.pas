@@ -67,6 +67,7 @@ type
   protected
     FApplicationName: TJwString;
 //    FClientAddress
+    FClientAddress: TJwString;
     FClientBuildNumber: DWORD;
     FClientDirectory: TJwString;
 //    FClientDisplay
@@ -92,6 +93,7 @@ type
     FState: TJwState;
     FUsername: TJwString;
     FWinStationName: TJwString;
+    function GetClientAddress: TJwString;
     procedure GetIdleTime;
   public
     constructor Create(const AOwner: TJwWTSSessionList;
@@ -106,6 +108,7 @@ type
       var ABuffer: Pointer);
   public
     property ApplicationName: TJwString read FApplicationName;
+    property ClientAddress: TJwString read FClientAddress;
     property ClientBuildNumber: DWORD read FClientBuildNumber;
     property ClientDirectory: TJwString read FClientDirectory;
     property ClientHardwareId: DWORD read FClientHardwareId;
@@ -127,24 +130,6 @@ type
     property WinStationName: TJwString read FWinStationName;
     property WorkingDirectory: TJwString read FWorkingDirectory;
   end;
-
-{  TJwWTSSessionList = class(TObjectList)
-  private
-  protected
-    FOwner: TJwTerminalServer;
-    function GetOwner: TJwTerminalServer;
-    function GetItem(AIndex: integer): TJwWTSSession; reintroduce;
-//    function Add(AObject: TObject): Integer;
-  public
-//    constructor Create(const AOwner: TJwTerminalServer); reintroduce;
-    constructor Create(const AOwner: TJwTerminalServer); reintroduce;
-    //    procedure Delete(Index: integer); reintroduce;
-//    procedure Refresh;
-//    function FindSession(ASessionId: TJwSessionID): TJwTWTSSession;
-//    function FindClientSession(AClientName: TJwString): TJwTWTSSession;
-//    function FindUser(AUsername: TJwString) : TJwTWTSSession;
-    property Items[AIndex: integer]: TJwWTSSession read GetItem; default;
-  end;}
 
   { List Of TJwWTSSession Objects }
   TJwWTSSessionList = class(TObjectList)
@@ -222,7 +207,6 @@ implementation
 constructor TJwTerminalServer.Create;
 begin
   inherited Create;
-//  FSessions := TJwWTSSessionList.Create(Self);
   FSessions := TJwWTSSessionList.Create;
   FSessions.Owner := Self;
 end;
@@ -337,17 +321,6 @@ begin
   FOwner := Value;
 end;
 
-{constructor TJwWTSSessionList.Create(const AOwner: TJwTerminalServer);
-begin
-  inherited Create(True);
-  FOwner := AOwner;
-end;}
-
-{function TJwWTSSessionList.GetItem(AIndex: Integer): TJwWTSSession;
-begin
-  Result := TJwWTSSession(inherited GetItem(AIndex));
-end;}
-
 function TJwWTSSession.GetOwner;
 begin
   Result := FOwner;
@@ -356,7 +329,7 @@ end;
 procedure TJwWTSSession.GetSessionInfoPtr(const WTSInfoClass: _WTS_INFO_CLASS;
   var ABuffer: Pointer);
 var dwBytesReturned: DWORD;
-  Res: Boolean;
+  Res: Bool;
 begin
   Res :=
 {$IFDEF UNICODE}
@@ -366,14 +339,21 @@ begin
     WTSQuerySessionInformationA(GetServerHandle, FSessionId, WTSInfoClass,
       ABuffer, dwBytesReturned);
 {$ENDIF}
+  // function always returns an error 997: overlapped IO on session 0
+  if (not Res) and (FSessionId <> 0) then
+  begin
+    raise EJwsclWinCallFailedException.CreateFmtWinCall(RsWinCallFailed,
+      'WTSQuerySessionInformation', ClassName, RSUNTerminalServer, 0, True,
+      'WTSQuerySessionInformation', ['WTSQuerySessionInformation']);
+  end;
 end;
 
 function TJwWTSSession.GetSessionInfoStr(const WTSInfoClass: _WTS_INFO_CLASS):
   TJwString;
-var 
+var
   dwBytesReturned: DWORD;
   aBuffer: Pointer;
-  Res: Boolean;
+  Res: Bool;
 begin
   ABuffer := nil;
   Result := '';
@@ -385,24 +365,15 @@ begin
     WTSQuerySessionInformationA(GetServerHandle, FSessionId, WTSInfoClass,
       ABuffer, dwBytesReturned);
 {$ENDIF}
-{TODO: Test for return value and raise exception if it failed
-raise EJwsclWinCallFailedException.CreateFmtWinCall(
-      RsWinCallFailed,
-      '<Method name that contains source that failed>',
-	  ClassName, 
-	  RsUNTerminalServer, 
-      0, //Sourceline. Must be 0.
-	  True, //show Value of GetLastError
-	  '<Name of winapi function that failed>',
-      ['<Name of winapi function that failed>']);
-Also add a 
-@raises(EJwsclWinCallFailedException will be raised if blabla)
-to the declaration 
-}
-
-  if ABuffer <> nil then
+  // function always returns an error 997: overlapped IO on session 0
+  if (not Res) and (FSessionId <> 0) then
   begin
-    //TODO: Test with UNICODE AND ANSICODE! by Wimmer
+    raise EJwsclWinCallFailedException.CreateFmtWinCall(RsWinCallFailed,
+      'WTSQuerySessionInformation', ClassName, RSUNTerminalServer, 0, True,
+      'WTSQuerySessionInformation', ['WTSQuerySessionInformation']);
+  end
+  else if ABuffer <> nil then
+  begin
     Result := TJwString(TJwPChar(aBuffer));
     WTSFreeMemory(aBuffer);
   end;
@@ -411,10 +382,11 @@ end;
 function TJwWTSSession.GetSessionInfoDWORD(const WTSInfoClass: _WTS_INFO_CLASS): DWORD;
 var dwBytesReturned: DWORD;
   ABuffer: Pointer;
-  Res: Boolean;
+  Res: Bool;
 begin
   ABuffer := nil;
   Result := 0;
+  Res :=
 {$IFDEF UNICODE}
     WTSQuerySessionInformationW(GetServerHandle, FSessionId, WTSInfoClass,
       ABuffer, dwBytesReturned);
@@ -422,7 +394,14 @@ begin
     WTSQuerySessionInformationA(GetServerHandle, FSessionId, WTSInfoClass,
       ABuffer, dwBytesReturned);
 {$ENDIF}
-  if ABuffer <> nil then
+  // function always returns an error 997: overlapped IO on session 0
+  if (not Res) and (FSessionId <> 0) then
+  begin
+    raise EJwsclWinCallFailedException.CreateFmtWinCall(RsWinCallFailed,
+      'WTSQuerySessionInformation', ClassName, RSUNTerminalServer, 0, True,
+      'WTSQuerySessionInformation', ['WTSQuerySessionInformation']);
+  end
+  else if ABuffer <> nil then
   begin
     Result := PDWord(ABuffer)^;
     WTSFreeMemory(ABuffer);
@@ -459,11 +438,6 @@ begin
   if YearOf(FLastInputTime) = 1601 then
   begin
     FLastInputTime := FDisconnectTime;
-{    OutputDebugString(PChar('ConnectTime: ' + DateTimeToStr(FConnectTime)));
-    OutputDebugString(PChar('CurrentTime: ' + DateTimeToStr(FCurrentTime)));
-    OutputDebugString(PChar('DisconnectTime: ' + DateTimeToStr(FDisconnectTime)));
-    OutputDebugString(PChar('LastInputTime: ' + DateTimeToStr(FLastInputTime)));
-    OutputDebugString(PChar('LogonTime: ' + DateTimeToStr(FLogonTime)));}
   end;
 
   FIdleTime := FLastInputTime - FCurrentTime;
@@ -485,7 +459,32 @@ begin
   if YearOf(FLogonTime) = 1601 then
   begin
     FIdleTimeStr := '.';
-  end;  
+  end;
+end;
+
+function TJwWTSSession.GetClientAddress: TJwString;
+var ClientAddressPtr: PWtsClientAddress;
+  ClientAddress: TWtsClientAddress;
+begin
+  GetSessionInfoPtr(WTSClientAddress, Pointer(ClientAddressPtr));
+  ClientAddress := ClientAddressPtr^;
+  {Note that the first byte of the IP address returned in the ppBuffer
+   parameter will be located at an offset of 2 bytes from the start of
+   the Address member of the returned WTS_CLIENT_ADDRESS structure.}
+  case ClientAddressPtr^.AddressFamily of
+    AF_INET:
+      Result := Format('%d.%d.%d.%d', [ClientAddressPtr^.Address[2],
+        ClientAddressPtr^.Address[3], ClientAddressPtr^.Address[4],
+        ClientAddressPtr^.Address[5]]);
+//    AF_INET6: // Not implemented in JwaWindows (as of Vista)
+    AF_IPX:
+      Result := 'IPX is not supported';
+    AF_NETBIOS:
+      Result := 'NETBIOS is not supported';
+    AF_UNSPEC:
+      Result := 'Unspecified Address';
+  end;
+  WTSFreeMemory(ClientAddressPtr);
 end;
 
 constructor TJwWTSSession.Create(const AOwner: TJwWTSSessionList;
@@ -507,6 +506,9 @@ begin
     dwReturnLength) then
   begin
     FApplicationName := GetSessionInfoStr(WTSApplicationName);
+
+    FClientAddress := GetClientAddress;
+
     FClientBuildNumber := GetSessionInfoDWORD(WTSClientBuildNumber);
     FClientDirectory := GetSessionInfoStr(WTSClientDirectory);
     FClientHardwareId := GetSessionInfoDWORD(WTSClientHardwareId);
