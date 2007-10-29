@@ -1,5 +1,7 @@
-This is a Subversion repository; use the 'svnadmin' tool to examine
-it.  Do not add, delete, or modify files here unless you know how
-to avoid corrupting the repository.
+This Subversion respository contains 
+JEDI Windows Headers 
+and
+JEDI Windows Security Code Library
 
-Visit http://subversion.tigris.org/ for more information.
+
+for Delphi
