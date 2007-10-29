@@ -63,6 +63,14 @@ type
   TJwTokenAccessMask = TJwAccessMask;
 
 
+  //@Name is the type of a Terminal Server Session Identifier
+  TJwSessionId = DWORD;
+  //@Name is the type of a Terminal Server Session State
+  TJwState = DWORD;
+  //@Name is the type of a Terminal Server Process Identifier
+  TJwProcessId = DWORD;
+
+
   TJwAceFlag  = (//e.g. inherit ACE to this folder and its sub files
     afObjectInheritAce,
 
