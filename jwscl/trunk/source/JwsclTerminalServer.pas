@@ -26,7 +26,7 @@ unit JwsclTerminalServer;
 
 interface
 
-uses Classes, Contnrs, SysUtils, DateUtils,
+uses Classes, Contnrs, SysUtils, DateUtils, Dialogs,
   JwaWindows, 
   JwsclResource, JwsclExceptions, JwsclConstants, JwsclTypes, JwsclStrings;
 
@@ -54,7 +54,7 @@ type
     function Open: THandle;
   public
     property Connected: Boolean read FConnected;
-    constructor Create; reintroduce;
+    constructor Create; virtual;
     function Enumerate: boolean;
     function FileTime2DateTime(FileTime: FileTime): TDateTime;
     property Server: TJwString read FServer write SetServer;
@@ -92,17 +92,18 @@ type
     FState: TJwState;
     FUsername: TJwString;
     FWinStationName: TJwString;
+    procedure GetIdleTime;
   public
     constructor Create(const AOwner: TJwWTSSessionList;
       const ASessionId: TJwSessionId; const AWinStationName: TJwString;
       const AState: TJwState); reintroduce;
-      
+
     function GetOwner: TJwWTSSessionList; reintroduce;
     function GetServerHandle: THandle;
     function GetSessionInfoDWORD(const WTSInfoClass: WTS_INFO_CLASS): DWORD;
     function GetSessionInfoStr(const WTSInfoClass: WTS_INFO_CLASS): TJwString;
     procedure GetSessionInfoPtr(const WTSInfoClass: WTS_INFO_CLASS;
-      var ABuffer: Pointer);      
+      var ABuffer: Pointer);
   public
     property ApplicationName: TJwString read FApplicationName;
     property ClientBuildNumber: DWORD read FClientBuildNumber;
@@ -127,20 +128,41 @@ type
     property WorkingDirectory: TJwString read FWorkingDirectory;
   end;
 
-  TJwWTSSessionList = class(TObjectList)
+{  TJwWTSSessionList = class(TObjectList)
   private
   protected
     FOwner: TJwTerminalServer;
     function GetOwner: TJwTerminalServer;
-    function GetItem(AIndex: integer): TJwWTSSession;
+    function GetItem(AIndex: integer): TJwWTSSession; reintroduce;
+//    function Add(AObject: TObject): Integer;
   public
-    constructor Create(const AOwner: TJwTerminalServer);
-//    procedure Delete(Index: integer); reintroduce;
+//    constructor Create(const AOwner: TJwTerminalServer); reintroduce;
+    constructor Create(const AOwner: TJwTerminalServer); reintroduce;
+    //    procedure Delete(Index: integer); reintroduce;
 //    procedure Refresh;
 //    function FindSession(ASessionId: TJwSessionID): TJwTWTSSession;
 //    function FindClientSession(AClientName: TJwString): TJwTWTSSession;
 //    function FindUser(AUsername: TJwString) : TJwTWTSSession;
     property Items[AIndex: integer]: TJwWTSSession read GetItem; default;
+  end;}
+
+  { List Of TJwWTSSession Objects }
+  TJwWTSSessionList = class(TObjectList)
+  private
+    FOwnsObjects: Boolean;
+    FOwner: TJwTerminalServer;
+  protected
+    function GetItem(Index: Integer): TJwWTSSession;
+    procedure SetItem(Index: Integer; AObject: TJwWTSSession);
+  public
+    function Add(ASession: TJwWTSSession): Integer;
+    function Remove(ASession: TJwWTSSession): Integer;
+    function IndexOf(ASession: TJwWTSSession): Integer;
+    procedure Insert(Index: Integer; ASession: TJwWTSSession);
+    property OwnsObjects: Boolean read FOwnsObjects write FOwnsObjects;
+    property Items[Index: Integer]: TJwWTSSession read GetItem write SetItem; default;
+    procedure SetOwner(const Value: TJwTerminalServer);
+    property Owner: TJwTerminalServer read FOwner write SetOwner;
   end;
 
   TJwWTSProcess = class(TPersistent)
@@ -177,7 +199,7 @@ type
     ConnectTime: FILETIME;
     DisconnectTime: FILETIME;
     LastInputTime: FILETIME;
-    LoginTime: FILETIME;
+    LogonTime: FILETIME;
     Reserved3: array[0..1011] of byte;
     Domain: array[0..17] of WideChar;
     Username: array[0..22] of WideChar;
@@ -200,7 +222,9 @@ implementation
 constructor TJwTerminalServer.Create;
 begin
   inherited Create;
-  FSessions := TJwWTSSessionList.Create(Self);
+//  FSessions := TJwWTSSessionList.Create(Self);
+  FSessions := TJwWTSSessionList.Create;
+  FSessions.Owner := Self;
 end;
 
 procedure TJwTerminalServer.SetServer(const Value: TJwString);
@@ -249,7 +273,7 @@ begin
     Result := WTS_CURRENT_SERVER_HANDLE;
     FConnected := True;
   end
-  else 
+  else
   begin
 {$IFDEF UNICODE}
     Result := WTSOpenServerW(PWideChar(WideString(FServer)));
@@ -278,20 +302,51 @@ begin
   Result := SystemTimeToDateTime(SystemTime);
 end;
 
-constructor TJwWTSSessionList.Create(const AOwner: TJwTerminalServer);
+function TJwWTSSessionList.Add(ASession: TJwWTSSession): Integer;
 begin
+  Result := inherited Add(ASession);
+end;
+
+function TJwWTSSessionList.GetItem(Index: Integer): TJwWTSSession;
+begin
+  Result := TJwWTSSession(inherited Items[Index]);
+end;
+
+function TJwWTSSessionList.IndexOf(ASession: TJwWTSSession): Integer;
+begin
+  Result := inherited IndexOf(ASession);
+end;
+
+procedure TJwWTSSessionList.Insert(Index: Integer; ASession: TJwWTSSession);
+begin
+  inherited Insert(Index, ASession);
+end;
+
+function TJwWTSSessionList.Remove(ASession: TJwWTSSession): Integer;
+begin
+  Result := inherited Remove(ASession);
+end;
+
+procedure TJwWTSSessionList.SetItem(Index: Integer; AObject: TJwWTSSession);
+begin
+  inherited Items[Index] := AObject;
+end;
+
+procedure TJwWTSSessionList.SetOwner(const Value: TJwTerminalServer);
+begin
+  FOwner := Value;
+end;
+
+{constructor TJwWTSSessionList.Create(const AOwner: TJwTerminalServer);
+begin
+  inherited Create(True);
   FOwner := AOwner;
-end;
+end;}
 
-function TJwWTSSessionList.GetOwner;
-begin
-  Result := FOwner;
-end;
-
-function TJwWTSSessionList.GetItem(AIndex: Integer): TJwWTSSession;
+{function TJwWTSSessionList.GetItem(AIndex: Integer): TJwWTSSession;
 begin
   Result := TJwWTSSession(inherited GetItem(AIndex));
-end;
+end;}
 
 function TJwWTSSession.GetOwner;
 begin
@@ -376,24 +431,72 @@ end;
 
 function TJwWTSSession.GetServerHandle;
 begin
-  Result := GetOwner.GetOwner.ServerHandle;
+  Result := GetOwner.Owner.ServerHandle;
+end;
+
+procedure TJwWTSSession.GetIdleTime;
+var Days, Hours, Minutes: Word;
+{$IFDEF COMPILER7_UP}
+  FS: TFormatSettings;
+{$ENDIF COMPILER7_UP}
+begin
+{$IFDEF COMPILER7_UP}
+  GetLocaleFormatSettings(LOCALE_SYSTEM_DEFAULT, FS);
+{$ENDIF COMPILER7_UP}
+  if YearOf(FLogonTime) = 1601 then
+  begin
+    FLogonTimeStr := '';
+  end
+  else begin
+  {$IFDEF COMPILER7_UP}
+    FLoginTimeStr := DateTimeToStr(FLogonTime, FS);
+  {$ELSE}
+    FLogonTimeStr := DateTimeToStr(FLogonTime);
+  {$ENDIF COMPILER7_UP}
+  end;
+
+  // Disconnected session = idle since DisconnectTime
+  if YearOf(FLastInputTime) = 1601 then
+  begin
+    FLastInputTime := FDisconnectTime;
+{    OutputDebugString(PChar('ConnectTime: ' + DateTimeToStr(FConnectTime)));
+    OutputDebugString(PChar('CurrentTime: ' + DateTimeToStr(FCurrentTime)));
+    OutputDebugString(PChar('DisconnectTime: ' + DateTimeToStr(FDisconnectTime)));
+    OutputDebugString(PChar('LastInputTime: ' + DateTimeToStr(FLastInputTime)));
+    OutputDebugString(PChar('LogonTime: ' + DateTimeToStr(FLogonTime)));}
+  end;
+
+  FIdleTime := FLastInputTime - FCurrentTime;
+  Days := Trunc(FIdleTime);
+  Hours := HourOf(FIdleTime);
+  Minutes := MinuteOf(FIdleTime);
+  if Days > 0 then begin
+    FIdleTimeStr := Format('%dd %d:%1.2d', [Days, Hours, Minutes]);
+  end
+  else if Hours > 0 then begin
+    FIdleTimeStr := Format('%d:%1.2d', [Hours, Minutes]);
+  end
+  else if Minutes > 0 then begin
+    FIdleTimeStr := IntToStr(Minutes);
+  end
+  else begin
+    FIdleTimeStr := '.';
+  end;
+  if YearOf(FLogonTime) = 1601 then
+  begin
+    FIdleTimeStr := '.';
+  end;  
 end;
 
 constructor TJwWTSSession.Create(const AOwner: TJwWTSSessionList;
   const ASessionId: TJwSessionId; const AWinStationName: TJwString;
   const AState: TJwState);
-// #todo: reverse _WINSTATIONQUERYINFORMATIONA structure?
-var 
+var
+  // #todo: reverse _WINSTATIONQUERYINFORMATIONA structure?
   WinStationInfoPtr: _WINSTATIONQUERYINFORMATIONW;
   dwReturnLength: DWORD;
-{$IFDEF COMPILER7_UP}
-  FS: TFormatSettings;
-{$ENDIF COMPILER7_UP}
-  Days, Hours, Minutes: Word;
 begin
-{$IFDEF COMPILER7_UP}
-  GetLocaleFormatSettings(LOCALE_SYSTEM_DEFAULT, FS);
-{$ENDIF COMPILER7_UP}
+  FOwner := AOwner;
 
   FSessionId := ASessionId;
   FWinStationName := AWinStationName;
@@ -417,54 +520,10 @@ begin
     FConnectTime := FileTime2DateTime(WinStationInfoPtr.ConnectTime);
     FDisconnectTime := FileTime2DateTime(WinStationInfoPtr.DisconnectTime);
     FLastInputTime := FileTime2DateTime(WinStationInfoPtr.LastInputTime);
-    FLogonTime := FileTime2DateTime(WinStationInfoPtr.LoginTime);
+    FLogonTime := FileTime2DateTime(WinStationInfoPtr.LogonTime);
     FCurrentTime := FileTime2DateTime(WinStationInfoPtr.CurrentTime);
 
-    if YearOf(FLogonTime) = 1601 then
-    begin
-      FLogonTimeStr := ''
-    end
-    else 
-	begin
-{$IFDEF COMPILER7_UP}
-        FLoginTimeStr := DateTimeToStr(LogonTime, FS);
-{$ELSE}
-        FLogonTimeStr := DateTimeToStr(LogonTime);
-{$ENDIF COMPILER7_UP}
-      { from Usenet post by Chuck Chopp
-        http://groups.google.com/group/microsoft.public.win32.programmer.kernel/browse_thread/thread/c6dd86e7df6d26e4/3cf53e12a3246e25?lnk=st&q=WinStationQueryInformationa+group:microsoft.public.*&rnum=1&hl=en#3cf53e12a3246e25
-        2)  The system console session cannot go into an idle/disconnected state.
-            As such, the LastInputTime value will always math CurrentTime for the
-            console session.
-        3)  The LastInputTime value will be zero if the session has gone
-            disconnected.  In that case, use the DisconnectTime value in place of
-            LastInputTime when calculating the current idle time for a disconnected session.
-        4)  All of these time values are GMT time values.
-        5)  The disconnect time value will be zero if the sesson has never been
-            disconnected.}
-
-      // Disconnected session = idle since DisconnectTime
-      if YearOf(FLastInputTime) = 1601 then
-      begin
-        FLastInputTime := FileTime2DateTime(WinStationInfoPtr.DisconnectTime);
-      end;
-
-      FIdleTime := FLastInputTime - FCurrentTime;
-      Days := Trunc(FIdleTime);
-      Hours := HourOf(FIdleTime);
-      Minutes := MinuteOf(FIdleTime);
-
-      if Days > 0 then
-        FIdleTimeStr := Format('%dd %d:%1.2d', [Days, Hours, Minutes])
-      else
-      if Hours > 0 then
-        FIdleTimeStr := Format('%d:%1.2d', [Hours, Minutes])
-      else
-      if Minutes > 0 then
-        FIdleTimeStr := IntToStr(Minutes)
-      else
-        FIdleTimeStr := '-';
-    end;
+    GetIdleTime;
   end;
 end;
 
