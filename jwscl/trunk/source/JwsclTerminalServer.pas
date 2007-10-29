@@ -26,9 +26,9 @@ unit JwsclTerminalServer;
 
 interface
 
-uses Classes, Contnrs,
+uses Classes, Contnrs, SysUtils, DateUtils,
   JwaWindows,
-  jwsclTypes, JwsclStrings;
+  JwsclTypes, JwsclStrings;
 
 {$ENDIF SL_OMIT_SECTIONS}
 
@@ -37,65 +37,113 @@ type
 
   { forward declarations }
   TJwTerminalServer = class;
-  TJwWtsSession = class;
-  TJwWtsSessionList = class;
-  TJwWtsProcess = class;
-  TJwWtsProcessList = class;
+  TJwWTSSession = class;
+  TJwWTSSessionList = class;
+  TJwWTSProcess = class;
+  TJwWTSProcessList = class;
 
   TJwTerminalServer = class(TPersistent)
   private
-    FSessions: TJwWtsSessionList;
-    FServer: TJwString;
-    hServer: THandle;
     FConnected: Boolean;
+    FServer: TJwString;
+    FServerHandle: THandle;
+    FSessions: TJwWTSSessionList;
     procedure SetServer(const Value: TJwString);
   protected
-    function Open: THandle;
     procedure Close;
+    function Open: THandle;
   published
-    property Server: TJwString read FServer write SetServer;
     property Connected: Boolean read FConnected;
     constructor Create; reintroduce;
     function Enumerate: boolean;
+    function FileTime2DateTime(FileTime: FileTime): TDateTime;
+    property Server: TJwString read FServer write SetServer;
+    property ServerHandle: THandle read FServerHandle;
+    property Sessions: TJwWTSSessionList read FSessions;
   end;
 
-  TJwWtsSession = class(TPersistent)
+  TJwWTSSession = class(TPersistent)
   private
   protected
-    FOwner: TJwWtsSessionList;
+    FApplicationName: TJwString;
+//    FClientAddress
+    FClientBuildNumber: DWORD;
+    FClientDirectory: TJwString;
+//    FClientDisplay
+    FClientHardwareId: DWORD;
+//    FClientInfo
+    FClientName: TJwString;
+    FClientProductId: WORD;
+    FClientProtocolType: WORD;
+    FInitialProgram: TJwString;
+//    FOEMId // Currently not used
+    FWorkingDirectory: TJwString;
+    FConnectTime: TDateTime;
+    FCurrentTime: TDateTime;
+    FDisconnectTime: TDateTime;
+    FIdleTime: TDateTime;
+    FIdleTimeStr: TJwString;
+    FLastInputTime: TDateTime;
+    FLogonTime: TDateTime;
+    FLogonTimeStr: TJwString;
     FDomain: TJwString;
-    FUsername: TJwString;
+    FOwner: TJwWTSSessionList;
     FSessionId: TJwSessionId;
-    WinStationName: TJwString;
-    State: TJwState;
+    FState: TJwState;
+    FUsername: TJwString;
+    FWinStationName: TJwString;
   published
-//    property Username: TJwString read FUsername write SetUsername;
-    property SessionId: TJwSessionId read FSessionId;
-    property Domain: TJwString read FDomain write SetDomain;
     constructor Create(const AOwner: TJwWTSSessionList;
       const ASessionId: TJwSessionId; const AWinStationName: TJwString;
       const AState: TJwState); reintroduce;
+    property ApplicationName: TJwString read FApplicationName;
+    property ClientBuildNumber: DWORD read FClientBuildNumber;
+    property ClientDirectory: TJwString read FClientDirectory;
+    property ClientHardwareId: DWORD read FClientHardwareId;
+    property ClientName: TJwString read FClientName;
+    property ClientProductId: WORD read FClientProductId;
+    property ClientProtocolType: WORD read FClientProtocolType;
+    property ConnectTime: TDateTime read FConnectTime;
+    property CurrentTime: TDateTime read FCurrentTime;
+    property DisconnectTime: TDateTime read FDisconnectTime;
+    property Domain: TJwString read FDomain;
+    function GetOwner: TJwWTSSessionList; reintroduce;
+    function GetServerHandle: THandle;
+    function GetSessionInfoDWORD(const WTSInfoClass: WTS_INFO_CLASS): DWORD;
+    function GetSessionInfoStr(const WTSInfoClass: WTS_INFO_CLASS): TJwString;
+    procedure GetSessionInfoPtr(const WTSInfoClass: WTS_INFO_CLASS;
+      var ABuffer: Pointer);
+    property IdleTimeStr: TJwString read FIdleTimeStr;
+    property InitialProgram: TJwString read FInitialProgram;
+    property LastInputTime: TDateTime read FLastInputTime;
+    property LogonTime: TDateTime read FLogonTime;
+    property LogonTimeStr: TJwString read FLogonTimeStr;
+    property SessionId: TJwSessionId read FSessionId;
+    property State: TJwState read FState;
+    property Username: TJwString read FUsername;
+    property WinStationName: TJwString read FWinStationName;
+    property WorkingDirectory: TJwString read FWorkingDirectory;
   end;
 
-  TJwWtsSessionList = class(TObjectList)
+  TJwWTSSessionList = class(TObjectList)
   private
   protected
     FOwner: TJwTerminalServer;
     function GetOwner: TJwTerminalServer;
-//    function GetItem(AIndex: integer): TJwTWtsSession;
+    function GetItem(AIndex: integer): TJwWTSSession;
   public
     constructor Create(const AOwner: TJwTerminalServer);
 //    procedure Delete(Index: integer); reintroduce;
 //    procedure Refresh;
-//    function FindSession(ASessionId: TJwSessionID): TJwTWtsSession;
-//    function FindClientSession(AClientName: TJwString): TJwTWtsSession;
-//    function FindUser(AUsername: TJwString) : TJwTWtsSession;
-//    property Items[AIndex: integer]: TJwTWtsSession read GetItem; default;
+//    function FindSession(ASessionId: TJwSessionID): TJwTWTSSession;
+//    function FindClientSession(AClientName: TJwString): TJwTWTSSession;
+//    function FindUser(AUsername: TJwString) : TJwTWTSSession;
+    property Items[AIndex: integer]: TJwWTSSession read GetItem; default;
   end;
 
-  TJwWtsProcess = class(TPersistent)
+  TJwWTSProcess = class(TPersistent)
   private
-    FOwner: TJwWtsProcessList;
+    FOwner: TJwWTSProcessList;
     FSessionId: TJwSessionID;
     FProcessId: TJwProcessID;
     FProcessName: TJwString;
@@ -103,17 +151,17 @@ type
   public
   end;
 
-  TJwWtsProcessList = class(TPersistent)
+  TJwWTSProcessList = class(TPersistent)
   protected
-//    function GetItem(AIndex: integer): TJwWtsProcess;
+//    function GetItem(AIndex: integer): TJwWTSProcess;
 //    function GetOwner: TJwTerminalServer; override;
   public
 //    constructor Create(AOwner: TPersistent);
 //    procedure Delete(Index: integer);
 //    procedure Refresh;
-//    function GetProcess(AProcessName: TJwString): TJwWtsProcess; overload;
-//    function GetProcess(AProcessId: DWORD): TJwWtsProcess; overload;
-//    property Items[AIndex: integer]: TJwWtsProcess read GetItem; default;
+//    function GetProcess(AProcessName: TJwString): TJwWTSProcess; overload;
+//    function GetProcess(AProcessId: DWORD): TJwWTSProcess; overload;
+//    property Items[AIndex: integer]: TJwWTSProcess read GetItem; default;
   end;
 
   _WINSTATIONQUERYINFORMATIONW = record
@@ -134,11 +182,11 @@ type
     CurrentTime: FILETIME;
   end;
 
-  PJwWtsSessionInfoAArray = ^TJwWtsSessionInfoAArray;
-  TJwWtsSessionInfoAArray = array[0..ANYSIZE_ARRAY-1] of WTS_SESSION_INFOA;
+  PJwWTSSessionInfoAArray = ^TJwWTSSessionInfoAArray;
+  TJwWTSSessionInfoAArray = array[0..ANYSIZE_ARRAY-1] of WTS_SESSION_INFOA;
 
-  PJwWtsSessionInfoWArray = ^TJwWtsSessionInfoWArray;
-  TJwWtsSessionInfoWArray = array[0..ANYSIZE_ARRAY-1] of WTS_SESSION_INFOW;
+  PJwWTSSessionInfoWArray = ^TJwWTSSessionInfoWArray;
+  TJwWTSSessionInfoWArray = array[0..ANYSIZE_ARRAY-1] of WTS_SESSION_INFOW;
 
 {$ENDIF SL_IMPLEMENTATION_SECTION}
 
@@ -159,8 +207,8 @@ begin
 end;
 
 function TJwTerminalServer.Enumerate: boolean;
-var SessionInfoPtr: {$IFDEF UNICODE}PJwWtsSessionInfoWArray;
-  {$ELSE}PJwWtsSessionInfoAArray;{$ENDIF UNICODE}
+var SessionInfoPtr: {$IFDEF UNICODE}PJwWTSSessionInfoWArray;
+  {$ELSE}PJwWTSSessionInfoAArray;{$ENDIF UNICODE}
   pCount: Cardinal;
   i: integer;
   Res: Longbool;
@@ -169,10 +217,10 @@ begin
   Open;
   Res :=
   {$IFDEF UNICODE}
-    WtsEnumerateSessionsW(hServer, 0, 1, PWTS_SESSION_INFOW(SessionInfoPtr),
+    WTSEnumerateSessionsW(FhServer, 0, 1, PWTS_SESSION_INFOW(SessionInfoPtr),
       pCount);
   {$ELSE}
-    WtsEnumerateSessions(hServer, 0, 1, PWTS_SESSION_INFOA(SessionInfoPtr),
+    WTSEnumerateSessions(FServerHandle, 0, 1, PWTS_SESSION_INFOA(SessionInfoPtr),
       pCount);
   {$ENDIF UNICODE}
 
@@ -214,47 +262,191 @@ end;
 
 procedure TJwTerminalServer.Close;
 begin
-  if hServer <> WTS_CURRENT_SERVER_HANDLE then
+  if FServerHandle <> WTS_CURRENT_SERVER_HANDLE then
   begin
-    WTSCloseServer(hServer);
+    WTSCloseServer(FServerHandle);
   end;
 end;
 
-constructor TJwWtsSessionList.Create(const AOwner: TJwTerminalServer);
+function TJwTerminalServer.FileTime2DateTime(FileTime: _FILETIME): TDateTime;
+var
+  LocalFileTime: TFileTime;
+  SystemTime: TSystemTime;
+begin
+  FileTimeToLocalFileTime(FileTime, LocalFileTime);
+  FileTimeToSystemTime(LocalFileTime, SystemTime);
+  Result := SystemTimeToDateTime(SystemTime);
+end;
+
+constructor TJwWTSSessionList.Create(const AOwner: TJwTerminalServer);
 begin
   FOwner := AOwner;
 end;
 
-function TJwWtsSessionList.GetOwner;
+function TJwWTSSessionList.GetOwner;
 begin
   Result := FOwner;
 end;
 
-procedure TJwWtsSession.SetDomain(const Value: TJwString);
+function TJwWTSSessionList.GetItem(AIndex: Integer): TJwWTSSession;
 begin
-  FDomain := Value;
+  Result := TJwWTSSession(inherited GetItem(AIndex));
 end;
 
-procedure TJwWtsSession.SetUsername(const Value: TJwString);
+function TJwWTSSession.GetOwner;
 begin
-  FUsername := Value;
+  Result := FOwner;
 end;
 
-constructor TJwWtsSession.Create(const AOwner: TJwWTSSessionList;
+procedure TJwWTSSession.GetSessionInfoPtr(const WTSInfoClass: _WTS_INFO_CLASS;
+  var ABuffer: Pointer);
+var dwBytesReturned: DWORD;
+  Res: Boolean;
+begin
+  Res :=
+  {$IFDEF UNICODE}
+    WTSQuerySessionInformationW(GetServerHandle, FSessionId, WTSInfoClass,
+      ABuffer, dwBytesReturned);
+  {$ELSE}
+    WTSQuerySessionInformationA(GetServerHandle, FSessionId, WTSInfoClass,
+      ABuffer, dwBytesReturned);
+  {$ENDIF}
+end;
+
+function TJwWTSSession.GetSessionInfoStr(const WTSInfoClass: _WTS_INFO_CLASS):
+  TJwString;
+var dwBytesReturned: DWORD;
+  ABuffer: Pointer;
+  Res: Boolean;
+begin
+  ABuffer := nil;
+  Result := '';
+  Res :=
+  {$IFDEF UNICODE}
+    WTSQuerySessionInformationW(GetServerHandle, FSessionId, WTSInfoClass,
+      ABuffer, dwBytesReturned);
+  {$ELSE}
+    WTSQuerySessionInformationA(GetServerHandle, FSessionId, WTSInfoClass,
+      ABuffer, dwBytesReturned);
+  {$ENDIF}
+
+  if ABuffer <> nil then
+  begin
+    Result := PWideChar(ABuffer);
+    WTSFreeMemory(ABuffer);
+  end;
+end;
+
+function TJwWTSSession.GetSessionInfoDWORD(const WTSInfoClass: _WTS_INFO_CLASS): DWORD;
+var dwBytesReturned: DWORD;
+  ABuffer: Pointer;
+  Res: Boolean;
+begin
+  ABuffer := nil;
+  Result := 0;
+  {$IFDEF UNICODE}
+    WTSQuerySessionInformationW(GetServerHandle, FSessionId, WTSInfoClass,
+      ABuffer, dwBytesReturned);
+  {$ELSE}
+    WTSQuerySessionInformationA(GetServerHandle, FSessionId, WTSInfoClass,
+      ABuffer, dwBytesReturned);
+  {$ENDIF}
+  if ABuffer <> nil then
+  begin
+    Result := PDWord(ABuffer)^;
+    WTSFreeMemory(ABuffer);
+  end;
+end;
+
+function TJwWTSSession.GetServerHandle;
+begin
+  Result := GetOwner.GetOwner.ServerHandle;
+end;
+
+constructor TJwWTSSession.Create(const AOwner: TJwWTSSessionList;
   const ASessionId: TJwSessionId; const AWinStationName: TJwString;
   const AState: TJwState);
-// note: only unicode version is known
+// #todo: reverse _WINSTATIONQUERYINFORMATIONA structure?
 var WinStationInfoPtr: _WINSTATIONQUERYINFORMATIONW;
   dwReturnLength: DWORD;
+  {$IFDEF COMPILER7_UP}
+  FS: TFormatSettings;
+  {$ENDIF COMPILER7_UP}
+  Days, Hours, Minutes: Word;
 begin
-  SessionId := ASessionId;
-  WinStationName := AWinStationName;
-  State := AState;
-  if WinStationQueryInformationW(hServer, ASessionId, WinStationInformation,
-    WinStationInfoPtr, SizeOf(WinStationInfoPtr), dwReturnLength) then
+  {$IFDEF COMPILER7_UP}
+  GetLocaleFormatSettings(LOCALE_SYSTEM_DEFAULT, FS);
+  {$ENDIF COMPILER7_UP}
+
+  FSessionId := ASessionId;
+  FWinStationName := AWinStationName;
+  FState := AState;
+
+  if WinStationQueryInformationW(GetServerHandle, ASessionId,
+    WinStationInformation, @WinStationInfoPtr, SizeOf(WinStationInfoPtr),
+    dwReturnLength) then
   begin
-    Domain := WinStationInfoPtr.Domain;
-    Username := WinStationInfoPtr.Username;
+    FApplicationName := GetSessionInfoStr(WTSApplicationName);
+    FClientBuildNumber := GetSessionInfoDWORD(WTSClientBuildNumber);
+    FClientDirectory := GetSessionInfoStr(WTSClientDirectory);
+    FClientHardwareId := GetSessionInfoDWORD(WTSClientHardwareId);
+    FClientName := GetSessionInfoStr(WTSClientName);
+    FClientProductId := GetSessionInfoDWORD(WTSClientProductId);
+    FClientProtocolType := GetSessionInfoDWORD(WTSClientProtocolType);
+    FInitialProgram := GetSessionInfoStr(WTSInitialProgram);
+    FWorkingDirectory := GetSessionInfoStr(WTSWorkingDirectory);
+    FDomain := WinStationInfoPtr.Domain;
+    FUsername := WinStationInfoPtr.Username;
+    FConnectTime := FileTime2DateTime(WinStationInfoPtr.ConnectTime);
+    FDisconnectTime := FileTime2DateTime(WinStationInfoPtr.DisconnectTime);
+    FLastInputTime := FileTime2DateTime(WinStationInfoPtr.LastInputTime);
+    FLogonTime := FileTime2DateTime(WinStationInfoPtr.LoginTime);
+    FCurrentTime := FileTime2DateTime(WinStationInfoPtr.CurrentTime);
+
+    if YearOf(FLogonTime) = 1601 then
+    begin
+      FLogonTimeStr := ''
+    end
+    else begin
+      {$IFDEF COMPILER7_UP}
+        FLoginTimeStr := DateTimeToStr(LogonTime, FS);
+      {$ELSE}
+        FLogonTimeStr := DateTimeToStr(LogonTime);
+      {$ENDIF COMPILER7_UP}
+      { from Usenet post by Chuck Chopp
+        http://groups.google.com/group/microsoft.public.win32.programmer.kernel/browse_thread/thread/c6dd86e7df6d26e4/3cf53e12a3246e25?lnk=st&q=WinStationQueryInformationa+group:microsoft.public.*&rnum=1&hl=en#3cf53e12a3246e25
+        2)  The system console session cannot go into an idle/disconnected state.
+            As such, the LastInputTime value will always math CurrentTime for the
+            console session.
+        3)  The LastInputTime value will be zero if the session has gone
+            disconnected.  In that case, use the DisconnectTime value in place of
+            LastInputTime when calculating the current idle time for a disconnected session.
+        4)  All of these time values are GMT time values.
+        5)  The disconnect time value will be zero if the sesson has never been
+            disconnected.}
+
+      // Disconnected session = idle since DisconnectTime
+      if YearOf(FLastInputTime) = 1601 then
+      begin
+        FLastInputTime := FileTime2DateTime(WinStationInfoPtr.DisconnectTime);
+      end;
+
+      FIdleTime := FLastInputTime - FCurrentTime;
+      Days := Trunc(FIdleTime);
+      Hours := HourOf(FIdleTime);
+      Minutes := MinuteOf(FIdleTime);
+
+      if Days > 0 then
+        FIdleTimeStr := Format('%dd %d:%1.2d', [Days, Hours, Minutes])
+      else
+      if Hours > 0 then
+        FIdleTimeStr := Format('%d:%1.2d', [Hours, Minutes])
+      else
+      if Minutes > 0 then
+        FIdleTimeStr := IntToStr(Minutes)
+      else
+        FIdleTimeStr := '-';
+    end;
   end;
 end;
 
