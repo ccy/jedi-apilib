@@ -192,7 +192,7 @@
 %% Angaben zur Standardformatierung des Titels %%%%%%%%%%%%%%%%%%%%%%%%
 %\titlehead{Titelkopf}
 %\subject{Typisierung}
-\title{Programmierung in Windows Sicherheit mit \newline \underline{J}EDI \underline{W}indows \underline{S}ecurity \underline{C}ode \underline{L}ibrary\newline JWSCL}
+\title{Programmierung in Windows Sicherheit mit \newline \underline{J}EDI \underline{W}indows \underline{S}ecurity \underline{C}ode \underline{L}ibrary\newline{}JWSCL\newline\textbf{Erster Entwurf}}
 \author{Christian Wimmer}
 %\and{Der Name des Co-Autoren}
 %\thanks{Fußnote}			% entspr. \footnote im Fließtext
@@ -321,7 +321,7 @@ Diese Angaben wird in CreateFile auf Korrektheit überprüft. Kann die Datei nicht
 
 Das folgende Programm zeigt, dass ReadFile mit Fehler 5 (Zugriff verweigert) scheitert, wenn in CreateFile \emph{FILE\_WRITE\_DATA} für den Parameter \textit{dwDesiredAccess} verwendet wird.
 Würde man im Beispiel \emph{FILE\_READ\_DATA} statt \emph{FILE\_WRITE\_DATA} verwenden und genau im dem Moment zwischen CreateFile und ReadFile über die Dateizugriffsrechte den Lesezugriff verweigern, so würde ReadFile trotzdem funktionieren. 
-
+\newpage
 \lstset{language=Delphi} 
 \begin{lstlisting} 
 program CreateFileTest;
@@ -335,9 +335,6 @@ var h : THandle;
     b : array[0..10] of char;
 begin
   SetLastError(0);
-\end{lstlisting}
-\newpage
-\begin{lstlisting} 
   h := CreateFile(
    'CreateFileTest.dpr', //__in          LPCTSTR lpFileName,
    FILE_WRITE_DATA,//__in          DWORD dwDesiredAccess,
@@ -371,9 +368,10 @@ GR\footnote{Generic Read}&GW\footnote{Generic Wead}&GE\footnote{Generic Execute}
 \end{tabular}}
 \renewcommand\footnoterule{}
 \end{minipage}
-\newline\newline
-Die \textbf{objektspezifischen Rechte} sind, wie der Name schon sagt für jedes Objekt definiert. Die Bits 0 bis 15 sind zwar immer dieselben, jedoch definiert jedes Objekt nur ein Teil der kombinierten Bits als gültige Zugriffsrechte. Theoretisch können so bis zu $2^{16}-1 = 65535$ verschiedene Zugriffsrechte definiert werden.
-\newline\newline
+\subsubsection{objektspezifischen Rechte}
+Die \textbf{objektspezifischen Rechte} sind, wie der Name schon sagt für jedes Objekt definiert. Die Bits 0 bis 15 sind zwar immer dieselben, jedoch definiert jedes Objekt nur ein Teil der kombinierten Bits als gültige Zugriffsrechte. Theoretisch können so bis zu $2^{16}-1 = 65535$ verschiedene Zugriffsrechte definiert werden.\newline
+
+\subsubsection{Standardzugriffsrechte}
 Die \textbf{Standardzugriffsrechte} sind für alle Objekte immer dieselben:\\\newline
 \small{
 \begin{tabular}{|l|l|}\hline
@@ -383,8 +381,8 @@ READ\_CONTROL & Das Recht Sicherheitsinformationen des Objekts zu lesen. \\
 SYNCHRONIZE & Das Recht das Objekt für Synchronisation zu nutzen. \\
 WRITE\_DAC & Das Recht die Sicherheitsinformation des Objekts zu ändern.\\
 WRITE\_OWNER & Das Recht den Besitzer des Objekts zu ändern. \\\hline
-\end{tabular}}
-\newpage{}Es gibt Konstanten, die die obigen Standardrechte kombinieren.\\\\
+\end{tabular}}\newline\newline
+Es gibt Konstanten, die die obigen Standardrechte kombinieren.\\\\
 \begin{tabular}{|l|l|}\hline
 STANDARD\_RIGHTS\_ALL & Kombiniert DELETE, READ\_CONTROL, WRITE\_DAC, \\
 \space & WRITE\_OWNER, und SYNCHRONIZE Zugriff.\\
@@ -395,15 +393,28 @@ STANDARD\_RIGHTS\_REQUIRED & Kombiniert DELETE, READ\_CONTROL, WRITE\_DAC, \\
 STANDARD\_RIGHTS\_WRITE &	Aktuell READ\_CONTROL\\\hline
 \end{tabular}
 \newline\newline\newline
-Die System ACL\footnote{Access Control List engl.\, Zugriffsliste} (kurz SACL) oder auch Überwachungsliste\footnote{engl. Audit ACL} definiert Einträge, die eine Überwachung des Objektes ermöglichen. Diese Liste kann nur mit dem Privilege ACCESS\_SYSTEM\_SECURITY\footnote{Was ein Privileg ist kann im Kapitel Privileg nachgelesen werden. Wir kommen darauf nochmals zurück.} geändert werden. Das Bit 24 (SA) bestimmt daher nicht, ob der Zugriff auf die SACL gestattet ist. Es wird nur verwendet, um den Zugriff auf die SACL zu überwachen.
-\newline\newline
-Die Bits 28 bis 31 sind für die generischen Zugriffsrechte bestimmt. Sie werden  im folgenden Kapitel besprochen.
+Die System ACL\footnote{Access Control List engl.\, Zugriffsliste} (kurz SACL) oder auch Überwachungsliste\footnote{engl. Audit ACL} definiert Einträge, die eine Überwachung des Objektes ermöglichen. Diese Liste kann nur mit dem Privilege ACCESS\_SYSTEM\_SECURITY\footnote{Was ein Privileg ist kann im Kapitel Privileg auf Seite \pageref{lab_privilege} nachgelesen werden. Wir kommen darauf jedoch nochmals zurück.} geändert werden. Das Bit 24 (SA) bestimmt daher nicht, ob der Zugriff auf die SACL gestattet ist. Es wird nur verwendet, um den Zugriff auf die SACL zu überwachen.\newline
 
+\subsubsection{Generische Rechte}
+Die Bits 28 bis 31 sind für die generischen Zugriffsrechte bestimmt. Sie werden im Kapitel \textbf{Generic Mapping} auf Seite\pageref{lab_generic_mapping} besprochen.
 
+\subsubsection{MAXIMUM\_ALLOWED}
 
+Ein spezielles Recht ist MAXIMUM\_ALLOWED, welches verwendet werden kann, um zu ermitteln, welche Rechte auf ein Objekt erfolgreich
+angewendet werden können. MAXIMUM\_ALLOWED wird mit AccessCheck verwendet, welches die möglichen Rechte zurückgibt.
+\lstset{language=Delphi} 
+\begin{lstlisting} 
+MAXIMUM_ALLOWED = $$02000000;
+\end{lstlisting}
+
+Dieses Pseudorechte sollte nur in begründeten Fällen eingesetzt werden (z.B. um den Benutzer aufzuklären, was er mit einem Objekt machen darf). Es ist immer die beste Art, nur die wirklich benötigten Rechte zu fordern, als MAXIMUM\_ALLOWED oder GENERIC\_ALL einzusetzen.
 
 \subsection{Generic Mapping}
-"`Generic Mapping"' bezeichnet die übersetzung der generischen Zugriffsrechte auf die Standard- und Spezialrechten.
+\label{lab_generic_mapping}
+"`Generic Mapping"' bezeichnet die übersetzung der generischen Zugriffsrechte (oder auch Generalrechte) auf die Standard- und Spezialrechten.
+Sie sind an sich keine echten Rechte und müssen vor der Verwendung in API Funktionen (wie AccessCheck) in spezifische Rechte
+und Standardrechte umgewandelt werden. Die Generalbits werden dabei gelöscht.
+
 Es gibt die folgenden Generalrechte:
 \begin{itemize}
 	\item{GENERIC\_ALL}
@@ -412,10 +423,63 @@ Es gibt die folgenden Generalrechte:
 	\item{GENERIC\_EXECUTE}
 \end{itemize}
 
+Diese Rechte werden mit der Hilfe der API Funktion MapGenericMask auf die objektspezifischen und Standard-Rechte übersetzt.\\
+\lstset{language=c} 
+\begin{lstlisting} 
+VOID WINAPI MapGenericMask(
+  __in_out      PDWORD AccessMask,
+  __in          PGENERIC_MAPPING GenericMapping
+);
+\end{lstlisting} 
+
+Der Typ GENERIC\_MAPPING enthält dabei alle vier Generalrechte als Kombination der objektspezifischen und Standard-Rechte.\\
+\begin{lstlisting} 
+typedef struct _GENERIC_MAPPING {
+  ACCESS_MASK GenericRead;
+  ACCESS_MASK GenericWrite;
+  ACCESS_MASK GenericExecute;
+  ACCESS_MASK GenericAll;
+} GENERIC_MAPPING, 
+ *PGENERIC_MAPPING;
+\end{lstlisting} 
+\newpage
+Ein Beispiel für die konvertierung von General-Dateirechten in spezifische würde dann so aussehen:\\
+
+\lstset{language=delphi} 
+\begin{lstlisting} 
+const 
+  FILE_GENERIC_READ = STANDARD_RIGHTS_READ or FILE_READ_DATA 
+    or FILE_READ_ATTRIBUTES or FILE_READ_EA or SYNCHRONIZE; 
+  FILE_GENERIC_WRITE = STANDARD_RIGHTS_WRITE or FILE_WRITE_DATA 
+    or FILE_WRITE_ATTRIBUTES or FILE_WRITE_EA
+    or FILE_APPEND_DATA or SYNCHRONIZE;     
+  FILE_GENERIC_EXECUTE = STANDARD_RIGHTS_READ or FILE_READ_DATA
+    or FILE_READ_ATTRIBUTES or FILE_READ_EA or SYNCHRONIZE; 
+  FILE_ALL_ACCESS = STANDARD_RIGHTS_REQUIRED or SYNCHRONIZE or 511; 
+    
+var FileMapping : GENERIC_MAPPING;
+    MyAccessMask : DWORD;
+begin 
+  FileMapping.GenericRead := FILE_GENERIC_READ;
+  FileMapping.GenericWrite := FILE_GENERIC_WRITE; 
+  FileMapping.GenericExecute := FILE_GENERIC_EXECUTE; 
+  FileMapping.GenericAll := FILE_ALL_ACCESS; 
+
+  MyAccessMask := GENERIC_ALL;
+  MapGenericMask(@MyAccessMask, @FileMapping); 
+\end{lstlisting} 
+
+In der Variable \textit{MyAccessMask} wird das Bit 28 (Generic all) gesetzt. Ein Aufruf von AccessCheck würde daher fehlschlagen. Die Funktion MapGenericMask übersetzt daher das GA Bit durch den Inhalt von \textit{FileMapping.GenericAll},
+also mit \textit{STANDARD\_RIGHTS\_REQUIRED or SYNCHRONIZE or 511} und man erhält eine korrekte Zugriffsmaske.
+
+
+ 
+
 
 \subsection{Security Descriptor}
 \subsection{Token}
 \subsection{Privilege}
+\label{lab_privilege}
 
 
 
