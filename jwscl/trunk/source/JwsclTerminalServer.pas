@@ -47,12 +47,14 @@ type
     FSessions: TJwWtsSessionList;
     FServer: TJwString;
     hServer: THandle;
+    FConnected: Boolean;
     procedure SetServer(const Value: TJwString);
   protected
     function Open: THandle;
     procedure Close;
   published
     property Server: TJwString read FServer write SetServer;
+    property Connected: Boolean read FConnected;
     constructor Create; reintroduce;
     function Enumerate: boolean;
   end;
@@ -61,35 +63,39 @@ type
   private
   protected
     FOwner: TJwWtsSessionList;
-    SessionId: TJwSessionId;
-    WinStationName: TjwString;
+    FDomain: TJwString;
+    FUsername: TJwString;
+    FSessionId: TJwSessionId;
+    WinStationName: TJwString;
     State: TJwState;
   published
-    constructor Create(AOwner: TjwWTSSessionList; ASessionId: TJwSessionId; AWinStationName: TJwString;
-      AState: TjwState); reintroduce;
+//    property Username: TJwString read FUsername write SetUsername;
+    property SessionId: TJwSessionId read FSessionId;
+    property Domain: TJwString read FDomain write SetDomain;
+    constructor Create(const AOwner: TJwWTSSessionList;
+      const ASessionId: TJwSessionId; const AWinStationName: TJwString;
+      const AState: TJwState); reintroduce;
   end;
 
   TJwWtsSessionList = class(TObjectList)
   private
   protected
-    FOwner: TjwTerminalServer;
+    FOwner: TJwTerminalServer;
     function GetOwner: TJwTerminalServer;
-
-    //    function GetItem(AIndex: integer): TJwTWtsSession;
-//    function GetOwner: TJwTerminalServer;
+//    function GetItem(AIndex: integer): TJwTWtsSession;
   public
-    constructor Create(AOwner: TJwTerminalServer);
+    constructor Create(const AOwner: TJwTerminalServer);
 //    procedure Delete(Index: integer); reintroduce;
 //    procedure Refresh;
 //    function FindSession(ASessionId: TJwSessionID): TJwTWtsSession;
 //    function FindClientSession(AClientName: TJwString): TJwTWtsSession;
-//    function FindUser(AUserName: TJwString) : TJwTWtsSession;
+//    function FindUser(AUsername: TJwString) : TJwTWtsSession;
 //    property Items[AIndex: integer]: TJwTWtsSession read GetItem; default;
   end;
 
   TJwWtsProcess = class(TPersistent)
   private
-    FOwner: TjwWtsProcessList;
+    FOwner: TJwWtsProcessList;
     FSessionId: TJwSessionID;
     FProcessId: TJwProcessID;
     FProcessName: TJwString;
@@ -112,7 +118,7 @@ type
 
   _WINSTATIONQUERYINFORMATIONW = record
     State: DWORD;
-    WinStationNameName: array[0..10] of WideChar;
+    WinStationName: array[0..10] of WideChar;
     Unknown1: array[0..10] of byte;
     Unknown3: array[0..10] of WideChar;
     Unknown2: array[0..8] of byte;
@@ -124,7 +130,7 @@ type
     LoginTime: FILETIME;
     Reserved3: array[0..1011] of byte;
     Domain: array[0..17] of WideChar;
-    UserName: array[0..22] of WideChar;
+    Username: array[0..22] of WideChar;
     CurrentTime: FILETIME;
   end;
 
@@ -144,7 +150,7 @@ implementation
 constructor TJwTerminalServer.Create;
 begin
   inherited Create;
-  FSessions.Create(Self);
+  FSessions := TJwWTSSessionList.Create(Self);
 end;
 
 procedure TJwTerminalServer.SetServer(const Value: TJwString);
@@ -158,7 +164,7 @@ var SessionInfoPtr: {$IFDEF UNICODE}PJwWtsSessionInfoWArray;
   pCount: Cardinal;
   i: integer;
   Res: Longbool;
-  ASession: TjwWTSSession;
+  ASession: TJwWTSSession;
 begin
   Open;
   Res :=
@@ -173,11 +179,12 @@ begin
   // Clear the sessionslist
   FSessions.Clear;
 
-  // Add all sessions
+  // Add all sessions to the SessionList
   for i := 0 to pCount - 1 do
   begin
     ASession := TJwWTSSession.Create(FSessions, SessionInfoPtr^[i].SessionId,
       SessionInfoPtr^[i].pWinStationName, TJwState(SessionInfoPtr^[i].State));
+    FSessions.Add(ASession);
   end;
 
   // Pass the result
@@ -190,6 +197,7 @@ begin
   if FServer = '' then
   begin
     Result := WTS_CURRENT_SERVER_HANDLE;
+    FConnected := True;
   end
   else begin
     {$IFDEF UNICODE}
@@ -197,6 +205,10 @@ begin
     {$ELSE}
       Result := WTSOpenServer(PChar(FServer));
     {$ENDIF}
+    if Result > 0 then
+    begin
+      FConnected := True;
+    end;
   end;
 end;
 
@@ -208,7 +220,7 @@ begin
   end;
 end;
 
-constructor TJwWtsSessionList.Create(AOwner: TjwTerminalServer);
+constructor TJwWtsSessionList.Create(const AOwner: TJwTerminalServer);
 begin
   FOwner := AOwner;
 end;
@@ -218,8 +230,32 @@ begin
   Result := FOwner;
 end;
 
-constructor TJwWtsSession.Create(AOwner: TjwWTSSessionList; ASessionId: Cardinal; AWinStationName: string; AState: TJwState);
+procedure TJwWtsSession.SetDomain(const Value: TJwString);
 begin
-//  handle
+  FDomain := Value;
 end;
+
+procedure TJwWtsSession.SetUsername(const Value: TJwString);
+begin
+  FUsername := Value;
+end;
+
+constructor TJwWtsSession.Create(const AOwner: TJwWTSSessionList;
+  const ASessionId: TJwSessionId; const AWinStationName: TJwString;
+  const AState: TJwState);
+// note: only unicode version is known
+var WinStationInfoPtr: _WINSTATIONQUERYINFORMATIONW;
+  dwReturnLength: DWORD;
+begin
+  SessionId := ASessionId;
+  WinStationName := AWinStationName;
+  State := AState;
+  if WinStationQueryInformationW(hServer, ASessionId, WinStationInformation,
+    WinStationInfoPtr, SizeOf(WinStationInfoPtr), dwReturnLength) then
+  begin
+    Domain := WinStationInfoPtr.Domain;
+    Username := WinStationInfoPtr.Username;
+  end;
+end;
+
 end.
