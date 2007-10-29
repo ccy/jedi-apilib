@@ -441,6 +441,7 @@ const
   RsUNSecureObjects      = 'JwsclSecureObjects.pas';
   RsUNSecurityDialogs    = 'JwsclSecurityDialogs.pas';
   RsUNSid                = 'JwsclSid.pas';
+  RsUNTerminalServer     = 'JwsclTerminalServer.pas';
   RsUNToken              = 'JwsclToken.pas';
   RsUNTypes              = 'JwsclTypes.pas';
   RsUNUtils              = 'JwsclUtils.pas';

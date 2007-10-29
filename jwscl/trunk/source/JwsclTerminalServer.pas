@@ -27,8 +27,8 @@ unit JwsclTerminalServer;
 interface
 
 uses Classes, Contnrs, SysUtils, DateUtils,
-  JwaWindows,
-  JwsclTypes, JwsclStrings;
+  JwaWindows, 
+  JwsclResource, JwsclExceptions, JwsclConstants, JwsclTypes, JwsclStrings;
 
 {$ENDIF SL_OMIT_SECTIONS}
 
@@ -52,7 +52,7 @@ type
   protected
     procedure Close;
     function Open: THandle;
-  published
+  public
     property Connected: Boolean read FConnected;
     constructor Create; reintroduce;
     function Enumerate: boolean;
@@ -92,10 +92,18 @@ type
     FState: TJwState;
     FUsername: TJwString;
     FWinStationName: TJwString;
-  published
+  public
     constructor Create(const AOwner: TJwWTSSessionList;
       const ASessionId: TJwSessionId; const AWinStationName: TJwString;
       const AState: TJwState); reintroduce;
+      
+    function GetOwner: TJwWTSSessionList; reintroduce;
+    function GetServerHandle: THandle;
+    function GetSessionInfoDWORD(const WTSInfoClass: WTS_INFO_CLASS): DWORD;
+    function GetSessionInfoStr(const WTSInfoClass: WTS_INFO_CLASS): TJwString;
+    procedure GetSessionInfoPtr(const WTSInfoClass: WTS_INFO_CLASS;
+      var ABuffer: Pointer);      
+  public
     property ApplicationName: TJwString read FApplicationName;
     property ClientBuildNumber: DWORD read FClientBuildNumber;
     property ClientDirectory: TJwString read FClientDirectory;
@@ -107,12 +115,6 @@ type
     property CurrentTime: TDateTime read FCurrentTime;
     property DisconnectTime: TDateTime read FDisconnectTime;
     property Domain: TJwString read FDomain;
-    function GetOwner: TJwWTSSessionList; reintroduce;
-    function GetServerHandle: THandle;
-    function GetSessionInfoDWORD(const WTSInfoClass: WTS_INFO_CLASS): DWORD;
-    function GetSessionInfoStr(const WTSInfoClass: WTS_INFO_CLASS): TJwString;
-    procedure GetSessionInfoPtr(const WTSInfoClass: WTS_INFO_CLASS;
-      var ABuffer: Pointer);
     property IdleTimeStr: TJwString read FIdleTimeStr;
     property InitialProgram: TJwString read FInitialProgram;
     property LastInputTime: TDateTime read FLastInputTime;
@@ -143,11 +145,11 @@ type
 
   TJwWTSProcess = class(TPersistent)
   private
+  protected
     FOwner: TJwWTSProcessList;
     FSessionId: TJwSessionID;
     FProcessId: TJwProcessID;
     FProcessName: TJwString;
-  protected
   public
   end;
 
@@ -212,17 +214,17 @@ var SessionInfoPtr: {$IFDEF UNICODE}PJwWTSSessionInfoWArray;
   pCount: Cardinal;
   i: integer;
   Res: Longbool;
-  ASession: TJwWTSSession;
+  aSession: TJwWTSSession;
 begin
   Open;
   Res :=
-  {$IFDEF UNICODE}
+{$IFDEF UNICODE}
     WTSEnumerateSessionsW(FhServer, 0, 1, PWTS_SESSION_INFOW(SessionInfoPtr),
       pCount);
-  {$ELSE}
+{$ELSE}
     WTSEnumerateSessions(FServerHandle, 0, 1, PWTS_SESSION_INFOA(SessionInfoPtr),
       pCount);
-  {$ENDIF UNICODE}
+{$ENDIF UNICODE}
 
   // Clear the sessionslist
   FSessions.Clear;
@@ -230,9 +232,9 @@ begin
   // Add all sessions to the SessionList
   for i := 0 to pCount - 1 do
   begin
-    ASession := TJwWTSSession.Create(FSessions, SessionInfoPtr^[i].SessionId,
+    aSession := TJwWTSSession.Create(FSessions, SessionInfoPtr^[i].SessionId,
       SessionInfoPtr^[i].pWinStationName, TJwState(SessionInfoPtr^[i].State));
-    FSessions.Add(ASession);
+    FSessions.Add(aSession);
   end;
 
   // Pass the result
@@ -247,16 +249,14 @@ begin
     Result := WTS_CURRENT_SERVER_HANDLE;
     FConnected := True;
   end
-  else begin
-    {$IFDEF UNICODE}
-      Result := WTSOpenServerW(PWideChar(WideString(FServer)));
-    {$ELSE}
-      Result := WTSOpenServer(PChar(FServer));
-    {$ENDIF}
-    if Result > 0 then
-    begin
-      FConnected := True;
-    end;
+  else 
+  begin
+{$IFDEF UNICODE}
+    Result := WTSOpenServerW(PWideChar(WideString(FServer)));
+{$ELSE}
+    Result := WTSOpenServer(PChar(FServer));
+{$ENDIF}
+    FConnected := Result > 0;
   end;
 end;
 
@@ -304,36 +304,52 @@ var dwBytesReturned: DWORD;
   Res: Boolean;
 begin
   Res :=
-  {$IFDEF UNICODE}
+{$IFDEF UNICODE}
     WTSQuerySessionInformationW(GetServerHandle, FSessionId, WTSInfoClass,
       ABuffer, dwBytesReturned);
-  {$ELSE}
+{$ELSE}
     WTSQuerySessionInformationA(GetServerHandle, FSessionId, WTSInfoClass,
       ABuffer, dwBytesReturned);
-  {$ENDIF}
+{$ENDIF}
 end;
 
 function TJwWTSSession.GetSessionInfoStr(const WTSInfoClass: _WTS_INFO_CLASS):
   TJwString;
-var dwBytesReturned: DWORD;
-  ABuffer: Pointer;
+var 
+  dwBytesReturned: DWORD;
+  aBuffer: Pointer;
   Res: Boolean;
 begin
   ABuffer := nil;
   Result := '';
   Res :=
-  {$IFDEF UNICODE}
+{$IFDEF UNICODE}
     WTSQuerySessionInformationW(GetServerHandle, FSessionId, WTSInfoClass,
       ABuffer, dwBytesReturned);
-  {$ELSE}
+{$ELSE}
     WTSQuerySessionInformationA(GetServerHandle, FSessionId, WTSInfoClass,
       ABuffer, dwBytesReturned);
-  {$ENDIF}
+{$ENDIF}
+{TODO: Test for return value and raise exception if it failed
+raise EJwsclWinCallFailedException.CreateFmtWinCall(
+      RsWinCallFailed,
+      '<Method name that contains source that failed>',
+	  ClassName, 
+	  RsUNTerminalServer, 
+      0, //Sourceline. Must be 0.
+	  True, //show Value of GetLastError
+	  '<Name of winapi function that failed>',
+      ['<Name of winapi function that failed>']);
+Also add a 
+@raises(EJwsclWinCallFailedException will be raised if blabla)
+to the declaration 
+}
 
   if ABuffer <> nil then
   begin
-    Result := PWideChar(ABuffer);
-    WTSFreeMemory(ABuffer);
+    //TODO: Test with UNICODE AND ANSICODE! by Wimmer
+    Result := TJwString(TJwPChar(aBuffer));
+    WTSFreeMemory(aBuffer);
   end;
 end;
 
@@ -344,13 +360,13 @@ var dwBytesReturned: DWORD;
 begin
   ABuffer := nil;
   Result := 0;
-  {$IFDEF UNICODE}
+{$IFDEF UNICODE}
     WTSQuerySessionInformationW(GetServerHandle, FSessionId, WTSInfoClass,
       ABuffer, dwBytesReturned);
-  {$ELSE}
+{$ELSE}
     WTSQuerySessionInformationA(GetServerHandle, FSessionId, WTSInfoClass,
       ABuffer, dwBytesReturned);
-  {$ENDIF}
+{$ENDIF}
   if ABuffer <> nil then
   begin
     Result := PDWord(ABuffer)^;
@@ -367,16 +383,17 @@ constructor TJwWTSSession.Create(const AOwner: TJwWTSSessionList;
   const ASessionId: TJwSessionId; const AWinStationName: TJwString;
   const AState: TJwState);
 // #todo: reverse _WINSTATIONQUERYINFORMATIONA structure?
-var WinStationInfoPtr: _WINSTATIONQUERYINFORMATIONW;
+var 
+  WinStationInfoPtr: _WINSTATIONQUERYINFORMATIONW;
   dwReturnLength: DWORD;
-  {$IFDEF COMPILER7_UP}
+{$IFDEF COMPILER7_UP}
   FS: TFormatSettings;
-  {$ENDIF COMPILER7_UP}
+{$ENDIF COMPILER7_UP}
   Days, Hours, Minutes: Word;
 begin
-  {$IFDEF COMPILER7_UP}
+{$IFDEF COMPILER7_UP}
   GetLocaleFormatSettings(LOCALE_SYSTEM_DEFAULT, FS);
-  {$ENDIF COMPILER7_UP}
+{$ENDIF COMPILER7_UP}
 
   FSessionId := ASessionId;
   FWinStationName := AWinStationName;
@@ -407,12 +424,13 @@ begin
     begin
       FLogonTimeStr := ''
     end
-    else begin
-      {$IFDEF COMPILER7_UP}
+    else 
+	begin
+{$IFDEF COMPILER7_UP}
         FLoginTimeStr := DateTimeToStr(LogonTime, FS);
-      {$ELSE}
+{$ELSE}
         FLogonTimeStr := DateTimeToStr(LogonTime);
-      {$ENDIF COMPILER7_UP}
+{$ENDIF COMPILER7_UP}
       { from Usenet post by Chuck Chopp
         http://groups.google.com/group/microsoft.public.win32.programmer.kernel/browse_thread/thread/c6dd86e7df6d26e4/3cf53e12a3246e25?lnk=st&q=WinStationQueryInformationa+group:microsoft.public.*&rnum=1&hl=en#3cf53e12a3246e25
         2)  The system console session cannot go into an idle/disconnected state.
