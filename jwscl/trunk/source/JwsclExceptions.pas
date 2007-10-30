@@ -253,10 +253,15 @@ type
 
   EJwsclOSError = class(EJwsclSecurityException);
 
-  EjwsclCryptException = class(EJwsclSecurityException);
-  EjwsclCryptApiException = class(EjwsclCryptException);
-  EjwsclCryptUnsupportedException = class(EjwsclCryptException);
+  EJwsclCryptException = class(EJwsclSecurityException);
+  EJwsclCryptApiException = class(EjwsclCryptException);
+  EJwsclCryptUnsupportedException = class(EjwsclCryptException);
 
+  //general exception for terminal server methods
+  EJwsclTerminalServerException = class(EJwsclSecurityException);
+
+  //general exception for terminal session methods
+  EJwsclTerminalSessionException = class(EJwsclTerminalServerException);
 
 {$ENDIF SL_IMPLEMENTATION_SECTION}
 

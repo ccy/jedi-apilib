@@ -72,6 +72,8 @@ type
   TJwWTSSession = class(TPersistent)
   private
   protected
+    //TODO: I usually do not comment these things because
+    //they are already commented in the property declaration
     FApplicationName: TJwString;
     FClientAddress: TJwString;
     FClientBuildNumber: DWORD;
@@ -105,6 +107,8 @@ type
     FVerticalResolution: DWORD;
     FWinStationName: TJwString;
     FWorkingDirectory: TJwString;
+
+    //TODO: this func should be documented but not so detailed because of protected
     procedure GetClientDisplay;
     procedure CalculateIdleTime;
     function GetSessionInfoDWORD(const WTSInfoClass: WTS_INFO_CLASS): DWORD;
@@ -112,6 +116,50 @@ type
       var ABuffer: Pointer);
     function GetSessionInfoStr(const WTSInfoClass: WTS_INFO_CLASS): TJwString;
   public
+    {TODO: @Name create a new session here. <add here more information>
+
+     Maybe some sample code to show problems or so ("#" is neccessary)
+     @longcode(#
+      var P : TJwWTSSession;
+      begin
+      end;
+     #)
+
+     Lists:
+     @unorderedlist(
+      @item(item1)
+      @item(items2)
+     )
+     @orderedlist(
+      @item(item1)
+      @item(items2)
+     )
+
+     Find out more here: http://pasdoc.sipsolutions.net/SupportedTags
+
+     <Properties do no have the following tags:>
+
+     @param(AOwner receives the owner session list. It will be available
+        through the property Owner. This parameter must not be nil.
+        <Always adda precondition. like: must not be nil or zero.
+        A precondition is tested in the function and a exception is raised.>
+        )
+     @param(ASessionId ...)
+     <@return(Return value makes bla - only functions. Say something
+      about the value semantic. Maybe : return of 0 means something special.
+      Or the return value must be/must not be freed by the caller.
+      )>
+     
+     @raises(EJwSecurityException <Show here the reason for that exception type.
+        Also for every failed precondition >)
+     @raises(EJwsclTerminalServerException < Create your own  >)
+     @raises(EJwsclTerminalSessionException < dito>)
+     @raises(EJwsclWinCallFailedException <winAPI call failed. Its always called that!>)
+     @raises(EJwsclNILParameterException <a parameter is nil. Search for
+      that exception in other classes for an example>)
+      
+    
+  }
     constructor Create(const AOwner: TJwWTSSessionList;
       const ASessionId: TJwSessionId; const AWinStationName: TJwString;
       const AConnectState: TWtsConnectStateClass); reintroduce;
