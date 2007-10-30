@@ -26,7 +26,7 @@ unit JwsclTerminalServer;
 
 interface
 
-uses Classes, Contnrs, SysUtils, DateUtils, Dialogs,
+uses Classes, Contnrs, SysUtils, DateUtils,
   JwaWindows, 
   JwsclResource, JwsclExceptions, JwsclConstants, JwsclTypes, JwsclStrings;
 
@@ -55,6 +55,7 @@ type
   public
     property Connected: Boolean read FConnected;
     constructor Create; virtual;
+    function ConnectStateToStr(AConnectState: TWtsConnectStateClass): TJwString;
     function Enumerate: boolean;
     function FileTime2DateTime(FileTime: FileTime): TDateTime;
     property Server: TJwString read FServer write SetServer;
@@ -66,19 +67,21 @@ type
   private
   protected
     FApplicationName: TJwString;
-//    FClientAddress
     FClientAddress: TJwString;
     FClientBuildNumber: DWORD;
     FClientDirectory: TJwString;
-//    FClientDisplay
+    FHorizontalResolution: DWORD;
+    FVerticalResolution: DWORD;
+    FColorDepth: DWORD;
     FClientHardwareId: DWORD;
-//    FClientInfo
+//    FClientInfo  // Vista only!
     FClientName: TJwString;
     FClientProductId: WORD;
     FClientProtocolType: WORD;
     FInitialProgram: TJwString;
-//    FOEMId // Currently not used
+//    FOEMId // Currently not used, so not implemented
     FWorkingDirectory: TJwString;
+    FConnectStateStr: TJwString;
     FConnectTime: TDateTime;
     FCurrentTime: TDateTime;
     FDisconnectTime: TDateTime;
@@ -90,7 +93,8 @@ type
     FDomain: TJwString;
     FOwner: TJwWTSSessionList;
     FSessionId: TJwSessionId;
-    FState: TJwState;
+//    FState: TJwState;
+    FConnectState: TWtsConnectStateClass;
     FUsername: TJwString;
     FWinStationName: TJwString;
     function GetClientAddress: TJwString;
@@ -98,15 +102,14 @@ type
   public
     constructor Create(const AOwner: TJwWTSSessionList;
       const ASessionId: TJwSessionId; const AWinStationName: TJwString;
-      const AState: TJwState); reintroduce;
-
+      const AConnectState: TWtsConnectStateClass); reintroduce;
+    procedure GetClientDisplay;
     function GetOwner: TJwWTSSessionList; reintroduce;
     function GetServerHandle: THandle;
     function GetSessionInfoDWORD(const WTSInfoClass: WTS_INFO_CLASS): DWORD;
     function GetSessionInfoStr(const WTSInfoClass: WTS_INFO_CLASS): TJwString;
     procedure GetSessionInfoPtr(const WTSInfoClass: WTS_INFO_CLASS;
       var ABuffer: Pointer);
-  public
     property ApplicationName: TJwString read FApplicationName;
     property ClientAddress: TJwString read FClientAddress;
     property ClientBuildNumber: DWORD read FClientBuildNumber;
@@ -115,18 +118,22 @@ type
     property ClientName: TJwString read FClientName;
     property ClientProductId: WORD read FClientProductId;
     property ClientProtocolType: WORD read FClientProtocolType;
+    property ColorDepth: DWORD read FColorDepth;
+    property ConnectStateStr: TJwString read FConnectStateStr;
     property ConnectTime: TDateTime read FConnectTime;
     property CurrentTime: TDateTime read FCurrentTime;
     property DisconnectTime: TDateTime read FDisconnectTime;
     property Domain: TJwString read FDomain;
+    property HorinzontalResolution: DWORD read FHorizontalResolution;
     property IdleTimeStr: TJwString read FIdleTimeStr;
     property InitialProgram: TJwString read FInitialProgram;
     property LastInputTime: TDateTime read FLastInputTime;
     property LogonTime: TDateTime read FLogonTime;
     property LogonTimeStr: TJwString read FLogonTimeStr;
     property SessionId: TJwSessionId read FSessionId;
-    property State: TJwState read FState;
+//    property State: TJwState read FState;
     property Username: TJwString read FUsername;
+    property VerticalResolution: DWORD read FVerticalResolution;
     property WinStationName: TJwString read FWinStationName;
     property WorkingDirectory: TJwString read FWorkingDirectory;
   end;
@@ -241,7 +248,7 @@ begin
   for i := 0 to pCount - 1 do
   begin
     aSession := TJwWTSSession.Create(FSessions, SessionInfoPtr^[i].SessionId,
-      SessionInfoPtr^[i].pWinStationName, TJwState(SessionInfoPtr^[i].State));
+      SessionInfoPtr^[i].pWinStationName, TWtsConnectStateClass(SessionInfoPtr^[i].State));
     FSessions.Add(aSession);
   end;
 
@@ -273,6 +280,24 @@ begin
   if FServerHandle <> WTS_CURRENT_SERVER_HANDLE then
   begin
     WTSCloseServer(FServerHandle);
+  end;
+end;
+
+function TJwTerminalServer.ConnectStateToStr(AConnectState: TWtsConnectStateClass): TJwString;
+begin
+  case AConnectState of
+    WTSActive: Result := 'Active';
+    WTSConnected: Result := 'Connected';
+    WTSConnectQuery: Result := 'ConnectQuery';
+    WTSShadow: Result := 'Shadowing';
+    WTSDisconnected: Result := 'Disconnected';
+    WTSIdle: Result := 'Idle';
+    WTSListen: Result := 'Listening';
+    WTSReset: Result := 'Reset';
+    WTSDown: Result := 'Down';
+    WTSInit: Result := 'Init';
+  else
+    Result := 'Unidentified state';  // should never happen
   end;
 end;
 
@@ -464,10 +489,8 @@ end;
 
 function TJwWTSSession.GetClientAddress: TJwString;
 var ClientAddressPtr: PWtsClientAddress;
-  ClientAddress: TWtsClientAddress;
 begin
   GetSessionInfoPtr(WTSClientAddress, Pointer(ClientAddressPtr));
-  ClientAddress := ClientAddressPtr^;
   {Note that the first byte of the IP address returned in the ppBuffer
    parameter will be located at an offset of 2 bytes from the start of
    the Address member of the returned WTS_CLIENT_ADDRESS structure.}
@@ -476,7 +499,8 @@ begin
       Result := Format('%d.%d.%d.%d', [ClientAddressPtr^.Address[2],
         ClientAddressPtr^.Address[3], ClientAddressPtr^.Address[4],
         ClientAddressPtr^.Address[5]]);
-//    AF_INET6: // Not implemented in JwaWindows (as of Vista)
+    AF_INET6:
+      Result := 'IPv6 address not yet supported';
     AF_IPX:
       Result := 'IPX is not supported';
     AF_NETBIOS:
@@ -487,9 +511,19 @@ begin
   WTSFreeMemory(ClientAddressPtr);
 end;
 
+procedure TJwWTSSession.GetClientDisplay;
+var ClientDisplayPtr: PWtsClientDisplay;
+begin
+  GetSessionInfoPtr(WTSClientDisplay, Pointer(ClientDisplayPtr));
+  FHorizontalResolution := ClientDisplayPtr^.HorizontalResolution;
+  FVerticalResolution := ClientDisplayPtr^.VerticalResolution;
+  FColorDepth := ClientDisplayPtr^.ColorDepth;
+  WTSFreeMemory(ClientDisplayPtr);
+end;
+
 constructor TJwWTSSession.Create(const AOwner: TJwWTSSessionList;
   const ASessionId: TJwSessionId; const AWinStationName: TJwString;
-  const AState: TJwState);
+  const AConnectState: TWtsConnectStateClass);
 var
   // #todo: reverse _WINSTATIONQUERYINFORMATIONA structure?
   WinStationInfoPtr: _WINSTATIONQUERYINFORMATIONW;
@@ -499,7 +533,10 @@ begin
 
   FSessionId := ASessionId;
   FWinStationName := AWinStationName;
-  FState := AState;
+//  FState := Cardinal(AState);
+  FConnectState := AConnectState;
+
+  FConnectStateStr := GetOwner.Owner.ConnectStateToStr(FConnectState);
 
   if WinStationQueryInformationW(GetServerHandle, ASessionId,
     WinStationInformation, @WinStationInfoPtr, SizeOf(WinStationInfoPtr),
