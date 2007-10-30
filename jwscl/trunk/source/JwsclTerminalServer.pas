@@ -48,8 +48,10 @@ type
     FConnected: Boolean;
     FServer: TJwString;
     FServerHandle: THandle;
+    FServers: TJwTJwStringArray;
     FSessions: TJwWTSSessionList;
     FProcesses: TJwWTSProcessList;
+    procedure GetServers;
     procedure SetServer(const Value: TJwString);
   protected
     procedure Close;
@@ -58,10 +60,12 @@ type
     property Connected: Boolean read FConnected;
     constructor Create;
     destructor Destroy; override;
-    function Enumerate: boolean;
+    function EnumerateServers: boolean;
+    function EnumerateSessions: boolean;
     function FileTime2DateTime(FileTime: TFileTime): TDateTime;
     property Server: TJwString read FServer write SetServer;
     property ServerHandle: THandle read FServerHandle;
+//    property Servers: TStringList read GetServers;
     property Sessions: TJwWTSSessionList read FSessions;
   end;
 
@@ -103,7 +107,6 @@ type
     FWorkingDirectory: TJwString;
     procedure GetClientDisplay;
     procedure CalculateIdleTime;
-//    function GetOwner: TJwWTSSessionList; reintroduce;
     function GetSessionInfoDWORD(const WTSInfoClass: WTS_INFO_CLASS): DWORD;
     procedure GetSessionInfoPtr(const WTSInfoClass: WTS_INFO_CLASS;
       var ABuffer: Pointer);
@@ -177,7 +180,7 @@ type
   public
   end;
 
-  { List Of TJwWTSSession Objects }
+  { List Of TJwWTSProcess Objects }
   TJwWTSProcessList = class(TObjectList)
   private
     FOwnsObjects: Boolean;
@@ -195,6 +198,8 @@ type
     property OwnsObjects: Boolean read FOwnsObjects write FOwnsObjects;
     function Remove(AProcess: TJwWTSProcess): Integer;
   end;
+
+
 
   // #todo: move this back to JwaWinsta
   _WINSTATIONQUERYINFORMATIONW = record
@@ -215,12 +220,21 @@ type
     CurrentTime: FILETIME;
   end;
 
+  { array of TWtsSessionInfoA }
   PJwWTSSessionInfoAArray = ^TJwWTSSessionInfoAArray;
-  TJwWTSSessionInfoAArray = array[0..ANYSIZE_ARRAY-1] of WTS_SESSION_INFOA;
+  TJwWTSSessionInfoAArray = array[0..ANYSIZE_ARRAY-1] of TWtsSessionInfoA;
 
+  { array of TWtsSessionInfoA }
   PJwWTSSessionInfoWArray = ^TJwWTSSessionInfoWArray;
-  TJwWTSSessionInfoWArray = array[0..ANYSIZE_ARRAY-1] of WTS_SESSION_INFOW;
+  TJwWTSSessionInfoWArray = array[0..ANYSIZE_ARRAY-1] of TWtsSessionInfoW;
 
+  { array of TWtsServerInfoA }
+  PJwWtsServerInfoAArray = ^TJwWtsServerInfoAArray;
+  TJwWtsServerInfoAArray = array[0..ANYSIZE_ARRAY-1] of TWtsServerInfoA;
+
+  { array of TWtsServerInfoW }
+  PJwWtsServerInfoWArray = ^TJwWtsServerInfoWArray;
+  TJwWtsServerInfoWArray = array[0..ANYSIZE_ARRAY-1] of TWtsServerInfoW;
 {$ENDIF SL_IMPLEMENTATION_SECTION}
 
 {$IFNDEF SL_OMIT_SECTIONS}
@@ -263,7 +277,46 @@ begin
   FServer := Value;
 end;
 
-function TJwTerminalServer.Enumerate: boolean;
+procedure TJwTerminalServer.GetServers;
+begin
+  if True then
+
+end;
+
+function TJwTerminalServer.EnumerateServers: Boolean;
+var Res: Bool;
+  ServerInfoPtr:
+{$IFDEF UNICODE}
+  PJwWtsServerInfoWArray;
+{$ELSE}
+  PJwWtsServerInfoAArray;
+{$ENDIF UNICODE}
+  pCount: DWORD;
+  i: DWORD;
+begin
+  Res :=
+{$IFDEF UNICODE}
+  WTSEnumerateServersW(nil, 0, 1, PWTS_SERVER_INFOW(ServerInfoPtr), pCount);
+{$ELSE}
+  WTSEnumerateServersA(nil, 0, 1, PWTS_SERVER_INFOA(ServerInfoPtr), pCount);
+{$ENDIF UNICODE}
+  if Res then
+  begin
+    SetLength(FServers, pCount);
+    for i := 0 to pCount - 1 do
+    begin
+      FServers[i] := (ServerInfoPtr^[i].pServerName);
+    end;
+  end;
+
+  if ServerInfoPtr <> nil then
+  begin
+    WTSFreeMemory(ServerInfoPtr);
+  end;
+  Result := Res;
+end;
+
+function TJwTerminalServer.EnumerateSessions: boolean;
 var SessionInfoPtr: {$IFDEF UNICODE}PJwWTSSessionInfoWArray;
   {$ELSE}PJwWTSSessionInfoAArray;{$ENDIF UNICODE}
   pCount: Cardinal;
@@ -665,20 +718,20 @@ begin
   FUsername := GetSessionInfoStr(WTSUsername); // Documented way:
   // FUsername := WinStationInfoPtr.Username; // Undocumented way:
 
-  if TJwWindowsVersion.IsWindowsVista(True) then
-  begin
+//  if TJwWindowsVersion.IsWindowsVista(True) then
+//  begin
     // Status: Not implemented yet}
     { Vista has a documented way of retrieving idle time, although
       the documentation is preliminary and is subject to change
       see here: http://msdn2.microsoft.com/en-us/library/bb736370.aspx}
-  end
-  else begin
+//  end
+//  else begin
     { Use undocumented API to retrieve Idle and LoginTime }
     { this is for Windows 2000, Windows XP and Windows 2003 }
     { Might work on Windows Vista and Windows Server 2008 (not tested) }
     { not expected to work on Windows NT 4 (not tested) }
     CalculateIdleTime;
-  end;
+//  end;
 end;
 
 function TJwWTSSession.GetServerName: TJwString;
