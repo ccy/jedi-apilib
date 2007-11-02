@@ -117,6 +117,23 @@ function WinStationShadowStop(hServer: Handle; SessionID: ULONG; Unknown: Intege
 function WinStationConnectW(hServer: Handle; SessionID: ULONG; TargetSessionID: ULONG; pPassword: PWideChar;
   bWait: Boolean): Boolean; stdcall;
 
+function WinStationTerminateProcess(hServer: Handle; dwPID: DWORD dwExitCode: DWORD): BOOL; stdcall;
+{***********************************************************}
+{ WinStationQueryInformation: Query Terminal Sessions Info  }
+{ When using WTSAPI function, this function is called       }
+{ supply WinStationInformationClass 8 to retrieve Idle Time }
+{ and logon time, see helper function GetWTSIdleTime        }
+{                                                           }
+{ hServer: Handle to Terminal Server                        }
+{          Use WTSOpenServer to obtain handle or pass       }
+{          SERVERNAME_CURRENT                               }
+{                                                           }
+{ dwPid: Pid of the process you want to terminate           }
+{                                                           }
+{ dwExitCode: Exitcode, usually 0                           }
+{***********************************************************}
+
+
 {***********************************************************}
 { WinStationQueryInformation: Query Terminal Sessions Info  }
 { When using WTSAPI function, this function is called       }
@@ -158,6 +175,8 @@ function WinStationShadow; external 'winsta.dll' name 'WinStationShadow';
 function WinStationShadowStop; external 'winsta.dll' name 'WinStationShadowStop';
 
 function WinStationConnectW; external 'winsta.dll' name 'WinStationConnectW';
+
+function WinStationTerminateProcess; external 'winsta.dll' name 'WinStationTerminateProcess';
 
 function WinStationQueryInformationW; external 'winsta.dll' name 'WinStationQueryInformationW';
 
