@@ -312,7 +312,7 @@ type {@Name contains information about a security descriptor.
         @param SA [in,out] SA receives the security attribute to be freed. It is set to nil after an successfull deallocation.
         @raises EJwsclSecurityException The exception EJwsclSecurityException is raised if the internal nLength component is not the sizeof TSecurityAttributes.
        }
-    procedure Free_SA(var SA: PSecurityAttributes);
+    class procedure Free_SA(var SA: PSecurityAttributes);
 
        {@Name frees a security attribute created by Create_SAEx.
 
@@ -322,7 +322,7 @@ type {@Name contains information about a security descriptor.
         @param SA [in,out] SA receives the security attribute to be freed. Its members are set to nil after an successfull deallocation.
         @raises EJwsclSecurityException The exception EJwsclSecurityException is raised if the internal nLength component is not the sizeof TSecurityAttributes.
        }
-    procedure Free_SAEx(var SA: TSecurityAttributes);
+    class procedure Free_SAEx(var SA: TSecurityAttributes);
 
        {@Name writes an relative security descriptor into a stream.
         The method uses a magic header to check for position errors in a stream.
@@ -1603,7 +1603,7 @@ begin
 
 end;
 
-procedure TJwSecurityDescriptor.Free_SAEx(var SA: TSecurityAttributes);
+class procedure TJwSecurityDescriptor.Free_SAEx(var SA: TSecurityAttributes);
 begin
   if SA.nLength <> sizeof(TSecurityAttributes) then
     raise EJwsclSecurityException.CreateFmtEx(
@@ -1620,7 +1620,7 @@ begin
 
 end;
 
-procedure TJwSecurityDescriptor.Free_SA(var SA: PSecurityAttributes);
+class procedure TJwSecurityDescriptor.Free_SA(var SA: PSecurityAttributes);
 begin
   if (SA = nil) then
     exit;

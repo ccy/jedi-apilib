@@ -2,14 +2,14 @@
 // or leave commented to create a GUI application...
 // {$APPTYPE CONSOLE}
 
-program SecurityManagerProjectTests;
+program UnitTests;
 
 
 {.$APPTYPE CONSOLE}
 
 {Define one of these directive to use memory leak manager}
-{$DEFINE FASTMM4}
-{.$UNDEF FASTMM4}
+{.$DEFINE FASTMM4}
+{$UNDEF FASTMM4}
 
 {$IFDEF FASTMM4}
   {$UNDEF MEMCHECK}
@@ -27,17 +27,29 @@ program SecurityManagerProjectTests;
 
 
 uses
+{$IFDEF FASTMM4}
   FastMm4,
+{$ENDIF FASTMM4}  
+  //JEDI API LIB
   jwaWindows,
+  JwaVista,
+  
+  //VCL
   SysUtils,
   Dialogs,
-  TestFramework,
   Forms,
+  Classes,
+  Windows, //only for TKeyboardState 
+
+  //DUNIT
+  TestFramework,
   GUITestRunner,
   TextTestRunner,
-  Windows,
-  Classes,
+
+  //Tools
   UMessageForm in '..\..\source\UMessageForm.pas' {frmMessage},
+
+  //JEDI WSCL
   JwsclResource,
   JwsclAcl,
   JwsclConstants,
@@ -65,23 +77,21 @@ uses
   JwsclPrivileges,
   JwsclTerminalServer,
   JwsclSecurePrivateObjects,
-  JwsclSecureUserObjects in '..\..\source\JwsclSecureUserObjects.pas',
-  
-  JwsclAclTests in '..\source\JwsclAclTests.pas',
-  JwsclDescriptorTests in '..\source\JwsclDescriptorTests.pas',
-  JwsclDesktopsTests in '..\source\JwsclDesktopsTests.pas',
-  JwsclExceptionsTests in '..\source\JwsclExceptionsTests.pas',
-  JwsclMappingTests in '..\source\JwsclMappingTests.pas',
-  JwsclSecurityDialogsTests in '..\source\JwsclSecurityDialogsTests.pas',
-  JwsclSecureObjectsTests in '..\source\JwsclSecureObjectsTests.pas',
-  JwsclServiceTests in '..\source\JwsclServiceTests.pas' {ServiceTests: TService},
-  JwsclSIDTests in '..\source\JwsclSIDTests.pas',
-  JwsclTokenTests in '..\source\JwsclTokenTests.pas',
-  JwsclUnitUtilsTests in '..\source\JwsclUnitUtilsTests.pas',
-  JwsclSecurePrivateObjectsTests in '..\source\JwsclSecurePrivateObjectsTests.pas',
+  JwsclSecureUserObjects,
 
+  //JWSCL Unit Tests
+  JwsclAclTests in '..\..\source\JwsclAclTests.pas',
+  JwsclDescriptorTests in '..\..\source\JwsclDescriptorTests.pas',
+  JwsclDesktopsTests in '..\..\source\JwsclDesktopsTests.pas',
+  JwsclExceptionsTests in '..\..\source\JwsclExceptionsTests.pas',
+  JwsclMappingTests in '..\..\source\JwsclMappingTests.pas',
+  JwsclSecurityDialogsTests in '..\..\source\JwsclSecurityDialogsTests.pas',
+  JwsclSecureObjectsTests in '..\..\source\JwsclSecureObjectsTests.pas',
+  JwsclSIDTests in '..\..\source\JwsclSIDTests.pas',
+  JwsclTokenTests in '..\..\source\JwsclTokenTests.pas',
+  JwsclUnitUtilsTests in '..\..\source\JwsclUnitUtilsTests.pas',
+  JwsclSecurePrivateObjectsTests in '..\..\source\JwsclSecurePrivateObjectsTests.pas';
 
-  JwaVista in '..\..\jwaUnits\Win32API\JwaVista.pas';
 
 //never ever use JwsclLibrary and one of the Jwscl units at the same time!!
 

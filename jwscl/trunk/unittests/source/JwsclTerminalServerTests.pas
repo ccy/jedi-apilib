@@ -86,9 +86,13 @@ begin
 
 end;
 
+procedure Nop;
+begin
+end;
+
 procedure TJwTerminalServerTests.TestClose;
 begin
-
+  Nop;
 end;
 
 procedure TJwTerminalServerTests.TestCreate;
