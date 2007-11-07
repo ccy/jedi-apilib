@@ -26,7 +26,7 @@ unit JwsclTerminalServer;
 
 interface
 
-uses Classes, Contnrs, SysUtils, DateUtils,
+uses Classes, Contnrs, DateUtils, SysUtils,
   JwaWindows,
   JwsclConstants, JwsclExceptions, JwsclResource, JwsclTypes, JwsclVersion,
   JwsclStrings;
@@ -289,6 +289,46 @@ type
 
 implementation
 {$ENDIF SL_OMIT_SECTIONS}
+function WideStringToString(const ws: WideString): AnsiString;
+var
+  l: integer;
+begin
+  if ws = '' then
+    Result := ''
+  else
+  begin
+    l := WideCharToMultiByte(GetACP,
+      WC_COMPOSITECHECK or WC_DISCARDNS or WC_SEPCHARS or WC_DEFAULTCHAR,
+      @ws[1], - 1, nil, 0, nil, nil);
+    SetLength(Result, l - 1);
+    if l > 1 then
+      WideCharToMultiByte(GetACP,
+        WC_COMPOSITECHECK or WC_DISCARDNS or WC_SEPCHARS or WC_DEFAULTCHAR,
+        @ws[1], - 1, @Result[1], l - 1, nil, nil);
+  end;
+end; { WideStringToString }
+
+
+{:Converts Ansi string to Unicode string using specified code page.
+  @param   s        Ansi string.
+  @param   codePage Code page to be used in conversion.
+  @returns Converted wide string.
+}
+function StringToWideString(const s: AnsiString): WideString;
+var
+  l: integer;
+begin
+  if s = '' then
+    Result := ''
+  else
+  begin
+    l := MultiByteToWideChar(GetACP, MB_PRECOMPOSED, PChar(@s[1]), - 1, nil, 0);
+    SetLength(Result, l - 1);
+    if l > 1 then
+      MultiByteToWideChar(GetACP, MB_PRECOMPOSED, PChar(@s[1]),
+        - 1, PWideChar(@Result[1]), l - 1);
+  end;
+end; { StringToWideString }
 
 constructor TJwTerminalServer.Create;
 begin

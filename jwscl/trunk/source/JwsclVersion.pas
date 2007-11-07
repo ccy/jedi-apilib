@@ -59,6 +59,7 @@ type
          @item cOS2003R2  = running on Windows 2003 Release 2
          @item cOSXP64    = running on Windows XP 64 Edition (not supported at the moment)
          @item cOsVista   = running on Windows Vista
+         @item cOsWin2008 = running on Windows 2008 (tested on rc)
          ))
        }
 
@@ -174,6 +175,22 @@ type
                )
        }
     class function IsWindowsVista(bOrHigher: boolean = False): boolean;
+      virtual;
+
+      {@Name checks if the system has the version given in the function name.
+
+       Actually the parameter bOrHigher has no meaning in this function!
+
+       @param(bOrHigher defines if the return value should also be @true if the system
+              is better/higher than the requested system version.)
+       @return(@Name returns @true if the system is the requested version (or higher if bOrHigher is true);
+               otherwise @false.
+               If bOrHigher is @true the return value is the result of
+                @TRUE if (bOrHigher and (GetWindowsType > iVer)) is true;
+                @FALSE if GetWindowsType < (requested version)
+               )
+       }
+    class function IsWindows2008(bOrHigher: boolean = False): boolean;
       virtual;
 
       {@Name checks if the system is a server version
@@ -327,6 +344,15 @@ begin
     (fWindowsType > iVer));
 end;
 
+class function TJwWindowsVersion.IsWindows2008(bOrHigher: boolean = False)
+: boolean;
+const
+  iVer = cOsWin2008;
+begin
+  Result := (fWindowsType = iVer) or (bOrHigher and
+    (fWindowsType > iVer));
+end;
+
 class function TJwWindowsVersion.IsServer: boolean;
 begin
   Result := fIsServer;
@@ -371,6 +397,10 @@ begin
           else
             Result := cOS2003;
         end
+        else if (majorVer = 6) and (minorVer = 0) and (not fIsServer) then
+          Result := cOsVista
+        else if (majorVer = 6) and (minorVer = 0) and (fIsServer) then
+          Result := cOsWin2008
         else if (majorVer = 6) and (minorVer = 0) then
           Result := cOsVista
         else
