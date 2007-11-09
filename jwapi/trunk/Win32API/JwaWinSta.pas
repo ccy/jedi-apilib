@@ -42,16 +42,33 @@ type
   {$ENDIF JWA_INCLUDEMODE}
 
   _WINSTATIONQUERYINFORMATIONW = record
-    Reserved1: array [0..71] of Byte;
-    SessionId: Longint;
-    Reserved2: array [0..3] of Byte;
+    State: DWORD;
+    WinStationName: array[0..10] of WideChar;
+    Unknown1: array[0..10] of byte;
+    Unknown3: array[0..10] of WideChar;
+    Unknown2: array[0..8] of byte;
+    SessionId: DWORD;
+    Reserved2: array[0..3] of byte;
     ConnectTime: FILETIME;
     DisconnectTime: FILETIME;
     LastInputTime: FILETIME;
-    LoginTime: FILETIME;
-    Reserved3: array [0..1095] of Byte;
+    LogonTime: FILETIME;
+    Unknown4: array[0..11] of byte;
+    OutgoingFrames: DWORD;
+    OutgoingBytes: DWORD;
+    OutgoingCompressBytes: DWORD;
+    Unknown5: array[0..435] of byte;
+    IncomingCompressedBytes: DWORD;
+    Unknown6: array[0..7] of byte;
+    IncomingFrames: DWORD;
+    IncomingBytes: DWORD;
+    Unknown7: array[0..3] of byte;
+    Reserved3: array[0..528] of byte;
+    Domain: array[0..17] of WideChar;
+    Username: array[0..22] of WideChar;
     CurrentTime: FILETIME;
   end;
+
 
 {***********************************************************}
 { WinStationShadow: Shadow another user's session           }
@@ -73,10 +90,10 @@ type
 {             for the default (CTRL)                        }
 {                                                           }
 { v0.2:                                                     }
-{ Changed param2 Unknown: ULONG to pServerName: PWideChar   }
+{ Changed param2 Unknown: DWORD to pServerName: PWideChar   }
 {***********************************************************}
-function WinStationShadow(hServer: Handle; pServerName: PWideChar; SessionID: ULONG; HotKey: ULONG;
-  HKModifier: ULONG): Boolean; stdcall;
+function WinStationShadow(hServer: Handle; pServerName: PWideChar; SessionID: DWORD; HotKey: DWORD;
+  HKModifier: DWORD): Boolean; stdcall;
 
 {***********************************************************}
 { WinStationShadowStop: Not needed, is called for you when  }
@@ -86,7 +103,7 @@ function WinStationShadow(hServer: Handle; pServerName: PWideChar; SessionID: UL
 {                (note: possibly pServerName: PWideChar;    }
 { Not tested!                                               }
 {***********************************************************}
-function WinStationShadowStop(hServer: Handle; SessionID: ULONG; Unknown: Integer): Boolean; stdcall;
+function WinStationShadowStop(hServer: Handle; SessionID: DWORD; Unknown: Integer): Boolean; stdcall;
 
 {***********************************************************}
 { WinStationConnect: Connect to a session                   }
@@ -114,7 +131,7 @@ function WinStationShadowStop(hServer: Handle; SessionID: ULONG; Unknown: Intege
 { changed name ActiveSessionID to TargetSessionID           }
 { Function tested and working on Windows 2003               }
 {***********************************************************}
-function WinStationConnectW(hServer: Handle; SessionID: ULONG; TargetSessionID: ULONG; pPassword: PWideChar;
+function WinStationConnectW(hServer: Handle; SessionID: DWORD; TargetSessionID: DWORD; pPassword: PWideChar;
   bWait: Boolean): Boolean; stdcall;
 
 function WinStationDisconnect(hServer: THandle; SessionId: DWORD;
@@ -152,12 +169,12 @@ function WinStationTerminateProcess(hServer: Handle; dwPID: DWORD; dwExitCode: D
 {                                                           }
 { SessionID: The session you want query                     }
 {***********************************************************}
-function WinStationQueryInformationW(hServer: HANDLE; SessionId: ULONG;
+function WinStationQueryInformationW(hServer: HANDLE; SessionId: DWORD;
   WinStationInformationClass: Cardinal; pWinStationInformation: PVOID;
-  WinStationInformationLength: ULONG; var pReturnLength: ULONG):
+  WinStationInformationLength: DWORD; var pReturnLength: DWORD):
   Boolean; stdcall;
 
-function GetWTSLogonIdleTime(hServer: Handle; SessionID: ULONG;
+function GetWTSLogonIdleTime(hServer: Handle; SessionID: DWORD;
   var sLogonTime: string; var sIdleTime: string): Boolean;
 
 function FileTime2DateTime(FileTime: FileTime): TDateTime;
@@ -165,7 +182,7 @@ function FileTime2DateTime(FileTime: FileTime): TDateTime;
 {$IFNDEF JWA_INCLUDEMODE}
 const
   SERVERNAME_CURRENT  = HANDLE(0);
-  LOGONID_CURRENT = ULONG(-1);
+  LOGONID_CURRENT = DWORD(-1);
 {$ENDIF JWA_INCLUDEMODE}
 
 {$ENDIF JWA_IMPLEMENTATIONSECTION}
@@ -202,10 +219,10 @@ begin
   Result := SystemTimeToDateTime(SystemTime);
 end;
 
-function GetWTSLogonIdleTime(hServer: HANDLE; SessionID: ULONG;
+function GetWTSLogonIdleTime(hServer: HANDLE; SessionID: DWORD;
   var sLogonTime: string; var sIdleTime: string): Boolean;
 var
-  uReturnLength: ULONG;
+  uReturnLength: DWORD;
   Info: _WINSTATIONQUERYINFORMATIONW;
   CurrentTime: TDateTime;
   LastInputTime: TDateTime;
@@ -224,7 +241,7 @@ begin
     Result := WinStationQueryInformationW(hServer, SessionID, 8, @Info, SizeOf(Info), uReturnLength);
     if Result then
     begin
-      LogonTime := FileTime2DateTime(Info.LoginTime);
+      LogonTime := FileTime2DateTime(Info.LogonTime);
       if YearOf(LogonTime) = 1601 then
         sLogonTime := ''
       else
