@@ -117,12 +117,18 @@ function WinStationShadowStop(hServer: Handle; SessionID: ULONG; Unknown: Intege
 function WinStationConnectW(hServer: Handle; SessionID: ULONG; TargetSessionID: ULONG; pPassword: PWideChar;
   bWait: Boolean): Boolean; stdcall;
 
-function WinStationTerminateProcess(hServer: Handle; dwPID: DWORD dwExitCode: DWORD): BOOL; stdcall;
+function WinStationDisconnect(hServer: THandle; SessionId: DWORD;
+  bWait: BOOLEAN): BOOLEAN; stdcall;
+
+function WinStationGetProcessSid(hServer: Handle; dwPID: DWORD;
+  ProcessStartTime: FILETIME; pProcessUserSid: PSID; var dwSidSize: DWORD): BOOLEAN; stdcall;
+
+procedure CachedGetUserFromSid(pSid: PSID; pUserName: PWideChar;
+  var cbUserName: DWORD); stdcall;
+
+function WinStationTerminateProcess(hServer: Handle; dwPID: DWORD; dwExitCode: DWORD): BOOL; stdcall;
 {***********************************************************}
-{ WinStationQueryInformation: Query Terminal Sessions Info  }
-{ When using WTSAPI function, this function is called       }
-{ supply WinStationInformationClass 8 to retrieve Idle Time }
-{ and logon time, see helper function GetWTSIdleTime        }
+{ WinStationTerminateProcess: Terminate a process           }
 {                                                           }
 { hServer: Handle to Terminal Server                        }
 {          Use WTSOpenServer to obtain handle or pass       }
@@ -174,7 +180,13 @@ function WinStationShadow; external 'winsta.dll' name 'WinStationShadow';
 
 function WinStationShadowStop; external 'winsta.dll' name 'WinStationShadowStop';
 
+function WinStationDisconnect; external 'winsta.dll' name 'WinStationDisconnect';
+
 function WinStationConnectW; external 'winsta.dll' name 'WinStationConnectW';
+
+function WinStationGetProcessSid; external 'winsta.dll' name 'WinStationGetProcessSid';
+
+procedure CachedGetUserFromSid; external 'utildll.dll' name 'CachedGetUserFromSid';
 
 function WinStationTerminateProcess; external 'winsta.dll' name 'WinStationTerminateProcess';
 
