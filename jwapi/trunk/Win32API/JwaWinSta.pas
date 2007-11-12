@@ -140,7 +140,14 @@ function WinStationDisconnect(hServer: THandle; SessionId: DWORD;
   bWait: BOOLEAN): BOOLEAN; stdcall;
 
 function WinStationGetProcessSid(hServer: Handle; dwPID: DWORD;
-  ProcessStartTime: FILETIME; pProcessUserSid: PSID; var dwSidSize: DWORD): BOOLEAN; stdcall;
+  ProcessStartTime: FILETIME; pProcessUserSid: PSID; var dwSidSize: DWORD):
+  BOOLEAN; stdcall;
+
+function WinStationNameFromLogonIdA(hServer: HANDLE; SessionID: ULONG;
+  pWinStationName: PAnsiChar): boolean; stdcall;
+
+function WinStationNameFromLogonIdW(hServer: HANDLE; SessionID: ULONG;
+  pWinStationName: PWideChar): boolean; stdcall;
 
 procedure CachedGetUserFromSid(pSid: PSID; pUserName: PWideChar;
   var cbUserName: DWORD); stdcall;
@@ -176,6 +183,15 @@ function WinStationQueryInformationW(hServer: HANDLE; SessionId: DWORD;
   WinStationInformationLength: DWORD; var pReturnLength: DWORD):
   Boolean; stdcall;
 
+function WinStationCallBack(hServer:HANDLE; SessionId: DWORD;
+	pPhoneNumber: PWideChar): boolean; stdcall;
+
+function WinStationShutDownSystem(hSERVER: HANDLE; ShutdownFlags: DWORD): boolean; stdcall;
+
+function WinStationBroadcastSystemMessage(hServer: HANDLE; SendToAllWinstations: BOOL;
+	SessionId: DWORD; TimeOut: DWORD; dwFlags: DWORD; lpdwRecipients: DWORD; uiMessage: ULONG;
+	wParam: WPARAM; lParam: LPARAM; pResponse: LONGINT): LONGINT; stdcall;
+
 function GetWTSLogonIdleTime(hServer: Handle; SessionID: DWORD;
   var sLogonTime: string; var sIdleTime: string): Boolean;
 
@@ -201,23 +217,144 @@ const
   utildll = 'utildll.dll';
 {$ENDIF JWA_INCLUDEMODE}
 
-{$IFNDEF DYNAMIC_LINK}     
-function WinStationShadow; external winstaDLL name 'WinStationShadow';
-
-function WinStationShadowStop; external winstaDLL name 'WinStationShadowStop';
-
-function WinStationDisconnect; external winstaDLL name 'WinStationDisconnect';
-
-function WinStationConnectW; external winstaDLL name 'WinStationConnectW';
-
-function WinStationGetProcessSid; external winstaDLL name 'WinStationGetProcessSid';
-
+{$IFNDEF DYNAMIC_LINK}
 procedure CachedGetUserFromSid; external utildll name 'CachedGetUserFromSid';
-
-function WinStationTerminateProcess; external winstaDLL name 'WinStationTerminateProcess';
-
+function WinStationBroadcastSystemMessage; external winstaDLL name 'WinStationBroadcastSystemMessage';
+function WinStationCallBack; external winstaDLL name 'WinStationCallBack';
+function WinStationConnectW; external winstaDLL name 'WinStationConnectW';
+function WinStationDisconnect; external winstaDLL name 'WinStationDisconnect';
+function WinStationGetProcessSid; external winstaDLL name 'WinStationGetProcessSid';
+function WinStationNameFromLogonIdA; external winstaDLL name 'WinStationNameFromLogonIdA';
+function WinStationNameFromLogonIdW; external winstaDLL name 'WinStationNameFromLogonIdW';
+function WinStationShadow; external winstaDLL name 'WinStationShadow';
+function WinStationShadowStop; external winstaDLL name 'WinStationShadowStop';
+function WinStationShutDownSystem; external winstaDLL name 'WinStationShutDownSystem';
 function WinStationQueryInformationW; external winstaDLL name 'WinStationQueryInformationW';
+function WinStationTerminateProcess; external winstaDLL name 'WinStationTerminateProcess';
 {$ELSE}
+
+var
+  __CachedGetUserFromSid: Pointer;
+
+procedure CachedGetUserFromSid;
+begin
+  GetProcedureAddress(__CachedGetUserFromSid, winstaDLL, 'CachedGetUserFromSid');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [__CachedGetUserFromSid]
+  end;
+end;
+
+var
+  __WinStationBroadcastSystemMessage: Pointer;
+
+function WinStationBroadcastSystemMessage;
+begin
+  GetProcedureAddress(__WinStationBroadcastSystemMessage, winstaDLL, 'WinStationBroadcastSystemMessage');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [__WinStationBroadcastSystemMessage]
+  end;
+end;
+
+var
+  __WinStationCallBack: Pointer;
+
+function WinStationCallBack;
+begin
+  GetProcedureAddress(__WinStationCallBack, winstaDLL, 'WinStationCallBack');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [__WinStationCallBack]
+  end;
+end;
+
+
+var
+  __WinStationConnectW: Pointer;
+
+function WinStationConnectW;
+begin
+  GetProcedureAddress(__WinStationConnectW, winstaDLL, 'WinStationConnectW');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [__WinStationConnectW]
+  end;
+end;
+
+
+var
+  __WinStationDisconnect: Pointer;
+
+function WinStationDisconnect;
+begin
+  GetProcedureAddress(__WinStationDisconnect, winstaDLL, 'WinStationDisconnect');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [__WinStationDisconnect]
+  end;
+end;
+
+var
+  __WinStationGetProcessSid: Pointer;
+
+function WinStationGetProcessSid;
+begin
+  GetProcedureAddress(__WinStationGetProcessSid, winstaDLL, 'WinStationGetProcessSid');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [__WinStationGetProcessSid]
+  end;
+end;
+
+
+var
+  __WinStationNameFromLogonIdA: Pointer;
+
+function WinStationNameFromLogonIdA;
+begin
+  GetProcedureAddress(__WinStationNameFromLogonIdA, winstaDLL, 'WinStationNameFromLogonIdA');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [__WinStationNameFromLogonIdA]
+  end;
+end;
+
+
+var
+  __WinStationNameFromLogonIdW: Pointer;
+
+function WinStationNameFromLogonIdW;
+begin
+  GetProcedureAddress(__WinStationNameFromLogonIdW, winstaDLL, 'WinStationNameFromLogonIdW');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [__WinStationNameFromLogonIdW]
+  end;
+end;
+
+
+var
+  __WinStationQueryInformationW: Pointer;
+
+function WinStationQueryInformationW;
+begin
+  GetProcedureAddress(__WinStationQueryInformationW, winstaDLL, 'WinStationQueryInformationW');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [__WinStationQueryInformationW]
+  end;
+end;
+
 
 var
   __WinStationShadow: Pointer;
@@ -232,9 +369,10 @@ begin
   end;
 end;
 
+
 var
   __WinStationShadowStop : Pointer;
-  
+
 function WinStationShadowStop;
 begin
   GetProcedureAddress(__WinStationShadowStop, winstaDLL, 'WinStationShadowStop');
@@ -245,63 +383,23 @@ begin
   end;
 end;
 
+
 var
-  __WinStationDisconnect: Pointer;
-  
-function WinStationDisconnect;
+  __WinStationShutDownSystem : Pointer;
+
+function WinStationShutDownSystem;
 begin
-  GetProcedureAddress(__WinStationDisconnect, winstaDLL, 'WinStationDisconnect');
+  GetProcedureAddress(__WinStationShutDownSystem, winstaDLL, 'WinStationShutDownSystem');
   asm
         MOV     ESP, EBP
         POP     EBP
-        JMP     [__WinStationDisconnect]
-  end;
-end;
-
-
-var
-  __WinStationConnectW: Pointer;
-  
-function WinStationConnectW;
-begin
-  GetProcedureAddress(__WinStationConnectW, winstaDLL, 'WinStationConnectW');
-  asm
-        MOV     ESP, EBP
-        POP     EBP
-        JMP     [__WinStationConnectW]
-  end;
-end;
-
-
-var
-  __WinStationGetProcessSid: Pointer;
-  
-function WinStationGetProcessSid;
-begin
-  GetProcedureAddress(__WinStationGetProcessSid, winstaDLL, 'WinStationGetProcessSid');
-  asm
-        MOV     ESP, EBP
-        POP     EBP
-        JMP     [__WinStationGetProcessSid]
-  end;
-end;
-
-var
-  __CachedGetUserFromSid: Pointer;
-  
-procedure CachedGetUserFromSid;
-begin
-  GetProcedureAddress(__CachedGetUserFromSid, winstaDLL, 'CachedGetUserFromSid');
-  asm
-        MOV     ESP, EBP
-        POP     EBP
-        JMP     [__CachedGetUserFromSid]
+        JMP     [__WinStationShutDownSystem]
   end;
 end;
 
 var
   __WinStationTerminateProcess: Pointer;
-  
+
 function WinStationTerminateProcess;
 begin
   GetProcedureAddress(__WinStationTerminateProcess, winstaDLL, 'WinStationTerminateProcess');
@@ -312,19 +410,6 @@ begin
   end;
 end;
 
-
-var
-  __WinStationQueryInformationW : Pointer;
-  
-function WinStationQueryInformationW;
-begin
-  GetProcedureAddress(__WinStationQueryInformationW, winstaDLL, 'WinStationQueryInformationW');
-  asm
-        MOV     ESP, EBP
-        POP     EBP
-        JMP     [__WinStationQueryInformationW]
-  end;
-end;
 
 {$ENDIF DYNAMIC_LINK}
 
