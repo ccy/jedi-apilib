@@ -1202,28 +1202,15 @@ begin
 end;
 
 function TJwSecurityId.GetChachedUserFromSid : WideString;
-var pUserName : PWideChar;
-    len : DWORD;
+var pwUserName : PWideChar;
+    cbUserName : DWORD;
 begin
   CheckSID;
-  len := 0;
-  CachedGetUserFromSid(fSID, nil, len);
-  if len > 0 then
-  begin
-    pUserName := PWideChar(LocalAlloc(GMEM_FIXED or GMEM_ZEROINIT,
-      (len+1) * sizeof(WideChar)));
 
-    try
-      CachedGetUserFromSid(fSID, pUserName, len);
-      Result := WideString(pUserName);
-    finally
-      LocalFree(Cardinal(pUserName));
-    end;
-  end
-  else
-    raise EJwsclWinCallFailedException.CreateFmtEx(
-      RsWinCallFailed,
-      'CachedGetUserFromSid', ClassName, RsUNSid, 0, True, ['CachedGetUserFromSid']);
+  cbUserName := UNLen * SizeOf(WCHAR);
+  GetMem(pwUserName, cbUserName);
+  CachedGetUserFromSid(fSID, pwUserName, cbUserName);
+  FreeMem(pwUserName);
 end;
 
 function TJwSecurityId.GetAccountName(SystemName: TJwString): TJwString;

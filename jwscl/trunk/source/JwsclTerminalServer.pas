@@ -27,7 +27,8 @@ unit JwsclTerminalServer;
 interface
 
 uses Classes, Contnrs, DateUtils, SysUtils,
-  JwaWindows, JwaWinsta,
+  JwaWindows,
+  //JwaWinsta, //already compiled into jwaWindows
 {$IFDEF UNICODE}
   JclUnicode,
 {$ENDIF UNICODE}
@@ -371,7 +372,7 @@ begin
   WTSEnumerateProcessesW(FServerHandle, 0, 1, PWTS_PROCESS_INFOW(ProcessInfoPtr),
     pCount);
 {$ELSE}
-  WTSEnumerateProcessesA(FServerHandle, 0, 1, PWTS_PROCESS_INFOW(ProcessInfoPtr),
+  WTSEnumerateProcessesA(FServerHandle, 0, 1, PWTS_PROCESS_INFOA(ProcessInfoPtr),
     pCount);
 {$ENDIF UNICODE}
   if Res then
