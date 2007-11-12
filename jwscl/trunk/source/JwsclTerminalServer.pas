@@ -27,11 +27,10 @@ unit JwsclTerminalServer;
 interface
 
 uses Classes, Contnrs, DateUtils, SysUtils,
-  JwaWindows,
-  //JwaWinsta, //already compiled into jwaWindows
 {$IFDEF UNICODE}
   JclUnicode,
 {$ENDIF UNICODE}
+  JwaWindows,
   JwsclConstants, JwsclExceptions, JwsclResource, JwsclSid, JwsclTypes,
   JwsclVersion, JwsclStrings;
 
@@ -382,9 +381,15 @@ begin
       if ProcessInfoPtr^[i].ProcessId = 0 then
       begin
         ProcessInfoPtr^[i].pProcessName := 'System Idle Process';
+        Username := 'SYSTEM';
       end;
       if ProcessInfoPtr^[i].pUserSid <> nil then
       begin
+{        with TJwSecurityID.Create(ProcessInfoPtr^[i].pUserSid) do
+        begin
+          Username := GetChachedUserFromSid;
+          Free;
+        end;}
         cbUserName := UNLen * SizeOf(WCHAR);
         GetMem(pwUserName, cbUserName);
         CachedGetUserFromSid(ProcessInfoPtr^[i].pUserSid, pwUsername,
