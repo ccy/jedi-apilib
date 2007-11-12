@@ -214,11 +214,11 @@ implementation
 {$IFNDEF JWA_INCLUDEMODE}
 const
   winstaDLL = 'winsta.dll';
-  utildll = 'utildll.dll';
+  utilDLL = 'utildll.dll';
 {$ENDIF JWA_INCLUDEMODE}
 
 {$IFNDEF DYNAMIC_LINK}
-procedure CachedGetUserFromSid; external utildll name 'CachedGetUserFromSid';
+procedure CachedGetUserFromSid; external utilDLL name 'CachedGetUserFromSid';
 function WinStationBroadcastSystemMessage; external winstaDLL name 'WinStationBroadcastSystemMessage';
 function WinStationCallBack; external winstaDLL name 'WinStationCallBack';
 function WinStationConnectW; external winstaDLL name 'WinStationConnectW';
@@ -238,7 +238,7 @@ var
 
 procedure CachedGetUserFromSid;
 begin
-  GetProcedureAddress(__CachedGetUserFromSid, winstaDLL, 'CachedGetUserFromSid');
+  GetProcedureAddress(__CachedGetUserFromSid, utilDLL, 'CachedGetUserFromSid');
   asm
         MOV     ESP, EBP
         POP     EBP
