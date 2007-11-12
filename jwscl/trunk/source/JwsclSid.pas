@@ -1210,6 +1210,9 @@ begin
   cbUserName := UNLen * SizeOf(WCHAR);
   GetMem(pwUserName, cbUserName);
   CachedGetUserFromSid(fSID, pwUserName, cbUserName);
+
+  result := WideString(pwUserName);
+
   FreeMem(pwUserName);
 end;
 
