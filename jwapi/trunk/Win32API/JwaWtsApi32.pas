@@ -92,7 +92,7 @@ const
   {$IFNDEF JWA_INCLUDEMODE}
   IDTIMEOUT = 32000;
   {$EXTERNALSYM IDTIMEOUT}
-  {$ENDIF JWA_INCLUDEMODE}  
+  {$ENDIF JWA_INCLUDEMODE}
   IDASYNC   = 32001;
   {$EXTERNALSYM IDASYNC}
 
@@ -115,6 +115,12 @@ const
                                         // off through software)
   WTS_WSD_FASTREBOOT = $00000010;       // reboot without logging users
   {$EXTERNALSYM WTS_WSD_FASTREBOOT}     // off or shutting down
+
+// Added from Server 2008 pre-release SDK
+  MAX_ELAPSED_TIME_LENGTH = 15;
+  MAX_DATE_TIME_LENGTH = 56;
+  WINSTATIONNAME_LENGTH = 32;
+  DOMAIN_LENGTH = 17;
 
 //==============================================================================
 // WTS_CONNECTSTATE_CLASS - Session connect state
