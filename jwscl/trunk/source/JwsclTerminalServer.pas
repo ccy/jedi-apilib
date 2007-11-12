@@ -958,7 +958,7 @@ begin
   end;
 {$ELSE}
   GetMem(pWinStationName, WINSTATIONNAME_LENGTH);
-  WinStationNameFromLogonIdW(GetServerHandle, FSessionId,
+  WinStationNameFromLogonIdA(GetServerHandle, FSessionId,
     pWinStationName);
 {$ENDIF UNICODE}
   FWinstationName := pWinStationName;
