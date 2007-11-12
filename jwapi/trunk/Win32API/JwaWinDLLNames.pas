@@ -113,10 +113,12 @@ const
   trafficlib = 'traffic.dll';
   user32 = 'user32.dll';
   userenvlib = 'userenv.dll';
+  utildll = 'utildll.dll';
   versionlib = 'version.dll';
   winberapi = 'wldap32.dll';
   winfax = 'winfax.dll';
   winspool32 = 'winspool32.drv';
+  winstaDLL = 'winsta.dll';
   winternl_lib = 'ntdll.dll';
   wow16lib = 'kernel32.dll';
   wow32lib = 'wow32.dll';

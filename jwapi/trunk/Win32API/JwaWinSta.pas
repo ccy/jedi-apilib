@@ -29,9 +29,11 @@ unit JwaWinSta;
 interface
 
 uses
-  SysUtils, Windows, DateUtils;
+  SysUtils, DateUtils,
+  JwaWinType, JwaWinBase, JwaWinDllNames;
 
 {$ENDIF JWA_OMIT_SECTIONS}
+{$I jediapilib.inc}
 
 {$IFNDEF JWA_IMPLEMENTATIONSECTION}
 
@@ -193,21 +195,138 @@ implementation
 
 {$IFNDEF JWA_INTERFACESECTION}
 
-function WinStationShadow; external 'winsta.dll' name 'WinStationShadow';
+{$IFNDEF JWA_INCLUDEMODE}
+const
+  winstaDLL = 'winsta.dll';
+  utildll = 'utildll.dll';
+{$ENDIF JWA_INCLUDEMODE}
 
-function WinStationShadowStop; external 'winsta.dll' name 'WinStationShadowStop';
+{$IFNDEF DYNAMIC_LINK}     
+function WinStationShadow; external winstaDLL name 'WinStationShadow';
 
-function WinStationDisconnect; external 'winsta.dll' name 'WinStationDisconnect';
+function WinStationShadowStop; external winstaDLL name 'WinStationShadowStop';
 
-function WinStationConnectW; external 'winsta.dll' name 'WinStationConnectW';
+function WinStationDisconnect; external winstaDLL name 'WinStationDisconnect';
 
-function WinStationGetProcessSid; external 'winsta.dll' name 'WinStationGetProcessSid';
+function WinStationConnectW; external winstaDLL name 'WinStationConnectW';
 
-procedure CachedGetUserFromSid; external 'utildll.dll' name 'CachedGetUserFromSid';
+function WinStationGetProcessSid; external winstaDLL name 'WinStationGetProcessSid';
 
-function WinStationTerminateProcess; external 'winsta.dll' name 'WinStationTerminateProcess';
+procedure CachedGetUserFromSid; external utildll name 'CachedGetUserFromSid';
 
-function WinStationQueryInformationW; external 'winsta.dll' name 'WinStationQueryInformationW';
+function WinStationTerminateProcess; external winstaDLL name 'WinStationTerminateProcess';
+
+function WinStationQueryInformationW; external winstaDLL name 'WinStationQueryInformationW';
+{$ELSE}
+
+var
+  __WinStationShadow: Pointer;
+
+function WinStationShadow;
+begin
+  GetProcedureAddress(__WinStationShadow, winstaDLL, 'WinStationShadow');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [__WinStationShadow]
+  end;
+end;
+
+var
+  __WinStationShadowStop : Pointer;
+  
+function WinStationShadowStop;
+begin
+  GetProcedureAddress(__WinStationShadowStop, winstaDLL, 'WinStationShadowStop');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [__WinStationShadowStop]
+  end;
+end;
+
+var
+  __WinStationDisconnect: Pointer;
+  
+function WinStationDisconnect;
+begin
+  GetProcedureAddress(__WinStationDisconnect, winstaDLL, 'WinStationDisconnect');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [__WinStationDisconnect]
+  end;
+end;
+
+
+var
+  __WinStationConnectW: Pointer;
+  
+function WinStationConnectW;
+begin
+  GetProcedureAddress(__WinStationConnectW, winstaDLL, 'WinStationConnectW');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [__WinStationConnectW]
+  end;
+end;
+
+
+var
+  __WinStationGetProcessSid: Pointer;
+  
+function WinStationGetProcessSid;
+begin
+  GetProcedureAddress(__WinStationGetProcessSid, winstaDLL, 'WinStationGetProcessSid');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [__WinStationGetProcessSid]
+  end;
+end;
+
+var
+  __CachedGetUserFromSid: Pointer;
+  
+procedure CachedGetUserFromSid;
+begin
+  GetProcedureAddress(__CachedGetUserFromSid, winstaDLL, 'CachedGetUserFromSid');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [__CachedGetUserFromSid]
+  end;
+end;
+
+var
+  __WinStationTerminateProcess: Pointer;
+  
+function WinStationTerminateProcess;
+begin
+  GetProcedureAddress(__WinStationTerminateProcess, winstaDLL, 'WinStationTerminateProcess');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [__WinStationTerminateProcess]
+  end;
+end;
+
+
+var
+  __WinStationQueryInformationW : Pointer;
+  
+function WinStationQueryInformationW;
+begin
+  GetProcedureAddress(__WinStationQueryInformationW, winstaDLL, 'WinStationQueryInformationW');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [__WinStationQueryInformationW]
+  end;
+end;
+
+{$ENDIF DYNAMIC_LINK}
 
 function FileTime2DateTime(FileTime: FileTime): TDateTime;
 var
