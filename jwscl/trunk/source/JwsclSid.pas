@@ -338,14 +338,14 @@ type
        @raises(EJwsclWinCallFailedException if the call to a winapi function failed)
 
       }
-    function EqualPrefixSid(pSid1: TJwSecurityId): boolean;
+    function EqualPrefixSid(pSid1: TJwSecurityId): boolean;virtual;
       {@Name tests two security-identifier (SID) values for equality.
        @param(pSid1 the SID to be compared with the actual sid instance)
        @return(If the SID prefixes are equal, the return value is true; otherwise false)
        @raises(EJwsclNILParameterException if parameter pSID1 is nil)
        @raises(EJwsclWinCallFailedException if the call to a winapi function failed)
       }
-    function EqualSid(pSid1: TJwSecurityId): boolean;
+    function EqualSid(pSid1: TJwSecurityId): boolean;virtual;
 
       {@Name determines whether two SIDs are from the same domain.
        @param(pSid1 the SID to be compared with the actual sid instance)
@@ -353,7 +353,7 @@ type
        @raises(EJwsclNILParameterException if parameter pSID1 is nil)
        @raises(EJwsclWinCallFailedException if the call to a winapi function failed)
       }
-    function EqualDomainSid(pSid1: TJwSecurityId): boolean;
+    function EqualDomainSid(pSid1: TJwSecurityId): boolean; virtual;
 
       {@Name gets the domain and acount name of the SID. It also returns the type of Sid Name.
        @param(SystemName contains the target computer name. It can be null to use the local system.)
@@ -375,32 +375,34 @@ type
        @raises(EJwsclSecurityException See @link(CheckSID) for more exceptions)
        }
     function GetAccountSidString(const SystemName: TJwString;
-      out DomainName: TJwString; out SidNameUse: TSidNameUse): TJwString;
+      out DomainName: TJwString; out SidNameUse: TSidNameUse): TJwString; virtual;
 
       {@Name returns the account name of the SID on the computer given in SystemName.
        For more information see the see also section.
        @raises(EJwsclWinCallFailedException if the call to a winapi function failed)
        @Seealso(GetAccountSidString);
        }
-    function GetAccountName(SystemName: TJwString): TJwString;
+    function GetAccountName(SystemName: TJwString): TJwString; virtual;
+
+    function GetChachedUserFromSid : WideString; virtual;
 
       {@Name returns the domain account name of the SID on the computer given in SystemName.
        For more information see the see also section.
        @raises(EJwsclWinCallFailedException if the call to a winapi function failed)
        @Seealso(GetAccountSidString);
        }
-    function GetAccountDomainName(SystemName: TJwString): TJwString;
+    function GetAccountDomainName(SystemName: TJwString): TJwString; virtual;
 
       {@Name returns the account name use of the SID on the computer given in SystemName.
        For more information see the see also section.
        @raises(EJwsclWinCallFailedException if the call to a winapi function failed)
        @Seealso(GetAccountSidString);
        }
-    function GetAccountNameUse(SystemName: TJwString): TSidNameUse;
+    function GetAccountNameUse(SystemName: TJwString): TSidNameUse; virtual;
 
     {@Name creates a TSidIdentifierAuthority structure from values.}
     class function CreateSidIdentifierAuthority(Value1, Value2,
-      Value3, Value4, Value5, Value6: byte): TSidIdentifierAuthority;
+      Value3, Value4, Value5, Value6: byte): TSidIdentifierAuthority;virtual;
 
       {@Name allocates memory for a SID and Attributes structure.
        The SID instance will be copied into a new SID structure that is attached to the returned structure in its SID value.
@@ -622,6 +624,8 @@ type
        @Seealso(GetAccountSidString);
        }
     property AccountName[SystemName: TJwString]: TJwString Read GetAccountName;
+
+    property ChachedUserFromSid : WideString read GetChachedUserFromSid;
 
        {@Name returns the domain account name of the SID on the computer given in SystemName.
        For more information see the see also section.
@@ -1195,6 +1199,31 @@ begin
       RsSidCallLookupAccountSidFailed,
       'GetAccountSidString', ClassName, RsUNSid, 0, True, []);
 
+end;
+
+function TJwSecurityId.GetChachedUserFromSid : WideString;
+var pUserName : PWideChar;
+    len : DWORD;
+begin
+  CheckSID;
+  len := 0;
+  CachedGetUserFromSid(fSID, nil, len);
+  if len > 0 then
+  begin
+    pUserName := PWideChar(LocalAlloc(GMEM_FIXED or GMEM_ZEROINIT,
+      (len+1) * sizeof(WideChar)));
+
+    try
+      CachedGetUserFromSid(fSID, pUserName, len);
+      Result := WideString(pUserName);
+    finally
+      LocalFree(Cardinal(pUserName));
+    end;
+  end
+  else
+    raise EJwsclWinCallFailedException.CreateFmtEx(
+      RsWinCallFailed,
+      'CachedGetUserFromSid', ClassName, RsUNSid, 0, True, ['CachedGetUserFromSid']);
 end;
 
 function TJwSecurityId.GetAccountName(SystemName: TJwString): TJwString;
