@@ -1,0 +1,9 @@
+*.dcu
+*.ddp
+*.~*
+*.hpp
+*.o
+*.ppu
+*.rst
+*.bak
+
