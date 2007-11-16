@@ -54,6 +54,7 @@ type
     //destructor Destroy; override;
     //Alle Benutzer eines Systems
     //constructor CreateBySystemAccounts(const System: TJwString);
+
   end;
 
   {@Name is not implemented yet}
@@ -111,6 +112,24 @@ type
   end;
 
 
+{TODO: do testing!} 
+{@Name checks whether a given account on a given computer or domain
+has an empty password.
+
+This function does not raise exceptions!
+
+@param(UserName defines the user account that is checked for an empty password)
+@param(ComputerDomainName defines the computer or domain name that is used
+for the user account.
+WARNING: This parameter was not tested!)
+@return(@Name returns true if the password is empty; otherwise false. It also
+returns false if an error has occoured.)
+}
+function JwHasAccountPassword(
+    const UserName : TJwString;
+    const ComputerDomainName : TJwString = '') : Boolean;
+
+
 {$ENDIF SL_IMPLEMENTATION_SECTION}
 
 {$IFNDEF SL_OMIT_SECTIONS}
@@ -119,6 +138,27 @@ implementation
 {$ENDIF SL_OMIT_SECTIONS}
 
 {$IFNDEF SL_INTERFACE_SECTION}
+
+{origin: Assarbad
+converted from C by Christian Wimmer}
+function JwHasAccountPassword(
+    const UserName : TJwString;
+    const ComputerDomainName : TJwString = '') : Boolean;
+var hToken : Cardinal;
+    dwErr : DWORD;
+begin
+  hToken := 0;
+  if {$IFDEF UNICODE}LogonUserW{$ELSE}LogonUserA{$ENDIF}
+     (TJwPChar(Username), TJwPChar(ComputerDomainName), '', 2, 0, hToken) then
+    CloseHandle(hToken);
+
+  dwErr := GetLastError();
+  result := (ERROR_PASSWORD_RESTRICTION <> dwErr) and
+            (ERROR_LOGON_FAILURE = dwErr) and
+            (1267 = dwErr);
+end;
+
+
 {$ENDIF SL_INTERFACE_SECTION}
 
 {$IFNDEF SL_OMIT_SECTIONS}

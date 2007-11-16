@@ -1431,14 +1431,13 @@ var
 begin
   if not Assigned(JwAdministratorsSID) then
     JwInitWellKnownSIDs;
-     
+
   SD := TJwSecurityDescriptor.Create;
   try
     SD.PrimaryGroup := JwNullSID;
     SD.Owner := JwAdministratorsSID;
     SD.OwnDACL := true;
 
-   // SD.Control := [sdcDaclPresent];
     SD.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil,[],
       STANDARD_RIGHTS_ALL,JwAdministratorsSID,false));
 
