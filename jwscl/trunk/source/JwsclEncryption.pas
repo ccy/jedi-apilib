@@ -56,16 +56,16 @@ type
     class function CryptProtectData(DataIn : TDataBlob; Description : TJwString;
             Entropy : PDataBlob; PromptInfo : TCryptProtectPromptStruct; Flags :
             TJwCryptProtectFlagSet): TDataBlob; virtual;
-    {@Name is not implemented.}
+
     class procedure CryptProtectMemory(Data: Pointer; Size : Cardinal; Flags :
-            TJwCryptProtectFlagSet); virtual;
+            TJwProtectMemoryFlagSet); virtual;
 
     class function CryptUnProtectData(DataIn : TDataBlob;
             Entropy : PDataBlob; PromptInfo : TCryptProtectPromptStruct; Flags :
             TJwCryptProtectFlagSet): TDataBlob; virtual;
-    {@Name is not implemented.}
+
     class procedure CryptUnProtectMemory(Data: Pointer; Size : Cardinal; Flags :
-            TJwCryptProtectFlagSet); virtual;
+            TJwProtectMemoryFlagSet); virtual;
 
    
 
@@ -406,17 +406,50 @@ begin
 
 end;
 
+var _CryptProtectMemory: function(Memory: Pointer; Size: Cardinal; Flags: Cardinal): Cardinal; stdcall;
+    CryptProtectMemoryNtStatus: Boolean; // Does the function above return a NT_STATUS?
+
 class procedure TJwEncryptionApi.CryptProtectMemory(Data: Pointer; Size : Cardinal;
-        Flags : TJwCryptProtectFlagSet);
+        Flags : TJwProtectMemoryFlagSet);
+var Res: Integer; Exc: EJwsclCryptApiException;
 begin
-  raise EjwsclCryptUnsupportedException.CreateFmtEx(
-        RsCryptNotImplemented,// const MessageString: string;
-        'CryptProtectMemory',ClassName,//sSourceProc, sSourceClass,
-        RsUNEncryption,//sSourceFile: string;
-        0,//iSourceLine:  Cardinal;
-        false,//bShowLastError: boolean;
-        ['CryptProtectMemory']//const Args: array of const
-        );
+  //Try to use CryptProtectMemory - if it is not available, we have to use RtlEncryptMemory
+  try
+    GetProcedureAddress(Pointer(@_CryptProtectMemory), Crypt32, 'CryptProtectMemory');
+  except
+    GetProcedureAddress(Pointer(@_CryptProtectMemory), AdvApi32, 'SystemFunction040'); //RtlEncryptMemory is exported as SystemFunction040
+    CryptProtectMemoryNtStatus:=True;
+  end;
+  if CryptProtectMemoryNtStatus then
+  begin
+    Res:=_CryptProtectMemory(Data, Size, TJwEnumMap.ConvertProtectMemoryFlags(Flags));
+    if Res<>STATUS_SUCCESS then
+    begin
+      Exc:=EjwsclCryptApiException.CreateFmtEx(
+        '',
+        'CryptProtectMemory',                                //sSourceProc
+        ClassName,                                //sSourceClass
+        RsUNEncryption,                          //sSourceFile
+        0,                                           //iSourceLine
+        RtlNtStatusToDosError(Res),                 //iLastError
+        ['CryptProtectMemory']);                 //const args: array of const
+      Exc.WinCallName:='RtlEncryptMemory';
+      raise Exc;
+    end;
+  end
+  else
+  begin
+    if _CryptProtectMemory(Data, Size, TJwEnumMap.ConvertProtectMemoryFlags(Flags))=0 then
+      raise EjwsclCryptApiException.CreateFmtWinCall(
+        '',
+        'CryptProtectMemory',                                //sSourceProc
+        ClassName,                                //sSourceClass
+        RsUNEncryption,                          //sSourceFile
+        0,                                           //iSourceLine
+        True,                                  //bShowLastError
+        'CryptProtectMemory',                   //sWinCall
+        ['CryptProtectMemory'])
+  end;
 end;
 
 
@@ -448,17 +481,50 @@ begin
 
 end;
 
-class procedure TJwEncryptionApi.CryptUnProtectMemory(Data: Pointer;
-  Size: Cardinal; Flags: TJwCryptProtectFlagSet);
+var _CryptUnProtectMemory: function(Memory: Pointer; Size: Cardinal; Flags: Cardinal): Cardinal; stdcall;
+    CryptUnProtectMemoryNtStatus: Boolean; // Does the function above return a NT_STATUS?
+
+class procedure TJwEncryptionApi.CryptUnProtectMemory(Data: Pointer; Size : Cardinal;
+        Flags : TJwProtectMemoryFlagSet);
+var Res: Integer; Exc: EJwsclCryptApiException;
 begin
-  raise EjwsclCryptUnsupportedException.CreateFmtEx(
-        RsCryptNotImplemented,// const MessageString: string;
-        'CryptUnProtectMemory',ClassName,//sSourceProc, sSourceClass,
-        RsUNEncryption,//sSourceFile: string;
-        0,//iSourceLine:  Cardinal;
-        false,//bShowLastError: boolean;
-        ['CryptUnProtectMemory']//const Args: array of const
-        );
+  //Try to use CryptUnProtectMemory - if it is not available, we have to use RtlDecryptMemory
+  try
+    GetProcedureAddress(Pointer(@_CryptUnProtectMemory), Crypt32, 'CryptProtectMemory');
+  except
+    GetProcedureAddress(Pointer(@_CryptUnProtectMemory), AdvApi32, 'SystemFunction041');
+    CryptUnProtectMemoryNtStatus:=True;
+  end;
+  if CryptUnProtectMemoryNtStatus then
+  begin
+    Res:=_CryptUnProtectMemory(Data, Size, TJwEnumMap.ConvertProtectMemoryFlags(Flags));
+    if Res<>STATUS_SUCCESS then
+    begin
+      Exc:=EjwsclCryptApiException.CreateFmtEx(
+        '',
+        'CryptUnProtectMemory',                                //sSourceProc
+        ClassName,                                //sSourceClass
+        RsUNEncryption,                          //sSourceFile
+        0,                                           //iSourceLine
+        RtlNtStatusToDosError(Res),                 //iLastError
+        ['CryptUnProtectMemory']);                 //const args: array of const
+      Exc.WinCallName:='RtlDecryptMemory';
+      raise Exc;
+    end;
+  end
+  else
+  begin
+    if _CryptUnProtectMemory(Data, Size, TJwEnumMap.ConvertProtectMemoryFlags(Flags))=0 then
+      raise EjwsclCryptApiException.CreateFmtWinCall(
+        '',
+        'CryptUnProtectMemory',                                //sSourceProc
+        ClassName,                                //sSourceClass
+        RsUNEncryption,                          //sSourceFile
+        0,                                           //iSourceLine
+        True,                                  //bShowLastError
+        'CryptUnProtectMemory',                   //sWinCall
+        ['CryptUnProtectMemory'])
+  end;
 end;
 
 { TJwEncryptData }
