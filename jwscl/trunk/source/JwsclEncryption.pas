@@ -2,7 +2,7 @@
 Actually the Windows Vista Crypt API is not supported by this unit. The direct memory encryption is simulated.)
 @author(Christian Wimmer)
 @created(03/23/2007)
-@lastmod(09/10/2007)
+@lastmod(17/11/2007)
 
 Project JEDI Windows Security Code Library (JWSCL)
 
@@ -18,6 +18,7 @@ The Original Code is JwsclEncryption.pas.
 
 The Initial Developer of the Original Code is Christian Wimmer.
 Portions created by Christian Wimmer are Copyright (C) Christian Wimmer. All rights reserved.
+Portions created by Philip Dittmann are Copyright (C) Philip Dittmann. All rights reserved.
 
 
 Description:
@@ -30,7 +31,6 @@ unit JwsclEncryption;
 
 {$I Jwscl.inc}
 
-// Last modified: $Date: 2007-09-10 10:00:00 +0100 $
 //do not move header comment from above unit declaration!
 
 interface
