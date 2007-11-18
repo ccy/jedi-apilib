@@ -1,4 +1,4 @@
-{@abstract(provides access to cryptgraphic service providers (CSPs) and objects depending on them)
+{@abstract(Provides access to cryptgraphic service providers (CSPs) and objects depending on them.)
 @author(Philip Dittmann)
 @created(11/18/2007)
 @lastmod(11/18/2007)
@@ -37,48 +37,88 @@ uses
 {$IFNDEF SL_IMPLEMENTATION_SECTION}
 
 type
-  //put this into JwsclTypes
-//  TJwCSPType = (ctRsaFull, {ctRsaAes, }ctRsaSig, ctRsaSchannel, //PROV_RSA_AES is not in JwaWinCrypt.pas yet
-//                ctDss, ctDssDh, ctDhSchannel, ctFortezza,
-//                ctMsExchange, ctSsl);
-//  TJwCSPCreationFlag = (ccfVerifyContext, ccfNewKeyset,
-//                        ccfMachineKeyset, ccfSilent);
-//  TJwCSPCreationFlagSet = set of TJwCSPCreationFlag;
-//
-//  TJwKeylessHashAlgorithm = (khaMD2, khaMD4, khaMD5, khaSHA);
-//
-//  TJwCSPHandle = Cardinal;
-//  TJwHashHandle = Cardinal;
-
-  //put this into JwsclException
-
+  {@abstract(Provides access to cryptographic service providers)}
   TJwCryptProvider = class
   protected
-    fCSPHandle: Cardinal; //redeclare as TJwCSPHandle
+    //@exclude
+    fCSPHandle: TJwCSPHandle;
+    //@exclude
     class procedure RaiseApiError(const Procname, WinCallname: TJwString);
   public
-    constructor Create(const KeyContainerName, CSPName: TJwString; CSPType: TJwCSPType; Flags: TJwCSPCreationFlagSet);
+    {@Name retrieves a handle to the specified CSP using CryptAcquireContext.
+     @param(KeyContainerName The name of the key container to be used
+            for subsequent operations. Can be @nil to specify the default name.
+            Must be @nil if Flags contains ccfVerifyContext.)
+     @param(CSPName The name of the CSP)
+     @param(Flags Special flags to use with the call to CryptAcquireContext)}
+    constructor Create(const KeyContainerName, CSPName: TJwString;
+        CSPType: TJwCSPType; Flags: TJwCSPCreationFlagSet); overload;
+    {@Name clones an existing CSP and increments its reference count.
+     @param(OldCSP The CSP which shall be cloned)}
+    constructor Create(const OldCSP: TJwCryptProvider); overload;
+    {@Name releases the handle to the CSP.}
     destructor Destroy; override;
+    {@Name deletes the specified keyset using CryptAcquireContext with
+     the flag CRYPT_DELETEKEYSET.
+     @param(KeysetName The name of the keyset to delete.)}
     class procedure DeleteKeyset(const KeysetName: TJwString);
-    class function GetDefaultProvider(const ProviderType: TJwCSPType): TJwString;
+    {@Name obtains the name of the default CSP of the specified type.
+     @param(ProviderType The type of CSP for which the default
+            is to retrieve)
+     @param(MachineDefault If true, the machine default provider is returned.
+            Otherwise, the user default is returned.)}
+    class function GetDefaultProvider(const ProviderType: TJwCSPType;
+      MachineDefault: Boolean): TJwString;
+
+    {@Name is the handle to the CSP.}
     property CSPHandle: Cardinal read fCSPHandle;
   end;
 
-
+  {@Name provides the possibility to compute hashes with keyless
+   algorithms. These hashes cannot be signed since one would need
+   a public/private key pair for that.
+   @abstract(A class to compute hashes without keys)}
   TJwKeylessHash = class
   protected
-    fHashHandle: Cardinal; //redeclare as TJwHashHandle
+    //@exclude
+    fHashHandle: TJwHashHandle;
+    //@exclude
     fProvider:   TJwCryptProvider;
+    //@exclude
     class procedure RaiseApiError(const Procname, WinCallname: TJwString);
+    //@exclude
     function GetHashParam(dwParam: Cardinal; pbData: PByte; var pdwDataLen: Cardinal): BOOL;
+    //@exclude
     function GetAlgorithm: TJwKeylessHashAlgorithm;
   public
-    constructor Create(Alg: TJwKeylessHashAlgorithm);
+    {Creates a new hash object
+     @param(Alg Specifies the algorithm to use)
+     @param(CSP The provider the hash uses. If it is @nil,
+            the default CSP of type ctDss is used.
+            The CSP can be freed during lifetime of the hash
+            since the hash increments the reference count of the CSP.)}
+    constructor Create(const Alg: TJwKeylessHashAlgorithm; const CSP: TJwCryptProvider = nil);
+    {Destroys the hash object and releases the CSP}
     destructor Destroy; override;
+    {Adds data to the hash object.
+     @param(Data Specifies the data to be added)
+     @param(Size Specifies the size of the data)}
     procedure HashData(const Data; const Size: Cardinal);
+    {@Name returns the size of the hash value in bytes.
+     This value is constant for each algorithm.}
     function GetHashLength: Cardinal;
+    {@Name computes the hash of the data previously added to
+     the hash using @link(HashData). After a successful call
+     to this function you cannot add more data to the hash.
+     All additional calls to HashData will fail.
+     @param(Hash Specifies the storage in which to put the
+            computed hash value)
+     @param(Len Specifies the size of Hash. The procedure will
+            raise an exception if Len is not big enough.)}
     procedure RetrieveHash(var Hash; var Len: Cardinal);
+    {The algorithm specified in the call to @link(create)}
     property Algorithm: TJwKeylessHashAlgorithm read GetAlgorithm;
+    {@Name is the handle to the hash object.}
     property HashHandle: Cardinal read fHashHandle;
   end;
 
@@ -100,6 +140,14 @@ begin
   inherited Create;
   if not CryptAcquireContext(fCSPHandle, TJwPChar(KeyContainerName), TJwPChar(CSPName), TJwEnumMap.ConvertCSPType(CSPType), TJwEnumMap.ConvertCSPCreationFlags(Flags)) then
     RaiseApiError('Create', 'CryptAcquireContext');
+end;
+
+constructor TJwCryptProvider.Create(const OldCSP: TJwCryptProvider);
+begin
+  inherited Create;
+  fCSPHandle := OldCSP.CSPHandle;
+  if not CryptContextAddRef(OldCSP.CSPHandle, nil, 0) then
+    RaiseApiError('Create', 'CryptCOntextAddRef');
 end;
 
 destructor TJwCryptProvider.Destroy;
@@ -129,14 +177,18 @@ begin
     [Procname]);
 end;
 
-class function TJwCryptProvider.GetDefaultProvider(const ProviderType: TJwCSPType): TJwString;
-var Len: Cardinal;
+class function TJwCryptProvider.GetDefaultProvider(const ProviderType: TJwCSPType; MachineDefault: Boolean): TJwString;
+var Len: Cardinal; Flag: Cardinal;
 begin
   Len := 0;
-  if not CryptGetDefaultProvider(TJwEnumMap.ConvertCSPType(ProviderType), nil, 0, nil, Len) then
+  if MachineDefault then
+    Flag := CRYPT_MACHINE_DEFAULT
+  else
+    Flag := CRYPT_USER_DEFAULT;
+  if not CryptGetDefaultProvider(TJwEnumMap.ConvertCSPType(ProviderType), nil, Flag, nil, Len) then
     RaiseApiError('GetDefaultProvider', 'CryptGetDefaultProvider');
   SetLength(Result, Len);
-  if not CryptGetDefaultProvider(TJwEnumMap.ConvertCSPType(ProviderType), nil, 0, TJwPChar(Result), Len) then
+  if not CryptGetDefaultProvider(TJwEnumMap.ConvertCSPType(ProviderType), nil, Flag, TJwPChar(Result), Len) then
   begin
     Result := '';
     RaiseApiError('GetDefaultProvider', 'CryptGetDefaultProvider');
@@ -146,10 +198,13 @@ end;
 
 { TJwKeylessHash }
 
-constructor TJwKeylessHash.Create(Alg: TJwKeylessHashAlgorithm);
+constructor TJwKeylessHash.Create(const Alg: TJwKeylessHashAlgorithm; const CSP: TJwCryptProvider = nil);
 begin
   inherited Create;
-  fProvider := TJwCryptProvider.Create('', '', ctDss, [ccfVerifyContext]);
+  if CSP = nil then
+    fProvider := TJwCryptProvider.Create('', '', ctDss, [ccfVerifyContext])
+  else
+    fProvider := TJwCryptProvider.Create(CSP);
   if not CryptCreateHash(fProvider.CSPHandle, TJwEnumMap.ConvertKeylessHashAlgorithm(Alg), 0, 0, fHashHandle) then
     RaiseApiError('Create', 'CryptCreateHash');
 end;

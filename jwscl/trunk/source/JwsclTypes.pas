@@ -751,11 +751,12 @@ type
      //use the given instance and simply add it to the list
      cfPointAtInstance);
 
-  //@Name defines the type of a cryptographic service provider
-  //see http://msdn2.microsoft.com/en-us/library/aa380244.aspx for more information.
+  //@Name defines the type of a cryptographic service provider.
+  //See http://msdn2.microsoft.com/en-us/library/aa380244.aspx for more information.
   TJwCSPType = (
      ctRsaFull,
-     // ctRsaAes, PROV_RSA_AES is not in JwaWinCrypt.pas yet
+     {exclude ctRsaAes, PROV_RSA_AES is not in JwaWinCrypt.pas yet}
+     {}
      ctRsaSig,
      ctRsaSchannel,
      ctDss,
@@ -767,19 +768,19 @@ type
 
   //@Name defines the flags for a call to CryptAcquireContext
   TJwCSPCreationFlag = (
-     //No need for access to private keys
+     //This flag is specified when there is no need for access to private keys.
      ccfVerifyContext,
-     //Create the key container with the specified name
+     //Specify this flag to create the key container with the specified name.
      ccfNewKeyset,
-     //Do not store keys as user keys
+     //This flag causes the CSP to treat the key container as a machine key container.
      ccfMachineKeyset,
-     //ccfDeleteKeyset, //excluded since this is not a regular acquisition
-     //Do not display any UI
+     {ccfDeleteKeyset, excluded since this is not a regular acquisition}
+     {This flag prevents the CSP from displaying any UI.}
      ccfSilent);
 
   TJwCSPCreationFlagSet = set of TJwCSPCreationFlag;
 
-  //@Name: keyless hash algorithms supported in Windows XP
+  //Keyless hash algorithms supported in Windows XP
   TJwKeylessHashAlgorithm = (
      khaMD2,
      khaMD4,
