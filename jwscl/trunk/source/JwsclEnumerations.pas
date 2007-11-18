@@ -1,7 +1,7 @@
 {@abstract(This unit provides conversion functions from windows api constants to delphi enumeration types and vice versa.)
 @author(Christian Wimmer)
 @created(03/23/2007)
-@lastmod(09/10/2007)
+@lastmod(11/18/2007)
 
 Project JEDI Windows Security Code Library (JWSCL)
 
@@ -114,6 +114,21 @@ type
       const Attributes: Cardinal): TJwSidAttributeSet; overload;
     class function ConvertAttributes(
       const Attributes: TJwSidAttributeSet): Cardinal; overload;
+
+    class function ConvertKeylessHashAlgorithm(
+      const Alg: TJwKeylessHashAlgorithm): DWORD; overload;
+    class function ConvertKeylessHashAlgorithm(
+      const Alg: DWORD): TJwKeylessHashAlgorithm; overload;
+
+    class function ConvertCSPType(
+      const CSPType: TJwCSPType): DWORD; overload;
+    class function ConvertCSPType(
+      const CSPType: DWORD): TJwCSPType; overload;
+
+    class function ConvertCSPCreationFlags(
+      const FlagSet: TJwCSPCreationFlagSet): Cardinal; overload;
+    class function ConvertCSPCreationFlags(
+      const FlagBits: Cardinal): TJwCSPCreationFlagSet; overload;
   end;
 
 
@@ -253,6 +268,33 @@ const InheritFlagsValues : array[TJwInheritFlag] of Cardinal = (
        { ,CRYPTPROTECT_AUDIT//cfAudit
         CRYPTPROTECT_VERIFY_PROTECTION//cfVerifyProtection }
       );
+
+      KeylessHashAlgorithmValues: array[TJwKeylessHashAlgorithm] of Cardinal = (
+        CALG_MD2
+       ,CALG_MD4
+       ,CALG_MD5
+       ,CALG_SHA
+       );
+
+      CSPTypeValues: array[TJwCSPType] of Cardinal = (
+        PROV_RSA_FULL
+       ,PROV_RSA_SIG
+       ,PROV_RSA_SCHANNEL
+       ,PROV_DSS
+       ,PROV_DSS_DH
+       ,PROV_DH_SCHANNEL
+       ,PROV_FORTEZZA
+       ,PROV_MS_EXCHANGE
+       ,PROV_SSL
+       );
+
+      CSPCreationFlagValues: array[TJwCSPCreationFlag] of Cardinal = (
+        CRYPT_VERIFYCONTEXT
+       ,CRYPT_NEWKEYSET
+       ,CRYPT_MACHINE_KEYSET
+       //, CRYPT_DELETEKEYSET
+       ,CRYPT_SILENT
+       );
 
 
 { TJwEnumMap }
@@ -478,6 +520,66 @@ begin
   begin
     if I in Flags then
       result := result or CryptProtectOnPromptFlagValues[I];
+  end;
+end;
+
+class function TJwEnumMap.ConvertKeylessHashAlgorithm(
+  const Alg: TJwKeylessHashAlgorithm): DWORD;
+begin
+  Result:=KeylessHashAlgorithmValues[Alg];
+end;
+
+class function TJwEnumMap.ConvertKeylessHashAlgorithm(
+  const Alg: DWORD): TJwKeylessHashAlgorithm;
+var i: TJwKeylessHashAlgorithm;
+begin
+  for i := Low(TJwKeylessHashAlgorithm) to High(TJwKeylessHashAlgorithm) do
+    if KeylessHashAlgorithmValues[i] = Alg then
+    begin
+      Result := i;
+      Break;
+    end;
+end;
+
+class function TJwEnumMap.ConvertCSPType(
+  const CSPType: TJwCSPType): DWORD;
+begin
+  Result := CSPTypeValues[CSPType];
+end;
+
+class function TJwEnumMap.ConvertCSPType(
+  const CSPType: DWORD): TJwCSPType;
+var i: TJwCSPType;
+begin
+  for i := Low(TJwCSPType) to High(TJwCSPType) do
+    if CSPTypeValues[i] = CSPType then
+    begin
+      Result := i;
+      Break;
+    end;
+end;
+
+class function TJwEnumMap.ConvertCSPCreationFlags(
+  const FlagSet: TJwCSPCreationFlagSet): Cardinal;
+var I : TJwCSPCreationFlag;
+begin
+  result := 0;
+  for I := Low(TJwCSPCreationFlag) to High(TJwCSPCreationFlag) do
+  begin
+    if I in FlagSet then
+      result := result or CSPCreationFlagValues[I];
+  end;
+end;
+
+class function TJwEnumMap.ConvertCSPCreationFlags(
+  const FlagBits: Cardinal): TJwCSPCreationFlagSet;
+var I : TJwCSPCreationFlag;
+begin
+  result := [];
+  for I := Low(TJwCSPCreationFlag) to High(TJwCSPCreationFlag) do
+  begin
+    if (FlagBits and CSPCreationFlagValues[I]) = CSPCreationFlagValues[I] then
+      Include(result, I);
   end;
 end;
 

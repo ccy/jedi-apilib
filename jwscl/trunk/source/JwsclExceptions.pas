@@ -1,7 +1,7 @@
 {@abstract(Contains exceptions that are used by the units of the JWSCL)
 @author(Christian Wimmer)
 @created(03/23/2007)
-@lastmod(09/10/2007)
+@lastmod(11/18/2007)
 
 Project JEDI Windows Security Code Library (JWSCL)
 
@@ -262,6 +262,12 @@ type
 
   //general exception for terminal session methods
   EJwsclTerminalSessionException = class(EJwsclTerminalServerException);
+
+  EJwsclCSPException = class(EJwsclCryptException);
+  EJwsclCSPApiException = class(EJwsclCSPException);
+
+  EJwsclHashException = class(EJwsclCryptException);
+  EJwsclHashApiException = class (EJwsclHashException);
 
 {$ENDIF SL_IMPLEMENTATION_SECTION}
 

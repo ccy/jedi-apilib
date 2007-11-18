@@ -1,7 +1,7 @@
 {@abstract(Contains resource strings used by JSWCL)
 @author(Christian Wimmer)
 @created(03/23/2007)
-@lastmod(09/10/2007)
+@lastmod(11/18/2007)
 
 Project JEDI Windows Security Code Library (JWSCL)
 
@@ -452,6 +452,7 @@ const
 
   RsUnLibrary = 'JwscLibrary.pas';
 
+  RsUNCryptProvider = 'JwsclCryptProvider.pas';
 implementation
 
 end.

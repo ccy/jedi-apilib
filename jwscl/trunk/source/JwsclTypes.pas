@@ -61,6 +61,10 @@ type
   TJwLastError     = Cardinal;
   //@Name defines the access mask of a token
   TJwTokenAccessMask = TJwAccessMask;
+  //@Name is the type of a cryptographic service provider handle
+  TJwCSPHandle     = Cardinal;
+  //@name is the type of a hash handle
+  TJwHashHandle    = Cardinal;
 
 
   //@Name is the type of a Terminal Server Session Identifier
@@ -744,8 +748,43 @@ type
   TJwCopyFlag =(
      //Copy the instance data into a newly created instance
      cfCopyInstance,
-     //use the given instance and simply add it to the list 
+     //use the given instance and simply add it to the list
      cfPointAtInstance);
+
+  //@Name defines the type of a cryptographic service provider
+  //see http://msdn2.microsoft.com/en-us/library/aa380244.aspx for more information.
+  TJwCSPType = (
+     ctRsaFull,
+     // ctRsaAes, PROV_RSA_AES is not in JwaWinCrypt.pas yet
+     ctRsaSig,
+     ctRsaSchannel,
+     ctDss,
+     ctDssDh,
+     ctDhSchannel,
+     ctFortezza,
+     ctMsExchange,
+     ctSsl);
+
+  //@Name defines the flags for a call to CryptAcquireContext
+  TJwCSPCreationFlag = (
+     //No need for access to private keys
+     ccfVerifyContext,
+     //Create the key container with the specified name
+     ccfNewKeyset,
+     //Do not store keys as user keys
+     ccfMachineKeyset,
+     //ccfDeleteKeyset, //excluded since this is not a regular acquisition
+     //Do not display any UI
+     ccfSilent);
+
+  TJwCSPCreationFlagSet = set of TJwCSPCreationFlag;
+
+  //@Name: keyless hash algorithms supported in Windows XP
+  TJwKeylessHashAlgorithm = (
+     khaMD2,
+     khaMD4,
+     khaMD5,
+     khaSHA);
 
 
 {$ENDIF SL_IMPLEMENTATION_SECTION}
