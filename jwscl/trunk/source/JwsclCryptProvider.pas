@@ -88,96 +88,17 @@ type
 
 {$IFNDEF SL_OMIT_SECTIONS}
 implementation
+uses JwsclEnumerations;
 {$ENDIF SL_OMIT_SECTIONS}
 
 {$IFNDEF SL_INTERFACE_SECTION}
-
-const KeylessHashAlgorithmValues: array[TJwKeylessHashAlgorithm] of Cardinal = (
-        CALG_MD2
-       ,CALG_MD4
-       ,CALG_MD5
-       ,CALG_SHA
-       );
-
-const CSPTypeValues: array[TJwCSPType] of Cardinal = (
-        PROV_RSA_FULL
-       ,PROV_RSA_SIG
-       ,PROV_RSA_SCHANNEL
-       ,PROV_DSS
-       ,PROV_DSS_DH
-       ,PROV_DH_SCHANNEL
-       ,PROV_FORTEZZA
-       ,PROV_MS_EXCHANGE
-       ,PROV_SSL
-       );
-
-const CSPCreationFlagValues: array[TJwCSPCreationFlag] of Cardinal = (
-        CRYPT_VERIFYCONTEXT
-       ,CRYPT_NEWKEYSET
-       ,CRYPT_MACHINE_KEYSET
-       ,CRYPT_SILENT
-       );
-
-function ConvertKeylessHashAlgorithm(const Alg: TJwKeylessHashAlgorithm): DWORD; overload;
-begin
-  Result:=KeylessHashAlgorithmValues[Alg];
-end;
-
-function ConvertKeylessHashAlgorithm(const Alg: DWORD): TJwKeylessHashAlgorithm; overload;
-var i: TJwKeylessHashAlgorithm;
-begin
-  for i := Low(TJwKeylessHashAlgorithm) to High(TJwKeylessHashAlgorithm) do
-    if KeylessHashAlgorithmValues[i] = Alg then
-    begin
-      Result := i;
-      Break;
-    end;
-end;
-
-function ConvertCSPType(const CSPType: TJwCSPType): DWORD; overload;
-begin
-  Result := CSPTypeValues[CSPType];
-end;
-
-function ConvertCSPType(const CSPType: DWORD): TJwCSPType; overload;
-var i: TJwCSPType;
-begin
-  for i := Low(TJwCSPType) to High(TJwCSPType) do
-    if CSPTypeValues[i] = CSPType then
-    begin
-      Result := i;
-      Break;
-    end;
-end;
-
-function ConvertCSPCreationFlags(const FlagSet: TJwCSPCreationFlagSet): Cardinal; overload;
-var I : TJwCSPCreationFlag;
-begin
-  result := 0;
-  for I := Low(TJwCSPCreationFlag) to High(TJwCSPCreationFlag) do
-  begin
-    if I in FlagSet then
-      result := result or CSPCreationFlagValues[I];
-  end;
-end;
-
-function ConvertCSPCreationFlags(const FlagBits: Cardinal): TJwCSPCreationFlagSet; overload;
-var I : TJwCSPCreationFlag;
-begin
-  result := [];
-  for I := Low(TJwCSPCreationFlag) to High(TJwCSPCreationFlag) do
-  begin
-    if (FlagBits and CSPCreationFlagValues[I]) = CSPCreationFlagValues[I] then
-      Include(result, I);
-  end;
-end;
 
 { TJwCryptProvider }
 
 constructor TJwCryptProvider.Create(const KeyContainerName, CSPName: TJwString; CSPType: TJwCSPType; Flags: TJwCSPCreationFlagSet);
 begin
   inherited Create;
-  if not CryptAcquireContext(fCSPHandle, TJwPChar(KeyContainerName), TJwPChar(CSPName), ConvertCSPType(CSPType), ConvertCSPCreationFlags(Flags)) then
+  if not CryptAcquireContext(fCSPHandle, TJwPChar(KeyContainerName), TJwPChar(CSPName), TJwEnumMap.ConvertCSPType(CSPType), TJwEnumMap.ConvertCSPCreationFlags(Flags)) then
     RaiseApiError('Create', 'CryptAcquireContext');
 end;
 
@@ -212,10 +133,10 @@ class function TJwCryptProvider.GetDefaultProvider(const ProviderType: TJwCSPTyp
 var Len: Cardinal;
 begin
   Len := 0;
-  if not CryptGetDefaultProvider(ConvertCSPType(ProviderType), nil, 0, nil, Len) then
+  if not CryptGetDefaultProvider(TJwEnumMap.ConvertCSPType(ProviderType), nil, 0, nil, Len) then
     RaiseApiError('GetDefaultProvider', 'CryptGetDefaultProvider');
   SetLength(Result, Len);
-  if not CryptGetDefaultProvider(ConvertCSPType(ProviderType), nil, 0, TJwPChar(Result), Len) then
+  if not CryptGetDefaultProvider(TJwEnumMap.ConvertCSPType(ProviderType), nil, 0, TJwPChar(Result), Len) then
   begin
     Result := '';
     RaiseApiError('GetDefaultProvider', 'CryptGetDefaultProvider');
@@ -229,7 +150,7 @@ constructor TJwKeylessHash.Create(Alg: TJwKeylessHashAlgorithm);
 begin
   inherited Create;
   fProvider := TJwCryptProvider.Create('', '', ctDss, [ccfVerifyContext]);
-  if not CryptCreateHash(fProvider.CSPHandle, ConvertKeylessHashAlgorithm(Alg), 0, 0, fHashHandle) then
+  if not CryptCreateHash(fProvider.CSPHandle, TJwEnumMap.ConvertKeylessHashAlgorithm(Alg), 0, 0, fHashHandle) then
     RaiseApiError('Create', 'CryptCreateHash');
 end;
 
@@ -265,7 +186,7 @@ begin
   Size := SizeOf(Alg);
   if not GetHashParam(HP_ALGID, @Alg, Size) then
     RaiseApiError('GetAlgorithm', 'CryptGetHashParam');;
-  Result := ConvertKeylessHashAlgorithm(Alg);
+  Result := TJwEnumMap.ConvertKeylessHashAlgorithm(Alg);
 end;
 
 procedure TJwKeylessHash.HashData(const Data; const Size: Cardinal);

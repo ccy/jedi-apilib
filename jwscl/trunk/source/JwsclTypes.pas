@@ -2,7 +2,7 @@
 @abstract(Contains types that are used by the units of)
 @author(Christian Wimmer)
 @created(03/23/2007)
-@lastmod(09/10/2007)
+@lastmod(11/18/2007)
 
 Project JEDI Windows Security Code Library (JWSCL)
 
