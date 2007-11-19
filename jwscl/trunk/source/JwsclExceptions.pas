@@ -1,7 +1,7 @@
 {@abstract(Contains exceptions that are used by the units of the JWSCL)
 @author(Christian Wimmer)
 @created(03/23/2007)
-@lastmod(11/18/2007)
+@lastmod(11/19/2007)
 
 Project JEDI Windows Security Code Library (JWSCL)
 
@@ -268,6 +268,9 @@ type
 
   EJwsclHashException = class(EJwsclCryptException);
   EJwsclHashApiException = class (EJwsclHashException);
+
+  EJwsclKeyException = class(EJwsclCryptException);
+  EJwsclKeyApiException = class(EJwsclKeyException);
 
 {$ENDIF SL_IMPLEMENTATION_SECTION}
 

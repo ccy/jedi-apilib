@@ -1,7 +1,7 @@
 {@abstract(This unit provides conversion functions from windows api constants to delphi enumeration types and vice versa.)
 @author(Christian Wimmer)
 @created(03/23/2007)
-@lastmod(11/18/2007)
+@lastmod(11/19/2007)
 
 Project JEDI Windows Security Code Library (JWSCL)
 
@@ -115,10 +115,10 @@ type
     class function ConvertAttributes(
       const Attributes: TJwSidAttributeSet): Cardinal; overload;
 
-    class function ConvertKeylessHashAlgorithm(
-      const Alg: TJwKeylessHashAlgorithm): DWORD; overload;
-    class function ConvertKeylessHashAlgorithm(
-      const Alg: DWORD): TJwKeylessHashAlgorithm; overload;
+    class function ConvertHashAlgorithm(
+      const Alg: TJwHashAlgorithm): DWORD; overload;
+    class function ConvertHashAlgorithm(
+      const Alg: DWORD): TJwHashAlgorithm; overload;
 
     class function ConvertCSPType(
       const CSPType: TJwCSPType): DWORD; overload;
@@ -129,6 +129,16 @@ type
       const FlagSet: TJwCSPCreationFlagSet): Cardinal; overload;
     class function ConvertCSPCreationFlags(
       const FlagBits: Cardinal): TJwCSPCreationFlagSet; overload;
+
+    class function ConvertKeyPairType(
+      const KeyPairType: TJwKeyPairType): Cardinal; overload;
+    class function ConvertKeyPairType(
+      const KeyPairType: Cardinal): TJwKeyPairType; overload;
+
+    class function ConvertKeyFlagSet(
+      const FlagSet: TJwKeyFlagSet): Cardinal; overload;
+    class function ConvertKeyFlagSet(
+      const FlagBits: Cardinal): TJwKeyFlagSet; overload;
   end;
 
 
@@ -269,11 +279,13 @@ const InheritFlagsValues : array[TJwInheritFlag] of Cardinal = (
         CRYPTPROTECT_VERIFY_PROTECTION//cfVerifyProtection }
       );
 
-      KeylessHashAlgorithmValues: array[TJwKeylessHashAlgorithm] of Cardinal = (
+      HashAlgorithmValues: array[TJwHashAlgorithm] of Cardinal = (
         CALG_MD2
        ,CALG_MD4
        ,CALG_MD5
        ,CALG_SHA
+       ,CALG_MAC
+       ,CALG_HMAC
        );
 
       CSPTypeValues: array[TJwCSPType] of Cardinal = (
@@ -294,6 +306,24 @@ const InheritFlagsValues : array[TJwInheritFlag] of Cardinal = (
        ,CRYPT_MACHINE_KEYSET
        //, CRYPT_DELETEKEYSET
        ,CRYPT_SILENT
+       );
+
+      KeyPairTypeValues: array[TJwKeyPairType] of Cardinal = (
+        AT_KEYEXCHANGE
+       ,AT_SIGNATURE
+       );
+
+      KeyFlagValues: array[TJwKeyFlag] of Cardinal = (
+        CRYPT_CREATE_SALT
+      // ,CRYPT_ARCHIVABLE
+       ,CRYPT_PREGEN
+       ,CRYPT_EXPORTABLE
+       ,CRYPT_NO_SALT
+       ,CRYPT_USER_PROTECTED
+       ,CRYPT_OAEP
+       ,CRYPT_UPDATE_KEY
+       ,CRYPT_DESTROYKEY
+       ,CRYPT_SSL2_FALLBACK
        );
 
 
@@ -523,18 +553,18 @@ begin
   end;
 end;
 
-class function TJwEnumMap.ConvertKeylessHashAlgorithm(
-  const Alg: TJwKeylessHashAlgorithm): DWORD;
+class function TJwEnumMap.ConvertHashAlgorithm(
+  const Alg: TJwHashAlgorithm): DWORD;
 begin
-  Result:=KeylessHashAlgorithmValues[Alg];
+  Result:=HashAlgorithmValues[Alg];
 end;
 
-class function TJwEnumMap.ConvertKeylessHashAlgorithm(
-  const Alg: DWORD): TJwKeylessHashAlgorithm;
-var i: TJwKeylessHashAlgorithm;
+class function TJwEnumMap.ConvertHashAlgorithm(
+  const Alg: DWORD): TJwHashAlgorithm;
+var i: TJwHashAlgorithm;
 begin
-  for i := Low(TJwKeylessHashAlgorithm) to High(TJwKeylessHashAlgorithm) do
-    if KeylessHashAlgorithmValues[i] = Alg then
+  for i := Low(TJwHashAlgorithm) to High(TJwHashAlgorithm) do
+    if HashAlgorithmValues[i] = Alg then
     begin
       Result := i;
       Break;
@@ -579,6 +609,48 @@ begin
   for I := Low(TJwCSPCreationFlag) to High(TJwCSPCreationFlag) do
   begin
     if (FlagBits and CSPCreationFlagValues[I]) = CSPCreationFlagValues[I] then
+      Include(result, I);
+  end;
+end;
+
+class function TJwEnumMap.ConvertKeyPairType(
+  const KeyPairType: TJwKeyPairType): Cardinal;
+begin
+  Result := KeyPairTypeValues[KeyPairType];
+end;
+
+class function TJwEnumMap.ConvertKeyPairType(
+  const KeyPairType: Cardinal): TJwKeyPairType;
+var i: TJwKeyPairType;
+begin
+  for i:=Low(TJwKeyPairType) to High(TJwKeyPairType) do
+    if KeyPairTypeValues[i] = KeyPairType then
+    begin
+      Result := i;
+      Break;
+    end;
+end;
+
+class function TJwEnumMap.ConvertKeyFlagSet(
+  const FlagSet: TJwKeyFlagSet): Cardinal;
+var I : TJwKeyFlag;
+begin
+  result := 0;
+  for I := Low(TJwKeyFlag) to High(TJwKeyFlag) do
+  begin
+    if I in FlagSet then
+      result := result or KeyFlagValues[I];
+  end;
+end;
+
+class function TJwEnumMap.ConvertKeyFlagSet(
+  const FlagBits: Cardinal): TJwKeyFlagSet;
+var I : TJwKeyFlag;
+begin
+  result := [];
+  for I := Low(TJwKeyFlag) to High(TJwKeyFlag) do
+  begin
+    if (FlagBits and KeyFlagValues[I]) = KeyFlagValues[I] then
       Include(result, I);
   end;
 end;

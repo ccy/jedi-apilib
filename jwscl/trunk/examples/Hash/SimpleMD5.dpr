@@ -21,9 +21,9 @@ begin
   end;
 end;
 
-var Hash: TJwKeylessHash; Data: String; HashVal: PByte; Size: Cardinal;
+var Hash: TJwHash; Data: String; HashVal: PByte; Size: Cardinal;
 begin
-  Hash:= TJwKeylessHash.Create(khaMD5);
+  Hash:= TJwHash.Create(haMD5);
   try
     Readln(Data);
     Hash.HashData(PChar(Data)^, Length(Data));

@@ -2,7 +2,7 @@
 @abstract(Contains types that are used by the units of)
 @author(Christian Wimmer)
 @created(03/23/2007)
-@lastmod(11/18/2007)
+@lastmod(11/19/2007)
 
 Project JEDI Windows Security Code Library (JWSCL)
 
@@ -63,8 +63,10 @@ type
   TJwTokenAccessMask = TJwAccessMask;
   //@Name is the type of a cryptographic service provider handle
   TJwCSPHandle     = Cardinal;
-  //@name is the type of a hash handle
+  //@Name is the type of a hash handle
   TJwHashHandle    = Cardinal;
+  //@Name is the type of a handle to a cryptographic key
+  TJwKeyHandle = Cardinal;
 
 
   //@Name is the type of a Terminal Server Session Identifier
@@ -780,14 +782,50 @@ type
 
   TJwCSPCreationFlagSet = set of TJwCSPCreationFlag;
 
-  //Keyless hash algorithms supported in Windows XP
-  TJwKeylessHashAlgorithm = (
-     khaMD2,
-     khaMD4,
-     khaMD5,
-     khaSHA);
+  //Hash algorithms supported in Windows XP
+  TJwHashAlgorithm = (
+     haMD2,
+     haMD4,
+     haMD5,
+     haSHA,
+     haMAC,
+     haHMAC);
 
+const KeylessHashAlgorithms = [haMD2..haSHA];
 
+type
+//The flags needed for calls to TJwCryptKey.Import,
+//.ExportKey, .Generate and .Derive
+  TJwKeyFlag = (kfCreateSalt,
+                {kfArchivable,}
+                {}
+                kfPreGen,
+                kfExportable,
+                kfNoSalt,
+                kfUserProtected,
+                kfOaep,
+                kfUpdateKey,
+                kfDestroyKey,
+                kfSSL2Fallback);
+
+  TJwKeyFlagSet = set of TJwKeyFlag;
+
+const
+  //Flags allowed for a call to TJwCryptKey.Generate
+  GenerateKeyFlags = [kfCreateSalt..kfUserProtected];
+  //Flags allowed for a call to TJwCryptKey.Derive
+  DeriveKeyFlags   = [kfCreateSalt, kfExportable, kfNoSalt, kfUpdateKey];
+  //Flags allowed for a call to TJwCryptKey.Import
+  ImportKeyFlags   = [kfExportable..kfOaep];
+  //Flags allowed for a call to TJwCryptKey.ExportKey
+  ExportKeyFlags   = [kfOaep, kfDestroyKey, kfSSL2Fallback];
+
+type
+  {Each key container usually contains two key pairs.
+   Functions require a parameter of type @name if the
+   programmer should decide which of the key pairs should be used.}
+  TJwKeyPairType = (kptKeyExchange,
+                    kptSignature);
 {$ENDIF SL_IMPLEMENTATION_SECTION}
 
 {$IFNDEF SL_OMIT_SECTIONS}

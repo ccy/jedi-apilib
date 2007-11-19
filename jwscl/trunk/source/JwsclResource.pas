@@ -1,7 +1,7 @@
 {@abstract(Contains resource strings used by JSWCL)
 @author(Christian Wimmer)
 @created(03/23/2007)
-@lastmod(11/18/2007)
+@lastmod(11/19/2007)
 
 Project JEDI Windows Security Code Library (JWSCL)
 
@@ -401,6 +401,10 @@ const
   RsElevationRegDeleteError = 'The key %0:s could not be deleted.';
   RsElevationRegCreateError = 'The key %0:s could not be created.';
 
+//Unit JwsclCryptProvider.pas
+  RsKeyedHashNeedsKey     = 'A valid key is needed to create a hash object with a keyed algorithm.';
+  RsNonKeyedHash          = 'A non-keyed hash cannot be created with a key.';
+
 //General strings
   RsBracketNil = '(nil)';
   RsWinCallFailedWithNTStatus = 'Call to %0:s failed. NTError: %1:d';
@@ -419,6 +423,8 @@ const
   RsInvalidResultValue = 'The value result of a method is invalid: %d ';
 
   RsAccessDenied = 'Access denied!';
+
+  RsInvalidFlags = 'Invalid flags!';
 
 
 const
