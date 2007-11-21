@@ -125,9 +125,9 @@ WARNING: This parameter was not tested!)
 @return(@Name returns true if the password is empty; otherwise false. It also
 returns false if an error has occoured.)
 }
-function JwHasAccountPassword(
+{Not usable!! function JwHasAccountPassword(
     const UserName : TJwString;
-    const ComputerDomainName : TJwString = '') : Boolean;
+    const ComputerDomainName : TJwString = '') : Boolean;}
 
 
 {$ENDIF SL_IMPLEMENTATION_SECTION}
