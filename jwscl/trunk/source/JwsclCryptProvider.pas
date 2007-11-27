@@ -1,7 +1,9 @@
-{@abstract(Provides access to cryptgraphic service providers (CSPs) and objects depending on them.)
+{@abstract(Provides access to the parts of the Microsoft
+           Cryptographic API (CAPI) which depend on cryptographic service
+           providers (CSPs).)
 @author(Philip Dittmann)
 @created(11/18/2007)
-@lastmod(11/19/2007)
+@lastmod(11/27/2007)
 
 Project JEDI Windows Security Code Library (JWSCL)
 
@@ -44,28 +46,43 @@ type
     fCSPHandle: TJwCSPHandle;
     //@exclude
     class procedure RaiseApiError(const Procname, WinCallname: TJwString);
+    //@exclude
+    function GetName: TJwString;
+    //@exclude
+    function GetKeyContainerName: TJwString;
   public
     {@Name retrieves a handle to the specified CSP using CryptAcquireContext.
      @param(KeyContainerName The name of the key container to be used
-            for subsequent operations. Can be @nil to specify the default name.
-            Must be @nil if Flags contains ccfVerifyContext.)
-     @param(CSPName The name of the CSP)
+            for subsequent operations. Can be '' to specify the default name.
+            Must be '' if Flags contains ccfVerifyContext.)
+     @param(CSPName The name of the CSP. If you specify '', the default will be used.)
+     @param(The type of the CSP to acquire)
      @param(Flags Special flags to use with the call to CryptAcquireContext)
      @raises EJwsclCSPApiException will be raised if the underlying Windows call fails.}
     constructor Create(const KeyContainerName, CSPName: TJwString;
         CSPType: TJwCSPType; Flags: TJwCSPCreationFlagSet); overload;
-    {@Name clones an existing CSP and increments its reference count.
-     @param(OldCSP The CSP which shall be cloned)
+
+    {@Name duplicates an existing CSP and increments its reference count.
+     @param(OldCSP The CSP to duplicate)
      @raises EJwsclCSPApiException will be raised if the underlying Windows call fails.}
     constructor Create(const OldCSP: TJwCryptProvider); overload;
+
     {@Name releases the handle to the CSP.
      @raises EJwsclCSPApiException will be raised if the underlying Windows call fails.}
     destructor Destroy; override;
+
+    {This function can be used to retrieve certain parameters
+     of the CSP. It is mostly for internal use.
+     See http://msdn2.microsoft.com/en-us/library/ms938096.aspx for
+     more information.}
+    function GetProvParam(dwParam: Cardinal; pbData: Pointer; var pdwDataLen: Cardinal; Flags: Cardinal): BOOL;
+
     {@Name deletes the specified keyset using CryptAcquireContext with
      the flag CRYPT_DELETEKEYSET.
      @param(KeysetName The name of the keyset to delete.)
      @raises EJwsclCSPApiException will be raised if the underlying Windows call fails.}
     class procedure DeleteKeyset(const KeysetName: TJwString);
+
     {@Name obtains the name of the default CSP of the specified type.
      @param(ProviderType The type of CSP for which the default
             is to retrieve)
@@ -74,18 +91,89 @@ type
      @return(@Name returns the name of the default provider of
              the specified type.))
      @raises EJwsclCSPApiException will be raised if the underlying Windows call fails
-             because there is no default provider or for other reasons}
-    class function GetDefaultProvider(const ProviderType: TJwCSPType;
-      MachineDefault: Boolean): TJwString;
+             because there is no default provider or for other reasons.}
+    class function GetDefaultProvider(ProviderType: TJwCSPType;
+      MachineDefault: Boolean): TJwString; //static;
+    {The directive static is necessary if you want to use
+     the class property DefaultProvider.}
+
+    {Sets the default CSP either for the current user or the machine
+     @param(NewDefault The name of the new default provider)
+     @param(ProviderType The type of CSP for which the specified provider
+            should be the default)
+     @param(MachineDefault If true, the machine default provider is set.
+            Otherwise, the user default is set.)
+     @raises EJwsclCSPApiException will be raised if the underlying Windows call fails.}
+    class procedure SetDefaultProvider(ProviderType: TJwCSPType;
+      MachineDefault: Boolean; const NewDefault: TJwString); //static;
+    {The directive static is necessary if you want to use
+     the class property DefaultProvider.}
+
+    (*{This construct can be used since Delphi 7. You have to remove
+     the comment on 'static' after GetDefaultProvider and
+     SetDefaultProvider to compile!}
+    class property DefaultProvider[ProviderType: TJwCSPType; MachineDefault: Boolean]: TJwString
+      read GetDefaultProvider write SetDefaultProvider; *)
+
+    {Deletes the default provider setting for the specified type
+     @param(ProviderType The CSP type for which the default setting should
+            be deleted.)
+     @param(MachineDefault If true, the machine default setting is deleted.
+            Otherwise, the user default setting is deleted.)
+     @raises EJwsclCSPApiException will be raised if the underlying Windows call fails.}
+    class procedure DeleteDefaultProvider(ProviderType: TJwCSPType;
+      MachineDefault: Boolean);
+
+    {Enumerates all providers installed on the machine
+     @return(@Name returns an array of TJwEnumProvider records, which
+             contain the provider name and type.)
+     @raises EJwsclCSPApiException will be raised if the underlying Windows call fails.}
+    class function EnumProviders: TJwEnumProviderArray;
+
+    {Enumerates all provider types on the machine
+     @return(@Name returns an array of TJwEnumProvider records containing
+             the type as a member of the TJwCSPType enumeration and the
+             name as a human-readable string.)
+      @raises EJwsclCSPApiException will be raised if the underlying Windows call fails.}
+    class function EnumProviderTypes: TJwEnumProviderArray;
+
+    {Enumerates all the algorithms supported by the CSP.
+     @return(@Name returns an array of TJwEnumAlgorithmsEntry records.
+             See @link(TJwEnumAlgorithmsEntry) for more information)
+     @raises EJwsclCSPApiException will be raised if the underlying Windows call fails.}
+    function EnumAlgorithms: TJwEnumAlgorithms;
+
+    {@Name fills a buffer with random data. The data is usually
+     far better than the one you retrieve by calling System.Random,
+     although the exact implementation depends on the CSP.
+     @param(Random Pointer to the buffer to be filled with random
+            data. The current contents of the buffer are used as a seed.
+            Nevertheless, it is not necessary to supply a good seed in
+            the buffer.)
+     @param(Length Size of the buffer to be filled)
+     @raises EJwsclCSPApiException will be raised if the underlying Windows call fails.}
+    procedure GetRandomData(Random: Pointer; const Length: Cardinal);
 
     {@Name is the handle to the CSP.}
-    property CSPHandle: Cardinal read fCSPHandle;
+    property CSPHandle: TJwCSPHandle read fCSPHandle;
+
+    {The name of the CSP as specified in the CSPName parameter in the call to
+     @link(create)
+     @raises EJwsclCSPApiException will be raised if the underlying Windows call fails.}
+    property Name: TJwString read GetName;
+
+    {The name of the key container as specified in the KeyContainerName parameter
+     in the call to @link(create)
+     @raises EJwsclCSPApiException will be raised if the underlying Windows call fails.}
+    property KeyContainerName: TJwString read GetName;
   end;
 
   TJwCryptKey = class;
 
-  {@Name provides the possibility to compute hashes.
-   @abstract(A class to compute hashes)}
+  {@abstract(@Name is a class to compute hashes.)
+   Both keyless and keyed algorithms are supported.
+   Hashes can also be used to sign data.
+   }
   TJwHash = class
   protected
     //@exclude
@@ -94,40 +182,43 @@ type
     fProvider:   TJwCryptProvider;
     //@exclude
     class procedure RaiseApiError(const Procname, WinCallname: TJwString);
-    //@exclude
+    //@Name calls the WinAPI function CryptGetHashParam. It
+    //is protected since the functionality is encapsulated by
+    //@link(GetHashLength), @link(RetrieveHash) and @link(Algorithm).
     function GetHashParam(dwParam: Cardinal; pbData: PByte; var pdwDataLen: Cardinal): BOOL;
     //@exclude
     function GetAlgorithm: TJwHashAlgorithm;
   public
     {Creates a new hash object
      @param(Alg Specifies the algorithm to use)
-     @param(CSP The provider the hash uses. If it is @nil,
-            the default CSP of type ctDss is used. Be aware that you
+     @param(CSP The provider the hash uses. If it is nil,
+            the default CSP of type ctRsaFull is used. Be aware that you
             will not be able to call the @link(GetSignatureLength) and
             @link(Sign) functions in this case since the CSP is created
             with the flag ccfVerifyContext meaning that there are no
             lasting key pairs in the CSP.
             The CSP can be freed during lifetime of the hash
             since the hash increments the reference count of the CSP.)
-     @param(The key used for data hashing if an keyed algorithm is specified.
-            Otherwise this must be @nil.)
+     @param(The key used for data hashing if a keyed algorithm is specified.
+            Otherwise this must be nil.)
      @raises EJwsclHashException will be raised if there is a key specified
              for a non-keyed algorithm or if no key is specified for a keyed
              algorithm.
-     @raises EJsclHashApiException will be raised if the underlying Windows call fails}
-    constructor Create(const Alg: TJwHashAlgorithm; const CSP: TJwCryptProvider = nil; const Key: TJwCryptKey = nil);
+     @raises EJsclHashApiException will be raised if the underlying Windows call fails.}
+    constructor Create(Alg: TJwHashAlgorithm; const CSP: TJwCryptProvider = nil; const Key: TJwCryptKey = nil);
 
-    {Destroys the hash object and releases the CSP}
+    {Destroys the hash object and releases the CSP
+     @raises EJsclHashApiException will be raised if the underlying Windows call fails.}
     destructor Destroy; override;
 
-    {Adds data to the hash object.
-     @param(Data Specifies the data to be added)
+    {Adds data to the hash object
+     @param(Data Pointer to the data to be added)
      @param(Size Specifies the size of the data)
      @raises EJwsclHashApiException will be raised if the
              underlying Windows call fails due to a
              previous call to @link(RetrieveHash) or
              @link(Sign) or for other reasons.}
-    procedure HashData(const Data; const Size: Cardinal);
+    procedure HashData(Data: Pointer; Size: Cardinal);
 
     {@Name returns the size of the hash value in bytes.
      This value is constant for each algorithm.
@@ -135,6 +226,7 @@ type
      @raises EJwsclHashApiException will be raised if the
              underlying Windows call fails.}
     function GetHashLength: Cardinal;
+
     {@Name computes the hash of the data previously added to
      the hash using @link(HashData). After a successful call
      to this function you cannot add more data to the hash.
@@ -146,7 +238,7 @@ type
      @raises EJwsclHashApiException will be raised if the
              underlying Windows call fails because the specified
              buffer is to small or for other reasons.}
-    procedure RetrieveHash(var Hash; var Len: Cardinal); overload;
+    procedure RetrieveHash(Hash: Pointer; var Len: Cardinal); overload;
 
     {@Name computes the hash of the data previously added to
      the hash using @link(HashData). After a successful call
@@ -171,17 +263,20 @@ type
      The used CSP must have permanent key pairs and thus
      have not been created with the ccfVerifyContext flag.
      @param(Signature The buffer the signature is stored in)
-     @param(Len The length of the buffer specified in Signature)
+     @param(Len The length of the buffer specified in Signature.
+            The actual size of the signature is returned here.)
      @param(Key A CSP usually has two key pairs. This parameter specifies
             which should be used.)
      @raises EJwsclHashApiException will be raised if the
              underlying Windows call fails because the specified
              buffer is to small or for other reasons.}
-    procedure Sign(var Signature; var Len: Cardinal; Key: TJwKeyPairType = kptSignature); overload;
+    procedure Sign(Signature: Pointer; var Len: Cardinal; Key: TJwKeyPairType = kptSignature); overload;
 
     {@Name computes a signature of the data in the hash.
      The used CSP must have permanent key pairs and thus
      have not been created with the ccfVerifyContext flag.
+     The buffer returned by this function must be freed using
+     @link(FreeBuffer).
      @param(Len The length of the returned buffer
      @param(Key A CSP usually has two key pairs. This parameter specifies
             which should be used.)
@@ -189,7 +284,7 @@ type
               using @link(FreeBuffer) when it is no longer needed.)
      @raises EJwsclHashApiException will be raised if the
              underlying Windows call fails.}
-    function  Sign(out Len: Cardinal; Key: TJwKeyPairType = kptSignature): Pointer; overload;
+    function Sign(out Len: Cardinal; Key: TJwKeyPairType = kptSignature): Pointer; overload;
 
     {@Name frees buffer returned by previous calls to
      @link(RetrieveHash) and @link(Sign).
@@ -200,27 +295,178 @@ type
      @raises EJwsclHashApiException will be raised if the
              underlying Windows call fails.}
     property Algorithm: TJwHashAlgorithm read GetAlgorithm;
+
     {@Name is the handle to the hash object.}
-    property HashHandle: Cardinal read fHashHandle;
+    property HashHandle: TJwHashHandle read fHashHandle;
   end;
 
-  {@Name is not completely implemented yet}
+  {@abstract(@Name encapsulates CAPI keys.)
+   Keys for symmetric and asymmetric algorithms are supported.
+   They can be used for hash computing. Keys can be created
+   by retrieving the user keys of a CSP, randomly generating
+   a new key, deriving from base data and importing from
+   a data blob.}
   TJwCryptKey = class
   protected
     //@exclude
     fHandle: TJwKeyHandle;
     //@exclude
     class procedure RaiseApiError(const Procname, WinCallname: TJwString);
+    //@exclude
+    function GetDWordKeyParam(const Param: Integer): Cardinal;
   public
+    {Duplicates an existing key.
+    @param(OldKey The key to duplicate)
+    @raises EJwsclKeyApiException will be raised if the
+             underlying Windows call fails.}
     constructor Create(OldKey: TJwCryptKey);
+
+    {Gets one of the two standard key pairs of the specified CSP.
+     @param(CSP The cryptographic service provider)
+     @param(Key The key pair you want to retrieve)
+     @raises EJwsclKeyApiException will be raised if the
+             underlying Windows call fails.}
     constructor GetUserKey(CSP: TJwCryptProvider; Key: TJwKeyPairType);
-    constructor Import(CSP: TJwCryptProvider; const Data; DataLen: Cardinal;
-                       PubKey: TJwCryptKey; Flags: TJwKeyFlagSet);
-//    constructor Generate;
-//    constructor Derive;
+
+    {Imports a key from a data blob
+     @param(CSP The cryptographic service provider)
+     @param(Data The data blob)
+     @param(DataLen The size of the data blob.)
+     @param(PubKey The key with which the data blob shall be decrypted.
+            This parameter must be nil if no encryption key has been specified
+            upon key export.)
+     @param(Flags Special flags to use with the WinAPI funtion call)
+     @raises EJwsclKeyApiException will be raised if the
+             underlying Windows call fails.}
+    constructor Import(CSP: TJwCryptProvider; Data: Pointer; DataLen: Cardinal;
+      PubKey: TJwCryptKey; Flags: TJwKeyFlagSet);
+
+    {Randomly generates a key
+    @param(CSP The cryptographic service provider)
+    @param(Alg The algorithm for which the key is to be used)
+    @param(Flags Flags to use with the WinAPI call)
+    @param(Length The length of the key)
+    @raises EJwsclKeyApiException will be raised if the
+             underlying Windows call fails.}
+    constructor Generate(CSP: TJwCryptProvider; Alg: TJwEncryptionAlgorithm;
+      Flags: TJwKeyFlagSet; Length: Word);
+
+    {Derives a key from a specified seed
+    @param(CSP The cryptographic service provider)
+    @param(Alg The algorithm for which the key is to be used)
+    @param(Flags Flags to use with the WinAPI call)
+    @param(Length The length of the key)
+    @param(BaseData The base data from which the key shall be derived.
+                    The data must have been added to the hash object using
+                    @link(TJwHash.HashData))
+    @raises EJwsclKeyApiException will be raised if the
+             underlying Windows call fails.}
+    constructor Derive(CSP: TJwCryptProvider; Alg: TJwEncryptionAlgorithm;
+      Flags: TJwKeyFlagSet; Length: Word; BaseData: TJwHash);
+
+    {Destroys the key
+     @raises EJwsclKeyApiException will be raised if the
+             underlying Windows call fails.}
     destructor Destroy; override;
-//    procedure ExportKey(ExpKey: TJwCryptKey;
+
+    {This function can be used to retrieve certain parameters
+     of the key. It is mostly for internal use.
+     See http://msdn2.microsoft.com/en-us/library/aa379949.aspx for
+     more information.}
+    function GetKeyParam(dwParam: Cardinal; pbData: PByte; var pdwDataLen: Cardinal): BOOL;
+
+    {@Name can be used to determine the length of the export blob for
+     subsequent calls to @link(ExportKey).
+     @param(ExpKey The key with which the data blob is encrypted. It depends on BlobType
+            and the CSP which keys, and whether nil keys, are allowed.)
+     @param(BlobType The type of blob to which the key shall be exported)
+     @param(Flags Export flags)
+     @return(The length of the export blob)
+     @raises EJwsclKeyApiException will be raised if the
+             underlying Windows call fails.}
+    function GetExportKeyLength(ExpKey: TJwCryptKey; BlobType: TJwKeyExportKind; Flags: TJwKeyFlagSet): Cardinal;
+
+    {Exports the key to a data blob
+     @param(ExpKey The key with which the data blob is encrypted. It depends on BlobType
+            and the CSP which keys, and wether nil keys, are allowed.)
+     @param(BlobType Specifies how the key should be exported.)
+     @param(Flags Export flags)
+     @param(Blob The blob in which the export data is stored)
+     @param(BlobLen Specify the size of Blob here. it will be set to
+            the actual length of the exported key upon return.
+            An exception will be raised if BlobLen is to small.)
+     @raises EJwsclKeyApiException will be raised if the
+             underlying Windows call fails becaus the specified
+             buffer is to small or for other reasons.}
+    procedure ExportKey(ExpKey: TJwCryptKey; BlobType: TJwKeyExportKind;
+      Flags: TJwKeyFlagSet; Blob: Pointer; var BlobLen: Cardinal); overload;
+
+    {Exports the key to a data blob which is returned. It must be freed using
+     @link(FreeBuffer).
+     @param(ExpKey The key with which the data blob is encrypted. It depends on BlobType
+            and the CSP which keys, and whether nil keys, are allowed.)
+     @param(BlobType Specifies how the key should be exported.)
+     @param(Flags Export flags)
+     @param(BlobLen This parameter will be set to the size of the returned
+            data blob.)
+     @return(A pointer to the allocated data blob with the key data is
+             returned. You have to free the blob using @link(FreeBuffer)
+             when it is no longer needed.)
+     @raises EJwsclKeyApiException will be raised if the
+             underlying Windows call fails.}
+    function  ExportKey(ExpKey: TJwCryptKey; BlobType: TJwKeyExportKind;
+      Flags: TJwKeyFlagSet; out BlobLen: Cardinal): Pointer; overload;
+
+    {This function encrypts a data block. It trashes the original
+     data.
+     @param(Hash Specify an instance of TJwHash to encrypt and
+            hash data simultaneously, e.g. for signing it.
+            This parameter can be nil.)
+     @param(FinalBlock Use this parameter to indicate that this
+            is the last block in a stream of data to encrypt.)
+     @param(Flags Special encryption flags)
+     @param(Data Pointer to the data to be encrypted. The ciphertext is also
+            returned in this buffer.)
+     @param(DataLen The length of the plaintext. The length of the
+            ciphertext is returned here.)
+     @param(BufSize Specify the size of the Data buffer here.)
+     @raises EJwsclKeyApiException will be raised if the
+             underlying Windows call fails.}
+    procedure Encrypt(const Hash: TJwHash; FinalBlock: Boolean; Flags: TJwKeyFlagSet;
+      Data: Pointer; var DataLen: Cardinal; BufSize: Cardinal); overload;
+
+    {This function decrypts a data block. It trashes the encrypted
+     data.
+     @param(Hash Specify an instance of TJwHash to decrypt and
+            hash data simultaneously, e.g. for verifying a signature.
+            This parameter can be nil.)
+     @param(FinalBlock Use this parameter to indicate that this
+            is the last block in a stream of data to decrypt.)
+     @param(Flags Special decryption flags)
+     @param(Data Pointer to the data to be decrypted. The plaintext is also
+            returned in this buffer.)
+     @param(DataLen The length of the ciphertext. The length of the
+            plaintext is returned here as well.)
+     @raises EJwsclKeyApiException will be raised if the
+             underlying Windows call fails.}
+    procedure Decrypt(const Hash: TJwHash; FinalBlock: Boolean; Flags: TJwKeyFlagSet;
+      Data: Pointer; var DataLen: Cardinal); overload;
+
+    {@Name frees buffer returned by previous calls to
+     @link(ExportKey).
+     @Param(Buffer The buffer to be freed)}
+    class procedure FreeBuffer(Buffer: Pointer);
+
+    {The handle to the key}
     property Handle: TJwKeyHandle read fHandle;
+
+    {The length of the key, as specified upon key creation}
+    property KeyLen: Cardinal index KP_KEYLEN  read GetDWordKeyParam;
+
+    {The block size of the key. This is zero for stream ciphers.
+     If the key is a public/private key pair, the encryption granularity
+     is returned.}
+    property BlockLen: Cardinal index KP_BLOCKLEN  read GetDWordKeyParam;
   end;
 
 
@@ -236,7 +482,8 @@ uses JwsclEnumerations;
 
 { TJwCryptProvider }
 
-constructor TJwCryptProvider.Create(const KeyContainerName, CSPName: TJwString; CSPType: TJwCSPType; Flags: TJwCSPCreationFlagSet);
+constructor TJwCryptProvider.Create(const KeyContainerName, CSPName: TJwString;
+  CSPType: TJwCSPType; Flags: TJwCSPCreationFlagSet);
 begin
   inherited Create;
   if not CryptAcquireContext(fCSPHandle, TJwPChar(KeyContainerName), TJwPChar(CSPName), TJwEnumMap.ConvertCSPType(CSPType), TJwEnumMap.ConvertCSPCreationFlags(Flags)) then
@@ -265,6 +512,12 @@ begin
     RaiseApiError('DeleteKeyset', 'CryptAcquireContext');
 end;
 
+function TJwCryptProvider.GetProvParam(dwParam: Cardinal; pbData: Pointer;
+  var pdwDataLen: Cardinal; Flags: Cardinal): BOOL;
+begin
+  Result := CryptGetProvParam(fCSPHandle, dwParam, pbData, pdwDataLen, Flags);
+end;
+
 class procedure TJwCryptProvider.RaiseApiError(const Procname, WinCallname: TJwString);
 begin
   raise EJwsclCSPApiException.CreateFmtWinCall(
@@ -278,7 +531,8 @@ begin
     [Procname]);
 end;
 
-class function TJwCryptProvider.GetDefaultProvider(const ProviderType: TJwCSPType; MachineDefault: Boolean): TJwString;
+class function TJwCryptProvider.GetDefaultProvider(ProviderType: TJwCSPType;
+  MachineDefault: Boolean): TJwString;
 var Len: Cardinal; Flag: Cardinal;
 begin
   Len := 0;
@@ -294,12 +548,156 @@ begin
     Result := '';
     RaiseApiError('GetDefaultProvider', 'CryptGetDefaultProvider');
   end;
+end;
 
+class procedure TJwCryptProvider.SetDefaultProvider(ProviderType: TJwCSPType;
+  MachineDefault: Boolean; const NewDefault: string);
+var Flags: Cardinal;
+begin
+  if MachineDefault then
+    Flags := CRYPT_MACHINE_DEFAULT
+  else
+    Flags := CRYPT_USER_DEFAULT;
+  if not CryptSetProviderEx(PChar(NewDefault), TJwEnumMap.ConvertCSPType(ProviderType), nil, Flags) then
+    RaiseApiError('SetDefaultProvider', 'CryptSetProviderEx');
+end;
+
+class procedure TJwCryptProvider.DeleteDefaultProvider(ProviderType: TJwCSPType;
+  MachineDefault: Boolean);
+var Flags: Cardinal;
+begin
+  if MachineDefault then
+    Flags := CRYPT_DELETE_DEFAULT or CRYPT_MACHINE_DEFAULT
+  else
+    Flags := CRYPT_DELETE_DEFAULT or CRYPT_USER_DEFAULT;
+  if not CryptSetProviderEx(nil, TJwEnumMap.ConvertCSPType(ProviderType), nil, Flags) then
+    RaiseApiError('SetDefaultProvider', 'CryptSetProviderEx');
+end;
+
+class function TJwCryptProvider.EnumProviders: TJwEnumProviderArray;
+var i: integer; Err: Cardinal; Len: Cardinal; ProvType: Cardinal;
+begin
+  i := 0;
+  Len := 0;
+  Err := ERROR_SUCCESS;
+  repeat
+    if not CryptEnumProviders(i, nil, 0, ProvType, nil, Len) then
+    begin
+      Err := GetLastError;
+      if Err <> ERROR_NO_MORE_ITEMS then
+      begin
+        SetLastError(Err);
+        RaiseApiError('EnumProviders', 'CryptEnumProviders');
+      end;
+    end
+    else
+    begin
+      SetLength(Result, i+1);
+      SetLength(Result[i].Name, Len);
+      if not CryptEnumProviders(i, nil, 0, ProvType, PChar(Result[i].Name), Len) then
+        RaiseApiError('EnumProviders', 'CryptEnumProviders');
+      Result[i].ProviderType := TJwEnumMap.ConvertCSPType(ProvType);
+      inc(i);
+    end;
+  until Err = ERROR_NO_MORE_ITEMS;
+end;
+
+class function TJwCryptProvider.EnumProviderTypes: TJwEnumProviderArray;
+var i: integer; Err: Cardinal; Len: Cardinal; ProvType: Cardinal;
+begin
+  i := 0;
+  Len := 0;
+  Err := ERROR_SUCCESS;
+  repeat
+    if not CryptEnumProviderTypes(i, nil, 0, ProvType, nil, Len) then
+    begin
+      Err := GetLastError;
+      if Err <> ERROR_NO_MORE_ITEMS then
+      begin
+        SetLastError(Err);
+        RaiseApiError('EnumProviderTypes', 'CryptEnumProviderTypes');
+      end;
+    end
+    else
+    begin
+      SetLength(Result, i+1);
+      SetLength(Result[i].Name, Len);
+      if not CryptEnumProviderTypes(i, nil, 0, ProvType, PChar(Result[i].Name), Len) then
+        RaiseApiError('EnumProviderTypes', 'CryptEnumProviderTypes');
+      Result[i].ProviderType := TJwEnumMap.ConvertCSPType(ProvType);
+      inc(i);
+    end;
+  until Err = ERROR_NO_MORE_ITEMS;
+end;
+
+function TJwCryptProvider.GetName: TJwString;
+var Len: Cardinal;
+begin
+  Len := 0;
+  if not GetProvParam(PP_NAME, nil, Len, 0) then
+    RaiseApiError('GetName', 'CryptGetProvParam');
+  SetLength(Result, Len);
+  if not GetProvParam(PP_NAME, Pointer(Result), Len, 0) then
+    RaiseApiError('GetName', 'CryptGetProvParam');
+end;
+
+function TJwCryptProvider.GetKeyContainerName: TJwString;
+var Len: Cardinal;
+begin
+  Len := 0;
+  if not GetProvParam(PP_CONTAINER, nil, Len, 0) then
+    RaiseApiError('GetKeyContainerName', 'CryptGetProvParam');
+  SetLength(Result, Len);
+  if not GetProvParam(PP_CONTAINER, Pointer(Result), Len, 0) then
+    RaiseApiError('GetKeyContainerName', 'CryptGetProvParam');
+end;
+
+function TJwCryptProvider.EnumAlgorithms: TJwEnumAlgorithms;
+var EnumAlgs: PROV_ENUMALGS_EX; Size: Cardinal; Err: Cardinal;
+begin
+  Size := SizeOf(EnumAlgs);
+  GetProvParam(PP_ENUMALGS_EX, @EnumAlgs, Size, CRYPT_FIRST);
+  while true do
+  begin
+    SetLength(Result, Length(Result)+1);
+    with Result[High(Result)] do
+    begin
+      AlgId := EnumAlgs.aiAlgid;
+      HashAlgType := TJwEnumMap.ConvertHashAlgorithm(EnumAlgs.aiAlgid);
+      HashAlgorithm := HashAlgType <> haUnknown;
+      if not HashAlgorithm then
+        EncrAlgType := TJwEnumMap.ConvertEncryptionAlgorithm(EnumAlgs.aiAlgid);
+      DefaultKeyLen := EnumAlgs.dwDefaultLen;
+      MinKeyLen := EnumAlgs.dwMinLen;
+      MaxKeyLen := EnumAlgs.dwMaxLen;
+      ProtocolNum := EnumAlgs.dwProtocols;
+      SetString(ShortName, EnumAlgs.szName,     EnumAlgs.dwNameLen);
+      SetString(LongName,  EnumAlgs.szLongName, EnumAlgs.dwLongNameLen);
+    end;
+    if not GetProvParam(PP_ENUMALGS_EX, @EnumAlgs, Size, 0) then
+    begin
+      Err := GetLastError;
+      if Err <> ERROR_NO_MORE_ITEMS then
+      begin
+        SetLastError(Err);
+        RaiseApiError('EnumAlgorithms', 'CryptGetProvParam');
+      end
+      else
+        break;
+    end;
+  end;
+end;
+
+procedure TJwCryptProvider.GetRandomData(Random: Pointer; const Length: Cardinal);
+begin
+  if not CryptGenRandom(fCSPHandle, Length, Random) then
+    RaiseApiError('GetRandomData', 'CryptGenRandom');
 end;
 
 { TJwHash }
 
-constructor TJwHash.Create(const Alg: TJwHashAlgorithm; const CSP: TJwCryptProvider = nil; const Key: TJwCryptKey = nil);
+constructor TJwHash.Create(Alg: TJwHashAlgorithm; const CSP: TJwCryptProvider = nil;
+  const Key: TJwCryptKey = nil);
 var KeyHandle: TJwKeyHandle;
 begin
   inherited Create;
@@ -323,7 +721,7 @@ begin
       []);
 
   if CSP = nil then
-    fProvider := TJwCryptProvider.Create('', '', ctDss, [ccfVerifyContext])
+    fProvider := TJwCryptProvider.Create('', '', ctRsaFull, [ccfVerifyContext])
   else
     fProvider := TJwCryptProvider.Create(CSP);
   if Assigned(Key) then
@@ -360,7 +758,8 @@ begin
     [ProcName]);
 end;
 
-function TJwHash.GetHashParam(dwParam: Cardinal; pbData: PByte; var pdwDataLen: Cardinal): BOOL;
+function TJwHash.GetHashParam(dwParam: Cardinal; pbData: PByte;
+  var pdwDataLen: Cardinal): BOOL;
 begin
   Result := CryptGetHashParam(fHashHandle, dwParam, pbData, pdwDataLen, 0);
 end;
@@ -374,7 +773,7 @@ begin
   Result := TJwEnumMap.ConvertHashAlgorithm(Alg);
 end;
 
-procedure TJwHash.HashData(const Data; const Size: Cardinal);
+procedure TJwHash.HashData(Data: Pointer; Size: Cardinal);
 begin
   if not CryptHashData(fHashHandle, @Data, Size, 0) then
     RaiseApiError('HashData', 'CryptHashData');
@@ -388,9 +787,9 @@ begin
     RaiseApiError('GetHashLength', 'CryptGetHashParam');
 end;
 
-procedure TJwHash.RetrieveHash(var Hash; var Len: Cardinal);
+procedure TJwHash.RetrieveHash(Hash: Pointer; var Len: Cardinal);
 begin
-  if not GetHashParam(HP_HASHVAL, @Hash, Len) then
+  if not GetHashParam(HP_HASHVAL, Hash, Len) then
     RaiseApiError('RetrieveHash', 'CryptGetHashParam');
 end;
 
@@ -399,7 +798,7 @@ begin
   Len := GetHashLength;
   GetMem(Result, Len);
   try
-    RetrieveHash(Result^, Len);
+    RetrieveHash(Result, Len);
     ReallocMem(Result, Len);
   except
     FreeMem(Result);
@@ -410,23 +809,25 @@ end;
 function TJwHash.GetSignatureLength: Cardinal;
 begin
   Result := 0;
-  //the key type should not matter for the signature length, so just take AT_SIGNATURE here
-  if not CryptSignHash(fHashHandle, AT_SIGNATURE, nil, 0, nil, Result) then
-    RaiseApiError('GetSignatureLength', 'CryptSignHash');
+  //the key type should not matter for the signature length,
+  //so just take kptSignature here
+  Sign(nil, Result, kptSignature);
 end;
 
-procedure TJwHash.Sign(var Signature; var Len: Cardinal; Key: TJwKeyPairType = kptSignature);
+procedure TJwHash.Sign(Signature: Pointer; var Len: Cardinal;
+  Key: TJwKeyPairType = kptSignature);
 begin
-  if not CryptSignHash(fHashHandle, TJwEnumMap.ConvertKeyPairType(Key), nil, 0, @Signature, Len) then
+  if not CryptSignHash(fHashHandle, TJwEnumMap.ConvertKeyPairType(Key), nil, 0, Signature, Len) then
     RaiseApiError('Sign', 'CryptSignHash');
 end;
 
-function TJwHash.Sign(out Len: Cardinal; Key: TJwKeyPairType = kptSignature): Pointer;
+function TJwHash.Sign(out Len: Cardinal;
+  Key: TJwKeyPairType = kptSignature): Pointer;
 begin
   Len := GetSignatureLength;
   GetMem(Result, Len);
   try
-    Sign(Result^, Len, Key);
+    Sign(Result, Len, Key);
     ReallocMem(Result, Len);
   except
     FreeMem(Result);
@@ -441,18 +842,22 @@ begin
   if not CryptDuplicateKey(OldKey.Handle, nil, 0, fHandle) then
     RaiseApiError('Create', 'CryptDuplicateKey');
 end;
-constructor TJwCryptKey.GetUserKey(CSP: TJwCryptProvider; Key: TJwKeyPairType);
+
+constructor TJwCryptKey.GetUserKey(CSP: TJwCryptProvider;
+  Key: TJwKeyPairType);
 begin
   inherited Create;
   if not CryptGetUserKey(CSP.CSPHandle, TJwEnumMap.ConvertKeyPairType(Key), fHandle) then
     RaiseApiError('GetUserKey', 'CryptGetUserKey');
 end;
 
-constructor TJwCryptKey.Import(CSP: TJwCryptProvider; const Data; DataLen: Cardinal; PubKey: TJwCryptKey; Flags: TJwKeyFlagSet);
+constructor TJwCryptKey.Import(CSP: TJwCryptProvider; Data: Pointer;
+  DataLen: Cardinal; PubKey: TJwCryptKey; Flags: TJwKeyFlagSet);
+var Key: Cardinal;
 begin
   inherited Create;
   if not (Flags<=ImportKeyFlags) then
-    raise EJwsclKeyException.CreateFmtEx(
+    raise EJwsclInvalidFlagsException.CreateFmtEx(
       RsInvalidFlags,
       'Import',
       ClassName,
@@ -460,8 +865,47 @@ begin
       0,
       false,
       []);
-  if not CryptImportKey(CSP.CSPHandle, @Data, DataLen, PubKey.Handle, TJwEnumMap.ConvertKeyFlagSet(Flags), fHandle) then
+  if Assigned(PubKey) then
+    Key := PubKey.Handle
+  else
+    Key := 0;
+  if not CryptImportKey(CSP.CSPHandle, Data, DataLen, Key, TJwEnumMap.ConvertKeyFlagSet(Flags), fHandle) then
     RaiseApiError('Import', 'CryptImportKey');
+end;
+
+constructor TJwCryptKey.Generate(CSP: TJwCryptProvider;
+  Alg: TJwEncryptionAlgorithm; Flags: TJwKeyFlagSet; Length: Word);
+begin
+  if not (Flags<=GenerateKeyFlags) then
+    raise EJwsclInvalidFlagsException.CreateFmtEx(
+      RsInvalidFlags,
+      'IGenerate',
+      ClassName,
+      RsUNCryptProvider,
+      0,
+      false,
+      []);
+
+ inherited Create;
+  if not CryptGenKey(CSP.CSPHandle, TJwEnumMap.ConvertEncryptionAlgorithm(Alg), TJwEnumMap.ConvertKeyFlagSet(Flags) or (Length shl 16), fHandle) then
+    RaiseApiError('Generate', 'CryptGenKey');
+end;
+
+constructor TJwCryptKey.Derive(CSP: TJwCryptProvider; Alg: TJwEncryptionAlgorithm;
+  Flags: TJwKeyFlagSet; Length: Word; BaseData: TJwHash);
+begin
+  if not (Flags<=DeriveKeyFlags) then
+    raise EJwsclInvalidFlagsException.CreateFmtEx(
+      RsInvalidFlags,
+      'Derive',
+      ClassName,
+      RsUNCryptProvider,
+      0,
+      false,
+      []);
+  inherited Create;
+  if not CryptDeriveKey(CSP.CSPHandle, TJwEnumMap.ConvertEncryptionAlgorithm(Alg), BaseData.HashHandle, TJwEnumMap.ConvertKeyFlagSet(Flags) or(Length shl 16), fHandle) then
+    RaiseApiError('Derive', 'CryptDeriveKey');
 end;
 
 destructor TJwCryptKey.Destroy;
@@ -469,6 +913,48 @@ begin
   if not CryptDestroyKey(fHandle) then
     RaiseApiError('Destroy', 'CryptDestroyKey');
   inherited Destroy;
+end;
+
+function TJwCryptKey.GetExportKeyLength(ExpKey: TJwCryptKey;
+  BlobType: TJwKeyExportKind; Flags: TJwKeyFlagSet): Cardinal;
+begin
+  Result := 0;
+  ExportKey(ExpKey, BlobType, Flags, nil, Result);
+end;
+
+procedure TJwCryptKey.ExportKey(ExpKey: TJwCryptKey; BlobType: TJwKeyExportKind;
+  Flags: TJwKeyFlagSet; Blob: Pointer; var BlobLen: Cardinal);
+var Key: Cardinal;
+begin
+  if not (Flags <= ExportKeyFlags) then
+    raise EJwsclInvalidFlagsException.CreateFmtEx(
+      RsInvalidFlags,
+      'ExportKey',
+      ClassName,
+      RsUNCryptProvider,
+      0,
+      false,
+      []);
+  if Assigned(ExpKey) then
+    Key := ExpKey.Handle
+  else
+    Key := 0;
+  if not CryptExportKey(fHandle, Key, TJwEnumMap.ConvertKeyExportKind(BlobType), TJwEnumMap.ConvertKeyFlagSet(Flags), @Blob, BlobLen) then
+    RaiseApiError('GetExportKeyLength', 'CryptExportKey');
+end;
+
+function TJwCryptKey.ExportKey(ExpKey: TJwCryptKey; BlobType: TJwKeyExportKind;
+  Flags: TJwKeyFlagSet; out BlobLen: Cardinal): Pointer;
+begin
+  BlobLen := GetExportKeyLength(ExpKey, BlobType, Flags);
+  GetMem(Result, BlobLen);
+  try
+    ExportKey(ExpKey, BlobType, Flags, Result, BlobLen);
+    ReallocMem(Result, BlobLen);
+  except
+    FreeMem(Result);
+    raise;
+  end;
 end;
 
 class procedure TJwCryptKey.RaiseApiError(const Procname: string; const WinCallname: string);
@@ -482,6 +968,68 @@ begin
     True,
     WinCallName,
     [ProcName]);
+end;
+
+class procedure TJwCryptKey.FreeBuffer(Buffer: Pointer);
+begin
+  FreeMem(Buffer);
+end;
+
+procedure TJwCryptKey.Encrypt(const Hash: TJwHash; FinalBlock: Boolean;
+  Flags: TJwKeyFlagSet; Data: Pointer; var DataLen: Cardinal; BufSize: Cardinal);
+var HashHandle: Cardinal;
+begin
+  if not (Flags <= EncryptKeyFlags) then
+    raise EJwsclInvalidFlagsException.CreateFmtEx(
+      RsInvalidFlags,
+      'Encrypt',
+      ClassName,
+      RsUNCryptProvider,
+      0,
+      false,
+      []);
+  if Assigned(Hash) then
+    HashHandle := Hash.HashHandle
+  else
+    HashHandle := 0;
+  if not CryptEncrypt(fHandle, HashHandle, FinalBlock, TJwEnumMap.ConvertKeyFlagSet(Flags),
+           Data, DataLen, BufSize) then
+    RaiseApiError('Encrypt', 'CryptEncrypt');
+end;
+
+procedure TJwCryptKey.Decrypt(const Hash: TJwHash; FinalBlock: Boolean;
+  Flags: TJwKeyFlagSet; Data: Pointer; var DataLen: Cardinal);
+var HashHandle: Cardinal;
+begin
+  if not (Flags <= DecryptKeyFlags) then
+    raise EJwsclInvalidFlagsException.CreateFmtEx(
+      RsInvalidFlags,
+      'Decrypt',
+      ClassName,
+      RsUNCryptProvider,
+      0,
+      false,
+      []);
+  if Assigned(Hash) then
+    HashHandle := Hash.HashHandle
+  else
+    HashHandle := 0;
+  if not CryptDecrypt(fHandle, HashHandle, FinalBlock,
+           TJwEnumMap.ConvertKeyFlagSet(Flags), Data, DataLen) then
+    RaiseApiError('Decrypt', 'CryptDecrypt');
+end;
+
+function TJwCryptKey.GetKeyParam(dwParam: Cardinal; pbData: PByte; var pdwDataLen: Cardinal): BOOL;
+begin
+  Result := CryptGetKeyParam(fHandle, dwParam, pbData, pdwDataLen, 0);
+end;
+
+function TJwCryptKey.GetDWordKeyParam(const Param: integer): Cardinal;
+var Size: Cardinal;
+begin
+  Size := 4;
+  if not GetKeyParam(Param, @Result, Size) then
+    RaiseApiError('GetDWordKeyParam', 'CryptGetKeyParam');
 end;
 
 {$ENDIF SL_INTERFACE_SECTION}

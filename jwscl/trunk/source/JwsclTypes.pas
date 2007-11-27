@@ -2,7 +2,7 @@
 @abstract(Contains types that are used by the units of)
 @author(Christian Wimmer)
 @created(03/23/2007)
-@lastmod(11/19/2007)
+@lastmod(11/27/2007)
 
 Project JEDI Windows Security Code Library (JWSCL)
 
@@ -756,6 +756,9 @@ type
   //@Name defines the type of a cryptographic service provider.
   //See http://msdn2.microsoft.com/en-us/library/aa380244.aspx for more information.
   TJwCSPType = (
+     //This value is returned by conversion functions only.
+     //It should be used solely for error checking.
+     ctUnknown,
      ctRsaFull,
      {exclude ctRsaAes, PROV_RSA_AES is not in JwaWinCrypt.pas yet}
      {}
@@ -784,6 +787,9 @@ type
 
   //Hash algorithms supported in Windows XP
   TJwHashAlgorithm = (
+     //This value is returned by conversion functions only.
+     //It should be used solely for error checking.
+     haUnknown,
      haMD2,
      haMD4,
      haMD5,
@@ -794,6 +800,29 @@ type
 const KeylessHashAlgorithms = [haMD2..haSHA];
 
 type
+//General-purpose encryption algorithms. See
+//http://msdn2.microsoft.com/en-us/library/ms937014.aspx for more
+//information
+  TJwEncryptionAlgorithm = (
+     eaUnknown,
+     eaRsaSign,
+     eaRsaKeyX,
+     eaDes,
+     ea3Des,
+     ea3Des112,
+     eaRc2,
+     eaRc4,
+     eaRc5,
+     eaSeal,
+     eaDhSf,
+     eaDhEphem,
+     eaAgreedKeyAny,
+     eaKeaKeyX,
+     eaSkipjack,
+     eaTek,
+     eaCylinkMek
+     );
+
 //The flags needed for calls to TJwCryptKey.Import,
 //.ExportKey, .Generate and .Derive
   TJwKeyFlag = (kfCreateSalt,
@@ -819,13 +848,71 @@ const
   ImportKeyFlags   = [kfExportable..kfOaep];
   //Flags allowed for a call to TJwCryptKey.ExportKey
   ExportKeyFlags   = [kfOaep, kfDestroyKey, kfSSL2Fallback];
-
+  //Flags allowed for a call to TJwCryptKey.Encrypt
+  EncryptKeyFlags  = [kfOaep];
+  //Flags allowed for a call to TJwCryptKey.Decrypt
+  DecryptKeyFlags  = [kfOaep];
 type
   {Each key container usually contains two key pairs.
    Functions require a parameter of type @name if the
    programmer should decide which of the key pairs should be used.}
   TJwKeyPairType = (kptKeyExchange,
                     kptSignature);
+
+    {An array of @Name is returned by TJwCryptProvider.EnumProviders
+   and TJwCryptProvider.EnumProviderTypes. The meaning of Name
+   depends on the function.}
+  TJwEnumProviderEntry = record
+  //The CSP type
+    ProviderType: TJwCSPType;
+  //Either the name of the provider or the friendly name of the type
+    Name:         TJwString;
+  end;
+  TJwEnumProviderArray = array of TJwEnumProviderEntry;
+
+  {An array of @Name is returned by TJwCryptProvider.EnumAlgorithms.
+   It is mostly the same as PROV_ENUMALGS_EX (see
+   http://msdn2.microsoft.com/en-us/library/aa387441.aspx), but
+   uses delphi strings.}
+  TJwEnumAlgorithmsEntry = record
+  //The algorithm as a Windows ALG_ID.
+  //This value can be useful if AlgType is ctUnknown
+    AlgId:         ALG_ID;
+  //The default key length for the algorithm
+    DefaultKeyLen: Cardinal;
+  //The minimal key length for the algorithm
+    MinKeyLen:     Cardinal;
+  //The maximal key length for the algorithm
+    MaxKeyLen:     Cardinal;
+  //The number of protocols supported
+    ProtocolNum:   Cardinal;
+  //The short name of the algorithm
+    ShortName:     TJwString;
+  //The long name of the algorithm
+    LongName:      TJwString;
+  //Is this a hash algorithm?
+    case HashAlgorithm: Boolean of
+     True:  (HashAlgType: TJwHashAlgorithm);
+     False: (EncrAlgType: TJwEncryptionAlgorithm)
+  end;
+  TJwEnumAlgorithms = array of TJwEnumAlgorithmsEntry;
+
+  //@Name specifies how a key should be exported. See
+  //http://msdn2.microsoft.com/en-us/library/ms938025.aspx
+  //for more information
+  TJwKeyExportKind = (
+  //Only for Schannel CSPs
+    kekOpaque,
+  //Export the whole key pair
+    kekPrivate,
+  //Export only the public key - no encryption necessary
+    kekPublic,
+  //Used for symmetric session keys, encrypted with a public key
+    kekSimple,
+  //Use no encryption
+    kekPlainText,
+  //Ued to export session keys encrypted with another session key
+    kekSymmetricWrap);
 
 
   TJwACLProtectionState = (apNone, apProtected, apUnprotected);

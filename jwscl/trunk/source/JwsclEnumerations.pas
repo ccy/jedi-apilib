@@ -1,7 +1,7 @@
 {@abstract(This unit provides conversion functions from windows api constants to delphi enumeration types and vice versa.)
 @author(Christian Wimmer)
 @created(03/23/2007)
-@lastmod(11/19/2007)
+@lastmod(11/27/2007)
 
 Project JEDI Windows Security Code Library (JWSCL)
 
@@ -139,6 +139,17 @@ type
       const FlagSet: TJwKeyFlagSet): Cardinal; overload;
     class function ConvertKeyFlagSet(
       const FlagBits: Cardinal): TJwKeyFlagSet; overload;
+
+    class function ConvertKeyExportKind(
+      const KeyExportKind: TJwKeyExportKind): Cardinal; overload;
+    class function ConvertKeyExportKind(
+      const KeyExportKind: Cardinal): TJwKeyExportKind; overload;
+
+    class function ConvertEncryptionAlgorithm(
+      const Algorithm: TJwEncryptionAlgorithm): Cardinal; overload;
+    class function ConvertEncryptionAlgorithm(
+      const AlgId: Cardinal): TJwEncryptionAlgorithm; overload;
+
 
     class function ConvertMandatoryPolicyFlags(
       const FlagSet: TJwMandatoryPolicyFlagSet): Cardinal; overload;
@@ -287,24 +298,28 @@ const
   );
 
   HashAlgorithmValues: array[TJwHashAlgorithm] of Cardinal = (
-    CALG_MD2
-   ,CALG_MD4
-   ,CALG_MD5
-   ,CALG_SHA
-   ,CALG_MAC
-   ,CALG_HMAC
+    0  //haUnknown
+   ,CALG_MD2 //haMD2
+   ,CALG_MD4 //haMD4
+   ,CALG_MD5 //haMD5
+   ,CALG_SHA //haSHA
+   ,CALG_MAC //haMAC
+   ,CALG_HMAC //haHMAC
    );
 
+
   CSPTypeValues: array[TJwCSPType] of Cardinal = (
-    PROV_RSA_FULL
-   ,PROV_RSA_SIG
-   ,PROV_RSA_SCHANNEL
-   ,PROV_DSS
-   ,PROV_DSS_DH
-   ,PROV_DH_SCHANNEL
-   ,PROV_FORTEZZA
-   ,PROV_MS_EXCHANGE
-   ,PROV_SSL
+    0 //ctUnknown
+   ,PROV_RSA_FULL //ctRsaFull
+   //,PROV_RSA_AES //ctRsaAes
+   ,PROV_RSA_SIG  //ctRsaSig
+   ,PROV_RSA_SCHANNEL //ctRsaSchannel
+   ,PROV_DSS  //ctDss
+   ,PROV_DSS_DH   //ctDssDh
+   ,PROV_DH_SCHANNEL   //ctDhSchannel
+   ,PROV_FORTEZZA   //ctFortezza
+   ,PROV_MS_EXCHANGE //ctMsExchange
+   ,PROV_SSL   //ctSsl
    );
 
   CSPCreationFlagValues: array[TJwCSPCreationFlag] of Cardinal = (
@@ -331,6 +346,35 @@ const
    ,CRYPT_UPDATE_KEY
    ,CRYPT_DESTROYKEY
    ,CRYPT_SSL2_FALLBACK
+   );
+
+  KeyExportKindValues: array[TJwKeyExportKind] of Cardinal = (
+    OPAQUEKEYBLOB //kekOpaque
+   ,PRIVATEKEYBLOB  //kekPrivate
+   ,PUBLICKEYBLOB   //kekPublic
+   ,SIMPLEBLOB      //kekSimple
+   ,PLAINTEXTKEYBLOB //kekPlaintext
+   ,SYMMETRICWRAPKEYBLOB //kekSymmetricWrap
+   );
+
+  EncryptionAlgorithmValues: array[TJwEncryptionAlgorithm] of Cardinal =(
+    0 //eaUnknown,
+   ,CALG_RSA_SIGN //eaRsaSign
+   ,CALG_RSA_KEYX //eaRsaKeyX
+   ,CALG_DES //eaDes
+   ,CALG_3DES //ea3Des
+   ,CALG_3DES_112 //ea3Des112
+   ,CALG_RC2 //eaRc2
+   ,CALG_RC4 //eaRc4
+   ,CALG_RC5 //eaRc5
+   ,CALG_SEAL //eaSeal
+   ,CALG_DH_SF //eaDhSf
+   ,CALG_DH_EPHEM //eaDhEphem
+   ,CALG_AGREEDKEY_ANY //eaAgreedKeyAny
+   ,CALG_KEA_KEYX //eaKeaKeyX
+   ,CALG_SKIPJACK //eaSkipjack
+   ,CALG_TEK //eaTek
+   ,CALG_CYLINK_MEK //eaCylinkMek
    );
 
   MandatoryPolicyFlagValues : array[TJwMandatoryPolicy] of Cardinal = (
@@ -589,6 +633,80 @@ begin
   end;
 end;
 
+
+
+
+class function TJwEnumMap.ConvertAttributes(
+  const Attributes: Cardinal): TJwSidAttributeSet;
+begin
+  Result := [];
+  if Attributes and SE_GROUP_MANDATORY = SE_GROUP_MANDATORY then
+    Include(Result, sidaGroupMandatory);
+
+  if Attributes and SE_GROUP_ENABLED_BY_DEFAULT =
+    SE_GROUP_ENABLED_BY_DEFAULT then
+    Include(Result, sidaGroupEnabledByDefault);
+
+  if Attributes and SE_GROUP_ENABLED = SE_GROUP_ENABLED then
+    Include(Result, sidaGroupEnabled);
+
+  if Attributes and SE_GROUP_OWNER = SE_GROUP_OWNER then
+    Include(Result, sidaGroupOwner);
+
+  if Attributes and SE_GROUP_USE_FOR_DENY_ONLY =
+    SE_GROUP_USE_FOR_DENY_ONLY then
+    Include(Result, sidaGroupUseForDenyOnly);
+
+  if Attributes and SE_GROUP_LOGON_ID = SE_GROUP_LOGON_ID then
+    Include(Result, sidaGroupLogonId);
+
+  if Attributes and SE_GROUP_RESOURCE = SE_GROUP_RESOURCE then
+    Include(Result, sidaGroupResource);
+
+
+  if Attributes and SE_GROUP_INTEGRITY = SE_GROUP_INTEGRITY then
+    Include(Result, sidaGroupIntegrity);
+
+  if Attributes and SE_GROUP_INTEGRITY_ENABLED = SE_GROUP_INTEGRITY_ENABLED then
+    Include(Result, sidaGroupIntegrityEnabled);
+
+end;
+
+class function TJwEnumMap.ConvertAttributes(
+  const Attributes: TJwSidAttributeSet): Cardinal;
+begin
+  Result := 0;
+  if sidaGroupMandatory in Attributes then
+    Result := Result or SE_GROUP_MANDATORY;
+
+  if sidaGroupEnabledByDefault in Attributes then
+    Result := Result or SE_GROUP_ENABLED_BY_DEFAULT;
+
+  if sidaGroupEnabled in Attributes then
+    Result := Result or SE_GROUP_ENABLED;
+
+  if sidaGroupOwner in Attributes then
+    Result := Result or SE_GROUP_OWNER;
+
+  if sidaGroupUseForDenyOnly in Attributes then
+    Result := Result or SE_GROUP_USE_FOR_DENY_ONLY;
+
+  if sidaGroupLogonId in Attributes then
+    Result := Result or SE_GROUP_LOGON_ID;
+
+  if sidaGroupResource in Attributes then
+    Result := Result or SE_GROUP_RESOURCE;
+
+
+  if sidaGroupIntegrity in Attributes then
+    Result := Result or SE_GROUP_INTEGRITY;
+
+  if sidaGroupIntegrityEnabled in Attributes then
+    Result := Result or SE_GROUP_INTEGRITY_ENABLED;
+
+end;
+
+
 class function TJwEnumMap.ConvertHashAlgorithm(
   const Alg: TJwHashAlgorithm): DWORD;
 begin
@@ -599,6 +717,7 @@ class function TJwEnumMap.ConvertHashAlgorithm(
   const Alg: DWORD): TJwHashAlgorithm;
 var i: TJwHashAlgorithm;
 begin
+  Result := haUnknown;
   for i := Low(TJwHashAlgorithm) to High(TJwHashAlgorithm) do
     if HashAlgorithmValues[i] = Alg then
     begin
@@ -617,6 +736,7 @@ class function TJwEnumMap.ConvertCSPType(
   const CSPType: DWORD): TJwCSPType;
 var i: TJwCSPType;
 begin
+  Result := ctUnknown;
   for i := Low(TJwCSPType) to High(TJwCSPType) do
     if CSPTypeValues[i] = CSPType then
     begin
@@ -691,81 +811,50 @@ begin
   end;
 end;
 
+
+class function TJwEnumMap.ConvertKeyExportKind(
+  const KeyExportKind: TJwKeyExportKind): Cardinal;
+begin
+  Result := KeyExportKindValues[KeyExportKind];
+end;
+
+class function TJwEnumMap.ConvertKeyExportKind(const KeyExportKind: Cardinal): TJwKeyExportKind;
+var I: TJwKeyExportKind;
+begin
+  Result := kekPlaintext;
+  for I := Low(TJwKeyExportKind) to High(TJwKeyExportKind) do
+  begin
+    if KeyExportKindValues[I] = KeyExportKind then
+    begin
+      Result := I;
+      break;
+    end;
+  end;
+end;
+
+class function TJwEnumMap.ConvertEncryptionAlgorithm(
+  const Algorithm: TJwEncryptionAlgorithm): Cardinal;
+begin
+  Result := EncryptionAlgorithmValues[Algorithm];
+end;
+
+class function TJwEnumMap.ConvertEncryptionAlgorithm(
+  const AlgId: Cardinal): TJwEncryptionAlgorithm;
+var i: TJwEncryptionAlgorithm;
+begin
+  Result := eaUnknown;
+  for i := Low(TJwEncryptionAlgorithm) to High(TJwEncryptionAlgorithm) do
+    if EncryptionAlgorithmValues[i] = AlgId then
+    begin
+      Result := i;
+      Break;
+    end;
+end;
+
+
 {$ENDIF SL_INTERFACE_SECTION}
 
 {$IFNDEF SL_OMIT_SECTIONS}
-
-
-
-class function TJwEnumMap.ConvertAttributes(
-  const Attributes: Cardinal): TJwSidAttributeSet;
-begin
-  Result := [];
-  if Attributes and SE_GROUP_MANDATORY = SE_GROUP_MANDATORY then
-    Include(Result, sidaGroupMandatory);
-
-  if Attributes and SE_GROUP_ENABLED_BY_DEFAULT =
-    SE_GROUP_ENABLED_BY_DEFAULT then
-    Include(Result, sidaGroupEnabledByDefault);
-
-  if Attributes and SE_GROUP_ENABLED = SE_GROUP_ENABLED then
-    Include(Result, sidaGroupEnabled);
-
-  if Attributes and SE_GROUP_OWNER = SE_GROUP_OWNER then
-    Include(Result, sidaGroupOwner);
-
-  if Attributes and SE_GROUP_USE_FOR_DENY_ONLY =
-    SE_GROUP_USE_FOR_DENY_ONLY then
-    Include(Result, sidaGroupUseForDenyOnly);
-
-  if Attributes and SE_GROUP_LOGON_ID = SE_GROUP_LOGON_ID then
-    Include(Result, sidaGroupLogonId);
-
-  if Attributes and SE_GROUP_RESOURCE = SE_GROUP_RESOURCE then
-    Include(Result, sidaGroupResource);
-
-
-  if Attributes and SE_GROUP_INTEGRITY = SE_GROUP_INTEGRITY then
-    Include(Result, sidaGroupIntegrity);
-
-  if Attributes and SE_GROUP_INTEGRITY_ENABLED = SE_GROUP_INTEGRITY_ENABLED then
-    Include(Result, sidaGroupIntegrityEnabled);
-
-end;
-
-class function TJwEnumMap.ConvertAttributes(
-  const Attributes: TJwSidAttributeSet): Cardinal;
-begin
-  Result := 0;
-  if sidaGroupMandatory in Attributes then
-    Result := Result or SE_GROUP_MANDATORY;
-
-  if sidaGroupEnabledByDefault in Attributes then
-    Result := Result or SE_GROUP_ENABLED_BY_DEFAULT;
-
-  if sidaGroupEnabled in Attributes then
-    Result := Result or SE_GROUP_ENABLED;
-
-  if sidaGroupOwner in Attributes then
-    Result := Result or SE_GROUP_OWNER;
-
-  if sidaGroupUseForDenyOnly in Attributes then
-    Result := Result or SE_GROUP_USE_FOR_DENY_ONLY;
-
-  if sidaGroupLogonId in Attributes then
-    Result := Result or SE_GROUP_LOGON_ID;
-
-  if sidaGroupResource in Attributes then
-    Result := Result or SE_GROUP_RESOURCE;
-
-
-  if sidaGroupIntegrity in Attributes then
-    Result := Result or SE_GROUP_INTEGRITY;
-
-  if sidaGroupIntegrityEnabled in Attributes then
-    Result := Result or SE_GROUP_INTEGRITY_ENABLED;
-
-end;
 
 initialization
 {$ENDIF SL_OMIT_SECTIONS}
