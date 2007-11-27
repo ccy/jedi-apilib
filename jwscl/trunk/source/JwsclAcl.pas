@@ -97,6 +97,8 @@ type
     {@Name destroys the list and all it items.}
     destructor Destroy; override;
 
+    {@Name returns the ACL content in a new string. Additionally
+     the access rights are mapped into string using a defined mapping.}
     function GetTextMap(const Mapping: TJwSecurityGenericMappingClass = nil):
       TJwString; virtual;
 
@@ -105,6 +107,14 @@ type
      The list order in the new ACL will be the same like the list in @link(Items).
 
      @raises(EJwsclNotEnoughMemory will be raised if the new memory block for ACL could not be allocated)
+     @raises(EJwsclUnsupportedACE will be raised if a given ACE in the list is not supported by this function.
+        @unorderedlist(
+         @item(TJwDiscretionaryAccessControlEntryAllow added by AddAccessAllowedAceEx)
+         @item(TJwDiscretionaryAccessControlEntryDeny added by AddAccessDeniedAceEx)
+         @item(TJwAuditAccessControlEntry added by AddAuditAccessAce)
+         @item(TJwSystemMandatoryAccessControlEntry added by AddMandatoryAce)
+         )
+     @raises(EJwsclFailedAddACE will be raised if a AddXXX winapi call for a given ACE in the list failed.)
     }
     function Create_PACL: PACL;
 
@@ -870,6 +880,17 @@ type
     {@Name returns the mandatory level type.}
     function GetMandatoryLevelType : TMandatoryLevel; virtual;
 
+    {@Name returns the policy of the mandatory label.
+     This policy defines how access is defined to lower or higher objects.
+     This value is an interpreted value from property AccessMask.}
+    function GetMandatoryPolicy : TJwMandatoryPolicyFlagSet; virtual;
+
+    {@Name sets the mandatory policy.
+     This function simply changes the property AccessMask.
+    }
+    procedure SetMandatoryPolicy(const Level : TJwMandatoryPolicyFlagSet); virtual;
+
+
     {@Name compare the mandatory ACE with another one.
 
      @param(MandatoryLabel defines a label to be compared)
@@ -884,6 +905,11 @@ type
        MandatoryLabel is nil)
      }
     function Compare(const MandatoryLabel : TJwSystemMandatoryAccessControlEntry) : Integer;
+
+    {@Name sets or gets the mandatory policy.
+     See http://msdn2.microsoft.com/en-us/library/aa965848.aspx}
+    property MandatoryPolicy : TJwMandatoryPolicyFlagSet read GetMandatoryPolicy
+      write SetMandatoryPolicy;
   end;
 
 
@@ -1164,6 +1190,7 @@ var
   //[Hint] aPSID: PSID;
 
   aAudit:  TJwAuditAccessControlEntry;
+  Mandatory : TJwSystemMandatoryAccessControlEntry;
   bResult: boolean;
 
   iSize: Cardinal;
@@ -1231,13 +1258,33 @@ begin
           Items[i].AccessMask, Items[i].SID.SID,
           aAudit.AuditSuccess,
           aAudit.AuditFailure);
+      end
+      else
+      if Items[i] is TJwSystemMandatoryAccessControlEntry then
+      begin
+        Mandatory := (Items[i] as TJwSystemMandatoryAccessControlEntry);
+        bResult := AddMandatoryAce(
+              Result,//PACL pAcl,       
+              ACL_REVISION,//DWORD dwAceRevision,
+              TJwEnumMap.ConvertAceFlags(Items[i].Flags),//DWORD AceFlags,
+              Mandatory.AccessMask,//DWORD MandatoryPolicy,
+              Items[i].SID.SID,//PSID pLabelSid
+            );
+      end
+      else
+      begin //class is not supported
+        GlobalFree(HRESULT(Result));
+
+        raise EJwsclUnsupportedACE.CreateFmtEx(
+          RsACLClassUnknownAccessAce,
+          'Create_PACL', ClassName, RsUNAcl, 0, True, [Items[i].ClassName,i]);
       end;
 
       if not bResult then
       begin
         GlobalFree(HRESULT(Result));
-        //[Hint] Result := nil;
-        raise EJwsclSecurityException.CreateFmtEx(
+
+        raise EJwsclFailedAddACE.CreateFmtEx(
           RsACLClassAddXAccessAceFailed,
           'Create_PACL', ClassName, RsUNAcl, 0, True, [i]);
       end;
@@ -1769,6 +1816,7 @@ begin
     *)
     fFlags := AccessEntry.Flags;
     fAccessMask := AccessEntry.AccessMask;
+    fHeader := AccessEntry.Header;
   end;
 end;
 
@@ -2447,7 +2495,7 @@ end;
 constructor TJwSystemMandatoryAccessControlEntry.Create(
   const MandatoryLabel: TJwSystemMandatoryAccessControlEntry);
 begin
-  inherited Create(PAccessAllowedAce(MandatoryLabel));
+  inherited Create(TJwSecurityAccessControlEntry(MandatoryLabel));
 end;
 
 constructor TJwSystemMandatoryAccessControlEntry.Create(
@@ -2486,6 +2534,18 @@ begin
   result := Integer(Self.GetMandatoryLevelType) -
               Integer(MandatoryLabel.GetMandatoryLevelType);
 end;
+
+function TJwSystemMandatoryAccessControlEntry.GetMandatoryPolicy : TJwMandatoryPolicyFlagSet;
+begin
+  result := TJwEnumMap.ConvertMandatoryPolicyFlags(AccessMask);
+end;
+
+procedure TJwSystemMandatoryAccessControlEntry.
+  SetMandatoryPolicy(const Level : TJwMandatoryPolicyFlagSet);
+begin
+  AccessMask := TJwEnumMap.ConvertMandatoryPolicyFlags(Level);
+end;
+
 
 function TJwSystemMandatoryAccessControlEntry.GetMandatoryLevelType: TMandatoryLevel;
 begin

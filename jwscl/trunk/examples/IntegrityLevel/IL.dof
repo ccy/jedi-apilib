@@ -100,7 +100,7 @@ Conditionals=
 DebugSourceDirs=
 UsePackages=0
 [Parameters]
-RunParams=e:\programme
+RunParams=C:\
 HostApplication=
 Launcher=
 UseLauncher=0
@@ -108,6 +108,7 @@ DebugCWD=
 [Language]
 ActiveLang=
 ProjectLang=
+RootDir=
 [Version Info]
 IncludeVerInfo=0
 AutoIncBuild=0

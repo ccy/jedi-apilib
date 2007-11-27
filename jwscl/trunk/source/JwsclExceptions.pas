@@ -243,6 +243,8 @@ type
 
   EJwsclOpenWindowStationException = class(EJwsclWindowStationException);
 
+  EJwsclUnsupportedACE = class(EJwsclSecurityException);
+  EJwsclFailedAddACE = class(EJwsclSecurityException);
 
   EJwsclSecurityExceptionClass = class of EJwsclSecurityException;
 

@@ -68,6 +68,7 @@ const
   RsACLClassNilSid        = 'The SID of ACE #%0:d must not be nil! Did you use a SID from XXXXKnownSid.pas and did not call JwInitWellKnownSIDs ?';
   RsACLClassNewAclNotEnoughMemory = 'Not enough memory to allocate memory for a new acl.';
   RsACLClassAddXAccessAceFailed = 'Call to AddXXXXXAccessAce failed in Item Index: %0:d';
+  RsACLClassUnknownAccessAce = 'An unknown and unsupported item class %0:s was found for item index: %0:d';
   RsACLClassAceAlreadyInList = 'AccessControlEntry already in a list';
   RsACLClassInvalidAceInDacl = 'An discretionary access control list can onl' +
     'y list discretionary access control entries. (found %s)';

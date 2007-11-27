@@ -826,6 +826,15 @@ type
    programmer should decide which of the key pairs should be used.}
   TJwKeyPairType = (kptKeyExchange,
                     kptSignature);
+
+
+  TJwACLProtectionState = (apNone, apProtected, apUnprotected);
+
+  TJwMandatoryPolicy = (mpNoWriteUp, mpNoReadUp, mpNoExecuteUp);
+  TJwMandatoryPolicyFlagSet = set of TJwMandatoryPolicy;
+
+
+
 {$ENDIF SL_IMPLEMENTATION_SECTION}
 
 {$IFNDEF SL_OMIT_SECTIONS}

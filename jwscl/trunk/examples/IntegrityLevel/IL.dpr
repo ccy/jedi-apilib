@@ -17,8 +17,9 @@ uses
 var Path : String;
     IsDir : Boolean;
     SD : TJwSecurityDescriptor;
-
     H : HANDLE;
+    Mand : TJwSystemMandatoryAccessControlEntry;
+    SO : TJwSecureFileObject;
 begin
   Path := ParamStr(1);
   if not FileExists(Path) and not DirectoryExists(Path) then
@@ -61,10 +62,33 @@ begin
   except
     On E : Exception do
       Writeln(E.Message);
-
   end;
-  
   CloseHandle(H);
+
+  writeln;
+  writeln('Another typ of retrieving mandatory label:');
+  SO := TJwSecureFileObject.Create(Path);
+  try
+    Mand := SO.GetMandatoryLabel;
+    if Assigned(Mand) then
+      Write(Mand.SID.GetText)
+    else
+      Write('No mandatory label found.');
+    write(' ');
+    if mpNoWriteUp in Mand.GetMandatoryPolicy then
+      write('[NW]');
+    if mpNoReadUp in Mand.GetMandatoryPolicy then
+      write('[NR]');
+    if mpNoExecuteUp in Mand.GetMandatoryPolicy then
+      write('[NX]');
+    writeln;
+    Mand.Free;
+  finally
+    SO.Free;
+  end;
+
+
+
 
   Writeln;
   writeln('[Hit return]');

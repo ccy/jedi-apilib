@@ -139,6 +139,12 @@ type
       const FlagSet: TJwKeyFlagSet): Cardinal; overload;
     class function ConvertKeyFlagSet(
       const FlagBits: Cardinal): TJwKeyFlagSet; overload;
+
+    class function ConvertMandatoryPolicyFlags(
+      const FlagSet: TJwMandatoryPolicyFlagSet): Cardinal; overload;
+    class function ConvertMandatoryPolicyFlags(
+      const FlagBits: Cardinal): TJwMandatoryPolicyFlagSet; overload;
+
   end;
 
 
@@ -159,175 +165,205 @@ I use comma in front of the enumerations because pasdoc can recognize
 comments behind of declaration
 }
 
-const InheritFlagsValues : array[TJwInheritFlag] of Cardinal = (
-        SEF_DACL_AUTO_INHERIT //ifDaclAutoInherit
-        ,SEF_SACL_AUTO_INHERIT //ifSaclAutoInherit
-        ,SEF_DEFAULT_DESCRIPTOR_FOR_OBJECT //ifDefaultDescriptor
-        ,SEF_AVOID_PRIVILEGE_CHECK //ifAvoidPrivilegeCheck
-        ,SEF_AVOID_OWNER_CHECK //ifAvoidOwnerCheck
-        ,SEF_DEFAULT_OWNER_FROM_PARENT //ifDefaultOwnerFromPArent
-        ,SEF_DEFAULT_GROUP_FROM_PARENT //ifDefaultGroupFromParent
-        ,$100//SEF_MACL_NO_WRITE_UP //ifMaclNoWriteUp
-        ,$200//SEF_MACL_NO_READ_UP //ifMaclNoReadUp
-        ,$400//SEF_MACL_NO_EXECUTE_UP //ifMaclNoExecuteUp
-        ,$1000//SEF_AVOID_OWNER_RESTRICTION //ifAvoidOwnerRestriction
-        );
+const
+   InheritFlagsValues : array[TJwInheritFlag] of Cardinal = (
+    SEF_DACL_AUTO_INHERIT //ifDaclAutoInherit
+    ,SEF_SACL_AUTO_INHERIT //ifSaclAutoInherit
+    ,SEF_DEFAULT_DESCRIPTOR_FOR_OBJECT //ifDefaultDescriptor
+    ,SEF_AVOID_PRIVILEGE_CHECK //ifAvoidPrivilegeCheck
+    ,SEF_AVOID_OWNER_CHECK //ifAvoidOwnerCheck
+    ,SEF_DEFAULT_OWNER_FROM_PARENT //ifDefaultOwnerFromPArent
+    ,SEF_DEFAULT_GROUP_FROM_PARENT //ifDefaultGroupFromParent
+    ,$100//SEF_MACL_NO_WRITE_UP //ifMaclNoWriteUp
+    ,$200//SEF_MACL_NO_READ_UP //ifMaclNoReadUp
+    ,$400//SEF_MACL_NO_EXECUTE_UP //ifMaclNoExecuteUp
+    ,$1000//SEF_AVOID_OWNER_RESTRICTION //ifAvoidOwnerRestriction
+    );
 
-      SecurityInformationValues : array[TJwSecurityInformationFlag]
-        of Cardinal = (
-        OWNER_SECURITY_INFORMATION//siOwnerSecurityInformation
-        ,GROUP_SECURITY_INFORMATION//siGroupSecurityInformation
-        ,DACL_SECURITY_INFORMATION//siDaclSecurityInformation
-        ,SACL_SECURITY_INFORMATION//siSaclSecurityInformation
-        ,LABEL_SECURITY_INFORMATION//siLabelSecurityInformation
-        ,PROTECTED_DACL_SECURITY_INFORMATION//siProtectedDaclSecurityInformation
-        ,PROTECTED_SACL_SECURITY_INFORMATION//siProtectedSaclSecurityInformation
-        ,UNPROTECTED_DACL_SECURITY_INFORMATION//siUnprotectedDaclSecurityInformation
-        ,UNPROTECTED_SACL_SECURITY_INFORMATION//siUnprotectedSaclSecurityInformation
-        );
+  SecurityInformationValues : array[TJwSecurityInformationFlag]
+    of Cardinal = (
+    OWNER_SECURITY_INFORMATION//siOwnerSecurityInformation
+    ,GROUP_SECURITY_INFORMATION//siGroupSecurityInformation
+    ,DACL_SECURITY_INFORMATION//siDaclSecurityInformation
+    ,SACL_SECURITY_INFORMATION//siSaclSecurityInformation
+    ,LABEL_SECURITY_INFORMATION//siLabelSecurityInformation
+    ,PROTECTED_DACL_SECURITY_INFORMATION//siProtectedDaclSecurityInformation
+    ,PROTECTED_SACL_SECURITY_INFORMATION//siProtectedSaclSecurityInformation
+    ,UNPROTECTED_DACL_SECURITY_INFORMATION//siUnprotectedDaclSecurityInformation
+    ,UNPROTECTED_SACL_SECURITY_INFORMATION//siUnprotectedSaclSecurityInformation
+    );
 
-      SecurityDescriptorControlValues : array[TJwSecurityDescriptorControl]
-        of Cardinal = (
-        SE_OWNER_DEFAULTED//sdcOwnerDefaulted
-        ,SE_GROUP_DEFAULTED//sdcGroupDefaulted
-        ,SE_DACL_PRESENT//sdcDaclPresent
-        ,SE_DACL_DEFAULTED//sdcDaclDefaulted
-        ,SE_SACL_PRESENT//sdcSaclPresent
-        ,SE_SACL_DEFAULTED//sdcSaclDefaulted
-        ,SE_DACL_AUTO_INHERIT_REQ//sdcDaclAutoInheritReq
-        ,SE_SACL_AUTO_INHERIT_REQ//sdcSaclAutoInheritReq
-        ,SE_DACL_AUTO_INHERITED//sdcDaclAutoInherited
-        ,SE_SACL_AUTO_INHERITED//sdcSaclAutoInherited
-        ,SE_DACL_PROTECTED//sdcDaclProtected
-        ,SE_SACL_PROTECTED//sdcSaclProtected
-        ,SE_RM_CONTROL_VALID//sdcRmControlValid
-        ,SE_SELF_RELATIVE//sdcSelfRelative
-        );
+  SecurityDescriptorControlValues : array[TJwSecurityDescriptorControl]
+    of Cardinal = (
+    SE_OWNER_DEFAULTED//sdcOwnerDefaulted
+    ,SE_GROUP_DEFAULTED//sdcGroupDefaulted
+    ,SE_DACL_PRESENT//sdcDaclPresent
+    ,SE_DACL_DEFAULTED//sdcDaclDefaulted
+    ,SE_SACL_PRESENT//sdcSaclPresent
+    ,SE_SACL_DEFAULTED//sdcSaclDefaulted
+    ,SE_DACL_AUTO_INHERIT_REQ//sdcDaclAutoInheritReq
+    ,SE_SACL_AUTO_INHERIT_REQ//sdcSaclAutoInheritReq
+    ,SE_DACL_AUTO_INHERITED//sdcDaclAutoInherited
+    ,SE_SACL_AUTO_INHERITED//sdcSaclAutoInherited
+    ,SE_DACL_PROTECTED//sdcDaclProtected
+    ,SE_SACL_PROTECTED//sdcSaclProtected
+    ,SE_RM_CONTROL_VALID//sdcRmControlValid
+    ,SE_SELF_RELATIVE//sdcSelfRelative
+    );
 
-      SecurityDialogFlagValues : array[TJwSecurityDialogFlag]
-        of Cardinal = (
-        SI_EDIT_PERMS//sdfEditDacl
-        ,SI_EDIT_AUDITS//sdfEditSacl
-        ,SI_EDIT_OWNER//sdfEditOwner
-        ,SI_CONTAINER//sdfContainer
-        ,SI_READONLY//sdfReadOnly
-        ,SI_ADVANCED//sdfAdvanced
-        ,SI_RESET//sdfReset
-        ,SI_OWNER_READONLY//sdfOwnerReadOnly
-        ,SI_EDIT_PROPERTIES//sdfEditProperties
-        ,SI_OWNER_RECURSE//sdfOwnerRecurse
-        ,SI_NO_ACL_PROTECT//sdfNoAclProtect
-        ,SI_NO_TREE_APPLY//sdfNoTreeApply
-        ,SI_SERVER_IS_DC//sdfServerIsDc
-        ,SI_RESET_DACL_TREE//sdfResetDaclTree
-        ,SI_RESET_SACL_TREE//sdfResetSaclTree
-        ,SI_OBJECT_GUID//sdfObjectGuid
-        ,SI_EDIT_EFFECTIVE//sdfEditEffective
-        ,SI_RESET_DACL//sdfResetDacl
-        ,SI_RESET_SACL//sdfResetSacl
-        ,SI_RESET_OWNER//sdfResetOwner
-        ,SI_NO_ADDITIONAL_PERMISSION//sdfNoAdditionalPermission
-        ,SI_MAY_WRITE//sdfMayWrite
-        ,SI_PAGE_TITLE//sdfPageTitle
-      );
+  SecurityDialogFlagValues : array[TJwSecurityDialogFlag]
+    of Cardinal = (
+    SI_EDIT_PERMS//sdfEditDacl
+    ,SI_EDIT_AUDITS//sdfEditSacl
+    ,SI_EDIT_OWNER//sdfEditOwner
+    ,SI_CONTAINER//sdfContainer
+    ,SI_READONLY//sdfReadOnly
+    ,SI_ADVANCED//sdfAdvanced
+    ,SI_RESET//sdfReset
+    ,SI_OWNER_READONLY//sdfOwnerReadOnly
+    ,SI_EDIT_PROPERTIES//sdfEditProperties
+    ,SI_OWNER_RECURSE//sdfOwnerRecurse
+    ,SI_NO_ACL_PROTECT//sdfNoAclProtect
+    ,SI_NO_TREE_APPLY//sdfNoTreeApply
+    ,SI_SERVER_IS_DC//sdfServerIsDc
+    ,SI_RESET_DACL_TREE//sdfResetDaclTree
+    ,SI_RESET_SACL_TREE//sdfResetSaclTree
+    ,SI_OBJECT_GUID//sdfObjectGuid
+    ,SI_EDIT_EFFECTIVE//sdfEditEffective
+    ,SI_RESET_DACL//sdfResetDacl
+    ,SI_RESET_SACL//sdfResetSacl
+    ,SI_RESET_OWNER//sdfResetOwner
+    ,SI_NO_ADDITIONAL_PERMISSION//sdfNoAdditionalPermission
+    ,SI_MAY_WRITE//sdfMayWrite
+    ,SI_PAGE_TITLE//sdfPageTitle
+  );
 
-      AceFlagValues : Array[TJwAceFlag] of Cardinal = (
-        OBJECT_INHERIT_ACE//afObjectInheritAce
-        ,CONTAINER_INHERIT_ACE//afContainerInheritAce
-        ,NO_PROPAGATE_INHERIT_ACE//afNoPropagateInheritAce
-        ,INHERIT_ONLY_ACE//afInheritOnlyAce
-        ,INHERITED_ACE//afInheritedAce
-        ,VALID_INHERIT_FLAGS//afValidInheritFlags
-        ,SUCCESSFUL_ACCESS_ACE_FLAG//afSuccessfulAccessAceFlag
-        ,FAILED_ACCESS_ACE_FLAG//afFailedAccessAceFlag
-      );
+  AceFlagValues : Array[TJwAceFlag] of Cardinal = (
+    OBJECT_INHERIT_ACE//afObjectInheritAce
+    ,CONTAINER_INHERIT_ACE//afContainerInheritAce
+    ,NO_PROPAGATE_INHERIT_ACE//afNoPropagateInheritAce
+    ,INHERIT_ONLY_ACE//afInheritOnlyAce
+    ,INHERITED_ACE//afInheritedAce
+    ,VALID_INHERIT_FLAGS//afValidInheritFlags
+    ,SUCCESSFUL_ACCESS_ACE_FLAG//afSuccessfulAccessAceFlag
+    ,FAILED_ACCESS_ACE_FLAG//afFailedAccessAceFlag
+  );
 
-      //TJwCredentialFlag    = (
-      CredentialFlagValues : Array[TJwCredentialFlag] of Cardinal = (
-        CREDUI_FLAGS_ALWAYS_SHOW_UI//cfFlagsAlwaysShowUi
-        ,CREDUI_FLAGS_DO_NOT_PERSIST//cfFlagsDoNotPersist
-        ,CREDUI_FLAGS_EXCLUDE_CERTIFICATES//cfFlagsExcludeCertificates
-        ,CREDUI_FLAGS_EXPECT_CONFIRMATION//cfFlagsExpectConfirmation
-        ,CREDUI_FLAGS_GENERIC_CREDENTIALS//cfFlagsGenericCredentials
-        ,CREDUI_FLAGS_INCORRECT_PASSWORD//cfFlagsIncorrectPassword
-        ,CREDUI_FLAGS_PERSIST//cfFlagsPersist
-        ,CREDUI_FLAGS_REQUEST_ADMINISTRATOR//cfFlagsRequestAdministrator
-        ,CREDUI_FLAGS_REQUIRE_CERTIFICATE//cfFlagsRequireCertificate
-        ,CREDUI_FLAGS_REQUIRE_SMARTCARD//cfFlagsRequireSmartCard
-        ,CREDUI_FLAGS_SERVER_CREDENTIAL//cfFlagsServerCredential
-        ,CREDUI_FLAGS_SHOW_SAVE_CHECK_BOX//cfFlagsShowSaveCheckBox
-        ,CREDUI_FLAGS_USERNAME_TARGET_CREDENTIALS//cfFlagsUserNameTargetCredentials
-      );
+  //TJwCredentialFlag    = (
+  CredentialFlagValues : Array[TJwCredentialFlag] of Cardinal = (
+    CREDUI_FLAGS_ALWAYS_SHOW_UI//cfFlagsAlwaysShowUi
+    ,CREDUI_FLAGS_DO_NOT_PERSIST//cfFlagsDoNotPersist
+    ,CREDUI_FLAGS_EXCLUDE_CERTIFICATES//cfFlagsExcludeCertificates
+    ,CREDUI_FLAGS_EXPECT_CONFIRMATION//cfFlagsExpectConfirmation
+    ,CREDUI_FLAGS_GENERIC_CREDENTIALS//cfFlagsGenericCredentials
+    ,CREDUI_FLAGS_INCORRECT_PASSWORD//cfFlagsIncorrectPassword
+    ,CREDUI_FLAGS_PERSIST//cfFlagsPersist
+    ,CREDUI_FLAGS_REQUEST_ADMINISTRATOR//cfFlagsRequestAdministrator
+    ,CREDUI_FLAGS_REQUIRE_CERTIFICATE//cfFlagsRequireCertificate
+    ,CREDUI_FLAGS_REQUIRE_SMARTCARD//cfFlagsRequireSmartCard
+    ,CREDUI_FLAGS_SERVER_CREDENTIAL//cfFlagsServerCredential
+    ,CREDUI_FLAGS_SHOW_SAVE_CHECK_BOX//cfFlagsShowSaveCheckBox
+    ,CREDUI_FLAGS_USERNAME_TARGET_CREDENTIALS//cfFlagsUserNameTargetCredentials
+  );
 
-      CryptProtectOnPromptFlagValues : Array[TJwCryptProtectOnPromptFlag] of Cardinal = (
-        0
-        ,CRYPTPROTECT_PROMPT_ON_PROTECT //cppf_PromptOnProtect
-        ,CRYPTPROTECT_PROMPT_ON_UNPROTECT //cppf_PromptOnUnprotect
-      );
+  CryptProtectOnPromptFlagValues : Array[TJwCryptProtectOnPromptFlag] of Cardinal = (
+    0
+    ,CRYPTPROTECT_PROMPT_ON_PROTECT //cppf_PromptOnProtect
+    ,CRYPTPROTECT_PROMPT_ON_UNPROTECT //cppf_PromptOnUnprotect
+  );
 
-      ProtectMemoryFlagSetValues : Array[TJwProtectMemoryFlag] of Cardinal = (
-        CRYPTPROTECTMEMORY_SAME_PROCESS //pmSameProcess
-        ,CRYPTPROTECTMEMORY_CROSS_PROCESS //pmCrossProcess
-        ,CRYPTPROTECTMEMORY_SAME_LOGON //pmSameLogon
-      );
+  ProtectMemoryFlagSetValues : Array[TJwProtectMemoryFlag] of Cardinal = (
+    CRYPTPROTECTMEMORY_SAME_PROCESS //pmSameProcess
+    ,CRYPTPROTECTMEMORY_CROSS_PROCESS //pmCrossProcess
+    ,CRYPTPROTECTMEMORY_SAME_LOGON //pmSameLogon
+  );
 
-      CryptProtectFlag : Array[TJwCryptProtectFlag] of Cardinal = (
-        CRYPTPROTECT_LOCAL_MACHINE//cfLocalMachine
-        ,CRYPTPROTECT_UI_FORBIDDEN//cfUiFobidden
-        //Vista only 
-       { ,CRYPTPROTECT_AUDIT//cfAudit
-        CRYPTPROTECT_VERIFY_PROTECTION//cfVerifyProtection }
-      );
+  CryptProtectFlag : Array[TJwCryptProtectFlag] of Cardinal = (
+    CRYPTPROTECT_LOCAL_MACHINE//cfLocalMachine
+    ,CRYPTPROTECT_UI_FORBIDDEN//cfUiFobidden
+    //Vista only 
+   { ,CRYPTPROTECT_AUDIT//cfAudit
+    CRYPTPROTECT_VERIFY_PROTECTION//cfVerifyProtection }
+  );
 
-      HashAlgorithmValues: array[TJwHashAlgorithm] of Cardinal = (
-        CALG_MD2
-       ,CALG_MD4
-       ,CALG_MD5
-       ,CALG_SHA
-       ,CALG_MAC
-       ,CALG_HMAC
-       );
+  HashAlgorithmValues: array[TJwHashAlgorithm] of Cardinal = (
+    CALG_MD2
+   ,CALG_MD4
+   ,CALG_MD5
+   ,CALG_SHA
+   ,CALG_MAC
+   ,CALG_HMAC
+   );
 
-      CSPTypeValues: array[TJwCSPType] of Cardinal = (
-        PROV_RSA_FULL
-       ,PROV_RSA_SIG
-       ,PROV_RSA_SCHANNEL
-       ,PROV_DSS
-       ,PROV_DSS_DH
-       ,PROV_DH_SCHANNEL
-       ,PROV_FORTEZZA
-       ,PROV_MS_EXCHANGE
-       ,PROV_SSL
-       );
+  CSPTypeValues: array[TJwCSPType] of Cardinal = (
+    PROV_RSA_FULL
+   ,PROV_RSA_SIG
+   ,PROV_RSA_SCHANNEL
+   ,PROV_DSS
+   ,PROV_DSS_DH
+   ,PROV_DH_SCHANNEL
+   ,PROV_FORTEZZA
+   ,PROV_MS_EXCHANGE
+   ,PROV_SSL
+   );
 
-      CSPCreationFlagValues: array[TJwCSPCreationFlag] of Cardinal = (
-        CRYPT_VERIFYCONTEXT
-       ,CRYPT_NEWKEYSET
-       ,CRYPT_MACHINE_KEYSET
-       //, CRYPT_DELETEKEYSET
-       ,CRYPT_SILENT
-       );
+  CSPCreationFlagValues: array[TJwCSPCreationFlag] of Cardinal = (
+    CRYPT_VERIFYCONTEXT
+   ,CRYPT_NEWKEYSET
+   ,CRYPT_MACHINE_KEYSET
+   //, CRYPT_DELETEKEYSET
+   ,CRYPT_SILENT
+   );
 
-      KeyPairTypeValues: array[TJwKeyPairType] of Cardinal = (
-        AT_KEYEXCHANGE
-       ,AT_SIGNATURE
-       );
+  KeyPairTypeValues: array[TJwKeyPairType] of Cardinal = (
+    AT_KEYEXCHANGE
+   ,AT_SIGNATURE
+   );
 
-      KeyFlagValues: array[TJwKeyFlag] of Cardinal = (
-        CRYPT_CREATE_SALT
-      // ,CRYPT_ARCHIVABLE
-       ,CRYPT_PREGEN
-       ,CRYPT_EXPORTABLE
-       ,CRYPT_NO_SALT
-       ,CRYPT_USER_PROTECTED
-       ,CRYPT_OAEP
-       ,CRYPT_UPDATE_KEY
-       ,CRYPT_DESTROYKEY
-       ,CRYPT_SSL2_FALLBACK
-       );
+  KeyFlagValues: array[TJwKeyFlag] of Cardinal = (
+    CRYPT_CREATE_SALT
+  // ,CRYPT_ARCHIVABLE
+   ,CRYPT_PREGEN
+   ,CRYPT_EXPORTABLE
+   ,CRYPT_NO_SALT
+   ,CRYPT_USER_PROTECTED
+   ,CRYPT_OAEP
+   ,CRYPT_UPDATE_KEY
+   ,CRYPT_DESTROYKEY
+   ,CRYPT_SSL2_FALLBACK
+   );
 
+  MandatoryPolicyFlagValues : array[TJwMandatoryPolicy] of Cardinal = (
+   SYSTEM_MANDATORY_LABEL_NO_WRITE_UP
+   ,SYSTEM_MANDATORY_LABEL_NO_READ_UP
+   ,SYSTEM_MANDATORY_LABEL_NO_EXECUTE_UP
+   );
 
 { TJwEnumMap }
+
+class function TJwEnumMap.ConvertMandatoryPolicyFlags(
+      const FlagSet: TJwMandatoryPolicyFlagSet): Cardinal;
+var I : TJwMandatoryPolicy;
+begin
+  result := 0;
+  for I := Low(TJwMandatoryPolicy) to High(TJwMandatoryPolicy) do
+  begin
+    if I in FlagSet then
+      result := result or MandatoryPolicyFlagValues[I];
+  end;
+end;
+
+class function TJwEnumMap.ConvertMandatoryPolicyFlags(
+      const FlagBits: Cardinal): TJwMandatoryPolicyFlagSet;
+var I : TJwMandatoryPolicy;
+begin
+  result := [];
+  for I := Low(TJwMandatoryPolicy) to High(TJwMandatoryPolicy) do
+  begin
+    if (FlagBits and MandatoryPolicyFlagValues[I]) = MandatoryPolicyFlagValues[I] then
+      Include(result, I);
+  end;
+end;
 
 class function TJwEnumMap.ConvertInheritFlags(
   const FlagSet: TJwInheritFlagSet): Cardinal;

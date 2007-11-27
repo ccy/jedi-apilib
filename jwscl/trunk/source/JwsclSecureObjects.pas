@@ -363,9 +363,14 @@ type
     function GetOwner: TJwSecurityId; virtual; abstract;
     function GetGroup: TJwSecurityId; virtual; abstract;
 
+    function GetMandatoryLabel : TJwSystemMandatoryAccessControlEntry; virtual; abstract;
+    procedure SetMandatoryLabel(const MandatoryLabel :
+      TJwSystemMandatoryAccessControlEntry); virtual; abstract;
 
-    procedure SetDACL(const list: TJwDAccessControlList); virtual; abstract;
-    procedure SetSACL(const list: TJwSAccessControlList); virtual; abstract;
+    procedure SetDACL(const list: TJwDAccessControlList;
+     const Protection : TJwACLProtectionState = apNone); virtual; abstract;
+    procedure SetSACL(const list: TJwSAccessControlList;
+     const Protection : TJwACLProtectionState = apNone); virtual; abstract;
 
     procedure SetOwner(const ID: TJwSecurityId); virtual; abstract;
     procedure SetGroup(const ID: TJwSecurityId); virtual; abstract;
@@ -882,6 +887,15 @@ type
        }
     function GetSACL: TJwSAccessControlList; override;
 
+    {@Name returns the mandatory level of the object. The object is retrieved
+     from the SACL.
+     Its only supported on Windows Vista and newer.
+     @return(Returns a mandatory level entry which must be freed.}
+    function GetMandatoryLabel : TJwSystemMandatoryAccessControlEntry; override;
+
+    {@Name sets the mandatory level of the object.}
+    procedure SetMandatoryLabel(const MandatoryLabel :
+       TJwSystemMandatoryAccessControlEntry); override;
       {@Name returns the owner of the file object.
        @return The newly created instance must be destroyed by the caller!
       }
@@ -901,15 +915,38 @@ type
        Afterwards you can set a new DACL to the file.
        So nobody can hijack the file you should also open the file exclusively and do not use the SetNamedXXX methods.
 
+       New: You can also use apProtected to remove inherited ACEs (replace an existing DACL completly).
+
        The list is copied into the file object.
+
+       @param(Protection defines which TJwSecurityInformationFlag Flag is used:
+        @unorderedlist(
+          @item(apNone uses simply siDaclSecurityInformation to set DACL)
+          @item(apProtected uses siProtectedDaclSecurityInformation to set a protected DACL)
+          @item(apUnprotected uses siUnprotectedDaclSecurityInformation to set
+              an unprotected DACL and let flow the inheritance stream)
+         ))
        }
-    procedure SetDACL(const list: TJwDAccessControlList); overload; override;
+    procedure SetDACL(const list: TJwDAccessControlList;
+     const Protection : TJwACLProtectionState = apNone); overload; override;
       {@Name sets the SACL of the file object.
        You need to have SE_SECURITY_NAME privilege be enabled otherwise the call fails.
 
+       New: You can also use apProtected to remove inherited ACEs (replace an existing SACL completly).
+
        The list is copied into the file object.
+
+       @param(Protection defines which TJwSecurityInformationFlag Flag is used:
+        @unorderedlist(
+          @item(apNone uses simply siSaclSecurityInformation to set SACL)
+          @item(apProtected uses siProtectedSaclSecurityInformation to set a protected SACL)
+          @item(apUnprotected uses siUnprotectedSaclSecurityInformation to set
+              an unprotected SACL and let flow the inheritance stream)
+         ))
        }
-    procedure SetSACL(const list: TJwSAccessControlList); overload; override;
+    procedure SetSACL(const list: TJwSAccessControlList;
+     const Protection : TJwACLProtectionState = apNone); overload; override;
+
 
       {@Name sets the owner of the file object.
        You need WRITE_DACL and WRITE_OWNER rights to set the DACL or
@@ -933,6 +970,10 @@ type
        It simply calls all SetXXX methods if defined in SD_entries.
        If a entry of the SD cannot be set an exception is raised and the rest is dismissed.
        However all entries that were successfully set before the exception are stored into the file security.
+
+       Warning: The control value of the security descriptor is ignored because it is automatically set by Windows API.
+         If you want to set control value (or even RMControl) you must use a direct API Call (e.g. SetFileSecurity)
+
 
        @param SD defines the security descriptor to be set. It most not nil otherwise EJwsclInvalidParameterException is raised.
        @param SD_entries The following security descriptor flags are supported
@@ -1456,6 +1497,15 @@ type
        }
     function GetSACL: TJwSAccessControlList; override;
 
+     {@Name returns the mandatory level of the object. The object is retrieved
+     from the SACL.
+     Its only supported on Windows Vista and newer.
+     @return(Returns a mandatory level entry which must be freed.}
+    function GetMandatoryLabel : TJwSystemMandatoryAccessControlEntry; override;
+
+    {@Name sets the mandatory level of the object.}
+    procedure SetMandatoryLabel(const MandatoryLabel :
+      TJwSystemMandatoryAccessControlEntry); override;
       {@Name returns the owner of the file object.
        @return The newly created instance must be destroyed by the caller!
       }
@@ -1475,15 +1525,38 @@ type
        Afterwards you can set a new DACL to the file.
        So nobody can hijack the file you should also open the file exclusively and do not use the SetNamedXXX methods.
 
+       New: You can also use apProtected to remove inherited ACEs (replace an existing DACL completly).
+
        The list is copied into the file object.
+
+       @param(Protection defines which TJwSecurityInformationFlag Flag is used:
+        @unorderedlist(
+          @item(apNone uses simply siDaclSecurityInformation to set DACL)
+          @item(apProtected uses siProtectedDaclSecurityInformation to set a protected DACL)
+          @item(apUnprotected uses siUnprotectedDaclSecurityInformation to set
+              an unprotected DACL and let flow the inheritance stream)
+         ))
        }
-    procedure SetDACL(const list: TJwDAccessControlList); overload; override;
+    procedure SetDACL(const list: TJwDAccessControlList;
+     const Protection : TJwACLProtectionState = apNone); overload; override;
       {@Name sets the SACL of the file object.
        You need to have SE_SECURITY_NAME privilege be enabled otherwise the call fails.
 
+       New: You can also use apProtected to remove inherited ACEs (replace an existing SACL completly).
+
        The list is copied into the file object.
+
+       @param(Protection defines which TJwSecurityInformationFlag Flag is used:
+        @unorderedlist(
+          @item(apNone uses simply siSaclSecurityInformation to set SACL)
+          @item(apProtected uses siProtectedSaclSecurityInformation to set a protected SACL)
+          @item(apUnprotected uses siUnprotectedSaclSecurityInformation to set
+              an unprotected SACL and let flow the inheritance stream)
+         ))
        }
-    procedure SetSACL(const list: TJwSAccessControlList); overload; override;
+
+    procedure SetSACL(const list: TJwSAccessControlList;
+      const Protection : TJwACLProtectionState = apNone); overload; override;
 
       {@Name sets the owner of the file object.
        You need WRITE_DACL and WRITE_OWNER rights to set the DACL or
@@ -1534,6 +1607,7 @@ type
        use the data from the first call.
       }
     function GetTempSACL: TJwSAccessControlList; overload; override;
+
 
       {@Name resets the cache. Subsequent calls to GetTempXXX will not
        use the cache instead it calls the security winapi functions.
@@ -2436,9 +2510,6 @@ begin
 
   if Assigned(aSACL) then
   begin
-    if not (siSaclSecurityInformation in aSecurityInfo) then
-      Include(aSecurityInfo, siSaclSecurityInformation);
-
     pSACL := PACL(aSACL.Create_PACL);
   end;
 
@@ -3052,10 +3123,27 @@ begin
     SetOwner(SD.Owner);
   if siGroupSecurityInformation in SD_entries then
     SetGroup(SD.PrimaryGroup);
+
+  if siProtectedDaclSecurityInformation in SD_entries then
+    SetDACL(SD.DACL,apProtected)
+  else
+  if siUnProtectedDaclSecurityInformation in SD_entries then
+    SetDACL(SD.DACL,apUnProtected)
+  else
   if siDaclSecurityInformation in SD_entries then
     SetDACL(SD.DACL);
+
+  if siProtectedSaclSecurityInformation in SD_entries then
+    SetSACL(SD.SACL,apProtected)
+  else
+  if siUnProtectedSaclSecurityInformation in SD_entries then
+    SetSACL(SD.SACL,apUnProtected)
+  else
   if siSaclSecurityInformation in SD_entries then
     SetSACL(SD.SACL);
+
+ { if siLabelSecurityInformation in SD_entries then
+    SetIntegrityLabel(SD.   }
 
   //We do not use SetFileSecurity
 end;
@@ -3956,6 +4044,74 @@ begin
       RsUNSecureObjects, 0, False, []);
 end;
 
+procedure TJwSecureFileObject.SetMandatoryLabel(const MandatoryLabel :
+      TJwSystemMandatoryAccessControlEntry);
+var
+  SACL : TJwSAccessControlList;
+begin
+  SACL := TJwSAccessControlList.Create;
+  SACL.SetMandatoryLabel(MandatoryLabel,cfCopyInstance);
+  
+  try
+    if (fFileName <> '') then
+    begin
+      SetNamedSecurityInfo(TJwPChar(fFileName), SE_FILE_OBJECT,
+        [siLabelSecurityInformation],nil,nil,nil,SACL);
+    end
+    else
+    if HasValidHandle then
+    begin
+      SetSecurityInfo(fHandle, SE_FILE_OBJECT,
+        [siLabelSecurityInformation],nil,nil,nil,SACL);
+    end
+    else
+      raise EJwsclInvalidObjectException.CreateFmtEx(
+        RsSecureObjectsInvalidRegPathHandle, 'SetMandatoryLabel', ClassName,
+        RsUNSecureObjects, 0, False, []);
+  finally
+    SACL.Free;
+  end;
+end;
+
+function TJwSecureFileObject.GetMandatoryLabel : TJwSystemMandatoryAccessControlEntry;
+var
+  SD : TJwSecurityDescriptor;
+begin
+  Result := nil;
+
+  SD := nil;
+
+  try
+    if (fFileName <> '') then
+    begin
+      SD := GetNamedSecurityInfo(TJwPChar(fFileName), SE_FILE_OBJECT,
+        [siLabelSecurityInformation]);
+
+      if Assigned(SD.AuditACL) and SD.AuditACL.HasMandatoryLabel then
+      begin
+        result := TJwSystemMandatoryAccessControlEntry.Create(SD.AuditACL.MandatoryLabel);
+      end;
+    end
+    else
+    if HasValidHandle then
+    begin
+      SD := GetSecurityInfo(fHandle, SE_FILE_OBJECT,
+        [siLabelSecurityInformation]);
+
+      if Assigned(SD.AuditACL) and SD.AuditACL.HasMandatoryLabel then
+      begin
+        result := TJwSystemMandatoryAccessControlEntry.Create(SD.AuditACL.MandatoryLabel);
+      end;
+    end
+    else
+      raise EJwsclInvalidObjectException.CreateFmtEx(
+        RsSecureObjectsInvalidRegPathHandle, 'GetMandatoryLabel', ClassName,
+        RsUNSecureObjects, 0, False, []);
+  finally
+    SD.Free;
+  end;
+end;
+
 function TJwSecureFileObject.GetSACL: TJwSAccessControlList;
 var
   anOwner: TJwSecurityId;
@@ -4177,18 +4333,27 @@ begin
   inherited;
 end;
 
-procedure TJwSecureFileObject.SetDACL(const list: TJwDAccessControlList);
+
+procedure TJwSecureFileObject.SetDACL(const list: TJwDAccessControlList;
+  const Protection : TJwACLProtectionState = apNone);
 var
   anOwner: TJwSecurityId;
   anGroup: TJwSecurityId;
-  //[Hint] aDACL : TJwDAccessControlList;
   aSACL: TJwSAccessControlList;
+  Flags : TJwSecurityInformationFlagSet;
+
 begin
 
   anOwner := nil;
   anGroup := nil;
-  //[Hint] aDACL := nil;
+
   aSACL := nil;
+  Flags := [siDaclSecurityInformation];
+  if Protection = apProtected then
+    Include(Flags, siProtectedDaclSecurityInformation)
+  else
+  if Protection = apUnprotected then
+    Include(Flags, siUnprotectedDaclSecurityInformation);
 
   //List can be nil = NULL DACL
 
@@ -4201,7 +4366,7 @@ begin
         anGroup, nil, aSACL);
 
     SetNamedSecurityInfo(TJwPChar(fFileName), SE_FILE_OBJECT,
-      [siDaclSecurityInformation], anOwner,
+      Flags, anOwner,
       anGroup, list, aSACL);
   end
   else
@@ -4214,7 +4379,7 @@ begin
         anGroup, nil, aSACL);
 
     SetSecurityInfo(fHandle, SE_FILE_OBJECT,
-      [siDaclSecurityInformation], anOwner,
+      Flags, anOwner,
       anGroup, list, aSACL);
   end
   else
@@ -4313,17 +4478,24 @@ begin
       RsUNSecureObjects, 0, False, []);
 end;
 
-procedure TJwSecureFileObject.SetSACL(const list: TJwSAccessControlList);
+procedure TJwSecureFileObject.SetSACL(const list: TJwSAccessControlList;
+  const Protection : TJwACLProtectionState = apNone);
 var
   anOwner: TJwSecurityId;
   anGroup: TJwSecurityId;
   aDACL: TJwDAccessControlList;
-  //[Hint] aSACL : TJwSAccessControlList;
+  Flags : TJwSecurityInformationFlagSet;
+
 begin
   anOwner := nil;
   anGroup := nil;
   aDACL := nil;
-  //[Hint] aSACL := nil;
+  Flags := [siSaclSecurityInformation];
+  if Protection = apProtected then
+    Include(Flags, siProtectedSaclSecurityInformation)
+  else
+  if Protection = apUnprotected then
+    Include(Flags, siUnprotectedSaclSecurityInformation);
 
   if (fFileName <> '') then
   begin
@@ -4334,7 +4506,7 @@ begin
         anGroup, aDACL, nil);
 
     SetNamedSecurityInfo(TJwPChar(fFileName), SE_FILE_OBJECT,
-      [siSaclSecurityInformation], anOwner,
+      Flags, anOwner,
       anGroup, aDACL, list);
 
   end
@@ -4348,7 +4520,7 @@ begin
         anGroup, aDACL, nil);
 
     SetSecurityInfo(fHandle, SE_FILE_OBJECT,
-      [siSaclSecurityInformation], anOwner,
+      Flags, anOwner,
       anGroup, aDACL, list);
   end
   else
@@ -6172,6 +6344,79 @@ begin
       RsUNSecureObjects, 0, False, []);
 end;
 
+procedure TJwSecureRegistryKey.SetMandatoryLabel(const MandatoryLabel :
+      TJwSystemMandatoryAccessControlEntry);
+var
+  SACL : TJwSAccessControlList;
+  bUsesName: boolean;
+begin
+  SACL := TJwSAccessControlList.Create;
+  SACL.SetMandatoryLabel(MandatoryLabel,cfCopyInstance);
+
+  GetKey(bUsesName);
+  try
+    if (bUsesName) then
+    begin
+      SetNamedSecurityInfo(TJwPChar(fKeyName), SE_REGISTRY_KEY,
+        [siLabelSecurityInformation],nil,nil,nil,SACL);
+    end
+    else
+    if HasValidHandle then
+    begin
+      SetSecurityInfo(fHandle, SE_REGISTRY_KEY,
+        [siLabelSecurityInformation],nil,nil,nil,SACL);
+    end
+    else
+      raise EJwsclInvalidObjectException.CreateFmtEx(
+        RsSecureObjectsInvalidRegPathHandle, 'SetMandatoryLabel', ClassName,
+        RsUNSecureObjects, 0, False, []);
+  finally
+    SACL.Free;
+  end;
+end;
+
+function TJwSecureRegistryKey.GetMandatoryLabel : TJwSystemMandatoryAccessControlEntry;
+var
+  SD : TJwSecurityDescriptor;
+  bUsesName: boolean;
+begin
+  Result := nil;
+
+  GetKey(bUsesName);
+  SD := nil;
+
+  try
+    if (bUsesName) then
+    begin
+      SD := GetNamedSecurityInfo(TJwPChar(fKeyName), SE_REGISTRY_KEY,
+        [siLabelSecurityInformation]);
+
+      if Assigned(SD.AuditACL) and SD.AuditACL.HasMandatoryLabel then
+      begin
+        result := TJwSystemMandatoryAccessControlEntry.Create(SD.AuditACL.MandatoryLabel);
+      end;
+    end
+    else
+    if HasValidHandle then
+    begin
+      SD := GetSecurityInfo(fHandle, SE_REGISTRY_KEY,
+        [siLabelSecurityInformation]);
+
+      if Assigned(SD.AuditACL) and SD.AuditACL.HasMandatoryLabel then
+      begin
+        result := TJwSystemMandatoryAccessControlEntry.Create(SD.AuditACL.MandatoryLabel);
+      end;
+    end
+    else
+      raise EJwsclInvalidObjectException.CreateFmtEx(
+        RsSecureObjectsInvalidRegPathHandle, 'GetMandatoryLabel', ClassName,
+        RsUNSecureObjects, 0, False, []);
+  finally
+    SD.Free;
+  end;
+end;
+
+
 function TJwSecureRegistryKey.GetSACL: TJwSAccessControlList;
 var
   anOwner: TJwSecurityId;
@@ -6399,13 +6644,15 @@ begin
   inherited;
 end;
 
-procedure TJwSecureRegistryKey.SetDACL(const list: TJwDAccessControlList);
+procedure TJwSecureRegistryKey.SetDACL(const list: TJwDAccessControlList;
+     const Protection : TJwACLProtectionState = apNone);
 var
   anOwner: TJwSecurityId;
   anGroup: TJwSecurityId;
   aSACL: TJwSAccessControlList;
 
   bUsesName: boolean;
+  Flags : TJwSecurityInformationFlagSet;
 begin
 
   anOwner := nil;
@@ -6416,6 +6663,12 @@ begin
   GetKey(bUsesName);
   //List can be nil = NULL DACL
 
+  Flags := [siDaclSecurityInformation];
+  if Protection = apProtected then
+    Include(Flags, siProtectedDaclSecurityInformation)
+  else
+  if Protection = apUnprotected then
+    Include(Flags, siUnprotectedDaclSecurityInformation);
 
   if (bUsesName) then
   begin
@@ -6426,7 +6679,7 @@ begin
         anGroup, nil, aSACL);
 
     SetNamedSecurityInfo(TJwPChar(fKeyName), SE_REGISTRY_KEY,
-      [siDaclSecurityInformation], anOwner,
+      Flags, anOwner,
       anGroup, list, aSACL);
   end
   else
@@ -6439,7 +6692,7 @@ begin
         anGroup, nil, aSACL);
 
     SetSecurityInfo(fHandle, SE_REGISTRY_KEY,
-      [siDaclSecurityInformation], anOwner,
+      Flags, anOwner,
       anGroup, list, aSACL);
   end
   else
@@ -6526,12 +6779,14 @@ begin
       RsUNSecureObjects, 0, False, []);
 end;
 
-procedure TJwSecureRegistryKey.SetSACL(const list: TJwSAccessControlList);
+procedure TJwSecureRegistryKey.SetSACL(const list: TJwSAccessControlList;
+  const Protection : TJwACLProtectionState = apNone);
 
 var
   anOwner: TJwSecurityId;
   anGroup: TJwSecurityId;
   aDACL: TJwDAccessControlList;
+  Flags : TJwSecurityInformationFlagSet;
 
   bUsesName: boolean;
 begin
@@ -6539,6 +6794,12 @@ begin
   anGroup := nil;
   aDACL := nil;
 
+  Flags := [siSaclSecurityInformation];
+  if Protection = apProtected then
+    Include(Flags, siProtectedSaclSecurityInformation)
+  else
+  if Protection = apUnprotected then
+    Include(Flags, siUnprotectedSaclSecurityInformation);
 
   GetKey(bUsesName);
   if (bUsesName) then
@@ -6550,7 +6811,7 @@ begin
         anGroup, aDACL, nil);
 
     SetNamedSecurityInfo(TJwPChar(fKeyName), SE_REGISTRY_KEY,
-      [siSaclSecurityInformation], anOwner,
+      Flags, anOwner,
       anGroup, aDACL, list);
 
   end
@@ -6564,7 +6825,7 @@ begin
         anGroup, aDACL, nil);
 
     SetSecurityInfo(fHandle, SE_REGISTRY_KEY,
-      [siSaclSecurityInformation], anOwner,
+      Flags, anOwner,
       anGroup, aDACL, list);
   end
   else

@@ -5,6 +5,18 @@ information about the current user.
 Version: 0.5
 Release: 1.10.2007
 Written by Christian Wimmer
+
+Notes:
+This example may raises lots of exceptions in the Delphi IDE but should work
+fine when started from the Windows Explorer or command line.
+Raising exceptions in the Delphi is normal because even catched exception
+will be displayed in the Delphi IDE. You can change this behaviour in
+Tools-Debugger options-> Language exceptions 
+
+Known bugs:
+This example will not work on Windows XP Sp1 due to a unsupported
+parameter in GetTokenInformation. This example must be adapted to
+check for the occuring exception.
 }
 program whoami;
 
@@ -143,6 +155,10 @@ var Token : TJwSecurityToken;
     groups : TJwSecurityIdList;
     lpEnv : Pointer;
 begin
+  {Should change Code Page to display characters correctly.
+   if not SetConsoleOutputCP(xxx) then
+    RaiseLastOSError;}
+    
   { TODO -oUser -cConsole Main : Hier Code einfügen }
   try
     Token := TJwSecurityToken.CreateTokenEffective(TOKEN_ALL_ACCESS);//TOKEN_QUERY or TOKEN_READ);

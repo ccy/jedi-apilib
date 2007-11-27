@@ -526,8 +526,11 @@ type {@Name contains information about a security descriptor.
         }
     property SACL: TJwSAccessControlList Read GetSACL Write SetSACL;
 
-       {@Name sets or gets the control values of the sd. Do not change them if you do not know what it means.
-        For more information see MSDN.}
+   {@Name sets or gets the resource managercontrol values of the sd.
+    Do not change them if you do not know what it means.
+        For more information see MSDN.
+    This value is ignored in actual version.
+    }
     property RMControl: jwaWindows.TSecurityDescriptorControl
       Read GetRMControl Write SetRMControl;
 
@@ -1929,9 +1932,10 @@ begin
 end;
 
 function TJwSecurityDescriptor.GetRMControl:
-jwaWindows.TSecurityDescriptorControl;
+  jwaWindows.TSecurityDescriptorControl;
 begin
-  Result := TJwEnumMap.ConvertSecurityControl(fControl);
+  //TODO: Control is not resource manager (RM) Control !!
+  //Result := TJwEnumMap.ConvertSecurityControl(fControl);
 end;
 
 procedure TJwSecurityDescriptor.SetControl(
@@ -1943,7 +1947,8 @@ end;
 procedure TJwSecurityDescriptor.SetRMControl(
   aRMControl: jwaWindows.TSecurityDescriptorControl);
 begin
-  fControl := TJwEnumMap.ConvertSecurityControl(aRMControl);
+  //TODO: Control is not resource manager (RM) Control !!
+  //fControl := TJwEnumMap.ConvertSecurityControl(aRMControl);
 end;
 
 function TJwSecurityDescriptor.IsEqual(const SD: TJwSecurityDescriptor;
