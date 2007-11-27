@@ -350,7 +350,7 @@ begin
 
   aToken := nil;
   if (hToken <> 0) and (hToken <> INVALID_HANDLE_VALUE) then
-    aToken := TJwSecurityToken.Create(hToken, TOKEN_ALL_ACCESS);
+    aToken := TJwSecurityToken.Create(hToken, shOwned, TOKEN_ALL_ACCESS);
 
 end;
 

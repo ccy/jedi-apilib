@@ -263,7 +263,11 @@ type
     function GetMaximumAllowed : TAccessMask;
 
   public
-    {@Name TBD}
+    {@Name TBD.
+     Using this constructor is stronly discouraged!
+     It initialises all properties and sets
+      TokenHandle to 0 and Shared to true
+      }
     constructor Create; overload;
 
 
@@ -343,6 +347,10 @@ type
         @param(aDesiredAccess Receives the desired access for this token. The access types can be get from the following list. Access flags must be concatenated with or operator.
         If you want to use DuplicateToken or creating an impersonated token (by ConvertToImpersonatedToken) you must specific TOKEN_DUPLICATE.
 
+        @param(aDesiredAccess The desired access rights of the new token.
+           It can be MAXIMUM_ALLOWED to get the maximum possible access.
+          )
+
         See @link(CreateTokenByProcess CreateTokenByProcess) for a list of access rights.)}
     constructor CreateTokenEffective(const aDesiredAccess: TJwAccessMask);
       virtual;
@@ -352,7 +360,9 @@ type
          The token needs the TOKEN_DUPLICATE access type.
 
          @param(aTokenHandle The token handle to be copied.)
-         @param(aDesiredAccess The access type of the new token)
+         @param(aDesiredAccess The desired access rights of the new token.
+           It can be MAXIMUM_ALLOWED to get the maximum possible access.
+          )
          @param(UseDuplicateExistingToken For C++ compability only. If you are using C++ and want to use this constructor instead of Create.
               Set this parameter to true of false. This parameter is ignored!)
          }
@@ -361,7 +371,17 @@ type
       const aDesiredAccess: TJwAccessMask;
       UseDuplicateExistingToken: boolean = False); virtual;
 
+    {@Name creates a token instance using an already existing token handle.
+     It can be choosen whether the token instance will close the handle or not.
+
+     @param(aTokeHandle defines the handle to the token.
+       @Name does not do a validity check on the handle!)
+     @param(ShareTokenHandle defines whether the instance ought to close the handle
+      or not)
+     @param(aDesiredAccess defines the access to the token handle.
+       MAXIMUM_ALLOWED can be used to get the maximum access allowed.)}
     constructor Create(const aTokenHandle: TJwTokenHandle;
+      const ShareTokenHandle : TJwSharedHandle;
       const aDesiredAccess: TJwAccessMask); overload; virtual;
 
         {@Name opens a token of a logged on user.
@@ -418,6 +438,10 @@ type
       aTokenSource: TTokenSource); virtual;
 
 
+    {@NAme creates and initialises a OBJECT_ATTRIBUTES structure.
+     Some members need space on the heap so that
+      Free_OBJECT_ATTRIBUTES must be called to free the structure.
+     }
     class function Create_OBJECT_ATTRIBUTES(
       const aRootDirectory: THandle;
       const anObjectName: TJwString;
@@ -427,6 +451,8 @@ type
       const aContextTrackingMode: SECURITY_CONTEXT_TRACKING_MODE;
       const anEffectiveOnly: boolean): TObjectAttributes; virtual;
 
+    {@Name removes memory allocated by the members which were created
+     by Create_OBJECT_ATTRIBUTES}
     class procedure Free_OBJECT_ATTRIBUTES(
       anObjectAttributes: TObjectAttributes); virtual;
 
@@ -437,7 +463,8 @@ type
          You must set aTokenAccessMask to the token access type of aTokenHandle.
 
          @param(aTokenHandle contains the token handle to be restricted in a new token)
-         @param(aTokenAccessMask contains the access mask of aTokenHandle)
+         @param(aTokenAccessMask contains the access mask of aTokenHandle.
+           MAXIMUM_ALLOWED can be used to get the maximum access allowed.)
          @param(aFlags contains special flags:
          @unorderedlist(
           @item( DISABLE_MAX_PRIVILEGE
@@ -513,6 +540,9 @@ type
 
         See @link(CreateTokenByProcess CreateTokenByProcess) for a list of access rights.)
 
+        @param(aDesiredAccess defines the access to the new primary token.
+          It can be MAXIMUM_ALLOWED to get the maximum possible access.
+          Possible access rights are always equal or lower than the given ones when the handle was opened)
         @raises(EJwsclTokenPrimaryException will be raised if the call to DuplicateTokenEx failed.)
         @raises(EJwsclAccessTypeException will be raised if the token does not have the access TOKEN_READ and TOKEN_DUPLICATE)
 
@@ -534,11 +564,28 @@ type
     function GetTokenPrivilegesEx: PTOKEN_PRIVILEGES;
 
 
-    {@Name duplicates the instance AND token}
+    {@Name duplicates the instance AND token.
+
+     As the token type and impersonation level the current values of the
+     instance are used.
+
+     @param(Security
+      A pointer to a SECURITY_ATTRIBUTES structure that specifies a security descriptor for
+      the new token and determines whether child processes can inherit the token.
+      If lpTokenAttributes is NULL, the token gets a default security descriptor and
+      the handle cannot be inherited. If the security descriptor contains a system access
+      control list (SACL), the token gets ACCESS_SYSTEM_SECURITY access right, even if it was not
+      requested in dwDesiredAccess.
+      (source: http://msdn2.microsoft.com/en-us/library/aa446617.aspx)
+
+     @param(AccessMask defines the access to the token handle.
+       MAXIMUM_ALLOWED can be used to get the maximum access allowed.)'
+    }
     function CreateDuplicateToken(AccessMask: TJwAccessMask;
       Security: PSECURITY_ATTRIBUTES): TJwSecurityToken;
 
-    {@Name creates an restricted token of the instance.}
+    {@Name creates a restricted token of the instance.
+     This is just a wrapper method of the overloaded method CreateRestrictedToken.}
     function CreateRestrictedToken(const aTokenAccessMask: TJwTokenHandle;
       aFlags: Cardinal; aSidsToDisable: TJwSecurityIdList;
       aPrivilegesToDelete: TJwPrivilegeSet;
@@ -546,6 +593,9 @@ type
       virtual;
 
 
+    {@Name checks whether a given SID is member of the token.
+     It returns true if the SID could be found in the list ignoring
+     whether the SID is enabled or not; otherwise it returns false.}
     function CheckTokenMembership(aSidToCheck: TJwSecurityId): boolean;
 
         {@Name compares the token instance with a second one.
@@ -2551,11 +2601,15 @@ begin
 end;
 
 constructor TJwSecurityToken.Create(const aTokenHandle: TJwTokenHandle;
+  const ShareTokenHandle : TJwSharedHandle;
   const aDesiredAccess: TJwAccessMask);
 begin
   Self.Create;
   fTokenHandle := aTokenHandle;
   fAccessMask  := aDesiredAccess;
+
+  fShared := ShareTokenHandle = shShared;
+
 
   if aDesiredAccess = MAXIMUM_ALLOWED then
     fAccessMask := GetMaximumAllowed
@@ -3383,7 +3437,10 @@ begin
     JwaVista.TTokenInformationClass(JwaVista.TokenLinkedToken), Pointer(Data));
 
   try
-    result := TJwSecurityToken.Create(Data^.LinkedToken, MAXIMUM_ALLOWED);
+    {TODO: Warning:
+     I do not really know whether the LinkedToken is safe to be shared or
+      must be destroyed.}
+    result := TJwSecurityToken.Create(Data^.LinkedToken, shShared, MAXIMUM_ALLOWED);
   finally
     HeapFree(GetProcessHeap, 0, Data);
   end;

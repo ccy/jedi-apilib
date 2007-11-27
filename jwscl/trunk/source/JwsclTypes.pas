@@ -920,7 +920,7 @@ type
   TJwMandatoryPolicy = (mpNoWriteUp, mpNoReadUp, mpNoExecuteUp);
   TJwMandatoryPolicyFlagSet = set of TJwMandatoryPolicy;
 
-
+  TJwSharedHandle = (shShared, shOwned);
 
 {$ENDIF SL_IMPLEMENTATION_SECTION}
 
