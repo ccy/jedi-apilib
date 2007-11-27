@@ -347,6 +347,33 @@ const
   SystemIL = 'S-1-16-16384';
   ProtectedProcessIL = 'S-1-16-20480';
 
+
+  function AddMandatoryAce(pAcl: PACL; dwAceRevision, AceFlags, MandatoryPolicy: DWORD;
+    pLabelSid: PSID): BOOL; stdcall;
+  {$EXTERNALSYM AddMandatoryAce}
+
+
+
 implementation
+uses JwaWinDLLNames;
+
+{$IFNDEF DYNAMIC_LINK}
+  function AddMandatoryAce; external advapi32 name 'AddMandatoryAce';
+{$ELSE}
+
+var
+  _AddMandatoryAce: Pointer;
+
+function AddMandatoryAce;
+begin
+  GetProcedureAddress(_AddMandatoryAce, advapi32, 'AddMandatoryAce');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_AddMandatoryAce]
+  end;
+end;
+
+{$ENDIF DYNAMIC_LINK}
 
 end.
