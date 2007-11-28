@@ -10,9 +10,10 @@ uses
   SysUtils,
   jwaWindows,
 
-  USM_Token,
-  USM_Credentials in '..\..\..\USM_Credentials.pas',
-  USM_Ansi_UniCode;
+  JwsclToken,
+  JwsclTypes,
+  JwsclCredentials,
+  JwsclStrings;
 
 procedure ShowUserName(Caption : String);
 var
