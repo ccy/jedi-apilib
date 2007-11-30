@@ -246,9 +246,9 @@ function Process32FirstW(hSnapshot: HANDLE; var lppe: PROCESSENTRY32W): BOOL; st
 function Process32NextW(hSnapshot: HANDLE; var lppe: PROCESSENTRY32W): BOOL; stdcall;
 {$EXTERNALSYM Process32NextW}
 
-function Process32First(hSnapshot: HANDLE; var lppe: PROCESSENTRY32): BOOL; stdcall;
+function Process32First(hSnapshot: HANDLE; var lppe: PROCESSENTRY32): BOOL; stdcall;//always ANSI!
 {$EXTERNALSYM Process32First}
-function Process32Next(hSnapshot: HANDLE; var lppe: PROCESSENTRY32): BOOL; stdcall;
+function Process32Next(hSnapshot: HANDLE; var lppe: PROCESSENTRY32): BOOL; stdcall; //always ANSI!
 {$EXTERNALSYM Process32Next}
 
 // Thread walking
@@ -345,9 +345,9 @@ function Module32NextW(hSnapshot: HANDLE; var lpme: MODULEENTRY32W): BOOL; stdca
 // NOTE CAREFULLY that the modBaseAddr and hModule fields are valid ONLY
 // in th32ProcessID's process context.
 //
-function Module32First(hSnapshot: HANDLE; var lpme: MODULEENTRY32): BOOL; stdcall;
+function Module32First(hSnapshot: HANDLE; var lpme: MODULEENTRY32): BOOL; stdcall; //always ANSI!
 {$EXTERNALSYM Module32First}
-function Module32Next(hSnapshot: HANDLE; var lpme: MODULEENTRY32): BOOL; stdcall;
+function Module32Next(hSnapshot: HANDLE; var lpme: MODULEENTRY32): BOOL; stdcall; //always ANSI!
 {$EXTERNALSYM Module32Next}
 
 {$ENDIF JWA_IMPLEMENTATIONSECTION}
@@ -601,8 +601,8 @@ function Process32First; external kernel32 name 'Process32First'; //ANSI
 function Process32NextW; external kernel32 name 'Process32NextW';
 function Process32Next; external kernel32 name 'Process32Next';  //ANSI
 
-function Module32First; external kernel32 name 'Module32First';
-function Module32FirstW; external kernel32 name 'Module32FirstW'; //ANSI
+function Module32First; external kernel32 name 'Module32First'; //ANSI
+function Module32FirstW; external kernel32 name 'Module32FirstW';
 
 function Module32NextW; external kernel32 name 'Module32NextW';
 function Module32Next; external kernel32 name 'Module32Next'; //ANSI
