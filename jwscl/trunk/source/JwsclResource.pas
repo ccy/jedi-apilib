@@ -355,6 +355,7 @@ const
   RsPrivilegeLuidText = 'hi: 0x%0:x, lo: 0x%1:x (0x%2:x)';
   RsTokenInvalidClass = 'The token instance "%s" is not a TJwSecurityToken.';
 
+
 //Unit JwsclVersion.pas
   RsVersionOrHigher = 'or higher';
   RsVersionUnsupportedVersion = 'Unsupported version "%0:s". Need "%1:s" %2:' +
@@ -426,6 +427,9 @@ const
   RsAccessDenied = 'Access denied!';
 
   RsInvalidFlags = 'Invalid flags!';
+
+  RsInitWellKnownNotCalled = 'This method needs JwInitWellKnownSIDs from unit JwsclKnownSid to be called.';
+
 
 
 const

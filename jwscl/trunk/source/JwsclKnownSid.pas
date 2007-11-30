@@ -73,6 +73,7 @@ const JwLowIL = 'S-1-16-4096';
       JwSystemIL = 'S-1-16-16384';
       JwProtectedProcessIL = 'S-1-16-20480';
 var
+   JwIntegrityLabelSID : array[TJwIntegrityLabelType] of TJwSecurityKnownSID;
     {@Name defines the current user SID that started the process.
      Use this:
       SD : TJwSecurityDescriptor;
@@ -377,9 +378,17 @@ begin
 
   if not Assigned(JwSecurityProcessUserSID) then
     JwSecurityProcessUserSID := TJwSecurityThreadUserSID.Create;
+
+  JwIntegrityLabelSID[iltNone]       := nil;
+  JwIntegrityLabelSID[iltLow]       := TJwSecurityKnownSID.Create(JwLowIL);
+  JwIntegrityLabelSID[iltMedium]    := TJwSecurityKnownSID.Create(JwMediumIL);
+  JwIntegrityLabelSID[iltHigh]      := TJwSecurityKnownSID.Create(JwHighIL);
+  JwIntegrityLabelSID[iltSystem]    := TJwSecurityKnownSID.Create(JwSystemIL);
+  JwIntegrityLabelSID[iltProtected] := TJwSecurityKnownSID.Create(JwProtectedProcessIL);
 end;
 
 procedure DoneWellKnownSIDs;
+var ilts : TJwIntegrityLabelType;
 begin
 
   FreeAndNil(JwAdministratorsSID);
@@ -393,6 +402,9 @@ begin
   FreeAndNil(JwLocalGroupSID);
   FreeAndNil(JwSecurityProcessUserSID);
   //  FreeAndNil(fSecurityCurrentThreadUserSID);
+
+  for ilts := low(TJwIntegrityLabelType) to high(TJwIntegrityLabelType) do
+    FreeAndNil(JwIntegrityLabelSID[ilts]);
 end;
 
 function TJwSecurityKnownSID.IsStandardSID: boolean;

@@ -274,6 +274,10 @@ type
   EJwsclKeyException = class(EJwsclCryptException);
   EJwsclKeyApiException = class(EJwsclKeyException);
 
+  {@Name is raised if JwInitWellKnownSIDs was not called.}
+  EJwsclInitWellKnownException = class(EJwsclKeyException);
+
+
 {$ENDIF SL_IMPLEMENTATION_SECTION}
 
 {$IFNDEF SL_OMIT_SECTIONS}

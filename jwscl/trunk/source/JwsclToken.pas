@@ -44,7 +44,7 @@ uses SysUtils, Contnrs, Classes,
   Windows, Dialogs,
   jwaWindows, JwsclResource, JwsclUtils, JwaVista,
   JwsclTypes, JwsclExceptions, JwsclSid, JwsclAcl,
-  JwsclDescriptor,
+  JwsclDescriptor, JwsclEnumerations,
   JwsclVersion, JwsclConstants, JwsclProcess,
   JwsclStrings; //JwsclStrings, must be at the end of uses list!!!
 {$ENDIF SL_OMIT_SECTIONS}
@@ -215,16 +215,19 @@ type
 
     function GetPrivilegeAvailable(Name: string): boolean;
 
-    function GetIntegrityLevel : TJwSecurityIdList;
-    function GetLinkedToken : TJwSecurityToken;
+    function GetIntegrityLevel : TJwSecurityIdList; virtual;
+    function GetIntegrityLevelType : TJwIntegrityLabelType; virtual;
+    procedure SetIntegrityLevelType(const LevelType : TJwIntegrityLabelType); virtual;
 
-    function GetRunElevation: Cardinal;
-    function GetElevationType: TTokenElevationType;
+    function GetLinkedToken : TJwSecurityToken;virtual;
 
-    function GetVirtualizationAllowed: boolean;
-    function GetVirtualizationEnabled: boolean;
+    function GetRunElevation: Cardinal;virtual;
+    function GetElevationType: TTokenElevationType; virtual;
 
-    function GetMandatoryPolicy : DWORD;
+    function GetVirtualizationAllowed: boolean; virtual;
+    function GetVirtualizationEnabled: boolean;virtual;
+
+    function GetMandatoryPolicy : DWORD; virtual;
 
   protected
         {@Name checks the TokenHandle of this instance and raises EJwsclInvalidTokenHandle if the token is invalid; otherwise it does nothing
@@ -410,7 +413,11 @@ type
       SessionID: Cardinal = INVALID_HANDLE_VALUE); overload; virtual;
 
 
-        (*
+      (*
+	  @Name forges a new token using ZwCreateToken.
+	  This function can only be called successfully from a SYSTEM service.
+	  
+	  
         ZwCreateToken(
            TokenHandle: PHANDLE;
            DesiredAccess: ACCESS_MASK;
@@ -563,6 +570,29 @@ type
 
     function GetTokenPrivilegesEx: PTOKEN_PRIVILEGES;
 
+    {@Name sets the integrity level of the token using a Sid structure.
+     @Name needs InitWellKnownException from JwsclKnownSid to be called before.
+
+     @param(MandatorySid a mandatory Sid. Must not be nil)
+     @param(Attributes defines attributes for the Sid)
+     @raises(EJwsclInitWellKnownException will be raised if InitWellKnownException was not called)
+     @raises(EJwsclNILParameterException will be raised if parameter MandatorySid is nil)
+     @raises(EJwsclWinCallFailedException will be raised if the integrity level could not be changed)
+    }
+    procedure SetIntegrityLevel(const MandatorySid : TJwSecurityId;
+      const Attributes : TJwSidAttributeSet = [sidaGroupMandatory]); overload; virtual;
+
+    {@Name sets the integrity level of the token using a Sid structure.
+     @Name needs InitWellKnownException from JwsclKnownSid to be called before.
+
+     @param(MandatorySidType a mandatory . Must not be nil)
+     @param(Attributes defines attributes for the Sid)
+     @raises(EJwsclInitWellKnownException will be raised if InitWellKnownException was not called)
+     @raises(EJwsclNILParameterException will be raised if parameter MandatorySid is nil)
+     @raises(EJwsclWinCallFailedException will be raised if the integrity level could not be changed)
+    }
+    procedure SetIntegrityLevel(const LabelType : TJwIntegrityLabelType;
+      const Attributes : TJwSidAttributeSet = [sidaGroupMandatory]); overload; virtual;
 
     {@Name duplicates the instance AND token.
 
@@ -892,6 +922,18 @@ type
      The caller is responsible for freeing the resulting TJwSecurityIdList.
     }
     property TokenIntegrityLevel : TJwSecurityIdList read GetIntegrityLevel;
+
+    {@Name sets or gets the TokenIntegrityLevel in an easier way.
+     This property uses iltLow, iltMedium, iltHigh, iltSystem and iltProtected to
+     get or set the integrity level.
+
+     If the token does not have a level the function returns iltNone.
+     The value iltNone cannot be set!
+
+     This property can raise exceptions on get and set! See SetIntegrityLevel.
+    }
+    property TokenIntegrityLevelType : TJwIntegrityLabelType read GetIntegrityLevelType write SetIntegrityLevelType;
+
 
     {@Name returns the linked token of this token.
      In vista every token can have a second token that has more or less
@@ -3151,6 +3193,14 @@ begin
     JwsclTypes.
 {$ENDIF}     *)
     JwaVista.TokenDefaultDacl, Pointer(pDACL));
+  {If the value of the TokenInformationClass parameter is TokenDefaultDacl and the
+  token has no default DACL, the function sets the variable pointed to by ReturnLength
+  to sizeof(TOKEN_DEFAULT_DACL) and sets the DefaultDacl member of the
+  TOKEN_DEFAULT_DACL structure to NULL.
+  http://msdn2.microsoft.com/en-us/library/aa446671.aspx
+  }
+  result := nil;
+  if pDACL <> nil then
   try
     Result := TJwDAccessControlList.Create(pDACL^.DefaultDacl);
   finally
@@ -3446,6 +3496,80 @@ begin
   end;
 end;
 
+function TJwSecurityToken.GetIntegrityLevelType : TJwIntegrityLabelType;
+var List : TJwSecurityIdList;
+    Labels : TJwIntegrityLabelType;
+begin
+  for Labels := low(TJwIntegrityLabelType) to high(TJwIntegrityLabelType) do
+    if (Labels <> iltNone) and not Assigned(JwIntegrityLabelSID[Labels]) then
+      raise EJwsclInitWellKnownException.CreateFmtEx(
+        RsInitWellKnownNotCalled,
+        'GetIntegrityLevelType', RsTokenGlobalClassName, RsUNToken, 0, False, []);
+      
+  result := iltNone;
+
+  List := GetIntegrityLevel;
+  try
+    if Assigned(List) and (List.Count > 0) then
+    begin
+      for Labels := low(TJwIntegrityLabelType) to high(TJwIntegrityLabelType) do
+      begin
+        if Assigned(JwIntegrityLabelSID[Labels]) and
+          JwIntegrityLabelSID[Labels].EqualSid(List[0]) then
+        begin
+          result := Labels;
+          break;
+        end;
+      end;
+    end;
+  finally
+    List.Free;
+  end;
+end;
+
+procedure TJwSecurityToken.SetIntegrityLevelType(const LevelType : TJwIntegrityLabelType);
+begin
+  SetIntegrityLevel(LevelType);
+end;
+
+procedure TJwSecurityToken.SetIntegrityLevel(const LabelType : TJwIntegrityLabelType;
+      const Attributes : TJwSidAttributeSet = [sidaGroupMandatory]);
+begin
+  if (LabelType <> iltNone) and not Assigned(JwIntegrityLabelSID[LabelType]) then
+    raise EJwsclInitWellKnownException.CreateFmtEx(
+      RsInitWellKnownNotCalled,
+      'SetIntegrityLevel', RsTokenGlobalClassName, RsUNToken, 0, False, []);
+
+  SetIntegrityLevel(JwIntegrityLabelSID[LabelType]);
+end;
+
+
+procedure TJwSecurityToken.SetIntegrityLevel(const MandatorySid : TJwSecurityId;
+      const Attributes : TJwSidAttributeSet = [sidaGroupMandatory]);
+var mL : TTokenMandatoryLabel;
+begin
+  if not Assigned(MandatorySid) then
+    raise EJwsclNILParameterException.CreateFmtEx(
+      RsNilParameter,
+      'SetIntegrityLevel', RsTokenGlobalClassName, RsUNToken, 0, False, ['MandatorySid']);
+
+
+  mL.Label_.Sid := MandatorySid.CreateCopyOfSID;
+  mL.Label_.Attributes := TJwEnumMap.ConvertAttributes(Attributes);
+
+  try
+    if (not SetTokenInformation(
+        fTokenHandle, JwaWindows.TTokenInformationClass(JwaVista.TokenIntegrityLevel), Pointer(@mL),
+        sizeof(mL))) then
+      raise EJwsclWinCallFailedException.CreateFmtEx(
+        RsWinCallFailed,
+        'SetIntegrityLevel', ClassName, RsUNToken, 0, True,
+         ['SetTokenInformation']);
+  finally
+    MandatorySid.FreeSID(mL.Label_.Sid);
+  end;
+end;
+
 function TJwSecurityToken.GetIntegrityLevel: TJwSecurityIdList;
 var
   mL: PTokenMandatoryLabel;
@@ -3458,6 +3582,8 @@ begin
   Self.GetTokenInformation(fTokenHandle,
     JwaVista.TTokenInformationClass(JwaVista.TokenIntegrityLevel), Pointer(mL));
 
+  result := nil;
+  if Assigned(mL) then
   try
     result := TJwSecurityIdList.Create(@Ml^.Label_);
   finally
@@ -4377,7 +4503,7 @@ initialization
   //warning do not add here code lines!!
   JwProcessHeap := GetProcessHeap;
   //add code from here
-  JwCheckAdministratorAccess;
+  //...
 {$ENDIF SL_INITIALIZATION_SECTION}
 
 

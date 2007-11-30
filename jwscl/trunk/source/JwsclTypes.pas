@@ -587,7 +587,14 @@ type
 
   TJwStringArray = array of String;
 
-
+  TJwIntegrityLabelType = (
+    iltNone,
+    iltLow,
+    iltMedium,
+    iltHigh,
+    iltSystem,
+    iltProtected
+    );
 
 type
    TJwSecurityObjectInformation = record
