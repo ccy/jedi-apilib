@@ -484,7 +484,7 @@ var
 
 function Process32First;
 begin
-  GetProcedureAddress(_Process32First, kernel32, 'Process32First' + AWSuffix);
+  GetProcedureAddress(_Process32First, kernel32, 'Process32First');
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -497,7 +497,7 @@ var
 
 function Process32Next;
 begin
-  GetProcedureAddress(_Process32Next, kernel32, 'Process32Next' + AWSuffix);
+  GetProcedureAddress(_Process32Next, kernel32, 'Process32Next');
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -562,7 +562,7 @@ var
 
 function Module32First;
 begin
-  GetProcedureAddress(_Module32First, kernel32, 'Module32First' + AWSuffix);
+  GetProcedureAddress(_Module32First, kernel32, 'Module32First');
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -575,7 +575,7 @@ var
 
 function Module32Next;
 begin
-  GetProcedureAddress(_Module32Next, kernel32, 'Module32Next' + AWSuffix);
+  GetProcedureAddress(_Module32Next, kernel32, 'Module32Next');
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -591,16 +591,21 @@ function Heap32ListNext; external kernel32 name 'Heap32ListNext';
 function Heap32First; external kernel32 name 'Heap32First';
 function Heap32Next; external kernel32 name 'Heap32Next';
 function Toolhelp32ReadProcessMemory; external kernel32 name 'Toolhelp32ReadProcessMemory';
-function Process32FirstW; external kernel32 name 'Process32FirstW';
-function Process32NextW; external kernel32 name 'Process32NextW';
-function Process32First; external kernel32 name 'Process32First' + AWSuffix;
-function Process32Next; external kernel32 name 'Process32Next' + AWSuffix;
 function Thread32First; external kernel32 name 'Thread32First';
 function Thread32Next; external kernel32 name 'Thread32Next';
-function Module32FirstW; external kernel32 name 'Module32FirstW';
+
+
+function Process32FirstW; external kernel32 name 'Process32FirstW';
+function Process32First; external kernel32 name 'Process32First'; //ANSI
+
+function Process32NextW; external kernel32 name 'Process32NextW';
+function Process32Next; external kernel32 name 'Process32Next';  //ANSI
+
+function Module32First; external kernel32 name 'Module32First';
+function Module32FirstW; external kernel32 name 'Module32FirstW'; //ANSI
+
 function Module32NextW; external kernel32 name 'Module32NextW';
-function Module32First; external kernel32 name 'Module32First' + AWSuffix;
-function Module32Next; external kernel32 name 'Module32Next' + AWSuffix;
+function Module32Next; external kernel32 name 'Module32Next'; //ANSI
 
 {$ENDIF DYNAMIC_LINK}
 
