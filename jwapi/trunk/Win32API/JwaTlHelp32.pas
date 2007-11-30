@@ -484,7 +484,7 @@ var
 
 function Process32First;
 begin
-  GetProcedureAddress(_Process32First, kernel32, 'Process32First' + AWSuffix);
+  GetProcedureAddress(_Process32First, kernel32, 'Process32First');
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -497,7 +497,7 @@ var
 
 function Process32Next;
 begin
-  GetProcedureAddress(_Process32Next, kernel32, 'Process32Next' + AWSuffix);
+  GetProcedureAddress(_Process32Next, kernel32, 'Process32Next');
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -562,7 +562,7 @@ var
 
 function Module32First;
 begin
-  GetProcedureAddress(_Module32First, kernel32, 'Module32First' + AWSuffix);
+  GetProcedureAddress(_Module32First, kernel32, 'Module32First');
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -575,7 +575,7 @@ var
 
 function Module32Next;
 begin
-  GetProcedureAddress(_Module32Next, kernel32, 'Module32Next' + AWSuffix);
+  GetProcedureAddress(_Module32Next, kernel32, 'Module32Next');
   asm
         MOV     ESP, EBP
         POP     EBP
