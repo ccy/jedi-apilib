@@ -354,7 +354,7 @@ const
     '%s.';
   RsPrivilegeLuidText = 'hi: 0x%0:x, lo: 0x%1:x (0x%2:x)';
   RsTokenInvalidClass = 'The token instance "%s" is not a TJwSecurityToken.';
-
+  RsProcessNotFound = 'The process "%0:s" could not be found.';  
 
 //Unit JwsclVersion.pas
   RsVersionOrHigher = 'or higher';

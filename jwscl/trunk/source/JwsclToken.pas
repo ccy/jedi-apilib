@@ -50,6 +50,8 @@ uses SysUtils, Contnrs, Classes,
 {$ENDIF SL_OMIT_SECTIONS}
 
 {$IFNDEF SL_IMPLEMENTATION_SECTION}
+const ExplorerProcessName = 'EXPLORER.EXE';
+
 type
   TJwPrivilegeSet = class;
   TJwPrivilege    = class;
@@ -358,17 +360,20 @@ type
     constructor CreateTokenEffective(const aDesiredAccess: TJwAccessMask);
       virtual;
 
-        {@Name create a duplicate token from an existing one. The token will be a primary one.
-         You cannot use the class to adapt an existing token, because the access mask of the token is unkown. (AccessCheck not implemented yet)
-         The token needs the TOKEN_DUPLICATE access type.
+    {@Name create a duplicate token from an existing one. The token will be a primary one.
+     You cannot use the class to adapt an existing token, because the access mask of the token is unkown. (AccessCheck not implemented yet)
+     The token needs the TOKEN_DUPLICATE access type.
 
-         @param(aTokenHandle The token handle to be copied.)
-         @param(aDesiredAccess The desired access rights of the new token.
-           It can be MAXIMUM_ALLOWED to get the maximum possible access.
-          )
-         @param(UseDuplicateExistingToken For C++ compability only. If you are using C++ and want to use this constructor instead of Create.
-              Set this parameter to true of false. This parameter is ignored!)
-         }
+     New: @Name creates in every case a second handle. Shared will be set to false so the handle is closed
+      if instance is freed.
+
+     @param(aTokenHandle The token handle to be copied.)
+     @param(aDesiredAccess The desired access rights of the new token.
+       It can be MAXIMUM_ALLOWED to get the maximum possible access.
+      )
+     @param(UseDuplicateExistingToken For C++ compability only. If you are using C++ and want to use this constructor instead of Create.
+          Set this parameter to true of false. This parameter is ignored!)
+     }
     constructor CreateDuplicateExistingToken(
       const aTokenHandle: TJwTokenHandle;
       const aDesiredAccess: TJwAccessMask;
@@ -412,6 +417,29 @@ type
     constructor CreateWTSQueryUserToken(
       SessionID: Cardinal = INVALID_HANDLE_VALUE); overload; virtual;
 
+    {@Name is a compatibility constructor for CreateWTSQueryUserToken which does
+     not work in Windows 2000.
+     It creates a token of the current logged on user.
+
+     This constructor seeks a process of the user and gets its token.
+     It only works in the same (terminal) session of the process.
+
+     @param(DesiredAccess defines the desired access to the token)
+     @param(ProcessName defines which process is used to get the token of the user)
+
+     @raises(EJwsclProcessNotFound will be raised if process handle given in parameter
+       ProcessName could not be retrieved.)
+     @raises(EJwsclWinCallFailedException will be raised if the process handle of the found
+       process could not be opened)
+     @raises(EJwsclSecurityException Several exceptions can be raised by used methods:
+       @unorderedlist(
+         @item(CreateTokenByProcess)
+         @item(CreateDuplicateExistingToken)
+       ))
+    }
+    constructor CreateCompatibilityQueryUserToken(
+      const DesiredAccess: TJwAccessMask;
+      const ProcessName : TJwString = ExplorerProcessName);
 
       (*
 	  @Name forges a new token using ZwCreateToken.
@@ -2659,6 +2687,72 @@ begin
     fAccessMask := aDesiredAccess;
 end;
 
+
+
+constructor TJwSecurityToken.CreateCompatibilityQueryUserToken(
+      const DesiredAccess: TJwAccessMask;
+      const ProcessName : TJwString = ExplorerProcessName);
+
+  {origin:
+   http://www.delphipraxis.net/post721630.html#721630}    
+  function GetProcessID(Exename: string): DWORD;
+  var
+    hProcessHandle: THandle;
+    pEntry: TProcessEntry32;
+  begin
+    result := 0;
+    hProcessHandle := CreateToolHelp32SnapShot(TH32CS_SNAPPROCESS, 0);
+    if hProcessHandle <> INVALID_HANDLE_VALUE then
+    begin
+      pEntry.dwSize := SizeOf(ProcessEntry32);
+      if Process32First(hProcessHandle, pEntry) = true then begin
+        repeat
+          if pos(Uppercase(pEntry.szExeFile), UpperCase(Exename)) <> 0 then begin
+            result := pEntry.th32ProcessID;
+            break;
+          end;
+        until Process32Next(hProcessHandle, pEntry) = false;
+      end;
+      CloseHandle(hProcessHandle);
+    end;
+  end;
+var
+    ProcessHandle,
+    ProcessID : Cardinal;
+    TokenOrig : TJwSecurityToken;
+
+begin
+  ProcessID := GetProcessID(TjwPChar(ProcessName));
+  if ProcessID = 0 then
+    raise EJwsclProcessNotFound.CreateFmtEx(
+          RsProcessNotFound,
+          'CreateCompatibilityQueryUserToken', ClassName, RsUNToken,
+          0, false, [ProcessName]);
+
+                        
+  ProcessHandle := OpenProcess(PROCESS_ALL_ACCESS, true, ProcessID);
+  if ProcessHandle = 0 then
+     raise EJwsclWinCallFailedException.CreateFmtEx(
+          RsWinCallFailed,
+          'CreateCompatibilityQueryUserToken', ClassName, RsUNToken,
+          0, True, ['OpenProcess']);
+
+  try
+    TokenOrig := TJwSecurityToken.CreateTokenByProcess(ProcessHandle,
+      TOKEN_ALL_ACCESS);
+
+    try
+      //Copy token handle to a primary one
+      Self.CreateDuplicateExistingToken(TokenOrig.TokenHandle, DesiredAccess);
+    finally
+      FreeAndNil(TokenOrig);
+    end;
+  finally
+    CloseHandle(ProcessHandle);
+  end;
+end;
+
+
 constructor TJwSecurityToken.CreateWTSQueryUserToken(SessionID:
   Cardinal {= INVALID_HANDLE_VALUE});
 begin
@@ -2704,12 +2798,25 @@ constructor TJwSecurityToken.CreateDuplicateExistingToken(
   UseDuplicateExistingToken: boolean = False);
 begin
   Self.Create;
+  //Shared == true
 
   fTokenHandle := aTokenHandle;
   fAccessMask  := TOKEN_ALL_ACCESS;
 
   try
+    //first convert token to thread token
+    //this method will do thing if token is already impersonated
+
+    ConvertToImpersonatedToken(DEFAULT_IMPERSONATION_LEVEL, aDesiredAccess);
+    //If the token handle differs we have a new token handle that
+    //is not shared.
+    if fTokenHandle <> aTokenHandle then
+      Shared := false; 
+
+    //if we are here the token is an impersonated one in every case  
     ConvertToPrimaryToken(aDesiredAccess);
+
+    Shared := false; 
   except
     Done; //free objects created by Self.Create;
     raise;
@@ -3547,12 +3654,15 @@ end;
 procedure TJwSecurityToken.SetIntegrityLevel(const MandatorySid : TJwSecurityId;
       const Attributes : TJwSidAttributeSet = [sidaGroupMandatory]);
 var mL : TTokenMandatoryLabel;
+  l : Integer;
 begin
   if not Assigned(MandatorySid) then
     raise EJwsclNILParameterException.CreateFmtEx(
       RsNilParameter,
       'SetIntegrityLevel', RsTokenGlobalClassName, RsUNToken, 0, False, ['MandatorySid']);
 
+
+  l := MandatorySid.SIDLength;
 
   mL.Label_.Sid := MandatorySid.CreateCopyOfSID;
   mL.Label_.Attributes := TJwEnumMap.ConvertAttributes(Attributes);

@@ -182,6 +182,7 @@ type
 
   EJwsclInvalidParameterException = class(EJwsclSecurityException);
 
+  EJwsclProcessNotFound = class(EJwsclSecurityException);
 
   EJwsclInvalidFlagsException = class(EJwsclSecurityException);
   EJwsclNoSuchLogonSession = class(EJwsclSecurityException);
