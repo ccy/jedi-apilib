@@ -22,6 +22,8 @@ Description:
 This unit contains ansi- and unicode string types that are used by the units of JWSCL.
 You can define UNICODE to use unicode strings. Otherwise ansicode will be used.
 
+See Jwscl.inc for Vista related stuff!
+
 TODO:
 use
 @longcode(#

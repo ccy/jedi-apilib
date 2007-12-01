@@ -35,6 +35,8 @@ Unsupported structures :
  SYSTEM_AUDIT_CALLBACK_OBJECT_ACE
 
 
+
+
 }
 {$IFNDEF SL_OMIT_SECTIONS}
 unit JwsclAcl;
@@ -112,7 +114,9 @@ type
          @item(TJwDiscretionaryAccessControlEntryAllow added by AddAccessAllowedAceEx)
          @item(TJwDiscretionaryAccessControlEntryDeny added by AddAccessDeniedAceEx)
          @item(TJwAuditAccessControlEntry added by AddAuditAccessAce)
-         @item(TJwSystemMandatoryAccessControlEntry added by AddMandatoryAce)
+         @item(TJwSystemMandatoryAccessControlEntry added by AddMandatoryAce.
+           This option is only available if the compiler directive "VISTA" is set
+            (usually in jwscl.inc))
          )
      @raises(EJwsclFailedAddACE will be raised if a AddXXX winapi call for a given ACE in the list failed.)
     }
@@ -1260,11 +1264,12 @@ begin
           aAudit.AuditFailure);
       end
       else
+{$IFDEF VISTA}
       if Items[i] is TJwSystemMandatoryAccessControlEntry then
       begin
         Mandatory := (Items[i] as TJwSystemMandatoryAccessControlEntry);
         bResult := AddMandatoryAce(
-              Result,//PACL pAcl,       
+              Result,//PACL pAcl,
               ACL_REVISION,//DWORD dwAceRevision,
               TJwEnumMap.ConvertAceFlags(Items[i].Flags),//DWORD AceFlags,
               Mandatory.AccessMask,//DWORD MandatoryPolicy,
@@ -1272,6 +1277,7 @@ begin
             );
       end
       else
+{$ENDIF}      
       begin //class is not supported
         GlobalFree(HRESULT(Result));
 
