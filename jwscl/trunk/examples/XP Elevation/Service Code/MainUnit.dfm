@@ -1,10 +1,9 @@
-object XPElevationService: TXPElevationService
+object Service1: TService1
   OldCreateOrder = False
-  AllowPause = False
-  DisplayName = 'XP Elevation'
-  AfterInstall = ServiceAfterInstall
-  Left = 2103
-  Top = 308
+  DisplayName = 'XP Elevation Service'
+  StartType = stManual
+  OnExecute = ServiceExecute
+  OnStop = ServiceStop
   Height = 150
   Width = 215
 end

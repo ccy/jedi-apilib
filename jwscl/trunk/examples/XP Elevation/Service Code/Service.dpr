@@ -2,7 +2,7 @@ program Service;
 
 uses
   SvcMgr,
-  MainUnit in 'MainUnit.pas' {XPElevationService: TService},
+  MainUnit in 'MainUnit.pas' {Service1: TService},
   ThreadUnit in 'ThreadUnit.pas',
   HandleRequestThread in 'HandleRequestThread.pas';
 
@@ -23,8 +23,8 @@ begin
   //
   // Application.DelayInitialize := True;
   //
- { if not Application.DelayInitialize or Application.Installing then
-    Application.Initialize;   }
-  Application.CreateForm(TXPElevationService, XPElevationService);
+  if not Application.DelayInitialize or Application.Installing then
+    Application.Initialize;
+  Application.CreateForm(TService1, Service1);
   Application.Run;
 end.

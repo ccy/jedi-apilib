@@ -35,31 +35,40 @@ uses MainUnit;
 procedure THandleRequestThread.Execute;
 var AppName: string; PipeSize: Cardinal; OvLapped: OVERLAPPED; ar: array[0..1] of THandle;
 begin
-  OvLapped.hEvent:=CreateEvent(nil, false, false, nil);
+  if InterlockedExchangeAdd(Service1.fHReqThreadCount, 1)=0 then
+   ResetEvent(Service1.ThreadsStopped);
   try
-    ar[0]:=OvLapped.hEvent;
-    ar[1]:=XPElevationService.StopEvent;
-    ReadFile(fPipeHandle, nil, 0, nil, @OvLapped);
-    case WaitForMultipleObjects(2, @ar[0], false, 10000) of
-      WAIT_TIMEOUT:
-      begin
-        XPElevationService.LogEvent('HandleRequestThread was timed out');
-        exit;
+    if Service1.Stopped then
+     exit;
+    OvLapped.hEvent:=CreateEvent(nil, false, false, nil);
+    try
+      ar[0]:=OvLapped.hEvent;
+      ar[1]:=Service1.StopEvent;
+      ReadFile(fPipeHandle, nil, 0, nil, @OvLapped);
+      case WaitForMultipleObjects(2, @ar[0], false, 10000) of
+        WAIT_TIMEOUT:
+        begin
+          Service1.LogEvent('HandleRequestThread was timed out');
+          exit;
+        end;
+        WAIT_OBJECT_0+1: exit;
       end;
-      WAIT_OBJECT_0+1: exit;
+      PeekNamedPipe(fPipeHandle, nil, 0, nil, @PipeSize, nil);
+      SetLength(AppName, PipeSize);
+      ReadFile(fPipeHandle, @AppName[1], PipeSize, nil, @OvLapped);
+      WaitForSingleObject(OvLapped.hEvent, INFINITE);
+    //              MessageBox(0, PChar(AppName), 'App is to start', MB_SERVICE_NOTIFICATION or MB_OK);
+      TJwSecurityToken.ImpersonateNamedPipeClient(fPipeHandle);
+      Service1.StartApp(Appname);
+    //  TJwSecurityToken.RevertToSelf; //now made in StartApp
+    finally
+      CloseHandle(OvLapped.hEvent);
+      DisconnectNamedPipe(fPipeHandle);
+      CloseHandle(fPipeHandle);
     end;
-    PeekNamedPipe(fPipeHandle, nil, 0, nil, @PipeSize, nil);
-    SetLength(AppName, PipeSize);
-    ReadFile(fPipeHandle, @AppName[1], PipeSize, nil, @OvLapped);
-    WaitForSingleObject(OvLapped.hEvent, INFINITE);
-  //              MessageBox(0, PChar(AppName), 'App is to start', MB_SERVICE_NOTIFICATION or MB_OK);
-    TJwSecurityToken.ImpersonateNamedPipeClient(fPipeHandle);
-    XPElevationService .StartApp(Appname);
-  //  TJwSecurityToken.RevertToSelf; //now made in StartApp
   finally
-    CloseHandle(OvLapped.hEvent);
-    DisconnectNamedPipe(fPipeHandle);
-    CloseHandle(fPipeHandle);
+    if InterlockedExchangeAdd(Service1.fHReqThreadCount, -1)=1 then
+      SetEvent(Service1.ThreadsStopped);
   end;
 end;
 

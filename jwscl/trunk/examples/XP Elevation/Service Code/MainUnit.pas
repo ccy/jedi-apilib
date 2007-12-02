@@ -3,39 +3,38 @@ unit MainUnit;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, SvcMgr, Dialogs,
+  Messages, SysUtils, Classes, Graphics, Controls, SvcMgr, Dialogs,
   JwaWindows, JwsclToken, JwsclLsa, JwsclCredentials, JwsclDescriptor, JwsclDesktops,
-  JwsclExceptions, JwsclSID, JwsclKnownSID;
+  JwsclExceptions, JwsclSID, JwsclKnownSID, JwsclEncryption, JwsclTypes;
 
 type
   TLogType=(ltInfo, ltError);
 
-  TXPElevationService = class(TService)
+  TService1 = class(TService)
     procedure ServiceExecute(Sender: TService);
-    procedure ServiceStart(Sender: TService; var Started: Boolean);
     procedure ServiceStop(Sender: TService; var Stopped: Boolean);
-    procedure ServiceShutdown(Sender: TService);
-    procedure ServiceAfterInstall(Sender: TService);
   private
     { Private declarations }
     fStopEvent:           THandle;
+    fThreadsStopped:      THandle;
     fLogCriticalSection:  TCriticalSection;
     fLogFile:             Textfile;
     fStopped:             boolean;
 //    fDesktop:             TJwSecurityDesktop;
     fAllowedSIDs:         TJwSecurityIdList;
+    fPasswords:           TThreadList;
     procedure InitAllowedSIDs;
     procedure SetStopped(const Value: boolean);
     function MayUserBeElevated(User: TJwSecurityID): boolean;
-    function AskCredentials(Token: TJwSecurityToken; AppToStart: String; UserAndDomain: string; out Password: string): boolean;
+    function AskCredentials(Token: TJwSecurityToken; AppToStart: String; UserAndDomain: string; out Password: string; out Save: boolean): boolean;
   public
-    fCompletionPortsCrit: TCriticalSection;
-    fCompletionPorts:     array of THandle;
+    fHReqThreadCount:     Integer;
     function GetServiceController: TServiceController; override;
     procedure StartApp(AppToStart: String);
     procedure LogEvent(Event: String; EventType: TLogType=ltInfo);
     { Public declarations }
     property StopEvent: THandle read fStopEvent;
+    property ThreadsStopped: THandle read fThreadsStopped;
     property Stopped: boolean read fStopped write SetStopped;
   end;
 
@@ -43,72 +42,32 @@ const MessageboxCaption= 'XP Elevation';
       CredApplicationKey='CredentialsApplication';
       LogFileKey='Log';
 
-      PARAMETER_LOG_DEBUG = 'debug'; //log by debug output message
-      PARAMETER_LOG_EVENT = 'event'; //log by windows event logging
-
-      SERVICE_DESCRIPTION : WideString = 'XP Elevation service provides the fundamental elevation '+
-      'process for starting processes as an elevated user. If this service is stopped or terminated '+
-      'privileged users can no more elevate themselves as administrators.';
-
-
 var
-  XPElevationService: TXPElevationService;
-
-
-function HasParameter(const Str : String) : Boolean;
+  Service1: TService1;
 
 implementation
 uses ThreadUnit, HandleRequestThread, Registry;
 {$R *.DFM}
 
-function HasParameter(const Str : String) : Boolean;
-var i : Integer;
-begin
-  result := false;
-  for i := 1 to ParamCount -1 do
-  begin
-    result := (CompareText(ParamStr(i),'/'+Str) = 0) or
-       (CompareText(ParamStr(i),'-'+Str) = 0);
-    if result then
-      break;
-  end;
-end;
-
 procedure ServiceController(CtrlCode: DWord); stdcall;
 begin
-  XPElevationService.Controller(CtrlCode);
+  Service1.Controller(CtrlCode);
 end;
 
-function TXPElevationService.GetServiceController: TServiceController;
+function TService1.GetServiceController: TServiceController;
 begin
   Result := ServiceController;
 end;
 
-procedure TXPElevationService.LogEvent(Event: String; EventType: TLogType=ltInfo);
-var S : String;
-    ID : Integer;
+procedure TService1.LogEvent(Event: String; EventType: TLogType=ltInfo);
 begin
-  ID := 0;
   EnterCriticalSection(fLogCriticalSection);
   try
     case EventType of
-      ltInfo: begin
-                S := DateTimeToStr(Now)+' '+Event;
-                ID := EVENTLOG_INFORMATION_TYPE;
-              end;
-      ltError: begin
-                 S := DateTimeToStr(Now)+ ' ERROR: ' + Event;
-                 ID := EVENTLOG_ERROR_TYPE;
-               end;
+      ltInfo: Writeln(fLogfile, DateTimeToStr(Now)+' '+Event);
+      ltError: Writeln(fLogfile, DateTimeToStr(Now), ' ERROR: ', Event);
     end;
-    Writeln(fLogfile, S);
     Flush(fLogfile);
-
-    if HasParameter(PARAMETER_LOG_DEBUG) then
-      OutputDebugString(PChar(S));
-    if HasParameter(PARAMETER_LOG_EVENT) then
-      Self.LogMessage(S, ID);
-
   finally
     LeaveCriticalSection(fLogCriticalSection);
   end;
@@ -223,15 +182,16 @@ begin
   end;
 end;
 
-function TXPElevationService.AskCredentials(Token: TJwSecurityToken; AppToStart: string; UserAndDomain: string; out Password: string): boolean;
-var StartInfo: STARTUPINFOA;
+function TService1.AskCredentials(Token: TJwSecurityToken; AppToStart: string; UserAndDomain: string; out Password: string; out Save: boolean): boolean;
+var StartInfo: STARTUPINFOW;
   procedure InitStartInfo;
   begin
     ZeroMemory(@StartInfo, Sizeof(StartInfo));
     StartInfo.cb:=Sizeof(StartInfo);
     StartInfo.lpDesktop:='WinSta0\Default';
   end;
-const StrLenCancelled: Cardinal=Cardinal(-1);
+const StrLenCancelled = Cardinal(-1);
+      SaveBit         = Cardinal(1 shl 31);
 var ProcInfo: PROCESS_INFORMATION; Ar: Array[0..1] of THandle; Dummy: Cardinal;
     ReadPipe, WritePipe: THandle; Loc: Cardinal; Desc: TJwSecurityDescriptor; SecAttr: LPSECURITY_ATTRIBUTES;
     CredApp: String;
@@ -240,12 +200,17 @@ begin
   InitStartInfo;
   ZeroMemory(@ProcInfo, Sizeof(ProcInfo));
   Desc:=TJwSecurityDescriptor.Create;
+  Assert(JwIsPrivilegeSet(SE_ASSIGNPRIMARYTOKEN_NAME), 'SE_ASSIGNPRIMARYTOKEN_NAME not held');
+  Assert(JwIsPrivilegeSet(SE_INCREASE_QUOTA_NAME), 'SE_INCREASE_QUOTA_NAME not held');
+  Assert((Token.AccessMask and TOKEN_ASSIGN_PRIMARY)=TOKEN_ASSIGN_PRIMARY, 'TOKEN_ASSIGN_PRIMARY not in access mask');
+  Assert((Token.AccessMask and TOKEN_DUPLICATE)=TOKEN_DUPLICATE, 'TOKEN_DUPLICATE not in access mask');
+  Assert((Token.AccessMask and TOKEN_QUERY)=TOKEN_QUERY, 'TOKEN_QUERY not in access mask');
   try
     SecAttr:=LPSECURITY_ATTRIBUTES(Desc.Create_SA(false));
     try
       CredApp:=RegGetFullPath(CredApplicationKey);
       //The application will immediately stop execution because it expects two parameters, but we need its exit code
-      if not CreateProcessAsUser(Token.TokenHandle, PChar(CredApp), nil,
+      if not CreateProcessAsUserW(Token.TokenHandle, PWideChar(WideString(CredApp)), nil,
              SecAttr, SecAttr, True, CREATE_NEW_CONSOLE, nil, nil, StartInfo, ProcInfo) then
       begin
         LogEvent('Could not create the process asking for credentials '+SysErrorMessage(GetLastError), ltError);
@@ -270,7 +235,7 @@ begin
         GetExitCodeProcess(ProcInfo.hProcess, Loc);
         CloseHandle(ProcInfo.hProcess);
 
-        if not CreateProcessAsUser(Token.TokenHandle, PChar(CredApp), PChar('"'+CredApp+'" "'+AppToStart+'" "'+UserAndDomain+'"'),
+        if not CreateProcessAsUserW(Token.TokenHandle, PWideChar(WideString(CredApp)), PWideChar(WideString('"'+CredApp+'" "'+AppToStart+'" "'+UserAndDomain+'"')),
                  SecAttr, SecAttr, True, CREATE_NEW_CONSOLE or CREATE_SUSPENDED, nil, nil, StartInfo, ProcInfo) then
         begin
           LogEvent('Could not create the process asking for credentials '+SysErrorMessage(GetLastError), ltError);
@@ -279,31 +244,37 @@ begin
         else
         begin
           CreatePipe(ReadPipe, WritePipe, nil, 0);
-          DuplicateHandle(GetCurrentProcess, WritePipe, ProcInfo.hProcess, @WritePipe, 0, false, DUPLICATE_SAME_ACCESS or DUPLICATE_CLOSE_SOURCE);
-          //write the new handle to the location given in the exit code
-          WriteProcessMemory(ProcInfo.hProcess, Pointer(Loc), @WritePipe, SizeOf(WritePipe), nil);
-          ResumeThread(ProcInfo.hThread);
-          CloseHandle(ProcInfo.hThread);
-          Ar[0]:=fStopEvent;
-          Ar[1]:=ProcInfo.hProcess;
-          WaitForMultipleObjects(2, @Ar[0], false, INFINITE);
-          if fStopped then
-          begin
-            //Terminate process???
+          try
+            DuplicateHandle(GetCurrentProcess, WritePipe, ProcInfo.hProcess, @WritePipe, 0, false, DUPLICATE_SAME_ACCESS or DUPLICATE_CLOSE_SOURCE);
+            //write the new handle to the location given in the exit code
+            WriteProcessMemory(ProcInfo.hProcess, Pointer(Loc), @WritePipe, SizeOf(WritePipe), nil);
+            ResumeThread(ProcInfo.hThread);
+            CloseHandle(ProcInfo.hThread);
+            Ar[0]:=fStopEvent;
+            Ar[1]:=ProcInfo.hProcess;
+            WaitForMultipleObjects(2, @Ar[0], false, INFINITE);
+            if fStopped then
+            begin
+              //Terminate process???
+              CloseHandle(ProcInfo.hProcess);
+              Abort;
+            end;
             CloseHandle(ProcInfo.hProcess);
-            Abort;
+            //we just reuse loc here
+            ReadFile(ReadPipe, @Loc, SizeOf(Loc), @Dummy, nil);
+            Result:=Loc<>StrLenCancelled;
+            if Result then
+            begin
+              Save:=Loc and SaveBit = SaveBit;
+              SetLength(Password, Loc and not SaveBit);
+              if Loc<>0 then
+                ReadFile(ReadPipe, Pointer(Password), Loc and not SaveBit, @Dummy, nil);
+            end;
+          finally
+            CloseHandle(ReadPipe);
+            CloseHandle(WritePipe);
           end;
-          CloseHandle(ProcInfo.hProcess);
-          //we just reuse loc here
-          ReadFile(ReadPipe, @Loc, SizeOf(Loc), @Dummy, nil);
-          Result:=Loc<>StrLenCancelled;
-          if Result then
-          begin
-            SetLength(Password, Loc);
-            if Loc<>0 then
-              ReadFile(ReadPipe, Pointer(Password), Loc, @Dummy, nil);
-          end;
-      end;
+        end;
     end;
     finally
       Desc.Free_SA(PSECURITY_ATTRIBUTES(SecAttr));
@@ -313,12 +284,14 @@ begin
   end;
 end;
 
-function TXPElevationService.MayUserBeElevated(User: TJwSecurityID): boolean;
+function TService1.MayUserBeElevated(User: TJwSecurityID): boolean;
 begin
   result:=fAllowedSIDs.FindSid(User)<>-1;
 end;
 
-procedure TXPElevationService.StartApp(AppToStart: string);
+const EmptyPass = Pointer(-1);
+
+procedure TService1.StartApp(AppToStart: string);
 var Pass, User, Domain: string; LSA: TJwSecurityLsa;
 
     plogonData : PMSV1_0_INTERACTIVE_LOGON; Authlen: Cardinal;
@@ -328,16 +301,19 @@ var Pass, User, Domain: string; LSA: TJwSecurityLsa;
     ProfInfo: PROFILEINFO; AddGroups: TJwSecurityIDList; SID: TJwSecurityID;
 
     EnvirBlock: Pointer; StartInfo: STARTUPINFO; ProcInfo: PROCESS_INFORMATION;
-    Job: THandle; Dummy: Cardinal;
+    Job: THandle; EncryptLength: Cardinal; SIDIndex: Integer;
 
-    SeId1, SeId2, SeId3: Cardinal;
+    SeId1, SeId2, SeId3: Cardinal; EncryptedPassword: Pointer; Save: Boolean;
+
+const EncryptionBlockSize = 8;
 begin
   try
     Token:=TJwSecurityToken.CreateTokenEffective(TOKEN_ALL_ACCESS);
     try
       SID:=Token.TokenUser;
       try
-        If not MayUserBeElevated(SID) then
+        SIDIndex:=fAllowedSIDs.FindSid(SID);
+        If SIDIndex=-1 then
         begin
           LogEvent('Elevation of user '+SID.AccountName['']+' for application '+AppToStart+' not allowed.');
 //          //we do not want to wait for the user to abort this dialog
@@ -353,17 +329,44 @@ begin
         except
           Domain:='local';
         end;
+
       finally
         SID.Free;
       end;
       TJwSecurityToken.RevertToSelf;
+      Save:=False;
       Token.ConvertToPrimaryToken(TOKEN_ALL_ACCESS);
-      if not AskCredentials(Token, AppToStart, User+'@'+Domain, Pass) then
-      begin
-        LogEvent('Credentials prompt for '+AppToStart+' aborted by user');
-        exit;
+      with fPasswords.LockList do
+      try
+        EncryptedPassword:=Items[SIDIndex];
+        if EncryptedPassword=nil then
+        begin
+          LogEvent('Credentials for user '+User+' are asked');
+          if not AskCredentials(Token, AppToStart, User+'@'+Domain, Pass, Save) then
+          begin
+            LogEvent('Credentials prompt for '+AppToStart+' aborted by user');
+            exit;
+          end
+        end
+        else
+        begin
+          LogEvent('Credentials for user '+User+' are retrieved from the cache');
+          if PCardinal(EncryptedPassword)=EmptyPass then
+            Pass:=''
+          else
+          begin
+            if PCardinal(EncryptedPassword)^ mod EncryptionBlockSize = 0 then
+              SetLength(Pass, PCardinal(EncryptedPassword)^)
+            else
+              SetLength(Pass, ((PCardinal(EncryptedPassword)^ div EncryptionBlockSize)+1)*EncryptionBlockSize);
+            System.Move(PCardinal(Cardinal(EncryptedPassword)+4)^, Pointer(Pass)^, Length(Pass));
+            TJwEncryptionApi.CryptProtectMemory(Pointer(Pass), Length(Pass), [pmSameProcess]);
+            SetLength(Pass, PCardinal(EncryptedPassword)^);
+          end;
+        end;
+      finally
+        fPasswords.UnlockList;
       end;
-
 //      Token:=TJwSecurityToken.CreateWTSQueryUserToken;
 //      try
 //        with Token.TokenUser do
@@ -423,6 +426,35 @@ begin
                   LogEvent('Logon of User '+User+' failed');
                   MessageBox(0, 'Invalid logon data (e.g. wrong password)', MessageboxCaption, MB_SERVICE_NOTIFICATION or MB_OK);
                   abort;
+                end;
+              end;
+              NewToken.Shared:=False; //IMPORTANT!!!
+              if Save then
+              begin
+                if Pass='' then
+                  with fPasswords.LockList do
+                  try
+                    if Items[SIDIndex]=nil then
+                      Items[SIDIndex]:=EmptyPass;
+                  finally
+                    fPasswords.UnlockList;
+                  end
+                else
+                begin
+                  if Length(Pass) mod EncryptionBlockSize = 0 then
+                    EncryptLength:=Length(Pass)
+                  else
+                    EncryptLength:=((Length(Pass) div 8)+1)*8;
+                  EncryptedPassword:=AllocMem(4+EncryptLength);
+                  Move(PCardinal(Cardinal(Pass)-4)^, EncryptedPassword^, 4+Length(Pass));
+                  TJwEncryptionApi.CryptProtectMemory(Pointer(Cardinal(EncryptedPassword)+4), EncryptLength, [pmSameProcess]);
+                  with fPasswords.LockList do
+                  try
+                    if Items[SIDIndex]=nil then
+                      Items[SIDIndex]:=EncryptedPassword;
+                  finally
+                    fPasswords.UnlockList;
+                  end;
                 end;
               end;
             finally
@@ -492,7 +524,7 @@ begin
 //              finally
 //                Free;
 //              end;
-              if GetTokenInformation(   Token.TokenHandle, TokenSessionId, @SeId1, 4, Dummy) then
+              if GetTokenInformation(   Token.TokenHandle, TokenSessionId, @SeId1, 4, EncryptLength) then //EncryptLength is just a dummy here
                 SetTokenInformation(NewToken.TokenHandle, TokenSessionId, @SeId1, 4);
               CreateEnvironmentBlock(@Envirblock, NewToken.TokenHandle, false);
               try
@@ -510,12 +542,13 @@ begin
                 DestroyEnvironmentBlock(Envirblock);
               end;
               if not AssignProcessToJobObject(Job, ProcInfo.hProcess) then
-                LogEvent('Assignment to job failed '+SysErrorMessage(GetLastError), ltError);
+                LogEvent('Assignment to job failed '+SysErrorMessage(GetLastError)+' '+inttostr(Job)+' '+inttostr(ProcInfo.hProcess), ltError);
               ResumeThread(ProcInfo.hThread);
               CloseHandle(Procinfo.hThread);
+              CloseHandle(ProcInfo.hProcess);
               LogEvent('Creation of process '+AppToStart+' as user '+User+' successful');
 //              MessageBox(0, PChar('Process created successfully: '+inttostr(ProcInfo.hProcess)), 'UAC-Nachbildung', MB_SERVICE_NOTIFICATION or MB_OK);
-              TUnloadProfThread.Create(Profinfo.hProfile, NewToken, Job);
+              UnloadProfThread.Add(Job, Profinfo.hProfile, NewToken);
             finally
               LsaFreeReturnBuffer(ProfBuffer);
             end;
@@ -526,9 +559,10 @@ begin
           LSA.Free;
         end;
       finally
-        ZeroMemory(Pointer(Password), length(Password));
+        ZeroMemory(Pointer(Pass), length(Pass));
       end;
     finally
+      ZeroMemory(Pointer(Pass), Length(Pass));
       Token.Free;
     end;
   except
@@ -544,7 +578,7 @@ begin
   end;
 end;
 
-procedure TXPElevationService.InitAllowedSIDs;
+procedure TService1.InitAllowedSIDs;
 var Reg: TRegistry; SIDStrings: TStringlist; i: integer;
 begin
   fAllowedSIDs:=TJwSecurityIDList.Create(True);
@@ -570,9 +604,12 @@ begin
   finally
     Reg.Free;
   end;
+  fPasswords:=TThreadList.Create;
+  fPasswords.LockList.Count:=fAllowedSIDs.Count;
+  fPasswords.UnlockList;
 end;
 
-procedure TXPElevationService.ServiceExecute(Sender: TService);
+procedure TService1.ServiceExecute(Sender: TService);
 var Pipe: THandle; OvLapped: OVERLAPPED; ar: array[0..1] of THandle;
     AppName: String; PipeSize: Cardinal; Descr: TJwSecurityDescriptor; SecAttr: PSECURITY_ATTRIBUTES;
     i: integer;
@@ -599,99 +636,108 @@ begin
 //    finally
 //      Descr.Free;
 //    end;
-    InitializeCriticalSection(fCompletionPortsCrit);
-      try
-        SecAttr:=nil;
-        ZeroMemory(@OvLapped, sizeof(OvLapped));
-        OvLapped.hEvent:=CreateEvent(nil, false, false, nil);
+    fStopEvent:=CreateEvent(nil, true, false, nil);
+    fThreadsStopped:=CreateEvent(nil, true, true, nil);
+    try
         try
-          Descr:=TJwSecurityDescriptor.Create;
+          SecAttr:=nil;
+          ZeroMemory(@OvLapped, sizeof(OvLapped));
+          OvLapped.hEvent:=CreateEvent(nil, false, false, nil);
           try
-            Descr.DACL:=nil;
-            SecAttr:=Descr.Create_SA(False);
-            Pipe:=CreateNamedPipe('\\.\pipe\UAC in XP', PIPE_ACCESS_INBOUND or FILE_FLAG_OVERLAPPED, PIPE_WAIT, PIPE_UNLIMITED_INSTANCES, 0, 0, 0, LPSECURITY_ATTRIBUTES(SecAttr));
-          finally
-            Descr.Free;
-          end;
-          if Pipe=INVALID_HANDLE_VALUE then
-          begin
-//            MessageBox(0, PChar('Error occured during pipe creation: '+SysErrorMessage(GetLastError)), 'UAC-Nachbildung', MB_SERVICE_NOTIFICATION or MB_OK);
-            LogEvent('Error occured during pipe creation: '+SysErrorMessage(GetLastError), ltError);
-            abort;
-          end;
-//        MessageBox(0, PChar('Pipe ('+inttostr(Pipe)+') created successfully'), 'UAC-Nachbildung', MB_SERVICE_NOTIFICATION or MB_OK);
-          try
+            Descr:=TJwSecurityDescriptor.Create;
+            try
+              Descr.DACL:=nil;
+              SecAttr:=Descr.Create_SA(False);
+              Pipe:=CreateNamedPipe('\\.\pipe\XPElevationPipe', PIPE_ACCESS_INBOUND or FILE_FLAG_OVERLAPPED, PIPE_WAIT, PIPE_UNLIMITED_INSTANCES, 0, 0, 0, LPSECURITY_ATTRIBUTES(SecAttr));
+            finally
+              Descr.Free;
+            end;
+            if Pipe=INVALID_HANDLE_VALUE then
+            begin
+//              MessageBox(0, PChar('Error occured during pipe creation: '+SysErrorMessage(GetLastError)), 'UAC-Nachbildung', MB_SERVICE_NOTIFICATION or MB_OK);
+              LogEvent('Error occured during pipe creation: '+SysErrorMessage(GetLastError), ltError);
+              abort;
+            end;
+//          MessageBox(0, PChar('Pipe ('+inttostr(Pipe)+') created successfully'), 'UAC-Nachbildung', MB_SERVICE_NOTIFICATION or MB_OK);
             InitAllowedSIDs;
             try
-              ar[0]:=fStopEvent;
-              ar[1]:=OvLapped.hEvent;
-              ConnectNamedPipe(Pipe, @OvLapped);
-              while MsgWaitForMultipleObjects(2, @ar[0], false, INFINITE, QS_ALLINPUT)=WAIT_OBJECT_0+2 do
-                ServiceThread.ProcessRequests(False);
-              while not Stopped do
-              begin
-////              MessageBox(0, 'Pipe connected', 'UAC-Nachbildung', MB_SERVICE_NOTIFICATION or MB_OK);
-//                PeekNamedPipe(Pipe, nil, 0, nil, @PipeSize, nil);
-//                while (PipeSize=0) and not Stopped do
-//                begin
-//                  Sleep(0);
-//                  PeekNamedPipe(Pipe, nil, 0, nil, @PipeSize, nil);
-//                  ServiceThread.ProcessRequests(false);
-//                end;
-//                if Stopped then
-//                  break;
-//                SetLength(AppName, PipeSize);
-//                ReadFile(Pipe, @AppName[1], PipeSize, nil, @OvLapped);
-//                WaitForSingleObject(OvLapped.hEvent, INFINITE);
-////              MessageBox(0, PChar(AppName), 'App is to start', MB_SERVICE_NOTIFICATION or MB_OK);
-//                TJwSecurityToken.ImpersonateNamedPipeClient(Pipe);
-//                StartApp(Appname);
-//              //  TJwSecurityToken.RevertToSelf; //now made in StartApp
-//                DisconnectNamedPipe(Pipe);
-                with THandleRequestThread.Create(True) do
-                begin
-                  FreeOnTerminate:=True;
-                  PipeHandle:=Pipe;
-                  Resume;
-                end;
-                Pipe:=CreateNamedPipe('\\.\pipe\UAC in XP', PIPE_ACCESS_INBOUND or FILE_FLAG_OVERLAPPED, PIPE_WAIT, PIPE_UNLIMITED_INSTANCES, 0, 0, 0, LPSECURITY_ATTRIBUTES(SecAttr));
-                if Pipe=INVALID_HANDLE_VALUE then
-                begin
-//                  MessageBox(0, PChar('Error occured during pipe creation: '+SysErrorMessage(GetLastError)), 'UAC-Nachbildung', MB_SERVICE_NOTIFICATION or MB_OK);
-                  LogEvent('Error occured during pipe creation: '+SysErrorMessage(GetLastError), ltError);
-                  abort;
-                end;
+              try
+                UnloadProfThread := TUnloadProfThread.Create;
+                ar[0]:=fStopEvent;
+                ar[1]:=OvLapped.hEvent;
                 ConnectNamedPipe(Pipe, @OvLapped);
-                while MsgWaitForMultipleObjects(2, @ar[0], false, INFINITE, QS_ALLINPUT and not QS_POSTMESSAGE or QS_ALLPOSTMESSAGE)=WAIT_OBJECT_0+2 do
+                while MsgWaitForMultipleObjects(2, @ar[0], false, INFINITE, QS_ALLINPUT)=WAIT_OBJECT_0+2 do
                   ServiceThread.ProcessRequests(False);
+                while not Stopped do
+                begin
+////                MessageBox(0, 'Pipe connected', 'UAC-Nachbildung', MB_SERVICE_NOTIFICATION or MB_OK);
+//                  PeekNamedPipe(Pipe, nil, 0, nil, @PipeSize, nil);
+//                  while (PipeSize=0) and not Stopped do
+//                  begin
+//                    Sleep(0);
+//                    PeekNamedPipe(Pipe, nil, 0, nil, @PipeSize, nil);
+//                    ServiceThread.ProcessRequests(false);
+//                  end;
+//                  if Stopped then
+//                    break;
+//                  SetLength(AppName, PipeSize);
+//                  ReadFile(Pipe, @AppName[1], PipeSize, nil, @OvLapped);
+//                  WaitForSingleObject(OvLapped.hEvent, INFINITE);
+////                MessageBox(0, PChar(AppName), 'App is to start', MB_SERVICE_NOTIFICATION or MB_OK);
+//                  TJwSecurityToken.ImpersonateNamedPipeClient(Pipe);
+//                  StartApp(Appname);
+//                //  TJwSecurityToken.RevertToSelf; //now made in StartApp
+//                  DisconnectNamedPipe(Pipe);
+                  with THandleRequestThread.Create(True) do
+                  begin
+                    FreeOnTerminate:=True;
+                    PipeHandle:=Pipe;
+                    Resume;
+                  end;
+                  Pipe:=CreateNamedPipe('\\.\pipe\XPElevationPipe', PIPE_ACCESS_INBOUND or FILE_FLAG_OVERLAPPED, PIPE_WAIT, PIPE_UNLIMITED_INSTANCES, 0, 0, 0, LPSECURITY_ATTRIBUTES(SecAttr));
+                  if Pipe=INVALID_HANDLE_VALUE then
+                  begin
+//                    MessageBox(0, PChar('Error occured during pipe creation: '+SysErrorMessage(GetLastError)), 'UAC-Nachbildung', MB_SERVICE_NOTIFICATION or MB_OK);
+                    LogEvent('Error occured during pipe creation: '+SysErrorMessage(GetLastError), ltError);
+                    abort;
+                  end;
+                  ConnectNamedPipe(Pipe, @OvLapped);
+                  while MsgWaitForMultipleObjects(2, @ar[0], false, INFINITE, QS_ALLINPUT and not QS_POSTMESSAGE or QS_ALLPOSTMESSAGE)=WAIT_OBJECT_0+2 do
+                    ServiceThread.ProcessRequests(False);
+                end;
+              finally
+
               end;
-            finally
-              fAllowedSIDs.Free;
-            end;
-        finally
-          CloseHandle(Pipe);
-          EnterCriticalSection(fCompletionPortsCrit);
-          try
-            for i:=0 to high(fCompletionPorts) do
-              PostQueuedCompletionStatus(fCompletionPorts[i], 0, MESSAGE_FROM_SERVICE, nil);
           finally
-            LeaveCriticalSection(fCompletionPortsCrit);
+            CloseHandle(Pipe);
+            PostQueuedCompletionStatus(UnloadProfThread.IOCompletionPort, 0, MESSAGE_FROM_SERVICE, nil);
+            WaitForSingleObject(fThreadsStopped, 10000);
+//            Sleep(1000);
+            fAllowedSIDs.Free;
+            with fPasswords.LockList do
+              for i:=0 to Count-1 do
+                if (Items[i]<>nil) and (Items[i]<>EmptyPass) then
+                  FreeMem(Items[i]);
+            fPasswords.Free;
+            UnloadProfThread.WaitFor;
+            UnloadProfThread.Free;
           end;
-          Sleep(1000);
+        finally
+          if Assigned(SecAttr) then
+          begin
+            TJwSecurityDescriptor.Free_SD(PSECURITY_DESCRIPTOR(SecAttr.lpSecurityDescriptor));
+            FreeMem(SecAttr);
+          end;
+          CloseHandle(OvLapped.hEvent);
         end;
       finally
-        if Assigned(SecAttr) then
-        begin
-          TJwSecurityDescriptor.Free_SD(PSECURITY_DESCRIPTOR(SecAttr.lpSecurityDescriptor));
-          FreeMem(SecAttr);
-        end;
-        CloseHandle(OvLapped.hEvent);
+//        fDesktop.Free;
+//        MessageBox(0, 'Ending', 'UAC-Nachbildung', MB_SERVICE_NOTIFICATION or MB_OK);
+        LogEvent('Ending');
       end;
     finally
-      DeleteCriticalSection(fCompletionPortsCrit);
-//      fDesktop.Free;
-//      MessageBox(0, 'Ending', 'UAC-Nachbildung', MB_SERVICE_NOTIFICATION or MB_OK);
-      LogEvent('Ending');
+      CloseHandle(fStopEvent);
+      CloseHandle(fThreadsStopped);
     end;
   finally
     DeleteCriticalSection(fLogCriticalSection);
@@ -699,52 +745,16 @@ begin
   end;
 end;
 
-procedure TXPElevationService.ServiceShutdown(Sender: TService);
-begin
-  CloseHandle(fStopEvent);
-end;
-
-procedure TXPElevationService.ServiceStart(Sender: TService; var Started: Boolean);
-begin
-  fStopEvent:=CreateEvent(nil, true, false, nil);
-end;
-
-procedure TXPElevationService.ServiceStop(Sender: TService; var Stopped: Boolean);
+procedure TService1.ServiceStop(Sender: TService; var Stopped: Boolean);
 begin
   Self.Stopped:=True;
 end;
 
-procedure TXPElevationService.SetStopped(const Value: boolean);
+procedure TService1.SetStopped(const Value: boolean);
 begin
   FStopped := Value;
   if Value then
     SetEvent(fStopEvent);
-end;
-
-procedure TXPElevationService.ServiceAfterInstall(Sender: TService);
-var SvcMgr, Svc : Cardinal;
-    sd : TServiceDescriptionW;
-begin
-  //Set service description
-  SvcMgr := OpenSCManager(nil, nil, SC_MANAGER_ALL_ACCESS);
-  if SvcMgr = 0 then
-    exit;
-
-
-  Svc := OpenService(SvcMgr, PChar(Name), SERVICE_CHANGE_CONFIG);
-  if Svc = 0 then
-    exit;
-
-  FillChar(sd, sizeof(sd),0);
-  sd.lpDescription := PWideChar(SERVICE_DESCRIPTION);
-
-  ChangeServiceConfig2W(
-        Svc,                 // handle to service
-        SERVICE_CONFIG_DESCRIPTION, // change: description
-        @sd);
-
-  CloseServiceHandle(Svc);
-  CloseServiceHandle(SvcMgr);
 end;
 
 end.

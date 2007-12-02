@@ -8,85 +8,115 @@ uses
 type
   TUnloadProfThread = class(TThread)
   private
-    { Private declarations }
-    fProfile:          THandle;
-    fJob:              THandle;
-    fToken:            TJwSecurityToken;
-
+    fList:             TThreadList;
     fIOCompletionPort: THandle;
+    fCurrentId:        Integer;
   protected
     procedure Execute; override;
     procedure DoTerminate; override;
   public
-    constructor Create(Profile: THandle; Token: TJwSecurityToken; Job: THandle);
+    constructor Create;
+    procedure Add(Job, Profile: Cardinal; Token: TJwSecurityToken);
     property IOCompletionPort: THandle read fIOCompletionPort;
   end;
 
 const
-  MESSAGE_FROM_JOB     = 0;
-  MESSAGE_FROM_SERVICE = 1;
+  MESSAGE_FROM_SERVICE = 0;
 
+var UnloadProfThread: TUnloadProfThread;
 implementation
 uses MainUnit;
-{ Important: Methods and properties of objects in visual components can only be
-  used in a method called using Synchronize, for example,
 
-      Synchronize(UpdateCaption);
-
-  and UpdateCaption could look like,
-
-    procedure TUnloadProfThread.UpdateCaption;
-    begin
-      Form1.Caption := 'Updated in a thread';
-    end; }
-
-{ TUnloadProfThread }
+type
+  PJobInformation = ^TJobInformation;
+  TJobInformation = record
+    Job:     Cardinal;
+    Profile: Cardinal;
+    Token:   TJwSecurityToken;
+    Id:      Integer;
+  end;
 
 procedure TUnloadProfThread.Execute;
-var Val, Key: Cardinal; Ov: POVERLAPPED;
+var Val, Key: Cardinal; Ov: POVERLAPPED; i: integer;
 begin
-  repeat
-    GetQueuedCompletionStatus(fIOCompletionPort, Val, Key, Ov, INFINITE);
-  until (Key<>MESSAGE_FROM_JOB) or (Val=JOB_OBJECT_MSG_ACTIVE_PROCESS_ZERO);
+  while True do
+  begin
+    repeat
+      GetQueuedCompletionStatus(fIOCompletionPort, Val, Key, Ov, INFINITE);
+    until (Key = MESSAGE_FROM_SERVICE) or
+     (Val=JOB_OBJECT_MSG_ACTIVE_PROCESS_ZERO);
 
-  if Key=MESSAGE_FROM_SERVICE then
-    TerminateJobObject(fJob, 0);
+    if Key = MESSAGE_FROM_SERVICE then //Is this a stop message?
+    begin
+      with fList.LockList do
+      begin
+        for i:=0 to Count-1 do
+        begin
+          with PJobInformation(Items[i])^ do
+          begin
+            TerminateJobObject(Job, 0);
+            CloseHandle(Job);
+            UnloadUserProfile(Token.TokenHandle, Profile);
+            Token.Free;
+          end;
+          Dispose(PJobInformation(Items[i]));
+        end;
+        break;
+      end;
+    end;
 
-  UnloadUserProfile(fToken.TokenHandle, fProfile);
-  fToken.Free;
-  CloseHandle(fJob);
+    with fList.LockList do
+    try
+      for i:=0 to Count-1 do
+        if Cardinal(PJobInformation(Items[i])^.Id) = Key then
+        begin
+          with PJobInformation(Items[i])^ do
+          begin
+            CloseHandle(Job);
+            UnloadUserProfile(Token.TokenHandle, Profile);
+            Token.Free;
+          end;
+          Dispose(PJobInformation(Items[i]));
+          Delete(i);
+          break;
+        end;
+    finally
+      fList.UnlockList;
+    end;
+  end;
+end;
+
+procedure TUnloadProfThread.Add(Job: Cardinal; Profile: Cardinal; Token: TJwSecurityToken);
+var JobInformation: PJobInformation;
+    AssocPort: JOBOBJECT_ASSOCIATE_COMPLETION_PORT;
+begin
+  New(JobInformation);
+  JobInformation.Job := Job;
+  JobInformation.Profile := Profile;
+  JobInformation.Token := Token;
+  JobInformation.Id := InterlockedExchangeAdd(fCurrentId, 1);
+  AssocPort.CompletionPort := fIOCompletionPort;
+  AssocPort.CompletionKey := Pointer(JobInformation.Id);
+  if not SetInformationJobObject(Job, JobObjectAssociateCompletionPortInformation,
+           @AssocPort, SizeOf(AssocPort)) then
+    Service1.LogEvent('SetInformationJobObject failed with '+SysErrorMessage(GetLastError), ltError)
+  else
+    fList.Add(JobInformation);
 end;
 
 procedure TUnloadProfThread.DoTerminate;
 begin
-  XPElevationService.LogEvent('Thread terminates');
   CloseHandle(fIOCompletionPort);
-  inherited;
+  fList.Free;
+  Service1.LogEvent('UnloadProfThread terminates');
 end;
 
-constructor TUnloadProfThread.Create(Profile: THandle; Token: TJwSecurityToken; Job: THandle);
-var JobIOCompletion: JOBOBJECT_ASSOCIATE_COMPLETION_PORT;
+constructor TUnloadProfThread.Create;
 begin
-  inherited Create(true);
-  FreeOnTerminate:=True;
-  fProfile:=Profile;
-  fToken:=Token;
-  fJob:=Job;
-  fIOCompletionPort:=CreateIOCompletionPort(INVALID_HANDLE_VALUE, 0, 0, 1);
-  SetLength(XPElevationService.fCompletionPorts, Length(XPElevationService.fCompletionPorts)+1);
-  EnterCriticalSection(XPElevationService.fCompletionPortsCrit);
-  try
-    if XPElevationService.Stopped then //this is necessary!
-      exit;
-    XPElevationService.fCompletionPorts[high(XPElevationService.fCompletionPorts)]:=fIOCompletionPort;
-  finally
-    LeaveCriticalSection(XPElevationService.fCompletionPortsCrit);
-  end;
-  JobIOCompletion.CompletionPort:=fIOCompletionPort;
-  JobIOCompletion.CompletionKey:=Pointer(MESSAGE_FROM_JOB);
-  if not SetInformationJobObject(fJob, JobObjectAssociateCompletionPortInformation, @JobIOCompletion, SizeOf(JobIOCompletion)) then
-    XPElevationService.LogEvent('Error in SetInformationJobObject: '+inttostr(fIOCompletionPort)+' '+inttostr(fJob)+SysErrorMessage(GetLastError));
-  Resume;
+  fList := TThreadList.Create;
+  fIOCompletionPort := CreateIOCompletionPort(INVALID_HANDLE_VALUE, 0, 0, 1);
+  fCurrentId := MESSAGE_FROM_SERVICE+1; //MESSAGE_FROM_SERVICE is reserved for the stop message
+  inherited Create(false);
 end;
 
 end.
