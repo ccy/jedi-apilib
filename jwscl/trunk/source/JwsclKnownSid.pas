@@ -75,6 +75,7 @@ const JwLowIL = 'S-1-16-4096';
 var
    JwIntegrityLabelSID : array[TJwIntegrityLabelType] of TJwSecurityKnownSID;
     {@Name defines the current user SID that started the process.
+     You need to call JwInitWellknownSIDs before accessing this variable!
      Use this:
       SD : TJwSecurityDescriptor;
       ...
@@ -89,6 +90,7 @@ var
 
     {@Name defines the local administrator group
      Do not free!!
+     You need to call JwInitWellknownSIDs before accessing this variable!
 
      Use this:
       SD : TJwSecurityDescriptor;
@@ -101,6 +103,7 @@ var
     }
   JwAdministratorsSID,
     {@Name defines the local user group
+     You need to call JwInitWellknownSIDs before accessing this variable!
     
      Use this:
       SD : TJwSecurityDescriptor;
@@ -111,6 +114,7 @@ var
     }
   JwUsersSID,
     {@Name defines the local power user group - legacy in Vista
+     You need to call JwInitWellknownSIDs before accessing this variable!
 
      Use this:
       SD : TJwSecurityDescriptor;
@@ -121,6 +125,7 @@ var
     }
   JwPowerUsersSID,
     {@Name defines the local guest group
+     You need to call JwInitWellknownSIDs before accessing this variable!
     
      Use this:
       SD : TJwSecurityDescriptor;
@@ -131,7 +136,8 @@ var
     }
   JwGuestsSID,
     {@Name defines the local system account
-    
+     You need to call JwInitWellknownSIDs before accessing this variable!
+
      Use this:
       SD : TJwSecurityDescriptor;
       ...
@@ -141,6 +147,7 @@ var
     }
   JwLocalSystemSID,
     {@Name defines the group that allows remote interaction with the machine
+     You need to call JwInitWellknownSIDs before accessing this variable!
     
      Use this:
       SD : TJwSecurityDescriptor;
@@ -151,7 +158,8 @@ var
     }
   JwRemoteInteractiveLogonSID,
     {@Name defines the NULL Logon SID
-    
+     You need to call JwInitWellknownSIDs before accessing this variable!
+
      Use this:
       SD : TJwSecurityDescriptor;
       ...
@@ -161,6 +169,7 @@ var
     }
   JwNullSID,
     {@Name defines the Everybody group
+     You need to call JwInitWellknownSIDs before accessing this variable!
 
      Use this:
       SD : TJwSecurityDescriptor;
@@ -171,6 +180,7 @@ var
     }
   JwWorldSID,
     {@Name defines the local group
+     You need to call JwInitWellknownSIDs before accessing this variable!
 
      Use this:
       SD : TJwSecurityDescriptor;
@@ -217,7 +227,10 @@ function JwGetLogonSID(const hWinStation: HWINSTA{TWindowStation} = 0)
 
 function JwGetLogonSID(aToken: TJwSecurityToken): TJwSecurityId; overload;
 
-{@Name initializes the WellKnownSID variables. Do not call!
+{@Name initializes the WellKnownSID variables.
+ This function should not be called during initialization of
+ a Jwscl-unit since it indirectly accesses various global variables,
+ e.g. JwProcessHeap, which might not have been initialized yet.
 }
 procedure JwInitWellKnownSIDs;
 
@@ -380,11 +393,16 @@ begin
     JwSecurityProcessUserSID := TJwSecurityThreadUserSID.Create;
 
   JwIntegrityLabelSID[iltNone]       := nil;
-  JwIntegrityLabelSID[iltLow]       := TJwSecurityKnownSID.Create(JwLowIL);
-  JwIntegrityLabelSID[iltMedium]    := TJwSecurityKnownSID.Create(JwMediumIL);
-  JwIntegrityLabelSID[iltHigh]      := TJwSecurityKnownSID.Create(JwHighIL);
-  JwIntegrityLabelSID[iltSystem]    := TJwSecurityKnownSID.Create(JwSystemIL);
-  JwIntegrityLabelSID[iltProtected] := TJwSecurityKnownSID.Create(JwProtectedProcessIL);
+  if not Assigned(JwIntegrityLabelSID[iltLow]) then
+    JwIntegrityLabelSID[iltLow]       := TJwSecurityKnownSID.Create(JwLowIL);
+  if not Assigned(JwIntegrityLabelSID[iltMedium]) then
+    JwIntegrityLabelSID[iltMedium]    := TJwSecurityKnownSID.Create(JwMediumIL);
+  if not Assigned(JwIntegrityLabelSID[iltHigh]) then
+    JwIntegrityLabelSID[iltHigh]      := TJwSecurityKnownSID.Create(JwHighIL);
+  if not Assigned(JwIntegrityLabelSID[iltSystem]) then
+    JwIntegrityLabelSID[iltSystem]    := TJwSecurityKnownSID.Create(JwSystemIL);
+  if not Assigned(JwIntegrityLabelSID[iltProtected]) then
+    JwIntegrityLabelSID[iltProtected] := TJwSecurityKnownSID.Create(JwProtectedProcessIL);
 end;
 
 procedure DoneWellKnownSIDs;
@@ -429,7 +447,6 @@ initialization
   JwNullSID  := nil;
   JwWorldSID := nil;
   JwLocalGroupSID := nil;
-
 
 {$ENDIF SL_INITIALIZATION_SECTION}
 
