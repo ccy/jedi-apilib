@@ -427,7 +427,8 @@ type
      It only works in the same (terminal) session of the process.
 
      @param(DesiredAccess defines the desired access to the token)
-     @param(ProcessName defines which process is used to get the token of the user)
+     @param(ProcessName defines which process is used to get the token of the user.
+       The name must match exactly but can ignore case sensitivity.)
 
      @raises(EJwsclProcessNotFound will be raised if process handle given in parameter
        ProcessName could not be retrieved.)
@@ -2709,7 +2710,8 @@ constructor TJwSecurityToken.CreateCompatibilityQueryUserToken(
       pEntry.dwSize := SizeOf(ProcessEntry32);
       if Process32First(hProcessHandle, pEntry) = true then begin
         repeat
-          if pos(Uppercase(pEntry.szExeFile), UpperCase(Exename)) <> 0 then begin
+          if JwCompareString(pEntry.szExeFile, Exename) = 0 then
+          begin
             result := pEntry.th32ProcessID;
             break;
           end;

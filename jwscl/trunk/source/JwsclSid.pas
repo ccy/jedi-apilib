@@ -94,7 +94,7 @@ type
       usePrefix: boolean = False): integer;
 
       {@Name inserts a SID into the list.
-       @param(Index List index where the SID shall be inserted before.
+       @param(Index defines a list index where the SID is to be inserted .
               If the Index is not between 0 and Count-1 an exception will be raised.)
        }
     procedure Insert(Index: integer; AObject: TJwSecurityId);
@@ -507,7 +507,7 @@ type
        {@Name creates a SID instance from a known well sid type.
         The resulted SID will be checked by @link(CheckSID).
 
-        @param(WellKnownSidType contains the sid type that shall be created)
+        @param(WellKnownSidType contains the sid type that is to be created)
         @param(DomainSid contains the domain SID where the new SID is associated. It can be nil to use the local computer.
                The domain SID. This value is required for the following WellKnownSidType values. This parameter is ignored for any other WellKnownSidType values.
                @unorderedlist(

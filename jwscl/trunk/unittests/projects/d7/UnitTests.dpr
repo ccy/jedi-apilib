@@ -78,6 +78,7 @@ uses
   JwsclTerminalServer,
   JwsclSecurePrivateObjects,
   JwsclSecureUserObjects,
+  JwsclAccounts,
 
   //JWSCL Unit Tests
   JwsclAclTests in '..\..\source\JwsclAclTests.pas',

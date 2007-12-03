@@ -533,7 +533,7 @@ type
   TJwSidInfoRecordArray = array of TJwSidInfoRecord;
 
 
- {TCreationFlags defines how a TDesktop object shall be created}
+ {TCreationFlags defines how a TDesktop object is to be created}
   TJwDesktopCreationFlag = (
     //@Name creates a new desktop with the given flags
     dcfCreate, 

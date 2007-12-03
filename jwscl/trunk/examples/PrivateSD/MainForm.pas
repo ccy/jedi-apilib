@@ -6,7 +6,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, Buttons, ComCtrls, ExtCtrls, ToolWin, Menus,
 
-  JwaVista,
+  JwaVista, JwsclUtils,
   JwsclTypes, JwsclExceptions, JwsclAcl, JwsclMapping, JwsclSid, JwsclKnownSid,
   JwsclSecureObjects, JwsclResource, JwsclSecurePrivateObjects,JwsclEnumerations,
   JwsclVersion, JwsclConstants, JwsclProcess, JwsclDescriptor, JwsclToken,
@@ -84,47 +84,10 @@ begin
   result := TSecurityData.Create();
 end;
 
-procedure P;
-var S : TJwSecureFileObject;
-   SA : TJwDAccessControlList;
-   SD : TJwSecurityDescriptor;
-   Mand : TJwSystemMandatoryAccessControlEntry;
-   Flags : TJwMandatoryPolicyFlagSet;
-begin
-  S := TJwSecureFileObject.Create('P:\Eigene Dateien\Dezipaitor\Projekte\Delphi\7\jedi-api-lib\test.txt');
-  //S := TJwSecureFileObject.Create('C:\');
-  { SA := TJwDAccessControlList.Create;
-   SA.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil,[],GENERIC_ALL,JwWorldSID,false));
-   S.SetDACL(SA,apProtected);
-   SA.Free;}
-
-  {Mand := TJwSystemMandatoryAccessControlEntry.Create(MandatoryLevelHigh);
-  Mand.MandatoryPolicy := [mpNoWriteUp,mpNoReadUp,mpNoExecuteUp];}
-  S.SetMandatoryLabel(nil);
-
-
-  {
-  Mand := S.GetMandatoryLabel;
-  Flags := Mand.GetMandatoryPolicy;
-  }
-  //Mand.Free;
-
- { SD := S.GetSecurityDescriptor([siDaclSecurityInformation]);
-  //SD.DACL.RemoveInherited;
-
-  SD.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil,[],GENERIC_ALL,JwWorldSID,false));
-//  SD.Control := SD.Control + [sdcDaclProtected];
-  S.SetSecurityDescriptor(SD,[siUnprotectedDaclSecurityInformation]);
-
-  SD.Free;}
-
-  S.Free;
-end;
 
 procedure TFormMain.FormCreate(Sender: TObject);
 begin
   JwInitWellKnownSIDs;
-  P;
 
   TreeItem := MainTreeView.Items.AddChild(nil,'root');
 
