@@ -48,26 +48,29 @@ type
     function GetData(const Node : TTreeNode) : TTreeItemData; overload;
     function GetData(const Item : TListItem) : TChildData; overload;
 
-    function AddDefaultTreeItem(const Parent : TTreeNode; const Name : String) : TTreeNode;
+    function AddTreeItem(const Parent : TTreeNode; const Name : String) : TTreeNode;
   public
     { Public-Deklarationen }
   end;
 
+
   TChildData = class
   public
+    Parent : TTreeItemData;
     Security : IJwPrivateSecurityInformation;
     Name : String;
 
-    constructor Create;
+    constructor Create(aParent : TTreeItemData);
     destructor Destroy; override;
   end;
 
   TTreeItemData = class
   public
+    Parent : TTreeItemData;
     Security : IJwPrivateSecurityInformation;
     Childs   : TList;
 
-    constructor Create;
+    constructor Create(aParent : TTreeItemData);
     destructor Destroy; override;
   end;
 
@@ -96,9 +99,7 @@ begin
 
   TreeItem := MainTreeView.Items.AddChild(nil,'root');
 
-  TreeItem.Data := TTreeItemData.Create;
-  GetData(TreeItem).Childs := TList.Create;
-  GetData(TreeItem).Security := GetDefaultSecurity;
+  TreeItem.Data := TTreeItemData.Create(nil);
 end;
 
 procedure TFormMain.MainTreeViewChange(Sender: TObject; Node: TTreeNode);
@@ -145,8 +146,13 @@ begin
 end;
 
 procedure TFormMain.ToolButton1Click(Sender: TObject);
+var Name : String;
 begin
   //
+  Name := '2';
+ // if not InputQuery('New folder','Foldername',Name) then
+ //   exit;
+  MainTreeView.Selected := AddTreeItem(MainTreeView.Selected,Name);
 end;
 
 procedure TFormMain.MainTreeViewDeletion(Sender: TObject; Node: TTreeNode);
@@ -154,21 +160,33 @@ begin
   TTreeItemData(Node.Data).Free;
 end;
 
-function TFormMain.AddDefaultTreeItem(const Parent: TTreeNode;
+function TFormMain.AddTreeItem(const Parent: TTreeNode;
   const Name: String): TTreeNode;
 begin
   result := MainTreeView.Items.AddChild(Parent, Name);
-  result.Data := TTreeItemData.Create;  
+  result.Data := TTreeItemData.Create(GetData(Parent));
 end;
 
 
 { TTreeItemData }
 
-constructor TTreeItemData.Create;
+constructor TTreeItemData.Create(aParent : TTreeItemData);
+var SD : TJwSecurityDescriptor;
 begin
-  inherited;
+  inherited Create;
   Childs := TList.Create;
-  Security := GetDefaultSecurity;
+  Parent := aParent;
+  if Assigned(aParent) then
+  begin
+    aParent.Security.GetSecurity(JwSecurityInformationAllFlags,SD);
+    try
+      Security := TSecurityData.Create(SD);
+    finally
+      SD.Free;
+    end;
+  end
+  else
+    Security := GetDefaultSecurity;
 end;
 
 destructor TTreeItemData.Destroy;
@@ -181,9 +199,9 @@ end;
 
 { TChildData }
 
-constructor TChildData.Create;
+constructor TChildData.Create(aParent : TTreeItemData);
 begin
-  inherited;
+  inherited Create;
 
   Security := GetDefaultSecurity;
 end;
