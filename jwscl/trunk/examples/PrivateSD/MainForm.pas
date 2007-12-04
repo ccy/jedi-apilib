@@ -48,6 +48,7 @@ type
     function GetData(const Node : TTreeNode) : TTreeItemData; overload;
     function GetData(const Item : TListItem) : TChildData; overload;
 
+    function AddDefaultTreeItem(const Parent : TTreeNode; const Name : String) : TTreeNode;
   public
     { Public-Deklarationen }
   end;
@@ -56,6 +57,9 @@ type
   public
     Security : IJwPrivateSecurityInformation;
     Name : String;
+
+    constructor Create;
+    destructor Destroy; override;
   end;
 
   TTreeItemData = class
@@ -63,6 +67,7 @@ type
     Security : IJwPrivateSecurityInformation;
     Childs   : TList;
 
+    constructor Create;
     destructor Destroy; override;
   end;
 
@@ -149,11 +154,42 @@ begin
   TTreeItemData(Node.Data).Free;
 end;
 
+function TFormMain.AddDefaultTreeItem(const Parent: TTreeNode;
+  const Name: String): TTreeNode;
+begin
+  result := MainTreeView.Items.AddChild(Parent, Name);
+  result.Data := TTreeItemData.Create;  
+end;
+
+
 { TTreeItemData }
+
+constructor TTreeItemData.Create;
+begin
+  inherited;
+  Childs := TList.Create;
+  Security := GetDefaultSecurity;
+end;
 
 destructor TTreeItemData.Destroy;
 begin
   FreeAndNil(Childs);
+  Security._Release;
+  Security := nil;
+  inherited;
+end;
+
+{ TChildData }
+
+constructor TChildData.Create;
+begin
+  inherited;
+
+  Security := GetDefaultSecurity;
+end;
+
+destructor TChildData.Destroy;
+begin
   Security._Release;
   Security := nil;
   inherited;
