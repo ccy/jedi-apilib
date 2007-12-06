@@ -10,7 +10,7 @@ uses
   JwsclTypes, JwsclExceptions, JwsclAcl, JwsclMapping, JwsclSid, JwsclKnownSid,
   JwsclSecureObjects, JwsclResource, JwsclSecurePrivateObjects,JwsclEnumerations,
   JwsclVersion, JwsclConstants, JwsclProcess, JwsclDescriptor, JwsclToken,
-  JwsclStrings;
+  JwsclStrings, JwsclSecureUserObjects;
 
 
 type
