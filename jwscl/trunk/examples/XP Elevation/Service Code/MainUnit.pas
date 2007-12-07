@@ -26,7 +26,7 @@ type
     procedure InitAllowedSIDs;
     procedure SetStopped(const Value: boolean);
     function MayUserBeElevated(User: TJwSecurityID): boolean;
-    function AskCredentials(Token: TJwSecurityToken; AppToStart: String; UserAndDomain: string; out Password: string; out Save: boolean): boolean;
+    function AskCredentials(Session: Cardinal; AppToStart: String; UserAndDomain: string; out Password: string; out Save: boolean): boolean;
   public
     fHReqThreadCount:     Integer;
     function GetServiceController: TServiceController; override;
@@ -93,106 +93,129 @@ begin
   end;
 end;
 
-function TService1.AskCredentials(Token: TJwSecurityToken; AppToStart: string; UserAndDomain: string; out Password: string; out Save: boolean): boolean;
-var StartInfo: STARTUPINFOA;
+function TService1.AskCredentials(Session: Cardinal; AppToStart: string; UserAndDomain: string; out Password: string; out Save: boolean): boolean;
+var StartInfo: STARTUPINFOA; Token: TJwSecurityToken;
   procedure InitStartInfo;
   begin
     ZeroMemory(@StartInfo, Sizeof(StartInfo));
     StartInfo.cb:=Sizeof(StartInfo);
     StartInfo.lpDesktop:='WinSta0\Default';
   end;
+
+  procedure CreateToken;
+  var ProcessToken: TJwSecurityToken; RestrGroups: TJwSecurityIdList; RestrPrivs: TJwPrivilegeSet;
+  begin
+    ProcessToken:=TJwSecurityToken.CreateTokenByProcess(GetCurrentProcess, TOKEN_ALL_ACCESS);
+    try
+      RestrGroups:=TJwSecurityIdList.Create(false);
+      try
+        RestrPrivs:=ProcessToken.GetTokenPrivileges;
+        try
+          ProcessToken.TokenSessionId:=Session;
+          Token:=ProcessToken.CreateRestrictedToken(TOKEN_ALL_ACCESS,
+                    0, RestrGroups, RestrPrivs, nil);
+        finally
+          RestrPrivs.Free;
+        end;
+      finally
+        RestrGroups.Free;
+      end;
+    finally
+      ProcessToken.Free;
+    end;
+  end;
 const StrLenCancelled = Cardinal(-1);
       SaveBit         = Cardinal(1 shl 31);
 var ProcInfo: PROCESS_INFORMATION; Ar: Array[0..1] of THandle; Dummy: Cardinal;
     ReadPipe, WritePipe: THandle; Loc: Cardinal; Desc: TJwSecurityDescriptor; SecAttr: LPSECURITY_ATTRIBUTES;
-    CredApp: String;
+    CredApp: String; SeId: Cardinal;
 begin
   Result:=False;
   InitStartInfo;
   ZeroMemory(@ProcInfo, Sizeof(ProcInfo));
-  Desc:=TJwSecurityDescriptor.Create;
-//  Assert(JwIsPrivilegeSet(SE_ASSIGNPRIMARYTOKEN_NAME), 'SE_ASSIGNPRIMARYTOKEN_NAME not held');
-//  Assert(JwIsPrivilegeSet(SE_INCREASE_QUOTA_NAME), 'SE_INCREASE_QUOTA_NAME not held');
-//  Assert((Token.AccessMask and TOKEN_ASSIGN_PRIMARY)=TOKEN_ASSIGN_PRIMARY, 'TOKEN_ASSIGN_PRIMARY not in access mask');
-//  Assert((Token.AccessMask and TOKEN_DUPLICATE)=TOKEN_DUPLICATE, 'TOKEN_DUPLICATE not in access mask');
-//  Assert((Token.AccessMask and TOKEN_QUERY)=TOKEN_QUERY, 'TOKEN_QUERY not in access mask');
+  CreateToken;
   try
-
-    SecAttr:=LPSECURITY_ATTRIBUTES(Desc.Create_SA(false));
+    Desc:=TJwSecurityDescriptor.CreateDefaultByToken(Token);
     try
-      CredApp:=RegGetFullPath(CredApplicationKey);
-      //The application will immediately stop execution because it expects two parameters, but we need its exit code
-      if not CreateProcessAsUser(Token.TokenHandle, PChar(CredApp), nil,
-             SecAttr, SecAttr, True, CREATE_NEW_CONSOLE, nil, nil, StartInfo, ProcInfo) then
-      begin
-        LogEvent('Could not create the process asking for credentials '+SysErrorMessage(GetLastError), ltError);
-        Abort;
-      end
-      else
-      begin
-        CloseHandle(ProcInfo.hThread);
-        Ar[0]:=fStopEvent;
-        Ar[1]:=ProcInfo.hProcess;
-        //This function is called in a separate thread, so there is no need for ServiceThread.ProcessRequests!
-//        while MsgWaitForMultipleObjects(2, @Ar[0], false, INFINITE, QS_ALLINPUT)=WAIT_OBJECT_0+2 do
-//          ServiceThread.ProcessRequests(false);
-        WaitForMultipleObjects(2, @Ar[0], false, INFINITE);
-        if fStopped then
+    //  SecAttr:=LPSECURITY_ATTRIBUTES(Desc.Create_SA(false));
+      SecAttr:=nil;
+      try
+        CredApp:=RegGetFullPath(CredApplicationKey);
+        //The application will immediately stop execution because it expects two parameters, but we need its exit code
+        if not CreateProcessAsUser(Token.TokenHandle, PChar(CredApp), nil,
+               SecAttr, SecAttr, True, CREATE_NEW_CONSOLE, nil, nil, StartInfo, ProcInfo) then
         begin
-          //Terminate process???
-          CloseHandle(ProcInfo.hProcess);
-          Abort;
-        end;
-        //The application will return an address in its exit code
-        GetExitCodeProcess(ProcInfo.hProcess, Loc);
-        CloseHandle(ProcInfo.hProcess);
-
-        if not CreateProcessAsUser(Token.TokenHandle, PChar(CredApp), PChar('"'+CredApp+'" "'+AppToStart+'" "'+UserAndDomain+'"'),
-                 SecAttr, SecAttr, True, CREATE_NEW_CONSOLE or CREATE_SUSPENDED, nil, nil, StartInfo, ProcInfo) then
-        begin
-          LogEvent('Could not create the process asking for credentials '+SysErrorMessage(GetLastError), ltError);
+          LogEvent('Could not create the process asking for credentials: '+SysErrorMessage(GetLastError), ltError);
           Abort;
         end
         else
         begin
-          CreatePipe(ReadPipe, WritePipe, nil, 0);
-          try
-            DuplicateHandle(GetCurrentProcess, WritePipe, ProcInfo.hProcess, @WritePipe, 0, false, DUPLICATE_SAME_ACCESS or DUPLICATE_CLOSE_SOURCE);
-            //write the new handle to the location given in the exit code
-            WriteProcessMemory(ProcInfo.hProcess, Pointer(Loc), @WritePipe, SizeOf(WritePipe), nil);
-            ResumeThread(ProcInfo.hThread);
-            CloseHandle(ProcInfo.hThread);
-            Ar[0]:=fStopEvent;
-            Ar[1]:=ProcInfo.hProcess;
-            WaitForMultipleObjects(2, @Ar[0], false, INFINITE);
-            if fStopped then
-            begin
-              //Terminate process???
-              CloseHandle(ProcInfo.hProcess);
-              Abort;
-            end;
+          CloseHandle(ProcInfo.hThread);
+          Ar[0]:=fStopEvent;
+          Ar[1]:=ProcInfo.hProcess;
+          //This function is called in a separate thread, so there is no need for ServiceThread.ProcessRequests!
+//          while MsgWaitForMultipleObjects(2, @Ar[0], false, INFINITE, QS_ALLINPUT)=WAIT_OBJECT_0+2 do
+//            ServiceThread.ProcessRequests(false);
+          WaitForMultipleObjects(2, @Ar[0], false, INFINITE);
+          if fStopped then
+          begin
+            //Terminate process???
             CloseHandle(ProcInfo.hProcess);
-            //we just reuse loc here
-            ReadFile(ReadPipe, @Loc, SizeOf(Loc), @Dummy, nil);
-            Result:=Loc<>StrLenCancelled;
-            if Result then
-            begin
-              Save:=Loc and SaveBit = SaveBit;
-              SetLength(Password, Loc and not SaveBit);
-              if Loc<>0 then
-                ReadFile(ReadPipe, Pointer(Password), Loc and not SaveBit, @Dummy, nil);
-            end;
-          finally
-            CloseHandle(ReadPipe);
-            CloseHandle(WritePipe);
+            Abort;
           end;
-        end;
-    end;
+          //The application will return an address in its exit code
+          GetExitCodeProcess(ProcInfo.hProcess, Loc);
+          CloseHandle(ProcInfo.hProcess);
+
+          if not CreateProcessAsUser(Token.TokenHandle, PChar(CredApp), PChar('"'+CredApp+'" "'+AppToStart+'" "'+UserAndDomain+'"'),
+                   SecAttr, SecAttr, True, CREATE_NEW_CONSOLE or CREATE_SUSPENDED, nil, nil, StartInfo, ProcInfo) then
+          begin
+            LogEvent('Could not create the process asking for credentials the second time: '+SysErrorMessage(GetLastError), ltError);
+            Abort;
+          end
+          else
+          begin
+            CreatePipe(ReadPipe, WritePipe, nil, 0);
+            try
+              DuplicateHandle(GetCurrentProcess, WritePipe, ProcInfo.hProcess, @WritePipe, 0, false, DUPLICATE_SAME_ACCESS or DUPLICATE_CLOSE_SOURCE);
+              //write the new handle to the location given in the exit code
+              WriteProcessMemory(ProcInfo.hProcess, Pointer(Loc), @WritePipe, SizeOf(WritePipe), nil);
+              ResumeThread(ProcInfo.hThread);
+              CloseHandle(ProcInfo.hThread);
+              Ar[0]:=fStopEvent;
+              Ar[1]:=ProcInfo.hProcess;
+              WaitForMultipleObjects(2, @Ar[0], false, INFINITE);
+              if fStopped then
+              begin
+                //Terminate process???
+                CloseHandle(ProcInfo.hProcess);
+                Abort;
+              end;
+              CloseHandle(ProcInfo.hProcess);
+              //we just reuse loc here
+              ReadFile(ReadPipe, @Loc, SizeOf(Loc), @Dummy, nil);
+              Result:=Loc<>StrLenCancelled;
+              if Result then
+              begin
+                Save:=Loc and SaveBit = SaveBit;
+                SetLength(Password, Loc and not SaveBit);
+                if Loc<>0 then
+                  ReadFile(ReadPipe, Pointer(Password), Loc and not SaveBit, @Dummy, nil);
+              end;
+            finally
+              CloseHandle(ReadPipe);
+              CloseHandle(WritePipe);
+            end;
+          end;
+      end;
+      finally
+        Desc.Free_SA(PSECURITY_ATTRIBUTES(SecAttr));
+      end;
     finally
-      Desc.Free_SA(PSECURITY_ATTRIBUTES(SecAttr));
+      Desc.Free;
     end;
   finally
-    Desc.Free;
+    Token.Free;
   end;
 end;
 
@@ -245,16 +268,21 @@ begin
       finally
         SID.Free;
       end;
+ //     Token.TokenSessionId;
       TJwSecurityToken.RevertToSelf;
       Save:=False;
-      Token.ConvertToPrimaryToken(TOKEN_ALL_ACCESS);
+  //    Token.ConvertToPrimaryToken(TOKEN_ALL_ACCESS);
       with fPasswords.LockList do
       try
         EncryptedPassword:=Items[SIDIndex];
         if EncryptedPassword=nil then
         begin
           LogEvent('Credentials for user '+User+' are asked');
-          if not AskCredentials(Token, AppToStart, User+'@'+Domain, Pass, Save) then
+
+          //I have no idea why we can't use Token.TokenSessionId, but this throws an exception
+          if not GetTokenInformation(Token.TokenHandle, TokenSessionId, @SeId1, 4, SeId2) then
+            LogEvent(SysErrorMessage(GetLastError));
+          if not AskCredentials(SeId1, AppToStart, User+'@'+Domain, Pass, Save) then
           begin
             LogEvent('Credentials prompt for '+AppToStart+' aborted by user');
             exit;
