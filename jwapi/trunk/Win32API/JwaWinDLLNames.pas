@@ -61,6 +61,7 @@ const
   credapi = 'advapi32.dll';
   credui = 'credui.dll';
   crypt32 = 'crypt32.dll';
+  cryptnet = 'cryptnet.dll';
   cryptuiapi = 'cryptui.dll';
   dhcpapi = 'dhcpcsvc.dll';
   dhcplib = 'dhcpsapi.dll';

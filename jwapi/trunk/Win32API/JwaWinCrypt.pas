@@ -16093,12 +16093,13 @@ implementation
 {$IFNDEF JWA_INCLUDEMODE}
 const
   crypt32 = 'crypt32.dll';
+  cryptnet = 'cryptnet.dll';
   advapi32 = 'advapi32.dll';
   softpub = 'softpub.dll';
   {$IFDEF UNICODE}
   AWSuffix = 'W';
   {$ELSE}
-  AWSuffix = 'A';
+  AWSuffix = 'A';   
   {$ENDIF UNICODE}
 {$ENDIF JWA_INCLUDEMODE}
 
@@ -16281,7 +16282,7 @@ var
 
 function CryptSetKeyParam;
 begin
-  GetProcedureAddress(_CryptSetKeyParam, crypt32, 'CryptSetKeyParam');
+  GetProcedureAddress(_CryptSetKeyParam, advapi32, 'CryptSetKeyParam');
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -19219,7 +19220,7 @@ var
 
 function CryptRetrieveObjectByUrlA;
 begin
-  GetProcedureAddress(_CryptRetrieveObjectByUrlA, crypt32, 'CryptRetrieveObjectByUrlA');
+  GetProcedureAddress(_CryptRetrieveObjectByUrlA, cryptnet, 'CryptRetrieveObjectByUrlA');
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -19232,7 +19233,7 @@ var
 
 function CryptRetrieveObjectByUrlW;
 begin
-  GetProcedureAddress(_CryptRetrieveObjectByUrlW, crypt32, 'CryptRetrieveObjectByUrlW');
+  GetProcedureAddress(_CryptRetrieveObjectByUrlW, cryptnet, 'CryptRetrieveObjectByUrlW');
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -19245,7 +19246,7 @@ var
 
 function CryptRetrieveObjectByUrl;
 begin
-  GetProcedureAddress(_CryptRetrieveObjectByUrl, crypt32, 'CryptRetrieveObjectByUrl' + AWSuffix);
+  GetProcedureAddress(_CryptRetrieveObjectByUrl, cryptnet, 'CryptRetrieveObjectByUrl' + AWSuffix);
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -19258,7 +19259,7 @@ var
 
 function CryptInstallCancelRetrieval;
 begin
-  GetProcedureAddress(_CryptInstallCancelRetrieval, crypt32, 'CryptInstallCancelRetrieval');
+  GetProcedureAddress(_CryptInstallCancelRetrieval, cryptnet, 'CryptInstallCancelRetrieval');
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -19271,7 +19272,7 @@ var
 
 function CryptUninstallCancelRetrieval;
 begin
-  GetProcedureAddress(_CryptUninstallCancelRetrieval, crypt32, 'CryptUninstallCancelRetrieval');
+  GetProcedureAddress(_CryptUninstallCancelRetrieval, cryptnet, 'CryptUninstallCancelRetrieval');
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -19284,7 +19285,7 @@ var
 
 function CryptCancelAsyncRetrieval;
 begin
-  GetProcedureAddress(_CryptCancelAsyncRetrieval, crypt32, 'CryptCancelAsyncRetrieval');
+  GetProcedureAddress(_CryptCancelAsyncRetrieval, cryptnet, 'CryptCancelAsyncRetrieval');
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -19297,7 +19298,7 @@ var
 
 function CryptGetObjectUrl;
 begin
-  GetProcedureAddress(_CryptGetObjectUrl, crypt32, 'CryptGetObjectUrl');
+  GetProcedureAddress(_CryptGetObjectUrl, cryptnet, 'CryptGetObjectUrl');
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -19310,7 +19311,7 @@ var
 
 function CryptGetTimeValidObject;
 begin
-  GetProcedureAddress(_CryptGetTimeValidObject, crypt32, 'CryptGetTimeValidObject');
+  GetProcedureAddress(_CryptGetTimeValidObject, cryptnet, 'CryptGetTimeValidObject');
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -19323,7 +19324,7 @@ var
 
 function CryptFlushTimeValidObject;
 begin
-  GetProcedureAddress(_CryptFlushTimeValidObject, crypt32, 'CryptFlushTimeValidObject');
+  GetProcedureAddress(_CryptFlushTimeValidObject, cryptnet, 'CryptFlushTimeValidObject');
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -19334,7 +19335,7 @@ end;
 var
   _CryptProtectData: Pointer;
 
-function CryptProtectData;
+function CryptProtectData;              
 begin
   GetProcedureAddress(_CryptProtectData, crypt32, 'CryptProtectData');
   asm
@@ -19609,7 +19610,7 @@ function CryptReleaseContext; external advapi32 name 'CryptReleaseContext';
 function CryptGenKey; external advapi32 name 'CryptGenKey';
 function CryptDeriveKey; external advapi32 name 'CryptDeriveKey';
 function CryptDestroyKey; external advapi32 name 'CryptDestroyKey';
-function CryptSetKeyParam; external crypt32 name 'CryptSetKeyParam';
+function CryptSetKeyParam; external advapi32 name 'CryptSetKeyParam';
 function CryptGetKeyParam; external advapi32 name 'CryptGetKeyParam';
 function CryptSetHashParam; external advapi32 name 'CryptSetHashParam';
 function CryptGetHashParam; external advapi32 name 'CryptGetHashParam';
@@ -19835,15 +19836,15 @@ function CryptCreateAsyncHandle; external crypt32 name 'CryptCreateAsyncHandle';
 function CryptSetAsyncParam; external crypt32 name 'CryptSetAsyncParam';
 function CryptGetAsyncParam; external crypt32 name 'CryptGetAsyncParam';
 function CryptCloseAsyncHandle; external crypt32 name 'CryptCloseAsyncHandle';
-function CryptRetrieveObjectByUrlA; external crypt32 name 'CryptRetrieveObjectByUrlA';
-function CryptRetrieveObjectByUrlW; external crypt32 name 'CryptRetrieveObjectByUrlW';
-function CryptRetrieveObjectByUrl; external crypt32 name 'CryptRetrieveObjectByUrl' + AWSuffix;
-function CryptInstallCancelRetrieval; external crypt32 name 'CryptInstallCancelRetrieval';
-function CryptUninstallCancelRetrieval; external crypt32 name 'CryptUninstallCancelRetrieval';
-function CryptCancelAsyncRetrieval; external crypt32 name 'CryptCancelAsyncRetrieval';
-function CryptGetObjectUrl; external crypt32 name 'CryptGetObjectUrl';
-function CryptGetTimeValidObject; external crypt32 name 'CryptGetTimeValidObject';
-function CryptFlushTimeValidObject; external crypt32 name 'CryptFlushTimeValidObject';
+function CryptRetrieveObjectByUrlA; external cryptnet name 'CryptRetrieveObjectByUrlA';
+function CryptRetrieveObjectByUrlW; external cryptnet name 'CryptRetrieveObjectByUrlW';
+function CryptRetrieveObjectByUrl; external cryptnet name 'CryptRetrieveObjectByUrl' + AWSuffix;
+function CryptInstallCancelRetrieval; external cryptnet name 'CryptInstallCancelRetrieval';
+function CryptUninstallCancelRetrieval; external cryptnet name 'CryptUninstallCancelRetrieval';
+function CryptCancelAsyncRetrieval; external cryptnet name 'CryptCancelAsyncRetrieval';
+function CryptGetObjectUrl; external cryptnet name 'CryptGetObjectUrl';
+function CryptGetTimeValidObject; external cryptnet name 'CryptGetTimeValidObject';
+function CryptFlushTimeValidObject; external cryptnet name 'CryptFlushTimeValidObject';
 function CryptProtectData; external crypt32 name 'CryptProtectData';
 function CryptUnprotectData; external crypt32 name 'CryptUnprotectData';
 function CertCreateSelfSignCertificate; external crypt32 name 'CertCreateSelfSignCertificate';

@@ -352,10 +352,9 @@ implementation
 {$ENDIF JWA_OMIT_SECTIONS}
 
 {$IFNDEF JWA_INTERFACESECTION}
-const
-  Version = 'version.dll';
-
   {$IFNDEF JWA_INCLUDEMODE}
+const
+  versionlib = 'version.dll';
   {$IFDEF UNICODE}
   AWSuffix = 'W';
   {$ELSE}
@@ -370,7 +369,7 @@ var
 
 function VerFindFileA;
 begin
-  GetProcedureAddress(_VerFindFileA, Version, 'VerFindFileA');
+  GetProcedureAddress(_VerFindFileA, versionlib, 'VerFindFileA');
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -383,7 +382,7 @@ var
 
 function VerFindFileW;
 begin
-  GetProcedureAddress(_VerFindFileW, Version, 'VerFindFileW');
+  GetProcedureAddress(_VerFindFileW, versionlib, 'VerFindFileW');
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -396,7 +395,7 @@ var
 
 function VerFindFile;
 begin
-  GetProcedureAddress(_VerFindFile, Version, 'VerFindFile' + AWSuffix);
+  GetProcedureAddress(_VerFindFile, versionlib, 'VerFindFile' + AWSuffix);
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -409,7 +408,7 @@ var
 
 function VerInstallFileA;
 begin
-  GetProcedureAddress(_VerInstallFileA, Version, 'VerInstallFileA');
+  GetProcedureAddress(_VerInstallFileA, versionlib, 'VerInstallFileA');
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -422,7 +421,7 @@ var
 
 function VerInstallFileW;
 begin
-  GetProcedureAddress(_VerInstallFileW, Version, 'VerInstallFileW');
+  GetProcedureAddress(_VerInstallFileW, versionlib, 'VerInstallFileW');
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -435,7 +434,7 @@ var
 
 function VerInstallFile;
 begin
-  GetProcedureAddress(_VerInstallFile, Version, 'VerInstallFile' + AWSuffix);
+  GetProcedureAddress(_VerInstallFile, versionlib, 'VerInstallFile' + AWSuffix);
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -448,7 +447,7 @@ var
 
 function GetFileVersionInfoSizeA;
 begin
-  GetProcedureAddress(_GetFileVersionInfoSizeA, Version, 'GetFileVersionInfoSizeA');
+  GetProcedureAddress(_GetFileVersionInfoSizeA, versionlib, 'GetFileVersionInfoSizeA');
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -461,7 +460,7 @@ var
 
 function GetFileVersionInfoSizeW;
 begin
-  GetProcedureAddress(_GetFileVersionInfoSizeW, Version, 'GetFileVersionInfoSizeW');
+  GetProcedureAddress(_GetFileVersionInfoSizeW, versionlib, 'GetFileVersionInfoSizeW');
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -474,7 +473,7 @@ var
 
 function GetFileVersionInfoSize;
 begin
-  GetProcedureAddress(_GetFileVersionInfoSize, Version, 'GetFileVersionInfoSize' + AWSuffix);
+  GetProcedureAddress(_GetFileVersionInfoSize, versionlib, 'GetFileVersionInfoSize' + AWSuffix);
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -487,7 +486,7 @@ var
 
 function GetFileVersionInfoA;
 begin
-  GetProcedureAddress(_GetFileVersionInfoA, Version, 'GetFileVersionInfoA');
+  GetProcedureAddress(_GetFileVersionInfoA, versionlib, 'GetFileVersionInfoA');
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -500,7 +499,7 @@ var
 
 function GetFileVersionInfoW;
 begin
-  GetProcedureAddress(_GetFileVersionInfoW, Version, 'GetFileVersionInfoW');
+  GetProcedureAddress(_GetFileVersionInfoW, versionlib, 'GetFileVersionInfoW');
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -513,7 +512,7 @@ var
 
 function GetFileVersionInfo;
 begin
-  GetProcedureAddress(_GetFileVersionInfo, Version, 'GetFileVersionInfo' + AWSuffix);
+  GetProcedureAddress(_GetFileVersionInfo, versionlib, 'GetFileVersionInfo' + AWSuffix);
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -526,7 +525,7 @@ var
 
 function VerLanguageNameA;
 begin
-  GetProcedureAddress(_VerLanguageNameA, Version, 'VerLanguageNameA');
+  GetProcedureAddress(_VerLanguageNameA, versionlib, 'VerLanguageNameA');
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -539,7 +538,7 @@ var
 
 function VerLanguageNameW;
 begin
-  GetProcedureAddress(_VerLanguageNameW, Version, 'VerLanguageNameW');
+  GetProcedureAddress(_VerLanguageNameW, versionlib, 'VerLanguageNameW');
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -552,7 +551,7 @@ var
 
 function VerLanguageName;
 begin
-  GetProcedureAddress(_VerLanguageName, Version, 'VerLanguageName' + AWSuffix);
+  GetProcedureAddress(_VerLanguageName, versionlib, 'VerLanguageName' + AWSuffix);
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -565,7 +564,7 @@ var
 
 function VerQueryValueA;
 begin
-  GetProcedureAddress(_VerQueryValueA, Version, 'VerQueryValueA');
+  GetProcedureAddress(_VerQueryValueA, versionlib, 'VerQueryValueA');
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -578,7 +577,7 @@ var
 
 function VerQueryValueW;
 begin
-  GetProcedureAddress(_VerQueryValueW, Version, 'VerQueryValueW');
+  GetProcedureAddress(_VerQueryValueW, versionlib, 'VerQueryValueW');
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -591,7 +590,7 @@ var
 
 function VerQueryValue;
 begin
-  GetProcedureAddress(_VerQueryValue, Version, 'VerQueryValue' + AWSuffix);
+  GetProcedureAddress(_VerQueryValue, versionlib, 'VerQueryValue' + AWSuffix);
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -601,24 +600,24 @@ end;
 
 {$ELSE}
 
-function VerFindFileA; external Version name 'VerFindFileA';
-function VerFindFileW; external Version name 'VerFindFileW';
-function VerFindFile; external Version name 'VerFindFile' + AWSuffix;
-function VerInstallFileA; external Version name 'VerInstallFileA';
-function VerInstallFileW; external Version name 'VerInstallFileW';
-function VerInstallFile; external Version name 'VerInstallFile' + AWSuffix;
-function GetFileVersionInfoSizeA; external Version name 'GetFileVersionInfoSizeA';
-function GetFileVersionInfoSizeW; external Version name 'GetFileVersionInfoSizeW';
-function GetFileVersionInfoSize; external Version name 'GetFileVersionInfoSize' + AWSuffix;
-function GetFileVersionInfoA; external Version name 'GetFileVersionInfoA';
-function GetFileVersionInfoW; external Version name 'GetFileVersionInfoW';
-function GetFileVersionInfo; external Version name 'GetFileVersionInfo' + AWSuffix;
-function VerLanguageNameA; external Version name 'VerLanguageNameA';
-function VerLanguageNameW; external Version name 'VerLanguageNameW';
-function VerLanguageName; external Version name 'VerLanguageName' + AWSuffix;
-function VerQueryValueA; external Version name 'VerQueryValueA';
-function VerQueryValueW; external Version name 'VerQueryValueW';
-function VerQueryValue; external Version name 'VerQueryValue' + AWSuffix;
+function VerFindFileA; external versionlib name 'VerFindFileA';
+function VerFindFileW; external versionlib name 'VerFindFileW';
+function VerFindFile; external versionlib name 'VerFindFile' + AWSuffix;
+function VerInstallFileA; external versionlib name 'VerInstallFileA';
+function VerInstallFileW; external versionlib name 'VerInstallFileW';
+function VerInstallFile; external versionlib name 'VerInstallFile' + AWSuffix;
+function GetFileVersionInfoSizeA; external versionlib name 'GetFileVersionInfoSizeA';
+function GetFileVersionInfoSizeW; external versionlib name 'GetFileVersionInfoSizeW';
+function GetFileVersionInfoSize; external versionlib name 'GetFileVersionInfoSize' + AWSuffix;
+function GetFileVersionInfoA; external versionlib name 'GetFileVersionInfoA';
+function GetFileVersionInfoW; external versionlib name 'GetFileVersionInfoW';
+function GetFileVersionInfo; external versionlib name 'GetFileVersionInfo' + AWSuffix;
+function VerLanguageNameA; external versionlib name 'VerLanguageNameA';
+function VerLanguageNameW; external versionlib name 'VerLanguageNameW';
+function VerLanguageName; external versionlib name 'VerLanguageName' + AWSuffix;
+function VerQueryValueA; external versionlib name 'VerQueryValueA';
+function VerQueryValueW; external versionlib name 'VerQueryValueW';
+function VerQueryValue; external versionlib name 'VerQueryValue' + AWSuffix;
 
 {$ENDIF DYNAMIC_LINK}
 
