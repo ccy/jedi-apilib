@@ -85,6 +85,10 @@ Standalone compiling would be useless!
   {$DEFINE SUPPORT_LONG_VARNAMES}
 {$ENDIF FPC}
 
+//activate 64bit tweaks for some functions
+//jwaWinBase::InterlockedCompareExchangePointer
+//jwaWinBase::InterlockedExchangePointer
+{$DEFINE CPU64BIT}
 
 // Global switch for the Windows version the files are compatible with
 // ONLY A SINGLE ONE IS ALLOWED TO BE ACTIVATED BY CHANGING THE DOT TO A DOLLAR SIGN!

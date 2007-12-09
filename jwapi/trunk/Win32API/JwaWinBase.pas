@@ -2050,6 +2050,10 @@ function GetEnvironmentStringsA: LPSTR; stdcall;
 {$EXTERNALSYM GetEnvironmentStringsA}
 {$ENDIF !UNICODE}
 
+
+{$IFDEF WIN2003_UP}
+//This function is only available in Windows 2003, Vista and 2008
+//http://sourceforge.net/support/tracker.php?aid=1846987
 function SetEnvironmentStringsA(NewEnvironment: LPSTR): BOOL; stdcall;
 {$EXTERNALSYM SetEnvironmentStringsA}
 
@@ -2057,6 +2061,7 @@ function SetEnvironmentStringsW(NewEnvironment: LPWSTR): BOOL; stdcall;
 {$EXTERNALSYM SetEnvironmentStringsW}
 function SetEnvironmentStrings(NewEnvironment: LPTSTR): BOOL; stdcall;
 {$EXTERNALSYM SetEnvironmentStrings}
+{$ENDIF WIN2003_UP}
 
 function FreeEnvironmentStringsA(pstr: LPSTR): BOOL; stdcall;
 {$EXTERNALSYM FreeEnvironmentStringsA}
@@ -6163,14 +6168,39 @@ begin
   Result := $100000;
 end;
 
+{added tweak from
+http://sourceforge.net/tracker/index.php?func=detail&aid=1662760&group_id=121894&atid=694029
+by
+Marco
+}
 function InterlockedExchangePointer(var Target: PVOID; Value: PVOID): PVOID;
+var _Target : LONGLONG;
 begin
+{$ifdef CPU64BIT}
+  _Target := LONGLONG(Target);
+  Result := PVOID(InterlockedExchange64(_Target, LONGLONG(Value)));
+  Target := PVOID(_Target);
+{$else}
   Result := PVOID(InterlockedExchange(LONG(Target), LONG(Value)));
+{$endif CPU64BIT}
 end;
 
+{added tweak from
+http://sourceforge.net/tracker/index.php?func=detail&aid=1662760&group_id=121894&atid=694029
+by Marco
+}
 function InterlockedCompareExchangePointer(var Destination: PVOID; Exchange, Comperand: PVOID): PVOID;
+var _Destination : LONGLONG;
 begin
-  Result := PVOID(InterlockedCompareExchange(LONG(Destination), LONG(Exchange), LONG(Comperand)));
+{$ifdef CPU64BIT}
+  _Destination := LONGLONG(Destination);
+  Result := PVOID(InterlockedCompareExchange64(_Destination,
+              LONGLONG(Exchange), LONGLONG(Comperand)));
+  Destination := PVOID(_Destination);
+{$else CPU64BIT}
+  Result := PVOID(InterlockedCompareExchange(LONG(Destination),
+    LONG(Exchange), LONG(Comperand)));
+{$endif CPU64BIT}
 end;
 
 function UnlockResource(hResData: HANDLE): BOOL;
@@ -7573,6 +7603,7 @@ end;
 
 {$ENDIF !UNICODE}
 
+{$IFDEF WIN2003_UP}
 var
   _SetEnvironmentStringsA: Pointer;
 
@@ -7611,6 +7642,8 @@ begin
         JMP     [_SetEnvironmentStrings]
   end;
 end;
+
+{$ENDIF WIN2003_UP}
 
 var
   _FreeEnvironmentStringsA: Pointer;
@@ -19063,9 +19096,13 @@ function GetEnvironmentStrings; external kernel32 name 'GetEnvironmentStrings' +
 {$IFNDEF UNICODE}
 function GetEnvironmentStringsA; external kernel32 name 'GetEnvironmentStringsA';
 {$ENDIF !UNICODE}
+
+{$IFDEF WIN2003_UP}
 function SetEnvironmentStringsA; external kernel32 name 'SetEnvironmentStringsA';
 function SetEnvironmentStringsW; external kernel32 name 'SetEnvironmentStringsW';
 function SetEnvironmentStrings; external kernel32 name 'SetEnvironmentStrings' + AWSuffix;
+{$ENDIF WIN2003_UP}
+
 function FreeEnvironmentStringsA; external kernel32 name 'FreeEnvironmentStringsA';
 function FreeEnvironmentStringsW; external kernel32 name 'FreeEnvironmentStringsW';
 function FreeEnvironmentStrings; external kernel32 name 'FreeEnvironmentStrings' + AWSuffix;
