@@ -3168,25 +3168,25 @@ type
     case Integer of
       // printer only fields
       0: (
-        dmOrientation: Smallint;
-        dmPaperSize: Smallint;
-        dmPaperLength: Smallint;
-        dmPaperWidth: Smallint;
-        dmScale: Smallint;
-        dmCopies: Smallint;
-        dmDefaultSource: Smallint;
-        dmPrintQuality: Smallint);
+        dmOrientation: short;
+        dmPaperSize: short;
+        dmPaperLength: short;
+        dmPaperWidth: short;
+        dmScale: short;
+        dmCopies: short;
+        dmDefaultSource: short;
+        dmPrintQuality: short);
       // display only fields
       1: (
         dmPosition: POINTL;
         dmDisplayOrientation: DWORD;
         dmDisplayFixedOutput: DWORD);
     end;
-    dmColor: Shortint;
-    dmDuplex: Shortint;
-    dmYResolution: Shortint;
-    dmTTOption: Shortint;
-    dmCollate: Shortint;
+    dmColor: short;
+    dmDuplex: short;
+    dmYResolution: short;
+    dmTTOption: short;
+    dmCollate: short;
     dmFormName: array [0..CCHFORMNAME - 1] of BYTE;
     dmLogPixels: WORD;
     dmBitsPerPel: DWORD;
@@ -3227,25 +3227,25 @@ type
     case Integer of
       // printer only fields
       0: (
-        dmOrientation: Smallint;
-        dmPaperSize: Smallint;
-        dmPaperLength: Smallint;
-        dmPaperWidth: Smallint;
-        dmScale: Smallint;
-        dmCopies: Smallint;
-        dmDefaultSource: Smallint;
-        dmPrintQuality: Smallint);
+        dmOrientation: short;
+        dmPaperSize: short;
+        dmPaperLength: short;
+        dmPaperWidth: short;
+        dmScale: short;
+        dmCopies: short;
+        dmDefaultSource: short;
+        dmPrintQuality: short);
       // display only fields
       1: (
         dmPosition: POINTL;
         dmDisplayOrientation: DWORD;
         dmDisplayFixedOutput: DWORD);
     end;
-    dmColor: Shortint;
-    dmDuplex: Shortint;
-    dmYResolution: Shortint;
-    dmTTOption: Shortint;
-    dmCollate: Shortint;
+    dmColor: short;
+    dmDuplex: short;
+    dmYResolution: short;
+    dmTTOption: short;
+    dmCollate: short;
     dmFormName: array [0..CCHFORMNAME - 1] of WCHAR;
     dmLogPixels: WORD;
     dmBitsPerPel: DWORD;
