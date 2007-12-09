@@ -1775,7 +1775,7 @@ begin
 end;
 
 var
-{$IFDEF DELPHI6_UP}
+{$IFDEF SUPPORT_LONG_VARNAMES}
   _BluetoothDisplayDeviceProperties: Pointer;
 {$ELSE}
   _BluetoothDisplayDProperties: Pointer;
@@ -1784,7 +1784,7 @@ var
 
 function BluetoothDisplayDeviceProperties;
 begin
-{$IFDEF DELPHI6_UP}
+{$IFDEF SUPPORT_LONG_VARNAMES}
   GetProcedureAddress(_BluetoothDisplayDeviceProperties, btapi, 'BluetoothDisplayDeviceProperties');
 {$ELSE}
   GetProcedureAddress(_BluetoothDisplayDProperties, btapi, 'BluetoothDisplayDeviceProperties');
@@ -1794,7 +1794,7 @@ begin
   asm
         MOV     ESP, EBP
         POP     EBP
-{$IFDEF DELPHI6_UP}
+{$IFDEF SUPPORT_LONG_VARNAMES}
         JMP     [_BluetoothDisplayDeviceProperties]
 {$ELSE}
        JMP     [_BluetoothDisplayDProperties]
@@ -1818,7 +1818,7 @@ begin
 end;
 
 var
-{$IFDEF DELPHI6_UP}
+{$IFDEF SUPPORT_LONG_VARNAMES}
   _BluetoothAuthenticateMultipleDevices: Pointer;
 {$ELSE}
   _BluetoothAuthenticateMDevices: Pointer;
@@ -1827,7 +1827,7 @@ var
 
 function BluetoothAuthenticateMultipleDevices;
 begin
-{$IFDEF DELPHI6_UP}
+{$IFDEF SUPPORT_LONG_VARNAMES}
   GetProcedureAddress(_BluetoothAuthenticateMultipleDevices, btapi, 'BluetoothAuthenticateMultipleDevices');
 {$ELSE}
   GetProcedureAddress(_BluetoothAuthenticateMDevices, btapi, 'BluetoothAuthenticateMultipleDevices');
@@ -1836,7 +1836,7 @@ begin
   asm
         MOV     ESP, EBP
         POP     EBP
-{$IFDEF DELPHI6_UP}
+{$IFDEF SUPPORT_LONG_VARNAMES}
         JMP     [_BluetoothAuthenticateMultipleDevices]
 {$ELSE}
        JMP     [_BluetoothAuthenticateMDevices]
@@ -1859,7 +1859,7 @@ begin
 end;
 
 var
-{$IFDEF DELPHI6_UP}
+{$IFDEF SUPPORT_LONG_VARNAMES}
   _BluetoothEnumerateInstalledServices: Pointer;
 {$ELSE}
   _BluetoothEnumerateIS: Pointer;
@@ -1868,7 +1868,7 @@ var
 
 function BluetoothEnumerateInstalledServices;
 begin
-{$IFDEF DELPHI6_UP}
+{$IFDEF SUPPORT_LONG_VARNAMES}
   GetProcedureAddress(_BluetoothEnumerateInstalledServices, btapi, 'BluetoothEnumerateInstalledServices');
 {$ELSE}
   GetProcedureAddress(_BluetoothEnumerateIS, btapi, 'BluetoothEnumerateInstalledServices');
@@ -1877,7 +1877,7 @@ begin
   asm
         MOV     ESP, EBP
         POP     EBP
-{$IFDEF DELPHI6_UP}
+{$IFDEF SUPPORT_LONG_VARNAMES}
         JMP     [_BluetoothEnumerateInstalledServices]
 {$ELSE}
        JMP     [_BluetoothEnumerateIS]
@@ -1913,7 +1913,7 @@ begin
 end;
 
 var
-{$IFDEF DELPHI6_UP}
+{$IFDEF SUPPORT_LONG_VARNAMES}
   _BluetoothEnableIncomingConnections: Pointer;
 {$ELSE}
   _BluetoothEnableIC: Pointer;
@@ -1921,7 +1921,7 @@ var
 
 function BluetoothEnableIncomingConnections;
 begin
-{$IFDEF DELPHI6_UP}
+{$IFDEF SUPPORT_LONG_VARNAMES}
   GetProcedureAddress(_BluetoothEnableIncomingConnections, btapi, 'BluetoothEnableIncomingConnections');
 {$ELSE}
   GetProcedureAddress(_BluetoothEnableIC, btapi, 'BluetoothEnableIncomingConnections');
@@ -1930,7 +1930,7 @@ begin
   asm
         MOV     ESP, EBP
         POP     EBP
-{$IFDEF DELPHI6_UP}
+{$IFDEF SUPPORT_LONG_VARNAMES}
         JMP     [_BluetoothEnableIncomingConnections]
 {$ELSE}
        JMP     [_BluetoothEnableIC]
@@ -1953,7 +1953,7 @@ begin
 end;
 
 var
-{$IFDEF DELPHI6_UP}
+{$IFDEF SUPPORT_LONG_VARNAMES}
   _BluetoothRegisterForAuthentication: Pointer;
 {$ELSE}
   _BluetoothRegisterFA: Pointer;
@@ -1962,7 +1962,7 @@ var
 
 function BluetoothRegisterForAuthentication;
 begin
-{$IFDEF DELPHI6_UP}
+{$IFDEF SUPPORT_LONG_VARNAMES}
   GetProcedureAddress(_BluetoothRegisterForAuthentication, btapi, 'BluetoothRegisterForAuthentication');
 {$ELSE}
   GetProcedureAddress(_BluetoothRegisterFA, btapi, 'BluetoothRegisterForAuthentication');
@@ -1972,7 +1972,7 @@ begin
         MOV     ESP, EBP
         POP     EBP
 
-{$IFDEF DELPHI6_UP}
+{$IFDEF SUPPORT_LONG_VARNAMES}
         JMP     [_BluetoothRegisterForAuthentication]
 {$ELSE}
         JMP     [_BluetoothRegisterFA]
@@ -1982,7 +1982,7 @@ begin
 end;
 
 var
-{$IFDEF DELPHI6_UP}
+{$IFDEF SUPPORT_LONG_VARNAMES}
   _BluetoothUnregisterAuthentication: Pointer;
 {$ELSE}
   _BluetoothUA: Pointer;
@@ -1990,7 +1990,7 @@ var
 
 function BluetoothUnregisterAuthentication;
 begin
-{$IFDEF DELPHI6_UP}
+{$IFDEF SUPPORT_LONG_VARNAMES}
   GetProcedureAddress(_BluetoothUnregisterAuthentication, btapi, 'BluetoothUnregisterAuthentication');
 {$ELSE}
   GetProcedureAddress(_BluetoothUA, btapi, 'BluetoothUnregisterAuthentication');
@@ -1999,7 +1999,7 @@ begin
   asm
         MOV     ESP, EBP
         POP     EBP
-{$IFDEF DELPHI6_UP}
+{$IFDEF SUPPORT_LONG_VARNAMES}
         JMP     [_BluetoothUnregisterAuthentication]
 {$ELSE}
         JMP     [_BluetoothUA]
@@ -2009,7 +2009,7 @@ begin
 end;
 
 var
-{$IFDEF DELPHI6_UP}
+{$IFDEF SUPPORT_LONG_VARNAMES}
   _BluetoothSendAuthenticationResponse: Pointer;
 {$ELSE}
   _BluetoothSendAR: Pointer;
@@ -2018,7 +2018,7 @@ var
 
 function BluetoothSendAuthenticationResponse;
 begin
-{$IFDEF DELPHI6_UP}
+{$IFDEF SUPPORT_LONG_VARNAMES}
   GetProcedureAddress(_BluetoothSendAuthenticationResponse, btapi, 'BluetoothSendAuthenticationResponse');
 {$ELSE}
   GetProcedureAddress(_BluetoothSendAR, btapi, 'BluetoothSendAuthenticationResponse');
@@ -2027,7 +2027,7 @@ begin
   asm
         MOV     ESP, EBP
         POP     EBP
-{$IFDEF DELPHI6_UP}
+{$IFDEF SUPPORT_LONG_VARNAMES}
         JMP     [_BluetoothSendAuthenticationResponse]
 {$ELSE}
         JMP     [_BluetoothSendAR]
@@ -2050,7 +2050,7 @@ begin
 end;
 
 var
-{$IFDEF DELPHI6_UP}
+{$IFDEF SUPPORT_LONG_VARNAMES}
   _BluetoothSdpGetContainerElementData: Pointer;
 {$ELSE}
   _BluetoothSdpGetCED: Pointer;
@@ -2058,7 +2058,7 @@ var
 
 function BluetoothSdpGetContainerElementData;
 begin
-{$IFDEF DELPHI6_UP}
+{$IFDEF SUPPORT_LONG_VARNAMES}
   GetProcedureAddress(_BluetoothSdpGetContainerElementData, btapi, 'BluetoothSdpGetContainerElementData');
 {$ELSE}
   GetProcedureAddress(_BluetoothSdpGetCED, btapi, 'BluetoothSdpGetContainerElementData');
@@ -2067,7 +2067,7 @@ begin
   asm
         MOV     ESP, EBP
         POP     EBP
-{$IFDEF DELPHI6_UP}
+{$IFDEF SUPPORT_LONG_VARNAMES}
         JMP     [_BluetoothSdpGetContainerElementData]
 {$ELSE}
         JMP     [_BluetoothSdpGetCED]

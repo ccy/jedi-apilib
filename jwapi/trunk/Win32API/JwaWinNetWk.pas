@@ -388,12 +388,21 @@ function WNetGetConnectionW(lpLocalName, lpRemoteName: LPWSTR; var lpnLength: DW
 function WNetGetConnection(lpLocalName, lpRemoteName: LPTSTR; var lpnLength: DWORD): DWORD; stdcall;
 {$EXTERNALSYM WNetGetConnection}
 
-function WNetRestoreConnectionA(hwndParent: HWND; lpDevice: LPCSTR): DWORD; stdcall;
-{$EXTERNALSYM WNetRestoreConnectionA}
+{WNetRestoreConnectionA is no more available
+See bug tracker
+http://sourceforge.net/tracker/index.php?func=detail&aid=1846980&group_id=121894&atid=694029
+}
+//function WNetRestoreConnectionA(hwndParent: HWND; lpDevice: LPCSTR): DWORD; stdcall;
+{.$EXTERNALSYM WNetRestoreConnectionA}
+
+{$IFNDEF WINVISTA_UP}
+//These functions are no longer available in Windows Vista and newer
+                    
 function WNetRestoreConnectionW(hwndParent: HWND; lpDevice: LPCWSTR): DWORD; stdcall;
 {$EXTERNALSYM WNetRestoreConnectionW}
 function WNetRestoreConnection(hwndParent: HWND; lpDevice: LPCTSTR): DWORD; stdcall;
 {$EXTERNALSYM WNetRestoreConnection}
+{$ENDIF WINVISTA_UP}
 
 function WNetUseConnectionA(hwndOwner: HWND; const lpNetResource: NETRESOURCEA;
   lpPassword, lpUserID: LPCSTR; dwFlags: DWORD; lpAccessName: LPSTR;
@@ -1239,6 +1248,10 @@ begin
   end;
 end;
 
+{WNetRestoreConnectionA is no more available
+See bug tracker
+http://sourceforge.net/tracker/index.php?func=detail&aid=1846980&group_id=121894&atid=694029
+
 var
   _WNetRestoreConnectionA: Pointer;
 
@@ -1251,7 +1264,9 @@ begin
         JMP     [_WNetRestoreConnectionA]
   end;
 end;
+}
 
+{$IFNDEF WINVISTA_UP}
 var
   _WNetRestoreConnectionW: Pointer;
 
@@ -1268,15 +1283,21 @@ end;
 var
   _WNetRestoreConnection: Pointer;
 
+{WNetRestoreConnectionA is no more available
+See bug tracker
+http://sourceforge.net/tracker/index.php?func=detail&aid=1846980&group_id=121894&atid=694029
+}
+
 function WNetRestoreConnection;
 begin
-  GetProcedureAddress(_WNetRestoreConnection, mpr, 'WNetRestoreConnection' + AWSuffix);
+  GetProcedureAddress(_WNetRestoreConnection, mpr, 'WNetRestoreConnection' +'W'{ + AWSuffix});
   asm
         MOV     ESP, EBP
         POP     EBP
         JMP     [_WNetRestoreConnection]
   end;
 end;
+{$ENDIF WINVISTA_UP}
 
 var
   _WNetUseConnectionA: Pointer;
@@ -1844,9 +1865,15 @@ function WNetCancelConnection2; external mpr name 'WNetCancelConnection2' + AWSu
 function WNetGetConnectionA; external mpr name 'WNetGetConnectionA';
 function WNetGetConnectionW; external mpr name 'WNetGetConnectionW';
 function WNetGetConnection; external mpr name 'WNetGetConnection' + AWSuffix;
+{WNetRestoreConnectionA is no more available
+See bug tracker
+http://sourceforge.net/tracker/index.php?func=detail&aid=1846980&group_id=121894&atid=694029
 function WNetRestoreConnectionA; external mpr name 'WNetRestoreConnectionA';
+}
+{$IFNDEF WINVISTA_UP}
 function WNetRestoreConnectionW; external mpr name 'WNetRestoreConnectionW';
-function WNetRestoreConnection; external mpr name 'WNetRestoreConnection' + AWSuffix;
+function WNetRestoreConnection; external mpr name 'WNetRestoreConnection' +'A'{+ AWSuffix};
+{$ENDIF WINVISTA_UP}
 function WNetUseConnectionA; external mpr name 'WNetUseConnectionA';
 function WNetUseConnectionW; external mpr name 'WNetUseConnectionW';
 function WNetUseConnection; external mpr name 'WNetUseConnection' + AWSuffix;

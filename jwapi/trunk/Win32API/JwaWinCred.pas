@@ -1430,7 +1430,7 @@ begin
 end;
 
 var
-{$IFDEF DELPHI6_UP}
+{$IFDEF SUPPORT_LONG_VARNAMES}
    _CredUICmdLinePromptForCredentialsW: Pointer;
 {$ELSE}
   _CredUICmdLinePromptFCW: Pointer;
@@ -1438,7 +1438,7 @@ var
 
 function CredUICmdLinePromptForCredentialsW;
 begin
-{$IFDEF DELPHI6_UP}
+{$IFDEF SUPPORT_LONG_VARNAMES}
   GetProcedureAddress(_CredUICmdLinePromptForCredentialsW, credui, 'CredUICmdLinePromptForCredentialsW');
 {$ELSE}
   GetProcedureAddress(_CredUICmdLinePromptFCW, credui, 'CredUICmdLinePromptForCredentialsW');
@@ -1447,7 +1447,7 @@ begin
   asm
         MOV     ESP, EBP
         POP     EBP
-{$IFDEF DELPHI6_UP}
+{$IFDEF SUPPORT_LONG_VARNAMES}
         JMP     [_CredUICmdLinePromptForCredentialsW]
 {$ELSE}
         JMP     [_CredUICmdLinePromptFCW]
@@ -1456,7 +1456,7 @@ begin
 end;
 
 var
-{$IFDEF DELPHI6_UP}
+{$IFDEF SUPPORT_LONG_VARNAMES}
    _CredUICmdLinePromptForCredentialsA: Pointer;
 {$ELSE}
   _CredUICmdLinePromptFCA: Pointer;
@@ -1465,7 +1465,7 @@ var
 
 function CredUICmdLinePromptForCredentialsA;
 begin
-{$IFDEF DELPHI6_UP}
+{$IFDEF SUPPORT_LONG_VARNAMES}
   GetProcedureAddress(_CredUICmdLinePromptForCredentialsA, credui, 'CredUICmdLinePromptForCredentialsA');
 {$ELSE}
   GetProcedureAddress(_CredUICmdLinePromptFCA, credui, 'CredUICmdLinePromptForCredentialsA');
@@ -1473,7 +1473,7 @@ begin
   asm
         MOV     ESP, EBP
         POP     EBP
-{$IFDEF DELPHI6_UP}
+{$IFDEF SUPPORT_LONG_VARNAMES}
         JMP     [_CredUICmdLinePromptForCredentialsA]
 {$ELSE}
         JMP     [_CredUICmdLinePromptFCA]
@@ -1483,7 +1483,7 @@ end;
 
 var
 
-{$IFDEF DELPHI6_UP}
+{$IFDEF SUPPORT_LONG_VARNAMES}
         _CredUICmdLinePromptForCredentials: Pointer;
 {$ELSE}
         _CredUICmdLinePromptFC: Pointer;
@@ -1491,7 +1491,7 @@ var
 
 function CredUICmdLinePromptForCredentials;
 begin
-{$IFDEF DELPHI6_UP}
+{$IFDEF SUPPORT_LONG_VARNAMES}
   GetProcedureAddress(_CredUICmdLinePromptForCredentials, credui, 'CredUICmdLinePromptForCredentials' + AWSuffix);
 {$ELSE}
   GetProcedureAddress(_CredUICmdLinePromptFC, credui, 'CredUICmdLinePromptForCredentials' + AWSuffix);
@@ -1499,7 +1499,7 @@ begin
   asm
         MOV     ESP, EBP
         POP     EBP
-{$IFDEF DELPHI6_UP}
+{$IFDEF SUPPORT_LONG_VARNAMES}
         JMP     [_CredUICmdLinePromptForCredentials]
 {$ELSE}
         JMP     [_CredUICmdLinePromptFC]

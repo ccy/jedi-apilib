@@ -280,6 +280,11 @@ These files are included a second time in the implementation section!
 {$I JwaWinPerf.pas}
 {$I JwaQos.pas}
 {$I JwaWinternl.pas}
+{$I JwaQosSp.pas}
+
+{The following files cannot be included because of unfixed errors and problems.
+The list has no order!}
+//no members
 
 {******** WINSOCK *******************}
 
@@ -596,6 +601,12 @@ These files must be in a correct order!
 {$I JwaWinPerf.pas}
 {$I JwaQos.pas}
 {$I JwaWinternl.pas}
+{$I JwaQosSp.pas}
+
+{The following files cannot be included because of unfixed errors and problems.
+The list has no order!}
+//no members
+
 
 {******** WINSOCK *******************}
 
@@ -885,4 +896,5 @@ If you get this error you should do the things described or upgrade.
 {$UNDEF JWA_OMIT_SECTIONS}
 
 end.
+
 

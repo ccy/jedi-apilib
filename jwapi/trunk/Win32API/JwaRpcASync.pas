@@ -180,8 +180,13 @@ function RpcAsyncAbortCall(var pAsync: RPC_ASYNC_STATE; ExceptionCode: Cardinal)
 {$EXTERNALSYM RpcAsyncAbortCall}
 function RpcAsyncCancelCall(var pAsync: RPC_ASYNC_STATE; fAbort: BOOL): RPC_STATUS; stdcall;
 {$EXTERNALSYM RpcAsyncCancelCall}
-function RpcAsyncCleanupThread(dwTimeout: DWORD): RPC_STATUS; stdcall;
-{$EXTERNALSYM RpcAsyncCleanupThread}
+
+{This function is removed due to
+http://www.freepascal.org/mantis/view.php?id=10364
+and
+http://sourceforge.net/tracker/index.php?func=detail&aid=1846986&group_id=121894&atid=694029
+function RpcAsyncCleanupThread(dwTimeout: DWORD): RPC_STATUS; stdcall;}
+{.$EXTERNALSYM RpcAsyncCleanupThread}
 
 type
   tagExtendedErrorParamTypes = (
@@ -480,6 +485,12 @@ begin
   end;
 end;
 
+{
+{This function is removed due to
+http://www.freepascal.org/mantis/view.php?id=10364
+and
+http://sourceforge.net/tracker/index.php?func=detail&aid=1846986&group_id=121894&atid=694029
+
 var
   _RpcAsyncCleanupThread: Pointer;
 
@@ -492,6 +503,7 @@ begin
         JMP     [_RpcAsyncCleanupThread]
   end;
 end;
+}
 
 var
   _RpcErrorStartEnumeration: Pointer;
@@ -709,7 +721,13 @@ function RpcAsyncGetCallStatus; external rpclib name 'RpcAsyncGetCallStatus';
 function RpcAsyncCompleteCall; external rpclib name 'RpcAsyncCompleteCall';
 function RpcAsyncAbortCall; external rpclib name 'RpcAsyncAbortCall';
 function RpcAsyncCancelCall; external rpclib name 'RpcAsyncCancelCall';
-function RpcAsyncCleanupThread; external rpclib name 'RpcAsyncCleanupThread';
+
+{This function is removed due to
+http://www.freepascal.org/mantis/view.php?id=10364
+and
+http://sourceforge.net/tracker/index.php?func=detail&aid=1846986&group_id=121894&atid=694029
+}
+//function RpcAsyncCleanupThread; external rpclib name 'RpcAsyncCleanupThread';
 function RpcErrorStartEnumeration; external rpclib name 'RpcErrorStartEnumeration';
 function RpcErrorGetNextRecord; external rpclib name 'RpcErrorGetNextRecord';
 function RpcErrorEndEnumeration; external rpclib name 'RpcErrorEndEnumeration';

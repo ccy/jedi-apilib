@@ -165,7 +165,7 @@ begin
 end;
 
 var
-{$IFDEF DELPHI6_UP}
+{$IFDEF SUPPORT_LONG_VARNAMES}
   _NetRegisterDomainNameChangeNotification: Pointer;
 {$ELSE}
   _NetRegisterDomainNCN: Pointer;
@@ -174,7 +174,7 @@ var
 
 function NetRegisterDomainNameChangeNotification;
 begin
-{$IFDEF DELPHI6_UP}
+{$IFDEF SUPPORT_LONG_VARNAMES}
   GetProcedureAddress(_NetRegisterDomainNameChangeNotification, netapi32, 'NetRegisterDomainNameChangeNotification');
 {$ELSE}
   GetProcedureAddress(_NetRegisterDomainNCN, netapi32, 'NetRegisterDomainNameChangeNotification');
@@ -182,7 +182,7 @@ begin
   asm
         MOV     ESP, EBP
         POP     EBP
-{$IFDEF DELPHI6_UP}
+{$IFDEF SUPPORT_LONG_VARNAMES}
         JMP     [_NetRegisterDomainNameChangeNotification]
 {$ELSE}
         JMP     [_NetRegisterDomainNCN]
@@ -191,7 +191,7 @@ begin
 end;
 
 var
-{$IFDEF DELPHI6_UP}
+{$IFDEF SUPPORT_LONG_VARNAMES}
   _NetUnregisterDomainNameChangeNotification: Pointer;
 {$ELSE}
   _NetUnregisterDomainNCN: Pointer;
@@ -200,7 +200,7 @@ var
 
 function NetUnregisterDomainNameChangeNotification;
 begin
-{$IFDEF DELPHI6_UP}
+{$IFDEF SUPPORT_LONG_VARNAMES}
   GetProcedureAddress(_NetUnregisterDomainNameChangeNotification, netapi32, 'NetUnregisterDomainNameChangeNotification');
 {$ELSE}
   GetProcedureAddress(_NetUnregisterDomainNCN, netapi32, 'NetUnregisterDomainNameChangeNotification');
@@ -210,7 +210,7 @@ begin
   asm
         MOV     ESP, EBP
         POP     EBP
-{$IFDEF DELPHI6_UP}
+{$IFDEF SUPPORT_LONG_VARNAMES}
         JMP     [_NetUnregisterDomainNameChangeNotification]
 {$ELSE}
         JMP     [_NetUnregisterDomainNCN]

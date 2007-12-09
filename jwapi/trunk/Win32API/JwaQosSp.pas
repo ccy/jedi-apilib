@@ -38,6 +38,9 @@
 {                                                                              }
 { For more information about the LGPL: http://www.gnu.org/copyleft/lesser.html }
 {                                                                              }
+{                                                                              }
+{ Bug:                                                                         }
+{ This file cannot be compiled with JwaWindows.pas                             }
 {******************************************************************************}
 
 // $Id: JwaQosSp.pas,v 1.11 2007/09/05 11:58:52 dezipaitor Exp $
@@ -140,8 +143,8 @@ type
   {$EXTERNALSYM LPRSVP_FILTERSPEC_V4}
   _RSVP_FILTERSPEC_V4 = record
     Address: IN_ADDR_IPV4;
-    Unused: Shortint;
-    Port: Shortint;
+    Unused: USHORT;
+    Port: USHORT;
   end;
   {$EXTERNALSYM _RSVP_FILTERSPEC_V4}
   RSVP_FILTERSPEC_V4 = _RSVP_FILTERSPEC_V4;
@@ -153,8 +156,8 @@ type
   {$EXTERNALSYM LPRSVP_FILTERSPEC_V6}
   _RSVP_FILTERSPEC_V6 = record
     Address: IN_ADDR_IPV6;
-    UnUsed: Shortint;
-    Port: Shortint;
+    UnUsed: USHORT;
+    Port: USHORT;
   end;
   {$EXTERNALSYM _RSVP_FILTERSPEC_V6}
   RSVP_FILTERSPEC_V6 = _RSVP_FILTERSPEC_V6;
@@ -265,8 +268,8 @@ type
   LPRSVP_POLICY = ^RSVP_POLICY;
   {$EXTERNALSYM LPRSVP_POLICY}
   _RSVP_POLICY = record
-    Len: Shortint;
-    Type_: Shortint;
+    Len: USHORT;
+    Type_: USHORT;
     Info: array [0..4 - 1] of UCHAR;
   end;
   {$EXTERNALSYM _RSVP_POLICY}
@@ -279,7 +282,7 @@ type
   {$EXTERNALSYM LPCRSVP_POLICY}
 
 const
-  RSVP_POLICY_HDR_LEN = SizeOf(Shortint) + SizeOf(Shortint);
+  RSVP_POLICY_HDR_LEN = SizeOf(USHORT) + SizeOf(USHORT);
   {$EXTERNALSYM RSVP_POLICY_HDR_LEN}
 
 (*
@@ -379,7 +382,8 @@ type
   {$EXTERNALSYM LPQOS_DESTADDR}
   _QOS_DESTADDR = record
     ObjectHdr: QOS_OBJECT_HDR; // Object header
-    SocketAddress: PSockAddr; // Destination socket address
+    //Wimmer@2007 - to compile in JwaWindows.pas made into Pointer
+    SocketAddress: Pointer{PSockAddr}; // Destination socket address
     SocketAddressLength: ULONG; // Length of the address structure
   end;
   {$EXTERNALSYM _QOS_DESTADDR}

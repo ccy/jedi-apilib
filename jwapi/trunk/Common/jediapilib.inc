@@ -72,6 +72,20 @@ Standalone compiling would be useless!
 // directly through the use of Windows.pas instead of JwaWinType.pas.
 {$DEFINE USE_DELPHI_TYPES}
 
+
+// This global switch activates the using of long function variables
+// for dynamic linking
+// in old Delphi versions long var names are shorten and no more recognized.
+{$UNDEF SUPPORT_LONG_VARNAMES}
+{$IFDEF DELPHI6_UP}
+  {$DEFINE SUPPORT_LONG_VARNAMES}
+{$ENDIF DELPHI6_UP}
+
+{$IFDEF FPC}
+  {$DEFINE SUPPORT_LONG_VARNAMES}
+{$ENDIF FPC}
+
+
 // Global switch for the Windows version the files are compatible with
 // ONLY A SINGLE ONE IS ALLOWED TO BE ACTIVATED BY CHANGING THE DOT TO A DOLLAR SIGN!
 // Default is WINXP
@@ -83,6 +97,13 @@ Standalone compiling would be useless!
 {.DEFINE WIN2000}
 {$DEFINE WINXP}
 {.DEFINE WIN2003}
+{.DEFINE WINVISTA}
+{.$DEFINE WIN2008}
+
+{.DEFINE SERVICEPACK_1}
+{.DEFINE SERVICEPACK_2}
+{.DEFINE SERVICEPACK_3}
+{.DEFINE SERVICEPACK_4}
 
 // Global switch for the Windows Internet Explorer versions
 // ONLY A SINGLE ONE IS ALLOWED TO BE ACTIVATED BY CHANGING THE DOT TO A DOLLAR SIGN!
@@ -109,6 +130,32 @@ Standalone compiling would be useless!
 {$DEFINE HTMLHELP12}
 
 // secondary IFDEFs for "_UP" which means also any later OS version
+
+{$IFDEF WIN2008}
+ {$DEFINE WIN95_UP}
+ {$DEFINE WIN98_UP}
+ {$DEFINE WIN98SE_UP}
+ {$DEFINE WIN98ME_UP}
+ {$DEFINE WINNT4_UP}
+ {$DEFINE WIN2000_UP}
+ {$DEFINE WINXP_UP}
+ {$DEFINE WIN2003_UP}
+ {$DEFINE WINVISTA_UP}
+ {$DEFINE WIN2008_UP}
+{$ENDIF WIN2008}
+
+{$IFDEF WINVISTA}
+ {$DEFINE WIN95_UP}
+ {$DEFINE WIN98_UP}
+ {$DEFINE WIN98SE_UP}
+ {$DEFINE WIN98ME_UP}
+ {$DEFINE WINNT4_UP}
+ {$DEFINE WIN2000_UP}
+ {$DEFINE WINXP_UP}
+ {$DEFINE WIN2003_UP}
+ {$DEFINE WINVISTA_UP}
+{$ENDIF WINVISTA}
+
 {$IFDEF WIN2003}
  {$DEFINE WIN95_UP}
  {$DEFINE WIN98_UP}
@@ -168,6 +215,21 @@ Standalone compiling would be useless!
 {$IFDEF WIN95}
  {$DEFINE WIN95_UP}
 {$ENDIF WIN95}
+
+{$IFDEF SERVICEPACK_2}
+ {$DEFINE SERVICEPACK_1_UP}
+{$ENDIF SERVICEPACK_2}
+
+{$IFDEF SERVICEPACK_3}
+ {$DEFINE SERVICEPACK_1_UP}
+ {$DEFINE SERVICEPACK_2_UP}
+{$ENDIF SERVICEPACK_3}
+
+{$IFDEF SERVICEPACK_4}
+ {$DEFINE SERVICEPACK_1_UP}
+ {$DEFINE SERVICEPACK_2_UP}
+ {$DEFINE SERVICEPACK_3_UP}
+{$ENDIF SERVICEPACK_4}
 
 
 // secondary IFDEFs for "_UP" which means also any later IE version

@@ -819,7 +819,7 @@ begin
 end;
 
 var
-{$IFDEF DELPHI6_UP}
+{$IFDEF SUPPORT_LONG_VARNAMES}
   _NhpAllocateAndGetInterfaceInfoFromStack: Pointer;
 {$ELSE}
   _NhpAllocateAGIIFrStack: Pointer;
@@ -827,7 +827,7 @@ var
 
 function NhpAllocateAndGetInterfaceInfoFromStack;
 begin
-{$IFDEF DELPHI6_UP}
+{$IFDEF SUPPORT_LONG_VARNAMES}
   GetProcedureAddress(_NhpAllocateAndGetInterfaceInfoFromStack,iphlpapilib, 'NhpAllocateAndGetInterfaceInfoFromStack');
 {$ELSE}
   GetProcedureAddress(_NhpAllocateAGIIFrStack,iphlpapilib, 'NhpAllocateAndGetInterfaceInfoFromStack');
@@ -835,7 +835,7 @@ begin
   asm
         MOV     ESP, EBP
         POP     EBP
-{$IFDEF DELPHI6_UP}
+{$IFDEF SUPPORT_LONG_VARNAMES}
         JMP     [_NhpAllocateAndGetInterfaceInfoFromStack]
 {$ELSE}
         JMP     [_NhpAllocateAGIIFrStack]
