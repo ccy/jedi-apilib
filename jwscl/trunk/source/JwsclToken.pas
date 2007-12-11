@@ -2708,9 +2708,9 @@ constructor TJwSecurityToken.CreateCompatibilityQueryUserToken(
     if hProcessHandle <> INVALID_HANDLE_VALUE then
     begin
       pEntry.dwSize := SizeOf(ProcessEntry32);
-      if Process32First(hProcessHandle, pEntry) = true then begin
+      if Process32First(hProcessHandle, pEntry) then begin
         repeat
-          if JwCompareString(pEntry.szExeFile, Exename) = 0 then
+          if JwCompareString(pEntry.szExeFile, Exename, true) = 0 then
           begin
             result := pEntry.th32ProcessID;
             break;
