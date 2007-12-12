@@ -617,6 +617,8 @@ type
   TJwGetAccessCheckType =
    (gactGetSecurity,
     gactSetSecurity);
+  TJwGetAccessCheckTypeSet = set of TJwGetAccessCheckType;
+
   TJwGetInheritFlagsType =
    (giftCreatePrivate,
     giftSetPrivate);

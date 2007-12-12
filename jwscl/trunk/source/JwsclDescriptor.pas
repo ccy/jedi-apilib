@@ -112,7 +112,7 @@ type {@Name contains information about a security descriptor.
        {@Name creates an empty security descriptor.
         The property pSD is initialised and ready to be filled.
 
-        By default the DACL is initialised emptily so everyone is denied access.
+        By default the DACL is initialized with no entries so everyone is denied access.
         Set DACL to nil to allow everyone access but do not free it by calling Free.
         DACL := Nil;
         }
@@ -324,17 +324,17 @@ type {@Name contains information about a security descriptor.
        }
     class procedure Free_SAEx(var SA: TSecurityAttributes);
 
-       {@Name writes an relative security descriptor into a stream.
+       {@Name writes a relative security descriptor into a stream.
         The method uses a magic header to check for position errors in a stream.
 
         @unorderedlist(
-        @item Bytes         |  Value
-        @item 1..5 (5)      |  SD_MAGIC_HEADER (byte array)
-        @item 6..9 (4)      |  SD size (Cardinal)
-        @item 10..17 (8)    |  hash value (Cardinal)
-        @item 18..18 (1)    |  hash value in use (byte) true if 255 otherwise false.
-        @item == SD_HEADER_SIZE
-        @item 19..sd (size) |  security descriptor data
+        @item(Bytes         |  Value)
+        @item(1..5 (5)      |  SD_MAGIC_HEADER (byte array))
+        @item(6..9 (4)      |  SD size (Cardinal))
+        @item(10..17 (8)    |  hash value (Cardinal))
+        @item(18..18 (1)    |  hash value in use (byte) true if 255 otherwise false.
+               == SD_HEADER_SIZE)
+        @item(19..sd (size) |  security descriptor data)
     )
 
 
@@ -371,7 +371,7 @@ type {@Name contains information about a security descriptor.
     function GetSecurityDescriptorString(SIFlags: TJwSecurityInformationFlagSet): TJwString; overload;
 
     {@Name replaces the security descriptor elements given in SecurityInformationSet with
-     the one in SecurityDescriptor.
+     the ones in SecurityDescriptor.
      @param(SecurityInformationSet Contains the members of the SD to be replaced.)
      @param(SecurityDescriptor defines the SD which is used to copy the members into
         the instance.)
