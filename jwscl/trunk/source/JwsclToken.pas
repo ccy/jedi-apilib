@@ -1485,7 +1485,7 @@ type
   TJwPrivilegeQueryType = (pqt_Available, pqt_Enabled);
   TJwPrivilegeSetType   = (pst_Enable, pst_EnableIfAvail, pst_Disable);
 
-{@Name checks if a given privilege is available or enabled in the actual process or thread.
+{@Name checks whether a given privilege is available or enabled in the actual process or thread.
 @param Index gets the privilege name
 @param query defines whether the given privilege should be checked for availability or is enable
 @return Returns true if the privilege is available and enabled. If the privilege is not available or disabled the result is false.

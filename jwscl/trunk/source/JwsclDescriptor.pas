@@ -1012,7 +1012,7 @@ begin
       RsWinCallFailed,
       'Create', ClassName, RsUNDescriptor, 0, True, ['GetSecurityDescriptorControl']);
 
-  RMControl := c;
+  //RMControl := c; Warning: GetRMControl not implemented!!
   {if c and SE_SELF_RELATIVE <> SE_SELF_RELATIVE then
     exit;}
 
@@ -1363,10 +1363,10 @@ begin
   else
   begin
     ipSDSize := sizeof(jwaWindows.TSecurityDescriptor);
-    //result := PSecurityDescriptor(LocalAlloc(LMEM_FIXED or LMEM_ZEROINIT,sizeof(jwaWindows.TJwSecurityDescriptor)));
+//    result := PSecurityDescriptor(LocalAlloc(LMEM_FIXED or LMEM_ZEROINIT,sizeof(jwaWindows.TSecurityDescriptor)));
     GetMem(Result, sizeof(jwaWindows.TSecurityDescriptor));
 
-    //Result.Control := RMControl;
+    //Result.Control := RMControl; Warning: GetRMControl not implemented!! 
     {result <> nil}
     if not InitializeSecurityDescriptor(
       Result, SECURITY_DESCRIPTOR_REVISION) then
@@ -1492,8 +1492,9 @@ begin
 
   //Control2 := TJwEnumMap.ConvertSecurityControl(result^.Control);
 
-  
-  Result.Control := RMControl;
+
+ // Result.Control := GetRMControl; Warning: GetRMControl not implemented!!
+  Result.Control := 0;
 
   Result.Control := Result.Control or SE_DACL_PRESENT;
 
@@ -1522,8 +1523,7 @@ begin
     Result.Control := Result.Control and not SE_SELF_RELATIVE;
 
  // Control2 := TJwEnumMap.ConvertSecurityControl(result^.Control);
-
-
+   
 
 
   {result <> nil
@@ -1586,15 +1586,16 @@ function TJwSecurityDescriptor.Create_SA(bInheritHandle: boolean = False;
   bSDRelative: boolean = False): PSecurityAttributes;
 begin
   GetMem(Result, sizeof(TSecurityAttributes));
+  //result := PSecurityAttributes(LocalAlloc(LPTR, sizeof(TSecurityAttributes)));
   if (Result = nil) then
     exit;
 
 
-  Result.nLength := sizeof(TSecurityAttributes);
-  Result.bInheritHandle := bInheritHandle;
+  Result^.nLength := sizeof(TSecurityAttributes);
+  Result^.bInheritHandle := bInheritHandle;
 
   try
-    Result.lpSecurityDescriptor := Create_SD(bSDRelative);
+    Result^.lpSecurityDescriptor := Create_SD(bSDRelative);
   except
     on E: Exception do
     begin
@@ -1934,6 +1935,7 @@ end;
 function TJwSecurityDescriptor.GetRMControl:
   jwaWindows.TSecurityDescriptorControl;
 begin
+  result := 0;
   //TODO: Control is not resource manager (RM) Control !!
   //Result := TJwEnumMap.ConvertSecurityControl(fControl);
 end;
