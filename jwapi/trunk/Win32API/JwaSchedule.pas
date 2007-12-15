@@ -144,6 +144,7 @@ const
 
 
 {$IFNDEF JWA_OMIT_SECTIONS}
+Implementation // implementation is mandatory under FPC.
 end.
 {$ENDIF JWA_OMIT_SECTIONS}
 

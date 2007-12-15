@@ -77,7 +77,8 @@ unit JwaAdsTLB;
 interface
 {$i jediapilib.inc}
 uses
-  Windows, ActiveX, Classes {$IFNDEF NOVCL} , Graphics, OleServer, OleCtrls, StdVCL {$ENDIF} ;
+  Windows, ActiveX, Classes 
+     {$ifndef FPC} {$IFNDEF NOVCL} , Graphics, OleServer, OleCtrls, StdVCL {$ENDIF} {$endif} ;  // Are these used at all?
 
 {$ENDIF JWA_OMIT_SECTIONS}
 

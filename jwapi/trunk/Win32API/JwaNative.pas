@@ -168,7 +168,7 @@
 unit JwaNative;
 
 interface
-
+{$INCLUDE jediapilib.inc}
 uses
   JwaWinType, JwaWinNT, JwaWinBase, JwaNtStatus;
 
@@ -179,7 +179,7 @@ uses
 {$IFDEF RTDL}{$DEFINE DYNAMIC_LINK}{$ENDIF}
 const
   ntdll = 'ntdll.dll';
-{$INCLUDE jediapilib.inc}
+
 //------------------------------------------------------------------------------
 
 {$ENDIF JWA_OMIT_SECTIONS}
