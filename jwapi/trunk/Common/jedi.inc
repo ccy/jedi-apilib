@@ -77,10 +77,14 @@
   Directive           Description
   ------------------------------------------------------------------------------
   WIN32               Defined when target platform is 32 bit Windows
+  WIN64               Defined when target platform is 64 bit Windows
   MSWINDOWS           Defined when target platform is 32 bit Windows
   LINUX               Defined when target platform is Linux
-  UNIX                Defined when target platform is Linux or Unix
+  UNIX                Defined when target platform is Unix-like (including Linux)
 
+- Architecture directives. These are auto-defined by FPC
+  CPU386              Defined when target platform is x86 (win32)
+  CPUx86_64           Defined when target platform is x86_64 (win64)
 
 - Visual library Directives
 
@@ -391,14 +395,16 @@
 { Set FreePascal to Delphi mode }
 {$IFDEF FPC}
   {$MODE DELPHI}
-  {$ASMMODE Intel}
+  {$ASMMODE Intel}  
   {$UNDEF BORLAND}
+   // FPC defines CPU* and Unix automatically
 {$ENDIF}
 
 {$IFDEF BORLAND}
   {$IFDEF LINUX}
     {$DEFINE KYLIX}
   {$ENDIF LINUX}
+  {$DEFINE CPU386}  // For Borland compilers select the x86 compat assembler by default
 {$ENDIF BORLAND}
 
 {------------------------------------------------------------------------------}
