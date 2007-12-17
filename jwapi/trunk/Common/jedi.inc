@@ -83,8 +83,13 @@
   UNIX                Defined when target platform is Unix-like (including Linux)
 
 - Architecture directives. These are auto-defined by FPC
+  CPU32 and CPU64 are mostly for generic pointer size dependant differences rather
+  than for a specific architecture.
+
   CPU386              Defined when target platform is x86 (win32)
   CPUx86_64           Defined when target platform is x86_64 (win64)
+  CPU32               Defined when target is 32-bit
+  CPU64	              Defined when target is 64-bit
 
 - Visual library Directives
 
@@ -405,6 +410,7 @@
     {$DEFINE KYLIX}
   {$ENDIF LINUX}
   {$DEFINE CPU386}  // For Borland compilers select the x86 compat assembler by default
+  {$DEFINE CPU32}   // Assume Borland compilers are 32-bit (rather than 64-bit)
 {$ENDIF BORLAND}
 
 {------------------------------------------------------------------------------}
