@@ -5,14 +5,15 @@ interface
 uses
   Messages, SysUtils, Classes, Graphics, Controls, SvcMgr, Dialogs,
   JwaWindows, JwsclToken, JwsclLsa, JwsclCredentials, JwsclDescriptor, JwsclDesktops,
-  JwsclExceptions, JwsclSID, JwsclKnownSID, JwsclEncryption, JwsclTypes;
+  JwsclExceptions, JwsclSID, JwsclAcl,JwsclKnownSID, JwsclEncryption, JwsclTypes;
 
 type
   TLogType=(ltInfo, ltError);
 
-  TService1 = class(TService)
+  TXPService = class(TService)
     procedure ServiceExecute(Sender: TService);
     procedure ServiceStop(Sender: TService; var Stopped: Boolean);
+    procedure ServiceStart(Sender: TService; var Started: Boolean);
   private
     { Private declarations }
     fStopEvent:           THandle;
@@ -43,7 +44,7 @@ const MessageboxCaption= 'XP Elevation';
       LogFileKey='Log';
 
 var
-  Service1: TService1;
+  XPService: TXPService;
 
 implementation
 uses ThreadUnit, HandleRequestThread, Registry;
@@ -51,15 +52,15 @@ uses ThreadUnit, HandleRequestThread, Registry;
 
 procedure ServiceController(CtrlCode: DWord); stdcall;
 begin
-  Service1.Controller(CtrlCode);
+  XPService.Controller(CtrlCode);
 end;
 
-function TService1.GetServiceController: TServiceController;
+function TXPService.GetServiceController: TServiceController;
 begin
   Result := ServiceController;
 end;
 
-procedure TService1.LogEvent(Event: String; EventType: TLogType=ltInfo);
+procedure TXPService.LogEvent(Event: String; EventType: TLogType=ltInfo);
 begin
   EnterCriticalSection(fLogCriticalSection);
   try
@@ -93,7 +94,7 @@ begin
   end;
 end;
 
-function TService1.AskCredentials(Token: TJwSecurityToken; AppToStart: string; UserAndDomain: string; out Password: string; out Save: boolean): boolean;
+function TXPService.AskCredentials(Token: TJwSecurityToken; AppToStart: string; UserAndDomain: string; out Password: string; out Save: boolean): boolean;
 var StartInfo: STARTUPINFOA;
   procedure InitStartInfo;
   begin
@@ -196,14 +197,14 @@ begin
   end;
 end;
 
-function TService1.MayUserBeElevated(User: TJwSecurityID): boolean;
+function TXPService.MayUserBeElevated(User: TJwSecurityID): boolean;
 begin
   result:=fAllowedSIDs.FindSid(User)<>-1;
 end;
 
 const EmptyPass = Pointer(-1);
 
-procedure TService1.StartApp(AppToStart: string);
+procedure TXPService.StartApp(AppToStart: string);
 var Pass, User, Domain: string; LSA: TJwSecurityLsa;
 
     plogonData : PMSV1_0_INTERACTIVE_LOGON; Authlen: Cardinal;
@@ -370,7 +371,7 @@ begin
 //              Startinfo.dwFlags:=STARTF_USESHOWWINDOW;
 //              Startinfo.wShowWindow:=SW_SHOW;
               Startinfo.lpDesktop:='Winsta0\default';
-              if GetTokenInformation(   Token.TokenHandle, TokenSessionId, @SeId1, 4, EncryptLength) then //EncryptLength is just a dummy here
+              if GetTokenInformation(Token.TokenHandle, TokenSessionId, @SeId1, 4, EncryptLength) then //EncryptLength is just a dummy here
                 SetTokenInformation(NewToken.TokenHandle, TokenSessionId, @SeId1, 4);
               CreateEnvironmentBlock(@Envirblock, NewToken.TokenHandle, false);
               try
@@ -424,7 +425,7 @@ begin
   end;
 end;
 
-procedure TService1.InitAllowedSIDs;
+procedure TXPService.InitAllowedSIDs;
 var Reg: TRegistry; SIDStrings: TStringlist; i: integer;
 begin
   fAllowedSIDs:=TJwSecurityIDList.Create(True);
@@ -455,11 +456,14 @@ begin
   fPasswords.UnlockList;
 end;
 
-procedure TService1.ServiceExecute(Sender: TService);
+procedure TXPService.ServiceExecute(Sender: TService);
 var Pipe: THandle; OvLapped: OVERLAPPED; ar: array[0..1] of THandle;
     AppName: String; PipeSize: Cardinal; Descr: TJwSecurityDescriptor; SecAttr: PSECURITY_ATTRIBUTES;
     i: integer;
 begin
+ //MessageBox(0,'wait1','',MB_SERVICE_NOTIFICATION or MB_OK);
+
+  //Sleep(10000);
   try
     AssignFile(fLogFile, RegGetFullPath(LogFileKey));
     if FileExists(RegGetFullPath(LogFileKey)) then
@@ -473,6 +477,8 @@ begin
       MessageBox(0, PChar(E.Message), MessageboxCaption, MB_SERVICE_NOTIFICATION or MB_OK);
     end;
   end;
+
+  LogEvent('*** XP Elevation Service starts... ');
   try
 //    MessageBox(0, 'Started', 'UAC-Nachbildung', MB_SERVICE_NOTIFICATION or MB_OK);
     LogEvent('Started');
@@ -484,6 +490,7 @@ begin
 //    end;
     fStopEvent:=CreateEvent(nil, true, false, nil);
     fThreadsStopped:=CreateEvent(nil, true, true, nil);
+    Sleep(1000);
     try
       try
         SecAttr:=nil;
@@ -492,8 +499,15 @@ begin
         try
           Descr:=TJwSecurityDescriptor.Create;
           try
-            Descr.DACL:=nil;
-            SecAttr:=Descr.Create_SA(False);
+            LogEvent('Create Pipe 1');
+            Descr.Owner := JwSecurityProcessUserSID;
+            Descr.PrimaryGroup := JwAdministratorsSID;
+            //Descr.DACL:=nil;
+            Descr.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil,[],GENERIC_ALL,JwLocalSystemSID,false));
+            Descr.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil,[],GENERIC_ALL,JwAdministratorsSID,false));
+            Descr.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil,[],GENERIC_ALL,JwWorldSID,false));
+            SecAttr:=Descr.Create_SA(false);
+            //SecAttr:= nil;
             Pipe:=CreateNamedPipe('\\.\pipe\XPElevationPipe', PIPE_ACCESS_INBOUND or FILE_FLAG_OVERLAPPED, PIPE_WAIT, PIPE_UNLIMITED_INSTANCES, 0, 0, 0, LPSECURITY_ATTRIBUTES(SecAttr));
           finally
             Descr.Free;
@@ -521,6 +535,7 @@ begin
                 PipeHandle:=Pipe;
                 Resume;
               end;
+              LogEvent('Create Pipe 2');
               Pipe:=CreateNamedPipe('\\.\pipe\XPElevationPipe', PIPE_ACCESS_INBOUND or FILE_FLAG_OVERLAPPED, PIPE_WAIT, PIPE_UNLIMITED_INSTANCES, 0, 0, 0, LPSECURITY_ATTRIBUTES(SecAttr));
               if Pipe=INVALID_HANDLE_VALUE then
               begin
@@ -557,31 +572,37 @@ begin
       finally
 //        fDesktop.Free;
 //        MessageBox(0, 'Ending', 'UAC-Nachbildung', MB_SERVICE_NOTIFICATION or MB_OK);
-        LogEvent('Ending');
+        LogEvent('*** XP Elevation Service finished.');
       end;
     finally
       CloseHandle(fStopEvent);
       CloseHandle(fThreadsStopped);
     end;
   finally
+    //LogEvent('*** XP Elevation Service finished. ');
+
     DeleteCriticalSection(fLogCriticalSection);
     CloseFile(fLogFile);
   end;
 end;
 
-procedure TService1.ServiceStop(Sender: TService; var Stopped: Boolean);
+procedure TXPService.ServiceStop(Sender: TService; var Stopped: Boolean);
 begin
   Self.Stopped:=True;
+
 end;
 
-procedure TService1.SetStopped(const Value: boolean);
+procedure TXPService.SetStopped(const Value: boolean);
 begin
   FStopped := Value;
   if Value then
     SetEvent(fStopEvent);
 end;
 
-initialization
-  JwInitWellknownSIDs;
+procedure TXPService.ServiceStart(Sender: TService; var Started: Boolean);
+begin
+  Started := true;
+end;
+
 
 end.

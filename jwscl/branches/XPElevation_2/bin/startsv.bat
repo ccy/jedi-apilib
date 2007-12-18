@@ -1,1 +1,3 @@
-net start "XPElevationService"
+net start "XP Elevation Service"
+pause
+

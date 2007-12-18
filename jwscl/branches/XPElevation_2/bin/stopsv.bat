@@ -1,1 +1,1 @@
-net stop "XPElevationService"
+net stop "XP Elevation Service"

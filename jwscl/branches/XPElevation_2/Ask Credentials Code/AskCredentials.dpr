@@ -2,6 +2,8 @@ program AskCredentials;
 
 //{$APPTYPE CONSOLE}
 
+{$R *.res}
+
 uses
   SysUtils,
   JwaWindows,
@@ -10,7 +12,15 @@ uses
   JwsclCredentials,
   JwsclTypes,
   Graphics,
-  Registry;
+  Registry,
+  Controls,
+  Forms,
+  CredentialsForm,
+  MainForm in 'MainForm.pas' {FormMain};
+
+
+var ScreenBitmap : TBitmap;
+    Resolution : TRect;  
 
 function BitBltBlack(DestDC: HDC; DestX, DestY: Integer; nWidth, nHeight: integer; SrcDC: HDC; SrcX, SrcY: integer; Black: byte): LongBool;
 var BlendStruct: BLENDFUNCTION;
@@ -64,40 +74,45 @@ begin
 end;
 
 function AskPassword(AppToStart: String; UserAndDomain: string; out Password: string): boolean;
+
 var Prompt: TJwCredentialsPrompt; OldDesk: HDESK; OldWallpaperPath: PChar; DesktopWallpaperPath: string;
      Bmp: Graphics.TBitmap; DeskDC: HDC; Desktop: TJwSecurityDesktop; Descr: TJwSecurityDescriptor;
 begin
-  DesktopWallPaperPath:=RegistryGetDeskBackgroundPath;
-  DeskDC:=GetDC(0);
-  try
-    Bmp:=Graphics.TBitmap.Create;
-    try
-      Bmp.Width :=GetDeviceCaps(DeskDC, HORZRES);
-      Bmp.Height:=GetDeviceCaps(DeskDC, VERTRES);
-      BitBltBlack(Bmp.Canvas.Handle, 0, 0, Bmp.Width, Bmp.Height, DeskDC, 0, 0, 50);
-      Bmp.SaveToFile(PChar(DesktopWallpaperPath));
-    finally
-      Bmp.Free;
-    end;
-  finally
-    ReleaseDC(0, DeskDC);
-  end;
-  GetMem(OldWallpaperPath, MAX_PATH);
-  try
-    OldDesk:=GetThreadDesktop(GetCurrentThreadID);
-    SystemParametersInfo(SPI_GETDESKWALLPAPER, MAX_PATH, OldWallpaperPath, 0);
-    Descr:=TJwSecurityDescriptor.Create;
-    try
-      Desktop:=TJwSecurityDesktop.CreateDesktop(nil, true, 'UACinXPAskCredentialsDesk', [], false, GENERIC_ALL, Descr);
-    finally
-      Descr.Free;
-    end;
-    try
+  try  //1.
+    Descr:=TJwSecurityDescriptor.CreateDefaultByToken;
+
+    try //2.
+      OldDesk:=GetThreadDesktop(GetCurrentThreadID);
+      Desktop:=TJwSecurityDesktop.CreateDesktop(nil, true, 'UACinXPAskCredentialsDesk', [], false, GENERIC_ALL,  Descr);
       Desktop.SetThreadDesktop;
       try
         Desktop.SwitchDesktop;
         try
-          SystemParametersInfo(SPI_SETDESKWALLPAPER, 0, PChar(DesktopWallpaperPath), 0);
+         { Application.Initialize;
+          Application.CreateForm(TFormMain, FormMain);
+          Application.CreateForm(TFormCredentials, FormCredentials);
+          FormCredentials.ShowModal;   }
+
+
+          Application := TApplication.Create(nil);
+          Application.Initialize;
+          Application.CreateForm(TFormMain, FormMain);
+          FormMain.Image1.Picture.Bitmap.Assign(ScreenBitmap);
+          FormMain.Image1.Align  := alClient;
+
+          FormMain.BoundsRect := Resolution;
+          FormMain.Show;
+
+
+          Application.CreateForm(TFormCredentials, FormCredentials);
+          //FormCredentials.CenterInMonitor(1);
+          FormCredentials.Show;
+          Application.Run;
+          Application.Free;
+          {Application.Run; }
+
+
+         (* SystemParametersInfo(SPI_SETDESKWALLPAPER, 0, PChar(DesktopWallpaperPath), 0);
           Prompt:=TJwCredentialsPrompt.Create;
           try
             Prompt.Caption:='UAC in XP';
@@ -111,21 +126,28 @@ begin
             Password:=Prompt.Password;
           finally
             Prompt.Free;
-          end;
+          end;    *)
         finally
           Desktop.SwitchDesktopBack;
         end;
       finally
         SetThreadDesktop(OldDesk);
-        SystemParametersInfo(SPI_SETDESKWALLPAPER, 0, OldWallpaperPath, 0);
+
+     //   SystemParametersInfo(SPI_SETDESKWALLPAPER, 0, OldWallpaperPath, 0);
       end;
-    finally
-      Desktop.Free;
+    finally //2.
+      Descr.Free;
+      try
+        Desktop.Free;
+      except
+      end;
+      Application := TApplication.Create(nil);
     end;
-  finally
-    FreeMem(OldWallpaperPath);
+  finally  //1
+    //FreeMem(OldWallpaperPath);
+
   end;
-  DeleteFile(PChar(DesktopWallpaperPath));
+  //DeleteFile(PChar(DesktopWallpaperPath));
 end;
 
 function IfThen(Cond: Boolean; TrueVal, FalseVal: String): String;
@@ -146,33 +168,104 @@ begin
     MessageBox(0, PChar(SysErrorMessage(GetLastError)), 'Ask Credentials', MB_OK);
 end;
 
+function GetScreenBitmap(out Resolution : TRect) : TBitmap;
+
+  function BitBltBlack(DestDC: HDC; DestX, DestY : Integer; nWidth, nHeight: integer; SrcDC: HDC; SrcX, SrcY: integer; Black: byte): LongBool;
+  var BlendStruct: BLENDFUNCTION;
+  begin
+    BitBlt(DestDC, DestX, DestY, nWidth, nHeight, 0, SrcX, SrcY, BLACKNESS);
+    BlendStruct.BlendFlags:=0;
+    BlendStruct.BlendOp:=AC_SRC_OVER;
+    BlendStruct.SourceConstantAlpha:=255-Black;
+    BlendStruct.AlphaFormat:=0;
+    Result:= jwaWindows.AlphaBlend(DestDC, DestX, DestY, nWidth, nHeight, SrcDC, SrcX, SrcY, NWidth, nHeight, BlendStruct);
+  end;
+
+  function GetMaxResolution : TRect;
+  var i : Integer;
+  begin
+    ZeroMemory(@result, sizeof(result));
+    for i := 0 to Screen.MonitorCount -1 do
+    begin
+      if Screen.Monitors[i].BoundsRect.Left < result.Left then
+        result.Left := Screen.Monitors[i].BoundsRect.Left;
+      if Screen.Monitors[i].BoundsRect.Top < result.Top then
+        result.Top := Screen.Monitors[i].BoundsRect.Top;
+
+      if Screen.Monitors[i].BoundsRect.Right > result.Right then
+        result.Right := Screen.Monitors[i].BoundsRect.Right;
+      if Screen.Monitors[i].BoundsRect.Bottom > result.Bottom then
+        result.Bottom := Screen.Monitors[i].BoundsRect.Bottom;
+    end;
+  end;
+
+var i : Integer;
+    R,R2 : TRect;
+    DeskDC : HDC;
+begin
+  Resolution := GetMaxResolution;
+
+  DeskDC := GetDC(0);
+  try
+    result := Graphics.TBitmap.Create;
+    result.Width := abs(Resolution.Left) + abs(Resolution.Right);
+    result.Height:= abs(Resolution.Top) + abs(Resolution.Bottom);
+    BitBltBlack(result.Canvas.Handle, 0, 0, result.Width, result.Height, DeskDC, Resolution.Left, Resolution.Top, 200);
+    //Bmp.SaveToFile(PChar(DesktopWallpaperPath));
+   // result.SaveToFile('E:\Temp\_Bmp.bmp');
+  finally
+    ReleaseDC(0, DeskDC);
+  end;
+
+  Resolution.Right  := abs(Resolution.Left) + abs(Resolution.Right);
+  Resolution.Bottom := abs(Resolution.Top) + abs(Resolution.Bottom);
+end;
+
 var Password: String; Pipe: THandle;
+
 
 function func(p: pointer): LRESULT; stdcall;
 const StrLenCancelled: Cardinal=Cardinal(-1);
       Null: Cardinal=0;
 var Dummy: Cardinal;
 begin
+  ScreenBitmap := GetScreenBitmap(Resolution);
   try
-    if Pipe=0 then
-      exit;
+   { if Pipe=0 then
+      exit;}
+    Password := '';
     if not AskPassword(Paramstr(1), Paramstr(2), Password) then
-      WriteFile(Pipe, @StrLenCancelled, SizeOf(StrLenCancelled), @Dummy, nil)
+    ;
+   {   WriteFile(Pipe, @StrLenCancelled, SizeOf(StrLenCancelled), @Dummy, nil)
     else
     begin
       if Length(Password)>0 then
         WriteFile(Pipe, Pointer(integer(Password)-4), SizeOf(Cardinal)+Length(Password), @Dummy, nil)
       else
         WriteFile(Pipe, @Null, SizeOf(Null), @Dummy, nil);
-    end;
+    end;  }
   except
     on E: Exception do
       MessageBox(0, PChar(E.ClassType.ClassName+#13#10+E.Message), '', MB_OK);
   end;
+  ScreenBitmap.Free;
 end;
 
+
+
+
 begin
-  if (Paramstr(2)='') then
-    Halt(Integer(@Pipe));
-  WaitForSingleObject(CreateThread(nil, 0, @func, nil, 0, nil), Infinite);
+  Application.Free;
+  //FreeAndNil(Application);
+  {if (Paramstr(2)='') then
+    Halt(Integer(@Pipe)); }
+
+
+
+  //WaitForSingleObject(CreateThread(nil, 0, @func, nil, 0, nil), Infinite);
+  try
+    Func(0);
+  finally
+    halt(0);
+  end;
 end.

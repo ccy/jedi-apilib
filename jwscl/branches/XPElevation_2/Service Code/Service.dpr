@@ -23,7 +23,7 @@ begin
   //
   // Application.DelayInitialize := True;
   //
-  if not Application.DelayInitialize or Application.Installing then
+ { if not Application.DelayInitialize or Application.Installing then  }
     Application.Initialize;
   Application.CreateForm(TService1, Service1);
   Application.Run;

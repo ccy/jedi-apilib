@@ -99,7 +99,7 @@ begin
   AssocPort.CompletionKey := Pointer(JobInformation.Id);
   if not SetInformationJobObject(Job, JobObjectAssociateCompletionPortInformation,
            @AssocPort, SizeOf(AssocPort)) then
-    Service1.LogEvent('SetInformationJobObject failed with '+SysErrorMessage(GetLastError), ltError)
+    XPService.LogEvent('SetInformationJobObject failed with '+SysErrorMessage(GetLastError), ltError)
   else
     fList.Add(JobInformation);
 end;
@@ -108,7 +108,7 @@ procedure TUnloadProfThread.DoTerminate;
 begin
   CloseHandle(fIOCompletionPort);
   fList.Free;
-  Service1.LogEvent('UnloadProfThread terminates');
+  XPService.LogEvent('UnloadProfThread terminates');
 end;
 
 constructor TUnloadProfThread.Create;

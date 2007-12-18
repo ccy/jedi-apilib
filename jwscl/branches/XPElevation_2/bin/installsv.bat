@@ -1,1 +1,2 @@
-service /install
+XPElevationService /install
+pause

@@ -35,20 +35,20 @@ uses MainUnit;
 procedure THandleRequestThread.Execute;
 var AppName: string; PipeSize: Cardinal; OvLapped: OVERLAPPED; ar: array[0..1] of THandle;
 begin
-  if InterlockedExchangeAdd(Service1.fHReqThreadCount, 1)=0 then
-   ResetEvent(Service1.ThreadsStopped);
+  if InterlockedExchangeAdd(XPService.fHReqThreadCount, 1)=0 then
+   ResetEvent(XPService.ThreadsStopped);
   try
-    if Service1.Stopped then
+    if XPService.Stopped then
      exit;
     OvLapped.hEvent:=CreateEvent(nil, false, false, nil);
     try
       ar[0]:=OvLapped.hEvent;
-      ar[1]:=Service1.StopEvent;
+      ar[1]:=XPService.StopEvent;
       ReadFile(fPipeHandle, nil, 0, nil, @OvLapped);
       case WaitForMultipleObjects(2, @ar[0], false, 10000) of
         WAIT_TIMEOUT:
         begin
-          Service1.LogEvent('HandleRequestThread was timed out');
+          XPService.LogEvent('HandleRequestThread was timed out');
           exit;
         end;
         WAIT_OBJECT_0+1: exit;
@@ -59,7 +59,7 @@ begin
       WaitForSingleObject(OvLapped.hEvent, INFINITE);
     //              MessageBox(0, PChar(AppName), 'App is to start', MB_SERVICE_NOTIFICATION or MB_OK);
       TJwSecurityToken.ImpersonateNamedPipeClient(fPipeHandle);
-      Service1.StartApp(Appname);
+      XPService.StartApp(Appname);
     //  TJwSecurityToken.RevertToSelf; //now made in StartApp
     finally
       CloseHandle(OvLapped.hEvent);
@@ -67,8 +67,8 @@ begin
       CloseHandle(fPipeHandle);
     end;
   finally
-    if InterlockedExchangeAdd(Service1.fHReqThreadCount, -1)=1 then
-      SetEvent(Service1.ThreadsStopped);
+    if InterlockedExchangeAdd(XPService.fHReqThreadCount, -1)=1 then
+      SetEvent(XPService.ThreadsStopped);
   end;
 end;
 

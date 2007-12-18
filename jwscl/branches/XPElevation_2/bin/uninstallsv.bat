@@ -1,1 +1,1 @@
-service /uninstall
+XPElevationService /uninstall
