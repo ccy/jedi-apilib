@@ -271,15 +271,14 @@ function DiffTimeString(FTLow: FILETIME; FTHigh: FILETIME;
 function ElapsedTimeString(DiffTime: PDiffTime; bShowSeconds: Boolean;
   lpElapsedTime: PWideChar): Integer; stdcall;
 
-// This is a wrapped for all OS version, mem is reserved by the function
-// caller has to free it!
+// This is a wrapped for all OS versions
 function ElapsedTimeStringSafe(DiffTime: PDiffTime; bShowSeconds: Boolean;
-  lpElapsedTime: PWideChar): Integer;
+  lpElapsedTime: PWideChar; cchDest: SIZE_T): Integer;
 
 // This is the Vista version of ElapsedTimeString which takes an additional
 // parameter with the count of characters for lpElapsedTime (you have to set it)
 function ElapsedTimeStringEx(DiffTime: PDiffTime; bShowSeconds: Boolean;
-  lpElapsedTime: PWideChar; cchDest: SIZE_T): Integer; stdcall;
+  var lpElapsedTime: PWideChar; cchDest: SIZE_T): Integer; stdcall;
 
 function FileTime2DateTime(FileTime: FileTime): TDateTime;
 
@@ -1001,20 +1000,22 @@ begin
   DiffTime.wMinutes := DiffSecs MOD 86400 MOD 3600 DIV 60; // No of whole minutes
   DiffTime.wSeconds := DiffSecs MOD 86400 MOD 3600 MOD 60; // No of seconds
 
+  // Reserve Memory
+  GetMem(pwElapsedTime, ELAPSED_TIME_STRING_LENGTH * SizeOf(WCHAR));
   // Format Elapsed TimeString in minutes (bShowSeconds = False)
-  NumChars := ElapsedTimeStringSafe(@DiffTime, False, pwElapsedTime);
-
+  NumChars := ElapsedTimeStringSafe(@DiffTime, False, pwElapsedTime,
+    ELAPSED_TIME_STRING_LENGTH);
   Result := NumChars;
+  // Caller has to free memory when done
 end;
 
 function ElapsedTimeStringSafe(DiffTime: PDiffTime; bShowSeconds: Boolean;
-  lpElapsedTime: PWideChar): Integer;
+  lpElapsedTime: PWideChar; cchDest: SIZE_T): Integer;
 var VersionInfo: TOSVersionInfoEx;
 begin
-  // Reserve Mem and fill it with zeroes
-  GetMem(lpElapsedTime, ELAPSED_TIME_STRING_LENGTH * SizeOf(WCHAR));
-  ZeroMemory(lpElapsedTime, ELAPSED_TIME_STRING_LENGTH * SizeOf(WCHAR));
-
+  // Zero Memory
+  ZeroMemory(lpElapsedTime, cchDest * SizeOf(WCHAR));
+  
   // Zero Memory and set structure size
   ZeroMemory(@VersionInfo, SizeOf(VersionInfo));
   VersionInfo.dwOSVersionInfoSize := SizeOf(VersionInfo);
@@ -1025,7 +1026,7 @@ begin
     (VersionInfo.wProductType = VER_NT_WORKSTATION) then
   begin
     Result := ElapsedTimeStringEx(DiffTime, bShowSeconds, lpElapsedTime,
-      ELAPSED_TIME_STRING_LENGTH);
+      cchDest);
   end
   else begin
     Result := ElapsedTimeString(DiffTime, bShowSeconds, lpElapsedTime);
