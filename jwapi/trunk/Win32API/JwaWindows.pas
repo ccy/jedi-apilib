@@ -477,9 +477,6 @@ The list has no order!}
 {$I JwaWinWlx.pas}
 {$I JwaWmiStr.pas}
 {$I JwaWowNT16.pas}
-{$IFDEF COMPILER6_UP}
- {$I JwaWinSta.pas}
-{$ENDIF}
 {$I JwaSens.pas}
 {$I JwaSensAPI.pas}
 {$IFNDEF FPC}
@@ -496,7 +493,7 @@ The list has no order!}
 {$I JwaTmSchema.pas}
 {$I JwaTraffic.pas}
 {$I JwaSceSvc.pas}
-{$I JwaSchemaDef.pas} 
+{$I JwaSchemaDef.pas}
 {$I JwaObjSel.pas}
 {$I JwaPatchApi.pas}
 {$I JwaPatchWiz.pas}
@@ -549,6 +546,9 @@ type UUID = GUID;
 
 {$DEFINE JWA_INCLUDEMODE}
 {$I JwaNative.pas}
+{$IFDEF COMPILER6_UP}
+ {$I JwaWinSta.pas}
+{$ENDIF}
 
 {$I ..\Common\ModuleLoader.pas}
 {$IFDEF JWA_INCLUDE_SETUP_API}
