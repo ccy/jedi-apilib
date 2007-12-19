@@ -341,7 +341,6 @@ function PWideCharToJwString(lpWideCharStr: PWideChar): TJwString;
 {$IFNDEF UNICODE}
 var cbMultiByte: Integer;
   lpMultiByteStr: PAnsiChar;
-  Res: Boolean;
 {$ENDIF UNICODE}
 begin
   if lpWideCharStr = nil then
@@ -355,7 +354,7 @@ begin
     cbMultiByte := 0;
     // WideCharToMultiByte returns needed size in bytes for lpMultiByteStr
     cbMultiByte := WideCharToMultiByte(CP_THREAD_ACP, WC_COMPOSITECHECK,
-      lpWideCharStr, -1, lpMultiByteStr, 0, nil, nil);
+      lpWideCharStr, -1, nil, 0, nil, nil);
 
     // Reserve and Zero memory
     GetMem(lpMultiByteStr, cbMultiByte);
@@ -472,7 +471,6 @@ begin
   ProcessInfoPtr := nil;
   Count := 1;
   Result := WinStationGetAllProcesses(FServerHandle, 0, Count, ProcessInfoPtr);
-  OutputDebugString(PChar(SysErrorMessage(GetLastError)));
   if Result then
   begin
     for i := 0 to Count-1 do
@@ -506,12 +504,15 @@ begin
           // Calculate Process Age
           CalculateElapsedTime(@CreateTime, DiffTime);
           // Reserve Mem and format Process Age String
-          GetMem(lpBuffer, 255 * SizeOf(WCHAR));
+          GetMem(lpBuffer, MAX_PATH * SizeOf(WCHAR));
+          ZeroMemory(lpBuffer, MAX_PATH * SizeOf(WCHAR));
           ElapsedTimeString(@DiffTime, False, lpBuffer);
           FProcessAge := PWideCharToJwString(lpBuffer);
           // Free mem
           FreeMem(lpBuffer);
+          lpBuffer := nil;
 
+          // Some of the used counters are explained here:
           // http://msdn2.microsoft.com/en-us/library/aa394372.aspx
           
           FProcessCreateTime :=
@@ -968,11 +969,13 @@ begin
     // Only Active Session has Logon Time
     if FConnectState = WTSActive then
     begin
-      // Format LogonTime string
+      // Reserve memory
       GetMem(lpBuffer, MAX_PATH * SizeOf(WCHAR));
+      // Format LogonTime string
       DateTimeString(@WinStationInfo.LogonTime, lpBuffer);
       FLogonTimeStr := PWideCharToJwString(lpBuffer);
       FreeMem(lpBuffer);
+      lpBuffer := nil;
 
       if FWinStationName <> 'Console' then
       begin
@@ -1002,10 +1005,12 @@ begin
       FIdleTimeStr := '.';
     end
     else begin
-      // Calculate & Format Idle Time String
+      // Calculate & Format Idle Time String, DiffTimeString allocates the
+      // memory for us
       DiffTimeString(WinStationInfo.LastInputTime, WinStationInfo.CurrentTime,
         lpBuffer);
       FIdleTimeStr := PWideCharToJwString(lpBuffer);
+      // We free the memory DiffTimeString has allocated for us
       FreeMem(lpBuffer);
     end;
 
@@ -1016,6 +1021,7 @@ begin
     FLogonTime := FileTime2DateTime(WinStationInfo.LogonTime);
     FCurrentTime := FileTime2DateTime(WinStationInfo.CurrentTime);
   end;
+
 end;
 
 function BlobDataToHexStr(P: PByte; I: Integer): string;
