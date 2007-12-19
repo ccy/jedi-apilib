@@ -351,7 +351,6 @@ begin
 {$IFDEF UNICODE}
     Result := lpWideCharStr;
 {$ELSE}
-    cbMultiByte := 0;
     // WideCharToMultiByte returns needed size in bytes for lpMultiByteStr
     cbMultiByte := WideCharToMultiByte(CP_THREAD_ACP, WC_COMPOSITECHECK,
       lpWideCharStr, -1, nil, 0, nil, nil);
@@ -1192,27 +1191,29 @@ end;
 constructor TJwWTSProcess.Create(const AOwner: TJwWTSProcessList;
   const ASessionId: TJwSessionId; const AProcessID: TJwProcessId;
   const AProcessName: TJwString; const AUsername: TjwString);
-var pWinStationName:{$IFDEF UNICODE}PWideChar{$ELSE}PAnsiChar{$ENDIF UNICODE};
+var pWinStationName: PWideChar;
+  Res: Boolean;
 begin
   FOwner := AOwner;
   FSessionID := ASessionId;
-{$IFDEF UNICODE}
   GetMem(pWinStationName, WINSTATIONNAME_LENGTH * SizeOf(WideChar));
-  if WinStationNameFromLogonIdW(GetServerHandle, FSessionId,
-    pWinStationName) then
-  begin
-
-  end
-  else begin
-    MessageBox(0, PChar(SysErrorMessage(GetLastError)), 'WinstationName', MB_OK);
-  end;
-{$ELSE}
-  GetMem(pWinStationName, WINSTATIONNAME_LENGTH);
-  WinStationNameFromLogonIdA(GetServerHandle, FSessionId,
+  ZeroMemory(pWinStationName, WINSTATIONNAME_LENGTH * SizeOf(WideChar));
+  Res := WinStationNameFromLogonIdW(GetServerHandle, FSessionId,
     pWinStationName);
-{$ENDIF UNICODE}
-  FWinstationName := pWinStationName;
+  if Res then
+  begin
+    FWinStationName := PWideCharToJwString(pWinStationName);
+  end;
+  if FWinStationName = '' then
+  begin
+    // Return disconnected if WinStationName = empty
+    FWinStationName := PWideCharToJwString(
+      StrConnectState(WTSDisconnected, False));
+  end;
+
+  // FreeMem
   FreeMem(pWinStationName);
+
   FProcessId := AProcessId;
   FProcessName := AProcessName;
   FUsername := AUsername;
