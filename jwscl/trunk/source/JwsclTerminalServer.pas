@@ -502,7 +502,11 @@ begin
           FProcesses.Add(AProcess);
           // Calculate Process Age
           CalculateElapsedTime(@CreateTime, DiffTime);
-          ElapsedTimeStringSafe(@DiffTime, False, lpBuffer);
+          // Reserve Memory
+          GetMem(lpBuffer, ELAPSED_TIME_STRING_LENGTH * SizeOf(WCHAR));
+          // Format Elapsed Time String
+          ElapsedTimeStringSafe(@DiffTime, False, lpBuffer,
+            ELAPSED_TIME_STRING_LENGTH);
           FProcessAge := PWideCharToJwString(lpBuffer);
           // Free mem
           FreeMem(lpBuffer);
