@@ -46,6 +46,9 @@ const
   TOTAL_SESSIONS_TOTAL_CONNECTED_NOW_COUNTER_2 = 6;
   TOTAL_SESSIONS_TOTAL_DISCONNECTED_NOW_COUNTER_2 = 7;
 
+  // Max lenght for ElapsedTimeString (server 2008 version of utildll
+  // fixes size at 15, so that's assumed to be safe
+  ELAPSED_TIME_STRING_LENGTH = 15;
 
   // Class constants for WinStationQueryInformationW
   // These names were found in winsta.dll because they have
@@ -264,8 +267,19 @@ function DateTimeString(DateTime: PFILETIME; lpBuffer: PWideChar): PWideChar;
 function DiffTimeString(FTLow: FILETIME; FTHigh: FILETIME;
   var pwElapsedTime: PWideChar): Integer;
 
+// This is the version for NT Terminal Server, 2000, XP/2003 and Server 2008
 function ElapsedTimeString(DiffTime: PDiffTime; bShowSeconds: Boolean;
   lpElapsedTime: PWideChar): Integer; stdcall;
+
+// This is a wrapped for all OS version, mem is reserved by the function
+// caller has to free it!
+function ElapsedTimeStringSafe(DiffTime: PDiffTime; bShowSeconds: Boolean;
+  lpElapsedTime: PWideChar): Integer;
+
+// This is the Vista version of ElapsedTimeString which takes an additional
+// parameter with the count of characters for lpElapsedTime (you have to set it)
+function ElapsedTimeStringEx(DiffTime: PDiffTime; bShowSeconds: Boolean;
+  lpElapsedTime: PWideChar; cchDest: SIZE_T): Integer; stdcall;
 
 function FileTime2DateTime(FileTime: FileTime): TDateTime;
 
@@ -280,10 +294,12 @@ procedure InitTermSrvCounterArray(
 
 function IsTerminalServiceRunning: boolean;
 
-// A Version assumed, not yet tested
+// Tested and working on Windows XP but doesn't seem to work on
+// Windows Vista/2008
 function LogonIdFromWinStationNameA(hServer: HANDLE; pWinStationName: LPSTR;
-  var SessionId: DWORD): NTSTATUS; stdcall;
+  var SessionId: DWORD): BOOL; stdcall;
 
+// Tested and working on XP, 2003 and 2008
 function LogonIdFromWinStationNameW(hServer: HANDLE; pWinStationName: LPWSTR;
   var SessionId: DWORD): BOOL; stdcall;
 
@@ -422,6 +438,8 @@ function CalculateElapsedTime; external utildll name 'CalculateElapsedTime';
 function CurrentDateTimeString; external utildll name 'CurrentDateTimeString';
 function DateTimeString; external utildll name 'DateTimeString';
 function ElapsedTimeString; external utildll name 'ElapsedTimeString';
+// Vista version of ElapsedTimeString, exported name is ElapsedTimeString
+function ElapsedTimeStringEx; external utildll name 'ElapsedTimeString';
 function GetUnknownString; external utildll name 'GetUnknownString';
 function LogonIdFromWinStationNameA; external winstadll name 'LogonIdFromWinStationNameA';
 function LogonIdFromWinStationNameW; external winstadll name 'LogonIdFromWinStationNameW';
@@ -530,6 +548,20 @@ begin
         JMP     [__ElapsedTimeString]
   end;
 end;
+
+var
+  __ElapsedTimeStringEx: Pointer;
+
+function ElapsedTimeStringEx;
+begin
+  GetProcedureAddress(__ElapsedTimeStringEx, utildll, 'ElapsedTimeString');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [__ElapsedTimeStringEx]
+  end;
+end;
+
 
 var
   __GetUnknownString: Pointer;
@@ -969,17 +1001,37 @@ begin
   DiffTime.wMinutes := DiffSecs MOD 86400 MOD 3600 DIV 60; // No of whole minutes
   DiffTime.wSeconds := DiffSecs MOD 86400 MOD 3600 MOD 60; // No of seconds
 
-  // Reserve mem and fill with zeroes
-  GetMem(pwElapsedTime, MAX_PATH * SizeOf(WCHAR));
-  ZeroMemory(pwElapsedTime, MAX_PATH * SizeOf(WCHAR));
-
   // Format Elapsed TimeString in minutes (bShowSeconds = False)
-  NumChars := ElapsedTimeString(@DiffTime, False, pwElapsedTime);
+  NumChars := ElapsedTimeStringSafe(@DiffTime, False, pwElapsedTime);
 
   Result := NumChars;
 end;
 
+function ElapsedTimeStringSafe(DiffTime: PDiffTime; bShowSeconds: Boolean;
+  lpElapsedTime: PWideChar): Integer;
+var VersionInfo: TOSVersionInfoEx;
+begin
+  // Reserve Mem and fill it with zeroes
+  GetMem(lpElapsedTime, ELAPSED_TIME_STRING_LENGTH * SizeOf(WCHAR));
+  ZeroMemory(lpElapsedTime, ELAPSED_TIME_STRING_LENGTH * SizeOf(WCHAR));
 
+  // Zero Memory and set structure size
+  ZeroMemory(@VersionInfo, SizeOf(VersionInfo));
+  VersionInfo.dwOSVersionInfoSize := SizeOf(VersionInfo);
+  GetVersionEx(@VersionInfo);
+
+  // Are we running Vista?
+  if (VersionInfo.dwMajorVersion = 6) and (VersionInfo.dwMinorVersion = 0) and
+    (VersionInfo.wProductType = VER_NT_WORKSTATION) then
+  begin
+    Result := ElapsedTimeStringEx(DiffTime, bShowSeconds, lpElapsedTime,
+      ELAPSED_TIME_STRING_LENGTH);
+  end
+  else begin
+    Result := ElapsedTimeString(DiffTime, bShowSeconds, lpElapsedTime);
+  end;
+  // Caller has to free memory when done
+end;
 
 function FileTime2DateTime(FileTime: FileTime): TDateTime;
 var LocalFileTime: TFileTime;
