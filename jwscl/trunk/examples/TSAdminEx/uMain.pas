@@ -118,10 +118,11 @@ type
       ShowImage: Boolean);
     procedure ApplicationEvents1Message(var Msg: tagMSG; var Handled: Boolean);
     procedure ProcessesListViewDeletion(Sender: TObject; Item: TListItem);
+    procedure ServerTreeViewDblClick(Sender: TObject);
   private
     { Private declarations }
-    var iActiveSessions: Integer;
-    var iDisconnectedSessions: Integer;
+    iActiveSessions: Integer;
+    iDisconnectedSessions: Integer;
     procedure UpdateTotals;
   public
     { Public declarations }
@@ -130,6 +131,7 @@ type
 var
   MainForm: TMainForm;
   IconRec: TIconRec;
+  strServer: String;
 implementation
 
 {$R *.dfm}
@@ -177,16 +179,16 @@ var TerminalServer: TJwTerminalServer;
   FormatSettings: TFormatSettings;
 begin
   // Get LocaleFormatSettings, we use them later on to format DWORD
-  // values with bytes as KByte values with thousand seperators
-  // a la taskmgr
+  // values with bytes as KByte values with thousand seperators a la taskmgr
   GetLocaleFormatSettings(LOCALE_USER_DEFAULT, FormatSettings);
 
   TerminalServer := TJwTerminalServer.Create;
-  TerminalServer.Server := '';
+  TerminalServer.Server := strServer;
 
 //  if TerminalServer.EnumerateProcesses then
   if TerminalServer.GetAllProcesses then
   begin
+    ProcessesListView.Items.BeginUpdate;
     for i := 0 to TerminalServer.Processes.Count -1 do
     begin
       with TerminalServer.Processes[i] do
@@ -228,6 +230,7 @@ begin
         end;
       end;
     end;
+    ProcessesListView.Items.EndUpdate;
   end
   else begin
     ShowMessage(SysErrorMessage(GetLastError));
@@ -235,6 +238,8 @@ begin
 
   if TerminalServer.EnumerateSessions then
   begin
+    SessionsListView.Items.BeginUpdate;
+    UsersListView.Items.BeginUpdate;
 
     for i := 0 to TerminalServer.Sessions.Count -1 do
     begin
@@ -267,7 +272,6 @@ begin
         begin
           Caption := TerminalServer.Server;
           ImageIndex := IconRec.Server;
-          SubItemImages[SubItems.Add(Username)] := IconRec.User;
           if WinStationName = 'Console' then
           begin
             SubItemImages[SubItems.Add(WinStationName)] := IconRec.Console;
@@ -297,6 +301,8 @@ begin
         end;
       end;
     end;
+    SessionsListView.Items.BeginUpdate;
+    UsersListView.Items.BeginUpdate;
   end
   else begin
 //    MessageBoxW(Handle, 'Error connecting to server', PWideChar(TerminalServer.Server), MB_OK);
@@ -619,7 +625,14 @@ begin
   if Item.Data <> nil then
   begin
     THiddenProcessData(Item.Data).Free;
+    Item.Data := nil;
   end;
+end;
+
+procedure TMainForm.ServerTreeViewDblClick(Sender: TObject);
+begin
+  strServer := ServerTreeView.Selected.Text;
+  Button1.Click;
 end;
 
 procedure TMainForm.SessionsListViewDeletion(Sender: TObject; Item: TListItem);
@@ -627,6 +640,7 @@ begin
   if Item.Data <> nil then
   begin
     THiddenProcessData(Item.Data).Free;
+    Item.Data := nil;
   end;
 end;
 
