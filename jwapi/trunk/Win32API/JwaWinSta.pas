@@ -275,7 +275,7 @@ function DateTimeStringVista(DateTime: PFILETIME; lpBuffer: PWideChar;
   cchDest: SIZE_T): PWideChar; stdcall;
 
 function DiffTimeString(FTLow: FILETIME; FTHigh: FILETIME;
-  var pwElapsedTime: PWideChar): Integer;
+  out pwElapsedTime: PWideChar): Integer;
 
 // This is the version for NT Terminal Server, 2000, XP/2003 and Server 2008
 function ElapsedTimeString(DiffTime: PDiffTime; bShowSeconds: Boolean;
@@ -1041,7 +1041,7 @@ end;
 // Elapsed time string (the way Idle Time is displayed in TSAdmin)
 // Return value is the string length
 function DiffTimeString(FTLow: FILETIME; FTHigh: FILETIME;
-  var pwElapsedTime: PWideChar): Integer;
+  out pwElapsedTime: PWideChar): Integer;
 var
   DiffSecs: INT64;
   DiffTime: TDiffTime;
