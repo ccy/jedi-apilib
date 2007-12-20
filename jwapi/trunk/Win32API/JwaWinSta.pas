@@ -288,7 +288,7 @@ function ElapsedTimeStringSafe(DiffTime: PDiffTime; bShowSeconds: Boolean;
 // This is the Vista version of ElapsedTimeString which takes an additional
 // parameter with the count of characters for lpElapsedTime (you have to set it)
 function ElapsedTimeStringEx(DiffTime: PDiffTime; bShowSeconds: Boolean;
-  var lpElapsedTime: PWideChar; cchDest: SIZE_T): Integer; stdcall;
+  lpElapsedTime: PWideChar; cchDest: SIZE_T): HRESULT; stdcall;
 
 function FileTime2DateTime(FileTime: FileTime): TDateTime;
 
@@ -1068,6 +1068,8 @@ end;
 
 function ElapsedTimeStringSafe(DiffTime: PDiffTime; bShowSeconds: Boolean;
   lpElapsedTime: PWideChar; cchDest: SIZE_T): Integer;
+var
+  hr: HRESULT;
 begin
   // Zero Memory
   ZeroMemory(lpElapsedTime, cchDest * SizeOf(WCHAR));
@@ -1075,8 +1077,16 @@ begin
  // Are we running Vista?
   if IsVista then
   begin
-    Result := ElapsedTimeStringEx(DiffTime, bShowSeconds, lpElapsedTime,
+    hr := ElapsedTimeStringEx(DiffTime, bShowSeconds, lpElapsedTime,
       cchDest);
+    if Succeeded(hr) then
+    begin
+      Result := cchDest;
+    end
+    else begin
+      Result := 0;
+    end;
+   
   end
   else begin
     Result := ElapsedTimeString(DiffTime, bShowSeconds, lpElapsedTime);
