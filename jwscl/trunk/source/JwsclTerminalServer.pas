@@ -972,7 +972,7 @@ begin
       // Reserve memory
       GetMem(lpBuffer, MAX_PATH * SizeOf(WCHAR));
       // Format LogonTime string
-      DateTimeString(@WinStationInfo.LogonTime, lpBuffer);
+      DateTimeStringSafe(@WinStationInfo.LogonTime, lpBuffer, MAX_PATH);
       FLogonTimeStr := PWideCharToJwString(lpBuffer);
       FreeMem(lpBuffer);
       lpBuffer := nil;
