@@ -369,7 +369,7 @@ const
   RsDesktopFailedGetThreadDesktop = 'Could not get thread desktop by ThreadI' +
     'D "%0:d"';
   RsDesktopInvalidClosedDesktop = 'Desktop "%s" is not opened. ';
-  RsDesktopCloseFailed = 'Could not close desktop named "%s"';
+  RsDesktopCloseFailed = 'Could not close desktop named "%0:s" : (%1:d) %2:s';
   RsDesktopCreateFailed = 'Could not create desktop "%0:s"';
   RsDesktopAlreadyOpened = 'Desktop "%s" already opened. ';
   RsDesktopOpenFailed = 'Could not open to desktop "%0:s".';

@@ -288,6 +288,9 @@ begin
       );
   Result := nil;
 
+  if (hWinStation = 0) or (hWinStation = INVALID_HANDLE_VALUE) then
+    exit;
+
   if not GetUserObjectInformation(hAWinst, UOI_USER_SID, nil, 0, dwSize) then
   begin
     // GetUserObjectInformation returns required size

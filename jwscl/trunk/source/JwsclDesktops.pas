@@ -1020,11 +1020,12 @@ begin
     raise EJwsclCloseDesktopException.CreateFmt(
       RsDesktopInvalidClosedDesktop, [Name]);
 
+  SetLastError(0);
   if Handle > 0 then
     if not jwaWindows.CloseDesktop(Handle) then
       raise EJwsclCloseDesktopException.CreateFmt(
         RsDesktopCloseFailed,
-        [Name]);
+        [Name,GetLastError, EJwsclSecurityException.GetLastErrorMessage]);
 
   fHandle := 0;
 end;
