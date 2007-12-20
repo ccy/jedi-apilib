@@ -261,8 +261,18 @@ function CpuTime2Str(ACPUTime: LARGE_INTEGER): string;
 
 function CurrentDateTimeString(out lpBuffer: PWideChar): Boolean; stdcall;
 
+// This is the version for NT Terminal Server, 2000, XP/2003 and Server 2008
 function DateTimeString(DateTime: PFILETIME; lpBuffer: PWideChar): PWideChar;
   stdcall;
+
+// This is a wrapped for all OS versions
+function DateTimeStringSafe(DateTime: PFILETIME; lpBuffer: PWideChar;
+  cchDest: SIZE_T): PWideChar; stdcall;
+
+// This is the Vista version which takes an additional parameter with
+// maximum buffer size (you have to set it) 
+function DateTimeStringVista(DateTime: PFILETIME; lpBuffer: PWideChar;
+  cchDest: SIZE_T): PWideChar; stdcall;
 
 function DiffTimeString(FTLow: FILETIME; FTHigh: FILETIME;
   var pwElapsedTime: PWideChar): Integer;
@@ -436,6 +446,7 @@ function CalculateDiffTime; external utildll name 'CalculateDiffTime';
 function CalculateElapsedTime; external utildll name 'CalculateElapsedTime';
 function CurrentDateTimeString; external utildll name 'CurrentDateTimeString';
 function DateTimeString; external utildll name 'DateTimeString';
+function DateTimeStringVista; external utildll name 'DateTimeString';
 function ElapsedTimeString; external utildll name 'ElapsedTimeString';
 // Vista version of ElapsedTimeString, exported name is ElapsedTimeString
 function ElapsedTimeStringEx; external utildll name 'ElapsedTimeString';
@@ -532,6 +543,19 @@ begin
         MOV     ESP, EBP
         POP     EBP
         JMP     [__DateTimeString]
+  end;
+end;
+
+var
+  __DateTimeStringVista: Pointer;
+
+function DateTimeStringVista;
+begin
+  GetProcedureAddress(__DateTimeStringVista, utildll, 'DateTimeString');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [__DateTimeStringVista]
   end;
 end;
 
@@ -946,6 +970,21 @@ begin
 end;
 {$ENDIF DYNAMIC_LINK}
 
+// This function is not exported
+function IsVista: boolean;
+var VersionInfo: TOSVersionInfoEx;
+begin
+  // Zero Memory and set structure size
+  ZeroMemory(@VersionInfo, SizeOf(VersionInfo));
+  VersionInfo.dwOSVersionInfoSize := SizeOf(VersionInfo);
+  GetVersionEx(@VersionInfo);
+
+  // Are we running Vista?
+  Result := (VersionInfo.dwMajorVersion = 6) and
+    (VersionInfo.dwMinorVersion = 0) and
+    (VersionInfo.wProductType = VER_NT_WORKSTATION);
+end;
+
 // This the way QWinsta checks if Terminal Services is active:
 function AreWeRunningTerminalServices: Boolean;
 var VersionInfo: TOSVersionInfoEx;
@@ -980,6 +1019,24 @@ begin
 {$ENDIF COMPILER7_UP}
 end;
 
+function DateTimeStringSafe(DateTime: PFILETIME; lpBuffer: PWideChar;
+  cchDest: SIZE_T): PWideChar; stdcall;
+begin
+  // Zero Memory
+  ZeroMemory(lpBuffer, cchDest * SizeOf(WCHAR));
+
+ // Are we running Vista?
+  if IsVista then
+  begin
+    // Vista version
+    Result := DateTimeStringVista(DateTime, lpBuffer, cchDest);
+  end
+  else begin
+    // Other OS's (including server 2008!)
+    Result := DateTimeString(DateTime, lpBuffer);
+  end;
+end;
+
 // DiffTimeString is a helper function that returns a formatted
 // Elapsed time string (the way Idle Time is displayed in TSAdmin)
 // Return value is the string length
@@ -1011,19 +1068,12 @@ end;
 
 function ElapsedTimeStringSafe(DiffTime: PDiffTime; bShowSeconds: Boolean;
   lpElapsedTime: PWideChar; cchDest: SIZE_T): Integer;
-var VersionInfo: TOSVersionInfoEx;
 begin
   // Zero Memory
   ZeroMemory(lpElapsedTime, cchDest * SizeOf(WCHAR));
-  
-  // Zero Memory and set structure size
-  ZeroMemory(@VersionInfo, SizeOf(VersionInfo));
-  VersionInfo.dwOSVersionInfoSize := SizeOf(VersionInfo);
-  GetVersionEx(@VersionInfo);
 
-  // Are we running Vista?
-  if (VersionInfo.dwMajorVersion = 6) and (VersionInfo.dwMinorVersion = 0) and
-    (VersionInfo.wProductType = VER_NT_WORKSTATION) then
+ // Are we running Vista?
+  if IsVista then
   begin
     Result := ElapsedTimeStringEx(DiffTime, bShowSeconds, lpElapsedTime,
       cchDest);
