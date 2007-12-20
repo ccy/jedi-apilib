@@ -267,6 +267,12 @@ type
 
     function GetIsRestricted: boolean;
 
+    {@Name returns the maximum access rights this token can be opened with.
+     This function can fail with an exception if the token DACL could not be read
+     and the token access rights does not contain TOKEN_READ, TOKEN_QUERY and TOKEN_DUPLICATE.
+     If the token DACL can be read the token access rights do not need TOKEN_DUPLICATE.
+     This error happens sometimes
+    }
     function GetMaximumAllowed : TAccessMask;
 
   public
@@ -896,6 +902,8 @@ type
 
         {@Name sets or gets the token owner.
          To set the value the token needs TOKEN_ADJUST_DEFAULT privilege.
+
+         Returned Sid must be freed.
          }
     property TokenOwner: TJwSecurityId
       Read GetTokenOwner Write SetTokenOwner; //TOKEN_ADJUST_DEFAULT
@@ -2538,13 +2546,34 @@ end;
 
 function TJwSecurityToken.GetMaximumAllowed : TAccessMask;
 var SD : TJwSecurityDescriptor;
+    temp,
     Token : TJwSecurityToken;
 begin
-  SD := TJwSecureGeneralObject.GetSecurityInfo(
-    TokenHandle,//const aHandle: THandle;
-    SE_KERNEL_OBJECT,  //const aObjectType: TSeObjectType;
-    [siOwnerSecurityInformation,siGroupSecurityInformation,siDaclSecurityInformation]//aSecurityInfo: TJwSecurityInformationFlagSet;
-    );
+  try
+    //First try a simple solution without TOKEN_DUPLICATE
+    SD := TJwSecureGeneralObject.GetSecurityInfo(
+      TokenHandle,//const aHandle: THandle;
+      SE_KERNEL_OBJECT,  //const aObjectType: TSeObjectType;
+      [siOwnerSecurityInformation,siGroupSecurityInformation,siDaclSecurityInformation]//aSecurityInfo: TJwSecurityInformationFlagSet;
+      );
+  except
+    //Make sure that the given token has enough access rights
+    //to get the DACL
+    //Strangely enough, XP needs TOKEN_DUPLICATE to work correctly
+
+    temp := TJwSecurityToken.CreateDuplicateExistingToken(TokenHandle,
+              TOKEN_READ or TOKEN_QUERY or TOKEN_DUPLICATE);
+
+    try
+      SD := TJwSecureGeneralObject.GetSecurityInfo(
+        temp.TokenHandle,//const aHandle: THandle;
+        SE_KERNEL_OBJECT,  //const aObjectType: TSeObjectType;
+        [siOwnerSecurityInformation,siGroupSecurityInformation,siDaclSecurityInformation]//aSecurityInfo: TJwSecurityInformationFlagSet;
+        );
+    finally
+      temp.Free;
+    end;
+  end;
 
 //  ShowMEssage(SD.Text);
   try
@@ -2775,6 +2804,8 @@ begin
   fShared := False;
   fTokenHandle := 0;
 
+  SetLastError(0);
+
   if SessionID = INVALID_HANDLE_VALUE then
   begin
     if not WTSQueryUserToken(WtsGetActiveConsoleSessionID, fTokenHandle) then
@@ -2795,6 +2826,8 @@ begin
 
   //should be TOKEN_ALL_ACCESS
   fAccessMask := GetMaximumAllowed;
+  //TODO: Warning: in XP may not TOKEN_ALL_ACCESS
+  //fAccessMask := TOKEN_ALL_ACCESS;
 end;
 
 constructor TJwSecurityToken.CreateDuplicateExistingToken(
@@ -3365,11 +3398,11 @@ var
   pOrigin: TOKEN_ORIGIN;
 begin
   CheckTokenHandle('SetTokenOrigin');
-  CheckTokenPrivileges([SE_TCB_NAME]);
+  //TODO: CheckTokenPrivileges([SE_TCB_NAME]); do not do this - process must have TCB!!
 
   try
-    PushPrivileges;
-    PrivilegeEnabled[SE_TCB_NAME] := True;
+    //PushPrivileges;
+    //PrivilegeEnabled[SE_TCB_NAME] := True;
 
     pOrigin.OriginatingLogonSession := anOrigin;
 
@@ -3380,7 +3413,7 @@ begin
         'SetTokenOrigin', ClassName, RsUNToken, 0, True,
          ['SetTokenInformation']);
   finally
-    PopPrivileges;
+    //PopPrivileges;
   end;
 
 end;
@@ -3410,12 +3443,12 @@ var
   pOwner: TOKEN_OWNER;
 begin
   CheckTokenHandle('SetTokenOrigin');
-  CheckTokenPrivileges([SE_TCB_NAME]);
+  //TODO: CheckTokenPrivileges([SE_TCB_NAME]); do not do this - process must have TCB!!
 
   pOwner.Owner := anOwner.SID;
   try
-    PushPrivileges;
-    PrivilegeEnabled[SE_TCB_NAME] := True;
+    //PushPrivileges;
+    //PrivilegeEnabled[SE_TCB_NAME] := True;
 
     if (not SetTokenInformation(fTokenHandle, jwaWindows.TokenOwner,
       Pointer(@pOwner), sizeof(pOwner))) then
@@ -3424,7 +3457,7 @@ begin
         'SetTokenInformation', ClassName, RsUNToken, 0, True,
         ['SetTokenInformation']);
   finally
-    PopPrivileges;
+    //PopPrivileges;
   end;
 end;
 
@@ -3490,12 +3523,12 @@ begin
     exit;
 
   CheckTokenHandle('SetTokenSessionId');
-  CheckTokenPrivileges([SE_TCB_NAME]);
+  //TODO: CheckTokenPrivileges([SE_TCB_NAME]); do not do this - process must have TCB!!
 
   try
-    PushPrivileges;
+    //PushPrivileges;
 
-    PrivilegeEnabled[SE_TCB_NAME] := True;
+    //PrivilegeEnabled[SE_TCB_NAME] := True;
 
     if (not SetTokenInformation(
       fTokenHandle, jwaWindows.TokenSessionId, Pointer(@SessionID),
@@ -3505,7 +3538,7 @@ begin
         'SetTokenSessionId', ClassName, RsUNToken, 0, True,
          ['SetTokenInformation']);
   finally
-    PopPrivileges;
+    //PopPrivileges;
   end;
 end;
 
