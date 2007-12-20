@@ -456,7 +456,7 @@ begin
   Result := s;
 end;
 
-function TJwTerminalServer.GetAllProcesses;
+function TJwTerminalServer.GetAllProcesses: Boolean;
 var
   Count: Integer;
   ProcessInfoPtr: PWINSTA_PROCESS_INFO_ARRAY;
@@ -469,6 +469,15 @@ var
 begin
   ProcessInfoPtr := nil;
   Count := 1;
+
+  FProcesses.Clear;
+  FServerHandle := Open;
+  if not Connected then
+  begin
+    Result := False;
+    Exit;
+  end;
+
   Result := WinStationGetAllProcesses(FServerHandle, 0, Count, ProcessInfoPtr);
   if Result then
   begin
@@ -551,7 +560,7 @@ var Res: Bool;
   AProcess: TJwWTSProcess;
 begin
   FProcesses.Clear;
-  Open;
+  FServerHandle := Open;
   if not Connected then
   begin
     Result := False;
@@ -657,7 +666,7 @@ var SessionInfoPtr: {$IFDEF UNICODE}PJwWTSSessionInfoWArray;
   Res: Longbool;
   ASession: TJwWTSSession;
 begin
-  Open;
+  FServerHandle := Open;
   if not Connected then
   begin
     Result := False;
