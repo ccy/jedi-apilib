@@ -354,7 +354,9 @@ var
   i: Integer;
   c: Integer;
 begin
+{$IFDEF FASTMM}
   ReportMemoryLeaksOnShutDown := DebugHook <> 0;
+{$ENDIF FASTMM}
   IconRec.Server := 11;
   IconRec.User := 12;
   IconRec.Network := 13;

@@ -1,9 +1,9 @@
 object MainForm: TMainForm
   Left = 0
   Top = 0
+  Width = 646
+  Height = 457
   Caption = 'TSAdminEx'
-  ClientHeight = 401
-  ClientWidth = 630
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -20,9 +20,6 @@ object MainForm: TMainForm
     Left = 201
     Top = 29
     Height = 353
-    ExplicitLeft = 352
-    ExplicitTop = 160
-    ExplicitHeight = 100
   end
   object ServerTreeView: TTreeView
     Left = 0
@@ -40,8 +37,6 @@ object MainForm: TMainForm
     Width = 630
     Height = 29
     Caption = 'ToolBar1'
-    EdgeBorders = [ebTop]
-    Flat = False
     Images = ImageList1
     TabOrder = 1
     object ToolButton1: TToolButton
@@ -340,8 +335,6 @@ object MainForm: TMainForm
           TabOrder = 0
           ViewStyle = vsReport
           OnDeletion = ProcessesListViewDeletion
-          ExplicitLeft = -2
-          ExplicitTop = -3
         end
       end
     end
