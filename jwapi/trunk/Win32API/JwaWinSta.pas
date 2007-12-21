@@ -668,7 +668,7 @@ end;
 var
   __QueryCurrentWinStationEx: Pointer;
 
-function QueryCurrentWinStation;
+function QueryCurrentWinStationEx;
 begin
   GetProcedureAddress(__QueryCurrentWinStationEx, utildll, 'QueryCurrentWinStation');
   asm
