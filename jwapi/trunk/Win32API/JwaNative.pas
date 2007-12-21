@@ -1903,7 +1903,7 @@ type
     FileSystemFlags: ULONG;
     MaximumComponentNameLength: ULONG;
     FileSystemNameLength: ULONG;
-    FileSystemName: array[0..0] of WCHAR
+    FileSystemName: array[0..0] of WCHAR;
   end;
   FILE_FS_ATTRIBUTE_INFORMATION = _FILE_FS_ATTRIBUTE_INFORMATION;
   PFILE_FS_ATTRIBUTE_INFORMATION = ^FILE_FS_ATTRIBUTE_INFORMATION;
@@ -1978,7 +1978,7 @@ type
     AllocationSize: LARGE_INTEGER;
     FileAttributes: ULONG;
     FileNameLength: ULONG;
-    FileName: array[0..0] of WCHAR
+    FileName: array[0..0] of WCHAR;
   end;
   FILE_DIRECTORY_INFORMATION = _FILE_DIRECTORY_INFORMATION;
   PFILE_DIRECTORY_INFORMATION = ^FILE_DIRECTORY_INFORMATION;
@@ -1997,7 +1997,7 @@ type
     FileAttributes: ULONG;
     FileNameLength: ULONG;
     EaInformationLength: ULONG;
-    FileName: array[0..0] of WCHAR
+    FileName: array[0..0] of WCHAR;
   end;
   FILE_FULL_DIRECTORY_INFORMATION = _FILE_FULL_DIRECTORY_INFORMATION;
   PFILE_FULL_DIRECTORY_INFORMATION = ^FILE_FULL_DIRECTORY_INFORMATION;
@@ -6197,7 +6197,7 @@ procedure RtlAcquirePebLock(); stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
 // same flags apply.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlAddAccessAllowedAce(
-    pAcl : PACL;
+    pAcl: PACL;
     dwAceRevision : DWORD;
     AccessMask : ACCESS_MASK;
     pSid : PSID
