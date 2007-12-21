@@ -50,6 +50,14 @@ const
   // fixes size at 15, so that's assumed to be safe
   ELAPSED_TIME_STRING_LENGTH = 15;
 
+  // WdFlag = WinStation Driver Flag, it is returned in class 3 (WdConfig)
+  // of WinStationQueryInformation and has a different value which
+  // depends on the protocol. WdFlag is also returned by QueryCurrentWinStation
+  WD_FLAG_CONSOLE_XP = $24; // XP
+  WD_FLAG_CONSOLE = $34; // 2003/2008
+  WD_FLAG_RDP = $36; // XP/2003/2008
+  WD_FLAG_ICA = $6E; // Presentation Server 4, other versions could be different!
+
   // Class constants for WinStationQueryInformationW
   // These names were found in winsta.dll because they have
   // corresponding unicode 2 ansi conversion functions.
@@ -177,7 +185,7 @@ type
   end;
   PWD_CONFIGW = ^_WD_CONFIGW;
   TWdConfigW = _WD_CONFIGW;
-  PWdCOnfigW = PWD_CONFIGW;
+  PWdConfigW = PWD_CONFIGW;
 
   // WinStationConfig class, returns information about the client's
   // configuration such as network, time(zone) settings and such
@@ -304,13 +312,30 @@ procedure InitTermSrvCounterArray(
 function IsTerminalServiceRunning: boolean;
 
 // Tested and working on Windows XP but doesn't seem to work on
-// Windows Vista/2008
+// Windows Vista/2008. Better use W version to be sure!
 function LogonIdFromWinStationNameA(hServer: HANDLE; pWinStationName: LPSTR;
   var SessionId: DWORD): BOOL; stdcall;
 
 // Tested and working on XP, 2003 and 2008
 function LogonIdFromWinStationNameW(hServer: HANDLE; pWinStationName: LPWSTR;
   var SessionId: DWORD): BOOL; stdcall;
+
+// This is the version for NT Terminal Server, 2000, XP/2003 and Server 2008
+// Reserve 66 bytes for pWinStationName and 21 for pUserName
+function QueryCurrentWinStation(pWinStationName: LPWSTR;
+  pUserName: LPWSTR; var SessionId: DWORD; var WdFlag: DWORD): Boolean;
+  stdcall;
+
+// This is the Vista version of QueryCurrentWinStation which takes an
+// additional parameter with the count of characters for pUserName
+// note that pWinStationname is Fixed Size!
+function QueryCurrentWinStationEx(pWinStationName: LPWSTR;
+  pUserName: PWideChar; cchDest: DWORD; var SessionId: DWORD;
+  var WdFlag: DWORD): Boolean; stdcall;
+
+function QueryCurrentWinStationSafe(pWinStationName: LPWSTR;
+  pUserName: PWideChar; cchDest: DWORD; var SessionId: DWORD;
+  var WdFlag: DWORD): Boolean; stdcall;
 
 function StrConnectState(ConnectState: WTS_CONNECTSTATE_CLASS;
   bShortString: BOOL): PWideChar; stdcall;
@@ -453,6 +478,8 @@ function ElapsedTimeStringEx; external utildll name 'ElapsedTimeString';
 function GetUnknownString; external utildll name 'GetUnknownString';
 function LogonIdFromWinStationNameA; external winstadll name 'LogonIdFromWinStationNameA';
 function LogonIdFromWinStationNameW; external winstadll name 'LogonIdFromWinStationNameW';
+function QueryCurrentWinStation; external utildll name 'QueryCurrentWinStation';
+function QueryCurrentWinStationEx; external utildll name 'QueryCurrentWinStation';
 function StrConnectState; external utildll name 'StrConnectState';
 function WinStationBroadcastSystemMessage; external winstadll name 'WinStationBroadcastSystemMessage';
 function WinStationCallBack; external winstadll name 'WinStationCallBack';
@@ -626,6 +653,32 @@ begin
 end;
 
 var
+  __QueryCurrentWinStation: Pointer;
+
+function QueryCurrentWinStation;
+begin
+  GetProcedureAddress(__QueryCurrentWinStation, utildll, 'QueryCurrentWinStation');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [__QueryCurrentWinStation]
+  end;
+end;
+
+var
+  __QueryCurrentWinStationEx: Pointer;
+
+function QueryCurrentWinStation;
+begin
+  GetProcedureAddress(__QueryCurrentWinStationEx, utildll, 'QueryCurrentWinStation');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [__QueryCurrentWinStationEx]
+  end;
+end;
+
+var
   __StrConnectState: Pointer;
 
 function StrConnectState;
@@ -637,7 +690,6 @@ begin
         JMP     [__StrConnectState]
   end;
 end;
-
 
 var
   __WinStationBroadcastSystemMessage: Pointer;
@@ -1208,6 +1260,28 @@ begin
     CloseServiceHandle(hSCM);
   end;
 end;
+
+function QueryCurrentWinStationSafe(pWinStationName: LPWSTR;
+  pUserName: PWideChar; cchDest: DWORD; var SessionId: DWORD;
+  var WdFlag: DWORD): Boolean;
+begin
+  // Zero Memory
+  ZeroMemory(pWinStationName, 66);
+  ZeroMemory(pUserName, cchDest * SizeOf(WCHAR));
+
+  // Are we running Vista?
+  if IsVista then
+  begin
+    Result := QueryCurrentWinStationEx(pWinStationName, pUserName, cchDest,
+      SessionId, WdFlag);
+  end
+  else begin
+    Result := QueryCurrentWinStation(pWinStationName, pUserName, SessionId,
+      WdFlag);
+  end;
+  
+end;
+
 
 function WinStationQueryUserToken(hServer: HANDLE; SessionId: DWORD;
   var hToken: HANDLE): BOOL;
