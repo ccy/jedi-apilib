@@ -557,6 +557,8 @@ begin
   WinStationFreeGAPMemory(0, ProcessInfoPtr, Count);
 end;
 
+// todo: This function will removed as it will be replaced by
+// WinStationGetAllProcesses
 function TJwTerminalServer.EnumerateProcesses;
 var Res: Bool;
   pCount: Cardinal;
@@ -1072,34 +1074,6 @@ begin
     FCurrentTime := FileTime2DateTime(WinStationInfo.CurrentTime);
   end;
 
-end;
-
-//TODO: Warning: not used
-function BlobDataToHexStr(P: PByte; I: Integer): string;
-var HexStr: string;
-begin
-  HexStr := '';
-  while (I > 0) do
-  begin
-    Dec(I);
-    //TODO: Warning: P can be nil
-    HexStr := HexStr + IntToHex(P^, 2);
-    Inc(P);
-  end;
-  Result := HexStr;
-end;
-
-function ByteToStr(T: array of byte): string;
-const
-  Digits: array[0..15] of char =
-          ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f');
-
-var
-  I: integer;
-begin
-  Result := '';
-  for I := Low(T) to High(T) do
-    Result := Result + Digits[(T[I] shr 4) and $0f] + Digits[T[I] and $0f];
 end;
 
 function TJwWTSSession.GetClientAddress: TJwString;
