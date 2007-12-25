@@ -1506,7 +1506,6 @@ begin
   begin
     anACE := Items[i];
 
-
     Result := Result + '#' + IntToStr(i) + #13#10 +
       anACE.GetTextMap(Mapping) + #13#10;
   end;
@@ -2344,8 +2343,14 @@ begin
   end;
   System.Delete(FlagString, Length(FlagString), 1);
 
+
+
   if Assigned(Mapping) then
-    sMap := Mapping.MapAccessMaskToString(AccessMask)
+  begin
+    //map generics to specific rights and then convert
+    //all remaining specific rights to string
+    sMap := Mapping.MapAccessMaskToString(Mapping.GenericMap(AccessMask))
+  end
   else
     sMap := RsMapNoMapGiven;
 

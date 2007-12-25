@@ -41,6 +41,7 @@ uses SysUtils,
 
 
 type
+  {@Name is the main entry class for LSA calls.}
   TJwSecurityLsa = class
   protected
     fLsaHandle: THandle;

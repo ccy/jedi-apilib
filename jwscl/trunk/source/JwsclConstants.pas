@@ -41,6 +41,11 @@ uses
 {$ENDIF SL_OMIT_SECTIONS}
 
 {$IFNDEF SL_IMPLEMENTATION_SECTION}
+
+{Here we include resource strings and other things}
+{$R Jwscl.res}
+
+
 const
   TAceTypeString : array[TJwAceType] of TJwString =
     (RsAceTypeStringAllow,
@@ -1369,7 +1374,10 @@ const
   PipeMappingStartIndex = 50520;
 
 
-{$R Jwscl.res}
+const
+  //LogonUser undefined constant values (may be moved to JWA)
+  ERROR_ILL_FORMED_PASSWORD = 1327;
+
 
 
 {@Name translate all the rights mapping arrays using the resource.
@@ -1561,7 +1569,8 @@ begin
     Inst//ModuleInstance : HINST = 0
   );
 
-  
+
+
 
 
 

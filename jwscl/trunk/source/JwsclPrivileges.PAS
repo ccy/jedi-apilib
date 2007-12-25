@@ -85,7 +85,7 @@ type
   end;
 
 
-  {
+
   {@Name creates a new privilege scope instance and activates
      all privileges specified in parameter Privileges.
      These privileges will be disabled on destruction of this instance.

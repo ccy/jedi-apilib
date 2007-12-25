@@ -65,7 +65,10 @@ function JwCompareString(const S1, S2: TJwString;
 
 function JwStringArrayIndexOf(const StrArry: TJwTJwStringArray; const S: TJwString): integer;
 
-function JwFormatString(const Str : String; const Args: array of const) : TJwString;
+{@Name formats a ansi- or unicode string and calls JwReplaceBreaks.}
+function JwFormatString(const Str : TJwString; const Args: array of const) : TJwString;
+
+{@Name replaces "\r" and "\n" with break line chars.}
 procedure JwReplaceBreaks(var Str : TJwString);
 
 
@@ -164,7 +167,7 @@ begin
   end;
 end;
 
-function JwFormatString(const Str : String; const Args: array of const) : TJwString;
+function JwFormatString(const Str : TJwString; const Args: array of const) : TJwString;
 begin
   {$IFDEF UNICODE}
   {$IFDEF JCL}

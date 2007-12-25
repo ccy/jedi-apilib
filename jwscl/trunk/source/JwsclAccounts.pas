@@ -125,9 +125,9 @@ WARNING: This parameter was not tested!)
 @return(@Name returns true if the password is empty; otherwise false. It also
 returns false if an error has occoured.)
 }
-{Not usable!! function JwHasAccountPassword(
+function JwHasAccountPassword(
     const UserName : TJwString;
-    const ComputerDomainName : TJwString = '') : Boolean;}
+    const ComputerDomainName : TJwString = '') : Boolean;
 
 
 {$ENDIF SL_IMPLEMENTATION_SECTION}
@@ -146,16 +146,18 @@ function JwHasAccountPassword(
     const ComputerDomainName : TJwString = '') : Boolean;
 var hToken : Cardinal;
     dwErr : DWORD;
+    res : BOOL;
 begin
   hToken := 0;
-  if {$IFDEF UNICODE}LogonUserW{$ELSE}LogonUserA{$ENDIF}
-     (TJwPChar(Username), TJwPChar(ComputerDomainName), '', 2, 0, hToken) then
+  res := {$IFDEF UNICODE}LogonUserW{$ELSE}LogonUserA{$ENDIF}
+     (TJwPChar(Username), TJwPChar(ComputerDomainName), '', 2, 0, hToken);
+
+  if res then
     CloseHandle(hToken);
 
   dwErr := GetLastError();
-  result := (ERROR_PASSWORD_RESTRICTION <> dwErr) and
-            (ERROR_LOGON_FAILURE = dwErr) and
-            (1267 = dwErr);
+
+  result := (res) or (ERROR_ILL_FORMED_PASSWORD = dwErr);
 end;
 
 

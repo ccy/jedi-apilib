@@ -100,7 +100,7 @@ type {@Name contains information about a security descriptor.
     procedure Done; virtual;
 
     //@Name see property Text for more information
-    function GetText: TJwString;
+    function GetText: TJwString; virtual;
 
     function GetRMControl: jwaWindows.TSecurityDescriptorControl; virtual;
     procedure SetRMControl(aRMControl:
@@ -407,7 +407,8 @@ type {@Name contains information about a security descriptor.
     function GetPrivateObjectSecurity(const SecurityInformation
       : TJwSecurityInformationFlagSet) : TJwSecurityDescriptor; virtual;
 
-
+    function GetTextMap(const Mapping: TJwSecurityGenericMappingClass =
+      nil): TJwString;
   public
     {@Name sets or gets the owner of the SD.
     If the property OwnOwner is true and the property is set, the old Owner TJwSecurityId instance will be freed and
@@ -1914,6 +1915,11 @@ begin
 end;
 
 function TJwSecurityDescriptor.GetText: TJwString;
+begin
+  result := GetTextMap(nil);
+end;
+
+function TJwSecurityDescriptor.GetTextMap(const Mapping: TJwSecurityGenericMappingClass = nil): TJwString;
 var sOwner,
     sGroup,
     sDACL,
@@ -1925,9 +1931,9 @@ begin
   if Assigned(fPrimaryGroup) then
     sGroup := fPrimaryGroup.GetText(true);
   if Assigned(fDACL) then
-    sDACL := fDACL.GetTextMap();
+    sDACL := fDACL.GetTextMap(Mapping);
   if Assigned(fAuditACL) then
-    sSACL := fAuditACL.GetTextMap();
+    sSACL := fAuditACL.GetTextMap(Mapping);
 
   result := JwFormatString(s,[sOwner,sGroup,sDACL,sSACL]);
 end;
