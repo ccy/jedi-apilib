@@ -544,26 +544,50 @@ type
     //constructor CreateLogonUser(.....
     //constructor CreateLSALogonUser(....
   public
-        {@Name converts the token into an impersonated token. It does nothing if the token is already impersonated.
-         The token instance must be opened with TOKEN_DUPLICATE access right.
+    {@Name converts the token into an impersonated token. For this purpose
+     the token will be converted and the old TokenHandle will be closed. The
+     impersonated token will be the new TokenHandle.
+     It does nothing if the token is already impersonated.
+     The token instance must be opened with TOKEN_DUPLICATE access right.
 
-         Actually you can impersonate a shared token. The impersonated token will be copied into the instance property TokenHandle.
-         The old handle will not be closed if Share is set to true. You must save the old value to close it by yourself.
+     Actually you can impersonate a shared token. The impersonated token will be copied into the instance property TokenHandle.
+     The old handle will not be closed if Share is set to true. You must save the old value to close it by yourself.
 
-         Because the old handle is discarded you must call these functions again :
-           GetTokenPrivileges
+     Because the old handle is discarded you must call these functions again :
+       GetTokenPrivileges
 
-        @param(impLevel receives the impersonation Level. Use one of these SecurityAnonymous, SecurityIdentification, SecurityImpersonation, SecurityDelegation. )
-        @param(aDesiredAccess Receives the desired access for this token. The access types can be get from the following list. Access flags must be concatenated with or operator.
-        If you want to use DuplicateToken or creating an impersonated token (by ConvertToImpersonatedToken) you must specify TOKEN_DUPLICATE.
+     This function does the same as ImpersonateLoggedOnUser if used in this way:
+     @longcode(#
+     var Token : TJwSecurityToken;
+     begin
+       Token := TJwSecurityToken.CreateTokenByProcess(0,
+             TOKEN_ADJUST_PRIVILEGES or TOKEN_QUERY or TOKEN_IMPERSONATE or TOKEN_DUPLICATE);
+       //Token is the process token
+       Token.ConvertToImpersonatedToken(SecurityImpersonation, TOKEN_IMPERSONATE or TOKEN_QUERY);
+       //Token is now a new duplicate token (it does not have to do anything with the process token)
+       Token.SetThreadToken(0);
+       ...do stuff here
+       Token.Free;
+       Token := TJwSecurityToken.CreateTokenByProcess(0,
+             TOKEN_ADJUST_PRIVILEGES or TOKEN_QUERY or TOKEN_IMPERSONATE or TOKEN_DUPLICATE);
+     #)
+     As you see the token is freed and recreated in contrast to using "RevertToSelf". This is by design,
+     because ConvertToImpersonatedToken converts "Token" to a thread token and loses the process token handle.
+     "ReverToSelf" will not help in this case because there is no token to revert to.
 
-        See @link(CreateTokenByProcess CreateTokenByProcess) for a list of access rights.)
 
-        @raises(EJwsclSharedTokenException IS NOT USED! .. will be raised if @link(Shared Shared) is set to true. This is because the old token handle will be closed and other referes to it are invalid.)
-        @raises(EJwsclTokenImpersonationException will be raised if the call to DuplicateTokenEx failed.)
-        @raises(EJwsclAccessTypeException will be raised if the token does not have the access TOKEN_READ and TOKEN_DUPLICATE)
 
-        }
+    @param(impLevel receives the impersonation Level. Use one of these SecurityAnonymous, SecurityIdentification, SecurityImpersonation, SecurityDelegation. )
+    @param(aDesiredAccess Receives the desired access for this token. The access types can be get from the following list. Access flags must be concatenated with or operator.
+    If you want to use DuplicateToken or creating an impersonated token (by ConvertToImpersonatedToken) you must specify TOKEN_DUPLICATE.
+
+    See @link(CreateTokenByProcess CreateTokenByProcess) for a list of access rights.)
+
+    @raises(EJwsclSharedTokenException IS NOT USED! .. will be raised if @link(Shared Shared) is set to true. This is because the old token handle will be closed and other referes to it are invalid.)
+    @raises(EJwsclTokenImpersonationException will be raised if the call to DuplicateTokenEx failed.)
+    @raises(EJwsclAccessTypeException will be raised if the token does not have the access TOKEN_READ and TOKEN_DUPLICATE)
+
+    }
     procedure ConvertToImpersonatedToken(
       impLevel: SECURITY_IMPERSONATION_LEVEL;
       const aDesiredAccess: TJwAccessMask); virtual;
@@ -3079,8 +3103,10 @@ var
 begin
   CheckTokenHandle('GetTokenInformation');
 
-  CheckTokenAccessType(TOKEN_READ or
-    TOKEN_QUERY, 'TOKEN_READ, TOKEN_QUERY', 'GetTokenInformation');
+  if TokenInformationClass = TokenSource then
+    CheckTokenAccessType(TOKEN_QUERY_SOURCE, 'TOKEN_QUERY_SOURCE', 'GetTokenInformation')
+  else
+    CheckTokenAccessType(TOKEN_QUERY, 'TOKEN_QUERY', 'GetTokenInformation');
 
   tokLen := Self.GetTokenInformationLength(
     hTokenHandle, TokenInformationClass);
