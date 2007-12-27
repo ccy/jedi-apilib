@@ -560,6 +560,18 @@ type
     function GetAttributeString(
       const Attributes: TJwSidAttributeSet): TJwString; overload;  virtual;
 
+    {@Name converts a TSidIdentifierAuthority into an integer.
+     @return(Returns the converted value. The value is always smaller or equal than
+      $FFFFFFFFFFFF ((2^48) -1)) }
+    class function SidAuthToInt(const Value : TSidIdentifierAuthority) : Int64;
+
+    {@Name converts a value into a sid identifier structure.
+     @param(Value defines a value that is to be converted.)
+     @raises(EJwsclInvalidSidAuthorityValue will be raised if the given value
+       is greater than $FFFFFFFFFFFF ((2^48) -1))}
+    class function IntToSidAuth(const Value : Int64) : TSidIdentifierAuthority;
+
+
     {@Name destroys the instance and frees the SID.}
     destructor Destroy; override;
   public
@@ -1327,6 +1339,32 @@ begin
       ClassName, RsUNSid, 0, True, ['GetSidIdentifierAuthority']);
 
   Result := p^;
+end;
+
+
+class function TJwSecurityId.IntToSidAuth(const Value : Int64) : TSidIdentifierAuthority;
+var i : Byte;
+    Bits : Cardinal;
+begin
+  ZeroMemory(@result.Value, sizeof(result.Value));
+
+  if I > $FFFFFFFFFFFF then //> 2^48
+    raise EJwsclInvalidSidAuthorityValue.CreateFmtEx(
+      RsInvalidSidAuthorityValue, 'IntToSidAuth',
+      ClassName, RsUNSid, 0, false, []);
+
+  Bits := Length(result.Value) * 8;
+  for i := low(result.Value) to high(result.Value) do
+    result.Value[high(result.Value)-i] := (Value shl (Bits-((i+1)*8))) shr 40;
+end;
+
+class function TJwSecurityId.SidAuthToInt(const Value : TSidIdentifierAuthority) : Int64;
+var i : Byte;
+begin
+  result := 0;
+
+  for i := low(Value.Value) to high(Value.Value) do
+    result := (result shl 8) or Value.Value[i];
 end;
 
 function TJwSecurityId.GetLengthSID: Cardinal;

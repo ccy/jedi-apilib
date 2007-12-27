@@ -167,6 +167,9 @@ type
   EJwsclInvalidOwnerSIDException = class(EJwsclInvalidSIDException);
   EJwsclInvalidGroupSIDException = class(EJwsclInvalidSIDException);
 
+  EJwsclInvalidSidAuthorityValue = class(EJwsclInvalidSIDException);
+
+
   //@name is raised if an given index is not within the bounds of a list
   EJwsclIndexOutOfBoundsException = class(EJwsclSecurityException);
 

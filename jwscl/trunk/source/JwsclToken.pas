@@ -1542,7 +1542,8 @@ function JwEnablePrivilege(const Index: string;
 SE_XXXXX [enabled]
 SE_XXXXX [disabled]
 }
-function JwGetPrivilegesText: TJwString;
+function JwGetPrivilegesText : TJwString; overload;
+function JwGetPrivilegesText(const DisplayPrivileges : array of String): TJwString; overload;
 
 {@Name returns true if the user is a member of the administrator group.
 This does not mean that she has administrator rights (on Vista).
@@ -1615,6 +1616,41 @@ begin
   end;
 end;
 
+
+
+function JwGetPrivilegesText(const DisplayPrivileges : array of String): TJwString;
+var
+  t: TJwSecurityToken;
+  Priv : TJwPrivilege;
+  s: TJwPrivilegeSet;
+  i: integer;
+begin
+  Result := '';
+
+  t := TJwSecurityToken.CreateTokenEffective(TOKEN_DUPLICATE or
+    TOKEN_READ or TOKEN_ADJUST_PRIVILEGES);
+  try
+    s := t.GetTokenPrivileges;
+
+    for i := low(DisplayPrivileges) to high(DisplayPrivileges) do
+    begin
+      Priv := s.PrivByName[DisplayPrivileges[i]];
+      if Assigned(Priv) then
+      begin
+        if Priv.Enabled then
+          Result := Result + #13#10 + Priv.Name + ' '+RsTokenEnabledText
+        else
+          Result := Result + #13#10 + Priv.Name + ' '+RsTokenDisabledText;
+      end
+      else
+        Result := Result + #13#10 + DisplayPrivileges[i] + ' '+RsTokenUnavailableText;
+    end;
+
+    s.Free;
+  finally
+    t.Free;
+  end;
+end;
 
 function JwGetPrivilegesText: TJwString;
 var

@@ -69,6 +69,12 @@ type
       Maps: array of TJwRightsMapping): TJwString; virtual;
 
   public
+    {@Name returns an description of a specific bit value given in Idx.
+     This function only supports one bit per call.
+     @param(Idx Defines a bit position between 0 and 31)
+     @return(Returns the name and description of the given bit or an empty string
+       if the bit is invalid.)
+     }
     class function GetBitMappingString(Idx: Cardinal): TJwString; virtual;
 
        {@Name creates a string represenative for the given access mask.
@@ -95,6 +101,9 @@ type
        @return In TJwSecurityGenericMapping this method returns the standard rights.}
     class function GetMapping: TGenericMapping; virtual;
 
+    {@Name returns a pointer to a SI_ACCESS structure.
+     The caller must free the returned value by using FreeAccessNames.
+    }
     class function GetAccessNames(out iCount: Cardinal): PSI_ACCESS;
       virtual;
     class procedure FreeAccessNames(var pPSI_ACCESS: PSI_ACCESS;

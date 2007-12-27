@@ -270,6 +270,7 @@ const
   RsSidUnknownName   = '(?Name?)\r\n%s';
   RsSidUnknownSid    = '(S-1-????)\r\n%s';
   RsSidTextString    = '%0:s %1:s (%2:s) [%3:s]';
+  RsInvalidSidAuthorityValue = 'The identifier authority value must not be larger than $FFFFFFFFFFFF.';
 
 
 //Unit JwsclToken.pas
@@ -282,6 +283,7 @@ const
 
   RsTokenEnabledText = '[enabled]';
   RsTokenDisabledText = '[disabled]';
+  RsTokenUnavailableText = '[not available]';
   RsTokenPrivilegeNotAvailable = 'Privilege %s is not available.';
   RsTokenGlobalClassName = '(global)';
   RsTokenInvalidPrivilegeIndex = 'Invalid index %0:d (must be between 0 and ' +
