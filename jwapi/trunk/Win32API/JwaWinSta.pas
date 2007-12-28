@@ -174,7 +174,7 @@ type
     ClientPassword: array[0..255] of WCHAR; // this was fixec win2000 SP4
     Reserved2: array[0..1635] of BYTE;
     Reserved3: array[0..6] of DWORD;
-    Reserved4: array[0..283] of BYTE;
+    Reserved4: array[0..275] of BYTE;
   end;
   PWINSTATION_CLIENTW = ^_WINSTATION_CLIENTW;
   TWinStationClientW = _WINSTATION_CLIENTW;
