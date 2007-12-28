@@ -1,5 +1,8 @@
-{******************************************************************}{ This Unit provides Delphi translations of some functions from    }
-{ WinSta.dll. Most functions are related to Terminal Server        }
+{******************************************************************}
+{ This Unit provides Delphi translations of some functions from    }
+{ WinSta.dll and Utildll.                                          }
+{ Most functions are undocumented and somehow related to           }
+{ Terminal Server                                                  }
 {                                                                  }
 { Author: Remko Weijnen (r dot weijnen at gmail dot com)           }
 { Documentation can be found at www.remkoweijnen.nl                }
@@ -24,9 +27,9 @@ unit JwaWinSta;
 interface
 
 uses
-  DateUtils, SysUtils,
-  JwaWinBase, JwaNTStatus, JwaWinNT,
-  JwaWinType, JwaWinSvc, JwaWtsApi32, JwaNative;
+  DateUtils, SysUtils, JwaWinType, // JwaWinType must be declared before JwaWinBase because of duplicate declaration of FILETIME
+  JwaWinBase, JwaWinError, JwaNTStatus, JwaWinNT, JwaWinsock2,
+  JwaWinSvc, JwaWtsApi32, JwaNative;
 {$ENDIF JWA_OMIT_SECTIONS}
 
 {$I jediapilib.inc}
@@ -43,7 +46,7 @@ const
   TOTAL_SESSIONS_RECONNECTED_COUNTER = 3;
   TOTAL_SESSIONS_TOTAL_CONNECTED_NOW_COUNTER = 4;
   TOTAL_SESSIONS_TOTAL_DISCONNECTED_NOW_COUNTER = 5;
-  TOTAL_SESSIONS_TOTAL_CONNECTED_NOW_COUNTER_2 = 6;
+  TOTAL_SESSIONS_TOTAL_CONNECTED_NOW_COUNTER_2 = 6; //TermSrvSuccLocalLogons;
   TOTAL_SESSIONS_TOTAL_DISCONNECTED_NOW_COUNTER_2 = 7;
 
   // Max lenght for ElapsedTimeString (server 2008 version of utildll
@@ -72,6 +75,7 @@ const
   WinStationConfig = 6;
 //  WinStationInformation = 8;  (defined in other unit)
   WinStationProductId = 27;
+  WinStationRemoteAddress = 29;
 
   // Constants for WinStationSetInformation
   WinStationBeep = 10;  // Calls MessageBeep
@@ -84,6 +88,9 @@ const
   // functionality not yet confirmed
   WinStationLock = 28; // Locks or Unlocks the WinStation
 
+  SECONDS_PER_DAY = 86400;
+  SECONDS_PER_HOUR = 3600;
+  SECONDS_PER_MINUTE = 60;
 type
   // This type is used for ElapsedTimeString
   TDiffTime = record
@@ -253,6 +260,28 @@ type
   TWinStationInformationExW = _WINSTATION_INFORMATIONW;
   PWinStationInformationExW = PWINSTATION_INFORMATIONW;
 
+  // WinStationRemoteAddress (class 29)
+  // Definition is preliminary
+  // AddressFamily can be AF_INET, AF_IPX, AF_NETBIOS, AF_UNSPEC
+  // Port is the remote port number (local port number is 3389 by default)
+  // Address (for type AF_INET it start's at a 2 byte offset)
+  // You can format IP Address to string like this:
+  // Format('%d.%d.%d.%d', [WinStationAddress.Address[2],
+  //  WinStationRemoteAddress.[3], WinStationRemoteAddress.Address[4],
+  //  WinStationRemoteAddress..Address[5]]);
+  //
+  // Be sure to fill the structure with zeroes before query!
+  _WINSTATION_REMOTE_ADDRESS = record
+    AddressFamily: DWORD;
+    Port: WORD;
+    Address: array [0..19] of BYTE;
+    Reserved: array[0..5] of BYTE;
+  end;
+  PWINSTATION_REMOTE_ADDRESS = ^_WINSTATION_REMOTE_ADDRESS;
+  TWinStationRemoteAddress = _WINSTATION_REMOTE_ADDRESS;
+  PWinStationRemoteAddress = PWINSTATION_REMOTE_ADDRESS;
+
+
 function AreWeRunningTerminalServices: Boolean;
 
 procedure CachedGetUserFromSid(pSid: PSID; pUserName: LPWSTR;
@@ -298,7 +327,7 @@ function ElapsedTimeStringSafe(DiffTime: PDiffTime; bShowSeconds: Boolean;
 function ElapsedTimeStringEx(DiffTime: PDiffTime; bShowSeconds: Boolean;
   lpElapsedTime: PWideChar; cchDest: SIZE_T): HRESULT; stdcall;
 
-function FileTime2DateTime(FileTime: FileTime): TDateTime;
+function FileTime2DateTime(FileTime: TFileTime): TDateTime;
 
 function GetUnknownString: PWideChar; stdcall;
 
@@ -378,6 +407,9 @@ function WinStationGetLanAdapterNameW(hServer: HANDLE; LanaId: DWORD;
 function WinStationGetProcessSid(hServer: Handle; dwPID: DWORD;
   ProcessStartTime: FILETIME; pProcessUserSid: PSID; var dwSidSize: DWORD):
   BOOL; stdcall;
+
+function WinStationGetRemoteIPAddress(hServer: HANDLE; SessionId: DWORD;
+  var RemoteIPAddress: string; var Port: WORD): Boolean;
 
 function WinStationGetTermSrvCountersValue(hServer: Handle;
   dwArraySize: DWORD; PCountersArray: PTERM_SRV_COUNTER_ARRAY): BOOL;
@@ -1104,10 +1136,17 @@ begin
   DiffSecs := CalculateDiffTime(Int64(FTLow), Int64(FTHigh));
   // Recalc DiffTime to TDiffTime
   ZeroMemory(@DiffTime, SizeOf(DiffTime));
-  DiffTime.wDays := DiffSecs DIV 86400;                    // No of whole days
-  DiffTime.wHours :=  DiffSecs MOD 86400 DIV 3600;         // No of whole hours
-  DiffTime.wMinutes := DiffSecs MOD 86400 MOD 3600 DIV 60; // No of whole minutes
-  DiffTime.wSeconds := DiffSecs MOD 86400 MOD 3600 MOD 60; // No of seconds
+  // Calculate no of whole days
+  DiffTime.wDays := DiffSecs DIV SECONDS_PER_DAY;
+  // Calculate no of whole hours
+  DiffTime.wHours :=  DiffSecs MOD SECONDS_PER_DAY DIV SECONDS_PER_HOUR;
+  // Calculate no of whole minutes
+  DiffTime.wMinutes := DiffSecs MOD SECONDS_PER_DAY MOD SECONDS_PER_HOUR
+    DIV SECONDS_PER_MINUTE; // Result = No of whole minutes
+  // Calculate no of whole seconds
+  DiffTime.wSeconds := DiffSecs MOD SECONDS_PER_DAY MOD SECONDS_PER_HOUR
+    MOD SECONDS_PER_MINUTE; // Result = No of seconds
+  // Note that Milliseconds are not used and therefore not calculated
 
   // Reserve Memory
   GetMem(pwElapsedTime, ELAPSED_TIME_STRING_LENGTH * SizeOf(WCHAR));
@@ -1146,7 +1185,7 @@ begin
   // Caller has to free memory when done
 end;
 
-function FileTime2DateTime(FileTime: FileTime): TDateTime;
+function FileTime2DateTime(FileTime: TFileTime): TDateTime;
 var LocalFileTime: TFileTime;
   SystemTime: TSystemTime;
 begin
@@ -1279,9 +1318,48 @@ begin
     Result := QueryCurrentWinStation(pWinStationName, pUserName, SessionId,
       WdFlag);
   end;
-  
+
 end;
 
+function WinStationGetRemoteIPAddress(hServer: HANDLE; SessionId: DWORD;
+  var RemoteIPAddress: string; var Port: WORD): Boolean;
+var WinStationRemoteIPAddress: TWinStationRemoteAddress;
+  pReturnLength: DWORD;
+begin
+  // Zero Memory
+  ZeroMemory(@WinStationRemoteIPAddress, SizeOf(WinStationRemoteIPAddress));
+  // Query Remote Address
+  Result := WinStationQueryInformationW(hServer, SessionId,
+    WinStationRemoteAddress, @WinStationRemoteIPAddress,
+    SizeOf(WinStationRemoteIPAddress), pReturnLength);
+  if Result then
+  begin
+    // If the AddressFamily is IPv4
+    if WinStationRemoteIPAddress.AddressFamily = AF_INET then
+    begin
+      // The ntohs function converts a u_short from TCP/IP network byte order
+      // to host byte order (which is little-endian on Intel processors).
+      Port := ntohs(WinStationRemoteIPAddress.Port);
+      with WinStationRemoteIPAddress do
+      begin
+        // format the IP Address as string
+        RemoteIPAddress := Format('%d.%d.%d.%d', [Address[2], Address[3],
+          Address[4], Address[5]]);
+        // If you want to convert the to a sockaddr structure you could
+        // user WSAStringToAddress
+      end;
+    end
+    else begin
+      Result := False;
+      Port := 0;
+      RemoteIPAddress := '';
+      // SetLastError to give the user a clue as to why we failed..
+      //  An address incompatible with the requested protocol was used.
+      // (An address incompatible with the requested protocol was used.)
+      SetLastError(WSAEAFNOSUPPORT);
+    end;
+  end;
+end;
 
 function WinStationQueryUserToken(hServer: HANDLE; SessionId: DWORD;
   var hToken: HANDLE): BOOL;
