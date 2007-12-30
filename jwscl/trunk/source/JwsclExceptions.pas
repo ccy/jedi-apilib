@@ -179,6 +179,7 @@ type
   EJwsclReadOnlyPropertyException = class(EJwsclSecurityException);
 
   EJwsclInvalidACEException = class(EJwsclSecurityException);
+  EJwsclRevisionMismatchException = class(EJwsclSecurityException);
 
   EJwsclInvalidSecurityDescriptor = class(EJwsclSecurityException);
   EJwsclInvalidPathException = class(EJwsclSecurityException);

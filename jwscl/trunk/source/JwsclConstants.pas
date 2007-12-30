@@ -212,7 +212,7 @@ var
     Flags: SI_ACCESS_SPECIFIC),
     (Right: SYNCHRONIZE; Name: 'SYNCHRONIZE';
     Flags: SI_ACCESS_SPECIFIC)
-    );
+    );           
 
 
   FileGenericMapping: TGenericMapping =

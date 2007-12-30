@@ -600,6 +600,7 @@ type
     property SubAuthority[Index: Cardinal]: Cardinal Read GetSidSubAuthority;
 
        {@Name returns a copy of the sid identifier authority of the SID.
+        You can use SidAuthToInt to convert the array into a 48bit number as a 64bit integer.
        EJwsclWinCallFailedException will be raised if the call to GetSidIdentifierAuthority failed.
         }
     property IdentifierAuthority: TSidIdentifierAuthority
@@ -1353,11 +1354,20 @@ begin
       RsInvalidSidAuthorityValue, 'IntToSidAuth',
       ClassName, RsUNSid, 0, false, []);
 
-  Bits := Length(result.Value) * 8;
+  Bits := Length(result.Value) shl 3;
+ {
+  result.Value[5] := (Value shl 40) shr 40;
+  result.Value[4] := (Value shl 32) shr 40;
+  result.Value[3] := (Value shl 24) shr 40;
+  result.Value[2] := (Value shl 16) shr 40;
+  result.Value[1] := (Value shl 8) shr 40;
+  result.Value[0] := (Value shl 0) shr 40;
+  ===
+ }
   for i := low(result.Value) to high(result.Value) do
-    result.Value[high(result.Value)-i] := (Value shl (Bits-((i+1)*8))) shr 40;
-end;
+    result.Value[high(result.Value)-i] := (Value shl (Bits-((i+1) shl 3 ))) shr (Bits - 8);
 
+end;
 class function TJwSecurityId.SidAuthToInt(const Value : TSidIdentifierAuthority) : Int64;
 var i : Byte;
 begin

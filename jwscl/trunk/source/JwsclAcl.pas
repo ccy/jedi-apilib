@@ -48,6 +48,9 @@ interface
 
 uses
   SysUtils, Contnrs, Classes,
+{DEBUG}
+  Dialogs,
+{DEBUG}
   jwaWindows, JwaVista,
   JwsclResource, JwsclUtils,
 
@@ -74,6 +77,7 @@ type
   TJwSecurityAccessControlList = class(TObjectList)
   protected
     mDoNoRaiseException: boolean;
+    fRevision : Cardinal;
     function GetItem(idx: integer): TJwSecurityAccessControlEntry;
     procedure RemoveOwners;
   protected
@@ -128,11 +132,11 @@ type
      }
     class procedure Free_PACL(var AclPointerList: PACL);
 
-    {@Name clears all ACEs in the instance and adds new instances of ACEs
-     from aObject. All ACE SIDs are copied.
+    {@Name clears all ACEs in the instance and adds new instances of then ACEs
+     from AclInstance. All ACE SIDs are copied.
      If an exception is raised the old ACEs are removed but the newly added ACEs are preserved.
-     @param(aObject receives the new ACEs)
-     @raises(EJwsclNILParameterException will be raised if aObject is nil)
+     @param(AclInstance receives the list.)
+     @raises(EJwsclNILParameterException will be raised if AclInstance is nil)
     }
     procedure Assign(AclInstance: TJwSecurityAccessControlList); virtual;
 
@@ -259,13 +263,50 @@ type
        only explicit ACEs. This stops the inheritance flow.
       }
     procedure ConvertInheritedToExplicit;
+
+    {@Name removes all explicit entries from the list using Remove. See @link(Remove)
+     for information about how the entries are removed.}
     procedure RemoveExplicits;
+
+    {@Name removes all inherited entries from the list using Remove. See @link(Remove)
+     for information about how the entries are removed.}
     procedure RemoveInherited;
 
+    {@Name checks whether the ACL is in canonical order.
+
+     The following list shows a access control list in canonical order:
+      @orderedlist(
+      @item deny ACE   (direct)
+      @item allow ACE  (direct)
+      @item deny ACE   (inherited)
+      @item allow ACE  (inherited)
+      )
+    }
     function IsCanonical: boolean;
+
+    {@Name rearranges the entries of the list to make the list canonical.
+
+     The following list shows a access control list in canonical order:
+      @orderedlist(
+      @item deny ACE   (direct)
+      @item allow ACE  (direct)
+      @item deny ACE   (inherited)
+      @item allow ACE  (inherited)
+      )
+    }
     procedure MakeCanonical;
 
-    function IsEqual(const AccessControlListInstance: TJwSecurityAccessControlList): boolean;
+    {@Name compares two ACL and returns true if they are equal.
+     This method uses FindEqualACE to compare two access control entries.
+
+     @param(AccessControlListInstance defines the second ACL. Cannot be nil.)
+     @param(EqualAceTypeSet defines the ACE comparision done by FindEqualACE.
+            By default all ACE members must be equal to return a positive result)
+     @return(Returns true if both ACL are equal; otherwise False. It also
+          returns false if AccessControlListInstance is nil)
+    }
+    function IsEqual(const AccessControlListInstance: TJwSecurityAccessControlList;
+                     const EqualAceTypeSet: TJwEqualAceTypeSet = JwAllEqualAceTypes): boolean;
 
     {@Name removes a ACE from the list. If the List owns the object
      the ACE will also be freed.
@@ -276,12 +317,23 @@ type
                the ACE could not be found the return value is -1.) }
     function Remove(AccessEntry: TJwSecurityAccessControlEntry): integer; overload;
 
+    {@Name removes an object give by index from the list.
+     The object will be freed automatically if OwnsObject is true.
+
+    @return(Index receives the zero based index of the object to be removed.
+             Valid values are 0 to Count -1 .)  
+    @return(@Name returns the index of the ACE in the list before it was removed. If
+               the ACE could not be found the return value is -1.)
+    }
     function Remove(Index: integer): integer; overload;
 
     property Items[Index: integer]: TJwSecurityAccessControlEntry Read GetItem;
       default;
 
+    {@Name returns a humand readable text that contains information about this ACL.}
     property Text: TJwString Read GetText;
+
+    property Revision : Cardinal read fRevision write fRevision;
   end;
 
   {@Name provides methods for an discretionary access control list.
@@ -451,6 +503,7 @@ type
     fIgnore:     boolean;
     fUserData : Pointer;
     fHeader : TAceHeader;
+    fRevision : Cardinal;
 
     procedure SetListOwner(ListOwner: TJwSecurityAccessControlList);
     procedure SetFlags(FlagSet: TJwAceFlags);
@@ -458,6 +511,8 @@ type
     procedure SetSID(SidInstance: TJwSecurityId);
     procedure CheckReadOnly;
     function GetAceType: TJwAceType; virtual;
+    procedure SetOwnSid(const OwnSid : Boolean); Virtual;
+    function GetOwnSid : Boolean;
 
   protected
    {@Name creates a new ACE.
@@ -480,6 +535,31 @@ type
       const aFlags: TJwAceFlags;
       const anAccessMask: TJwAccessMask;
       const aSID: TJwSecurityId;
+      ownSID: boolean = True); overload;
+
+    {@Name creates a new ACE applying a revision level.
+    Do not use this constructor.
+    Instead use
+      @unorderedlist(
+        @item TJwDiscretionaryAccessControlEntryAllow.Create(...)
+        @item TJwDiscretionaryAccessControlEntryDeny.Create(...)
+        @item TJwAuditAccessControlEntry.Create(...)
+      )
+
+    @param(ListOwner retrieves the list owner  (including nil). If it is set to a list (not nil) the ACE is added to the list automatically.)
+    @param(Flags retrieves the ACE flags as a set)
+    @param(AccessMask retrieves the access mask like GENERIC_ALL)
+    @param(SID retrieves the ACE to be allowed or denied. It can be nil)
+    @param(Revision Defines the revision level of the ACE. Can be one of the revision levels.
+          ACL_REVISION, ACL_REVISION1, ACL_REVISION2, ACL_REVISION3, ACL_REVISION4 or ACL_REVISION_DS)
+    @param(ownSID defines whether the aSID is freed automatically on end or not)
+
+    }
+    constructor Create(const ListOwner: TJwSecurityAccessControlList;
+      const Flags: TJwAceFlags;
+      const AccessMask: TJwAccessMask;
+      const SID: TJwSecurityId;
+      const Revision : Cardinal;
       ownSID: boolean = True); overload;
 
     {@Name creates a copy of another ACE.
@@ -598,18 +678,23 @@ type
 
   public
     {@Name copies all properties from another ACE.
-     The instance @classname must not be already added to a list (ListOwner must be nil).
-      However aObject can be in a list.
-     @Name creates copies of all properties. It even makes a copy of ACE and sets
-      ownSID to True so the ACE will be freed on destruction.
-     ListOwner will be set to nil. You have to add the ACE manually.
+     This method does not add this instance to any list or change ListOwner.
     }
     procedure Assign(AccessEntry: TJwSecurityAccessControlEntry); virtual;
 
+    {@Name returns information about the SID instance using human readable
+     description. This function shows bit states for the AccessMask.
+     Use @link(GetTextMap) to define readable access rights mapping.}
     function GetText: TJwString;
   public
+    {@Name returns information about the SID instance using human readable
+     description. This function can convert the AccessMask bits into strings
+     using a mapping class.
+     @param(Mapping defines a class thats provides the mapping implementation)
+    }
     function GetTextMap(const Mapping: TJwSecurityGenericMappingClass =
       nil): TJwString;
+
     {@Name contains the owner of this ACE. It cannot be set.
      If ListOwner is nil it can be set once. If it set to a
       TJwSecurityAccessControlList instance the ACE will automatically added
@@ -642,14 +727,16 @@ type
 
     {@Name defines whether the TJwSecurityId SID shall be freed (True) or not (False).
     }
-    property OwnSID: boolean Read fownSID Write fownSID;
+    property OwnSID: boolean Read GetOwnSID Write SetownSID;
 
     property Header : TAceHeader read fHeader write fHeader;
 
+    {@Name gets or sets the revision of the ACE.}
+    property Revision : Cardinal read fRevision write fRevision;
 
     property Ignore: boolean Read fIgnore Write fIgnore;
 
-    property UserData : Pointer read fUserData write fUserData; 
+    property UserData : Pointer read fUserData write fUserData;
   end;
 
   {@Name defines a discretionary access control entry.
@@ -679,6 +766,28 @@ type
       const aFlags: TJwAceFlags;
       const anAccessMask: TJwAccessMask;
       const aSID: TJwSecurityId;
+      ownSID: boolean = True); overload;
+
+    {@Name creates a new positive ACE and applies an ACE revision level.
+
+    @param(aListOwner retrieves the list owner  (including nil). If it is set to a list (not nil) the ACE is added to the list automatically.)
+    @param(aFlags retrieves the ACE flags as a set)
+    @param(anAccessMask retrieves the access mask like GENERIC_ALL.
+           If you want to set file or folder security use FILE_ALL_ACCESS or similar instead of GENERIC_XXX.
+           Some flags are discarded when written to disk and would differ after read from disk.
+              )
+    @param(Revision Defines the revision level of the ACE. Can be one of the revision levels.
+          ACL_REVISION, ACL_REVISION1, ACL_REVISION2, ACL_REVISION3, ACL_REVISION4 or ACL_REVISION_DS)
+    @param(aSID retrieves the SID to be allowed or denied. It can be nil)
+    @param(ownSID defines whether the aSID is freed automatically on end or not)
+
+    }
+    constructor Create(
+      const ListOwner: TJwSecurityAccessControlList;
+      const Flags: TJwAceFlags;
+      const AccessMask: TJwAccessMask;
+      const SID: TJwSecurityId;
+      const Revision : Cardinal;
       ownSID: boolean = True); overload;
 
 
@@ -733,6 +842,28 @@ type
       const aFlags: TJwAceFlags;
       const anAccessMask: TJwAccessMask;
       const aSID: TJwSecurityId;
+      ownSID: boolean = True); overload;
+
+    {@Name creates a new negative ACE and applies an ACE revision level.
+
+    @param(aListOwner retrieves the list owner  (including nil). If it is set to a list (not nil) the ACE is added to the list automatically.)
+    @param(aFlags retrieves the ACE flags as a set)
+    @param(anAccessMask retrieves the access mask like GENERIC_ALL.
+           If you want to set file or folder security use FILE_ALL_ACCESS or similar instead of GENERIC_XXX.
+           Some flags are discarded when written to disk and would differ after read from disk.
+              )
+    @param(Revision Defines the revision level of the ACE. Can be one of the revision levels.
+          ACL_REVISION, ACL_REVISION1, ACL_REVISION2, ACL_REVISION3, ACL_REVISION4 or ACL_REVISION_DS)
+    @param(aSID retrieves the SID to be allowed or denied. It can be nil)
+    @param(ownSID defines whether the aSID is freed automatically on end or not)
+
+    }
+    constructor Create(
+      const ListOwner: TJwSecurityAccessControlList;
+      const Flags: TJwAceFlags;
+      const AccessMask: TJwAccessMask;
+      const SID: TJwSecurityId;
+      const Revision : Cardinal;
       ownSID: boolean = True); overload;
 
 
@@ -801,6 +932,20 @@ type
       const anAccessMask: TJwAccessMask;
       const aSID: TJwSecurityId;
       ownSID: boolean = True); overload;
+
+    {@Name creates a new audit ACE.  (SACL).
+
+    @param(aListOwner retrieves the list owner (including nil). If it is set to a list (not nil) the ACE is added to the list automatically. )
+    @param(aFlags retrieves the ACE flags as a set)
+    @param(anAccessMask retrieves the access mask like GENERIC_ALL)
+    @param(anAuditSuccess receives the state of success audit flag. If true the ACE will
+        audit successfull access.)
+    @param(aAuditFailure receives the state of failure audit flag. If true the ACE will
+        audit failed access.)
+    @param(aSID retrieves the SID to be allowed or denied. It can be nil)
+    @param(ownSID defines whether the aSID is freed automatically on end or not)
+
+    }
     constructor Create(const aListOwner: TJwSecurityAccessControlList;
       aAuditSuccess, aAuditFailure: boolean;
       const anAccessMask: TJwAccessMask;
@@ -965,6 +1110,23 @@ end;
 
 
 
+
+
+constructor TJwSecurityAccessControlList.Create(OwnAceEntries: boolean);
+begin
+  //  raise EJwsclInvalidSecurityListException.CreateFmtEx('Do not call TJwSecurityAccessControlList.Create .', 'Create()',ClassName,'JwsclAcl.pas', 0,False,[]);
+  inherited Create(OwnAceEntries);
+  fRevision := ACL_REVISION;
+end;
+
+constructor TJwSecurityAccessControlList.Create;
+begin
+  //  raise EJwsclInvalidSecurityListException.CreateFmtEx('Do not call TJwSecurityAccessControlList.Create .', 'Create()',ClassName,'JwsclAcl.pas', 0,False,[]);
+  inherited;
+  fRevision := ACL_REVISION;
+end;
+
+
 constructor TJwSAccessControlList.Create;
 begin
   inherited;
@@ -978,18 +1140,6 @@ end;
 constructor TJwSAccessControlList.Create(AclPointerList: PACL);
 begin
   inherited Create(AclPointerList);
-end;
-
-constructor TJwSecurityAccessControlList.Create(OwnAceEntries: boolean);
-begin
-  //  raise EJwsclInvalidSecurityListException.CreateFmtEx('Do not call TJwSecurityAccessControlList.Create .', 'Create()',ClassName,'JwsclAcl.pas', 0,False,[]);
-  inherited Create(OwnAceEntries);
-end;
-
-constructor TJwSecurityAccessControlList.Create;
-begin
-  //  raise EJwsclInvalidSecurityListException.CreateFmtEx('Do not call TJwSecurityAccessControlList.Create .', 'Create()',ClassName,'JwsclAcl.pas', 0,False,[]);
-  inherited;
 end;
 
 function TJwSAccessControlList.GetItem(idx: integer): TJwAuditAccessControlEntry;
@@ -1071,7 +1221,7 @@ var
   s: ACL_SIZE_INFORMATION;
   aPACE: PACE;
   i: integer;
-  //[Hint] aSID: PSID;
+
 begin
   Self.Create(True);
 
@@ -1088,7 +1238,7 @@ begin
   {if not GetAclInformation(aAPCL, @s, sizeof(s),AclSizeInformation) then
     raise EJwsclWinCallFailedException.CreateFmtEx('Call to GetAclInformation failed.', 'Create(ownACEs: Boolean; aAPCL: PACL)',ClassName,'JwsclAcl.pas', 0,True,[]);}
 
-
+  fRevision := AclPointerList.AclRevision; //fastest way
   s.AceCount := AclPointerList.AceCount;
 
   for i := 0 to s.AceCount - 1 do
@@ -1097,7 +1247,8 @@ begin
 
     if GetAce(AclPointerList, i, Pointer(aPACE)) then
     begin
-      Self.Add(TJwSecurityAccessControlEntry.CreateACE(
+      //keep order of original ACL
+      Self.Insert(i, TJwSecurityAccessControlEntry.CreateACE(
         PAccessAllowedAce(aPACE)));
     end
     else
@@ -1153,7 +1304,7 @@ begin
     ACE.Assign(AclInstance.Items[i]);
 
     try
-      Add(ACE);
+      Insert(i,ACE); //keep order of original ACL
     except
       //free the ACE it will not be published
       ACE.Free;
@@ -1184,7 +1335,9 @@ begin
   begin
     E := TJwSecurityAccessControlEntry.CreateACE(AclInstance[i].AceType);
     E.Assign(AclInstance[i]);
-    Self.Add(E);
+
+    //keep order of original ACL
+    Self.Insert(i, E);
   end;
 end;
 
@@ -1192,6 +1345,8 @@ function TJwSecurityAccessControlList.Create_PACL: PACL;
 var
   c, i: integer;
   //[Hint] aPSID: PSID;
+  s : String;
+ { tempACL : TJwSecurityAccessControlList;    }
 
   aAudit:  TJwAuditAccessControlEntry;
   Mandatory : TJwSystemMandatoryAccessControlEntry;
@@ -1236,29 +1391,31 @@ begin
       RsACLClassNewAclNotEnoughMemory,
       'Create_PACL', ClassName, RsUNAcl, 0, True, []);
 
-  // InitializeAcl(Result,GlobalSize(Cardinal(Result)),ACL_REVISION);
-  InitializeAcl(Result, iSize, ACL_REVISION);
+  // InitializeAcl(Result,GlobalSize(Cardinal(Result)),fRevision);
+  InitializeAcl(Result, iSize, fRevision);
 
+  //ShowMEssage(GetText);
   //Add...ex functions only Windows 2000 or higher
   for i := 0 to Count - 1 do
   begin
     if Assigned(Items[i].SID) and (Items[i].SID.SID <> nil) then
     begin
       bResult := False;
+     // ShowMEssage((Items[i].GetText));
       if Items[i] is TJwDiscretionaryAccessControlEntryAllow then
-        bResult := AddAccessAllowedAceEx(Result, ACL_REVISION,
+        bResult := AddAccessAllowedAceEx(Result, Items[i].Revision,
           TJwEnumMap.ConvertAceFlags(
           Items[i].Flags), Items[i].AccessMask, Items[i].SID.SID)
       else
       if Items[i] is TJwDiscretionaryAccessControlEntryDeny then
-        bResult := AddAccessDeniedAceEx(Result, ACL_REVISION,
+        bResult := AddAccessDeniedAceEx(Result, Items[i].Revision,
           TJwEnumMap.ConvertAceFlags(
           Items[i].Flags), Items[i].AccessMask, Items[i].SID.SID)
       else
       if Items[i] is TJwAuditAccessControlEntry then
       begin
         aAudit  := (Items[i] as TJwAuditAccessControlEntry);
-        bResult := AddAuditAccessAce(Result, ACL_REVISION,
+        bResult := AddAuditAccessAce(Result, aAudit.Revision,
           Items[i].AccessMask, Items[i].SID.SID,
           aAudit.AuditSuccess,
           aAudit.AuditFailure);
@@ -1270,7 +1427,7 @@ begin
         Mandatory := (Items[i] as TJwSystemMandatoryAccessControlEntry);
         bResult := AddMandatoryAce(
               Result,//PACL pAcl,
-              ACL_REVISION,//DWORD dwAceRevision,
+              Mandatory.Revision,//DWORD dwAceRevision,
               TJwEnumMap.ConvertAceFlags(Items[i].Flags),//DWORD AceFlags,
               Mandatory.AccessMask,//DWORD MandatoryPolicy,
               Items[i].SID.SID,//PSID pLabelSid
@@ -1297,6 +1454,11 @@ begin
     end;
 
   end;
+
+ { tempACL := TJwSecurityAccessControlList.Create(result);
+  ShowMessage(tempACL.GetText);   }
+
+
 end;
 
 class procedure TJwSecurityAccessControlList.Free_PACL(var AclPointerList: PACL);
@@ -1318,6 +1480,16 @@ end;
 
 function TJwSecurityAccessControlList.Add(AccessEntry:
   TJwSecurityAccessControlEntry): integer;
+
+procedure UpdateACLRevision;
+begin
+  //update ACL revision to the newer ACE revision
+  //ACE structure does not change during revisions
+  //so it is safe
+  if AccessEntry.Revision > Self.fRevision then
+    Self.fRevision := AccessEntry.Revision;
+end;
+
 var
   i:  integer;
   bInserted: boolean;
@@ -1347,6 +1519,8 @@ begin
   s2 := AccessEntry.ClassName;
   b1 := (Self is TJwSAccessControlList);
 
+
+
   //  b2 := (Self is TJwSecurityAccessControlList);
   //[Hint] b2 := True;
 
@@ -1365,6 +1539,8 @@ begin
     AccessEntry.fListOwner := Self;
     Result := inherited Add(AccessEntry);
     //do not call our Self Add -> otherwise we get a recursion
+
+    UpdateACLRevision;
     Exit;
   end;
 
@@ -1380,6 +1556,8 @@ begin
       //do not call our Self Insert -> otherwise we get a recursion
       AccessEntry.fListOwner := Self;
       Result := 0;
+
+      UpdateACLRevision;
       Exit;
     end;
 
@@ -1394,6 +1572,7 @@ begin
         bInserted := True;
         AccessEntry.fListOwner := Self;
 
+        UpdateACLRevision;
         break;
       end;
     end;
@@ -1401,8 +1580,11 @@ begin
     if not bInserted then
     begin
       AccessEntry.fListOwner := Self;
+
       Result := inherited Add(AccessEntry);
       //do not call our Self Add -> otherwise we get a recursion
+
+      UpdateACLRevision;
     end;
 
     Exit;
@@ -1416,6 +1598,8 @@ begin
       Result := inherited Add(AccessEntry);
       //do not call our Self Add -> otherwise we get a recursion
       AccessEntry.fListOwner := Self;
+
+      UpdateACLRevision;
       Exit;
     end;
 
@@ -1430,6 +1614,7 @@ begin
         //[Hint] bInserted := True;
         AccessEntry.fListOwner := Self;
 
+        UpdateACLRevision;
         Exit;
       end;
     end;
@@ -1439,6 +1624,8 @@ begin
       AccessEntry.fListOwner := Self;
       Result := inherited Add(AccessEntry);
       //do not call our Self Add -> otherwise we get a recursion
+
+      UpdateACLRevision;
     end;
 
     Exit;
@@ -1591,6 +1778,13 @@ begin
   inherited Insert(Index, AccessEntry);
 
   AccessEntry.fListOwner := Self;
+
+  //update ACL revision to the newer ACE revision
+  //ACE structure does not change during revisions
+  //so it is safe
+  if AccessEntry.Revision > Self.fRevision then
+    Self.fRevision := AccessEntry.Revision;
+
 end;
 
 
@@ -1762,6 +1956,7 @@ begin
   fFlags := aFlags;
   fAccessMask := anAccessMask;
   fSID := aSID;
+  fRevision := ACL_REVISION;
 
   if Assigned(aSID) and (aSID.IsStandardSID) then
     ownSID := False;
@@ -1776,6 +1971,18 @@ begin
 end;
 
 constructor TJwSecurityAccessControlEntry.Create(
+      const ListOwner: TJwSecurityAccessControlList;
+      const Flags: TJwAceFlags;
+      const AccessMask: TJwAccessMask;
+      const SID: TJwSecurityId;
+      const Revision : Cardinal;
+      ownSID: boolean = True);
+begin
+  Self.Create(ListOwner, Flags, AccessMask, SID, ownSID);
+  fRevision := Revision;
+end;
+
+constructor TJwSecurityAccessControlEntry.Create(
   const AccessEntry: TJwSecurityAccessControlEntry);
 begin
   inherited Create;
@@ -1783,12 +1990,7 @@ begin
   ownSid := True;
 end;
 
-{
-der ACE eintrag wird kopiert und in seine übergeordnete liste automatisch eingefügt, wenn nicht schon vorhanden
 
-Die SID wird in eine Kopie kopiert, und OwnSID wird auf True gesetzt.
-
-}
 procedure TJwSecurityAccessControlEntry.Assign(AccessEntry:
   TJwSecurityAccessControlEntry);
 var
@@ -1811,17 +2013,14 @@ begin
   fSID := S;
 
   begin
-    fListOwner := nil;
-  (*  fListOwner := aObject.ListOwner;
-
-    //automatically add entry to list if not happened already
-    if Assigned(fListOwner) then
-      if ListOwner.IndexOf(Self) < 0 then
-        ListOwner.Add(Self);
+    (*
+    do not change fListOwner
+    because this ace instance could already be added
     *)
     fFlags := AccessEntry.Flags;
     fAccessMask := AccessEntry.AccessMask;
     fHeader := AccessEntry.Header;
+    fRevision := AccessEntry.fRevision;
   end;
 end;
 
@@ -1834,6 +2033,7 @@ begin
   fSID := nil;
   fownSID := False;
   fUserData := nil;
+  fRevision := ACL_REVISION;
 end;
 
 
@@ -1908,6 +2108,7 @@ begin
   Self.Create;
   fFlags := TJwEnumMap.ConvertAceFlags(AccessEntryPointer.Header.AceFlags);
   fAccessMask := AccessEntryPointer.Mask;
+  fRevision := ACL_REVISION;
 
   OwnSID := True;
   fSID := TJwSecurityId.Create(PSID(@AccessEntryPointer.SidStart));
@@ -2084,6 +2285,17 @@ begin
 end;
 
 constructor TJwDiscretionaryAccessControlEntryDeny.Create(
+      const ListOwner: TJwSecurityAccessControlList;
+      const Flags: TJwAceFlags;
+      const AccessMask: TJwAccessMask;
+      const SID: TJwSecurityId;
+      const Revision : Cardinal;
+      ownSID: boolean = True);
+begin
+  inherited Create(ListOwner, Flags, AccessMask, SID, Revision, ownSID);
+end;
+
+constructor TJwDiscretionaryAccessControlEntryDeny.Create(
   const AccessEntryPointer: PAccessDeniedAce);
 begin
   inherited Create(AccessEntryPointer);
@@ -2115,6 +2327,18 @@ constructor TJwDiscretionaryAccessControlEntryAllow.Create(
   const anAccessMask: TJwAccessMask; const aSID: TJwSecurityId; ownSID: boolean);
 begin
   inherited Create(aListOwner, aFlags, anAccessMask, aSID, ownSID);
+end;
+
+constructor TJwDiscretionaryAccessControlEntryAllow.Create(
+      const ListOwner: TJwSecurityAccessControlList;
+      const Flags: TJwAceFlags;
+      const AccessMask: TJwAccessMask;
+      const SID: TJwSecurityId;
+      const Revision : Cardinal;
+      ownSID: boolean = True);
+begin
+  Self.Create(ListOwner, Flags, AccessMask, SID, ownSID);
+  fRevision := Revision;
 end;
 
 constructor TJwDiscretionaryAccessControlEntryAllow.Create(
@@ -2259,6 +2483,24 @@ begin
   AuditFailure := AccessEntry.AuditFailure;
 end;
 
+
+function TJwSecurityAccessControlEntry.GetOwnSid : Boolean;
+begin
+  if Assigned(SID) and (SID.IsStandardSID) then
+    fOwnSid := False;
+
+  result := fOwnSid;
+end;
+
+procedure TJwSecurityAccessControlEntry.SetOwnSid(const OwnSid: Boolean);
+begin
+  if Assigned(SID) and (SID.IsStandardSID) then
+    fOwnSid := False
+  else
+    fOwnSid := OwnSid;
+end;
+
+
 function TJwSecurityAccessControlEntry.GetAceType: TJwAceType;
 begin
   Result := actDeny;
@@ -2381,7 +2623,8 @@ begin
 end;
 
 function TJwSecurityAccessControlList.IsEqual(
-  const AccessControlListInstance: TJwSecurityAccessControlList): boolean;
+  const AccessControlListInstance: TJwSecurityAccessControlList;
+  const EqualAceTypeSet: TJwEqualAceTypeSet = JwAllEqualAceTypes): boolean;
 var
   i, iPos: integer;
   tempACL1, tempACL2: TJwSecurityAccessControlList;
@@ -2404,7 +2647,7 @@ begin
 
   for i := 0 to tempACL1.Count - 1 do
   begin
-    iPos := tempACL1.FindEqualACE(tempACL2.Items[i], JwAllEqualAceTypes, i - 1);
+    iPos := tempACL1.FindEqualACE(tempACL2.Items[i], EqualAceTypeSet, i - 1);
     if iPos <> i then
       Exit;
   end;
@@ -2488,7 +2731,7 @@ begin
   ACL := TJwSecurityAccessControlList.Create;
   for i := 0 to Count - 1 do
   begin
-    ACL.Add(Items[i]);
+    ACL.Add(Items[i]); //rearrange ACE in ACL
   end;
 
   Assign(ACL);
@@ -2594,6 +2837,7 @@ end;
 {$ENDIF SL_INTERFACE_SECTION}
 
 {$IFNDEF SL_OMIT_SECTIONS}
+
 
 end.
 {$ENDIF SL_OMIT_SECTIONS}

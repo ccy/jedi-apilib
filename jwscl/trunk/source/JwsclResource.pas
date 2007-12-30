@@ -72,6 +72,7 @@ const
   RsACLClassAceAlreadyInList = 'AccessControlEntry already in a list';
   RsACLClassInvalidAceInDacl = 'An discretionary access control list can onl' +
     'y list discretionary access control entries. (found %s)';
+  RsACLRevisionMisMatch = 'An ACE with an higher revision number (%0:d) was tried to add to an ACL with a lower version (%0:d).';
   RsACLClassInvaldAceInSacl = 'An system access control list can only list a' +
     'uditing access control entries.';
   RsACLClassInvalidAce = 'Could not add ACE to list. Did you use TSecurityAc' +

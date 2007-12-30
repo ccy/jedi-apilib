@@ -44,14 +44,27 @@ type
   TJwUserSecurityInformation = class(TInterfacedObject, IJwPrivateSecurityInformation)
   public
     constructor Create(const Parent : IJwPrivateSecurityInformation;
-       const GenericMask : TJwSecurityGenericMappingClass);
+        const GenericMask : TJwSecurityGenericMappingClass;
+        const AccessCheckType : TJwGetAccessCheckTypeSet;
+        const Level      : TCardinalE = -1;
+        const ServerName : TJwString  = '';
+        const ObjectName : TJwString  = '';
+        const ObjectGuid : PGuid      = nil;
+        const ObjectType : PGuid      = nil);
   protected
     fSecurityDescriptor : TJwSecurityDescriptor;
     fCheckOwnerGroup : Boolean;
     fParent : IJwPrivateSecurityInformation;
     fGenericMask : TJwSecurityGenericMappingClass;
 
-  protected
+    fLevel: TCardinalE;
+    fObjectGuid: TGuid;
+    fObjectName: TJwString;
+    fObjectType: TGuid;
+    fServerName: TJwString;
+    fAccessCheckType : TJwGetAccessCheckTypeSet;
+
+  public
     {@Name retrieves information about the private objec
      @param(ObjectInformationSet contains information which
      information must be returned.)
@@ -143,7 +156,17 @@ type
               @item(Any other result will raise EJwsclInvalidObjectException)
             ))
     }
-    function MapGenericMask(out GenericMap : TJwSecurityGenericMappingClass) : HRESULT; 
+    function MapGenericMask(out GenericMap : TJwSecurityGenericMappingClass) : HRESULT;
+  public
+    property Level: TCardinalE read fLevel;
+    property ObjectGuid: TGuid read fObjectGuid;
+    property ObjectName: TJwString read fObjectName;
+    property ObjectType: TGuid read fObjectType;
+    property ServerName: TJwString read fServerName;
+
+    property Parent : IJwPrivateSecurityInformation read fParent;
+    property GenericMask : TJwSecurityGenericMappingClass read fGenericMask;
+    property AccessCheckType : TJwGetAccessCheckTypeSet read fAccessCheckType;
   end;
 
 
@@ -151,29 +174,51 @@ implementation
 
 { TJwUserSecurityInformation }
 
-constructor TJwUserSecurityInformation.Create(
-  const Parent: IJwPrivateSecurityInformation;
-  const GenericMask: TJwSecurityGenericMappingClass);
+constructor TJwUserSecurityInformation.Create;
+  function InitGuid(p : PGUID) : TGuid;
+  begin
+    if p <> nil then
+      result := p^
+    else
+      result := NULL_GUID;
+  end;
 begin
+  inherited Create;
+  fParent := Parent;
+  fGenericMask := GenericMask;
 
+  fLevel      := Level;
+  fObjectGuid := InitGuid(ObjectGuid);
+  fObjectName := ObjectName;
+  fObjectType := InitGuid(ObjectType);
+  fServerName := ServerName;
 end;
 
 function TJwUserSecurityInformation.GetChildren(
   out Children: TJwPrivateSecurityInformationArray): HRESULT;
 begin
-
+  Children := nil;
 end;
 
 function TJwUserSecurityInformation.GetObjectInformation(
   const ObjectInformationSet: TJwSecurityObjectInformationFlagSet): TJwSecurityObjectInformation;
-begin
 
+ function CompareGUID(const G1, G2: TGUID): boolean;
+  begin
+    Result := CompareMem(@G1, @G2, Sizeof(TGUID));
+  end;
+begin
+  result.Level := Level;
+  result.ObjectGuid := ObjectGuid;
+  result.ObjectName := ObjectName;
+  result.ObjectType := ObjectType;
+  result.ServerName := ServerName;
 end;
 
 function TJwUserSecurityInformation.GetParent(
   out Parent: IJwPrivateSecurityInformation): HRESULT;
 begin
-
+  Parent := fParent;
 end;
 
 procedure TJwUserSecurityInformation.GetSecurity(
@@ -187,13 +232,13 @@ end;
 function TJwUserSecurityInformation.GetUseAccessCheck(
   const AccessCheckType: TJwGetAccessCheckType): Boolean;
 begin
-
+  result := AccessCheckType in fAccessCheckType;
 end;
 
 function TJwUserSecurityInformation.MapGenericMask(
   out GenericMap: TJwSecurityGenericMappingClass): HRESULT;
 begin
-
+  GenericMap := fGenericMask;
 end;
 
 procedure TJwUserSecurityInformation.SetSecurity(
