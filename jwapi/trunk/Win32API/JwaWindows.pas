@@ -151,7 +151,7 @@ the one of the project.
 
 //extra compiler options
 {$I jedi.inc}
-{$I jediapilib.inc}
+{$I ..\common\jediapilib.inc}
 
 
 
@@ -250,6 +250,8 @@ const
   {Version of this header. Its not a CVS, SVN or compile version}
   JWA_CONST_VERSION = '1.5';
 
+
+
 {Beginning of interface section.
 These files must be in a correct order!
 These files are included a second time in the implementation section!
@@ -279,9 +281,13 @@ These files are included a second time in the implementation section!
 { I JwaShellAPI.pas} // TODO convert
 {$I JwaWinPerf.pas}
 {$I JwaQos.pas}
-{$I JwaWinternl.pas}
 {$I JwaQosSp.pas}
 
+{.$IFNDEF JWA_INCLUDE_JWAADSTLB}
+type UUID = GUID;
+{.$ENDIF JWA_INCLUDE_JWAADSTLB}
+
+{$I JwaNative.pas}
 {The following files cannot be included because of unfixed errors and problems.
 The list has no order!}
 //no members
@@ -540,15 +546,13 @@ The list has no order!}
 {$I JwaBitscfg.pas}
 {$ENDIF JWA_INCLUDE_JWAADSTLB}
 
-{$IFNDEF JWA_INCLUDE_JWAADSTLB}
-type UUID = GUID;
-{$ENDIF JWA_INCLUDE_JWAADSTLB}
+
 
 {$DEFINE JWA_INCLUDEMODE}
-{$I JwaNative.pas}
 {$IFDEF COMPILER6_UP}
  {$I JwaWinSta.pas}
 {$ENDIF}
+{.$I JwaWinternl.pas}
 
 {$I ..\Common\ModuleLoader.pas}
 {$IFDEF JWA_INCLUDE_SETUP_API}
@@ -600,8 +604,9 @@ These files must be in a correct order!
 { I JwaShellAPI.pas} // TODO convert
 {$I JwaWinPerf.pas}
 {$I JwaQos.pas}
-{$I JwaWinternl.pas}
 {$I JwaQosSp.pas}
+
+{$I JwaNative.pas}
 
 {The following files cannot be included because of unfixed errors and problems.
 The list has no order!}
@@ -610,7 +615,7 @@ The list has no order!}
 
 {******** WINSOCK *******************}
 
-  {$IFDEF JWA_WINSOCK_1}
+{$IFDEF JWA_WINSOCK_1}
   {$I JwaWinSock.pas}
   {$ELSE}
   {$DEFINE JWA_WINSOCK_2}
@@ -636,7 +641,7 @@ The list has no order!}
   {$I JwaIpTypes.pas}
   {$I JwaIpHlpApi.pas}
   {$I JwaIcmpApi.pas}
-  {$ENDIF JWA_WINSOCK_1}
+{$ENDIF JWA_WINSOCK_1}
 
 {******** various headers that must be included before rest *********}
 
@@ -801,10 +806,6 @@ The list has no order!}
 {$I JwaWmiStr.pas}
 {$I JwaWowNT16.pas}
 
-//these files needs a newer version due to missing units
-{$IFDEF COMPILER6_UP}
-{$I JwaWinSta.pas}
-{$ENDIF COMPILER6_UP}
 
 {$I JwaSens.pas}
 {$I JwaSensAPI.pas}
@@ -871,7 +872,12 @@ The list has no order!}
 
 
 {$DEFINE JWA_INCLUDEMODE}
-{$I JwaNative.pas}
+
+{.$I JwaWinternl.pas}
+//these files needs a newer version due to missing units
+{$IFDEF COMPILER6_UP}
+{$I JwaWinSta.pas}
+{$ENDIF COMPILER6_UP}
 
 
 {$I ..\Common\ModuleLoader.pas}
@@ -896,5 +902,6 @@ If you get this error you should do the things described or upgrade.
 {$UNDEF JWA_OMIT_SECTIONS}
 
 end.
+
 
 

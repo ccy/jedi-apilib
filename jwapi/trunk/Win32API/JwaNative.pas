@@ -183,8 +183,8 @@ const
 //------------------------------------------------------------------------------
 
 {$ENDIF JWA_OMIT_SECTIONS}
-
 {$IFNDEF JWA_IMPLEMENTATIONSECTION}
+
 type
  
   _CLIENT_ID = record
@@ -268,7 +268,6 @@ const
 type
   POOL_TYPE = NonPagedPool..NonPagedPoolCacheAlignedMustSSession;
 
-  {$IFNDEF JWA_INCLUDEMODE}
   _IO_STATUS_BLOCK = record
     //union {
     Status: NTSTATUS;
@@ -280,7 +279,7 @@ type
   PIO_STATUS_BLOCK = ^IO_STATUS_BLOCK;
   TIoStatusBlock = IO_STATUS_BLOCK;
   PIoStatusBlock = ^TIoStatusBlock;
-  {$ENDIF JWA_INCLUDEMODE}
+
 
 const
   ViewShare = 1;
@@ -289,7 +288,7 @@ const
 type
   SECTION_INHERIT = ViewShare..ViewUnmap;
 
-  {$IFNDEF JWA_INCLUDEMODE}
+  {.$IFNDEF JWA_INCLUDEMODE}
   _THREADINFOCLASS = (
     ThreadBasicInformation,
     ThreadTimes,
@@ -312,19 +311,19 @@ type
     ThreadBreakOnTermination, // was added in XP - used by RtlSetThreadIsCritical()
     MaxThreadInfoClass);
   THREADINFOCLASS = _THREADINFOCLASS;
-  {$ENDIF JWA_INCLUDEMODE}
+  {.$ENDIF JWA_INCLUDEMODE}
   THREAD_INFORMATION_CLASS = THREADINFOCLASS;
 
-  {$IFNDEF JWA_INCLUDEMODE}
+  {.$IFNDEF JWA_INCLUDEMODE}
   TThreadInfoClass = THREADINFOCLASS;
 
   KAFFINITY = ULONG;
   PKAFFINITY = ^KAFFINITY;
-  {$ENDIF JWA_INCLUDEMODE}
+  {.$ENDIF JWA_INCLUDEMODE}
 
   PKNORMAL_ROUTINE = procedure(NormalContext, SystemArgument1, SystemArgument2: PVOID); stdcall;
 
-  {$IFNDEF JWA_INCLUDEMODE}
+
   _PROCESSINFOCLASS = (
     ProcessBasicInformation,
     ProcessQuotaLimits,
@@ -361,12 +360,8 @@ type
     ProcessHandleTracing,
     MaxProcessInfoClass);
   PROCESSINFOCLASS = _PROCESSINFOCLASS;
-  {$ENDIF JWA_INCLUDEMODE}
   PROCESS_INFORMATION_CLASS = PROCESSINFOCLASS;
-
-  {$IFNDEF JWA_INCLUDEMODE}
   TProcessInfoClass = PROCESSINFOCLASS;
-  {$ENDIF JWA_INCLUDEMODE}
 
   _KPROFILE_SOURCE = (
     ProfileTime,
@@ -397,9 +392,7 @@ type
   KPROFILE_SOURCE = _KPROFILE_SOURCE;
   TKProfileSource = KPROFILE_SOURCE;
 
-  {$IFNDEF JWA_INCLUDEMODE}
   PIO_APC_ROUTINE = procedure(ApcContext: PVOID; IoStatusBlock: PIO_STATUS_BLOCK; Reserved: ULONG); stdcall;
-  {$ENDIF JWA_INCLUDEMODE}
 
   _FILE_FULL_EA_INFORMATION = record
     NextEntryOffset: ULONG;
@@ -429,9 +422,11 @@ type
   TFsInformationClass = FS_INFORMATION_CLASS;
   PFsInformationClass = ^TFsInformationClass;
 
-  {$IFNDEF JWA_INCLUDEMODE}
+
+{$IFNDEF JWA_INCLUDEMODE} //defined in jwaWindows.pas
   UUID = GUID;
-  {$ENDIF JWA_INCLUDEMODE}
+{$ENDIF JWA_INCLUDEMODE}
+
 
   _FILE_BASIC_INFORMATION = record
     CreationTime: LARGE_INTEGER;
@@ -459,7 +454,7 @@ type
   TFileNetworkOpenInformation = FILE_NETWORK_OPEN_INFORMATION;
   PFileNetworkOpenInformation = ^TFileNetworkOpenInformation;
 
-  {$IFNDEF JWA_INCLUDEMODE}
+  
   _FILE_INFORMATION_CLASS = (
     FileFiller0,
     FileDirectoryInformation, // 1
@@ -500,11 +495,8 @@ type
     FileTrackingInformation, // 36
     FileMaximumInformation);
   FILE_INFORMATION_CLASS = _FILE_INFORMATION_CLASS;
-  {$ENDIF JWA_INCLUDEMODE}
   PFILE_INFORMATION_CLASS = ^FILE_INFORMATION_CLASS;
-  {$IFNDEF JWA_INCLUDEMODE}
   TFileInformationClass = FILE_INFORMATION_CLASS;
-  {$ENDIF JWA_INCLUDEMODE}
   PFileInformationClass = ^TFileInformationClass;
 
   _FILE_STANDARD_INFORMATION = record
@@ -679,7 +671,6 @@ type
 // NT System Services
 //==============================================================================
 
-{$IFNDEF JWA_INCLUDEMODE}
 type
   _SYSTEM_INFORMATION_CLASS = (
     SystemBasicInformation,
@@ -737,7 +728,6 @@ type
     SystemAddVerifier,
     SystemSessionProcessesInformation);
   SYSTEM_INFORMATION_CLASS = _SYSTEM_INFORMATION_CLASS;
-{$ENDIF JWA_INCLUDEMODE}
   TSystemInformationClass = SYSTEM_INFORMATION_CLASS;
 
 type
@@ -3097,7 +3087,6 @@ type
   (*22c*)FlsHighIndex: ULONG;
   end;
 
-  {$IFNDEF JWA_INCLUDEMODE}
   {$IFDEF WINNT4}
   _PEB = _PEB_W2K; // Exact layout for NT4 unknown
   {$ENDIF WINNT4}
@@ -3116,7 +3105,6 @@ type
 
   PEB = _PEB;
   PPEB = ^_PEB;
-  {$ENDIF JWA_INCLUDEMODE}
   PPPEB = ^PPEB;
 
 {$IFNDEF JWA_INCLUDEMODE}
@@ -3223,7 +3211,7 @@ type
   TEB_ACTIVE_FRAME = _TEB_ACTIVE_FRAME;
   PPTEB_ACTIVE_FRAME = ^PTEB_ACTIVE_FRAME;
 
-{$IFNDEF JWA_INCLUDEMODE}
+
 // Verified in W2K, WXP and W2K3 using WinDbg
   _TEB = record // not packed!
   (*000*)NtTib: NT_TIB;
@@ -3309,7 +3297,6 @@ type
   TEB = _TEB;
   PTEB = ^_TEB;
   PPTEB = ^PTEB;
-{$ENDIF JWA_INCLUDEMODE}
 
 type
   _OBJECT_NAME_INFORMATION = record
@@ -7605,12 +7592,11 @@ function  RtlNormalizeProcessParams(
     ProcessParameters : PRTL_USER_PROCESS_PARAMETERS
   ): PRTL_USER_PROCESS_PARAMETERS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
 
-{$IFNDEF JWA_INCLUDEMODE}
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlNtStatusToDosError(
     Status : NTSTATUS
   ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-{$ENDIF JWA_INCLUDEMODE}
+
 
 // Compatibility: WXP, 2K3
 function  RtlNtStatusToDosErrorNoTeb(
@@ -9311,9 +9297,9 @@ var
   _NtCancelIoFile : Pointer = nil;
   _NtCancelTimer : Pointer = nil;
   _NtClearEvent : Pointer = nil;
-  {$IFNDEF JWA_INCLUDEMODE}
+
   _NtClose : Pointer = nil;
-  {$ENDIF JWA_INCLUDEMODE}
+
   _NtCloseObjectAuditAlarm : Pointer = nil;
   _NtCompleteConnectPort : Pointer = nil;
   _NtConnectPort : Pointer = nil;
@@ -9322,9 +9308,9 @@ var
   _NtCreateDirectoryObject : Pointer = nil;
   _NtCreateEvent : Pointer = nil;
   _NtCreateEventPair : Pointer = nil;
-  {$IFNDEF JWA_INCLUDEMODE}
+
   _NtCreateFile : Pointer = nil;
-  {$ENDIF JWA_INCLUDEMODE}
+
   _NtCreateIoCompletion : Pointer = nil;
   _NtCreateJobObject : Pointer = nil;
   _NtCreateKey : Pointer = nil;
@@ -9350,9 +9336,9 @@ var
   _NtDeleteKey : Pointer = nil;
   _NtDeleteObjectAuditAlarm : Pointer = nil;
   _NtDeleteValueKey : Pointer = nil;
-  {$IFNDEF JWA_INCLUDEMODE}
+
   _NtDeviceIoControlFile : Pointer = nil;
-  {$ENDIF JWA_INCLUDEMODE}
+
   _NtDisplayString : Pointer = nil;
   _NtDuplicateObject : Pointer = nil;
   _NtDuplicateToken : Pointer = nil;
@@ -9400,9 +9386,9 @@ var
   _NtOpenDirectoryObject : Pointer = nil;
   _NtOpenEvent : Pointer = nil;
   _NtOpenEventPair : Pointer = nil;
-  {$IFNDEF JWA_INCLUDEMODE}
+
   _NtOpenFile : Pointer = nil;
-  {$ENDIF JWA_INCLUDEMODE}
+
   _NtOpenIoCompletion : Pointer = nil;
   _NtOpenJobObject : Pointer = nil;
   _NtOpenKey : Pointer = nil;
@@ -9435,10 +9421,8 @@ var
   _NtQueryInformationFile : Pointer = nil;
   _NtQueryInformationJobObject : Pointer = nil;
   _NtQueryInformationPort : Pointer = nil;
-  {$IFNDEF JWA_INCLUDEMODE}
   _NtQueryInformationProcess : Pointer = nil;
   _NtQueryInformationThread : Pointer = nil;
-  {$ENDIF JWA_INCLUDEMODE}
   _NtQueryInformationToken : Pointer = nil;
   _NtQueryInstallUILanguage : Pointer = nil;
   _NtQueryIntervalProfile : Pointer = nil;
@@ -9456,10 +9440,8 @@ var
   _NtQuerySemaphore : Pointer = nil;
   _NtQuerySymbolicLinkObject : Pointer = nil;
   _NtQuerySystemEnvironmentValue : Pointer = nil;
-  {$IFNDEF JWA_INCLUDEMODE}
   _NtQuerySystemInformation : Pointer = nil;
   _NtQuerySystemTime : Pointer = nil;
-  {$ENDIF JWA_INCLUDEMODE}
   _NtQueryTimer : Pointer = nil;
   _NtQueryTimerResolution : Pointer = nil;
   _NtQueryValueKey : Pointer = nil;
@@ -9551,9 +9533,7 @@ var
   _NtVdmControl : Pointer = nil;
   _NtW32Call : Pointer = nil;
   _NtWaitForMultipleObjects : Pointer = nil;
-  {$IFNDEF JWA_INCLUDEMODE}
   _NtWaitForSingleObject : Pointer = nil;
-  {$ENDIF JWA_INCLUDEMODE}
   _NtWaitHighEventPair : Pointer = nil;
   _NtWaitLowEventPair : Pointer = nil;
   _NtWriteFile : Pointer = nil;
@@ -9577,9 +9557,7 @@ var
   _RtlAllocateHeap : Pointer = nil;
   _RtlAnsiCharToUnicodeChar : Pointer = nil;
   _RtlAnsiStringToUnicodeSize : Pointer = nil;
-  {$IFNDEF JWA_INCLUDEMODE}
   _RtlAnsiStringToUnicodeString : Pointer = nil;
-  {$ENDIF JWA_INCLUDEMODE}
   _RtlAppendAsciizToString : Pointer = nil;
   _RtlAppendStringToString : Pointer = nil;
   _RtlAppendUnicodeStringToString : Pointer = nil;
@@ -9758,9 +9736,7 @@ var
   _RtlMergeRangeLists : Pointer = nil;
   _RtlMoveMemory : Pointer = nil;
   _RtlNormalizeProcessParams : Pointer = nil;
-  {$IFNDEF JWA_INCLUDEMODE}
   _RtlNtStatusToDosError : Pointer = nil;
-  {$ENDIF JWA_INCLUDEMODE}
   _RtlNtStatusToDosErrorNoTeb : Pointer = nil;
   _RtlNumberOfClearBits : Pointer = nil;
   _RtlNumberOfSetBits : Pointer = nil;
@@ -19565,7 +19541,7 @@ begin
   );
 end;
 
-{$IFNDEF JWA_INCLUDEMODE}
+
 // Dynamic version of RtlNtStatusToDosError
 function  RtlNtStatusToDosError(
     Status : NTSTATUS
@@ -19576,7 +19552,7 @@ begin
     Status
   );
 end;
-{$ENDIF JWA_INCLUDEMODE}
+
 
 // Dynamic version of RtlNtStatusToDosErrorNoTeb
 function  RtlNtStatusToDosErrorNoTeb(

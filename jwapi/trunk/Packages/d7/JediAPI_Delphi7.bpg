@@ -10,7 +10,7 @@ DCC = $(ROOT)\bin\dcc32.exe $**
 BRCC = $(ROOT)\bin\brcc32.exe $**
 #------------------------------------------------------------------------------
 PROJECTS = JediApi_DynamicDebug.bpl JediApi_DynamicRelease.bpl \
-  JediApi_StaticDebug.bpl JediApi_StaticRelease.bpl
+  JediApi_StaticDebug.bpl JediApi_StaticRelease.bpl JediApi_SingleUnits.bpl
 #------------------------------------------------------------------------------
 default: $(PROJECTS)
 #------------------------------------------------------------------------------
@@ -25,6 +25,9 @@ JediApi_StaticDebug.bpl: JediApi_StaticDebug.dpk
   $(DCC)
 
 JediApi_StaticRelease.bpl: JediApi_StaticRelease.dpk
+  $(DCC)
+
+JediApi_SingleUnits.bpl: JediApi_SingleUnits.dpk
   $(DCC)
 
 

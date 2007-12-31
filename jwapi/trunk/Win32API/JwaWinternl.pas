@@ -70,6 +70,11 @@
 *   Copyright (c) Microsoft Corp. All rights reserved.                  *
 *                                                                       *
 ************************************************************************)
+{$IFDEF JWA_INCLUDEMODE}
+This unit must not be included in JwaWindows.pas because the members are
+already declared.
+{$ENDIF JWA_INCLUDEMODE}
+
 {$IFNDEF JWA_OMIT_SECTIONS}
 unit JwaWinternl;
 
@@ -118,6 +123,7 @@ uses
 //     mov     eax,[eax+0x1d4]
 //
 
+{$IFNDEF JWA_INCLUDEMODE}
 type
   _PEB = record
     Reserved1: array [0..1] of Byte;
@@ -129,6 +135,7 @@ type
   PEB = _PEB;
   PPEB = ^PEB;
   TPeb = PEB;
+{$ENDIF JWA_INCLUDEMODE}
 
 //
 // Instead of using the Tls fields, use the Win32 TLS APIs
@@ -207,7 +214,7 @@ type
   POBJECT_ATTRIBUTES = ^OBJECT_ATTRIBUTES;
   TObjectAttributes = OBJECT_ATTRIBUTES;
   PObjectAttributes = ^TObjectAttributes;
-  {$ENDIF JWA_INCLUDEMODE}
+
 
   _IO_STATUS_BLOCK = record
     (*
@@ -222,9 +229,12 @@ type
   PIO_STATUS_BLOCK = ^IO_STATUS_BLOCK;
   TIoStatusBlock = IO_STATUS_BLOCK;
   PIoStatusBlock = ^TIoStatusBlock;
+  {$ENDIF JWA_INCLUDEMODE}
 
+{$IFNDEF JWA_INCLUDEMODE}
 type
   PIO_APC_ROUTINE = procedure (ApcContext: PVOID; IoStatusBlock: PIO_STATUS_BLOCK; Reserved: ULONG); stdcall;
+{$ENDIF JWA_INCLUDEMODE}
 
 {$IFDEF _M_IA64}
 
@@ -363,24 +373,64 @@ type
 const
   FileDirectoryInformation = 1;
 
+{$IFNDEF JWA_INCLUDEMODE}
 type
   _FILE_INFORMATION_CLASS = DWORD;
   FILE_INFORMATION_CLASS = _FILE_INFORMATION_CLASS;
   TFileInformationClass = FILE_INFORMATION_CLASS;
+{$ENDIF JWA_INCLUDEMODE}  
 
+{
 const
   ProcessBasicInformation = 0;
   ProcessWow64Information = 26;
+}
 
+{$IFNDEF JWA_INCLUDEMODE}
 type
-  _PROCESSINFOCLASS = DWORD;
+{  _PROCESSINFOCLASS = DWORD;}
+  _PROCESSINFOCLASS = (
+    ProcessBasicInformation {= 0},
+    ProcessPad1,
+    ProcessPad2,
+    ProcessPad3,
+    ProcessPad4,
+    ProcessPad5,
+    ProcessPad6,
+    ProcessPad7,
+    ProcessPad8,
+    ProcessPad9,
+    ProcessPad10,
+    ProcessPad11,
+    ProcessPad12,
+    ProcessPad13,
+    ProcessPad14,
+    ProcessPad15,
+    ProcessPad16,
+    ProcessPad17,
+    ProcessPad18,
+    ProcessPad19,
+    ProcessPad20,
+    ProcessPad21,
+    ProcessPad22,
+    ProcessPad23,
+    ProcessPad24,
+    ProcessPad25,
+    ProcessWow64Information {= 26}
+  );
+
   PROCESSINFOCLASS = _PROCESSINFOCLASS;
   TProcessInfoClass = PROCESSINFOCLASS;
 
+
+{$ENDIF JWA_INCLUDEMODE}
+
+{$IFNDEF JWA_INCLUDEMODE}
 type
   _THREADINFOCLASS = DWORD;
   THREADINFOCLASS = _THREADINFOCLASS;
   TThreadInfoClass = THREADINFOCLASS;
+{$ENDIF JWA_INCLUDEMODE}
 
 const
   SystemBasicInformation = 0;
@@ -393,9 +443,11 @@ const
   SystemRegistryQuotaInformation = 37;
   SystemLookasideInformation = 45;
 
+{$IFNDEF JWA_INCLUDEMODE}
 type
   _SYSTEM_INFORMATION_CLASS = DWORD;
   SYSTEM_INFORMATION_CLASS = _SYSTEM_INFORMATION_CLASS;
+{$ENDIF JWA_INCLUDEMODE}  
 
 {$IFDEF WINXP}
 
@@ -708,7 +760,7 @@ type
 
 {$IFNDEF JWA_OMIT_SECTIONS}
 implementation
-
+         
 uses
   JwaWinDLLNames;
 {$ENDIF JWA_OMIT_SECTIONS}
@@ -1082,9 +1134,9 @@ end;
 {$ENDIF JWA_INCLUDEMODE}
 
 {$ELSE}
-
-//function NtClose; external winternl_lib name 'NtClose';
-{function NtCreateFile; external winternl_lib name 'NtCreateFile';
+(*
+function NtClose; external winternl_lib name 'NtClose';
+function NtCreateFile; external winternl_lib name 'NtCreateFile';
 function NtOpenFile; external winternl_lib name 'NtOpenFile';
 function NtDeviceIoControlFile; external winternl_lib name 'NtDeviceIoControlFile';
 function NtWaitForSingleObject; external winternl_lib name 'NtWaitForSingleObject';
@@ -1095,25 +1147,28 @@ function NtQueryInformationThread; external winternl_lib name 'NtQueryInformatio
 function NtQuerySystemInformation; external winternl_lib name 'NtQuerySystemInformation';
 function NtQuerySystemTime; external winternl_lib name 'NtQuerySystemTime';
 function RtlLocalTimeToSystemTime; external winternl_lib name 'RtlLocalTimeToSystemTime';
-function RtlTimeToSecondsSince1970; external winternl_lib name 'RtlTimeToSecondsSince1970';       }
-{$IFNDEF JWA_INCLUDEMODE}
+function RtlTimeToSecondsSince1970; external winternl_lib name 'RtlTimeToSecondsSince1970';
+*)
+
 procedure RtlFreeAnsiString; external winternl_lib name 'RtlFreeAnsiString';
 procedure RtlFreeUnicodeString; external winternl_lib name 'RtlFreeUnicodeString';
 procedure RtlFreeOemString; external winternl_lib name 'RtlFreeOemString';
 procedure RtlInitString; external winternl_lib name 'RtlInitString';
 procedure RtlInitAnsiString; external winternl_lib name 'RtlInitAnsiString';
 procedure RtlInitUnicodeString; external winternl_lib name 'RtlInitUnicodeString';
-{$ENDIF JWA_INCLUDEMODE}
 
+(*
 {function RtlAnsiStringToUnicodeString; external winternl_lib name 'RtlAnsiStringToUnicodeString';
 function RtlUnicodeStringToAnsiString; external winternl_lib name 'RtlUnicodeStringToAnsiString';
 function RtlUnicodeStringToOemString; external winternl_lib name 'RtlUnicodeStringToOemString';
 function RtlUnicodeToMultiByteSize; external winternl_lib name 'RtlUnicodeToMultiByteSize';
 function RtlCharToInteger; external winternl_lib name 'RtlCharToInteger';}
-{$IFNDEF JWA_INCLUDEMODE}
+
 function RtlConvertSidToUnicodeString; external winternl_lib name 'RtlConvertSidToUnicodeString';
+
+*)
 procedure RtlUnwind; external winternl_lib name 'RtlUnwind';
-{$ENDIF JWA_INCLUDEMODE}
+
 function RtlUniform; external winternl_lib name 'RtlUniform';
 
 {$ENDIF DYNAMIC_LINK}
