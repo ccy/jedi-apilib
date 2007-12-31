@@ -20,7 +20,7 @@ TColumnClicked = class
 end;
 
 // Class below is used to store bytes values, they are used when sorting the
-// ListView columns 
+// ListView columns
 THiddenProcessData = class(TObject)
   MemUsage: DWORD;
   VMSize: DWORD;
@@ -106,6 +106,7 @@ type
     Button3: TButton;
     Button4: TButton;
     ApplicationEvents1: TApplicationEvents;
+    Button2: TButton;
     procedure FormCreate(Sender: TObject);
     procedure ListViewColumnClick(Sender: TObject; Column: TListColumn);
     procedure FormDestroy(Sender: TObject);
@@ -119,10 +120,12 @@ type
     procedure ApplicationEvents1Message(var Msg: tagMSG; var Handled: Boolean);
     procedure ProcessesListViewDeletion(Sender: TObject; Item: TListItem);
     procedure ServerTreeViewDblClick(Sender: TObject);
+    procedure Button2Click(Sender: TObject);
   private
     { Private declarations }
     iActiveSessions: Integer;
     iDisconnectedSessions: Integer;
+    procedure OnTerminalServerEvent(Sender: TObject);
     procedure UpdateTotals;
   public
     { Public declarations }
@@ -132,9 +135,14 @@ var
   MainForm: TMainForm;
   IconRec: TIconRec;
   strServer: String;
+  TerminalServer: TJwTerminalServer;
+
 implementation
 
 {$R *.dfm}
+function QueryCurrentWinStation(lpWinStationName: PWideChar;
+  lpUserName: PWideChar; var dwSessionId: DWORD; var dwWdFlag: DWORD): Boolean;
+  stdcall; external 'utildll.dll';
 
 constructor TColumnClicked.Create;
 begin
@@ -173,17 +181,19 @@ begin
 end;
 
 procedure TMainForm.Button1Click(Sender: TObject);
-var TerminalServer: TJwTerminalServer;
+var
+//TerminalServer: TJwTerminalServer;
   i: Integer;
   HiddenData: THiddenProcessData;
   FormatSettings: TFormatSettings;
 begin
+  ProcessesListView.Items.Clear;
+  SessionsListView.Items.Clear;
+  UsersListView.Items.Clear;
+
   // Get LocaleFormatSettings, we use them later on to format DWORD
   // values with bytes as KByte values with thousand seperators a la taskmgr
   GetLocaleFormatSettings(LOCALE_USER_DEFAULT, FormatSettings);
-
-  TerminalServer := TJwTerminalServer.Create;
-  TerminalServer.Server := strServer;
 
 //  if TerminalServer.EnumerateProcesses then
   if TerminalServer.GetAllProcesses then
@@ -199,7 +209,7 @@ begin
           ImageIndex := IconRec.Server;
 
           SubItemImages[SubItems.Add(Username)] := IconRec.User;
-          if WinStationName = 'Console' then
+          if WinStationName <> 'Console' then
           begin
             SubItemImages[SubItems.Add(WinStationName)] := IconRec.Console;
           end
@@ -231,9 +241,6 @@ begin
       end;
     end;
     ProcessesListView.Items.EndUpdate;
-  end
-  else begin
-    ShowMessage(SysErrorMessage(GetLastError));
   end;
 
   if TerminalServer.EnumerateSessions then
@@ -253,14 +260,22 @@ begin
             begin
               Caption := TerminalServer.Server;
               ImageIndex := IconRec.Server;
-              SubItemImages[SubItems.Add(Username)] := IconRec.User;
-              if WinStationName = 'Console' then
+              if Username <> '' then
+              begin
+                SubItemImages[SubItems.Add(Username)] := IconRec.User;
+              end
+              else begin
+                SubItems.Add('');
+              end;
+
+              if WdFlag < WD_FLAG_RDP then
               begin
                 SubItemImages[SubItems.Add(WinStationName)] := IconRec.Console;
               end
               else begin
                 SubItemImages[SubItems.Add(WinStationName)] := IconRec.Network;
               end;
+              
               SubItems.Add(IntToStr(SessionId));
               SubItems.Add(ConnectStateStr);
               SubItems.Add(IdleTimeStr);
@@ -279,17 +294,24 @@ begin
           else begin
             SubItemImages[SubItems.Add(WinStationName)] := IconRec.Network;
           end;
-          SubItemImages[SubItems.Add(Username)] := IconRec.User;
+          if Username <> '' then
+          begin
+            SubItemImages[SubItems.Add(Username)] := IconRec.User;
+          end
+          else begin
+            SubItems.Add('');
+          end;
+
           SubItems.Add(IntToStr(SessionId));
           SubItems.Add(ConnectStateStr);
           SubItems.Add(WinStationDriverName);
           SubItems.Add(ClientName);
           SubItems.Add(IdleTimeStr);
           SubItems.Add(LogonTimeStr);
-          SubItems.Add(ClientAddress);
+          SubItems.Add(RemoteAddress);
 
-          // Show Counters only for Active and non-conole sessions
-          if (ConnectState = WTSActive) and (WinStationName <> 'Console') then
+          // Show Counters only for Active and non-console sessions
+          if (ConnectState = WTSActive) and (WdFlag > WD_FLAG_CONSOLE) then
           begin
             SubItems.Add(IntToStr(IncomingBytes));
             SubItems.Add(IntToStr(OutgoingBytes));
@@ -301,14 +323,30 @@ begin
         end;
       end;
     end;
-    SessionsListView.Items.BeginUpdate;
-    UsersListView.Items.BeginUpdate;
-  end
-  else begin
-//    MessageBoxW(Handle, 'Error connecting to server', PWideChar(TerminalServer.Server), MB_OK);
+    SessionsListView.Items.EndUpdate;
+    UsersListView.Items.EndUpdate;
   end;
-  TerminalServer.Free;
+//  TerminalServer.Free;
+//  MessageBox(0, 'we have enumerated all', 'debug', MB_OK);
 end;
+
+procedure TMainForm.Button2Click(Sender: TObject);
+var
+  pWinStationName: PWideChar;
+  pUserName: PWideChar;
+  SessionId: Cardinal;
+  WdFlag: Cardinal;
+  Res: Boolean;
+begin
+  GetMem(pWinStationName, 66);
+  GetMem(pUserName, 21);
+  Res := QueryCurrentWinStation(pWinStationName, pUserName, SessionId, WdFlag);
+  MessageBoxW(0, pWinStationName, pUserName, MB_OK);
+  MessageBox(0, PChar(Format('WinStationName: %s, UserName: %s, SessionId: %d, WdFlag: %d', [pWinStationName, pUserName, SessionId, WdFlag])), 'QueryCurrentWinStation', MB_OK);
+  FreeMem(pWinStationName);
+  FreeMem(pUserName);
+end;
+
 
 procedure TMainForm.UpdateTotals;
 begin
@@ -354,9 +392,7 @@ var
   i: Integer;
   c: Integer;
 begin
-{$IFDEF FASTMM}
   ReportMemoryLeaksOnShutDown := DebugHook <> 0;
-{$ENDIF FASTMM}
   IconRec.Server := 11;
   IconRec.User := 12;
   IconRec.Network := 13;
@@ -418,6 +454,10 @@ begin
       end;
     end;
   end;
+
+  TerminalServer := TJwTerminalServer.Create;
+  TerminalServer.Server := strServer;
+  TerminalServer.OnSessionEvent := OnTerminalServerEvent;  
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
@@ -432,6 +472,19 @@ begin
         // Free ColumnClicked
         TColumnClicked(Tag).Free;
       end;
+    end;
+  end;
+  TerminalServer.Free;
+end;
+
+procedure TMainForm.OnTerminalServerEvent(Sender: TObject);
+var ATerminalServer: TJwTerminalServer;
+begin
+  with (Sender as TJwTerminalServer) do
+  begin
+    if LastEventFlag < WTS_EVENT_STATECHANGE then
+    begin
+
     end;
   end;
 end;
