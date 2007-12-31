@@ -59,7 +59,8 @@ const
   WD_FLAG_CONSOLE_XP = $24; // XP
   WD_FLAG_CONSOLE = $34; // 2003/2008
   WD_FLAG_RDP = $36; // XP/2003/2008
-  WD_FLAG_ICA = $6E; // Presentation Server 4, other versions could be different!
+  WD_FLAG_ICA = $6E; // Citrix Presentation Server
+//  (value from Citrix PS4, other versions could be different!)
 
   // Class constants for WinStationQueryInformationW
   // These names were found in winsta.dll because they have
@@ -73,7 +74,7 @@ const
   WdConfig = 3;
   WinStationClient = 1;
   WinStationConfig = 6;
-//  WinStationInformation = 8;  (defined in other unit)
+  WinStationInformation = 8;
   WinStationProductId = 27;
   WinStationRemoteAddress = 29;
 
