@@ -41,6 +41,8 @@ type
 
   { forward declarations }
   TJwTerminalServer = class;
+  TJwWTSEventThread = class;
+//  TJwWTSEnumServersThread = class;
   TJwWTSSession = class;
   TJwWTSSessionList = class;
   TJwWTSProcess = class;
@@ -51,19 +53,33 @@ type
     FComputerName: TJwString;
     FConnected: Boolean;
     FIdleProcessName: TJwString;
-    FServer: TJwString;
+    FLastEventFlag: DWORD;
+    FOnSessionConnect: TNotifyEvent;
+    FOnSessionCreate: TNotifyEvent;
+    FOnSessionDelete: TNotifyEvent;
+    FOnSessionDisconnect: TNotifyEvent;
+    FOnSessionEvent: TNotifyEvent;
+    FOnLicenseStateChange: TNotifyEvent;
+    FOnSessionLogon: TNotifyEvent;
+    FOnSessionLogoff: TNotifyEvent;
+    FOnSessionStateChange: TNotifyEvent;
+    FOnWinStationRename: TNotifyEvent;
     FServerHandle: THandle;
     FServers: {$IFDEF UNICODE}TWideStringList{$ELSE}TStringList{$ENDIF UNICODE};
     FSessions: TJwWTSSessionList;
     FProcesses: TJwWTSProcessList;
+    FTerminalServerEventThread: TThread;
+    FServer: TJwString;
     function GetIdleProcessName: TJwString;
     function GetServers: {$IFDEF UNICODE}TWideStringList{$ELSE}TStringList{$ENDIF UNICODE};
     function GetServer: TJwString;
+    function GetWinStationName(const SessionId: DWORD): TJwString;
     procedure SetServer(const Value: TJwString);
   protected
-    procedure Close;
-    function Open: THandle;
+    procedure FireEvent(EventFlag: DWORD);
   public
+    procedure Connect;
+    procedure Disconnect;
     property ComputerName: TJwString read FComputerName;
     property Connected: Boolean read FConnected;
     constructor Create;
@@ -74,6 +90,17 @@ type
     function EnumerateSessions: boolean;
     function FileTime2DateTime(FileTime: TFileTime): TDateTime;
     property IdleProcessName: TJwString read GetIdleProcessName;
+    property LastEventFlag: DWORD read FLastEventFlag;
+    property OnSessionEvent: TNotifyEvent read FOnSessionEvent write FOnSessionEvent;
+    property OnSessionConnect: TNotifyEvent read FOnSessionConnect write FOnSessionConnect;
+    property OnSessionCreate: TNotifyEvent read FOnSessionCreate write FOnSessionCreate;
+    property OnSessionDelete: TNotifyEvent read FOnSessionDelete write FOnSessionDelete;
+    property OnSessionDisconnect: TNotifyEvent read FOnSessionDisconnect write FOnSessionDisconnect;
+    property OnLicenseStateChange: TNotifyEvent read FOnLicenseStateChange write FOnLicenseStateChange;
+    property OnSessionLogon: TNotifyEvent read FOnSessionLogon write FOnSessionLogon;
+    property OnSessionLogoff: TNotifyEvent read FOnSessionLogoff write FOnSessionLogoff;
+    property OnWinStationRename: TNotifyEvent read FOnWinStationRename write FOnWinStationRename;
+    property OnSessionStateChange: TNotifyEvent read FOnSessionStateChange write FOnSessionStateChange;
     property Processes: TJwWTSProcessList read FProcesses;
     property Server: TJwString read GetServer write SetServer;
     property ServerHandle: THandle read FServerHandle;
@@ -84,6 +111,27 @@ type
     function UnicodeStringToString(const AUnicodeString: UNICODE_STRING):
       TJwString;
   end;
+
+  TJwWTSEventThread = class(TThread)
+  private
+    FOwner: TJwTerminalServer;
+    FEventFlag: DWORD;
+  protected
+  public
+    constructor Create(CreateSuspended: Boolean; AOwner: TJwTerminalServer);
+    procedure DispatchEvent;
+    procedure Execute; override;
+  end;
+
+{  TJwWTSEnumServersThread = class(TThread)
+  private
+    FOwner: TJwTerminalServer;
+  protected
+  public
+    constructor Create(CreateSuspended: Boolean; AOwner: TJwTerminalServer);
+    procedure Execute; override;
+  end;}
+
 
   TJwWTSSession = class(TPersistent)
   private
@@ -124,10 +172,13 @@ type
     FOutgoingCompressBytes: DWORD;
     FOutgoingFrames: DWORD;
     FProtocolTypeStr: TJwString;
+    FRemoteAddress: TJwString;
+    FRemotePort: WORD;
     FSessionId: TJwSessionId;
 //    FState: TJwState;
     FUsername: TJwString;
     FVerticalResolution: DWORD;
+    FWdFlag: DWORD;
     FWdName: TJwString;
     FWinStationName: TJwString;
     FWorkingDirectory: TJwString;
@@ -223,12 +274,15 @@ type
     function PostMessage(const AMessage: TJwString; const ACaption: TJwString;
       const uType: DWORD): DWORD;
     function ProtocolTypeToStr(AProtocolType: DWORD): TJwString;
+    property RemoteAddress: TJwString read FRemoteAddress;
+    property RemotePort: WORD read FRemotePort;
     function SendMessage(const AMessage: TJwString; const ACaption: TJwString;
       const uType: DWORD; const ATimeOut: DWORD): DWORD;
     property SessionId: TJwSessionId read FSessionId;
     function Shadow: boolean;
     property Username: TJwString read FUsername;
     property VerticalResolution: DWORD read FVerticalResolution;
+    property WdFlag: DWORD read FWdFlag;
     property WinStationDriverName: TJwString read FWdName;
     property WinStationName: TJwString read FWinStationName;
     property WorkingDirectory: TJwString read FWorkingDirectory;
@@ -367,7 +421,7 @@ begin
     Result := lpMultiByteStr;
 
     // Cleanup
-    FreeMem(lpMultiByteStr); 
+    FreeMem(lpMultiByteStr);
 {$ENDIF}
   end;
 end;
@@ -377,18 +431,21 @@ begin
   inherited Create;
   FSessions := TJwWTSSessionList.Create(True);
   FSessions.Owner := Self;
+
   FProcesses := TJwWTSProcessList.Create(True);
   FProcesses.Owner := Self;
 
-  //TODO: FServers := ...Create or := Nil;
+  FTerminalServerEventThread := nil;
+  FServers := nil;
 end;
 
 destructor TJwTerminalServer.Destroy;
+var EventFlag: DWORD;
 begin
   // Close connection
   if Connected then
   begin
-    Close;
+    Disconnect;
   end;
 
   // Free the SessionList
@@ -410,6 +467,104 @@ begin
   end;
 
   inherited;
+end;
+
+
+{
+The following table lists the events that trigger the different flags.
+Events are listed across the top and the flags are listed down the
+left column. An “X” indicates that the event triggers the flag.
++-------------+------+------+------+-------+----------+-----+------+-------+
+| EventFlag   |Create|Delete|Rename|Connect|Disconnect|Logon|Logoff|License|
++-------------+------+------+------+-------+----------+-----+------+-------+
+| Create      | X    |      |      | X     |          |     |      |       |
++-------------+------+------+------+-------+----------+-----+------+-------+
+| Delete      |      | X    |      |       |          |     | X    |       |
++-------------+------+------+------+-------+----------+-----+------+-------+
+| Rename      |      |      | X    |       |          |     |      |       |
++-------------+------+------+------+-------+----------+-----+------+-------+
+| Connect     |      |      |      | X     |          |     |      |       |
++-------------+------+------+------+-------+----------+-----+------+-------+
+| Disconnect  |      |      |      |       | X        |     |      |       |
++-------------+------+------+------+-------+----------+-----+------+-------+
+| Logon       |      |      |      |       |          | X   |      |       |
++-------------+------+------+------+-------+----------+-----+------+-------+
+| Logoff      |      |      |      |       |          |     | X    |       |
++-------------+------+------+------+-------+----------+-----+------+-------+
+| License     |      |      |      |       |          |     |      | X     |
++-------------+------+------+------+-------+----------+-----+------+-------+
+| StateChange | X    | X    |      | X     | X        | X   | X    |       |
++-------------+------+------+------+-------+----------+-----+------+-------+
+| All         | X    | X    | X    | X     | X        | X   | X    | X     |
++-------------+------+------+------+-------+----------+-----+------+-------+
+
+An WinStation is created when a user connects. When a user logs off, the
+Winstation is deleted. When a user logs on to a disconnected session, the
+existing session is deleted and the Delete flag is triggered. When users
+connect to a disconnected session from within a session, their session is
+disconnected and the Disconnect flag is triggered instead of the Delete flag.}
+
+procedure TJwTerminalServer.FireEvent(EventFlag: Cardinal);
+begin
+  // Set LastEventFlag property
+  FLastEventFlag := EventFlag;
+
+  // The OnSessionEvent should be fired if anything happens that is session
+  // related, like statechange, logon/logoff, disconnect and (re)connect.
+  if (EventFlag > WTS_EVENT_CONNECT) and (EventFlag < WTS_EVENT_LICENSE) then
+  begin
+    if Assigned(FOnSessionEvent) then
+    begin
+      OnSessionEvent(Self);
+    end;
+  end;
+
+  if (EventFlag and WTS_EVENT_LICENSE = WTS_EVENT_LICENSE) and
+    Assigned(OnLicenseStateChange) then
+  begin
+    OnLicenseStateChange(Self);
+  end;
+  if (EventFlag and WTS_EVENT_STATECHANGE = WTS_EVENT_STATECHANGE) and
+    Assigned(FOnSessionStateChange) then
+  begin
+    OnSessionStateChange(Self);
+  end;
+  if (EventFlag and WTS_EVENT_LOGOFF = WTS_EVENT_LOGOFF) and
+    Assigned(FOnSessionLogoff) then
+  begin
+    OnSessionLogoff(Self);
+  end;
+  if (EventFlag and WTS_EVENT_LOGON = WTS_EVENT_LOGON) and
+    Assigned(FOnSessionLogon) then
+  begin
+    OnSessionLogon(Self);
+  end;
+  if (EventFlag and WTS_EVENT_DISCONNECT = WTS_EVENT_DISCONNECT) and
+    Assigned(FOnSessionDisconnect) then
+  begin
+    OnSessionDisconnect(Self);
+  end;
+  if (EventFlag and WTS_EVENT_CONNECT = WTS_EVENT_CONNECT) and
+    Assigned(FOnSessionConnect) then
+  begin
+    OnSessionConnect(Self);
+  end;
+  if (EventFlag and WTS_EVENT_RENAME = WTS_EVENT_RENAME) and
+    Assigned(FOnWinStationRename) then
+  begin
+    OnWinStationRename(Self);
+  end;
+  if (EventFlag and WTS_EVENT_DELETE = WTS_EVENT_DELETE) and
+    Assigned(FOnSessionDelete) then
+  begin
+    OnSessionDelete(Self);
+  end;
+  if (EventFlag and WTS_EVENT_CREATE = WTS_EVENT_CREATE) and
+    Assigned(FOnSessionCreate) then
+  begin
+    OnSessionCreate(Self);
+  end;
+
 end;
 
 function TJwTerminalServer.GetServer: TJwString;
@@ -437,6 +592,31 @@ begin
   else
   begin
     Result := FServer;
+  end;
+end;
+
+function TJwTerminalServer.GetWinStationName(const SessionId: DWORD): TJwString;
+var WinStationNamePtr: PWideChar;
+begin
+  GetMem(WinStationNamePtr, WINSTATIONNAME_LENGTH * SizeOf(WideChar));
+  try
+    ZeroMemory(WinStationNamePtr, WINSTATIONNAME_LENGTH * SizeOf(WideChar));
+
+    if WinStationNameFromLogonIdW(FServerHandle, SessionId,
+      WinStationNamePtr) then
+    begin
+      Result := PWideCharToJwString(WinStationNamePtr);
+    end;
+
+    // Return disconnected if WinStationName = empty
+    if Result = '' then
+    begin
+      Result := PWideCharToJwString(
+        StrConnectState(WTSDisconnected, False));
+    end;
+  finally
+    // FreeMem
+    FreeMem(WinStationNamePtr);
   end;
 end;
 
@@ -470,18 +650,13 @@ var
   DiffTime: TDiffTime;
 begin
   //TODO: FServerHandle is valid?
-  
   ProcessInfoPtr := nil;
   Count := 1;
 
-
   FProcesses.Clear;
-  FServerHandle := Open;
   if not Connected then
   begin
-    //TODO: replace by exception
-    Result := False;
-    Exit;
+    Connect;
   end;
 
   Result := WinStationGetAllProcesses(FServerHandle, 0, Count, ProcessInfoPtr);
@@ -555,6 +730,7 @@ begin
   end;
   // Cleanup
   WinStationFreeGAPMemory(0, ProcessInfoPtr, Count);
+  ProcessInfoPtr := nil;
 end;
 
 // todo: This function will removed as it will be replaced by
@@ -573,12 +749,12 @@ var Res: Bool;
   AProcess: TJwWTSProcess;
 begin
   FProcesses.Clear;
-  FServerHandle := Open;
+
   if not Connected then
   begin
-    Result := False;
-    Exit;
+    Connect;
   end;
+
   Res :=
 {$IFDEF UNICODE}
 
@@ -689,12 +865,9 @@ var SessionInfoPtr: {$IFDEF UNICODE}PJwWTSSessionInfoWArray;
   Res: Longbool;
   ASession: TJwWTSSession;
 begin
-  FServerHandle := Open;
   if not Connected then
   begin
-    //TODO: replace by exception
-    Result := False;
-    Exit;
+    Connect;
   end;
 
   Res :=
@@ -706,11 +879,6 @@ begin
       pCount);
 {$ENDIF UNICODE}
 
-
-  //TODO: test for result
-  //TODO: SessionInfoPtr = nil ???
-  //FSessions = nil?
-
   // Clear the sessionslist
   FSessions.Clear;
 
@@ -718,42 +886,78 @@ begin
   for i := 0 to pCount - 1 do
   begin
     ASession := TJwWTSSession.Create(FSessions, SessionInfoPtr^[i].SessionId,
-      SessionInfoPtr^[i].pWinStationName, TWtsConnectStateClass(SessionInfoPtr^[i].State));
+//      SessionInfoPtr^[i].pWinStationName, TWtsConnectStateClass(SessionInfoPtr^[i].State));
+      GetWinStationName(SessionInfoPtr^[i].SessionId),
+      TWtsConnectStateClass(SessionInfoPtr^[i].State));
     FSessions.Add(ASession);
   end;
 
+  WTSFreeMemory(SessionInfoPtr);
+  SessionInfoPtr := nil;
+  
   // Pass the result
   Result := Res;
-  Close;
 end;
 
-function TJwTerminalServer.Open: THandle;
+procedure TJwTerminalServer.Connect;
 begin
-  if FServer = '' then
+  if not FConnected then
   begin
-    Result := WTS_CURRENT_SERVER_HANDLE;
-    FConnected := True;
-  end
-  else
-  begin
+    if FServer = '' then
+    begin
+      FServerHandle := WTS_CURRENT_SERVER_HANDLE;
+      FConnected := True;
+    end
+    else
+    begin
+      FServerHandle :=
 {$IFDEF UNICODE}
-    Result := WTSOpenServerW(PWideChar(WideString(FServer)));
+      WTSOpenServerW(PWideChar(WideString(FServer)));
 {$ELSE}
-    //TODO: WTSOpenServerA instead of WTSOpenServer ???
-    Result := WTSOpenServer(PChar(FServer));
+      WTSOpenServerA(PChar(FServer));
 {$ENDIF}
-    FConnected := Result > 0;
+      // If WTSOpenServer fails the return value is 0
+      if FServerHandle = 0 then
+      begin
+        raise EJwsclWinCallFailedException.CreateFmtWinCall(RsWinCallFailed,
+          'Connect', ClassName, RsUNTerminalServer, 0, True,
+          'WTSOpenServer', ['FServer']);
+      end
+      else begin
+        FConnected := True;
+      end;
+    end;
+
+    if (FConnected) and (FTerminalServerEventThread = nil) then
+    begin
+      FTerminalServerEventThread := TJwWTSEventThread.Create(False, Self);
+//      MessageBox(0, 'connected and threaded', 'debug', MB_OK);
+    end;
   end;
 end;
 
-procedure TJwTerminalServer.Close;
+procedure TJwTerminalServer.Disconnect;
+var EventFlag: DWORD;
 begin
+  // Terminate the Event Thread before closing the connection.
+  if Assigned(FTerminalServerEventThread) then
+  begin
+    // Terminate Event Thread
+    FTerminalServerEventThread.Terminate;
+
+    // unblock the waiter
+    WTSWaitSystemEvent(FServerHandle, WTS_EVENT_FLUSH, EventFlag);
+    FreeAndNil(FTerminalServerEventThread);
+  end;
+
   if FServerHandle <> WTS_CURRENT_SERVER_HANDLE then
   begin
     WTSCloseServer(FServerHandle);
-    //TODO: FConnected := false; ??
-    //TODO: FServerHandle := INVALID_HANDLE_VALUE;??
   end;
+
+  FServerHandle := INVALID_HANDLE_VALUE;
+  FConnected := False;
+
 end;
 
 function TJwTerminalServer.FileTime2DateTime(FileTime: _FILETIME): TDateTime;
@@ -769,6 +973,39 @@ end;
 function TJwTerminalServer.Shutdown(AShutdownFlag: Cardinal): Boolean;
 begin
   Result := WTSShutdownSystem(FServerHandle, AShutdownFlag);
+end;
+
+constructor TJwWTSEventThread.Create(CreateSuspended: Boolean;
+  AOwner: TJwTerminalServer);
+begin
+//  MessageBox(0, 'eventthread is created', 'debug', MB_OK);
+  inherited Create(CreateSuspended);
+  FOwner := AOwner;
+  FreeOnTerminate := False;
+end;
+
+procedure TJwWTSEventThread.Execute;
+begin
+  while not Terminated do
+  begin
+//    MessageBox(0, 'thread is waiting', PChar(IntToStr(FEventFlag)), MB_OK);
+    if WTSWaitSystemEvent(FOwner.ServerHandle, WTS_EVENT_ALL, FEventFlag) then
+    begin
+//      MessageBox(0, 'thread is dispatching', PChar(IntToStr(FEventFlag)), MB_OK);
+      Synchronize(DispatchEvent);
+    end;
+    Sleep(10);
+  end;
+//  MessageBox(0, 'thread is terminated', 'debug', MB_OK);
+end;
+
+procedure TJwWTSEventThread.DispatchEvent;
+begin
+  if FEventFlag > WTS_EVENT_NONE then //) and (FEventFlag < WTS_EVENT_FLUSH) then
+  begin
+    FOwner.FireEvent(FEventFlag);
+    FEventFlag := WTS_EVENT_NONE;
+  end;
 end;
 
 destructor TJwWTSSessionList.Destroy;
@@ -904,7 +1141,7 @@ begin
   if (not Res) and (FSessionId <> 0) then
   begin
     raise EJwsclWinCallFailedException.CreateFmtWinCall(RsWinCallFailed,
-      'GetSessionInfoPtr', ClassName, RSUNTerminalServer, 0, True,
+      'GetSessionInfoPtr', ClassName, RsUNTerminalServer, 0, True,
       'WTSQuerySessionInformation', ['WTSQuerySessionInformation']);
   end;
 end;
@@ -985,7 +1222,7 @@ procedure TJwWTSSession.GetWinStationDriver;
 var WinStationDriver: _WD_CONFIGW;
   dwReturnLength: DWORD;
 begin
-  //TODO: FWdName := ''; ??
+  FWdName := '';
   // ZeroMemory
   ZeroMemory(@WinStationDriver, SizeOf(WinStationDriver));
 
@@ -994,6 +1231,7 @@ begin
     dwReturnLength) then
   begin
     FWdName := PWideCharToJwString(WinStationDriver.WdName);
+    FWdFlag := WinStationDriver.WdFlag;
   end;
 end;
 
@@ -1025,7 +1263,8 @@ begin
         lpBuffer := nil;
       end;
 
-      if FWinStationName <> 'Console' then
+//      if FWinStationName <> 'Console' then
+      if FWdFlag > WD_FLAG_CONSOLE then
       begin
         // Counter values (Status from TSAdmin)
         FIncomingBytes := WinStationInfo.IncomingBytes;
@@ -1037,8 +1276,12 @@ begin
         FOutgoingFrames := WinStationInfo.OutgoingFrames;
 
         // Calculate Compression ratio and store as formatted string
-        FCompressionRatio := Format('%1.2f',
-          [WinStationInfo.OutgoingCompressBytes / WinStationInfo.OutgoingBytes]);
+        if WinStationInfo.OutgoingBytes > 0 then // 0 division check
+        begin
+          FCompressionRatio := Format('%1.2f',
+            [WinStationInfo.OutgoingCompressBytes /
+            WinStationInfo.OutgoingBytes]);
+        end;
       end;
     end
     else if FConnectState = WTSDisconnected then
@@ -1047,9 +1290,10 @@ begin
       WinStationInfo.LastInputTime := WinStationInfo.DisconnectTime;
     end;
 
-    if FConnectState = WTSListen then
+    if FUsername = '' then
     begin
-      // Listener is not Idle
+      // A session without a user is not idle, usually these are special
+      // sessions like Listener, Services or console session 
       FIdleTimeStr := '.';
     end
     else
@@ -1129,17 +1373,15 @@ begin
   FConnectState := AConnectState;
   FConnectStateStr := PWideCharToJwString(StrConnectState(FConnectState, False));
 //  ConnectStateToStr(FConnectState);
-  if FConnectState = WTSDisconnected then
+{  if (FConnectState = WTSDisconnected) and (FWdFlag <> WD_FLAG_CONSOLE) then
   begin
-    // Disconnected sessions have no WinStationName
-    // so set this to Disconnected
+    // Disconnected sessions have no WinStationName so set this to Disconnected
     FWinStationName := FConnectStateStr;
   end
   else begin
     FWinStationName := AWinStationName;
-  end;
-
-
+  end;}
+  FWinStationName := AWinStationName;
   FApplicationName := GetSessionInfoStr(WTSApplicationName);
   FClientAddress := GetClientAddress;
   FClientBuildNumber := GetSessionInfoDWORD(WTSClientBuildNumber);
@@ -1170,6 +1412,8 @@ begin
     { not expected to work on Windows NT 4 (not tested) }
     GetWinStationDriver;
     GetWinStationInformation;
+    WinStationGetRemoteIPAddress(GetServerHandle, ASessionId, FRemoteAddress,
+      FRemotePort);
 //  end;
 end;
 
@@ -1234,11 +1478,11 @@ var pWinStationName: PWideChar;
 begin
   FOwner := AOwner;
   FSessionID := ASessionId;
-  
-  GetMem(pWinStationName, WINSTATIONNAME_LENGTH * SizeOf(WideChar));
+
+{  GetMem(pWinStationName, WINSTATIONNAME_LENGTH * SizeOf(WideChar));
   try
     ZeroMemory(pWinStationName, WINSTATIONNAME_LENGTH * SizeOf(WideChar));
-    
+
     Res := WinStationNameFromLogonIdW(GetServerHandle, FSessionId,
       pWinStationName);
     if Res then
@@ -1254,7 +1498,8 @@ begin
   finally
     // FreeMem
     FreeMem(pWinStationName);
-  end;
+  end;}
+  FWinStationName := FOwner.FOwner.GetWinStationName(ASessionId);
 
   FProcessId := AProcessId;
   FProcessName := AProcessName;
