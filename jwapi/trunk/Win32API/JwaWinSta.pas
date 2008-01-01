@@ -40,6 +40,8 @@ uses
 // Defines
 //==============================================================================
 const
+  SERVERNAME_CURRENT = 0;
+  
   // constants used for WinStationGetTermSrvCounters
   TOTAL_SESSIONS_CREATED_COUNTER = 1;
   TOTAL_SESSIONS_DISCONNECTED_COUNTER = 2;

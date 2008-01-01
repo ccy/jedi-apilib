@@ -208,6 +208,39 @@ type
     }
     function Add(AccessEntry: TJwSecurityAccessControlEntry): integer;
 
+    {@Name computes the effective access rights of a user and the ACL.
+     A better and more secure way to check access rights is to use
+     AccessCheck with MAXIMUM_ALLOWED desired access rights.
+
+     Known bug in internal Windows call:
+       This function does/may not work with inherited access control elements and
+       also can fail on some combination with deny entries!
+
+     @param(User defines a trustee that is used to get effective access rights)
+     @return(@Name returns the rights which are granted to User)
+     @raises(EJwsclWinCallFailedException will be raised if a call to
+       GetEffectiveRightsFromAcl failed)
+     }
+    function GetEffectiveRights(const User :
+       {$IFDEF UNICODE}TTrusteeW{$ELSE}TTrusteeA{$ENDIF}) : TJwAccessMask; overload;
+
+
+    {@Name computes the effective access rights of a user and the ACL.
+     A better and more secure way to check access rights is to use
+     AccessCheck with MAXIMUM_ALLOWED desired access rights.
+
+     Known bug in internal Windows call:
+       This function does/may not work with inherited access control elements and
+       also can fail on some combination with deny entries!
+
+     @param(User defines a SecurityID that is used to get effective access rights.
+       This parameter can be nil to use the current user of thread or process instead.)
+     @return(@Name returns the rights which are granted to User)
+     @raises(EJwsclWinCallFailedException will be raised if a call to
+       GetEffectiveRightsFromAcl failed)
+     }
+    function GetEffectiveRights(const User : TJwSecurityId) : TJwAccessMask; overload;
+
     {@Name returns the first ACE from the list.
      @return(The first ACE or if the list is empty @Name returns nil.)
      }
@@ -284,17 +317,7 @@ type
     }
     function IsCanonical: boolean;
 
-    {@Name rearranges the entries of the list to make the list canonical.
 
-     The following list shows a access control list in canonical order:
-      @orderedlist(
-      @item deny ACE   (direct)
-      @item allow ACE  (direct)
-      @item deny ACE   (inherited)
-      @item allow ACE  (inherited)
-      )
-    }
-    procedure MakeCanonical;
 
     {@Name compares two ACL and returns true if they are equal.
      This method uses FindEqualACE to compare two access control entries.
@@ -333,6 +356,15 @@ type
     {@Name returns a humand readable text that contains information about this ACL.}
     property Text: TJwString Read GetText;
 
+    {@Name gets or sets or gets the revision of the ACL.
+     The version is used to set the ACL structure revision in Create_PACL.
+     The revision version is always updated to the highest ACE revision version.
+
+     Can be one of the revision levels:
+     ACL_REVISION, ACL_REVISION1, ACL_REVISION2, ACL_REVISION3, ACL_REVISION4 or ACL_REVISION_DS
+
+     Default value is ACL_REVISION.
+     }
     property Revision : Cardinal read fRevision write fRevision;
   end;
 
@@ -369,6 +401,18 @@ type
      The caller must free the newly created DACL.
     }
     function GetExplicit: TJwDAccessControlList;
+
+        {@Name rearranges the entries of the list to make the list canonical.
+
+     The following list shows a access control list in canonical order:
+      @orderedlist(
+      @item deny ACE   (direct)
+      @item allow ACE  (direct)
+      @item deny ACE   (inherited)
+      @item allow ACE  (inherited)
+      )
+    }
+    procedure MakeCanonical;
   end;
 
   {@Name provides methods for an audit access control list.
@@ -550,7 +594,7 @@ type
     @param(Flags retrieves the ACE flags as a set)
     @param(AccessMask retrieves the access mask like GENERIC_ALL)
     @param(SID retrieves the ACE to be allowed or denied. It can be nil)
-    @param(Revision Defines the revision level of the ACE. Can be one of the revision levels.
+    @param(Revision Defines the revision level of the ACE. Can be one of the revision levels:
           ACL_REVISION, ACL_REVISION1, ACL_REVISION2, ACL_REVISION3, ACL_REVISION4 or ACL_REVISION_DS)
     @param(ownSID defines whether the aSID is freed automatically on end or not)
 
@@ -731,11 +775,16 @@ type
 
     property Header : TAceHeader read fHeader write fHeader;
 
-    {@Name gets or sets the revision of the ACE.}
+    {@Name gets or sets or gets the revision of the ACE
+     Can be one of the revision levels:
+          ACL_REVISION, ACL_REVISION1, ACL_REVISION2, ACL_REVISION3, ACL_REVISION4 or ACL_REVISION_DS
+    }
     property Revision : Cardinal read fRevision write fRevision;
 
+    {not used}
     property Ignore: boolean Read fIgnore Write fIgnore;
 
+    {@Name defines user data that can be used to attach used defined data}
     property UserData : Pointer read fUserData write fUserData;
   end;
 
@@ -1061,6 +1110,8 @@ type
       write SetMandatoryPolicy;
   end;
 
+  function JwFormatAccessRights(const Access : Cardinal;
+     RightsMapping : Array of TJwRightsMapping) : TJwString;
 
 {$ENDIF SL_IMPLEMENTATION_SECTION}
 
@@ -1075,6 +1126,22 @@ uses Math, JwsclEnumerations;
 
 {$IFNDEF SL_INTERFACE_SECTION}
 
+function JwFormatAccessRights(const Access : Cardinal;
+     RightsMapping : Array of TJwRightsMapping) : TJwString;
+var i : Integer;
+begin
+  for i := low(RightsMapping) to high(RightsMapping) do
+  begin
+    if Access and RightsMapping[i].Right =
+      RightsMapping[i].Right then
+      Result := Result + '[X] '
+    else
+      Result := Result + '[ ] ';
+
+    //names may vary depeding on resource string contents
+    Result := Result + RightsMapping[i].Name + #13#10;
+  end;
+end;
 
 
 
@@ -1409,8 +1476,8 @@ begin
       else
       if Items[i] is TJwDiscretionaryAccessControlEntryDeny then
         bResult := AddAccessDeniedAceEx(Result, Items[i].Revision,
-          TJwEnumMap.ConvertAceFlags(
-          Items[i].Flags), Items[i].AccessMask, Items[i].SID.SID)
+          TJwEnumMap.ConvertAceFlags(Items[i].Flags),
+          Items[i].AccessMask, Items[i].SID.SID)
       else
       if Items[i] is TJwAuditAccessControlEntry then
       begin
@@ -1476,6 +1543,48 @@ function TJwSecurityAccessControlList.GetItem(idx: integer):
 TJwSecurityAccessControlEntry;
 begin
   Result := inherited Get(idx);
+end;
+
+function TJwSecurityAccessControlList.GetEffectiveRights(const User :
+       {$IFDEF UNICODE}TTrusteeW{$ELSE}TTrusteeA{$ENDIF}) : TJwAccessMask;
+var ACL : PACL;
+    i : Integer;
+begin
+  result := 0;
+
+  ACL := Self.Create_PACL;
+  try
+    if {$IFDEF UNICODE}GetEffectiveRightsFromAclW{$ELSE}GetEffectiveRightsFromAclA{$ENDIF}
+      (ACL,//__in   PACL pacl,
+      @User,//__in   PTRUSTEE pTrustee,
+      result//__out  PACCESS_MASK pAccessRights
+      ) <> ERROR_SUCCESS then
+    begin
+       raise EJwsclWinCallFailedException.CreateFmtEx(
+          RsWinCallFailed,
+           'GetEffectiveRights', ClassName, RsUNAcl, 0, true,
+           ['GetEffectiveRightsFromAcl']);
+    end;
+  finally
+    Free_PACL(ACL);
+  end;
+end;
+
+function TJwSecurityAccessControlList.GetEffectiveRights
+  (const User : TJwSecurityId) : TJwAccessMask;
+var Trust : {$IFDEF UNICODE}TTrusteeW{$ELSE}TTrusteeA{$ENDIF};
+    Sid : PSID;
+begin
+  ZeroMemory(@Trust, sizeof(Trust));
+
+  if not Assigned(User) then
+    {$IFDEF UNICODE}BuildTrusteeWithNameW{$ELSE}BuildTrusteeWithNameA{$ENDIF}
+     (@Trust, 'CURRENT_USER')
+  else
+  {$IFDEF UNICODE}BuildTrusteeWithSidW{$ELSE}BuildTrusteeWithSidA{$ENDIF}
+   (@Trust, User.Sid);
+
+  result := GetEffectiveRights(Trust);
 end;
 
 function TJwSecurityAccessControlList.Add(AccessEntry:
@@ -2639,11 +2748,15 @@ begin
 
   tempACL1 := TJwSecurityAccessControlList.Create;
   tempACL1.Assign(Self);
-  tempACL1.MakeCanonical;
+
+  if tempACL1 is TJwDAccessControlList then
+   (tempACL1 as TJwDAccessControlList).MakeCanonical;
 
   tempACL2 := TJwSecurityAccessControlList.Create;
   tempACL2.Assign(AccessControlListInstance);
-  tempACL2.MakeCanonical;
+
+  if tempACL1 is TJwDAccessControlList then
+    (tempACL2 as TJwDAccessControlList).MakeCanonical;
 
   for i := 0 to tempACL1.Count - 1 do
   begin
@@ -2723,16 +2836,29 @@ begin
   Result := True;
 end;
 
-procedure TJwSecurityAccessControlList.MakeCanonical;
+procedure TJwDAccessControlList.MakeCanonical;
 var
   ACL: TJwSecurityAccessControlList;
+
   i: integer;
+
+  ACE : TJwSecurityAccessControlEntry;
+  OldList : TJwSecurityAccessControlList;
+  OldOwns : Boolean;
 begin
-  ACL := TJwSecurityAccessControlList.Create;
-  for i := 0 to Count - 1 do
+  ACL := TJwDAccessControlList.Create;
+
+  OldOwns := OwnsObjects;
+  OwnsObjects := false;
+  for i := Count - 1 downto 0 do
   begin
-    ACL.Add(Items[i]); //rearrange ACE in ACL
+    ACE := Items[i];
+    //detach from old list
+    Remove(i);
+
+    ACL.Add(ACE); //rearrange ACE in ACL
   end;
+  OwnsObjects := OldOwns;
 
   Assign(ACL);
   ACL.Free;

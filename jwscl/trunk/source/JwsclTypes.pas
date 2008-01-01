@@ -931,6 +931,23 @@ type
 
   TJwSharedHandle = (shShared, shOwned);
 
+  TAuthZResourceManagerFlag =
+    (authRM_Default,
+     authRM_NoAudit,
+     authRM_InitializeUnderImpersonation
+     );
+  TAuthZResourceManagerFlags = set of TAuthZResourceManagerFlag;
+
+  TAuthZSidContextFlag =
+    (
+     authZSF_Default,
+     authZSF_SkipTokenGroups,
+     authZSF_RequireS4ULogon,
+     authZSF_ComputePrivleges
+     );
+  TAuthZSidContextFlags = set of TAuthZSidContextFlag;
+
+
 {$ENDIF SL_IMPLEMENTATION_SECTION}
 
 {$IFNDEF SL_OMIT_SECTIONS}

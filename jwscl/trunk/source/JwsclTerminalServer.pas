@@ -847,7 +847,7 @@ begin
   else
   begin
     //TODO: replace by exception
-    MessageBox(0, PChar(SysErrorMessage(hResult(GetLastError))), 'WTSEnumerateServers', MB_OK);
+    MessageBox(0, TJwPChar(SysErrorMessage(hResult(GetLastError))), 'WTSEnumerateServers', MB_OK);
   end;
 
   if ServerInfoPtr <> nil then

@@ -239,6 +239,10 @@ const
   RsSecureObjectsPrivilegeSecurityMissing = 'To obtain audit information the' +
     ' privilege SE_SECURITY_NAME must be held by the token. But it could not b' +
     'e found and activated! (%s)';
+  RsSecureObjectsPrivilegeSecurityMissing2 = 'To obtain audit information the' +
+    ' privilege SE_SECURITY_NAME must be held by the token. But it could not b' +
+    'e found! ';
+
   RsSecureObjectsParameterSiMissesDacl = 'Parameter aSecurityInfo must be [s' +
     'if_DACL_SECURITY_INFORMATION] or [siSaclSecurityInformation]. ';
   RsSecureObjectsNotEnoughMemoryForThreadData = 'Not enough memory to alloca' +

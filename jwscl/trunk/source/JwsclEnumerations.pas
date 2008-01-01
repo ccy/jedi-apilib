@@ -156,6 +156,16 @@ type
     class function ConvertMandatoryPolicyFlags(
       const FlagBits: Cardinal): TJwMandatoryPolicyFlagSet; overload;
 
+    class function ConvertAuthZResourceManager(
+      const FlagSet: TAuthZResourceManagerFlags): Cardinal; overload;
+    class function ConvertAuthZResourceManager(
+      const FlagBits: Cardinal): TAuthZResourceManagerFlags; overload;
+
+    class function ConvertAuthZSidContextFlags(
+      const FlagSet: TAuthZSidContextFlags): Cardinal; overload;
+    class function ConvertAuthZSidContextFlags(
+      const FlagBits: Cardinal): TAuthZSidContextFlags; overload;
+
   end;
 
 
@@ -382,6 +392,21 @@ const
    ,SYSTEM_MANDATORY_LABEL_NO_READ_UP
    ,SYSTEM_MANDATORY_LABEL_NO_EXECUTE_UP
    );
+
+  AuthZResourceManagerValues : array[TAuthZResourceManagerFlag] of Cardinal = (
+   0
+   ,AUTHZ_RM_FLAG_NO_AUDIT
+   ,AUTHZ_RM_FLAG_INITIALIZE_UNDER_IMPERSONATION
+   );
+
+  AuthZSidContextValues : array[TAuthZSidContextFlag] of Cardinal = (
+   0
+   ,AUTHZ_SKIP_TOKEN_GROUPS
+   ,AUTHZ_REQUIRE_S4U_LOGON
+   ,$8//,AUTHZ_COMPUTE_PRIVILEGES
+   );
+
+
 
 { TJwEnumMap }
 
@@ -851,10 +876,59 @@ begin
     end;
 end;
 
+class function TJwEnumMap.ConvertAuthZResourceManager(
+  const FlagSet: TAuthZResourceManagerFlags): Cardinal;
+var I : TAuthZResourceManagerFlag;
+begin
+  result := 0;
+  for I := Low(TAuthZResourceManagerFlag) to High(TAuthZResourceManagerFlag) do
+  begin
+    if I in FlagSet then
+      result := result or AuthZResourceManagerValues[I];
+  end;
+end;
+
+class function TJwEnumMap.ConvertAuthZResourceManager(
+  const FlagBits: Cardinal): TAuthZResourceManagerFlags;
+var I : TAuthZResourceManagerFlag;
+begin
+  result := [];
+  for I := Low(TAuthZResourceManagerFlag) to High(TAuthZResourceManagerFlag) do
+  begin
+    if (FlagBits and AuthZResourceManagerValues[I]) = AuthZResourceManagerValues[I] then
+      Include(result, I);
+  end;
+end;
+
+class function TJwEnumMap.ConvertAuthZSidContextFlags(
+ const FlagSet: TAuthZSidContextFlags): Cardinal;
+var I : TAuthZSidContextFlag;
+begin
+  result := 0;
+  for I := Low(TAuthZSidContextFlag) to High(TAuthZSidContextFlag) do
+  begin
+    if I in FlagSet then
+      result := result or AuthZSidContextValues[I];
+  end;
+end;
+
+class function TJwEnumMap.ConvertAuthZSidContextFlags(
+  const FlagBits: Cardinal): TAuthZSidContextFlags; 
+var I : TAuthZSidContextFlag;
+begin
+  result := [];
+  for I := Low(TAuthZSidContextFlag) to High(TAuthZSidContextFlag) do
+  begin
+    if (FlagBits and AuthZSidContextValues[I]) = AuthZSidContextValues[I] then
+      Include(result, I);
+  end;
+end;
 
 {$ENDIF SL_INTERFACE_SECTION}
 
 {$IFNDEF SL_OMIT_SECTIONS}
+
+
 
 initialization
 {$ENDIF SL_OMIT_SECTIONS}

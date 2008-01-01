@@ -53,7 +53,13 @@ type
   TJwHashCodeMethod = function(val: Pointer; size: integer): int64 of object;
 
 
-type {@Name contains information about a security descriptor.
+type
+  TJwSecurityDescriptor = class;
+
+  TJwSecurityDescriptorArray = array of TJwSecurityDescriptor;
+
+
+  {@Name contains information about a security descriptor.
       It does not hold a pointer to a security descriptor.
        It is created on demand.
       }
