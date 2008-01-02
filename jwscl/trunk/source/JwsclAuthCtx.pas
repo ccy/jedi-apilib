@@ -124,6 +124,7 @@ type
   TJwAccessMaskArray = array of TJwAccessMask;
   TJwCardinalArray = array of Cardinal;
 
+
   TJwAuthZAccessReply = class
   protected
     fGrantedAccessMask : TJwAccessMaskArray;
@@ -134,6 +135,19 @@ type
 
     property GrantedAccessMask : TJwAccessMaskArray read fGrantedAccessMask;
     property SaclEvaluationResults : TJwCardinalArray read fSaclEvaluationResults;
+
+    {@Name contains the error of the access check.
+     Values are from
+      http://msdn2.microsoft.com/en-us/library/aa376321(VS.85).aspx
+     @unorderedlist(
+      @item(ERROR_SUCCESS  All the access bits, not including MAXIMUM_ALLOWED, are granted and the GrantedAccessMask member is not zero.)
+      @item(ERROR_PRIVILEGE_NOT_HELD DesiredAccess includes ACCESS_SYSTEM_SECURITY and the client does not have SeSecurityPrivilege.)
+      @item(ERROR_ACCESS_DENIED Includes each of the following:
+    * The requested bits are not granted.
+    * MaximumAllowed bit is on and granted access is zero.
+    * DesiredAccess is zero.)
+      )
+     }
     property Error : TJwCardinalArray read fError;
   end;
 
@@ -219,6 +233,13 @@ type
     destructor Destroy;
 
     {@Name
+     @param(Request receives a class that contains information about the
+      access check procedure. This instance is automatically freed
+      if no exception was raised and Request.Shared is shOwned.
+
+      Known Bug: If Request.ObjectTypeList is none nil the AuthZAccessCheck
+        will always return "Invalid parameter".  
+      )
      @param(OptionalSecurityDescriptorArray defines additional security descriptor
       which are used for the access check. They a simply added at the end
       of the primary security descriptor (logical order).
