@@ -81,15 +81,15 @@ type
   TOnAuthzComputeGroupsCallback = function(
     hAuthzClientContext : AUTHZ_CLIENT_CONTEXT_HANDLE;
     Args : Pointer;
-    out pSidAttrArray : array of SID_AND_ATTRIBUTES; //PSID_AND_ATTRIBUTES* pSidAttrArray,
-    out pSidCount : DWORD;
-    out pRestrictedSidAttrArray : array of SID_AND_ATTRIBUTES; //PSID_AND_ATTRIBUTES* pRestrictedSidAttrArray,
-    out pRestrictedSidCount : DWORD
+    var pSidAttrArray : array of SID_AND_ATTRIBUTES; //PSID_AND_ATTRIBUTES* pSidAttrArray,
+    var pSidCount : DWORD;
+    var pRestrictedSidAttrArray : array of SID_AND_ATTRIBUTES; //PSID_AND_ATTRIBUTES* pRestrictedSidAttrArray,
+    var pRestrictedSidCount : DWORD
     ) : Boolean of object; stdcall;
 
   TOnAuthzFreeGroupsCallback = procedure(
     const pSidAttrArray : array of SID_AND_ATTRIBUTES
-    ) of object; stdcall;
+    ){of object}; stdcall;
 
   TJwObjectTypeArray = array of TObjectTypeList;
 
@@ -158,9 +158,26 @@ type
     fOnAuthzComputeGroupsCallback : TOnAuthzComputeGroupsCallback;
     fOnAuthzAccessCheckCallback : TOnAuthzAccessCheckCallback;
   protected
-    procedure OnInternalAuthzFreeGroupsCallback(
+    {procedure OnInternalAuthzFreeGroupsCallback(
         const pSidAttrArray : array of SID_AND_ATTRIBUTES
-        ); stdcall;
+        ); stdcall;}
+
+    function OnInternalAuthzComputeGroupsCallback(
+      hAuthzClientContext : AUTHZ_CLIENT_CONTEXT_HANDLE;
+      Args : Pointer;
+      var pSidAttrArray : array of SID_AND_ATTRIBUTES; //PSID_AND_ATTRIBUTES* pSidAttrArray,
+      var pSidCount : DWORD;
+      var pRestrictedSidAttrArray : array of SID_AND_ATTRIBUTES; //PSID_AND_ATTRIBUTES* pRestrictedSidAttrArray,
+      var pRestrictedSidCount : DWORD
+      ) : Boolean; stdcall;
+
+    function OnInternalAuthzAccessCheckCallback(
+      hAuthzClientContext : AUTHZ_CLIENT_CONTEXT_HANDLE;
+      pAce : PACE_HEADER;
+      pArgs : Pointer;
+      var pbAceApplicable : Boolean) : Boolean;stdcall;
+
+
   public
     constructor Create(
       const Name : WideString;
@@ -190,6 +207,16 @@ type
 
   TAuthZAccessCheckResultHandle = AUTHZ_ACCESS_CHECK_RESULTS_HANDLE;
 
+  TJwAuthContext = class;
+
+  PJwCallbackData = ^TJwCallbackData;
+  TJwCallbackData = record
+    Hd : Integer;
+    Context : TJwAuthContext;
+    RM : TJwAuthResourceManager;
+    UserData : Pointer;
+  end;
+
   TJwAuthContext = class
   protected
     fHandle : TAuthZClientContextHandle;
@@ -202,7 +229,10 @@ type
     fContextInfoSource,
     fContextInfoAll,
     fContextInfoAuthenticationId : Pointer;
+    fAuthResourceManager : TJwAuthResourceManager;
+    fDynamicGroupArgs : Pointer;
 
+    fCallbackData : PJwCallbackData;
   protected
     function GetInformationFromContext(
       InfoClass : AUTHZ_CONTEXT_INFORMATION_CLASS) : Pointer;
@@ -223,6 +253,18 @@ type
       const Token : TJwSecurityToken;
       const ExpirationTime : Int64;
       const DynamicGroupArgs : Pointer); overload;
+
+
+    { @param(Sid
+
+      @raises(EJwsclWinCallFailedException will be raised if a call to
+      AuthzInitializeContextFromSid failed.
+      If GetLastError returns ERROR_INVALID_BLOCK, the reason is because
+       a callback data block (TJwCallbackData) is invalid. This can only
+       happen if someone changed the internal instance data.
+      )
+
+    }
     constructor CreateBySid(
       const ResourceManager : TJwAuthResourceManager;
       Flags : TAuthZSidContextFlags;
@@ -230,7 +272,57 @@ type
       const ExpirationTime : Int64;
       const DynamicGroupArgs : Pointer); overload;
 
+
+
+    {@Name creates a new security context using an existing one.
+     This function can also add additional positive and negative Sids to
+     the context.
+
+     @param(Sids receives a list of Sids and its Attributes to be used as
+       new groups in the security context. (like TokenGroups in a token).
+
+       The attributes (AttributesType) must be set
+        to SE_GROUP_ENABLED (sidaGroupOwner) or
+        SE_GROUP_USE_FOR_DENY_ONLY (sidaGroupUseForDenyOnly); otherwise
+       the call to a WinAPI function wil fail with INVALID_PARAMETERS (87).
+
+       Origin: http://msdn2.microsoft.com/en-us/library/aa375798.aspx
+       @unorderedlist(
+        @item(SE_GROUP_ENABLED - adds a group to the security context.
+              It will be treated as if the User has entered a group.)
+        @item(SE_GROUP_USE_FOR_DENY_ONLY - adds a group to the security context,
+          but this group is only used for deny check. All positive ACE for
+          this group in a DACL are ignored. Only Deny ACEs are recognized
+          and can turn off other positive ACEs of other groups.)
+        )
+       )
+     @param(RestrictedSids receives a list of Sids and its Attributes to be used as
+       new deny only groups in the security context. (like TokenGroups in a token).
+
+       The attributes (AttributesType) must be set
+        to SE_GROUP_ENABLED (sidaGroupOwner) or
+        SE_GROUP_USE_FOR_DENY_ONLY (sidaGroupUseForDenyOnly); otherwise
+       the call to a WinAPI function wil fail with INVALID_PARAMETERS (87).
+
+       Origin: http://msdn2.microsoft.com/en-us/library/aa375798.aspx
+       @unorderedlist(
+        @item(SE_GROUP_ENABLED - (probably) the same as parameter SID and
+            attribute SE_GROUP_USE_FOR_DENY_ONLY.)
+        @item(SE_GROUP_USE_FOR_DENY_ONLY - Results alway in Access Denied.
+            However do not rely on me - maybe somebody with
+            internal knowledge can comment it.)
+       )
+    }
+    constructor CreateAndAddSids(
+      const AuthContext : TJwAuthContext;
+      const Sids : TJwSecurityIdList;
+      const RestrictedSids : TJwSecurityIdList);
+
+
+
     destructor Destroy;
+
+
 
     {@Name
      @param(Request receives a class that contains information about the
@@ -246,8 +338,6 @@ type
        The canonical ACE order is not enforced.
       Deny ACE in the optional security descriptors may be useless if a positive
       ACE could be found in the primary security descriptor.
-
-     Known Bug: Only the first security descriptor may be recognized!
      )
     }
     procedure AccessCheck(
@@ -272,9 +362,11 @@ type
     property ContextInfoSource : Pointer read fContextInfoSource;
     property ContextInfoAll : Pointer read fContextInfoAll;
     property ContextInfoAuthenticationId : Pointer read fContextInfoAuthenticationId;
+
+    property AuthResourceManager : TJwAuthResourceManager read fAuthResourceManager;
   end;
 
-{$ENDIF SL_IMPLEMENTATION_SECTION}
+  {$ENDIF SL_IMPLEMENTATION_SECTION}
 
 {$IFNDEF SL_OMIT_SECTIONS}
 implementation
@@ -287,7 +379,60 @@ uses Math, JwsclEnumerations;
 
 {$ENDIF SL_INTERFACE_SECTION}
 
+const HEADERMAGIC = 12345678;
+ 
+function OnInternalAuthzComputeGroupsCallback2(
+      hAuthzClientContext : AUTHZ_CLIENT_CONTEXT_HANDLE;
+      Args : Pointer;
+      var pSidAttrArray : array of SID_AND_ATTRIBUTES; //PSID_AND_ATTRIBUTES* pSidAttrArray,
+      var pSidCount : DWORD;
+      var pRestrictedSidAttrArray : array of SID_AND_ATTRIBUTES; //PSID_AND_ATTRIBUTES* pRestrictedSidAttrArray,
+      var pRestrictedSidCount : DWORD
+      ) : Boolean; stdcall;
+var CallbackData : PJwCallbackData;
+begin
+  CallbackData := PJwCallbackData(Args);
+  if CallbackData.Hd <> HEADERMAGIC then
+  begin
+    SetLastError(ERROR_INVALID_BLOCK);
+    result := false;
+    exit;
+  end;
 
+  if Assigned(CallbackData) and
+     Assigned(CallbackData.RM) and
+     Assigned(CallbackData.RM.OnAuthzComputeGroupsCallback) then
+    result := CallbackData.RM.OnAuthzComputeGroupsCallback(
+        hAuthzClientContext, CallbackData.UserData, pSidAttrArray,
+        pSidCount,pRestrictedSidAttrArray, pRestrictedSidCount)
+  else
+    result := false;
+end;
+
+
+function OnInternalAuthzAccessCheckCallback2(
+  hAuthzClientContext : AUTHZ_CLIENT_CONTEXT_HANDLE;
+  pAce : PACE_HEADER;
+  pArgs : Pointer;
+  var pbAceApplicable : Boolean) : Boolean;
+var CallbackData : PJwCallbackData;
+begin
+  CallbackData := PJwCallbackData(pArgs);
+  if CallbackData.Hd <> HEADERMAGIC then
+  begin
+    SetLastError(ERROR_INVALID_BLOCK);
+    result := false;
+    exit;
+  end;
+
+  if Assigned(CallbackData) and
+     Assigned(CallbackData.RM) and
+     Assigned(CallbackData.RM.OnAuthzAccessCheckCallback) then
+    result := CallbackData.RM.OnAuthzAccessCheckCallback(
+        hAuthzClientContext, pAce, CallbackData.UserData, pbAceApplicable)
+  else
+    result := false;
+end;
 
 
 { TJwAuthContext }
@@ -308,7 +453,16 @@ constructor TJwAuthContext.CreateByToken(
 var luid : TLuid;
     tempToken: TJwSecurityToken;
 begin
+  GetMem(fCallbackData, sizeof(TJwCallbackData));
+  fCallbackData.Hd := HEADERMAGIC;
+  fCallbackData.Context  := Self;
+  fCallbackData.RM := ResourceManager;
+  fCallbackData.UserData := DynamicGroupArgs;
+  
   ZeroMemory(@luid, sizeof(TLuid));
+
+  fDynamicGroupArgs := DynamicGroupArgs;
+  fAuthResourceManager := ResourceManager;
 
   if not Assigned(Token) then
     tempToken := TJwSecurityToken.CreateTokenEffective(TOKEN_READ or TOKEN_QUERY)
@@ -326,7 +480,7 @@ begin
         @fHandle//__out  PAUTHZ_CLIENT_CONTEXT_HANDLE pAuthzClientContext
       ) then
      raise EJwsclWinCallFailedException.CreateFmtEx(
-        RsWinCallFailed, 'Create', ClassName,
+        RsWinCallFailed, 'CreateByToken', ClassName,
         RsUNSid, 0, True, ['AuthzInitializeContextFromToken']);
   finally
     if not Assigned(Token) then
@@ -343,7 +497,17 @@ constructor TJwAuthContext.CreateBySid(
   const ExpirationTime : Int64;
   const DynamicGroupArgs : Pointer);
 var luid : TLuid;
+
 begin
+  GetMem(fCallbackData, sizeof(TJwCallbackData));
+  fCallbackData.Hd := HEADERMAGIC;
+  fCallbackData.Context  := Self;
+  fCallbackData.RM := ResourceManager;
+  fCallbackData.UserData := DynamicGroupArgs;
+
+  fAuthResourceManager := ResourceManager;
+  fDynamicGroupArgs := DynamicGroupArgs;
+
   ZeroMemory(@luid, sizeof(TLuid));
 
   try
@@ -353,12 +517,12 @@ begin
         ResourceManager.Handle, //__in   AUTHZ_RESOURCE_MANAGER_HANDLE AuthzResourceManager,
         @ExpirationTime, //__in   PLARGE_INTEGER pExpirationTime,
         luid,//__in   LUID Identifier,
-        DynamicGroupArgs,//__in   PVOID DynamicGroupArgs,
+        fCallbackData,//__in   PVOID DynamicGroupArgs,
         @fHandle//__out  PAUTHZ_CLIENT_CONTEXT_HANDLE pAuthzClientContext
       ) then
      raise EJwsclWinCallFailedException.CreateFmtEx(
-        RsWinCallFailed, 'Create', ClassName,
-        RsUNSid, 0, True, ['AuthzInitializeContextFromToken']);
+        RsWinCallFailed, 'CreateBySid', ClassName,
+        RsUNSid, 0, True, ['AuthzInitializeContextFromSid']);
   finally
   end;
 
@@ -372,6 +536,20 @@ constructor TJwAuthContext.CreateByContext(
   const DynamicGroupArgs: Pointer);
 var luid : TLuid;
 begin
+  if not Assigned(AuthContext) then
+    raise EJwsclNILParameterException.CreateFmtEx(
+      RsNilParameter, 'CreateByContext',
+      ClassName, RsUNSid, 0, False, ['AuthContext']);
+      
+  fAuthResourceManager := AuthContext.AuthResourceManager;
+  fDynamicGroupArgs := DynamicGroupArgs;
+
+  GetMem(fCallbackData, sizeof(TJwCallbackData));
+  fCallbackData.Hd := HEADERMAGIC;
+  fCallbackData.Context  := Self;
+  fCallbackData.RM := fAuthResourceManager;
+  fCallbackData.UserData := DynamicGroupArgs;
+
   ZeroMemory(@luid, sizeof(TLuid));
 
   if not Assigned(AuthContext) then
@@ -389,7 +567,7 @@ begin
         @fHandle//__out  PAUTHZ_CLIENT_CONTEXT_HANDLE pAuthzClientContext
       ) then
      raise EJwsclWinCallFailedException.CreateFmtEx(
-        RsWinCallFailed, 'Create', ClassName,
+        RsWinCallFailed, 'CreateByContext', ClassName,
         RsUNSid, 0, True, ['AuthzInitializeContextFromAuthzContext']);
   finally
   end;
@@ -397,10 +575,85 @@ begin
   InitProperties;
 end;
 
+
+constructor TJwAuthContext.CreateAndAddSids(
+  const AuthContext : TJwAuthContext;
+  const Sids : TJwSecurityIdList;
+  const RestrictedSids : TJwSecurityIdList);
+var luid : TLuid;
+    pSid, pRSid : PSidAndAttributesArray;
+    tSid, tRSid : TSidAndAttributes;
+
+    c1, c2 : Cardinal;
+begin
+  if not Assigned(AuthContext) then
+    raise EJwsclNILParameterException.CreateFmtEx(
+      RsNilParameter, 'CreateByContext',
+      ClassName, RsUNSid, 0, False, ['AuthContext']);
+      
+  fAuthResourceManager := AuthContext.AuthResourceManager;
+  fDynamicGroupArgs := AuthContext.fDynamicGroupArgs;
+
+  GetMem(fCallbackData, sizeof(TJwCallbackData));
+  fCallbackData.Hd := HEADERMAGIC;
+  fCallbackData.Context  := Self;
+  fCallbackData.RM := fAuthResourceManager;
+  fCallbackData.UserData := fDynamicGroupArgs;
+
+  ZeroMemory(@luid, sizeof(TLuid));
+
+
+  pSid  := nil;
+  pRSid := nil;
+  c1 := 0;
+  c2 := 0;
+
+  if Assigned(Sids) then
+  begin
+    pSid := Sids.Create_PSID_Array;
+    c1 := Sids.Count;
+  end;
+
+  if Assigned(RestrictedSids) then
+  begin
+    pRSid := RestrictedSids.Create_PSID_Array;
+    c2 := RestrictedSids.Count;
+  end;
+
+ { asm
+    int 3h;
+  end; }
+  try
+     if not AuthzAddSidsToContext(
+        AuthContext.Handle,//__in   AUTHZ_CLIENT_CONTEXT_HANDLE OrigClientContext,
+        @pSid[0],//__in   PSID_AND_ATTRIBUTES Sids,
+        c1,//__in   DWORD SidCount,
+        @pRSid[0],//__in   PSID_AND_ATTRIBUTES RestrictedSids,
+        c2,//__in   DWORD RestrictedSidCount,
+        @fHandle//__out  PAUTHZ_CLIENT_CONTEXT_HANDLE pNewClientContext
+      ) then
+     raise EJwsclWinCallFailedException.CreateFmtEx(
+        RsWinCallFailed, 'CreateAndAddSids', ClassName,
+        RsUNSid, 0, True, ['AuthzAddSidsToContext']);
+  finally
+    if Assigned(Sids) then
+      Sids.Free_PSID_Array(pSid);
+    if Assigned(RestrictedSids) then
+      RestrictedSids.Free_PSID_Array(pRSid);
+  end;
+
+  InitProperties;
+end;
+
+
+
+
+
 destructor TJwAuthContext.Destroy;
 begin
   AuthzFreeContext(fHandle);
   fHandle := INVALID_HANDLE_VALUE;
+  FreeMem(fCallbackData);
 
   FreeAndNil(fUserSid);
 end;
@@ -446,13 +699,8 @@ procedure TJwAuthContext.AccessCheck(Flags: Cardinal;
   out Reply: TJwAuthZAccessReply;
   out AuthZHandle: TAuthZAccessCheckResultHandle);
 
-type
-   TPSDArray = array of PSECURITY_DESCRIPTOR;
-   TSDArray = array of SECURITY_DESCRIPTOR;
 var pRequest : AUTHZ_ACCESS_REQUEST;
     pSD : PSecurityDescriptor;
-    //pOSD,pPOSD : PSECURITY_DESCRIPTOR;
-    OSD : array of SECURITY_DESCRIPTOR;
     pOSD : array of PSECURITY_DESCRIPTOR;
 
     pReply : AUTHZ_ACCESS_REPLY;
@@ -464,7 +712,7 @@ begin
   ZeroMemory(@pRequest, sizeof(pRequest));
   pRequest.DesiredAccess    := Request.fDesiredAccess;
   pRequest.PrincipalSelfSid := Request.fPrincipalSelfSid.SID;
-  pRequest.ObjectTypeList   := @Request.fObjectTypeArray;
+  pRequest.ObjectTypeList   := @Request.fObjectTypeArray[0];
   pRequest.ObjectTypeListLength := Length(Request.fObjectTypeArray);
   pRequest.OptionalArguments := Request.fData;
 
@@ -472,21 +720,10 @@ begin
   if Assigned(SecurityDescriptor) Then
     pSD := SecurityDescriptor.Create_SD();
 
- (* GetMem(pOSD, Length(OptionalSecurityDescriptorArray) * sizeof(PSECURITY_DESCRIPTOR));
-//  pPOSD := pOSD;
-  for i := 0 to Length(OptionalSecurityDescriptorArray)-1 do
-  begin
-    TSDArray(pOSD)[i] := OptionalSecurityDescriptorArray[i].Create_SD(false);
-
-  end;*)
-
-  //Bug??: Only the first security descriptor may be recognized!
   SetLength(pOSD, Length(OptionalSecurityDescriptorArray));
-  SetLength(OSD, Length(OptionalSecurityDescriptorArray));
   for i := 0 to Length(OptionalSecurityDescriptorArray)-1 do
   begin
     pOSD[i] := OptionalSecurityDescriptorArray[i].Create_SD(false);
-    OSD[i] := pOSD[i]^;
   end;
 
 
@@ -497,11 +734,11 @@ begin
     pReply.ResultListLength := 1;
 
   GetMem(pReply.GrantedAccessMask,
-    pReply.ResultListLength * sizeof(ACCESS_MASK));
+    (pReply.ResultListLength+1) * sizeof(ACCESS_MASK));
   GetMem(pReply.SaclEvaluationResults,
-    pReply.ResultListLength * sizeof(DWORD));
+    (pReply.ResultListLength+1) * sizeof(DWORD));
   GetMem(pReply.Error,
-    pReply.ResultListLength * sizeof(DWORD));
+    (pReply.ResultListLength+1) * sizeof(DWORD));
 
   for i := 0 to pReply.ResultListLength-1 do
   begin
@@ -519,7 +756,7 @@ begin
         @pRequest,//__in      PAUTHZ_ACCESS_REQUEST pRequest,
         AuditInfo,//__in      AUTHZ_AUDIT_INFO_HANDLE AuditInfo,
         pSD,//__in      PSECURITY_DESCRIPTOR pSecurityDescriptor,
-        @OSD,//__in_opt  PSECURITY_DESCRIPTOR* OptionalSecurityDescriptorArray,
+        @pOSD[0],//__in_opt  PSECURITY_DESCRIPTOR* OptionalSecurityDescriptorArray,
         Length(OptionalSecurityDescriptorArray),//__in_opt  DWORD OptionalSecurityDescriptorCount,
         @pReply,//__inout   PAUTHZ_ACCESS_REPLY pReply,
         @AuthZHandle, //__out     PAUTHZ_ACCESS_CHECK_RESULTS_HANDLE pAuthzHandle
@@ -539,7 +776,6 @@ begin
       TJwSecurityDescriptor.Free_SD(pSD);
     
       i := GetLastError;
-      OSD := nil;
       for i := 0 to Length(OptionalSecurityDescriptorArray)-1 do
       begin
         TJwSecurityDescriptor.Free_SD(pOSD[i]);
@@ -585,24 +821,27 @@ begin
   if Flags = [] then
     Flags := [authRM_NoAudit];
 
-  fOnAuthzFreeGroupsCallback := OnInternalAuthzFreeGroupsCallback;//debug
+  //fOnAuthzFreeGroupsCallback := OnInternalAuthzFreeGroupsCallback2;//debug
   //fOnAuthzFreeGroupsCallback := OnAuthzFreeGroupsCallback;
-  if Assigned(fOnAuthzFreeGroupsCallback) then
-    p1 := TMethod(fOnAuthzFreeGroupsCallback);
 
+
+  //fOnAuthzComputeGroupsCallback := OnInternalAuthzComputeGroupsCallback2; //debug
   fOnAuthzComputeGroupsCallback := OnAuthzComputeGroupsCallback;
-  if Assigned(fOnAuthzComputeGroupsCallback) then
-    p2 := TMethod(fOnAuthzComputeGroupsCallback);
+  //if Assigned(fOnAuthzComputeGroupsCallback) then
+    //p2 := TMethod(fOnAuthzComputeGroupsCallback);
 
-  fOnAuthzAccessCheckCallback := OnAuthzAccessCheckCallback;
+
+  fOnAuthzAccessCheckCallback := OnInternalAuthzAccessCheckCallback;
+  //fOnAuthzAccessCheckCallback := OnAuthzAccessCheckCallback;
   if Assigned(fOnAuthzAccessCheckCallback) then
     p3 := TMethod(fOnAuthzAccessCheckCallback);
 
+
   if not AuthzInitializeResourceManager(
     TJwEnumMap.ConvertAuthZResourceManager(Flags),//__in   DWORD flags,
-    p1.Code,//__in   PFN_AUTHZ_DYNAMIC_ACCESS_CHECK pfnAccessCheck,
-    p2.Code,//__in   PFN_AUTHZ_COMPUTE_DYNAMIC_GROUPS pfnComputeDynamicGroups,
-    p3.Code,//__in   PFN_AUTHZ_FREE_DYNAMIC_GROUPS pfnFreeDynamicGroups,
+    @OnInternalAuthzAccessCheckCallback2,//__in   PFN_AUTHZ_DYNAMIC_ACCESS_CHECK pfnAccessCheck,
+    @OnInternalAuthzComputeGroupsCallback2,//__in   PFN_AUTHZ_COMPUTE_DYNAMIC_GROUPS pfnComputeDynamicGroups,
+    @OnAuthzFreeGroupsCallback,//__in   PFN_AUTHZ_FREE_DYNAMIC_GROUPS pfnFreeDynamicGroups,
     lpwName,//__in   PCWSTR ResourceManagerName,
     @fHandle//__out  PAUTHZ_RESOURCE_MANAGER_HANDLE pAuthzResourceManager
   ) then
@@ -614,14 +853,32 @@ end;
 destructor TJwAuthResourceManager.Destroy;
 begin
   AuthzFreeResourceManager(Handle);
-  fHandle := INVALID_HANDLE_VALUE; 
+  fHandle := INVALID_HANDLE_VALUE;
 end;
 
-procedure TJwAuthResourceManager.OnInternalAuthzFreeGroupsCallback(
+function TJwAuthResourceManager.OnInternalAuthzAccessCheckCallback(
+  hAuthzClientContext: AUTHZ_CLIENT_CONTEXT_HANDLE; pAce: PACE_HEADER;
+  pArgs: Pointer; var pbAceApplicable: Boolean): Boolean;
+begin
+//
+end;
+
+function TJwAuthResourceManager.OnInternalAuthzComputeGroupsCallback(
+  hAuthzClientContext: AUTHZ_CLIENT_CONTEXT_HANDLE; Args: Pointer;
+  var pSidAttrArray: array of SID_AND_ATTRIBUTES;
+  var pSidCount: DWORD;
+  var pRestrictedSidAttrArray: array of SID_AND_ATTRIBUTES;
+  var pRestrictedSidCount: DWORD): Boolean;
+begin
+  //
+  result := false;
+end;
+
+{procedure TJwAuthResourceManager.OnInternalAuthzFreeGroupsCallback(
   const pSidAttrArray: array of SID_AND_ATTRIBUTES);
 begin
   //
-end;
+end;}
 
 
 

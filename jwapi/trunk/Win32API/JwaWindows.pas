@@ -100,25 +100,38 @@ PACKAGE_CONDITIONS can be set in the options of a project
 to disable these source code compiler defines and use
 the one of the project.
 }
+
 {$IFNDEF PACKAGE_CONDITIONS}
+
   {$DEFINE DYNAMIC_LINK}  //link most of functions dynamically ?
+
   {$DEFINE JWA_INCLUDE_SETUP_API} //include setup api ?
+
   {.$DEFINE JWA_WINSOCK_1} //use winsock.pas instead of winsock2.pas ?
+
   {-$DEFINE NOVCL}
+
   {The following directive includes the file jwaAdsTlb.pas
    This unit needs the units OleServer, OleCtrls which do install
    a windows handle in newer delphi versions.
    This handle prevents SetThreadDesktop to work on the main thread. It
    works on a new thread!
-   
+
    ActiveX and COM is not supported by this lib on Freepascal yet!
   }
   {$DEFINE JWA_INCLUDE_JWAADSTLB}
-{$IFDEF FPC}  
-  {$UNDEF JWA_INCLUDE_JWAADSTLB}
-  {$UNDEF JWA_INCLUDE_SETUP_API} 
-{$ENDIF FPC}
+
+  {$IFDEF FPC}
+    {$UNDEF JWA_INCLUDE_JWAADSTLB}
+    {$UNDEF JWA_INCLUDE_SETUP_API}
+  {$ENDIF FPC}
 {$ENDIF PACKAGE_CONDITIONS}
+
+
+
+{------ end of your business ------}
+
+
 
 {Exclude some units that are not compilabe under FPC
   JwaSensEvts.pas - not supported
@@ -132,9 +145,10 @@ the one of the project.
   {$DEFINE EXCLUDE_FPC}
 {$ENDIF FPC}
 
-{The following defines should not be changed!}
+
 {$WEAKPACKAGEUNIT}
 
+{The following defines should not be changed!}
 {$DEFINE JWAWINDOWS_PAS}   //include mode activated
 {$DEFINE JWA_INCLUDEMODE}  //exclude duplicate things - do not remove!
 

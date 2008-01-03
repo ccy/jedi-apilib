@@ -1480,7 +1480,10 @@ begin
       RsSidAndAttributesMemoryAllocationFailed,
       'Create_PSID_AND_ATTRIBUTES', ClassName, RsUNSid, 0, True, []);
 
-  Result.Attributes := attributes;
+  if Attributes = 0 then
+    Result.Attributes := Self.Attributes
+  else
+    Result.Attributes := attributes;
   Result.Sid := CreateCopyOfSID;
 end;
 

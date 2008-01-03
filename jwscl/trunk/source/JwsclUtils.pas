@@ -188,15 +188,29 @@ procedure LocalizeMapping(var MappingRecord : array of TJwRightsMapping;
   );
 
 
+procedure JwUNIMPLEMENTED_DEBUG;
+procedure JwUNIMPLEMENTED;
 
 implementation
 uses Classes, SysUtils, JwsclToken, JwsclKnownSid, JwsclDescriptor, JwsclAcl,
      JwsclSecureObjects, JwsclMapping;
 
 
+procedure JwUNIMPLEMENTED;
+begin
+  raise EJwsclUnimplemented.CreateFmtEx(
+    'This function is not implemented.',
+    'LocalizeMapping', '', '', 0, false, []);
+end;
 
-
-
+procedure JwUNIMPLEMENTED_DEBUG;
+begin
+{$IFNDEF DEBUG}
+  raise EJwsclUnimplemented.CreateFmtEx(
+    'This function is not implemented.',
+    'LocalizeMapping', '', '', 0, false, []);
+{$ENDIF DEBUG}    
+end;
 
 procedure LocalizeMapping(var MappingRecord : array of TJwRightsMapping;
   const StartStringId : Cardinal;

@@ -282,6 +282,7 @@ type
   {@Name is raised if JwInitWellKnownSIDs was not called.}
   EJwsclInitWellKnownException = class(EJwsclKeyException);
 
+  EJwsclUnimplemented = class(EJwsclCryptException);
 
 {$ENDIF SL_IMPLEMENTATION_SECTION}
 
