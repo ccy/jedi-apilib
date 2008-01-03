@@ -41,19 +41,23 @@ type
 
   { forward declarations }
   TJwTerminalServer = class;
+  TJwTerminalServerList = class;
   TJwWTSEventThread = class;
-//  TJwWTSEnumServersThread = class;
+  TJwWTSEnumServersThread = class;
   TJwWTSSession = class;
   TJwWTSSessionList = class;
   TJwWTSProcess = class;
   TJwWTSProcessList = class;
 
+  PJwTerminalServer = ^TJwTerminalServer;
   TJwTerminalServer = class(TPersistent)
   private
     FComputerName: TJwString;
     FConnected: Boolean;
+    FEnumServersThread: TJwWTSEnumServersThread;
     FIdleProcessName: TJwString;
     FLastEventFlag: DWORD;
+    FOnServersEnumerated: TNotifyEvent;
     FOnSessionConnect: TNotifyEvent;
     FOnSessionCreate: TNotifyEvent;
     FOnSessionDelete: TNotifyEvent;
@@ -65,6 +69,7 @@ type
     FOnSessionStateChange: TNotifyEvent;
     FOnWinStationRename: TNotifyEvent;
     FServerHandle: THandle;
+    FServerList: TStringList;
     FServers: {$IFDEF UNICODE}TWideStringList{$ELSE}TStringList{$ENDIF UNICODE};
     FSessions: TJwWTSSessionList;
     FProcesses: TJwWTSProcessList;
@@ -88,9 +93,11 @@ type
     function EnumerateProcesses: boolean;
     function EnumerateServers: boolean;
     function EnumerateSessions: boolean;
+    function EnumerateServersEx: boolean;
     function FileTime2DateTime(FileTime: TFileTime): TDateTime;
     property IdleProcessName: TJwString read GetIdleProcessName;
     property LastEventFlag: DWORD read FLastEventFlag;
+    property OnServersEnumerated: TNotifyEvent read FOnServersEnumerated write FOnServersEnumerated;
     property OnSessionEvent: TNotifyEvent read FOnSessionEvent write FOnSessionEvent;
     property OnSessionConnect: TNotifyEvent read FOnSessionConnect write FOnSessionConnect;
     property OnSessionCreate: TNotifyEvent read FOnSessionCreate write FOnSessionCreate;
@@ -106,10 +113,31 @@ type
     property ServerHandle: THandle read FServerHandle;
     property Servers: {$IFDEF UNICODE}TWideStringList{$ELSE}
       TStringList{$ENDIF UNICODE} read GetServers;
+    property ServerList: TStringList read FServerList;
     property Sessions: TJwWTSSessionList read FSessions;
     function Shutdown(AShutdownFlag: DWORD): Boolean;
     function UnicodeStringToString(const AUnicodeString: UNICODE_STRING):
       TJwString;
+  end;
+
+  PJwTerminalServerList = ^TJwTerminalServerList;
+  TJwTerminalServerList = class(TObjectList)
+  private
+    FOwnsObjects: Boolean;
+    FOwner: TComponent;
+  protected
+    function GetItem(Index: Integer): TJwTerminalServer;
+    procedure SetItem(Index: Integer; ATerminalServer: TJwTerminalServer);
+    procedure SetOwner(const Value: TComponent);
+  public
+    destructor Destroy; reintroduce;
+    function Add(ATerminalServer: TJwTerminalServer): Integer;
+    function IndexOf(ATerminalServer: TJwTerminalServer): Integer;
+    procedure Insert(Index: Integer; ATerminalServer: TJwTerminalServer);
+    property Items[Index: Integer]: TJwTerminalServer read GetItem write SetItem; default;
+    property Owner: TComponent read FOwner write SetOwner;
+    property OwnsObjects: Boolean read FOwnsObjects write FOwnsObjects;
+    function Remove(ATerminalServer: TJwTerminalServer): Integer;
   end;
 
   TJwWTSEventThread = class(TThread)
@@ -123,16 +151,21 @@ type
     procedure Execute; override;
   end;
 
-{  TJwWTSEnumServersThread = class(TThread)
+  TJwWTSEnumServersThread = class(TThread)
   private
     FOwner: TJwTerminalServer;
+    FServer: TJwString;
   protected
   public
     constructor Create(CreateSuspended: Boolean; AOwner: TJwTerminalServer);
+    procedure AddToServerList;
+    procedure ClearServerList;
+    procedure DispatchEvent;
     procedure Execute; override;
-  end;}
+    function WaitFor: LongWord; reintroduce;
+  end;
 
-
+  PJwWTSSession = ^TJwWTSSession;
   TJwWTSSession = class(TPersistent)
   private
   protected
@@ -289,6 +322,7 @@ type
   end;
 
   { List Of TJwWTSSession Objects }
+  PJwWTSSessionList = ^TJwWTSSessionList;
   TJwWTSSessionList = class(TObjectList)
   private
     FOwnsObjects: Boolean;
@@ -437,12 +471,35 @@ begin
 
   FTerminalServerEventThread := nil;
   FServers := nil;
+
+  FOnServersEnumerated := nil;
+  FServerList := TStringList.Create;
+
 end;
 
 destructor TJwTerminalServer.Destroy;
 var EventFlag: DWORD;
 begin
   // Close connection
+  if Assigned(FEnumServersThread) then
+  begin
+    OutputDebugString('Terminating thread');
+    FEnumServersThread.Terminate;
+
+    // Is the thread suspended?
+    if FEnumServersThread.Suspended then
+    begin
+      // Resume the thread in order to terminate!
+      OutputDebugString('Resuming the thread');
+      FEnumServersThread.Resume;
+    end;
+
+    OutputDebugString('Waiting for thread termination');
+    FEnumServersThread.WaitFor;
+    OutputDebugString('Thread has terminated');
+    FEnumServersThread.Free;
+  end;
+
   if Connected then
   begin
     Disconnect;
@@ -466,6 +523,12 @@ begin
     FreeAndNil(FServers);
   end;
 
+  // Free the Serverlist
+  if Assigned(FServerList) then
+  begin
+    FreeAndNil(FServerList);
+  end;
+  
   inherited;
 end;
 
@@ -899,6 +962,29 @@ begin
   Result := Res;
 end;
 
+function TJwTerminalServer.EnumerateServersEx: Boolean;
+begin
+  // Does the thread exist?
+  if Assigned(FEnumServersThread) then
+  begin
+    // Is the thread suspended?
+    if FEnumServersThread.Suspended then
+    begin
+      OutputDebugString('Resuming thread');
+      // Resume (if not terminated, this will enumerate again)
+      FEnumServersThread.Resume;
+    end
+    else begin
+      OutputDebugString('thread is already running');
+    end;
+  end
+  else begin
+    // Create the thread
+    OutputDebugString('create 1st thread');
+    FEnumServersThread := TJwWTSEnumServersThread.Create(True, Self);
+  end;
+end;
+
 procedure TJwTerminalServer.Connect;
 begin
   if not FConnected then
@@ -981,7 +1067,7 @@ begin
 //  MessageBox(0, 'eventthread is created', 'debug', MB_OK);
   inherited Create(CreateSuspended);
   FOwner := AOwner;
-  FreeOnTerminate := False;
+  FreeOnTerminate := True;
 end;
 
 procedure TJwWTSEventThread.Execute;
@@ -1008,10 +1094,122 @@ begin
   end;
 end;
 
+constructor TJwWTSEnumServersThread.Create(CreateSuspended: Boolean;
+  AOwner: TJwTerminalServer);
+begin
+  inherited Create(CreateSuspended);
+//  Priority := tpLowest;
+  FOwner := AOwner;
+  FreeOnTerminate := False;
+  Resume;
+end;
+
+procedure TJwWTSEnumServersThread.Execute;
+var ServerInfoPtr: PJwWtsServerInfoAArray;
+  pCount: DWORD;
+  i: DWORD;
+begin
+  while not Terminated do
+  begin
+    OutputDebugString('thread is executing');
+    // Clear the serverlist
+    Synchronize(ClearServerList);
+
+    // Since we return to a Stringlist (which does not support unicode)
+    // we only use WTSEnumerateServersA
+    if WTSEnumerateServersA(nil, 0, 1, PWTS_SERVER_INFOA(ServerInfoPtr),
+      pCount) then
+    begin
+      for i := 0 to pCount - 1 do
+      begin
+        // If the thread is terminated then leave the loop
+        if Terminated then Break;
+        FServer := ServerInfoPtr^[i].pServerName;
+        Synchronize(AddToServerList);
+      end;
+    end;
+
+    // Note that on failure of WTSEnumerateServers we don't produce an
+    // exception but return an empty ServerList instead. This is by design
+
+    // If we have not been terminated we fire the OnServersEnumerated Event
+    if not Terminated then
+    begin
+      Synchronize(DispatchEvent);
+    end;
+
+    // Cleanup
+    if ServerInfoPtr <> nil then
+    begin
+      WTSFreeMemory(ServerInfoPtr);
+    end;
+
+    if not Terminated then
+    begin
+      // We are done for now so we suspend the thread. If the user wants to
+      // enumerate servers again we simply resume the thread.
+      OutputDebugString('suspending thread');
+      Suspend;
+    end;
+  end;
+end;
+
+procedure TJwWTSEnumServersThread.AddToServerList;
+begin
+  FOwner.ServerList.Add(FServer);
+end;
+
+procedure TJwWTSEnumServersThread.ClearServerList;
+begin
+  FOwner.ServerList.Clear;
+end;
+
+procedure TJwWTSEnumServersThread.DispatchEvent;
+begin
+  if Assigned(FOwner.OnServersEnumerated) then
+  begin
+    // Fire the OnServersEnumerated event
+    FOwner.OnServersEnumerated(FOwner);
+  end;
+end;
+
+// Borland's WaitFor procedure contains a bug, in between loop iterations the
+// TThread object can be freed and its Handle invalidated.  When
+// MsgWaitForMultipleObjects() is called again, it fails, and then a call to
+// CheckThreadError() afterwards throws on EOSError exception with an error
+// code of 6 and an error message of "the handle is invalid".
+function TJwWTSEnumServersThread.WaitFor;
+var H: array[0..1] of THandle;
+  WaitResult: Cardinal;
+  Msg: TMsg;
+begin
+  H[0] := Handle;
+  if GetCurrentThreadID = MainThreadID then
+  begin
+    WaitResult := 0;
+    H[1] := SyncEvent;
+    repeat
+      { This prevents a potential deadlock if the background thread
+        does a SendMessage to the foreground thread }
+      if WaitResult = WAIT_OBJECT_0 + 2 then
+        PeekMessage(Msg, 0, 0, 0, PM_NOREMOVE);
+      WaitResult := MsgWaitForMultipleObjects(2, @H, False, 1000, QS_SENDMESSAGE);
+      // The line below was added as Workaround to prevent Invalid Handle:
+      if WaitResult = WAIT_FAILED then Break;
+      CheckThreadError(WaitResult <> WAIT_FAILED);
+      if WaitResult = WAIT_OBJECT_0 + 1 then
+        CheckSynchronize;
+    until WaitResult = WAIT_OBJECT_0;
+  end else WaitForSingleObject(H[0], INFINITE);
+  CheckThreadError(GetExitCodeThread(H[0], Result));
+end;
+
 destructor TJwWTSSessionList.Destroy;
 begin
   inherited Destroy;
 end;
+
+
 
 function TJwWTSSessionList.Add(ASession: TJwWTSSession): Integer;
 begin
@@ -1105,6 +1303,46 @@ begin
     end;
   end;
   Result := FIdleProcessName;
+end;
+
+function TJwTerminalServerList.GetItem(Index: Integer): TJwTerminalServer;
+begin
+  Result := TJwTerminalServer(inherited Items[Index]);
+end;
+
+function TJwTerminalServerList.Add(ATerminalServer: TJwTerminalServer): Integer;
+begin
+  Result := inherited Add(ATerminalServer);
+end;
+
+function TJwTerminalServerList.IndexOf(ATerminalServer: TJwTerminalServer): Integer;
+begin
+  Result := inherited IndexOf(ATerminalServer);
+end;
+
+function TJwTerminalServerList.Remove(ATerminalServer: TJwTerminalServer): Integer;
+begin
+  Result := inherited Remove(ATerminalServer);
+end;
+
+procedure TJwTerminalServerList.SetItem(Index: Integer; ATerminalServer: TJwTerminalServer);
+begin
+  inherited Items[Index] := ATerminalServer;
+end;
+
+procedure TJwTerminalServerList.SetOwner(const Value: TComponent);
+begin
+  FOwner := Value;
+end;
+
+procedure TJwTerminalServerList.Insert(Index: Integer; ATerminalServer: TJwTerminalServer);
+begin
+  inherited Insert(Index, ATerminalServer);
+end;
+
+destructor TJwTerminalServerList.Destroy;
+begin
+  inherited Destroy;
 end;
 
 procedure TJwWTSProcessList.SetOwner(const Value: TJwTerminalServer);
