@@ -358,11 +358,12 @@
   SUPPORTS_UNSAFE_WARNINGS      Compiler supports unsafe warnings (D7)
   SUPPORTS_WEAKPACKAGEUNIT      Compiler supports the WEAKPACKAGEUNIT directive
   SUPPORTS_COMPILETIME_MESSAGES Compiler supports the MESSAGE directive
-  HAS_UNIT_LIBC                 Unit Libc exists (Kylix, FPC on Linux)
-  HAS_UNIT_RTLCONSTS            Unit RTLConsts exists (D6+/BCB6+)
-  HAS_UNIT_TYPES                Unit Types exists (D6+/BCB6+)
-  HAS_UNIT_VARIANTS             Unit Variants exists (D6+/BCB6+)
-  HAS_UNIT_STRUTILS             Unit StrUtils exists (D6+/BCB6+)
+  HAS_UNIT_LIBC                 Unit Libc exists (Kylix, FPC on Linux/x86)
+  HAS_UNIT_RTLCONSTS            Unit RTLConsts exists (D6+/BCB6+/FPC)
+  HAS_UNIT_TYPES                Unit Types exists (D6+/BCB6+/FPC)
+  HAS_UNIT_VARIANTS             Unit Variants exists (D6+/BCB6+/FPC)
+  HAS_UNIT_STRUTILS             Unit StrUtils exists (D6+/BCB6+/FPC)
+  HAS_UNIT_DATEUTILS		Unit DateUtils exists (D6+/BCB6+/FPC)
   XPLATFORM_RTL                 The RTL supports crossplatform function names (e.g. RaiseLastOSError) (D6+/BCB6+/FPC)
 
 
@@ -817,6 +818,7 @@
     {$DEFINE HAS_UNIT_TYPES}
     {$DEFINE HAS_UNIT_VARIANTS}
     {$DEFINE HAS_UNIT_STRUTILS}
+    {$DEFINE HAS_UNIT_DATEUTILS}
     {$DEFINE HAS_UNIT_RTLCONSTS}
 
     {$DEFINE XPLATFORM_RTL}
@@ -919,6 +921,7 @@
   {$DEFINE HAS_UNIT_TYPES}
   {$DEFINE HAS_UNIT_VARIANTS}
   {$DEFINE HAS_UNIT_STRUTILS}
+  {$DEFINE HAS_UNIT_DATEUTILS}
   {$DEFINE XPLATFORM_RTL}
 {$ENDIF RTL140_UP}
 

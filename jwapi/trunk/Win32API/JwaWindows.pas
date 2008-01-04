@@ -175,7 +175,7 @@ interface
 uses
 {$IFDEF USE_DELPHI_TYPES}
   Windows,
-{$IFDEF COMPILER6_UP}
+{$IFDEF HAS_UNIT_DATEUTILS}
    DateUtils, //used by JwaWinSta.pas
 {$ENDIF}
 {$IFDEF JWA_INCLUDE_JWAADSTLB}
@@ -204,7 +204,11 @@ uses
 
 
 {$IFNDEF COMPILER6_UP}
-type PCardinal = ^Cardinal;
+  {$ifndef FPC}
+    type PCardinal = ^Cardinal;
+  {$ELSE}
+    {$ALIGN 4}
+  {$ENDIF}
 {$ELSE}
 {$ALIGN 4}
 {$ENDIF}
@@ -566,6 +570,10 @@ The list has no order!}
 {$IFDEF COMPILER6_UP}
  {$I JwaWinSta.pas}
 {$ENDIF}
+{$IFDEF FPC}
+ {$I JwaWinSta.pas}
+{$ENDIF}
+
 {.$I JwaWinternl.pas}
 
 {$I ..\Common\ModuleLoader.pas}
@@ -892,7 +900,9 @@ The list has no order!}
 {$IFDEF COMPILER6_UP}
 {$I JwaWinSta.pas}
 {$ENDIF COMPILER6_UP}
-
+{$IFDEF FPC}
+{$I JwaWinSta.pas}
+{$ENDIF FPC}
 
 {$I ..\Common\ModuleLoader.pas}
 {$IFDEF JWA_INCLUDE_SETUP_API}

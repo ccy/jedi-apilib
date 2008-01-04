@@ -26,13 +26,14 @@ unit JwaWinSta;
 
 interface
 
+{$I jediapilib.inc}
+
 uses
   DateUtils, SysUtils, JwaWinType, // JwaWinType must be declared before JwaWinBase because of duplicate declaration of FILETIME
   JwaWinBase, JwaWinError, JwaNTStatus, JwaWinNT, JwaWinsock2,
   JwaWinSvc, JwaWtsApi32, JwaNative;
 {$ENDIF JWA_OMIT_SECTIONS}
 
-{$I jediapilib.inc}
 
 {$IFNDEF JWA_IMPLEMENTATIONSECTION}
 
