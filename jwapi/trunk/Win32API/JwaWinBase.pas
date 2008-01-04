@@ -51,13 +51,11 @@ unit JwaWinBase;
 {$HPPEMIT '#include "WinBase.h"'}
 {$HPPEMIT ''}
 
-{$STACKFRAMES ON}
-
 {$IFNDEF JWA_OMIT_SECTIONS}
 
 {$I jediapilib.inc}
 
-
+{$STACKFRAMES ON} // must be after include. FPC's $MODE command resets this
 
 interface
 
@@ -6174,15 +6172,12 @@ by
 Marco
 }
 function InterlockedExchangePointer(var Target: PVOID; Value: PVOID): PVOID;
-var _Target : LONGLONG;
 begin
-{$ifdef CPU64BIT}
-  _Target := LONGLONG(Target);
-  Result := PVOID(InterlockedExchange64(_Target, LONGLONG(Value)));
-  Target := PVOID(_Target);
+{$ifdef CPU64}
+  Result := PVOID(InterlockedExchange64(LONGLONG(Target), LONGLONG(Value)));
 {$else}
   Result := PVOID(InterlockedExchange(LONG(Target), LONG(Value)));
-{$endif CPU64BIT}
+{$endif CPU64}
 end;
 
 {added tweak from
@@ -6190,17 +6185,14 @@ http://sourceforge.net/tracker/index.php?func=detail&aid=1662760&group_id=121894
 by Marco
 }
 function InterlockedCompareExchangePointer(var Destination: PVOID; Exchange, Comperand: PVOID): PVOID;
-var _Destination : LONGLONG;
 begin
-{$ifdef CPU64BIT}
-  _Destination := LONGLONG(Destination);
-  Result := PVOID(InterlockedCompareExchange64(_Destination,
+{$ifdef CPU64}
+  Result := PVOID(InterlockedCompareExchange64(LONGLONG(Destination),
               LONGLONG(Exchange), LONGLONG(Comperand)));
-  Destination := PVOID(_Destination);
-{$else CPU64BIT}
+{$else CPU64}
   Result := PVOID(InterlockedCompareExchange(LONG(Destination),
     LONG(Exchange), LONG(Comperand)));
-{$endif CPU64BIT}
+{$endif CPU64}
 end;
 
 function UnlockResource(hResData: HANDLE): BOOL;
