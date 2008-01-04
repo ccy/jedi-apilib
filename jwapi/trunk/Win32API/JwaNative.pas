@@ -8304,24 +8304,43 @@ end;
 
 function NtpGetProcessHeap(): HANDLE;
 asm
+  {$ifdef CPU386}
   mov   EAX, FS:[018h]            // EAX now holds the TEB address
   mov   EAX, [EAX+030h]           // TEB+$30 holds the PEB address
   mov   EAX, DWORD PTR [EAX+018h] // PEB+$30 holds the ProcessHeap's handle
+  {$endif}
+  {$ifdef cpux86_64}
+    mov   RAX, GS:[48]              // EAX now holds the TEB address
+    mov   RAX, [RAX+060h]           // TEB+$30 holds the PEB address
+    mov   RAX, DWORD PTR [RAX+48]   // PEB+$30 holds the ProcessHeap's handle
+  {$endif cpux86_64}
 end;
 
 // Own function to retrieve the thread environment block (TEB) pointer
 
 function NtpCurrentTeb(): PTEB;
 asm
-  mov   EAX, FS:[018h]
+  {$ifdef cpu386}
+    mov   EAX, FS:[018h]
+  {$endif cpu386}
+  {$ifdef cpux86_64}
+    mov   RAX, GS:[48]
+  {$endif cpux86_64}
+  
 end;
 
 // Own function to retrieve the process environment block (PEB) pointer
 
 function RtlpGetCurrentPeb(): PPEB;
 asm
-  mov   EAX, FS:[018h]
-  mov   EAX, [EAX+030h]
+  {$ifdef cpu386}
+   mov   EAX, FS:[018h]
+   mov   EAX, [EAX+030h]
+  {$endif cpu386}
+  {$ifdef cpux86_64}
+   mov   RAX, GS:[24]
+   mov   RAX, [RAX+060h]
+  {$endif cpux86_64}
 end;
 
 (* Own function to swap bytes in 16bit values
@@ -8331,6 +8350,9 @@ end;
 
 function RtlUshortByteSwap(Source: USHORT): USHORT;
 asm
+  {$ifdef cpux86_64}
+   mov   CX, AX
+  {$endif cpux86_64}
   rol   AX, 08h
 end;
 
@@ -8341,8 +8363,16 @@ end;
 
 function RtlUlongByteSwap(Source: ULONG): ULONG;
 asm
+  {$ifndef FPC}
   // This is not written as mnemonics to be compatible with D4!
   db    0Fh, 0C8h       // "bswap EAX" can only be executed on 486+!!!
+  {$else}
+    {$ifdef cpux86_64}
+       mov   ECX, EAX
+    {$endif cpux86_64}
+       bswap EAX	// .. but bswap EAX is also 64-bit!!! 0F C8 isn't.
+  {$endif}
+   
 (*
 // Does the same but perhaps slower ...
                         // Source = $11223344
@@ -8359,12 +8389,18 @@ end;
 
 function RtlUlonglongByteSwap(Source: ULONGLONG): ULONGLONG;
 asm
-  mov   EAX, [ESP+0Ch]  // Get the high part of the ULONGLONG into EAX
-  mov   EDX, [ESP+08h]  // Get the low part of the ULONGLONG into EDX
+  {$ifdef cpu386}
+    mov   EAX, [ESP+0Ch]  // Get the high part of the ULONGLONG into EAX
+    mov   EDX, [ESP+08h]  // Get the low part of the ULONGLONG into EDX
   // This is not written as mnemonics to be compatible with D4!
-  db    0Fh, 0C8h       // "bswap EAX" can only be executed on 486+!!!
-  db    0Fh, 0CAh       // "bswap EDX" can only be executed on 486+!!!
+    db    0Fh, 0C8h       // "bswap EAX" can only be executed on 486+!!!
+    db    0Fh, 0CAh       // "bswap EDX" can only be executed on 486+!!!
   // High part returns in EDX, low part in EAX
+  {$endif}
+  {$ifdef cpux86_64}
+    MOV   RCX,RAX
+    BSWAP EAX
+  {$endif cpux86_64}
 end;
 
 // Resembles the RtlValidateUnicodeString() function available from Windows XP
