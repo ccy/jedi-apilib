@@ -1,9 +1,6 @@
 program TSAdminEx;
 
 uses
-{$IFDEF FASTMM}
-  FastMM4,
-{$ENDIF FASTMM}
   Forms,
   uMain in 'uMain.pas' {MainForm};
 

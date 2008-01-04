@@ -17,22 +17,33 @@ object MainForm: TMainForm
   PixelsPerInch = 96
   TextHeight = 13
   object Splitter1: TSplitter
-    Left = 201
+    Left = 0
     Top = 29
     Height = 353
     ExplicitLeft = 352
     ExplicitTop = 160
     ExplicitHeight = 100
   end
-  object ServerTreeView: TTreeView
-    Left = 0
+  object VSTServer: TVirtualStringTree
+    Left = 3
     Top = 29
     Width = 201
     Height = 353
     Align = alLeft
-    Indent = 19
-    TabOrder = 0
-    OnDblClick = ServerTreeViewDblClick
+    Header.AutoSizeIndex = 0
+    Header.Font.Charset = DEFAULT_CHARSET
+    Header.Font.Color = clWindowText
+    Header.Font.Height = -11
+    Header.Font.Name = 'Tahoma'
+    Header.Font.Style = []
+    Header.MainColumn = -1
+    Header.Options = [hoColumnResize, hoDrag]
+    TabOrder = 2
+    OnColumnDblClick = VSTServerColumnDblClick
+    OnFreeNode = VSTServerFreeNode
+    OnGetText = VSTServerGetText
+    OnGetNodeDataSize = VSTServerGetNodeDataSize
+    Columns = <>
   end
   object ToolBar1: TToolBar
     Left = 0
@@ -43,7 +54,7 @@ object MainForm: TMainForm
     EdgeBorders = [ebTop]
     Flat = False
     Images = ImageList1
-    TabOrder = 1
+    TabOrder = 0
     object ToolButton1: TToolButton
       Left = 0
       Top = 2
@@ -165,7 +176,7 @@ object MainForm: TMainForm
     Align = alClient
     BevelOuter = bvLowered
     Caption = 'Panel1'
-    TabOrder = 3
+    TabOrder = 1
     object PageControl1: TPageControl
       Left = 1
       Top = 1
@@ -176,208 +187,88 @@ object MainForm: TMainForm
       TabOrder = 0
       object TabSheet1: TTabSheet
         Caption = 'Users'
-        object UsersListView: TListView
+        object VSTUser: TVirtualStringTree
           Left = 0
           Top = 0
           Width = 416
           Height = 323
           Align = alClient
+          Header.AutoSizeIndex = -1
+          Header.Font.Charset = DEFAULT_CHARSET
+          Header.Font.Color = clWindowText
+          Header.Font.Height = -11
+          Header.Font.Name = 'Tahoma'
+          Header.Font.Style = []
+          Header.Options = [hoAutoResize, hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoAutoSpring]
+          TabOrder = 0
+          TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toThemeAware, toUseBlendedImages]
+          TreeOptions.SelectionOptions = [toFullRowSelect, toMultiSelect]
+          OnCompareNodes = VSTUserCompareNodes
+          OnGetText = VSTUserGetText
+          OnGetImageIndex = VSTUserGetImageIndex
+          OnGetNodeDataSize = VSTUserGetNodeDataSize
+          OnHeaderClick = VSTUserHeaderClick
           Columns = <
             item
-              AutoSize = True
-              Caption = 'Server'
+              Position = 0
+              Width = 100
+              WideText = 'Server'
             end
             item
-              AutoSize = True
-              Caption = 'User'
+              Position = 1
+              WideText = 'User'
             end
             item
-              AutoSize = True
-              Caption = 'Session'
-            end
-            item
-              Alignment = taRightJustify
-              AutoSize = True
-              Caption = 'ID'
-            end
-            item
-              AutoSize = True
-              Caption = 'State'
+              Position = 2
+              WideText = 'Session'
             end
             item
               Alignment = taRightJustify
-              AutoSize = True
-              Caption = 'Idle Time'
+              Position = 3
+              WideText = 'ID'
             end
             item
-              AutoSize = True
-              Caption = 'Logon Time'
+              Position = 4
+              WideText = 'State'
+            end
+            item
+              Alignment = taRightJustify
+              Position = 5
+              WideText = 'Idle Time'
+            end
+            item
+              Position = 6
+              Width = 62
+              WideText = 'Logon Time'
             end>
-          SortType = stBoth
-          TabOrder = 0
-          ViewStyle = vsReport
         end
       end
       object TabSheet2: TTabSheet
         Caption = 'Sessions'
         ImageIndex = 1
-        object SessionsListView: TListView
-          Left = 0
-          Top = 0
-          Width = 416
-          Height = 323
-          Align = alClient
-          Columns = <
-            item
-              Caption = 'Server'
-              Width = -1
-              WidthType = (
-                -1)
-            end
-            item
-              Caption = 'Session'
-              Width = -1
-              WidthType = (
-                -1)
-            end
-            item
-              AutoSize = True
-              Caption = 'User'
-            end
-            item
-              Alignment = taRightJustify
-              AutoSize = True
-              Caption = 'ID'
-            end
-            item
-              AutoSize = True
-              Caption = 'State'
-            end
-            item
-              AutoSize = True
-              Caption = 'Type'
-            end
-            item
-              AutoSize = True
-              Caption = 'Client Name'
-            end
-            item
-              Alignment = taRightJustify
-              AutoSize = True
-              Caption = 'Idle Time'
-            end
-            item
-              AutoSize = True
-              Caption = 'Logon Time'
-            end
-            item
-              AutoSize = True
-              Caption = 'Client Address'
-            end
-            item
-              Alignment = taRightJustify
-              AutoSize = True
-              Caption = 'IncomingBytes'
-            end
-            item
-              Alignment = taRightJustify
-              Caption = 'OutgoingBytes'
-              Width = 31
-            end
-            item
-              Alignment = taRightJustify
-              AutoSize = True
-              Caption = 'Compression Ratio'
-            end>
-          SortType = stBoth
-          TabOrder = 0
-          ViewStyle = vsReport
-          OnColumnClick = ListViewColumnClick
-          OnDeletion = SessionsListViewDeletion
-          OnInsert = SessionsListViewInsert
-        end
       end
       object TabSheet3: TTabSheet
         Caption = 'Processes'
         ImageIndex = 2
-        object ProcessesListView: TListView
-          Left = 0
-          Top = 0
-          Width = 416
-          Height = 323
-          Align = alClient
-          Columns = <
-            item
-              Caption = 'Server'
-            end
-            item
-              Caption = 'User'
-            end
-            item
-              Caption = 'Session'
-            end
-            item
-              Caption = 'ID'
-            end
-            item
-              Caption = 'PID'
-            end
-            item
-              Caption = 'Image'
-            end
-            item
-              Caption = 'Process Age'
-            end
-            item
-              Caption = 'CPU Time'
-            end
-            item
-              Caption = 'Mem Usage'
-            end
-            item
-              Caption = 'VM Size'
-            end>
-          TabOrder = 0
-          ViewStyle = vsReport
-          OnDeletion = ProcessesListViewDeletion
-        end
       end
     end
   end
   object Button1: TButton
     Left = 547
-    Top = 8
+    Top = -2
     Width = 75
     Height = 25
-    Caption = 'Fetch'
+    Caption = 'Button1'
     TabOrder = 4
     OnClick = Button1Click
   end
-  object Button3: TButton
-    Left = 466
-    Top = 8
-    Width = 75
-    Height = 25
-    Caption = 'SessCounters'
-    TabOrder = 5
-    OnClick = Button3Click
-  end
-  object Button4: TButton
-    Left = 385
-    Top = 8
-    Width = 75
-    Height = 25
-    Caption = 'EnumServers'
-    TabOrder = 6
-    OnClick = Button4Click
-  end
   object Button2: TButton
-    Left = 304
+    Left = 432
     Top = -2
     Width = 75
     Height = 25
     Caption = 'Button2'
-    TabOrder = 7
+    TabOrder = 5
     OnClick = Button2Click
   end
   object MainMenu1: TMainMenu
@@ -1173,7 +1064,6 @@ object MainForm: TMainForm
     end
   end
   object ApplicationEvents1: TApplicationEvents
-    OnMessage = ApplicationEvents1Message
     Left = 480
     Top = 248
   end

@@ -6,30 +6,22 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, ComCtrls, ExtCtrls, ActnList, ImgList, ToolWin, Menus,
   StdCtrls, Math, StrUtils, CommCtrl,
-  JWsclTerminalServer, JwaWindows, AppEvnts;
+  JWsclTerminalServer, JwaWindows, AppEvnts,
+  VirtualTrees, Contnrs;
 
 type
+  PServerNodeData = ^TServerNodeData;
+  TServerNodeData = record
+    Index: Integer;
+    Caption: String;
+    PTerminalServerList: PJwTerminalServerList;
+  end;
 
-TColumnSortType = (stAlpha, stNumeric, stDateTime, stData);
-
-TColumnClicked = class
-  Ascending: boolean;
-  Column: TListColumn;
-  Parent: TListView;
-  constructor Create;
-end;
-
-// Class below is used to store bytes values, they are used when sorting the
-// ListView columns
-THiddenProcessData = class(TObject)
-  MemUsage: DWORD;
-  VMSize: DWORD;
-end;
-
-// Class below is used to store connectstate in ListView (not visible)
-THiddenSessionData = class(TObject)
-  ConnectState: TWtsConnectStateClass;
-end;
+  PUserNodeData = ^TUserNodeData;
+  TUserNodeData = record
+    Index: Integer;
+    List: PJwWTSSessionList;
+  end;
 
 // Class below is used to store imageindex of icons in the Imagelist
 TIconRec = record
@@ -42,7 +34,8 @@ end;
 
 type
   TMainForm = class(TForm)
-    ServerTreeView: TTreeView;
+    VSTUser: TVirtualStringTree;
+    VSTServer: TVirtualStringTree;
     MainMenu1: TMainMenu;
     ToolBar1: TToolBar;
     ImageList1: TImageList;
@@ -97,36 +90,45 @@ type
     Panel1: TPanel;
     PageControl1: TPageControl;
     TabSheet1: TTabSheet;
-    UsersListView: TListView;
     TabSheet2: TTabSheet;
     TabSheet3: TTabSheet;
-    ProcessesListView: TListView;
-    SessionsListView: TListView;
-    Button1: TButton;
-    Button3: TButton;
-    Button4: TButton;
     ApplicationEvents1: TApplicationEvents;
+    Button1: TButton;
     Button2: TButton;
     procedure FormCreate(Sender: TObject);
-    procedure ListViewColumnClick(Sender: TObject; Column: TListColumn);
     procedure FormDestroy(Sender: TObject);
+    procedure VSTUserGetText(Sender: TBaseVirtualTree;
+      Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType;
+      var CellText: WideString);
+    procedure VSTUserGetImageIndex(Sender: TBaseVirtualTree;
+      Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
+      var Ghosted: Boolean; var ImageIndex: Integer);
+    procedure VSTUserGetNodeDataSize(Sender: TBaseVirtualTree;
+      var NodeDataSize: Integer);
+    procedure VSTUserCompareNodes(Sender: TBaseVirtualTree; Node1,
+      Node2: PVirtualNode; Column: TColumnIndex; var Result: Integer);
+    procedure VSTUserHeaderClick(Sender: TVTHeader;
+      Column: TColumnIndex; Button: TMouseButton; Shift: TShiftState; X,
+      Y: Integer);
+    procedure VSTServerGetNodeDataSize(Sender: TBaseVirtualTree;
+      var NodeDataSize: Integer);
+    procedure VSTServerGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
+      Column: TColumnIndex; TextType: TVSTTextType; var CellText: WideString);
+    procedure VSTServerColumnDblClick(Sender: TBaseVirtualTree;
+      Column: TColumnIndex; Shift: TShiftState);
+    procedure VSTServerFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure Button1Click(Sender: TObject);
-    procedure Button3Click(Sender: TObject);
-    procedure Button4Click(Sender: TObject);
-    procedure SessionsListViewInsert(Sender: TObject; Item: TListItem);
-    procedure SessionsListViewDeletion(Sender: TObject; Item: TListItem);
-    procedure SetColumnImage(List: TListView; ColumnIndex, Image: Integer;
-      ShowImage: Boolean);
-    procedure ApplicationEvents1Message(var Msg: tagMSG; var Handled: Boolean);
-    procedure ProcessesListViewDeletion(Sender: TObject; Item: TListItem);
-    procedure ServerTreeViewDblClick(Sender: TObject);
     procedure Button2Click(Sender: TObject);
   private
     { Private declarations }
-    iActiveSessions: Integer;
-    iDisconnectedSessions: Integer;
+    TerminalServers: TJwTerminalServerList;
+    pThisComputerNode: PVirtualNode;
+    pAllListedServersNode: PVirtualNode;
+    procedure UpdateVirtualTree(const AVirtualTree: TBaseVirtualTree;
+      const PSessionList: PJwWTSSessionList; PrevCount: Integer);
     procedure OnTerminalServerEvent(Sender: TObject);
-    procedure UpdateTotals;
+    procedure OnEnumerateServersDone(Sender: TObject);
+  public
   public
     { Public declarations }
   end;
@@ -134,581 +136,547 @@ type
 var
   MainForm: TMainForm;
   IconRec: TIconRec;
-  strServer: String;
-  TerminalServer: TJwTerminalServer;
-
 implementation
 
 {$R *.dfm}
-function QueryCurrentWinStation(lpWinStationName: PWideChar;
-  lpUserName: PWideChar; var dwSessionId: DWORD; var dwWdFlag: DWORD): Boolean;
-  stdcall; external 'utildll.dll';
-
-constructor TColumnClicked.Create;
+procedure TMainForm.UpdateVirtualTree(const AVirtualTree: TBaseVirtualTree;
+  const PSessionList: PJwWTSSessionList; PrevCount: Integer);
+var i: Integer;
+  pNode: PVirtualNode;
+  pPrevNode: PVirtualNode;
+  pData: PUserNodeData;
+  NewCount: Integer;
 begin
-  inherited create;
-//  LastSortedColumn := -1;
-  Ascending := True;
-  Column := nil;
-end;
+  // Get the last node
+  pNode := AVirtualTree.GetLast;
 
-// This event takes care of redrawing the sort glyph in the column
-// header on WM_PAINT event
-procedure TMainForm.ApplicationEvents1Message(var Msg: tagMSG;
-  var Handled: Boolean);
-var AListView: TListView;
-  ColumnClicked: TColumnClicked;
-  i: Integer;
-begin
-  if (ActiveControl.ClassType = TListView) and (Msg.message = WM_PAINT) then
-  begin
-    AListView := ActiveControl as TListView;
-    ColumnClicked := TColumnClicked(AListView.Tag);
+  // Now iterate from last to first node
+  repeat
+    pData := AVirtualTree.GetNodeData(pNode);
+    // Get the previous node and store the pointer, because in the next step
+    // we might delete the current node ;-)
+    pPrevNode := AVirtualTree.GetPrevious(pNode);
 
-    if ColumnClicked.Column <> nil then
+    // Is the node data pointing to PSessionList and do we need to delete it?
+    if (pData^.List = PSessionList) and
+      (pData^.Index > PSessionList^.Count-1) then
     begin
-      for i := 0 to AListView.Columns.Count - 1 do
-      begin
-        // the Descending icon is no 9 in the Imagelist, the Ascending image
-        // is no 10 (9 + Ord(ColumnClicked.Ascending)
-        SetColumnImage(AListView, i, 9 + Ord(ColumnClicked.Ascending),
-        i = ColumnClicked.Column.Index);
-      end;
+      // Delete the node (we have no Session Data for it)
+      AVirtualTree.DeleteNode(pNode);
+    end
+    else begin
+      // Invalidating the node will trigger the GetText event which will update
+      // our data
+      AVirtualTree.InvalidateNode(pNode);
     end;
-    // Last column takes up the remainder space
-    AListView.Columns[AListView.Columns.Count-1].Width := -2;
-  end;
-end;
+    pNode := pPrevNode;
+  until pNode = nil;
 
-procedure TMainForm.Button1Click(Sender: TObject);
-var
-//TerminalServer: TJwTerminalServer;
-  i: Integer;
-  HiddenData: THiddenProcessData;
-  FormatSettings: TFormatSettings;
-begin
-  ProcessesListView.Items.Clear;
-  SessionsListView.Items.Clear;
-  UsersListView.Items.Clear;
+  // How many new sessions are there?
+  NewCount := PSessionList^.Count - PrevCount;
 
-  // Get LocaleFormatSettings, we use them later on to format DWORD
-  // values with bytes as KByte values with thousand seperators a la taskmgr
-  GetLocaleFormatSettings(LOCALE_USER_DEFAULT, FormatSettings);
-
-//  if TerminalServer.EnumerateProcesses then
-  if TerminalServer.GetAllProcesses then
+  // Create a new node for each new session
+  for i := 0 to NewCount-1 do
   begin
-    ProcessesListView.Items.BeginUpdate;
-    for i := 0 to TerminalServer.Processes.Count -1 do
-    begin
-      with TerminalServer.Processes[i] do
-      begin
-        with ProcessesListView.Items.Add do
-        begin
-          Caption := TerminalServer.Server;
-          ImageIndex := IconRec.Server;
-
-          SubItemImages[SubItems.Add(Username)] := IconRec.User;
-          if WinStationName <> 'Console' then
-          begin
-            SubItemImages[SubItems.Add(WinStationName)] := IconRec.Console;
-          end
-          else begin
-            SubItemImages[SubItems.Add(WinStationName)] := IconRec.Network;
-          end;
-
-          SubItems.Add(IntToStr(SessionId));
-          SubItems.Add(IntToStr(ProcessId));
-          SubItemImages[SubItems.Add(ProcessName)] := IconRec.Process;
-          SubItems.Add(ProcessAge);
-          SubItems.Add(ProcessCPUTime);
-          // Convert to Kilobytes and display with thousands seperator
-          // and no decimals
-          SubItems.Add(Format('%.0n K', [ProcessMemUsage / 1024],
-            FormatSettings));
-          // Convert to Kilobytes and display with thousands seperator
-          // and no decimals
-          SubItems.Add(Format('%.0n K', [ProcessVMSize / 1024],
-            FormatSettings));
-
-          Data := THiddenProcessData.Create;
-          with THiddenProcessData(Data) do
-          begin
-            MemUsage := ProcessMemUsage;
-            VMSize := ProcessVMSize;
-          end;
-        end;
-      end;
-    end;
-    ProcessesListView.Items.EndUpdate;
+    pNode := AVirtualTree.AddChild(nil);
+    pData := AVirtualTree.GetNodeData(pNode);
+    pData^.Index := PrevCount;
+    pData^.List := PSessionList;
   end;
-
-  if TerminalServer.EnumerateSessions then
-  begin
-    SessionsListView.Items.BeginUpdate;
-    UsersListView.Items.BeginUpdate;
-
-    for i := 0 to TerminalServer.Sessions.Count -1 do
-    begin
-      with TerminalServer.Sessions[i] do
-      begin
-        if ConnectState <> WTSListen then
-        begin
-          if UserName <> '' then
-          begin
-            with UsersListView.Items.Add do
-            begin
-              Caption := TerminalServer.Server;
-              ImageIndex := IconRec.Server;
-              if Username <> '' then
-              begin
-                SubItemImages[SubItems.Add(Username)] := IconRec.User;
-              end
-              else begin
-                SubItems.Add('');
-              end;
-
-              if WdFlag < WD_FLAG_RDP then
-              begin
-                SubItemImages[SubItems.Add(WinStationName)] := IconRec.Console;
-              end
-              else begin
-                SubItemImages[SubItems.Add(WinStationName)] := IconRec.Network;
-              end;
-              
-              SubItems.Add(IntToStr(SessionId));
-              SubItems.Add(ConnectStateStr);
-              SubItems.Add(IdleTimeStr);
-              SubItems.Add(LogonTimeStr);
-            end;
-          end;
-        end;
-        with SessionsListView.Items.Add do
-        begin
-          Caption := TerminalServer.Server;
-          ImageIndex := IconRec.Server;
-          if WinStationName = 'Console' then
-          begin
-            SubItemImages[SubItems.Add(WinStationName)] := IconRec.Console;
-          end
-          else begin
-            SubItemImages[SubItems.Add(WinStationName)] := IconRec.Network;
-          end;
-          if Username <> '' then
-          begin
-            SubItemImages[SubItems.Add(Username)] := IconRec.User;
-          end
-          else begin
-            SubItems.Add('');
-          end;
-
-          SubItems.Add(IntToStr(SessionId));
-          SubItems.Add(ConnectStateStr);
-          SubItems.Add(WinStationDriverName);
-          SubItems.Add(ClientName);
-          SubItems.Add(IdleTimeStr);
-          SubItems.Add(LogonTimeStr);
-          SubItems.Add(RemoteAddress);
-
-          // Show Counters only for Active and non-console sessions
-          if (ConnectState = WTSActive) and (WdFlag > WD_FLAG_CONSOLE) then
-          begin
-            SubItems.Add(IntToStr(IncomingBytes));
-            SubItems.Add(IntToStr(OutgoingBytes));
-            SubItems.Add(CompressionRatio);
-          end;
-
-          Data := THiddenSessionData.Create;
-          THiddenSessionData(Data).ConnectState := ConnectState;
-        end;
-      end;
-    end;
-    SessionsListView.Items.EndUpdate;
-    UsersListView.Items.EndUpdate;
-  end;
-//  TerminalServer.Free;
-//  MessageBox(0, 'we have enumerated all', 'debug', MB_OK);
-end;
-
-procedure TMainForm.Button2Click(Sender: TObject);
-var
-  pWinStationName: PWideChar;
-  pUserName: PWideChar;
-  SessionId: Cardinal;
-  WdFlag: Cardinal;
-  Res: Boolean;
-begin
-  GetMem(pWinStationName, 66);
-  GetMem(pUserName, 21);
-  Res := QueryCurrentWinStation(pWinStationName, pUserName, SessionId, WdFlag);
-  MessageBoxW(0, pWinStationName, pUserName, MB_OK);
-  MessageBox(0, PChar(Format('WinStationName: %s, UserName: %s, SessionId: %d, WdFlag: %d', [pWinStationName, pUserName, SessionId, WdFlag])), 'QueryCurrentWinStation', MB_OK);
-  FreeMem(pWinStationName);
-  FreeMem(pUserName);
-end;
-
-
-procedure TMainForm.UpdateTotals;
-begin
-  StatusBar1.Panels[0].Text := Format(StatusBar1.Panels[0].Text,
-    [iActiveSessions]);
-  StatusBar1.Panels[1].Text := Format(StatusBar1.Panels[1].Text,
-    [iDisconnectedSessions]);
-  StatusBar1.Panels[2].Text := Format(StatusBar1.Panels[1].Text,
-    [SessionsListView.Items.Count]);
-end;
-
-procedure TMainForm.Button3Click(Sender: TObject);
-var WinStationInfoPtr: _WINSTATION_INFORMATIONW;
-  dwReturnLength: DWORD;
-begin
-  ZeroMemory(@WinStationInfoPtr, SizeOf(WinStationInfoPtr));
-  if WinstationQueryInformationW(SERVERNAME_CURRENT, 2, 8, @WinStationInfoPtr,
-    SizeOf(WinStationInfoPtr), dwReturnLength) then
-  begin
-{  Memo1.Lines.Add(Format('Incoming Bytes: %d | Outgoing Bytes: %d', [WinStationInfoPtr.IncomingBytes, WinStationInfoPtr.OutgoingBytes]));
-  Memo1.Lines.Add(Format('Incoming Frames: %d | Outgoing Frames: %d', [WinStationInfoPtr.IncomingFrames, WinStationInfoPtr.OutgoingFrames]));
-  Memo1.Lines.Add(Format('Compression Ratio: %1.2f', [WinStationInfoPtr.OutgoingCompressBytes / WinStationInfoPtr.OutgoingBytes]));}
-  {  Memo1.Lines.Add(Format('Value3: %d', [WinStationInfoPtr.Value3]));
-  Memo1.Lines.Add(Format('Value4: %d', [WinStationInfoPtr.Value4]));
-  Memo1.Lines.Add(Format('Value5: %d', [WinStationInfoPtr.Value5]));}
-  end;
-end;
-
-procedure TMainForm.Button4Click(Sender: TObject);
-var TerminalServer: TJwTerminalServer;
-  i: Integer;
-begin
-  TerminalServer := TJwTerminalServer.Create;
-  for i := 0 to TerminalServer.Servers.Count-1 do
-  begin
-    ServerTreeView.Items.AddChild(nil, TerminalServer.Servers[i]);
-  end;
-  TerminalServer.Free;
-end;
-
-procedure TMainForm.FormCreate(Sender: TObject);
-var
-  i: Integer;
-  c: Integer;
-begin
-  ReportMemoryLeaksOnShutDown := DebugHook <> 0;
-  IconRec.Server := 11;
-  IconRec.User := 12;
-  IconRec.Network := 13;
-  IconRec.Process := 14;
-  IconRec.Console := 15;
-
-  for i := 0 to ComponentCount - 1 do
-  begin
-    if Components[i].ClassType = TListView then
-    begin
-      with Components[i] as TListView do
-      begin
-        // Set sort type and sort handler
-        SortType := stBoth;
-        OnColumnClick := ListViewColumnClick;
-
-        // ListView options
-//        RowSelect := True;
-//        HotTrack := True;
-        RowSelect := True;
-//        HotTrackStyles := [];
-        SmallImages := ImageList1;
-
-        // Create a ColumnClicked type for each ListView
-        // (we store some sort data in there)
-        Tag := Integer(Pointer(TColumnClicked.Create));
-//        TColumnClicked(Tag).Parent := (Components[i] as TListView);
-
-        // Enumerate Columns
-        for c := 0 to Columns.Count - 1 do
-        begin
-          with Columns[c] do
-          begin
-            AutoSize := False;
-            Width := -1;  // adjust the width to the longest item in the column
-
-            // If column name ends with time set sort type to DateTime
-            if RightStr(Caption, 4) = 'Time' then
-            begin
-              Tag := Integer(stAlpha);
-            end
-            // If column name ends with ID or Bytes set sort type to Numeric
-            else if (RightStr(Caption, 2) = 'ID') or
-                    (RightStr(Caption, 5) = 'Bytes') then begin
-              Tag := Integer(stNumeric);
-              Width := -1;
-              Alignment := taRightJustify;
-            end
-            else if (LeftStr(Caption, 2) = 'VM') or
-                    (LeftStr(Caption, 3) = 'Mem') then begin
-              Tag := Integer(stData);
-              Width := -1;
-              Alignment := taRightJustify;
-            end;
-            // Other columns have tag = 0 (stAlpha) by default
-          end;
-          Columns[Columns.Count-1].Width := -2;
-        end;
-      end;
-    end;
-  end;
-
-  TerminalServer := TJwTerminalServer.Create;
-  TerminalServer.Server := strServer;
-  TerminalServer.OnSessionEvent := OnTerminalServerEvent;  
-end;
-
-procedure TMainForm.FormDestroy(Sender: TObject);
-var i: integer;
-begin
-  for i := 0 to ComponentCount - 1 do
-  begin
-    if Components[i].ClassType = TListView then
-    begin
-      with Components[i] as TListView do
-      begin
-        // Free ColumnClicked
-        TColumnClicked(Tag).Free;
-      end;
-    end;
-  end;
-  TerminalServer.Free;
 end;
 
 procedure TMainForm.OnTerminalServerEvent(Sender: TObject);
-var ATerminalServer: TJwTerminalServer;
+var PrevCount: Integer;
 begin
   with (Sender as TJwTerminalServer) do
   begin
-    if LastEventFlag < WTS_EVENT_STATECHANGE then
-    begin
+    // Get the previous session count
+    PrevCount := Sessions.Count;
 
-    end;
+    // Enumerate sessions
+    EnumerateSessions;
+
+    // Sychronize tree with SessionList
+    UpdateVirtualTree(VSTUser, @Sessions, PrevCount);
   end;
 end;
 
-function SortByColumn(Item1, Item2: TListItem; Data: integer): integer; stdcall;
-var ColumnClicked: TColumnClicked;
-  n1, n2: Int64;
-  s1, s2: String;
-  SortType: TColumnSortType;
+procedure TMainForm.OnEnumerateServersDone(Sender: TObject);
+var i: Integer;
+  pNode: PVirtualNode;
+  pData: PServerNodeData;
 begin
-  ColumnClicked := TColumnClicked(Data);
-  SortType := TColumnSortType(ColumnClicked.Column.Tag);
-
-  // 1st column is always alpha sort (servername)
-  if ColumnClicked.Column.Index = 0 then
+  with Sender as TJwTerminalServer do
   begin
-    Result := AnsiCompareText(Item1.Caption, Item2.Caption);
-  end
-  else begin
-    // need to sort the clicked column (subitems) where
-    // subitems = ColumnIndex -1
-    if SortType = stNumeric then
+    for i := 0 to ServerList.Count-1 do
     begin
-      // Convert string to int64 (if the subitems does not exist, set it to -1)
-      if Item1.SubItems.Count >= ColumnClicked.Column.Index then
-      begin
-        n1 := StrToInt64Def(Item1.SubItems[ColumnClicked.Column.Index-1], -1);
-      end
-      else begin
-        n1 := -1;
-      end;
-      if Item2.SubItems.Count >= ColumnClicked.Column.Index then
-      begin
-        n2 := StrToInt64Def(Item2.SubItems[ColumnClicked.Column.Index-1], -1);
-      end
-      else begin
-        n2 := -1;
-      end;
-
-      // Now compare
-      if n1 > n2 then
-      begin
-        Result := 1
-      end
-      else if n1 < n2 then
-      begin
-        Result := -1
-      end
-      else begin
-        Result := 0;
-      end;
-    end
-    else if SortType = stData then
-    begin
-      if Item1.Data <> nil then
-      begin
-        if ColumnClicked.Column.Caption = 'Mem Usage' then
-        begin
-          n1 := THiddenProcessData(Item1.Data).MemUsage;
-        end
-        else begin
-          n1 := THiddenProcessData(Item1.Data).VMSize;
-        end;
-      end
-      else begin
-        n1 := -1;
-      end;
-
-      if Item2.Data <> nil then
-      begin
-        if ColumnClicked.Column.Caption = 'Mem Usage' then
-        begin
-          n2 := THiddenProcessData(Item2.Data).MemUsage;
-        end
-        else begin
-          n2 := THiddenProcessData(Item2.Data).VMSize;
-        end;
-      end
-      else begin
-        n2 := -1;
-      end;
-
-      // Now compare
-      if n1 > n2 then
-      begin
-        Result := 1
-      end
-      else if n1 < n2 then
-      begin
-        Result := -1
-      end
-      else begin
-        Result := 0;
-      end;
-    end
-    else begin // stAlpha
-      // Check if the column (subitem) exists, if not then set to empty string
-      if Item1.SubItems.Count >= ColumnClicked.Column.Index then
-      begin
-        s1 := Item1.SubItems[ColumnClicked.Column.Index-1];
-      end
-      else begin
-        s1 := '';
-      end;
-      // Check if the column (subitem) exists, if not then set to empty string
-      if Item2.SubItems.Count >= ColumnClicked.Column.Index then
-      begin
-      s2 := Item2.SubItems[ColumnClicked.Column.Index-1];
-      end
-      else begin
-        s2 := '';
-      end;
-      // Now compare
-      Result := AnsiCompareText(s1, s2);
+      pNode := VSTServer.AddChild(pAllListedServersNode);
+      pData := VSTServer.GetNodeData(pNode);
+      pData^.Index := -1;
+      pData^.Caption := ServerList.Strings[i];
+      pData^.PTerminalServerList := nil;
     end;
   end;
 
-  // Reverse result when Ascending
-  if not ColumnClicked.Ascending then Result := -Result;
+  VSTServer.FullExpand(pAllListedServersNode);
 end;
 
-// SetColumnImage procedure was taken from
-// http://www.delphi3000.com/articles/article_2063.asp?SK=
-procedure TMainForm.SetColumnImage( List: TListView; ColumnIndex, Image: Integer;
-                                 ShowImage: Boolean);
-var
-  Align,hHeader: integer;
-  HD: HD_ITEM;
-
+procedure TMainForm.Button1Click(Sender: TObject);
 begin
-  hHeader := SendMessage(List.Handle, LVM_GETHEADER, 0, 0);
-  with HD do
-  begin
-    case List.Columns[ColumnIndex].Alignment of
-      taLeftJustify:  Align := HDF_LEFT;
-      taCenter:       Align := HDF_CENTER;
-      taRightJustify: Align := HDF_RIGHT;
-    else
-      Align := HDF_LEFT;
-    end;
-
-    mask := HDI_IMAGE or HDI_FORMAT;
-
-    pszText := PChar(List.Columns[ColumnIndex].Caption);
-
-    if ShowImage then
-      fmt := HDF_STRING or HDF_IMAGE or HDF_BITMAP_ON_RIGHT
-    else
-      fmt := HDF_STRING or Align;
-
-    iImage := Image;
-  end;
-  SendMessage(hHeader, HDM_SETITEM, ColumnIndex, Integer(@HD));
+  TerminalServers[0].EnumerateServersEx;
 end;
 
-procedure TMainForm.ListViewColumnClick(Sender: TObject;
-  Column: TListColumn);
-var ColumnClicked: TColumnClicked;
+function GetVKText(VK: UINT): String;
+var Buf: array[0..255] of char;
+  sc: Integer;
+  asc: Boolean;
+  Temp: Integer;
+begin
+  sc := MapVirtualKey(VK, 0);
+  ZeroMemory(@Buf, SizeOf(Buf));
+
+  // Is vk ASCII?
+  asc := VK <= 32;
+  if (not asc) and (vk <> VK_DIVIDE) then
+  begin
+    asc := ToAscii(vk, sc, @buf, @Temp, 1) > 0;
+  end;
+
+  // Set bits
+  sc := sc shl 16;
+  sc := sc or $1 shl 25; // <- don't care
+
+  if (not asc) then
+  begin
+    sc := sc or $1 shl 24; // <- extended bit
+  end;
+
+  // Convert to string
+  if GetKeyNameText(sc, buf, 256) > 0 then
+  begin
+    Result := Buf;
+  end;
+end;
+
+procedure ClientResize(const ClientHandle: HWND; const IncWidthBy: Integer;
+  const IncHeightBy: Integer);
+var lpRect: RECT;
+  ParentHandle: HWND;
+  NewWidth: Integer;
+  NewHeight: Integer;
+begin
+  // Get Parent Window Handle
+  ParentHandle := GetParent(ClientHandle);
+  GetWindowRect(ClientHandle, lpRect);
+
+  // Convert lpRect to client-area coordinates
+  ScreenToClient(ParentHandle, tagPoint(lpRect.TopLeft));
+  ScreenToClient(ParentHandle, tagPoint(lpRect.BottomRight));
+
+  // Calculate New Width and Height
+  NewWidth := (lpRect.Right-lpRect.Left) + IncWidthBy;
+  NewHeight := (lpRect.Bottom-lpRect.Top) + IncHeightBy;
+
+  // Resize the Window
+  MoveWindow(ClientHandle, lpRect.Left, lpRect.Top, NewWidth, NewHeight, True);
+end;
+
+procedure InitComboBox(hCB: HWND);
+var Index: Integer;
   i: Integer;
-  AListView: TListView;
+  Default: Integer;
+  lpRect: TRect;
+  ItemHeight: Integer;
+  IncHeight: Integer;
+function AddComboBoxItem(const s: string; VK: UINT): Integer;
+var t: string;
 begin
-  AListView := Sender as TListView;
-  ColumnClicked := TColumnClicked(AListView.Tag);
-
-  if Column = ColumnClicked.Column then
+  if (Length(s) = 1) and ((s > '/') and (s < '[')) then
   begin
-    ColumnClicked.Ascending := not ColumnClicked.Ascending;
+    t := s;
   end
   else begin
-    // Remove column image
-    ColumnClicked.Column := Column;
-//    ColumnClicked.LastSortedColumn := Column.Index;
+    t := '{' + s + '}';
   end;
 
-  // Customsort Routine
-  AListView.CustomSort(@SortByColumn, Integer(ColumnClicked));
-
-  // This loop displays the icon in the selected column.
-  for i := 0 to AListView.Columns.Count-1 do
+  SendMessage(hCB, CB_ADDSTRING, 0, Longint(PChar(t)));
+  SendMessage(hCB, CB_SETITEMDATA, Index, VK);
+  Result := Index;
+  Inc(Index);
+end;
+begin
+  for i := 0 to 9 do
   begin
-    // the Descending icon is no 9 in the Imagelist, the Ascending image
-    // is no 10 (9 + Ord(ColumnClicked.Ascending)
-    SetColumnImage(AListView, i, 9 + Ord(ColumnClicked.Ascending),
-      i = Column.Index);
+    AddComboBoxItem(IntToStr(i), 30);
   end;
 
-  AListView := nil;
-  AListView.Free;
-end;
-
-procedure TMainForm.ProcessesListViewDeletion(Sender: TObject; Item: TListItem);
-begin
-  if Item.Data <> nil then
+  for i := Ord('A') to Ord('Z') do
   begin
-    THiddenProcessData(Item.Data).Free;
-    Item.Data := nil;
+    AddComboBoxItem(Chr(i), 41 + i);
   end;
-end;
 
-procedure TMainForm.ServerTreeViewDblClick(Sender: TObject);
-begin
-  strServer := ServerTreeView.Selected.Text;
-  Button1.Click;
-end;
+  AddComboBoxItem('backspace', VK_BACK);
+  AddComboBoxItem('delete', VK_DELETE);
+  AddComboBoxItem('down', VK_DOWN);
+  AddComboBoxItem('enter', VK_RETURN);
 
-procedure TMainForm.SessionsListViewDeletion(Sender: TObject; Item: TListItem);
-begin
-  if Item.Data <> nil then
+  for i := 2 to 12 do
   begin
-    THiddenProcessData(Item.Data).Free;
-    Item.Data := nil;
+    AddComboBoxItem('F' + IntToStr(i), VK_F2 + i);
   end;
+
+  AddComboBoxItem('home', VK_HOME);
+  AddComboBoxItem('insert', VK_INSERT);
+  AddComboBoxItem('left', VK_LEFT);
+  AddComboBoxItem('-', VK_SUBTRACT);
+  AddComboBoxItem('pagedown', VK_NEXT);
+  AddComboBoxItem('pageup', VK_PRIOR);
+  AddComboBoxItem('+', VK_ADD);
+  AddComboBoxItem('prtscrn', VK_SNAPSHOT);
+  AddComboBoxItem('right', VK_RIGHT);
+  AddComboBoxItem('spacebar', VK_SPACE);
+  Default := AddComboBoxItem('*', VK_MULTIPLY);
+  AddComboBoxItem('tab', VK_TAB);
+  Index := AddComboBoxItem('up', VK_UP);
+
+  // Get the height of a single item
+  ItemHeight := SendMessage(hCB, CB_GETITEMHEIGHT, 0, 0);
+
+  // We want to show 28 extra items
+  IncHeight := ItemHeight * 28;
+
+  // Resize the combobox drop down height
+  ClientResize(hCB, 0, IncHeight);
+
+  // Select Default Combobox Item
+  SendMessage(hCB, CB_SETCURSEL, Default, 0);
 end;
 
-procedure TMainForm.SessionsListViewInsert(Sender: TObject; Item: TListItem);
+function MyDialogProc(hwndDlg: HWND; uMsg: UINT; wParam: WPARAM;
+  lParam: LPARAM): BOOL; stdcall;
+var i: Integer;
+  s: String;
+  c: Char;
+  hComboBox: THandle;
+  ShiftChecked: Boolean;
+  ControlChecked: Boolean;
+  AltChecked: Boolean;
 begin
-  if Item.Data <> nil then
-  begin
-    case THiddenSessionData(Item.Data).ConnectState of
-      WTSActive: Inc(iActiveSessions);
-      WTSDisconnected: Inc(IDisconnectedSessions);
+  Result := False;
+  case uMsg of
+    WM_INITDIALOG:
+    begin
+      Result := True;
+      InitComboBox(GetDlgItem(hwndDlg, 241));
     end;
-    UpdateTotals;
+    WM_SYSCOMMAND:
+    begin
+      if wParam = SC_CLOSE then
+      begin
+        EndDialog(hwndDlg, IDCANCEL);// same as cancel button
+      end;
+    end;
+    WM_COMMAND:
+    begin
+      if HiWord(wParam) = BN_CLICKED then
+      begin
+        Result := True;
+        case LoWord(wParam) of
+          1:
+          begin
+            ShiftChecked := SendMessage(GetDlgItem(hwndDlg, 242), BM_GETCHECK, 0, 0) = BST_CHECKED;
+            ControlChecked := SendMessage(GetDlgItem(hwndDlg, 243), BM_GETCHECK, 0, 0) = BST_CHECKED;
+            AltChecked := SendMessage(GetDlgItem(hwndDlg, 244), BM_GETCHECK, 0, 0) = BST_CHECKED;
+            ShowMessageFmt('Shift: %d Control: %d Alt: %d', [Ord(ShiftChecked), Ord(ControlChecked), Ord(AltChecked)]);
+//            EndDialog(hwndDlg, IDOK);
+          end;
+          2: EndDialog(hwndDlg, IDCANCEL);
+        end;
+      end;
+    end;
   end;
+end;
+
+
+procedure TMainForm.Button2Click(Sender: TObject);
+var TaskMgr : HModule;
+  Buffer: array[0..255] of char;
+  sc: Integer;
+  asc: Boolean;
+  s: string;
+  Res: Integer;
+begin
+  TaskMgr := LoadLibrary('taskmgr.exe');
+  if TaskMgr <> 0 then
+  begin
+    try
+      Res := DialogBox(TaskMgr, MakeIntResource(240), Handle, @MyDialogProc);
+      if Res = IDOK then
+      begin
+        ShowMessage('shadow');
+      end
+      else begin
+        ShowMessage('no shadow');
+      end;
+      
+    finally
+      FreeLibrary(TaskMgr);
+    end;
+  end;
+end;
+
+procedure TMainForm.FormCreate(Sender: TObject);
+var pNode: PVirtualNode;
+  pData: PServerNodeData;
+begin
+  ReportMemoryLeaksOnShutDown := DebugHook <> 0;
+  TerminalServers := TJwTerminalServerList.Create;
+  TerminalServers.Owner := Self;
+
+  // Create the 'This Computer' parent node
+  pThisComputerNode := VSTServer.AddChild(nil);
+  pData := VSTServer.GetNodeData(pThisComputerNode);
+
+  // This is a node without a Terminal Server instance attached so we set
+  // Index to -2 (never add a Terminal Server instance to it) and Pointer to nil
+  pData^.Caption := 'This Computer';
+  pData^.Index := -2;
+  pData^.PTerminalServerList := nil;
+
+  // Add a child node (local computer)
+  pNode := VSTServer.AddChild(pThisComputerNode);
+  pData := VSTServer.GetNodeData(pNode);
+
+  // Point the node data to a Terminal Server instance
+  pData^.Index := TerminalServers.Add(TjwTerminalServer.Create);
+  pData^.PTerminalServerList := @TerminalServers;
+
+  // Expand the This Computer Node
+  VSTServer.FullExpand(pThisComputerNode);
+
+  // Create the 'All Listed Servers' parent node
+  pAllListedServersNode := VSTServer.AddChild(nil);
+  pData := VSTServer.GetNodeData(pAllListedServersNode);
+
+  // This is a node without a Terminal Server instance attached so we set
+  // Index to -2 (never add a Terminal Server instance to it) and Pointer to nil
+  pData^.Caption := 'All Listed Servers';
+  pData^.Index := -2;
+  pData^.PTerminalServerList := nil;
+end;
+
+procedure TMainForm.VSTUserGetText(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType;
+  var CellText: WideString);
+var
+  pData: PUserNodeData;
+begin
+  pData := Sender.GetNodeData(Node);
+
+  // Do we have data for this session?
+  if pData^.List^.Count > pData^.Index then
+  begin
+    case Column of
+      0: CellText := pData^.List^.Items[pData^.Index].Owner.Owner.Server;
+      1: CellText := pData^.List^.Items[pData^.Index].Username;
+      2: CellText := pData^.List^.Items[pData^.Index].WinStationName;
+      3: CellText := IntToStr(pData^.List^.Items[pData^.Index].SessionId);
+      4: CellText := pData^.List^.Items[pData^.Index].ConnectStateStr;
+      5: CellText := pData^.List^.Items[pData^.Index].IdleTimeStr;
+      6: CellText := pData^.List^.Items[pData^.Index].LogonTimeStr;
+    end;
+  end;
+end;
+
+procedure TMainForm.VSTUserHeaderClick(Sender: TVTHeader;
+  Column: TColumnIndex; Button: TMouseButton; Shift: TShiftState; X,
+  Y: Integer);
+begin
+  with Sender do
+  begin
+    SortColumn := Column;
+    Treeview.SortTree(Column, SortDirection);
+    if SortDirection = sdAscending then
+    begin
+      SortDirection := sdDescending;
+    end
+    else begin
+      SortDirection := sdAscending;
+    end;
+  end;
+end;
+
+procedure TMainForm.VSTUserGetImageIndex(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
+  var Ghosted: Boolean; var ImageIndex: Integer);
+var
+  pData: PUserNodeData;
+begin
+  if Kind in [ikNormal, ikSelected] then begin
+//    pData := Sender.GetNodeData(Node);
+  end;
+end;
+
+procedure TMainForm.VSTServerGetNodeDataSize(Sender: TBaseVirtualTree;
+  var NodeDataSize: Integer);
+begin
+  NodeDataSize := SizeOf(TServerNodeData);
+end;
+
+procedure TMainForm.VSTUserGetNodeDataSize(Sender: TBaseVirtualTree;
+  var NodeDataSize: Integer);
+begin
+  NodeDataSize := SizeOf(TUserNodeData);
+end;
+
+procedure TMainForm.VSTUserCompareNodes(Sender: TBaseVirtualTree; Node1,
+  Node2: PVirtualNode; Column: TColumnIndex; var Result: Integer);
+var Data1: PUserNodeData;
+  Data2: PUserNodeData;
+  Index1: Integer;
+  Index2: Integer;
+begin
+  Data1 := Sender.GetNodeData(Node1);
+  Data2 := Sender.GetNodeData(Node2);
+
+  if (not Assigned(Data1)) or (not Assigned(Data2)) then
+  begin
+    Result := 0;
+  end
+  else begin
+    Index1 := Data1^.Index;
+    Index2 := Data2^.Index;
+
+    // Do we have data of these sessions?
+    if (Data1^.List^.Count > Index1) and (Data2^.List^.Count > Index2) then
+    begin
+      case Column of
+        0: begin
+          Result := CompareText(Data1^.List^.Items[Index1].Owner.Owner.Server,
+            Data2^.List^.Items[Index2].Owner.Owner.Server);
+        end;
+        1: begin
+          Result := CompareText(Data1^.List^.Items[Index1].Username,
+            Data2^.List^.Items[Index2].Username);
+        end;
+        2: begin
+          Result := CompareText(Data1^.List^.Items[Index1].WinStationName,
+            Data2^.List^.Items[Index2].WinStationName);
+        end;
+        3: begin
+          if Data1^.List^.Items[Index1].SessionId >
+            Data2^.List^.Items[Index2].SessionId then
+          begin
+            Result := 1;
+          end
+          else if Data1^.List^.Items[Index1].SessionId =
+            Data2^.List^.Items[Index2].SessionId then
+          begin
+            Result := 0;
+          end
+          else begin
+            Result := -1;
+          end;
+        end;
+        4: begin
+          Result := CompareText(Data1^.List^.Items[Index1].ConnectStateStr,
+            Data2^.List^.Items[Index2].ConnectStateStr);
+        end;
+        5: begin
+          Result := CompareText(Data1^.List^.Items[Index1].IdleTimeStr,
+            Data2^.List^.Items[Index2].IdleTimeStr);
+        end;
+        6: begin
+          Result := CompareText(Data1^.List^.Items[Index1].LogonTimeStr,
+            Data2^.List^.Items[Index2].LogonTimeStr);
+        end;
+      end;
+    end
+    else begin
+      // We have no data, so return equal, should not occur!
+      Result := 0;
+    end;
+  end;
+end;
+
+procedure TMainForm.VSTServerGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
+  Column: TColumnIndex; TextType: TVSTTextType; var CellText: WideString);
+var pData: PServerNodeData;
+begin
+  pData := Sender.GetNodeData(Node);
+  if pData^.PTerminalServerList <> nil then
+  begin
+    CellText := pData^.PTerminalServerList^[pData^.Index].Server;
+  end
+  else begin
+    CellText := pData^.Caption;
+  end;
+end;
+
+procedure TMainForm.VSTServerColumnDblClick(Sender: TBaseVirtualTree;
+  Column: TColumnIndex; Shift: TShiftState);
+var pServerData: PServerNodeData;
+  pUserNode: PVirtualNode;
+  pUserData: PUserNodeData;
+  i: Integer;
+begin
+  pServerData := Sender.GetNodeData(Sender.FocusedNode);
+
+  // Is this a server node?
+  if pServerData^.Index > -2 then
+  begin
+    // Is a Terminal Server instance assigned?
+    if pServerData^.PTerminalServerList = nil then
+    begin
+      // Create a Terminal Server instance
+      pServerData^.Index := TerminalServers.Add(TjwTerminalServer.Create);
+      // Set the servername
+      TerminalServers[pServerData^.Index].Server := pServerData^.Caption;
+      // Point the node data to a Terminal Server instance
+      pServerData^.PTerminalServerList := @TerminalServers;
+    end;
+
+    with pServerData^.PTerminalServerList^[pServerData^.Index] do
+    begin
+      // EnumerateSessions
+      if EnumerateSessions then
+      begin
+        for i := 0 to Sessions.Count - 1 do
+        begin
+          // Create a node for the session
+          pUserNode := VSTUser.AddChild(nil);
+          // and add the data
+          pUserData := VSTUser.GetNodeData(pUserNode);
+          // Set the Index
+          pUserData^.Index := i;
+          // Point to TerminalServerList.TerminalServer[Index].SessionList
+          pUserData^.List := @Sessions;
+        end;
+      end;
+
+      // Assign Event Handler
+      OnSessionEvent := OnTerminalServerEvent;
+    end;
+  end;
+end;
+
+procedure TMainForm.VSTServerFreeNode(Sender: TBaseVirtualTree;
+  Node: PVirtualNode);
+var pData: PServerNodeData;
+begin
+  pData := Sender.GetNodeData(Node);
+  // Free the string data by setting it to ''
+  pData^.Caption := '';
+end;
+
+procedure TMainForm.FormDestroy(Sender: TObject);
+begin
+  // Prevent updates to the Virtual String Grids
+  VSTUser.OnGetText := nil;
+  VSTServer.OnGetText := nil;
+
+  // Now Free the Terminal Server Instances
+  TerminalServers.Free;
 end;
 
 end.
