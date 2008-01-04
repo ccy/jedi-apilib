@@ -333,9 +333,9 @@
   SUPPORTS_IMPLEMENTS           Compiler supports implements (D4+/BCB4+)
   SUPPORTS_DEPRECATED           Compiler supports the deprecated directive (D6+/BCB6+)
   SUPPORTS_PLATFORM             Compiler supports the platform directive (D6+/BCB6+)
-  SUPPORTS_LIBRARY              Compiler supports the library directive (D6+/BCB6+)
+  SUPPORTS_LIBRARY              Compiler supports the library directive (D6+/BCB6+/FPC)
   SUPPORTS_LOCAL                Compiler supports the local directive (D6+/BCB6+)
-  SUPPORTS_INLINE               Compiler supports the inline directive (D9+)
+  SUPPORTS_INLINE               Compiler supports the inline directive (D9+/FPC)
   SUPPORTS_FOR_IN               Compiler supports for in loops (D9+)
   SUPPORTS_NESTED_CONSTANTS     Compiler supports nested constants (D9+)
   SUPPORTS_NESTED_TYPES         Compiler supports nested types (D9+)
@@ -347,7 +347,7 @@
   SUPPORTS_STATIC               Compiler supports static keyword (D9.NET, D10+)
   SUPPORTS_FINAL                Compiler supports final keyword (D9.NET, D10+)
   ACCEPT_DEPRECATED             Compiler supports or ignores the deprecated directive (D6+/BCB6+/FPC)
-  ACCEPT_PLATFORM               Compiler supports or ignores the platform directive (D6+/BCB6+)
+  ACCEPT_PLATFORM               Compiler supports or ignores the platform directive (D6+/BCB6+/FPC)
   ACCEPT_LIBRARY                Compiler supports or ignores the library directive (D6+/BCB6+)
   SUPPORTS_CUSTOMVARIANTS       Compiler supports custom variants (D6+/BCB6+)
   SUPPORTS_VARARGS              Compiler supports varargs (D6+/BCB6+)
@@ -803,8 +803,8 @@
     {$DEFINE SUPPORTS_DYNAMICARRAYS}
     {$DEFINE SUPPORTS_DEFAULTPARAMS}
     {$DEFINE SUPPORTS_OVERLOAD}
-    {$DEFINE ACCEPT_DEPRECATED}
-    {$DEFINE ACCEPT_PLATFORM}
+    {$DEFINE ACCEPT_DEPRECATED}  // 2.2 also gives warnings
+    {$DEFINE ACCEPT_PLATFORM}    // 2.2 also gives warnings
     {$DEFINE ACCEPT_LIBRARY}
     {$DEFINE SUPPORTS_EXTSYM}
     {$DEFINE SUPPORTS_NODEFINE}
@@ -823,8 +823,14 @@
 
     {$DEFINE XPLATFORM_RTL}
 
-    {$UNDEF SUPPORTS_DISPINTERFACE}
-    {$UNDEF SUPPORTS_IMPLEMENTS}
+    {$IFDEF VER2_2}
+      {$DEFINE SUPPORTS_DISPINTERFACE}
+      {$DEFINE SUPPORTS_IMPLEMENTS}
+      {$DEFINE SUPPORTS_DISPID}
+    {$ELSE}
+      {$UNDEF SUPPORTS_DISPINTERFACE}
+      {$UNDEF SUPPORTS_IMPLEMENTS}
+    {$endif}
     {$UNDEF SUPPORTS_UNSAFE_WARNINGS}
   {$ENDIF}
 {$ENDIF FPC}
