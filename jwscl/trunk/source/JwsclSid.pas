@@ -384,7 +384,7 @@ type
        }
     function GetAccountName(SystemName: TJwString): TJwString; virtual;
 
-    function GetChachedUserFromSid : WideString; virtual;
+    function GetCachedUserFromSid : WideString; virtual;
 
       {@Name returns the domain account name of the SID on the computer given in SystemName.
        For more information see the see also section.
@@ -638,7 +638,7 @@ type
        }
     property AccountName[SystemName: TJwString]: TJwString Read GetAccountName;
 
-    property ChachedUserFromSid : WideString read GetChachedUserFromSid;
+    property ChachedUserFromSid : WideString read GetCachedUserFromSid;
 
        {@Name returns the domain account name of the SID on the computer given in SystemName.
        For more information see the see also section.
@@ -1214,7 +1214,7 @@ begin
 
 end;
 
-function TJwSecurityId.GetChachedUserFromSid : WideString;
+function TJwSecurityId.GetCachedUserFromSid : WideString;
 var pwUserName : PWideChar;
     cbUserName : DWORD;
 begin
