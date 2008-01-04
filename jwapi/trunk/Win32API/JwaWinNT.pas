@@ -9009,21 +9009,38 @@ end;
 
 
 {$IFNDEF JWA_INCLUDEMODE}
+
 function NtCurrentTeb: PNT_TIB;
 asm
-        MOV     EAX, FS:[0]
+{$ifdef cpu386}
+        MOV     EAX, FS:[024]   // was zero        
+{$endif cpu386}
+{$ifdef cpux86_64}
+        movq     RAX, GS:[48]
+{$endif cpux86_64}
 end;
 {$ENDIF JWA_INCLUDEMODE}
 
 function GetFiberData: PVOID;
 asm
-        MOV     EAX, FS:[$10]
+{$ifdef cpu386}
+        MOV     EAX, FS:[$1016]
         MOV     EAX, [EAX]
+{$endif cpu386}
+{$ifdef cpux86_64}
+        MOV     RAX, GS:[32]
+        MOV     RAX, [RAX]
+{$endif cpux86_64}
 end;
 
 function GetCurrentFiber: PVOID;
 asm
-        MOV     EAX, FS:[$10]
+{$ifdef cpu386}
+        MOV     EAX, FS:[$1016]
+{$endif cpu386}
+{$ifdef cpux86_64}
+        MOV     RAX, GS:[32]
+{$endif cpux86_64}
 end;
 
 {$IFNDEF JWA_INCLUDEMODE}
