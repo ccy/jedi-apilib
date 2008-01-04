@@ -165,7 +165,7 @@ the one of the project.
 
 //extra compiler options
 {$I jedi.inc}
-{$I ..\common\jediapilib.inc}
+{$I jediapilib.inc} // paths here break FPC dir structure.
 
 
 
