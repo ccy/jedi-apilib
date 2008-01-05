@@ -490,7 +490,7 @@ var Res: Integer; Exc: EJwsclCryptApiException;
 begin
   //Try to use CryptUnProtectMemory - if it is not available, we have to use RtlDecryptMemory
   try
-    GetProcedureAddress(Pointer(@_CryptUnProtectMemory), Crypt32, 'CryptProtectMemory');
+    GetProcedureAddress(Pointer(@_CryptUnProtectMemory), Crypt32, 'CryptUnProtectMemory');
   except
     GetProcedureAddress(Pointer(@_CryptUnProtectMemory), AdvApi32, 'SystemFunction041');
     CryptUnProtectMemoryNtStatus:=True;
