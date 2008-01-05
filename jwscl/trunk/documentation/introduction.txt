@@ -1,4 +1,4 @@
-JEDI Windows Security Library BETA 0.5
+JEDI Windows Security Library BETA 0.6
 This is the preliminary version of JWSCL.
 
 The suite is a bunch of classes that encapsulated MS Windows security functions in object oriented way.
@@ -25,8 +25,23 @@ The library is subject to the Mozilla Public License Version 1.1 (the "License")
 you may not use this file except in compliance with the License. You may obtain a copy of the
 License at http://www.mozilla.org/MPL/
 
+Alternatively, the contents of this file may be used under the terms of the  
+GNU Lesser General Public License (the  "LGPL License"), in which case the   
+provisions of the LGPL License are applicable instead of those above.        
+If you wish to allow use of your version of this file only under the terms   
+of the LGPL License and not to allow others to use your version of this file 
+under the MPL, indicate your decision by deleting  the provisions above and  
+replace  them with the notice and other provisions required by the LGPL      
+License.  If you do not delete the provisions above, a recipient may use     
+your version of this file under either the MPL or the LGPL License.          
+                                                                             
+For more information about the LGPL: http://www.gnu.org/copyleft/lesser.html 
+
 
 Do not forget to send bugs, comments or greets to the author
 
 Christian Wimmer – DelphiSecurityLibrary(ät)teamchris(dot)info
-Stuttgart, Germany 1.10.2007
+Stuttgart, Germany 05.10.2008
+
+In Memory Of
+Robert Marquardt
