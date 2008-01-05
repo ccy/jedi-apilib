@@ -576,7 +576,7 @@ The list has no order!}
 
 {.$I JwaWinternl.pas}
 
-{$I ..\Common\ModuleLoader.pas}
+{$I ModuleLoader.pas}
 {$IFDEF JWA_INCLUDE_SETUP_API}
 {$DEFINE SETUPAPI_LINKONREQUEST}
 {If the compiler cannot find "SaCMAPI" its
@@ -904,7 +904,7 @@ The list has no order!}
 {$I JwaWinSta.pas}
 {$ENDIF FPC}
 
-{$I ..\Common\ModuleLoader.pas}
+{$I ModuleLoader.pas}
 {$IFDEF JWA_INCLUDE_SETUP_API}
 {$DEFINE SETUPAPI_LINKONREQUEST}
 

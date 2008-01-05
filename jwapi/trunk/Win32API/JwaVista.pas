@@ -358,7 +358,8 @@ implementation
 uses JwaWinDLLNames;
 
 {$IFNDEF DYNAMIC_LINK}
-  function AddMandatoryAce; external advapi32 name 'AddMandatoryAce';
+  function AddMandatoryAce(pAcl: PACL; dwAceRevision, AceFlags, MandatoryPolicy: DWORD;
+    pLabelSid: PSID): BOOL; stdcall; external advapi32 name 'AddMandatoryAce';
 {$ELSE}
 
 var
