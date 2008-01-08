@@ -2,8 +2,8 @@ object MainForm: TMainForm
   Left = 0
   Top = 0
   Caption = 'TSAdminEx'
-  ClientHeight = 401
-  ClientWidth = 630
+  ClientHeight = 397
+  ClientWidth = 686
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -19,7 +19,7 @@ object MainForm: TMainForm
   object Splitter1: TSplitter
     Left = 0
     Top = 29
-    Height = 353
+    Height = 349
     ExplicitLeft = 352
     ExplicitTop = 160
     ExplicitHeight = 100
@@ -28,7 +28,7 @@ object MainForm: TMainForm
     Left = 3
     Top = 29
     Width = 201
-    Height = 353
+    Height = 349
     Align = alLeft
     Header.AutoSizeIndex = 0
     Header.Font.Charset = DEFAULT_CHARSET
@@ -48,7 +48,7 @@ object MainForm: TMainForm
   object ToolBar1: TToolBar
     Left = 0
     Top = 0
-    Width = 630
+    Width = 686
     Height = 29
     Caption = 'ToolBar1'
     EdgeBorders = [ebTop]
@@ -150,8 +150,8 @@ object MainForm: TMainForm
   end
   object StatusBar1: TStatusBar
     Left = 0
-    Top = 382
-    Width = 630
+    Top = 378
+    Width = 686
     Height = 19
     Panels = <
       item
@@ -171,8 +171,8 @@ object MainForm: TMainForm
   object Panel1: TPanel
     Left = 204
     Top = 29
-    Width = 426
-    Height = 353
+    Width = 482
+    Height = 349
     Align = alClient
     BevelOuter = bvLowered
     Caption = 'Panel1'
@@ -180,9 +180,9 @@ object MainForm: TMainForm
     object PageControl1: TPageControl
       Left = 1
       Top = 1
-      Width = 424
-      Height = 351
-      ActivePage = TabSheet1
+      Width = 480
+      Height = 347
+      ActivePage = TabSheet3
       Align = alClient
       TabOrder = 0
       object TabSheet1: TTabSheet
@@ -190,8 +190,8 @@ object MainForm: TMainForm
         object VSTUser: TVirtualStringTree
           Left = 0
           Top = 0
-          Width = 416
-          Height = 323
+          Width = 472
+          Height = 319
           Align = alClient
           Header.AutoSizeIndex = -1
           Header.Font.Charset = DEFAULT_CHARSET
@@ -207,7 +207,7 @@ object MainForm: TMainForm
           OnGetText = VSTUserGetText
           OnGetImageIndex = VSTUserGetImageIndex
           OnGetNodeDataSize = VSTUserGetNodeDataSize
-          OnHeaderClick = VSTUserHeaderClick
+          OnHeaderClick = VSTHeaderClick
           Columns = <
             item
               Position = 0
@@ -238,7 +238,7 @@ object MainForm: TMainForm
             end
             item
               Position = 6
-              Width = 62
+              Width = 118
               WideText = 'Logon Time'
             end>
         end
@@ -249,8 +249,8 @@ object MainForm: TMainForm
         object VSTSession: TVirtualStringTree
           Left = 0
           Top = 0
-          Width = 416
-          Height = 323
+          Width = 472
+          Height = 319
           Align = alClient
           Header.AutoSizeIndex = -1
           Header.Font.Charset = DEFAULT_CHARSET
@@ -262,8 +262,10 @@ object MainForm: TMainForm
           TabOrder = 0
           TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toThemeAware, toUseBlendedImages]
           TreeOptions.SelectionOptions = [toFullRowSelect, toMultiSelect]
+          OnCompareNodes = VSTSessionCompareNodes
           OnGetText = VSTSessionGetText
           OnGetNodeDataSize = VSTSessionGetNodeDataSize
+          OnHeaderClick = VSTHeaderClick
           Columns = <
             item
               Position = 0
@@ -330,8 +332,8 @@ object MainForm: TMainForm
         object VSTProcess: TVirtualStringTree
           Left = 0
           Top = 0
-          Width = 416
-          Height = 323
+          Width = 472
+          Height = 319
           Align = alClient
           Header.AutoSizeIndex = -1
           Header.Font.Charset = DEFAULT_CHARSET
@@ -343,9 +345,10 @@ object MainForm: TMainForm
           TabOrder = 0
           TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toThemeAware, toUseBlendedImages]
           TreeOptions.SelectionOptions = [toFullRowSelect, toMultiSelect]
-          OnCompareNodes = VSTUserCompareNodes
+          OnCompareNodes = VSTProcessCompareNodes
           OnGetText = VSTProcessGetText
           OnGetNodeDataSize = VSTProcessGetNodeDataSize
+          OnHeaderClick = VSTHeaderClick
           Columns = <
             item
               Position = 0
@@ -409,6 +412,15 @@ object MainForm: TMainForm
     Caption = 'EnumServers'
     TabOrder = 4
     OnClick = Button1Click
+  end
+  object Button2: TButton
+    Left = 448
+    Top = -2
+    Width = 75
+    Height = 25
+    Caption = 'Toggle Timer'
+    TabOrder = 5
+    OnClick = Button2Click
   end
   object MainMenu1: TMainMenu
     Images = ImageList1
@@ -1201,5 +1213,12 @@ object MainForm: TMainForm
       Hint = 'Refresh Now'
       ImageIndex = 8
     end
+  end
+  object Timer1: TTimer
+    Enabled = False
+    Interval = 5000
+    OnTimer = Timer1Timer
+    Left = 632
+    Top = 136
   end
 end

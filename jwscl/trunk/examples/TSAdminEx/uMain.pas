@@ -107,6 +107,8 @@ type
     TabSheet2: TTabSheet;
     TabSheet3: TTabSheet;
     Button1: TButton;
+    Button2: TButton;
+    Timer1: TTimer;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure VSTUserGetText(Sender: TBaseVirtualTree;
@@ -119,9 +121,6 @@ type
       var NodeDataSize: Integer);
     procedure VSTUserCompareNodes(Sender: TBaseVirtualTree; Node1,
       Node2: PVirtualNode; Column: TColumnIndex; var Result: Integer);
-    procedure VSTUserHeaderClick(Sender: TVTHeader;
-      Column: TColumnIndex; Button: TMouseButton; Shift: TShiftState; X,
-      Y: Integer);
     procedure VSTServerGetNodeDataSize(Sender: TBaseVirtualTree;
       var NodeDataSize: Integer);
     procedure VSTServerGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
@@ -140,6 +139,16 @@ type
       Column: TColumnIndex; TextType: TVSTTextType; var CellText: WideString);
     procedure VSTProcessGetNodeDataSize(Sender: TBaseVirtualTree;
       var NodeDataSize: Integer);
+    procedure Button2Click(Sender: TObject);
+    procedure Button3Click(Sender: TObject);
+    procedure VSTHeaderClick(Sender: TVTHeader;
+      Column: TColumnIndex; Button: TMouseButton; Shift: TShiftState; X,
+      Y: Integer);
+    procedure VSTSessionCompareNodes(Sender: TBaseVirtualTree; Node1,
+      Node2: PVirtualNode; Column: TColumnIndex; var Result: Integer);
+    procedure VSTProcessCompareNodes(Sender: TBaseVirtualTree; Node1,
+      Node2: PVirtualNode; Column: TColumnIndex; var Result: Integer);
+    procedure Timer1Timer(Sender: TObject);
   private
     { Private declarations }
     TerminalServers: TJwTerminalServerList;
@@ -147,6 +156,8 @@ type
     pAllListedServersNode: PVirtualNode;
     procedure UpdateVirtualTree(const AVirtualTree: TBaseVirtualTree;
       const PSessionList: PJwWTSSessionList; PrevCount: Integer);
+    procedure UpdateProcessVirtualTree(const AVirtualTree: TBaseVirtualTree;
+      const PProcessList: PJwWTSProcessList; PrevCount: Integer);
     procedure OnTerminalServerEvent(Sender: TObject);
     procedure OnEnumerateServersDone(Sender: TObject);
   public
@@ -214,6 +225,51 @@ begin
   end;
 end;
 
+procedure TMainForm.UpdateProcessVirtualTree(const AVirtualTree: TBaseVirtualTree; const PProcessList: PJwWTSProcessList; PrevCount: Integer);
+var i: Integer;
+  pNode: PVirtualNode;
+  pPrevNode: PVirtualNode;
+  pData: PProcessNodeData;
+  NewCount: Integer;
+begin
+  // Get the last node
+  pNode := AVirtualTree.GetLast;
+
+  // Now iterate from last to first node
+  repeat
+    pData := AVirtualTree.GetNodeData(pNode);
+    // Get the previous node and store the pointer, because in the next step
+    // we might delete the current node ;-)
+    pPrevNode := AVirtualTree.GetPrevious(pNode);
+
+    // Is the node data pointing to PSessionList and do we need to delete it?
+    if (pData^.List = PProcessList) and
+      (pData^.Index > PProcessList^.Count-1) then
+    begin
+      // Delete the node (we have no Session Data for it)
+      AVirtualTree.DeleteNode(pNode);
+    end
+    else begin
+      // Invalidating the node will trigger the GetText event which will update
+      // our data
+      AVirtualTree.InvalidateNode(pNode);
+    end;
+    pNode := pPrevNode;
+  until pNode = nil;
+
+  // How many new sessions are there?
+  NewCount := PProcessList^.Count - PrevCount;
+
+  // Create a new node for each new session
+  for i := 0 to NewCount-1 do
+  begin
+    pNode := AVirtualTree.AddChild(nil);
+    pData := AVirtualTree.GetNodeData(pNode);
+    pData^.Index := PrevCount;
+    pData^.List := PProcessList;
+  end;
+end;
+
 procedure TMainForm.OnTerminalServerEvent(Sender: TObject);
 var PrevCount: Integer;
 begin
@@ -228,6 +284,21 @@ begin
     // Sychronize User and Session tree's with the SessionList
     UpdateVirtualTree(VSTUser, @Sessions, PrevCount);
     UpdateVirtualTree(VSTSession, @Sessions, PrevCount);
+  end;
+end;
+
+procedure TMainForm.Timer1Timer(Sender: TObject);
+var i: Integer;
+  PrevCount: Integer;
+begin
+  (Sender as TTimer).Enabled := False;
+  for i := 0 to TerminalServers.Count - 1 do
+  begin
+    PrevCount := TerminalServers[i].Processes.Count;
+    TerminalServers[i].EnumerateProcesses;
+    UpdateProcessVirtualTree(VSTProcess, @TerminalServers[i].Processes,
+      PrevCount);
+  (Sender as TTimer).Enabled := True;
   end;
 end;
 
@@ -253,20 +324,30 @@ end;
 
 procedure TMainForm.Button1Click(Sender: TObject);
 begin
-  TerminalServers[0].EnumerateServersEx;
+  TerminalServers[0].EnumerateServers;
 end;
 
+
+procedure TMainForm.Button2Click(Sender: TObject);
+begin
+  Timer1.Enabled := not Timer1.Enabled;
+end;
+
+procedure TMainForm.Button3Click(Sender: TObject);
+begin
+  VSTProcess.EndUpdate;
+end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
 var pNode: PVirtualNode;
   pData: PServerNodeData;
-  i: Integer;
   pUserNode: PVirtualNode;
   pUserData: PUserNodeData;
   pSessionNode: PVirtualNode;
   pSessionData: PSessionNodeData;
   pProcessNode: PVirtualNode;
   pProcessData: PProcessNodeData;
+  i: Integer;
 begin
 {$IFDEF FASTMM}
   ReportMemoryLeaksOnShutDown := DebugHook <> 0;
@@ -322,7 +403,7 @@ begin
       // Assign Session Event Handler
       OnSessionEvent := OnTerminalServerEvent;
 
-      if GetAllProcesses then
+      if EnumerateProcesses then
       begin
         for i := 0 to Processes.Count - 1 do
         begin
@@ -388,21 +469,27 @@ begin
   end;
 end;
 
-procedure TMainForm.VSTUserHeaderClick(Sender: TVTHeader;
+procedure TMainForm.VSTHeaderClick(Sender: TVTHeader;
   Column: TColumnIndex; Button: TMouseButton; Shift: TShiftState; X,
   Y: Integer);
+var LastSortColumn: Integer;
 begin
   with Sender do
   begin
+    LastSortColumn := SortColumn;
     SortColumn := Column;
-    Treeview.SortTree(Column, SortDirection);
-    if SortDirection = sdAscending then
+    if Column = LastSortColumn then
     begin
-      SortDirection := sdDescending;
-    end
-    else begin
-      SortDirection := sdAscending;
+      if SortDirection = sdAscending then
+      begin
+        SortDirection := sdDescending;
+      end
+      else begin
+        SortDirection := sdAscending;
+      end;
     end;
+    // Sort
+    Treeview.SortTree(Column, SortDirection);
   end;
 end;
 
@@ -575,6 +662,122 @@ begin
   end;
 end;
 
+procedure TMainForm.VSTSessionCompareNodes(Sender: TBaseVirtualTree; Node1,
+  Node2: PVirtualNode; Column: TColumnIndex; var Result: Integer);
+var Data1: PSessionNodeData;
+  Data2: PSessionNodeData;
+  Index1: Integer;
+  Index2: Integer;
+begin
+  Data1 := Sender.GetNodeData(Node1);
+  Data2 := Sender.GetNodeData(Node2);
+
+  if (not Assigned(Data1)) or (not Assigned(Data2)) then
+  begin
+    Result := 0;
+  end
+  else begin
+    Index1 := Data1^.Index;
+    Index2 := Data2^.Index;
+
+    // Do we have data of these sessions?
+    if (Data1^.List^.Count > Index1) and (Data2^.List^.Count > Index2) then
+    begin
+      case Column of
+        0: begin
+          Result := CompareText(Data1^.List^.Items[Index1].Owner.Owner.Server,
+            Data2^.List^.Items[Index2].Owner.Owner.Server);
+        end;
+        1: begin
+          Result := CompareText(Data1^.List^.Items[Index1].Username,
+            Data2^.List^.Items[Index2].Username);
+        end;
+        2: begin
+          if Data1^.List^.Items[Index1].SessionId >
+            Data2^.List^.Items[Index2].SessionId then
+          begin
+            Result := 1;
+          end
+          else if Data1^.List^.Items[Index1].SessionId =
+            Data2^.List^.Items[Index2].SessionId then
+          begin
+            Result := 0;
+          end
+          else begin
+            Result := -1;
+          end;
+        end;
+        3: begin
+          Result := CompareText(Data1^.List^.Items[Index1].ConnectStateStr,
+            Data2^.List^.Items[Index2].ConnectStateStr);
+        end;
+        4: begin
+          Result := CompareText(Data1^.List^.Items[Index1].WinStationDriverName,
+            Data2^.List^.Items[Index2].WinStationDriverName);
+        end;
+        5: begin
+          Result := CompareText(Data1^.List^.Items[Index1].ClientName,
+            Data2^.List^.Items[Index2].ClientName);
+        end;
+        6: begin
+          Result := CompareText(Data1^.List^.Items[Index1].IdleTimeStr,
+            Data2^.List^.Items[Index2].IdleTimeStr);
+        end;
+        7: begin
+          Result := CompareText(Data1^.List^.Items[Index1].LogonTimeStr,
+            Data2^.List^.Items[Index2].LogonTimeStr);
+        end;
+        8: begin
+          Result := CompareText(Data1^.List^.Items[Index1].RemoteAddress,
+            Data2^.List^.Items[Index2].RemoteAddress);
+        end;
+        9: begin
+          Result := CompareText(Data1^.List^.Items[Index1].RemoteAddress,
+            Data2^.List^.Items[Index2].RemoteAddress);
+        end;
+        10: begin
+          if Data1^.List^.Items[Index1].IncomingBytes >
+            Data2^.List^.Items[Index2].IncomingBytes then
+          begin
+            Result := 1;
+          end
+          else if Data1^.List^.Items[Index1].IncomingBytes =
+            Data2^.List^.Items[Index2].IncomingBytes then
+          begin
+            Result := 0;
+          end
+          else begin
+            Result := -1;
+          end;
+        end;
+        11: begin
+          if Data1^.List^.Items[Index1].OutgoingBytes >
+            Data2^.List^.Items[Index2].OutgoingBytes then
+          begin
+            Result := 1;
+          end
+          else if Data1^.List^.Items[Index1].OutgoingBytes =
+            Data2^.List^.Items[Index2].OutgoingBytes then
+          begin
+            Result := 0;
+          end
+          else begin
+            Result := -1;
+          end;
+        end;
+        12: begin
+          Result := CompareText(Data1^.List^.Items[Index1].CompressionRatio,
+            Data2^.List^.Items[Index2].CompressionRatio);
+        end;
+      end;
+    end
+    else begin
+      // We have no data, so return equal, should not occur!
+      Result := 0;
+    end;
+  end;
+end;
+
 procedure TMainForm.VSTSessionGetNodeDataSize(Sender: TBaseVirtualTree;
   var NodeDataSize: Integer);
 begin
@@ -677,6 +880,132 @@ begin
   end;
 end;}
 
+procedure TMainForm.VSTProcessCompareNodes(Sender: TBaseVirtualTree; Node1,
+  Node2: PVirtualNode; Column: TColumnIndex; var Result: Integer);
+var Data1: PProcessNodeData;
+  Data2: PProcessNodeData;
+  Index1: Integer;
+  Index2: Integer;
+begin
+  Data1 := Sender.GetNodeData(Node1);
+  Data2 := Sender.GetNodeData(Node2);
+
+  if (not Assigned(Data1)) or (not Assigned(Data2)) then
+  begin
+    Result := 0;
+  end
+  else begin
+    Index1 := Data1^.Index;
+    Index2 := Data2^.Index;
+
+    // Do we have data of these sessions?
+    if (Data1^.List^.Count > Index1) and (Data2^.List^.Count > Index2) then
+    begin
+      case Column of
+        0: begin
+          Result := CompareText(Data1^.List^.Items[Index1].Owner.Owner.Server,
+            Data2^.List^.Items[Index2].Owner.Owner.Server);
+        end;
+        1: begin
+          Result := CompareText(Data1^.List^.Items[Index1].Username,
+            Data2^.List^.Items[Index2].Username);
+        end;
+        2: begin
+          Result := CompareText(Data1^.List^.Items[Index1].WinStationName,
+            Data2^.List^.Items[Index2].WinStationName);
+        end;
+        3: begin
+          if Data1^.List^.Items[Index1].SessionId >
+            Data2^.List^.Items[Index2].SessionId then
+          begin
+            Result := 1;
+          end
+          else if Data1^.List^.Items[Index1].SessionId =
+            Data2^.List^.Items[Index2].SessionId then
+          begin
+            Result := 0;
+          end
+          else begin
+            Result := -1;
+          end;
+        end;
+        4: begin
+          if Data1^.List^.Items[Index1].ProcessId >
+            Data2^.List^.Items[Index2].ProcessId then
+          begin
+            Result := 1;
+          end
+          else if Data1^.List^.Items[Index1].ProcessId =
+            Data2^.List^.Items[Index2].ProcessId then
+          begin
+            Result := 0;
+          end
+          else begin
+            Result := -1;
+          end;
+        end;
+        5: begin
+          Result := CompareText(Data1^.List^.Items[Index1].ProcessName,
+            Data2^.List^.Items[Index2].ProcessName);
+        end;
+        6: begin
+          if Data1^.List^.Items[Index1].ProcessAge >
+            Data2^.List^.Items[Index2].ProcessAge then
+          begin
+            Result := 1;
+          end
+          else if Data1^.List^.Items[Index1].ProcessAge =
+            Data2^.List^.Items[Index2].ProcessAge then
+          begin
+            Result := 0;
+          end
+          else begin
+            Result := -1;
+          end;
+        end;
+        7: begin
+          Result := CompareText(Data1^.List^.Items[Index1].ProcessCPUTime,
+            Data2^.List^.Items[Index2].ProcessCPUTime);
+        end;
+        8: begin
+          if Data1^.List^.Items[Index1].ProcessMemUsage >
+            Data2^.List^.Items[Index2].ProcessMemUsage then
+          begin
+            Result := 1;
+          end
+          else if Data1^.List^.Items[Index1].ProcessMemUsage =
+            Data2^.List^.Items[Index2].ProcessMemUsage then
+          begin
+            Result := 0;
+          end
+          else begin
+            Result := -1;
+          end;
+        end;
+        9: begin
+          if Data1^.List^.Items[Index1].ProcessVMSize >
+            Data2^.List^.Items[Index2].ProcessVMSize then
+          begin
+            Result := 1;
+          end
+          else if Data1^.List^.Items[Index1].ProcessVMSize =
+            Data2^.List^.Items[Index2].ProcessVMSize then
+          begin
+            Result := 0;
+          end
+          else begin
+            Result := -1;
+          end;
+        end;
+      end;
+    end
+    else begin
+      // We have no data, so return equal, should not occur!
+      Result := 0;
+    end;
+  end;
+end;
+
 procedure TMainForm.VSTProcessGetNodeDataSize(Sender: TBaseVirtualTree;
   var NodeDataSize: Integer);
 begin
@@ -705,13 +1034,11 @@ begin
       3: CellText := IntToStr(pData^.List^.Items[pData^.Index].SessionId);
       4: CellText := IntToStr(pData^.List^.Items[pData^.Index].ProcessId);
       5: CellText := pData^.List^.Items[pData^.Index].ProcessName;
-      6: CellText := pData^.List^.Items[pData^.Index].ProcessName;
-      7: CellText := pData^.List^.Items[pData^.Index].ProcessAge;
-      8: CellText := pData^.List^.Items[pData^.Index].ProcessCPUTime;
-      9: CellText := pData^.List^.Items[pData^.Index].ProcessCPUTime;
-      10: CellText := Format('%.0n K', [
+      6: CellText := pData^.List^.Items[pData^.Index].ProcessAgeStr;
+      7: CellText := pData^.List^.Items[pData^.Index].ProcessCPUTime;
+      8: CellText := Format('%.0n K', [
         pData^.List^.Items[pData^.Index].ProcessMemUsage / 1024], FormatSettings);
-      11: CellText := Format('%.0n K', [
+      9: CellText := Format('%.0n K', [
         pData^.List^.Items[pData^.Index].ProcessVMSize / 1024], FormatSettings);
     end;
   end;
