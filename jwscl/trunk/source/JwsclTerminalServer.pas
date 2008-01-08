@@ -392,6 +392,7 @@ type
   end;
 
   { List Of TJwWTSProcess Objects }
+  PJwWTSProcessList = ^TJwWTSProcessList;
   TJwWTSProcessList = class(TObjectList)
   private
     FOwnsObjects: Boolean;
@@ -770,9 +771,9 @@ begin
           // Calculate Process Age
           CalculateElapsedTime(@CreateTime, DiffTime);
 
-          try
             // Reserve Memory
             GetMem(lpBuffer, ELAPSED_TIME_STRING_LENGTH * SizeOf(WCHAR));
+          try
             // Format Elapsed Time String
             ElapsedTimeStringSafe(@DiffTime, False, lpBuffer,
                 ELAPSED_TIME_STRING_LENGTH);
