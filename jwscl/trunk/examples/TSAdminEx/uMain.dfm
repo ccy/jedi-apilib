@@ -39,10 +39,10 @@ object MainForm: TMainForm
     Header.MainColumn = -1
     Header.Options = [hoColumnResize, hoDrag]
     TabOrder = 2
-    OnColumnDblClick = VSTServerColumnDblClick
     OnFreeNode = VSTServerFreeNode
     OnGetText = VSTServerGetText
     OnGetNodeDataSize = VSTServerGetNodeDataSize
+    OnMouseDown = VSTServerMouseDown
     Columns = <>
   end
   object ToolBar1: TToolBar
@@ -182,7 +182,7 @@ object MainForm: TMainForm
       Top = 1
       Width = 424
       Height = 351
-      ActivePage = TabSheet1
+      ActivePage = TabSheet3
       Align = alClient
       TabOrder = 0
       object TabSheet1: TTabSheet
@@ -246,10 +246,158 @@ object MainForm: TMainForm
       object TabSheet2: TTabSheet
         Caption = 'Sessions'
         ImageIndex = 1
+        object VSTSession: TVirtualStringTree
+          Left = 0
+          Top = 0
+          Width = 416
+          Height = 323
+          Align = alClient
+          Header.AutoSizeIndex = -1
+          Header.Font.Charset = DEFAULT_CHARSET
+          Header.Font.Color = clWindowText
+          Header.Font.Height = -11
+          Header.Font.Name = 'Tahoma'
+          Header.Font.Style = []
+          Header.Options = [hoAutoResize, hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoAutoSpring]
+          TabOrder = 0
+          TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toThemeAware, toUseBlendedImages]
+          TreeOptions.SelectionOptions = [toFullRowSelect, toMultiSelect]
+          OnGetText = VSTSessionGetText
+          OnGetNodeDataSize = VSTSessionGetNodeDataSize
+          Columns = <
+            item
+              Position = 0
+              Width = 100
+              WideText = 'Server'
+            end
+            item
+              Position = 1
+              WideText = 'User'
+            end
+            item
+              Position = 2
+              WideText = 'ID'
+            end
+            item
+              Alignment = taRightJustify
+              Position = 3
+              WideText = 'State'
+            end
+            item
+              Position = 4
+              WideText = 'Type'
+            end
+            item
+              Alignment = taRightJustify
+              Position = 5
+              WideText = 'Client Name'
+            end
+            item
+              Position = 6
+              Width = 62
+              WideText = 'Idle Time'
+            end
+            item
+              Position = 7
+              Width = 62
+              WideText = 'Logon Time'
+            end
+            item
+              Position = 8
+              Width = 62
+              WideText = 'Remote Address'
+            end
+            item
+              Position = 9
+              Width = 62
+              WideText = 'Incoming Bytes'
+            end
+            item
+              Position = 10
+              Width = 62
+              WideText = 'Outgoing Bytes'
+            end
+            item
+              Position = 11
+              Width = 10
+              WideText = 'Compression Ratio'
+            end>
+        end
       end
       object TabSheet3: TTabSheet
         Caption = 'Processes'
         ImageIndex = 2
+        object VSTProcess: TVirtualStringTree
+          Left = 0
+          Top = 0
+          Width = 416
+          Height = 323
+          Align = alClient
+          Header.AutoSizeIndex = -1
+          Header.Font.Charset = DEFAULT_CHARSET
+          Header.Font.Color = clWindowText
+          Header.Font.Height = -11
+          Header.Font.Name = 'Tahoma'
+          Header.Font.Style = []
+          Header.Options = [hoAutoResize, hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoAutoSpring]
+          TabOrder = 0
+          TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toThemeAware, toUseBlendedImages]
+          TreeOptions.SelectionOptions = [toFullRowSelect, toMultiSelect]
+          OnCompareNodes = VSTUserCompareNodes
+          OnGetText = VSTProcessGetText
+          OnGetNodeDataSize = VSTProcessGetNodeDataSize
+          Columns = <
+            item
+              Position = 0
+              Width = 100
+              WideText = 'Server'
+            end
+            item
+              Position = 1
+              WideText = 'User'
+            end
+            item
+              Position = 2
+              WideText = 'Session'
+            end
+            item
+              Alignment = taRightJustify
+              Position = 3
+              WideText = 'ID'
+            end
+            item
+              Alignment = taRightJustify
+              Position = 4
+              WideText = 'PID'
+            end
+            item
+              Position = 5
+              WideText = 'Image'
+            end
+            item
+              Alignment = taRightJustify
+              Position = 6
+              Width = 62
+              WideText = 'Process Age'
+            end
+            item
+              Position = 7
+              Width = 62
+              WideText = 'CPU Time'
+            end
+            item
+              Alignment = taRightJustify
+              Position = 8
+              Width = 62
+              WideText = 'Mem Usage'
+            end
+            item
+              Alignment = taRightJustify
+              Position = 9
+              Width = 10
+              WideText = 'VM Size'
+            end>
+        end
       end
     end
   end
@@ -258,18 +406,17 @@ object MainForm: TMainForm
     Top = -2
     Width = 75
     Height = 25
-    Caption = 'Button1'
+    Caption = 'EnumServers'
     TabOrder = 4
     OnClick = Button1Click
   end
-  object Button2: TButton
-    Left = 432
-    Top = -2
+  object Button5: TButton
+    Left = 547
+    Top = 256
     Width = 75
     Height = 25
-    Caption = 'Button2'
+    Caption = 'Button5'
     TabOrder = 5
-    OnClick = Button2Click
   end
   object MainMenu1: TMainMenu
     Images = ImageList1
@@ -1062,9 +1209,5 @@ object MainForm: TMainForm
       Hint = 'Refresh Now'
       ImageIndex = 8
     end
-  end
-  object ApplicationEvents1: TApplicationEvents
-    Left = 480
-    Top = 248
   end
 end

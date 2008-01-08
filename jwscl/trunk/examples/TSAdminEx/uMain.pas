@@ -3,11 +3,14 @@ unit uMain;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, ComCtrls, ExtCtrls, ActnList, ImgList, ToolWin, Menus,
-  StdCtrls, Math, StrUtils, CommCtrl,
-  JWsclTerminalServer, JwaWindows, AppEvnts,
-  VirtualTrees, Contnrs;
+  StdCtrls, StrUtils, CommCtrl,
+  VirtualTrees,
+  JwaWindows,
+  JWsclTerminalServer;
+//  VirtualTrees;// Contnrs, RpcWinsta, JwsclEncryption, JwsclTypes,
+//  JwsclEnumerations, Internal;
 
 type
   PServerNodeData = ^TServerNodeData;
@@ -23,6 +26,15 @@ type
     List: PJwWTSSessionList;
   end;
 
+  PSessionNodeData = PUserNodeData;
+  TSessionNodeData = TUserNodeData;
+
+  PProcessNodeData = ^TProcessNodeData;
+  TProcessNodeData = record
+    Index: Integer;
+    List: PJwWTSProcessList;
+  end;
+
 // Class below is used to store imageindex of icons in the Imagelist
 TIconRec = record
   Server: WORD;
@@ -35,7 +47,9 @@ end;
 type
   TMainForm = class(TForm)
     VSTUser: TVirtualStringTree;
+    VSTSession: TVirtualStringTree;
     VSTServer: TVirtualStringTree;
+    VSTProcess: TVirtualStringTree;
     MainMenu1: TMainMenu;
     ToolBar1: TToolBar;
     ImageList1: TImageList;
@@ -92,9 +106,8 @@ type
     TabSheet1: TTabSheet;
     TabSheet2: TTabSheet;
     TabSheet3: TTabSheet;
-    ApplicationEvents1: TApplicationEvents;
     Button1: TButton;
-    Button2: TButton;
+    Button5: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure VSTUserGetText(Sender: TBaseVirtualTree;
@@ -114,11 +127,20 @@ type
       var NodeDataSize: Integer);
     procedure VSTServerGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex; TextType: TVSTTextType; var CellText: WideString);
-    procedure VSTServerColumnDblClick(Sender: TBaseVirtualTree;
-      Column: TColumnIndex; Shift: TShiftState);
+//    procedure VSTServerColumnDblClick(Sender: TBaseVirtualTree;
+//      Column: TColumnIndex; Shift: TShiftState);
     procedure VSTServerFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure Button1Click(Sender: TObject);
-    procedure Button2Click(Sender: TObject);
+    procedure VSTServerMouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure VSTSessionGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
+      Column: TColumnIndex; TextType: TVSTTextType; var CellText: WideString);
+    procedure VSTSessionGetNodeDataSize(Sender: TBaseVirtualTree;
+      var NodeDataSize: Integer);
+    procedure VSTProcessGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
+      Column: TColumnIndex; TextType: TVSTTextType; var CellText: WideString);
+    procedure VSTProcessGetNodeDataSize(Sender: TBaseVirtualTree;
+      var NodeDataSize: Integer);
   private
     { Private declarations }
     TerminalServers: TJwTerminalServerList;
@@ -138,6 +160,14 @@ var
   IconRec: TIconRec;
 implementation
 
+{function I_RpcBindingIsClientLocal(BindingHandle: RPC_BINDING_HANDLE;
+  out ClientLocalFlag: Integer): RPC_STATUS; external 'rpcrt4.dll';}
+
+procedure NTCheck(Res: Cardinal);
+begin
+  If (Res <>0) then
+    ShowMessage(SysErrorMessage(RtlNtStatusToDosError(Res)));
+end;
 {$R *.dfm}
 procedure TMainForm.UpdateVirtualTree(const AVirtualTree: TBaseVirtualTree;
   const PSessionList: PJwWTSSessionList; PrevCount: Integer);
@@ -196,8 +226,9 @@ begin
     // Enumerate sessions
     EnumerateSessions;
 
-    // Sychronize tree with SessionList
+    // Sychronize User and Session tree's with the SessionList
     UpdateVirtualTree(VSTUser, @Sessions, PrevCount);
+    UpdateVirtualTree(VSTSession, @Sessions, PrevCount);
   end;
 end;
 
@@ -226,210 +257,21 @@ begin
   TerminalServers[0].EnumerateServersEx;
 end;
 
-function GetVKText(VK: UINT): String;
-var Buf: array[0..255] of char;
-  sc: Integer;
-  asc: Boolean;
-  Temp: Integer;
-begin
-  sc := MapVirtualKey(VK, 0);
-  ZeroMemory(@Buf, SizeOf(Buf));
-
-  // Is vk ASCII?
-  asc := VK <= 32;
-  if (not asc) and (vk <> VK_DIVIDE) then
-  begin
-    asc := ToAscii(vk, sc, @buf, @Temp, 1) > 0;
-  end;
-
-  // Set bits
-  sc := sc shl 16;
-  sc := sc or $1 shl 25; // <- don't care
-
-  if (not asc) then
-  begin
-    sc := sc or $1 shl 24; // <- extended bit
-  end;
-
-  // Convert to string
-  if GetKeyNameText(sc, buf, 256) > 0 then
-  begin
-    Result := Buf;
-  end;
-end;
-
-procedure ClientResize(const ClientHandle: HWND; const IncWidthBy: Integer;
-  const IncHeightBy: Integer);
-var lpRect: RECT;
-  ParentHandle: HWND;
-  NewWidth: Integer;
-  NewHeight: Integer;
-begin
-  // Get Parent Window Handle
-  ParentHandle := GetParent(ClientHandle);
-  GetWindowRect(ClientHandle, lpRect);
-
-  // Convert lpRect to client-area coordinates
-  ScreenToClient(ParentHandle, tagPoint(lpRect.TopLeft));
-  ScreenToClient(ParentHandle, tagPoint(lpRect.BottomRight));
-
-  // Calculate New Width and Height
-  NewWidth := (lpRect.Right-lpRect.Left) + IncWidthBy;
-  NewHeight := (lpRect.Bottom-lpRect.Top) + IncHeightBy;
-
-  // Resize the Window
-  MoveWindow(ClientHandle, lpRect.Left, lpRect.Top, NewWidth, NewHeight, True);
-end;
-
-procedure InitComboBox(hCB: HWND);
-var Index: Integer;
-  i: Integer;
-  Default: Integer;
-  lpRect: TRect;
-  ItemHeight: Integer;
-  IncHeight: Integer;
-function AddComboBoxItem(const s: string; VK: UINT): Integer;
-var t: string;
-begin
-  if (Length(s) = 1) and ((s > '/') and (s < '[')) then
-  begin
-    t := s;
-  end
-  else begin
-    t := '{' + s + '}';
-  end;
-
-  SendMessage(hCB, CB_ADDSTRING, 0, Longint(PChar(t)));
-  SendMessage(hCB, CB_SETITEMDATA, Index, VK);
-  Result := Index;
-  Inc(Index);
-end;
-begin
-  for i := 0 to 9 do
-  begin
-    AddComboBoxItem(IntToStr(i), 30);
-  end;
-
-  for i := Ord('A') to Ord('Z') do
-  begin
-    AddComboBoxItem(Chr(i), 41 + i);
-  end;
-
-  AddComboBoxItem('backspace', VK_BACK);
-  AddComboBoxItem('delete', VK_DELETE);
-  AddComboBoxItem('down', VK_DOWN);
-  AddComboBoxItem('enter', VK_RETURN);
-
-  for i := 2 to 12 do
-  begin
-    AddComboBoxItem('F' + IntToStr(i), VK_F2 + i);
-  end;
-
-  AddComboBoxItem('home', VK_HOME);
-  AddComboBoxItem('insert', VK_INSERT);
-  AddComboBoxItem('left', VK_LEFT);
-  AddComboBoxItem('-', VK_SUBTRACT);
-  AddComboBoxItem('pagedown', VK_NEXT);
-  AddComboBoxItem('pageup', VK_PRIOR);
-  AddComboBoxItem('+', VK_ADD);
-  AddComboBoxItem('prtscrn', VK_SNAPSHOT);
-  AddComboBoxItem('right', VK_RIGHT);
-  AddComboBoxItem('spacebar', VK_SPACE);
-  Default := AddComboBoxItem('*', VK_MULTIPLY);
-  AddComboBoxItem('tab', VK_TAB);
-  Index := AddComboBoxItem('up', VK_UP);
-
-  // Get the height of a single item
-  ItemHeight := SendMessage(hCB, CB_GETITEMHEIGHT, 0, 0);
-
-  // We want to show 28 extra items
-  IncHeight := ItemHeight * 28;
-
-  // Resize the combobox drop down height
-  ClientResize(hCB, 0, IncHeight);
-
-  // Select Default Combobox Item
-  SendMessage(hCB, CB_SETCURSEL, Default, 0);
-end;
-
-function MyDialogProc(hwndDlg: HWND; uMsg: UINT; wParam: WPARAM;
-  lParam: LPARAM): BOOL; stdcall;
-var i: Integer;
-  s: String;
-  c: Char;
-  hComboBox: THandle;
-  ShiftChecked: Boolean;
-  ControlChecked: Boolean;
-  AltChecked: Boolean;
-begin
-  Result := False;
-  case uMsg of
-    WM_INITDIALOG:
-    begin
-      Result := True;
-      InitComboBox(GetDlgItem(hwndDlg, 241));
-    end;
-    WM_SYSCOMMAND:
-    begin
-      if wParam = SC_CLOSE then
-      begin
-        EndDialog(hwndDlg, IDCANCEL);// same as cancel button
-      end;
-    end;
-    WM_COMMAND:
-    begin
-      if HiWord(wParam) = BN_CLICKED then
-      begin
-        Result := True;
-        case LoWord(wParam) of
-          1:
-          begin
-            ShiftChecked := SendMessage(GetDlgItem(hwndDlg, 242), BM_GETCHECK, 0, 0) = BST_CHECKED;
-            ControlChecked := SendMessage(GetDlgItem(hwndDlg, 243), BM_GETCHECK, 0, 0) = BST_CHECKED;
-            AltChecked := SendMessage(GetDlgItem(hwndDlg, 244), BM_GETCHECK, 0, 0) = BST_CHECKED;
-            ShowMessageFmt('Shift: %d Control: %d Alt: %d', [Ord(ShiftChecked), Ord(ControlChecked), Ord(AltChecked)]);
-//            EndDialog(hwndDlg, IDOK);
-          end;
-          2: EndDialog(hwndDlg, IDCANCEL);
-        end;
-      end;
-    end;
-  end;
-end;
-
-
-procedure TMainForm.Button2Click(Sender: TObject);
-var TaskMgr : HModule;
-  Buffer: array[0..255] of char;
-  sc: Integer;
-  asc: Boolean;
-  s: string;
-  Res: Integer;
-begin
-  TaskMgr := LoadLibrary('taskmgr.exe');
-  if TaskMgr <> 0 then
-  begin
-    try
-      Res := DialogBox(TaskMgr, MakeIntResource(240), Handle, @MyDialogProc);
-      if Res = IDOK then
-      begin
-        ShowMessage('shadow');
-      end
-      else begin
-        ShowMessage('no shadow');
-      end;
-      
-    finally
-      FreeLibrary(TaskMgr);
-    end;
-  end;
-end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
 var pNode: PVirtualNode;
   pData: PServerNodeData;
+  i: Integer;
+  pUserNode: PVirtualNode;
+  pUserData: PUserNodeData;
+  pSessionNode: PVirtualNode;
+  pSessionData: PSessionNodeData;
+  pProcessNode: PVirtualNode;
+  pProcessData: PProcessNodeData;
 begin
+{.$IFDEF FASTMM}
   ReportMemoryLeaksOnShutDown := DebugHook <> 0;
+{.$ENDIF FASTMM}
   TerminalServers := TJwTerminalServerList.Create;
   TerminalServers.Owner := Self;
 
@@ -450,6 +292,52 @@ begin
   // Point the node data to a Terminal Server instance
   pData^.Index := TerminalServers.Add(TjwTerminalServer.Create);
   pData^.PTerminalServerList := @TerminalServers;
+
+  with pData^.PTerminalServerList^[pData^.Index] do
+    begin
+      // EnumerateSessions
+      if EnumerateSessions then
+      begin
+        for i := 0 to Sessions.Count - 1 do
+        begin
+          // Create a node for the session
+          pUserNode := VSTUser.AddChild(nil);
+          // and add the data
+          pUserData := VSTUser.GetNodeData(pUserNode);
+          // Set the Index
+          pUserData^.Index := i;
+          // Point to TerminalServerList.TerminalServer[Index].SessionList
+          pUserData^.List := @Sessions;
+
+          // Create a node for the session in the Sessions VST
+          pSessionNode := VSTSession.AddChild(nil);
+          // and add the data
+          pSessionData := VSTSession.GetNodeData(pSessionNode);
+          // Set the Index
+          pSessionData^.Index := i;
+          // Point to TerminalServerList.TerminalServer[Index].SessionList
+          pSessionData^.List := @Sessions;
+        end;
+      end;
+
+      // Assign Session Event Handler
+      OnSessionEvent := OnTerminalServerEvent;
+
+      if GetAllProcesses then
+      begin
+        for i := 0 to Processes.Count - 1 do
+        begin
+          // Create a node for the session
+          pProcessNode := VSTProcess.AddChild(nil);
+          // and add the data
+          pProcessData := VSTProcess.GetNodeData(pProcessNode);
+          // Set the Index
+          pProcessData^.Index := i;
+          // Point to TerminalServerList.TerminalServer[Index].SessionList
+          pProcessData^.List := @Processes;
+        end;
+      end;
+    end;
 
   // Expand the This Computer Node
   VSTServer.FullExpand(pThisComputerNode);
@@ -476,14 +364,27 @@ begin
   // Do we have data for this session?
   if pData^.List^.Count > pData^.Index then
   begin
-    case Column of
-      0: CellText := pData^.List^.Items[pData^.Index].Owner.Owner.Server;
-      1: CellText := pData^.List^.Items[pData^.Index].Username;
-      2: CellText := pData^.List^.Items[pData^.Index].WinStationName;
-      3: CellText := IntToStr(pData^.List^.Items[pData^.Index].SessionId);
-      4: CellText := pData^.List^.Items[pData^.Index].ConnectStateStr;
-      5: CellText := pData^.List^.Items[pData^.Index].IdleTimeStr;
-      6: CellText := pData^.List^.Items[pData^.Index].LogonTimeStr;
+    if pData^.List^.Items[pData^.Index].Username <> '' then
+    begin
+      // show the node!
+      if not (vsVisible in Node.States) then
+      begin
+        Sender.IsVisible[Node] := True;
+      end;
+
+      case Column of
+        0: CellText := pData^.List^.Items[pData^.Index].Owner.Owner.Server;
+        1: CellText := pData^.List^.Items[pData^.Index].Username;
+        2: CellText := pData^.List^.Items[pData^.Index].WinStationName;
+        3: CellText := IntToStr(pData^.List^.Items[pData^.Index].SessionId);
+        4: CellText := pData^.List^.Items[pData^.Index].ConnectStateStr;
+        5: CellText := pData^.List^.Items[pData^.Index].IdleTimeStr;
+        6: CellText := pData^.List^.Items[pData^.Index].LogonTimeStr;
+      end;
+    end
+    else begin
+      // Users Listview only shows sessions that have a user attached!
+      Sender.IsVisible[Node] := False;
     end;
   end;
 end;
@@ -613,15 +514,123 @@ begin
   end;
 end;
 
-procedure TMainForm.VSTServerColumnDblClick(Sender: TBaseVirtualTree;
+procedure TMainForm.VSTServerMouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+var pServerData: PServerNodeData;
+  pUserNode: PVirtualNode;
+  pUserData: PUserNodeData;
+  pSessionNode: PVirtualNode;
+  pSessionData: PSessionNodeData;
+  i: Integer;
+begin
+  with Sender as TVirtualStringTree do
+  begin
+
+    pServerData := GetNodeData(GetNodeAt(X, Y));
+  // Is this a server node?
+  if pServerData^.Index > -2 then
+  begin
+    // Is a Terminal Server instance assigned?
+    if pServerData^.PTerminalServerList = nil then
+    begin
+      // Create a Terminal Server instance
+      pServerData^.Index := TerminalServers.Add(TjwTerminalServer.Create);
+      // Set the servername
+      TerminalServers[pServerData^.Index].Server := pServerData^.Caption;
+      // Point the node data to a Terminal Server instance
+      pServerData^.PTerminalServerList := @TerminalServers;
+    end;
+
+    with pServerData^.PTerminalServerList^[pServerData^.Index] do
+    begin
+      // EnumerateSessions
+      if EnumerateSessions then
+      begin
+        for i := 0 to Sessions.Count - 1 do
+        begin
+          // Create a node for the session in the Users VST
+          pUserNode := VSTUser.AddChild(nil);
+          // and add the data
+          pUserData := VSTUser.GetNodeData(pUserNode);
+          // Set the Index
+          pUserData^.Index := i;
+          // Point to TerminalServerList.TerminalServer[Index].SessionList
+          pUserData^.List := @Sessions;
+
+          // Create a node for the session in the Sessions VST
+          pSessionNode := VSTSession.AddChild(nil);
+          // and add the data
+          pSessionData := VSTSession.GetNodeData(pSessionNode);
+          // Set the Index
+          pSessionData^.Index := i;
+          // Point to TerminalServerList.TerminalServer[Index].SessionList
+          pSessionData^.List := @Sessions;
+        end;
+      end;
+
+      // Assign Event Handler
+      OnSessionEvent := OnTerminalServerEvent;
+    end;
+  end;
+
+  end;
+end;
+
+procedure TMainForm.VSTSessionGetNodeDataSize(Sender: TBaseVirtualTree;
+  var NodeDataSize: Integer);
+begin
+  NodeDataSize := SizeOf(TSessionNodeData);
+end;
+
+procedure TMainForm.VSTSessionGetText(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType;
+  var CellText: WideString);
+var pData: PSessionNodeData;
+begin
+  pData := Sender.GetNodeData(Node);
+
+  // Do we have data for this session?
+  if pData^.List^.Count > pData^.Index then
+  begin
+    case Column of
+      0: CellText := pData^.List^.Items[pData^.Index].Owner.Owner.Server;
+      1: CellText := pData^.List^.Items[pData^.Index].Username;
+      2: CellText := IntToStr(pData^.List^.Items[pData^.Index].SessionId);
+      3: CellText := pData^.List^.Items[pData^.Index].ConnectStateStr;
+      4: CellText := pData^.List^.Items[pData^.Index].WinStationDriverName;
+      5: CellText := pData^.List^.Items[pData^.Index].ClientName;
+      6: CellText := pData^.List^.Items[pData^.Index].IdleTimeStr;
+      7: CellText := pData^.List^.Items[pData^.Index].LogonTimeStr;
+      8: CellText := pData^.List^.Items[pData^.Index].RemoteAddress;
+    end;
+    // Show Session Counters only for Active and non-console sessions:
+    if (pData^.List^.Items[pData^.Index].ConnectState = WTSActive) and
+      (pData^.List^.Items[pData^.Index].WdFlag > WD_FLAG_CONSOLE) then
+    begin
+      case Column of
+        9: CellText := IntToStr(pData^.List^.Items[pData^.Index].IncomingBytes);
+        10: CellText := IntToStr(pData^.List^.Items[pData^.Index].OutgoingBytes);
+        11: CellText := pData^.List^.Items[pData^.Index].CompressionRatio;
+      end;
+    end
+    // Set empty value for In- and OutgoingBytes and CompressionRatio
+    else if Column > 8 then
+    begin
+      CellText := '';
+    end;
+  end;
+end;
+
+{procedure TMainForm.VSTServerColumnDblClick(Sender: TBaseVirtualTree;
   Column: TColumnIndex; Shift: TShiftState);
 var pServerData: PServerNodeData;
   pUserNode: PVirtualNode;
   pUserData: PUserNodeData;
+  pSessionNode: PVirtualNode;
+  pSessionData: PSessionNodeData;
   i: Integer;
 begin
   pServerData := Sender.GetNodeData(Sender.FocusedNode);
-
   // Is this a server node?
   if pServerData^.Index > -2 then
   begin
@@ -651,11 +660,60 @@ begin
           pUserData^.Index := i;
           // Point to TerminalServerList.TerminalServer[Index].SessionList
           pUserData^.List := @Sessions;
+
+          // Create a node for the session in the Sessions VST
+          pSessionNode := VSTSession.AddChild(nil);
+          // and add the data
+          pSessionData := VSTSession.GetNodeData(pSessionNode);
+          // Set the Index
+          pSessionData^.Index := i;
+          // Point to TerminalServerList.TerminalServer[Index].SessionList
+          pSessionData^.List := @Sessions;
         end;
       end;
 
       // Assign Event Handler
       OnSessionEvent := OnTerminalServerEvent;
+    end;
+  end;
+end;}
+
+procedure TMainForm.VSTProcessGetNodeDataSize(Sender: TBaseVirtualTree;
+  var NodeDataSize: Integer);
+begin
+  NodeDataSize := SizeOf(TProcessNodeData);
+end;
+
+procedure TMainForm.VSTProcessGetText(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType;
+  var CellText: WideString);
+var pData: PProcessNodeData;
+  FormatSettings: TFormatSettings;
+begin
+  // Get LocaleFormatSettings, we use them later on to format DWORD
+  // values with bytes as KByte values with thousand seperators a la taskmgr
+  // (we query this every time because the user may have changed settings)
+  GetLocaleFormatSettings(LOCALE_USER_DEFAULT, FormatSettings);
+  pData := Sender.GetNodeData(Node);
+
+  // Do we have data for this session?
+  if pData^.List^.Count > pData^.Index then
+  begin
+    case Column of
+      0: CellText := pData^.List^.Items[pData^.Index].Owner.Owner.Server;
+      1: CellText := pData^.List^.Items[pData^.Index].Username;
+      2: CellText := pData^.List^.Items[pData^.Index].WinStationName;
+      3: CellText := IntToStr(pData^.List^.Items[pData^.Index].SessionId);
+      4: CellText := IntToStr(pData^.List^.Items[pData^.Index].ProcessId);
+      5: CellText := pData^.List^.Items[pData^.Index].ProcessName;
+      6: CellText := pData^.List^.Items[pData^.Index].ProcessName;
+      7: CellText := pData^.List^.Items[pData^.Index].ProcessAge;
+      8: CellText := pData^.List^.Items[pData^.Index].ProcessCPUTime;
+      9: CellText := pData^.List^.Items[pData^.Index].ProcessCPUTime;
+      10: CellText := Format('%.0n K', [
+        pData^.List^.Items[pData^.Index].ProcessMemUsage / 1024], FormatSettings);
+      11: CellText := Format('%.0n K', [
+        pData^.List^.Items[pData^.Index].ProcessVMSize / 1024], FormatSettings);
     end;
   end;
 end;
