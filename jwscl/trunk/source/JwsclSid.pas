@@ -1232,11 +1232,11 @@ var pwUserName : PWideChar;
 begin
   CheckSID;
 
-  cbUserName := UNLen * SizeOf(WCHAR);
-  GetMem(pwUserName, cbUserName);
+  cbUserName := UNLen;
+  GetMem(pwUserName, cbUserName * sizeOf(WideChar));
   CachedGetUserFromSid(fSID, pwUserName, cbUserName);
 
-  result := WideString(pwUserName);
+  Result := pwUserName;
 
   FreeMem(pwUserName);
 end;
