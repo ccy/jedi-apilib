@@ -107,7 +107,6 @@ type
     TabSheet2: TTabSheet;
     TabSheet3: TTabSheet;
     Button1: TButton;
-    Button5: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure VSTUserGetText(Sender: TBaseVirtualTree;
@@ -269,9 +268,9 @@ var pNode: PVirtualNode;
   pProcessNode: PVirtualNode;
   pProcessData: PProcessNodeData;
 begin
-{.$IFDEF FASTMM}
+{$IFDEF FASTMM}
   ReportMemoryLeaksOnShutDown := DebugHook <> 0;
-{.$ENDIF FASTMM}
+{$ENDIF FASTMM}
   TerminalServers := TJwTerminalServerList.Create;
   TerminalServers.Owner := Self;
 

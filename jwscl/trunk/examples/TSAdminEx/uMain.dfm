@@ -182,7 +182,7 @@ object MainForm: TMainForm
       Top = 1
       Width = 424
       Height = 351
-      ActivePage = TabSheet3
+      ActivePage = TabSheet1
       Align = alClient
       TabOrder = 0
       object TabSheet1: TTabSheet
@@ -409,14 +409,6 @@ object MainForm: TMainForm
     Caption = 'EnumServers'
     TabOrder = 4
     OnClick = Button1Click
-  end
-  object Button5: TButton
-    Left = 547
-    Top = 256
-    Width = 75
-    Height = 25
-    Caption = 'Button5'
-    TabOrder = 5
   end
   object MainMenu1: TMainMenu
     Images = ImageList1
