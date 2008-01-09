@@ -228,7 +228,7 @@ uses Dialogs;
 {$IFNDEF SL_OMIT_SECTIONS}
 { TJwSecurityWindowStations }
 
-
+(*
 type
 
 
@@ -256,9 +256,9 @@ type
 
 var  _WinStationEnumerateW : TWinStationEnumerateW;
      _WinStationQueryInformationW : TWinStationQueryInformationW;
-
+       *)
 constructor TJwSecurityWindowStations.Create(const LogonId: TLuid);
-var ByteCount,
+(*var ByteCount,
     Index,
     pEntries : Cardinal;
     Logon : TLogonID;
@@ -269,12 +269,12 @@ var ByteCount,
 //    b : Boolean;
     ReturnLength : ULONG;
     WinStaInformation : _WINSTATIONINFORMATIONW;
-    WinStationInfoLength : ULONG;
+    WinStationInfoLength : ULONG;*)
 begin
 {$IFNDEF DEBUG}
   raise EJwsclNotImplementedException.Create('TJwSecurityWindowStations.Create is not implemented.');
 {$ENDIF DEBUG}
-
+ (*
   _WinStationEnumerateW := nil;
   Module := TModuleLoader.Create('winsta.dll');
   Module.GetProcedure('WinStationEnumerateW',@_WinStationEnumerateW);
@@ -331,7 +331,7 @@ begin
      Module.Free;
    end;
 
-//  until res <> 0;
+//  until res <> 0;       *)
 end;
 
 constructor TJwSecurityWindowStations.Create;
