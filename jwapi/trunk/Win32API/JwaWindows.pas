@@ -165,7 +165,7 @@ the one of the project.
 
 //extra compiler options
 {$I jedi.inc}
-{$I jediapilib.inc} // paths here break FPC dir structure.
+{$I jediapilib.inc} //add "..\..\Common" to source path if not found
 
 
 
@@ -574,19 +574,21 @@ The list has no order!}
  {$I JwaWinSta.pas}
 {$ENDIF}
 
-{.$I JwaWinternl.pas}
+{.$I JwaWinternl.pas}  //not used anymore!
 
-{$I ModuleLoader.pas}
+{$I ModuleLoader.pas}//set source path ..\..\Common if not found
+
 {$IFDEF JWA_INCLUDE_SETUP_API}
-{$DEFINE SETUPAPI_LINKONREQUEST}
-{If the compiler cannot find "SaCMAPI" its
-because it should be "Setup and Config Manager API".
-But the compiler cannot include files with spaces in it.
-Simply hard link or copy the following files into the new folder.
-}
-{$I ..\SaCMAPI\SetupApi.pas}
-{$I ..\SaCMAPI\Cfg.pas}
-{$I ..\SaCMAPI\CfgMgr32.pas}
+  {$DEFINE SETUPAPI_LINKONREQUEST}
+  {
+  If the compiler cannot find "SaCMAPI" its
+  because it should be "Setup and Config Manager API".
+  But the compiler cannot include files with spaces in it.
+  Simply hard link or copy the following files into the new folder.
+  }
+  {$I ..\SaCMAPI\SetupApi.pas}
+  {$I ..\SaCMAPI\Cfg.pas}
+  {$I ..\SaCMAPI\CfgMgr32.pas}
 {$ENDIF JWA_INCLUDE_SETUP_API}
 
 {$UNDEF JWA_INTERFACESECTION}
@@ -895,7 +897,8 @@ The list has no order!}
 
 {$DEFINE JWA_INCLUDEMODE}
 
-{.$I JwaWinternl.pas}
+{.$I JwaWinternl.pas} //not used anymore!
+
 //these files needs a newer version due to missing units
 {$IFDEF COMPILER6_UP}
 {$I JwaWinSta.pas}
