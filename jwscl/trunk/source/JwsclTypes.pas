@@ -218,16 +218,26 @@ type
   TJwAccessControlListType = (
     acltDiscretionary, acltAuditing, acltMandatory);
   TJwAceType = (
-    actAllow,
-    actDeny,
     actAudit,
+    actAuditCallback,
+    actAuditObject,
+    actAuditCallbackObject,
+
+
     actMandatory,
 
+    actAllow,
+    actAllowCallback,
     actAllowObject,
-    actDenyObject,
     actAllowCallbackObject,
-    actDenyCallbackObject
-        );
+
+    actDeny,
+    actDenyCallback,
+    actDenyObject,
+    actDenyCallbackObject,
+
+    actUnknown
+   );
 
 
 
@@ -943,12 +953,16 @@ type
 
   TJwSharedHandle = (shShared, shOwned);
 
-  TAuthZResourceManagerFlag =
-    (authRM_Default,
+  TJwAuthZResourceManagerFlag =
+    ({The resource manager is created with all flags set
+      This needs the SE_SECURITY_NAME privilege activated. }
+     authRM_Default,
+     {The resource manager does not use auditing}
      authRM_NoAudit,
+     {The resource manager tries initialize with a set thread token.}
      authRM_InitializeUnderImpersonation
      );
-  TAuthZResourceManagerFlags = set of TAuthZResourceManagerFlag;
+  TJwAuthZResourceManagerFlags = set of TJwAuthZResourceManagerFlag;
 
   TAuthZSidContextFlag =
     (
@@ -959,12 +973,24 @@ type
      );
   TAuthZSidContextFlags = set of TAuthZSidContextFlag;
 
+  TJwObjectTypeArray = array of TObjectTypeList;
 
+
+  TJwReplyErrorEnum = (reSuccess, rePrivilegeNotHeld, reAccessDenied, reUnknown);
+  TJwReplyErrorEnumArray = array of TJwReplyErrorEnum;
+
+
+  TJwCardinalArray = array of Cardinal;
+
+
+  
 {$ENDIF SL_IMPLEMENTATION_SECTION}
 
 {$IFNDEF SL_OMIT_SECTIONS}
 implementation
 {$ENDIF SL_OMIT_SECTIONS}
+
+
 
 
 {$IFNDEF SL_OMIT_SECTIONS}

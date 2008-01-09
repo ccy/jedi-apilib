@@ -169,14 +169,27 @@ type
       const FlagBits: Cardinal): TJwMandatoryPolicyFlagSet; overload;
 
     class function ConvertAuthZResourceManager(
-      const FlagSet: TAuthZResourceManagerFlags): Cardinal; overload;
+      const FlagSet: TJwAuthZResourceManagerFlags): Cardinal; overload;
     class function ConvertAuthZResourceManager(
-      const FlagBits: Cardinal): TAuthZResourceManagerFlags; overload;
+      const FlagBits: Cardinal): TJwAuthZResourceManagerFlags; overload;
 
     class function ConvertAuthZSidContextFlags(
       const FlagSet: TAuthZSidContextFlags): Cardinal; overload;
     class function ConvertAuthZSidContextFlags(
       const FlagBits: Cardinal): TAuthZSidContextFlags; overload;
+
+    class function ConvertReplyErrorEnum(
+      const Flags: TJwReplyErrorEnum): Cardinal; overload;
+    class function ConvertReplyErrorEnum(
+      const Flags: Cardinal): TJwReplyErrorEnum; overload;
+
+
+    class function ConvertAceType(
+      const AceType: TJwAceType): Cardinal; overload;
+    class function ConvertAceType(
+      const AceType: Cardinal): TJwAceType; overload;
+
+
 
   end;
 
@@ -405,7 +418,7 @@ const
    ,SYSTEM_MANDATORY_LABEL_NO_EXECUTE_UP
    );
 
-  AuthZResourceManagerValues : array[TAuthZResourceManagerFlag] of Cardinal = (
+  AuthZResourceManagerValues : array[TJwAuthZResourceManagerFlag] of Cardinal = (
    0
    ,AUTHZ_RM_FLAG_NO_AUDIT
    ,AUTHZ_RM_FLAG_INITIALIZE_UNDER_IMPERSONATION
@@ -416,6 +429,34 @@ const
    ,AUTHZ_SKIP_TOKEN_GROUPS
    ,AUTHZ_REQUIRE_S4U_LOGON
    ,$8//,AUTHZ_COMPUTE_PRIVILEGES
+   );
+
+  ReplyErrorEnumValues : array[TJwReplyErrorEnum] of Cardinal = (
+    ERROR_SUCCESS,//reSuccess,
+    ERROR_PRIVILEGE_NOT_HELD,//rePrivilegeNotHeld,
+    ERROR_ACCESS_DENIED,//reAccessDenied,
+    0//reUnknown
+    );
+
+   AceTypeEnumValues : array[TJwAceType] of Cardinal = (
+    SYSTEM_AUDIT_ACE_TYPE,//actAudit,
+    SYSTEM_AUDIT_CALLBACK_ACE_TYPE,//actAuditCallback,
+    SYSTEM_AUDIT_OBJECT_ACE_TYPE,//actAuditObject,
+    SYSTEM_AUDIT_CALLBACK_OBJECT_ACE_TYPE,//actAuditCallbackObject,
+
+    SYSTEM_MANDATORY_LABEL_ACE_TYPE,//actMandatory,
+
+    ACCESS_ALLOWED_ACE_TYPE,//actAllow,
+    ACCESS_ALLOWED_CALLBACK_ACE_TYPE,//actAllowCallback,
+    ACCESS_ALLOWED_OBJECT_ACE_TYPE,//actAllowObject,
+    ACCESS_ALLOWED_CALLBACK_ACE_TYPE,//actAllowCallbackObject,
+
+    ACCESS_DENIED_ACE_TYPE,//actDeny,
+    ACCESS_DENIED_CALLBACK_ACE_TYPE,//actDenyCallback,
+    ACCESS_DENIED_OBJECT_ACE_TYPE,//actDenyObject,
+    ACCESS_DENIED_CALLBACK_OBJECT_ACE_TYPE,//actDenyCallbackObject
+
+    $FFFFF
    );
 
 
@@ -889,11 +930,11 @@ begin
 end;
 
 class function TJwEnumMap.ConvertAuthZResourceManager(
-  const FlagSet: TAuthZResourceManagerFlags): Cardinal;
-var I : TAuthZResourceManagerFlag;
+  const FlagSet: TJwAuthZResourceManagerFlags): Cardinal;
+var I : TJwAuthZResourceManagerFlag;
 begin
   result := 0;
-  for I := Low(TAuthZResourceManagerFlag) to High(TAuthZResourceManagerFlag) do
+  for I := Low(TJwAuthZResourceManagerFlag) to High(TJwAuthZResourceManagerFlag) do
   begin
     if I in FlagSet then
       result := result or AuthZResourceManagerValues[I];
@@ -901,11 +942,11 @@ begin
 end;
 
 class function TJwEnumMap.ConvertAuthZResourceManager(
-  const FlagBits: Cardinal): TAuthZResourceManagerFlags;
-var I : TAuthZResourceManagerFlag;
+  const FlagBits: Cardinal): TJwAuthZResourceManagerFlags;
+var I : TJwAuthZResourceManagerFlag;
 begin
   result := [];
-  for I := Low(TAuthZResourceManagerFlag) to High(TAuthZResourceManagerFlag) do
+  for I := Low(TJwAuthZResourceManagerFlag) to High(TJwAuthZResourceManagerFlag) do
   begin
     if (FlagBits and AuthZResourceManagerValues[I]) = AuthZResourceManagerValues[I] then
       Include(result, I);
@@ -925,7 +966,7 @@ begin
 end;
 
 class function TJwEnumMap.ConvertAuthZSidContextFlags(
-  const FlagBits: Cardinal): TAuthZSidContextFlags; 
+  const FlagBits: Cardinal): TAuthZSidContextFlags;
 var I : TAuthZSidContextFlag;
 begin
   result := [];
@@ -936,9 +977,55 @@ begin
   end;
 end;
 
+
+class function TJwEnumMap.ConvertReplyErrorEnum(
+  const Flags: TJwReplyErrorEnum): Cardinal;
+begin
+  result := ReplyErrorEnumValues[Flags];
+  //hier weiter
+end;
+
+class function TJwEnumMap.ConvertReplyErrorEnum(
+  const Flags: Cardinal): TJwReplyErrorEnum;
+var i : TJwReplyErrorEnum;
+begin
+  result := reUnknown;
+  for I := Low(TJwReplyErrorEnum) to High(TJwReplyErrorEnum) do
+  begin
+    if (Flags = ReplyErrorEnumValues[I]) then
+    begin
+      result := I;
+      exit;
+    end;
+  end;
+end;
+
+
+class function TJwEnumMap.ConvertAceType(
+  const AceType: TJwAceType): Cardinal;
+begin
+  result := AceTypeEnumValues[AceType];
+end;
+
+class function TJwEnumMap.ConvertAceType(
+  const AceType: Cardinal): TJwAceType;
+var i : TJwAceType;
+begin
+  result := actUnknown;
+  for i := Low(AceTypeEnumValues) to high(AceTypeEnumValues) do
+  begin
+    if AceType = AceTypeEnumValues[i] then
+    begin
+      result := i;
+      exit;
+    end;
+  end;
+end;
+
 {$ENDIF SL_INTERFACE_SECTION}
 
 {$IFNDEF SL_OMIT_SECTIONS}
+
 
 
 

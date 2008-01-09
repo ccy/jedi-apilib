@@ -60,14 +60,26 @@ uses
 
 const
   TAceTypeString : array[TJwAceType] of TJwString =
-    (RsAceTypeStringAllow,
-     RsAceTypeStringDeny,
-     RsAceTypeStringAudit,
-     RsAceMandatory,
-     RsAceAllowObject,
-     RsAceDenyObject,
-     RsAceAllowCallbackObject,
-     RsAceDenyCallbackObject);
+    (
+    RsAceUnknown, 
+    RsAceTypeStringAudit,//actAudit,
+    RsAceAuditCallback,//actAuditCallback,
+    RsAceAuditObject,//actAuditObject,
+    RsAceAuditCallbackObject,//actAuditCallbackObject,
+
+    RsAceMandatory,//actMandatory,
+
+    RsAceTypeStringAllow,//actAllow,
+    RsAceAllowCallback,//actAllowCallback,
+    RsAceAllowObject,//actAllowObject,
+    RsAceAllowCallbackObject,//actAllowCallbackObject,
+
+    RsAceTypeStringDeny,//actDeny,
+    RsAceDenyCallback,//actDenyCallback,
+    RsAceDenyObject,//actDenyObject,
+    RsAceDenyCallbackObject//actDenyCallbackObject
+    );
+
 
   IDAPPLY = 33;
   FILE_DELETE = Delete; //{0x00010000L}

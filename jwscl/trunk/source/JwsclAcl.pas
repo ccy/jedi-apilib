@@ -77,7 +77,7 @@ type
   TJwAuditAccessControlEntry    = class;
   TJwSystemMandatoryAccessControlEntry = class;
 
-
+  TJwSecurityAccessControlEntryClass = class of TJwSecurityAccessControlEntry;
 
   {@Name provides methods for an access control list.
    Do not make instances of this class. Instead use
@@ -561,16 +561,20 @@ type
     fHeader : TAceHeader;
     fRevision : Cardinal;
 
+    fObjectType,
+    fInheritedObjectType : TGuid;
+
     procedure SetListOwner(ListOwner: TJwSecurityAccessControlList);
     procedure SetFlags(FlagSet: TJwAceFlags);
     procedure SetAccessMask(anAccessMask: TJwAccessMask);
+    function GetAccessMask : TJwAccessMask; virtual;
     procedure SetSID(SidInstance: TJwSecurityId);
     procedure CheckReadOnly;
     function GetAceType: TJwAceType; virtual;
     procedure SetOwnSid(const OwnSid : Boolean); Virtual;
     function GetOwnSid : Boolean;
 
-  protected
+  public
    {@Name creates a new ACE.
     Do not use this constructor.
     Instead use
@@ -632,21 +636,94 @@ type
     constructor Create(const AccessEntry: TJwSecurityAccessControlEntry); overload;
 
     {@Name creates an access allowed structure from an existing one.
-    @param(accessACE contains a pointer to an AccessAllowedACE structure.)
-    @raises(EJwsclNILParameterException if aACE is nil)
+    @param(AccessEntryPointer contains a pointer to an PAccessDeniedAce structure.
+     @unorederdlist(
+       @item(ACCESS_ALLOWED_ACE returns class type TJwDiscretionaryAccessControlEntryAllow)
+       @item(ACCESS_ALLOWED_CALLBACK_ACE returns class type TJwDiscretionaryAccessControlEntryCallbackAllow)
+       @item(ACCESS_ALLOWED_OBJECT_ACE returns class type TJwDiscretionaryAccessControlEntryObjectAllow)
+       @item(ACCESS_ALLOWED_CALLBACK_OBJECT_ACE returns class type TJwDiscretionaryAccessControlEntryCallbackObjectAllow)
+
+       @item(ACCESS_DENIED_ACE returns class type TJwDiscretionaryAccessControlEntryDeny)
+       @item(ACCESS_DENIED_CALLBACK_ACE returns class type TJwDiscretionaryAccessControlEntryCallbackDeny)
+       @item(ACCESS_DENIED_OBJECT_ACE returns class type TJwDiscretionaryAccessControlEntryObjectDeny)
+       @item(ACCESS_DENIED_CALLBACK_OBJECT_ACE returns class type TJwDiscretionaryAccessControlEntryCallbackObjectDeny)
+
+       @item(SYSTEM_AUDIT_ACE returns class type TJwAuditAccessControlEntry)
+       @item(SYSTEM_AUDIT_CALLBACK_ACE returns class type TJwAuditAccessControlEntryCallback)
+       @item(SYSTEM_AUDIT_OBJECT_ACE returns class type TJwAuditAccessControlEntryObject)
+       @item(SYSTEM_AUDIT_CALLBACK_OBJECT_ACE returns class type TJwAuditAccessControlEntryCallbackObject)
+
+       @item(SYSTEM_MANDATORY_LABEL_ACE returns class type TJwSystemMandatoryAccessControlEntry)
+     )
+     Other types will raise an exception EJwsclInvalidACEException.
+    )
+    @return(Returns a derived class of TJwSecurityAccessControlEntry)
+    @raises(EJwsclNILParameterException if parameter AccessEntryPointer is nil)
+    @raises(EJwsclInvalidACEException will be raised if parameter
+      AccessEntryPointer does not contain a supported ACE type structure)
+    @raises(EJwsclInvalidAceMismatch will be raised if the header type of parameter AccessEntryPointer
+      does not match this ACE instance type)
     }
     constructor Create(const AccessEntryPointer: PAccessAllowedAce); overload;
 
     {@Name creates an access denied structure from an existing one.
-    @param(accessACE contains a pointer to an AccessDeniedACE structure.)
-    @raises(EJwsclNILParameterException if aACE is nil)
+
+    @param(AccessEntryPointer contains a pointer to an PAccessDeniedAce structure.
+     @unorederdlist(
+       @item(ACCESS_ALLOWED_ACE returns class type TJwDiscretionaryAccessControlEntryAllow)
+       @item(ACCESS_ALLOWED_CALLBACK_ACE returns class type TJwDiscretionaryAccessControlEntryCallbackAllow)
+       @item(ACCESS_ALLOWED_OBJECT_ACE returns class type TJwDiscretionaryAccessControlEntryObjectAllow)
+       @item(ACCESS_ALLOWED_CALLBACK_OBJECT_ACE returns class type TJwDiscretionaryAccessControlEntryCallbackObjectAllow)
+
+       @item(ACCESS_DENIED_ACE returns class type TJwDiscretionaryAccessControlEntryDeny)
+       @item(ACCESS_DENIED_CALLBACK_ACE returns class type TJwDiscretionaryAccessControlEntryCallbackDeny)
+       @item(ACCESS_DENIED_OBJECT_ACE returns class type TJwDiscretionaryAccessControlEntryObjectDeny)
+       @item(ACCESS_DENIED_CALLBACK_OBJECT_ACE returns class type TJwDiscretionaryAccessControlEntryCallbackObjectDeny)
+
+       @item(SYSTEM_AUDIT_ACE returns class type TJwAuditAccessControlEntry)
+       @item(SYSTEM_AUDIT_CALLBACK_ACE returns class type TJwAuditAccessControlEntryCallback)
+       @item(SYSTEM_AUDIT_OBJECT_ACE returns class type TJwAuditAccessControlEntryObject)
+       @item(SYSTEM_AUDIT_CALLBACK_OBJECT_ACE returns class type TJwAuditAccessControlEntryCallbackObject)
+
+       @item(SYSTEM_MANDATORY_LABEL_ACE returns class type TJwSystemMandatoryAccessControlEntry)
+     )
+     Other types will raise an exception EJwsclInvalidACEException.
+    )
+    @return(Returns a derived class of TJwSecurityAccessControlEntry)
+    @raises(EJwsclNILParameterException if parameter AccessEntryPointer is nil)
+    @raises(EJwsclInvalidACEException will be raised if parameter
+      AccessEntryPointer does not contain a supported ACE type structure)
+    @raises(EJwsclInvalidAceMismatch will be raised if the header type of parameter AccessEntryPointer
+      does not match this ACE instance type)
     }
     constructor Create(const AccessEntryPointer: PAccessDeniedAce); overload;
 
-    {@Name creates an access allowed class from an existing structure and returns it.
-    @param(accessACE contains a pointer to an AccessAllowedACE structure.)
-    @return(Returns an ACE of type TJwDiscretionaryAccessControlEntryAllow)
-    @raises(EJwsclNILParameterException if aACE is nil)
+    {@Name creates an access allowed class from an existing structure and returns
+     a compatible class instance.
+
+    @param(accessACE contains a pointer to an AccessAllowedACE structure.
+      @unorederdlist(
+       @item(ACCESS_ALLOWED_ACE returns class type TJwDiscretionaryAccessControlEntryAllow)
+       @item(ACCESS_ALLOWED_CALLBACK_ACE returns class type TJwDiscretionaryAccessControlEntryCallbackAllow)
+       @item(ACCESS_ALLOWED_OBJECT_ACE returns class type TJwDiscretionaryAccessControlEntryObjectAllow)
+       @item(ACCESS_ALLOWED_CALLBACK_OBJECT_ACE returns class type TJwDiscretionaryAccessControlEntryCallbackObjectAllow)
+
+       @item(ACCESS_DENIED_ACE returns class type TJwDiscretionaryAccessControlEntryDeny)
+       @item(ACCESS_DENIED_CALLBACK_ACE returns class type TJwDiscretionaryAccessControlEntryCallbackDeny)
+       @item(ACCESS_DENIED_OBJECT_ACE returns class type TJwDiscretionaryAccessControlEntryObjectDeny)
+       @item(ACCESS_DENIED_CALLBACK_OBJECT_ACE returns class type TJwDiscretionaryAccessControlEntryCallbackObjectDeny)
+
+       @item(SYSTEM_AUDIT_ACE returns class type TJwAuditAccessControlEntry)
+       @item(SYSTEM_AUDIT_CALLBACK_ACE returns class type TJwAuditAccessControlEntryCallback)
+       @item(SYSTEM_AUDIT_OBJECT_ACE returns class type TJwAuditAccessControlEntryObject)
+       @item(SYSTEM_AUDIT_CALLBACK_OBJECT_ACE returns class type TJwAuditAccessControlEntryCallbackObject)
+
+       @item(SYSTEM_MANDATORY_LABEL_ACE returns class type TJwSystemMandatoryAccessControlEntry)
+     )
+    @return(Returns a derived class of TJwSecurityAccessControlEntry)
+    @raises(EJwsclNILParameterException if parameter AccessEntryPointer is nil)
+    @raises(EJwsclInvalidACEException will be raised if parameter
+      AccessEntryPointer does not contain a supported ACE type structure)
     }
     class function CreateACE(const AccessEntryPointer: PAccessAllowedAce):
       TJwSecurityAccessControlEntry; overload;
@@ -659,20 +736,35 @@ type
     class function CreateACE(const AccessEntryPointer: PAccessDeniedAce):
       TJwSecurityAccessControlEntry; overload;
 
-  public
+  
     {@Name creates an with 0 initialized ACE and returns the corresponding class.
     @param(anACEType receives an @link(TJwAceType) type.)
-    @return(The return value is
-      @unorderedlist(
-        @item TJwDiscretionaryAccessControlEntryAllow for actAllow
-        @item TJwDiscretionaryAccessControlEntryDeny for actDeny
-        @item TJwAuditAccessControlEntry.Create for actAudit
-      ))
+    @return(The return value is one of the listed class types
+      @item(TjwAceType member - returned class type)
+
+      @item(actAudit - TJwAuditAccessControlEntry)
+      @item(actAuditCallback - TJwAuditAccessControlEntryCallback)
+      @item(actAuditObject - TJwAuditAccessControlEntryObject)
+      @item(actAuditCallbackObject - TJwAuditAccessControlEntryCallbackObject)
+
+      @item(actAllow - TJwDiscretionaryAccessControlEntryAllow)
+      @item(actAllowCallback - TJwDiscretionaryAccessControlEntryCallbackAllow)
+      @item(actAllowObject - TJwDiscretionaryAccessControlEntryObjectAllow)
+      @item(actAllowCallbackObject - TJwDiscretionaryAccessControlEntryCallbackObjectAllow)
+      @item(actDeny - TJwDiscretionaryAccessControlEntryDeny)
+      @item(actDenyCallback - TJwDiscretionaryAccessControlEntryCallbackDeny)
+      @item(actDenyObject - TJwDiscretionaryAccessControlEntryObjectDeny)
+      @item(actDenyCallbackObject - TJwDiscretionaryAccessControlEntryCallbackObjectDeny)
+      
+      @item(actMandatory - TJwSystemMandatoryAccessControlEntry)
+     )
+     @raises(EJwsclInvalidACEException will be raised if the ACE type of
+      the instance is not supported)
     }
     class function CreateACE(anAceType: TJwAceType):
       TJwSecurityAccessControlEntry;
       overload;
-  protected
+
 
     {@Name initializes a ACE. It is used internally}
     constructor Create; overload;
@@ -694,15 +786,98 @@ type
     {@Name creates a memory block filled with an ACE structure.
      The structure is points to PAccessAllowedAce structure;
      It must be freed by Free_PACE.
-     }
+
+     The following types (value of property AceType) are supported:
+     @unorederdlist(
+      @item(actAudit)
+      @item(actAuditCallback)
+      @item(actMandatory)
+      @item(actAllow)
+      @item(actAllowCallback)
+      @item(actDeny)
+      @item(actDenyCallback)
+     )
+     @raises(EJwsclInvalidACEException will be raised if the ACE type of
+      the instance is not supported)
+    }
     function Create_AllowACE: PAccessAllowedAce; overload;
 
 
     {@Name creates a memory block filled with an ACE structure.
      The structure is points to PAccessDeniedAce structure;
      It must be freed by Free_PACE.
+
+     The following types (value of property AceType) are supported:
+     @unorederdlist(
+      @item(actAudit)
+      @item(actAuditCallback)
+      @item(actMandatory)
+      @item(actAllow)
+      @item(actAllowCallback)
+      @item(actDeny)
+      @item(actDenyCallback)
+     )
+
+     @raises(EJwsclInvalidACEException will be raised if the ACE type of
+      the instance is not supported)
      }
     function Create_DenyACE: PAccessDeniedAce; overload;
+
+
+    {@Name creates an ACE WinAPI structure depending on the Sid type (property AceType) of
+     the instance.
+
+     The following types are supported:
+     @unorederdlist(
+      @item(TjwAceType member - returned pointer to structure)
+      @item(actAudit - SYSTEM_AUDIT_ACE)
+      @item(actAuditCallback - SYSTEM_AUDIT_CALLBACK_ACE)
+      @item(actAuditObject - SYSTEM_AUDIT_OBJECT_ACE)
+      @item(actAuditCallbackObject - SYSTEM_AUDIT_CALLBACK_OBJECT_ACE)
+      @item(actMandatory - SYSTEM_MANDATORY_LABEL_ACE)
+      @item(actAllow - ACCESS_ALLOWED_ACE)
+      @item(actAllowCallback - ACCESS_ALLOWED_CALLBACK_ACE)
+      @item(actAllowObject - ACCESS_ALLOWED_OBJECT_ACE)
+      @item(actAllowCallbackObject - ACCESS_ALLOWED_CALLBACK_OBJECT_ACE)
+      @item(actDeny - ACCESS_DENIED_ACE)
+      @item(actDenyCallback - ACCESS_DENIED_CALLBACK_ACE)
+      @item(actDenyObject - ACCESS_DENIED_OBJECT_ACE)
+      @item(actDenyCallbackObject - ACCESS_DENIED_CALLBACK_OBJECT_ACE)
+     )
+     @param(Size returns the memory size of the newly allocated block in bytes.)
+     @return(The return value is a pointer to a ACE Winapi structure. The supported
+       types can be read from the description above.
+       The memory block must be freed with GlobalFree.)
+     @raises(EJwsclInvalidACEException will be raised if the ACE type of
+      the instance is not supported)
+    }
+    function CreateDynamicACE(out Size : Cardinal) : Pointer;
+
+
+    {@Name returns the size of an ace structure without the additional
+     space for the Sid memory.
+
+     The following types are supported:
+     @unorederdlist(
+      @item(actAudit)
+      @item(actAuditCallback)
+      @item(actAuditObject)
+      @item(actAuditCallbackObject)
+      @item(actMandatory)
+      @item(actAllow)
+      @item(actAllowCallback)
+      @item(actAllowObject)
+      @item(actAllowCallbackObject)
+      @item(actDeny)
+      @item(actDenyCallback)
+      @item(actDenyObject)
+      @item(actDenyCallbackObject)
+     )
+     @raises(EJwsclInvalidACEException will be raised if the ACE type of
+      the instance is not supported)
+
+    }
+    function GetDynamicTypeSize : Cardinal;
 
     {@Name frees a PAccessAllowedAce access control list.
      It can free ACE memory created by Create_AllowACE .
@@ -733,6 +908,9 @@ type
     function GetExplicitAccess: TJwExplicitAccess;
 
   public
+    class function GetClassAceType(const AceType: TJwAceType)
+      : TJwSecurityAccessControlEntryClass;
+
     {@Name copies all properties from another ACE.
      This method does not add this instance to any list or change ListOwner.
     }
@@ -764,7 +942,7 @@ type
     property Flags: TJwAceFlags Read fFlags Write SetFlags;
 
     {@Name contains the access mask of the ACE.}
-    property AccessMask: TJwAccessMask Read fAccessMask Write SetAccessMask;
+    property AccessMask: TJwAccessMask Read GetAccessMask Write SetAccessMask;
 
     {@Name contains the security identifier. It can be nil.
      }
@@ -798,6 +976,9 @@ type
 
     {@Name defines user data that can be used to attach used defined data}
     property UserData : Pointer read fUserData write fUserData;
+
+    property ObjectType : TGuid read fObjectType write fObjectType;
+    property InheritedObjectType : TGuid read fInheritedObjectType write fInheritedObjectType;
   end;
 
   {@Name defines a discretionary access control entry.
@@ -872,6 +1053,19 @@ type
     {@Name creates a memory block filled with an ACE structure.
      The structure is points to PAccessAllowedAce structure;
      It must be freed by Free_PACE.
+
+     The following types (value of property AceType) are supported:
+     @unorederdlist(
+      @item(actAudit)
+      @item(actAuditCallback)
+      @item(actMandatory)
+      @item(actAllow)
+      @item(actAllowCallback)
+      @item(actDeny)
+      @item(actDenyCallback)
+     )
+     @raises(EJwsclInvalidACEException will be raised if the ACE type of
+      the instance is not supported)
      }
     function Create_AllowACE: PAccessAllowedAce; overload;
 
@@ -884,6 +1078,19 @@ type
      }
     procedure Free_PACE(var AccessEntryPointer: PAccessAllowedAce); overload;
   end;
+
+  TJwDiscretionaryAccessControlEntryCallbackAllow =
+    class(TJwDiscretionaryAccessControlEntryAllow)
+  end;
+
+  TJwDiscretionaryAccessControlEntryObjectAllow =
+    class(TJwDiscretionaryAccessControlEntryAllow)
+  end;
+
+  TJwDiscretionaryAccessControlEntryCallbackObjectAllow =
+    class(TJwDiscretionaryAccessControlEntryAllow)
+  end;
+
 
   {@Name is a class that defines a negative/deny access control entry.}
   TJwDiscretionaryAccessControlEntryDeny =
@@ -960,6 +1167,19 @@ type
   end;
 
 
+  TJwDiscretionaryAccessControlEntryCallbackDeny =
+    class(TJwDiscretionaryAccessControlEntryDeny)
+  end;
+
+  TJwDiscretionaryAccessControlEntryObjectDeny =
+    class(TJwDiscretionaryAccessControlEntryDeny)
+  end;
+
+
+  TJwDiscretionaryAccessControlEntryCallbackObjectDeny =
+    class(TJwDiscretionaryAccessControlEntryDeny)
+  end;
+
 
   {@Name provides function for a system control entry.
    The flags property is ignored.
@@ -977,6 +1197,7 @@ type
     procedure SetAuditFailure(const Value: boolean); virtual;
     procedure SetAuditSuccess(const Value: boolean); virtual;
 
+    function GetAccessMask : TJwAccessMask; override;
   public
     {@Name creates a new audit ACE.  (SACL).
      AuditSuccess, AuditFailure are set to False and can be changed afterwards.
@@ -1064,6 +1285,20 @@ type
     //@Name is ignored and cannot be changed - the value is empty
     //  property Flags: TJwAceFlags read fFlagsIgnored;
   end;
+
+  TJwAuditAccessControlEntryCallback =
+    class(TJwAuditAccessControlEntry)
+  end;
+
+
+  TJwAuditAccessControlEntryObject =
+    class(TJwAuditAccessControlEntry)
+  end;
+
+  TJwAuditAccessControlEntryCallbackObject =
+    class(TJwAuditAccessControlEntry)
+  end;
+
 
   {@Name defines a mandatory label ACE in a SACL.
    }
@@ -1420,12 +1655,33 @@ begin
   end;
 end;
 
+
+
 function TJwSecurityAccessControlList.Create_PACL: PACL;
+  function AddAceToList(const ACL : PACL;
+    ACE : TJwSecurityAccessControlEntry) : Boolean;
+  var ppACE : PACE;
+      Size : Cardinal;
+  begin
+    ppACE := ACE.CreateDynamicACE(Size);
+
+    result := AddAce(
+        ACL,//__inout  PACL pAcl,
+        ACE.Revision,//__in     DWORD dwAceRevision,
+        MAXDWORD,//__in     DWORD dwStartingAceIndex,
+        ppACE,//__in     LPVOID pAceList,
+        Size,//__in     DWORD nAceListLength
+      );
+
+    GlobalFree(Cardinal(ppACE));
+    //FreeMem(ppACE);
+  end;
+
+
 var
-  c, i: integer;
-  //[Hint] aPSID: PSID;
+  i: integer;
+
   s : String;
- { tempACL : TJwSecurityAccessControlList;    }
 
   aAudit:  TJwAuditAccessControlEntry;
   Mandatory : TJwSystemMandatoryAccessControlEntry;
@@ -1442,17 +1698,16 @@ begin
         'Create_PACL', ClassName, RsUNAcl, 0, True, [i]);
   end;
 
-  c := max(1, Count);
-
-  //determining the size comes from http://msdn2.microsoft.com/en-US/library/aa378853.aspx
-  iSize := sizeof(TACL) + (sizeof(ACCESS_ALLOWED_ACE) -
-    sizeof(Cardinal)) * c;
+  iSize := sizeof(TACL);
 
   for i := 0 to Count - 1 do
   begin
+    Inc(iSize, Items[i].GetDynamicTypeSize); //get size of ACE structure
+
     if Assigned(Items[i].SID) and (Items[i].SID.SID <> nil) then
       try
         Inc(iSize, Items[i].SID.SIDLength); //can throw exception!
+
       except
         on E: EJwsclSecurityException do
         begin
@@ -1470,57 +1725,15 @@ begin
       RsACLClassNewAclNotEnoughMemory,
       'Create_PACL', ClassName, RsUNAcl, 0, True, []);
 
-  // InitializeAcl(Result,GlobalSize(Cardinal(Result)),fRevision);
+
   InitializeAcl(Result, iSize, fRevision);
 
   //ShowMEssage(GetText);
-  //Add...ex functions only Windows 2000 or higher
   for i := 0 to Count - 1 do
   begin
     if Assigned(Items[i].SID) and (Items[i].SID.SID <> nil) then
     begin
-      bResult := False;
-     // ShowMEssage((Items[i].GetText));
-      if Items[i] is TJwDiscretionaryAccessControlEntryAllow then
-        bResult := AddAccessAllowedAceEx(Result, Items[i].Revision,
-          TJwEnumMap.ConvertAceFlags(
-          Items[i].Flags), Items[i].AccessMask, Items[i].SID.SID)
-      else
-      if Items[i] is TJwDiscretionaryAccessControlEntryDeny then
-        bResult := AddAccessDeniedAceEx(Result, Items[i].Revision,
-          TJwEnumMap.ConvertAceFlags(Items[i].Flags),
-          Items[i].AccessMask, Items[i].SID.SID)
-      else
-      if Items[i] is TJwAuditAccessControlEntry then
-      begin
-        aAudit  := (Items[i] as TJwAuditAccessControlEntry);
-        bResult := AddAuditAccessAce(Result, aAudit.Revision,
-          Items[i].AccessMask, Items[i].SID.SID,
-          aAudit.AuditSuccess,
-          aAudit.AuditFailure);
-      end
-      else
-{$IFDEF VISTA}
-      if Items[i] is TJwSystemMandatoryAccessControlEntry then
-      begin
-        Mandatory := (Items[i] as TJwSystemMandatoryAccessControlEntry);
-        bResult := AddMandatoryAce(
-              Result,//PACL pAcl,
-              Mandatory.Revision,//DWORD dwAceRevision,
-              TJwEnumMap.ConvertAceFlags(Items[i].Flags),//DWORD AceFlags,
-              Mandatory.AccessMask,//DWORD MandatoryPolicy,
-              Items[i].SID.SID,//PSID pLabelSid
-            );
-      end
-      else
-{$ENDIF}      
-      begin //class is not supported
-        GlobalFree(HRESULT(Result));
-
-        raise EJwsclUnsupportedACE.CreateFmtEx(
-          RsACLClassUnknownAccessAce,
-          'Create_PACL', ClassName, RsUNAcl, 0, True, [Items[i].ClassName,i]);
-      end;
+      bResult := AddAceToList(Result, Items[i]);
 
       if not bResult then
       begin
@@ -1627,6 +1840,7 @@ begin
 
   i := IndexOf(AccessEntry);
   if (i >= 0) or (Assigned(AccessEntry.ListOwner)) then
+
     raise EJwsclDuplicateListEntryException.CreateFmtEx(
       RsACLClassAceAlreadyInList, 'Add', ClassName, RsUNAcl,
       0, False, []);
@@ -1668,7 +1882,11 @@ begin
   Result := -1;
 
   if (Self is TJwDAccessControlList) and
-    (AccessEntry is TJwDiscretionaryAccessControlEntryDeny) then
+    ((AccessEntry is TJwDiscretionaryAccessControlEntryDeny) or
+     (AccessEntry is TJwDiscretionaryAccessControlEntryCallbackDeny) or
+     (AccessEntry is TJwDiscretionaryAccessControlEntryCallbackObjectDeny)
+     )
+    then
   begin
     if not (afInheritedAce in AccessEntry.Flags) then
     begin
@@ -1712,7 +1930,11 @@ begin
   end;
 
   if (Self is TJwDAccessControlList) and
-    (AccessEntry is TJwDiscretionaryAccessControlEntryAllow) then
+    ((AccessEntry is TJwDiscretionaryAccessControlEntryAllow) or
+     (AccessEntry is TJwDiscretionaryAccessControlEntryCallbackAllow) or
+     (AccessEntry is TJwDiscretionaryAccessControlEntryCallbackObjectAllow)
+     )
+    then
   begin
     if (afInheritedAce in AccessEntry.Flags) then
     begin
@@ -1856,7 +2078,7 @@ begin
   end;
 end;
 
-//           EJwsclReadOnlyPropertyException
+
 function TJwSecurityAccessControlList.First: TJwSecurityAccessControlEntry;
 begin
   if Count = 0 then
@@ -1884,13 +2106,20 @@ begin
       0, False, []);
 
   if ((Self is TJwDAccessControlList) and not
-    (AccessEntry is TJwDiscretionaryAccessControlEntry)) then
+    (AccessEntry is TJwDiscretionaryAccessControlEntry)
+    ) then
     raise EJwsclInvalidACEException.CreateFmtEx(
       RsACLClassInvalidAceInDacl,
       'Add', ClassName, RsUNAcl, 0, False, [AccessEntry.ClassName]);
 
   if ((Self is TJwSAccessControlList) and not
-    (AccessEntry is TJwAuditAccessControlEntry)) then
+    (
+     (AccessEntry is TJwAuditAccessControlEntry) or
+     (AccessEntry is TJwAuditAccessControlEntryObject) or
+     (AccessEntry is TJwAuditAccessControlEntryCallback) or
+     (AccessEntry is TJwAuditAccessControlEntryCallbackObject) or
+     (AccessEntry is TJwSystemMandatoryAccessControlEntry)
+    )) then
     raise EJwsclInvalidACEException.CreateFmtEx(
       RsACLClassInvaldAceInSacl,
       'Add', ClassName, RsUNAcl, 0, False, []);
@@ -2089,6 +2318,9 @@ begin
     aListOwner.Add(Self);
 
   fListOwner := aListOwner;
+
+  ObjectType    := NULL_GUID;
+  InheritedObjectType := NULL_GUID;
 end;
 
 constructor TJwSecurityAccessControlEntry.Create(
@@ -2109,6 +2341,9 @@ begin
   inherited Create;
   Assign(AccessEntry);
   ownSid := True;
+
+  ObjectType    := NULL_GUID;
+  InheritedObjectType := NULL_GUID;
 end;
 
 
@@ -2142,6 +2377,8 @@ begin
     fAccessMask := AccessEntry.AccessMask;
     fHeader := AccessEntry.Header;
     fRevision := AccessEntry.fRevision;
+    fObjectType := AccessEntry.fObjectType;
+    fInheritedObjectType := AccessEntry.fInheritedObjectType;
   end;
 end;
 
@@ -2155,6 +2392,10 @@ begin
   fownSID := False;
   fUserData := nil;
   fRevision := ACL_REVISION;
+  ZeroMemory(@fHeader, sizeof(fHeader));
+
+  ObjectType    := NULL_GUID;
+  InheritedObjectType := NULL_GUID;
 end;
 
 
@@ -2207,10 +2448,31 @@ TJwSecurityAccessControlEntry;
 begin
   Result := nil;
   case anACEType of
-    actAllow: Result := TJwDiscretionaryAccessControlEntryAllow.Create;
-    actDeny: Result  := TJwDiscretionaryAccessControlEntryDeny.Create;
-    actAudit: Result := TJwAuditAccessControlEntry.Create;
-    actMandatory : Result := TJwAuditAccessControlEntry.Create;
+    actAllow         : Result := TJwDiscretionaryAccessControlEntryAllow.Create;
+    actAllowCallback :
+      Result := TJwDiscretionaryAccessControlEntryCallbackAllow.Create;
+    actAllowObject :
+      Result := TJwDiscretionaryAccessControlEntryObjectAllow.Create;
+    actAllowCallbackObject :
+      Result := TJwDiscretionaryAccessControlEntryCallbackObjectAllow.Create;
+
+    actDeny          : Result  := TJwDiscretionaryAccessControlEntryDeny.Create;
+    actDenyCallback :
+      Result := TJwDiscretionaryAccessControlEntryCallbackDeny.Create;
+    actDenyObject :
+      Result := TJwDiscretionaryAccessControlEntryObjectDeny.Create;
+    actDenyCallbackObject :
+      Result := TJwDiscretionaryAccessControlEntryCallbackObjectDeny.Create;
+
+    actAudit : Result := TJwAuditAccessControlEntry.Create;
+    actAuditCallback  :
+      Result := TJwAuditAccessControlEntryCallback.Create;
+    actAuditObject  :
+      Result := TJwAuditAccessControlEntryObject.Create;
+    actAuditCallbackObject  :
+      Result := TJwAuditAccessControlEntryCallbackObject.Create;
+
+    actMandatory     : Result := TJwSystemMandatoryAccessControlEntry.Create;
   else
     raise EJwsclInvalidACEException.CreateFmtEx(
       RsUnsupportedACE, 'CreateACE', ClassName, RsUNAcl,
@@ -2218,21 +2480,90 @@ begin
   end;
 end;
 
+class function TJwSecurityAccessControlEntry.
+  GetClassAceType(const AceType: TJwAceType) : TJwSecurityAccessControlEntryClass;
+begin
+  case AceType of
+    actAllow :
+      result := TJwDiscretionaryAccessControlEntryAllow;
+    actAllowCallback:
+      Result := TJwDiscretionaryAccessControlEntryCallbackAllow;
+    actAllowObject:
+      Result := TJwDiscretionaryAccessControlEntryObjectAllow;
+    actAllowCallbackObject :
+      Result := TJwDiscretionaryAccessControlEntryCallbackObjectAllow;
+
+
+    actDeny :
+      Result := TJwDiscretionaryAccessControlEntryDeny;
+    actDenyCallback :
+      Result := TJwDiscretionaryAccessControlEntryCallbackDeny;
+    actDenyObject:
+      Result := TJwDiscretionaryAccessControlEntryObjectDeny;
+    actDenyCallbackObject :
+      Result := TJwDiscretionaryAccessControlEntryCallbackObjectDeny;
+
+    actAudit :
+      Result := TJwAuditAccessControlEntry;
+    actAuditCallback :
+      Result := TJwAuditAccessControlEntryCallback;
+    actAuditObject:
+      Result := TJwAuditAccessControlEntryObject;
+    actAuditCallbackObject :
+      Result := TJwAuditAccessControlEntryCallbackObject;
+
+
+    actMandatory :
+      Result := TJwSystemMandatoryAccessControlEntry;
+  else
+   raise EJwsclInvalidACEException.CreateFmtEx(
+      RsUnsupportedACE, 'GetClassAceType', ClassName, RsUNAcl,
+      0, False, []);
+  end;
+end;
+
+
 constructor TJwSecurityAccessControlEntry.Create(
   const AccessEntryPointer: PAccessAllowedAce);
+
 begin
   if not Assigned(AccessEntryPointer) then
     raise EJwsclNILParameterException.CreateFmtEx(
       RsACLClassNilParameter, 'Create', ClassName, RsUNAcl,
       0, False, ['accessACE']);
 
+  if (Self.ClassType <>
+    GetClassAceType(TJwEnumMap.ConvertAceType(AccessEntryPointer.Header.AceType))) then
+   raise EJwsclInvalidAceMismatch.CreateFmtEx(
+      RsACEMismatch, 'Create', ClassName, RsUNAcl,
+      0, False, []);
+
   Self.Create;
   fFlags := TJwEnumMap.ConvertAceFlags(AccessEntryPointer.Header.AceFlags);
   fAccessMask := AccessEntryPointer.Mask;
   fRevision := ACL_REVISION;
+  fHeader := AccessEntryPointer.Header;
+
 
   OwnSID := True;
   fSID := TJwSecurityId.Create(PSID(@AccessEntryPointer.SidStart));
+
+  //get other data
+  case AccessEntryPointer.Header.AceType of
+    SYSTEM_AUDIT_OBJECT_ACE_TYPE,
+    SYSTEM_AUDIT_CALLBACK_OBJECT_ACE_TYPE,
+    ACCESS_ALLOWED_OBJECT_ACE_TYPE,
+    ACCESS_ALLOWED_CALLBACK_OBJECT_ACE_TYPE,
+    ACCESS_DENIED_CALLBACK_ACE_TYPE,
+    ACCESS_DENIED_OBJECT_ACE_TYPE,
+    ACCESS_DENIED_CALLBACK_OBJECT_ACE_TYPE :
+      begin
+        fObjectType :=
+          PACCESS_ALLOWED_OBJECT_ACE(AccessEntryPointer).ObjectType;
+        fInheritedObjectType :=
+          PACCESS_ALLOWED_OBJECT_ACE(AccessEntryPointer).InheritedObjectType;
+      end;
+  end;
 
   fUserData := nil;
 end;
@@ -2253,25 +2584,36 @@ begin
       RsACLClassNilParameter, 'CreateACE', ClassName, RsUNAcl,
       0, False, ['accessACE']);
 
-  if AccessEntryPointer.Header.AceType = ACCESS_ALLOWED_ACE_TYPE then
+  {if AccessEntryPointer.Header.AceType = ACCESS_ALLOWED_ACE_TYPE then
     Result := TJwDiscretionaryAccessControlEntryAllow.Create(AccessEntryPointer)
+  else
+  if AccessEntryPointer.Header.AceType = ACCESS_ALLOWED_CALLBACK_ACE_TYPE then
+    result := TJwDiscretionaryAccessControlEntryCallbackAllow.Create(AccessEntryPointer)
   else
   if AccessEntryPointer.Header.AceType = ACCESS_DENIED_ACE_TYPE then
     Result := TJwDiscretionaryAccessControlEntryDeny.Create(AccessEntryPointer)
   else
+  if AccessEntryPointer.Header.AceType = ACCESS_DENIED_CALLBACK_ACE_TYPE then
+    result := TJwDiscretionaryAccessControlEntryCallbackDeny.Create(AccessEntryPointer)
+  else
   if AccessEntryPointer.Header.AceType = SYSTEM_AUDIT_ACE_TYPE then
     Result := TJwAuditAccessControlEntry.Create(PSystemAuditAce(AccessEntryPointer))
   else
+  if AccessEntryPointer.Header.AceType = SYSTEM_AUDIT_CALLBACK_ACE_TYPE then
+    Result := TJwAuditAccessControlEntryCallback.Create(PSystemAuditAce(AccessEntryPointer))
+  else
   if AccessEntryPointer.Header.AceType = SYSTEM_MANDATORY_LABEL_ACE_TYPE then
     Result := TJwSystemMandatoryAccessControlEntry.Create(
-        {PSystemAuditAce(PSystemMandatoryLabelAce}(AccessEntryPointer){)})
+        (AccessEntryPointer))
   else
-  //SYSTEM_AUDIT_CALLBACK_ACE,...
     raise EJwsclInvalidACEException.CreateFmtEx(
       RsUnsupportedACE, 'CreateACE', ClassName, RsUNAcl,
-      0, False, []);
+      0, False, []);   }
 
-  result.Header := AccessEntryPointer.Header;
+
+  result := GetClassAceType(TJwEnumMap.ConvertAceType(AccessEntryPointer.Header.AceType))
+       .Create(AccessEntryPointer);
+
 end;
 
 class function TJwSecurityAccessControlEntry.CreateACE(
@@ -2280,12 +2622,138 @@ begin
   Result := CreateACE(PAccessAllowedAce(AccessEntryPointer));
 end;
 
+function TJwSecurityAccessControlEntry.GetDynamicTypeSize : Cardinal;
+begin
+  result := 0;
+  case GetAceType of
+    actAudit         : result := sizeof(SYSTEM_AUDIT_ACE);
+    actAuditCallback : result := sizeof(SYSTEM_AUDIT_CALLBACK_ACE);
+    actAuditObject   : result := sizeof(SYSTEM_AUDIT_OBJECT_ACE);
+    actAuditCallbackObject : result := sizeof(SYSTEM_AUDIT_CALLBACK_OBJECT_ACE);
+
+    actMandatory : result := sizeof(SYSTEM_MANDATORY_LABEL_ACE);
+
+    actAllow : result := sizeof(ACCESS_ALLOWED_ACE);
+    actAllowCallback : result := sizeof(ACCESS_ALLOWED_CALLBACK_ACE);
+    actAllowObject : result := sizeof(ACCESS_ALLOWED_OBJECT_ACE);
+    actAllowCallbackObject : result := sizeof(ACCESS_ALLOWED_CALLBACK_OBJECT_ACE);
+
+    actDeny : result := sizeof(ACCESS_DENIED_ACE);
+    actDenyCallback : result := sizeof(ACCESS_DENIED_CALLBACK_ACE);
+    actDenyObject : result := sizeof(ACCESS_DENIED_OBJECT_ACE);
+    actDenyCallbackObject : result := sizeof(ACCESS_DENIED_CALLBACK_OBJECT_ACE);
+  else
+    raise EJwsclInvalidACEException.CreateFmtEx(
+      RsInvalidAceType,
+      'GetDynamicTypeSize', ClassName, RsUNAcl, 0, False, []);
+  end;
+end;                                
+
+function TJwSecurityAccessControlEntry.CreateDynamicACE(out Size : Cardinal) : Pointer;
+
+ procedure SetSidStart(var SidStart : Cardinal);
+ var aPSID: PSID;
+ begin
+   if Assigned(SID) then
+   begin
+     aPSID := SID.CreateCopyOfSID;
+     if aPSID <> nil then
+     begin
+       CopyMemory(@SidStart, aPSID, SID.SIDLength);
+       SID.FreeSID(aPSID);
+     end;
+   end;
+ end;
+
+ function CompareGUID(const G1, G2: TGUID): boolean;
+ begin
+   Result := CompareMem(@G1, @G2, Sizeof(TGUID));
+ end;
+
+
+var p1 : PACCESS_ALLOWED_CALLBACK_ACE;
+    p2 : PSYSTEM_MANDATORY_LABEL_ACE;
+    p3 : PACCESS_DENIED_OBJECT_ACE;
+    p4 : PACCESS_ALLOWED_CALLBACK_OBJECT_ACE;
+
+    AceType : TJwAceType;
+{$IFDEF DEBUG}
+type TB = array[0..27] of byte;
+var
+    Data : ^TB;
+{$ENDIF DEBUG}
+
+begin
+  Size := GetDynamicTypeSize;
+
+  if Assigned(SID) and (SID.SID <> nil) then
+    Inc(Size, SID.SIDLength);
+
+  //GetMem(result, Size);
+  //ZeroMemory(result,Size);
+  Result := Pointer(GlobalAlloc(GMEM_FIXED or GMEM_ZEROINIT, Size));
+
+
+{$IFDEF DEBUG}
+  Data := result;
+{$ENDIF DEBUG}
+
+  PACCESS_ALLOWED_ACE(result).Header.AceType
+    := TJwEnumMap.ConvertAceType(Self.AceType);
+  PACCESS_ALLOWED_ACE(result).Header.AceFlags
+    := TJwEnumMap.ConvertAceFlags(Self.Flags);
+  PACCESS_ALLOWED_ACE(result).Header.AceSize
+    := Size;
+
+  AceType := GetAceType;
+  case AceType of
+    actMandatory,
+
+    actAudit,
+    actAuditCallback,
+
+    actAllow,
+    actAllowCallback,
+
+    actDeny,
+    actDenyCallback:
+    begin
+      p1 := result;
+
+      p1.Mask := AccessMask;
+      SetSidStart(p1.SidStart);
+    end;
+
+    actAuditObject,
+    actAuditCallbackObject,
+
+    actAllowObject,
+    actAllowCallbackObject,
+    actDenyObject,
+    actDenyCallbackObject:
+    begin
+      p3 := result;
+
+      p3.Mask := AccessMask;
+
+      p3.Flags := 0;
+      if CompareGUID(NULL_GUID, Self.ObjectType) then
+        p3.Flags := p3.Flags or ACE_OBJECT_TYPE_PRESENT;
+      if CompareGUID(NULL_GUID, Self.InheritedObjectType) then
+        p3.Flags := p3.Flags or ACE_INHERITED_OBJECT_TYPE_PRESENT;
+
+      p3.ObjectType := Self.ObjectType;
+      p3.InheritedObjectType := Self.InheritedObjectType;
+
+      SetSidStart(p2.SidStart);
+    end;
+  end;
+end;
+
 function TJwSecurityAccessControlEntry.Create_AllowACE: PAccessAllowedAce;
-type
-  TB = array[-10..23] of byte;
 var
   aPSID: PSID;
-  mem: ^TB;
+  Size : Cardinal;
 begin
   if not Assigned(SID) then
     Result := PAccessAllowedAce(GlobalAlloc(GMEM_FIXED or
@@ -2294,24 +2762,25 @@ begin
     Result := PAccessAllowedAce(GlobalAlloc(GMEM_FIXED or
       GMEM_ZEROINIT, sizeof(TAccessAllowedAce) + SID.SIDLength));
 
-//  Result.Header.AceType := ACCESS_ALLOWED_ACE_TYPE;
-
-  if Self is TJwDiscretionaryAccessControlEntryAllow then
-    Result.Header.AceType := ACCESS_ALLOWED_ACE_TYPE
-  else
-  if Self is TJwDiscretionaryAccessControlEntryDeny then
-    Result.Header.AceType := ACCESS_DENIED_ACE_TYPE
-  else
-  if Self is TJwAuditAccessControlEntry then
-    Result.Header.AceType := SYSTEM_AUDIT_ACE_TYPE
-  else
-  if Self is TJwSystemMandatoryAccessControlEntry then
-    Result.Header.AceType := SYSTEM_MANDATORY_LABEL_ACE_TYPE
-  else
+  //only allow return structures that are compatible to result type
+  if
+  not
+  (
+  (Self is TJwDiscretionaryAccessControlEntryCallbackAllow) or
+  (Self is TJwDiscretionaryAccessControlEntryAllow) or
+  (Self is TJwDiscretionaryAccessControlEntryCallbackDeny) or
+  (Self is TJwDiscretionaryAccessControlEntryDeny) or
+  (Self is TJwAuditAccessControlEntryCallback) or
+  (Self is TJwAuditAccessControlEntry) or
+  (Self is TJwSystemMandatoryAccessControlEntry)
+  ) then
     raise EJwsclInvalidACEException.CreateFmtEx(
       RsUnsupportedACE, 'Create_XXXXXACE', ClassName, RsUNAcl,
       0, False, []);
 
+  result := CreateDynamicACE(Size);
+
+  (*
   Result.Header.AceFlags := TJwEnumMap.ConvertAceFlags(Flags);
 
 
@@ -2326,18 +2795,20 @@ begin
 
     if aPSID <> nil then
     begin
-      mem := @Result.SidStart;
-      FillChar(mem^, SID.SIDLength, 8);
+      //mem := @Result.SidStart;
+      //FillChar(mem^, SID.SIDLength, 8);
       CopyMemory(@Result.SidStart, aPSID, SID.SIDLength);
-      mem := @Result.SidStart;
+      //mem := @Result.SidStart;
 
-      if mem = nil then;
+      //if mem = nil then;
 
       SID.FreeSID(aPSID);
     end;
-  end;
+  end;    *)
 
 end;
+
+
 
 function TJwSecurityAccessControlEntry.Create_DenyACE: PAccessDeniedAce;
 begin
@@ -2379,6 +2850,11 @@ end;
 procedure TJwSecurityAccessControlEntry.SetFlags(FlagSet: TJwAceFlags);
 begin
   fFlags := FlagSet;
+end;
+
+function TJwSecurityAccessControlEntry.GetAccessMask : TJwAccessMask;
+begin
+  result := fAccessMask;
 end;
 
 procedure TJwSecurityAccessControlEntry.SetAccessMask(
@@ -2567,6 +3043,15 @@ begin
 end;
 
 
+function TJwAuditAccessControlEntry.GetAccessMask : TJwAccessMask;
+begin
+  result := 0;
+  if AuditSuccess then
+    result := result or SUCCESSFUL_ACCESS_ACE_FLAG;
+  if AuditFailure then
+    result := result or FAILED_ACCESS_ACE_FLAG;
+end;
+
 procedure TJwAuditAccessControlEntry.SetAuditSuccess(const Value: boolean);
 begin
   if Value then
@@ -2624,17 +3109,54 @@ end;
 
 function TJwSecurityAccessControlEntry.GetAceType: TJwAceType;
 begin
-  Result := actDeny;
+  Result := actUnknown;
 
+  {Order must be correct
+    CallbackX
+    CallbackObjectX
+    X
+  }
+
+  if Self is TJwDiscretionaryAccessControlEntryCallbackAllow then
+    Result := actAllowCallback
+  else
+  if Self is TJwDiscretionaryAccessControlEntryObjectAllow then
+    Result := actAllowObject
+  else
+  if Self is TJwDiscretionaryAccessControlEntryCallbackObjectAllow then
+    Result := actAllowCallbackObject
+  else
   if Self is TJwDiscretionaryAccessControlEntryAllow then
     Result := actAllow
+  else
+
+  if Self is TJwDiscretionaryAccessControlEntryCallbackDeny then
+    Result := actDenyCallback
+  else
+  if Self is TJwDiscretionaryAccessControlEntryObjectDeny then
+    Result := actDenyObject
+  else
+  if Self is TJwDiscretionaryAccessControlEntryCallbackObjectDeny then
+    Result := actDenyCallbackObject
   else
   if Self is TJwDiscretionaryAccessControlEntryDeny then
     Result := actDeny
   else
+
+  if Self is TJwAuditAccessControlEntryCallback then
+    Result := actAuditCallback
+  else
+  if Self is TJwAuditAccessControlEntryCallback  then
+    Result := actAuditCallbackObject
+  else
+  if Self is TJwAuditAccessControlEntryObject  then
+    Result := actAuditObject
+  else
   if Self is TJwAuditAccessControlEntry then
     Result := actAudit
   else
+
+
   if Self is TJwSystemMandatoryAccessControlEntry then
     Result := actMandatory
   else
@@ -2660,10 +3182,23 @@ begin
   //  Result.grfAccessMode := TAccessMode(Integer(ConvertAceFlagsToCardinal(Flags)));
 
   case GetAceType of
+    actAllowCallback,
+    actAllowObject,
+    actAllowCallbackObject,
     actAllow: Result.grfAccessMode := GRANT_ACCESS;
+
+    actDenyCallback,
+    actDenyObject,
+    actDenyCallbackObject,
     actDeny: Result.grfAccessMode  := DENY_ACCESS;
+
+
     actMandatory : Result.grfAccessMode := TAccessMode(AccessMask);
-    actAudit:
+
+    actAudit,
+    actAuditCallback,
+    actAuditObject,
+    actAuditCallbackObject:
     begin
       Result.grfAccessMode  := SET_ACCESS;
       Result.grfInheritance := 0;
@@ -2675,7 +3210,6 @@ begin
           Result.grfInheritance or FAILED_ACCESS_ACE_FLAG;
     end;
   end;
-
 
 
   FillChar(Result.Trustee, sizeof(Result.Trustee), 0);

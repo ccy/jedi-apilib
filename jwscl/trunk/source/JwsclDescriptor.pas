@@ -674,6 +674,7 @@ const {@Name is the header string that initiates a security descriptor stream bl
        and TJwSecurityDescriptor.LoadFromStream }
   SD_HEADER_SIZE = 19;
 
+procedure JwFreeSecurityDescriptorArray(var List : TJwSecurityDescriptorArray);
 
 {$ENDIF SL_IMPLEMENTATION_SECTION}
 
@@ -691,6 +692,15 @@ uses Math,
 
 {$IFNDEF SL_INTERFACE_SECTION}
 
+procedure JwFreeSecurityDescriptorArray(var List : TJwSecurityDescriptorArray);
+var i : Integer;
+begin
+  for i := low(List) to high(List) do
+  begin
+    FreeAndNil(List[i]);
+  end;
+  List := nil;
+end;
 
 procedure TJwSecurityDescriptor.Init(CreateDACL : Boolean);
 begin

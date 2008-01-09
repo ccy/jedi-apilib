@@ -30,7 +30,7 @@ begin
   JwInitWellKnownSIDs;
 
   RMCtx := TJwAuthResourceManager.Create('',
-    [authRM_NoAudit],nil,nil,nil);
+    [authRM_NoAudit],nil,nil);
 
   AuthZCtx := TJwAuthContext.CreateBySid(
       RMCtx,//const ResourceManager: TJwAuthResourceManager;

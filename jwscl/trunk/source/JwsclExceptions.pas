@@ -163,6 +163,7 @@ type
   EJwsclWinCallFailedException = class(EJwsclSecurityException);
   EJwsclProcessIdNotAvailable = class(EJwsclSecurityException);
 
+  EJwsclInvalidObjectArrayException = class(EJwsclSecurityException);
 
   EJwsclInheritanceSourceNotSupportedException =
     class(EJwsclSecurityException);
@@ -192,6 +193,7 @@ type
 
   EJwsclInvalidACEException = class(EJwsclSecurityException);
   EJwsclRevisionMismatchException = class(EJwsclSecurityException);
+  EJwsclInvalidAceMismatch = class(EJwsclSecurityException);
 
   EJwsclInvalidSecurityDescriptor = class(EJwsclSecurityException);
   EJwsclInvalidPathException = class(EJwsclSecurityException);

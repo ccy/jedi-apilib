@@ -63,9 +63,9 @@ uses
   JclWideFormat,
   JclWideStrings,
 {$ENDIF}
+  JwsclTypes,
   JwsclExceptions,
   JwsclResource,
-  JwsclTypes,
   JwsclStrings;
 
 procedure JwGlobalFreeAndNil(var hMem: HGLOBAL);
@@ -199,14 +199,75 @@ procedure LocalizeMapping(var MappingRecord : array of TJwRightsMapping;
   ModuleInstance : HINST = 0
   );
 
+function JwCheckArray(const Objs : TJwObjectTypeArray) : Boolean; overload;
+function JwCheckArray(const Objs : TJwObjectTypeArray; out Index : Integer) : Boolean; overload;
 
 procedure JwUNIMPLEMENTED_DEBUG;
 procedure JwUNIMPLEMENTED;
+
+procedure JwRaiseOnNilMemoryBlock(const P : Pointer; const MethodName, ClassName, FileName : TJwString);
+procedure JwRaiseOnNilParameter(const P : Pointer; const ParameterName, MethodName, ClassName, FileName : TJwString);
 
 implementation
 uses Classes, SysUtils, JwsclToken, JwsclKnownSid, JwsclDescriptor, JwsclAcl,
      JwsclSecureObjects, JwsclMapping;
 
+procedure JwRaiseOnNilParameter(const P : Pointer; const ParameterName, MethodName, ClassName, FileName : TJwString);
+begin
+  if not Assigned(P) then
+  raise EJwsclNILParameterException.CreateFmtEx(
+      RsNilParameter, MethodName,
+      ClassName, FileName, 0, False, [ParameterName]);
+end;
+
+procedure JwRaiseOnNilMemoryBlock(const P : Pointer; const MethodName, ClassName, FileName : TJwString);
+begin
+  if P = nil then
+    raise EJwsclUnimplemented.CreateFmtEx(
+     RsNilPointer,
+      MethodName, ClassName, FileName, 0, false, []);
+end;
+
+function JwCheckArray(const Objs : TJwObjectTypeArray; out Index : Integer) : Boolean;
+var
+    LastLevel : Cardinal;
+begin
+  Index := 0;
+
+  result := Assigned(Objs);
+  if not result then exit;
+
+  result := Length(Objs) > 0;
+  if not result then exit;
+
+  result := Objs[0].Level = 0;
+  if not result then exit;
+
+  LastLevel := 0;
+  if Length(Objs) > 1 then
+  begin
+    Index := 1;
+    while Index <= high(Objs) do
+    begin
+      result := (Objs[Index].Level > 0) and (Objs[Index].Level < 5);
+      if not result then exit;
+
+      if Objs[Index].Level > LastLevel then
+      begin
+        result := (Objs[Index].Level - LastLevel) = 1;
+        if not result then exit;
+      end;
+      LastLevel := Objs[Index].Level;
+      Inc(Index);
+    end;
+  end;
+end;
+
+function JwCheckArray(const Objs : TJwObjectTypeArray) : Boolean;
+var Index : Integer;
+begin
+  result := JwCheckArray(Objs);
+end;
 
 procedure JwUNIMPLEMENTED;
 begin

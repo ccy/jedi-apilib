@@ -3,6 +3,7 @@ program AuthCtx2;
 {$APPTYPE CONSOLE}
 
 uses
+  FastMM4,
   SysUtils,
   dialogs,
   JwaWindows,
@@ -37,12 +38,16 @@ var
     ObjectTypeArray: TJwObjectTypeArray;
     i : Integer;
 
-
+    HDR : ACE_HEADER;
 begin
-  JwInitWellKnownSIDs;
   try
+  writeln('JwaWindows is lodad in dynamic mode?: ', JWA_CONST_DYNAMICLINK);
+  JwInitWellKnownSIDs;
+
+
+
    RMCtx := TJwAuthResourceManager.Create('',
-    [authRM_NoAudit],nil,nil,nil);
+    [authRM_NoAudit],nil,nil);
 
   AuthZCtx := TJwAuthContext.CreateBySid(
       RMCtx,//const ResourceManager: TJwAuthResourceManager;
@@ -51,17 +56,8 @@ begin
       0,//const ExpirationTime: Int64;
       nil//const DynamicGroupArgs: Pointer
       );
-  except
-    on E : Exception  do
-    begin
-      writeln('0');
-      writeln(e.MEssage);
-      readln;
-      exit;
-    end;
-  end;
 
-  try
+  
   SD := TJwSecurityDescriptor.Create; //CreateDefaultByToken();
   SD.Owner := JwNullSID;
   SD.PrimaryGroup := JwNullSID;
@@ -84,6 +80,7 @@ begin
     SDArray[1].DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(
                   nil,[], FILE_WRITE_DATA, JwAdministratorsSID, false));
 
+  //  ShowMessage(SDArray[0].DACL.Text);
   {  SDArray[2] := TJwSecurityDescriptor.CreateDefaultByToken();
     SDArray[2].DACL.Clear;
     SDArray[2].DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(
@@ -91,50 +88,98 @@ begin
 
 
 
-  SetLength(ObjectTypeArray, 2);
-  ZeroMemory(@ObjectTypeArray[0], sizeof(ObjectTypeArray[0]));
-  ObjectTypeArray[0].Level := ACCESS_PROPERTY_GUID;
+  SetLength(ObjectTypeArray, 7);
+{  ZeroMemory(@ObjectTypeArray[0], sizeof(ObjectTypeArray[0]));
+  ObjectTypeArray[0].Level := 0;
   ObjectTypeArray[0].ObjectType := @GUID_1;
 
   ZeroMemory(@ObjectTypeArray[1], sizeof(ObjectTypeArray[1]));
-  ObjectTypeArray[1].Level := ACCESS_PROPERTY_GUID;
+  ObjectTypeArray[1].Level := 0;
   ObjectTypeArray[1].ObjectType := @GUID_2;
-  
 
+  ZeroMemory(@ObjectTypeArray[2], sizeof(ObjectTypeArray[2]));
+  ObjectTypeArray[2].Level := 1;
+  ObjectTypeArray[2].ObjectType := @GUID_2;    }
+                //0, 1, 2, 2, 1, 2, 3}
+  i := 0;
+  ZeroMemory(@ObjectTypeArray[i], sizeof(TObjectTypeList));
+  ObjectTypeArray[i].Level := 0;
+  ObjectTypeArray[i].ObjectType := @GUID_1;
+
+  Inc(i);
+  ZeroMemory(@ObjectTypeArray[1], sizeof(TObjectTypeList));
+  ObjectTypeArray[i].Level := 1;
+  ObjectTypeArray[i].ObjectType := @GUID_1;
+
+  Inc(i);
+  ZeroMemory(@ObjectTypeArray[i], sizeof(TObjectTypeList));
+  ObjectTypeArray[i].Level := 2;
+  ObjectTypeArray[i].ObjectType := @GUID_1;
+
+  Inc(i);
+  ZeroMemory(@ObjectTypeArray[i], sizeof(TObjectTypeList));
+  ObjectTypeArray[i].Level := 3;
+  ObjectTypeArray[i].ObjectType := @GUID_1;
+
+  Inc(i);
+  ZeroMemory(@ObjectTypeArray[i], sizeof(TObjectTypeList));
+  ObjectTypeArray[i].Level := 4;
+  ObjectTypeArray[i].ObjectType := @GUID_1;
+
+  Inc(i);
+  ZeroMemory(@ObjectTypeArray[i], sizeof(TObjectTypeList));
+  ObjectTypeArray[i].Level := 1;
+  ObjectTypeArray[i].ObjectType := @GUID_1;
+
+  Inc(i);
+  ZeroMemory(@ObjectTypeArray[i], sizeof(TObjectTypeList));
+  ObjectTypeArray[i].Level := 2;
+  ObjectTypeArray[i].ObjectType := @GUID_1;
+
+  Request := nil;
   Request := TJwAuthZAccessRequest.Create(
     MAXIMUM_ALLOWED,//FILE_READ_EA,//DesiredAccess: TJwAccessMask;
     JwNullSID, //PrincipalSelfSid: TJwSecurityID;
-    nil,//ObjectTypeArray,//ObjectTypeArray,//ObjectTypeArray: TJwObjectTypeArray;
+    ObjectTypeArray,//ObjectTypeArray,//ObjectTypeArray,//ObjectTypeArray: TJwObjectTypeArray;
     nil,//Data: Pointer
     shOwned
     );
 
-  AuthZCtx.AccessCheck(
-    1,//Flags: Cardinal;
-    Request,//const Request: TJwAuthZAccessRequest;
-    0,//const AuditInfo: TAuthZAuditInfoHandle;
-    SD,//const SecurityDescriptor: TJwSecurityDescriptor;
-    SDArray,//const OptionalSecurityDescriptorArray: TJwSecurityDescriptorArray;
-    Reply,//out Reply: TJwAuthZAccessReply;
-    AuthZHandle//out AuthZHandle: TAuthZAccessCheckResultHandle
-  );
+  Reply := nil;
+  try
+    AuthZCtx.AccessCheck(
+      1,//Flags: Cardinal;
+      Request,//const Request: TJwAuthZAccessRequest;
+      0,//const AuditInfo: TAuthZAuditInfoHandle;
+      SD,//const SecurityDescriptor: TJwSecurityDescriptor;
+      SDArray,//const OptionalSecurityDescriptorArray: TJwSecurityDescriptorArray;
+      Reply,//out Reply: TJwAuthZAccessReply;
+      AuthZHandle//out AuthZHandle: TAuthZAccessCheckResultHandle
+    );
+  finally
+    Request.Free;
+  end;
 
   writeln(JwFormatAccessRights(Reply.GrantedAccessMask[0], FileMapping));
 
   Reply.Free;
 
-  //readln;
-
   AuthZCtx.Free;
   RMCtx.Free;
+
+  JwFreeSecurityDescriptorArray(SDArray);
+  SD.Free;
+  ObjectTypeArray := nil;
+  readln;
+
 
   except
     on E : Exception  do
     begin
-      writeln('1');
+      writeln('0');
       writeln(e.MEssage);
       readln;
+      exit;
     end;
   end;
-  readln;
 end.

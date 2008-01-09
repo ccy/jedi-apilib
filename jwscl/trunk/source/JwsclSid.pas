@@ -143,12 +143,12 @@ type
        @param(sids contains the "SID and Attributes" structures to be freed. If nil nothing happens.
              The parameter will be nil afterwards.)
       }
-    procedure Free_PSID_Array(var sids: PSidAndAttributesArray); virtual;
+    class procedure Free_PSID_Array(var sids: PSidAndAttributesArray); virtual;
 
       {@Name frees the memory of a token groups structure that was created by Create_PTOKEN_GROUPS.
          The parameter will be nil afterwards.
       }
-    procedure Free_PTOKEN_GROUPS(var sids: PTOKEN_GROUPS); virtual;
+    class procedure Free_PTOKEN_GROUPS(var sids: PTOKEN_GROUPS); virtual;
 
       {@Name returns a string that contains for each list entry (SID)
        a text that contains domain, account name and humand readable SID structure.
@@ -1232,6 +1232,7 @@ var pwUserName : PWideChar;
 begin
   CheckSID;
 
+  //Buffer overlow issue fixed
   cbUserName := UNLen;
   GetMem(pwUserName, cbUserName * sizeOf(WideChar));
   CachedGetUserFromSid(fSID, pwUserName, cbUserName);
@@ -1361,7 +1362,7 @@ var i : Byte;
 begin
   ZeroMemory(@result.Value, sizeof(result.Value));
 
-  if I > $FFFFFFFFFFFF then //> 2^48
+  if Value > $FFFFFFFFFFFF then //> 2^48
     raise EJwsclInvalidSidAuthorityValue.CreateFmtEx(
       RsInvalidSidAuthorityValue, 'IntToSidAuth',
       ClassName, RsUNSid, 0, false, []);
@@ -1664,7 +1665,7 @@ begin
   end;
 end;
 
-procedure TJwSecurityIdList.Free_PTOKEN_GROUPS(var sids: PTOKEN_GROUPS);
+class procedure TJwSecurityIdList.Free_PTOKEN_GROUPS(var sids: PTOKEN_GROUPS);
 var
   i: integer;
 begin
@@ -1680,7 +1681,7 @@ begin
   Sids := nil;
 end;
 
-procedure TJwSecurityIdList.Free_PSID_Array(var sids: PSidAndAttributesArray);
+class procedure TJwSecurityIdList.Free_PSID_Array(var sids: PSidAndAttributesArray);
 var
   i: integer;
 begin

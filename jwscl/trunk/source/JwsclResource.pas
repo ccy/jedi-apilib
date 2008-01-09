@@ -103,6 +103,8 @@ const
   RsMapNoMapGiven = 'No map class given.';
   RsUnsupportedACE = 'The given ACE type is not supported by this library.';
   RsInvalidMandatoryLevelType = 'The given SID has so sub authority or the sub authority is invalid or unknown. The RID must be a number of SECURITY_MANDATORY_XXXXX constants.';
+  RsInvalidAceType = 'The type of the ACE structure is unknown.';
+  RsACEMismatch = 'The type of the ACE class and the type of the ACE header do not match.';
 
 //Unit  JwsclCredentials.pas
   RsCredentialsLocalName = 'local';
@@ -156,6 +158,12 @@ const
    RsAceDenyObject = 'Deny object'; 
    RsAceAllowCallbackObject = 'Allow callback object';
    RsAceDenyCallbackObject = 'Deny callback object';
+   RsAceAuditCallback = 'Audit callback';
+   RsAceAuditObject = 'Audit object';
+   RsAceAuditCallbackObject = 'Audit callback object';
+   RsAceAllowCallback = 'Allow callback';
+   RsAceDenyCallback = 'Deny callback';
+   RsAceUnknown = 'Unknown ace';
 
 //Unit Jwscl_Descriptor.pas
   RsSecurityDescriptorInvalidAttributesSize = 'Securityattributes has invali' +
@@ -426,6 +434,9 @@ const
   RsKeyedHashNeedsKey     = 'A valid key is needed to create a hash object with a keyed algorithm.';
   RsNonKeyedHash          = 'A non-keyed hash cannot be created with a key.';
 
+//Unit JwsclAuthCtx.pas
+  RsInvalidObjectTypeList = 'The given array of ObjectType is invalid around index %0:d. (If -1 the array is empty.)';
+
 //General strings
   RsBracketNil = '(nil)';
   RsWinCallFailedWithNTStatus = 'Call to %0:s failed. NTError: %1:d';
@@ -449,6 +460,7 @@ const
 
   RsInitWellKnownNotCalled = 'This method needs JwInitWellKnownSIDs from unit JwsclKnownSid to be called.';
 
+  RsNilPointer = 'A given pointer was unexpectedly NIL.';
 
 
 const
@@ -456,6 +468,7 @@ const
   RsUNAccountControl     = 'JwsclAccountControl.pas';
   RsUNAcl                = 'JwsclAcl.pas.pas';
   RsUNAnsi_UniCode       = 'JwsclAnsi_Unicode.pas';
+  RsUNAuthZCtx           = 'JwsclAuthCtx.pas'; 
   RsUNConstants          = 'JwsclConstants.pas';
   RsUNCredentials        = 'JwsclCredentials.pas';
   RsUNDescriptor         = 'JwsclDescriptor.pas';
