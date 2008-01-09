@@ -1,0 +1,47 @@
+JEDI Windows Security Library BETA 0.6
+This is the preliminary version of JWSCL.
+
+The suite is a bunch of classes that encapsulated MS Windows security functions in object oriented way.
+
+The goal of this project is to make security easier to delphi programmers. This includes that
+the programmer must not allocate Windows API memory and also free it. Also (s)he can use simple Delphi String (Ansi- and WideString)
+in all function that needs string manipulation. The memory allocation and deallocation for these things is done internally with a content check.
+Of course it is possible to retrieve winapi structures easily to use in other winapi calls (e.g. TJwSecurityDescriptor.Create_SD). The caller
+also has to free it using a counter part function (e.g. TJwSecurityDescriptor.Free_SD). 
+
+Also api functions are wrapped together in classes to diminish initialization that consumes a great amount of time which (s)he
+could use for better things. All the programmer has to do is to free the class instance after (s)he has used it.
+
+However it is not the goal to teach delphi programmers how to program in windows security or create secure windows applications.
+The programmer has to understand the security of windows by himself/herself. To use these classes (s)he must know 
+what tokens, principals, secure objects, sessions and so on are. 
+
+On the other hand if you want to test the software by creating good test scenarios (module, function, class, integration testing) you are welcome.
+With good tests I mean tests that are reproducable, have a high function cover and uses Dunit.
+
+This library has beta status and is surely not bug free. Do not use for production.
+
+The library is subject to the Mozilla Public License Version 1.1 (the "License");
+you may not use this file except in compliance with the License. You may obtain a copy of the
+License at http://www.mozilla.org/MPL/
+
+Alternatively, the contents of this file may be used under the terms of the  
+GNU Lesser General Public License (the  "LGPL License"), in which case the   
+provisions of the LGPL License are applicable instead of those above.        
+If you wish to allow use of your version of this file only under the terms   
+of the LGPL License and not to allow others to use your version of this file 
+under the MPL, indicate your decision by deleting  the provisions above and  
+replace  them with the notice and other provisions required by the LGPL      
+License.  If you do not delete the provisions above, a recipient may use     
+your version of this file under either the MPL or the LGPL License.          
+                                                                             
+For more information about the LGPL: http://www.gnu.org/copyleft/lesser.html 
+
+
+Do not forget to send bugs, comments or greets to the author
+
+Christian Wimmer – DelphiSecurityLibrary(ät)teamchris(dot)info
+Stuttgart, Germany 05.10.2008
+
+In Memory Of
+Robert Marquardt
