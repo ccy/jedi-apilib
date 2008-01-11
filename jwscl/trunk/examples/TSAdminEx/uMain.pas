@@ -5,10 +5,10 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, ComCtrls, ExtCtrls, ActnList, ImgList, ToolWin, Menus,
-  StdCtrls, StrUtils, CommCtrl,
+  StdCtrls, StrUtils, CommCtrl, Math, NetApi,
   VirtualTrees,
   JwaWindows,
-  JWsclTerminalServer;
+  JwsclTerminalServer;
 //  VirtualTrees;// Contnrs, RpcWinsta, JwsclEncryption, JwsclTypes,
 //  JwsclEnumerations, Internal;
 
@@ -36,13 +36,10 @@ type
   end;
 
 // Class below is used to store imageindex of icons in the Imagelist
-TIconRec = record
-  Server: WORD;
-  User: WORD;
-  Network: WORD;
-  Process: WORD;
-  Console: WORD;
-end;
+TIconIndex = (icThisComputer, icWorld, icServers, icServersSel, icServer,
+  icServerSel, icUserGhosted, icUser, IcNetworkUser, icNetwork, icComputer,
+  icProcess, icChip, icMemory, icListener, icVirtual, icCPUTime, icClock,
+  icService, icNetworkService, icSystem);
 
 type
   TMainForm = class(TForm)
@@ -109,6 +106,9 @@ type
     Button1: TButton;
     Button2: TButton;
     Timer1: TTimer;
+    StateImagesList: TImageList;
+    ImageList2: TImageList;
+    Button3: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure VSTUserGetText(Sender: TBaseVirtualTree;
@@ -149,6 +149,16 @@ type
     procedure VSTProcessCompareNodes(Sender: TBaseVirtualTree; Node1,
       Node2: PVirtualNode; Column: TColumnIndex; var Result: Integer);
     procedure Timer1Timer(Sender: TObject);
+    procedure VSTServerGetImageIndex(Sender: TBaseVirtualTree;
+      Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
+      var Ghosted: Boolean; var ImageIndex: Integer);
+    procedure VSTServerChecked(Sender: TBaseVirtualTree; Node: PVirtualNode);
+    procedure VSTProcessGetImageIndex(Sender: TBaseVirtualTree;
+      Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
+      var Ghosted: Boolean; var ImageIndex: Integer);
+    procedure VSTServerCompareNodes(Sender: TBaseVirtualTree; Node1,
+      Node2: PVirtualNode; Column: TColumnIndex; var Result: Integer);
+    procedure VSTServerDblClick(Sender: TObject);
   private
     { Private declarations }
     TerminalServers: TJwTerminalServerList;
@@ -316,6 +326,8 @@ begin
       pData^.Index := -1;
       pData^.Caption := ServerList.Strings[i];
       pData^.PTerminalServerList := nil;
+      // Assign a checkbox
+      pNode^.CheckType := ctCheckBox;
     end;
   end;
 
@@ -323,9 +335,75 @@ begin
 end;
 
 procedure TMainForm.Button1Click(Sender: TObject);
+{  SystemName: LSA_UNICODE_STRING;
+  ObjectAttributes: _LSA_OBJECT_ATTRIBUTES;
+  PolicyHandle: LSA_HANDLE;
+  EnumerationContext: Cardinal;
+  Buffer: array[0..ANYSIZE_ARRAY-1] of PLSA_TRUST_INFORMATION;
+  CountReturned: Cardinal;
+  Count: Integer;
+  i: Integer;
+  Res: NTSTATUS;
+  bufptr: Pointer;}
+var
+  DomainControllerInfo: PDOMAIN_CONTROLLER_INFOW;
+  DomainNames: PWideChar;
+  Current: PWideChar;
+  pData: PServerNodeData;
 begin
-  TerminalServers[0].EnumerateServers;
+  if DsGetDcNameW(nil, nil, nil, nil, DS_BACKGROUND_ONLY or DS_RETURN_FLAT_NAME,
+    DomainControllerInfo) = ERROR_SUCCESS then
+  begin
+    NetEnumerateTrustedDomains(DomainControllerInfo^.DomainControllerName, DomainNames);
+    Current := DomainNames;
+    while Current[0] <> #0 do
+    begin
+      pData := VSTServer.GetNodeData(VSTServer.AddChild(pAllListedServersNode));
+      pData^.Caption := Current;
+      Current := Current + Length(Current) + 1;
+    end;
+    pData := VSTServer.GetNodeData(VSTServer.AddChild(pAllListedServersNode));
+    pData^.Caption := DomainControllerInfo.DomainName;
+    VSTServer.Sort(pAllListedServersNode, 0, sdAscending);
+    VSTServer.FullExpand(pAllListedServersNode);
+
+    NetApiBufferFree(DomainNames);
+  end;
 end;
+{  bufptr := nil;
+  if NetGetAnyDCName(nil, nil, PByte(bufptr)) <> NERR_Success then
+  begin
+    Exit;
+  end;
+
+  ZeroMemory(@ObjectAttributes, Sizeof(ObjectAttributes));
+
+  if LsaOpenPolicy(bufptr, ObjectAttributes, POLICY_VIEW_LOCAL_INFORMATION,
+    PolicyHandle) = STATUS_SUCCESS then
+  begin
+    count := 0;
+    Res := STATUS_MORE_ENTRIES;
+
+    while Res = STATUS_MORE_ENTRIES do
+    begin
+      Res := LsaEnumerateTrustedDomains(PolicyHandle, EnumerationContext, @Buffer,
+        2048, CountReturned);
+      Inc(Count, CountReturned);
+
+      if Res = STATUS_SUCCESS then Break;
+    end;
+
+    ShowMessageFmt('Error: %s', [SysErrorMessage(LsaNtStatusToWinError(Res))]);
+
+    for i := 0 to Count - 1 do
+    begin
+      ShowMessageFmt('Name: "%s"', [Buffer[i].Name.Buffer]);
+    end;
+
+    NetApiBufferFree(bufptr);
+    LsaClose(PolicyHandle);
+  end;
+end;}
 
 
 procedure TMainForm.Button2Click(Sender: TObject);
@@ -334,8 +412,29 @@ begin
 end;
 
 procedure TMainForm.Button3Click(Sender: TObject);
+var DomainList: TStringList;
+  i: Integer;
+  p: PWideChar;
 begin
-  VSTProcess.EndUpdate;
+  p := EnumerateMultiUserServers(nil);
+  DomainList := PWArrayToStringList(p);
+  LocalFree(Cardinal(p));
+//  DomainList := EnumerateDomains;
+  for i := 0 to DomainList.Count - 1 do
+  begin
+    OutputDebugString(PChar(Format('Domain: %s', [DomainList[i]])));
+  end;
+end;
+
+procedure AutoSizeVST(const AVirtualTree: TVirtualStringTree);
+var i: Integer;
+begin
+  for i := 0 to AVirtualTree.Header.Columns.Count-1 do
+  begin
+    AVirtualTree.Header.Columns[i].Width :=
+      Max(AVirtualTree.Header.Columns[i].Width, AVirtualTree.GetMaxColumnWidth(i));
+  end;
+    
 end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
@@ -367,57 +466,16 @@ begin
 
   // Add a child node (local computer)
   pNode := VSTServer.AddChild(pThisComputerNode);
+
+//  VSTServer.CheckState[pThisComputerNode] := csCheckedNormal;
   pData := VSTServer.GetNodeData(pNode);
 
-  // Point the node data to a Terminal Server instance
-  pData^.Index := TerminalServers.Add(TjwTerminalServer.Create);
-  pData^.PTerminalServerList := @TerminalServers;
-
-  with pData^.PTerminalServerList^[pData^.Index] do
-    begin
-      // EnumerateSessions
-      if EnumerateSessions then
-      begin
-        for i := 0 to Sessions.Count - 1 do
-        begin
-          // Create a node for the session
-          pUserNode := VSTUser.AddChild(nil);
-          // and add the data
-          pUserData := VSTUser.GetNodeData(pUserNode);
-          // Set the Index
-          pUserData^.Index := i;
-          // Point to TerminalServerList.TerminalServer[Index].SessionList
-          pUserData^.List := @Sessions;
-
-          // Create a node for the session in the Sessions VST
-          pSessionNode := VSTSession.AddChild(nil);
-          // and add the data
-          pSessionData := VSTSession.GetNodeData(pSessionNode);
-          // Set the Index
-          pSessionData^.Index := i;
-          // Point to TerminalServerList.TerminalServer[Index].SessionList
-          pSessionData^.List := @Sessions;
-        end;
-      end;
-
-      // Assign Session Event Handler
-      OnSessionEvent := OnTerminalServerEvent;
-
-      if EnumerateProcesses then
-      begin
-        for i := 0 to Processes.Count - 1 do
-        begin
-          // Create a node for the session
-          pProcessNode := VSTProcess.AddChild(nil);
-          // and add the data
-          pProcessData := VSTProcess.GetNodeData(pProcessNode);
-          // Set the Index
-          pProcessData^.Index := i;
-          // Point to TerminalServerList.TerminalServer[Index].SessionList
-          pProcessData^.List := @Processes;
-        end;
-      end;
-    end;
+  // This node can be checked
+  pNode^.CheckType := ctCheckBox;
+  // The this computer node is checked by default
+  pNode^.CheckState := csCheckedNormal;
+  // Trigger the OnChecked Event
+  VSTServer.OnChecked(VSTServer, pNode);
 
   // Expand the This Computer Node
   VSTServer.FullExpand(pThisComputerNode);
@@ -431,6 +489,9 @@ begin
   pData^.Caption := 'All Listed Servers';
   pData^.Index := -2;
   pData^.PTerminalServerList := nil;
+  AutoSizeVST(VSTUser);
+  AutoSizeVST(VSTSession);
+  AutoSizeVST(VSTProcess);
 end;
 
 procedure TMainForm.VSTUserGetText(Sender: TBaseVirtualTree;
@@ -498,9 +559,99 @@ procedure TMainForm.VSTUserGetImageIndex(Sender: TBaseVirtualTree;
   var Ghosted: Boolean; var ImageIndex: Integer);
 var
   pData: PUserNodeData;
+  Username: string;
+  ConnectState: TWtsConnectStateClass;
+  IsConsole: Boolean;
 begin
+  pData := Sender.GetNodeData(Node);
+
+  // Do we have data for this session?
+  if pData^.List^.Count > pData^.Index then
+  begin
+    Username := pData^.List^.Items[pData^.Index].Username;
+    ConnectState := pData^.List^.Items[pData^.Index].ConnectState;
+    IsConsole := pData^.List^.Items[pData^.Index].WdFlag < WD_FLAG_RDP;
+  end;
+
   if Kind in [ikNormal, ikSelected] then begin
-//    pData := Sender.GetNodeData(Node);
+    case column of
+      0: ImageIndex := Integer(icServer);
+      1: begin
+        if Username = '' then
+        begin
+          ImageIndex := -1; // No Icon!
+        end
+        else if username = 'SYSTEM' then
+        begin
+          ImageIndex := Integer(icSystem);
+        end
+        else if username = 'LOCAL SERVICE' then
+        begin
+          ImageIndex := Integer(icService);
+        end
+        else if username = 'NETWORK SERVICE' then
+        begin
+          ImageIndex := Integer(icNetworkService);
+        end
+        else if ConnectState = WTSActive then
+        begin
+          ImageIndex := Integer(icUser);
+        end
+        else begin
+          ImageIndex := Integer(icUserGhosted);
+        end;
+      end;
+      2: begin
+        if IsConsole then
+        begin
+          ImageIndex := Integer(icComputer);
+        end
+        else if ConnectState = WTSListen then
+        begin
+          ImageIndex := Integer(icListener);
+        end
+        else if username <> '' then begin
+          ImageIndex := Integer(icNetworkUser);
+        end
+        else begin
+          ImageIndex := Integer(icNetwork);
+        end;
+      end;
+    end;
+  end;
+end;
+
+procedure TMainForm.VSTServerGetImageIndex(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
+  var Ghosted: Boolean; var ImageIndex: Integer);
+begin
+  case Kind of
+    ikNormal, ikSelected:
+    begin
+//      if Node^.ChildCount > 0 then
+      if Node^.Parent = Sender.RootNode  then
+      begin
+        // If it is a rootnode then the index in the tree eq imageindex
+        ImageIndex := Node^.Index;
+      end
+      else if Node^.Parent = pAllListedServersNode then
+      begin
+        ImageIndex := Integer(icServers);
+      end
+      else begin
+        ImageIndex := Integer(icServer);
+      end;
+    end;
+    ikState:
+    begin
+      if Sender.CheckState[Node] = csCheckedNormal then
+      begin
+        ImageIndex := 4;
+      end
+      else begin
+        ImageIndex := 1;
+      end;
+    end;
   end;
 end;
 
@@ -570,12 +721,34 @@ begin
             Data2^.List^.Items[Index2].ConnectStateStr);
         end;
         5: begin
-          Result := CompareText(Data1^.List^.Items[Index1].IdleTimeStr,
-            Data2^.List^.Items[Index2].IdleTimeStr);
+          if Data1^.List^.Items[Index1].IdleTime >
+            Data2^.List^.Items[Index2].IdleTime then
+          begin
+            Result := 1;
+          end
+          else if Data1^.List^.Items[Index1].IdleTime =
+            Data2^.List^.Items[Index2].IdleTime then
+          begin
+            Result := 0;
+          end
+          else begin
+            Result := -1;
+          end;
         end;
         6: begin
-          Result := CompareText(Data1^.List^.Items[Index1].LogonTimeStr,
-            Data2^.List^.Items[Index2].LogonTimeStr);
+          if Data1^.List^.Items[Index1].LogonTime >
+            Data2^.List^.Items[Index2].LogonTime then
+          begin
+            Result := 1;
+          end
+          else if Data1^.List^.Items[Index1].LogonTime =
+            Data2^.List^.Items[Index2].LogonTime then
+          begin
+            Result := 0;
+          end
+          else begin
+            Result := -1;
+          end;
         end;
       end;
     end
@@ -608,57 +781,76 @@ var pServerData: PServerNodeData;
   pSessionNode: PVirtualNode;
   pSessionData: PSessionNodeData;
   i: Integer;
+  pProcessNode: PVirtualNode;
+  pProcessData: PProcessNodeData;
 begin
   with Sender as TVirtualStringTree do
   begin
-
+    ShowMessageFmt('Index=%d', [GetNodeAt(X,Y)^.Index]);
     pServerData := GetNodeData(GetNodeAt(X, Y));
-  // Is this a server node?
-  if pServerData^.Index > -2 then
-  begin
-    // Is a Terminal Server instance assigned?
-    if pServerData^.PTerminalServerList = nil then
+    // Is this a server node?
+    if pServerData^.Index > -2 then
     begin
-      // Create a Terminal Server instance
-      pServerData^.Index := TerminalServers.Add(TjwTerminalServer.Create);
-      // Set the servername
-      TerminalServers[pServerData^.Index].Server := pServerData^.Caption;
-      // Point the node data to a Terminal Server instance
-      pServerData^.PTerminalServerList := @TerminalServers;
-    end;
-
-    with pServerData^.PTerminalServerList^[pServerData^.Index] do
-    begin
-      // EnumerateSessions
-      if EnumerateSessions then
+      // Is a Terminal Server instance assigned?
+      if pServerData^.PTerminalServerList = nil then
       begin
-        for i := 0 to Sessions.Count - 1 do
+        if TerminalServers.FindByServer(pServerData^.Caption) <> nil then
         begin
-          // Create a node for the session in the Users VST
-          pUserNode := VSTUser.AddChild(nil);
-          // and add the data
-          pUserData := VSTUser.GetNodeData(pUserNode);
-          // Set the Index
-          pUserData^.Index := i;
-          // Point to TerminalServerList.TerminalServer[Index].SessionList
-          pUserData^.List := @Sessions;
 
-          // Create a node for the session in the Sessions VST
-          pSessionNode := VSTSession.AddChild(nil);
-          // and add the data
-          pSessionData := VSTSession.GetNodeData(pSessionNode);
-          // Set the Index
-          pSessionData^.Index := i;
-          // Point to TerminalServerList.TerminalServer[Index].SessionList
-          pSessionData^.List := @Sessions;
+          // Create a Terminal Server instance
+          pServerData^.Index := TerminalServers.Add(TjwTerminalServer.Create);
+          // Set the servername
+          TerminalServers[pServerData^.Index].Server := pServerData^.Caption;
+          // Point the node data to a Terminal Server instance
+          pServerData^.PTerminalServerList := @TerminalServers;
+        end;
+
+        with pServerData^.PTerminalServerList^[pServerData^.Index] do
+        begin
+          // EnumerateSessions
+          if EnumerateSessions then
+          begin
+            for i := 0 to Sessions.Count - 1 do
+            begin
+              // Create a node for the session in the Users VST
+              pUserNode := VSTUser.AddChild(nil);
+              // and add the data
+                pUserData := VSTUser.GetNodeData(pUserNode);
+              // Set the Index
+              pUserData^.Index := i;
+              // Point to TerminalServerList.TerminalServer[Index].SessionList
+              pUserData^.List := @Sessions;
+
+              // Create a node for the session in the Sessions VST
+              pSessionNode := VSTSession.AddChild(nil);
+              // and add the data
+              pSessionData := VSTSession.GetNodeData(pSessionNode);
+              // Set the Index
+              pSessionData^.Index := i;
+              // Point to TerminalServerList.TerminalServer[Index].SessionList
+              pSessionData^.List := @Sessions;
+            end;
+          end;
+
+          // Assign Session Event Handler
+          OnSessionEvent := OnTerminalServerEvent;
+          if EnumerateProcesses then
+          begin
+            for i := 0 to Processes.Count - 1 do
+            begin
+              // Create a node for the session
+              pProcessNode := VSTProcess.AddChild(nil);
+              // and add the data
+              pProcessData := VSTProcess.GetNodeData(pProcessNode);
+              // Set the Index
+              pProcessData^.Index := i;
+                // Point to TerminalServerList.TerminalServer[Index].SessionList
+              pProcessData^.List := @Processes;
+            end;
+          end;
         end;
       end;
-
-      // Assign Event Handler
-      OnSessionEvent := OnTerminalServerEvent;
     end;
-  end;
-
   end;
 end;
 
@@ -720,12 +912,34 @@ begin
             Data2^.List^.Items[Index2].ClientName);
         end;
         6: begin
-          Result := CompareText(Data1^.List^.Items[Index1].IdleTimeStr,
-            Data2^.List^.Items[Index2].IdleTimeStr);
+          if Data1^.List^.Items[Index1].IdleTime >
+            Data2^.List^.Items[Index2].IdleTime then
+          begin
+            Result := 1;
+          end
+          else if Data1^.List^.Items[Index1].IdleTime =
+            Data2^.List^.Items[Index2].IdleTime then
+          begin
+            Result := 0;
+          end
+          else begin
+            Result := -1;
+          end;
         end;
         7: begin
-          Result := CompareText(Data1^.List^.Items[Index1].LogonTimeStr,
-            Data2^.List^.Items[Index2].LogonTimeStr);
+          if Data1^.List^.Items[Index1].LogonTime >
+            Data2^.List^.Items[Index2].LogonTime then
+          begin
+            Result := 1;
+          end
+          else if Data1^.List^.Items[Index1].LogonTime =
+            Data2^.List^.Items[Index2].LogonTime then
+          begin
+            Result := 0;
+          end
+          else begin
+            Result := -1;
+          end;
         end;
         8: begin
           Result := CompareText(Data1^.List^.Items[Index1].RemoteAddress,
@@ -1006,6 +1220,64 @@ begin
   end;
 end;
 
+procedure TMainForm.VSTProcessGetImageIndex(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
+  var Ghosted: Boolean; var ImageIndex: Integer);
+var pData: PProcessNodeData;
+  Username: string;
+  IsConsole: Boolean;
+begin
+  pData := Sender.GetNodeData(Node);
+
+  // Do we have data for this session?
+  if pData^.List^.Count > pData^.Index then
+  begin
+    Username := pData^.List^.Items[pData^.Index].Username;
+    IsConsole := pData^.List^.Items[pData^.Index].WinStationName = 'Console';
+  end;
+
+  if Kind in [ikNormal, ikSelected] then begin
+    case column of
+      0: ImageIndex := Integer(icServer);
+      1: begin
+        if Username = '' then
+        begin
+          ImageIndex := -1; // No Icon!
+        end
+        else if username = 'SYSTEM' then
+        begin
+          ImageIndex := Integer(icSystem);
+        end
+        else if username = 'LOCAL SERVICE' then
+        begin
+          ImageIndex := Integer(icService);
+        end
+        else if username = 'NETWORK SERVICE' then
+        begin
+          ImageIndex := Integer(icNetworkService);
+        end
+        else begin
+          ImageIndex := Integer(icUser);
+        end;
+      end;
+      2: begin
+        if IsConsole then
+        begin
+          ImageIndex := Integer(icComputer);
+        end
+        else begin
+          ImageIndex := Integer(icNetwork);
+        end;
+      end;
+      5: ImageIndex := Integer(icProcess);
+//      6: ImageIndex := Integer(icClock);
+      7: ImageIndex := Integer(icCPUTime);
+      8: ImageIndex := Integer(icMemory);
+//      9: ImageIndex := Integer(icVirtual);
+    end;
+  end;
+end;
+
 procedure TMainForm.VSTProcessGetNodeDataSize(Sender: TBaseVirtualTree;
   var NodeDataSize: Integer);
 begin
@@ -1044,6 +1316,119 @@ begin
   end;
 end;
 
+procedure TMainForm.VSTServerChecked(Sender: TBaseVirtualTree;
+  Node: PVirtualNode);
+var pServerData: PServerNodeData;
+  pUserNode: PVirtualNode;
+  pUserData: PUserNodeData;
+  pSessionNode: PVirtualNode;
+  pSessionData: PSessionNodeData;
+  i: Integer;
+  pProcessNode: PVirtualNode;
+  pProcessData: PProcessNodeData;
+  PrevCount: Integer;
+begin
+  // Get the Node Data
+  pServerData := Sender.GetNodeData(Node);
+  if Node^.CheckState = csUncheckedNormal then
+  begin
+    if pServerData^.PTerminalServerList <> nil then
+    begin
+      with pServerData^.PTerminalServerList.Items[pServerData^.Index] do
+      begin
+        PrevCount := Sessions.Count;
+        Sessions.Clear;
+        UpdateVirtualTree(VSTUser, @Sessions, PrevCount);
+        UpdateVirtualTree(VSTSession, @Sessions, PrevCount);
+        PrevCount := Processes.Count;
+        Processes.Clear;
+        UpdateVirtualTree(VSTProcess, @Processes, PrevCount);
+      end;
+    end;
+  end
+  else if Node^.CheckState = csCheckedNormal then
+  begin
+    // Is this a server node?
+    if pServerData^.Index > -2 then
+    begin
+      // Is a Terminal Server instance assigned?
+      if pServerData^.PTerminalServerList = nil then
+      begin
+        // Create a Terminal Server instance
+        pServerData^.Index := TerminalServers.Add(TjwTerminalServer.Create);
+        // Set the servername
+        TerminalServers[pServerData^.Index].Server := pServerData^.Caption;
+        // Point the node data to a Terminal Server instance
+        pServerData^.PTerminalServerList := @TerminalServers;
+      end;
+
+      with pServerData^.PTerminalServerList^[pServerData^.Index] do
+      begin
+        // EnumerateSessions
+        if EnumerateSessions then
+        begin
+          for i := 0 to Sessions.Count - 1 do
+          begin
+            // Create a node for the session in the Users VST
+            pUserNode := VSTUser.AddChild(nil);
+            // and add the data
+            pUserData := VSTUser.GetNodeData(pUserNode);
+            // Set the Index
+            pUserData^.Index := i;
+            // Point to TerminalServerList.TerminalServer[Index].SessionList
+            pUserData^.List := @Sessions;
+
+            // Create a node for the session in the Sessions VST
+            pSessionNode := VSTSession.AddChild(nil);
+            // and add the data
+            pSessionData := VSTSession.GetNodeData(pSessionNode);
+            // Set the Index
+            pSessionData^.Index := i;
+            // Point to TerminalServerList.TerminalServer[Index].SessionList
+            pSessionData^.List := @Sessions;
+          end;
+        end;
+
+        // Assign Session Event Handler
+        OnSessionEvent := OnTerminalServerEvent;
+        if EnumerateProcesses then
+        begin
+          for i := 0 to Processes.Count - 1 do
+          begin
+            // Create a node for the session
+            pProcessNode := VSTProcess.AddChild(nil);
+            // and add the data
+            pProcessData := VSTProcess.GetNodeData(pProcessNode);
+            // Set the Index
+            pProcessData^.Index := i;
+            // Point to TerminalServerList.TerminalServer[Index].SessionList
+            pProcessData^.List := @Processes;
+          end;
+        end;
+      end;
+    end;
+  end;
+end;
+
+procedure TMainForm.VSTServerCompareNodes(Sender: TBaseVirtualTree; Node1,
+  Node2: PVirtualNode; Column: TColumnIndex; var Result: Integer);
+var
+  s2: string;
+  s1: string;
+begin
+  s1 := PServerNodeData(Sender.GetNodeData(Node1))^.Caption;
+  s2 := PServerNodeData(Sender.GetNodeData(Node2))^.Caption;
+  Result := CompareText(s1, s2); 
+end;
+
+procedure TMainForm.VSTServerDblClick(Sender: TObject);
+begin
+  if VSTServer.FocusedNode = pAllListedServersNode then
+  begin
+    ShowMessage('ok');
+  end;
+end;
+
 procedure TMainForm.VSTServerFreeNode(Sender: TBaseVirtualTree;
   Node: PVirtualNode);
 var pData: PServerNodeData;
@@ -1055,6 +1440,7 @@ end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
 begin
+//  VSTServer.Header.SaveToStream();
   // Prevent updates to the Virtual String Grids
   VSTUser.OnGetText := nil;
   VSTServer.OnGetText := nil;
