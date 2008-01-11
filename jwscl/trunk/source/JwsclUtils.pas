@@ -199,7 +199,41 @@ procedure LocalizeMapping(var MappingRecord : array of TJwRightsMapping;
   ModuleInstance : HINST = 0
   );
 
+{@Name checks whether a object type list array is correctly formed.
+The array must be in a post fix order. This sequence describes the
+Level structure.
+
+Objs[i].Level = a_i
+        { a_i +1        | a_i - a_(i-1) = 1 AND a_i < 4
+a_i+1 = { a_i - t       | a_i - t AND t >= 0
+        { ERROR_INVALID_PARAMETER | else
+
+sequence start: a_0 = 0
+
+@param(Objs contains the object list)
+@return(Returns true if the object type list is correct; otherwise false.
+      It returns false if Objs is nil or does not contain any element.
+      It also returns false if any GUID member is nil.)
+}
 function JwCheckArray(const Objs : TJwObjectTypeArray) : Boolean; overload;
+
+{@Name checks whether a object type list array is correctly formed.
+The array must be in a post fix order. This sequence describes the
+Level structure.
+
+Objs[i].Level = a_i
+        { a_i +1        | a_i - a_(i-1) = 1 AND a_i < 4
+a_i+1 = { a_i - t       | a_i - t AND t >= 0
+        { ERROR_INVALID_PARAMETER | else
+
+sequence start: a_0 = 0
+
+@param(Objs contains the object list)
+@param(Index returns the index where an error occured.)
+@return(Returns true if the object type list is correct; otherwise false.
+      It returns false if Objs is nil or does not contain any element.
+      It also returns false if any GUID member is nil.)
+}
 function JwCheckArray(const Objs : TJwObjectTypeArray; out Index : Integer) : Boolean; overload;
 
 procedure JwUNIMPLEMENTED_DEBUG;
@@ -257,6 +291,10 @@ begin
         result := (Objs[Index].Level - LastLevel) = 1;
         if not result then exit;
       end;
+
+      if Objs[Index].ObjectType = nil then
+        exit;
+
       LastLevel := Objs[Index].Level;
       Inc(Index);
     end;
@@ -266,7 +304,7 @@ end;
 function JwCheckArray(const Objs : TJwObjectTypeArray) : Boolean;
 var Index : Integer;
 begin
-  result := JwCheckArray(Objs);
+  result := JwCheckArray(Objs, Index);
 end;
 
 procedure JwUNIMPLEMENTED;

@@ -261,6 +261,12 @@ type
     fHandle : TAuthZResourceManagerHandle;
     fOnAuthzComputeGroupsCallback : TJwOnAuthzComputeGroupsCallback;
     fOnAuthzAccessCheckCallback : TJwOnAuthzAccessCheckCallback;
+
+{$IFDEF DEBUG}
+    fOnAuthzComputeGroupsCallbackDebug : TJwOnAuthzComputeGroupsCallback;
+    fOnAuthzAccessCheckCallbackDebug : TJwOnAuthzAccessCheckCallback;
+{$ENDIF DEBUG}
+
   protected
     {procedure OnInternalAuthzFreeGroupsCallback(
         const pSidAttrArray : array of SID_AND_ATTRIBUTES
@@ -1338,12 +1344,20 @@ begin
     Flags := [authRM_NoAudit];
 
 
+{$IFDEF DEBUG}
+  fOnAuthzComputeGroupsCallback := OnInternalAuthzComputeGroupsCallback;
+  fOnAuthzComputeGroupsCallbackDebug := OnAuthzComputeGroupsCallback;
+{$ELSE}
   fOnAuthzComputeGroupsCallback := OnAuthzComputeGroupsCallback;
-  //fOnAuthzComputeGroupsCallback := OnInternalAuthzComputeGroupsCallback;
+{$ENDIF}
 
 
-  //fOnAuthzAccessCheckCallback := OnInternalAuthzAccessCheckCallback;
+{$IFDEF DEBUG}
+  fOnAuthzAccessCheckCallback := OnInternalAuthzAccessCheckCallback;
+  fOnAuthzAccessCheckCallbackDebug := OnAuthzAccessCheckCallback;
+{$ELSE}
   fOnAuthzAccessCheckCallback := OnAuthzAccessCheckCallback;
+{$ENDIF}
   
 
   if not AuthzInitializeResourceManager(
@@ -1371,8 +1385,13 @@ procedure TJwAuthResourceManager.OnInternalAuthzAccessCheckCallback(
       Args : Pointer;
       var AceApplicable : Boolean);
 begin
-//
-  AceApplicable := true;
+  //AceApplicable := true;
+{$IFDEF DEBUG}
+  if Assigned(fOnAuthzAccessCheckCallbackDebug) then
+    fOnAuthzAccessCheckCallbackDebug(AuthzClientContext,
+      Ace, Args, AceApplicable);
+//  AceApplicable := true;
+{$ENDIF DEBUG}
 end;
 
 procedure TJwAuthResourceManager.OnInternalAuthzComputeGroupsCallback(
@@ -1382,6 +1401,11 @@ procedure TJwAuthResourceManager.OnInternalAuthzComputeGroupsCallback(
         const RestrictedSidAttrArray : TJwSecurityIdList
        );
 begin
+{$IFDEF DEBUG}
+  if Assigned(fOnAuthzComputeGroupsCallbackDebug) then
+    fOnAuthzComputeGroupsCallbackDebug(
+      AuthzClientContext, Args, SidAttrArray, RestrictedSidAttrArray);
+{$ENDIF DEBUG}
   //SidAttrArray.Add(TJwSecurityId.Create('','Administrator'));
   //RestrictedSidAttrArray.Add(TJwSecurityId.Create('','Administrator'));
 

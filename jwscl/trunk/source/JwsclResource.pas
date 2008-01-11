@@ -105,6 +105,7 @@ const
   RsInvalidMandatoryLevelType = 'The given SID has so sub authority or the sub authority is invalid or unknown. The RID must be a number of SECURITY_MANDATORY_XXXXX constants.';
   RsInvalidAceType = 'The type of the ACE structure is unknown.';
   RsACEMismatch = 'The type of the ACE class and the type of the ACE header do not match.';
+  RsInvalidRevision = 'The given revision level %0:d is not supported.';
 
 //Unit  JwsclCredentials.pas
   RsCredentialsLocalName = 'local';
@@ -128,6 +129,7 @@ const
   RsUNCredentialsInvalidParametersCUIPFC = 'One or more parameters of CredUI' +
   'PromptForCredentials are invalid!';
   RsUNCredentialsInvalidLogonSession = 'There is no such logon session!';
+
 
 
 
@@ -435,7 +437,7 @@ const
   RsNonKeyedHash          = 'A non-keyed hash cannot be created with a key.';
 
 //Unit JwsclAuthCtx.pas
-  RsInvalidObjectTypeList = 'The given array of ObjectType is invalid around index %0:d. (If -1 the array is empty.)';
+  RsInvalidObjectTypeList = 'The given array of ObjectType is invalid around index %0:d. ';
 
 //General strings
   RsBracketNil = '(nil)';

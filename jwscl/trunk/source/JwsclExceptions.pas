@@ -194,6 +194,7 @@ type
   EJwsclInvalidACEException = class(EJwsclSecurityException);
   EJwsclRevisionMismatchException = class(EJwsclSecurityException);
   EJwsclInvalidAceMismatch = class(EJwsclSecurityException);
+  EJwsclInvalidRevision = class(EJwsclSecurityException);
 
   EJwsclInvalidSecurityDescriptor = class(EJwsclSecurityException);
   EJwsclInvalidPathException = class(EJwsclSecurityException);

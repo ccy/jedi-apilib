@@ -89,19 +89,24 @@ begin
   SD.Owner := JwNullSID;
   SD.PrimaryGroup := JwNullSID;
 
+
   SD.DACL.Clear;
-  SD.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(
-                  nil,[], FILE_ALL_ACCESS, JwAdministratorsSID, false));
+  SD.DACL.Revision := 4;
+{  SD.DACL.Add(TJwDiscretionaryAccessControlEntryCallbackObjectAllow.Create(
+                  nil,[], FILE_ALL_ACCESS, JwAdministratorsSID, false));  }
+
   {SD.DACL.Add(TJwDiscretionaryAccessControlEntryDeny.Create(
                   nil,[], FILE_READ_DATA, JwAdministratorsSID, false));
   }
 
- SD.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(
+  i := SD.DACL.Add(TJwDiscretionaryAccessControlEntryCallbackObjectAllow.Create(
                   nil,[], FILE_ALL_ACCESS, JwGuestsSID, false));
+  SD.DACL[i].ObjectType := GUID_1;
+  SD.DACL[i].Revision := 4;
  { SD.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(
                   nil,[], FILE_ALL_ACCESS, MySid, false));      }
-  SD.DACL.Add(TJwDiscretionaryAccessControlEntryDeny.Create(
-                  nil,[], FILE_READ_EA, MySid, false));
+  {SD.DACL.Add(TJwDiscretionaryAccessControlEntryCallbackDeny.Create(
+                  nil,[], FILE_READ_EA, MySid, false));   }
 
   SDArray := nil;
  { SetLength(SDArray,2);
@@ -120,20 +125,28 @@ begin
 
 
 
-  SetLength(ObjectTypeArray, 2);
+  SetLength(ObjectTypeArray, 4);
   ZeroMemory(@ObjectTypeArray[0], sizeof(ObjectTypeArray[0]));
-  ObjectTypeArray[0].Level := ACCESS_PROPERTY_GUID;
-  ObjectTypeArray[0].ObjectType := @GUID_1;
+  ObjectTypeArray[0].Level := ACCESS_OBJECT_GUID;
+  ObjectTypeArray[0].ObjectType := @NULL_GUID;
 
   ZeroMemory(@ObjectTypeArray[1], sizeof(ObjectTypeArray[1]));
-  ObjectTypeArray[1].Level := ACCESS_PROPERTY_GUID;
+  ObjectTypeArray[1].Level := ACCESS_PROPERTY_SET_GUID;
   ObjectTypeArray[1].ObjectType := @GUID_2;
+
+  ZeroMemory(@ObjectTypeArray[2], sizeof(ObjectTypeArray[2]));
+  ObjectTypeArray[2].Level := ACCESS_PROPERTY_GUID;
+  ObjectTypeArray[2].ObjectType := @GUID_1;
+
+  ZeroMemory(@ObjectTypeArray[3], sizeof(ObjectTypeArray[3]));
+  ObjectTypeArray[3].Level := ACCESS_PROPERTY_GUID;
+  ObjectTypeArray[3].ObjectType := @GUID_1;
   
 
   Request := TJwAuthZAccessRequest.Create(
     MAXIMUM_ALLOWED,//FILE_READ_EA,//DesiredAccess: TJwAccessMask;
     JwNullSID, //PrincipalSelfSid: TJwSecurityID;
-    nil,//ObjectTypeArray,//ObjectTypeArray: TJwObjectTypeArray;
+    ObjectTypeArray,//ObjectTypeArray: TJwObjectTypeArray;
     nil,//Data: Pointer
     shOwned
     );
@@ -148,7 +161,9 @@ begin
     AuthZHandle//out AuthZHandle: TAuthZAccessCheckResultHandle
   );
 
-  writeln(JwFormatAccessRights(Reply.GrantedAccessMask[0], FileMapping));
+  //writeln(JwFormatAccessRights(Reply.GrantedAccessMask[0], FileMapping));
+   writeln(JwFormatAccessRights(Reply.GrantedAccessMask, Reply.Error, FileFolderMapping));
+
 
   Reply.Free;
 

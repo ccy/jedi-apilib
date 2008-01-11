@@ -58,10 +58,10 @@ type
     procedure Free;
 
 
-    function IsStandardSID(const aSID: TJwSecurityId): boolean;
+    function IsStandardSIDEx(const aSID: TJwSecurityId): boolean;
       reintroduce; overload; virtual;
 
-    function IsStandardSID: boolean; reintroduce; overload; virtual;
+    function IsStandardSID: boolean;  override;
   end;
 
    (*@Name is a class that describes the actually user that is running
@@ -71,11 +71,13 @@ type
     Use the var JwSecurityProcessUserSID to get its date. But don't free it.
    *)
   TJwSecurityThreadUserSID = class(TJwSecurityKnownSID)
+  protected
+    fIsStandard : Boolean;
   public
     constructor Create; overload;
     procedure Free;
 
-    function IsStandardSID: boolean; overload; override;
+    function IsStandardSID: boolean;  override;
   end;
 
 
@@ -346,6 +348,8 @@ var
   token: TJwSecurityToken;
   s: TJwSecurityId;
 begin
+  fIsStandard := false;
+  
   token := TJwSecurityToken.CreateTokenEffective(TOKEN_ALL_ACCESS);
   S := nil;
   try
@@ -367,7 +371,7 @@ end;
 
 function TJwSecurityThreadUserSID.IsStandardSID: boolean;
 begin
-  Result := False;
+  Result := fIsStandard;
 end;
 
 { TJwSecurityKnownSID }
@@ -377,7 +381,7 @@ begin
   inherited;
 end;
 
-function TJwSecurityKnownSID.IsStandardSID(const aSID: TJwSecurityId): boolean;
+function TJwSecurityKnownSID.IsStandardSIDEx(const aSID: TJwSecurityId): boolean;
 begin
   Result := (aSID.ClassType = TJwSecurityThreadUserSID) or
     (aSID.ClassType = TJwSecurityThreadUserSID);
@@ -406,6 +410,7 @@ begin
 
   if not Assigned(JwSecurityProcessUserSID) then
     JwSecurityProcessUserSID := TJwSecurityThreadUserSID.Create;
+  (JwSecurityProcessUserSID as TJwSecurityThreadUserSID).fIsStandard := true;
 
   JwIntegrityLabelSID[iltNone]       := nil;
   if not Assigned(JwIntegrityLabelSID[iltLow]) then

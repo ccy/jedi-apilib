@@ -111,6 +111,9 @@ type
     constructor Create(AclPointerList: PACL); overload;
 
     function GetText: TJwString; virtual;
+    procedure SetRevision(const Revision : Cardinal); virtual;
+
+
   public
     {@Name destroys the list and all it items.}
     destructor Destroy; override;
@@ -376,8 +379,11 @@ type
      ACL_REVISION, ACL_REVISION1, ACL_REVISION2, ACL_REVISION3, ACL_REVISION4 or ACL_REVISION_DS
 
      Default value is ACL_REVISION.
+
+     This property raises an exception EJwsclInvalidRevision on setting
+      if the Revision is not in range of 1..4
      }
-    property Revision : Cardinal read fRevision write fRevision;
+    property Revision : Cardinal read fRevision write SetRevision;
   end;
 
   {@Name provides methods for an discretionary access control list.
@@ -573,6 +579,7 @@ type
     function GetAceType: TJwAceType; virtual;
     procedure SetOwnSid(const OwnSid : Boolean); Virtual;
     function GetOwnSid : Boolean;
+    function GetObjectFlags : Cardinal; virtual;
 
   public
    {@Name creates a new ACE.
@@ -977,6 +984,7 @@ type
     {@Name defines user data that can be used to attach used defined data}
     property UserData : Pointer read fUserData write fUserData;
 
+    property ObjectFlags : Cardinal read GetObjectFlags;
     property ObjectType : TGuid read fObjectType write fObjectType;
     property InheritedObjectType : TGuid read fInheritedObjectType write fInheritedObjectType;
   end;
@@ -1358,7 +1366,11 @@ type
   end;
 
   function JwFormatAccessRights(const Access : Cardinal;
-     RightsMapping : Array of TJwRightsMapping) : TJwString;
+     RightsMapping : Array of TJwRightsMapping) : TJwString; overload;
+  function JwFormatAccessRights(
+    const GrantedAccess : TJwAccessMaskArray;
+    const AccessStatus : TJwCardinalArray;
+    RightsMapping : Array of TJwRightsMapping) : TJwString; overload;
 
 {$ENDIF SL_IMPLEMENTATION_SECTION}
 
@@ -1372,6 +1384,14 @@ uses Math, JwsclEnumerations;
 {$ENDIF SL_OMIT_SECTIONS}
 
 {$IFNDEF SL_INTERFACE_SECTION}
+
+procedure RaiseOnInvalidRevision(const Revision: Cardinal; const MethodName, ClassName : String);
+begin
+ if (Revision < MIN_ACL_REVISION) or (Revision > MAX_ACL_REVISION) then
+   raise EJwsclInvalidRevision.CreateFmtEx(RsInvalidRevision,
+      MethodName, ClassName, RsUNAcl, 0, false, [Revision]);
+end;
+
 
 function JwFormatAccessRights(const Access : Cardinal;
      RightsMapping : Array of TJwRightsMapping) : TJwString;
@@ -1390,6 +1410,38 @@ begin
   end;
 end;
 
+function JwFormatAccessRights(
+    const GrantedAccess : TJwAccessMaskArray;
+    const AccessStatus : TJwCardinalArray;
+    RightsMapping : Array of TJwRightsMapping) : TJwString;
+var i,i2 : Integer;
+begin
+  result := '- generic'#13#10;
+  for i := low(RightsMapping) to high(RightsMapping) do
+  begin
+    if i = 7 then
+      result := result + '- specific' + #13#10;
+    if i = 17 then
+      result := result + '- standard' + #13#10;
+
+    for i2 := 0 to High(GrantedAccess) do
+    begin
+      if GrantedAccess[i2] and RightsMapping[i].Right =
+        RightsMapping[i].Right then
+        result := result + '[X]'
+      else
+      if (AccessStatus[i2] <> ERROR_SUCCESS) and
+         (AccessStatus[i2] <> 5)
+        then
+        result := result + '['+IntToStr(AccessStatus[i2])+']'
+      else
+        result := result + '[ ]';
+    end;
+
+    //names may vary depeding on resource string contents
+    result := result + ' ' + RightsMapping[i].Name + #13#10;
+  end;
+end;
 
 
 constructor TJwDAccessControlList.Create;
@@ -1611,6 +1663,7 @@ begin
       0, False, ['AclInstance']);
 
   Clear;
+  fRevision := AclInstance.fRevision;
 
   for i := 0 to AclInstance.Count - 1 do
   begin
@@ -1658,23 +1711,52 @@ end;
 
 
 function TJwSecurityAccessControlList.Create_PACL: PACL;
-  function AddAceToList(const ACL : PACL;
-    ACE : TJwSecurityAccessControlEntry) : Boolean;
+
+
+  function AddAceToList(ACL : PACL;
+    ACE : TJwSecurityAccessControlEntry;
+    const Size : Cardinal) : Boolean;
+
   var ppACE : PACE;
-      Size : Cardinal;
+      AceSize : Cardinal;
+//      p : Pointer;
+//      s : String;
   begin
-    ppACE := ACE.CreateDynamicACE(Size);
+    //result := RtlValidAcl(Acl);
+    //result := RtlFirstFreeAce( Acl, p);
+    {Warning:
+      AddAce cannot add object ACEs properly so we use the special functions here
+    }
+    case ACE.AceType of
+      actAuditObject :
+       result := AddAuditAccessObjectAce(ACL, ACE.Revision,
+          ACE.ObjectFlags, ACE.AccessMask, @ACE.ObjectType, @ACE.InheritedObjectType, ACE.SID.Sid,
+          (ACE as TJwAuditAccessControlEntry).AuditSuccess,
+          (ACE as TJwAuditAccessControlEntry).AuditFailure);
 
-    result := AddAce(
-        ACL,//__inout  PACL pAcl,
-        ACE.Revision,//__in     DWORD dwAceRevision,
-        MAXDWORD,//__in     DWORD dwStartingAceIndex,
-        ppACE,//__in     LPVOID pAceList,
-        Size,//__in     DWORD nAceListLength
-      );
 
-    GlobalFree(Cardinal(ppACE));
-    //FreeMem(ppACE);
+     actAllowObject :
+        result := AddAccessAllowedObjectAce(ACL, ACE.Revision,
+            ACE.ObjectFlags, ACE.AccessMask, @ACE.ObjectType, @ACE.InheritedObjectType, ACE.SID.Sid);
+
+     actDenyObject  :
+        result := AddAccessDeniedObjectAce(ACL,ACE.Revision,
+            ACE.ObjectFlags, ACE.AccessMask, @ACE.ObjectType, @ACE.InheritedObjectType, ACE.SID.Sid);
+    else
+      ppACE := ACE.CreateDynamicACE(AceSize);
+
+
+      result := AddAce(
+          ACL,//__inout  PACL pAcl,
+          ACE.Revision,//__in     DWORD dwAceRevision,
+          MAXDWORD,//__in     DWORD dwStartingAceIndex,
+          ppACE,//__in     LPVOID pAceList,
+          AceSize,//__in     DWORD nAceListLength
+        );
+
+      GlobalFree(Cardinal(ppACE));
+//      s := ACe.ClassName;
+    end;
   end;
 
 
@@ -1689,6 +1771,8 @@ var
 
   iSize: Cardinal;
 begin
+  RaiseOnInvalidRevision(fRevision, 'Create_PACL', ClassName);
+
   for i := 0 to Count - 1 do
   begin
     if not Assigned(Items[i].SID) or
@@ -1698,7 +1782,7 @@ begin
         'Create_PACL', ClassName, RsUNAcl, 0, True, [i]);
   end;
 
-  iSize := sizeof(TACL);
+  iSize := sizeof(TACL); //header size for ACL
 
   for i := 0 to Count - 1 do
   begin
@@ -1718,6 +1802,7 @@ begin
       end;
   end;
 
+  //iSize := 1000;
   Result := PACL(GlobalAlloc(GMEM_FIXED or GMEM_ZEROINIT, iSize));
 
   if Result = nil then
@@ -1726,14 +1811,23 @@ begin
       'Create_PACL', ClassName, RsUNAcl, 0, True, []);
 
 
-  InitializeAcl(Result, iSize, fRevision);
 
-  //ShowMEssage(GetText);
+  if not InitializeAcl(Result, iSize, fRevision) then
+  begin
+    GlobalFree(HRESULT(Result));
+
+    raise EJwsclWinCallFailedException.CreateFmtEx(
+          RsWinCallFailed,
+           'Create_PACL', ClassName, RsUNAcl, 0, true,
+           ['InitializeAcl']);
+  end;
+
   for i := 0 to Count - 1 do
   begin
     if Assigned(Items[i].SID) and (Items[i].SID.SID <> nil) then
     begin
-      bResult := AddAceToList(Result, Items[i]);
+      //bResult := AddAccessAllowedAce(result, Items[i].Revision, Items[i].AccessMask, Items[i].SID.Sid);
+      bResult := AddAceToList(Result, Items[i], iSize);
 
       if not bResult then
       begin
@@ -1746,11 +1840,6 @@ begin
     end;
 
   end;
-
- { tempACL := TJwSecurityAccessControlList.Create(result);
-  ShowMessage(tempACL.GetText);   }
-
-
 end;
 
 class procedure TJwSecurityAccessControlList.Free_PACL(var AclPointerList: PACL);
@@ -2014,6 +2103,13 @@ function TJwSecurityAccessControlList.GetText: TJwString;
 begin
   Result := GetTextMap(TJwSecurityGenericMapping);
 end;
+
+procedure TJwSecurityAccessControlList.SetRevision(const Revision : Cardinal);
+begin
+  RaiseOnInvalidRevision(Revision, 'SetRevision', ClassName);
+  fRevision := Revision;
+end;
+
 
 function TJwSecurityAccessControlList.GetTextMap(
   const Mapping: TJwSecurityGenericMappingClass): TJwString;
@@ -2408,12 +2504,12 @@ begin
       'Destroy', ClassName, RsUNAcl, 0, False, []);
   end;
 
-  if fownSID and Assigned(fSID) then
-    fSID.Free;
+  if fownSID and Assigned(fSID)
+    and not fSID.IsStandardSID then
+    FreeAndNil(fSID);
 
   fUserData := nil;
 
-  fSID := nil;
 
   inherited;
 end;
@@ -2745,7 +2841,7 @@ begin
       p3.ObjectType := Self.ObjectType;
       p3.InheritedObjectType := Self.InheritedObjectType;
 
-      SetSidStart(p2.SidStart);
+      SetSidStart(p3.SidStart);
     end;
   end;
 end;
@@ -3089,6 +3185,18 @@ begin
   AuditFailure := AccessEntry.AuditFailure;
 end;
 
+function TJwSecurityAccessControlEntry.GetObjectFlags : Cardinal;
+ function CompareGUID(const G1, G2: TGUID): boolean;
+ begin
+   Result := CompareMem(@G1, @G2, Sizeof(TGUID));
+ end;
+begin
+  result := 0;
+  if CompareGUID(NULL_GUID, Self.ObjectType) then
+    result := result or ACE_OBJECT_TYPE_PRESENT;
+  if CompareGUID(NULL_GUID, Self.InheritedObjectType) then
+    result := result or ACE_INHERITED_OBJECT_TYPE_PRESENT;
+end;
 
 function TJwSecurityAccessControlEntry.GetOwnSid : Boolean;
 begin
@@ -3223,6 +3331,8 @@ function TJwSecurityAccessControlEntry.GetText: TJwString;
 begin
   Result := GetTextMap(TJwSecurityGenericMapping);
 end;
+
+
 
 function TJwSecurityAccessControlEntry.GetTextMap(
   const Mapping: TJwSecurityGenericMappingClass): TJwString;
