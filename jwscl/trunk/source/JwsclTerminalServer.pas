@@ -128,7 +128,7 @@ type
     property ServerList: TStringList read FServerList;
     property Sessions: TJwWTSSessionList read FSessions;
     function Shutdown(AShutdownFlag: DWORD): Boolean;
-    function UnicodeStringToString(const AUnicodeString: UNICODE_STRING):
+    function UnicodeStringToJwString(const AUnicodeString: UNICODE_STRING):
       TJwString;
   end;
 
@@ -204,7 +204,7 @@ type
     FCurrentTime: TDateTime;
     FDisconnectTime: TDateTime;
     FDomain: TJwString;
-    FIdleTime: TDateTime;
+    FIdleTime: Int64;
     FIdleTimeStr: TJwString;
     FIncomingBytes: DWORD;
     FIncomingCompressedBytes: DWORD;
@@ -212,7 +212,7 @@ type
     FHorizontalResolution: DWORD;
     FInitialProgram: TJwString;
     FLastInputTime: TDateTime;
-    FLogonTime: TDateTime;
+    FLogonTime: Int64;
     FLogonTimeStr: TJwString;
     FOwner: TJwWTSSessionList;
     FOutgoingBytes: DWORD;
@@ -305,12 +305,13 @@ type
     function GetServerHandle: THandle;
     function GetServerName: TJwString;
     property HorizontalResolution: DWORD read FHorizontalResolution;
+    property IdleTime: Int64 read FIdleTime;
     property IdleTimeStr: TJwString read FIdleTimeStr;
     property IncomingBytes: DWORD read FIncomingBytes;
     property InitialProgram: TJwString read FInitialProgram;
     property LastInputTime: TDateTime read FLastInputTime;
     function Logoff(bWait: Boolean): Boolean;
-    property LogonTime: TDateTime read FLogonTime;
+    property LogonTime: Int64 read FLogonTime;
     property LogonTimeStr: TJwString read FLogonTimeStr;
     property Owner: TJwWTSSessionList read FOwner;
     property OutgoingBytes: DWORD read FOutgoingBytes;
@@ -666,20 +667,18 @@ begin
   FComputerName := '';
 end;
 
-function TJwTerminalServer.UnicodeStringToString(
+function TJwTerminalServer.UnicodeStringToJwString(
   const AUnicodeString: UNICODE_STRING): TJwString;
-var s: TJwString;
+var Len: DWORD;
 begin
-  s := PWideCharToJwString(AUniCodeString.Buffer);
-  // UNICODE_STRING specifies size in bytes instead number of WCHAR's
-  // so we cut the string to right size
-  SetLength(s, AUniCodeString.Length DIV SizeOf(WCHAR));
-  Result := s;
+  // Determine UnicodeStringLength (-1 because string has no #0 terminator)
+  Len := RtlUnicodeStringToAnsiSize(@AUnicodeString)-1;
+  // Convert to TJwString
+  Result := WideCharLenToString(AUniCodeString.Buffer, Len);
 end;
 
 function TJwTerminalServer.EnumerateProcesses: Boolean;
-var
-  Count: Integer;
+var Count: Integer;
   ProcessInfoPtr: PWINSTA_PROCESS_INFO_ARRAY;
   i: Integer;
   AProcess: TJwWTSProcess;
@@ -715,7 +714,7 @@ begin
         end
         else
         begin
-          strProcessName := UnicodeStringToString(ProcessName);
+          strProcessName := UnicodeStringToJwString(ProcessName);
 
           if IsValidSid(pUserSid) then
           begin
@@ -951,6 +950,7 @@ end;
 constructor TJwWTSEventThread.Create(CreateSuspended: Boolean;
   AOwner: TJwTerminalServer);
 begin
+  OutputDebugString('creating event thread');
   inherited Create(CreateSuspended);
   FOwner := AOwner;
   FreeOnTerminate := False;
@@ -1227,6 +1227,7 @@ begin
     if Items[i].Server = AServer then
     begin
       Result := Items[i];
+      Break;
     end;
   end;
 end;
@@ -1458,11 +1459,16 @@ begin
     if FUsername = '' then
     begin
       // A session without a user is not idle, usually these are special
-      // sessions like Listener, Services or console session 
+      // sessions like Listener, Services or console session
       FIdleTimeStr := '.';
+     // Store the IdleTime as elapsed seconds
+      FIdleTime := 0;
     end
     else
     begin
+      // Store the IdleTime as elapsed seconds
+      FIdleTime := CalculateDiffTime(Int64(WinStationInfo.LastInputTime),
+        Int64(WinStationInfo.CurrentTime));
       // Calculate & Format Idle Time String, DiffTimeString allocates the
       // memory for us
       DiffTimeString(WinStationInfo.LastInputTime, WinStationInfo.CurrentTime,
@@ -1479,7 +1485,8 @@ begin
     FDisconnectTime := FileTime2DateTime(WinStationInfo.DisconnectTime);
     // for A disconnected session LastInputTime has been set to DisconnectTime
     FLastInputTime := FileTime2DateTime(WinStationInfo.LastInputTime);
-    FLogonTime := FileTime2DateTime(WinStationInfo.LogonTime);
+//    FLogonTime := FileTime2DateTime(WinStationInfo.LogonTime);
+    FLogonTime := Int64(WinStationInfo.LogonTime);
     FCurrentTime := FileTime2DateTime(WinStationInfo.CurrentTime);
   end;
 
