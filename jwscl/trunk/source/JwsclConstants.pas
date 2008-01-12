@@ -61,7 +61,6 @@ uses
 const
   TAceTypeString : array[TJwAceType] of TJwString =
     (
-    RsAceUnknown, 
     RsAceTypeStringAudit,//actAudit,
     RsAceAuditCallback,//actAuditCallback,
     RsAceAuditObject,//actAuditObject,
@@ -77,8 +76,11 @@ const
     RsAceTypeStringDeny,//actDeny,
     RsAceDenyCallback,//actDenyCallback,
     RsAceDenyObject,//actDenyObject,
-    RsAceDenyCallbackObject//actDenyCallbackObject
+    RsAceDenyCallbackObject,//actDenyCallbackObject
+
+    RsAceUnknown
     );
+
 
 
   IDAPPLY = 33;
@@ -1321,6 +1323,13 @@ var
    bInheritHandle: False
   );
 
+
+  NullGenericMapping: TGenericMapping =
+    (GenericRead: 0;
+    GenericWrite: 0;
+    GenericExecute: 0;
+    GenericAll: 0;
+    );
 {TODO: recheck the values of these flags (only guessed)
 and move them to jwawincrypt
 its vista!

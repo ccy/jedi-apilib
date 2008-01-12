@@ -180,6 +180,7 @@ type
 
       sequence start: a_0 = 0
       #)
+      See also http://msdn2.microsoft.com/en-us/library/aa374917(VS.85).aspx
        )
      @param(Data defines user data that is supplied to the request in
         the OptionalData member,)

@@ -15,14 +15,14 @@ and limitations under the License.
 
 Alternatively, the contents of this file may be used under the terms of the  
 GNU Lesser General Public License (the  "LGPL License"), in which case the   
-provisions of the LGPL License are applicable instead of those above.        
+provisions of the LGPL License are applicable instead of those above.
 If you wish to allow use of your version of this file only under the terms   
 of the LGPL License and not to allow others to use your version of this file 
 under the MPL, indicate your decision by deleting  the provisions above and  
 replace  them with the notice and other provisions required by the LGPL      
 License.  If you do not delete the provisions above, a recipient may use     
 your version of this file under either the MPL or the LGPL License.          
-                                                                              
+
 For more information about the LGPL: http://www.gnu.org/copyleft/lesser.html 
 
 The Original Code is JwsclAcl.pas.
@@ -35,16 +35,10 @@ Portions created by Christian Wimmer are Copyright (C) Christian Wimmer. All rig
 Description:
 
 Unsupported structures :
- ACCESS_ALLOWED_CALLBACK_ACE and denied
- ACCESS_ALLOWED_CALLBACK_OBJECT_ACE and denied
- ACCESS_ALLOWED_OBJECT_ACE and denied
-
  SYSTEM_ALARM_ACE
  SYSTEM_ALARM_CALLBACK_ACE
  SYSTEM_ALARM_CALLBACK_OBJECT_ACE
  SYSTEM_ALARM_OBJECT_ACE
- SYSTEM_AUDIT_CALLBACK_ACE
- SYSTEM_AUDIT_CALLBACK_OBJECT_ACE
 
 
 
@@ -99,7 +93,7 @@ type
      @param(ownACEs receives whether the items shall be freed on destruction (True) or not.)}
     constructor Create(OwnAceEntries: boolean); overload;
 
-    {@Name creates a new list from an existing access control list.
+    {@Name creates a new access control list from an existing access control list.
      All entries a copied and the list owns these objects (entry.ListOwner is set to this instance).
 
      @raises(EJwsclWinCallFailedException will be raised if the aAPCL is not a valid access control list)
@@ -107,6 +101,13 @@ type
 
      }
     constructor Create(AclPointerList: PACL); overload;
+
+    {@Name creates a new access control list from an explicit access array.
+
+     @raises(EJwsclNILParameterException will be raised if parameter Accesses is nil)
+     @raises(EJwsclWinCallFailedException will be raised if the call to SetEntriesInAcl failed.)
+     }
+    constructor Create(const Accesses : TJwExplicitAccessArray); overload;
 
     function GetText: TJwString; virtual;
     procedure SetRevision(const Revision : Cardinal); virtual;
@@ -409,6 +410,13 @@ type
     }
     constructor Create(AclPointerList: PACL); overload;
 
+    {@Name creates a new access control list from an explicit access array.
+
+     @raises(EJwsclNILParameterException will be raised if parameter Accesses is nil)
+     @raises(EJwsclWinCallFailedException will be raised if the call to SetEntriesInAcl failed.)
+     }
+    constructor Create(const Accesses : TJwExplicitAccessArray); overload;
+
     {@Name creates a copy of the ACL that only contains inherited ACEs.
      The ACEs are copied and the list owns them.
      The caller must free the newly created DACL.
@@ -421,7 +429,7 @@ type
     }
     function GetExplicit: TJwDAccessControlList;
 
-        {@Name rearranges the entries of the list to make the list canonical.
+    {@Name rearranges the entries of the list to make the list canonical.
 
      The following list shows a access control list in canonical order:
       @orderedlist(
@@ -910,12 +918,34 @@ type
      If the ACE is an audit ace the grfAccessMode value is set to SET_AUDIT_FAILURE even if the flag AuditFailure is not set.
       You have to create two ExplicitAccess structures and change them to use them.
 
-     Not tested.
      @raises(EJwsclInvalidSIDException will be raised if the property SID is nil or invalid.)
      }
     function GetExplicitAccess: TJwExplicitAccess;
 
   public
+    {@Name returns an ACE class type depending on the give ACE type.
+     To create a class instance @link(CreateACE) can be used.
+
+     @param(AceType defines the wished ace type.
+          Supported types are
+          @unorderedlist(
+            @item(actAudit)
+            @item(actAuditCallback)
+            @item(actAuditObject)
+            @item(actAuditCallbackObject)
+            @item(actMandatory)
+            @item(actAllow)
+            @item(actAllowCallback)
+            @item(actAllowObject)
+            @item(actAllowCallbackObject)
+            @item(actDeny)
+            @item(actDenyCallback)
+            @item(actDenyObject)
+            @item(actDenyCallbackObject)
+          ))
+     @raises(EJwsclInvalidACEException will be raised if the given ACE type
+        is not supported.)
+    }
     class function GetClassAceType(const AceType: TJwAceType)
       : TJwSecurityAccessControlEntryClass;
 
@@ -932,7 +962,10 @@ type
     {@Name returns information about the SID instance using human readable
      description. This function can convert the AccessMask bits into strings
      using a mapping class.
-     @param(Mapping defines a class thats provides the mapping implementation)
+     @param(Mapping defines a class thats provides the mapping implementation.
+       If this parameter is nil the AccessMask will be shown as decimal and
+       as hex number.
+        )
     }
     function GetTextMap(const Mapping: TJwSecurityGenericMappingClass =
       nil): TJwString;
@@ -985,8 +1018,45 @@ type
     {@Name defines user data that can be used to attach used defined data}
     property UserData : Pointer read fUserData write fUserData;
 
+    {@Name returns the object flags of the ACE.
+     This property depends on property ObjectType and InheritedObjectType.
+
+     It returns a combination of these flags if parameter...
+      @unorderedlist(
+       @item(ACE_OBJECT_TYPE_PRESENT ...ObjectType is not a NULL GUID)
+       @item(ACE_INHERITED_OBJECT_TYPE_PRESENT ...InheritedObjectType is not a NULL GUID)
+      )
+    }
     property ObjectFlags : Cardinal read GetObjectFlags;
+
+    {@Name contains the object or property specific guid.
+     It is only of use if the instance of this ACE is an object of one of these types
+      @unorderedlist(
+        @item(TJwAuditAccessControlEntryObject)
+        @item(TJwAuditAccessControlEntryCallbackObject)
+        @item(TJwDiscretionaryAccessControlEntryObjectAllow)
+        @item(TJwDiscretionaryAccessControlEntryCallbackObjectAllow)
+        @item(TJwDiscretionaryAccessControlEntryObjectDeny)
+        @item(TJwDiscretionaryAccessControlEntryCallbackObjectDeny)
+      )
+
+      See also http://msdn2.microsoft.com/en-us/library/aa374917(VS.85).aspx
+     }
     property ObjectType : TGuid read fObjectType write fObjectType;
+
+     {@Name contains the object or property specific guid.
+     It is only of use if the instance of this ACE is an object of one of these types
+      @unorderedlist(
+        @item(TJwAuditAccessControlEntryObject)
+        @item(TJwAuditAccessControlEntryCallbackObject)
+        @item(TJwDiscretionaryAccessControlEntryObjectAllow)
+        @item(TJwDiscretionaryAccessControlEntryCallbackObjectAllow)
+        @item(TJwDiscretionaryAccessControlEntryObjectDeny)
+        @item(TJwDiscretionaryAccessControlEntryCallbackObjectDeny)
+      )
+
+      See also http://msdn2.microsoft.com/en-us/library/aa374917(VS.85).aspx
+     }
     property InheritedObjectType : TGuid read fInheritedObjectType write fInheritedObjectType;
   end;
 
@@ -1460,6 +1530,11 @@ begin
   inherited Create(AclPointerList);
 end;
 
+constructor TJwDAccessControlList.Create(const Accesses : TJwExplicitAccessArray);
+begin
+  inherited;
+end;
+
 function TJwDAccessControlList.GetInheritance: TJwDAccessControlList;
 begin
   Result := TJwDAccessControlList.Create;
@@ -1473,8 +1548,6 @@ begin
   Result.Assign(Self);
   Result.RemoveInherited;
 end;
-
-
 
 
 
@@ -1624,7 +1697,30 @@ begin
         'Create(ownACEs: Boolean; aAPCL: PACL)',
         ClassName, RsUNAcl, 0, True, [i]);
   end;
+end;
 
+
+
+constructor TJwSecurityAccessControlList.Create(const Accesses : TJwExplicitAccessArray);
+var ppACL : PACL;
+begin
+  JwRaiseOnNilParameter(
+    Accesses, 'Accessess', 'Create', ClassName, RsUNAcl);
+
+  if SetEntriesInAcl(1, @Accesses[0], nil, ppACL) <> ERROR_SUCCESS then
+     raise EJwsclWinCallFailedException.CreateFmtEx(
+        RsWinCallFailed,
+        'Create',
+        ClassName, RsUNAcl, 0, True, []);
+
+  if ppACL = nil then
+    Create
+  else
+    try
+      Create(ppACL);
+    finally
+      LocalFree(Cardinal(ppACL));
+    end;
 end;
 
 
@@ -3360,7 +3456,8 @@ begin
     sMap := Mapping.MapAccessMaskToString(Mapping.GenericMap(AccessMask))
   end
   else
-    sMap := RsMapNoMapGiven;
+    sMap := RsMapNoMapGiven + ' ' + IntToStr(Accessmask) +', 0x' + IntToHex(AccessMask,4);
+
 
 
   if not Assigned(SID) then
@@ -3376,16 +3473,6 @@ begin
      sMap,
      SidText
      ]);
-
- { Result := #13#10'ClassName: ' + ClassName + #13#10;
-  Result := 'AceType: ';
-  case AceType of
-    actAllow: Result := Result + 'Allow';
-    actDeny: Result  := Result + 'Deny';
-    actAudit: Result := Result + 'Audit';
-  end;
-  Result := Result + #13#10'Flags: ';        }
-
 end;
 
 function TJwSecurityAccessControlList.IsEqual(
