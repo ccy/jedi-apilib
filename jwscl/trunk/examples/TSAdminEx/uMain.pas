@@ -158,7 +158,7 @@ type
       var Ghosted: Boolean; var ImageIndex: Integer);
     procedure VSTServerCompareNodes(Sender: TBaseVirtualTree; Node1,
       Node2: PVirtualNode; Column: TColumnIndex; var Result: Integer);
-    procedure VSTServerDblClick(Sender: TObject);
+//    procedure VSTServerDblClick(Sender: TObject);
   private
     { Private declarations }
     TerminalServers: TJwTerminalServerList;
@@ -414,16 +414,23 @@ end;
 procedure TMainForm.Button3Click(Sender: TObject);
 var DomainList: TStringList;
   i: Integer;
-  p: PWideChar;
+  pData: PServerNodeData;
 begin
-  p := EnumerateMultiUserServers(nil);
-  DomainList := PWArrayToStringList(p);
-  LocalFree(Cardinal(p));
-//  DomainList := EnumerateDomains;
+// p := EnumerateMultiUserServers('EUROPE');
+//  DomainList := PWArrayToStringList(p);
+//  LocalFree(Cardinal(p));
+  DomainList := EnumerateDomains;
+
   for i := 0 to DomainList.Count - 1 do
   begin
-    OutputDebugString(PChar(Format('Domain: %s', [DomainList[i]])));
+    pData := VSTServer.GetNodeData(VSTServer.AddChild(pAllListedServersNode));
+    pData^.Index := -2;
+    pData^.Caption := DomainList[i];
+    pData^.PTerminalServerList := nil;
   end;
+
+  VSTServer.FullExpand(pAllListedServersNode);
+  DomainList.Free;
 end;
 
 procedure AutoSizeVST(const AVirtualTree: TVirtualStringTree);
@@ -440,13 +447,6 @@ end;
 procedure TMainForm.FormCreate(Sender: TObject);
 var pNode: PVirtualNode;
   pData: PServerNodeData;
-  pUserNode: PVirtualNode;
-  pUserData: PUserNodeData;
-  pSessionNode: PVirtualNode;
-  pSessionData: PSessionNodeData;
-  pProcessNode: PVirtualNode;
-  pProcessData: PProcessNodeData;
-  i: Integer;
 begin
 {$IFDEF FASTMM}
   ReportMemoryLeaksOnShutDown := DebugHook <> 0;
@@ -468,13 +468,14 @@ begin
   pNode := VSTServer.AddChild(pThisComputerNode);
 
 //  VSTServer.CheckState[pThisComputerNode] := csCheckedNormal;
-  pData := VSTServer.GetNodeData(pNode);
+//  pData := VSTServer.GetNodeData(pNode);
 
   // This node can be checked
   pNode^.CheckType := ctCheckBox;
   // The this computer node is checked by default
   pNode^.CheckState := csCheckedNormal;
-  // Trigger the OnChecked Event
+
+  // Trigger the OnChecked Event, this will fill the listviews for this computer
   VSTServer.OnChecked(VSTServer, pNode);
 
   // Expand the This Computer Node
@@ -571,50 +572,50 @@ begin
     Username := pData^.List^.Items[pData^.Index].Username;
     ConnectState := pData^.List^.Items[pData^.Index].ConnectState;
     IsConsole := pData^.List^.Items[pData^.Index].WdFlag < WD_FLAG_RDP;
-  end;
 
-  if Kind in [ikNormal, ikSelected] then begin
-    case column of
-      0: ImageIndex := Integer(icServer);
-      1: begin
-        if Username = '' then
-        begin
-          ImageIndex := -1; // No Icon!
-        end
-        else if username = 'SYSTEM' then
-        begin
-          ImageIndex := Integer(icSystem);
-        end
-        else if username = 'LOCAL SERVICE' then
-        begin
-          ImageIndex := Integer(icService);
-        end
-        else if username = 'NETWORK SERVICE' then
-        begin
-          ImageIndex := Integer(icNetworkService);
-        end
-        else if ConnectState = WTSActive then
-        begin
-          ImageIndex := Integer(icUser);
-        end
-        else begin
-          ImageIndex := Integer(icUserGhosted);
+    if Kind in [ikNormal, ikSelected] then begin
+      case column of
+        0: ImageIndex := Integer(icServer);
+        1: begin
+          if Username = '' then
+          begin
+            ImageIndex := -1; // No Icon!
+          end
+          else if username = 'SYSTEM' then
+          begin
+            ImageIndex := Integer(icSystem);
+          end
+          else if username = 'LOCAL SERVICE' then
+          begin
+            ImageIndex := Integer(icService);
+          end
+          else if username = 'NETWORK SERVICE' then
+          begin
+            ImageIndex := Integer(icNetworkService);
+          end
+          else if ConnectState = WTSActive then
+          begin
+            ImageIndex := Integer(icUser);
+          end
+          else begin
+            ImageIndex := Integer(icUserGhosted);
+          end;
         end;
-      end;
-      2: begin
-        if IsConsole then
-        begin
-          ImageIndex := Integer(icComputer);
-        end
-        else if ConnectState = WTSListen then
-        begin
-          ImageIndex := Integer(icListener);
-        end
-        else if username <> '' then begin
-          ImageIndex := Integer(icNetworkUser);
-        end
-        else begin
-          ImageIndex := Integer(icNetwork);
+        2: begin
+          if IsConsole then
+          begin
+            ImageIndex := Integer(icComputer);
+          end
+          else if ConnectState = WTSListen then
+          begin
+            ImageIndex := Integer(icListener);
+          end
+          else if username <> '' then begin
+            ImageIndex := Integer(icNetworkUser);
+          end
+          else begin
+            ImageIndex := Integer(icNetwork);
+          end;
         end;
       end;
     end;
@@ -1234,46 +1235,46 @@ begin
   begin
     Username := pData^.List^.Items[pData^.Index].Username;
     IsConsole := pData^.List^.Items[pData^.Index].WinStationName = 'Console';
-  end;
 
-  if Kind in [ikNormal, ikSelected] then begin
-    case column of
-      0: ImageIndex := Integer(icServer);
-      1: begin
-        if Username = '' then
-        begin
-          ImageIndex := -1; // No Icon!
-        end
-        else if username = 'SYSTEM' then
-        begin
-          ImageIndex := Integer(icSystem);
-        end
-        else if username = 'LOCAL SERVICE' then
-        begin
-          ImageIndex := Integer(icService);
-        end
-        else if username = 'NETWORK SERVICE' then
-        begin
-          ImageIndex := Integer(icNetworkService);
-        end
-        else begin
-          ImageIndex := Integer(icUser);
+    if Kind in [ikNormal, ikSelected] then begin
+      case column of
+        0: ImageIndex := Integer(icServer);
+        1: begin
+          if Username = '' then
+          begin
+            ImageIndex := -1; // No Icon!
+          end
+          else if username = 'SYSTEM' then
+          begin
+            ImageIndex := Integer(icSystem);
+          end
+          else if username = 'LOCAL SERVICE' then
+          begin
+            ImageIndex := Integer(icService);
+          end
+          else if username = 'NETWORK SERVICE' then
+          begin
+            ImageIndex := Integer(icNetworkService);
+          end
+          else begin
+            ImageIndex := Integer(icUser);
+          end;
+          end;
+          2: begin
+          if IsConsole then
+          begin
+            ImageIndex := Integer(icComputer);
+          end
+          else begin
+            ImageIndex := Integer(icNetwork);
+          end;
         end;
+        5: ImageIndex := Integer(icProcess);
+  //      6: ImageIndex := Integer(icClock);
+        7: ImageIndex := Integer(icCPUTime);
+        8: ImageIndex := Integer(icMemory);
+  //      9: ImageIndex := Integer(icVirtual);
       end;
-      2: begin
-        if IsConsole then
-        begin
-          ImageIndex := Integer(icComputer);
-        end
-        else begin
-          ImageIndex := Integer(icNetwork);
-        end;
-      end;
-      5: ImageIndex := Integer(icProcess);
-//      6: ImageIndex := Integer(icClock);
-      7: ImageIndex := Integer(icCPUTime);
-      8: ImageIndex := Integer(icMemory);
-//      9: ImageIndex := Integer(icVirtual);
     end;
   end;
 end;
@@ -1421,13 +1422,13 @@ begin
   Result := CompareText(s1, s2); 
 end;
 
-procedure TMainForm.VSTServerDblClick(Sender: TObject);
+{procedure TMainForm.VSTServerDblClick(Sender: TObject);
 begin
   if VSTServer.FocusedNode = pAllListedServersNode then
   begin
     ShowMessage('ok');
   end;
-end;
+end;}
 
 procedure TMainForm.VSTServerFreeNode(Sender: TBaseVirtualTree;
   Node: PVirtualNode);

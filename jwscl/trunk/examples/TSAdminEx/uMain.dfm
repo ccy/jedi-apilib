@@ -45,7 +45,6 @@ object MainForm: TMainForm
     TreeOptions.MiscOptions = [toAcceptOLEDrop, toCheckSupport, toFullRepaintOnResize, toInitOnSave, toToggleOnDblClick, toWheelPanning]
     OnChecked = VSTServerChecked
     OnCompareNodes = VSTServerCompareNodes
-    OnDblClick = VSTServerDblClick
     OnFreeNode = VSTServerFreeNode
     OnGetText = VSTServerGetText
     OnGetImageIndex = VSTServerGetImageIndex
