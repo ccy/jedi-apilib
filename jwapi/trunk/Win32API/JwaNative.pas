@@ -5116,7 +5116,7 @@ function  NtQueryInformationPort(
   ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
 function  ZwQueryInformationPort(PortHandle: HANDLE; PortInformationClass: PORT_INFORMATION_CLASS; PortInformation: PVOID; PortInformationLength: ULONG; ReturnLength: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
 
-{$IFNDEF JWA_INCLUDEMODE}
+{.$IFNDEF JWA_INCLUDEMODE} // drop JwaWinternal
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtQueryInformationProcess(
     ProcessHandle : HANDLE;
@@ -5125,7 +5125,7 @@ function  NtQueryInformationProcess(
     ProcessInformationLength : ULONG;
     ReturnLength : PULONG
   ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-{$ENDIF JWA_INCLUDEMODE}
+{.$ENDIF JWA_INCLUDEMODE}
 
 function  ZwQueryInformationProcess(ProcessHandle: HANDLE; ProcessInformationClass: PROCESSINFOCLASS; ProcessInformation: PVOID; ProcessInformationLength: ULONG; ReturnLength: PULONG): NTSTATUS; stdcall;
   {$IFNDEF RTDL}external ntdll;{$ENDIF}
@@ -5302,7 +5302,7 @@ function  NtQuerySystemEnvironmentValue(
   ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
 function  ZwQuerySystemEnvironmentValue(Name: PUNICODE_STRING; Value: PVOID; ValueLength: ULONG; ReturnLength: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
 
-{$IFNDEF JWA_INCLUDEMODE}
+{.$IFNDEF JWA_INCLUDEMODE} //do include since we dropped JwaWinternl 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtQuerySystemInformation(
     SystemInformationClass : SYSTEM_INFORMATION_CLASS;
@@ -5310,7 +5310,7 @@ function  NtQuerySystemInformation(
     SystemInformationLength : ULONG;
     ReturnLength : PULONG
   ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-{$ENDIF JWA_INCLUDEMODE}
+{.$ENDIF JWA_INCLUDEMODE}
 
 function  ZwQuerySystemInformation(SystemInformationClass: SYSTEM_INFORMATION_CLASS; SystemInformation: PVOID; SystemInformationLength: ULONG; ReturnLength: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
 
@@ -14094,7 +14094,7 @@ begin
   );
 end;
 
-{$IFNDEF JWA_INCLUDEMODE}
+{/$IFNDEF JWA_INCLUDEMODE} // drop JwaWinternal
 // Dynamic version of NtQueryInformationProcess
 function  NtQueryInformationProcess(
     ProcessHandle : HANDLE;
@@ -14109,7 +14109,7 @@ begin
     ProcessHandle, ProcessInformationClass, ProcessInformation, ProcessInformationLength, ReturnLength
   );
 end;
-{$ENDIF JWA_INCLUDEMODE}
+{.$ENDIF JWA_INCLUDEMODE}
 
 // Dynamic version of NtQueryInformationProcess
 function  ZwQueryInformationProcess(
@@ -14126,7 +14126,7 @@ begin
   );
 end;
 
-{$IFNDEF JWA_INCLUDEMODE}
+{.$IFNDEF JWA_INCLUDEMODE} // drop JwaWinternal
 // Dynamic version of NtQueryInformationThread
 function  NtQueryInformationThread(
     ThreadHandle : HANDLE;
@@ -14141,7 +14141,7 @@ begin
     ThreadHandle, ThreadInformationClass, ThreadInformation, ThreadInformationLength, ReturnLength
   );
 end;
-{$ENDIF JWA_INCLUDEMODE}
+{.$ENDIF JWA_INCLUDEMODE}
 
 // Dynamic version of NtQueryInformationThread
 function  ZwQueryInformationThread(
@@ -14630,7 +14630,7 @@ begin
   );
 end;
 
-{$IFNDEF JWA_INCLUDEMODE}
+{.$IFNDEF JWA_INCLUDEMODE} // do include since we droppen JwaWinternl
 // Dynamic version of NtQuerySystemInformation
 function  NtQuerySystemInformation(
     SystemInformationClass : SYSTEM_INFORMATION_CLASS;
@@ -14644,7 +14644,7 @@ begin
     SystemInformationClass, SystemInformation, SystemInformationLength, ReturnLength
   );
 end;
-{$ENDIF JWA_INCLUDEMODE}
+{.$ENDIF JWA_INCLUDEMODE}
 
 // Dynamic version of NtQuerySystemInformation
 function  ZwQuerySystemInformation(
