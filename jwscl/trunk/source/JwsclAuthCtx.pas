@@ -556,6 +556,7 @@ type
       const AuditInfo : TAuthZAuditInfoHandle;
       const SecurityDescriptor : TJwSecurityDescriptor;
       const OptionalSecurityDescriptorArray : TJwSecurityDescriptorArray;
+      const GenericMapping: TJwSecurityGenericMappingClass;
       out Reply : TJwAuthZAccessReply;
       out AuthZHandle : TAuthZAccessCheckResultHandle
       );
@@ -638,6 +639,7 @@ uses
 {$IFDEF DEBUG}
   Dialogs,
 {$ENDIF DEBUG}
+  JwsclSecureObjects,
   Math;
 {$ENDIF SL_OMIT_SECTIONS}
 
@@ -645,6 +647,8 @@ uses
 {$IFNDEF SL_INTERFACE_SECTION}
 
 {$ENDIF SL_INTERFACE_SECTION}
+
+
 
 const HEADERMAGIC = 12345678;
 
@@ -728,6 +732,8 @@ var CallbackData : PJwCallbackData;
     ACE : TJwSecurityAccessControlEntry;
 
 begin
+  result := false;
+
   CallbackData := PJwCallbackData(pArgs);
   if CallbackData.Hd <> HEADERMAGIC then
   begin
@@ -752,7 +758,10 @@ begin
         ACE.Header := pAce^;
       end;
       On E2: EJwsclSecurityException do
+      begin
         SetLastError(E2.LastError);
+        exit;
+      end;
     end;
 
     try
@@ -1086,6 +1095,7 @@ procedure TJwAuthContext.AccessCheck(Flags: Cardinal;
   const AuditInfo: TAuthZAuditInfoHandle;
   const SecurityDescriptor: TJwSecurityDescriptor;
   const OptionalSecurityDescriptorArray: TJwSecurityDescriptorArray;
+  const GenericMapping: TJwSecurityGenericMappingClass;
   out Reply: TJwAuthZAccessReply;
   out AuthZHandle: TAuthZAccessCheckResultHandle);
 
@@ -1098,6 +1108,10 @@ var pRequest : AUTHZ_ACCESS_REQUEST;
     pReply : AUTHZ_ACCESS_REPLY;
     i, idx : Integer;
     CallbackData : TJwCallbackData;
+
+    TempSD : TJwSecurityDescriptor;
+    bTempSD : Boolean;
+
 begin
   AuthZHandle := 0;
 
@@ -1109,6 +1123,7 @@ begin
       ClassName, RsUNAuthZCtx);
 
 
+
   //check for correct object array
   if Assigned(Request.fObjectTypeArray) then
     if not JwCheckArray(Request.fObjectTypeArray,i) then
@@ -1116,9 +1131,13 @@ begin
           RsInvalidObjectTypeList, 'AuthzAccessCheck', ClassName,
           RsUNAuthZCtx, 0, false, [i]);
 
+
+
+
   //initialize request structure
   ZeroMemory(@pRequest, sizeof(pRequest));
-  pRequest.DesiredAccess    := Request.fDesiredAccess;
+  //replace generic rights in Desired Access
+  pRequest.DesiredAccess    := TJwSecureBaseClass.ConvertAccessMask(GenericMapping, Request.fDesiredAccess);
   pRequest.PrincipalSelfSid := Request.fPrincipalSelfSid.SID;
   if Assigned(Request.fObjectTypeArray) and (Length(Request.fObjectTypeArray) > 0) then
     pRequest.ObjectTypeList   := @Request.fObjectTypeArray[0];
@@ -1133,101 +1152,124 @@ begin
 
   pRequest.OptionalArguments := @CallBackData;
 
-  //get security descriptor memory block
-  pSD := SecurityDescriptor.Create_SD();
+  bTempSD := Assigned(GenericMapping);
+  if bTempSD then
+  begin
+    TempSD := TJwSecurityDescriptor.Create(SecurityDescriptor);
+    {AccessCheck does not resolve GENERIC_XXXX rights in ACE
+    to the given ones here defined some lines later is quite useless.
+      mapping := TGenericMapping(GenericMapping.GetMapping());
+    See http://groups.google.de/group/microsoft.public.platformsdk.security/browse_thread/thread/2fb371cbd8ad1246/e9abf141630a0539?lnk=gst&q=accesscheck+generic#e9abf141630a0539
+
+    So we replace the ACEs AccessMask if necessary
+    }
+    //replace generic rights in dacl
+    TJwSecureBaseClass.ReplaceGenericRightsInDACL(GenericMapping, TempSD);
+  end
+  else
+    TempSD := SecurityDescriptor;
+
 
   try
+    //get security descriptor memory block
+    pSD := TempSD.Create_SD();
+
     Idx := -1;
-    SetLength(pOSD, Length(OptionalSecurityDescriptorArray));
-    for i := 0 to Length(OptionalSecurityDescriptorArray)-1 do
-    begin
-      try
-        pOSD[i] := OptionalSecurityDescriptorArray[i].Create_SD(false);
-      except
-        On E : EJwsclSecurityException do
-        begin
-          Idx := i-1;
-          raise;
-        end;
-      end;
-    end;
-  except
-    //we only check for known exceptions
-    On E : EJwsclSecurityException do
-    begin
-      //deallocate memory
-      if Assigned(SecurityDescriptor) then
-         TJwSecurityDescriptor.Free_SD(pSD);
-      for i := 0 to Idx do
-        TJwSecurityDescriptor.Free_SD(pOSD[i]);
-      raise
-    end;
-  end;
-
-
-  ZeroMemory(@pReply, sizeof(pReply));
-  //make room for at least one result
-  pReply.ResultListLength := pRequest.ObjectTypeListLength;
-  if pRequest.ObjectTypeListLength = 0 then
-    pReply.ResultListLength := 1;
-
-
-  //create arrays  
-  GetMem(pReply.GrantedAccessMask,
-    (pReply.ResultListLength) * sizeof(ACCESS_MASK));
-  ZeroMemory(pReply.GrantedAccessMask, (pReply.ResultListLength) * sizeof(ACCESS_MASK));
-
-  GetMem(pReply.SaclEvaluationResults,
-    (pReply.ResultListLength) * sizeof(DWORD));
-  ZeroMemory(pReply.SaclEvaluationResults, (pReply.ResultListLength) * sizeof(DWORD));
-
-  GetMem(pReply.Error,
-    (pReply.ResultListLength) * sizeof(DWORD));
-  ZeroMemory(pReply.Error, (pReply.ResultListLength) * sizeof(DWORD));
-
-
-  Reply := nil;
-  SetLastError(0);
-  try
     try
-      if not AuthzAccessCheck(
-        Flags, //__in      DWORD flags,
-        Handle,//__in      AUTHZ_CLIENT_CONTEXT_HANDLE AuthzClientContext,
-        @pRequest,//__in      PAUTHZ_ACCESS_REQUEST pRequest,
-        AuditInfo,//__in      AUTHZ_AUDIT_INFO_HANDLE AuditInfo,
-        pSD,//__in      PSECURITY_DESCRIPTOR pSecurityDescriptor,
-        @pOSD[0],//__in_opt  PSECURITY_DESCRIPTOR* OptionalSecurityDescriptorArray,
-        Length(OptionalSecurityDescriptorArray),//__in_opt  DWORD OptionalSecurityDescriptorCount,
-        @pReply,//__inout   PAUTHZ_ACCESS_REPLY pReply,
-        @AuthZHandle, //__out     PAUTHZ_ACCESS_CHECK_RESULTS_HANDLE pAuthzHandle
-      ) then
-        raise EJwsclWinCallFailedException.CreateFmtEx(
-          RsWinCallFailed, 'AuthzAccessCheck', ClassName,
-          RsUNAuthZCtx, 0, True, ['AuthzAccessCheck']);
-
-      //convert reply to a class
-      Reply := TJwAuthZAccessReply.Create(pReply);
-    finally
-      FreeMem(pReply.GrantedAccessMask);
-      FreeMem(pReply.SaclEvaluationResults);
-      FreeMem(pReply.Error);
-    
-      TJwSecurityDescriptor.Free_SD(pSD);
-
-     // FreeMem(CallBackData);
-
+      SetLength(pOSD, Length(OptionalSecurityDescriptorArray));
       for i := 0 to Length(OptionalSecurityDescriptorArray)-1 do
       begin
-        TJwSecurityDescriptor.Free_SD(pOSD[i]);
+        try
+          pOSD[i] := OptionalSecurityDescriptorArray[i].Create_SD(false);
+        except
+          On E : EJwsclSecurityException do
+          begin
+            Idx := i-1;
+            raise;
+          end;
+        end;
       end;
-      pOSD := nil;
+    except
+      //we only check for known exceptions
+      On E : EJwsclSecurityException do
+      begin
+        //deallocate memory
+        if Assigned(SecurityDescriptor) then
+           TJwSecurityDescriptor.Free_SD(pSD);
+        for i := 0 to Idx do
+          TJwSecurityDescriptor.Free_SD(pOSD[i]);
+        raise
+      end;
     end;
-  except
-    on E : EJwsclWinCallFailedException do
-    begin
-      FreeAndNil(Reply);
-      raise;
+
+
+    ZeroMemory(@pReply, sizeof(pReply));
+    //make room for at least one result
+    pReply.ResultListLength := pRequest.ObjectTypeListLength;
+    if pRequest.ObjectTypeListLength = 0 then
+      pReply.ResultListLength := 1;
+
+
+    GetMem(pReply.GrantedAccessMask,
+      (pReply.ResultListLength) * sizeof(ACCESS_MASK));
+    ZeroMemory(pReply.GrantedAccessMask, (pReply.ResultListLength) * sizeof(ACCESS_MASK));
+
+    GetMem(pReply.SaclEvaluationResults,
+      (pReply.ResultListLength) * sizeof(DWORD));
+    ZeroMemory(pReply.SaclEvaluationResults, (pReply.ResultListLength) * sizeof(DWORD));
+
+    GetMem(pReply.Error,
+      (pReply.ResultListLength) * sizeof(DWORD));
+    ZeroMemory(pReply.Error, (pReply.ResultListLength) * sizeof(DWORD));
+
+
+    Reply := nil;
+    SetLastError(0);
+    try
+      try
+        if not AuthzAccessCheck(
+          Flags, //__in      DWORD flags,
+          Handle,//__in      AUTHZ_CLIENT_CONTEXT_HANDLE AuthzClientContext,
+          @pRequest,//__in      PAUTHZ_ACCESS_REQUEST pRequest,
+          AuditInfo,//__in      AUTHZ_AUDIT_INFO_HANDLE AuditInfo,
+          pSD,//__in      PSECURITY_DESCRIPTOR pSecurityDescriptor,
+          @pOSD[0],//__in_opt  PSECURITY_DESCRIPTOR* OptionalSecurityDescriptorArray,
+          Length(OptionalSecurityDescriptorArray),//__in_opt  DWORD OptionalSecurityDescriptorCount,
+          @pReply,//__inout   PAUTHZ_ACCESS_REPLY pReply,
+          @AuthZHandle, //__out     PAUTHZ_ACCESS_CHECK_RESULTS_HANDLE pAuthzHandle
+        ) then
+          raise EJwsclWinCallFailedException.CreateFmtEx(
+            RsWinCallFailed, 'AuthzAccessCheck', ClassName,
+            RsUNAuthZCtx, 0, True, ['AuthzAccessCheck']);
+
+        //convert reply to a class
+        Reply := TJwAuthZAccessReply.Create(pReply);
+      finally
+        FreeMem(pReply.GrantedAccessMask);
+        FreeMem(pReply.SaclEvaluationResults);
+        FreeMem(pReply.Error);
+    
+        TJwSecurityDescriptor.Free_SD(pSD);
+
+
+       // FreeMem(CallBackData);
+
+        for i := 0 to Length(OptionalSecurityDescriptorArray)-1 do
+        begin
+          TJwSecurityDescriptor.Free_SD(pOSD[i]);
+        end;
+        pOSD := nil;
+      end;
+    except
+      on E : EJwsclWinCallFailedException do
+      begin
+        FreeAndNil(Reply);
+        raise;
+      end;
     end;
+  finally
+    if bTempSD then
+      TempSD.Free;
   end;
 end;
 

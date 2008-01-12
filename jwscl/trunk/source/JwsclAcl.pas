@@ -93,9 +93,7 @@ type
     function GetItem(idx: integer): TJwSecurityAccessControlEntry;
     procedure RemoveOwners;
   protected
-    // (rom) Create is already public in TObject. This does not work as intended.
-    {@Name creates an empty access control list. The list items will not be owned.}
-    constructor Create; overload;
+
 
     {@Name creates an empty access control list.
      @param(ownACEs receives whether the items shall be freed on destruction (True) or not.)}
@@ -115,6 +113,9 @@ type
 
 
   public
+    {@Name creates an empty access control list. The list items will not be owned.}
+    constructor Create; overload;
+
     {@Name destroys the list and all it items.}
     destructor Destroy; override;
 

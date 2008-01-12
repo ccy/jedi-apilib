@@ -157,6 +157,7 @@ begin
     0,//const AuditInfo: TAuthZAuditInfoHandle;
     SD,//const SecurityDescriptor: TJwSecurityDescriptor;
     SDArray,//const OptionalSecurityDescriptorArray: TJwSecurityDescriptorArray;
+    nil,
     Reply,//out Reply: TJwAuthZAccessReply;
     AuthZHandle//out AuthZHandle: TAuthZAccessCheckResultHandle
   );

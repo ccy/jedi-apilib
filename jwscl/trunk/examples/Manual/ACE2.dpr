@@ -20,6 +20,8 @@ var ACE1 : TJwDiscretionaryAccessControlEntryAllow;
     SD : TJwSecurityDescriptor;
     b : Boolean;
     m : Cardinal;
+    privs : TJwPrivilegeSet;
+    G,A : Cardinal;
 begin
   JwInitWellKnownSIDs;
   SD := TJwSecurityDescriptor.Create;
@@ -35,11 +37,12 @@ begin
 
   SD.DACL.Revision := ACL_REVISION;
   SD.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(
-                  nil,[], FILE_GENERIC_EXECUTE,JwSecurityProcessUserSID, ACL_REVISION_DS,false));
+                  nil,[], FILE_ALL_ACCESS,JwSecurityProcessUserSID, false));
 {  SD.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(
                   nil,[], FILE_GENERIC_EXECUTE,JwSecurityProcessUserSID, false));}
   SD.DACL.Add(TJwDiscretionaryAccessControlEntryDeny.Create(
-                  nil,[], FILE_WRITE_DATA {and not (FILE_GENERIC_WRITE or FILE_GENERIC_EXECUTE)}, JwSecurityProcessUserSID, ACL_REVISION_DS, false));
+                  nil,[], GENERIC_ALL {and not (FILE_GENERIC_WRITE or FILE_GENERIC_EXECUTE)},
+                  JwSecurityProcessUserSID, false));
 
  // showmessage(SD.DACL.Text);
   {SD.DACL.Insert(0,TJwDiscretionaryAccessControlEntryAllow.Create(
@@ -66,10 +69,13 @@ begin
   }
   m := TJwSecurityFileMapping.Map(GENERIC_READ);
 
-  b := TJwSecureGeneralObject.AccessCheck(SD,nil, FILE_WRITE_DATA,
+  b := TJwSecureGeneralObject.AccessCheck(SD,nil, FILE_READ_DATA,
       TJwSecurityFileMapping);
-
   writeln(b);
+
+  TJwSecureGeneralObject.AccessCheck(SD,nil,MAXIMUM_ALLOWED,TJwSecurityFileFolderMapping, privs,G,B);
+
+  writeln(JwFormatAccessRights(G, FileMapping));
   readln;
 
 

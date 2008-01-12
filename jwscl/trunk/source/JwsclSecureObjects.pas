@@ -149,19 +149,8 @@ type
     fAutoResetACL: boolean;
 
 
-  // This function converts generic rights to specifc ones
-  // It can convert several generic rights.
-  class function ConvertAccessMask(const GenericMapping: TJwSecurityGenericMappingClass;
-     InputMask : Cardinal) : Cardinal;
 
-  //this procedure replaces GENERIC access masks
-  //in the DACL with specific mask using mapping GenericMapping
-  class procedure ReplaceGenericRightsInDACL(
-    const GenericMapping: TJwSecurityGenericMappingClass;
-    const SD: TJwSecurityDescriptor);
-
-  protected
-      {@Name sets the security information of a object given by a handle.
+     {@Name sets the security information of a object given by a handle.
 
        @param aSecurityInfo receives the security flags that describes which security data to be set.
               It will be automatically extended if the following parameters are not nil.
@@ -403,6 +392,17 @@ type
         TJwSecurityGenericMappingClass
      ) : TAccessMask; virtual;
 
+  public
+    // This function converts generic rights to specifc ones
+    // It can convert several generic rights.
+    class function ConvertAccessMask(const GenericMapping: TJwSecurityGenericMappingClass;
+       InputMask : Cardinal) : Cardinal;
+
+    //this procedure replaces GENERIC access masks
+    //in the DACL with specific mask using mapping GenericMapping
+    class procedure ReplaceGenericRightsInDACL(
+      const GenericMapping: TJwSecurityGenericMappingClass;
+      const SD: TJwSecurityDescriptor);
   protected
     fDAccessControlList: TJwDAccessControlList;
     fSAccessControlList: TJwSAccessControlList;
@@ -2444,6 +2444,9 @@ type
 implementation
 
 uses TypInfo,
+{$IFDEF DEBUG}
+     Dialogs,
+{$ENDIF DEBUG}
      JwsclEnumerations;
 
 {$ENDIF SL_OMIT_SECTIONS}
@@ -2983,7 +2986,6 @@ class procedure TJwSecureBaseClass.AccessCheck(
   out AccessStatus: boolean);
 
 
-
 var
   pSDesc: jwaWindows.PSecurityDescriptor;
 
@@ -2998,7 +3000,8 @@ var
   Token: TJwSecurityToken;
   IsThreadToken: boolean;
 
-  tempSecurityDescriptor: TJwSecurityDescriptor;
+  TempSD  : TJwSecurityDescriptor;
+  bTempSD : Boolean;
 begin
   Token := nil;
   IsThreadToken := False;
@@ -3019,17 +3022,30 @@ begin
       RsSecureObjectsInvalidOwner,
       'AccessCheck', ClassName, RsUNSecureObjects, 0, False, []);
 
+  bTempSD := Assigned(GenericMapping);
+  if bTempSD then
+  begin
+    TempSD := TJwSecurityDescriptor.Create(SecurityDescriptor);
+    {AccessCheck does not resolve GENERIC_XXXX rights in ACE
+    to the given ones here defined some lines later is quite useless.
+      mapping := TGenericMapping(GenericMapping.GetMapping());
+    See http://groups.google.de/group/microsoft.public.platformsdk.security/browse_thread/thread/2fb371cbd8ad1246/e9abf141630a0539?lnk=gst&q=accesscheck+generic#e9abf141630a0539
 
-      
-  tempSecurityDescriptor := TJwSecurityDescriptor.Create(SecurityDescriptor);
-  try
+    So we replace the ACEs AccessMask if necessary
+    }
     //replace generic rights in dacl
-    ReplaceGenericRightsInDACL(GenericMapping, tempSecurityDescriptor);
+    TJwSecureBaseClass.ReplaceGenericRightsInDACL(GenericMapping, TempSD);
+  end
+  else
+    TempSD := SecurityDescriptor;
 
-    //replace generic rights in Desired Access
-    tempDesiredAccess := ConvertAccessMask(GenericMapping, DesiredAccess);
 
-    pSDesc := tempSecurityDescriptor.Create_SD(false);
+  //replace generic rights in Desired Access
+  tempDesiredAccess := ConvertAccessMask(GenericMapping, DesiredAccess);
+
+  try
+    // ShowMessage(tempSecurityDescriptor.DACL.GetTextMap(TJwSecurityFileFolderMapping));
+    pSDesc := tempSD.Create_SD(false);
 
     try
       Token := nil;
@@ -3060,7 +3076,10 @@ begin
       pPrivsSize := Sizeof(pPrivs);
 
       //mappings
-      mapping := TGenericMapping(GenericMapping.GetMapping());
+      if Assigned(GenericMapping) then
+        mapping := TGenericMapping(GenericMapping.GetMapping())
+      else
+        ZeroMemory(@mapping, sizeof(mapping));
 
       lbAccessStatus := AccessStatus;
 
@@ -3100,7 +3119,8 @@ begin
         PrivilegeSet := nil;
     end;
   finally
-    tempSecurityDescriptor.Free;
+    if bTempSD then
+      TempSD.Free;
   end;
 end;
 
@@ -3111,6 +3131,10 @@ class function TJwSecureBaseClass.ConvertAccessMask(
   InputMask : Cardinal) : Cardinal;
 begin
   result := InputMask;
+
+  if not Assigned(GenericMapping) then
+    exit;
+
   if InputMask and GENERIC_ALL = GENERIC_ALL then
   begin
     result := GenericMapping.Map(GENERIC_ALL);
@@ -3159,14 +3183,6 @@ class procedure TJwSecureBaseClass.AccessCheckByType(
 begin
 end;
 
-function AccessCheckByTypeResultList2(pSecurityDescriptor: PSECURITY_DESCRIPTOR;
-  PrincipalSelfSid: PSID; ClientToken: HANDLE; DesiredAccess: DWORD;
-  ObjectTypeList: POBJECT_TYPE_LIST; ObjectTypeListLength: DWORD;
-  const GenericMapping: GENERIC_MAPPING; var PrivilegeSet: PRIVILEGE_SET;
-  var PrivilegeSetLength : DWORD;
-  GrantedAccessList: PDWORD;
-  AccessStatusList: PDWORD): BOOL; stdcall; external advapi32 name 'AccessCheckByTypeResultList';
-
 class procedure TJwSecureBaseClass.AccessCheckByTypeResultList(
   const SecurityDescriptor : TJwSecurityDescriptor;
       const PrincipalSelfSid : TJwSecurityID;
@@ -3194,7 +3210,8 @@ var
   Token: TJwSecurityToken;
   IsThreadToken: boolean;
 
-  tempSecurityDescriptor: TJwSecurityDescriptor;
+  TempSD: TJwSecurityDescriptor;
+  bTempSD : Boolean;
 
   pObjectTypeArray : POBJECT_TYPE_LIST;
 begin
@@ -3204,24 +3221,27 @@ begin
   if not Assigned(SecurityDescriptor) then
     raise EJwsclInvalidParameterException.CreateFmtEx(
       RsNilParameter,
-      'AccessCheck',
+      'AccessCheckByTypeResultList',
       ClassName, RsUNSecureObjects, 0, False, ['SecurityDescriptor']);
 
   if not Assigned(SecurityDescriptor.PrimaryGroup) then
     raise EJwsclInvalidGroupSIDException.CreateFmtEx(
       RsSecureObjectsInvalidGroup,
-      'AccessCheck', ClassName, RsUNSecureObjects, 0, False, []);
+      'AccessCheckByTypeResultList', ClassName, RsUNSecureObjects, 0, False, []);
  
   if not Assigned(SecurityDescriptor.Owner) then
     raise EJwsclInvalidOwnerSIDException.CreateFmtEx(
       RsSecureObjectsInvalidOwner,
-      'AccessCheck', ClassName, RsUNSecureObjects, 0, False, []);
+      'AccessCheckByTypeResultList', ClassName, RsUNSecureObjects, 0, False, []);
+
+  JwRaiseOnNilParameter(ObjectTypeArray, 'ObjectTypeArray', 'AccessCheckByTypeResultList',
+     ClassName, RsUNAuthZCtx);
+
 
   //check for correct object array
-  if Assigned(ObjectTypeArray) then
-    if not JwCheckArray(ObjectTypeArray,i) then
-      raise EJwsclInvalidObjectArrayException.CreateFmtEx(
-          RsInvalidObjectTypeList, 'AuthzAccessCheck', ClassName,
+  if not JwCheckArray(ObjectTypeArray,i) then
+     raise EJwsclInvalidObjectArrayException.CreateFmtEx(
+          RsInvalidObjectTypeList, 'AccessCheckByTypeResultList', ClassName,
           RsUNAuthZCtx, 0, false, [i]);
 
   if Assigned(PrincipalSelfSid) then
@@ -3243,15 +3263,29 @@ begin
 
   SetLastError(0);
 
-  tempSecurityDescriptor := TJwSecurityDescriptor.Create(SecurityDescriptor);
-  try
+  bTempSD := Assigned(GenericMapping);
+  if bTempSD then
+  begin
+    TempSD := TJwSecurityDescriptor.Create(SecurityDescriptor);
+    {AccessCheck does not resolve GENERIC_XXXX rights in ACE
+    to the given ones here defined some lines later is quite useless.
+      mapping := TGenericMapping(GenericMapping.GetMapping());
+    See http://groups.google.de/group/microsoft.public.platformsdk.security/browse_thread/thread/2fb371cbd8ad1246/e9abf141630a0539?lnk=gst&q=accesscheck+generic#e9abf141630a0539
+
+    So we replace the ACEs AccessMask if necessary
+    }
     //replace generic rights in dacl
-    ReplaceGenericRightsInDACL(GenericMapping, tempSecurityDescriptor);
+    ReplaceGenericRightsInDACL(GenericMapping, TempSD);
+  end
+  else
+    TempSD := SecurityDescriptor;
 
-    //replace generic rights in Desired Access
-    tempDesiredAccess := ConvertAccessMask(GenericMapping, DesiredAccess);
 
-    pSDesc := tempSecurityDescriptor.Create_SD(false);
+  //replace generic rights in Desired Access
+  tempDesiredAccess := ConvertAccessMask(GenericMapping, DesiredAccess);
+
+  try
+    pSDesc := TempSD.Create_SD(false);
 
     try
       Token := nil;
@@ -3282,7 +3316,10 @@ begin
       pPrivsSize := Sizeof(pPrivs);
 
       //mappings
-      mapping := TGenericMapping(GenericMapping.GetMapping());
+      if Assigned(GenericMapping) then
+        mapping := TGenericMapping(GenericMapping.GetMapping())
+      else
+        ZeroMemory(@mapping, sizeof(mapping));
 
       if not jwaWindows.AccessCheckByTypeResultList(
           PSecurityDescriptor(pSDesc),//__in         PSECURITY_DESCRIPTOR pSecurityDescriptor,
@@ -3312,6 +3349,7 @@ begin
       Token.Free;
 
 
+
       SecurityDescriptor.Free_SD(pSDesc);
 
       if (pPrivsSize > 0) then
@@ -3328,7 +3366,8 @@ begin
         PrivilegeSet := nil;
     end;
   finally
-    tempSecurityDescriptor.Free;
+    if bTempSD then
+      TempSD.Free;
   end;
 end;
 
@@ -3363,17 +3402,7 @@ begin
 
   pSDesc := SecurityDescriptor.Create_SD();
 
-    (*
-{$IFDEF FPC}
-    if (GenericMapping.ClassType <> TJwSecurityGenericMapping.ClassType) then
-{$ELSE}
-  if (not GenericMapping.ClassNameIs(TJwSecurityGenericMapping.ClassName))
-  then
-{$ENDIF}*)
-    mapping := TGenericMapping(GenericMapping.GetMapping());
-(*  else
-    ZeroMemory(@mapping, sizeof(mapping));
-  *)
+  mapping := TGenericMapping(GenericMapping.GetMapping());
   lbAccessStatus := AccessStatus;
 
   if not

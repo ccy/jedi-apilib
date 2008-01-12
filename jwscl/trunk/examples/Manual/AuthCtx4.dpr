@@ -66,7 +66,7 @@ begin
   SD.DACL.Add(
     TJwDiscretionaryAccessControlEntryAllow.Create(
    // TJwDiscretionaryAccessControlEntryCallbackAllow.Create(
-                  nil,[], {FILE_READ_EA} FILE_ALL_ACCESS, JwAdministratorsSID, false));
+                  nil,[], {FILE_READ_EA} GENERIC_ALL, JwAdministratorsSID, false));
   SD.DACL.Add(
     TJwDiscretionaryAccessControlEntryDeny.Create(
                   nil,[], FILE_READ_EA, JwAdministratorsSID, false));

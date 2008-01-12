@@ -6,11 +6,11 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, Buttons, ComCtrls, ExtCtrls, ToolWin, Menus,
 
-  JwaVista, JwsclUtils,
+  JwaVista, JwsclUtils, JwsclSecureUserObjects, JwsclSecurePrivateObjects,
   JwsclTypes, JwsclExceptions, JwsclAcl, JwsclMapping, JwsclSid, JwsclKnownSid,
-  JwsclSecureObjects, JwsclResource, JwsclSecurePrivateObjects,JwsclEnumerations,
+  JwsclSecureObjects, JwsclResource, JwsclEnumerations,
   JwsclVersion, JwsclConstants, JwsclProcess, JwsclDescriptor, JwsclToken,
-  JwsclStrings, JwsclSecureUserObjects;
+  JwsclStrings;
 
 
 type
