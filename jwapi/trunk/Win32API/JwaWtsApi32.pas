@@ -119,7 +119,10 @@ const
 // Added from Server 2008 pre-release SDK
   MAX_ELAPSED_TIME_LENGTH = 15;
   MAX_DATE_TIME_LENGTH = 56;
-  WINSTATIONNAME_LENGTH = 32;
+// In the PSDK this is the value: WINSTATIONNAME_LENGTH = 32 but it seems
+// incorrect because internal winsta.dll and utildll.dll functions expect
+// 66 bytes. So we set value 33 here
+  WINSTATIONNAME_LENGTH = 33;
   DOMAIN_LENGTH = 17;
 
 //==============================================================================
