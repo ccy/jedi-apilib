@@ -203,7 +203,22 @@ var
       SD.Owner := JwLocalGroupSID;
       SD.DACL.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil,[],FILE_EXECUTE,JwLocalGroupSID, false)); //see?: false
     }
-  JwLocalGroupSID: TJwSecurityKnownSID;
+  JwLocalGroupSID,
+
+  {@Name defines the network service group
+     You need to call JwInitWellknownSIDs before accessing this variable!
+
+     Use this:
+      SD : TJwSecurityDescriptor;
+      ...
+      SD.OwnOwner := false;
+      SD.Owner := JwLocalGroupSID;
+      SD.DACL.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil,[],FILE_EXECUTE,JwNetworkServiceSID, false)); //see?: false
+    }
+  JwNetworkServiceSID
+
+        : TJwSecurityKnownSID;
+
 
 //    LocalAdministratorSID : TJwSecurityKnownSID;
 
@@ -407,6 +422,8 @@ begin
     JwWorldSID := TJwSecurityKnownSID.Create('S-1-1-0');
   if not Assigned(JwLocalGroupSID) then
     JwLocalGroupSID := TJwSecurityKnownSID.Create('S-1-2-0');
+  if not Assigned(JwNetworkServiceSID) then
+    JwNetworkServiceSID := TJwSecurityKnownSID.Create('S-1-5-20');
 
   if not Assigned(JwSecurityProcessUserSID) then
     JwSecurityProcessUserSID := TJwSecurityThreadUserSID.Create;
@@ -438,6 +455,7 @@ begin
   FreeAndNil(JwNullSID);
   FreeAndNil(JwWorldSID);
   FreeAndNil(JwLocalGroupSID);
+  FreeAndNil(JwNetworkServiceSID);
   FreeAndNil(JwSecurityProcessUserSID);
   //  FreeAndNil(fSecurityCurrentThreadUserSID);
 
@@ -467,6 +485,7 @@ initialization
   JwNullSID  := nil;
   JwWorldSID := nil;
   JwLocalGroupSID := nil;
+  JwNetworkServiceSID := nil;
 
 {$ENDIF SL_INITIALIZATION_SECTION}
 
