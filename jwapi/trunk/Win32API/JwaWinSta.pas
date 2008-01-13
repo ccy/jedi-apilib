@@ -74,12 +74,11 @@ const
   // The structures below are currently defined, constant names were
   // mapped on best guess:
 
-  WdConfig = 3;
+  WinStationCreate = 0;
   WinStationClient = 1;
+  WdConfig = 3;
   WinStationConfig = 6;
   WinStationInformation = 8;
-  WinStationProductId = 27;
-  WinStationRemoteAddress = 29;
 
   // Constants for WinStationSetInformation
   WinStationBeep = 10;  // Calls MessageBeep
@@ -88,13 +87,31 @@ const
   // Only System account is allowed to retrieve this!
   WinStationToken = 14;
 
+  WinStationShadowInformation = 26;
+  WinStationProductId = 27;
+
   // WinStationLocks plays the lock or unlock sound
   // functionality not yet confirmed
   WinStationLock = 28; // Locks or Unlocks the WinStation
 
+  WinStationRemoteAddress = 29;
+
   SECONDS_PER_DAY = 86400;
   SECONDS_PER_HOUR = 3600;
   SECONDS_PER_MINUTE = 60;
+
+  // shadow state constants (class 26)
+  SHADOW_STATE_NONE = 0;
+  SHADOW_STATE_SHADOWING = 1;
+  SHADOW_STATE_BEGING_SHADOWED = 2;
+
+  // shadow mode constants (class 26)
+  SHADOW_MODE_NONE_ALLOWED = 0;
+  SHADOW_MODE_FULL_CONTROL_WITH_PERMISSION = 1;
+  SHADOW_MODE_FULL_CONTROL_WITHOUT_PERMISSION = 2;
+  SHADOW_MODE_VIEW_ONLY_WITH_PERMISSION = 3;
+  SHADOW_MODE_VIEW_ONLY_WITHOUT_PERMISSION = 4;
+
 type
   // This type is used for ElapsedTimeString
   TDiffTime = record
@@ -167,6 +184,17 @@ type
   PWinstaProcessInfoArray = PWINSTA_PROCESS_INFO_ARRAY;
 
   // The following types are used for WinStationQueryInformationW
+
+  // WinStationCreate
+  // Both functions (A and W) shares the single definition
+
+  _WINSTATION_CREATE = record
+    EnableWinStation : BOOL;
+    MaxInstanceCount : DWORD;
+   end;
+  PWINSTATION_CREATE = ^_WINSTATION_CREATE;
+  TWinStationCreate = _WINSTATION_CREATE;
+  PWinStationCreate = PWINSTATION_CREATE;
 
   // WinStationClient, returns information as provided by the
   // Terminal Server client (mstsc).
@@ -285,6 +313,17 @@ type
   TWinStationRemoteAddress = _WINSTATION_REMOTE_ADDRESS;
   PWinStationRemoteAddress = PWINSTATION_REMOTE_ADDRESS;
 
+  // WinStationShadowInformation
+  // Setting it requires the caller to be a local system, only ShadowMode field is used
+  _WINSTATION_SHADOW_INFORMATION = record
+    CurrentShadowState : DWORD;  //one of the SHADOW_STATE_XXX constants
+    ShadowMode : DWORD;          // one of the SHADOW_MODE_XXX constants
+    CurrentSessionId : DWORD;
+    Unknown1 : dword; // unknown; contains 2 or normal sessions, 0 on console and idle sessions
+  end;
+  PWINSTATION_SHADOW_INFORMATION = ^_WINSTATION_SHADOW_INFORMATION;
+  TWinStationShadowInformation = _WINSTATION_SHADOW_INFORMATION;
+  PWinStationShadowInformation = PWINSTATION_SHADOW_INFORMATION;
 
 function AreWeRunningTerminalServices: Boolean;
 
