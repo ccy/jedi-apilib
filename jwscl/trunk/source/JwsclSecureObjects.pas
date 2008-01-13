@@ -950,7 +950,7 @@ type
        @raises(EJwsclInvalidGroupSIDException will be raised if the group of the security descriptor is nil.
           Use JwNullSID to remove influence of group to AccessCheck call.)
 
-     @raises(EJwsclWinCallFailedException if a call to AuthzAccessCheck failed.)
+     @raises(EJwsclWinCallFailedException if a call to AccessCheckByType failed.)
      @raises(EJwsclNILParameterException will be raised if parameter Request,
       SecurityDescriptor or Request.PrincipalSelfSid is nil)
     }
@@ -1047,7 +1047,7 @@ type
        @raises(EJwsclInvalidGroupSIDException will be raised if the group of the security descriptor is nil.
           Use JwNullSID to remove influence of group to AccessCheck call.)
 
-     @raises(EJwsclWinCallFailedException if a call to AuthzAccessCheck failed.)
+     @raises(EJwsclWinCallFailedException if a call to AccessCheckByTypeResultList failed.)
      @raises(EJwsclNILParameterException will be raised if parameter Request,
       SecurityDescriptor or Request.PrincipalSelfSid is nil)
     }
@@ -1209,7 +1209,7 @@ type
     {@Name returns the mandatory level of the object. The object is retrieved
      from the SACL.
      Its only supported on Windows Vista and newer.
-     @return(Returns a mandatory level entry which must be freed.}
+     @return(Returns a mandatory level entry which must be freed.)}
     function GetMandatoryLabel : TJwSystemMandatoryAccessControlEntry; override;
 
     {@Name sets the mandatory level of the object.}
@@ -1847,7 +1847,7 @@ type
      {@Name returns the mandatory level of the object. The object is retrieved
      from the SACL.
      Its only supported on Windows Vista and newer.
-     @return(Returns a mandatory level entry which must be freed.}
+     @return(Returns a mandatory level entry which must be freed.)}
     function GetMandatoryLabel : TJwSystemMandatoryAccessControlEntry; override;
 
     {@Name sets the mandatory level of the object.}

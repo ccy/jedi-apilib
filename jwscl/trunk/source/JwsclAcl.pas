@@ -129,17 +129,9 @@ type
      The created memory block must be freed by Free_PACL.
      The list order in the new ACL will be the same like the list in @link(Items).
 
-     @raises(EJwsclNotEnoughMemory will be raised if the new memory block for ACL could not be allocated)
-     @raises(EJwsclUnsupportedACE will be raised if a given ACE in the list is not supported by this function.
-        @unorderedlist(
-         @item(TJwDiscretionaryAccessControlEntryAllow added by AddAccessAllowedAceEx)
-         @item(TJwDiscretionaryAccessControlEntryDeny added by AddAccessDeniedAceEx)
-         @item(TJwAuditAccessControlEntry added by AddAuditAccessAce)
-         @item(TJwSystemMandatoryAccessControlEntry added by AddMandatoryAce.
-           This option is only available if the compiler directive "VISTA" is set
-            (usually in jwscl.inc))
-         )
-     @raises(EJwsclFailedAddACE will be raised if a AddXXX winapi call for a given ACE in the list failed.)
+     @raises(EJwsclNotEnoughMemory will be raised if the new memory block for ACL could not be allocated.)
+     @raises(EJwsclUnsupportedACE will be raised if a given ACE in the list is not supported by this function.)
+     @raises(EJwsclFailedAddACE will be raised if a AddXXX winapi call for a given ACE in the list failed. )
     }
     function Create_PACL: PACL;
 
@@ -653,7 +645,7 @@ type
 
     {@Name creates an access allowed structure from an existing one.
     @param(AccessEntryPointer contains a pointer to an PAccessDeniedAce structure.
-     @unorederdlist(
+     @unorderedlist(
        @item(ACCESS_ALLOWED_ACE returns class type TJwDiscretionaryAccessControlEntryAllow)
        @item(ACCESS_ALLOWED_CALLBACK_ACE returns class type TJwDiscretionaryAccessControlEntryCallbackAllow)
        @item(ACCESS_ALLOWED_OBJECT_ACE returns class type TJwDiscretionaryAccessControlEntryObjectAllow)
@@ -685,7 +677,7 @@ type
     {@Name creates an access denied structure from an existing one.
 
     @param(AccessEntryPointer contains a pointer to an PAccessDeniedAce structure.
-     @unorederdlist(
+     @unorderedlist(
        @item(ACCESS_ALLOWED_ACE returns class type TJwDiscretionaryAccessControlEntryAllow)
        @item(ACCESS_ALLOWED_CALLBACK_ACE returns class type TJwDiscretionaryAccessControlEntryCallbackAllow)
        @item(ACCESS_ALLOWED_OBJECT_ACE returns class type TJwDiscretionaryAccessControlEntryObjectAllow)
@@ -717,8 +709,8 @@ type
     {@Name creates an access allowed class from an existing structure and returns
      a compatible class instance.
 
-    @param(accessACE contains a pointer to an AccessAllowedACE structure.
-      @unorederdlist(
+    @param(AccessEntryPointer contains a pointer to an AccessAllowedACE structure.
+      @unorderedlist(
        @item(ACCESS_ALLOWED_ACE returns class type TJwDiscretionaryAccessControlEntryAllow)
        @item(ACCESS_ALLOWED_CALLBACK_ACE returns class type TJwDiscretionaryAccessControlEntryCallbackAllow)
        @item(ACCESS_ALLOWED_OBJECT_ACE returns class type TJwDiscretionaryAccessControlEntryObjectAllow)
@@ -736,6 +728,7 @@ type
 
        @item(SYSTEM_MANDATORY_LABEL_ACE returns class type TJwSystemMandatoryAccessControlEntry)
      )
+    )
     @return(Returns a derived class of TJwSecurityAccessControlEntry)
     @raises(EJwsclNILParameterException if parameter AccessEntryPointer is nil)
     @raises(EJwsclInvalidACEException will be raised if parameter
@@ -745,7 +738,7 @@ type
       TJwSecurityAccessControlEntry; overload;
 
     {@Name creates an access denied structure from an existing one.
-    @param(accessACE contains a pointer to an AccessDeniedACE structure.)
+    @param(AccessEntryPointer contains a pointer to an AccessDeniedACE structure.)
     @return(Returns an ACE of type TJwDiscretionaryAccessControlEntryDeny)
     @raises(EJwsclNILParameterException if aACE is nil)
     }
@@ -756,6 +749,8 @@ type
     {@Name creates an with 0 initialized ACE and returns the corresponding class.
     @param(anACEType receives an @link(TJwAceType) type.)
     @return(The return value is one of the listed class types
+
+     @unorderedlist(
       @item(TjwAceType member - returned class type)
 
       @item(actAudit - TJwAuditAccessControlEntry)
@@ -774,6 +769,7 @@ type
       
       @item(actMandatory - TJwSystemMandatoryAccessControlEntry)
      )
+    )
      @raises(EJwsclInvalidACEException will be raised if the ACE type of
       the instance is not supported)
     }
@@ -804,7 +800,7 @@ type
      It must be freed by Free_PACE.
 
      The following types (value of property AceType) are supported:
-     @unorederdlist(
+     @unorderedlist(
       @item(actAudit)
       @item(actAuditCallback)
       @item(actMandatory)
@@ -824,7 +820,7 @@ type
      It must be freed by Free_PACE.
 
      The following types (value of property AceType) are supported:
-     @unorederdlist(
+     @unorderedlist(
       @item(actAudit)
       @item(actAuditCallback)
       @item(actMandatory)
@@ -844,7 +840,7 @@ type
      the instance.
 
      The following types are supported:
-     @unorederdlist(
+     @unorderedlist(
       @item(TjwAceType member - returned pointer to structure)
       @item(actAudit - SYSTEM_AUDIT_ACE)
       @item(actAuditCallback - SYSTEM_AUDIT_CALLBACK_ACE)
@@ -874,7 +870,7 @@ type
      space for the Sid memory.
 
      The following types are supported:
-     @unorederdlist(
+     @unorderedlist(
       @item(actAudit)
       @item(actAuditCallback)
       @item(actAuditObject)
@@ -1134,7 +1130,7 @@ type
      It must be freed by Free_PACE.
 
      The following types (value of property AceType) are supported:
-     @unorederdlist(
+     @unorderedlist(
       @item(actAudit)
       @item(actAuditCallback)
       @item(actMandatory)

@@ -370,13 +370,13 @@ type
 
         {@Name opens a thread token or process. If it can not open the thread token it simply opens the process tokens
         @param(aDesiredAccess Receives the desired access for this token. The access types can be get from the following list. Access flags must be concatenated with or operator.
-        If you want to use DuplicateToken or creating an impersonated token (by ConvertToImpersonatedToken) you must specific TOKEN_DUPLICATE.
+        If you want to use DuplicateToken or creating an impersonated token (by ConvertToImpersonatedToken) you must specific TOKEN_DUPLICATE.)
 
         @param(aDesiredAccess The desired access rights of the new token.
            It can be MAXIMUM_ALLOWED to get the maximum possible access.
-          )
-
-        See @link(CreateTokenByProcess CreateTokenByProcess) for a list of access rights.)}
+           See @link(CreateTokenByProcess) for a list of access rights.
+           )
+       }
     constructor CreateTokenEffective(const aDesiredAccess: TJwAccessMask);
       virtual;
 
@@ -680,9 +680,10 @@ type
       control list (SACL), the token gets ACCESS_SYSTEM_SECURITY access right, even if it was not
       requested in dwDesiredAccess.
       (source: http://msdn2.microsoft.com/en-us/library/aa446617.aspx)
+     )
 
      @param(AccessMask defines the access to the token handle.
-       MAXIMUM_ALLOWED can be used to get the maximum access allowed.)'
+       MAXIMUM_ALLOWED can be used to get the maximum access allowed.)
     }
     function CreateDuplicateToken(AccessMask: TJwAccessMask;
       Security: PSECURITY_ATTRIBUTES): TJwSecurityToken;

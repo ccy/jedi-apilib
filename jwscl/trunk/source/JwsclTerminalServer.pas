@@ -273,7 +273,7 @@ type
       Or the return value must be/must not be freed by the caller.
       )>
 
-     @raises(EJwSecurityException <Show here the reason for that exception type.
+     @raises(EJwsclSecurityException <Show here the reason for that exception type.
         Also for every failed precondition >)
      @raises(EJwsclTerminalServerException < Create your own  >)
      @raises(EJwsclTerminalSessionException < dito>)

@@ -493,6 +493,7 @@ type
             However do not rely on me - maybe somebody with
             internal knowledge can comment it.)
        )
+     )
     }
     constructor CreateAndAddSids(
       const AuthContext : TJwAuthContext;
@@ -518,15 +519,15 @@ type
           @item(Value 	Meaning)
           @item(0   If pAuthzHandle is not NULL, a deep copy of the
             security descriptor is copied to the handle referenced by pAuthzHandle.)
-        )
-        @item(AUTHZ_ACCESS_CHECK_NO_DEEP_COPY_SD 1
+          @item(AUTHZ_ACCESS_CHECK_NO_DEEP_COPY_SD 1
           A deep copy of the security descriptor is not performed. The caller
           can use the handle for @link(AccessCheckCached).
 
           The AccessCheck function sets this handle to a security
           descriptor that must remain valid during subsequent calls
           to AccessCheckCached.)
-     )
+        )
+      )
      @param(Request receives a class that contains information about the
       access check procedure. This instance is automatically freed
       if no exception was raised and Request.Shared is shOwned.
@@ -575,7 +576,6 @@ type
           @item(Value 	Meaning)
           @item(0   If pAuthzHandle is not NULL, a deep copy of the
             security descriptor is copied to the handle referenced by pAuthzHandle.)
-        )
         @item(AUTHZ_ACCESS_CHECK_NO_DEEP_COPY_SD 1
           A deep copy of the security descriptor is not performed. The caller
           can use the handle for @link(AccessCheckCached).
@@ -583,6 +583,7 @@ type
           The AccessCheck function sets this handle to a security
           descriptor that must remain valid during subsequent calls
           to AccessCheckCached.)
+     )
      )
      @param(Request receives a class that contains information about the
       access check procedure. This instance is automatically freed

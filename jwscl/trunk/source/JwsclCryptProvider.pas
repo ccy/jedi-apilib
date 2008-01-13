@@ -99,11 +99,11 @@ type
      @param(ProviderType The type of CSP for which the default
             is to retrieve)
      @param(MachineDefault If true, the machine default provider is returned.
-            Otherwise, the user default is returned.
-     @return(@Name returns the name of the default provider of
-             the specified type.))
-     @raises EJwsclCSPApiException will be raised if the underlying Windows call fails
-             because there is no default provider or for other reasons.}
+            Otherwise, the user default is returned.)
+     @return(@Name returns the name of the default provider of)
+             the specified type.)
+     @raises(EJwsclCSPApiException will be raised if the underlying Windows call fails
+             because there is no default provider or for other reasons.)}
     class function GetDefaultProvider(ProviderType: TJwCSPType;
       MachineDefault: Boolean): TJwString; //static;
     {The directive static is necessary if you want to use
@@ -115,7 +115,7 @@ type
             should be the default)
      @param(MachineDefault If true, the machine default provider is set.
             Otherwise, the user default is set.)
-     @raises EJwsclCSPApiException will be raised if the underlying Windows call fails.}
+     @raises(EJwsclCSPApiException will be raised if the underlying Windows call fails.)}
     class procedure SetDefaultProvider(ProviderType: TJwCSPType;
       MachineDefault: Boolean; const NewDefault: TJwString); //static;
     {The directive static is necessary if you want to use
@@ -132,27 +132,27 @@ type
             be deleted.)
      @param(MachineDefault If true, the machine default setting is deleted.
             Otherwise, the user default setting is deleted.)
-     @raises EJwsclCSPApiException will be raised if the underlying Windows call fails.}
+     @raises(EJwsclCSPApiException will be raised if the underlying Windows call fails.)}
     class procedure DeleteDefaultProvider(ProviderType: TJwCSPType;
       MachineDefault: Boolean);
 
     {Enumerates all providers installed on the machine
      @return(@Name returns an array of TJwEnumProvider records, which
              contain the provider name and type.)
-     @raises EJwsclCSPApiException will be raised if the underlying Windows call fails.}
+     @raises(EJwsclCSPApiException will be raised if the underlying Windows call fails.)}
     class function EnumProviders: TJwEnumProviderArray;
 
     {Enumerates all provider types on the machine
      @return(@Name returns an array of TJwEnumProvider records containing
              the type as a member of the TJwCSPType enumeration and the
              name as a human-readable string.)
-      @raises EJwsclCSPApiException will be raised if the underlying Windows call fails.}
+      @raises(EJwsclCSPApiException will be raised if the underlying Windows call fails.)}
     class function EnumProviderTypes: TJwEnumProviderArray;
 
     {Enumerates all the algorithms supported by the CSP.
      @return(@Name returns an array of TJwEnumAlgorithmsEntry records.
              See @link(TJwEnumAlgorithmsEntry) for more information)
-     @raises EJwsclCSPApiException will be raised if the underlying Windows call fails.}
+     @raises(EJwsclCSPApiException will be raised if the underlying Windows call fails.)}
     function EnumAlgorithms: TJwEnumAlgorithms;
 
     {@Name fills a buffer with random data. The data is usually
@@ -163,7 +163,7 @@ type
             Nevertheless, it is not necessary to supply a good seed in
             the buffer.)
      @param(Length Size of the buffer to be filled)
-     @raises EJwsclCSPApiException will be raised if the underlying Windows call fails.}
+     @raises(EJwsclCSPApiException will be raised if the underlying Windows call fails.)}
     procedure GetRandomData(Random: Pointer; const Length: Cardinal);
 
     {@Name is the handle to the CSP.}
@@ -171,12 +171,12 @@ type
 
     {The name of the CSP as specified in the CSPName parameter in the call to
      @link(create)
-     @raises EJwsclCSPApiException will be raised if the underlying Windows call fails.}
+     EJwsclCSPApiException will be raised if the underlying Windows call fails.}
     property Name: TJwString read GetName;
 
     {The name of the key container as specified in the KeyContainerName parameter
      in the call to @link(create)
-     @raises EJwsclCSPApiException will be raised if the underlying Windows call fails.}
+     EJwsclCSPApiException will be raised if the underlying Windows call fails.}
     property KeyContainerName: TJwString read GetName;
   end;
 
@@ -216,11 +216,11 @@ type
      @raises EJwsclHashException will be raised if there is a key specified
              for a non-keyed algorithm or if no key is specified for a keyed
              algorithm.
-     @raises EJsclHashApiException will be raised if the underlying Windows call fails.}
+     @raises EJwsclHashApiException will be raised if the underlying Windows call fails.}
     constructor Create(Alg: TJwHashAlgorithm; const CSP: TJwCryptProvider = nil; const Key: TJwCryptKey = nil);
 
     {Destroys the hash object and releases the CSP
-     @raises EJsclHashApiException will be raised if the underlying Windows call fails.}
+     @raises EJwsclHashApiException will be raised if the underlying Windows call fails.}
     destructor Destroy; override;
 
     {Adds data to the hash object
@@ -279,9 +279,9 @@ type
             The actual size of the signature is returned here.)
      @param(Key A CSP usually has two key pairs. This parameter specifies
             which should be used.)
-     @raises EJwsclHashApiException will be raised if the
+     @raises(EJwsclHashApiException will be raised if the
              underlying Windows call fails because the specified
-             buffer is to small or for other reasons.}
+             buffer is to small or for other reasons.)}
     procedure Sign(Signature: Pointer; var Len: Cardinal; Key: TJwKeyPairType = kptSignature); overload;
 
     {@Name computes a signature of the data in the hash.
@@ -289,13 +289,13 @@ type
      have not been created with the ccfVerifyContext flag.
      The buffer returned by this function must be freed using
      @link(FreeBuffer).
-     @param(Len The length of the returned buffer
+     @param(Len The length of the returned buffer)
      @param(Key A CSP usually has two key pairs. This parameter specifies
             which should be used.)
      @return(The buffer containing the signature. It should be freed
               using @link(FreeBuffer) when it is no longer needed.)
-     @raises EJwsclHashApiException will be raised if the
-             underlying Windows call fails.}
+     @raises(EJwsclHashApiException will be raised if the
+             underlying Windows call fails.)}
     function Sign(out Len: Cardinal; Key: TJwKeyPairType = kptSignature): Pointer; overload;
 
     {@Name frees buffer returned by previous calls to
@@ -304,7 +304,7 @@ type
     procedure FreeBuffer(Buffer: Pointer);
 
     {The algorithm specified in the call to @link(create)
-     @raises EJwsclHashApiException will be raised if the
+     EJwsclHashApiException will be raised if the
              underlying Windows call fails.}
     property Algorithm: TJwHashAlgorithm read GetAlgorithm;
 
