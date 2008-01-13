@@ -56,6 +56,7 @@ type
   TJwTerminalServerList = class;
   TJwWTSEventThread = class;
   TJwWTSEnumServersThread = class;
+  TJwWTSSessionShadow = class;
   TJwWTSSession = class;
   TJwWTSSessionList = class;
   TJwWTSProcess = class;
@@ -228,7 +229,7 @@ type
     FWdName: TJwString;
     FWinStationName: TJwString;
     FWorkingDirectory: TJwString;
-
+    FShadow : TJwWTSSessionShadow;
     //TODO: this func should be documented but not so detailed because of protected
     procedure GetClientDisplay;
     function GetSessionInfoDWORD(const WTSInfoClass: WTS_INFO_CLASS): DWORD;
@@ -282,7 +283,8 @@ type
   }
     constructor Create(const AOwner: TJwWTSSessionList;
       const ASessionId: TJwSessionId; const AWinStationName: TJwString;
-      const AConnectState: TWtsConnectStateClass); reintroduce;
+      const AConnectState: TWtsConnectStateClass);
+    destructor Destroy; override;  
     property ApplicationName: TJwString read FApplicationName;
     property ClientAddress: TJwString read FClientAddress;
     property ClientBuildNumber: DWORD read FClientBuildNumber;
@@ -324,6 +326,7 @@ type
       const uType: DWORD; const ATimeOut: DWORD): DWORD;
     property SessionId: TJwSessionId read FSessionId;
     function Shadow: boolean;
+    property ShadowInformation : TJwWTSSessionShadow read FShadow;
     property Username: TJwString read FUsername;
     property VerticalResolution: DWORD read FVerticalResolution;
     property WdFlag: DWORD read FWdFlag;
@@ -407,6 +410,25 @@ type
     property Owner: TJwTerminalServer read FOwner write SetOwner;
     property OwnsObjects: Boolean read FOwnsObjects write FOwnsObjects;
     function Remove(AProcess: TJwWTSProcess): Integer;
+  end;
+
+  TShadowState = (ssNone = 0, ssShadowing = 1, ssBeingShadowed = 2);
+  TShadowMode = (smNoneAllowed = 0, smFullControlWithPermission = 1, smFullControlWithoutPermission = 2,
+    smViewOnlyWithPermission = 3, smViewOnlyWithoutPermission = 4);
+
+  TJwWTSSessionShadow = class
+  private
+    FWinStationShadowInformation : TWinStationShadowInformation;
+    FOwner : TJwWTSSession;
+  protected
+    function GetShadowState : TShadowState;
+    function GetShadowMode : TShadowMode;
+    procedure SetShadowMode(Const Value : TShadowMode);
+    procedure UpdateShadowInformation(const Modify : Boolean);
+  public
+    constructor Create(AOwner : TJwWTSSession);
+    property ShadowState : TShadowState read GetShadowState;
+    property ShadowMode : TShadowMode read GetShadowMode write SetShadowMode;
   end;
 
   { array of TWtsSessionInfoA }
@@ -1189,6 +1211,51 @@ begin
   inherited Items[Index] := AProcess;
 end;
 
+constructor TJwWTSSessionShadow.Create(AOwner : TJwWTSSession);
+begin
+  FOwner := AOwner;
+end;
+
+function TJwWTSSessionShadow.GetShadowMode;
+begin
+  UpdateShadowInformation(False);
+  Result := TShadowMode(FWinStationShadowInformation.ShadowMode);
+end;
+
+function TJwWTSSessionShadow.GetShadowState : TShadowState;
+begin
+  UpdateShadowInformation(False);
+  Result := TShadowState(FWinStationShadowInformation.CurrentShadowState);
+end;
+
+procedure TJwWTSSessionShadow.SetShadowMode(Const Value : TShadowMode);
+begin
+  FWinStationShadowInformation.ShadowMode := Ord(Value);
+  UpdateShadowInformation(True);
+end;
+
+procedure TJwWTSSessionShadow.UpdateShadowInformation(const Modify : Boolean);
+var
+  ReturnedLength : DWORD;
+begin
+  if not Modify then
+  begin
+    if not WinStationQueryInformationW(FOwner.GetServerHandle, FOwner.SessionId,
+     WinStationShadowInformation, @FWinStationShadowInformation,
+     SizeOf(FWinstationShadowInformation), ReturnedLength) then
+      raise EJwsclWinCallFailedException.CreateFmtWinCall(RsWinCallFailed,
+       'UpdateShadowInformation', ClassName, RsUNTerminalServer, 0, True,
+       'WinStationQueryInformationW', ['WinStationQueryInformationW']);
+  end
+  else
+    if not WinStationSetInformationW(FOwner.GetServerHandle, FOwner.SessionId,
+     WinStationShadowInformation, @FWinStationShadowInformation,
+     SizeOf(FWinstationShadowInformation)) then
+      raise EJwsclWinCallFailedException.CreateFmtWinCall(RsWinCallFailed,
+       'UpdateShadowInformation', ClassName, RsUNTerminalServer, 0, True,
+       'WinStationSetInformationW', ['WinStationSetInformationW']);
+end;
+
 function TJwTerminalServer.GetIdleProcessName: TJwString;
 var hModule: THandle;
   lpBuffer: PWideChar;
@@ -1542,6 +1609,7 @@ begin
   FOwner := AOwner; // Session is owned by the SessionList
   // First store the SessionID
   FSessionId := ASessionId;
+  FShadow := TJwWTSSessionShadow.Create(Self); 
   FConnectState := AConnectState;
   FConnectStateStr := PWideCharToJwString(StrConnectState(FConnectState, False));
   FWinStationName := AWinStationName;
@@ -1567,6 +1635,11 @@ begin
   // local ip address
   WinStationGetRemoteIPAddress(GetServerHandle, ASessionId, FRemoteAddress,
     FRemotePort);
+end;
+
+destructor TJwWTSSession.Destroy;
+begin
+  FreeAndNil(FShadow);
 end;
 
 function TJwWTSSession.GetServerName: TJwString;
