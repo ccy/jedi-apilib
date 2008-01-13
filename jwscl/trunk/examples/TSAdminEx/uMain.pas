@@ -500,13 +500,15 @@ procedure TMainForm.VSTUserGetText(Sender: TBaseVirtualTree;
   var CellText: WideString);
 var
   pData: PUserNodeData;
+  CurrentItem : TJwWTSSession;
 begin
   pData := Sender.GetNodeData(Node);
 
   // Do we have data for this session?
   if pData^.List^.Count > pData^.Index then
   begin
-    if pData^.List^.Items[pData^.Index].Username <> '' then
+    CurrentItem := pData^.List^.Items[pData^.Index];
+    if CurrentItem.Username <> '' then
     begin
       // show the node!
       if not (vsVisible in Node.States) then
@@ -515,13 +517,14 @@ begin
       end;
 
       case Column of
-        0: CellText := pData^.List^.Items[pData^.Index].Owner.Owner.Server;
-        1: CellText := pData^.List^.Items[pData^.Index].Username;
-        2: CellText := pData^.List^.Items[pData^.Index].WinStationName;
-        3: CellText := IntToStr(pData^.List^.Items[pData^.Index].SessionId);
-        4: CellText := pData^.List^.Items[pData^.Index].ConnectStateStr;
-        5: CellText := pData^.List^.Items[pData^.Index].IdleTimeStr;
-        6: CellText := pData^.List^.Items[pData^.Index].LogonTimeStr;
+        0: CellText := CurrentItem.Owner.Owner.Server;
+        1: CellText := CurrentItem.Username;
+        2: CellText := CurrentItem.WinStationName;
+        3: CellText := IntToStr(CurrentItem.SessionId);
+        4: CellText := Format('%s %d %d', [CurrentItem.ConnectStateStr,
+          (Ord(CurrentItem.ShadowInformation.ShadowMode)), (Ord(CurrentItem.ShadowInformation.ShadowState))]);
+        5: CellText := CurrentItem.IdleTimeStr;
+        6: CellText := CurrentItem.LogonTimeStr;
       end;
     end
     else begin
