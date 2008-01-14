@@ -279,8 +279,8 @@ function JwGetLogonSID(aToken: TJwSecurityToken): TJwSecurityId; overload;
 type
   TWellKnownSidTypeSet = set of TWellKnownSidType;
 
-const
-  AllWellKnownSid : TWellKnownSidTypeSet = ($FFFF);
+{const
+  AllWellKnownSid : TWellKnownSidTypeSet = ($FFFF);}
 
 {@Name initializes the WellKnownSID variables.
  This function should not be called during initialization of

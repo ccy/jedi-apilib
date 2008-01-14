@@ -1458,8 +1458,20 @@ begin
 end;
 
 function TJwSecurityId.GetWellKnownSidType: TWellKnownSidType;
+var i : TWellKnownSidType;
 begin
   Result := fWellKnownSidType;
+  if Result = WinNullSid then
+    exit;
+
+  for i := low(TWellKnownSidType) to high(TWellKnownSidType) do
+  begin
+    if JwaWindows.IsWellKnownSid(fSID, JwaWindows.TWellKnownSidType(i)) then
+    begin
+      result := i;
+      exit;
+    end;
+  end;
 end;
 
 function TJwSecurityId.GetWellKnownSid: boolean;
