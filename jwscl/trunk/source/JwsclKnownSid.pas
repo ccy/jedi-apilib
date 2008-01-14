@@ -41,7 +41,9 @@ unit JwsclKnownSid;
 interface
 
 uses SysUtils,
-  jwaWindows, JwsclResource,
+  jwaWindows,
+  JwaVista,
+  JwsclResource,
   JwsclSid, JwsclToken,
   JwsclTypes, JwsclExceptions,
   JwsclVersion, JwsclConstants, JwsclProcess,
@@ -227,9 +229,14 @@ var
       SD.Owner := JwLocalGroupSID;
       SD.DACL.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil,[],FILE_EXECUTE,JwLocalServiceSID, false)); //see?: false
     }
-  JwLocalServiceSID
+  JwLocalServiceSID,
 
-        : TJwSecurityKnownSID;
+  JwPrincipalSid    : TJwSecurityKnownSID;
+
+  {@Name contains a set of known sids. It is (partly) initialized
+   by a call to JwInitWellKnownSIDsEx.
+  }
+  JwKnownSid : array[TWellKnownSidType] of TJwSecurityKnownSID;
 
 
 //    LocalAdministratorSID : TJwSecurityKnownSID;
@@ -268,12 +275,28 @@ function JwGetLogonSID(const hWinStation: HWINSTA{TWindowStation} = 0)
 
 function JwGetLogonSID(aToken: TJwSecurityToken): TJwSecurityId; overload;
 
+
+type
+  TWellKnownSidTypeSet = set of TWellKnownSidType;
+
+const
+  AllWellKnownSid : TWellKnownSidTypeSet = ($FFFF);
+
 {@Name initializes the WellKnownSID variables.
  This function should not be called during initialization of
  a Jwscl-unit since it indirectly accesses various global variables,
  e.g. JwProcessHeap, which might not have been initialized yet.
 }
 procedure JwInitWellKnownSIDs;
+
+{@Name works like @link(JwInitWellKnownSIDs) but also inits the array
+JwKnownSid for additional known SIDs. It calls JwInitWellKnownSIDs automatically.
+
+@param(Sids defines a set of SIDs of type TWellKnownSidType that ought to be
+  initialized. The function can be called several times with more or the same
+   parameter values.)
+}
+procedure JwInitWellKnownSIDsEx(const Sids : TWellKnownSidTypeSet);
 
 
 {$ENDIF SL_IMPLEMENTATION_SECTION}
@@ -286,6 +309,102 @@ uses Classes;
 {$ENDIF SL_OMIT_SECTIONS}
 
 {$IFNDEF SL_INTERFACE_SECTION}
+
+var KnownSids : array[1..75] of AnsiString =
+     ('S-1-0-0',
+      'S-1-1-0',
+      'S-1-2-0',
+      'S-1-3-0',
+      'S-1-3-1',
+      'S-1-5',
+      'S-1-5-1',
+      'S-1-5-2',
+      'S-1-5-3',
+      'S-1-5-4',
+      'S-1-5-5-Lhi-Llo',
+      'S-1-5-6',
+      'S-1-5-7',
+      'S-1-5-8',
+      'S-1-5-9',
+      'S-1-5-10',
+      'S-1-5-11',
+      'S-1-5-12',
+      'S-1-5-13',
+      'S-1-5-14',
+      'S-1-5-15',
+      'S-1-5-16',
+      'S-1-5-17',
+      'S-1-5-18',
+      'S-1-5-19',
+      'S-1-5-20',
+      'S-1-5-21',
+      'S-1-5-32',
+      'S-1-5-1000',
+      'S-1-5-64-10',
+      'S-1-5-64-14',
+      'S-1-5-64-21',
+//
+      'S-1-5-#-500',
+      'S-1-5-#-501',
+      'S-1-5-#-502',
+      'S-1-5-#-503',
+      'S-1-5-#-504',
+      'S-1-5-#-505',
+      'S-1-5-#-506',
+      'S-1-5-#-507',
+      'S-1-5-#-508',
+      'S-1-5-#-509',
+      'S-1-5-#-510',
+      'S-1-5-#-511',
+      'S-1-5-#-512',
+      'S-1-5-#-513',
+      'S-1-5-#-514',
+      'S-1-5-#-515',
+      'S-1-5-#-516',
+      'S-1-5-#-517',
+      'S-1-5-#-518',
+      'S-1-5-#-519',
+      'S-1-5-#-520',
+      'S-1-5-#-521',
+      'S-1-5-#-533',
+      'S-1-5-#-544',
+      'S-1-5-#-545',
+      'S-1-5-#-546',
+      'S-1-5-#-547',
+      'S-1-5-#-548',
+      'S-1-5-#-549',
+      'S-1-5-#-550',
+      'S-1-5-#-551',
+      'S-1-5-#-552',
+      'S-1-5-#-553',
+      'S-1-5-#-554',
+      'S-1-5-#-555',
+      'S-1-5-#-556',
+      'S-1-5-#-557',
+      'S-1-5-#-558',
+      'S-1-5-#-559',
+      'S-1-5-#-560',
+      'S-1-5-#-561',
+      'S-1-5-#-562',
+      'S-1-5-#-563'
+      );
+
+
+procedure InitSid(const Idx : Integer; var SID : TJwSecurityKnownSID);
+begin
+  if not Assigned(SID) then
+  try
+    SID := TJwSecurityKnownSID.Create(KnownSids[Idx]);
+  except
+    On E : Exception do
+    begin
+{$IFDEF DEBUG}
+      OutputDebugStringA(Pchar(Format('%s. Security id: %s ',[E.Message,KnownSids[Idx]])));
+{$ENDIF DEBUG}
+      SID := nil;
+    end;
+  end;
+end;
 
 
 var
@@ -414,6 +533,22 @@ begin
     (aSID.ClassType = TJwSecurityThreadUserSID);
 end;
 
+procedure JwInitWellKnownSIDsEx(const Sids : TWellKnownSidTypeSet);
+var i : TWellKnownSidType;
+begin
+  JwInitWellKnownSIDs;
+
+  for i := low(TWellKnownSidType) to high(TWellKnownSidType) do
+  begin
+    if i in Sids then
+    begin
+      if not Assigned(JwKnownSid[i]) then
+        JwKnownSid[i] := TJwSecurityKnownSID.
+          CreateWellKnownSid(jwaVista.TWellKnownSidType(i));
+    end;
+  end;
+end;
+
 procedure JwInitWellKnownSIDs;
 begin
   if not Assigned(JwAdministratorsSID) then
@@ -436,9 +571,12 @@ begin
     JwLocalGroupSID := TJwSecurityKnownSID.Create('S-1-2-0');
   if not Assigned(JwNetworkServiceSID) then
     JwNetworkServiceSID := TJwSecurityKnownSID.Create('S-1-5-20');
-
   if not Assigned(JwLocalServiceSID) then
     JwLocalServiceSID := TJwSecurityKnownSID.Create('S-1-5-19');
+  if not Assigned(JwPrincipalSid) then
+    JwPrincipalSid := TJwSecurityKnownSID.Create('S-1-5-10');
+
+
 
 
 
@@ -461,6 +599,7 @@ end;
 
 procedure DoneWellKnownSIDs;
 var ilts : TJwIntegrityLabelType;
+    i : TWellKnownSidType;
 begin
 
   FreeAndNil(JwAdministratorsSID);
@@ -475,15 +614,31 @@ begin
   FreeAndNil(JwNetworkServiceSID);
   FreeAndNil(JwLocalServiceSID);
   FreeAndNil(JwSecurityProcessUserSID);
+  FreeAndNil(JwPrincipalSid);
   //  FreeAndNil(fSecurityCurrentThreadUserSID);
 
   for ilts := low(TJwIntegrityLabelType) to high(TJwIntegrityLabelType) do
     FreeAndNil(JwIntegrityLabelSID[ilts]);
+
+
+  for i := low(TWellKnownSidType) to high(TWellKnownSidType) do
+  begin
+    FreeAndNil(JwKnownSid[i]);
+  end;
 end;
 
 function TJwSecurityKnownSID.IsStandardSID: boolean;
 begin
   Result := True;
+end;
+
+procedure NilWellKnownSid;
+var i : TWellKnownSidType;
+begin
+  for i := low(TWellKnownSidType) to high(TWellKnownSidType) do
+  begin
+    JwKnownSid[i] := nil;
+  end;
 end;
 
 {$ENDIF SL_INTERFACE_SECTION}
@@ -505,6 +660,9 @@ initialization
   JwLocalGroupSID := nil;
   JwNetworkServiceSID := nil;
   JwLocalServiceSID := nil;
+  JwPrincipalSid := nil;
+
+  NilWellKnownSid;
 
 {$ENDIF SL_INITIALIZATION_SECTION}
 

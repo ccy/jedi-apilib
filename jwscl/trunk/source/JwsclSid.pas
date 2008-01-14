@@ -810,10 +810,12 @@ begin
   }
 
   //Copy the SID
-  Create(tempSID);
-
-  //free the SID
-  LocalFree(HLOCAL(tempSID));
+  try
+    Create(tempSID);
+  finally
+    //free the SID
+    LocalFree(HLOCAL(tempSID));
+  end;
 
   fWellKnownSidType := WellKnownSidType;
 
