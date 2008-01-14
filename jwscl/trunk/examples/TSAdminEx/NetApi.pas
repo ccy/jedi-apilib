@@ -4,18 +4,38 @@ interface
 
 uses Classes,
   JwaWindows,
-  JwsclVersion;
+  JwsclStrings, JwsclVersion;
 
 
 type
   PDS_DOMAIN_TRUSTSARRAYW = ^DS_DOMAIN_TRUSTSARRAYW;
   DS_DOMAIN_TRUSTSARRAYW = Array[0..ANYSIZE_ARRAY-1] of DS_DOMAIN_TRUSTSW;
+  PDS_DOMAIN_TRUSTSARRAYA = ^DS_DOMAIN_TRUSTSARRAYA;
+  DS_DOMAIN_TRUSTSARRAYA = Array[0..ANYSIZE_ARRAY-1] of DS_DOMAIN_TRUSTSA;
 
 function EnumerateDomains: TStringList;
-function PWArrayToStringList(const PWArray: PWideChar): TStringList;
 function EnumerateMultiUserServers(Domain: PWideChar) : PWideChar; stdcall; external 'utildll.dll';
+function PWArrayToStringList(const PWArray: PWideChar): TStringList;
+function ThisComputerName: TJwString;
 
 implementation
+
+function ThisComputerName: TJwString;
+var pComputerName: {$IFDEF UNICODE}PWideChar{$ELSE}PAnsiChar{$ENDIF};
+  cchSize: DWORD;
+begin
+  // If no server was specified we return the local computername
+  // (we cache this in FComputerName)
+  cchSize := MAX_COMPUTERNAME_LENGTH + 1;
+  GetMem(pComputerName, cchSize * SizeOf(TjWChar));
+{$IFDEF UNICODE}
+      GetComputerNameW(pComputerName, nSize);
+{$ELSE}
+      GetComputerNameA(pComputerName, cchSize);
+{$ENDIF}
+  Result := pComputerName;
+  FreeMem(pComputerName);
+end;
 
 // This function converts a pwidechar array with elements seperated by #0 to
 // a StringList
@@ -44,7 +64,6 @@ end;
 
 //function MyDsEnumerateDomainTrustsW(ServerName: LPWSTR; Flags: ULONG;
 //  Domains: PMyArray; var DomainCount: ULONG): DWORD; stdcall; external 'netapi32.dll' name 'DsEnumerateDomainTrustsW';
-
 function EnumerateDomains: TStringList;
 var Res: DWORD;
   DomainControllerInfo: PDOMAIN_CONTROLLER_INFOW;
