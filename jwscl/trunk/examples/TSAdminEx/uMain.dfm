@@ -250,6 +250,10 @@ object MainForm: TMainForm
       object TabSheet2: TTabSheet
         Caption = 'Sessions'
         ImageIndex = 1
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object VSTSession: TVirtualStringTree
           Left = 0
           Top = 0
@@ -339,6 +343,10 @@ object MainForm: TMainForm
       object TabSheet3: TTabSheet
         Caption = 'Processes'
         ImageIndex = 2
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object VSTProcess: TVirtualStringTree
           Left = 0
           Top = 0
