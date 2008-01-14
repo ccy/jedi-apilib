@@ -21,8 +21,8 @@ provisions of the LGPL License are applicable instead of those above.
 If you wish to allow use of your version of this file only under the terms   
 of the LGPL License and not to allow others to use your version of this file 
 under the MPL, indicate your decision by deleting  the provisions above and  
-replace  them with the notice and other provisions required by the LGPL      
-License.  If you do not delete the provisions above, a recipient may use     
+replace  them with the notice and other provisions required by the LGPL
+License.  If you do not delete the provisions above, a recipient may use
 your version of this file under either the MPL or the LGPL License.          
                                                                              
 For more information about the LGPL: http://www.gnu.org/copyleft/lesser.html 
@@ -67,6 +67,7 @@ type
   private
     FComputerName: TJwString;
     FConnected: Boolean;
+    FData: Pointer;
     FEnumServersThread: TJwWTSEnumServersThread;
     FIdleProcessName: TJwString;
     FLastEventFlag: DWORD;
@@ -88,6 +89,7 @@ type
     FProcesses: TJwWTSProcessList;
     FTerminalServerEventThread: TThread;
     FServer: TJwString;
+    FTag: Integer;
     function GetIdleProcessName: TJwString;
     function GetServers: {$IFDEF UNICODE}TWideStringList{$ELSE}TStringList{$ENDIF UNICODE};
     function GetServer: TJwString;
@@ -98,6 +100,7 @@ type
     procedure FireEvent(EventFlag: DWORD);
   public
     procedure Connect;
+    property Data: Pointer read FData write FData;
     procedure Disconnect;
     property ComputerName: TJwString read FComputerName;
     property Connected: Boolean read FConnected;
@@ -105,7 +108,7 @@ type
     destructor Destroy; override;
     function EnumerateProcesses: Boolean;
 //    function EnumerateProcesses: boolean;
-    function EnumerateServers: boolean;
+    function EnumerateServers(ADomain: String):Boolean;
     function EnumerateSessions: boolean;
     function FileTime2DateTime(FileTime: TFileTime): TDateTime;
     property IdleProcessName: TJwString read GetIdleProcessName;
@@ -129,8 +132,9 @@ type
     property ServerList: TStringList read FServerList;
     property Sessions: TJwWTSSessionList read FSessions;
     function Shutdown(AShutdownFlag: DWORD): Boolean;
-    function UnicodeStringToJwString(const AUnicodeString: UNICODE_STRING):
-      TJwString;
+    property Tag: Integer read FTag write FTag;
+    //    function UnicodeStringToJwString(const AUnicodeString: UNICODE_STRING):
+//      TJwString;
   end;
 
   PJwTerminalServerList = ^TJwTerminalServerList;
@@ -167,12 +171,14 @@ type
 
   TJwWTSEnumServersThread = class(TThread)
   private
+    FDomain: TJwString;
     FOwner: TJwTerminalServer;
     FServer: TJwString;
     FTerminatedEvent: THandle;
   protected
   public
-    constructor Create(CreateSuspended: Boolean; AOwner: TJwTerminalServer);
+    constructor Create(CreateSuspended: Boolean; AOwner: TJwTerminalServer;
+      ADomain: TJwString);
     procedure AddToServerList;
     procedure ClearServerList;
     procedure DispatchEvent;
@@ -326,7 +332,7 @@ type
       const uType: DWORD; const ATimeOut: DWORD): DWORD;
     property SessionId: TJwSessionId read FSessionId;
     function Shadow: boolean;
-    property ShadowInformation : TJwWTSSessionShadow read FShadow;
+    property ShadowInformation: TJwWTSSessionShadow read FShadow;
     property Username: TJwString read FUsername;
     property VerticalResolution: DWORD read FVerticalResolution;
     property WdFlag: DWORD read FWdFlag;
@@ -369,6 +375,7 @@ type
     FProcessName: TJwString;
     FProcessVMSize: DWORD;
     FSessionId: TJwSessionID;
+    FSidStr: TJwString;
     FUsername: TJwString;
     FWinStationName: TJwString;
   public
@@ -386,6 +393,7 @@ type
     property ProcessName: TJwString read FProcessName;
     property ProcessMemUsage: DWORD read FProcessMemUsage;
     property ProcessVMSize: DWORD read FProcessVMSize;
+    property SidStr: TJwString read FSidStr;
     function Terminate: boolean; overload;
     function Terminate(dwExitCode: DWORD): boolean; overload;
     property Username: TJwString read FUsername;
@@ -461,10 +469,11 @@ type
 implementation
 {$ENDIF SL_OMIT_SECTIONS}
 
-function PWideCharToJwString(lpWideCharStr: PWideChar): TJwString;
+// Moved to JwsclStrings
+{function PWideCharToJwString(lpWideCharStr: PWideChar): TJwString;
 begin
   Result := lpWideCharStr;
-end;
+end;}
 
 constructor TJwTerminalServer.Create;
 begin
@@ -485,13 +494,21 @@ end;
 
 destructor TJwTerminalServer.Destroy;
 var EventFlag: DWORD;
+  Res: Boolean;
 begin
   // Close connection
   if Assigned(FEnumServersThread) then
   begin
     // Signal Termination to the thread
     FEnumServersThread.Terminate;
-    // Wait for it to terminate
+    // Wait a while, see if thread terminates
+    if WaitForSingleObject(FEnumServersThread.Handle, 1000) = WAIT_TIMEOUT then
+    begin
+      // it didn't, so kill it (we don't want the user to wait forever)!
+      // TSAdmin does it the same way...
+      Res := TerminateThread(FEnumServersThread.Handle, 0);
+    end;
+
     FEnumServersThread.Wait;
   end;
 
@@ -689,7 +706,8 @@ begin
   FComputerName := '';
 end;
 
-function TJwTerminalServer.UnicodeStringToJwString(
+// Moved to JwsclString
+{function TJwTerminalServer.UnicodeStringToJwString(
   const AUnicodeString: UNICODE_STRING): TJwString;
 var Len: DWORD;
 begin
@@ -697,7 +715,7 @@ begin
   Len := RtlUnicodeStringToAnsiSize(@AUnicodeString)-1;
   // Convert to TJwString
   Result := WideCharLenToString(AUniCodeString.Buffer, Len);
-end;
+end;}
 
 function TJwTerminalServer.EnumerateProcesses: Boolean;
 var Count: Integer;
@@ -708,6 +726,7 @@ var Count: Integer;
   strUsername: TJwString;
   lpBuffer: PWideChar;
   DiffTime: TDiffTime;
+  strSid: TjwString;
 begin
   //TODO: FServerHandle is valid?
   ProcessInfoPtr := nil;
@@ -736,13 +755,14 @@ begin
         end
         else
         begin
-          strProcessName := UnicodeStringToJwString(ProcessName);
+          strProcessName := JwUnicodeStringToJwString(ProcessName);
 
           if IsValidSid(pUserSid) then
           begin
             with TJwSecurityID.Create(pUserSid) do
             begin
               strUsername := GetCachedUserFromSid;
+              strSid := StringSID;
               Free;
             end;
           end;
@@ -753,6 +773,8 @@ begin
         with AProcess do
         begin
           FProcesses.Add(AProcess);
+
+          FSidStr := strSid;
           // Calculate Process Age
           CalculateElapsedTime(@CreateTime, DiffTime);
 
@@ -774,7 +796,7 @@ begin
 
           // Some of the used counters are explained here:
           // http://msdn2.microsoft.com/en-us/library/aa394372.aspx
-          
+
           FProcessCreateTime :=
             TimeToStr(FileTime2DateTime(FILETIME(CreateTime)));
           // The CPU Time column in Taskmgr.exe is Usertime + Kerneltime
@@ -798,7 +820,7 @@ begin
   begin
     WinStationFreeGAPMemory(0, ProcessInfoPtr, Count);
   end;
-  
+
   ProcessInfoPtr := nil;
 end;
 
@@ -813,7 +835,7 @@ begin
     FServers := TStringList.Create;
 {$ENDIF UNICODE}
     // The list was empty so fill it!
-    EnumerateServers;
+    EnumerateServers('');
   end;
 
   // Return the serverlist
@@ -871,7 +893,7 @@ begin
   Result := Res;
 end;
 
-function TJwTerminalServer.EnumerateServers: Boolean;
+function TJwTerminalServer.EnumerateServers(ADomain: String): Boolean;
 begin
   // Does the thread exist?
   if Assigned(FEnumServersThread) then
@@ -882,7 +904,7 @@ begin
   else begin
     // Create the thread
     OutputDebugString('create thread');
-    FEnumServersThread := TJwWTSEnumServersThread.Create(True, Self);
+    FEnumServersThread := TJwWTSEnumServersThread.Create(True, Self, ADomain);
     FEnumServersThread.OnTerminate := OnEnumServersThreadTerminate;
     FEnumServersThread.Resume;
     Result := True;
@@ -972,7 +994,7 @@ end;
 constructor TJwWTSEventThread.Create(CreateSuspended: Boolean;
   AOwner: TJwTerminalServer);
 begin
-  OutputDebugString('creating event thread');
+  OutputDebugString('creating wtsevent thread');
   inherited Create(CreateSuspended);
   FOwner := AOwner;
   FreeOnTerminate := False;
@@ -1000,11 +1022,14 @@ begin
 end;
 
 constructor TJwWTSEnumServersThread.Create(CreateSuspended: Boolean;
-  AOwner: TJwTerminalServer);
+  AOwner: TJwTerminalServer; ADomain: TJwString);
 begin
+  OutputDebugString('Creating EnumServers thread');
+
   inherited Create(CreateSuspended);
   FTerminatedEvent := CreateEvent(nil, False, False, nil);
   FOwner := AOwner;
+  FDomain := ADomain;
   FreeOnTerminate := True;
 end;
 
@@ -1020,7 +1045,7 @@ begin
   ServerInfoPtr := nil;
   // Since we return to a Stringlist (which does not support unicode)
   // we only use WTSEnumerateServersA
-  if WTSEnumerateServersA(nil, 0, 1, PWTS_SERVER_INFOA(ServerInfoPtr),
+  if WTSEnumerateServersA(PAnsiChar(FDomain), 0, 1, PWTS_SERVER_INFOA(ServerInfoPtr),
     pCount) then
   begin
     for i := 0 to pCount - 1 do
@@ -1105,46 +1130,11 @@ begin
     'WaitFor function is not supported, please use Wait instead',
     ['TJwWTSEnumServersThread.WaitFor']);
 end;
-{var Msg: TMsg;
-  H: THandle;
-  WaitResult: Cardinal;
-begin
-//  DuplicateHandle(GetCurrentProcess(), Handle, GetCurrentProcess(), @H, 0,
-  DuplicateHandle(GetCurrentProcess(), Handle, GetCurrentProcess(), @H, 0,
-    False, DUPLICATE_SAME_ACCESS);
-  try
-    if GetCurrentThreadID = MainThreadID then
-    begin
-      WaitResult := WAIT_OBJECT_0 + 1;
-      while WaitResult = WAIT_OBJECT_0 + 1 do
-      begin
-        if H = INVALID_HANDLE_VALUE then Break;
-
-//        WaitResult := MsgWaitForMultipleObjects(1, @H, False, INFINITE, QS_SENDMESSAGE);
-        WaitResult := WaitForMultipleObjects(1, @H, False, INFINITE);//, QS_SENDMESSAGE);
-        if WaitResult = WAIT_FAILED then Break;
-
-        while PeekMessage(Msg, 0, 0, 0, PM_REMOVE) do
-        begin
-          DispatchMessage(@Msg);
-        end;
-      end;
-    end else
-    begin
-      WaitForSingleObject(H, INFINITE);
-    end;
-  finally
-    OutputDebugString('Closing Handle H');
-    CloseHandle(H);
-  end;
-end;}
 
 destructor TJwWTSSessionList.Destroy;
 begin
   inherited Destroy;
 end;
-
-
 
 function TJwWTSSessionList.Add(ASession: TJwWTSSession): Integer;
 begin
@@ -1240,12 +1230,12 @@ var
 begin
   if not Modify then
   begin
-    if not WinStationQueryInformationW(FOwner.GetServerHandle, FOwner.SessionId,
+{    if not }WinStationQueryInformationW(FOwner.GetServerHandle, FOwner.SessionId,
      WinStationShadowInformation, @FWinStationShadowInformation,
-     SizeOf(FWinstationShadowInformation), ReturnedLength) then
+     SizeOf(FWinstationShadowInformation), ReturnedLength);{ then
       raise EJwsclWinCallFailedException.CreateFmtWinCall(RsWinCallFailed,
        'UpdateShadowInformation', ClassName, RsUNTerminalServer, 0, True,
-       'WinStationQueryInformationW', ['WinStationQueryInformationW']);
+       'WinStationQueryInformationW', ['WinStationQueryInformationW']);}
   end
   else
     if not WinStationSetInformationW(FOwner.GetServerHandle, FOwner.SessionId,
@@ -1705,6 +1695,8 @@ begin
 
   FProcessId := AProcessId;
   FProcessName := AProcessName;
+//  FSidString :=
+//  TJwSecurityId.Create();
   FUsername := AUsername;
 end;
 
