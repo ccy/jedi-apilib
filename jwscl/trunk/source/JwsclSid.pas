@@ -623,11 +623,8 @@ type
        }
     property SIDLength: Cardinal Read GetLengthSID;
 
-       {@Name returns the SID type as a well known sid type.
-
-        The value is the parameter value given in CreateWellKnownSid as parameter WellKnownSidType.
-        Otherwise the value is always WinNullSid;
-       }
+    {@Name returns the SID type as a well known sid type.
+    }
     property WellKnownSidType: TWellKnownSidType Read GetWellKnownSidType;
 
        {@Name returns whether this instance contains a well known sid (true) or not (false).
@@ -1461,7 +1458,7 @@ function TJwSecurityId.GetWellKnownSidType: TWellKnownSidType;
 var i : TWellKnownSidType;
 begin
   Result := fWellKnownSidType;
-  if Result = WinNullSid then
+  if Result <> WinNullSid then
     exit;
 
   for i := low(TWellKnownSidType) to high(TWellKnownSidType) do
