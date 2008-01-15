@@ -4,18 +4,18 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, ComCtrls, ExtCtrls, ActnList, ImgList, ToolWin, Menus,
-  StdCtrls, StrUtils, CommCtrl, Math, NetApi,
+  ComCtrls, ExtCtrls, ActnList, ImgList, ToolWin, Menus,
+  StdCtrls, StrUtils{, CommCtrl}, Math, Dialogs,
   VirtualTrees,
+  NetApi, RpcWinsta,
   JwaWindows, JwaVista,
   JwsclSid, JwsclTerminalServer;
-//  VirtualTrees;// Contnrs, RpcWinsta, JwsclEncryption, JwsclTypes,
-//  JwsclEnumerations, Internal;
 
 type
   PServerNodeData = ^TServerNodeData;
   TServerNodeData = record
     Index: Integer;
+    OverlayIndex: Integer;
     Caption: String;
     PTerminalServerList: PJwTerminalServerList;
   end;
@@ -36,10 +36,10 @@ type
   end;
 
 // Class below is used to store imageindex of icons in the Imagelist
-TIconIndex = (icThisComputer, icWorld, icServers, icServersSel, icServer,
-  icServerSel, icUserGhosted, icUser, IcNetworkUser, icNetwork, icComputer,
-  icProcess, icChip, icMemory, icListener, icVirtual, icCPUTime, icClock,
-  icService, icNetworkService, icSystem);
+TIconIndex = (icThisComputer, icFavorite, icWorld, icServers, icServersSel,
+  icServer, icServerSel, icUserGhosted, icUser, IcNetworkUser, icNetwork,
+  icComputer, icProcess, icChip, icMemory, icListener, icVirtual, icCPUTime,
+  icClock, icService, icNetworkService, icSystem, icHourGlass, icExclMark);
 
 type
   TMainForm = class(TForm)
@@ -107,6 +107,9 @@ type
     Timer1: TTimer;
     StateImagesList: TImageList;
     ImageList2: TImageList;
+    PopupMenu1: TPopupMenu;
+    actAddServer: TAction;
+    AddServer1: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure VSTUserGetText(Sender: TBaseVirtualTree;
@@ -123,8 +126,6 @@ type
       var NodeDataSize: Integer);
     procedure VSTServerGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex; TextType: TVSTTextType; var CellText: WideString);
-//    procedure VSTServerColumnDblClick(Sender: TBaseVirtualTree;
-//      Column: TColumnIndex; Shift: TShiftState);
     procedure VSTServerFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure VSTSessionGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex; TextType: TVSTTextType; var CellText: WideString);
@@ -154,15 +155,24 @@ type
       Node2: PVirtualNode; Column: TColumnIndex; var Result: Integer);
     procedure VSTServerMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
-//    procedure VSTServerDblClick(Sender: TObject);
+    procedure VSTServerColumnDblClick(Sender: TBaseVirtualTree;
+      Column: TColumnIndex; Shift: TShiftState);
+    procedure VSTUserGetHint(Sender: TBaseVirtualTree; Node: PVirtualNode;
+      Column: TColumnIndex; var LineBreakStyle: TVTTooltipLineBreakStyle;
+      var HintText: WideString);
+    procedure VSTSessionGetHint(Sender: TBaseVirtualTree; Node: PVirtualNode;
+      Column: TColumnIndex; var LineBreakStyle: TVTTooltipLineBreakStyle;
+      var HintText: WideString);
+    procedure actAddServerExecute(Sender: TObject);
   private
     { Private declarations }
     TerminalServers: TJwTerminalServerList;
     pThisComputerNode: PVirtualNode;
+    pFavoritesNode: PVirtualNode;
     pAllListedServersNode: PVirtualNode;
-    JwNetworkServiceSid: TJwSecurityId;
-    JwLocalServiceSid: TJwSecurityId;
-    JwLocalSystemSid: TJwSecurityId;
+    LocalSystemName: string;
+    NetworkServiceName: string;
+    LocalServiceName: string;
     procedure UpdateVirtualTree(const AVirtualTree: TBaseVirtualTree;
       const PSessionList: PJwWTSSessionList; PrevCount: Integer);
     procedure UpdateProcessVirtualTree(const AVirtualTree: TBaseVirtualTree;
@@ -355,16 +365,40 @@ begin
       // Assign a checkbox
       pNode^.CheckType := ctCheckBox;
     end;
+    pData := VSTServer.GetNodeData(pDomainNode);
+
+    if ServerList.Count > 0 then
+    begin
+      // No overlay
+      pData^.OverlayIndex := -1;
+    end
+    else begin
+      // Warning overlay
+      pData^.OverlayIndex := Integer(icExclMark);
+    end;
   end;
 
   VSTServer.FullExpand(pDomainNode);
+end;
+
+procedure TMainForm.actAddServerExecute(Sender: TObject);
+var s: string;
+  pNode: PVirtualNode;
+  pData: PServerNodeData;
+begin
+  s := InputBox('Add Server', 'Type the name of the server you wish to add', '');;
+  pNode := VSTServer.AddChild(pFavoritesNode);
+  pData := VSTServer.GetNodeData(pNode);
+  pData^.Index := -1;
+  pData^.Caption := s;
+  pData^.PTerminalServerList := nil;
+  pNode.CheckType := ctCheckBox;
 end;
 
 procedure TMainForm.Button2Click(Sender: TObject);
 begin
   Timer1.Enabled := not Timer1.Enabled;
 end;
-
 
 procedure AutoSizeVST(const AVirtualTree: TVirtualStringTree);
 var i: Integer;
@@ -374,7 +408,7 @@ begin
     AVirtualTree.Header.Columns[i].Width :=
       Max(AVirtualTree.Header.Columns[i].Width, AVirtualTree.GetMaxColumnWidth(i));
   end;
-    
+
 end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
@@ -382,6 +416,7 @@ var pNode: PVirtualNode;
   pData: PServerNodeData;
   DomainList: TStringList;
   i: Integer;
+  JwSid: TJwSecurityId;
 begin
 {$IFDEF FASTMM}
   ReportMemoryLeaksOnShutDown := DebugHook <> 0;
@@ -389,10 +424,20 @@ begin
   TerminalServers := TJwTerminalServerList.Create;
   TerminalServers.Owner := Self;
 
-  JwLocalSystemSid := TJwSecurityId.CreateWellKnownSid(WinLocalSystemSid);
-  JwLocalServiceSid := TJwSecurityId.CreateWellKnownSid(WinLocalServiceSid);
-  JwNetworkServiceSid := TJwSecurityId.CreateWellKnownSid(WinNetworkServiceSid);
+  // The system accounts LocalSystem, LocalServer and NetworkService are
+  // localized. Therefore we retreive the name from the SID and store this
+  // in var's. Later on we use the var's to compare.
+  JwSid := TJwSecurityId.CreateWellKnownSid(WinLocalSystemSid);
+  LocalSystemName := JwSid.GetCachedUserFromSid;
+  JwSid.Free;
 
+  JwSid := TJwSecurityId.CreateWellKnownSid(WinLocalServiceSid);
+  LocalServiceName := JwSid.GetCachedUserFromSid;
+  JwSid.Free;
+
+  JwSid := TJwSecurityId.CreateWellKnownSid(WinNetworkServiceSid);
+  NetworkServiceName := JwSid.GetCachedUserFromSid;
+  JwSid.Free;
 
   // Create the 'This Computer' parent node
   pThisComputerNode := VSTServer.AddChild(nil);
@@ -421,6 +466,15 @@ begin
   // Expand the This Computer Node
   VSTServer.FullExpand(pThisComputerNode);
 
+  // Create the Favorites node
+  pFavoritesNode := VSTServer.AddChild(nil);
+  pData := VSTServer.GetNodeData(pFavoritesNode);
+  // This is a node without a Terminal Server instance attached so we set
+  // Index to -2 (never add a Terminal Server instance to it) and Pointer to nil
+  pData^.Caption := 'Favorites';
+  pData^.Index := -2;
+  pData^.PTerminalServerList := nil;
+
   // Create the 'All Listed Servers' parent node
   pAllListedServersNode := VSTServer.AddChild(nil);
   pData := VSTServer.GetNodeData(pAllListedServersNode);
@@ -441,8 +495,8 @@ begin
     pData^.PTerminalServerList := nil;
   end;
 
-  VSTServer.FullExpand(pAllListedServersNode);
   DomainList.Free;
+  VSTServer.FullExpand(pAllListedServersNode);
 
   AutoSizeVST(VSTUser);
   AutoSizeVST(VSTSession);
@@ -478,8 +532,7 @@ begin
         1: CellText := CurrentItem.Username;
         2: CellText := CurrentItem.WinStationName;
         3: CellText := IntToStr(CurrentItem.SessionId);
-        4: CellText := Format('%s %d %d', [CurrentItem.ConnectStateStr,
-          (Ord(CurrentItem.ShadowInformation.ShadowMode)), (Ord(CurrentItem.ShadowInformation.ShadowState))]);
+        4: CellText := CurrentItem.ConnectStateStr;
         5: CellText := CurrentItem.IdleTimeStr;
         6: CellText := CurrentItem.LogonTimeStr;
       end;
@@ -515,49 +568,83 @@ begin
   end;
 end;
 
+function GetShadowHint(const ShadowInformation: TJwWTSSessionShadow): WideString;
+begin
+  case ShadowInformation.ShadowState of
+    ssShadowing: Result := 'This session is currently shadowing another session';
+    ssBeingShadowed: Result := 'This session is currently being shadowed by another session';
+    else begin
+      case ShadowInformation.ShadowMode of
+        smNoneAllowed: Result := 'This session cannot be viewed or shadowed';
+        smFullControlWithPermission: Result := 'This session can be shadowed but needs the user''s permission';
+        smFullControlWithoutPermission: Result := 'This session can be shadowed and does not need the user''s permission';
+        smViewOnlyWithPermission: Result := 'This session can be viewed but needs the user''s permission';
+        smViewOnlyWithoutPermission: Result := 'This session can be viewed and does not need the user''s permission';
+      end;
+    end;
+  end;
+end;
+
+procedure TMainForm.VSTUserGetHint(Sender: TBaseVirtualTree; Node: PVirtualNode;
+  Column: TColumnIndex; var LineBreakStyle: TVTTooltipLineBreakStyle;
+  var HintText: WideString);
+var
+  pUserData: PUserNodeData;
+  CurrentItem: TJwWTSSession;
+begin
+  pUserData := Sender.GetNodeData(Node);
+  if pUserData^.List^.Count > pUserData^.Index then
+  begin
+    CurrentItem := pUserData^.List^[pUserData^.Index];
+
+    case Column of
+      4: HintText := GetShadowHint(CurrentItem.ShadowInformation);
+      8: HintText := Format('%s:%d', [CurrentItem.RemoteAddress, CurrentItem.RemotePort]);
+    end;
+  end;
+end;
+
 procedure TMainForm.VSTUserGetImageIndex(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
   var Ghosted: Boolean; var ImageIndex: Integer);
 var
   pData: PUserNodeData;
-  Username: string;
-  ConnectState: TWtsConnectStateClass;
+//  Username: string;
+//  ConnectState: TWtsConnectStateClass;
   IsConsole: Boolean;
-  JwUserSid: TjwSecurityId;
+  CurrentItem: TJwWTSSession;
 begin
   pData := Sender.GetNodeData(Node);
 
   // Do we have data for this session?
   if pData^.List^.Count > pData^.Index then
   begin
-    Username := pData^.List^.Items[pData^.Index].Username;
-    ConnectState := pData^.List^.Items[pData^.Index].ConnectState;
+    CurrentItem := pData^.List^.Items[pData^.Index];
+//    Username := CurrentItem.Username;
+//    ConnectState := pData^.List^.Items[pData^.Index].ConnectState;
     IsConsole := pData^.List^.Items[pData^.Index].WdFlag < WD_FLAG_RDP;
-
-    JwUserSid := TJwSecurityId.Create('', Username);
-
 
     if Kind in [ikNormal, ikSelected] then begin
       case column of
         0: ImageIndex := Integer(icServer);
         1: begin
-          if Username = '' then
+          if CurrentItem.Username = '' then
           begin
             ImageIndex := -1; // No Icon!
           end
-          else if JwUserSid.EqualSid(jwLocalSystemSid) then
+          else if CurrentItem.Username = LocalSystemName then
           begin
             ImageIndex := Integer(icSystem);
           end
-          else if JwUserSid.EqualSid(jwLocalServiceSid) then
+          else if CurrentItem.Username = LocalServiceName then
           begin
             ImageIndex := Integer(icService);
           end
-          else if JwUserSid.EqualSid(JwNetworkServiceSid) then
+          else if CurrentItem.Username = NetworkServiceName then
           begin
             ImageIndex := Integer(icNetworkService);
           end
-          else if ConnectState = WTSActive then
+          else if CurrentItem.ConnectState = WTSActive then
           begin
             ImageIndex := Integer(icUser);
           end
@@ -570,14 +657,14 @@ begin
           begin
             ImageIndex := Integer(icComputer);
           end
-          else if ConnectState = WTSListen then
+          else if CurrentItem.ConnectState = WTSListen then
           begin
             ImageIndex := Integer(icListener);
           end
-          else if username <> '' then begin
+          else if CurrentItem.Username <> '' then begin
             ImageIndex := Integer(icNetworkUser);
           end
-          else if ConnectState = WTSActive then begin
+          else if CurrentItem.ConnectState = WTSActive then begin
             ImageIndex := Integer(icNetwork);
           end
           else begin
@@ -586,20 +673,17 @@ begin
         end;
       end;
     end;
-
-    // Cleanup
-    JwUserSid.Free;
   end;
 end;
 
 procedure TMainForm.VSTServerGetImageIndex(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
   var Ghosted: Boolean; var ImageIndex: Integer);
+var pData: PServerNodeData;
 begin
   case Kind of
     ikNormal, ikSelected:
     begin
-//      if Node^.ChildCount > 0 then
       if Node^.Parent = Sender.RootNode  then
       begin
         // If it is a rootnode then the index in the tree eq imageindex
@@ -613,15 +697,10 @@ begin
         ImageIndex := Integer(icServer);
       end;
     end;
-    ikState:
+    ikOverlay:
     begin
-      if Sender.CheckState[Node] = csCheckedNormal then
-      begin
-        ImageIndex := 4;
-      end
-      else begin
-        ImageIndex := 1;
-      end;
+      pData := Sender.GetNodeData(Node);
+      ImageIndex := pData^.OverlayIndex;// * Integer(icHourGlass);
     end;
   end;
 end;
@@ -710,6 +789,9 @@ begin
     if pNode^.ChildCount = 0 then
     begin
       pServerData := VSTServer.GetNodeData(pNode);
+      // Add the hourglass
+      pServerData^.OverlayIndex := Integer(icHourGlass);
+
       strDomain := pServerData^.Caption;
 
       ATerminalServer := TJwTerminalServer.Create;
@@ -741,12 +823,13 @@ begin
   else begin
     Index1 := Data1^.Index;
     Index2 := Data2^.Index;
-    Session1 := Data1^.List^[Index1];
-    Session2 := Data2^.List^[Index2];
 
     // Do we have data of these sessions?
     if (Data1^.List^.Count > Index1) and (Data2^.List^.Count > Index2) then
     begin
+      Session1 := Data1^.List^[Index1];
+      Session2 := Data2^.List^[Index2];
+
       case Column of
         0: Result := CompareText(Session1.Owner.Owner.Server,
             Session2.Owner.Owner.Server);
@@ -775,6 +858,24 @@ begin
   end;
 end;
 
+procedure TMainForm.VSTSessionGetHint(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; Column: TColumnIndex;
+  var LineBreakStyle: TVTTooltipLineBreakStyle; var HintText: WideString);
+var
+  pUserData: PUserNodeData;
+  CurrentItem: TJwWTSSession;
+begin
+  pUserData := Sender.GetNodeData(Node);
+
+  if pUserData^.List^.Count > pUserData^.Index then
+  begin
+    CurrentItem := pUserData^.List^[pUserData^.Index];
+    case Column of
+      3: HintText := GetShadowHint(CurrentItem.ShadowInformation);
+    end;
+  end;
+end;
+
 procedure TMainForm.VSTSessionGetNodeDataSize(Sender: TBaseVirtualTree;
   var NodeDataSize: Integer);
 begin
@@ -793,6 +894,7 @@ begin
   if pData^.List^.Count > pData^.Index then
   begin
     CurrentItem := pData^.List^.Items[pData^.Index];
+
     case Column of
       0: CellText := CurrentItem.Owner.Owner.Server;
       1: CellText := CurrentItem.Username;
@@ -804,6 +906,7 @@ begin
       7: CellText := CurrentItem.LogonTimeStr;
       8: CellText := CurrentItem.RemoteAddress;
     end;
+
     // Show Session Counters only for Active and non-console sessions:
     if (CurrentItem.ConnectState = WTSActive) and
       (CurrentItem.WdFlag > WD_FLAG_CONSOLE) then
@@ -841,12 +944,13 @@ begin
   else begin
     Index1 := Data1^.Index;
     Index2 := Data2^.Index;
-    Process1 := Data1^.List^[Index1];
-    Process2 := Data2^.List^[Index2];
 
     // Do we have data of these sessions?
     if (Data1^.List^.Count > Index1) and (Data2^.List^.Count > Index2) then
     begin
+      Process1 := Data1^.List^[Index1];
+      Process2 := Data2^.List^[Index2];
+
       case Column of
         0: Result := CompareText(Process1.Owner.Owner.Server, Process2.Owner.Owner.Server);
         1: Result := CompareText(Process1.Username, Process2.Username);
@@ -873,7 +977,6 @@ procedure TMainForm.VSTProcessGetImageIndex(Sender: TBaseVirtualTree;
 var pData: PProcessNodeData;
   Username: string;
   IsConsole: Boolean;
-  JwUserSid: TjwSecurityId;
 begin
   pData := Sender.GetNodeData(Node);
 
@@ -882,7 +985,6 @@ begin
   begin
     Username := pData^.List^.Items[pData^.Index].Username;
     IsConsole := pData^.List^.Items[pData^.Index].WinStationName = 'Console';
-    JwUserSid := TjwSecurityId.Create('', Username);
 
     if Kind in [ikNormal, ikSelected] then begin
       case column of
@@ -892,15 +994,15 @@ begin
           begin
             ImageIndex := -1; // No Icon!
           end
-          else if JwUserSid.EqualSid(jwLocalSystemSid) then
+          else if Username = LocalSystemName then
           begin
             ImageIndex := Integer(icSystem);
           end
-          else if JwUserSid.EqualSid(jwLocalServiceSid) then
+          else if Username = LocalServiceName then
           begin
             ImageIndex := Integer(icService);
           end
-          else if JwUserSid.EqualSid(jwNetworkServiceSid) then
+          else if Username = NetworkServiceName then
           begin
             ImageIndex := Integer(icNetworkService);
           end
@@ -978,6 +1080,7 @@ var pServerData: PServerNodeData;
   PrevCount: Integer;
 begin
   // Get the Node Data
+
   pServerData := Sender.GetNodeData(Node);
   if Node^.CheckState = csUncheckedNormal then
   begin
@@ -1070,6 +1173,36 @@ begin
   end;
 end;
 
+procedure TMainForm.VSTServerColumnDblClick(Sender: TBaseVirtualTree;
+  Column: TColumnIndex; Shift: TShiftState);
+var
+  pNode: PVirtualNode;
+  pServerData: PServerNodeData;
+  strDomain: string;
+  ATerminalServer: TJwTerminalServer;
+begin
+  pNode := VSTServer.FocusedNode;
+
+  if pNode^.Parent = pAllListedServersNode then
+  begin
+    if pNode^.ChildCount = 0 then
+    begin
+      pServerData := VSTServer.GetNodeData(pNode);
+      // Add the hourglass overlay
+      pServerData^.OverlayIndex := 1;
+
+      strDomain := pServerData^.Caption;
+
+      ATerminalServer := TJwTerminalServer.Create;
+      ATerminalServer.OnServersEnumerated := OnEnumerateServersDone;
+      // store the node pointer
+      ATerminalServer.Data := pNode;
+
+      ATerminalServer.EnumerateServers(strDomain);
+    end;
+  end;
+end;
+
 procedure TMainForm.VSTServerCompareNodes(Sender: TBaseVirtualTree; Node1,
   Node2: PVirtualNode; Column: TColumnIndex; var Result: Integer);
 var
@@ -1078,7 +1211,7 @@ var
 begin
   s1 := PServerNodeData(Sender.GetNodeData(Node1))^.Caption;
   s2 := PServerNodeData(Sender.GetNodeData(Node2))^.Caption;
-  Result := CompareText(s1, s2); 
+  Result := CompareText(s1, s2);
 end;
 
 procedure TMainForm.VSTServerFreeNode(Sender: TBaseVirtualTree;
@@ -1096,11 +1229,6 @@ begin
   // Prevent updates to the Virtual String Grids
   VSTUser.OnGetText := nil;
   VSTServer.OnGetText := nil;
-
-  // Free Sid's
-  JwLocalSystemSid.Free;
-  JwLocalServiceSid.Free;
-  JwNetworkServiceSid.Free;
 
   // Now Free the Terminal Server Instances
   TerminalServers.Free;
