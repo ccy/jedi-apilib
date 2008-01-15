@@ -24,7 +24,7 @@ under the MPL, indicate your decision by deleting  the provisions above and
 replace  them with the notice and other provisions required by the LGPL
 License.  If you do not delete the provisions above, a recipient may use
 your version of this file under either the MPL or the LGPL License.          
-                                                                             
+
 For more information about the LGPL: http://www.gnu.org/copyleft/lesser.html 
 
 The Original Code is JwsclTerminalServer.pas.
@@ -42,7 +42,7 @@ uses Classes, Contnrs, DateUtils, SysUtils,
 {$IFDEF UNICODE}
   JclUnicode,
 {$ENDIF UNICODE}
-  JwaWindows,
+  JwaWindows, RpcWinsta,
   JwsclConstants, JwsclExceptions, JwsclResource, JwsclSid, JwsclTypes,
   JwsclVersion, JwsclStrings;
 
@@ -90,11 +90,22 @@ type
     FTerminalServerEventThread: TThread;
     FServer: TJwString;
     FTag: Integer;
+
+    // vars below are temp to test RpcBind
+    FNetworkAddr: PWideChar;
+    FBindingString: PWideChar;
+    Res: RPC_STATUS;
+    FBinding: RPC_BINDING_HANDLE;
+    FSecurity: _SEC_WINNT_AUTH_IDENTITY_W;
+    FWSUser: WideString;
+    FWSPassword: WideString;
+    FWSDomain: WideString;
     function GetIdleProcessName: TJwString;
     function GetServers: {$IFDEF UNICODE}TWideStringList{$ELSE}TStringList{$ENDIF UNICODE};
     function GetServer: TJwString;
     function GetWinStationName(const SessionId: DWORD): TJwString;
     procedure OnEnumServersThreadTerminate(Sender: TObject);
+    function RpcBind: Boolean;
     procedure SetServer(const Value: TJwString);
   protected
     procedure FireEvent(EventFlag: DWORD);
@@ -699,6 +710,57 @@ begin
   OutputDebugString('nil it!');
 end;
 
+function TJwTerminalServer.RpcBind: Boolean;
+var
+  ErrorCode: Cardinal;
+begin
+  FNetworkAddr := PWideChar(WideString(Format('\\%s', [FServer])));
+
+  Res := RpcStringBindingComposeW('5ca4a760-ebb1-11cf-8611-00a0245420ed',
+    'ncalrpc', FNetworkAddr, 'IcaApi', 'Security=Impersonation Dynamic False',
+    FBindingString);
+
+  if Res <> RPC_S_OK then
+  begin
+    Result := False;
+    Exit;
+  end;
+
+  Res := RpcBindingFromStringBindingW(FBindingString, FBinding);
+
+  if Res <> RPC_S_OK then
+  begin
+    Result := False;
+    Exit;
+  end;
+
+{  FWSUser := 'Remko';
+  FWSPassword := 'W0uter';
+  FWSDomain := 'PANDORA';
+
+  FSecurity.User := PWideChar(FWSUser);
+  FSecurity.UserLength := SizeOf(FWSUser);
+
+  FSecurity.Domain := PWideChar(FWSDomain);
+  FSecurity.DomainLength := SizeOf(FWSDomain);
+
+  FSecurity.Password := PWideChar(FWSPassword);
+  FSecurity.PasswordLength := SizeOf(FWSPassword);
+
+  FSecurity.Flags := SEC_WINNT_AUTH_IDENTITY_UNICODE;
+
+  Res := RpcBindingSetAuthInfoW(FBinding, FNetworkAddr, RPC_C_AUTHN_LEVEL_DEFAULT,
+    RPC_C_AUTHN_WINNT, @FSecurity, RPC_C_AUTHN_LEVEL_PKT_PRIVACY);
+
+  if Res <> RPC_S_OK then
+  begin
+    Result := False;
+    Exit;
+  end;}
+
+  Result := RpcWinStationOpenServer(FBinding, ErrorCode, FServerHandle);
+end;
+
 procedure TJwTerminalServer.SetServer(const Value: TJwString);
 begin
   FServer := Value;
@@ -931,9 +993,23 @@ begin
       // If WTSOpenServer fails the return value is 0
       if FServerHandle = 0 then
       begin
-        raise EJwsclWinCallFailedException.CreateFmtWinCall(RsWinCallFailed,
-          'WTSOpenServer', ClassName, RsUNTerminalServer, 1000, True,
-          'WTSOpenServer', ['WTSOpenServer', FServer]);
+{        if GetLastError = 1825 then
+        begin
+          if RpcBind then
+          begin
+            MessageBox(0, 'RpcBind ok', 'debug', MB_OK);
+            FConnected := True;
+          end
+          else begin
+            MessageBox(0, 'RpcBind ok', 'debug', MB_OK);
+          end;
+        end;
+        if FServerHandle = 0 then
+        begin }
+          raise EJwsclWinCallFailedException.CreateFmtWinCall(RsWinCallFailed,
+            'WTSOpenServer', ClassName, RsUNTerminalServer, 1000, True,
+            'WTSOpenServer', ['WTSOpenServer', FServer]);
+//        end;
       end
       else begin
         FConnected := True;
