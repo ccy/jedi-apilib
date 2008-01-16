@@ -1,10 +1,10 @@
 object MainForm: TMainForm
   Left = 0
   Top = 0
-  Width = 702
-  Height = 472
   ActiveControl = VSTUser
   Caption = 'TSAdminEx'
+  ClientHeight = 426
+  ClientWidth = 694
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -20,13 +20,14 @@ object MainForm: TMainForm
   object Splitter1: TSplitter
     Left = 0
     Top = 29
-    Height = 368
+    Height = 378
+    ExplicitHeight = 368
   end
   object VSTServer: TVirtualStringTree
     Left = 3
     Top = 29
     Width = 201
-    Height = 368
+    Height = 378
     Align = alLeft
     CheckImageKind = ckLightTick
     Header.AutoSizeIndex = 0
@@ -55,9 +56,11 @@ object MainForm: TMainForm
   object ToolBar1: TToolBar
     Left = 0
     Top = 0
-    Width = 686
+    Width = 694
     Height = 29
     Caption = 'ToolBar1'
+    EdgeBorders = [ebTop, ebRight]
+    Flat = False
     Images = ImageList1
     TabOrder = 0
     object ToolButton1: TToolButton
@@ -155,8 +158,8 @@ object MainForm: TMainForm
   end
   object StatusBar1: TStatusBar
     Left = 0
-    Top = 397
-    Width = 686
+    Top = 407
+    Width = 694
     Height = 19
     Panels = <>
     SimpleText = 'For Help, press F1'
@@ -164,8 +167,8 @@ object MainForm: TMainForm
   object Panel1: TPanel
     Left = 204
     Top = 29
-    Width = 482
-    Height = 368
+    Width = 490
+    Height = 378
     Align = alClient
     BevelOuter = bvLowered
     Caption = 'Panel1'
@@ -173,8 +176,8 @@ object MainForm: TMainForm
     object PageControl1: TPageControl
       Left = 1
       Top = 1
-      Width = 480
-      Height = 366
+      Width = 488
+      Height = 376
       ActivePage = TabSheet1
       Align = alClient
       TabOrder = 0
@@ -183,8 +186,8 @@ object MainForm: TMainForm
         object VSTUser: TVirtualStringTree
           Left = 0
           Top = 0
-          Width = 472
-          Height = 338
+          Width = 480
+          Height = 348
           Align = alClient
           Header.AutoSizeIndex = -1
           Header.Font.Charset = DEFAULT_CHARSET
@@ -242,7 +245,7 @@ object MainForm: TMainForm
             item
               Alignment = taRightJustify
               Position = 6
-              Width = 210
+              Width = 218
               WideText = 'Logon Time'
             end>
         end
@@ -250,6 +253,10 @@ object MainForm: TMainForm
       object TabSheet2: TTabSheet
         Caption = 'Sessions'
         ImageIndex = 1
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object VSTSession: TVirtualStringTree
           Left = 0
           Top = 0
@@ -343,6 +350,10 @@ object MainForm: TMainForm
       object TabSheet3: TTabSheet
         Caption = 'Processes'
         ImageIndex = 2
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object VSTProcess: TVirtualStringTree
           Left = 0
           Top = 0
