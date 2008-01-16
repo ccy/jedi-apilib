@@ -2,7 +2,7 @@
 @author(Remko Weijnen)
 @created(10/26/2007)
 @lastmod(10/26/2007)
-This unit contains types that are used by the units of the Security Manager Suite
+
 
 
 Project JEDI Windows Security Code Library (JWSCL)
