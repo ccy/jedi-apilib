@@ -103,7 +103,7 @@ const
   // shadow state constants (class 26)
   SHADOW_STATE_NONE = 0;
   SHADOW_STATE_SHADOWING = 1;
-  SHADOW_STATE_BEGING_SHADOWED = 2;
+  SHADOW_STATE_BEING_SHADOWED = 2;
 
   // shadow mode constants (class 26)
   SHADOW_MODE_NONE_ALLOWED = 0;
