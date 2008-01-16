@@ -29,7 +29,7 @@ begin
   cchSize := MAX_COMPUTERNAME_LENGTH + 1;
   GetMem(pComputerName, cchSize * SizeOf(TjWChar));
 {$IFDEF UNICODE}
-      GetComputerNameW(pComputerName, nSize);
+      GetComputerNameW(pComputerName, cchSize);
 {$ELSE}
       GetComputerNameA(pComputerName, cchSize);
 {$ENDIF}

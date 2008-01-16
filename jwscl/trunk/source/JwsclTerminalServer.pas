@@ -42,7 +42,13 @@ uses Classes, Contnrs, DateUtils, SysUtils,
 {$IFDEF UNICODE}
   JclUnicode,
 {$ENDIF UNICODE}
-  JwaWindows, RpcWinsta,
+  JwaWindows,
+{$IFDEF DEBUG}
+{$IFDEF REMKO}
+  RpcWinsta,       
+{$ENDIF REMKO}
+{$ENDIF DEBUG}
+
   JwsclConstants, JwsclExceptions, JwsclResource, JwsclSid, JwsclTypes,
   JwsclVersion, JwsclStrings;
 
@@ -160,7 +166,7 @@ type
   public
     destructor Destroy; reintroduce;
     function Add(ATerminalServer: TJwTerminalServer): Integer;
-    function FindByServer(AServer: TJwString): TJwTerminalServer;
+    function FindByServer(AServer: WideString): TJwTerminalServer;
     function IndexOf(ATerminalServer: TJwTerminalServer): Integer;
     procedure Insert(Index: Integer; ATerminalServer: TJwTerminalServer);
     property Items[Index: Integer]: TJwTerminalServer read GetItem write SetItem; default;
@@ -758,7 +764,7 @@ begin
     Exit;
   end;}
 
-  Result := RpcWinStationOpenServer(FBinding, ErrorCode, FServerHandle);
+//  Result := RpcWinStationOpenServer(FBinding, ErrorCode, FServerHandle);
 end;
 
 procedure TJwTerminalServer.SetServer(const Value: TJwString);
@@ -1351,7 +1357,7 @@ begin
   Result := FIdleProcessName;
 end;
 
-function TJwTerminalServerList.FindByServer(AServer: string): TJwTerminalServer;
+function TJwTerminalServerList.FindByServer(AServer: Widestring): TJwTerminalServer;
 var i: Integer;
 begin
   Result := nil;
@@ -1671,6 +1677,7 @@ end;
 constructor TJwWTSSession.Create(const AOwner: TJwWTSSessionList;
   const ASessionId: TJwSessionId; const AWinStationName: TJwString;
   const AConnectState: TWtsConnectStateClass);
+var tempStr : String;
 begin
   FOwner := AOwner; // Session is owned by the SessionList
   // First store the SessionID
@@ -1699,8 +1706,12 @@ begin
   // This function queries Terminal Server for the real remote ip address
   // and port (as opposed to WTSClientAddress which retreives the client's
   // local ip address
-  WinStationGetRemoteIPAddress(GetServerHandle, ASessionId, FRemoteAddress,
+
+  tempStr := String(FRemoteAddress);
+  WinStationGetRemoteIPAddress(GetServerHandle, ASessionId, tempStr,
     FRemotePort);
+
+  FRemoteAddress := WideString(tempStr);
 end;
 
 destructor TJwWTSSession.Destroy;

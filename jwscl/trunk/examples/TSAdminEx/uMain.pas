@@ -7,8 +7,12 @@ uses
   ComCtrls, ExtCtrls, ActnList, ImgList, ToolWin, Menus,
   StdCtrls, StrUtils{, CommCtrl}, Math, Dialogs,
   VirtualTrees,
-  NetApi, RpcWinsta,
-  JwaWindows, JwaVista,
+  NetApi,
+{$IFDEF DEBUG}
+{$IFDEF REMKO}
+  RpcWinsta,       
+{$ENDIF REMKO}
+{$ENDIF DEBUG}  JwaWindows, JwaVista,
   JwsclSid, JwsclTerminalServer;
 
 type
@@ -389,6 +393,8 @@ begin
   s := InputBox('Add Server', 'Type the name of the server you wish to add', '');;
   pNode := VSTServer.AddChild(pFavoritesNode);
   pData := VSTServer.GetNodeData(pNode);
+  ASSERT(pData <> nil);
+
   pData^.Index := -1;
   pData^.Caption := s;
   pData^.PTerminalServerList := nil;
@@ -442,6 +448,7 @@ begin
   // Create the 'This Computer' parent node
   pThisComputerNode := VSTServer.AddChild(nil);
   pData := VSTServer.GetNodeData(pThisComputerNode);
+  ASSERT(pData <> nil);
 
   // This is a node without a Terminal Server instance attached so we set
   // Index to -2 (never add a Terminal Server instance to it) and Pointer to nil
@@ -616,6 +623,8 @@ var
 begin
   pData := Sender.GetNodeData(Node);
 
+  if pData = nil then
+    exit;
   // Do we have data for this session?
   if pData^.List^.Count > pData^.Index then
   begin
@@ -765,6 +774,9 @@ procedure TMainForm.VSTServerGetText(Sender: TBaseVirtualTree; Node: PVirtualNod
 var pData: PServerNodeData;
 begin
   pData := Sender.GetNodeData(Node);
+  if pData = nil then
+    exit;
+
   if pData^.Caption = '' then
   begin
     CellText := ThisComputerName;
@@ -784,6 +796,9 @@ var
   ATerminalServer: TJwTerminalServer;
 begin
   pNode := VSTServer.GetNodeAt(X, Y);
+  if pNode = nil then
+    exit;
+
   if pNode^.Parent = pAllListedServersNode then
   begin
     if pNode^.ChildCount = 0 then
@@ -889,6 +904,11 @@ var pData: PSessionNodeData;
   CurrentItem: TJwWTSSession;
 begin
   pData := Sender.GetNodeData(Node);
+  if pData = nil then
+    exit;
+  if pData^.List = nil then
+    exit;
+
 
   // Do we have data for this session?
   if pData^.List^.Count > pData^.Index then
@@ -980,6 +1000,8 @@ var pData: PProcessNodeData;
 begin
   pData := Sender.GetNodeData(Node);
 
+  if pData = nil then
+    exit;
   // Do we have data for this session?
   if pData^.List^.Count > pData^.Index then
   begin
@@ -1046,6 +1068,8 @@ begin
   GetLocaleFormatSettings(LOCALE_USER_DEFAULT, FormatSettings);
   pData := Sender.GetNodeData(Node);
 
+  if pData = nil then
+    exit;
   // Do we have data for this session?
   if pData^.List^.Count > pData^.Index then
   begin
@@ -1182,6 +1206,8 @@ var
   ATerminalServer: TJwTerminalServer;
 begin
   pNode := VSTServer.FocusedNode;
+  if pNode = nil then
+    exit;
 
   if pNode^.Parent = pAllListedServersNode then
   begin
@@ -1219,6 +1245,8 @@ procedure TMainForm.VSTServerFreeNode(Sender: TBaseVirtualTree;
 var pData: PServerNodeData;
 begin
   pData := Sender.GetNodeData(Node);
+  if pData = nil then
+    exit;
   // Free the string data by setting it to ''
   pData^.Caption := '';
 end;

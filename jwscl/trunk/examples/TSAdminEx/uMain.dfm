@@ -1,10 +1,10 @@
 object MainForm: TMainForm
   Left = 0
   Top = 0
+  Width = 702
+  Height = 472
   ActiveControl = VSTUser
   Caption = 'TSAdminEx'
-  ClientHeight = 416
-  ClientWidth = 686
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -21,9 +21,6 @@ object MainForm: TMainForm
     Left = 0
     Top = 29
     Height = 368
-    ExplicitLeft = 352
-    ExplicitTop = 160
-    ExplicitHeight = 100
   end
   object VSTServer: TVirtualStringTree
     Left = 3
@@ -53,9 +50,6 @@ object MainForm: TMainForm
     OnGetImageIndex = VSTServerGetImageIndex
     OnGetNodeDataSize = VSTServerGetNodeDataSize
     OnMouseDown = VSTServerMouseDown
-    ExplicitLeft = 2
-    ExplicitTop = 35
-    ExplicitHeight = 349
     Columns = <>
   end
   object ToolBar1: TToolBar
@@ -64,11 +58,8 @@ object MainForm: TMainForm
     Width = 686
     Height = 29
     Caption = 'ToolBar1'
-    EdgeBorders = [ebTop]
-    Flat = False
     Images = ImageList1
     TabOrder = 0
-    ExplicitTop = -5
     object ToolButton1: TToolButton
       Left = 0
       Top = 2
@@ -122,7 +113,6 @@ object MainForm: TMainForm
     object ToolButton9: TToolButton
       Left = 154
       Top = 2
-      Margins.Left = 6
       Caption = 'ToolButton9'
       ImageIndex = 6
     end
@@ -170,7 +160,6 @@ object MainForm: TMainForm
     Height = 19
     Panels = <>
     SimpleText = 'For Help, press F1'
-    ExplicitTop = 378
   end
   object Panel1: TPanel
     Left = 204
@@ -181,7 +170,6 @@ object MainForm: TMainForm
     BevelOuter = bvLowered
     Caption = 'Panel1'
     TabOrder = 1
-    ExplicitHeight = 349
     object PageControl1: TPageControl
       Left = 1
       Top = 1
@@ -190,10 +178,8 @@ object MainForm: TMainForm
       ActivePage = TabSheet1
       Align = alClient
       TabOrder = 0
-      ExplicitHeight = 347
       object TabSheet1: TTabSheet
         Caption = 'Users'
-        ExplicitHeight = 319
         object VSTUser: TVirtualStringTree
           Left = 0
           Top = 0
@@ -220,7 +206,6 @@ object MainForm: TMainForm
           OnGetImageIndex = VSTUserGetImageIndex
           OnGetHint = VSTUserGetHint
           OnGetNodeDataSize = VSTUserGetNodeDataSize
-          ExplicitHeight = 319
           Columns = <
             item
               Position = 0
@@ -265,7 +250,6 @@ object MainForm: TMainForm
       object TabSheet2: TTabSheet
         Caption = 'Sessions'
         ImageIndex = 1
-        ExplicitHeight = 319
         object VSTSession: TVirtualStringTree
           Left = 0
           Top = 0
@@ -292,7 +276,6 @@ object MainForm: TMainForm
           OnGetHint = VSTSessionGetHint
           OnGetNodeDataSize = VSTSessionGetNodeDataSize
           OnHeaderClick = VSTHeaderClick
-          ExplicitHeight = 319
           Columns = <
             item
               Position = 0
@@ -360,7 +343,6 @@ object MainForm: TMainForm
       object TabSheet3: TTabSheet
         Caption = 'Processes'
         ImageIndex = 2
-        ExplicitHeight = 319
         object VSTProcess: TVirtualStringTree
           Left = 0
           Top = 0
@@ -383,7 +365,6 @@ object MainForm: TMainForm
           OnGetImageIndex = VSTProcessGetImageIndex
           OnGetNodeDataSize = VSTProcessGetNodeDataSize
           OnHeaderClick = VSTHeaderClick
-          ExplicitHeight = 319
           Columns = <
             item
               Position = 0
@@ -1268,7 +1249,7 @@ object MainForm: TMainForm
     Left = 376
     Top = 288
     Bitmap = {
-      494C010118001D00040010001000FFFFFFFFFF00FFFFFFFFFFFFFFFF424D3600
+      494C010118001D00040010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000008000000001002000000000000080
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -2328,7 +2309,8 @@ object MainForm: TMainForm
       0000C003E01FF01F0000E007FCFF801F0000E007F01F00030000E007C00F0001
       0000C003C007000000008001E003000000000000C003000000000000C0030000
       00008003C00300000000F83FC00300000000F83FC00300000000FC7FE0030000
-      0000FC7FF00781000000FEFFF84FFF81}
+      0000FC7FF00781000000FEFFF84FFF8100000000000000000000000000000000
+      000000000000}
   end
   object PopupMenu1: TPopupMenu
     Left = 160

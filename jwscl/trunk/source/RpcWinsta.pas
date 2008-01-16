@@ -1,3 +1,6 @@
+{RpcWinsta is only for testing purposes and may not be used for
+productive use!
+}
 unit RpcWinsta;
 
 interface
