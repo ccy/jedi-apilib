@@ -180,6 +180,8 @@ type
   EJwsclInvalidOwnerSIDException = class(EJwsclInvalidSIDException);
   EJwsclInvalidGroupSIDException = class(EJwsclInvalidSIDException);
 
+  EJwsclInvalidKnownSIDException = class(EJwsclInvalidSIDException);
+
   EJwsclInvalidSidAuthorityValue = class(EJwsclInvalidSIDException);
 
 

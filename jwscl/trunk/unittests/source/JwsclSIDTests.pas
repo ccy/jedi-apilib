@@ -9,6 +9,7 @@ uses
   jwaWindows,
   jwaVista,
   TestFrameWork,
+  JwsclKnownSid,
   JwsclStrings;
 
 type
@@ -31,6 +32,7 @@ type
     procedure TestFree_PSID_Array;
 
     procedure Test_GetText;
+    procedure Test_KnownSidFree;
 
    { procedure TestAdd;
     procedure TestFirst;
@@ -1009,6 +1011,32 @@ begin
 
 end;
 
+procedure TSecurityIDListTests.Test_KnownSidFree;
+begin
+  JwInitWellKnownSIDs;
+
+  //check for freeing known sids which must not be freed
+
+  fSIDList[1] := TJwSecurityIdList.Create(true);
+  CheckEquals(true, fSIDList[1].OwnsObjects);
+
+  fSIDList[1].Add(JwUsersSID);
+  fSIDList[1].Add(JwWorldSID);
+  fSIDList[1].Add(JwNullSID);
+  CheckEquals(3,fSIDList[1].Count);
+
+  fSIDList[1].Delete(0);
+  CheckNotNull(JwUsersSID);
+
+  fSIDList[1].Remove(JwWorldSID);
+  CheckNotNull(JwWorldSID);
+
+  fSIDList[1].Clear;
+
+  CheckEquals(0,fSIDList[1].Count);
+  CheckNotNull(JwNullSID);
+end;
+
 initialization
 
   TestFramework.RegisterTest('JwsclSidTests Suite',
@@ -1017,4 +1045,4 @@ initialization
     TSecurityIDTests.Suite);
 
 end.
- 
+

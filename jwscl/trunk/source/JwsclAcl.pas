@@ -595,8 +595,9 @@ type
     @param(aListOwner retrieves the list owner  (including nil). If it is set to a list (not nil) the ACE is added to the list automatically.)
     @param(aFlags retrieves the ACE flags as a set)
     @param(anAccessMask retrieves the access mask like GENERIC_ALL)
-    @param(aSID retrieves the ACE to be allowed or denied. It can be nil)
-    @param(ownSID defines whether the aSID is freed automatically on end or not)
+    @param(aSID retrieves the ACE to be allowed or denied. It cannot be nil)
+    @param(ownSID defines whether the SID given in parameter aSID should be freed automatically.
+            If this SID is a well known SID from unit JwsclKnownSid this parameter is ignored)
 
     }
     constructor Create(const aListOwner: TJwSecurityAccessControlList;
@@ -620,7 +621,8 @@ type
     @param(SID retrieves the ACE to be allowed or denied. It can be nil)
     @param(Revision Defines the revision level of the ACE. Can be one of the revision levels:
           ACL_REVISION, ACL_REVISION1, ACL_REVISION2, ACL_REVISION3, ACL_REVISION4 or ACL_REVISION_DS)
-    @param(ownSID defines whether the aSID is freed automatically on end or not)
+    @param(ownSID defines whether the SID given in parameter aSID should be freed automatically.
+            If this SID is a well known SID from unit JwsclKnownSid this parameter is ignored)
 
     }
     constructor Create(const ListOwner: TJwSecurityAccessControlList;
@@ -947,6 +949,15 @@ type
 
     {@Name copies all properties from another ACE.
      This method does not add this instance to any list or change ListOwner.
+
+     @raises(EJwsclNILParameterException will be raised if one of these
+        objects are nil:
+        @orderedlist(
+          @item(AccessEntry)
+          @item(AccessEntry.SID)
+        )
+     )
+
     }
     procedure Assign(AccessEntry: TJwSecurityAccessControlEntry); virtual;
 
@@ -996,7 +1007,8 @@ type
        }
     property AceType: TJwAceType Read GetAceType;
 
-    {@Name defines whether the TJwSecurityId SID shall be freed (True) or not (False).
+    {@Name defines whether the TJwSecurityId SID will be freed (True) or not (False).
+     If property SID is a well known SID from unit JwsclKnownSid this property will be ignored)
     }
     property OwnSID: boolean Read GetOwnSID Write SetownSID;
 
@@ -1075,7 +1087,9 @@ type
            Some flags are discarded when written to disk and would differ after read from disk.
               )
     @param(aSID retrieves the SID to be allowed or denied. It can be nil)
-    @param(ownSID defines whether the aSID is freed automatically on end or not)
+    @param(ownSID defines whether the SID given in parameter aSID should be freed automatically.
+            If this SID is a well known SID from unit JwsclKnownSid this parameter is ignored)
+
 
     }
 
@@ -1096,7 +1110,9 @@ type
     @param(Revision Defines the revision level of the ACE. Can be one of the revision levels.
           ACL_REVISION, ACL_REVISION1, ACL_REVISION2, ACL_REVISION3, ACL_REVISION4 or ACL_REVISION_DS)
     @param(aSID retrieves the SID to be allowed or denied. It can be nil)
-    @param(ownSID defines whether the aSID is freed automatically on end or not)
+    @param(ownSID defines whether the SID given in parameter aSID should be freed automatically.
+            If this SID is a well known SID from unit JwsclKnownSid this parameter is ignored)
+
 
     }
     constructor Create(
@@ -1177,7 +1193,9 @@ type
     @param(aFlags retrieves the ACE flags as a set)
     @param(anAccessMask retrieves the access mask like GENERIC_ALL)
     @param(aSID retrieves the SID to be allowed or denied. It can be nil)
-    @param(ownSID defines whether the aSID is freed automatically on end or not)
+    @param(ownSID defines whether the SID given in parameter aSID should be freed automatically.
+            If this SID is a well known SID from unit JwsclKnownSid this parameter is ignored)
+
 
     }
 
@@ -1198,7 +1216,9 @@ type
     @param(Revision Defines the revision level of the ACE. Can be one of the revision levels.
           ACL_REVISION, ACL_REVISION1, ACL_REVISION2, ACL_REVISION3, ACL_REVISION4 or ACL_REVISION_DS)
     @param(aSID retrieves the SID to be allowed or denied. It can be nil)
-    @param(ownSID defines whether the aSID is freed automatically on end or not)
+    @param(ownSID defines whether the SID given in parameter aSID should be freed automatically.
+            If this SID is a well known SID from unit JwsclKnownSid this parameter is ignored)
+
 
     }
     constructor Create(
@@ -1281,7 +1301,9 @@ type
     @param(aFlags retrieves the ACE flags as a set)
     @param(anAccessMask retrieves the access mask like GENERIC_ALL)
     @param(aSID retrieves the SID to be allowed or denied. It can be nil)
-    @param(ownSID defines whether the aSID is freed automatically on end or not)
+    @param(ownSID defines whether the SID given in parameter aSID should be freed automatically.
+            If this SID is a well known SID from unit JwsclKnownSid this parameter is ignored)
+
 
     }
     constructor Create(const aListOwner: TJwSecurityAccessControlList;
@@ -1300,7 +1322,9 @@ type
     @param(aAuditFailure receives the state of failure audit flag. If true the ACE will
         audit failed access.)
     @param(aSID retrieves the SID to be allowed or denied. It can be nil)
-    @param(ownSID defines whether the aSID is freed automatically on end or not)
+    @param(ownSID defines whether the SID given in parameter aSID should be freed automatically.
+            If this SID is a well known SID from unit JwsclKnownSid this parameter is ignored)
+
 
     }
     constructor Create(const aListOwner: TJwSecurityAccessControlList;
@@ -1345,7 +1369,7 @@ type
     {@Name copies all properties from another audit ACE.
      The instance @classname must not be already added to a list (ListOwner must be nil).
       However aObject can be in a list.
-     @Name creates copies of all properties. It even makes a copy of SID and sets
+     @Name creates copies of all properties. It also makes a copy of the SID and sets
       ownSID to True so the SID will be freed on destruction.
      ListOwner will be set to nil. You have to add the ACE manually.
     }
@@ -2490,6 +2514,8 @@ constructor TJwSecurityAccessControlEntry.Create(
   const aSID: TJwSecurityId;
   ownSID: boolean = True);
 begin
+  JwRaiseOnNilParameter(aSid,'aSID','Create',ClassName,RsUNACL);
+  
   fListOwner := nil;
 
   fFlags := aFlags;
@@ -2541,20 +2567,27 @@ procedure TJwSecurityAccessControlEntry.Assign(AccessEntry:
 var
   S: TJwSecurityId;
 begin
-  if not Assigned(AccessEntry) then
-    raise EJwsclNILParameterException.CreateFmtEx(
-      RsACLClassNilParameter, 'Assign', ClassName, RsUNAcl,
-      0, False, ['aObject']);
+  JwRaiseOnNilParameter(aObject,'aObject','Assign',ClassName,RsUNACL);
+  JwRaiseOnNilParameter(AccessEntry.SID,'AccessEntry.SID','Assign',ClassName,RsUNACL);
 
+  //free SID automatically
+  OwnSID := True;
 
   //make a copy of SID for our entry
   if Assigned(AccessEntry.SID) then
-    S := TJwSecurityId.Create(AccessEntry.SID)
+  begin
+    if (AccessEntry.SID.IsStandardSID) then
+    begin
+      //do not duplicate a well known sid from unit JwsclKnownSid
+      S := AccessEntry.SID;
+      ownSID := False;
+    end
+    else
+      S := TJwSecurityId.Create(AccessEntry.SID)
+  end
   else
     S := nil;
 
-  //free SID automatically  
-  OwnSID := True;
   fSID := S;
 
   begin

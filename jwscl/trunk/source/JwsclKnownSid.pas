@@ -297,6 +297,7 @@ JwKnownSid for additional known SIDs. It calls JwInitWellKnownSIDs automatically
    parameter values.)
 }
 procedure JwInitWellKnownSIDsEx(const Sids : TWellKnownSidTypeSet);
+procedure JwInitWellKnownSIDsExAll();
 
 
 {$ENDIF SL_IMPLEMENTATION_SECTION}
@@ -532,6 +533,25 @@ begin
   Result := (aSID.ClassType = TJwSecurityThreadUserSID) or
     (aSID.ClassType = TJwSecurityThreadUserSID);
 end;
+
+
+procedure JwInitWellKnownSIDsExAll();
+var i : TWellKnownSidType;
+begin
+  JwInitWellKnownSIDs;
+
+  for i := low(TWellKnownSidType) to high(TWellKnownSidType) do
+  begin
+    try
+      if not Assigned(JwKnownSid[i]) then
+        JwKnownSid[i] := TJwSecurityKnownSID.
+          CreateWellKnownSid(jwaVista.TWellKnownSidType(i));
+    except
+      JwKnownSid[i] := nil;
+    end;
+  end;
+end;
+
 
 procedure JwInitWellKnownSIDsEx(const Sids : TWellKnownSidTypeSet);
 var i : TWellKnownSidType;

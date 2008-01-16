@@ -59,6 +59,8 @@ type
   TJwSecurityIdList = class(TObjectList)
   protected
     function GetItem(idx: integer): TJwSecurityId;
+
+    procedure Notify(Ptr: Pointer; Action: TListNotification); override;
   public
       {@Name creates a list of SIDs that are provided in a TOKEN_GROUPS structure.
        The SIDs are copied.
@@ -118,10 +120,12 @@ type
 
       {@Name removes a SID from the list. If the List owns the object
        the SID will also be freed.
+       The special SIDs in JwsclKnownSids will not be freed but removed from list!
+
        @param(aObject contains the SID to be removed)
        @return(@Name returns the index of the SID in the list before it was removed. If
                  the SID could not be found the return value is -1.) }
-    function Remove(AObject: TJwSecurityId): integer;
+    function Remove(AObject: TJwSecurityId): integer; reintroduce;
 
       {@Name creates an array of "SID and Attributes" structures.
        The return value must be freed by  Free_PSID_Array.
@@ -793,7 +797,7 @@ begin
   if not JwaWindows.CreateWellKnownSid(JwaWindows.WELL_KNOWN_SID_TYPE(WellKnownSidType),
     pDomainSid, tempSID, dwSize) then
   begin
-    raise EJwsclWinCallFailedException.CreateFmtEx(
+    raise EJwsclInvalidKnownSIDException.CreateFmtEx(
       RsWinCallFailed, 'CreateWellKnownSid',
       ClassName, RsUNSid, 0, True, ['CreateWellKnownSid']);
   end;
@@ -1525,6 +1529,51 @@ begin
   sids := nil;
 end;
 
+
+
+function TJwSecurityId.GetAttributesType: TJwSidAttributeSet;
+begin
+  Result := TJwEnumMap.ConvertAttributes(fAttributes);
+  if (TJwEnumMap.ConvertAttributes(Result) <> fAttributes) then
+    Include(Result, sidaUnknown);
+end;
+
+procedure TJwSecurityId.SetAttributesType(Attributes: TJwSidAttributeSet);
+begin
+  fAttributes := TJwEnumMap.ConvertAttributes(Attributes);
+end;
+
+function TJwSecurityId.GetAttributeString(
+      const Attributes: TJwSidAttributeSet): TJwString;
+var
+  i: TJwSidAttribute;
+begin
+  Result := '';
+  for i := low(TJwSidAttribute) to high(TJwSidAttribute) do
+  begin
+    if i in Attributes then
+      Result := ', ' + JwSidAttributeStrings[i];
+  end;
+  System.Delete(Result, 1, 2);
+end;
+
+
+function TJwSecurityId.GetAttributeString(
+  const arrStrings: TJwSidAttributesStringArray): TJwString;
+var
+  i: TJwSidAttribute;
+  attr: TJwSidAttributeSet;
+begin
+  Result := '';
+  attr := AttributesType;
+  for i := low(TJwSidAttribute) to high(TJwSidAttribute) do
+  begin
+    if i in attr then
+      Result := ', ' + arrStrings[i];
+  end;
+  System.Delete(Result, 1, 2);
+end;
+
 procedure TJwSecurityId.UpdateDbgData;
 var
   Data: array[1..10] of string;
@@ -1733,7 +1782,7 @@ function TJwSecurityIdList.Add(AObject: TJwSecurityId): integer;
 begin
   if IndexOf(AObject) >= 0 then
     raise EJwsclDuplicateListEntryException.CreateFmtEx(RsSidAlreadyInList,
-      'Add', ClassName, RsUNSid, 0, True, []);
+      'Add', ClassName, RsUNSid, 0, false, []);
 
   Result := inherited Add(AObject);
 end;
@@ -1787,52 +1836,23 @@ begin
   Result := TJwSecurityId(inherited Last);
 end;
 
+
+procedure TJwSecurityIdList.Notify(Ptr: Pointer; Action: TListNotification);
+begin
+  //do not free known sids from jwsclKnownSid.pas!
+  if OwnsObjects and
+   (Action = lnDeleted) and
+    (Ptr <> nil) and
+  (not (TJwSecurityId(Ptr).IsStandardSID))  then
+  begin
+    TJwSecurityId(Ptr).Free;
+  end
+end;
+
+
 function TJwSecurityIdList.Remove(AObject: TJwSecurityId): integer;
 begin
   Result := inherited Remove(AObject);
-end;
-
-function TJwSecurityId.GetAttributesType: TJwSidAttributeSet;
-begin
-  Result := TJwEnumMap.ConvertAttributes(fAttributes);
-  if (TJwEnumMap.ConvertAttributes(Result) <> fAttributes) then
-    Include(Result, sidaUnknown);
-end;
-
-procedure TJwSecurityId.SetAttributesType(Attributes: TJwSidAttributeSet);
-begin
-  fAttributes := TJwEnumMap.ConvertAttributes(Attributes);
-end;
-
-function TJwSecurityId.GetAttributeString(
-      const Attributes: TJwSidAttributeSet): TJwString;
-var
-  i: TJwSidAttribute;
-begin
-  Result := '';
-  for i := low(TJwSidAttribute) to high(TJwSidAttribute) do
-  begin
-    if i in Attributes then
-      Result := ', ' + JwSidAttributeStrings[i];
-  end;
-  System.Delete(Result, 1, 2);
-end;
-
-
-function TJwSecurityId.GetAttributeString(
-  const arrStrings: TJwSidAttributesStringArray): TJwString;
-var
-  i: TJwSidAttribute;
-  attr: TJwSidAttributeSet;
-begin
-  Result := '';
-  attr := AttributesType;
-  for i := low(TJwSidAttribute) to high(TJwSidAttribute) do
-  begin
-    if i in attr then
-      Result := ', ' + arrStrings[i];
-  end;
-  System.Delete(Result, 1, 2);
 end;
 
 

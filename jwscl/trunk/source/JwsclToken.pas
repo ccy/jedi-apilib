@@ -2060,11 +2060,11 @@ procedure TJwPrivilegeSet.Free_PTOKEN_PRIVILEGES(
 begin
   if Privileges = nil then
     exit;
-  if fPPrivilegesList.IndexOf(Privileges) < 0 then
+ { if fPPrivilegesList.IndexOf(Privileges) < 0 then
     raise EJwsclSecurityException.CreateFmtEx(
       RsTokenInvalidPrivilegePointer,
-      'Free_PLUID_AND_ATTRIBUTES', ClassName, RsUNToken,
-      0, False, []);
+      'Free_PTOKEN_PRIVILEGES', ClassName, RsUNToken,
+      0, False, []);   }
 
   fPPrivilegesList.Remove(Privileges);
   HeapFree(JwProcessHeap, 0, Privileges);
@@ -4641,6 +4641,8 @@ begin
     aPrivileges.Free_PTOKEN_PRIVILEGES(pPrivileges);
     aDefaultDACL.Free_PACL(ttTokenDefaultDACL.DefaultDacl);
   end;
+
+  fAccessMask := GetMaximumAllowed;
 end;
 
 
