@@ -50,6 +50,7 @@ uses Classes, Contnrs, DateUtils, SysUtils,
 {$ENDIF DEBUG}
 
   JwsclConstants, JwsclExceptions, JwsclResource, JwsclSid, JwsclTypes,
+  JwsclUtils,
   JwsclVersion, JwsclStrings;
 
 {$ENDIF SL_OMIT_SECTIONS}
@@ -69,6 +70,8 @@ type
   TJwWTSProcessList = class;
 
   PJwTerminalServer = ^TJwTerminalServer;
+
+  {@Name defines }
   TJwTerminalServer = class(TPersistent)
   private
     FComputerName: TJwString;
@@ -150,8 +153,6 @@ type
     property Sessions: TJwWTSSessionList read FSessions;
     function Shutdown(AShutdownFlag: DWORD): Boolean;
     property Tag: Integer read FTag write FTag;
-    //    function UnicodeStringToJwString(const AUnicodeString: UNICODE_STRING):
-//      TJwString;
   end;
 
   PJwTerminalServerList = ^TJwTerminalServerList;
@@ -194,8 +195,8 @@ type
     FTerminatedEvent: THandle;
   protected
   public
-    constructor Create(CreateSuspended: Boolean; AOwner: TJwTerminalServer;
-      ADomain: TJwString);
+    constructor Create(CreateSuspended: Boolean; Owner: TJwTerminalServer;
+      Domain: TJwString);
     procedure AddToServerList;
     procedure ClearServerList;
     procedure DispatchEvent;
@@ -361,12 +362,12 @@ type
   { List Of TJwWTSSession Objects }
   PJwWTSSessionList = ^TJwWTSSessionList;
   TJwWTSSessionList = class(TObjectList)
-  private
-    FOwnsObjects: Boolean;
-    FOwner: TJwTerminalServer;
   protected
+    FOwner: TJwTerminalServer;
+
     function GetItem(Index: Integer): TJwWTSSession;
     procedure SetItem(Index: Integer; ASession: TJwWTSSession);
+
     procedure SetOwner(const Value: TJwTerminalServer);
   public
     destructor Destroy; reintroduce;
@@ -374,9 +375,10 @@ type
     function IndexOf(ASession: TJwWTSSession): Integer;
     procedure Insert(Index: Integer; ASession: TJwWTSSession);
     property Items[Index: Integer]: TJwWTSSession read GetItem write SetItem; default;
-    property Owner: TJwTerminalServer read FOwner write SetOwner;
-    property OwnsObjects: Boolean read FOwnsObjects write FOwnsObjects;
     function Remove(ASession: TJwWTSSession): Integer;
+
+    property Owner: TJwTerminalServer read FOwner write SetOwner;
+
   end;
 
   TJwWTSProcess = class(TPersistent)
@@ -420,10 +422,9 @@ type
   { List Of TJwWTSProcess Objects }
   PJwWTSProcessList = ^TJwWTSProcessList;
   TJwWTSProcessList = class(TObjectList)
-  private
-    FOwnsObjects: Boolean;
-    FOwner: TJwTerminalServer;
   protected
+    FOwner: TJwTerminalServer;
+
     function GetItem(Index: Integer): TJwWTSProcess;
     procedure SetItem(Index: Integer; AProcess: TJwWTSProcess);
     procedure SetOwner(const Value: TJwTerminalServer);
@@ -433,7 +434,6 @@ type
     procedure Insert(Index: Integer; AProcess: TJwWTSProcess);
     property Items[Index: Integer]: TJwWTSProcess read GetItem write SetItem; default;
     property Owner: TJwTerminalServer read FOwner write SetOwner;
-    property OwnsObjects: Boolean read FOwnsObjects write FOwnsObjects;
     function Remove(AProcess: TJwWTSProcess): Integer;
   end;
 
@@ -486,11 +486,7 @@ type
 implementation
 {$ENDIF SL_OMIT_SECTIONS}
 
-// Moved to JwsclStrings
-{function PWideCharToJwString(lpWideCharStr: PWideChar): TJwString;
-begin
-  Result := lpWideCharStr;
-end;}
+
 
 constructor TJwTerminalServer.Create;
 begin
@@ -1104,14 +1100,17 @@ begin
 end;
 
 constructor TJwWTSEnumServersThread.Create(CreateSuspended: Boolean;
-  AOwner: TJwTerminalServer; ADomain: TJwString);
+  Owner: TJwTerminalServer; Domain: TJwString);
 begin
+  JwRaiseOnNilParameter(Owner, 'Owner','Create', ClassName, RsUNTerminalServer);
+
   OutputDebugString('Creating EnumServers thread');
 
   inherited Create(CreateSuspended);
+
   FTerminatedEvent := CreateEvent(nil, False, False, nil);
-  FOwner := AOwner;
-  FDomain := ADomain;
+  FOwner := Owner;
+  FDomain := Domain;
   FreeOnTerminate := True;
 end;
 
