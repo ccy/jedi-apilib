@@ -600,6 +600,12 @@ var
   CurrentItem: TJwWTSSession;
 begin
   pUserData := Sender.GetNodeData(Node);
+  if pUserData = nil then
+    exit;
+
+  if not Assigned(pUserData^.List) then
+    exit;
+
   if pUserData^.List^.Count > pUserData^.Index then
   begin
     CurrentItem := pUserData^.List^[pUserData^.Index];

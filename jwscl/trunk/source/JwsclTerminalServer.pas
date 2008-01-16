@@ -72,7 +72,7 @@ type
   PJwTerminalServer = ^TJwTerminalServer;
 
   {@Name defines }
-  TJwTerminalServer = class(TPersistent)
+  TJwTerminalServer = class(TObject)
   private
     FComputerName: TJwString;
     FConnected: Boolean;
@@ -167,7 +167,7 @@ type
   public
     destructor Destroy; reintroduce;
     function Add(ATerminalServer: TJwTerminalServer): Integer;
-    function FindByServer(AServer: WideString): TJwTerminalServer;
+    function FindByServer(const ServerName: WideString; const IgnoreCase: boolean = False): TJwTerminalServer;
     function IndexOf(ATerminalServer: TJwTerminalServer): Integer;
     procedure Insert(Index: Integer; ATerminalServer: TJwTerminalServer);
     property Items[Index: Integer]: TJwTerminalServer read GetItem write SetItem; default;
@@ -206,7 +206,7 @@ type
   end;
 
   PJwWTSSession = ^TJwWTSSession;
-  TJwWTSSession = class(TPersistent)
+  TJwWTSSession = class(TObject)
   private
   protected
     //TODO: I usually do not comment these things because
@@ -305,9 +305,9 @@ type
      @raises(EJwsclNILParameterException <a parameter is nil. Search for
       that exception in other classes for an example>)
   }
-    constructor Create(const AOwner: TJwWTSSessionList;
-      const ASessionId: TJwSessionId; const AWinStationName: TJwString;
-      const AConnectState: TWtsConnectStateClass);
+    constructor Create(const Owner: TJwWTSSessionList;
+      const SessionId: TJwSessionId; const WinStationName: TJwString;
+      const ConnectState: TWtsConnectStateClass);
     destructor Destroy; override;  
     property ApplicationName: TJwString read FApplicationName;
     property ClientAddress: TJwString read FClientAddress;
@@ -343,7 +343,7 @@ type
     property OutgoingBytes: DWORD read FOutgoingBytes;
     function PostMessage(const AMessage: TJwString; const ACaption: TJwString;
       const uType: DWORD): DWORD;
-    function ProtocolTypeToStr(AProtocolType: DWORD): TJwString;
+    function ProtocolTypeToStr(const AProtocolType: DWORD): TJwString;
     property RemoteAddress: TJwString read FRemoteAddress;
     property RemotePort: WORD read FRemotePort;
     function SendMessage(const AMessage: TJwString; const ACaption: TJwString;
@@ -381,7 +381,7 @@ type
 
   end;
 
-  TJwWTSProcess = class(TPersistent)
+  TJwWTSProcess = class(TObject)
   private
   protected
     FOwner: TJwWTSProcessList;
@@ -398,9 +398,9 @@ type
     FUsername: TJwString;
     FWinStationName: TJwString;
   public
-    constructor Create(const AOwner: TJwWTSProcessList;
-      const ASessionId: TJwSessionId; const AProcessID: TJwProcessId;
-      const AProcessName: TJwString; const AUsername: TJwString); reintroduce;
+    constructor Create(const Owner: TJwWTSProcessList;
+      const SessionId: TJwSessionId; const ProcessID: TJwProcessId;
+      const ProcessName: TJwString; const Username: TJwString); reintroduce;
     function GetServerHandle: THandle;
     property Owner: TJwWTSProcessList read FOwner;
     property SessionId: TJwSessionId read FSessionId;
@@ -414,7 +414,7 @@ type
     property ProcessVMSize: DWORD read FProcessVMSize;
     property SidStr: TJwString read FSidStr;
     function Terminate: boolean; overload;
-    function Terminate(dwExitCode: DWORD): boolean; overload;
+    function Terminate(const dwExitCode: DWORD): boolean; overload;
     property Username: TJwString read FUsername;
     property WinStationName: TJwString read FWinStationname;
   end;
@@ -688,21 +688,23 @@ var WinStationNamePtr: PWideChar;
 begin
   // Get and zero memory (
   GetMem(WinStationNamePtr, WINSTATIONNAME_LENGTH * SizeOf(WideChar));
-  ZeroMemory(WinStationNamePtr, WINSTATIONNAME_LENGTH * SizeOf(WideChar));
+  try
+    ZeroMemory(WinStationNamePtr, WINSTATIONNAME_LENGTH * SizeOf(WideChar));
 
-  if WinStationNameFromLogonIdW(FServerHandle, SessionId,
-    WinStationNamePtr) then
-  begin
-    Result := PWideCharToJwString(WinStationNamePtr);
+    if WinStationNameFromLogonIdW(FServerHandle, SessionId,
+      WinStationNamePtr) then
+    begin
+      Result := PWideCharToJwString(WinStationNamePtr);
+    end;
+
+    // Return disconnected if WinStationName = empty
+    if Result = '' then
+    begin
+      Result := PWideCharToJwString(StrConnectState(WTSDisconnected, False));
+    end;
+  finally
+    FreeMem(WinStationNamePtr);
   end;
-
-  // Return disconnected if WinStationName = empty
-  if Result = '' then
-  begin
-    Result := PWideCharToJwString(StrConnectState(WTSDisconnected, False));
-  end;
-
-  FreeMem(WinStationNamePtr);
 end;
 
 procedure TJwTerminalServer.OnEnumServersThreadTerminate(Sender: TObject);
@@ -736,11 +738,7 @@ begin
     Exit;
   end;
 
-{  FWSUser := 'Remko';
-  FWSPassword := 'W0uter';
-  FWSDomain := 'PANDORA';
-
-  FSecurity.User := PWideChar(FWSUser);
+{ FSecurity.User := PWideChar(FWSUser);
   FSecurity.UserLength := SizeOf(FWSUser);
 
   FSecurity.Domain := PWideChar(FWSDomain);
@@ -1205,7 +1203,7 @@ begin
   // Return error
   Result := ERROR_NOT_SUPPORTED;
 
-  raise EJwsclWinCallFailedException.CreateFmtWinCall(RsWinCallFailed,
+  raise EJwsclUnimplemented.CreateFmtWinCall(RsWinCallFailed,
     'WaitFor function is not supported, please use Wait instead', ClassName,
     RsUNTerminalServer, 1203, False,
     'WaitFor function is not supported, please use Wait instead',
@@ -1311,6 +1309,9 @@ var
 begin
   if not Modify then
   begin
+    {
+
+    }
 {    if not }WinStationQueryInformationW(FOwner.GetServerHandle, FOwner.SessionId,
      WinStationShadowInformation, @FWinStationShadowInformation,
      SizeOf(FWinstationShadowInformation), ReturnedLength);{ then
@@ -1356,13 +1357,14 @@ begin
   Result := FIdleProcessName;
 end;
 
-function TJwTerminalServerList.FindByServer(AServer: Widestring): TJwTerminalServer;
+function TJwTerminalServerList.FindByServer(const ServerName: WideString; const IgnoreCase: boolean = False): TJwTerminalServer;
 var i: Integer;
 begin
   Result := nil;
   for i := 0 to Count-1 do
   begin
-    if Items[i].Server = AServer then
+    //if Items[i].Server = AServer then
+    if JwCompareString(Items[i].Server,ServerName,IgnoreCase) = 0 then
     begin
       Result := Items[i];
       Break;
@@ -1392,7 +1394,7 @@ end;
 
 procedure TJwTerminalServerList.SetItem(Index: Integer; ATerminalServer: TJwTerminalServer);
 begin
-  inherited Items[Index] := ATerminalServer;
+  inherited SetItem(Index, ATerminalServer);
 end;
 
 procedure TJwTerminalServerList.SetOwner(const Value: TComponent);
@@ -1415,7 +1417,7 @@ begin
   FOwner := Value;
 end;
 
-function TJwWTSSession.ProtocolTypeToStr(AProtocolType: Cardinal): TJwString;
+function TJwWTSSession.ProtocolTypeToStr(const AProtocolType: Cardinal): TJwString;
 begin
   //TODO: use resource strings
   case AProtocolType of
@@ -1431,6 +1433,7 @@ procedure TJwWTSSession.GetSessionInfoPtr(const WTSInfoClass: _WTS_INFO_CLASS;
   var ABuffer: Pointer);
 var dwBytesReturned: DWORD;
   Res: Bool;
+  i : Cardinal;
 begin
   ABuffer := nil;
   Res :=
@@ -1441,13 +1444,6 @@ begin
     WTSQuerySessionInformationA(GetServerHandle, FSessionId, WTSInfoClass,
       ABuffer, dwBytesReturned);
 {$ENDIF}
-  // function always returns an error 997: overlapped IO on session 0
-  if (not Res) and (FSessionId <> 0) then
-  begin
-    raise EJwsclWinCallFailedException.CreateFmtWinCall(RsWinCallFailed,
-      'GetSessionInfoPtr', ClassName, RsUNTerminalServer, 0, True,
-      'WTSQuerySessionInformation', ['WTSQuerySessionInformation']);
-  end;
 end;
 
 function TJwWTSSession.GetSessionInfoStr(const WTSInfoClass: _WTS_INFO_CLASS):
@@ -1457,31 +1453,11 @@ var
   aBuffer: Pointer;
   Res: Bool;
 begin
-  ABuffer := nil;
-  Result := '';
-  Res :=
-{$IFDEF UNICODE}
-    WTSQuerySessionInformationW(GetServerHandle, FSessionId, WTSInfoClass,
-      ABuffer, dwBytesReturned);
-{$ELSE}
-    WTSQuerySessionInformationA(GetServerHandle, FSessionId, WTSInfoClass,
-      ABuffer, dwBytesReturned);
-{$ENDIF UNICODE}
-  // function always returns an error 997: overlapped IO on session 0
-  if (not Res) and (FSessionId <> 0) then
+  result := '';
+  GetSessionInfoPtr(WTSInfoClass, aBuffer);
+  if ABuffer <> nil then
   begin
-    raise EJwsclWinCallFailedException.CreateFmtWinCall(RsWinCallFailed,
-      'GetSessionInfoStr', ClassName, RSUNTerminalServer, 0, True,
-      'WTSQuerySessionInformation', ['WTSQuerySessionInformation']);
-  end
-  else if ABuffer <> nil then
-  begin
-    Result :=
-{$IFDEF UNICODE}
-    TJwString(PWideChar(aBuffer));
-{$ELSE}
-    TJwString(PChar(aBuffer));
-{$ENDIF UNICODE}
+    Result := TJwString(TJwPChar(aBuffer));
     WTSFreeMemory(aBuffer);
   end;
 end;
@@ -1491,24 +1467,9 @@ var dwBytesReturned: DWORD;
   ABuffer: Pointer;
   Res: Bool;
 begin
-  ABuffer := nil;
-  Result := 0;
-  Res :=
-{$IFDEF UNICODE}
-    WTSQuerySessionInformationW(GetServerHandle, FSessionId, WTSInfoClass,
-      ABuffer, dwBytesReturned);
-{$ELSE}
-    WTSQuerySessionInformationA(GetServerHandle, FSessionId, WTSInfoClass,
-      ABuffer, dwBytesReturned);
-{$ENDIF}
-  // function always returns an error 997: overlapped IO on session 0
-  if (not Res) and (FSessionId <> 0) then
-  begin
-    raise EJwsclWinCallFailedException.CreateFmtWinCall(RsWinCallFailed,
-      'GetSessionInfoDWORD', ClassName, RSUNTerminalServer, 0, True,
-      'WTSQuerySessionInformation', ['WTSQuerySessionInformation']);
-  end
-  else if ABuffer <> nil then
+  result := 0;
+  GetSessionInfoPtr(WTSInfoClass, aBuffer);
+  if ABuffer <> nil then
   begin
     Result := PDWord(ABuffer)^;
     WTSFreeMemory(ABuffer);
@@ -1519,6 +1480,9 @@ function TJwWTSSession.GetServerHandle;
 begin
   // The ServerHandle is stored in TJwTerminalServer
   //TODO: Owner = nil? or Owner.Owner = nil ?
+  JwRaiseOnNilMemoryBlock(Owner, 'GetServerHandle', ClassName, RsUNTerminalServer);
+  JwRaiseOnNilMemoryBlock(Owner.Owner, 'GetServerHandle', ClassName, RsUNTerminalServer);
+
   Result := Owner.Owner.FServerHandle;
 end;
 
@@ -1585,7 +1549,9 @@ begin
           FCompressionRatio := Format('%1.2f',
             [WinStationInfo.OutgoingCompressBytes /
             WinStationInfo.OutgoingBytes]);
-        end;
+        end
+        else
+          FCompressionRatio := '(inf)'; //infinite output
       end;
     end
     else if FConnectState = WTSDisconnected then
@@ -1673,18 +1639,23 @@ begin
   end;
 end;
 
-constructor TJwWTSSession.Create(const AOwner: TJwWTSSessionList;
-  const ASessionId: TJwSessionId; const AWinStationName: TJwString;
-  const AConnectState: TWtsConnectStateClass);
+constructor TJwWTSSession.Create(const Owner: TJwWTSSessionList;
+  const SessionId: TJwSessionId; const WinStationName: TJwString;
+  const ConnectState: TWtsConnectStateClass);
 var tempStr : String;
 begin
-  FOwner := AOwner; // Session is owned by the SessionList
+  JwRaiseOnNilMemoryBlock(Owner, 'Create', ClassName, RsUNTerminalServer);
+  JwRaiseOnNilMemoryBlock(Owner.Owner, 'Create', ClassName, RsUNTerminalServer);
+
+  inherited Create;
+
+  FOwner := Owner; // Session is owned by the SessionList
   // First store the SessionID
-  FSessionId := ASessionId;
+  FSessionId := SessionId;
   FShadow := TJwWTSSessionShadow.Create(Self); 
-  FConnectState := AConnectState;
+  FConnectState := ConnectState;
   FConnectStateStr := PWideCharToJwString(StrConnectState(FConnectState, False));
-  FWinStationName := AWinStationName;
+  FWinStationName := WinStationName;
   FApplicationName := GetSessionInfoStr(WTSApplicationName);
   FClientAddress := GetClientAddress;
   FClientBuildNumber := GetSessionInfoDWORD(WTSClientBuildNumber);
@@ -1707,7 +1678,7 @@ begin
   // local ip address
 
   tempStr := String(FRemoteAddress);
-  WinStationGetRemoteIPAddress(GetServerHandle, ASessionId, tempStr,
+  WinStationGetRemoteIPAddress(GetServerHandle, SessionId, tempStr,
     FRemotePort);
 
   FRemoteAddress := WideString(tempStr);
@@ -1721,6 +1692,9 @@ end;
 function TJwWTSSession.GetServerName: TJwString;
 begin
   //TODO: Owner = nil? or Owner.Owner = nil ?
+  JwRaiseOnNilMemoryBlock(Owner, 'GetServerName', ClassName, RsUNTerminalServer);
+  JwRaiseOnNilMemoryBlock(Owner.Owner, 'GetServerName', ClassName, RsUNTerminalServer);
+
   Result := Owner.Owner.Server;
 end;
 
@@ -1770,25 +1744,33 @@ begin
     MOD_CONTROL);
 end;
 
-constructor TJwWTSProcess.Create(const AOwner: TJwWTSProcessList;
-  const ASessionId: TJwSessionId; const AProcessID: TJwProcessId;
-  const AProcessName: TJwString; const AUsername: TjwString);
+constructor TJwWTSProcess.Create(const Owner: TJwWTSProcessList;
+  const SessionId: TJwSessionId; const ProcessID: TJwProcessId;
+  const ProcessName: TJwString; const Username: TjwString);
 begin
-  FOwner := AOwner;
-  FSessionID := ASessionId;
+  JwRaiseOnNilParameter(Owner, 'Owner','Create', ClassName, RsUNTerminalServer);
+  JwRaiseOnNilParameter(Owner.Owner, 'Owner.Owner','Create', ClassName, RsUNTerminalServer);
 
-  FWinStationName := FOwner.FOwner.GetWinStationName(ASessionId);
+  inherited Create;
 
-  FProcessId := AProcessId;
-  FProcessName := AProcessName;
+  FOwner := Owner;
+  FSessionID := SessionId;
+
+  FWinStationName := FOwner.Owner.GetWinStationName(SessionId);
+
+  FProcessId := ProcessId;
+  FProcessName := ProcessName;
 //  FSidString :=
 //  TJwSecurityId.Create();
-  FUsername := AUsername;
+  FUsername := Username;
 end;
 
 
 function TJwWTSProcess.GetServerHandle: THandle;
 begin
+  JwRaiseOnNilMemoryBlock(Owner, 'GetServerHandle', ClassName, RsUNTerminalServer);
+  JwRaiseOnNilMemoryBlock(Owner.Owner, 'GetServerHandle', ClassName, RsUNTerminalServer);
+
   // The ServerHandle is stored in TJwTerminalServer
   Result := Owner.Owner.FServerHandle;
 end;
@@ -1798,7 +1780,7 @@ begin
   Result := WTSTerminateProcess(GetServerHandle, ProcessId, 0);
 end;
 
-function TJwWTSProcess.Terminate(dwExitCode: Cardinal): Boolean;
+function TJwWTSProcess.Terminate(const dwExitCode: Cardinal): Boolean;
 begin
   Result := WTSTerminateProcess(GetServerHandle, ProcessId, dwExitCode);
 end;
