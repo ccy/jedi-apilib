@@ -114,7 +114,6 @@ type
     function GetServer: TJwString;
     function GetWinStationName(const SessionId: DWORD): TJwString;
     procedure OnEnumServersThreadTerminate(Sender: TObject);
-    function RpcBind: Boolean;
     procedure SetServer(const Value: TJwString);
     procedure FireEvent(EventFlag: DWORD);
   public
@@ -722,52 +721,6 @@ begin
   OutputDebugString('nil it!');
 end;
 
-function TJwTerminalServer.RpcBind: Boolean;
-begin
-  result := true;
-  FNetworkAddr := PWideChar(WideString(Format('\\%s', [FServer])));
-
-  Res := RpcStringBindingComposeW('5ca4a760-ebb1-11cf-8611-00a0245420ed',
-    'ncalrpc', FNetworkAddr, 'IcaApi', 'Security=Impersonation Dynamic False',
-    FBindingString);
-
-  if Res <> RPC_S_OK then
-  begin
-    Result := False;
-    Exit;
-  end;
-
-  Res := RpcBindingFromStringBindingW(FBindingString, FBinding);
-
-  if Res <> RPC_S_OK then
-  begin
-    Result := False;
-    Exit;
-  end;
-
-{ FSecurity.User := PWideChar(FWSUser);
-  FSecurity.UserLength := SizeOf(FWSUser);
-
-  FSecurity.Domain := PWideChar(FWSDomain);
-  FSecurity.DomainLength := SizeOf(FWSDomain);
-
-  FSecurity.Password := PWideChar(FWSPassword);
-  FSecurity.PasswordLength := SizeOf(FWSPassword);
-
-  FSecurity.Flags := SEC_WINNT_AUTH_IDENTITY_UNICODE;
-
-  Res := RpcBindingSetAuthInfoW(FBinding, FNetworkAddr, RPC_C_AUTHN_LEVEL_DEFAULT,
-    RPC_C_AUTHN_WINNT, @FSecurity, RPC_C_AUTHN_LEVEL_PKT_PRIVACY);
-
-  if Res <> RPC_S_OK then
-  begin
-    Result := False;
-    Exit;
-  end;}
-
-//  Result := RpcWinStationOpenServer(FBinding, ErrorCode, FServerHandle);
-end;
-
 procedure TJwTerminalServer.SetServer(const Value: TJwString);
 begin
   FServer := Value;
@@ -1001,24 +954,9 @@ begin
       // If WTSOpenServer fails the return value is 0
       if FServerHandle = 0 then
       begin
-{        if GetLastError = 1825 then
-        begin
-          if RpcBind then
-          begin
-            MessageBox(0, 'RpcBind ok', 'debug', MB_OK);
-            FConnected := True;
-          end
-          else
-          begin
-            MessageBox(0, 'RpcBind ok', 'debug', MB_OK);
-          end;
-        end;
-        if FServerHandle = 0 then
-        begin }
-          raise EJwsclWinCallFailedException.CreateFmtWinCall(RsWinCallFailed,
-            'WTSOpenServer', ClassName, RsUNTerminalServer, 1000, True,
-            'WTSOpenServer', ['WTSOpenServer', FServer]);
-//        end;
+        raise EJwsclWinCallFailedException.CreateFmtWinCall(RsWinCallFailed,
+          'WTSOpenServer', ClassName, RsUNTerminalServer, 1000, True,
+          'WTSOpenServer', ['WTSOpenServer', FServer]);
       end
       else
       begin
@@ -1323,9 +1261,6 @@ var
 begin
   if not Modify then
   begin
-    {
-
-    }
 {    if not }WinStationQueryInformationW(FOwner.GetServerHandle, FOwner.SessionId,
      WinStationShadowInformation, @FWinStationShadowInformation,
      SizeOf(FWinstationShadowInformation), ReturnedLength);{ then
