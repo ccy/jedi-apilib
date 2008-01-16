@@ -2567,7 +2567,7 @@ procedure TJwSecurityAccessControlEntry.Assign(AccessEntry:
 var
   S: TJwSecurityId;
 begin
-  JwRaiseOnNilParameter(aObject,'aObject','Assign',ClassName,RsUNACL);
+  JwRaiseOnNilParameter(AccessEntry,'AccessEntry','Assign',ClassName,RsUNACL);
   JwRaiseOnNilParameter(AccessEntry.SID,'AccessEntry.SID','Assign',ClassName,RsUNACL);
 
   //free SID automatically

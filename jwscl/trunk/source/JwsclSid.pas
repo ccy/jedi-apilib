@@ -1575,12 +1575,14 @@ begin
 end;
 
 procedure TJwSecurityId.UpdateDbgData;
+{$IFDEF DEBUG}
 var
   Data: array[1..10] of string;
   i: integer;
   ident: TSidIdentifierAuthority;
+{$ENDIF DEBUG}
 begin
-
+{$IFDEF DEBUG}
   fDbgDisableException := True;
 
 
@@ -1643,7 +1645,7 @@ begin
   begin
     fDbgData := fDbgData + Data[i] + #13#10;
   end;
-
+{$ENDIF DEBUG}
 end;
 
 {*********** TJwSecurityIdList *************}
