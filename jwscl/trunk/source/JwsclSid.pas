@@ -192,7 +192,9 @@ type
 
     fAttributes: Cardinal;
 
-    {@Name contains the values of the properties of the instance for debugging purposes.}
+    {@Name contains the values of the properties of the instance for debugging purposes.
+     It is only used if DEBUG is defined.
+     }
     fDbgData: string;
 
       {@Name disables the raising of exceptions in the following methods :

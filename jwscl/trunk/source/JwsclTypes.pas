@@ -888,7 +888,8 @@ type
    Functions require a parameter of type @name if the
    programmer should decide which of the key pairs should be used.}
   TJwKeyPairType = (kptKeyExchange,
-                    kptSignature);
+                    kptSignature,
+                    kptUnknown);
 
     {An array of @Name is returned by TJwCryptProvider.EnumProviders
    and TJwCryptProvider.EnumProviderTypes. The meaning of Name

@@ -368,6 +368,7 @@ const
   KeyPairTypeValues: array[TJwKeyPairType] of Cardinal = (
     AT_KEYEXCHANGE
    ,AT_SIGNATURE
+   ,0
    );
 
   KeyFlagValues: array[TJwKeyFlag] of Cardinal = (
@@ -857,6 +858,7 @@ class function TJwEnumMap.ConvertKeyPairType(
   const KeyPairType: Cardinal): TJwKeyPairType;
 var i: TJwKeyPairType;
 begin
+  result := kptUnknown;
   for i:=Low(TJwKeyPairType) to High(TJwKeyPairType) do
     if KeyPairTypeValues[i] = KeyPairType then
     begin

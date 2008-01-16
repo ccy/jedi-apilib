@@ -73,7 +73,7 @@ type
 
   {@Name defines }
   TJwTerminalServer = class(TObject)
-  private
+  protected
     FComputerName: TJwString;
     FConnected: Boolean;
     FData: Pointer;
@@ -116,7 +116,6 @@ type
     procedure OnEnumServersThreadTerminate(Sender: TObject);
     function RpcBind: Boolean;
     procedure SetServer(const Value: TJwString);
-  protected
     procedure FireEvent(EventFlag: DWORD);
   public
     procedure Connect;
@@ -157,7 +156,7 @@ type
 
   PJwTerminalServerList = ^TJwTerminalServerList;
   TJwTerminalServerList = class(TObjectList)
-  private
+  protected
     FOwnsObjects: Boolean;
     FOwner: TComponent;
   protected
@@ -177,10 +176,9 @@ type
   end;
 
   TJwWTSEventThread = class(TThread)
-  private
+  protected
     FOwner: TJwTerminalServer;
     FEventFlag: DWORD;
-  protected
   public
     constructor Create(CreateSuspended: Boolean; AOwner: TJwTerminalServer);
     procedure DispatchEvent;
@@ -188,12 +186,11 @@ type
   end;
 
   TJwWTSEnumServersThread = class(TThread)
-  private
+  protected
     FDomain: TJwString;
     FOwner: TJwTerminalServer;
     FServer: TJwString;
     FTerminatedEvent: THandle;
-  protected
   public
     constructor Create(CreateSuspended: Boolean; Owner: TJwTerminalServer;
       Domain: TJwString);
@@ -207,7 +204,6 @@ type
 
   PJwWTSSession = ^TJwWTSSession;
   TJwWTSSession = class(TObject)
-  private
   protected
     //TODO: I usually do not comment these things because
     //they are already commented in the property declaration
@@ -382,7 +378,6 @@ type
   end;
 
   TJwWTSProcess = class(TObject)
-  private
   protected
     FOwner: TJwWTSProcessList;
     FProcessAge: Int64;
@@ -437,9 +432,22 @@ type
     function Remove(AProcess: TJwWTSProcess): Integer;
   end;
 
-  TShadowState = (ssNone = 0, ssShadowing = 1, ssBeingShadowed = 2);
-  TShadowMode = (smNoneAllowed = 0, smFullControlWithPermission = 1, smFullControlWithoutPermission = 2,
-    smViewOnlyWithPermission = 3, smViewOnlyWithoutPermission = 4);
+  TShadowState =
+    (
+     //@Name defines a none state
+     ssNone,// = 0,
+     //@Name ...
+     ssShadowing,// = 1,
+     //@Name ...
+     ssBeingShadowed// = 2
+  );
+  TShadowMode = (
+    smNoneAllowed, // = 0,
+    smFullControlWithPermission,// = 1,
+    smFullControlWithoutPermission,// = 2,
+    smViewOnlyWithPermission,// = 3,
+    smViewOnlyWithoutPermission// = 4
+  );
 
   TJwWTSSessionShadow = class
   private
@@ -456,6 +464,16 @@ type
     property ShadowMode : TShadowMode read GetShadowMode write SetShadowMode;
   end;
 
+
+{$ENDIF SL_IMPLEMENTATION_SECTION}
+
+{$IFNDEF SL_OMIT_SECTIONS}
+
+implementation
+{$ENDIF SL_OMIT_SECTIONS}
+
+
+type
   { array of TWtsSessionInfoA }
   PJwWTSSessionInfoAArray = ^TJwWTSSessionInfoAArray;
   TJwWTSSessionInfoAArray = array[0..ANYSIZE_ARRAY-1] of TWtsSessionInfoA;
@@ -479,14 +497,6 @@ type
   { array of TWtsServerInfoW }
   PJwWtsServerInfoWArray = ^TJwWtsServerInfoWArray;
   TJwWtsServerInfoWArray = array[0..ANYSIZE_ARRAY-1] of TWtsServerInfoW;
-{$ENDIF SL_IMPLEMENTATION_SECTION}
-
-{$IFNDEF SL_OMIT_SECTIONS}
-
-implementation
-{$ENDIF SL_OMIT_SECTIONS}
-
-
 
 constructor TJwTerminalServer.Create;
 begin
@@ -506,8 +516,6 @@ begin
 end;
 
 destructor TJwTerminalServer.Destroy;
-var EventFlag: DWORD;
-  Res: Boolean;
 begin
   // Close connection
   if Assigned(FEnumServersThread) then
@@ -519,7 +527,7 @@ begin
     begin
       // it didn't, so kill it (we don't want the user to wait forever)!
       // TSAdmin does it the same way...
-      Res := TerminateThread(FEnumServersThread.Handle, 0);
+      TerminateThread(FEnumServersThread.Handle, 0);
     end;
 
     FEnumServersThread.Wait;
@@ -657,7 +665,7 @@ end;
 
 function TJwTerminalServer.GetServer: TJwString;
 var nSize: DWORD;
-  pComputerName: {$IFDEF UNICODE}PWideChar{$ELSE}PAnsiChar{$ENDIF};
+  pComputerName: TJwPChar;
 begin
   // If no server was specified we return the local computername
   // (we cache this in FComputerName)
@@ -715,9 +723,8 @@ begin
 end;
 
 function TJwTerminalServer.RpcBind: Boolean;
-var
-  ErrorCode: Cardinal;
 begin
+  result := true;
   FNetworkAddr := PWideChar(WideString(Format('\\%s', [FServer])));
 
   Res := RpcStringBindingComposeW('5ca4a760-ebb1-11cf-8611-00a0245420ed',
@@ -963,7 +970,8 @@ begin
     OutputDebugString('thread is already assigned');
     Result := False;
   end
-  else begin
+  else
+  begin
     // Create the thread
     OutputDebugString('create thread');
     FEnumServersThread := TJwWTSEnumServersThread.Create(True, Self, ADomain);
@@ -1000,7 +1008,8 @@ begin
             MessageBox(0, 'RpcBind ok', 'debug', MB_OK);
             FConnected := True;
           end
-          else begin
+          else
+          begin
             MessageBox(0, 'RpcBind ok', 'debug', MB_OK);
           end;
         end;
@@ -1011,7 +1020,8 @@ begin
             'WTSOpenServer', ['WTSOpenServer', FServer]);
 //        end;
       end
-      else begin
+      else
+      begin
         FConnected := True;
       end;
     end;
@@ -1113,6 +1123,8 @@ begin
 end;
 
 procedure TJwWTSEnumServersThread.Execute;
+type
+  PWTS_SERVER_INFO = {$IFDEF UNICODE}PWTS_SERVER_INFOW{$ELSE}PWTS_SERVER_INFOA{$ENDIF UNICODE};
 var ServerInfoPtr: PJwWtsServerInfoAArray;
   pCount: DWORD;
   i: DWORD;
@@ -1124,7 +1136,9 @@ begin
   ServerInfoPtr := nil;
   // Since we return to a Stringlist (which does not support unicode)
   // we only use WTSEnumerateServersA
-  if WTSEnumerateServersA(PAnsiChar(FDomain), 0, 1, PWTS_SERVER_INFOA(ServerInfoPtr),
+
+  if {$IFDEF UNICODE}WTSEnumerateServersW{$ELSE}WTSEnumerateServersA{$ENDIF UNICODE}
+   (TJwPChar(FDomain), 0, 1, PWTS_SERVER_INFO(ServerInfoPtr),
     pCount) then
   begin
     for i := 0 to pCount - 1 do
@@ -1201,7 +1215,7 @@ end;
 function TJwWTSEnumServersThread.WaitFor: LongWord;
 begin
   // Return error
-  Result := ERROR_NOT_SUPPORTED;
+  //Result := ERROR_NOT_SUPPORTED;
 
   raise EJwsclUnimplemented.CreateFmtWinCall(RsWinCallFailed,
     'WaitFor function is not supported, please use Wait instead', ClassName,
@@ -1432,11 +1446,8 @@ end;
 procedure TJwWTSSession.GetSessionInfoPtr(const WTSInfoClass: _WTS_INFO_CLASS;
   var ABuffer: Pointer);
 var dwBytesReturned: DWORD;
-  Res: Bool;
-  i : Cardinal;
 begin
   ABuffer := nil;
-  Res :=
 {$IFDEF UNICODE}
     WTSQuerySessionInformationW(GetServerHandle, FSessionId, WTSInfoClass,
       ABuffer, dwBytesReturned);
@@ -1449,9 +1460,7 @@ end;
 function TJwWTSSession.GetSessionInfoStr(const WTSInfoClass: _WTS_INFO_CLASS):
   TJwString;
 var
-  dwBytesReturned: DWORD;
   aBuffer: Pointer;
-  Res: Bool;
 begin
   result := '';
   GetSessionInfoPtr(WTSInfoClass, aBuffer);
@@ -1463,9 +1472,7 @@ begin
 end;
 
 function TJwWTSSession.GetSessionInfoDWORD(const WTSInfoClass: _WTS_INFO_CLASS): DWORD;
-var dwBytesReturned: DWORD;
-  ABuffer: Pointer;
-  Res: Bool;
+var ABuffer: Pointer;
 begin
   result := 0;
   GetSessionInfoPtr(WTSInfoClass, aBuffer);
