@@ -117,6 +117,7 @@ var TokenHandle : THandle;
 
   SD : TJwSecurityDescriptor;
 begin
+  try
   //enable privileges for create token
   JwEnablePrivilege('SeTcbPrivilege',pst_Enable);
   JwEnablePrivilege('SeCreateTokenPrivilege',pst_Enable);
@@ -143,7 +144,7 @@ begin
   //OwnerSid := JwAdministratorsSID;
   //OwnerSid := JwLocalSystemSID;
 
-  try
+
   {  SD := TJwSecurityDescriptor.CreateDefaultByToken();
     SD.Owner := OwnerSid;
     SD.PrimaryGroup := OwnerSid;
