@@ -173,7 +173,30 @@ type
       SecurityDescriptor: TJwSecurityDescriptor);
       overload;
 
-    constructor CreateDefaultByToken(DefaultToken : TObject = nil);
+    {@Name creates a default security descriptor. It will contain the same
+    elements as if a securable object (like mutex) is created without a SD.
+    @param(DefaultToken defines a user defined token to be used. It must be of type
+            TJwSecurityToken. (because of unit dependings it cannot be the correct type))
+    @param(RequestedTokenType defines which token should be used for the new SD.
+           If parameter DefaultToken is not nil, RequestedTokenType will be ignored.
+          The following values are possible.  
+          @unorederdlist(
+            @item(rttAuto The token of the thread will be used if any; otherwise
+                  the process token.)
+            @item(rttTokenPrimary The process token is forced to use.
+                    See TJwSecurityToken.CreateTokenByProcess for more information)
+            @item(rttTokenImpersonation The thread token is forced to use.
+                  The token is opened against the process rights.
+                    See TJwSecurityToken.CreateTokenByThread for more information)
+          )
+     )
+    @raises(EJwsclInvalidParameterException will be raised if parameter DefaultToken
+        is not of type TJwSecurityToken.)
+    @raises(EJwsclNoThreadTokenAvailable will be raised if parameter RequestedTokenType
+       defines rttTokenImpersonation and no thread token is available)
+    }
+    constructor CreateDefaultByToken(const DefaultToken : TObject = nil;
+        const RequestedTokenType: TJwRequestedTokenType = rttAuto);
 
        {@Name create a new TJwSecurityDescriptor instance from a security descriptor.
         The sd can be a self relative or absolute sd.
@@ -788,11 +811,14 @@ begin
 end;
 
 
-constructor TJwSecurityDescriptor.CreateDefaultByToken(DefaultToken : TObject);
+constructor TJwSecurityDescriptor.CreateDefaultByToken(
+  const DefaultToken : TObject = nil;
+  const RequestedTokenType: TJwRequestedTokenType = rttAuto);
+  
 var OwnToken : Boolean;
     Token : TJwSecurityToken;
 begin
-  Init(false); //init but create no empty DACL
+  Init(false); //init but creates no empty DACL
 
   OwnToken := not Assigned(DefaultToken);
   if not OwnToken then
@@ -805,7 +831,17 @@ begin
     Token := DefaultToken as TJwSecurityToken;
   end
   else
-    Token := TJwSecurityToken.CreateTokenEffective(TOKEN_QUERY or TOKEN_READ);
+  begin
+    case RequestedTokenType of
+      rttTokenPrimary :
+        Token := TJwSecurityToken.CreateTokenByProcess(0,TOKEN_QUERY or TOKEN_READ);
+      rttTokenImpersonation :
+        Token := TJwSecurityToken.CreateTokenByThread(0,TOKEN_QUERY or TOKEN_READ,false);
+    else
+      //rttAuto :
+      Token := TJwSecurityToken.CreateTokenEffective(TOKEN_QUERY or TOKEN_READ);
+    end;
+  end;
 
   try
     {Just free old DACL}
@@ -828,7 +864,7 @@ begin
 
   finally
     if OwnToken then
-      FreeAndNil(Token);
+      FreeAndNil(Token); //free our token
   end;
 end;
 

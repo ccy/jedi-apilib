@@ -984,6 +984,8 @@ type
   TJwCardinalArray = array of Cardinal;
 
 
+  TJwRequestedTokenType = (rttAuto, rttTokenPrimary, rttTokenImpersonation);
+
   
 {$ENDIF SL_IMPLEMENTATION_SECTION}
 
