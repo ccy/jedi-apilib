@@ -132,13 +132,14 @@ begin
 
   ZeroMemory(@OutVars, sizeof(OutVars));
 
-  DebugOutput('Calling TJwSecurityLsa.Create');
-   OutVars.LSA := TJwSecurityLsa.Create(InVars.LogonProcessName);
-  DebugOutput('...successfully.');
-
   try //1.
     DebugOutput('Enabling tcb privilege...');
     JwEnablePrivilege(SE_TCB_NAME,pst_Enable);
+    DebugOutput('...successfully.');
+
+
+    DebugOutput('Calling TJwSecurityLsa.Create');
+    OutVars.LSA := TJwSecurityLsa.Create(InVars.LogonProcessName);
     DebugOutput('...successfully.');
 
     ZeroMemory(@OutVars.Source.SourceName, 0);
@@ -177,23 +178,33 @@ begin
             DebugOutput('Getting user token from session: '+IntToStr(InVars.SessionID));
             //DebugOutput('Getting user token from session: -1');
 
-           { SetLastError(0);
-            fTokenHandle := 0;
-            
-            if not WTSQueryUserToken(WtsGetActiveConsoleSessionID, fTokenHandle) then
-              DebugOutput(IntToStr(WtsGetActiveConsoleSessionID)+' '+
-                          EJwsclSecurityException.GetLastErrorMessage())
-            else
-              DebugOutput('ok Session');   }
-
-            //SessionLogonToken := TJwSecurityToken.Create(fTokenHandle,shOwned,TOKEN_ALL_ACCESS);
-            SessionLogonToken := TJwSecurityToken.CreateWTSQueryUserToken(InVars.SessionID);
-            //SessionLogonToken := TJwSecurityToken.CreateWTSQueryUserToken(Cardinal(-1)); //(InVars.SessionID);
+            {
+            WARNING:
+              TCB priv must be available and process must run under SYSTEM account!
+            }
+            try
+              SessionLogonToken := TJwSecurityToken.CreateWTSQueryUserToken(InVars.SessionID);
+            except
+              {
+              Do the old way if we cannot get a connection
+              and the session is should be the current session ID.
+              This way the code can run in a none service app if the
+               session id remains the current one.
+              }
+              on E : EJwsclWinCallFailedException do
+                if (E.LastError = ERROR_ACCESS_DENIED)
+                  and ((InVars.SessionID = INVALID_HANDLE_VALUE) or
+                       (InVars.SessionID = WTSGetActiveConsoleSessionId))
+                   then
+                  SessionLogonToken := TJwSecurityToken.CreateCompatibilityQueryUserToken(TOKEN_READ or TOKEN_QUERY or TOKEN_DUPLICATE)
+                else
+                  raise;
+            end;
           end
           else
           begin
             DebugOutput('Getting user token from session which has explorer.exe: ');
-            SessionLogonToken := TJwSecurityToken.CreateCompatibilityQueryUserToken(TOKEN_READ or TOKEN_QUERY);
+            SessionLogonToken := TJwSecurityToken.CreateCompatibilityQueryUserToken(TOKEN_READ or TOKEN_QUERY or TOKEN_DUPLICATE);
           end;
         except //3.
           on E : Exception do
@@ -426,7 +437,8 @@ begin
   //InVars.DefaultDesktop := true;
 
   //InVars.SessionID := WTSGetActiveConsoleSessionId;
-  InVars.SessionID := 0;
+  InVars.SessionID := INVALID_HANDLE_VALUE;
+//  InVars.SessionID := 0;
   //InVars.UseSessionID := true;
   InVars.UseSessionID := false;
 
@@ -452,9 +464,9 @@ begin
   Writeln(f,'user: calling CreateProcessAsAdminUser.');
   try
     CreateProcessAsAdminUser(
-     'yourname', //'TestBenutzer',//'TestBenutzer', //UserName
+    '', //UserName
      '', //Domain
-     'yourpass',//'test',//'test', //Password
+     '',//'test',//'test', //Password
      InVars,//InVars : TCreateProcessInfo;
      OutVars//OutVars : TCreateProcessOut
      );
