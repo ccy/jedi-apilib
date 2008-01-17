@@ -81,7 +81,7 @@ will (hopefully) show the stack trace to the GetMemPointer created by
 JwLocalAllocMem/JwGlobalAllocMem.
 
 Warning: Do not call JwLocalAllocMem/JwGlobalAllocMem for API functions
-that will give the handle free for themselves. GetMemPointer will remain
+that will free the handle. GetMemPointer will remain
 whatsoever. Instead use LocalAlloc/GlobalAlloc.
 This behavior is rare but the API documentation will (mostly) say it.
 Refer to MSDN documentation for more information.}
@@ -90,7 +90,7 @@ function JwLocalAllocMem(uFlags: UINT; uBytes: SIZE_T): HLOCAL;
 {@Name frees a managed LocalAlloc handle created by JwLocalAllocMem.
 The given handle will be set to 0.
 Refer to MSDN documentation for more information.
-@raises EInvalidPointer if the given handle was not created by JwLocalAllocMem.}
+@raises(EInvalidPointer if the given handle was not created by JwLocalAllocMem).}
 function JwLocalFreeMem(var hMem: HLOCAL): HLOCAL;
 
 {@Name creates a managed memory handle by LocalAlloc.
@@ -104,7 +104,7 @@ will (hopefully) show the stack trace to the GetMemPointer created by
 JwLocalAllocMem/JwGlobalAllocMem.
 
 Warning: Do not call JwLocalAllocMem/JwGlobalAllocMem for API functions
-that will give the handle free for themselves. GetMemPointer will remain
+that will free the handle. GetMemPointer will remain
 whatsoever. Instead use LocalAlloc/GlobalAlloc.
 This behavior is rare but the API documentation will (mostly) say it.
 Refer to MSDN documentation for more information.}
@@ -156,7 +156,7 @@ It is discouraged to use absolute values because they do not depend on the
 parameter StartStringId. Changing this value and the resource strings
 will lead to EJwsclResourceNotFound exception.
 
-@param([in,out] MappingRecord receives an array of TJwRightsMapping which
+@param(MappingRecord @italic([in,out]) receives an array of TJwRightsMapping which
   string member Name is replaced by the resource string.)
 
 @param(StartStringId defines the starting position of the index counting.
@@ -203,10 +203,12 @@ procedure LocalizeMapping(var MappingRecord : array of TJwRightsMapping;
 The array must be in a post fix order. This sequence describes the
 Level structure.
 
+@preformatted(
 Objs[i].Level = a_i
         { a_i +1        | a_i - a_(i-1) = 1 AND a_i < 4
 a_i+1 = { a_i - t       | a_i - t AND t >= 0
         { ERROR_INVALID_PARAMETER | else
+)
 
 sequence start: a_0 = 0
 
@@ -221,10 +223,12 @@ function JwCheckArray(const Objs : TJwObjectTypeArray) : Boolean; overload;
 The array must be in a post fix order. This sequence describes the
 Level structure.
 
+@preformatted(
 Objs[i].Level = a_i
         { a_i +1        | a_i - a_(i-1) = 1 AND a_i < 4
 a_i+1 = { a_i - t       | a_i - t AND t >= 0
         { ERROR_INVALID_PARAMETER | else
+)
 
 sequence start: a_0 = 0
 
@@ -239,8 +243,12 @@ function JwCheckArray(const Objs : TJwObjectTypeArray; out Index : Integer) : Bo
 procedure JwUNIMPLEMENTED_DEBUG;
 procedure JwUNIMPLEMENTED;
 
-procedure JwRaiseOnNilMemoryBlock(const P : Pointer; const MethodName, ClassName, FileName : TJwString);
-procedure JwRaiseOnNilParameter(const P : Pointer; const ParameterName, MethodName, ClassName, FileName : TJwString);
+procedure JwRaiseOnNilMemoryBlock(const P : Pointer;
+  const MethodName, ClassName, FileName : TJwString);
+
+  
+procedure JwRaiseOnNilParameter(const P : Pointer;
+  const ParameterName, MethodName, ClassName, FileName : TJwString);
 
 implementation
 uses Classes, SysUtils, JwsclToken, JwsclKnownSid, JwsclDescriptor, JwsclAcl,

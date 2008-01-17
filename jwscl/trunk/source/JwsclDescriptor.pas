@@ -180,7 +180,7 @@ type
     @param(RequestedTokenType defines which token should be used for the new SD.
            If parameter DefaultToken is not nil, RequestedTokenType will be ignored.
           The following values are possible.  
-          @unorederdlist(
+          @unorderedlist(
             @item(rttAuto The token of the thread will be used if any; otherwise
                   the process token.)
             @item(rttTokenPrimary The process token is forced to use.
