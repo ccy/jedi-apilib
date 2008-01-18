@@ -822,7 +822,7 @@ type
          See CreateTokenByThread for more information.
          @return Returns the thread token or nil if none exists.
           The caller must free the token instance.
-         @raises EJwsclOpenThreadTokenException will be raised if an error occurs.}
+         }
     class function GetThreadToken(const aDesiredAccess: TJwAccessMask;
       const anOpenAsSelf: boolean): TJwSecurityToken; virtual;
 
@@ -4217,36 +4217,38 @@ begin
   Result := True;
 
   privs := ClientToken.GetTokenPrivileges;
-  for i := 0 to aRequiredPrivileges.Count - 1 do
-  begin
-    priv := privs.GetPrivByLUID(aRequiredPrivileges.PrivByIdx[i].LUID);
-
-
-    if Assigned(priv) and priv.Enabled then
+  try
+    for i := 0 to aRequiredPrivileges.Count - 1 do
     begin
-      priv.Privilege_Used_For_Access := True;
+      priv := privs.GetPrivByLUID(aRequiredPrivileges.PrivByIdx[i].LUID);
 
-      if not RequiresAllPrivs then
+
+      if Assigned(priv) and priv.Enabled then
       begin
-        Result := True;
-        privs.Free;
-        exit;
-      end;
-    end
-    else
-    begin
-      if Assigned(priv) then
-        priv.Privilege_Used_For_Access := False;
-      if RequiresAllPrivs then
+        priv.Privilege_Used_For_Access := True;
+
+        if not RequiresAllPrivs then
+        begin
+          Result := True;
+          privs.Free;
+          exit;
+        end;
+      end
+      else
       begin
-        Result := False;
-        privs.Free;
-        exit;
+        if Assigned(priv) then
+          priv.Privilege_Used_For_Access := False;
+        if RequiresAllPrivs then
+        begin
+          Result := False;
+          privs.Free;
+          exit;
+        end;
       end;
     end;
+  finally
+    privs.Free;
   end;
-
-  privs.Free;
 end;
 
 
@@ -4339,20 +4341,19 @@ var
   i: integer;
 begin
   privSet := GetTokenPrivileges;
-
-
-  for i := LOW(Privileges) to High(Privileges) do
-  begin
-    if not Assigned(privSet.PrivByName[Privileges[i]]) then
+  try
+    for i := Low(Privileges) to High(Privileges) do
     begin
-      FreeAndNil(privSet);
-      raise EJwsclPrivilegeCheckException.CreateFmtEx(
-        RsTokenPrivilegeNotFound, 'CheckTokenPrivileges', ClassName, RsUNToken,
-        0, False, [Privileges[i]]);
+      if not Assigned(privSet.PrivByName[Privileges[i]]) then
+      begin
+        raise EJwsclPrivilegeCheckException.CreateFmtEx(
+          RsTokenPrivilegeNotFound, 'CheckTokenPrivileges', ClassName, RsUNToken,
+          0, False, [Privileges[i]]);
+      end;
     end;
+  finally
+    privSet.Free;
   end;
-
-  privSet.Free;
 end;
 
 procedure TJwSecurityToken.FreeObjectMemory(var anObject: TObject);
@@ -4367,10 +4368,11 @@ var
   privSet: TJwPrivilegeSet;
 begin
   privSet := GetTokenPrivileges;
-
-  Result := Assigned(privSet.PrivByName[Priv]);
-
-  privSet.Free;
+  try
+    Result := Assigned(privSet.PrivByName[Priv]);
+  finally
+    privSet.Free;
+  end;
 end;
 
 function TJwSecurityToken.GetIsRestricted: boolean;

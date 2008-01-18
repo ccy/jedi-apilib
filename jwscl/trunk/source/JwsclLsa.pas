@@ -190,8 +190,7 @@ const
     MaximumLength: 3;
     Buffer: '12'#0);
 begin
-  // JwEnablePrivilege(SE_TCB_NAME,pst_Enable);
-
+   
   lsaHostString := JwCreateLSAString(LogonProcessName);
 
 
