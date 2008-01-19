@@ -8,11 +8,7 @@ uses
   StdCtrls, StrUtils{, CommCtrl}, Math, Dialogs,
   VirtualTrees,
   NetApi,
-{$IFDEF DEBUG}
-{$IFDEF REMKO}
-  RpcWinsta,       
-{$ENDIF REMKO}
-{$ENDIF DEBUG}  JwaWindows, JwaVista,
+  JwaWindows, JwaVista,
   JwsclSid, JwsclTerminalServer;
 
 type
@@ -39,11 +35,11 @@ type
     List: PJwWTSProcessList;
   end;
 
-// Class below is used to store imageindex of icons in the Imagelist
-TIconIndex = (icThisComputer, icFavorite, icWorld, icServers, icServersSel,
-  icServer, icServerSel, icUserGhosted, icUser, IcNetworkUser, icNetwork,
-  icComputer, icProcess, icChip, icMemory, icListener, icVirtual, icCPUTime,
-  icClock, icService, icNetworkService, icSystem, icHourGlass, icExclMark);
+  // Class below is used to store imageindex of icons in the Imagelist
+  TIconIndex = (icThisComputer, icFavorite, icWorld, icServers, icServersSel,
+    icServer, icServerSel, icUserGhosted, icUser, IcNetworkUser, icNetwork,
+    icComputer, icProcess, icChip, icMemory, icListener, icVirtual, icCPUTime,
+    icClock, icService, icNetworkService, icSystem, icHourGlass, icExclMark);
 
 type
   TMainForm = class(TForm)
@@ -168,6 +164,8 @@ type
       Column: TColumnIndex; var LineBreakStyle: TVTTooltipLineBreakStyle;
       var HintText: WideString);
     procedure actAddServerExecute(Sender: TObject);
+    procedure ActionList1Update(Action: TBasicAction; var Handled: Boolean);
+    procedure actRefreshExecute(Sender: TObject);
   private
     { Private declarations }
     TerminalServers: TJwTerminalServerList;
@@ -181,9 +179,14 @@ type
       const PSessionList: PJwWTSSessionList; PrevCount: Integer);
     procedure UpdateProcessVirtualTree(const AVirtualTree: TBaseVirtualTree;
       const PProcessList: PJwWTSProcessList; PrevCount: Integer);
+    function GetCurrentSession(AVST: TBaseVirtualTree): TJwWTSSession; overload;
+    function GetCurrentSession(AVST: TBaseVirtualTree; Node: PVirtualNode): TJwWTSSession; overload;
+    function GetCurrentProcess(AVST: TBaseVirtualTree): TJwWTSProcess; overload;
+    function GetCurrentProcess(AVST: TBaseVirtualTree; Node: PVirtualNode): TJwWTSProcess; overload;
     procedure OnTerminalServerEvent(Sender: TObject);
     procedure OnEnumerateServersDone(Sender: TObject);
-  public
+//    procedure UpdateSessions(ATerminalServer: TJwTerminalServer);
+//    procedure UpdateProcesses(ATerminalServer: TJwTerminalServer);
   public
     { Public declarations }
   end;
@@ -318,6 +321,20 @@ begin
   end;
 end;
 
+procedure UpdateSessions(ATerminalServer: TJwTerminalServer);
+var PrevCount: Integer;
+begin
+  // Get the previous session count
+  PrevCount := ATerminalServer.Sessions.Count;
+
+  // Enumerate sessions
+  ATerminalServer.EnumerateSessions;
+
+  // Sychronize User and Session tree's with the SessionList
+  MainForm.UpdateVirtualTree(MainForm.VSTUser, @ATerminalServer.Sessions, PrevCount);
+  MainForm.UpdateVirtualTree(MainForm.VSTSession, @ATerminalServer.Sessions, PrevCount);
+end;
+
 procedure TMainForm.OnTerminalServerEvent(Sender: TObject);
 var PrevCount: Integer;
 begin
@@ -333,6 +350,15 @@ begin
     UpdateVirtualTree(VSTUser, @Sessions, PrevCount);
     UpdateVirtualTree(VSTSession, @Sessions, PrevCount);
   end;
+end;
+
+procedure UpdateProcesses(ATerminalServer: TJwTerminalServer);
+var
+  PrevCount: Integer;
+begin
+  PrevCount := ATerminalServer.Processes.Count;
+  ATerminalServer.EnumerateProcesses;
+  MainForm.UpdateProcessVirtualTree(MainForm.VSTProcess, @ATerminalServer.Processes, PrevCount);
 end;
 
 procedure TMainForm.Timer1Timer(Sender: TObject);
@@ -399,6 +425,164 @@ begin
   pData^.Caption := s;
   pData^.PTerminalServerList := nil;
   pNode.CheckType := ctCheckBox;
+end;
+
+function TMainForm.GetCurrentSession(AVST: TBaseVirtualTree; Node: PVirtualNode): TJwWTSSession;
+var UserNodeData: PUserNodeData;
+begin
+  Result := nil;
+
+  if Node = nil then
+  begin
+    Exit;
+  end;
+
+  // Get Node Data
+  UserNodeData := AVST.GetNodeData(Node);
+
+  // Do we have data for this session?
+  if UserNodeData^.Index < UserNodeData^.List.Count then
+  begin
+    Result := UserNodeData^.List^[UserNodeData^.Index];
+  end;
+end;
+
+function TMainForm.GetCurrentSession(AVST: TBaseVirtualTree): TJwWTSSession;
+var UserNodeData: PUserNodeData;
+  Node: PVirtualNode;
+begin
+  Result := nil;
+
+  Node := AVST.FocusedNode;
+
+  if Node = nil then
+  begin
+    Exit;
+  end;
+
+  // Get Node Data
+  UserNodeData := AVST.GetNodeData(Node);
+
+  // Do we have data for this session?
+  if UserNodeData^.Index < UserNodeData^.List.Count then
+  begin
+    Result := UserNodeData^.List^[UserNodeData^.Index];
+  end;
+end;
+
+function TMainForm.GetCurrentProcess(AVST: TBaseVirtualTree; Node: PVirtualNode): TJwWTSProcess;
+var
+  ProcessNodeData: PProcessNodeData;
+begin
+  Result := nil;
+
+  if Node = nil then
+  begin
+    Exit;
+  end;
+
+  // Get Node Data
+  ProcessNodeData := AVST.GetNodeData(Node);
+
+  // Do we have data for this process?
+  if ProcessNodeData^.Index < ProcessNodeData^.List.Count then
+  begin
+    Result := ProcessNodeData^.List^[ProcessNodeData^.Index];
+  end;
+end;
+
+function TMainForm.GetCurrentProcess(AVST: TBaseVirtualTree): TJwWTSProcess;
+var ProcessNodeData: PProcessNodeData;
+  Node: PVirtualNode;
+begin
+  Result := nil;
+
+  Node := AVST.FocusedNode;
+  if Node = nil then
+  begin
+    Exit;
+  end;
+
+  // Get Node Data
+  ProcessNodeData := AVST.GetNodeData(Node);
+
+  // Do we have data for this process?
+  if ProcessNodeData^.Index < ProcessNodeData^.List.Count then
+  begin
+    Result := ProcessNodeData^.List^[ProcessNodeData^.Index];
+  end;
+end;
+
+
+// This procedure takes care of updating the actionlist. It enables actions
+// based upon the visible tab (user, session or process) and session connect
+// state.
+procedure TMainForm.ActionList1Update(Action: TBasicAction;
+  var Handled: Boolean);
+var CurrentSession: TJwWTSSession;
+begin
+  CurrentSession := nil;
+
+  actEndProcess.Enabled := (PageControl1.ActivePageIndex = 2) and
+    (VSTProcess.FocusedNode <> nil);
+
+  case PageControl1.ActivePageIndex of
+    0: CurrentSession := GetCurrentSession(VSTUser);
+    1: CurrentSession := GetCurrentSession(VSTSession);
+  end;
+
+  if CurrentSession <> nil then
+  begin
+    actConnect.Enabled :=
+      CurrentSession.ConnectState in [WTSActive, WTSConnected, WTSDisconnected];
+    actDisconnect.Enabled :=
+      CurrentSession.ConnectState in [WTSActive, WTSConnected, WTSShadow];
+    actSendMessage.Enabled :=
+      CurrentSession.ConnectState in [WTSActive, WTSConnected, WTSShadow];
+    actRemoteControl.Enabled :=
+      CurrentSession.ConnectState in [WTSActive, WTSConnected];
+    actReset.Enabled := True;
+    actStatus.Enabled := True;
+    actLogoff.Enabled :=
+      CurrentSession.ConnectState in [WTSActive, WTSDisconnected, WTSShadow];
+  end
+  else begin
+    actConnect.Enabled := False;
+    actDisconnect.Enabled := False;
+    actSendMessage.Enabled := False;
+    actRemoteControl.Enabled := False;
+    actReset.Enabled := False;
+    actStatus.Enabled := False;
+    actLogoff.Enabled := False;
+  end;
+
+  // Set Handled (we don't need to do this for every action!)
+  Handled := True;
+end;
+
+procedure TMainForm.actRefreshExecute(Sender: TObject);
+var
+  i: Integer;
+  Update: procedure(ATerminalServer: TJwTerminalServer);
+begin
+  if PageControl1.ActivePageIndex = 2 then
+  begin
+    Update := UpdateProcesses;
+  end
+  else begin
+    Update := UpdateSessions;
+  end;
+
+  for i := 0 to TerminalServers.Count - 1 do
+  begin
+    Update(TerminalServers[i]);
+  end;
+
+  case PageControl1.ActivePageIndex of
+    0: VSTUser.SortTree(VSTUser.Header.SortColumn, VSTUser.Header.SortDirection);
+    1: VSTSession.SortTree(VSTSession.Header.SortColumn, VSTSession.Header.SortDirection);
+    2: VSTProcess.SortTree(VSTProcess.Header.SortColumn, VSTProcess.Header.SortDirection);
+  end;
 end;
 
 procedure TMainForm.Button2Click(Sender: TObject);
@@ -513,41 +697,42 @@ end;
 procedure TMainForm.VSTUserGetText(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType;
   var CellText: WideString);
-var
-  pUserData: PUserNodeData;
-  CurrentItem: TJwWTSSession;
+var CurrentSession: TJwWTSSession;
 begin
-  pUserData := Sender.GetNodeData(Node);
-
   // Sometimes VST asks for Column -1 (Autosort??)
   if Column < 0 then Exit;
 
-  // Do we have data for this session?
-  if pUserData^.List^.Count > pUserData^.Index then
-  begin
-    CurrentItem := pUserData^.List^.Items[pUserData^.Index];
-    if CurrentItem.Username <> '' then
-    begin
-      // Show the node if it was InVisible
-      if not (vsVisible in Node.States) then
-      begin
-        Sender.IsVisible[Node] := True;
-      end;
+  CurrentSession := GetCurrentSession(Sender, Node);
 
-      case Column of
-        0: CellText := CurrentItem.Owner.Owner.Server;
-        1: CellText := CurrentItem.Username;
-        2: CellText := CurrentItem.WinStationName;
-        3: CellText := IntToStr(CurrentItem.SessionId);
-        4: CellText := CurrentItem.ConnectStateStr;
-        5: CellText := CurrentItem.IdleTimeStr;
-        6: CellText := CurrentItem.LogonTimeStr;
-      end;
-    end
-    else begin
-      // Users Listview only shows sessions that have a user attached!
-      Sender.IsVisible[Node] := False;
+  // Delete this node if we don't have data for it!
+  if CurrentSession = nil then
+  begin
+    Sender.DeleteNode(Node);
+    Exit;
+  end;
+
+  if CurrentSession.Username <> '' then
+  begin
+
+    // Show the node if it was InVisible
+    if not (vsVisible in Node.States) then
+    begin
+      Sender.IsVisible[Node] := True;
     end;
+
+    case Column of
+      0: CellText := CurrentSession.Owner.Owner.Server;
+      1: CellText := CurrentSession.Username;
+      2: CellText := CurrentSession.WinStationName;
+      3: CellText := IntToStr(CurrentSession.SessionId);
+      4: CellText := CurrentSession.ConnectStateStr;
+      5: CellText := CurrentSession.IdleTimeStr;
+      6: CellText := CurrentSession.LogonTimeStr;
+    end;
+  end
+  else begin
+    // Users Listview only shows sessions that have a user attached!
+    Sender.IsVisible[Node] := False;
   end;
 end;
 
@@ -595,96 +780,87 @@ end;
 procedure TMainForm.VSTUserGetHint(Sender: TBaseVirtualTree; Node: PVirtualNode;
   Column: TColumnIndex; var LineBreakStyle: TVTTooltipLineBreakStyle;
   var HintText: WideString);
-var
-  pUserData: PUserNodeData;
-  CurrentItem: TJwWTSSession;
+var CurrentSession: TJwWTSSession;
 begin
-  pUserData := Sender.GetNodeData(Node);
-  if pUserData = nil then
-    exit;
+  CurrentSession := GetCurrentSession(Sender, Node);
 
-  if not Assigned(pUserData^.List) then
-    exit;
-
-  if pUserData^.List^.Count > pUserData^.Index then
+  // Delete this node if we don't have data for it!
+  if CurrentSession = nil then
   begin
-    CurrentItem := pUserData^.List^[pUserData^.Index];
+    Sender.DeleteNode(Node);
+    Exit;
+  end;
 
-    case Column of
-      4: HintText := GetShadowHint(CurrentItem.ShadowInformation);
-      8: HintText := Format('%s:%d', [CurrentItem.RemoteAddress, CurrentItem.RemotePort]);
-    end;
+  case Column of
+    4: HintText := GetShadowHint(CurrentSession.ShadowInformation);
+    8: HintText := Format('%s:%d', [CurrentSession.RemoteAddress, CurrentSession.RemotePort]);
   end;
 end;
 
 procedure TMainForm.VSTUserGetImageIndex(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
   var Ghosted: Boolean; var ImageIndex: Integer);
-var
-  pData: PUserNodeData;
-//  Username: string;
-//  ConnectState: TWtsConnectStateClass;
+var CurrentSession: TJwWTSSession;
   IsConsole: Boolean;
-  CurrentItem: TJwWTSSession;
 begin
-  pData := Sender.GetNodeData(Node);
+  CurrentSession := GetCurrentSession(Sender, Node);
 
-  if pData = nil then
-    exit;
-  // Do we have data for this session?
-  if pData^.List^.Count > pData^.Index then
+  // Delete this node if we don't have data for it!
+  if CurrentSession = nil then
   begin
-    CurrentItem := pData^.List^.Items[pData^.Index];
-//    Username := CurrentItem.Username;
-//    ConnectState := pData^.List^.Items[pData^.Index].ConnectState;
-    IsConsole := pData^.List^.Items[pData^.Index].WdFlag < WD_FLAG_RDP;
+    Sender.DeleteNode(Node);
+    Exit;
+  end;
 
-    if Kind in [ikNormal, ikSelected] then begin
-      case column of
-        0: ImageIndex := Integer(icServer);
-        1: begin
-          if CurrentItem.Username = '' then
-          begin
-            ImageIndex := -1; // No Icon!
-          end
-          else if CurrentItem.Username = LocalSystemName then
-          begin
-            ImageIndex := Integer(icSystem);
-          end
-          else if CurrentItem.Username = LocalServiceName then
-          begin
-            ImageIndex := Integer(icService);
-          end
-          else if CurrentItem.Username = NetworkServiceName then
-          begin
-            ImageIndex := Integer(icNetworkService);
-          end
-          else if CurrentItem.ConnectState = WTSActive then
-          begin
-            ImageIndex := Integer(icUser);
-          end
-          else begin
-            ImageIndex := Integer(icUserGhosted);
-          end;
+  IsConsole := CurrentSession.WdFlag < WD_FLAG_RDP;
+
+  if Kind in [ikNormal, ikSelected] then begin
+    case column of
+      0: ImageIndex := Integer(icServer);
+      1:
+      begin
+        if CurrentSession.Username = '' then
+        begin
+          ImageIndex := -1; // No Icon!
+        end
+        else if CurrentSession.Username = LocalSystemName then
+        begin
+          ImageIndex := Integer(icSystem);
+        end
+        else if CurrentSession.Username = LocalServiceName then
+        begin
+          ImageIndex := Integer(icService);
+        end
+        else if CurrentSession.Username = NetworkServiceName then
+        begin
+          ImageIndex := Integer(icNetworkService);
+        end
+        else if CurrentSession.ConnectState = WTSActive then
+        begin
+          ImageIndex := Integer(icUser);
+        end
+        else begin
+          ImageIndex := Integer(icUserGhosted);
         end;
-        2: begin
-          if IsConsole then
-          begin
-            ImageIndex := Integer(icComputer);
-          end
-          else if CurrentItem.ConnectState = WTSListen then
-          begin
-            ImageIndex := Integer(icListener);
-          end
-          else if CurrentItem.Username <> '' then begin
-            ImageIndex := Integer(icNetworkUser);
-          end
-          else if CurrentItem.ConnectState = WTSActive then begin
-            ImageIndex := Integer(icNetwork);
-          end
-          else begin
-            ImageIndex := -1;
-          end;
+      end;
+      2:
+      begin
+        if IsConsole then
+        begin
+          ImageIndex := Integer(icComputer);
+        end
+        else if CurrentSession.ConnectState = WTSListen then
+        begin
+          ImageIndex := Integer(icListener);
+        end
+        else if CurrentSession.Username <> '' then begin
+          ImageIndex := Integer(icNetworkUser);
+        end
+        else if CurrentSession.ConnectState = WTSActive then begin
+          ImageIndex := Integer(icNetwork);
+        end
+        else begin
+          ImageIndex := -1;
         end;
       end;
     end;
@@ -882,18 +1058,19 @@ end;
 procedure TMainForm.VSTSessionGetHint(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Column: TColumnIndex;
   var LineBreakStyle: TVTTooltipLineBreakStyle; var HintText: WideString);
-var
-  pUserData: PUserNodeData;
-  CurrentItem: TJwWTSSession;
+var CurrentSession: TJwWTSSession;
 begin
-  pUserData := Sender.GetNodeData(Node);
+  CurrentSession := GetCurrentSession(Sender, Node);
 
-  if pUserData^.List^.Count > pUserData^.Index then
+  // Delete this node if we don't have data for it!
+  if CurrentSession = nil then
   begin
-    CurrentItem := pUserData^.List^[pUserData^.Index];
-    case Column of
-      3: HintText := GetShadowHint(CurrentItem.ShadowInformation);
-    end;
+    Sender.DeleteNode(Node);
+    Exit;
+  end;
+
+  case Column of
+    3: HintText := GetShadowHint(CurrentSession.ShadowInformation);
   end;
 end;
 
@@ -906,48 +1083,43 @@ end;
 procedure TMainForm.VSTSessionGetText(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType;
   var CellText: WideString);
-var pData: PSessionNodeData;
-  CurrentItem: TJwWTSSession;
+var CurrentSession: TJwWTSSession;
 begin
-  pData := Sender.GetNodeData(Node);
-  if pData = nil then
-    exit;
-  if pData^.List = nil then
-    exit;
+  CurrentSession := GetCurrentSession(Sender, Node);
 
-
-  // Do we have data for this session?
-  if pData^.List^.Count > pData^.Index then
+  // Delete this node if we don't have data for it!
+  if CurrentSession = nil then
   begin
-    CurrentItem := pData^.List^.Items[pData^.Index];
+    Sender.DeleteNode(Node);
+    Exit;
+  end;
 
+  case Column of
+    0: CellText := CurrentSession.Owner.Owner.Server;
+    1: CellText := CurrentSession.Username;
+    2: CellText := IntToStr(CurrentSession.SessionId);
+    3: CellText := CurrentSession.ConnectStateStr;
+    4: CellText := CurrentSession.WinStationDriverName;
+    5: CellText := CurrentSession.ClientName;
+    6: CellText := CurrentSession.IdleTimeStr;
+    7: CellText := CurrentSession.LogonTimeStr;
+    8: CellText := CurrentSession.RemoteAddress;
+  end;
+
+  // Show Session Counters only for Active and non-console sessions:
+  if (CurrentSession.ConnectState = WTSActive) and
+    (CurrentSession.WdFlag > WD_FLAG_CONSOLE) then
+  begin
     case Column of
-      0: CellText := CurrentItem.Owner.Owner.Server;
-      1: CellText := CurrentItem.Username;
-      2: CellText := IntToStr(CurrentItem.SessionId);
-      3: CellText := CurrentItem.ConnectStateStr;
-      4: CellText := CurrentItem.WinStationDriverName;
-      5: CellText := CurrentItem.ClientName;
-      6: CellText := CurrentItem.IdleTimeStr;
-      7: CellText := CurrentItem.LogonTimeStr;
-      8: CellText := CurrentItem.RemoteAddress;
+      9: CellText := IntToStr(CurrentSession.IncomingBytes);
+      10: CellText := IntToStr(CurrentSession.OutgoingBytes);
+      11: CellText := CurrentSession.CompressionRatio;
     end;
-
-    // Show Session Counters only for Active and non-console sessions:
-    if (CurrentItem.ConnectState = WTSActive) and
-      (CurrentItem.WdFlag > WD_FLAG_CONSOLE) then
-    begin
-      case Column of
-        9: CellText := IntToStr(CurrentItem.IncomingBytes);
-        10: CellText := IntToStr(CurrentItem.OutgoingBytes);
-        11: CellText := CurrentItem.CompressionRatio;
-      end;
-    end
-    // Set empty value for In- and OutgoingBytes and CompressionRatio
-    else if Column > 8 then
-    begin
-      CellText := '';
-    end;
+  end
+  // Set empty value for In- and OutgoingBytes and CompressionRatio
+  else if Column > 8 then
+  begin
+    CellText := '';
   end;
 end;
 
@@ -1064,36 +1236,30 @@ end;
 procedure TMainForm.VSTProcessGetText(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType;
   var CellText: WideString);
-var pData: PProcessNodeData;
-  FormatSettings: TFormatSettings;
-  CurrentItem: TJwWTSProcess;
+var FormatSettings: TFormatSettings;
+  CurrentProcess: TJwWTSProcess;
 begin
   // Get LocaleFormatSettings, we use them later on to format DWORD
   // values with bytes as KByte values with thousand seperators a la taskmgr
   // (we query this every time because the user may have changed settings)
   GetLocaleFormatSettings(LOCALE_USER_DEFAULT, FormatSettings);
-  pData := Sender.GetNodeData(Node);
 
-  if pData = nil then
-    exit;
-  // Do we have data for this session?
-  if pData^.List^.Count > pData^.Index then
-  begin
-    CurrentItem := pData^.List^.Items[pData^.Index];
-    case Column of
-      0: CellText := CurrentItem.Owner.Owner.Server;
-      1: CellText := CurrentItem.Username;
-      2: CellText := CurrentItem.WinStationName;
-      3: CellText := IntToStr(CurrentItem.SessionId);
-      4: CellText := IntToStr(CurrentItem.ProcessId);
-      5: CellText := CurrentItem.ProcessName;
-      6: CellText := CurrentItem.ProcessAgeStr;
-      7: CellText := CurrentItem.ProcessCPUTime;
-      8: CellText := Format('%.0n K', [ CurrentItem.ProcessMemUsage / 1024],
-        FormatSettings);
-      9: CellText := Format('%.0n K', [CurrentItem.ProcessVMSize / 1024],
-        FormatSettings);
-    end;
+  // Get Current Process
+  CurrentProcess := GetCurrentProcess(Sender, Node);
+
+  case Column of
+    0: CellText := CurrentProcess.Owner.Owner.Server;
+    1: CellText := CurrentProcess.Username;
+    2: CellText := CurrentProcess.WinStationName;
+    3: CellText := IntToStr(CurrentProcess.SessionId);
+    4: CellText := IntToStr(CurrentProcess.ProcessId);
+    5: CellText := CurrentProcess.ProcessName;
+    6: CellText := CurrentProcess.ProcessAgeStr;
+    7: CellText := CurrentProcess.ProcessCPUTime;
+    8: CellText := Format('%.0n K', [ CurrentProcess.ProcessMemUsage / 1024],
+      FormatSettings);
+    9: CellText := Format('%.0n K', [CurrentProcess.ProcessVMSize / 1024],
+      FormatSettings);
   end;
 end;
 

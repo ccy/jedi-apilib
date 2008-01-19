@@ -1,7 +1,7 @@
 object MainForm: TMainForm
   Left = 0
   Top = 0
-  ActiveControl = VSTUser
+  ActiveControl = VSTProcess
   Caption = 'TSAdminEx'
   ClientHeight = 426
   ClientWidth = 694
@@ -76,14 +76,12 @@ object MainForm: TMainForm
     object ToolButton3: TToolButton
       Left = 46
       Top = 2
-      Caption = 'ToolButton3'
-      ImageIndex = 2
+      Action = actSendMessage
     end
     object ToolButton4: TToolButton
       Left = 69
       Top = 2
-      Caption = 'ToolButton4'
-      ImageIndex = 3
+      Action = actRemoteControl
     end
     object ToolButton5: TToolButton
       Left = 92
@@ -96,14 +94,12 @@ object MainForm: TMainForm
     object ToolButton6: TToolButton
       Left = 100
       Top = 2
-      Caption = 'ToolButton6'
-      ImageIndex = 4
+      Action = actReset
     end
     object ToolButton7: TToolButton
       Left = 123
       Top = 2
-      Caption = 'ToolButton7'
-      ImageIndex = 5
+      Action = actStatus
     end
     object ToolButton8: TToolButton
       Left = 146
@@ -116,8 +112,7 @@ object MainForm: TMainForm
     object ToolButton9: TToolButton
       Left = 154
       Top = 2
-      Caption = 'ToolButton9'
-      ImageIndex = 6
+      Action = ActLogoff
     end
     object ToolButton10: TToolButton
       Left = 177
@@ -130,8 +125,7 @@ object MainForm: TMainForm
     object ToolButton11: TToolButton
       Left = 185
       Top = 2
-      Caption = 'ToolButton11'
-      ImageIndex = 7
+      Action = ActEndProcess
     end
     object ToolButton12: TToolButton
       Left = 208
@@ -144,8 +138,7 @@ object MainForm: TMainForm
     object ToolButton13: TToolButton
       Left = 216
       Top = 2
-      Caption = 'ToolButton13'
-      ImageIndex = 8
+      Action = actRefresh
     end
     object ToolButton14: TToolButton
       Left = 239
@@ -178,7 +171,7 @@ object MainForm: TMainForm
       Top = 1
       Width = 488
       Height = 376
-      ActivePage = TabSheet1
+      ActivePage = TabSheet3
       Align = alClient
       TabOrder = 0
       object TabSheet1: TTabSheet
@@ -253,15 +246,11 @@ object MainForm: TMainForm
       object TabSheet2: TTabSheet
         Caption = 'Sessions'
         ImageIndex = 1
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
         object VSTSession: TVirtualStringTree
           Left = 0
           Top = 0
-          Width = 472
-          Height = 338
+          Width = 480
+          Height = 348
           Align = alClient
           Header.AutoSizeIndex = -1
           Header.Font.Charset = DEFAULT_CHARSET
@@ -283,6 +272,8 @@ object MainForm: TMainForm
           OnGetHint = VSTSessionGetHint
           OnGetNodeDataSize = VSTSessionGetNodeDataSize
           OnHeaderClick = VSTHeaderClick
+          ExplicitLeft = 1
+          ExplicitTop = -1
           Columns = <
             item
               Position = 0
@@ -350,15 +341,11 @@ object MainForm: TMainForm
       object TabSheet3: TTabSheet
         Caption = 'Processes'
         ImageIndex = 2
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
         object VSTProcess: TVirtualStringTree
           Left = 0
           Top = 0
-          Width = 472
-          Height = 338
+          Width = 480
+          Height = 348
           Align = alClient
           Header.AutoSizeIndex = -1
           Header.Font.Charset = DEFAULT_CHARSET
@@ -1054,6 +1041,7 @@ object MainForm: TMainForm
   end
   object ActionList1: TActionList
     Images = ImageList1
+    OnUpdate = ActionList1Update
     Left = 384
     Top = 248
     object actConnect: TAction
@@ -1100,6 +1088,8 @@ object MainForm: TMainForm
       Caption = 'Refresh Now'
       Hint = 'Refresh Now'
       ImageIndex = 8
+      ShortCut = 116
+      OnExecute = actRefreshExecute
     end
     object actAddServer: TAction
       Caption = 'Add Server'
@@ -1257,7 +1247,7 @@ object MainForm: TMainForm
       000000000000}
   end
   object ImageList2: TImageList
-    Left = 376
+    Left = 384
     Top = 288
     Bitmap = {
       494C010118001D00040010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
@@ -2324,8 +2314,8 @@ object MainForm: TMainForm
       000000000000}
   end
   object PopupMenu1: TPopupMenu
-    Left = 160
-    Top = 64
+    Left = 416
+    Top = 288
     object AddServer1: TMenuItem
       Action = actAddServer
     end
