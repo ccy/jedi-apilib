@@ -251,6 +251,7 @@ type
     FShadow : TJwWTSSessionShadow;
     //TODO: this func should be documented but not so detailed because of protected
     procedure GetClientDisplay;
+    function GetServer: TJwString;
     function GetSessionInfoDWORD(const WTSInfoClass: WTS_INFO_CLASS): DWORD;
     procedure GetSessionInfoPtr(const WTSInfoClass: WTS_INFO_CLASS;
       var ABuffer: Pointer);
@@ -303,7 +304,7 @@ type
     constructor Create(const Owner: TJwWTSSessionList;
       const SessionId: TJwSessionId; const WinStationName: TJwString;
       const ConnectState: TWtsConnectStateClass);
-    destructor Destroy; override;  
+    destructor Destroy; override;
     property ApplicationName: TJwString read FApplicationName;
     property ClientAddress: TJwString read FClientAddress;
     property ClientBuildNumber: DWORD read FClientBuildNumber;
@@ -324,7 +325,6 @@ type
     property Domain: TJwString read FDomain;
     function GetClientAddress: TJwString;
     function GetServerHandle: THandle;
-    function GetServerName: TJwString;
     property HorizontalResolution: DWORD read FHorizontalResolution;
     property IdleTime: Int64 read FIdleTime;
     property IdleTimeStr: TJwString read FIdleTimeStr;
@@ -343,6 +343,7 @@ type
     property RemotePort: WORD read FRemotePort;
     function SendMessage(const AMessage: TJwString; const ACaption: TJwString;
       const uType: DWORD; const ATimeOut: DWORD): DWORD;
+    property Server: TJwString read GetServer;
     property SessionId: TJwSessionId read FSessionId;
     function Shadow: boolean;
     property ShadowInformation: TJwWTSSessionShadow read FShadow;
@@ -391,12 +392,13 @@ type
     FSidStr: TJwString;
     FUsername: TJwString;
     FWinStationName: TJwString;
+    function GetServer: TJwString;
   public
     constructor Create(const Owner: TJwWTSProcessList;
       const SessionId: TJwSessionId; const ProcessID: TJwProcessId;
       const ProcessName: TJwString; const Username: TJwString); reintroduce;
     function GetServerHandle: THandle;
-    property Owner: TJwWTSProcessList read FOwner;
+    property Owner: TJwWTSProcessList read FOwner write FOwner;
     property SessionId: TJwSessionId read FSessionId;
     property ProcessAge: Int64 read FProcessAge;
     property ProcessAgeStr: TJwString read FProcessAgeStr;
@@ -406,6 +408,7 @@ type
     property ProcessName: TJwString read FProcessName;
     property ProcessMemUsage: DWORD read FProcessMemUsage;
     property ProcessVMSize: DWORD read FProcessVMSize;
+    property Server: TJwString read GetServer;
     property SidStr: TJwString read FSidStr;
     function Terminate: boolean; overload;
     function Terminate(const dwExitCode: DWORD): boolean; overload;
@@ -560,7 +563,7 @@ begin
   begin
     FreeAndNil(FServerList);
   end;
-  
+
   inherited;
 end;
 
@@ -1581,6 +1584,7 @@ begin
   end;
 end;
 
+
 constructor TJwWTSSession.Create(const Owner: TJwWTSSessionList;
   const SessionId: TJwSessionId; const WinStationName: TJwString;
   const ConnectState: TWtsConnectStateClass);
@@ -1631,7 +1635,7 @@ begin
   FreeAndNil(FShadow);
 end;
 
-function TJwWTSSession.GetServerName: TJwString;
+function TJwWTSSession.GetServer: TJwString;
 begin
   //TODO: Owner = nil? or Owner.Owner = nil ?
   JwRaiseOnNilMemoryBlock(Owner, 'GetServerName', ClassName, RsUNTerminalServer);
@@ -1682,7 +1686,7 @@ function TJwWTSSession.Shadow: boolean;
 begin
   // This function only exists in Unicode
   Result := WinStationShadow(GetServerHandle,
-    PWideChar(WideString(GetServerName)), FSessionId, VK_MULTIPLY,
+    PWideChar(WideString(GetServer)), FSessionId, VK_MULTIPLY,
     MOD_CONTROL);
 end;
 
@@ -1707,6 +1711,14 @@ begin
   FUsername := Username;
 end;
 
+function TJwWTSProcess.GetServer;
+begin
+  JwRaiseOnNilMemoryBlock(Owner, 'GetServerName', ClassName, RsUNTerminalServer);
+  JwRaiseOnNilMemoryBlock(Owner.Owner, 'GetServerName', ClassName, RsUNTerminalServer);
+
+  // The Server is stored in TJwTerminalServer
+  Result := Owner.Owner.Server;
+end;
 
 function TJwWTSProcess.GetServerHandle: THandle;
 begin
