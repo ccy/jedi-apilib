@@ -3,7 +3,7 @@ object MainForm: TMainForm
   Top = 0
   ActiveControl = VSTProcess
   Caption = 'TSAdminEx'
-  ClientHeight = 426
+  ClientHeight = 445
   ClientWidth = 694
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -20,14 +20,14 @@ object MainForm: TMainForm
   object Splitter1: TSplitter
     Left = 0
     Top = 29
-    Height = 378
+    Height = 397
     ExplicitHeight = 368
   end
   object VSTServer: TVirtualStringTree
     Left = 3
     Top = 29
     Width = 201
-    Height = 378
+    Height = 397
     Align = alLeft
     CheckImageKind = ckLightTick
     Header.AutoSizeIndex = 0
@@ -151,7 +151,7 @@ object MainForm: TMainForm
   end
   object StatusBar1: TStatusBar
     Left = 0
-    Top = 407
+    Top = 426
     Width = 694
     Height = 19
     Panels = <>
@@ -161,7 +161,7 @@ object MainForm: TMainForm
     Left = 204
     Top = 29
     Width = 490
-    Height = 378
+    Height = 397
     Align = alClient
     BevelOuter = bvLowered
     Caption = 'Panel1'
@@ -170,7 +170,7 @@ object MainForm: TMainForm
       Left = 1
       Top = 1
       Width = 488
-      Height = 376
+      Height = 395
       ActivePage = TabSheet3
       Align = alClient
       TabOrder = 0
@@ -180,7 +180,7 @@ object MainForm: TMainForm
           Left = 0
           Top = 0
           Width = 480
-          Height = 348
+          Height = 367
           Align = alClient
           Header.AutoSizeIndex = -1
           Header.Font.Charset = DEFAULT_CHARSET
@@ -191,6 +191,7 @@ object MainForm: TMainForm
           Header.Options = [hoAutoResize, hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoAutoSpring]
           HintMode = hmHintAndDefault
           Images = ImageList2
+          IncrementalSearch = isVisibleOnly
           ParentShowHint = False
           ShowHint = True
           TabOrder = 0
@@ -202,6 +203,7 @@ object MainForm: TMainForm
           OnGetImageIndex = VSTUserGetImageIndex
           OnGetHint = VSTUserGetHint
           OnGetNodeDataSize = VSTUserGetNodeDataSize
+          OnIncrementalSearch = VSTUserIncrementalSearch
           Columns = <
             item
               Position = 0
@@ -250,7 +252,7 @@ object MainForm: TMainForm
           Left = 0
           Top = 0
           Width = 480
-          Height = 348
+          Height = 367
           Align = alClient
           Header.AutoSizeIndex = -1
           Header.Font.Charset = DEFAULT_CHARSET
@@ -261,6 +263,7 @@ object MainForm: TMainForm
           Header.Options = [hoAutoResize, hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoAutoSpring]
           HintMode = hmHintAndDefault
           Images = ImageList2
+          IncrementalSearch = isAll
           ParentShowHint = False
           ShowHint = True
           TabOrder = 0
@@ -272,8 +275,7 @@ object MainForm: TMainForm
           OnGetHint = VSTSessionGetHint
           OnGetNodeDataSize = VSTSessionGetNodeDataSize
           OnHeaderClick = VSTHeaderClick
-          ExplicitLeft = 1
-          ExplicitTop = -1
+          OnIncrementalSearch = VSTSessionIncrementalSearch
           Columns = <
             item
               Position = 0
@@ -345,7 +347,7 @@ object MainForm: TMainForm
           Left = 0
           Top = 0
           Width = 480
-          Height = 348
+          Height = 367
           Align = alClient
           Header.AutoSizeIndex = -1
           Header.Font.Charset = DEFAULT_CHARSET
@@ -355,6 +357,7 @@ object MainForm: TMainForm
           Header.Font.Style = []
           Header.Options = [hoAutoResize, hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoAutoSpring]
           Images = ImageList2
+          IncrementalSearch = isAll
           TabOrder = 0
           TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toThemeAware, toUseBlendedImages]
           TreeOptions.SelectionOptions = [toFullRowSelect, toMultiSelect]
@@ -363,6 +366,7 @@ object MainForm: TMainForm
           OnGetImageIndex = VSTProcessGetImageIndex
           OnGetNodeDataSize = VSTProcessGetNodeDataSize
           OnHeaderClick = VSTHeaderClick
+          OnIncrementalSearch = VSTProcessIncrementalSearch
           Columns = <
             item
               Position = 0
@@ -428,6 +432,16 @@ object MainForm: TMainForm
     Caption = 'Toggle Timer'
     TabOrder = 4
     OnClick = Button2Click
+  end
+  object Button1: TButton
+    Left = 512
+    Top = -2
+    Width = 75
+    Height = 25
+    Caption = 'Button1'
+    Enabled = False
+    TabOrder = 5
+    OnClick = Button1Click
   end
   object MainMenu1: TMainMenu
     Images = ImageList1
@@ -498,6 +512,9 @@ object MainForm: TMainForm
     end
     object Help1: TMenuItem
       Caption = 'Help'
+      object About1: TMenuItem
+        Action = actAbout
+      end
     end
   end
   object ImageList1: TImageList
@@ -1094,6 +1111,10 @@ object MainForm: TMainForm
     object actAddServer: TAction
       Caption = 'Add Server'
       OnExecute = actAddServerExecute
+    end
+    object actAbout: TAction
+      Caption = 'About'
+      OnExecute = actAboutExecute
     end
   end
   object Timer1: TTimer
