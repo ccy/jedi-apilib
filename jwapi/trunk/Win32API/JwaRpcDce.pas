@@ -321,6 +321,10 @@ type
   TRpcIfIdVector = RPC_IF_ID_VECTOR;
   PRpcIfIdVector = PRPC_IF_ID_VECTOR;
 
+function I_RpcBindingIsClientLocal(BindingHandle: RPC_BINDING_HANDLE;
+  out ClientLocalFlag: Integer): RPC_STATUS;
+{$EXTERNALSYM I_RpcBindingIsClientLocal}
+
 function RpcBindingCopy(SourceBinding: RPC_BINDING_HANDLE;
   var DestinationBinding: RPC_BINDING_HANDLE): RPC_STATUS; stdcall;
 {$EXTERNALSYM RpcBindingCopy}
@@ -1335,6 +1339,18 @@ const
 {$ENDIF JWA_INCLUDEMODE}
 
 {$IFDEF DYNAMIC_LINK}
+var
+  _I_RpcBindingIsClientLocal: Pointer;
+
+function I_RpcBindingIsClientLocal;
+begin
+  GetProcedureAddress(_I_RpcBindingIsClientLocal, rpclib, 'I_RpcBindingIsClientLocal');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_I_RpcBindingIsClientLocal]
+  end;
+end;
 
 var
   _RpcBindingCopy: Pointer;
@@ -3287,7 +3303,7 @@ begin
 end;
 
 {$ELSE}
-
+function I_RpcBindingIsClientLocal; external rpclib name 'I_RpcBindingIsClientLocal';
 function RpcBindingCopy; external rpclib name 'RpcBindingCopy';
 function RpcBindingFree; external rpclib name 'RpcBindingFree';
 function RpcBindingSetOption; external rpclib name 'RpcBindingSetOption';
