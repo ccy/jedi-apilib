@@ -2,7 +2,8 @@ program TSAdminEx;
 
 uses
   Forms,
-  uMain in 'uMain.pas' {MainForm};
+  uMain in 'uMain.pas' {MainForm},
+  uAbout in 'uAbout.pas' {AboutDialog};
 
 {$R *.res}
 

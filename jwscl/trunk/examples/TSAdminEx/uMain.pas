@@ -205,7 +205,7 @@ type
     procedure UpdateVirtualTree(const AVirtualTree: TBaseVirtualTree;
       const PSessionList: PJwWTSSessionList; PrevCount: Integer);
     procedure UpdateProcessVirtualTree(const AVirtualTree: TBaseVirtualTree;
-      const PProcessList: PJwWTSProcessList; PrevCount: Integer);
+      const PProcessList: PJwWTSProcessList; const PrevCount: Integer; const ComparePointer:PJwWTSProcessList=nil);
     function GetCurrentSession(AVST: TBaseVirtualTree): TJwWTSSession; overload;
     function GetCurrentSession(AVST: TBaseVirtualTree; Node: PVirtualNode): TJwWTSSession; overload;
     function GetCurrentProcess(AVST: TBaseVirtualTree): TJwWTSProcess; overload;
@@ -228,7 +228,7 @@ var
 begin
   inherited Create(CreateSuspended);
   FreeOnTerminate := True;
-  
+
   FInterval := 5000; // Default interval = 5 seconds
   FOwner := Owner;
 
@@ -262,6 +262,9 @@ begin
       FTerminalServer := TJwTerminalServer.Create;
       FTerminalServer.Server := FServerList[i];
 
+      FTerminalServer.Processes.Free;
+      FTerminalServer.Processes := TJwWTSProcessList.Create(False);
+
       if FTerminalServer.EnumerateProcesses then
       begin
         // Did we terminate meanwhile?
@@ -272,7 +275,7 @@ begin
         Synchronize(Update);
       end;
 
-      FTerminalServer.Disconnect;
+//      FTerminalServer.Disconnect;
       FTerminalServer.Free;
 
     end;
@@ -286,16 +289,40 @@ procedure TEnumerateProcessThread.Update;
 var
   PrevCount: Integer;
   i: Integer;
-  AProcess: TJwWTSProcess;
+  OldProcessList: TJwWTSProcessList;
+  NewProcessList: TJwWTSProcessList;
+  TempProcessList: TJwWTSProcessList;
 begin
-  PrevCount := FOwner[FIndex].Processes.Count;
+  OldProcessList := FOwner[Findex].Processes;
+{  NewProcessList := FTerminalServer.Processes;
 
-  FOwner[FIndex].Processes.Clear;
-  for i := 0 to FTerminalServer.Processes.Count - 1 do
+  TempProcessList := FOwner[Findex].Processes;
+
+//  OutputDebugString(PChar(Format('Oldlist1 count: %d', [OldProcessList^.Count])));
+//  OutputDebugString(PChar(Format('Newlist1 count: %d', [NewProcessList^.Count])));
+
+  // swap the processlists
+  PrevCount := OldProcessList.Count;
+{  OldProcessList := NewProcessList;
+  NewProcessList := TempProcessList;
+  MainForm.TerminalServers[FIndex].Processes := OldProcessList^;
+}
+
+//  OutputDebugString(PChar(Format('Oldlist2 count: %d', [OldProcessList^.Count])));
+//  OutputDebugString(PChar(Format('Newlist2 count: %d', [NewProcessList^.Count])));
+  PrevCount := FOwner[Findex].Processes.Count;
+  FOwner[FIndex].Processes.Free;
+
+  FOwner[FIndex].Processes := FTerminalServer.Processes;
+  FTerminalServer.Processes := nil;
+//  FOwner[Findex].Processes.Assign(FTerminalServer.Processes);
+
+  FOwner[Findex].Processes.Owner := FOwner[Findex];
+
+  for i := 0 to FOwner[Findex].Processes.Count - 1 do
   begin
-    AProcess := FTerminalServer.Processes[i];
-    AProcess.Owner := FOwner[FIndex].Processes;
-    FOwner[FIndex].Processes.Add(AProcess);
+    FOwner[Findex].Processes[i].Owner := FOwner[FIndex].Processes;
+//    OutputDebugString(PChar(FOwner[Findex].Processes[i].Server));
   end;
 
   with MainForm do
@@ -303,10 +330,10 @@ begin
     // we only update if the process tab is visible...
     if PageControl1.ActivePageIndex = 2 then
     begin
-      UpdateProcessVirtualTree(VSTProcess, @FOwner[FIndex].Processes, PrevCount);
+      UpdateProcessVirtualTree(VSTProcess, @FOwner[Findex].Processes, PrevCount, @OldProcessList);
     end;
   end;
-
+//  FTerminalServer.Processes := nil;
 end;
 
 function CompareInteger(const int1: Integer; const int2: Integer): Integer; overload;
@@ -385,13 +412,24 @@ begin
   end;
 end;
 
-procedure TMainForm.UpdateProcessVirtualTree(const AVirtualTree: TBaseVirtualTree; const PProcessList: PJwWTSProcessList; PrevCount: Integer);
+//procedure TMainForm.UpdateProcessVirtualTree(const AVirtualTree: TBaseVirtualTree; const PProcessList: PJwWTSProcessList; PrevCount: Integer;  const ComparePointer:PJwWTSProcessList=nil);
+procedure TMainForm.UpdateProcessVirtualTree(const AVirtualTree: TBaseVirtualTree;
+      const PProcessList: PJwWTSProcessList; const PrevCount: Integer; const ComparePointer:PJwWTSProcessList=nil);
 var i: Integer;
   pNode: PVirtualNode;
   pPrevNode: PVirtualNode;
   pData: PProcessNodeData;
   NewCount: Integer;
+  CompareTo: PJwWTSProcessList;
 begin
+  if ComparePointer <> nil then
+  begin
+    CompareTo := ComparePointer;
+  end
+  else begin
+    CompareTo := PProcessList;
+  end;
+
   // Get the last node
   pNode := AVirtualTree.GetLast;
 
@@ -403,17 +441,25 @@ begin
     pPrevNode := AVirtualTree.GetPrevious(pNode);
 
     // Is the node data pointing to PSessionList and do we need to delete it?
-    if (pData^.List = PProcessList) and
-      (pData^.Index > PProcessList^.Count-1) then
+    if pData^.List = CompareTo then
     begin
-      // Delete the node (we have no Session Data for it)
-      AVirtualTree.DeleteNode(pNode);
-    end
-    else begin
-      // Invalidating the node will trigger the GetText event which will update
-      // our data
-      AVirtualTree.InvalidateNode(pNode);
+      if pData^.Index > PProcessList^.Count-1 then
+      begin
+        // Delete the node (we have no Session Data for it)
+        AVirtualTree.DeleteNode(pNode);
+      end
+      else begin
+        // Invalidating the node will trigger the GetText event which will update
+        // our data
+        if ComparePointer <> nil then
+        begin
+          pData^.List := PProcessList;
+        end;
+
+        AVirtualTree.InvalidateNode(pNode);
+      end;
     end;
+
     pNode := pPrevNode;
   until pNode = nil;
 
@@ -703,8 +749,39 @@ begin
 end;
 
 procedure TMainForm.Button1Click(Sender: TObject);
+var TS1, TS2: TJwTerminalServer;
+  i: Integer;
+  j: Integer;
+  TempProcessList: TJwWTSProcessList;
 begin
   TEnumerateProcessThread.Create(False, TerminalServers);
+{  TS1 := TJwTerminalServer.Create;
+  TS2 := TJwTerminalServer.Create;
+
+  for j := 0 to 10 do
+  begin
+    TS1.EnumerateProcesses;
+    TempProcessList := TS2.Processes;
+
+    TS2.Processes := TS1.Processes;
+    TS1.Processes := TempProcessList;
+
+    OutputDebugString(PChar(Format('Round: %d, Count: %d', [j, TS2.Processes.Count])));
+
+    for i := 0 to TS2.Processes.Count - 1 do
+    begin
+      OutputDebugString(PChar(Format('Round: %d Count %d: %s', [j, i, TS2.Processes[i].ProcessName])));
+    end;
+  end;
+
+  TS1.Free;
+  for i := 0 to TS2.Processes.Count - 1 do
+  begin
+    OutputDebugString(PChar(Format('Final Round: %d Count %d: %s', [j, i, TS2.Processes[i].ProcessName])));
+  end;
+
+  Sleep(2000);}
+
 end;
 
 procedure TMainForm.Button2Click(Sender: TObject);
@@ -1370,6 +1447,12 @@ begin
   // Get Current Process
   CurrentProcess := GetCurrentProcess(Sender, Node);
 
+  if CurrentProcess = nil then
+  begin
+//    Sender.DeleteNode(Node);
+    Exit;
+  end;
+
   case Column of
     0: CellText := CurrentProcess.Server;
     1: CellText := CurrentProcess.Username;
@@ -1408,7 +1491,7 @@ begin
     9: NodeValue := IntToStr(CurrentProcess.ProcessVMSize);
   end;
 
-  Result := StrLIComp(PChar(SearchText), PChar(NodeValue), Length(SearchText));
+  Result := StrLIComp(PChar(String(SearchText)), PChar(NodeValue), Length(SearchText));
 end;
 
 procedure TMainForm.VSTServerChecked(Sender: TBaseVirtualTree;
