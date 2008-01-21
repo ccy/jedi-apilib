@@ -243,7 +243,7 @@ type
     function GetVirtualizationAllowed: boolean; virtual;
     function GetVirtualizationEnabled: boolean;virtual;
 
-    function GetMandatoryPolicy : DWORD; virtual;
+    function GetMandatoryPolicy : TJwTokenMandatoryPolicies; virtual;
 
   protected
         {@Name checks the TokenHandle of this instance and raises EJwsclInvalidTokenHandle if the token is invalid; otherwise it does nothing
@@ -1038,7 +1038,7 @@ type
       Read GetVirtualizationEnabled;
 
     {@Name returns the mandatory policy of the token.
-     This property can have one the following values (from MSDN):
+     This property can have one the following values (from MSDN: http://msdn2.microsoft.com/en-us/library/bb394728.aspx):
       @unorderedlist(
         @item(TOKEN_MANDATORY_POLICY_OFF No mandatory integrity policy is enforced for the token.)
         @item(TOKEN_MANDATORY_POLICY_NO_WRITE_UP A process associated with the token cannot write to objects that have a greater mandatory integrity level.)
@@ -1047,7 +1047,7 @@ type
       )
     }
 
-    property MandatoryPolicy : DWORD read GetMandatoryPolicy;
+    property MandatoryPolicy : TJwTokenMandatoryPolicies read GetMandatoryPolicy;     
 
   end;
 
@@ -3886,14 +3886,14 @@ begin
 end;
 
 
-function TJwSecurityToken.GetMandatoryPolicy : DWORD;
+function TJwSecurityToken.GetMandatoryPolicy : TJwTokenMandatoryPolicies;
 var p : PTokenMandatoryPolicy;
 begin
   //Raises an exception if errors occur
   Self.GetTokenInformation(fTokenHandle,
     JwaVista.TokenMandatoryPolicy, Pointer(p));
 
-  result := p^.Policy;
+  result := TJwEnumMap.ConvertTokenMandatoryPolicyFlags(p^.Policy);
   
   HeapFree(GetProcessHeap, 0, p);
 end;

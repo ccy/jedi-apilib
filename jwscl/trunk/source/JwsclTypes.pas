@@ -986,7 +986,14 @@ type
 
   TJwRequestedTokenType = (rttAuto, rttTokenPrimary, rttTokenImpersonation);
 
-  
+  TJwTokenMandatoryPolicy = (
+    tmpOff,
+    tmpNoWriteUp,
+    tmpNewProcessMin);
+
+  TJwTokenMandatoryPolicies = set of TJwTokenMandatoryPolicy;
+
+
 {$ENDIF SL_IMPLEMENTATION_SECTION}
 
 {$IFNDEF SL_OMIT_SECTIONS}

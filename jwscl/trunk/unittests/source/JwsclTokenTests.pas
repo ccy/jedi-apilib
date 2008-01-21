@@ -18,6 +18,7 @@ uses
   JwsclToken,
   JwsclSid,
   JwsclStrings,
+  JwsclEnumerations,
 
   TestFrameWork;
 
@@ -44,6 +45,8 @@ type
     procedure TestGetIntegrityLevel;
 
     procedure TestGetLinkedToken;
+
+    procedure TestGetMandatoryPolicy;
 
 
    { procedure TestDestroy;
@@ -585,6 +588,25 @@ begin
     end;
   finally
     LinkedToken.Free;
+    Token.Free;
+  end;
+end;
+
+procedure TSecurityTokenTests.TestGetMandatoryPolicy;
+var Token : TJwSecurityToken;
+    Pol,Pol2 : TJwTokenMandatoryPolicies;
+    P : DWORD;
+begin
+  Token := TJwSecurityToken.CreateTokenEffective(TOKEN_READ or TOKEN_QUERY);
+  try
+    Pol := Token.GetMandatoryPolicy;
+
+    P := TJwEnumMap.ConvertTokenMandatoryPolicyFlags(Pol);
+    Pol2 := TJwEnumMap.ConvertTokenMandatoryPolicyFlags(P);
+
+    CheckTrue(Pol = Pol2);
+
+  finally
     Token.Free;
   end;
 end;

@@ -168,6 +168,12 @@ type
     class function ConvertMandatoryPolicyFlags(
       const FlagBits: Cardinal): TJwMandatoryPolicyFlagSet; overload;
 
+    class function ConvertTokenMandatoryPolicyFlags(
+      const FlagSet: TJwTokenMandatoryPolicies): Cardinal; overload;
+    class function ConvertTokenMandatoryPolicyFlags(
+      const FlagBits: Cardinal): TJwTokenMandatoryPolicies; overload;
+
+
     class function ConvertAuthZResourceManager(
       const FlagSet: TJwAuthZResourceManagerFlags): Cardinal; overload;
     class function ConvertAuthZResourceManager(
@@ -419,6 +425,13 @@ const
    ,SYSTEM_MANDATORY_LABEL_NO_EXECUTE_UP
    );
 
+  TokenMandatoryPolicyFlagValues : array[TJwTokenMandatoryPolicy] of Cardinal =
+   (
+    TOKEN_MANDATORY_POLICY_OFF,
+    TOKEN_MANDATORY_POLICY_NO_WRITE_UP,
+    TOKEN_MANDATORY_POLICY_NEW_PROCESS_MIN
+   );
+
   AuthZResourceManagerValues : array[TJwAuthZResourceManagerFlag] of Cardinal = (
    0
    ,AUTHZ_RM_FLAG_NO_AUDIT
@@ -487,6 +500,39 @@ begin
       Include(result, I);
   end;
 end;
+
+class function TJwEnumMap.ConvertTokenMandatoryPolicyFlags(
+  const FlagSet: TJwTokenMandatoryPolicies): Cardinal;
+var I : TJwTokenMandatoryPolicy;
+begin
+  result := 0;
+  if tmpOff in Flagset then
+    exit;
+
+  for I := Low(TJwTokenMandatoryPolicy) to High(TJwTokenMandatoryPolicy) do
+  begin
+    if I in FlagSet then
+      result := result or TokenMandatoryPolicyFlagValues[I];
+  end;
+end;
+
+class function TJwEnumMap.ConvertTokenMandatoryPolicyFlags(
+  const FlagBits: Cardinal): TJwTokenMandatoryPolicies;
+var I : TJwTokenMandatoryPolicy;
+begin
+  result := [tmpOff];
+  if FlagBits = 0 then
+    exit;
+
+  result := [];
+  for I := Low(TJwTokenMandatoryPolicy) to High(TJwTokenMandatoryPolicy) do
+  begin
+    if (FlagBits and TokenMandatoryPolicyFlagValues[I]) = TokenMandatoryPolicyFlagValues[I] then
+      Include(result, I);
+  end;
+  Exclude(result, tmpoff);
+end;
+
 
 class function TJwEnumMap.ConvertInheritFlags(
   const FlagSet: TJwInheritFlagSet): Cardinal;
