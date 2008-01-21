@@ -100,15 +100,6 @@ type
     FServer: TJwString;
     FTag: Integer;
 
-    // vars below are temp to test RpcBind
-    FNetworkAddr: PWideChar;
-    FBindingString: PWideChar;
-    Res: RPC_STATUS;
-    FBinding: RPC_BINDING_HANDLE;
-    FSecurity: _SEC_WINNT_AUTH_IDENTITY_W;
-    FWSUser: WideString;
-    FWSPassword: WideString;
-    FWSDomain: WideString;
     function GetIdleProcessName: TJwString;
     function GetServers: {$IFDEF UNICODE}TWideStringList{$ELSE}TStringList{$ENDIF UNICODE};
     function GetServer: TJwString;
@@ -142,7 +133,7 @@ type
     property OnSessionLogoff: TNotifyEvent read FOnSessionLogoff write FOnSessionLogoff;
     property OnWinStationRename: TNotifyEvent read FOnWinStationRename write FOnWinStationRename;
     property OnSessionStateChange: TNotifyEvent read FOnSessionStateChange write FOnSessionStateChange;
-    property Processes: TJwWTSProcessList read FProcesses;
+    property Processes: TJwWTSProcessList read FProcesses write FProcesses;
     property Server: TJwString read GetServer write SetServer;
     property ServerHandle: THandle read FServerHandle;
     property Servers: {$IFDEF UNICODE}TWideStringList{$ELSE}
@@ -466,14 +457,12 @@ type
     property ShadowMode : TShadowMode read GetShadowMode write SetShadowMode;
   end;
 
-
 {$ENDIF SL_IMPLEMENTATION_SECTION}
 
 {$IFNDEF SL_OMIT_SECTIONS}
 
 implementation
 {$ENDIF SL_OMIT_SECTIONS}
-
 
 type
   { array of TWtsSessionInfoA }
@@ -758,6 +747,7 @@ begin
   Count := 1;
 
   FProcesses.Clear;
+  
   if not Connected then
   begin
     Connect;
@@ -1694,8 +1684,8 @@ constructor TJwWTSProcess.Create(const Owner: TJwWTSProcessList;
   const SessionId: TJwSessionId; const ProcessID: TJwProcessId;
   const ProcessName: TJwString; const Username: TjwString);
 begin
-  JwRaiseOnNilParameter(Owner, 'Owner','Create', ClassName, RsUNTerminalServer);
-  JwRaiseOnNilParameter(Owner.Owner, 'Owner.Owner','Create', ClassName, RsUNTerminalServer);
+  JwRaiseOnNilParameter(Owner, 'Owner','TJwWTSProcess.Create', ClassName, RsUNTerminalServer);
+  JwRaiseOnNilParameter(Owner.Owner, 'Owner.Owner','TJwWTSProcess.Create', ClassName, RsUNTerminalServer);
 
   inherited Create;
 
@@ -1706,8 +1696,6 @@ begin
 
   FProcessId := ProcessId;
   FProcessName := ProcessName;
-//  FSidString :=
-//  TJwSecurityId.Create();
   FUsername := Username;
 end;
 
@@ -1722,8 +1710,8 @@ end;
 
 function TJwWTSProcess.GetServerHandle: THandle;
 begin
-  JwRaiseOnNilMemoryBlock(Owner, 'GetServerHandle', ClassName, RsUNTerminalServer);
-  JwRaiseOnNilMemoryBlock(Owner.Owner, 'GetServerHandle', ClassName, RsUNTerminalServer);
+  JwRaiseOnNilMemoryBlock(Owner, 'TJwWTSProcess.GetServerHandle', ClassName, RsUNTerminalServer);
+  JwRaiseOnNilMemoryBlock(Owner.Owner, 'TJwWTSProcess.GetServerHandle', ClassName, RsUNTerminalServer);
 
   // The ServerHandle is stored in TJwTerminalServer
   Result := Owner.Owner.FServerHandle;
