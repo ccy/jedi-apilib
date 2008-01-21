@@ -262,8 +262,9 @@ begin
       FTerminalServer := TJwTerminalServer.Create;
       FTerminalServer.Server := FServerList[i];
 
-      FTerminalServer.Processes.Free;
-      FTerminalServer.Processes := TJwWTSProcessList.Create(False);
+     { FTerminalServer.Processes.Free;
+      FTerminalServer.Processes := TJwWTSProcessList.Create(False);   }
+      FTerminalServer.Processes.Owner := FTerminalServer;
 
       if FTerminalServer.EnumerateProcesses then
       begin
@@ -430,6 +431,8 @@ begin
     CompareTo := PProcessList;
   end;
 
+  AVirtualTree.BeginUpdate;//big change in list, so notify it 
+
   // Get the last node
   pNode := AVirtualTree.GetLast;
 
@@ -474,6 +477,8 @@ begin
     pData^.Index := PrevCount;
     pData^.List := PProcessList;
   end;
+
+  AVirtualTree.EndUpdate; //changes are done. let list update
 end;
 
 procedure UpdateSessions(ATerminalServer: TJwTerminalServer);
@@ -807,6 +812,10 @@ var pNode: PVirtualNode;
   i: Integer;
   JwSid: TJwSecurityId;
 begin
+{$IFDEF DEBUG}
+  Button1.Enabled := TRUE;
+{$ENDIF}
+  
 {$IFDEF FASTMM}
   ReportMemoryLeaksOnShutDown := DebugHook <> 0;
 {$ENDIF FASTMM}
