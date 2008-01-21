@@ -262,9 +262,7 @@ begin
       FTerminalServer := TJwTerminalServer.Create;
       FTerminalServer.Server := FServerList[i];
 
-     { FTerminalServer.Processes.Free;
-      FTerminalServer.Processes := TJwWTSProcessList.Create(False);   }
-      FTerminalServer.Processes.Owner := FTerminalServer;
+//      FTerminalServer.Processes.Owner := FTerminalServer;
 
       if FTerminalServer.EnumerateProcesses then
       begin
@@ -294,36 +292,22 @@ var
   NewProcessList: TJwWTSProcessList;
   TempProcessList: TJwWTSProcessList;
 begin
+  if FOwner.Count = 0 then
+  begin
+    Exit;
+  end;
+
   OldProcessList := FOwner[Findex].Processes;
-{  NewProcessList := FTerminalServer.Processes;
-
-  TempProcessList := FOwner[Findex].Processes;
-
-//  OutputDebugString(PChar(Format('Oldlist1 count: %d', [OldProcessList^.Count])));
-//  OutputDebugString(PChar(Format('Newlist1 count: %d', [NewProcessList^.Count])));
-
-  // swap the processlists
-  PrevCount := OldProcessList.Count;
-{  OldProcessList := NewProcessList;
-  NewProcessList := TempProcessList;
-  MainForm.TerminalServers[FIndex].Processes := OldProcessList^;
-}
-
-//  OutputDebugString(PChar(Format('Oldlist2 count: %d', [OldProcessList^.Count])));
-//  OutputDebugString(PChar(Format('Newlist2 count: %d', [NewProcessList^.Count])));
   PrevCount := FOwner[Findex].Processes.Count;
-  FOwner[FIndex].Processes.Free;
 
+  FOwner[FIndex].Processes.Free;
   FOwner[FIndex].Processes := FTerminalServer.Processes;
   FTerminalServer.Processes := nil;
-//  FOwner[Findex].Processes.Assign(FTerminalServer.Processes);
-
   FOwner[Findex].Processes.Owner := FOwner[Findex];
 
   for i := 0 to FOwner[Findex].Processes.Count - 1 do
   begin
     FOwner[Findex].Processes[i].Owner := FOwner[FIndex].Processes;
-//    OutputDebugString(PChar(FOwner[Findex].Processes[i].Server));
   end;
 
   with MainForm do
@@ -331,7 +315,8 @@ begin
     // we only update if the process tab is visible...
     if PageControl1.ActivePageIndex = 2 then
     begin
-      UpdateProcessVirtualTree(VSTProcess, @FOwner[Findex].Processes, PrevCount, @OldProcessList);
+      OutputDebugString(PChar(Format('PrevCount: %d NewCount: %d', [PrevCount, FOwner[FIndex].Processes.Count])));
+      UpdateProcessVirtualTree(VSTProcess, @FOwner[Findex].Processes, PrevCount, nil);
     end;
   end;
 //  FTerminalServer.Processes := nil;
@@ -443,12 +428,14 @@ begin
     // we might delete the current node ;-)
     pPrevNode := AVirtualTree.GetPrevious(pNode);
 
-    // Is the node data pointing to PSessionList and do we need to delete it?
+    // Is the node data pointing to CompareTo Pointer?
     if pData^.List = CompareTo then
     begin
+      // do we have data for this process?
       if pData^.Index > PProcessList^.Count-1 then
       begin
         // Delete the node (we have no Session Data for it)
+        OutputDebugString(PChar(Format('Deleting Node with index: %d', [pData^.Index])));
         AVirtualTree.DeleteNode(pNode);
       end
       else begin
@@ -456,9 +443,12 @@ begin
         // our data
         if ComparePointer <> nil then
         begin
+          // Point in to the new Pointer
           pData^.List := PProcessList;
         end;
 
+        // Invalidating the node will trigger OnGetText which will retreive
+        // the new process info
         AVirtualTree.InvalidateNode(pNode);
       end;
     end;
@@ -466,7 +456,7 @@ begin
     pNode := pPrevNode;
   until pNode = nil;
 
-  // How many new sessions are there?
+  // How many new processes are there?
   NewCount := PProcessList^.Count - PrevCount;
 
   // Create a new node for each new session
