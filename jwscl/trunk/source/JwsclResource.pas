@@ -343,6 +343,12 @@ const
   RsTokenUnableToOpenThreadToken = 'Could not open a thread token';
   RsTokenUnsupportedWtsCall = 'The current Windows does not support WTS-' +
     'Function calls.';
+  RsTokenTerminalServiceFailed = 'This function needs Terminal services to be installed'+
+      ' and running. Supported in Windows 2000 Terminal Server and XP and above. ';
+  RsPrimaryTokenMustBeSystem = 'This functions needs the primary Token to be'+
+   ' a SYSTEM token.';
+
+
   RsTokenPrivilegeNotHeld = 'The privilege "%s" must be held to call this function.';
   RsTokenPrivilegeNotSet = 'The privilege "%s" must be set to call this function.';
 

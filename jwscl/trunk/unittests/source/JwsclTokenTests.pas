@@ -47,6 +47,8 @@ type
     procedure TestGetLinkedToken;
 
     procedure TestGetMandatoryPolicy;
+    procedure TestGetCurrentUserRegKey;
+    procedure TestCreateWTSQueryUserTokenEx;
 
 
    { procedure TestDestroy;
@@ -508,6 +510,27 @@ begin
 end;
 
 
+
+procedure TSecurityTokenTests.TestCreateWTSQueryUserTokenEx;
+var Token : TJwSecurityToken;
+begin
+  try
+    Token := TJwSecurityToken.CreateWTSQueryUserTokenEx(0,0);
+   finally
+    Token.Free;
+  end;
+end;
+
+procedure TSecurityTokenTests.TestGetCurrentUserRegKey;
+var Token : TJwSecurityToken;
+begin
+  Token := TJwSecurityToken.CreateTokenEffective(TOKEN_READ or TOKEN_QUERY);
+  try
+    RegCloseKey(Token.GetCurrentUserRegKey(MAXIMUM_ALLOWED));
+  finally
+    Token.Free;
+  end;
+end;
 
 procedure TSecurityTokenTests.TestGetElevationType;
 var Token : TJwSecurityToken;

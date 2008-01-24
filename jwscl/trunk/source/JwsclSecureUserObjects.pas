@@ -1,5 +1,5 @@
 {
-@abstract(This unit is empty. TBD)
+@abstract(This unit is for testing purposes only!!. TBD)
 @author(Christian Wimmer)
 @created(03/23/2007)
 @lastmod(09/10/2007)
@@ -32,8 +32,9 @@ The Original Code is JwsclSecureUserObjects.pas.
 
 The Initial Developer of the Original Code is Christian Wimmer.
 Portions created by Christian Wimmer are Copyright (C) Christian Wimmer. All rights reserved.
-                 
 
+!!!
+Warning: This unit is only for testing purposes!!!
 }
 unit JwsclSecureUserObjects;
 // Last modified: $Date: 2007-09-10 10:00:00 +0100 $
@@ -210,6 +211,7 @@ function TJwUserSecurityInformation.GetChildren(
   out Children: TJwPrivateSecurityInformationArray): HRESULT;
 begin
   Children := nil;
+  result := 5;
 end;
 
 function TJwUserSecurityInformation.GetObjectInformation(
@@ -231,6 +233,7 @@ function TJwUserSecurityInformation.GetParent(
   out Parent: IJwPrivateSecurityInformation): HRESULT;
 begin
   Parent := fParent;
+  result := 5;
 end;
 
 procedure TJwUserSecurityInformation.GetSecurity(
@@ -251,6 +254,7 @@ function TJwUserSecurityInformation.MapGenericMask(
   out GenericMap: TJwSecurityGenericMappingClass): HRESULT;
 begin
   GenericMap := fGenericMask;
+  result := 5;
 end;
 
 procedure TJwUserSecurityInformation.SetSecurity(

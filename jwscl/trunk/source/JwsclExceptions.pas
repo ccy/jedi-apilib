@@ -131,6 +131,9 @@ type
   EJwsclTokenImpersonationException = class(EJwsclSecurityException);
   //@name is raised if the requested primary token could not be retrieved. For more information see LastError.
   EJwsclTokenPrimaryException = class(EJwsclSecurityException);
+  EJwsclInvalidPrimaryToken = class(EJwsclTokenPrimaryException);
+
+
   //@name is raised if the given owner is invalid say nil.
   EJwsclInvalidOwnerException = class(EJwsclSecurityException);
   //@name is raised if a call to DuplicateTokenEx failed
@@ -157,8 +160,11 @@ type
   //@name is raised if the called method is not implemented yet.
   EJwsclNotImplementedException = class(EJwsclSecurityException);
   //@name is raised if the called function is not supported under the running windows version
-  EJwsclUnsupportedWindowsVersionException =
-    class(EJwsclSecurityException);
+  EJwsclUnsupportedWindowsVersionException =  class(EJwsclSecurityException);
+
+
+
+
   //@name is raised if a call to a windows API function failed. For more information see the LastError property
   EJwsclWinCallFailedException = class(EJwsclSecurityException);
   EJwsclProcessIdNotAvailable = class(EJwsclSecurityException);
@@ -283,6 +289,10 @@ type
 
   //general exception for terminal server methods
   EJwsclTerminalServerException = class(EJwsclSecurityException);
+
+  EJwsclTerminalServiceException =  class(EJwsclSecurityException);
+  EJwsclTerminalServiceNecessary =  class(EJwsclTerminalServiceException);
+
 
   //general exception for terminal session methods
   EJwsclTerminalSessionException = class(EJwsclTerminalServerException);

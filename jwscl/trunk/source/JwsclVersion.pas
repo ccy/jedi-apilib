@@ -229,6 +229,8 @@ type
     class procedure CheckWindowsVersion(iWinVer: integer;
       bOrHigher: boolean; SourceProc, SourceClass, SourceFile: TJwString;
       SourcePos: Cardinal); virtual;
+
+    class function IsTerminalServiceRunning : Boolean;
   end;
 
 
@@ -442,9 +444,16 @@ begin
     Result := cOsUnknown;
 end;
 
+class function TJwWindowsVersion.IsTerminalServiceRunning: Boolean;
+begin
+  result := JwaWindows.IsTerminalServiceRunning;
+end;
+
 {$ENDIF SL_INTERFACE_SECTION}
 
 {$IFNDEF SL_OMIT_SECTIONS}
+
+
 initialization
 {$ENDIF SL_OMIT_SECTIONS}
 

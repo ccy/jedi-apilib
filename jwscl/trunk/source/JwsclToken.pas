@@ -129,6 +129,11 @@ type
         @return
        }
     function PushPrivileges: Cardinal;
+
+    {@Name checks for whether user is SYSTEM and raises exception if not.
+     @param(MethodName defines the methode name of the caller)
+     @raises(EJwsclInvalidPrimaryToken if primary user token is not SYSTEM.)}
+    procedure RaiseOnInvalidPrimaryToken(MethodName : String);
   public
     {see @link(TokenType)}
     function GetTokenType: TOKEN_TYPE; virtual;
@@ -436,6 +441,27 @@ type
          }
     constructor CreateWTSQueryUserToken(
       SessionID: Cardinal = INVALID_HANDLE_VALUE); overload; virtual;
+
+    {@Name opens a token of a logged on user on a local or remote server.
+
+     This constructor can be used in Windows 2000 Terminal Server in contrary
+     to CreateWTSQueryUserToken.
+
+     @raises(EJwsclTerminalServiceNecessary will be raised if the no terminal
+      service is running)
+     @raises(EJwsclInvalidPrimaryToken will be raised if the process token
+      is not a SYSTEM user token)
+     @raises(EJwsclPrivilegeCheckException will be raised if the privilege
+       SE_TCB_NAME is not available)
+
+     @raises(EJwsclWinCallFailedException will be raised if
+      a call to WinStationQueryUserToken failed)
+
+     }
+    constructor CreateWTSQueryUserTokenEx(
+      const Server : HANDLE = 0;
+      SessionID: Cardinal = INVALID_HANDLE_VALUE); overload; virtual;
+
 
     {@Name is a compatibility constructor for CreateWTSQueryUserToken which does
      not work in Windows 2000.
@@ -774,9 +800,9 @@ type
          The programmer must free the class TJwSecurityTokenStatistics}
     function GetTokenStatistics: TJwSecurityTokenStatistics;
 
+    function GetCurrentUserRegKey(const DesiredAccess : TJwAccessMask) : HKEY;
 
-    //@Name is not implemented
-    procedure FreeObjectMemory(var anObject: TObject);
+
   public
     //instance function related to token context
 
@@ -2859,9 +2885,55 @@ begin
 end;
 
 
+
+constructor TJwSecurityToken.CreateWTSQueryUserTokenEx(
+      const Server : HANDLE = 0;
+      SessionID: Cardinal = INVALID_HANDLE_VALUE);
+begin
+  RaiseOnInvalidPrimaryToken('CreateWTSQueryUserTokenEx');
+  
+  if (not TJwWindowsVersion.IsTerminalServiceRunning) then
+    raise EJwsclTerminalServiceNecessary.CreateFmtEx(
+      RsTokenUnsupportedWtsCall,
+      'Create', ClassName, RsUNToken, 0, False, []);
+
+
+  if not JwIsPrivilegeSet(SE_TCB_NAME,pqt_Available) then
+    raise EJwsclPrivilegeCheckException.CreateFmtEx(
+      RsTokenPrivilegeNotHeld,
+      'Create', ClassName, RsUNToken, 0, False, [SE_TCB_NAME]);
+
+
+  Self.Create;
+  fShared := False;
+  fTokenHandle := 0;
+
+  SetLastError(0);
+
+  if SessionID = INVALID_HANDLE_VALUE then
+  begin
+    if not WinStationQueryUserToken(Server, WtsGetActiveConsoleSessionID, fTokenHandle) then
+      if not WinStationQueryUserToken(Server, WTS_CURRENT_SESSION, fTokenHandle) then
+        raise EJwsclWinCallFailedException.CreateFmtEx(
+          RsTokenCallWtsQueryUserTokenFailed,
+          'WinStationQueryUserToken', ClassName, RsUNToken,
+          0, True, [SessionID]);
+  end
+  else
+  begin
+    if not WinStationQueryUserToken(Server, SessionID, fTokenHandle) then
+      raise EJwsclWinCallFailedException.CreateFmtEx(
+        RsTokenCallWtsQueryUserTokenFailed,
+        'WinStationQueryUserToken', ClassName, RsUNToken,
+        0, True, [SessionID]);
+  end;
+end;
+
 constructor TJwSecurityToken.CreateWTSQueryUserToken(SessionID:
   Cardinal {= INVALID_HANDLE_VALUE});
 begin
+  RaiseOnInvalidPrimaryToken('CreateWTSQueryUserToken');
+  
   if not (TJwWindowsVersion.IsWindowsXP(True) or
     TJwWindowsVersion.IsWindows2003(True)) then
     raise EJwsclUnsupportedWindowsVersionException.CreateFmtEx(
@@ -4200,6 +4272,18 @@ begin
   HeapFree(GetProcessHeap, 0, stat);
 end;
 
+function TJwSecurityToken.GetCurrentUserRegKey(
+  const DesiredAccess : TJwAccessMask) : HKEY;
+var Res : HRESULT;
+begin
+  Res := RegOpenCurrentUser(DesiredAccess, result);
+  if Res <> 0 then
+    raise EJwsclWinCallFailedException.CreateFmtEx(
+        RsWinCallFailedWithNTStatus,
+        'RegOpenCurrentUser', ClassName, RsUNToken,
+        0, True, ['RegOpenCurrentUser',Res]);
+end;
+
 class function TJwSecurityToken.PrivilegeCheck(ClientToken: TJwSecurityToken;
   aRequiredPrivileges: TJwPrivilegeSet;
   RequiresAllPrivs: boolean): boolean;
@@ -4354,12 +4438,6 @@ begin
   finally
     privSet.Free;
   end;
-end;
-
-procedure TJwSecurityToken.FreeObjectMemory(var anObject: TObject);
-begin
-  //   if fPrivelegesList.Remove(anObject) < 0 then
-  //     fSecurityIDList.Remove(anObject);
 end;
 
 
@@ -4716,9 +4794,33 @@ begin
     SE_KERNEL_OBJECT,SecurityFlags,SecurityDescriptor);
 end;
 
+procedure TJwSecurityToken.RaiseOnInvalidPrimaryToken(MethodName : String);
+var Token : TJwSecurityToken;
+    Sid : TJwSecurityID;
+begin
+  JwInitWellKnownSIDs; //loads JwLocalSystemSID if not already done
+  
+  Token := TJwSecurityToken.CreateTokenByProcess(0,TOKEN_READ or TOKEN_QUERY);
+  try
+    Sid := Token.GetTokenUser;
+    try
+      if not Sid.EqualSid(JwLocalSystemSID) then
+        raise EJwsclInvalidPrimaryToken.CreateFmtEx(
+          RsPrimaryTokenMustBeSystem,
+          MethodName, ClassName, RsUNToken, 0, False, []);
+    finally
+      Sid.Free;
+    end;
+  finally
+    Token.Free;
+  end;
+end;
+
+
 {$ENDIF SL_INTERFACE_SECTION}
 
 {$IFNDEF SL_OMIT_SECTIONS}
+
 
 
 
