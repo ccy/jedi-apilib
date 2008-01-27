@@ -50,6 +50,7 @@ type
     procedure TestGetCurrentUserRegKey;
     procedure TestCreateWTSQueryUserTokenEx;
 
+    procedure TestPrivilegeCheck;
 
    { procedure TestDestroy;
     procedure TestCheckTokenHandle;
@@ -516,7 +517,7 @@ var Token : TJwSecurityToken;
 begin
   try
     Token := TJwSecurityToken.CreateWTSQueryUserTokenEx(0,0);
-   finally
+  finally
     Token.Free;
   end;
 end;
@@ -675,6 +676,36 @@ begin
     Token.Free;
   end;
 end;
+
+procedure TSecurityTokenTests.TestPrivilegeCheck;
+var Token : TJwSecurityToken;
+    Privs : TJwPrivilegeSet;
+    bRes : Boolean; 
+begin
+  Privs := TJwPrivilegeSet.Create;
+  Token := TJwSecurityToken.CreateTokenEffective(TOKEN_READ or TOKEN_QUERY);
+  try
+    try
+      Token.PrivilegeCheckEx(nil, pcAllPrivsEnabled);
+      Check(false,'Precondition not met');
+    except
+      on E : Exception do
+       CheckEquals(EJwsclNILParameterException,E.ClassType);
+    end;
+
+    CheckTrue(Token.PrivilegeCheckEx(Privs, pcAllPrivsEnabled));
+
+    Privs.Free;
+    Privs := Token.GetTokenPrivileges;
+    Privs.Control := PRIVILEGE_SET_ALL_NECESSARY;
+
+    CheckTrue(Token.PrivilegeCheckEx(Privs, pcDefault));
+
+  finally
+    Token.Free;
+  end;
+end;
+
 
 procedure TSecurityTokenTests.Test_ConvertToken;
 var Token1, Token2, oldToken : TJwSecurityToken;

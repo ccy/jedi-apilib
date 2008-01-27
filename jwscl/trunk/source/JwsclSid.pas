@@ -785,6 +785,7 @@ var
   pDomainSid: PSID;
   dwSize:  Cardinal;
   tempSID: PSID;
+  Excp : EJwsclInvalidKnownSIDException;
 begin
   Create;
 
@@ -799,9 +800,11 @@ begin
   if not JwaWindows.CreateWellKnownSid(JwaWindows.WELL_KNOWN_SID_TYPE(WellKnownSidType),
     pDomainSid, tempSID, dwSize) then
   begin
-    raise EJwsclInvalidKnownSIDException.CreateFmtEx(
+    Excp := EJwsclInvalidKnownSIDException.CreateFmtEx(
       RsWinCallFailed, 'CreateWellKnownSid',
       ClassName, RsUNSid, 0, True, ['CreateWellKnownSid']);
+    Excp.SidType := WellKnownSidType;
+    raise Excp;
   end;
 
   {

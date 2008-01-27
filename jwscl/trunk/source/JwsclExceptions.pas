@@ -43,7 +43,9 @@ interface
 
 uses SysUtils, Classes,
   jwaWindows,
+  jwaVista,
   JwsclResource,
+
  
   JwsclTypes, JwsclStrings;
 
@@ -186,7 +188,15 @@ type
   EJwsclInvalidOwnerSIDException = class(EJwsclInvalidSIDException);
   EJwsclInvalidGroupSIDException = class(EJwsclInvalidSIDException);
 
-  EJwsclInvalidKnownSIDException = class(EJwsclInvalidSIDException);
+  {@Name is raised if TJwSecurityId.CreateWellKnownSid fails}
+  EJwsclInvalidKnownSIDException = class(EJwsclInvalidSIDException)
+  protected
+    fSidType : TWellKnownSidType;
+  public
+    {@Name contains information which sid type was used
+     but could not be found}
+    property SidType : TWellKnownSidType read fSidType write fSidType;
+  end;
 
   EJwsclInvalidSidAuthorityValue = class(EJwsclInvalidSIDException);
 

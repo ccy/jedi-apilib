@@ -993,6 +993,11 @@ type
 
   TJwTokenMandatoryPolicies = set of TJwTokenMandatoryPolicy;
 
+  TJwPrivCheck = (
+    pcDefault,
+    pcAllPrivsEnabled);
+
+  TWellKnownSidTypeSet = set of TWellKnownSidType;
 
 {$ENDIF SL_IMPLEMENTATION_SECTION}
 

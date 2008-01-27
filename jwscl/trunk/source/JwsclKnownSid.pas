@@ -276,8 +276,6 @@ function JwGetLogonSID(const hWinStation: HWINSTA{TWindowStation} = 0)
 function JwGetLogonSID(aToken: TJwSecurityToken): TJwSecurityId; overload;
 
 
-type
-  TWellKnownSidTypeSet = set of TWellKnownSidType;
 
 {const
   AllWellKnownSid : TWellKnownSidTypeSet = ($FFFF);}
