@@ -732,7 +732,7 @@ type
   TSystemInformationClass = SYSTEM_INFORMATION_CLASS;
 
 type
-  {$IFNDEF JWA_INCLUDEMODE}
+  {.$IFNDEF JWA_INCLUDEMODE}
   _SYSTEM_BASIC_INFORMATION = record // Information Class 0
     Unknown: ULONG;
     MaximumIncrement: ULONG;
@@ -750,7 +750,7 @@ type
   PSYSTEM_BASIC_INFORMATION = ^SYSTEM_BASIC_INFORMATION;
   TSystemBasicInformation = SYSTEM_BASIC_INFORMATION;
   PSystemBasicInformation = ^TSystemBasicInformation;
-  {$ENDIF JWA_INCLUDEMODE}
+  {.$ENDIF JWA_INCLUDEMODE}
 
   _SYSTEM_PROCESSOR_INFORMATION = record // Information Class 1
     ProcessorArchitecture: USHORT;
@@ -762,7 +762,7 @@ type
   SYSTEM_PROCESSOR_INFORMATION = _SYSTEM_PROCESSOR_INFORMATION;
   PSYSTEM_PROCESSOR_INFORMATION = ^SYSTEM_PROCESSOR_INFORMATION;
 
-  {$IFNDEF JWA_INCLUDEMODE}
+  {.$IFNDEF JWA_INCLUDEMODE}
   TSystemProcessorInformation = SYSTEM_PROCESSOR_INFORMATION;
   PSystemProcessorInformation = ^TSystemProcessorInformation;
 
@@ -845,7 +845,7 @@ type
   PSYSTEM_PERFORMANCE_INFORMATION = ^SYSTEM_PERFORMANCE_INFORMATION;
   TSystemPerformanceInformation = SYSTEM_PERFORMANCE_INFORMATION;
   PSystemPerformanceInformation = ^TSystemPerformanceInformation;
-  {$ENDIF JWA_INCLUDEMODE}
+  {.$ENDIF JWA_INCLUDEMODE}
 
   _SYSTEM_TIME_OF_DAY_INFORMATION = record // Information Class 3
     BootTime: LARGE_INTEGER;
@@ -856,10 +856,10 @@ type
   SYSTEM_TIME_OF_DAY_INFORMATION = _SYSTEM_TIME_OF_DAY_INFORMATION;
   PSYSTEM_TIME_OF_DAY_INFORMATION = ^SYSTEM_TIME_OF_DAY_INFORMATION;
 
-  {$IFNDEF JWA_INCLUDEMODE}
+  {.$IFNDEF JWA_INCLUDEMODE}
   TSystemTimeOfDayInformation = SYSTEM_TIME_OF_DAY_INFORMATION;
   PSystemTimeOfDayInformation = ^TSystemTimeOfDayInformation;
-  {$ENDIF JWA_INCLUDEMODE}
+  {.$ENDIF JWA_INCLUDEMODE}
 
   _IO_COUNTERSEX = record
     ReadOperationCount: LARGE_INTEGER;
@@ -1209,7 +1209,7 @@ type
   TSystemCrashDumpInformation = SYSTEM_CRASH_DUMP_INFORMATION;
   PSystemCrashDumpInformation = ^TSystemCrashDumpInformation;
 
-  {$IFNDEF JWA_INCLUDEMODE}
+  {.$IFNDEF JWA_INCLUDEMODE}
   _SYSTEM_EXCEPTION_INFORMATION = record // Information Class 33
     AlignmentFixupCount: ULONG;
     ExceptionDispatchCount: ULONG;
@@ -1220,7 +1220,7 @@ type
   PSYSTEM_EXCEPTION_INFORMATION = ^SYSTEM_EXCEPTION_INFORMATION;
   TSystemExceptionInformation = SYSTEM_EXCEPTION_INFORMATION;
   PSystemExceptionInformation = ^TSystemExceptionInformation;
-  {$ENDIF JWA_INCLUDEMODE}
+  {.$ENDIF JWA_INCLUDEMODE}
 
   _SYSTEM_CRASH_STATE_INFORMATION = record // Information Class 34
     ValidCrashDump: ULONG;
@@ -1249,7 +1249,7 @@ type
   TSystemContextSwitchInformation = SYSTEM_CONTEXT_SWITCH_INFORMATION;
   PSystemContextSwitchInformation = ^TSystemContextSwitchInformation;
 
-  {$IFNDEF JWA_INCLUDEMODE}
+  {.$IFNDEF JWA_INCLUDEMODE}
   _SYSTEM_REGISTRY_QUOTA_INFORMATION = record // Information Class 37
     RegistryQuota: ULONG;
     RegistryQuotaInUse: ULONG;
@@ -1259,7 +1259,7 @@ type
   PSYSTEM_REGISTRY_QUOTA_INFORMATION = ^SYSTEM_REGISTRY_QUOTA_INFORMATION;
   TSystemRegistryQuotaInformation = SYSTEM_REGISTRY_QUOTA_INFORMATION;
   PSystemRegistryQuotaInformation = ^TSystemRegistryQuotaInformation;
-  {$ENDIF JWA_INCLUDEMODE}
+  {.$ENDIF JWA_INCLUDEMODE}
 
   _SYSTEM_LOAD_AND_CALL_IMAGE = record // Information Class 38
     ModuleName: UNICODE_STRING;
@@ -1291,7 +1291,7 @@ type
   TSystemTimeZoneInformation = SYSTEM_TIME_ZONE_INFORMATION;
   PSystemTimeZoneInformation = ^TSystemTimeZoneInformation;
 
-  {$IFNDEF JWA_INCLUDEMODE}
+  {.$IFNDEF JWA_INCLUDEMODE}
   _SYSTEM_LOOKASIDE_INFORMATION = record // Information Class 45
     Depth: USHORT;
     MaximumDepth: USHORT;
@@ -1307,7 +1307,7 @@ type
   PSYSTEM_LOOKASIDE_INFORMATION = ^SYSTEM_LOOKASIDE_INFORMATION;
   TSystemLookAsideInformation = SYSTEM_LOOKASIDE_INFORMATION;
   PSystemLookAsideInformation = ^TSystemLookAsideInformation;
-  {$ENDIF JWA_INCLUDEMODE}
+  {.$ENDIF JWA_INCLUDEMODE}
 
   _SYSTEM_SET_TIME_SLIP_EVENT = record // Information Class 46
     TimeSlipEvent: HANDLE;
