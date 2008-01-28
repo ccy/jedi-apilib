@@ -3977,11 +3977,11 @@ function  ZwClearEvent(EventHandle: HANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}ex
 // to the PSDK for additional information. Usually the same flags apply.
 // Documented in the DDK as ZwClose().
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
-{$IFNDEF JWA_INCLUDEMODE}
+{.$IFNDEF JWA_INCLUDEMODE}
 function  NtClose(
     Handle : HANDLE
   ): NTSTATUS; stdcall; {$IFNDEF RTDL} external ntdll; {$ENDIF}
-{$ENDIF JWA_INCLUDEMODE}
+{.$ENDIF JWA_INCLUDEMODE}
 
 function  ZwClose(Handle: HANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
 
@@ -4057,7 +4057,7 @@ function  NtCreateEventPair(
   ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
 function  ZwCreateEventPair(EventPairHandle: PHANDLE; DesiredAccess: ACCESS_MASK; ObjectAttributes: POBJECT_ATTRIBUTES): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
 
-{$IFNDEF JWA_INCLUDEMODE}
+{.$IFNDEF JWA_INCLUDEMODE}
 // Documented in the DDK as ZwCreateFile().
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtCreateFile(
@@ -4073,7 +4073,7 @@ function  NtCreateFile(
     EaBuffer : PVOID;
     EaLength : ULONG
   ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-{$ENDIF JWA_INCLUDEMODE}
+{.$ENDIF JWA_INCLUDEMODE}
 function  ZwCreateFile(FileHandle: PHANDLE; DesiredAccess: ACCESS_MASK; ObjectAttributes: POBJECT_ATTRIBUTES; IoStatusBlock: PIO_STATUS_BLOCK; AllocationSize: PLARGE_INTEGER; FileAttributes: ULONG; ShareAccess: ULONG;
     CreateDisposition: ULONG; CreateOptions: ULONG; EaBuffer: PVOID; EaLength: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
 
@@ -4339,7 +4339,7 @@ function  NtDeleteValueKey(
   ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
 function  ZwDeleteValueKey(KeyHandle: HANDLE; ValueName: PUNICODE_STRING): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
 
-{$IFNDEF JWA_INCLUDEMODE}
+{.$IFNDEF JWA_INCLUDEMODE}
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtDeviceIoControlFile(
     FileHandle : HANDLE;
@@ -4353,7 +4353,7 @@ function  NtDeviceIoControlFile(
     OutputBuffer : PVOID;
     OutputBufferLength : ULONG
   ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-{$ENDIF JWA_INCLUDEMODE}
+{.$ENDIF JWA_INCLUDEMODE}
 
 function  ZwDeviceIoControlFile(FileHandle: HANDLE; Event: HANDLE; ApcRoutine: PIO_APC_ROUTINE; ApcContext: PVOID; IoStatusBlock: PIO_STATUS_BLOCK; IoControlCode: ULONG; InputBuffer: PVOID; InputBufferLength: ULONG; OutputBuffer: PVOID;
     OutputBufferLength: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
@@ -4786,7 +4786,7 @@ function  NtOpenEventPair(
   ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
 function  ZwOpenEventPair(EventPairHandle: PHANDLE; DesiredAccess: ACCESS_MASK; ObjectAttributes: POBJECT_ATTRIBUTES): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
 
-{$IFNDEF JWA_INCLUDEMODE}
+{.$IFNDEF JWA_INCLUDEMODE}
 // Documented in the DDK as ZwOpenFile().
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtOpenFile(
@@ -4797,7 +4797,7 @@ function  NtOpenFile(
     ShareAccess : ULONG;
     OpenOptions : ULONG
   ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-{$ENDIF JWA_INCLUDEMODE}
+{.$ENDIF JWA_INCLUDEMODE}
 
 function  ZwOpenFile(FileHandle: PHANDLE; DesiredAccess: ACCESS_MASK; ObjectAttributes: POBJECT_ATTRIBUTES; IoStatusBlock: PIO_STATUS_BLOCK; ShareAccess: ULONG; OpenOptions: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
 
@@ -5130,7 +5130,7 @@ function  NtQueryInformationProcess(
 function  ZwQueryInformationProcess(ProcessHandle: HANDLE; ProcessInformationClass: PROCESSINFOCLASS; ProcessInformation: PVOID; ProcessInformationLength: ULONG; ReturnLength: PULONG): NTSTATUS; stdcall;
   {$IFNDEF RTDL}external ntdll;{$ENDIF}
 
-{$IFNDEF JWA_INCLUDEMODE}
+{.$IFNDEF JWA_INCLUDEMODE}
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtQueryInformationThread(
     ThreadHandle : HANDLE;
@@ -5139,7 +5139,7 @@ function  NtQueryInformationThread(
     ThreadInformationLength : ULONG;
     ReturnLength : PULONG
   ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-{$ENDIF JWA_INCLUDEMODE}
+{.$ENDIF JWA_INCLUDEMODE}
 
 function  ZwQueryInformationThread(ThreadHandle: HANDLE; ThreadInformationClass: THREADINFOCLASS; ThreadInformation: PVOID; ThreadInformationLength: ULONG; ReturnLength: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
 
@@ -5315,11 +5315,11 @@ function  NtQuerySystemInformation(
 function  ZwQuerySystemInformation(SystemInformationClass: SYSTEM_INFORMATION_CLASS; SystemInformation: PVOID; SystemInformationLength: ULONG; ReturnLength: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
-{$IFNDEF JWA_INCLUDEMODE}
+{.$IFNDEF JWA_INCLUDEMODE}
 function  NtQuerySystemTime(
     CurrentTime : PLARGE_INTEGER
   ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-{$ENDIF JWA_INCLUDEMODE}
+{.$ENDIF JWA_INCLUDEMODE}
 
 function  ZwQuerySystemTime(CurrentTime: PLARGE_INTEGER): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
 
@@ -6088,14 +6088,14 @@ function  NtWaitForMultipleObjects(
   ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
 function  ZwWaitForMultipleObjects(HandleCount: ULONG; Handles: PHANDLE; WaitType: WAIT_TYPE; Alertable: BOOLEAN; Timeout: PLARGE_INTEGER): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
 
-{$IFNDEF JWA_INCLUDEMODE}
+{.$IFNDEF JWA_INCLUDEMODE}
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtWaitForSingleObject(
     Handle : HANDLE;
     Alertable : BOOLEAN;
     Timeout : PLARGE_INTEGER
   ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-{$ENDIF JWA_INCLUDEMODE}
+{.$ENDIF JWA_INCLUDEMODE}
 
 function  ZwWaitForSingleObject(Handle: HANDLE; Alertable: BOOLEAN; Timeout: PLARGE_INTEGER): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
 
@@ -6328,7 +6328,7 @@ function  RtlAnsiStringToUnicodeSize(
     AnsiString : PANSI_STRING
   ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
 
-{$IFNDEF JWA_INCLUDEMODE}
+{.$IFNDEF JWA_INCLUDEMODE}
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlAnsiStringToUnicodeString(
@@ -6336,7 +6336,7 @@ function  RtlAnsiStringToUnicodeString(
     SourceString : PANSI_STRING;
     AllocateDestinationString : BOOLEAN
   ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-{$ENDIF JWA_INCLUDEMODE}
+{.$ENDIF JWA_INCLUDEMODE}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlAppendAsciizToString(
@@ -6501,7 +6501,7 @@ function  RtlConvertLongToLargeInteger(
     SignedInteger : LONG
   ): LARGE_INTEGER; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
 
-{$IFNDEF JWA_INCLUDEMODE}
+{.$IFNDEF JWA_INCLUDEMODE}
 // This function is very similar to ConvertSidToStringSid() from
 // Advapi32.dll. Refer to the PSDK for additional information. Usually the
 // same flags apply.
@@ -6511,7 +6511,7 @@ function  RtlConvertSidToUnicodeString(
     Sid : PSID;
     AllocateDestinationString : BOOLEAN
   ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-{$ENDIF JWA_INCLUDEMODE}
+{.$ENDIF JWA_INCLUDEMODE}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
@@ -7411,14 +7411,14 @@ function  RtlIsDosDeviceName_U(
     TestString : LPCWSTR
   ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
 
-{$IFNDEF JWA_INCLUDEMODE}
+{.$IFNDEF JWA_INCLUDEMODE}
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlIsNameLegalDOS8Dot3(
     Name : PUNICODE_STRING;
     OemName : POEM_STRING;
     NameContainsSpaces : PBOOLEAN
   ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-{$ENDIF JWA_INCLUDEMODE}
+{.$ENDIF JWA_INCLUDEMODE}
 
 // Compatibility: W2K, WXP
 function  RtlIsRangeAvailable(
@@ -7531,13 +7531,13 @@ function  RtlLengthSid(
     pSid : PSID
   ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
 
-{$IFNDEF JWA_INCLUDEMODE}
+{.$IFNDEF JWA_INCLUDEMODE}
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlLocalTimeToSystemTime(
     LocalTime : PLARGE_INTEGER;
     SystemTime : PLARGE_INTEGER
   ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-{$ENDIF JWA_INCLUDEMODE}
+{.$ENDIF JWA_INCLUDEMODE}
 
 // This function is very similar to HeapLock() from Kernel32.dll. Refer to
 // the PSDK for additional information. Usually the same flags apply.
@@ -8003,13 +8003,13 @@ procedure RtlTimeToElapsedTimeFields(
     TimeFields : PTIME_FIELDS
   ); stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
 
-{$IFNDEF JWA_INCLUDEMODE}
+{.$IFNDEF JWA_INCLUDEMODE}
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlTimeToSecondsSince1970(
     Time : PLARGE_INTEGER;
     ElapsedSeconds : PULONG
   ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-{$ENDIF JWA_INCLUDEMODE}
+{.$ENDIF JWA_INCLUDEMODE}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlTimeToSecondsSince1980(
@@ -8040,13 +8040,13 @@ function  RtlUnicodeStringToAnsiSize(
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
-{$IFNDEF JWA_INCLUDEMODE}
+{.$IFNDEF JWA_INCLUDEMODE}
 function  RtlUnicodeStringToAnsiString(
     DestinationString : PANSI_STRING;
     SourceString : PUNICODE_STRING;
     AllocateDestinationString : BOOLEAN
   ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-{$ENDIF JWA_INCLUDEMODE}
+{.$ENDIF JWA_INCLUDEMODE}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlUnicodeStringToCountedOemString(
@@ -8068,16 +8068,16 @@ function  RtlUnicodeStringToOemSize(
     UnicodeString : PUNICODE_STRING
   ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
 
-{$IFNDEF JWA_INCLUDEMODE}
+{.$IFNDEF JWA_INCLUDEMODE}
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlUnicodeStringToOemString(
     DestinationString : POEM_STRING;
     SourceString : PCUNICODE_STRING;
     AllocateDestinationString : BOOLEAN
   ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-{$ENDIF JWA_INCLUDEMODE}
+{.$ENDIF JWA_INCLUDEMODE}
 
-{$IFNDEF JWA_INCLUDEMODE}
+{.$IFNDEF JWA_INCLUDEMODE}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlUnicodeToMultiByteSize(
@@ -8092,7 +8092,7 @@ function  RtlUniform(
     Seed : PULONG
   ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
 
-{$ENDIF JWA_INCLUDEMODE}
+{.$ENDIF JWA_INCLUDEMODE}
 
 // The function RtlUnwind() from Kernel32.dll is an export forwarder to
 // this function. This means you can refer to the documentation of
@@ -9746,9 +9746,9 @@ var
   _RtlIpv4AddressToStringA : Pointer = nil;
   _RtlIpv4AddressToStringW : Pointer = nil;
   _RtlIsDosDeviceName_U : Pointer = nil;
-  {$IFNDEF JWA_INCLUDEMODE}
+  {.$IFNDEF JWA_INCLUDEMODE}
   _RtlIsNameLegalDOS8Dot3 : Pointer = nil;
-  {$ENDIF JWA_INCLUDEMODE}
+  {.$ENDIF JWA_INCLUDEMODE}
   _RtlIsRangeAvailable : Pointer = nil;
   _RtlIsTextUnicode : Pointer = nil;
   _RtlLargeIntegerAdd : Pointer = nil;
@@ -9763,9 +9763,9 @@ var
   _RtlLengthRequiredSid : Pointer = nil;
   _RtlLengthSecurityDescriptor : Pointer = nil;
   _RtlLengthSid : Pointer = nil;
-  {$IFNDEF JWA_INCLUDEMODE}
+  {.$IFNDEF JWA_INCLUDEMODE}
   _RtlLocalTimeToSystemTime : Pointer = nil;
-  {$ENDIF JWA_INCLUDEMODE}
+  {.$ENDIF JWA_INCLUDEMODE}
   _RtlLockHeap : Pointer = nil;
   _RtlMakeSelfRelativeSD : Pointer = nil;
   _RtlMapGenericMask : Pointer = nil;
@@ -9820,23 +9820,23 @@ var
   _RtlSystemTimeToLocalTime : Pointer = nil;
   _RtlTimeFieldsToTime : Pointer = nil;
   _RtlTimeToElapsedTimeFields : Pointer = nil;
-  {$IFNDEF JWA_INCLUDEMODE}
+  {.$IFNDEF JWA_INCLUDEMODE}
   _RtlTimeToSecondsSince1970 : Pointer = nil;
-  {$ENDIF JWA_INCLUDEMODE}
+  {.$ENDIF JWA_INCLUDEMODE}
   _RtlTimeToSecondsSince1980 : Pointer = nil;
   _RtlTimeToTimeFields : Pointer = nil;
   _RtlTryEnterCriticalSection : Pointer = nil;
   _RtlUnicodeStringToAnsiSize : Pointer = nil;
-  {$IFNDEF JWA_INCLUDEMODE}
+  {.$IFNDEF JWA_INCLUDEMODE}
   _RtlUnicodeStringToAnsiString : Pointer = nil;
-  {$ENDIF JWA_INCLUDEMODE}
+  {.$ENDIF JWA_INCLUDEMODE}
   _RtlUnicodeStringToCountedOemString : Pointer = nil;
   _RtlUnicodeStringToInteger : Pointer = nil;
   _RtlUnicodeStringToOemSize : Pointer = nil;
-  {$IFNDEF JWA_INCLUDEMODE}
+  {.$IFNDEF JWA_INCLUDEMODE}
   _RtlUnicodeStringToOemString : Pointer = nil;
   _RtlUnicodeToMultiByteSize : Pointer = nil;
-  {$ENDIF JWA_INCLUDEMODE}
+  {,$ENDIF JWA_INCLUDEMODE}
   _RtlUniform : Pointer = nil;
   _RtlUnwind : Pointer = nil;
   _RtlUpcaseUnicodeChar : Pointer = nil;
@@ -10809,7 +10809,7 @@ begin
   );
 end;
 
-{$IFNDEF JWA_INCLUDEMODE}
+{.$IFNDEF JWA_INCLUDEMODE}
 // Dynamic version of NtClose
 function  NtClose(
     Handle : HANDLE
@@ -10820,7 +10820,7 @@ begin
     Handle
   );
 end;
-{$ENDIF JWA_INCLUDEMODE}
+{.$ENDIF JWA_INCLUDEMODE}
 
 // Dynamic version of NtClose
 function  ZwClose(
@@ -11047,7 +11047,7 @@ begin
   );
 end;
 
-{$IFNDEF JWA_INCLUDEMODE}
+{.$IFNDEF JWA_INCLUDEMODE}
 // Dynamic version of NtCreateFile
 function  NtCreateFile(
     FileHandle : PHANDLE;
@@ -11068,7 +11068,7 @@ begin
     FileHandle, DesiredAccess, ObjectAttributes, IoStatusBlock, AllocationSize, FileAttributes, ShareAccess, CreateDisposition, CreateOptions, EaBuffer, EaLength
   );
 end;
-{$ENDIF JWA_INCLUDEMODE}
+{.$ENDIF JWA_INCLUDEMODE}
 
 // Dynamic version of NtCreateFile
 function  ZwCreateFile(
@@ -11836,7 +11836,7 @@ begin
   );
 end;
 
-{$IFNDEF JWA_INCLUDEMODE}
+{.$IFNDEF JWA_INCLUDEMODE}
 // Dynamic version of NtDeviceIoControlFile
 function  NtDeviceIoControlFile(
     FileHandle : HANDLE;
@@ -11856,7 +11856,7 @@ begin
     FileHandle, Event, ApcRoutine, ApcContext, IoStatusBlock, IoControlCode, InputBuffer, InputBufferLength, OutputBuffer, OutputBufferLength
   );
 end;
-{$ENDIF JWA_INCLUDEMODE}
+{.$ENDIF JWA_INCLUDEMODE}
 
 // Dynamic version of NtDeviceIoControlFile
 function  ZwDeviceIoControlFile(
@@ -13142,7 +13142,7 @@ begin
   );
 end;
 
-{$IFNDEF JWA_INCLUDEMODE}
+{.$IFNDEF JWA_INCLUDEMODE}
 // Dynamic version of NtOpenFile
 function  NtOpenFile(
     FileHandle : PHANDLE;
@@ -13158,7 +13158,7 @@ begin
     FileHandle, DesiredAccess, ObjectAttributes, IoStatusBlock, ShareAccess, OpenOptions
   );
 end;
-{$ENDIF JWA_INCLUDEMODE}
+{.$ENDIF JWA_INCLUDEMODE}
 
 // Dynamic version of NtOpenFile
 function  ZwOpenFile(
@@ -14660,7 +14660,7 @@ begin
   );
 end;
 
-{$IFNDEF JWA_INCLUDEMODE}
+{.$IFNDEF JWA_INCLUDEMODE}
 // Dynamic version of NtQuerySystemTime
 function  NtQuerySystemTime(
     CurrentTime : PLARGE_INTEGER
@@ -14671,7 +14671,7 @@ begin
     CurrentTime
   );
 end;
-{$ENDIF JWA_INCLUDEMODE}
+{.$ENDIF JWA_INCLUDEMODE}
 
 // Dynamic version of NtQuerySystemTime
 function  ZwQuerySystemTime(
@@ -17054,7 +17054,7 @@ begin
   );
 end;
 
-{$IFNDEF JWA_INCLUDEMODE}
+{.$IFNDEF JWA_INCLUDEMODE}
 // Dynamic version of NtWaitForSingleObject
 function  NtWaitForSingleObject(
     Handle : HANDLE;
@@ -17067,7 +17067,7 @@ begin
     Handle, Alertable, Timeout
   );
 end;
-{$ENDIF JWA_INCLUDEMODE}
+{.$ENDIF JWA_INCLUDEMODE}
 
 // Dynamic version of NtWaitForSingleObject
 function  ZwWaitForSingleObject(
@@ -17503,7 +17503,7 @@ begin
   );
 end;
 
-{$IFNDEF JWA_INCLUDEMODE}
+{.$IFNDEF JWA_INCLUDEMODE}
 // Dynamic version of RtlAnsiStringToUnicodeString
 function  RtlAnsiStringToUnicodeString(
     DestinationString : PUNICODE_STRING;
@@ -17516,7 +17516,7 @@ begin
     DestinationString, SourceString, AllocateDestinationString
   );
 end;
-{$ENDIF JWA_INCLUDEMODE}
+{.$ENDIF JWA_INCLUDEMODE}
 
 // Dynamic version of RtlAppendAsciizToString
 function  RtlAppendAsciizToString(
@@ -19291,7 +19291,7 @@ begin
   );
 end;
 
-{$IFNDEF JWA_INCLUDEMODE}
+{.$IFNDEF JWA_INCLUDEMODE}
 // Dynamic version of RtlIsNameLegalDOS8Dot3
 function  RtlIsNameLegalDOS8Dot3(
     Name : PUNICODE_STRING;
@@ -19304,7 +19304,7 @@ begin
     Name, OemName, NameContainsSpaces
   );
 end;
-{$ENDIF JWA_INCLUDEMODE}
+{.$ENDIF JWA_INCLUDEMODE}
 
 // Dynamic version of RtlIsRangeAvailable
 function  RtlIsRangeAvailable(
@@ -19479,7 +19479,7 @@ begin
   );
 end;
 
-{$IFNDEF JWA_INCLUDEMODE}
+{.$IFNDEF JWA_INCLUDEMODE}
 // Dynamic version of RtlLocalTimeToSystemTime
 function  RtlLocalTimeToSystemTime(
     LocalTime : PLARGE_INTEGER;
@@ -19491,7 +19491,7 @@ begin
     LocalTime, SystemTime
   );
 end;
-{$ENDIF JWA_INCLUDEMODE}
+{.$ENDIF JWA_INCLUDEMODE}
 
 // Dynamic version of RtlLockHeap
 function  RtlLockHeap(
@@ -20161,7 +20161,7 @@ begin
   );
 end;
 
-{$IFNDEF JWA_INCLUDEMODE}
+{.$IFNDEF JWA_INCLUDEMODE}
 // Dynamic version of RtlTimeToSecondsSince1970
 function  RtlTimeToSecondsSince1970(
     Time : PLARGE_INTEGER;
@@ -20173,7 +20173,7 @@ begin
     Time, ElapsedSeconds
   );
 end;
-{$ENDIF JWA_INCLUDEMODE}
+{.$ENDIF JWA_INCLUDEMODE}
 
 // Dynamic version of RtlTimeToSecondsSince1980
 function  RtlTimeToSecondsSince1980(
@@ -20221,7 +20221,7 @@ begin
   );
 end;
 
-{$IFNDEF JWA_INCLUDEMODE}
+{.$IFNDEF JWA_INCLUDEMODE}
 // Dynamic version of RtlUnicodeStringToAnsiString
 function  RtlUnicodeStringToAnsiString(
     DestinationString : PANSI_STRING;
@@ -20234,7 +20234,7 @@ begin
     DestinationString, SourceString, AllocateDestinationString
   );
 end;
-{$ENDIF JWA_INCLUDEMODE}
+{.$ENDIF JWA_INCLUDEMODE}
 
 // Dynamic version of RtlUnicodeStringToCountedOemString
 function  RtlUnicodeStringToCountedOemString(
@@ -20273,7 +20273,7 @@ begin
   );
 end;
 
-{$IFNDEF JWA_INCLUDEMODE}
+{.$IFNDEF JWA_INCLUDEMODE}
 // Dynamic version of RtlUnicodeStringToOemString
 function  RtlUnicodeStringToOemString(
     DestinationString : POEM_STRING;
@@ -20300,7 +20300,7 @@ begin
     BytesInMultiByteString, UnicodeString, BytesInUnicodeString
   );
 end;
-{$ENDIF JWA_INCLUDEMODE}
+{.$ENDIF JWA_INCLUDEMODE}
 
 // Dynamic version of RtlUniform
 function  RtlUniform(
