@@ -470,6 +470,7 @@ const
 
   RsNilPointer = 'A given pointer was unexpectedly NIL.';
 
+  RsInvalidComputer = 'The given computer name is invalid.';
 
 const
 // Unit names - do not localize

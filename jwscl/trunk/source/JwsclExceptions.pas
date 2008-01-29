@@ -188,6 +188,8 @@ type
   EJwsclInvalidOwnerSIDException = class(EJwsclInvalidSIDException);
   EJwsclInvalidGroupSIDException = class(EJwsclInvalidSIDException);
 
+  EJwsclInvalidComputer = class(EJwsclSecurityException);
+
   {@Name is raised if TJwSecurityId.CreateWellKnownSid fails}
   EJwsclInvalidKnownSIDException = class(EJwsclInvalidSIDException)
   protected

@@ -44,7 +44,7 @@ uses SysUtils,
   jwaWindows,
   JwaVista,
   JwsclResource,
-  JwsclSid, JwsclToken,
+  JwsclSid, JwsclToken, JwsclUtils,
   JwsclTypes, JwsclExceptions,
   JwsclVersion, JwsclConstants, JwsclProcess,
   JwsclStrings; //JwsclStrings, must be at the end of uses list!!!
@@ -275,7 +275,22 @@ function JwGetLogonSID(const hWinStation: HWINSTA{TWindowStation} = 0)
 
 function JwGetLogonSID(aToken: TJwSecurityToken): TJwSecurityId; overload;
 
+ 
+{@Name returns a local or remote machine's SID.
+Warning: This function may need some time on remote machines.
 
+@param(ComputerOrDNS defines a DNS or NetBIOS name of the remote server.
+      If empty the local machine is used)
+@return(Returns an instance of TJwSecurityId which presents the machine)
+@raises(EJwsclAccessDenied is raised if retrieving of the machine sid is denied.
+ This usually occurs if a remote system could not authenticate the local one.)
+@raises(EJwsclInvalidComputer is called if the system in parameter ComputerOrDNS
+ could not be resolved.)
+@raises(EJwsclWinCallFailedException is raised if a call to NetUserEnum failed.)
+@raises(EJwsclNILParameterException is raied if data returned by NetUserEnum
+  is nil.)
+}
+function JwGetMachineSid(const ComputerOrDNS : WideString = '') : TJwSecurityId;
 
 {const
   AllWellKnownSid : TWellKnownSidTypeSet = ($FFFF);}
@@ -303,11 +318,95 @@ procedure JwInitWellKnownSIDsExAll();
 {$IFNDEF SL_OMIT_SECTIONS}
 implementation
 
-uses Classes;
+uses Classes,Dialogs;
 
 {$ENDIF SL_OMIT_SECTIONS}
 
 {$IFNDEF SL_INTERFACE_SECTION}
+
+
+
+function JwGetMachineSid(const ComputerOrDNS : WideString = '') : TJwSecurityId;
+var Token : TJwSecurityToken;
+    SID : TJwSecurityId;
+    Arr : TJwSubAuthorityArray;
+    Ident : TSidIdentifierAuthority;
+
+    Data : PBYTE;
+    UserInfo : PUSER_INFO_0;
+
+    res,
+    entriesread,
+    totalentries,
+    resume_handle : DWORD;
+begin
+  Data := nil;
+
+  //get local users
+  res := NetUserEnum(
+    PWideChar(ComputerOrDNS),
+    0, //__in     DWORD level,
+    FILTER_NORMAL_ACCOUNT,//__in     DWORD filter,
+    Data,//__out    LPBYTE* bufptr,
+    MAX_PREFERRED_LENGTH,//__in     DWORD prefmaxlen,
+    @entriesread,//__out    LPDWORD entriesread,
+    @totalentries,//__out    LPDWORD totalentries,
+    nil//__inout  LPDWORD resume_handle
+  );
+
+  if res <> NERR_Success then
+  begin
+    case res of
+      ERROR_ACCESS_DENIED :
+        raise EJwsclAccessDenied.CreateFmtWinCall(
+          RsAccessDenied,
+          'JwGetMachineSid', '', RsUNKnownSid,
+          0, false, 'NetUserEnum', []);
+      53,
+      NERR_InvalidComputer :
+        raise EJwsclInvalidComputer.CreateFmtWinCall(
+          RsInvalidComputer,
+          'JwGetMachineSid', '', RsUNKnownSid,
+          0, false, 'NetUserEnum', []);
+      else
+      begin
+        SetLastError(res);
+        raise EJwsclWinCallFailedException.CreateFmtWinCall(
+          RsWinCallFailedWithNTStatus,
+          'JwGetMachineSid', '', RsUNKnownSid,
+          0, true, 'NetUserEnum', ['NetUserEnum',res]);
+      end;
+    end
+  end;
+
+
+  try
+    if Data = nil then
+      JwRaiseOnNilParameter(Data, 'NetUserEnum(..bufptr..)', 'JwGetMachineSid','', RsUNKnownSid);
+
+    UserInfo := PUSER_INFO_0(Data);
+
+    //get sid of that user
+    SID := TJwSecurityId.Create(ComputerOrDNS,UserInfo.usri0_name);
+    try
+
+      Arr   := SID.SubAuthorityArray;
+      Ident := SID.IdentifierAuthority;
+
+      //strip the RID (last member)
+      SetLength(Arr, High(Arr));
+      result := TJwSecurityId.Create(Arr,Ident);
+      //also copy cached system name
+      result.CachedSystemName := SID.CachedSystemName;
+
+      //ShowMessage(result.GetText(true));
+    finally
+      SID.Free;
+    end;
+  finally
+    NetApiBufferFree(Data);
+  end;
+end;
 
 var KnownSids : array[1..75] of AnsiString =
      ('S-1-0-0',

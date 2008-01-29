@@ -187,6 +187,7 @@ type
   private
     fWellKnownSidType: TWellKnownSidType;
 
+    fCachedSystemName : TJwString;
 
     fSID: PSID;
 
@@ -499,8 +500,7 @@ type
         The component attributes will be ignored.
         The resulted SID will be checked by @link(CheckSID).
 
-        @param(SID receives a TSidAndAttributes structure to be copied)
-
+       
         @raises(EJwsclWinCallFailedException will be raised if a call to AllocateAndInitializeSid failed)
         @raises(EJwsclSecurityException See @link(CheckSID) for exceptions description) }
 
@@ -690,6 +690,14 @@ type
       Read GetAttributesType Write SetAttributesType;
 
     property Trustee: TTrusteeEx Read GetTrustee;
+
+   {@Name contains the system or domain name that was supplied when the instance
+    was created. 
+    It is simply cached for later retrieving and can be used
+    for AccountName, AccountDomainName or AccountNameUse to get the information
+    in the context of the given system or domain.
+   }
+    property CachedSystemName : TJwString read fCachedSystemName write fCachedSystemName;
   end;
 
 
@@ -733,6 +741,7 @@ begin
   fSID := nil;
   fDbgDisableException := False;
   fWellKnownSidType := WinNullSid;
+  fCachedSystemName := '';
 end;
 
 constructor TJwSecurityId.Create(const SID: PSID);
@@ -772,6 +781,7 @@ begin
      ClassName, RsUNSid, 0, False, ['SecurityId']);
 
   Create(SecurityID.SID);
+  fCachedSystemName := SecurityID.CachedSystemName;
 
   CheckSID;
 
@@ -824,6 +834,10 @@ begin
   end;
 
   fWellKnownSidType := WellKnownSidType;
+
+  //get cached system name
+  if Assigned(DomainSid) then
+    fCachedSystemName := DomainSid.CachedSystemName;
 
   CheckSID;
 
@@ -912,11 +926,11 @@ var
 begin
   Create;
 
-  if Length(Authorities) <> 8 then
+ { if Length(Authorities) <> 8 then
     raise EJwsclIndexOutOfBoundsException.CreateFmtEx(
       RsSidInvalidAuthoritiesLength,
       'Create', ClassName, RsUNSid, 0, False, []);
-
+                }
   fSID := NewSID;
 
   fSID.Revision := 1;
@@ -986,7 +1000,8 @@ var
   SidNameUse: TSidNameUse;
   tempSID: PSID;
 begin
-
+  fCachedSystemName := SystemName;
+  
   SidNameUse := SidTypeInvalid;
 
   iSidSize := SECURITY_MAX_SID_SIZE;
@@ -1023,6 +1038,7 @@ begin
         RsUNSid, 0, True, ['LookupAccountName']);
     end;
 
+
   {
    WARNING:
      I changed the memory allocation to GetMem so Memory Leak Finders (like FastMM4) can work.
@@ -1033,6 +1049,8 @@ begin
 
     //Copy the SID
     Create(tempSID);
+
+    fCachedSystemName := pDomainName;
 
     //free the SID
     LocalFree(HLOCAL(tempSID));
@@ -1300,7 +1318,7 @@ var
 begin
   fDbgDisableException := ignoreExceptions;
   try
-    sDomain := AccountDomainName[''];
+    sDomain := AccountDomainName[fCachedSystemName];
   except
     on E: EJwsclSecurityException do
       sDomain := JwFormatString(RsSidUnknownDomain,[E.Message]);
@@ -1310,7 +1328,7 @@ begin
     sDomain := sDomain + '@';
 
   try
-    sName := AccountName[''];
+    sName := AccountName[fCachedSystemName];
   except
     on E: EJwsclSecurityException do
       sName := JwFormatString(RsSidUnknownName,[E.Message]);
@@ -1622,7 +1640,7 @@ begin
 
   Data[6] := RsSidAccountNameLabel;
   try
-    Data[6] := Data[6] + AccountName[''];
+    Data[6] := Data[6] + AccountName[fCachedSystemName];
   except
     on E : ESetSecurityException do
       Data[6] := Data[6] + '???';
@@ -1630,7 +1648,7 @@ begin
 
   Data[7] := RsSidAccountDomainNameLabel;
   try
-    Data[7] :=  Data[7] + AccountDomainName[''];
+    Data[7] :=  Data[7] + AccountDomainName[fCachedSystemName];
   except
     on E : ESetSecurityException do
       Data[7] := Data[7] + '???';
@@ -1638,7 +1656,7 @@ begin
 
   Data[8] := RsAccountNameUseLabel;
   try
-    Data[8] := Data[8] + IntToStr(AccountNameUse['']);
+    Data[8] := Data[8] + IntToStr(AccountNameUse[fCachedSystemName]);
   except
     Data[8] := Data[8] + '???';
   end;
