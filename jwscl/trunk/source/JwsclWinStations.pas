@@ -467,7 +467,7 @@ begin
         TJwString(lpszDesktop);
     finally
     end;
-  Result := True;
+  Result := true;
 end;
 
 function TJwSecurityWindowStation.GetDesktopNames: TJwTJwStringArray;

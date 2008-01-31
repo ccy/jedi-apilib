@@ -250,9 +250,30 @@ procedure JwRaiseOnNilMemoryBlock(const P : Pointer;
 procedure JwRaiseOnNilParameter(const P : Pointer;
   const ParameterName, MethodName, ClassName, FileName : TJwString);
 
+{$IFDEF JW_TYPEINFO}
+function GetUnitName(argObject: TObject): string;
+{$ENDIF JW_TYPEINFO}
+
 implementation
 uses Classes, SysUtils, JwsclToken, JwsclKnownSid, JwsclDescriptor, JwsclAcl,
-     JwsclSecureObjects, JwsclMapping;
+     JwsclSecureObjects, JwsclMapping
+{$IFDEF JW_TYPEINFO}
+     ,TypInfo
+{$ENDIF JW_TYPEINFO}
+     ;
+
+{$IFDEF JW_TYPEINFO}
+function GetUnitName(argObject: TObject): string;
+var
+  ptrTypeData: PTypeData;
+begin
+  if (argObject.ClassInfo <> nil) then
+  begin
+    ptrTypeData := GetTypeData(argObject.ClassInfo);
+    Result := ptrTypeData.UnitName;
+  end;
+end;
+{$ENDIF JW_TYPEINFO}
 
 procedure JwRaiseOnNilParameter(const P : Pointer; const ParameterName, MethodName, ClassName, FileName : TJwString);
 begin

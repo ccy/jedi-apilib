@@ -328,12 +328,13 @@ uses Classes,Dialogs;
 
 function JwGetMachineSid(const ComputerOrDNS : WideString = '') : TJwSecurityId;
 var Token : TJwSecurityToken;
-    SID : TJwSecurityId;
+    Sid{,Sid2} : TJwSecurityId;
     Arr : TJwSubAuthorityArray;
     Ident : TSidIdentifierAuthority;
 
     Data : PBYTE;
     UserInfo : PUSER_INFO_0;
+    //UserInfo2 : PUSER_MODALS_INFO_2;
 
     res,
     entriesread,
@@ -348,13 +349,15 @@ begin
     0, //__in     DWORD level,
     FILTER_NORMAL_ACCOUNT,//__in     DWORD filter,
     Data,//__out    LPBYTE* bufptr,
-    MAX_PREFERRED_LENGTH,//__in     DWORD prefmaxlen,
+    1,{read only one entry}//sizeof(USER_INFO_0),//MAX_PREFERRED_LENGTH,//__in     DWORD prefmaxlen,
     @entriesread,//__out    LPDWORD entriesread,
     @totalentries,//__out    LPDWORD totalentries,
     nil//__inout  LPDWORD resume_handle
   );
 
-  if res <> NERR_Success then
+//  res := NetUserModalsGet(PWideChar(ComputerOrDNS), 2, Data);
+
+  if (res <> NERR_Success) and (res <> ERROR_MORE_DATA) then
   begin
     case res of
       ERROR_ACCESS_DENIED :
@@ -380,21 +383,27 @@ begin
   end;
 
 
+
+
   try
     if Data = nil then
       JwRaiseOnNilParameter(Data, 'NetUserEnum(..bufptr..)', 'JwGetMachineSid','', RsUNKnownSid);
 
     UserInfo := PUSER_INFO_0(Data);
+  //  UserInfo2 := PUSER_MODALS_INFO_2(Data);
+
 
     //get sid of that user
-    SID := TJwSecurityId.Create(ComputerOrDNS,UserInfo.usri0_name);
+    Sid := TJwSecurityId.Create(ComputerOrDNS,UserInfo.usri0_name);
+  //  Sid := TJwSecurityId.Create(UserInfo2.usrmod2_domain_id);
     try
-
       Arr   := SID.SubAuthorityArray;
       Ident := SID.IdentifierAuthority;
 
-      //strip the RID (last member)
-      SetLength(Arr, High(Arr));
+      if Length(Arr) >= 5 then
+        //strip the RID (last member)
+        SetLength(Arr, High(Arr));
+        
       result := TJwSecurityId.Create(Arr,Ident);
       //also copy cached system name
       result.CachedSystemName := SID.CachedSystemName;

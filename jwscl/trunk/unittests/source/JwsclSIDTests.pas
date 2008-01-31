@@ -34,6 +34,8 @@ type
     procedure Test_GetText;
     procedure Test_KnownSidFree;
 
+
+
    { procedure TestAdd;
     procedure TestFirst;
     procedure TestIndexOf;
@@ -82,10 +84,17 @@ type
 
     procedure Test_Properties;
 
+  end;
 
+  TKnownSidTests = class(TTestCase)
+  private
 
-   
+  protected
+    procedure SetUp; override;
+    procedure TearDown; override;
 
+  published
+    procedure Test_JwGetMachineSid;
   end;
 
 implementation
@@ -766,7 +775,7 @@ begin
   end;
 
 
-  CheckEquals(5,fSIDs[1].IdentifierAuthority.Value[5],'Invalid identifier authority');
+  CheckEquals(Integer(5),fSIDs[1].IdentifierAuthority.Value[5],'Invalid identifier authority');
 
 
   CheckNotEquals(0,fSIDs[1].SIDLength,'Invalid SIDLength');
@@ -1037,12 +1046,38 @@ begin
   CheckNotNull(JwNullSID);
 end;
 
+
+{ TKnownSidTests }
+
+procedure TKnownSidTests.SetUp;
+begin
+  inherited;
+
+end;
+
+procedure TKnownSidTests.TearDown;
+begin
+  inherited;
+
+end;
+
+procedure TKnownSidTests.Test_JwGetMachineSid;
+var Sid : TJwSecurityId;
+begin
+  Sid := JwGetMachineSid();
+  CheckNotNull(Sid,'JwGetMachineSid must not return nil');
+  Sid.Free;
+end;
+
 initialization
 
   TestFramework.RegisterTest('JwsclSidTests Suite',
     TSecurityIDListTests.Suite);
   TestFramework.RegisterTest('JwsclSidTests Suite',
     TSecurityIDTests.Suite);
+
+  TestFramework.RegisterTest('JwsclKnownSidTests Suite',
+    TKnownSidTests.Suite);
 
 end.
 

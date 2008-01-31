@@ -54,7 +54,7 @@ uses SysUtils, Classes,
 {$IFNDEF SL_IMPLEMENTATION_SECTION}
 type
   {@Name is the main exception class that is used if an error occurs in any
-        SecurityManager unit.
+        Security Library unit.
   }
   EJwsclSecurityException = class(Exception)
   protected

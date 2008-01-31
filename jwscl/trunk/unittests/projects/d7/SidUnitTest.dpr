@@ -8,8 +8,9 @@ program SidUnitTest;
 {.$APPTYPE CONSOLE}
 
 {Define one of these directive to use memory leak manager}
-{.$DEFINE FASTMM4}
-{$UNDEF FASTMM4}
+{$DEFINE FASTMM4}
+{.$UNDEF FASTMM4}
+{$I JWSCL.inc}
 
 {$IFDEF FASTMM4}
   {$UNDEF MEMCHECK}
@@ -84,6 +85,7 @@ uses
   JwsclSIDTests in '..\..\source\JwsclSIDTests.pas';
 
 //never ever use JwsclLibrary and one of the Jwscl units at the same time!!
+
 
 begin
   JwInitWellKnownSIDs;
