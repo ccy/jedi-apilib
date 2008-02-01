@@ -41,7 +41,8 @@ type
               Settings : TJwSecurityDescriptorControlSet;
               NewSecurityDescriptor,
               MergedSecurityDescriptor
-               : TJwSecurityDescriptor);
+               : TJwSecurityDescriptor;
+               var bSuccess: boolean);
   public
     { Public-Deklarationen }
     procedure UpdateFileEdit;
@@ -146,7 +147,7 @@ procedure TForm1.Button_ChangeOwnerClick(Sender: TObject);
   begin
     pName := nil;
 
-    //WinNT://FELLBACH/CHRIS/ASPNET
+    //WinNT://XXX/YYY/ASPNET
     i := pos('://',Srv);
     if i > 0 then
       System.Delete(Srv,1,i+2);  //WINNT://
@@ -240,11 +241,12 @@ procedure TForm1.OnSetSecurity(Sender: TJwSecurityDescriptorDialog;
   SecurityDialogFlags: TJwSecurityDialogFlags;
   SecurityResetType: TJwSecurityResetType;
   Settings: TJwSecurityDescriptorControlSet; NewSecurityDescriptor,
-  MergedSecurityDescriptor: TJwSecurityDescriptor);
+  MergedSecurityDescriptor: TJwSecurityDescriptor;
+  var bSuccess: boolean);
 var bOk : Boolean;
 begin
   //
-
+  bOK := false;
   if siOwnerSecurityInformation in SecurityType then
   begin
     if JwIsPrivilegeSet(SE_TAKE_OWNERSHIP_NAME) then
@@ -273,8 +275,12 @@ begin
     UpdateFileEdit;
   end
   else
+  begin
     MessageDlg('The DACL cannot be changed in this version.', mtError, [mbOK], 0);
 
+  end;
+
+  bSuccess := bOK;
 end;
 
 end.
