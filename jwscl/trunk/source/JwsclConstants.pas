@@ -55,7 +55,24 @@ uses
 {$IFNDEF SL_IMPLEMENTATION_SECTION}
 
 {Here we include resource strings and other things}
-{$R Jwscl.res}
+
+
+{WARNING:
+Create new (empty) project and add this line in the main unit:
+
+Open taskmanager and add the Virtual Memory Size column via the View -> Select Columns menu. Record the current value of VM Size column.
+
+Compile and when the compilation has finished you can see 34,1 MB extra Virtual Memory is allocated.
+
+Compile again, 34,1 MB more is allocated. This continues with every compilation.
+
+Memory is not freed when closing the project, only restarting the IDE helps.
+
+http://qc.codegear.com/wc/qcmain.aspx?d=57701
+}
+{$IFDEF JWSCL_INCLUDE_RES}
+{.$R Jwscl.res}
+{$ENDIF JWSCL_INCLUDE_RES}
 
 
 const
@@ -1452,7 +1469,7 @@ procedure JwInitLocalizedMappings(PrimaryLanguage,
 {var Count : Cardinal;
     PsiArray : PSI_ACCESS;
     PsiArray2 : TJwSiAccessArray;}
-begin 
+begin
   LocalizeMapping(FileMapping, //var MappingRecord : array of TJwRightsMapping;
     FileMappingStartIndex,//const StartStringId : Cardinal;
     PrimaryLanguage, SubLanguage,//SubLanguageId : Word;
@@ -1614,7 +1631,12 @@ initialization
 // user language or neutral if not found
 // JwInitLocalizedMappings(PRIMARYLANGID(GetUserDefaultUILanguage),
 //   SUBLANGID(GetUserDefaultUILanguage));
+
+
+
+{$IFDEF JWSCL_INCLUDE_RES}
    JwInitLocalizedMappings(LANG_SYSTEM_DEFAULT, SUBLANG_SYS_DEFAULT);
+{$ENDIF JWSCL_INCLUDE_RES}
 
 // english version
 //  JwInitLocalizedMappings(LANG_ENGLISH, SUBLANG_ENGLISH_UK);
