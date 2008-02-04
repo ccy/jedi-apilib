@@ -15,7 +15,7 @@ ANY KIND, either express or implied. See the License for the specific language g
 and limitations under the License.
 
 Alternatively, the contents of this file may be used under the terms of the  
-GNU Lesser General Public License (the  "LGPL License"), in which case the   
+GNU Lesser General Public License (the  "LGPL License"), in which case the
 provisions of the LGPL License are applicable instead of those above.        
 If you wish to allow use of your version of this file only under the terms   
 of the LGPL License and not to allow others to use your version of this file 
@@ -908,7 +908,7 @@ type
    uses delphi strings.}
   TJwEnumAlgorithmsEntry = record
   //The algorithm as a Windows ALG_ID.
-  //This value can be useful if AlgType is ctUnknown
+  //This value can be useful if HashAlgType/EncrAlgType is haUnknown/eaUnknown.
     AlgId:         ALG_ID;
   //The default key length for the algorithm
     DefaultKeyLen: Cardinal;

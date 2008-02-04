@@ -298,10 +298,22 @@ type
              underlying Windows call fails.)}
     function Sign(out Len: Cardinal; Key: TJwKeyPairType = kptSignature): Pointer; overload;
 
+    {@Name verifies that the given signature is correct for the
+     data previously added to the hash using @link(HashData).
+     @param(The signature which should be verified)
+     @param(The length of the signature)
+     @key(The public key that corresponds to the private key with
+          with which the signature was created)
+     @raises(EJwsclHashApiException will be raised if the underlying
+             Windows call fails due to an incorrect signature or for other
+             reasons. In case of an incorrect signature, the property
+             LastError of the exception object will have the value NTE_BAD_SIGNATURE.)}
+    procedure VerifySignature(Signature: Pointer; Len: Cardinal; Key: TJwCryptKey);
+
     {@Name frees buffer returned by previous calls to
      @link(RetrieveHash) and @link(Sign).
      @Param(Buffer The buffer to be freed)}
-    procedure FreeBuffer(Buffer: Pointer);
+    class procedure FreeBuffer(Buffer: Pointer);
 
     {The algorithm specified in the call to @link(create)
      EJwsclHashApiException will be raised if the
@@ -752,7 +764,7 @@ begin
   inherited;
 end;
 
-procedure TJwHash.FreeBuffer(Buffer: Pointer);
+class procedure TJwHash.FreeBuffer(Buffer: Pointer);
 begin
   FreeMem(Buffer);
 end;
@@ -847,6 +859,12 @@ begin
   end;
 end;
 
+procedure TJwHash.VerifySignature(Signature: Pointer; Len: Cardinal; Key: TJwCryptKey);
+begin
+  if not CryptVerifySignature(fHashHandle, Signature, Len, Key.Handle, nil, 0) then
+    RaiseApiError('VerifySignature', 'CryptVerifySignature');
+end;
+
 { TJwCryptKey }
 constructor TJwCryptKey.Create(OldKey: TJwCryptKey);
 begin
@@ -891,14 +909,14 @@ begin
   if not (Flags<=GenerateKeyFlags) then
     raise EJwsclInvalidFlagsException.CreateFmtEx(
       RsInvalidFlags,
-      'IGenerate',
+      'Generate',
       ClassName,
       RsUNCryptProvider,
       0,
       false,
       []);
 
- inherited Create;
+  inherited Create;
   if not CryptGenKey(CSP.CSPHandle, TJwEnumMap.ConvertEncryptionAlgorithm(Alg), TJwEnumMap.ConvertKeyFlagSet(Flags) or (Length shl 16), fHandle) then
     RaiseApiError('Generate', 'CryptGenKey');
 end;
@@ -929,6 +947,7 @@ end;
 
 function TJwCryptKey.GetExportKeyLength(ExpKey: TJwCryptKey;
   BlobType: TJwKeyExportKind; Flags: TJwKeyFlagSet): Cardinal;
+var Key: Cardinal;
 begin
   Result := 0;
   ExportKey(ExpKey, BlobType, Flags, nil, Result);
@@ -951,7 +970,7 @@ begin
     Key := ExpKey.Handle
   else
     Key := 0;
-  if not CryptExportKey(fHandle, Key, TJwEnumMap.ConvertKeyExportKind(BlobType), TJwEnumMap.ConvertKeyFlagSet(Flags), @Blob, BlobLen) then
+  if not CryptExportKey(fHandle, Key, TJwEnumMap.ConvertKeyExportKind(BlobType), TJwEnumMap.ConvertKeyFlagSet(Flags), Blob, BlobLen) then
     RaiseApiError('GetExportKeyLength', 'CryptExportKey');
 end;
 
