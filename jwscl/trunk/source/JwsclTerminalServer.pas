@@ -39,17 +39,8 @@ unit JwsclTerminalServer;
 interface
 
 uses Classes, Contnrs, DateUtils, SysUtils,
-{$IFDEF UNICODE}
-  JclUnicode,
-{$ENDIF UNICODE}
   JwaWindows,
-{$IFDEF DEBUG}
-{$IFDEF REMKO}
-  RpcWinsta,       
-{$ENDIF REMKO}
-{$ENDIF DEBUG}
-
-  JwsclConstants, JwsclExceptions, JwsclResource, JwsclSid, JwsclTypes,
+  JwsclExceptions, JwsclResource, JwsclSid, JwsclTypes,
   JwsclUtils,
   JwsclVersion, JwsclStrings;
 
@@ -61,6 +52,7 @@ type
   { forward declarations }
   TJwTerminalServer = class;
   TJwTerminalServerList = class;
+  TJwThread = class;
   TJwWTSEventThread = class;
   TJwWTSEnumServersThread = class;
   TJwWTSSessionShadow = class;
@@ -69,9 +61,29 @@ type
   TJwWTSProcess = class;
   TJwWTSProcessList = class;
 
-  PJwTerminalServer = ^TJwTerminalServer;
+
+  TThreadNameInfo = record
+    FType: LongWord;     // must be 0x1000
+    FName: PChar;        // pointer to name (in user address space)
+    FThreadID: LongWord; // thread ID (-1 indicates caller thread)
+    FFlags: LongWord;    // reserved for future use, must be zero
+  end;
+
+  TJwThread = class(TThread)
+  private
+    { Private declarations }
+    FTerminatedEvent: THandle;
+    procedure SetName(const Name: String);
+  protected
+  public
+    constructor Create(const CreateSuspended: Boolean; const Name: String);
+    property Name: String write SetName;
+    procedure Wait;
+  end;
+
 
   {@Name defines }
+  PJwTerminalServer = ^TJwTerminalServer;
   TJwTerminalServer = class(TObject)
   protected
     FComputerName: TJwString;
@@ -96,7 +108,7 @@ type
     FServers: {$IFDEF UNICODE}TWideStringList{$ELSE}TStringList{$ENDIF UNICODE};
     FSessions: TJwWTSSessionList;
     FProcesses: TJwWTSProcessList;
-    FTerminalServerEventThread: TThread;
+    FTerminalServerEventThread: TJwWTSEventThread;
     FServer: TJwString;
     FTag: Integer;
 
@@ -116,7 +128,6 @@ type
     constructor Create;
     destructor Destroy; override;
     function EnumerateProcesses: Boolean;
-//    function EnumerateProcesses: boolean;
     function EnumerateServers(ADomain: String):Boolean;
     function EnumerateSessions: boolean;
     function FileTime2DateTime(FileTime: TFileTime): TDateTime;
@@ -139,7 +150,7 @@ type
     property Servers: {$IFDEF UNICODE}TWideStringList{$ELSE}
       TStringList{$ENDIF UNICODE} read GetServers;
     property ServerList: TStringList read FServerList;
-    property Sessions: TJwWTSSessionList read FSessions;
+    property Sessions: TJwWTSSessionList read FSessions write FSessions;
     function Shutdown(AShutdownFlag: DWORD): Boolean;
     property Tag: Integer read FTag write FTag;
   end;
@@ -165,14 +176,17 @@ type
     function Remove(ATerminalServer: TJwTerminalServer): Integer;
   end;
 
-  TJwWTSEventThread = class(TThread)
+  TJwWTSEventThread = class(TJwThread)
   protected
     FOwner: TJwTerminalServer;
     FEventFlag: DWORD;
+//    FTerminatedEvent: THandle;
   public
     constructor Create(CreateSuspended: Boolean; AOwner: TJwTerminalServer);
     procedure DispatchEvent;
     procedure Execute; override;
+//    property TerminatedEvent: THandle read FTerminatedEvent write
+//      FTerminatedEvent;
   end;
 
   TJwWTSEnumServersThread = class(TThread)
@@ -325,7 +339,7 @@ type
     function Logoff(bWait: Boolean): Boolean;
     property LogonTime: Int64 read FLogonTime;
     property LogonTimeStr: TJwString read FLogonTimeStr;
-    property Owner: TJwWTSSessionList read FOwner;
+    property Owner: TJwWTSSessionList read FOwner write FOwner;
     property OutgoingBytes: DWORD read FOutgoingBytes;
     function PostMessage(const AMessage: TJwString; const ACaption: TJwString;
       const uType: DWORD): DWORD;
@@ -374,13 +388,14 @@ type
     FProcessAge: Int64;
     FProcessAgeStr: TJwString;
     FProcessCreateTime: TJwString;
-    FProcessCPUTime: TJwString;
+    FProcessCPUTime: Int64;
+    FProcessCPUTimeStr: TJwString;
     FProcessId: TJwProcessID;
     FProcessMemUsage: DWORD;
     FProcessName: TJwString;
     FProcessVMSize: DWORD;
     FSessionId: TJwSessionID;
-    FSidStr: TJwString;
+//    FSidStr: TJwString;
     FUsername: TJwString;
     FWinStationName: TJwString;
     function GetServer: TJwString;
@@ -393,14 +408,15 @@ type
     property SessionId: TJwSessionId read FSessionId;
     property ProcessAge: Int64 read FProcessAge;
     property ProcessAgeStr: TJwString read FProcessAgeStr;
-    property ProcessCPUTime: TJwString read FProcessCPUTime;
+    property ProcessCPUTime: Int64 read FProcessCPUTime;
+    property ProcessCPUTimeStr: TJwString read FProcessCPUTimeStr;
     property ProcessCreateTime: TJwString read FProcessCreateTime;
     property ProcessId: TJwProcessId read FProcessId;
     property ProcessName: TJwString read FProcessName;
     property ProcessMemUsage: DWORD read FProcessMemUsage;
     property ProcessVMSize: DWORD read FProcessVMSize;
     property Server: TJwString read GetServer;
-    property SidStr: TJwString read FSidStr;
+//    property SidStr: TJwString read FSidStr;
     function Terminate: boolean; overload;
     function Terminate(const dwExitCode: DWORD): boolean; overload;
     property Username: TJwString read FUsername;
@@ -489,9 +505,39 @@ type
   PJwWtsServerInfoWArray = ^TJwWtsServerInfoWArray;
   TJwWtsServerInfoWArray = array[0..ANYSIZE_ARRAY-1] of TWtsServerInfoW;
 
+procedure TJwThread.SetName(const Name: string);
+var
+  ThreadNameInfo: TThreadNameInfo;
+begin
+  ThreadNameInfo.FType := $1000;
+  ThreadNameInfo.FName := PChar(Name);
+  ThreadNameInfo.FThreadID := $FFFFFFFF;
+  ThreadNameInfo.FFlags := 0;
+
+  try
+    RaiseException( $406D1388, 0, SizeOf(ThreadNameInfo) div SizeOf(LongWord),
+      @ThreadNameInfo );
+  except
+  end;
+end;
+
+constructor TJwThread.Create(const CreateSuspended: Boolean; const Name: string);
+begin
+  inherited Create(CreateSuspended);
+  SetName(Name);
+end;
+
+procedure TJwThread.Wait;
+var
+  Res: DWORD;
+begin
+  WaitForSingleObject(Handle, INFINITE);
+end;
+
 constructor TJwTerminalServer.Create;
 begin
   inherited Create;
+  OutputDebugString('TJwTerminalServer.Create');
   FSessions := TJwWTSSessionList.Create(True);
   FSessions.Owner := Self;
 
@@ -507,6 +553,8 @@ begin
 end;
 
 destructor TJwTerminalServer.Destroy;
+var
+  EventFlag: DWORD;
 begin
   // Close connection
   if Assigned(FEnumServersThread) then
@@ -529,29 +577,33 @@ begin
     Disconnect;
   end;
 
-  // Free the SessionList
-  if Assigned(FSessions) then
+  // Terminate the Event Thread before closing the connection.
+  if Assigned(FTerminalServerEventThread) then
   begin
-    FreeAndNil(FSessions);
+    // Terminate Event Thread
+    FTerminalServerEventThread.Terminate;
+
+    // unblock the waiter
+    WTSWaitSystemEvent(FServerHandle, WTS_EVENT_FLUSH, EventFlag);
+
+    // wait for the thread to finish
+    WaitForSingleObject(FTerminalServerEventThread.Handle, INFINITE);
+
+    // Free
+    FreeAndNil(FTerminalServerEventThread);
   end;
+
+    // Free the SessionList
+    FreeAndNil(FSessions);
 
     // Free the ProcessList
-  if Assigned(FProcesses) then
-  begin
     FreeAndNil(FProcesses);
-  end;
 
   // Free the Serverlist
-  if Assigned(FServers) then
-  begin
     FreeAndNil(FServers);
-  end;
 
   // Free the Serverlist
-  if Assigned(FServerList) then
-  begin
     FreeAndNil(FServerList);
-  end;
 
   inherited;
 end;
@@ -591,7 +643,7 @@ existing session is deleted and the Delete flag is triggered. When users
 connect to a disconnected session from within a session, their session is
 disconnected and the Disconnect flag is triggered instead of the Delete flag.}
 
-procedure TJwTerminalServer.FireEvent(EventFlag: Cardinal);
+procedure TJwTerminalServer.FireEvent(EventFlag: DWORD);
 begin
   // Set LastEventFlag property
   FLastEventFlag := EventFlag;
@@ -720,17 +772,6 @@ begin
   FComputerName := '';
 end;
 
-// Moved to JwsclString
-{function TJwTerminalServer.UnicodeStringToJwString(
-  const AUnicodeString: UNICODE_STRING): TJwString;
-var Len: DWORD;
-begin
-  // Determine UnicodeStringLength (-1 because string has no #0 terminator)
-  Len := RtlUnicodeStringToAnsiSize(@AUnicodeString)-1;
-  // Convert to TJwString
-  Result := WideCharLenToString(AUniCodeString.Buffer, Len);
-end;}
-
 function TJwTerminalServer.EnumerateProcesses: Boolean;
 var Count: Integer;
   ProcessInfoPtr: PWINSTA_PROCESS_INFO_ARRAY;
@@ -740,21 +781,20 @@ var Count: Integer;
   strUsername: TJwString;
   lpBuffer: PWideChar;
   DiffTime: TDiffTime;
-  strSid: TjwString;
+//  strSid: TjwString;
 begin
-  //TODO: FServerHandle is valid?
   ProcessInfoPtr := nil;
-  Count := 1;
+  Count := 0;
 
   FProcesses.Clear;
-  
+
   if not Connected then
   begin
     Connect;
   end;
 
   ProcessInfoPtr := nil;
-  
+
   Result := WinStationGetAllProcesses(FServerHandle, 0, Count, ProcessInfoPtr);
   if Result then
   begin
@@ -777,7 +817,7 @@ begin
             with TJwSecurityID.Create(pUserSid) do
             begin
               strUsername := GetCachedUserFromSid;
-              strSid := StringSID;
+//              strSid := StringSID;
               Free;
             end;
           end;
@@ -789,7 +829,7 @@ begin
         begin
           FProcesses.Add(AProcess);
 
-          FSidStr := strSid;
+//          FSidStr := strSid;
           // Calculate Process Age
           CalculateElapsedTime(@CreateTime, DiffTime);
 
@@ -816,7 +856,9 @@ begin
             TimeToStr(FileTime2DateTime(FILETIME(CreateTime)));
           // The CPU Time column in Taskmgr.exe is Usertime + Kerneltime
           // So we take the sum of it and call it ProcessCPUTime
-          FProcessCPUTime := CPUTime2Str(
+          FProcessCPUTime := UserTime.QuadPart + KernelTime.QuadPart;
+
+          FProcessCPUTimeStr := CPUTime2Str(
             LARGE_INTEGER(UserTime.QuadPart + KernelTime.QuadPart));
           // Amount of memory in bytes that a process needs to execute
           // efficiently. Maps to Mem Size column in Task Manager.
@@ -862,7 +904,7 @@ end;
 function TJwTerminalServer.EnumerateSessions: boolean;
 var SessionInfoPtr: {$IFDEF UNICODE}PJwWTSSessionInfoWArray;
   {$ELSE}PJwWTSSessionInfoAArray;{$ENDIF UNICODE}
-  pCount: Cardinal;
+  pCount: DWORD;
   i: integer;
   Res: Longbool;
   ASession: TJwWTSSession;
@@ -895,15 +937,21 @@ begin
   for i := 0 to pCount - 1 do
   begin
     ASession := TJwWTSSession.Create(FSessions, SessionInfoPtr^[i].SessionId,
-//      SessionInfoPtr^[i].pWinStationName, TWtsConnectStateClass(SessionInfoPtr^[i].State));
       GetWinStationName(SessionInfoPtr^[i].SessionId),
       TWtsConnectStateClass(SessionInfoPtr^[i].State));
     FSessions.Add(ASession);
   end;
 
+  // After enumerating we create an event thread to listen for session changes
+  if FTerminalServerEventThread = nil then
+  begin
+    FTerminalServerEventThread := TJwWTSEventThread.Create(False, Self);
+  end;
+
+
   WTSFreeMemory(SessionInfoPtr);
   SessionInfoPtr := nil;
-  
+
   // Pass the result
   Result := Res;
 end;
@@ -957,31 +1005,11 @@ begin
       end;
     end;
 
-    if (FConnected) and (FTerminalServerEventThread = nil) then
-    begin
-      FTerminalServerEventThread := TJwWTSEventThread.Create(False, Self);
-    end;
   end;
 end;
 
 procedure TJwTerminalServer.Disconnect;
-var EventFlag: DWORD;
 begin
-  // Terminate the Event Thread before closing the connection.
-  if Assigned(FTerminalServerEventThread) then
-  begin
-    // Terminate Event Thread
-    FTerminalServerEventThread.Terminate;
-
-    // unblock the waiter
-    WTSWaitSystemEvent(FServerHandle, WTS_EVENT_FLUSH, EventFlag);
-
-    // wait for the thread to finish
-    FTerminalServerEventThread.WaitFor;
-
-    // Free
-    FreeAndNil(FTerminalServerEventThread);
-  end;
 
   if FServerHandle <> WTS_CURRENT_SERVER_HANDLE then
   begin
@@ -990,7 +1018,6 @@ begin
 
   FServerHandle := INVALID_HANDLE_VALUE;
   FConnected := False;
-
 end;
 
 function TJwTerminalServer.FileTime2DateTime(FileTime: _FILETIME): TDateTime;
@@ -1003,7 +1030,7 @@ begin
   Result := SystemTimeToDateTime(SystemTime);
 end;
 
-function TJwTerminalServer.Shutdown(AShutdownFlag: Cardinal): Boolean;
+function TJwTerminalServer.Shutdown(AShutdownFlag: DWORD): Boolean;
 begin
   Result := WTSShutdownSystem(FServerHandle, AShutdownFlag);
 end;
@@ -1011,21 +1038,36 @@ end;
 constructor TJwWTSEventThread.Create(CreateSuspended: Boolean;
   AOwner: TJwTerminalServer);
 begin
+  inherited Create(CreateSuspended, Self.ClassName);
   OutputDebugString('creating wtsevent thread');
-  inherited Create(CreateSuspended);
+
   FOwner := AOwner;
-  FreeOnTerminate := False;
+
+  FTerminatedEvent := CreateEvent(nil, False, False, nil);
+  FreeOnTerminate := True;
 end;
+
+
 
 procedure TJwWTSEventThread.Execute;
 begin
+  
   while not Terminated do
   begin
+    OutputDebugString('Entering WTSWaitSystemEvent');
     if WTSWaitSystemEvent(FOwner.ServerHandle, WTS_EVENT_ALL, FEventFlag) then
     begin
-      Synchronize(DispatchEvent);
+      if FEventFlag > WTS_EVENT_FLUSH then
+      begin
+        // Wait some time to prevent duplicate event dispatch
+        OutputDebugString('Dispatching');
+        Synchronize(DispatchEvent);
+      end;
+    end
+    else begin
+      OutputDebugString(PChar(Format('WTSWaitSystemEvent, False: %s', [SysErrorMessage(GetLastError)])));
     end;
-    Sleep(10);
+    Sleep(0);
   end;
 end;
 
@@ -1121,11 +1163,12 @@ end;
 
 
 procedure TJwWTSEnumServersThread.Wait;
-var Res: Cardinal;
+var Res: DWORD;
 begin
   // we should wait only from the MainThreadId!
   if GetCurrentThreadID = MainThreadID then
-    begin  Res := WAIT_OBJECT_0+1;
+  begin
+    Res := WAIT_OBJECT_0+1;
 
     while (Res = WAIT_OBJECT_0+1) do
     begin
@@ -1359,7 +1402,7 @@ begin
   FOwner := Value;
 end;
 
-function TJwWTSSession.ProtocolTypeToStr(const AProtocolType: Cardinal): TJwString;
+function TJwWTSSession.ProtocolTypeToStr(const AProtocolType: DWORD): TJwString;
 begin
   //TODO: use resource strings
   case AProtocolType of
@@ -1722,7 +1765,7 @@ begin
   Result := WTSTerminateProcess(GetServerHandle, ProcessId, 0);
 end;
 
-function TJwWTSProcess.Terminate(const dwExitCode: Cardinal): Boolean;
+function TJwWTSProcess.Terminate(const dwExitCode: DWORD): Boolean;
 begin
   Result := WTSTerminateProcess(GetServerHandle, ProcessId, dwExitCode);
 end;
