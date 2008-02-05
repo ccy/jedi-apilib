@@ -254,6 +254,8 @@ procedure JwRaiseOnNilParameter(const P : Pointer;
 function GetUnitName(argObject: TObject): string;
 {$ENDIF JW_TYPEINFO}
 
+procedure JwSetThreadName(const Name: String);
+
 implementation
 uses Classes, SysUtils, JwsclToken, JwsclKnownSid, JwsclDescriptor, JwsclAcl,
      JwsclSecureObjects, JwsclMapping
@@ -274,6 +276,39 @@ begin
   end;
 end;
 {$ENDIF JW_TYPEINFO}
+
+
+type
+  TThreadNameInfo = record
+    FType: LongWord;     // must be 0x1000
+    FName: PChar;        // pointer to name (in user address space)
+    FThreadID: LongWord; // thread ID (-1 indicates caller thread)
+    FFlags: LongWord;    // reserved for future use, must be zero
+  end;
+
+
+//source http://msdn2.microsoft.com/en-us/library/xcb2z8hs(vs.71).aspx
+procedure JwSetThreadName(const Name: String);
+{$IFDEF MSWINDOWS}
+var
+  ThreadNameInfo: TThreadNameInfo;
+{$ENDIF}
+begin
+{$IFDEF MSWINDOWS}
+  ThreadNameInfo.FType := $1000;
+  ThreadNameInfo.FName := PChar(Name);
+  ThreadNameInfo.FThreadID := $FFFFFFFF;
+  ThreadNameInfo.FFlags := 0;
+
+  try
+    RaiseException( $406D1388, 0, SizeOf(ThreadNameInfo) div SizeOf(LongWord),
+      @ThreadNameInfo );
+  except
+  end;
+{$ENDIF}
+end;
+
+
 
 procedure JwRaiseOnNilParameter(const P : Pointer; const ParameterName, MethodName, ClassName, FileName : TJwString);
 begin
@@ -340,7 +375,7 @@ procedure JwUNIMPLEMENTED;
 begin
   raise EJwsclUnimplemented.CreateFmtEx(
     'This function is not implemented.',
-    'LocalizeMapping', '', '', 0, false, []);
+    '', '', '', 0, false, []);
 end;
 
 procedure JwUNIMPLEMENTED_DEBUG;
@@ -348,7 +383,7 @@ begin
 {$IFNDEF DEBUG}
   raise EJwsclUnimplemented.CreateFmtEx(
     'This function is not implemented.',
-    'LocalizeMapping', '', '', 0, false, []);
+    '', '', '', 0, false, []);
 {$ENDIF DEBUG}    
 end;
 

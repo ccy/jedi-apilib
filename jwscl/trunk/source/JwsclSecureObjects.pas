@@ -152,6 +152,9 @@ type
 
      {@Name sets the security information of a object given by a handle.
 
+     @Name cannot change inheritance protection flow. Instead use SetSecurityInfo
+      using TJwSecurityDescriptor.
+
        @param aSecurityInfo receives the security flags that describes which security data to be set.
               It will be automatically extended if the following parameters are not nil.
       }
@@ -164,6 +167,10 @@ type
       const aSACL: TJwSAccessControlList);
       overload; virtual;
 
+    {
+    @Name cannot change inheritance protection flow. Instead use SetSecurityInfo
+      using TJwSecurityDescriptor.
+    }
     class procedure SetNamedSecurityInfo(const anObjectName: TJwString;
       const aObjectType: TSeObjectType;
       aSecurityInfo:
@@ -286,12 +293,23 @@ type
     ); virtual;
 
 
-
+    {
+    The following values are ignored in SD_entries:
+       @unorderedlist(
+        @item(siprotectedDaclSecurityInformation)
+        @item(siUnprotectedDaclSecurityInformation)
+        @item(siprotectedSaclSecurityInformation)
+        @item(siUnprotectedSaclSecurityInformation)
+       )
+       Instead use TJwSecurityDescriptor.InheritanceDACLProtection or
+         TJwSecurityDescriptor.InheritanceSACLProtection to control inheritance.
+    }
     procedure SetSecurityDescriptor(const SD: TJwSecurityDescriptor;
       const SD_entries: TJwSecurityInformationFlagSet); virtual;
+
     function GetSecurityDescriptor(
       const SD_entries: TJwSecurityInformationFlagSet): TJwSecurityDescriptor;
-      virtual;
+      virtual; {WARNING: abstract in code!!}
 
     class procedure TreeResetNamedSecurityInfo(pObjectName: TJwString;
       const aObjectType:
@@ -420,8 +438,10 @@ type
     procedure SetMandatoryLabel(const MandatoryLabel :
       TJwSystemMandatoryAccessControlEntry); virtual; abstract;
 
+    {@param(Protection is not used. It can be used by override methods.) }
     procedure SetDACL(const list: TJwDAccessControlList;
      const Protection : TJwACLProtectionState = apNone); virtual; abstract;
+    {@param(Protection is not used. It can be used by override methods.) }
     procedure SetSACL(const list: TJwSAccessControlList;
      const Protection : TJwACLProtectionState = apNone); virtual; abstract;
 
@@ -467,6 +487,9 @@ type
   public
 
       {@Name sets security information of a named object
+       @Name cannot change inheritance protection flow. Instead use SetSecurityInfo
+          using TJwSecurityDescriptor.
+
        @param anObjectName defines the name of a named object which security information is to be changed
        @param aObjectType defines the named object type
        @param aSecurityInfo defines which security information is retrieved from the SD and used in the named object
@@ -629,6 +652,9 @@ type
 
       {@Name sets the security information of a handle using a security descriptor.
        Only the parts of the SD defined in aSecurityInfo are used.
+       @Name cannot change inheritance protection flow. Instead use SetSecurityInfo
+        using TJwSecurityDescriptor.
+
        @param aHandle defines the handle which security information is to be changed
        @param aObjectType defines the handle type
        @param aSecurityInfo defines which security information is retrieved from the SD and used in the handle
@@ -1234,7 +1260,7 @@ type
        Afterwards you can set a new DACL to the file.
        So nobody can hijack the file you should also open the file exclusively and do not use the SetNamedXXX methods.
 
-       New: You can also use apProtected to remove inherited ACEs (replace an existing DACL completly).
+       New: You can also use apProtected to remove inherited ACEs (replace an existing DACL completely).
 
        The list is copied into the file object.
 
@@ -1290,11 +1316,18 @@ type
        If a entry of the SD cannot be set an exception is raised and the rest is dismissed.
        However all entries that were successfully set before the exception are stored into the file security.
 
-       Warning: The control value of the security descriptor is ignored because it is automatically set by Windows API.
-         If you want to set control value (or even RMControl) you must use a direct API Call (e.g. SetFileSecurity)
+       The following values are ignored in SD_entries:
+       @unorderedlist(
+        @item(siprotectedDaclSecurityInformation)
+        @item(siUnprotectedDaclSecurityInformation)
+        @item(siprotectedSaclSecurityInformation)
+        @item(siUnprotectedSaclSecurityInformation)
+       )
+       Instead use TJwSecurityDescriptor.InheritanceDACLProtection or
+         TJwSecurityDescriptor.InheritanceSACLProtection to control inheritance.
 
-
-       @param SD defines the security descriptor to be set. It most not nil otherwise EJwsclInvalidParameterException is raised.
+       
+       @param SD defines the security descriptor to be set. It must not nil otherwise EJwsclInvalidParameterException is raised.
        @param SD_entries The following security descriptor flags are supported
                   siOwnerSecurityInformation, siGroupSecurityInformation, siDaclSecurityInformation, siSaclSecurityInformation
 
@@ -1375,6 +1408,8 @@ type
       }
     property AutoResetACL;
 
+    {@Name defines desired access.
+     It is used if DesiredAccess parameter of AccessCheck methods is (-1).}
     property AccessMask: TJwAccessMask Read fAccessMask Write fAccessMask;
 
 
@@ -1519,6 +1554,8 @@ type
         This method can be run in a seperate thread so that it immediately returns.
 
         This method cannot restore the security information for a locked out user without using SeBackupPrivilege privilege.
+        @Name cannot change inheritance protection flow.
+
 
         @param(pObjectName defines the folder which structure is about to be set or set. It must be an absolute folder path. It is called the root folder.)
         @param(aSecurityInfo defines the type of security (DACL, SACL, owner, group) and also inheritance protection to be set.
@@ -1796,7 +1833,7 @@ type
 
 
 
-  {@Name is not implemented yet}
+  {@Name provides access to registry key security information}
   TJwSecureRegistryKey = class(TJwSecureBaseClass)
   protected
     fDuplicateHandle: boolean;
@@ -1876,13 +1913,9 @@ type
 
        The list is copied into the file object.
 
-       @param(Protection defines which TJwSecurityInformationFlag Flag is used:
-        @unorderedlist(
-          @item(apNone uses simply siDaclSecurityInformation to set DACL)
-          @item(apProtected uses siProtectedDaclSecurityInformation to set a protected DACL)
-          @item(apUnprotected uses siUnprotectedDaclSecurityInformation to set
-              an unprotected DACL and let flow the inheritance stream)
-         ))
+       @param(Protection is not supported of this method.
+          Instead use TJwSecurityDescriptor.InheritanceDACLProtection or
+             TJwSecurityDescriptor.InheritanceSACLProtection to control inheritance.)
        }
     procedure SetDACL(const list: TJwDAccessControlList;
      const Protection : TJwACLProtectionState = apNone); overload; override;
@@ -1893,13 +1926,9 @@ type
 
        The list is copied into the file object.
 
-       @param(Protection defines which TJwSecurityInformationFlag Flag is used:
-        @unorderedlist(
-          @item(apNone uses simply siSaclSecurityInformation to set SACL)
-          @item(apProtected uses siProtectedSaclSecurityInformation to set a protected SACL)
-          @item(apUnprotected uses siUnprotectedSaclSecurityInformation to set
-              an unprotected SACL and let flow the inheritance stream)
-         ))
+       @param(Protection is not supported of this method.
+          Instead use TJwSecurityDescriptor.InheritanceDACLProtection or
+             TJwSecurityDescriptor.InheritanceSACLProtection to control inheritance.)
        }
 
     procedure SetSACL(const list: TJwSAccessControlList;
@@ -2061,7 +2090,17 @@ type
        If a entry of the SD cannot be set an exception is raised and the rest is dismissed.
        However all entries that were successfully set before the exception are stored into the key security.
 
-       @param SD defines the security descriptor to be set. It most not nil otherwise EJwsclInvalidParameterException is raised.
+       The following values are ignored in SD_entries:
+       @unorderedlist(
+        @item(siprotectedDaclSecurityInformation)
+        @item(siUnprotectedDaclSecurityInformation)
+        @item(siprotectedSaclSecurityInformation)
+        @item(siUnprotectedSaclSecurityInformation)
+       )
+       Instead use TJwSecurityDescriptor.InheritanceDACLProtection or
+         TJwSecurityDescriptor.InheritanceSACLProtection to control inheritance.
+
+       @param SD defines the security descriptor to be set. It must not nil otherwise EJwsclInvalidParameterException is raised.
        @param SD_entries The following security descriptor flags are supported
                   siOwnerSecurityInformation, siGroupSecurityInformation, siDaclSecurityInformation, siSaclSecurityInformation
 
@@ -3858,6 +3897,7 @@ begin
       'SetNamedSecurityInfo', ClassName, RsUNSecureObjects, 0, False,
        ['SecurityDescriptor']);
 
+
   CrackSecurityDescriptor(
     aSecurityDescriptor,//const SD : TJwSecurityDescriptor;
     aSecurityInfo,//const aSecurityInfo: TJwSecurityInformationFlagSet;
@@ -3876,6 +3916,7 @@ begin
                          aSecurityDescriptor.PrimaryGroup,
                          aSecurityDescriptor.DACL,
                          aSecurityDescriptor.SACL);}
+
 end;
 
 
@@ -3927,6 +3968,7 @@ end;
 procedure TJwSecureBaseClass.SetSecurityDescriptor(
   const SD: TJwSecurityDescriptor;
   const SD_entries: TJwSecurityInformationFlagSet);
+var SDInfo : TJwSecurityInformationFlagSet;
 begin
   if not Assigned(SD) then
     raise EJwsclNILParameterException.CreateFmtEx(
@@ -3938,79 +3980,40 @@ begin
   if siGroupSecurityInformation in SD_entries then
     SetGroup(SD.PrimaryGroup);
 
-  if siProtectedDaclSecurityInformation in SD_entries then
-    SetDACL(SD.DACL,apProtected)
+
+  //protect, unprotect ACL
+  SDInfo := SD_entries;
+
+  Exclude(SDInfo, siprotectedDaclSecurityInformation);
+  Exclude(SDInfo, siUnprotectedDaclSecurityInformation);
+  Exclude(SDInfo, siprotectedSaclSecurityInformation);
+  Exclude(SDInfo, siUnprotectedSaclSecurityInformation);
+
+  case SD.InheritanceDACLProtection of
+    aclpProtected      : SetDACL(SD.DACL,apProtected);
+    aclpForceUnprotect : SetDACL(SD.DACL,apUnProtected);
   else
-  if siUnProtectedDaclSecurityInformation in SD_entries then
-    SetDACL(SD.DACL,apUnProtected)
-  else
-  if siDaclSecurityInformation in SD_entries then
     SetDACL(SD.DACL);
+  end;
 
-  if siProtectedSaclSecurityInformation in SD_entries then
-    SetSACL(SD.SACL,apProtected)
+  case SD.InheritanceSACLProtection of
+    aclpProtected      : SetSACL(SD.SACL,apProtected);
+    aclpForceUnprotect : SetSACL(SD.SACL,apUnProtected);
   else
-  if siUnProtectedSaclSecurityInformation in SD_entries then
-    SetSACL(SD.SACL,apUnProtected)
-  else
-  if siSaclSecurityInformation in SD_entries then
     SetSACL(SD.SACL);
+  end;
 
- { if siLabelSecurityInformation in SD_entries then
-    SetIntegrityLabel(SD.   }
-
-  //We do not use SetFileSecurity
+{  if siLabelSecurityInformation in SD_entries then
+    SetIntegrityLabel(SD.}
 end;
 
 
 function TJwSecureBaseClass.GetSecurityDescriptor(
   const SD_entries: TJwSecurityInformationFlagSet): TJwSecurityDescriptor;
-var
-  anOwner, aGroup: TJwSecurityId;
-  DACL: TJwDAccessControlList;
-  SACL: TJwSAccessControlList;
-  s: string;
 begin
-  Result := TJwSecurityDescriptor.Create;
-  Result.OwnOwner := True;
-  Result.OwnPrimaryGroup := True;
-
-  s := ClassName;
-
-  if s = '' then;
-  try
-    if siOwnerSecurityInformation in SD_entries then
-    begin
-      anOwner := GetOwner();
-      Result.Owner := anOwner;
-      anOwner.Free;
-    end;
-
-    if siGroupSecurityInformation in SD_entries then
-    begin
-      aGroup := GetGroup();
-      Result.PrimaryGroup := GetGroup();
-      aGroup.Free;
-    end;
-
-    if siDaclSecurityInformation in SD_entries then
-    begin
-      DACL := GetDACL;
-      Result.DACL := DACL;
-      DACL.Free;
-    end;
-
-    if siSaclSecurityInformation in SD_entries then
-    begin
-      SACL := GetSACL;
-      Result.SACL := SACL;
-      SACL.Free;
-    end;
-
-  except
-    FreeAndNil(Result);
-    raise;
-  end;
+  {GetSecurityDescriptor must provide all information from a SD
+   including Control flag. We cannot do this here.}
+  Raise EAbstractError.Create('You must override GetSecurityDescriptor');
 end;
 
 
@@ -5234,15 +5237,67 @@ end;
 procedure TJwSecureFileObject.SetSecurityDescriptor(
   const SD: TJwSecurityDescriptor;
   const SD_entries: TJwSecurityInformationFlagSet);
+var SDInfo : TJwSecurityInformationFlagSet;
 begin
-  inherited;
+  SDInfo := SD_entries;
+
+  //protect, unprotect ACL
+
+  Exclude(SDInfo, siprotectedDaclSecurityInformation);
+  Exclude(SDInfo, siUnprotectedDaclSecurityInformation);
+  Exclude(SDInfo, siprotectedSaclSecurityInformation);
+  Exclude(SDInfo, siUnprotectedSaclSecurityInformation);
+
+  case SD.InheritanceDACLProtection of
+    aclpProtected      : Include(SDInfo, siprotectedDaclSecurityInformation);
+    aclpForceUnprotect : Include(SDInfo, siUnprotectedDaclSecurityInformation);
+  end;
+
+  case SD.InheritanceSACLProtection of
+    aclpProtected      : Include(SDInfo, siprotectedSaclSecurityInformation);
+    aclpForceUnprotect : Include(SDInfo, siUnprotectedSaclSecurityInformation);
+  end;
+
+    
+
+
+  if (fFileName <> '') then
+  begin
+    SetNamedSecurityInfo(TJwPChar(fFileName), SE_FILE_OBJECT,
+      SDInfo, SD);
+  end
+  else
+  if HasValidHandle then
+  begin
+    SetSecurityInfo(fHandle, SE_FILE_OBJECT, SDInfo, SD);
+  end
+  else
+    raise EJwsclInvalidObjectException.CreateFmtEx(
+      RsSecureObjectsInvalidFileNameHandle, 'GetSecurityDescriptor', ClassName,
+      RsUNSecureObjects, 0, False, []);
 end;
 
 function TJwSecureFileObject.GetSecurityDescriptor(
   const SD_entries: TJwSecurityInformationFlagSet): TJwSecurityDescriptor;
+
 begin
-  Result := inherited GetSecurityDescriptor(SD_entries);
+  Result := nil;
+
+  if (fFileName <> '') then
+  begin
+    result := GetNamedSecurityInfo(TJwPChar(fFileName), SE_FILE_OBJECT, SD_entries);
+  end
+  else
+  if HasValidHandle then
+  begin
+    result := GetSecurityInfo(fHandle, SE_FILE_OBJECT, SD_entries);
+  end
+  else
+    raise EJwsclInvalidObjectException.CreateFmtEx(
+      RsSecureObjectsInvalidFileNameHandle, 'GetSecurityDescriptor', ClassName,
+      RsUNSecureObjects, 0, False, []);
 end;
+
 
 procedure TJwSecureFileObject.SetGroup(const ID: TJwSecurityId);
 var
@@ -7017,15 +7072,69 @@ end;
 procedure TJwSecureRegistryKey.SetSecurityDescriptor(
   const SD: TJwSecurityDescriptor;
   const SD_entries: TJwSecurityInformationFlagSet);
+var
+  bUsesName: boolean;
+  SDInfo : TJwSecurityInformationFlagSet;
 begin
-  inherited;
+  GetKey(bUsesName);
+
+  //protect, unprotect ACL
+
+  Exclude(SDInfo, siprotectedDaclSecurityInformation);
+  Exclude(SDInfo, siUnprotectedDaclSecurityInformation);
+  Exclude(SDInfo, siprotectedSaclSecurityInformation);
+  Exclude(SDInfo, siUnprotectedSaclSecurityInformation);
+
+  case SD.InheritanceDACLProtection of
+    aclpProtected      : Include(SDInfo, siprotectedDaclSecurityInformation);
+    aclpForceUnprotect : Include(SDInfo, siUnprotectedDaclSecurityInformation);
+  end;
+
+  case SD.InheritanceSACLProtection of
+    aclpProtected      : Include(SDInfo, siprotectedSaclSecurityInformation);
+    aclpForceUnprotect : Include(SDInfo, siUnprotectedSaclSecurityInformation);
+  end;
+
+  //SE_REGISTRY_WOW64_32KEY is not supported here
+  if (bUsesName) then
+  begin
+    SetNamedSecurityInfo(TJwPChar(fKeyName), SE_REGISTRY_KEY, SDInfo, SD);
+  end
+  else
+  if HasValidHandle then
+  begin
+    SetSecurityInfo(fHandle, SE_REGISTRY_KEY, SDInfo, SD);
+  end
+  else
+    raise EJwsclInvalidObjectException.CreateFmtEx(
+      RsSecureObjectsInvalidRegPathHandle, 'GetSecurityDescriptor', ClassName,
+      RsUNSecureObjects, 0, False, []);
 end;
+
 
 function TJwSecureRegistryKey.GetSecurityDescriptor(
   const SD_entries: TJwSecurityInformationFlagSet): TJwSecurityDescriptor;
+var
+  bUsesName: boolean;
 begin
-  Result := inherited GetSecurityDescriptor(SD_entries);
+  GetKey(bUsesName);
+
+  //SE_REGISTRY_WOW64_32KEY is not supported here
+  if (bUsesName) then
+  begin
+    result := GetNamedSecurityInfo(TJwPChar(fKeyName), SE_REGISTRY_KEY, SD_entries);
+  end
+  else
+  if HasValidHandle then
+  begin
+    result := GetSecurityInfo(fHandle, SE_REGISTRY_KEY, SD_entries);
+  end
+  else
+    raise EJwsclInvalidObjectException.CreateFmtEx(
+      RsSecureObjectsInvalidRegPathHandle, 'GetSecurityDescriptor', ClassName,
+      RsUNSecureObjects, 0, False, []);
 end;
+
 
 function TJwSecureRegistryKey.AccessCheck(DesiredAccess: TJwAccessMask =
   Cardinal(-1); const ClientToken:
@@ -7099,14 +7208,14 @@ begin
 
   if (bUsesName) then
   begin
-    GetNamedSecurityInfo(TJwPChar(fKeyName), SE_FILE_OBJECT,
+    GetNamedSecurityInfo(TJwPChar(fKeyName), SE_REGISTRY_KEY,
       [siDaclSecurityInformation], anOwner,
       anGroup, Result, aSACL);
   end
   else
   if HasValidHandle then
   begin
-    GetSecurityInfo(fHandle, SE_FILE_OBJECT,
+    GetSecurityInfo(fHandle, SE_REGISTRY_KEY,
       [siDaclSecurityInformation], anOwner,
       anGroup, Result, aSACL);
   end

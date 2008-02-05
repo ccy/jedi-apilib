@@ -96,6 +96,9 @@ type
     fDACL:     TJwDAccessControlList;
     fAuditACL: TJwSAccessControlList;
 
+    fProtectionDACLState,
+    fProtectionSACLState  : TJwACLProtection;
+
 
 
     { function GetOwner : TJwSecurityId;}
@@ -126,6 +129,9 @@ type
     procedure SetControl(aControl: TJwSecurityDescriptorControlSet); virtual;
 
     procedure Init(CreateDACL : Boolean);
+
+    procedure SetProtectedState(Index : Integer; const Protect : TJwACLProtection); virtual;
+    function GetProtectedState(Index : Integer) : TJwACLProtection; virtual;
   public
        {@Name creates an empty security descriptor.
         The property pSD is initialised and ready to be filled.
@@ -577,9 +583,22 @@ type
       Read GetRMControl Write SetRMControl;
 
 
-
+    {@Name defines internal security descriptor controls. Do not
+    make write calls to it.}
     property Control: TJwSecurityDescriptorControlSet
       Read fControl Write SetControl;
+
+    {@Name defines whether the DACL is protected against inheritance flow or not.
+     Use aclpForceUnprotect instead of aclpUnprotected to let flow inheritance.
+     }
+    property InheritanceDACLProtection : TJwACLProtection index 0 read GetProtectedState write SetProtectedState;
+
+    {@Name defines whether the SACL is protected against inheritance flow or not.
+     Use aclpForceUnprotect instead of aclpUnprotected to let flow inheritance.
+     }
+    property InheritanceSACLProtection : TJwACLProtection index 1 read GetProtectedState write SetProtectedState;
+
+
 
      {@Name defines whether the owner SID shall be freed on destruction (true) or not (false)
       If the property OwnOwner is true and the property Owner is set, the old Owner TJwSecurityId instance will be freed and
@@ -1076,6 +1095,9 @@ begin
     raise EJwsclWinCallFailedException.CreateFmtEx(
       RsWinCallFailed,
       'Create', ClassName, RsUNDescriptor, 0, True, ['GetSecurityDescriptorControl']);
+
+
+  Self.Control := TJwEnumMap.ConvertSecurityControl(c);
 
   //RMControl := c; Warning: GetRMControl not implemented!!
   {if c and SE_SELF_RELATIVE <> SE_SELF_RELATIVE then
@@ -2214,7 +2236,7 @@ begin
       SEF_AVOID_PRIVILEGE_CHECK or SEF_DEFAULT_DESCRIPTOR_FOR_OBJECT or
       SEF_DEFAULT_OWNER_FROM_PARENT or SEF_DEFAULT_GROUP_FROM_PARENT or
       $1000, //SEF_AVOID_OWNER_RESTRICTION,
-      
+
       
       aMapping,//__in          PGENERIC_MAPPING GenericMapping,
       TokenHandle//__in_opt      HANDLE Token
@@ -2244,10 +2266,53 @@ begin
   end;
 end;
 
+function TJwSecurityDescriptor.GetProtectedState(Index: Integer): TJwACLProtection;
+begin
+
+  case Index of
+    0 {DACL}:
+      begin
+        result := fProtectionDACLState;
+        if sdcDaclProtected in Control then
+          result := aclpProtected;
+      end;
+    1 {SACL}:
+      begin
+        result := fProtectionSACLState;
+        if sdcSaclProtected in Control then
+          result := aclpProtected;
+      end;
+  end;
+end;
+
+procedure TJwSecurityDescriptor.SetProtectedState(Index: Integer;
+  const Protect: TJwACLProtection);
+begin
+  case Index of
+    0 {DACL}:
+       begin
+         fProtectionDACLState := Protect;
+         if Protect = aclpProtected then
+           Include(fControl, sdcDaclProtected)
+         else
+           Exclude(fControl, sdcDaclProtected);
+       end;
+    1 {SACL}:
+       if Protect = aclpProtected then
+         Include(fControl, sdcSaclProtected)
+       else
+         Exclude(fControl, sdcSaclProtected);
+  end;
+end;
+
+
 
 {$ENDIF SL_INTERFACE_SECTION}
 
 {$IFNDEF SL_OMIT_SECTIONS}
+
+
+
 end.
 {$ENDIF SL_OMIT_SECTIONS}(*
     aPOwnerTrustee := nil;

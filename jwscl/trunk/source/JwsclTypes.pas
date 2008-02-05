@@ -292,6 +292,7 @@ type
     siUnprotectedDaclSecurityInformation,
     //this flag removes protection from the SACL
     siUnprotectedSaclSecurityInformation);
+
   TJwSecurityInformationFlagSet = set of TJwSecurityInformationFlag;
 
 const
@@ -385,6 +386,23 @@ type
     );
 
   TJwSecurityDescriptorControlSet = set of TJwSecurityDescriptorControl;
+
+  {@Name control the protection of an acl.}
+  TJwACLProtection =
+    ({The acl is not protected and can contain inherited ace.
+     This flag is only for reading purpose. Use aclpForceUnprotect to
+     actually unprotect an acl. }
+     aclpUnprotected,
+     {The acl is protected or can be made protected against inherited ace.
+      If made protected all access control elements are converted to explicit ones.
+     }
+     aclpProtected,
+     {This flag unprotects a protected acl and restores inheritance flow.
+      If explicit ace element are available they will remain intact.
+      However duplicate elements are ignored and remain in the ACL.
+      }
+     aclpForceUnprotect);
+
 
   {@Name defines the type of change to a object tree}
   TJwTreeSetType = ({Set security information}
@@ -946,8 +964,17 @@ type
   //Ued to export session keys encrypted with another session key
     kekSymmetricWrap);
 
-
-  TJwACLProtectionState = (apNone, apProtected, apUnprotected);
+  {@Name is used by TJwSecureFileObject to set inheritance protection.
+   Do not mix up with TJwACLProtection which is used by TJwSecurityDescriptor
+   to set and get the protection state.
+  }
+  TJwACLProtectionState =
+   (//does not change state
+    apNone,
+    //block inheritance flow
+    apProtected,
+    //unblock inheritance flow
+    apUnprotected);
 
   TJwMandatoryPolicy = (mpNoWriteUp, mpNoReadUp, mpNoExecuteUp);
   TJwMandatoryPolicyFlagSet = set of TJwMandatoryPolicy;

@@ -41,7 +41,7 @@ interface
 uses Classes, Contnrs, DateUtils, SysUtils,
   JwaWindows,
   JwsclExceptions, JwsclResource, JwsclSid, JwsclTypes,
-  JwsclUtils,
+  JwsclUtils, JwsclToken,
   JwsclVersion, JwsclStrings;
 
 {$ENDIF SL_OMIT_SECTIONS}
@@ -254,6 +254,10 @@ type
     FWinStationName: TJwString;
     FWorkingDirectory: TJwString;
     FShadow : TJwWTSSessionShadow;
+
+    FToken : TJwSecurityToken;
+    FUserSid : TJwSecurityID;
+
     //TODO: this func should be documented but not so detailed because of protected
     procedure GetClientDisplay;
     function GetServer: TJwString;
@@ -310,6 +314,8 @@ type
       const SessionId: TJwSessionId; const WinStationName: TJwString;
       const ConnectState: TWtsConnectStateClass);
     destructor Destroy; override;
+
+
     property ApplicationName: TJwString read FApplicationName;
     property ClientAddress: TJwString read FClientAddress;
     property ClientBuildNumber: DWORD read FClientBuildNumber;
@@ -358,6 +364,9 @@ type
     property WinStationDriverName: TJwString read FWdName;
     property WinStationName: TJwString read FWinStationName;
     property WorkingDirectory: TJwString read FWorkingDirectory;
+
+    property Token : TJwSecurityToken read fToken;
+    property UserSid : TJwSecurityID read FUserSid;
   end;
 
   { List Of TJwWTSSession Objects }
@@ -398,12 +407,26 @@ type
 //    FSidStr: TJwString;
     FUsername: TJwString;
     FWinStationName: TJwString;
+    FToken : TJwSecurityToken;
+    FUserSid : TJwSecurityID;
+
     function GetServer: TJwString;
+
   public
     constructor Create(const Owner: TJwWTSProcessList;
       const SessionId: TJwSessionId; const ProcessID: TJwProcessId;
-      const ProcessName: TJwString; const Username: TJwString); reintroduce;
-    function GetServerHandle: THandle;
+      const ProcessName: TJwString; const Username: TJwString);
+
+    destructor Destroy; override;
+
+    function GetServerHandle: THandle; virtual;
+
+
+  public
+    function Terminate: boolean; overload;
+    function Terminate(const dwExitCode: DWORD): boolean; overload;
+  public
+
     property Owner: TJwWTSProcessList read FOwner write FOwner;
     property SessionId: TJwSessionId read FSessionId;
     property ProcessAge: Int64 read FProcessAge;
@@ -417,10 +440,11 @@ type
     property ProcessVMSize: DWORD read FProcessVMSize;
     property Server: TJwString read GetServer;
 //    property SidStr: TJwString read FSidStr;
-    function Terminate: boolean; overload;
-    function Terminate(const dwExitCode: DWORD): boolean; overload;
+    property Token : TJwSecurityToken read fToken;
+    property UserSid : TJwSecurityID read FUserSid;
     property Username: TJwString read FUsername;
     property WinStationName: TJwString read FWinStationname;
+
   end;
 
   { List Of TJwWTSProcess Objects }
@@ -1655,11 +1679,33 @@ begin
     FRemotePort);
 
   FRemoteAddress := WideString(tempStr);
+
+  try
+    FToken := TJwSecurityToken.CreateWTSQueryUserToken(FSessionId);
+  except
+    on E : EJwsclOpenProcessTokenException do
+      FToken := nil;
+  end;
+
+  if Assigned(FToken) then
+  begin
+    try
+      FUserSid := FToken.GetTokenUser;
+    except
+      on E : EJwsclSecurityException do
+        FUserSid := nil;
+    end;
+  end
+  else
+    FUserSid  := nil;
+
 end;
 
 destructor TJwWTSSession.Destroy;
 begin
   FreeAndNil(FShadow);
+  FreeAndNil(FToken);
+  FreeAndNil(FUserSid);
 end;
 
 function TJwWTSSession.GetServer: TJwString;
@@ -1734,6 +1780,34 @@ begin
   FProcessId := ProcessId;
   FProcessName := ProcessName;
   FUsername := Username;
+
+
+  try
+    JwEnablePrivilege(SE_DEBUG_NAME, pst_EnableIfAvail);
+    FToken := TJwSecurityToken.CreateTokenByProcess(ProcessID, MAXIMUM_ALLOWED);
+  except
+    on E : EJwsclOpenProcessTokenException do
+      FToken := nil;
+  end;
+
+  if Assigned(FToken) then
+  begin
+    try
+      FUserSid := FToken.GetTokenUser;
+    except
+      on E : EJwsclSecurityException do
+        FUserSid := nil;
+    end;
+  end
+  else
+    FUserSid  := nil;
+end;
+
+destructor TJwWTSProcess.Destroy;
+begin
+  FreeAndNil(FToken);
+  FreeAndNil(FUserSid);
+  inherited;
 end;
 
 function TJwWTSProcess.GetServer;

@@ -193,6 +193,11 @@ const
     siDaclSecurityInformation,
     siSaclSecurityInformation];
 
+  JwSecurityInformationACLFlagsOD =
+    [siOwnerSecurityInformation,
+    siDaclSecurityInformation];
+
+
   JwSecurityInformationACLFlagsOG =
     [siOwnerSecurityInformation,
     siGroupSecurityInformation];
