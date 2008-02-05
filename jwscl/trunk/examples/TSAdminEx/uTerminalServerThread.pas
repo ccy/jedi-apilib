@@ -5,7 +5,7 @@ interface
 uses
   Classes, Messages, SysUtils,
   VirtualTrees, //uTerminalServerThreadMsg,
-  JwaWindows, JwsclTerminalServer;
+  JwaWindows, JwsclTerminalServer, JwsclUtils;
 
 {$IFDEF MSWINDOWS}
 type
