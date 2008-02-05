@@ -40,7 +40,7 @@ unit JwsclKnownSid;
 
 interface
 
-uses SysUtils,
+uses SysUtils, Classes,
   jwaWindows,
   JwaVista,
   JwsclResource,
@@ -313,16 +313,201 @@ procedure JwInitWellKnownSIDsEx(const Sids : TWellKnownSidTypeSet);
 procedure JwInitWellKnownSIDsExAll();
 
 
+type
+  PJwSidMap = ^TJwSidMap;
+
+  {@Name defines a map between a name and its Sid instance.}
+  TJwSidMap = record
+    {@Name defines a name that is can be used for Sid retrieving.
+     Searching is case insensitive.
+    }
+    Name,
+    {@Name defines binary string Sid. It is converted to
+     a TJwSecurity instance in JwInitMapping.
+     Only used in JwSidMapDef.
+     If @Name starts with "-", JwInitMapping will add the local machine Sid
+     at front of it.
+    }
+    SidString : TJwString;
+
+    {@Name defines the Sid instance. Can be nil.}
+    Sid  : TJwSecurityId;
+  end;
+
+{@Name initialises Sid name mapping.
+Must be called before using JwAddMapSid and JwSidMap.
+
+@Name reads JwSidMapDef and adds it to the internal list of
+name to Sid mappings.
+If a mapping could not be made, JwSidMapDefErrors will contain the index
+(JwSidMapDef) of the problem.
+
+}
+procedure JwInitMapping;
+
+{@Name adds a string to the string Sid map list.
+JwInitMapping must be called before.
+
+@param(Name defines the name of the Sid to be used.
+The name can be used for retrieving the Sid. It is case insensitive.)
+@param(Sid defines the Sid instance that represents the name. Can not be nil)
+@raises(EJwsclNILParameterException will be raised if Sid is nil or
+ JwInitMapping was not called)
+}
+procedure JwAddMapSid(const Name : TJwString; const Sid : TJwSecurityID);
+
+{
+@Name returns a Sid instance that was connected to a name.
+The advantage of this type is that names are not translated. They are always
+the same.
+
+JwInitMapping must be called before.
+
+@param(Name defines the Sid name which is to be retrieved.
+ It is case insensitive.)
+@raises(EJwsclNILParameterException will be raised if JwInitMapping was not called)
+}
+function JwSidMap(const Name : TJwString) : TJwSecurityID;
+
+
+var {@Name defines a list of mapped known Sids which are used
+     to retrieve by JwSidMap.
+     See TJwSidMap for more information
+    }
+    JwSidMapDef : array[0..10] of TJwSidMap = (
+    (Name : 'Administrator';
+     SidString : '-500'),
+    (Name : 'Administrators';
+     SidString : '1S-1-5-32-544'),
+    (Name : 'Guest';
+     SidString : '-501'),
+    (Name : 'Guests';
+     SidString : 'S-1-5-32-546'),
+    (Name : '';
+     SidString : ''),
+    (Name : '';
+     SidString : ''),
+    (Name : '';
+     SidString : ''),
+    (Name : '';
+     SidString : ''),
+    (Name : '';
+     SidString : ''),
+    (Name : '';
+     SidString : ''),
+    (Name : '';
+     SidString : '')
+    );
+
+    {@Name contains a list of numbers that defines which index
+     in JwSidMapDef could not be resolved.
+    }
+    JwSidMapDefErrors : TList;
+
 {$ENDIF SL_IMPLEMENTATION_SECTION}
 
 {$IFNDEF SL_OMIT_SECTIONS}
 implementation
 
-uses Classes,Dialogs;
+uses Dialogs, IniFiles;
 
 {$ENDIF SL_OMIT_SECTIONS}
 
 {$IFNDEF SL_INTERFACE_SECTION}
+
+
+var SidMaps : TList;
+
+procedure JwInitMapping;
+var i : Integer;
+    LocalSid,
+    Sid : TJwSecurityID;
+    LocalSidStr,
+    Str : TJwString;
+    Map : PJwSidMap;
+begin
+  if not Assigned(SidMaps) then
+    SidMaps := TList.Create;
+  SidMaps.Clear;
+
+  LocalSid := JwGetMachineSid();
+  LocalSidStr := LocalSid.StringSID;
+  LocalSid.Free;
+
+
+  if not Assigned(JwSidMapDefErrors) then
+    JwSidMapDefErrors := TList.Create;
+  JwSidMapDefErrors.Clear;
+
+
+  for i := low(JwSidMapDef) to high(JwSidMapDef) do
+  begin
+    if Length(JwSidMapDef[i].SidString) > 0 then
+    begin
+      Str := JwSidMapDef[i].SidString;
+      if JwSidMapDef[i].SidString[1] = '-' then
+        Str := LocalSidStr + Str;
+      try
+        Sid := TJwSecurityID.Create(Str);
+
+        New(Map);
+        Map.Name := JwSidMapDef[i].Name;
+        Map.SidString := Str;
+        Map.Sid := Sid;
+        SidMaps.Add(Map);
+      except
+        JwSidMapDefErrors.Add(Pointer(i));
+      end;
+    end;
+  end;
+end;
+
+procedure JwDoneMapping;
+var i : Integer;
+begin
+  if not Assigned(SidMaps) then
+    exit;
+
+  for i := 0 to SidMaps.Count -1 do
+  begin
+    if SidMaps[i] <> nil then
+      Dispose(PJwSidMap(SidMaps[i]))
+  end;
+  FreeAndNil(SidMaps);
+  FreeAndNil(JwSidMapDefErrors);
+end;
+
+procedure JwAddMapSid(const Name : TJwString; const Sid : TJwSecurityID);
+var Map : PJwSidMap;
+begin
+  JwRaiseOnNilParameter(SidMaps, 'JwInitMapping must be called.', 'JwAddMapSid','', RsUNKnownSid);
+  JwRaiseOnNilParameter(Sid, 'Sid', 'JwAddMapSid','', RsUNKnownSid);
+
+  New(Map);
+  Map.Name := Name;
+  Map.Sid := Sid;
+  SidMaps.Add(Map);
+end;
+
+function JwSidMap(const Name : TJwString) : TJwSecurityID;
+var i : Integer;
+    Map : PJwSidMap;
+begin
+  JwRaiseOnNilParameter(SidMaps, 'JwInitMapping must be called.', 'JwAddMapSid','', RsUNKnownSid);
+
+  result := nil;
+
+  for i := 0 to SidMaps.Count-1 do
+  begin
+    if JwCompareString(Name, PJwSidMap(SidMaps.Items[i]).Name, true) = 0 then
+    begin
+      result := PJwSidMap(SidMaps.Items[i]).Sid;
+      exit;
+    end;
+  end;
+
+  raise EJwsclIndexOutOfBoundsException.Create('');
+end;
 
 
 
@@ -799,6 +984,7 @@ finalization
 {$IFNDEF SL_FINALIZATION_SECTION}
   OnFinalization := True;
   DoneWellKnownSIDs;
+  JwDoneMapping;
 {$ENDIF SL_FINALIZATION_SECTION}
 
 {$IFNDEF SL_OMIT_SECTIONS}
