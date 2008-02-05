@@ -7,8 +7,8 @@ uses
   ComCtrls, ExtCtrls, ActnList, ImgList, ToolWin, Menus,
   StdCtrls, StrUtils{, CommCtrl}, Math, Dialogs,
   VirtualTrees,
-  NetApi, uAbout,
-  JwaWindows, JwaVista,
+  NetApi, uTerminalServerThread, uAbout,
+  JwaWindows, //JwaVista,
   JwsclSid, JwsclTerminalServer;
 
 type
@@ -16,8 +16,16 @@ type
   TServerNodeData = record
     Index: Integer;
     OverlayIndex: Integer;
-    Caption: String;
-    PTerminalServerList: PJwTerminalServerList;
+    Caption: string;
+    Thread: TTerminalServerThread;
+    cs: RTL_CRITICAL_SECTION;
+    TerminalServer: TJwTerminalServer;
+  end;
+
+  PIterateServerTreeData = ^TIterateServerTreeData;
+  TIterateServerTreeData = record
+    Server: string;
+    NodePtr: PVirtualNode;
   end;
 
   PUserNodeData = ^TUserNodeData;
@@ -33,22 +41,6 @@ type
   TProcessNodeData = record
     Index: Integer;
     List: PJwWTSProcessList;
-  end;
-
-  // This class is used to refresh a process list on each interval
-  TEnumerateProcessThread = class(TThread)
-  protected
-    FIndex: Integer;
-    FInterval: DWORD;
-    FOwner: TJwTerminalServerList;
-    FServerList: TStringList;
-    FTerminalServer: TJwTerminalServer;
-    FTerminatedEvent: THandle;
-    procedure Update;
-  public
-    constructor Create(CreateSuspended: Boolean; Owner: TJwTerminalServerList);
-    property Interval: DWORD read FInterval write FInterval;
-    procedure Execute; override;
   end;
 
   // Class below is used to store imageindex of icons in the Imagelist
@@ -129,6 +121,7 @@ type
     About1: TMenuItem;
     actAbout: TAction;
     Button1: TButton;
+    Button3: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure VSTUserGetText(Sender: TBaseVirtualTree;
@@ -192,16 +185,20 @@ type
       Node: PVirtualNode; const SearchText: WideString; var Result: Integer);
     procedure VSTSessionIncrementalSearch(Sender: TBaseVirtualTree;
       Node: PVirtualNode; const SearchText: WideString; var Result: Integer);
+    procedure Button3Click(Sender: TObject);
+    procedure VSTServerChecking(Sender: TBaseVirtualTree; Node: PVirtualNode;
+      var NewState: TCheckState; var Allowed: Boolean);
     procedure Button1Click(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
   private
     { Private declarations }
-    TerminalServers: TJwTerminalServerList;
     pThisComputerNode: PVirtualNode;
     pFavoritesNode: PVirtualNode;
     pAllListedServersNode: PVirtualNode;
     LocalSystemName: string;
     NetworkServiceName: string;
     LocalServiceName: string;
+//    TermServer: TJwTerminalServer;
     procedure UpdateVirtualTree(const AVirtualTree: TBaseVirtualTree;
       const PSessionList: PJwWTSSessionList; PrevCount: Integer);
     procedure UpdateProcessVirtualTree(const AVirtualTree: TBaseVirtualTree;
@@ -212,8 +209,17 @@ type
     function GetCurrentProcess(AVST: TBaseVirtualTree; Node: PVirtualNode): TJwWTSProcess; overload;
     procedure OnTerminalServerEvent(Sender: TObject);
     procedure OnEnumerateServersDone(Sender: TObject);
+    procedure IterateServerSubTree(Sender: TBaseVirtualTree; Node: PVirtualNode;
+      Data: Pointer; var Abort:Boolean);
+    procedure RefreshNode(Sender: TBaseVirtualTree; Node: PVirtualNode;
+      Data: Pointer; var Abort:Boolean);
+    procedure SessionsEnumerated(Node: PVirtualNode);
+    procedure ProcessesEnumerated(Node: PVirtualNode);
+    procedure ThreadRunning(const Node: PVirtualNode);
   public
     { Public declarations }
+  protected
+    procedure WndProc(var AMsg: TMessage); override;
   end;
 
 var
@@ -222,104 +228,119 @@ var
 
 implementation
 {$R *.dfm}
-constructor TEnumerateProcessThread.Create(CreateSuspended: Boolean; Owner: TJwTerminalServerList);
+procedure TMainForm.WndProc(var AMsg: TMessage);
+begin
+  with AMsg do
+  begin
+    case Msg of
+    TM_THREAD_RUNNING: ThreadRunning(PVirtualNode(wParam));
+    TM_ENUM_SESSIONS_SUCCESS: SessionsEnumerated(PVirtualNode(wParam));
+    TM_ENUM_PROCESSES_SUCCESS: ProcessesEnumerated(PVirtualNode(wParam));
+    TM_ENUM_PROCESSES_FAIL: ShowMessage('Enumerating processes failed');
+    TM_ENUM_SESSIONS_FAIL: ShowMessage('Enumerating sessions failed');
+    end;
+  end;
+
+  inherited;
+end;
+
+procedure TMainForm.ThreadRunning(const Node: PVirtualNode);
 var
+  pServerData: PServerNodeData;
+begin
+  pServerData := VSTServer.GetNodeData(Node);
+
+  // Request session enumeration
+  PostThreadMessage(pServerData^.Thread.ThreadId, TM_ENUM_SESSIONS, 0, 0);
+
+  // Request process enumeration
+  PostThreadMessage(pServerData^.Thread.ThreadId, TM_ENUM_PROCESSES, 0, 0);
+end;
+
+procedure TMainForm.SessionsEnumerated(Node: PVirtualNode);
+var
+  pServerData: PServerNodeData;
+  TerminalServer: TJwTerminalServer;
   i: Integer;
-begin
-  inherited Create(CreateSuspended);
-  FreeOnTerminate := True;
-
-  FInterval := 5000; // Default interval = 5 seconds
-  FOwner := Owner;
-
-  FServerList := TStringList.Create;
-  for i := 0 to Owner.Count - 1 do
-  begin
-    if FOwner[i].ComputerName <> FOwner[i].Server then
-    begin
-      FServerList.Add(Owner[i].Server);
-    end
-    else begin
-      FServerList.Add('');
-    end;
-  end;
-
-  // This event is used to signal termination
-  FTerminatedEvent := CreateEvent(nil, False, False, nil);
-end;
-
-procedure TEnumerateProcessThread.Execute;
-var i: Integer;
-begin
-  while not Terminated do
-  begin
-
-    for i := 0 to FServerList.Count - 1 do
-    begin
-      // Did we terminate meanwhile?
-      if Terminated then Exit;
-
-      FTerminalServer := TJwTerminalServer.Create;
-      FTerminalServer.Server := FServerList[i];
-
-//      FTerminalServer.Processes.Owner := FTerminalServer;
-
-      if FTerminalServer.EnumerateProcesses then
-      begin
-        // Did we terminate meanwhile?
-        if Terminated then Exit;
-
-        // Store Index and Update
-        FIndex := i;
-        Synchronize(Update);
-      end;
-
-//      FTerminalServer.Disconnect;
-      FTerminalServer.Free;
-
-    end;
-    // Do nothing until either the interval expires or a Termination Event is
-    // sent
-    WaitForSingleObject(FTerminatedEvent, Interval);
-  end;
-end;
-
-procedure TEnumerateProcessThread.Update;
-var
   PrevCount: Integer;
-  i: Integer;
-  OldProcessList: TJwWTSProcessList;
-  NewProcessList: TJwWTSProcessList;
-  TempProcessList: TJwWTSProcessList;
 begin
-  if FOwner.Count = 0 then
+  // Get Node Data
+  pServerData := VSTServer.GetNodeData(Node);
+
+  // Get Terminal Server instance
+  TerminalServer := pServerData^.TerminalServer;
+
+  // Check if we are not nil (this could happen if the node was deleted)
+  if TerminalServer = nil then Exit;
+
+  // Store current session count
+  PrevCount := TerminalServer.Sessions.Count;
+
+  // Clear current sessionlist
+  TerminalServer.Sessions.Clear;
+
+  // Assign the new sessionslist
+  TerminalServer.Sessions.Assign(pServerData^.Thread.SessionList);
+
+  // Free EnumSessionData
+  pServerData^.Thread.SessionList.OwnsObjects := False;
+  pServerData^.Thread.SessionList.Free;
+  pServerData^.Thread.SessionList := nil;
+
+  for i := 0 to TerminalServer.Sessions.Count - 1 do
   begin
-    Exit;
+    // Set the new owner for each session
+    TerminalServer.Sessions[i].Owner := TerminalServer.Sessions;
   end;
 
-  OldProcessList := FOwner[Findex].Processes;
-  PrevCount := FOwner[Findex].Processes.Count;
+  UpdateVirtualTree(VSTUser, @TerminalServer.Sessions, PrevCount);
+  UpdateVirtualTree(VSTSession, @TerminalServer.Sessions, PrevCount);
+end;
 
-  FOwner[FIndex].Processes.Free;
-  FOwner[FIndex].Processes := FTerminalServer.Processes;
-  FTerminalServer.Processes := nil;
-  FOwner[Findex].Processes.Owner := FOwner[Findex];
+procedure TMainForm.ProcessesEnumerated(Node: PVirtualNode);
+var
+  pServerData: PServerNodeData;
+  i: Integer;
+  PrevCount: Integer;
+  TerminalServer: TJwTerminalServer;
+begin
+  pServerData := VSTServer.GetNodeData(Node);
 
-  for i := 0 to FOwner[Findex].Processes.Count - 1 do
+  TerminalServer := pServerData^.TerminalServer;
+
+  // Check if we are not nil (this could happen if the node was deleted)
+  if TerminalServer = nil then Exit;
+
+  // Get current process count
+  PrevCount := TerminalServer.Processes.Count;
+
+  // Clear current processlist
+  TerminalServer.Processes.Clear;
+
+  // Enter CRITICAL_SECTION
+//  EnterCriticalSection(pServerData^.cs);
+
+  // Assign the new processlist
+  TerminalServer.Processes.Assign(pServerData^.Thread.ProcessList);
+
+  // Free EnumProcessesData
+//  FreeAndNil(EnumProcessesData.ProcessList^);
+  pServerData^.Thread.ProcessList.OwnsObjects := False;
+  pServerData^.Thread.ProcessList.Free;
+  pServerData^.Thread.ProcessList := nil;
+
+//  EnumProcessesData.Free;
+
+  // Leave CRITICAL_SECTION
+//  LeaveCriticalSection(pServerData^.cs);
+
+  for i := 0 to TerminalServer.Processes.Count - 1 do
   begin
-    FOwner[Findex].Processes[i].Owner := FOwner[FIndex].Processes;
+    // Set the new owner for each session
+    TerminalServer.Processes[i].Owner := TerminalServer.Processes;
   end;
 
-  with MainForm do
-  begin
-    // we only update if the process tab is visible...
-    if PageControl1.ActivePageIndex = 2 then
-    begin
-      OutputDebugString(PChar(Format('PrevCount: %d NewCount: %d', [PrevCount, FOwner[FIndex].Processes.Count])));
-      UpdateProcessVirtualTree(VSTProcess, @FOwner[Findex].Processes, PrevCount, nil);
-    end;
-  end;
-//  FTerminalServer.Processes := nil;
+  UpdateProcessVirtualTree(VSTProcess, @TerminalServer.Processes, PrevCount);
 end;
 
 function CompareInteger(const int1: Integer; const int2: Integer): Integer; overload;
@@ -360,11 +381,14 @@ var i: Integer;
   pData: PUserNodeData;
   NewCount: Integer;
 begin
+  AVirtualTree.BeginUpdate;
+
   // Get the last node
   pNode := AVirtualTree.GetLast;
 
   // Now iterate from last to first node
-  repeat
+  while pNode <> nil do
+  begin
     pData := AVirtualTree.GetNodeData(pNode);
     // Get the previous node and store the pointer, because in the next step
     // we might delete the current node ;-)
@@ -380,10 +404,11 @@ begin
     else begin
       // Invalidating the node will trigger the GetText event which will update
       // our data
+
       AVirtualTree.InvalidateNode(pNode);
     end;
     pNode := pPrevNode;
-  until pNode = nil;
+  end;
 
   // How many new sessions are there?
   NewCount := PSessionList^.Count - PrevCount;
@@ -393,9 +418,11 @@ begin
   begin
     pNode := AVirtualTree.AddChild(nil);
     pData := AVirtualTree.GetNodeData(pNode);
-    pData^.Index := PrevCount;
+    pData^.Index := PrevCount + i;
     pData^.List := PSessionList;
   end;
+
+  AVirtualTree.EndUpdate;
 end;
 
 //procedure TMainForm.UpdateProcessVirtualTree(const AVirtualTree: TBaseVirtualTree; const PProcessList: PJwWTSProcessList; PrevCount: Integer;  const ComparePointer:PJwWTSProcessList=nil);
@@ -408,6 +435,7 @@ var i: Integer;
   NewCount: Integer;
   CompareTo: PJwWTSProcessList;
 begin
+
   if ComparePointer <> nil then
   begin
     CompareTo := ComparePointer;
@@ -416,13 +444,14 @@ begin
     CompareTo := PProcessList;
   end;
 
-  AVirtualTree.BeginUpdate;//big change in list, so notify it 
+  AVirtualTree.BeginUpdate;//big change in list, so notify it
 
   // Get the last node
   pNode := AVirtualTree.GetLast;
 
   // Now iterate from last to first node
-  repeat
+  while pNode <> nil do
+  begin
     pData := AVirtualTree.GetNodeData(pNode);
     // Get the previous node and store the pointer, because in the next step
     // we might delete the current node ;-)
@@ -454,7 +483,7 @@ begin
     end;
 
     pNode := pPrevNode;
-  until pNode = nil;
+  end;
 
   // How many new processes are there?
   NewCount := PProcessList^.Count - PrevCount;
@@ -464,25 +493,11 @@ begin
   begin
     pNode := AVirtualTree.AddChild(nil);
     pData := AVirtualTree.GetNodeData(pNode);
-    pData^.Index := PrevCount;
+    pData^.Index := PrevCount + i;
     pData^.List := PProcessList;
   end;
 
   AVirtualTree.EndUpdate; //changes are done. let list update
-end;
-
-procedure UpdateSessions(ATerminalServer: TJwTerminalServer);
-var PrevCount: Integer;
-begin
-  // Get the previous session count
-  PrevCount := ATerminalServer.Sessions.Count;
-
-  // Enumerate sessions
-  ATerminalServer.EnumerateSessions;
-
-  // Sychronize User and Session tree's with the SessionList
-  MainForm.UpdateVirtualTree(MainForm.VSTUser, @ATerminalServer.Sessions, PrevCount);
-  MainForm.UpdateVirtualTree(MainForm.VSTSession, @ATerminalServer.Sessions, PrevCount);
 end;
 
 procedure TMainForm.OnTerminalServerEvent(Sender: TObject);
@@ -494,7 +509,7 @@ begin
     PrevCount := Sessions.Count;
 
     // Enumerate sessions
-    EnumerateSessions;
+//    EnumerateSessions;
 
     // Sychronize User and Session tree's with the SessionList
     UpdateVirtualTree(VSTUser, @Sessions, PrevCount);
@@ -512,18 +527,46 @@ begin
 end;
 
 procedure TMainForm.Timer1Timer(Sender: TObject);
-var i: Integer;
-  PrevCount: Integer;
 begin
   (Sender as TTimer).Enabled := False;
-  for i := 0 to TerminalServers.Count - 1 do
-  begin
-    PrevCount := TerminalServers[i].Processes.Count;
-    TerminalServers[i].EnumerateProcesses;
-    UpdateProcessVirtualTree(VSTProcess, @TerminalServers[i].Processes,
-      PrevCount);
+  actRefresh.Execute;
   (Sender as TTimer).Enabled := True;
+end;
+
+procedure TMainForm.IterateServerSubTree(Sender: TBaseVirtualTree; Node: PVirtualNode;
+  Data: Pointer; var Abort:Boolean);
+var NodeData: pServerNodeData;
+  SearchRec: PIterateServerTreeData;
+begin
+  SearchRec := PIterateServerTreeData(Data);
+  NodeData := Sender.GetNodeData(Node);
+  
+  if CompareText(NodeData^.Caption, SearchRec^.Server) = 0 then
+  begin
+    SearchRec^.NodePtr := Node;
+    Abort := True;
   end;
+end;
+
+procedure TMainForm.RefreshNode(Sender: TBaseVirtualTree; Node: PVirtualNode;
+  Data: Pointer; var Abort:Boolean);
+var
+  pServerData: PServerNodeData;
+begin
+  pServerData := Sender.GetNodeData(Node);
+
+  if pServerData^.Thread <> nil then
+  begin
+    if PageControl1.ActivePageIndex = 2 then
+    begin
+      PostThreadMessage(pServerData^.Thread.ThreadId, TM_ENUM_PROCESSES, Integer(Node), 0);
+    end
+    else begin
+      PostThreadMessage(pServerData^.Thread.ThreadId, TM_ENUM_SESSIONS, Integer(Node), 0);
+    end;
+  end;
+
+  Abort := False;
 end;
 
 procedure TMainForm.OnEnumerateServersDone(Sender: TObject);
@@ -535,16 +578,19 @@ begin
   with Sender as TJwTerminalServer do
   begin
     pDomainNode := Data;
+
     for i := 0 to ServerList.Count-1 do
     begin
       pNode := VSTServer.AddChild(pDomainNode);
       pData := VSTServer.GetNodeData(pNode);
+
       pData^.Index := -1;
       pData^.Caption := ServerList.Strings[i];
-      pData^.PTerminalServerList := nil;
+
       // Assign a checkbox
       pNode^.CheckType := ctCheckBox;
     end;
+
     pData := VSTServer.GetNodeData(pDomainNode);
 
     if ServerList.Count > 0 then
@@ -559,6 +605,8 @@ begin
   end;
 
   VSTServer.FullExpand(pDomainNode);
+
+  FreeAndNil(Sender);
 end;
 
 procedure TMainForm.actAboutExecute(Sender: TObject);
@@ -566,7 +614,7 @@ var AboutDialog: TAboutDialog;
 begin
   AboutDialog := TAboutDialog.Create(Self);
   AboutDialog.ShowModal;
-  AboutDialog.Free;
+  FreeAndNil(AboutDialog);
 end;
 
 procedure TMainForm.actAddServerExecute(Sender: TObject);
@@ -577,12 +625,21 @@ begin
   s := InputBox('Add Server', 'Type the name of the server you wish to add', '');;
   pNode := VSTServer.AddChild(pFavoritesNode);
   pData := VSTServer.GetNodeData(pNode);
-  ASSERT(pData <> nil);
 
   pData^.Index := -1;
   pData^.Caption := s;
-  pData^.PTerminalServerList := nil;
-  pNode.CheckType := ctCheckBox;
+  pData^.Thread := nil;
+
+  pNode^.CheckType := ctCheckBox;
+
+  // Expand the favorites node
+  VSTServer.FullExpand(pFavoritesNode);
+
+  // Check and trigger the oncheck event
+  pNode^.CheckState := csCheckedNormal;
+  VSTServer.OnChecked(VSTServer, pNode);
+
+
 end;
 
 function TMainForm.GetCurrentSession(AVST: TBaseVirtualTree; Node: PVirtualNode): TJwWTSSession;
@@ -719,69 +776,60 @@ begin
 end;
 
 procedure TMainForm.actRefreshExecute(Sender: TObject);
-var
-  i: Integer;
-  Update: procedure(ATerminalServer: TJwTerminalServer);
+//var
+//  i: Integer;
+//  Update: procedure(ATerminalServer: TJwTerminalServer);
 begin
-  if PageControl1.ActivePageIndex = 2 then
-  begin
-    Update := UpdateProcesses;
-  end
-  else begin
-    Update := UpdateSessions;
-  end;
-
-  for i := 0 to TerminalServers.Count - 1 do
-  begin
-    Update(TerminalServers[i]);
-  end;
-
-  case PageControl1.ActivePageIndex of
-    0: VSTUser.SortTree(VSTUser.Header.SortColumn, VSTUser.Header.SortDirection);
-    1: VSTSession.SortTree(VSTSession.Header.SortColumn, VSTSession.Header.SortDirection);
-    2: VSTProcess.SortTree(VSTProcess.Header.SortColumn, VSTProcess.Header.SortDirection);
-  end;
+  VSTServer.IterateSubtree(nil, RefreshNode, nil);
 end;
 
 procedure TMainForm.Button1Click(Sender: TObject);
-var TS1, TS2: TJwTerminalServer;
-  i: Integer;
-  j: Integer;
-  TempProcessList: TJwWTSProcessList;
 begin
-  TEnumerateProcessThread.Create(False, TerminalServers);
-{  TS1 := TJwTerminalServer.Create;
-  TS2 := TJwTerminalServer.Create;
-
-  for j := 0 to 10 do
-  begin
-    TS1.EnumerateProcesses;
-    TempProcessList := TS2.Processes;
-
-    TS2.Processes := TS1.Processes;
-    TS1.Processes := TempProcessList;
-
-    OutputDebugString(PChar(Format('Round: %d, Count: %d', [j, TS2.Processes.Count])));
-
-    for i := 0 to TS2.Processes.Count - 1 do
-    begin
-      OutputDebugString(PChar(Format('Round: %d Count %d: %s', [j, i, TS2.Processes[i].ProcessName])));
-    end;
-  end;
-
-  TS1.Free;
-  for i := 0 to TS2.Processes.Count - 1 do
-  begin
-    OutputDebugString(PChar(Format('Final Round: %d Count %d: %s', [j, i, TS2.Processes[i].ProcessName])));
-  end;
-
-  Sleep(2000);}
-
+  PageControl1.Visible := False;
+  Panel1.Font.Style := [fsBold];
 end;
 
 procedure TMainForm.Button2Click(Sender: TObject);
 begin
   Timer1.Enabled := not Timer1.Enabled;
+end;
+
+procedure TMainForm.Button3Click(Sender: TObject);
+type
+  PServerInfo101Arr = ^TServerInfo101Arr;
+  TServerInfo101Arr = array[0..ANYSIZE_ARRAY-1] of _SERVER_INFO_101;
+
+var
+  ServerInfoPtr: PServerInfo101Arr;
+  entriesread: DWORD;
+  totalentries: DWORD;
+  resume_handle: DWORD;
+  Res: NET_API_STATUS;
+  i: Integer;
+begin
+  entriesread := 0;
+  totalentries := 0;
+  resume_handle := 0;
+  ServerInfoPtr := nil;
+
+  Res := NetServerEnum(nil, 101, PByte(ServerInfoPtr), MAX_PREFERRED_LENGTH,
+    @entriesread, @totalentries, SV_TYPE_TERMINALSERVER, 'workgroup', @resume_handle);
+  if Res = NERR_Success then
+  begin
+    for i := 0 to entriesread - 1 do
+    begin
+      ShowMessageFmt('Server: %s', [ServerInfoPtr^[i].sv101_name]);
+    end;
+  end
+  else begin
+    ShowMessageFmt('Error: %s', [SysErrorMessage(Res)]);
+  end;
+
+  if ServerInfoPtr <> nil then
+  begin
+    NetApiBufferFree(ServerInfoPtr);
+  end;
+
 end;
 
 procedure AutoSizeVST(const AVirtualTree: TVirtualStringTree);
@@ -795,6 +843,13 @@ begin
 
 end;
 
+procedure TMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  PageControl1.Visible := False;
+  Panel1.Font.Style := [fsBold];
+  VSTServer.Free;
+end;
+
 procedure TMainForm.FormCreate(Sender: TObject);
 var pNode: PVirtualNode;
   pData: PServerNodeData;
@@ -802,28 +857,22 @@ var pNode: PVirtualNode;
   i: Integer;
   JwSid: TJwSecurityId;
 begin
-{$IFDEF DEBUG}
-  Button1.Enabled := TRUE;
-{$ENDIF}
-  
-{$IFDEF FASTMM}
+{$IFDEF VER185}
   ReportMemoryLeaksOnShutDown := DebugHook <> 0;
-{$ENDIF FASTMM}
-  TerminalServers := TJwTerminalServerList.Create;
-  TerminalServers.Owner := Self;
+{$ENDIF VER185}
 
   // The system accounts LocalSystem, LocalServer and NetworkService are
   // localized. Therefore we retreive the name from the SID and store this
   // in var's. Later on we use the var's to compare.
-  JwSid := TJwSecurityId.CreateWellKnownSid(WinLocalSystemSid);
+  JwSid := TJwSecurityId.Create('S-1-5-18');
   LocalSystemName := JwSid.GetCachedUserFromSid;
   JwSid.Free;
 
-  JwSid := TJwSecurityId.CreateWellKnownSid(WinLocalServiceSid);
+  JwSid := TJwSecurityId.Create('S-1-5-19');
   LocalServiceName := JwSid.GetCachedUserFromSid;
   JwSid.Free;
 
-  JwSid := TJwSecurityId.CreateWellKnownSid(WinNetworkServiceSid);
+  JwSid := TJwSecurityId.Create('S-1-5-20');
   NetworkServiceName := JwSid.GetCachedUserFromSid;
   JwSid.Free;
 
@@ -835,7 +884,7 @@ begin
   // Index to -2 (never add a Terminal Server instance to it) and Pointer to nil
   pData^.Caption := 'This Computer';
   pData^.Index := -2;
-  pData^.PTerminalServerList := nil;
+  pData^.Thread := nil;
 
   // Add a child node (local computer)
   pNode := VSTServer.AddChild(pThisComputerNode);
@@ -844,7 +893,6 @@ begin
   pNode^.CheckType := ctCheckBox;
   // The this computer node is checked by default
   pNode^.CheckState := csCheckedNormal;
-
   // Trigger the OnChecked Event, this will fill the listviews for this computer
   VSTServer.OnChecked(VSTServer, pNode);
 
@@ -858,7 +906,7 @@ begin
   // Index to -2 (never add a Terminal Server instance to it) and Pointer to nil
   pData^.Caption := 'Favorites';
   pData^.Index := -2;
-  pData^.PTerminalServerList := nil;
+  pData^.Thread := nil;
 
   // Create the 'All Listed Servers' parent node
   pAllListedServersNode := VSTServer.AddChild(nil);
@@ -868,7 +916,7 @@ begin
   // Index to -2 (never add a Terminal Server instance to it) and Pointer to nil
   pData^.Caption := 'All Listed Servers';
   pData^.Index := -2;
-  pData^.PTerminalServerList := nil;
+  pData^.Thread := nil;
 
   DomainList := EnumerateDomains;
 
@@ -877,10 +925,10 @@ begin
     pData := VSTServer.GetNodeData(VSTServer.AddChild(pAllListedServersNode));
     pData^.Index := -2;
     pData^.Caption := DomainList[i];
-    pData^.PTerminalServerList := nil;
+    pData^.Thread := nil;
   end;
 
-  DomainList.Free;
+  FreeAndNil(DomainList);
   VSTServer.FullExpand(pAllListedServersNode);
 
   AutoSizeVST(VSTUser);
@@ -949,7 +997,7 @@ begin
     6: NodeValue := CurrentSession.LogonTimeStr;
   end;
 
-  Result := StrLIComp(PChar(SearchText), PChar(NodeValue), Length(SearchText));
+  Result := StrLIComp(PChar(String(SearchText)), PChar(NodeValue), Length(SearchText));
 end;
 
 procedure TMainForm.VSTHeaderClick(Sender: TVTHeader;
@@ -1009,7 +1057,6 @@ begin
 
   case Column of
     4: HintText := GetShadowHint(CurrentSession.ShadowInformation);
-    8: HintText := Format('%s:%d', [CurrentSession.RemoteAddress, CurrentSession.RemotePort]);
   end;
 end;
 
@@ -1126,10 +1173,7 @@ end;
 
 procedure TMainForm.VSTUserCompareNodes(Sender: TBaseVirtualTree; Node1,
   Node2: PVirtualNode; Column: TColumnIndex; var Result: Integer);
-var Data1: PUserNodeData;
-  Data2: PUserNodeData;
-  Index1: Integer;
-  Index2: Integer;
+var
   Session1: TJwWTSSession;
   Session2: TJwWTSSession;
 begin
@@ -1205,10 +1249,7 @@ end;
 
 procedure TMainForm.VSTSessionCompareNodes(Sender: TBaseVirtualTree; Node1,
   Node2: PVirtualNode; Column: TColumnIndex; var Result: Integer);
-var Data1: PSessionNodeData;
-  Data2: PSessionNodeData;
-  Index1: Integer;
-  Index2: Integer;
+var
   Session1: TJwWTSSession;
   Session2: TJwWTSSession;
 begin
@@ -1253,6 +1294,7 @@ begin
 
   case Column of
     3: HintText := GetShadowHint(CurrentSession.ShadowInformation);
+    8: HintText := Format('%s:%d', [CurrentSession.RemoteAddress, CurrentSession.RemotePort]);
   end;
 end;
 
@@ -1266,7 +1308,13 @@ procedure TMainForm.VSTSessionGetText(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType;
   var CellText: WideString);
 var CurrentSession: TJwWTSSession;
+  FormatSettings: TFormatSettings;
 begin
+  // Get LocaleFormatSettings, we use them later on to format DWORD
+  // values with bytes as KByte values with thousand seperators a la taskmgr
+  // (we query this every time because the user may have changed settings)
+  GetLocaleFormatSettings(LOCALE_USER_DEFAULT, FormatSettings);
+
   CurrentSession := GetCurrentSession(Sender, Node);
 
   // Delete this node if we don't have data for it!
@@ -1293,8 +1341,8 @@ begin
     (CurrentSession.WdFlag > WD_FLAG_CONSOLE) then
   begin
     case Column of
-      9: CellText := IntToStr(CurrentSession.IncomingBytes);
-      10: CellText := IntToStr(CurrentSession.OutgoingBytes);
+      9: CellText := Format('%.0n', [CurrentSession.IncomingBytes / 1], FormatSettings);
+      10: CellText := Format('%.0n', [CurrentSession.OutgoingBytes / 1], FormatSettings);
       11: CellText := CurrentSession.CompressionRatio;
     end;
   end
@@ -1329,15 +1377,12 @@ begin
     11: NodeValue := CurrentSession.CompressionRatio;
   end;
 
-  Result := StrLIComp(PChar(SearchText), PChar(NodeValue), Length(SearchText));
+  Result := StrLIComp(PChar(String(SearchText)), PChar(NodeValue), Length(SearchText));
 end;
 
 procedure TMainForm.VSTProcessCompareNodes(Sender: TBaseVirtualTree; Node1,
   Node2: PVirtualNode; Column: TColumnIndex; var Result: Integer);
-var Data1: PProcessNodeData;
-  Data2: PProcessNodeData;
-  Index1: Integer;
-  Index2: Integer;
+var
   Process2: TJwWTSProcess;
   Process1: TJwWTSProcess;
 begin
@@ -1358,7 +1403,7 @@ begin
     4: Result := CompareInteger(Process1.ProcessId, Process2.ProcessId);
     5: Result := CompareText(Process1.ProcessName, Process2.ProcessName);
     6: Result := CompareInteger(Process1.ProcessAge, Process2.ProcessAge);
-    7: Result := CompareText(Process1.ProcessCPUTime, Process2.ProcessCPUTime);
+    7: Result := CompareText(Process1.ProcessCPUTimeStr, Process2.ProcessCPUTimeStr);
     8: Result := CompareInteger(Process1.ProcessMemUsage, Process2.ProcessMemUsage);
     9: Result := CompareInteger(Process1.ProcessVMSize, Process2.ProcessVMSize);
   end;
@@ -1367,7 +1412,7 @@ end;
 procedure TMainForm.VSTProcessGetImageIndex(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
   var Ghosted: Boolean; var ImageIndex: Integer);
-var pData: PProcessNodeData;
+var
   Username: string;
   IsConsole: Boolean;
   CurrentProcess: TJwWTSProcess;
@@ -1460,7 +1505,7 @@ begin
     4: CellText := IntToStr(CurrentProcess.ProcessId);
     5: CellText := CurrentProcess.ProcessName;
     6: CellText := CurrentProcess.ProcessAgeStr;
-    7: CellText := CurrentProcess.ProcessCPUTime;
+    7: CellText := CurrentProcess.ProcessCPUTimeStr;
     8: CellText := Format('%.0n K', [ CurrentProcess.ProcessMemUsage / 1024],
       FormatSettings);
     9: CellText := Format('%.0n K', [CurrentProcess.ProcessVMSize / 1024],
@@ -1485,7 +1530,7 @@ begin
     4: NodeValue := IntToStr(CurrentProcess.ProcessId);
     5: NodeValue := CurrentProcess.ProcessName;
     6: NodeValue := CurrentProcess.ProcessAgeStr;
-    7: NodeValue := CurrentProcess.ProcessCPUTime;
+    7: NodeValue := CurrentProcess.ProcessCPUTimeStr;
     8: NodeValue := IntToStr(CurrentProcess.ProcessMemUsage);
     9: NodeValue := IntToStr(CurrentProcess.ProcessVMSize);
   end;
@@ -1495,24 +1540,23 @@ end;
 
 procedure TMainForm.VSTServerChecked(Sender: TBaseVirtualTree;
   Node: PVirtualNode);
-var pServerData: PServerNodeData;
-  pUserNode: PVirtualNode;
-  pUserData: PUserNodeData;
-  pSessionNode: PVirtualNode;
-  pSessionData: PSessionNodeData;
-  i: Integer;
-  pProcessNode: PVirtualNode;
-  pProcessData: PProcessNodeData;
+var
+  pServerData: PServerNodeData;
   PrevCount: Integer;
+  dwExitCode: DWORD;
+  WaitResult: DWORD;
 begin
   // Get the Node Data
-
   pServerData := Sender.GetNodeData(Node);
+
   if Node^.CheckState = csUncheckedNormal then
   begin
-    if pServerData^.PTerminalServerList <> nil then
+
+    Node^.CheckState := csMixedNormal;
+    if pServerData^.TerminalServer <> nil then
     begin
-      with pServerData^.PTerminalServerList.Items[pServerData^.Index] do
+
+      with pServerData^.TerminalServer do
       begin
         // Store the current session count
         PrevCount := Sessions.Count;
@@ -1521,18 +1565,40 @@ begin
         // Update User and Session VST
         UpdateVirtualTree(VSTUser, @Sessions, PrevCount);
         UpdateVirtualTree(VSTSession, @Sessions, PrevCount);
+
         // Store the current process count
         PrevCount := Processes.Count;
         // Clear the ProcessList
         Processes.Clear;
         // and update Process VST
         UpdateVirtualTree(VSTProcess, @Processes, PrevCount);
+      end;
 
-        pServerData^.PTerminalServerList.Delete(pServerData^.Index);
-        // nil it
-        pServerData^.PTerminalServerList := nil;
+      // nil it
+      FreeAndNil(pServerData^.TerminalServer);
+
+      with pServerData^ do
+      begin
+        if Thread <> nil then
+        begin
+          // Set thread to terminate
+          OutputDebugString('sending stop');
+
+          Thread.Terminate;
+          // Send a stop message to the thread!
+          EnterCriticalSection(pServerData^.cs);
+          PostThreadMessage(Thread.ThreadId, TM_THREAD_STOP, 0, 0);
+          Thread.WaitFor;
+
+          FreeAndNil(pServerData^.Thread);//.Free;
+          OutputDebugString('Thread is nilled');
+          DeleteCriticalSection(pServerData^.cs);
+
+          Node^.CheckState := csUnCheckedNormal;
+        end;
 
       end;
+
     end;
   end
   else if Node^.CheckState = csCheckedNormal then
@@ -1541,62 +1607,46 @@ begin
     if pServerData^.Index > -2 then
     begin
       // Is a Terminal Server instance assigned?
-      if pServerData^.PTerminalServerList = nil then
+      if pServerData^.TerminalServer = nil then
       begin
-        // Create a Terminal Server instance and add it to the list
-        pServerData^.Index := TerminalServers.Add(TjwTerminalServer.Create);
-        // Set the servername
-        TerminalServers[pServerData^.Index].Server := pServerData^.Caption;
-        // Point the node data to a Terminal Server instance
-        pServerData^.PTerminalServerList := @TerminalServers;
-      end;
+        // Init CRITICAL_SECTION structure
+        InitializeCriticalSection(pServerData^.cs);
 
-      with pServerData^.PTerminalServerList^[pServerData^.Index] do
-      begin
-        // EnumerateSessions
-        if EnumerateSessions then
+        pServerData^.TerminalServer := TJwTerminalServer.Create;
+        pServerData^.TerminalServer.Server := pServerData^.Caption;
+
+{        // Create Terminal Server Thread, pass servername and CRITICAL_SECTION
+        while pServerData^.Thread <> nil do
         begin
-          for i := 0 to Sessions.Count - 1 do
-          begin
-            // Create a node for the session in the Users VST
-            pUserNode := VSTUser.AddChild(nil);
-            // and add the data
-            pUserData := VSTUser.GetNodeData(pUserNode);
-            // Set the Index
-            pUserData^.Index := i;
-            // Point to TerminalServerList.TerminalServer[Index].SessionList
-            pUserData^.List := @Sessions;
+          Application.ProcessMessages;
+          Sleep(0);
+        end;}
 
-            // Create a node for the session in the Sessions VST
-            pSessionNode := VSTSession.AddChild(nil);
-            // and add the data
-            pSessionData := VSTSession.GetNodeData(pSessionNode);
-            // Set the Index
-            pSessionData^.Index := i;
-            // Point to TerminalServerList.TerminalServer[Index].SessionList
-            pSessionData^.List := @Sessions;
-          end;
-        end;
+        pServerData^.Thread := TTerminalServerThread.Create(pServerData^.Caption,
+          Node, pServerData^.cs);
 
-        // Assign Session Event Handler
-        OnSessionEvent := OnTerminalServerEvent;
-        if EnumerateProcesses then
-        begin
-          for i := 0 to Processes.Count - 1 do
-          begin
-            // Create a node for the session
-            pProcessNode := VSTProcess.AddChild(nil);
-            // and add the data
-            pProcessData := VSTProcess.GetNodeData(pProcessNode);
-            // Set the Index
-            pProcessData^.Index := i;
-            // Point to TerminalServerList.TerminalServer[Index].SessionList
-            pProcessData^.List := @Processes;
-          end;
-        end;
+//        pServerData^.Thread.Resume;
+
       end;
     end;
   end;
+end;
+
+procedure TMainForm.VSTServerChecking(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; var NewState: TCheckState; var Allowed: Boolean);
+var
+  pServerData: PServerNodeData;
+begin
+  pServerData := Sender.GetNodeData(Node);
+
+  case NewState of
+    csUncheckedNormal: Allowed := pServerData^.Thread <> nil;
+    csCheckedNormal: Allowed := pServerData^.Thread = nil;
+    else begin
+      OutputDebugString(PChar(Format('Checkstate: %d', [Integer(NewState)])));
+    end;
+  end;
+
 end;
 
 procedure TMainForm.VSTServerColumnDblClick(Sender: TBaseVirtualTree;
@@ -1644,24 +1694,45 @@ end;
 
 procedure TMainForm.VSTServerFreeNode(Sender: TBaseVirtualTree;
   Node: PVirtualNode);
-var pData: PServerNodeData;
+var pServerData: PServerNodeData;
+  dwExitCode: DWORD;
 begin
-  pData := Sender.GetNodeData(Node);
-  if pData = nil then
-    exit;
-  // Free the string data by setting it to ''
-  pData^.Caption := '';
+  pServerData := Sender.GetNodeData(Node);
+
+  with pServerData^ do
+  begin
+    // Free the string data by setting it to ''
+    OutputDebugString(PChar(Format('ServerFree: %s', [Caption])));
+    Caption := '';
+
+    if Thread <> nil then
+    begin
+      // Set thread to terminate
+      OutputDebugString('Terminating Enum thread');
+      Thread.Terminate;
+      OutputDebugString('sending stop');
+      dwExitCode := STILL_ACTIVE;
+      while dwExitCode = STILL_ACTIVE do
+      begin
+        PostThreadMessage(Thread.ThreadId, TM_THREAD_STOP, 0, 0);
+        Application.ProcessMessages;
+        dwExitCode := 0;
+        GetExitCodeThread(Thread.Handle, dwExitCode);
+      end;
+
+      FreeAndNil(Thread);
+//      LeaveCriticalSection(pServerData^.cs);
+    end;
+
+    DeleteCriticalSection(cs);
+  end;
+
+  FreeAndNil(pServerData^.TerminalServer);
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
 begin
-//  VSTServer.Header.SaveToStream();
-  // Prevent updates to the Virtual String Grids
-  VSTUser.OnGetText := nil;
-  VSTServer.OnGetText := nil;
-
-  // Now Free the Terminal Server Instances
-  TerminalServers.Free;
+//  VSTServer.Free;
 end;
 
 end.
