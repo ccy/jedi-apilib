@@ -72,13 +72,13 @@ type
   TJwThread = class(TThread)
   private
     { Private declarations }
+    FName: String;
     FTerminatedEvent: THandle;
     procedure SetName(const Name: String);
   protected
   public
     constructor Create(const CreateSuspended: Boolean; const Name: String);
-    property Name: String write SetName;
-    procedure Wait;
+    property Name: String read FName write SetName;
   end;
 
 
@@ -515,8 +515,9 @@ begin
   ThreadNameInfo.FFlags := 0;
 
   try
-    RaiseException( $406D1388, 0, SizeOf(ThreadNameInfo) div SizeOf(LongWord),
-      @ThreadNameInfo );
+    RaiseException($406D1388, 0, SizeOf(ThreadNameInfo) div SizeOf(LongWord),
+      @ThreadNameInfo);
+    FName := Name;
   except
   end;
 end;
@@ -525,13 +526,7 @@ constructor TJwThread.Create(const CreateSuspended: Boolean; const Name: string)
 begin
   inherited Create(CreateSuspended);
   SetName(Name);
-end;
-
-procedure TJwThread.Wait;
-var
-  Res: DWORD;
-begin
-  WaitForSingleObject(Handle, INFINITE);
+  FTerminatedEvent := CreateEvent(nil, False, False, nil);
 end;
 
 constructor TJwTerminalServer.Create;
@@ -572,11 +567,6 @@ begin
     FEnumServersThread.Wait;
   end;
 
-  if Connected then
-  begin
-    Disconnect;
-  end;
-
   // Terminate the Event Thread before closing the connection.
   if Assigned(FTerminalServerEventThread) then
   begin
@@ -587,10 +577,15 @@ begin
     WTSWaitSystemEvent(FServerHandle, WTS_EVENT_FLUSH, EventFlag);
 
     // wait for the thread to finish
-    WaitForSingleObject(FTerminalServerEventThread.Handle, INFINITE);
+    FTerminalServerEventThread.WaitFor;
 
     // Free
     FreeAndNil(FTerminalServerEventThread);
+  end;
+
+  if Connected then
+  begin
+    Disconnect;
   end;
 
     // Free the SessionList
@@ -1039,12 +1034,11 @@ constructor TJwWTSEventThread.Create(CreateSuspended: Boolean;
   AOwner: TJwTerminalServer);
 begin
   inherited Create(CreateSuspended, Self.ClassName);
+  FreeOnTerminate := False;
+
   OutputDebugString('creating wtsevent thread');
 
   FOwner := AOwner;
-
-  FTerminatedEvent := CreateEvent(nil, False, False, nil);
-  FreeOnTerminate := True;
 end;
 
 
