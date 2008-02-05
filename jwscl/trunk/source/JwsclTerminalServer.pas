@@ -161,13 +161,10 @@ type
   protected
     FOwner: TJwTerminalServer;
     FEventFlag: DWORD;
-//    FTerminatedEvent: THandle;
   public
     constructor Create(CreateSuspended: Boolean; AOwner: TJwTerminalServer);
     procedure DispatchEvent;
     procedure Execute; override;
-//    property TerminatedEvent: THandle read FTerminatedEvent write
-//      FTerminatedEvent;
   end;
 
   TJwWTSEnumServersThread = class(TThread)
@@ -1015,7 +1012,7 @@ end;
 constructor TJwWTSEventThread.Create(CreateSuspended: Boolean;
   AOwner: TJwTerminalServer);
 begin
-  inherited Create(CreateSuspended, Self.ClassName);
+  inherited Create(CreateSuspended, Format('%s (%s)', [ClassName, AOwner.Server]));
   FreeOnTerminate := False;
 
   OutputDebugString('creating wtsevent thread');
