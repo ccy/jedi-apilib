@@ -52,7 +52,6 @@ type
   { forward declarations }
   TJwTerminalServer = class;
   TJwTerminalServerList = class;
-  TJwThread = class;
   TJwWTSEventThread = class;
   TJwWTSEnumServersThread = class;
   TJwWTSSessionShadow = class;
@@ -62,24 +61,6 @@ type
   TJwWTSProcessList = class;
 
 
-  TThreadNameInfo = record
-    FType: LongWord;     // must be 0x1000
-    FName: PChar;        // pointer to name (in user address space)
-    FThreadID: LongWord; // thread ID (-1 indicates caller thread)
-    FFlags: LongWord;    // reserved for future use, must be zero
-  end;
-
-  TJwThread = class(TThread)
-  private
-    { Private declarations }
-    FName: String;
-    FTerminatedEvent: THandle;
-    procedure SetName(const Name: String);
-  protected
-  public
-    constructor Create(const CreateSuspended: Boolean; const Name: String);
-    property Name: String read FName write SetName;
-  end;
 
 
   {@Name defines }
@@ -529,29 +510,6 @@ type
   PJwWtsServerInfoWArray = ^TJwWtsServerInfoWArray;
   TJwWtsServerInfoWArray = array[0..ANYSIZE_ARRAY-1] of TWtsServerInfoW;
 
-procedure TJwThread.SetName(const Name: string);
-var
-  ThreadNameInfo: TThreadNameInfo;
-begin
-  ThreadNameInfo.FType := $1000;
-  ThreadNameInfo.FName := PChar(Name);
-  ThreadNameInfo.FThreadID := $FFFFFFFF;
-  ThreadNameInfo.FFlags := 0;
-
-  try
-    RaiseException($406D1388, 0, SizeOf(ThreadNameInfo) div SizeOf(LongWord),
-      @ThreadNameInfo);
-    FName := Name;
-  except
-  end;
-end;
-
-constructor TJwThread.Create(const CreateSuspended: Boolean; const Name: string);
-begin
-  inherited Create(CreateSuspended);
-  SetName(Name);
-  FTerminatedEvent := CreateEvent(nil, False, False, nil);
-end;
 
 constructor TJwTerminalServer.Create;
 begin

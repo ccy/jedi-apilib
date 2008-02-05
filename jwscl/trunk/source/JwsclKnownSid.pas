@@ -425,6 +425,7 @@ var i : Integer;
     LocalSidStr,
     Str : TJwString;
     Map : PJwSidMap;
+label RestartLoop;
 begin
   if not Assigned(SidMaps) then
     SidMaps := TList.Create;
@@ -439,15 +440,27 @@ begin
     JwSidMapDefErrors := TList.Create;
   JwSidMapDefErrors.Clear;
 
+  i := low(JwSidMapDef);
 
-  for i := low(JwSidMapDef) to high(JwSidMapDef) do
-  begin
-    if Length(JwSidMapDef[i].SidString) > 0 then
+  {We use goto here because
+   a try/except within a loop can be really slow for
+   many loops.
+   However the solution creating a new procedure
+   and call it recursively is also not a good idea
+   because if many errors occur stack can become low of memory.
+   So if we jump out of loop in case of exception
+   we can simply jump back to next loop item. 
+  }
+RestartLoop:
+  try
+    while i <= high(JwSidMapDef) do
     begin
-      Str := JwSidMapDef[i].SidString;
-      if JwSidMapDef[i].SidString[1] = '-' then
-        Str := LocalSidStr + Str;
-      try
+      if Length(JwSidMapDef[i].SidString) > 0 then
+      begin
+        Str := JwSidMapDef[i].SidString;
+        if JwSidMapDef[i].SidString[1] = '-' then
+          Str := LocalSidStr + Str;
+
         Sid := TJwSecurityID.Create(Str);
 
         New(Map);
@@ -455,11 +468,17 @@ begin
         Map.SidString := Str;
         Map.Sid := Sid;
         SidMaps.Add(Map);
-      except
-        JwSidMapDefErrors.Add(Pointer(i));
       end;
+      Inc(i);
     end;
+  except
+    JwSidMapDefErrors.Add(Pointer(i));
+    Inc(i);
   end;
+  //also within loop!
+  if i <= high(JwSidMapDef) then
+    goto RestartLoop;
+
 end;
 
 procedure JwDoneMapping;

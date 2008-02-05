@@ -58,6 +58,7 @@ unit JwsclUtils;
 interface
 
 uses
+  Classes,
   jwaWindows,
 {$IFDEF JCL}
   JclWideFormat,
@@ -67,6 +68,43 @@ uses
   JwsclExceptions,
   JwsclResource,
   JwsclStrings;
+
+
+
+type
+  {@Name defines a thread base class
+  which offers a name for the thread.
+  Override Execute and call it at first
+  to have any effect.
+  }
+  TJwThread = class(TThread)
+  private
+    { Private declarations }
+    FName: String;
+
+    procedure SetName(const Name: String);
+  protected
+    FTerminatedEvent: THandle;
+  public
+    {@Name is the main execution procedure of thread.
+     Override it and call it at first.
+    }
+    procedure Execute; override;
+  public
+    {@Name create a thread instance.
+     @param(CreateSuspended defines whether the thread is created
+      and commenced immediately (false) or suspended (true).)
+     @param(Name defines the thread's name)
+     }
+    constructor Create(const CreateSuspended: Boolean; const Name: String);
+    destructor Destroy; override;
+
+    {@Name sets or gets the threads name.
+     The name is retrieved from internal variable. Changing the thread's name
+     using foreign code does not affect this property.
+    }
+    property Name: String read FName write SetName;
+  end;
 
 procedure JwGlobalFreeAndNil(var hMem: HGLOBAL);
 
@@ -254,10 +292,10 @@ procedure JwRaiseOnNilParameter(const P : Pointer;
 function GetUnitName(argObject: TObject): string;
 {$ENDIF JW_TYPEINFO}
 
-procedure JwSetThreadName(const Name: String);
+procedure JwSetThreadName(const Name: String; const ThreadID : Cardinal = Cardinal(-1));
 
 implementation
-uses Classes, SysUtils, JwsclToken, JwsclKnownSid, JwsclDescriptor, JwsclAcl,
+uses SysUtils, JwsclToken, JwsclKnownSid, JwsclDescriptor, JwsclAcl,
      JwsclSecureObjects, JwsclMapping
 {$IFDEF JW_TYPEINFO}
      ,TypInfo
@@ -287,8 +325,35 @@ type
   end;
 
 
+procedure TJwThread.SetName(const Name: string);
+begin
+  FName := Name;
+  JwSetThreadName(Name, ThreadID);
+end;
+
+constructor TJwThread.Create(const CreateSuspended: Boolean; const Name: string);
+begin
+  inherited Create(CreateSuspended);
+
+  SetName(Name);
+
+  FTerminatedEvent := CreateEvent(nil, False, False, nil);
+end;
+
+destructor TJwThread.Destroy;
+begin
+  CloseHandle(FTerminatedEvent);
+  inherited;
+end;
+
+
+procedure TJwThread.Execute;
+begin
+  SetName(Name);
+end;
+
 //source http://msdn2.microsoft.com/en-us/library/xcb2z8hs(vs.71).aspx
-procedure JwSetThreadName(const Name: String);
+procedure JwSetThreadName(const Name: String; const ThreadID : Cardinal = Cardinal(-1));
 {$IFDEF MSWINDOWS}
 var
   ThreadNameInfo: TThreadNameInfo;
@@ -297,7 +362,7 @@ begin
 {$IFDEF MSWINDOWS}
   ThreadNameInfo.FType := $1000;
   ThreadNameInfo.FName := PChar(Name);
-  ThreadNameInfo.FThreadID := $FFFFFFFF;
+  ThreadNameInfo.FThreadID := ThreadID; //$FFFFFFFF;
   ThreadNameInfo.FFlags := 0;
 
   try
@@ -670,6 +735,9 @@ end;
     SA : TResourceTStringArray;
     Indexes : TResourceIndexArray;
     i : Integer;     }
+
+
+
 initialization
  
   {
