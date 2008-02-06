@@ -845,8 +845,17 @@ end;
 
 procedure TMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
+  // Disable the timer
+  Timer1.OnTimer := nil;
+  Timer1.Enabled := False;
+
+  // Hide the PageControl (this shows the Panel beneath it and the "wait for..."
+  // caption on it. It also prevents new GetText events from the VirtualStringTree
   PageControl1.Visible := False;
   Panel1.Font.Style := [fsBold];
+
+  // Freeing the VSTServer tree will close all connections and free all
+  // TerminalServer objects
   VSTServer.Free;
 end;
 
@@ -1586,13 +1595,13 @@ begin
 
           Thread.Terminate;
           // Send a stop message to the thread!
-          EnterCriticalSection(pServerData^.cs);
+//          EnterCriticalSection(pServerData^.cs);
           PostThreadMessage(Thread.ThreadId, TM_THREAD_STOP, 0, 0);
           Thread.WaitFor;
 
           FreeAndNil(pServerData^.Thread);//.Free;
           OutputDebugString('Thread is nilled');
-          DeleteCriticalSection(pServerData^.cs);
+//          DeleteCriticalSection(pServerData^.cs);
 
           Node^.CheckState := csUnCheckedNormal;
         end;
@@ -1707,21 +1716,21 @@ begin
 
     if Thread <> nil then
     begin
-      // Set thread to terminate
-      OutputDebugString('Terminating Enum thread');
-      Thread.Terminate;
-      OutputDebugString('sending stop');
-      dwExitCode := STILL_ACTIVE;
-      while dwExitCode = STILL_ACTIVE do
+      if Thread <> nil then
       begin
-        PostThreadMessage(Thread.ThreadId, TM_THREAD_STOP, 0, 0);
-        Application.ProcessMessages;
-        dwExitCode := 0;
-        GetExitCodeThread(Thread.Handle, dwExitCode);
-      end;
+        // Set thread to terminate
+        OutputDebugString('sending stop');
 
-      FreeAndNil(Thread);
-//      LeaveCriticalSection(pServerData^.cs);
+        Thread.Terminate;
+        // Send a stop message to the thread!
+        PostThreadMessage(Thread.ThreadId, TM_THREAD_STOP, 0, 0);
+        Thread.WaitFor;
+        FreeAndNil(pServerData^.Thread);//.Free;
+
+        OutputDebugString('Thread is nilled');
+        Node^.CheckState := csUnCheckedNormal;
+
+      end;
     end;
 
     DeleteCriticalSection(cs);

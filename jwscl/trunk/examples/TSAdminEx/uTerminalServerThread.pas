@@ -110,8 +110,6 @@ var
   LastError: DWORD;
 begin
 
-  // Create a sessionslist (we do not own the objects because we are going
-  // to assign them to the list in the main thread later on...
   Res := False;
 
   try
@@ -133,10 +131,10 @@ begin
     FTerminalServer.Sessions.Clear;
 
     // Inform main tread that we have enumerated
-    SendMessage(MainForm.Handle, TM_ENUM_SESSIONS_SUCCESS,
-      Integer(FNode), 0);
+    SendMessage(MainForm.Handle, TM_ENUM_SESSIONS_SUCCESS, Integer(FNode), 0);
   end
   else begin
+    // Inform main tread that we have failed to enumerate
     SendMessage(MainForm.Handle, TM_ENUM_SESSIONS_FAIL, Integer(FNode), LastError);
   end;
 
@@ -171,10 +169,10 @@ begin
       FTerminalServer.Processes.Clear;
 
       // Inform main tread that we have enumerated
-      SendMessage(MainForm.Handle, TM_ENUM_PROCESSES_SUCCESS,
-        Integer(FNode), 0);
+      SendMessage(MainForm.Handle, TM_ENUM_PROCESSES_SUCCESS, Integer(FNode), 0);
     end
     else begin
+      // Inform main tread that we have failed to enumerate
       SendMessage(MainForm.Handle, TM_ENUM_PROCESSES_FAIL, Integer(FNode), LastError);
     end;
 
@@ -187,9 +185,9 @@ var
   i: Integer;
 begin
 
-  FreeAndNil(FProcessListCopy);
-  FreeAndNil(FSessionListCopy);
   FreeAndNil(FTerminalServer);
+  FreeAndNil(FSessionListCopy);
+  FreeAndNil(FProcessListCopy);
 
   inherited Destroy;
 end;
