@@ -405,6 +405,8 @@ procedure TSecurityDescriptorTests.TestSetGetDACL;
 var d : TJwDAccessControlList;
     s : TJwString;
 begin
+  JwInitWellKnownSIDs;
+
   SecurityDescriptors[1] := TJwSecurityDescriptor.Create;
   CheckEquals(0, SecurityDescriptors[1].DACL.Count);
 
@@ -414,10 +416,10 @@ begin
     CheckEquals(0, d.Count);
 
 
-    d.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil,[afInheritedAce],GENERIC_READ,nil,false));
-    d.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil,[afInheritedAce],GENERIC_READ,nil,false));
-    d.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil,[],GENERIC_READ,nil,false));
-    d.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil,[],GENERIC_WRITE,nil,false));
+    d.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil,[afInheritedAce],GENERIC_READ,JwNullSID,false));
+    d.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil,[afInheritedAce],GENERIC_READ,JwNullSID,false));
+    d.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil,[],GENERIC_READ,JwNullSID,false));
+    d.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil,[],GENERIC_WRITE,JwNullSID,false));
 
     S := d.Text;
     //ShowMessage(S);
@@ -428,7 +430,7 @@ begin
 
     CheckEquals(4, d.count);
 
-    SecurityDescriptors[1].DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil,[afInheritedAce],GENERIC_READ,nil,false));
+    SecurityDescriptors[1].DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil,[afInheritedAce],GENERIC_READ,JwNullSID,false));
     SecurityDescriptors[1].DACL := nil;
 
     CheckNull(SecurityDescriptors[1].DACL);
@@ -487,8 +489,11 @@ begin
   //StringSD[0];
   S1 := Format('O:%sG:%sD:(D;;GW;;;%0:s)(A;;GR;;;%0:s)S:(AU;SAFA;FR;;;%0:s)(AU;SA;FW;;;%0:s)'
                 ,[SecurityDescriptors[1].Owner.StringSID,SecurityDescriptors[1].PrimaryGroup.StringSID]);
+
+{$IFDEF NO_VISTA} //string above may vary in vista!
 {$IFDEF COMPILER_5}CheckEqualsWideString{$ELSE}CheckEquals{$ENDIF}
    (S1,Str,'Unequal StringSD');
+{$ENDIF NO_VISTA}
 
 
   SecurityDescriptors[2] := TJwSecurityDescriptor.Create(Str);

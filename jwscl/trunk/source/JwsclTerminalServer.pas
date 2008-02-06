@@ -245,6 +245,10 @@ type
     function GetSessionInfoStr(const WTSInfoClass: WTS_INFO_CLASS): TJwString;
     procedure GetWinStationInformation;
     procedure GetWinStationDriver;
+
+    function GetToken : TJwSecurityToken;
+    function GetUserSid : TJwSecurityID;
+
   public
     {TODO: @Name create a new session here. <add here more information>
 
@@ -343,8 +347,8 @@ type
     property WinStationName: TJwString read FWinStationName;
     property WorkingDirectory: TJwString read FWorkingDirectory;
 
-    property Token : TJwSecurityToken read fToken;
-    property UserSid : TJwSecurityID read FUserSid;
+    property Token : TJwSecurityToken read GetToken;
+    property UserSid : TJwSecurityID read GetUserSid;
   end;
 
   { List Of TJwWTSSession Objects }
@@ -389,6 +393,8 @@ type
     FUserSid : TJwSecurityID;
 
     function GetServer: TJwString;
+    function GetToken : TJwSecurityToken;
+    function GetUserSid : TJwSecurityID;
 
   public
     constructor Create(const Owner: TJwWTSProcessList;
@@ -418,8 +424,8 @@ type
     property ProcessVMSize: DWORD read FProcessVMSize;
     property Server: TJwString read GetServer;
 //    property SidStr: TJwString read FSidStr;
-    property Token : TJwSecurityToken read fToken;
-    property UserSid : TJwSecurityID read FUserSid;
+    property Token : TJwSecurityToken read GetToken;
+    property UserSid : TJwSecurityID read GetUserSid;
     property Username: TJwString read FUsername;
     property WinStationName: TJwString read FWinStationname;
 
@@ -1635,16 +1641,44 @@ begin
 
   FRemoteAddress := WideString(tempStr);
 
-  // Need to be system in order to execute call below. This means we fail and
-  // except if we are not. (removed it for now)
-  // 1. We should check if we are system
-  // 2. We should support win2000 so using WinstationQueryUserToken is preferred
-{  try
+  FToken := nil;
+  FUserSid := nil;
+end;
+
+destructor TJwWTSSession.Destroy;
+begin
+  FreeAndNil(FShadow);
+  FreeAndNil(FToken);
+  FreeAndNil(FUserSid);
+end;
+
+function TJwWTSSession.GetToken : TJwSecurityToken;
+begin
+  result := FToken;
+  if Assigned(FToken) then
+    exit;
+
+  result := nil;
+
+  //session on another Server? : CreateWTSQueryUserTokenEx
+  try
     FToken := TJwSecurityToken.CreateWTSQueryUserToken(FSessionId);
   except
     on E : EJwsclOpenProcessTokenException do
       FToken := nil;
   end;
+
+  result := FToken;
+end;
+
+function TJwWTSSession.GetUserSid : TJwSecurityID;
+begin
+  GetToken;
+
+  result := FUserSid;
+
+  if Assigned(FUserSid) then
+    exit;
 
   if Assigned(FToken) then
   begin
@@ -1656,15 +1690,9 @@ begin
     end;
   end
   else
-    FUserSid  := nil;}
+    FUserSid  := nil;
 
-end;
-
-destructor TJwWTSSession.Destroy;
-begin
-  FreeAndNil(FShadow);
-  FreeAndNil(FToken);
-  FreeAndNil(FUserSid);
+  result := FUserSid;
 end;
 
 function TJwWTSSession.GetServer: TJwString;
@@ -1740,14 +1768,54 @@ begin
   FProcessName := ProcessName;
   FUsername := Username;
 
-  // CreateTokenByProcess expects a process handle and not a ProcessID...
-{  try
-    JwEnablePrivilege(SE_DEBUG_NAME, pst_EnableIfAvail);
-    FToken := TJwSecurityToken.CreateTokenByProcess(ProcessID, MAXIMUM_ALLOWED);
+  FToken := nil;
+  FUserSid := nil;
+
+end;
+
+destructor TJwWTSProcess.Destroy;
+begin
+  FreeAndNil(FToken);
+  FreeAndNil(FUserSid);
+  inherited;
+end;
+
+function TJwWTSProcess.GetToken : TJwSecurityToken;
+var hProc : HANDLE;
+begin
+  result := FToken;
+  if Assigned(FToken) then
+    exit;
+
+  result := nil;
+  JwEnablePrivilege(SE_DEBUG_NAME, pst_EnableIfAvail);
+
+  SetLastError(0);
+  hProc := OpenProcess(PROCESS_QUERY_INFORMATION, false, ProcessID);
+
+  if hProc = 0 then
+    exit;
+
+  try
+    FToken := TJwSecurityToken.CreateTokenByProcess(hProc, MAXIMUM_ALLOWED);
   except
     on E : EJwsclOpenProcessTokenException do
       FToken := nil;
   end;
+
+  CloseHandle(hProc);
+
+  result := FToken;
+end;
+
+function TJwWTSProcess.GetUserSid : TJwSecurityID;
+begin
+  GetToken;
+
+  result := FUserSid;
+
+  if Assigned(FUserSid) then
+    exit;
 
   if Assigned(FToken) then
   begin
@@ -1759,14 +1827,9 @@ begin
     end;
   end
   else
-    FUserSid  := nil;}
-end;
+    FUserSid  := nil;
 
-destructor TJwWTSProcess.Destroy;
-begin
-  FreeAndNil(FToken);
-  FreeAndNil(FUserSid);
-  inherited;
+  result := FUserSid;
 end;
 
 function TJwWTSProcess.GetServer;

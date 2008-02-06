@@ -30,6 +30,12 @@ type
     procedure TestMakeGlobalAllocLeak;
     procedure TestCheckAdministratorAccess;
 
+    procedure TestSetThreadName;
+  end;
+
+  TTestThread = class(TJwThread)
+  public
+    procedure Execute; override;
 
   end;
 
@@ -87,6 +93,27 @@ procedure TestUnitUtils.TestMakeLocalAllocLeak;
 var Mem : HLocal;
 begin
   Mem := JwLocalAllocMem(LPTR, 100);
+end;
+
+procedure TestUnitUtils.TestSetThreadName;
+var T : TTestThread;
+begin
+  JwSetThreadName('Main Thread');
+
+  T := TTestThread.Create(false, 'JWSCL Thread Name Testing');
+  T.FreeOnTerminate := true;
+  T.Resume;
+end;
+
+{ TTestThread }
+
+procedure TTestThread.Execute;
+begin
+  inherited;
+asm
+  int 3h;  //soft break
+end;
+  //check thread name here in your Thread Status window
 end;
 
 initialization
