@@ -111,7 +111,6 @@ type
     TabSheet1: TTabSheet;
     TabSheet2: TTabSheet;
     TabSheet3: TTabSheet;
-    Button2: TButton;
     Timer1: TTimer;
     StateImagesList: TImageList;
     ImageList2: TImageList;
@@ -120,8 +119,8 @@ type
     AddServer1: TMenuItem;
     About1: TMenuItem;
     actAbout: TAction;
-    Button1: TButton;
     Button3: TButton;
+    AutoRefresh: TCheckBox;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure VSTUserGetText(Sender: TBaseVirtualTree;
@@ -190,6 +189,7 @@ type
       var NewState: TCheckState; var Allowed: Boolean);
     procedure Button1Click(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure AutoRefreshClick(Sender: TObject);
   private
     { Private declarations }
     pThisComputerNode: PVirtualNode;
@@ -216,6 +216,7 @@ type
     procedure SessionsEnumerated(Node: PVirtualNode);
     procedure ProcessesEnumerated(Node: PVirtualNode);
     procedure ThreadRunning(const Node: PVirtualNode);
+    procedure AutoSizeVST(const AVirtualTree: TVirtualStringTree);
   public
     { Public declarations }
   protected
@@ -294,7 +295,9 @@ begin
   end;
 
   UpdateVirtualTree(VSTUser, @TerminalServer.Sessions, PrevCount);
+  AutoSizeVST(VSTUser);
   UpdateVirtualTree(VSTSession, @TerminalServer.Sessions, PrevCount);
+  AutoSizeVST(VSTSession);
 end;
 
 procedure TMainForm.ProcessesEnumerated(Node: PVirtualNode);
@@ -341,6 +344,7 @@ begin
   end;
 
   UpdateProcessVirtualTree(VSTProcess, @TerminalServer.Processes, PrevCount);
+  AutoSizeVST(VSTProcess);
 end;
 
 function CompareInteger(const int1: Integer; const int2: Integer): Integer; overload;
@@ -530,7 +534,7 @@ procedure TMainForm.Timer1Timer(Sender: TObject);
 begin
   (Sender as TTimer).Enabled := False;
   actRefresh.Execute;
-  (Sender as TTimer).Enabled := True;
+  (Sender as TTimer).Enabled := AutoRefresh.Checked;
 end;
 
 procedure TMainForm.IterateServerSubTree(Sender: TBaseVirtualTree; Node: PVirtualNode;
@@ -783,6 +787,11 @@ begin
   VSTServer.IterateSubtree(nil, RefreshNode, nil);
 end;
 
+procedure TMainForm.AutoRefreshClick(Sender: TObject);
+begin
+  Timer1.Enabled := (Sender as TCheckBox).Checked;
+end;
+
 procedure TMainForm.Button1Click(Sender: TObject);
 begin
   PageControl1.Visible := False;
@@ -832,7 +841,7 @@ begin
 
 end;
 
-procedure AutoSizeVST(const AVirtualTree: TVirtualStringTree);
+procedure TMainForm.AutoSizeVST(const AVirtualTree: TVirtualStringTree);
 var i: Integer;
 begin
   for i := 0 to AVirtualTree.Header.Columns.Count-1 do
@@ -939,10 +948,6 @@ begin
 
   FreeAndNil(DomainList);
   VSTServer.FullExpand(pAllListedServersNode);
-
-  AutoSizeVST(VSTUser);
-  AutoSizeVST(VSTSession);
-  AutoSizeVST(VSTProcess);
 end;
 
 procedure TMainForm.VSTUserGetText(Sender: TBaseVirtualTree;

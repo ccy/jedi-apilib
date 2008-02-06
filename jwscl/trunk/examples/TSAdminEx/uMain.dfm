@@ -1,7 +1,7 @@
 object MainForm: TMainForm
   Left = 0
   Top = 0
-  ActiveControl = VSTUser
+  ActiveControl = VSTProcess
   Caption = 'TSAdminEx'
   ClientHeight = 445
   ClientWidth = 694
@@ -13,8 +13,12 @@ object MainForm: TMainForm
   Font.Style = []
   Menu = MainMenu1
   OldCreateOrder = False
+  OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  DesignSize = (
+    694
+    445)
   PixelsPerInch = 96
   TextHeight = 13
   object Splitter1: TSplitter
@@ -44,6 +48,7 @@ object MainForm: TMainForm
     TabOrder = 2
     TreeOptions.MiscOptions = [toAcceptOLEDrop, toCheckSupport, toFullRepaintOnResize, toInitOnSave, toToggleOnDblClick, toWheelPanning]
     OnChecked = VSTServerChecked
+    OnChecking = VSTServerChecking
     OnColumnDblClick = VSTServerColumnDblClick
     OnCompareNodes = VSTServerCompareNodes
     OnFreeNode = VSTServerFreeNode
@@ -157,6 +162,16 @@ object MainForm: TMainForm
     Panels = <>
     SimpleText = 'For Help, press F1'
   end
+  object Button3: TButton
+    Left = 416
+    Top = 8
+    Width = 75
+    Height = 25
+    Caption = 'Button3'
+    TabOrder = 4
+    Visible = False
+    OnClick = Button3Click
+  end
   object Panel1: TPanel
     Left = 204
     Top = 29
@@ -164,14 +179,20 @@ object MainForm: TMainForm
     Height = 397
     Align = alClient
     BevelOuter = bvLowered
-    Caption = 'Panel1'
+    Caption = 'Please wait while all connections are being closed'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
     TabOrder = 1
     object PageControl1: TPageControl
       Left = 1
       Top = 1
       Width = 488
       Height = 395
-      ActivePage = TabSheet1
+      ActivePage = TabSheet3
       Align = alClient
       TabOrder = 0
       object TabSheet1: TTabSheet
@@ -425,46 +446,16 @@ object MainForm: TMainForm
       end
     end
   end
-  object Button2: TButton
-    Left = 603
-    Top = -1
-    Width = 75
-    Height = 25
-    Caption = 'Toggle Timer'
-    TabOrder = 4
-    Visible = False
-    OnClick = Button2Click
-  end
-  object Button1: TButton
-    Left = 512
-    Top = -2
-    Width = 75
-    Height = 25
-    Caption = 'Button1'
-    Enabled = False
+  object AutoRefresh: TCheckBox
+    Left = 544
+    Top = 31
+    Width = 142
+    Height = 17
+    Alignment = taLeftJustify
+    Anchors = [akTop, akRight]
+    Caption = 'Auto Refresh ProcessList'
     TabOrder = 5
-    Visible = False
-    OnClick = Button1Click
-  end
-  object Button3: TButton
-    Left = 416
-    Top = 8
-    Width = 75
-    Height = 25
-    Caption = 'Button3'
-    TabOrder = 6
-    Visible = False
-    OnClick = Button3Click
-  end
-  object Button4: TButton
-    Left = 304
-    Top = -2
-    Width = 75
-    Height = 25
-    Caption = 'Button4'
-    TabOrder = 7
-    Visible = False
-    OnClick = Button4Click
+    OnClick = AutoRefreshClick
   end
   object MainMenu1: TMainMenu
     Images = ImageList1
@@ -1010,7 +1001,7 @@ object MainForm: TMainForm
   end
   object Timer1: TTimer
     Enabled = False
-    Interval = 5000
+    Interval = 2000
     OnTimer = Timer1Timer
     Left = 632
     Top = 136
