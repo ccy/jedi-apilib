@@ -454,7 +454,7 @@ type
      logged on. To accurately determine if a user has logged on to session 0,
      you can use the Username property
     @br
-    @link(http://support.microsoft.com/kb/307642/en-us)
+    http://support.microsoft.com/kb/307642/en-us
     }
     property ConnectState: TWtsConnectStateClass read FConnectState;
     {@Name returns a localised connection state string.
@@ -654,6 +654,7 @@ type
     {WinStationDriver Flag (@Name) returns a value indicating the protocol and
      connection type. It's usefull for easy determination of console session.
      Possible values:
+     @table(
      @rowHead(  @cell(Value) @cell(Meaning))
       @row(     @cell(WD_FLAG_CONSOLE_XP) @cell(XP Console sessions))
       @row(     @cell(WD_FLAG_CONSOLE) @cell(2003/2008 Console Session))
@@ -666,16 +667,18 @@ type
     {WinStationDriver Name (@Name) returns a value indicating the protocol and
      protocol type.
      Known Microsoft values:
+     @table(
      @rowHead(  @cell(Operating System) @cell(Value))
       @row(     @cell(Windows 2000) @cell(Microsoft RDP 5.0))
       @row(     @cell(Windows XP) @cell(Microsoft RDP 5.1))
       @row(     @cell(Windows 2003) @cell(Microsoft RDP 5.2))
       @row(     @cell(Windows 2008/Vista) @cell(Microsoft RDP 6.0))
-      ))
+      )
      Known Citrix values:
+     @table(
      @rowHead(  @cell(Version) @cell(Value))
       @row(     @cell(Citrix Presentation Server 4) @cell(Citrix ICA 3.0))
-      ))
+      )
 
     }
     property WinStationDriverName: TJwString read FWdName;
