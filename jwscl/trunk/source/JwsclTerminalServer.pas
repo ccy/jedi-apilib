@@ -1635,7 +1635,11 @@ begin
 
   FRemoteAddress := WideString(tempStr);
 
-  try
+  // Need to be system in order to execute call below. This means we fail and
+  // except if we are not. (removed it for now)
+  // 1. We should check if we are system
+  // 2. We should support win2000 so using WinstationQueryUserToken is preferred
+{  try
     FToken := TJwSecurityToken.CreateWTSQueryUserToken(FSessionId);
   except
     on E : EJwsclOpenProcessTokenException do
@@ -1652,7 +1656,7 @@ begin
     end;
   end
   else
-    FUserSid  := nil;
+    FUserSid  := nil;}
 
 end;
 
@@ -1736,8 +1740,8 @@ begin
   FProcessName := ProcessName;
   FUsername := Username;
 
-
-  try
+  // CreateTokenByProcess expects a process handle and not a ProcessID...
+{  try
     JwEnablePrivilege(SE_DEBUG_NAME, pst_EnableIfAvail);
     FToken := TJwSecurityToken.CreateTokenByProcess(ProcessID, MAXIMUM_ALLOWED);
   except
@@ -1755,7 +1759,7 @@ begin
     end;
   end
   else
-    FUserSid  := nil;
+    FUserSid  := nil;}
 end;
 
 destructor TJwWTSProcess.Destroy;
