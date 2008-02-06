@@ -347,7 +347,26 @@ type
     property WinStationName: TJwString read FWinStationName;
     property WorkingDirectory: TJwString read FWorkingDirectory;
 
+    {@Name returns the token of the session.
+     This call needs the TCB privilege and the process must run under
+     SYSTEM account; otherwise EJwsclPrivilegeCheckException,
+     EJwsclWinCallFailedException is raised.
+     The returned value is cached and must not be freed!
+
+
+
+    }
     property Token : TJwSecurityToken read GetToken;
+
+    {@Name returns the logged on User of the session.
+    This call needs the TCB privilege and the process must run under
+     SYSTEM account; otherwise EJwsclPrivilegeCheckException,
+     EJwsclWinCallFailedException is raised.
+
+     The returned value is cached and must not be freed!
+
+     If the value cannot be obtained the return value is nil.
+    }
     property UserSid : TJwSecurityID read GetUserSid;
   end;
 
@@ -424,8 +443,19 @@ type
     property ProcessVMSize: DWORD read FProcessVMSize;
     property Server: TJwString read GetServer;
 //    property SidStr: TJwString read FSidStr;
+
+    {@Name returns the token of the session.
+     The returned value is cached and must not be freed!
+     If the value cannot be obtained the return value is nil.
+    }
     property Token : TJwSecurityToken read GetToken;
+
+    {@Name returns the logged on User of the session.
+    The returned value is cached and must not be freed!
+    If the value cannot be obtained the return value is nil.
+    }
     property UserSid : TJwSecurityID read GetUserSid;
+
     property Username: TJwString read FUsername;
     property WinStationName: TJwString read FWinStationname;
 
