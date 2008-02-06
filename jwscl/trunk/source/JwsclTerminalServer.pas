@@ -187,66 +187,116 @@ type
   PJwWTSSession = ^TJwWTSSession;
   TJwWTSSession = class(TObject)
   protected
-    //TODO: I usually do not comment these things because
-    //they are already commented in the property declaration
+    {@exclude}
     FApplicationName: TJwString;
+    {@exclude}
     FClientAddress: TJwString;
+    {@exclude}
     FClientBuildNumber: DWORD;
+    {@exclude}
     FColorDepth: DWORD;
+    {@exclude}
     FClientDirectory: TJwString;
+    {@exclude}
     FClientHardwareId: DWORD;
+    {@exclude}
     FClientName: TJwString;
+    {@exclude}
     FClientProductId: WORD;
+    {@exclude}
     FClientProtocolType: WORD;
+    {@exclude}
     FClientProtocolStr: TJwString;
-//    FOEMId // Currently not used, so not implemented
+    {@exclude}
     FCompressionRatio: TJwString;
+    {@exclude}
     FConnectState: TWtsConnectStateClass;
+    {@exclude}
     FConnectStateStr: TJwString;
+    {@exclude}
     FConnectTime: TDateTime;
+    {@exclude}
     FCurrentTime: TDateTime;
+    {@exclude}
     FDisconnectTime: TDateTime;
+    {@exclude}
     FDomain: TJwString;
+    {@exclude}
     FIdleTime: Int64;
+    {@exclude}
     FIdleTimeStr: TJwString;
+    {@exclude}
     FIncomingBytes: DWORD;
+    {@exclude}
     FIncomingCompressedBytes: DWORD;
+    {@exclude}
     FIncomingFrames: DWORD;
+    {@exclude}
     FHorizontalResolution: DWORD;
+    {@exclude}
     FInitialProgram: TJwString;
+    {@exclude}
     FLastInputTime: TDateTime;
+    {@exclude}
     FLogonTime: Int64;
+    {@exclude}
     FLogonTimeStr: TJwString;
+    {@exclude}
     FOwner: TJwWTSSessionList;
+    {@exclude}
     FOutgoingBytes: DWORD;
+    {@exclude}
     FOutgoingCompressBytes: DWORD;
+    {@exclude}
     FOutgoingFrames: DWORD;
+    {@exclude}
     FProtocolTypeStr: TJwString;
+    {@exclude}
     FRemoteAddress: TJwString;
+    {@exclude}
     FRemotePort: WORD;
+    {@exclude}
     FSessionId: TJwSessionId;
+    {@exclude}
     FUsername: TJwString;
+    {@exclude}
     FVerticalResolution: DWORD;
+    {@exclude}
     FWdFlag: DWORD;
+    {@exclude}
     FWdName: TJwString;
+    {@exclude}
     FWinStationName: TJwString;
+    {@exclude}
     FWorkingDirectory: TJwString;
+    {@exclude}
     FShadow : TJwWTSSessionShadow;
+    {@exclude}
 
+    {@exclude}
     FToken : TJwSecurityToken;
+    {@exclude}
     FUserSid : TJwSecurityID;
 
-    //TODO: this func should be documented but not so detailed because of protected
+    {@exclude}
     procedure GetClientDisplay;
+    {@exclude}
     function GetServer: TJwString;
+    {@exclude}
     function GetSessionInfoDWORD(const WTSInfoClass: WTS_INFO_CLASS): DWORD;
+    {@exclude}
     procedure GetSessionInfoPtr(const WTSInfoClass: WTS_INFO_CLASS;
       var ABuffer: Pointer);
+    {@exclude}
     function GetSessionInfoStr(const WTSInfoClass: WTS_INFO_CLASS): TJwString;
+    {@exclude}
     procedure GetWinStationInformation;
+    {@exclude}
     procedure GetWinStationDriver;
 
+    {@exclude}
     function GetToken : TJwSecurityToken;
+    {@exclude}
     function GetUserSid : TJwSecurityID;
 
   public
@@ -297,54 +347,350 @@ type
       const ConnectState: TWtsConnectStateClass);
     destructor Destroy; override;
 
-
+    {@Name returns the the startup application as specified in the
+     Terminal Server client. If no startup application was specified
+     an empty string is returned.
+     @br@br
+     @bold(Remarks:) Console sessions always returns empty value.
+     }
     property ApplicationName: TJwString read FApplicationName;
+
+    {@Name returns the Client IP Address as string. This is the local IP
+     address of a client as reported by the Terminal Server Client
+     @br@br
+     @bold(Remarks:) Console sessions always returns empty value.
+     }
     property ClientAddress: TJwString read FClientAddress;
-    property ClientBuildNumber: DWORD read FClientBuildNumber;
+
+    {@Name returns the version number of the Terminal Server Client
+     @br@br
+     @bold(Remarks:) Console sessions always returns empty value.
+     @seealso(RemoteAddress)
+     @seealso(RemotePort)
+     }
+     property ClientBuildNumber: DWORD read FClientBuildNumber;
+
+    {@Name returns the version number of the Terminal Server Client
+     @br@br
+     @bold(Remarks:) Console sessions always returns empty value.
+     }
     property ClientDirectory: TJwString read FClientDirectory;
+
+    {@Name returns a client-specific hardware identifier
+     @br@br
+     @bold(Remarks:) Console sessions always returns empty value.
+     }
     property ClientHardwareId: DWORD read FClientHardwareId;
+
+    {@Name returns the local computer name of the client
+     @br@br
+     @bold(Remarks:) Console sessions always returns empty value.
+     }
     property ClientName: TJwString read FClientName;
+
+    {@Name returns a client-specific product identifier.
+     @br@br
+     @bold(Remarks:) Console sessions always returns empty value.
+     }
     property ClientProductId: WORD read FClientProductId;
+
+    {@Name returns a value that indicates the protocol type
+     This is one of the following values:
+     @table(
+     @rowHead(  @cell(ClientProtocolType) @cell(Meaning))
+      @row(     @cell(WTS_PROTOCOL_TYPE_CONSOLE) @cell(The Console session))
+      @row(     @cell(WTS_PROTOCOL_TYPE_ICA) @cell(The ICA protocol))
+      @row(     @cell(WTS_PROTOCOL_TYPE_RDP) @cell(The RDP protocol))
+      )
+     @seealso(ClientProtocolStr)
+     @seealso(RemoteAddress)
+     @seealso(RemotePort)
+      }
     property ClientProtocolType: WORD read FClientProtocolType;
+
+    {@Name returns a string  that indicates the protocol type
+     This is one of the following values:
+     @table(
+     @rowHead(  @cell(ClientProtocolType) @cell(Value))
+      @row(     @cell(WTS_PROTOCOL_TYPE_CONSOLE) @cell(Console))
+      @row(     @cell(WTS_PROTOCOL_TYPE_ICA) @cell(ICA))
+      @row(     @cell(WTS_PROTOCOL_TYPE_RDP) @cell(RDP))
+      )
+     @seealso(ClientProtocolType)
+     @seealso(RemoteAddress)
+     @seealso(RemotePort)
+      }
     property ClientProtocolStr: TJwString read FClientProtocolStr;
+
     property ColorDepth: DWORD read FColorDepth;
+
+    {@Name returns the current compression ratio as string with 2 decimals.
+     Compression Ratio equals OutgoingCompressBytes / OutgoingBytescompressed
+     Console sessions always returns empty value.
+     @br@br
+     @seealso(IncomingBytes)
+     @seealso(OutgoingBytes)
+    }
     property CompressionRatio: TJwString read FCompressionRatio;
+
+    {@Name returns the connection state of the session. Which can be one of the
+     following values:
+     @unorderedList(
+      @itemSpacing Compact
+      @item(WTSActive)
+      @item(WTSConnected)
+      @item(WTSConnectQuery)
+      @item(WTSShadow)
+      @item(WTSDisconnected)
+      @item(WTSIdle)
+      @item(WTSListen)
+      @item(WTSReset)
+      @item(WTSDown)
+      @item(WTSInit)
+     )
+     @br
+     @bold(Remarks:) On Windows XP, however, the state for session 0 can be
+     misleading because it will be WTSDisconnected even if there is no user
+     logged on. To accurately determine if a user has logged on to session 0,
+     you can use the Username property
+    @br
+    @link(http://support.microsoft.com/kb/307642/en-us)
+    }
     property ConnectState: TWtsConnectStateClass read FConnectState;
+    {@Name returns a localised connection state string.
+     }
     property ConnectStateStr: TJwString read FConnectStateStr;
+
+    {@Name The most recent client connection time.
+     }
     property ConnectTime: TDateTime read FConnectTime;
+
+    {@Name The time that the TJwWTSSession info was queried. This can be
+     used to calculate time differences such as idle time
+     }
     property CurrentTime: TDateTime read FCurrentTime;
+
+    {The @Name function disconnects the logged-on user
+     from the specified Terminal Services session without closing the session.
+     If the user subsequently logs on to the same terminal server, the user is
+     reconnected to the same session.
+     @param(bWait Indicates whether the operation is synchronous. Specify TRUE
+     to wait for the operation to complete, or FALSE to return immediately.)
+     }
     function Disconnect(bWait: Boolean): Boolean;
+
+    {@Name The last client disconnection time.
+    }
     property DisconnectTime: TDateTime read FDisconnectTime;
+    {@Name the domain of the logged-on user
+    }
     property Domain: TJwString read FDomain;
+
+    {@exclude}
     function GetClientAddress: TJwString;
+
+    {@exclude}
     function GetServerHandle: THandle;
     property HorizontalResolution: DWORD read FHorizontalResolution;
+
+    {@Name The elapsed time since last user input in the session in the number
+     of 100-nanosecond intervals since January 1, 1601 (TFileTime).
+     @br
+     @seealso(IdleTimeStr)
+    }
     property IdleTime: Int64 read FIdleTime;
+
+    {@Name The elapsed time since last user input in the session as formatted
+     string. The string is formatted according to the table below:
+     @table(
+     @rowHead(  @cell(days) @cell(hours) @cell(minutes) @cell(value))
+      @row(     @cell(> 0)  @cell(any)   @cell(any)     @cell(+d+hh:mm))
+      @row(     @cell(0)    @cell(>0)    @cell(any)     @cell(hh:mm))
+      @row(     @cell(0)    @cell(0)     @cell(any)     @cell(mm))
+      @row(     @cell(0)    @cell(0)     @cell(0)       @cell(.))
+      )
+     @seealso(IdleTimeStr)
+    }
     property IdleTimeStr: TJwString read FIdleTimeStr;
+
+    {@Name Uncompressed Remote Desktop Protocol (RDP) data from the client
+     to the server.
+     @seealso(OutgoingBytes)
+    }
     property IncomingBytes: DWORD read FIncomingBytes;
+
+    {@Name string containing the name of the initial program that
+     Terminal Services runs when the user logs on.
+    }
     property InitialProgram: TJwString read FInitialProgram;
+
+    {@Name The time of the last user input in the session.
+    }
     property LastInputTime: TDateTime read FLastInputTime;
+
+    {The @Name function logs off a specified Terminal Services session
+     @param(bWait Indicates whether the operation is synchronous. Specify TRUE
+     to wait for the operation to complete, or FALSE to return immediately.)
+     }
     function Logoff(bWait: Boolean): Boolean;
+
+    {@Name The time that the user logged on to the session in the number
+     of 100-nanosecond intervals since January 1, 1601 (TFileTime).
+     @seealso(LogonTimeStr)
+    }
     property LogonTime: Int64 read FLogonTime;
+
+    {@Name The time that the user logged on to the session as a localised
+     Date Time string.
+     @seealso(LogonTime)
+    }
     property LogonTimeStr: TJwString read FLogonTimeStr;
+
+    {@Name of this session object, which can only be a TJwWTSSessionList
+    }
     property Owner: TJwWTSSessionList read FOwner write FOwner;
+    {@Name Uncompressed RDP data from the server to the client.
+     @seealso(IncomingBytes)
+    }
     property OutgoingBytes: DWORD read FOutgoingBytes;
+
+    {The @Name function displays a message box on the client desktop.
+     @param(AMessage: string that contains the message to be displayed)
+     @param(ACaption: string that contains the dialog box title.)
+     @param(uType: Specifies the contents and behavior of the message box.
+     This value is typically MB_OK. For a complete list of values, see the
+     uType parameter of the MessageBox function.)
+     @br
+     @bold(Remarks:) PostMessage does not wait for the user to respond.
+     @seealso(SendMessage)
+    }
     function PostMessage(const AMessage: TJwString; const ACaption: TJwString;
       const uType: DWORD): DWORD;
+
+    {@exclude}
     function ProtocolTypeToStr(const AProtocolType: DWORD): TJwString;
+
+    {@Name returns the real IP Address that is connected to the Terminal Server.
+     (As opposed to ClientAddress which returns the address as specified by
+     the client which is usually just it's local ip address)
+
+     @seealso(RemotePort)
+    }
     property RemoteAddress: TJwString read FRemoteAddress;
+
+    {@Name returns the Remote Port number which is is connected to the
+    Terminal Server. The Terminal Server listens (by default) on port 3389
+    but the client connects with a random available port.
+     @seealso(RemoteAddress)
+    }
     property RemotePort: WORD read FRemotePort;
+
+    {The @Name function displays a message box on the client desktop.
+     @param(AMessage string that contains the message to be displayed.)
+     @param(ACaption string that contains the dialog box title.)
+     @param(uType Specifies the contents and behavior of the message box.
+     This value is typically MB_OK. For a complete list of values, see the
+     uType parameter of the MessageBox function.)
+     @param(ATimeOut Specifies the time, in seconds, that the SendMessage
+     function waits for the user's response. If the user does not respond within
+     the time-out interval, the pResponse parameter returns IDTIMEOUT.
+     If the Timeout parameter is zero, WTSSendMessage will wait indefinitely
+     for the user to respond.)
+     @return(@Name returns the user's response, which can be one of the
+     following values:
+     @table(
+     @rowHead(  @cell(Value) @cell(Meaning))
+      @row(     @cell(IDABORT) @cell(Abort button was selected.))
+      @row(     @cell(IDCANCEL) @cell(Cancel button was selected.))
+      @row(     @cell(IDIGNORE) @cell(Ignore button was selected.))
+      @row(     @cell(IDNO) @cell(No button was selected.))
+      @row(     @cell(IDRETRY) @cell(Retry button was selected.))
+      @row(     @cell(IDYES) @cell(Yes button was selected.))
+      @row(     @cell(IDASYNC) @cell(The bWait parameter was FALSE, so the function returned without waiting for a response.))
+      @row(     @cell(IDTIMEOUT) @cell(The bWait parameter was TRUE and the time-out interval elapsed.))
+      ))
+     @br
+     @bold(Remarks:) If you don't need to wait for the user's response you can
+     use the PostMessage function
+     @seealso(PostMessage)
+    }
     function SendMessage(const AMessage: TJwString; const ACaption: TJwString;
       const uType: DWORD; const ATimeOut: DWORD): DWORD;
+
+    {@Name the netbios name of the Terminal Server.
+     @br@br
+     @bold(Remarks:) If you want to connect to a Terminal Server locally
+     you should not specify the server name. Please note that in the case of a
+     local connection this property @bold(will return the computername))
+    }
     property Server: TJwString read GetServer;
+
+    {@Name the session identifier
+    }
     property SessionId: TJwSessionId read FSessionId;
+    {The @Name function starts the remote control of another Terminal Services
+    session. You must call this function from a remote session.
+    @Return(If the function fails, the return value is zero. To get extended
+    error information, call GetLastError)
+    }
     function Shadow: boolean;
+
+    {@Name returns information about the Shadow State and Shadow Mode of
+    a session.
+    @br
+    Shadow State shows if the session is shadowing another session or is being
+    shadowed by another session.
+    @br@br
+    Shadow Mode queries the shadow permissions for this session.
+    }
     property ShadowInformation: TJwWTSSessionShadow read FShadow;
+
+    {@Name the name of the user associated with the session.
+    }
     property Username: TJwString read FUsername;
+
     property VerticalResolution: DWORD read FVerticalResolution;
+
+    {WinStationDriver Flag (@Name) returns a value indicating the protocol and
+     connection type. It's usefull for easy determination of console session.
+     Possible values:
+     @rowHead(  @cell(Value) @cell(Meaning))
+      @row(     @cell(WD_FLAG_CONSOLE_XP) @cell(XP Console sessions))
+      @row(     @cell(WD_FLAG_CONSOLE) @cell(2003/2008 Console Session))
+      @row(     @cell(WD_FLAG_RDP) @cell(RDP Session))
+      @row(     @cell(WD_FLAG_ICA) @cell(ICA Session))
+      ))
+    }
     property WdFlag: DWORD read FWdFlag;
+
+    {WinStationDriver Name (@Name) returns a value indicating the protocol and
+     protocol type.
+     Known Microsoft values:
+     @rowHead(  @cell(Operating System) @cell(Value))
+      @row(     @cell(Windows 2000) @cell(Microsoft RDP 5.0))
+      @row(     @cell(Windows XP) @cell(Microsoft RDP 5.1))
+      @row(     @cell(Windows 2003) @cell(Microsoft RDP 5.2))
+      @row(     @cell(Windows 2008/Vista) @cell(Microsoft RDP 6.0))
+      ))
+     Known Citrix values:
+     @rowHead(  @cell(Version) @cell(Value))
+      @row(     @cell(Citrix Presentation Server 4) @cell(Citrix ICA 3.0))
+      ))
+
+    }
     property WinStationDriverName: TJwString read FWdName;
+
+    {@Name returns the session name.
+     @br@br
+     @bold(Remarks:) Despite its name, specifying this property does not return
+     the window station name. Rather, it returns the name of the Terminal
+     Services session.@br
+     For RDP this will be something like RDP-Tcp#023@br
+     For ICA this will be something like ICA-tcp#014
+         }
     property WinStationName: TJwString read FWinStationName;
+
+    {@Name the default directory used when launching the initial program.}
     property WorkingDirectory: TJwString read FWorkingDirectory;
 
     {@Name returns the token of the session.
@@ -1060,7 +1406,8 @@ end;
 
 procedure TJwWTSEventThread.Execute;
 begin
-  
+  inherited Execute;  
+
   while not Terminated do
   begin
     OutputDebugString('Entering WTSWaitSystemEvent');
