@@ -167,7 +167,7 @@ type
     procedure Execute; override;
   end;
 
-  TJwWTSEnumServersThread = class(TThread)
+  TJwWTSEnumServersThread = class(TJwThread)
   protected
     FDomain: TJwString;
     FOwner: TJwTerminalServer;
@@ -918,8 +918,12 @@ begin
   // Close connection
   if Assigned(FEnumServersThread) then
   begin
+    // Don't handle any more events
+    FOnServersEnumerated := nil;
+
     // Signal Termination to the thread
     FEnumServersThread.Terminate;
+
     // Wait a while, see if thread terminates
     if WaitForSingleObject(FEnumServersThread.Handle, 1000) = WAIT_TIMEOUT then
     begin
@@ -928,7 +932,7 @@ begin
       TerminateThread(FEnumServersThread.Handle, 0);
     end;
 
-    FEnumServersThread.Wait;
+//    FEnumServersThread.Wait;
   end;
 
   // Terminate the Event Thread before closing the connection.
@@ -1443,10 +1447,9 @@ constructor TJwWTSEnumServersThread.Create(CreateSuspended: Boolean;
   Owner: TJwTerminalServer; Domain: TJwString);
 begin
   JwRaiseOnNilParameter(Owner, 'Owner','Create', ClassName, RsUNTerminalServer);
-
   OutputDebugString('Creating EnumServers thread');
 
-  inherited Create(CreateSuspended);
+  inherited Create(CreateSuspended, Format('%s (%s)', [ClassName, Owner.Server]));
 
   FTerminatedEvent := CreateEvent(nil, False, False, nil);
   FOwner := Owner;
@@ -1461,6 +1464,8 @@ var ServerInfoPtr: PJwWtsServerInfoAArray;
   pCount: DWORD;
   i: DWORD;
 begin
+  inherited Execute;
+
   OutputDebugString('thread is executing');
   // Clear the serverlist
   Synchronize(ClearServerList);
