@@ -277,45 +277,66 @@ type
 
     {The @Name is a generic event which is fired if anything happens that is
      session related, like statechange, logon/logoff, disconnect and (re)connect.
+     @br@br
+     The table below shows which Terminal Server event triggers which event:@br
+     @image(.\..\documentation\TJwWTSEvents-Table.png)
     }
     property OnSessionEvent: TNotifyEvent read FOnSessionEvent write FOnSessionEvent;
 
     {The @Name event is fired when a client connected to a session
+     @seealso(OnSessionEvent for an overview of which events are triggered and
+     when)
     }
     property OnSessionConnect: TNotifyEvent read FOnSessionConnect write FOnSessionConnect;
 
     {The @Name event is fired when a session is created
+     @seealso(OnSessionEvent for an overview of which events are triggered and
+     when)
     }
     property OnSessionCreate: TNotifyEvent read FOnSessionCreate write FOnSessionCreate;
 
     {The @Name event is fired when a session is deleted
+     @seealso(OnSessionEvent for an overview of which events are triggered and
+     when)
     }
     property OnSessionDelete: TNotifyEvent read FOnSessionDelete write FOnSessionDelete;
 
     {The @Name event is fired when a session is disconnected
+     @seealso(OnSessionEvent for an overview of which events are triggered and
+     when)
     }
     property OnSessionDisconnect: TNotifyEvent read FOnSessionDisconnect write FOnSessionDisconnect;
 
     {The @Name event is fired when when a license is added or deleted using
      License Manager.
+     @seealso(OnSessionEvent for an overview of which events are triggered and
+     when)
     }
     property OnLicenseStateChange: TNotifyEvent read FOnLicenseStateChange write FOnLicenseStateChange;
 
     {The @Name event is fired when a client logs on either through the console
      or a session
+     @seealso(OnSessionEvent for an overview of which events are triggered and
+     when)
     }
     property OnSessionLogon: TNotifyEvent read FOnSessionLogon write FOnSessionLogon;
 
     {The @Name event is fired when a client logs off either from the console
      or a session
+     @seealso(OnSessionEvent for an overview of which events are triggered and
+     when)
     }
     property OnSessionLogoff: TNotifyEvent read FOnSessionLogoff write FOnSessionLogoff;
 
     {The @Name event is fired when an existing session has been renamed
+     @seealso(OnSessionEvent for an overview of which events are triggered and
+     when)
     }
     property OnWinStationRename: TNotifyEvent read FOnWinStationRename write FOnWinStationRename;
 
     {The @Name event is fired when the connectstate of a session has changed
+     @seealso(OnSessionEvent for an overview of which events are triggered and
+     when)
     }
     property OnSessionStateChange: TNotifyEvent read FOnSessionStateChange write FOnSessionStateChange;
 
@@ -440,7 +461,7 @@ type
     @br
     @Name is Owned by a TJwTerminalServer instance
     @br@br
-    @bold(Remarks:)@Name uses the WTSWaitSystemEvent API Call which can hang
+    @bold(Remarks:) @Name uses the WTSWaitSystemEvent API Call which can hang
     on Windows Vista after sending a WTS_FLUSH event. The bug was first
     corrected in winsta.dll version 6.0.6000.20664.@br
     @br
@@ -452,7 +473,7 @@ type
     FEventFlag: DWORD;
     procedure DispatchEvent;
   public
-    {Call @Name to create a @Name Thread.
+    {Call @Name to create a @classname Thread.
      @Param(CreateSuspended If CreateSuspended is False, Execute is called
      immediately. If CreateSuspended is True, Execute won't be called until
      after Resume is called.)
@@ -487,7 +508,7 @@ type
     procedure ClearServerList;
     procedure DispatchEvent;
   public
-    {Call @Name to create a @Name Thread.
+    {Call @Name to create a @classname Thread.
      @Param(CreateSuspended If CreateSuspended is False, Execute is called
      immediately. If CreateSuspended is True, Execute won't be called until
      after Resume is called.)
@@ -629,15 +650,28 @@ type
     function GetUserSid : TJwSecurityID;
 
   public
-    {@Name create a TJwWTSSession instance.
+    {The @Name constructor creates a TJwWTSSession instance and allocates memory for it
      @Param(Owner Specifies the TJwTerminalServer instance that owns the session)
      @Param(SessionId The Session Identifier)
      @Param(WinStationName The Session Name)
      @Param(ConnectState The current connection state of the session)
+     @br@br
+     @bold(Remarks:) It's not necessary to manually create a session instance.
+     Enumerating sessions with the EnumerateSessions function will create a
+     SessionList filled with Sessions.
+     @seealso(EnumerateSessions)
     }
     constructor Create(const Owner: TJwWTSSessionList;
       const SessionId: TJwSessionId; const WinStationName: TJwString;
       const ConnectState: TWtsConnectStateClass);
+
+    {The @Name destructor disposes the Session object.
+     @br@br
+     @bold(Remarks:) Since a session is Owned by a SessionList by default
+     @bold(you should not destroy/free a session manually). The only scenario
+     where a sessions would need to be freed is when you manually create a
+     sessionlist and specify False for the OwnsObject parameter.
+    }
     destructor Destroy; override;
 
     {@Name returns the the startup application as specified in the
@@ -769,6 +803,8 @@ type
      reconnected to the same session.
      @param(bWait Indicates whether the operation is synchronous. Specify TRUE
      to wait for the operation to complete, or FALSE to return immediately.)
+     @returns(If the function fails you can use GetLastError to get extended
+     error information)
      }
     function Disconnect(bWait: Boolean): Boolean;
 
@@ -786,15 +822,24 @@ type
     function GetServerHandle: THandle;
     property HorizontalResolution: DWORD read FHorizontalResolution;
 
-    {@Name The elapsed time since last user input in the session in the number
-     of 100-nanosecond intervals since January 1, 1601 (TFileTime).
-     @br
+    {@Name The elapsed time (relative to CurrentTime) since last user input in
+     the session expressed in the number of 100-nanosecond intervals since
+     January 1, 1601 (TFileTime).
+     @br@br
+     @bold(Remarks:) Please note the following remarks about Idle Time:@br
+     A disconnected session is Idle since DisconnectTime. A session without a
+     user is never idle, usually these are special sessions like Listener,
+     Services or console session.@br
+     IdleTimeStr returns a convenient formatted idle time string
+     which can be used for displaying. This value is more convenient however for
+     calculations such as sorting or comparing idle times.
      @seealso(IdleTimeStr)
     }
     property IdleTime: Int64 read FIdleTime;
 
-    {@Name The elapsed time since last user input in the session as formatted
-     string. The string is formatted according to the table below:
+    {@Name The elapsed time (relative to CurrentTime) since last user input in
+     the session as formatted string. The string is formatted according to the
+     table below:
      @table(
      @rowHead(  @cell(days) @cell(hours) @cell(minutes) @cell(value))
       @row(     @cell(> 0)  @cell(any)   @cell(any)     @cell(+d+hh:mm))
@@ -802,13 +847,21 @@ type
       @row(     @cell(0)    @cell(0)     @cell(any)     @cell(mm))
       @row(     @cell(0)    @cell(0)     @cell(0)       @cell(.))
       )
+     @br@br
+     @bold(Remarks:) Please note the following remarks about Idle Time:@br
+     A disconnected session is Idle since DisconnectTime. A session without a
+     user is never idle, usually these are special sessions like Listener,
+     Services or console session.
      @seealso(IdleTimeStr)
+     @seealso(CurrentTime)
     }
     property IdleTimeStr: TJwString read FIdleTimeStr;
 
     {@Name Uncompressed Remote Desktop Protocol (RDP) data from the client
      to the server.
+     @bold(Remarks:) This value is not returned for console sessions.
      @seealso(OutgoingBytes)
+     @seealso(CompressionRatio)
     }
     property IncomingBytes: DWORD read FIncomingBytes;
 
@@ -824,6 +877,8 @@ type
     {The @Name function logs off a specified Terminal Services session
      @param(bWait Indicates whether the operation is synchronous. Specify TRUE
      to wait for the operation to complete, or FALSE to return immediately.)
+     @returns(If the function fails you can use GetLastError to get extended
+     error information)
      }
     function Logoff(bWait: Boolean): Boolean;
 
@@ -843,7 +898,10 @@ type
     }
     property Owner: TJwWTSSessionList read FOwner write FOwner;
     {@Name Uncompressed RDP data from the server to the client.
+     @br@br
+     @bold(Remarks:) This value is not returned for console sessions.
      @seealso(IncomingBytes)
+     @seealso(CompressionRatio)
     }
     property OutgoingBytes: DWORD read FOutgoingBytes;
 
@@ -854,6 +912,9 @@ type
      This value is typically MB_OK. For a complete list of values, see the
      uType parameter of the MessageBox function.)
      @br
+     @returns(If the function fails you can use GetLastError to get extended
+     error information)
+     @br@br
      @bold(Remarks:) PostMessage does not wait for the user to respond.
      @seealso(SendMessage)
     }
@@ -864,16 +925,38 @@ type
     function ProtocolTypeToStr(const AProtocolType: DWORD): TJwString;
 
     {@Name returns the real IP Address that is connected to the Terminal Server.
-     (As opposed to ClientAddress which returns the address as specified by
-     the client which is usually just it's local ip address)
-
+     @br@br
+     @bold(Remarks:) @Name returns the IP address that is actually connected
+     to the Terminal Server (as opposed to ClientAddress which returns the
+     address as reported by the client which is usually just it's local ip
+     address).@br
+     @Name is the same adddress you will see when you examine netstat output@br
+     @longcode(#
+     C:\Documents and Settings\Remko>netstat -n | find /i "3389"
+     TCP    192.168.2.2:3389       192.168.2.3:4096       ESTABLISHED
+     #)
+     In the output above, 192.168.2.2 is the IP Address of the Terminal Server
+     which listens on port 3389. It has currently one Session from Remote IP
+     192.168.2.3 on TCP port 4096. The @Name property is usefull because netstat
+     cannot relate a connection to a Session Id.@br
+     If you want to convert the to IP Address to a sockaddr structure you can
+     use the WSAStringToAddress API.
      @seealso(RemotePort)
     }
     property RemoteAddress: TJwString read FRemoteAddress;
 
     {@Name returns the Remote Port number which is is connected to the
-    Terminal Server. The Terminal Server listens (by default) on port 3389
-    but the client connects with a random available port.
+     Terminal Server. The Terminal Server listens (by default) on port 3389
+     but the client connects with a random available port.
+     @Name is the same port number you will see when you examine netstat output@br
+     @longcode(#
+     C:\Documents and Settings\Remko>netstat -n | find /i "3389"
+     TCP    192.168.2.2:3389       192.168.2.3:4096       ESTABLISHED
+     #)
+     In the output above, 192.168.2.2 is the IP Address of the Terminal Server
+     which listens on port 3389. It has currently one Session from Remote IP
+     192.168.2.3 on TCP port 4096. The RemoteAddress and @Name properties are
+     usefull because netstat cannot relate a connection to a Session Id.@br
      @seealso(RemoteAddress)
     }
     property RemotePort: WORD read FRemotePort;
@@ -903,6 +986,9 @@ type
       @row(     @cell(IDTIMEOUT) @cell(The bWait parameter was TRUE and the time-out interval elapsed.))
       ))
      @br
+     @returns(If the function fails you can use GetLastError to get extended
+     error information)
+     @br@br
      @bold(Remarks:) If you don't need to wait for the user's response you can
      use the PostMessage function
      @seealso(PostMessage)
@@ -922,9 +1008,21 @@ type
     }
     property SessionId: TJwSessionId read FSessionId;
     {The @Name function starts the remote control of another Terminal Services
-    session. You must call this function from a remote session.
-    @Return(If the function fails, the return value is zero. To get extended
-    error information, call GetLastError)
+     session. You must call this function from a remote session.
+     @Return(If the function fails, the return value is zero. To get extended
+     error information, call GetLastError)
+     @br@br
+     @bold(Remarks:) By default the console session cannot be shadowed. You can
+     change this by modifying the following registry keys:
+     @longcode(#
+     HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\Console
+     "fInheritShadow" = REG_DWORD:1
+     "Shadow" = REG_DWORD:1
+     #)
+     Where Shadow can be one of the TShadowMode values.
+     @seealso(ShadowInformation)
+     @seealso(TShadowMode)
+     @see(TShadowState)
     }
     function Shadow: boolean;
 
@@ -935,6 +1033,9 @@ type
     shadowed by another session.
     @br@br
     Shadow Mode queries the shadow permissions for this session.
+    @seealso(Shadow)
+    @seealso(TShadowMode)
+    @see(TShadowState)
     }
     property ShadowInformation: TJwWTSSessionShadow read FShadow;
 
@@ -1160,7 +1261,7 @@ type
     {@Name The total CPU Time (Usertime + Kerneltime) for the given process
      in 100-nanosecond intervals since January 1, 1601 (TFileTime).@br
      @br@br
-     @bold(Remarks:)This value matches the CPU Time column in Task Manager.
+     @bold(Remarks:) This value matches the CPU Time column in Task Manager.
      @seealso(ProcessCPUTimeStr)
     }
     property ProcessCPUTime: Int64 read FProcessCPUTime;
@@ -1169,7 +1270,7 @@ type
      as formatted string. (On Delphi 7 and higher this is a localised string
      for older version it is fixed at hh:mm)@br
      @br@br
-     @bold(Remarks:)This value matches the CPU Time column in Task Manager.
+     @bold(Remarks:) This value matches the CPU Time column in Task Manager.
      @seealso(ProcessCPUTime)
     }
     property ProcessCPUTimeStr: TJwString read FProcessCPUTimeStr;
@@ -1188,13 +1289,13 @@ type
 
     {@Name The Amount of memory in Bytes used by the process
      @br@br
-     @bold(Remarks:)This value matches the Mem Usage column in Task Manager.
+     @bold(Remarks:) This value matches the Mem Usage column in Task Manager.
     }
     property ProcessMemUsage: DWORD read FProcessMemUsage;
 
     {@Name The Amount of Virtual memory in Bytes used by the process
      @br@br
-     @bold(Remarks:)This value matches the VM Size column in Task Manager.
+     @bold(Remarks:) This value matches the VM Size column in Task Manager.
     }
     property ProcessVMSize: DWORD read FProcessVMSize;
 
@@ -1313,7 +1414,7 @@ type
   {@Abstract(@Name class gives access to the ShadowState and Shadowmode of a
    session.)
 
-   @br@bold(Remarks:)Please note that changing the shadow mode with the SetShadow
+   @br@bold(Remarks:) Please note that changing the shadow mode with the SetShadow
    function does not take affect until the sessions has been disconnected
    and reconnected.
    @seealso(TShadowMode)
