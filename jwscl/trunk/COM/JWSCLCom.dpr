@@ -3,13 +3,17 @@ library JWSCLCom;
 uses
   ComServ,
   JWSCLCom_TLB in 'JWSCLCom_TLB.pas',
-  JwsclCoSid in 'JwsclCoSid.pas' {JwCoSid: CoClass};
+  JwsclCoSid in 'JwsclCoSid.pas' {JwCoSid: CoClass},
+  JwsclCOMExports in 'JwsclCOMExports.pas';
 
 exports
   DllGetClassObject,
   DllCanUnloadNow,
   DllRegisterServer,
-  DllUnregisterServer;
+  DllUnregisterServer,
+  JwOleRaise,
+  JwHasException
+  ;
 
 
 

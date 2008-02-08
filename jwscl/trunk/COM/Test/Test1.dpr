@@ -3,10 +3,19 @@ program Test1;
 {$APPTYPE CONSOLE}
 
 uses
-  ComObj, ActiveX, Sysutils,
-  JwsclSid, JwaWindows,
-  JWSCLCom_TLB in '..\JWSCLCom_TLB.pas';
-  
+  ComObj,
+  ActiveX,
+  Sysutils,
+  Classes,
+  Dialogs,
+  JwsclSid,
+  JwaWindows,
+  JWSCLCoException,
+  JwsclExceptions,
+  JWSCLCom_TLB;
+
+
+procedure JwOleRaise(const Res : HRESULT); stdcall; external '..\JWSCLCom.dll';
 
 function JwCoConvertSid(const SidPtr : TJwSecurityId) : PCoSid;
 var Data : PSID;
@@ -18,20 +27,7 @@ begin
   SidPtr.FreeSID(Data);
 end;
 
-procedure JwOleRaise(const Res : HRESULT);
-var Err : IErrorInfo;
-    Desc : WideString;
-begin
-  if Failed(Res) then
-  begin
-    OleCheck(GetErrorInfo(0,Err));
 
-    OleCheck(Err.GetDescription(Desc));
-
-    if Desc = '' then;
-
-  end;
-end;
 
 var CoSid : IJwCoSid;
     Sid : TJwSecurityId;
@@ -44,7 +40,8 @@ begin
     CoSidData := JwCoConvertSid(Sid);
 
     CoSid := CoJwCoSid.Create;
-    JwOleRaise(CoSid.InitBySid(PCoSid(CoSidData)));
+    //JwOleRaise(CoSid.InitBySid(PCoSid(CoSidData)));
+    JwOleRaise(CoSid.InitBySid(nil));
 
     CoTaskMemFree(CoSidData);
   except

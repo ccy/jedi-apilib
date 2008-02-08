@@ -2,7 +2,7 @@ unit JWSCLCoException;
 
 interface
 uses  ComObj, ActiveX, Sysutils,
-      JWSCLExceptions,
+      JWSCLExceptions,Dialogs,
       JWSCLStrings;
 
 
@@ -17,8 +17,24 @@ const
 
 const LIBID_EXCEPTION : TGUID = '{305BF594-58DF-4E9B-B926-C3B447B9130D}';
 
+
+const
+    SJWEXCEPTIONNAME = 'ExceptionName';
+    SJWMETHODNAME = 'JwMethodName';
+    SJWCLASSNAME = 'JwClassName';
+    SJWSOURCEFILE = 'JwSourceFile';
+    SJWSOURCELINE = 'JwSourceLine';
+    SJWGETLASTERROR = 'JwGetLastError';
+    SJWWINCALLNAME = 'JwWinCallName';
+    SJWMESSAGE = 'JwMessage';
+    SCOMETHODNAME = 'CoMethodName';
+    SCOCLASSNAME = 'CoClassName';
+    SCOSOURCEFILE = 'CoSourceFile';
+    SCOSOURCELINE = 'CoSourceLine';
+
+
 implementation
-uses IniFiles;
+uses IniFiles, Classes;
 
 
 
@@ -33,32 +49,56 @@ function JwSetCoException(const MethodName, ClassName, UnitName : WideString;
   const ExceptionType : Exception;
   out CoResult : HRESULT) : HRESULT;
 var
+  JE : EJwsclSecurityException;
   ErrorInfo: ICreateErrorInfo;
   Description : WideString;
-//  Ini : TIniFile;
+  Data : TStringList;
+
+
 begin
   CoResult := E_EXCEPTION;
+
+  Data := TStringList.Create;
 
   OleCheck(CreateErrorInfo(ErrorInfo));
 
   if ExceptionType is EJwsclSecurityException then
   begin
-    Description := JwFormatString(
-      '%s\%s\%s\123',
-     [MethodName, ClassName, UnitName]);
+    JE := ExceptionType as EJwsclSecurityException;
+
+    Data.Values[SJWEXCEPTIONNAME] := JE.ClassName;
+    Data.Values[SJWMETHODNAME] := JE.SourceProc;
+    Data.Values[SJWCLASSNAME] := JE.SourceClass;
+    Data.Values[SJWSOURCEFILE] := JE.SourceFile;
+    Data.Values[SJWSOURCELINE] := IntToStr(JE.SourceLine);
+    Data.Values[SJWGETLASTERROR] := IntToStr(JE.LastError);
+    Data.Values[SJWWINCALLNAME] := JE.WinCallName;
+    Data.Values[SJWMESSAGE] := JE.Message;
+    Data.Values[SCOMETHODNAME] := MethodName;
+    Data.Values[SCOCLASSNAME] := ClassName;
+    Data.Values[SCOSOURCEFILE] := UnitName;
+    Data.Values[SCOSOURCELINE] := '0';
   end
   else
   if ExceptionType is Exception then
-  begin
-    Description := JwFormatString(
-      '%s\%s\%s\',
-     [MethodName, ClassName, UnitName]);
+  begin 
+    Data.Values[SJWEXCEPTIONNAME] := ExceptionType.ClassName;
+    Data.Values[SJWCLASSNAME] := IntToStr(GetLastError);
+    Data.Values[SJWMESSAGE] := ExceptionType.Message;
+    Data.Values[SCOMETHODNAME] := MethodName;
+    Data.Values[SCOCLASSNAME] := ClassName;
+    Data.Values[SCOSOURCEFILE] := UnitName;
+    Data.Values[SCOSOURCELINE] := '0';
   end;
 
-  //OleCheck(ErrorInfo.SetGUID(LIBID_EXCEPTION));
+  OleCheck(ErrorInfo.SetGUID(JwMapException(ExceptionType.ClassName)));
+
+  Description := Data.CommaText;
   OleCheck(ErrorInfo.SetDescription(PWideChar(Description)));
   OleCheck(ErrorInfo.SetHelpContext(1));
   OleCheck(SetErrorInfo(0, (ErrorInfo as IErrorInfo)));
+
+  Data.Free;
 end;
 
 end.

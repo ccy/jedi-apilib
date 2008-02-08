@@ -6,28 +6,33 @@ interface
 
 uses
   ComObj, ActiveX, StdVcl, JWSCLCom_TLB,
-  JwaWindows,
+  JwaWindows,TypInfo,
   JWSCLSid;
 type
   TJwCoSid = class(TTypedComObject, IJwCoSid, ISupportErrorInfo)
   protected
     fInternalSid : TJwSecurityID;
   protected
+    function InterfaceSupportsErrorInfo(const iid: TIID): HResult; stdcall;
+  protected
     function InitBySid(SidPtr: PCoSid): HResult; stdcall;
     function GetSidPtr(out SidDataPtr: PCoSid; out SidDataSize: Integer): HResult; stdcall;
     function InitByStream(const SidAsStream: IUnknown): HResult; stdcall;
     function GetSidStream(out SidAsStream: IUnknown): HResult; stdcall;
+    function InitByBinarySid(const BinarySid: WideString): HResult; stdcall;
+    function InitByName(const SystemName, AccountName: WideString): HResult;     stdcall;
     {IJwCoSid-Methoden hier deklarieren}
 
-    function InterfaceSupportsErrorInfo(const iid: TIID): HResult; stdcall;
   end;
 
 implementation
 
 
-uses ComServ, TypInfo, SysUtils, Dialogs,
+uses ComServ,  SysUtils, Dialogs,
      JwsclUtils,
      JWSCLCoException;
+
+
 
 function GetUnitName(argObject: TObject): string;
 var
@@ -49,10 +54,6 @@ var Data : PSid;
 begin
   result := S_OK;
  
-  if not Assigned(fInternalSid) then
-    result := MakeResult(1,FACILITY_JWSCL,  1);
-
-
   try
     SidDataPtr := CoTaskMemAlloc(SECURITY_MAX_SID_SIZE);
     SidDataSize := SECURITY_MAX_SID_SIZE;
@@ -75,10 +76,6 @@ function TJwCoSid.InitBySid(SidPtr: PCoSid): HResult;
 begin
   result := S_OK;
   try
-    result := S_FALSE;
-    JwRaiseOnNilParameter(nil, '123','456','789',GetUnitName(Self));
-
-
     fInternalSid := TJwSecurityId.Create(PSid(SidPtr));
   except
     On E : Exception do
@@ -96,6 +93,31 @@ begin
   if GetInterfaceEntry(iid) <> nil then
     Result := S_OK else
     Result := S_FALSE;
+end;
+
+
+
+function TJwCoSid.InitByBinarySid(const BinarySid: WideString): HResult;
+begin
+  result := S_OK;
+  try
+    fInternalSid := TJwSecurityId.Create(BinarySid);
+  except
+    On E : Exception do
+      JwSetCoException('InitBySid',ClassName, GetUnitName(Self), E, Result);
+  end;
+end;
+
+function TJwCoSid.InitByName(const SystemName,
+  AccountName: WideString): HResult;
+begin
+  result := S_OK;
+  try
+    fInternalSid := TJwSecurityId.Create(SystemName, AccountName);
+  except
+    On E : Exception do
+      JwSetCoException('InitBySid',ClassName, GetUnitName(Self), E, Result);
+  end;
 end;
 
 initialization

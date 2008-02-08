@@ -12,7 +12,7 @@ unit JWSCLCom_TLB;
 // ************************************************************************ //
 
 // $Rev: 8291 $
-// File generated on 08.02.2008 21:31:39 from Type Library described below.
+// File generated on 08.02.2008 23:57:20 from Type Library described below.
 
 // ************************************************************************  //
 // Type Lib: P:\Eigene Dateien\Dezipaitor\Projekte\Delphi\7\jedi-api-lib\jwscl\trunk\COM\JWSCLCom.tlb (1)
@@ -58,12 +58,6 @@ type
 const
   FACILITY_JWSCL = $00000065;
 
-// Constants for enum JwErrors
-type
-  JwErrors = TOleEnum;
-const
-  E_EXCEPTION = $00000002;
-
 type
 
 // *********************************************************************//
@@ -95,6 +89,8 @@ type
     function GetSidPtr(out SidDataPtr: PCoSid; out SidDataSize: Integer): HResult; stdcall;
     function InitByStream(const SidAsStream: IUnknown): HResult; stdcall;
     function GetSidStream(out SidAsStream: IUnknown): HResult; stdcall;
+    function InitByBinarySid(const BinarySid: WideString): HResult; stdcall;
+    function InitByName(const SystemName: WideString; const AccountName: WideString): HResult; stdcall;
   end;
 
 // *********************************************************************//
