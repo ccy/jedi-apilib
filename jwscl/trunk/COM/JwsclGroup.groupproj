@@ -1,0 +1,46 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{f56d812b-2a3a-44b3-b370-8a6c0a30c80f}</ProjectGuid>
+  </PropertyGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Projects Include="JWSCLCom.dproj" />
+    <Projects Include="Test\Test1.dproj">
+      <Dependencies>JWSCLCom.dproj</Dependencies>
+    </Projects>
+  </ItemGroup>
+  <ProjectExtensions>
+    <Borland.Personality>Default.Personality</Borland.Personality>
+    <Borland.ProjectType />
+    <BorlandProject>
+<BorlandProject xmlns=""><Default.Personality></Default.Personality></BorlandProject></BorlandProject>
+  </ProjectExtensions>
+  <Target Name="JWSCLCom">
+    <MSBuild Projects="JWSCLCom.dproj" Targets="" />
+  </Target>
+  <Target Name="JWSCLCom:Clean">
+    <MSBuild Projects="JWSCLCom.dproj" Targets="Clean" />
+  </Target>
+  <Target Name="JWSCLCom:Make">
+    <MSBuild Projects="JWSCLCom.dproj" Targets="Make" />
+  </Target>
+  <Target Name="Test1" DependsOnTargets="JWSCLCom">
+    <MSBuild Projects="Test\Test1.dproj" Targets="" />
+  </Target>
+  <Target Name="Test1:Clean" DependsOnTargets="JWSCLCom:Clean">
+    <MSBuild Projects="Test\Test1.dproj" Targets="Clean" />
+  </Target>
+  <Target Name="Test1:Make" DependsOnTargets="JWSCLCom:Make">
+    <MSBuild Projects="Test\Test1.dproj" Targets="Make" />
+  </Target>
+  <Target Name="Build">
+    <CallTarget Targets="JWSCLCom;Test1" />
+  </Target>
+  <Target Name="Clean">
+    <CallTarget Targets="JWSCLCom:Clean;Test1:Clean" />
+  </Target>
+  <Target Name="Make">
+    <CallTarget Targets="JWSCLCom:Make;Test1:Make" />
+  </Target>
+  <Import Condition="Exists('$(MSBuildBinPath)\Borland.Group.Targets')" Project="$(MSBuildBinPath)\Borland.Group.Targets" />
+</Project>
