@@ -30,7 +30,34 @@ The Original Code is JwsclTerminalServer.pas.
 
 The Initial Developer of the Original Code is Remko Weijnen.
 Portions created by Remko Weijnen are Copyright (C) Remko Weijnen. All rights reserved.
+@br
+@br
+The central object of the JwsclTerminalServer unit is the TJwTerminalServer
+object. It represents a Terminal Server, the connection to this server and
+holds the session- and processlist.
+
+Key functions of TJwTerminalServer are:@br
+
+@unorderedList(
+  @item(EnumerateSessions enumerates all Terminal Server sessions into a
+  TJwSessionList which can be accessed by the Sessions property.)
+  @Item(EnumerateProcesses enumerates all Terminal Server processes into a
+  TJwProcessList which can be accessed by the Processes property.)
+  @Item(EnumerateServers enumerates all Terminal Servers in a domain.)
+  @Item(Shutdown Shuts down and optionally restarts the specified
+  Terminal Server.)
+)
+@br
+TJwTerminalServer also offers Events to monitor Terminal Server activity such as
+OnSessionConnect, OnSessionCreate, OnSessionLogon and OnSessionLogoff.@br
+@br@br
+The schema belows shows the relations between TJwTerminalServer,
+the TJwWTSSessionList with TJwWTSSessions and the TJwWTSProcessList with
+TjwWTSSessions.@br
+@br
+@image(.\..\documentation\TJwTerminalServer-Hierarchy.png)
 }
+
 {$IFNDEF SL_OMIT_SECTIONS}
 unit JwsclTerminalServer;
 {$I Jwscl.inc}
@@ -123,8 +150,6 @@ type
     {@exclude}
     FServerHandle: THandle;
     {@exclude}
-//    FServerList: TStringList;
-    {@exclude}
     FServers: TStringList;
     {@exclude}
     FSessions: TJwWTSSessionList;
@@ -153,13 +178,14 @@ type
     procedure FireEvent(EventFlag: DWORD);
   public
 
-    {@Name sets up the connection with the Terminal Server.@br
+    {@Name sets up the connection with the Terminal Server specified in the
+     Server property.@br
      The Connected property can be used to check if we're already connected.
      @raises(EJwsclWinCallFailedException will be raised if the connection
      attempt was unsuccessfull)
      @br@br
      @bold(Remarks:) EnumerateSessions and EnumerateProcesses will automatically
-     connected to the Terminal Server when needed.
+     connect to the Terminal Server when needed.
      }
     procedure Connect;
 
@@ -185,9 +211,10 @@ type
      }
     property Data: Pointer read FData write FData;
 
-    {@Name will disconnect an existing connection to the Terminal Server.@br
+    {@Name will disconnect an existing connection to the Terminal Server.
      The Connected property can be used to check if we're already connected.
-     @bold(Remarks:) Disconnecting will prevent receiving session events!
+     @br@br
+     @bold(Remarks:) If you disconnect you will not receive Session Events!
      }
     procedure Disconnect;
 
@@ -199,7 +226,8 @@ type
     }
     property Connected: Boolean read FConnected;
 
-    {@Name Creates a TJwTerminalServer instance.@br
+    {The @Name constructor creates a TJwTerminalServer instance and reservers
+     memory for it.@br
      @br
      Example:
      @longcode(#
@@ -223,16 +251,17 @@ type
     #)
     }
     constructor Create;
+    {@exclude}
     destructor Destroy; override;
 
-    {@Name Enumerates all processes on the Terminal Server and fills the
+    {@Name enumerates all processes on the Terminal Server and fills the
      Processes property with a TJwProcessList. This list contains all processes
      and their properties such as Process Name, Process Id, Username, Memory
      Usage and so on.
     }
     function EnumerateProcesses: Boolean;
 
-    {@Name Enumerates all Terminal Servers in the specified domain.
+    {@Name enumerates all Terminal Servers in the specified domain.
      @Param(ADomain name of the Domain to be queried, if empty string is
      specified the current domain is queried)
      @br@br
@@ -257,7 +286,7 @@ type
     }
     function EnumerateServers(ADomain: String):Boolean;
 
-    {@Name Enumerates all sessions on the Terminal Server and fills the
+    {@Name enumerates all sessions on the Terminal Server and fills the
      Sessions property with a TJwSessionList. This list contains all sessions
      and their properties such as Username, Session Id, Connection State, Idle
      Time and son on.
@@ -284,59 +313,50 @@ type
     property OnSessionEvent: TNotifyEvent read FOnSessionEvent write FOnSessionEvent;
 
     {The @Name event is fired when a client connected to a session
-     @seealso(OnSessionEvent for an overview of which events are triggered and
-     when)
+     @seealso(OnSessionEvent Overview of which events are triggered and when)
     }
     property OnSessionConnect: TNotifyEvent read FOnSessionConnect write FOnSessionConnect;
 
     {The @Name event is fired when a session is created
-     @seealso(OnSessionEvent for an overview of which events are triggered and
-     when)
+     @seealso(OnSessionEvent Overview of which events are triggered and when)
     }
     property OnSessionCreate: TNotifyEvent read FOnSessionCreate write FOnSessionCreate;
 
     {The @Name event is fired when a session is deleted
-     @seealso(OnSessionEvent for an overview of which events are triggered and
-     when)
+     @seealso(OnSessionEvent Overview of which events are triggered and when)
     }
     property OnSessionDelete: TNotifyEvent read FOnSessionDelete write FOnSessionDelete;
 
     {The @Name event is fired when a session is disconnected
-     @seealso(OnSessionEvent for an overview of which events are triggered and
-     when)
+     @seealso(OnSessionEvent Overview of which events are triggered and when)
     }
     property OnSessionDisconnect: TNotifyEvent read FOnSessionDisconnect write FOnSessionDisconnect;
 
     {The @Name event is fired when when a license is added or deleted using
      License Manager.
-     @seealso(OnSessionEvent for an overview of which events are triggered and
-     when)
+     @seealso(OnSessionEvent Overview of which events are triggered and when)
     }
     property OnLicenseStateChange: TNotifyEvent read FOnLicenseStateChange write FOnLicenseStateChange;
 
     {The @Name event is fired when a client logs on either through the console
      or a session
-     @seealso(OnSessionEvent for an overview of which events are triggered and
-     when)
+     @seealso(OnSessionEvent Overview of which events are triggered and when)
     }
     property OnSessionLogon: TNotifyEvent read FOnSessionLogon write FOnSessionLogon;
 
     {The @Name event is fired when a client logs off either from the console
      or a session
-     @seealso(OnSessionEvent for an overview of which events are triggered and
-     when)
+     @seealso(OnSessionEvent Overview of which events are triggered and when)
     }
     property OnSessionLogoff: TNotifyEvent read FOnSessionLogoff write FOnSessionLogoff;
 
     {The @Name event is fired when an existing session has been renamed
-     @seealso(OnSessionEvent for an overview of which events are triggered and
-     when)
+     @seealso(OnSessionEvent Overview of which events are triggered and when)
     }
     property OnWinStationRename: TNotifyEvent read FOnWinStationRename write FOnWinStationRename;
 
     {The @Name event is fired when the connectstate of a session has changed
-     @seealso(OnSessionEvent for an overview of which events are triggered and
-     when)
+     @seealso(OnSessionEvent Overview of which events are triggered and when)
     }
     property OnSessionStateChange: TNotifyEvent read FOnSessionStateChange write FOnSessionStateChange;
 
@@ -373,7 +393,7 @@ type
     {@exclude}
     property ServerHandle: THandle read FServerHandle;
 
-    {@Name Contains the list of Enumerated Terminal Servers
+    {@Name contains the list of Enumerated Terminal Servers
      @seealso(EnumerateServers)
      }
     property Servers: TStringList read GetServers;
@@ -387,6 +407,7 @@ type
      function.
     }
     property Sessions: TJwWTSSessionList read FSessions write FSessions;
+
     {@Name shuts down (and optionally restarts) the specified terminal server.@br
      @Param AShutdownFlag can be one of the following values:
      @table(
@@ -441,7 +462,7 @@ type
   public
     destructor Destroy; reintroduce;
     function Add(ATerminalServer: TJwTerminalServer): Integer;
-    {@Name Looks up a Terminal Server in the List by Servername}
+    {@Name looks up a Terminal Server in the List by Servername}
     function FindByServer(const ServerName: WideString; const IgnoreCase: boolean = False): TJwTerminalServer;
     function IndexOf(ATerminalServer: TJwTerminalServer): Integer;
     procedure Insert(Index: Integer; ATerminalServer: TJwTerminalServer);
@@ -792,7 +813,7 @@ type
      }
     property ConnectTime: TDateTime read FConnectTime;
 
-    {@Name The time that the TJwWTSSession info was queried. This can be
+    {@Name the time that the TJwWTSSession info was queried. This can be
      used to calculate time differences such as idle time
      }
     property CurrentTime: TDateTime read FCurrentTime;
@@ -808,7 +829,7 @@ type
      }
     function Disconnect(bWait: Boolean): Boolean;
 
-    {@Name The last client disconnection time.
+    {@Name the last client disconnection time.
     }
     property DisconnectTime: TDateTime read FDisconnectTime;
     {@Name the domain of the logged-on user
@@ -822,7 +843,7 @@ type
     function GetServerHandle: THandle;
     property HorizontalResolution: DWORD read FHorizontalResolution;
 
-    {@Name The elapsed time (relative to CurrentTime) since last user input in
+    {@Name the elapsed time (relative to CurrentTime) since last user input in
      the session expressed in the number of 100-nanosecond intervals since
      January 1, 1601 (TFileTime).
      @br@br
@@ -837,7 +858,7 @@ type
     }
     property IdleTime: Int64 read FIdleTime;
 
-    {@Name The elapsed time (relative to CurrentTime) since last user input in
+    {@Name the elapsed time (relative to CurrentTime) since last user input in
      the session as formatted string. The string is formatted according to the
      table below:
      @table(
@@ -857,7 +878,7 @@ type
     }
     property IdleTimeStr: TJwString read FIdleTimeStr;
 
-    {@Name Uncompressed Remote Desktop Protocol (RDP) data from the client
+    {@Name uncompressed Remote Desktop Protocol (RDP) data from the client
      to the server.
      @bold(Remarks:) This value is not returned for console sessions.
      @seealso(OutgoingBytes)
@@ -870,7 +891,7 @@ type
     }
     property InitialProgram: TJwString read FInitialProgram;
 
-    {@Name The time of the last user input in the session.
+    {@Name the time of the last user input in the session.
     }
     property LastInputTime: TDateTime read FLastInputTime;
 
@@ -882,13 +903,13 @@ type
      }
     function Logoff(bWait: Boolean): Boolean;
 
-    {@Name The time that the user logged on to the session in the number
+    {@Name the time that the user logged on to the session in the number
      of 100-nanosecond intervals since January 1, 1601 (TFileTime).
      @seealso(LogonTimeStr)
     }
     property LogonTime: Int64 read FLogonTime;
 
-    {@Name The time that the user logged on to the session as a localised
+    {@Name the time that the user logged on to the session as a localised
      Date Time string.
      @seealso(LogonTime)
     }
@@ -897,7 +918,7 @@ type
     {@Name of this session object, which can only be a TJwWTSSessionList
     }
     property Owner: TJwWTSSessionList read FOwner write FOwner;
-    {@Name Uncompressed RDP data from the server to the client.
+    {@Name uncompressed RDP data from the server to the client.
      @br@br
      @bold(Remarks:) This value is not returned for console sessions.
      @seealso(IncomingBytes)
@@ -1022,7 +1043,7 @@ type
      Where Shadow can be one of the TShadowMode values.
      @seealso(ShadowInformation)
      @seealso(TShadowMode)
-     @see(TShadowState)
+     @seealso(TShadowState)
     }
     function Shadow: boolean;
 
@@ -1035,7 +1056,7 @@ type
     Shadow Mode queries the shadow permissions for this session.
     @seealso(Shadow)
     @seealso(TShadowMode)
-    @see(TShadowState)
+    @seealso(TShadowState)
     }
     property ShadowInformation: TJwWTSSessionShadow read FShadow;
 
@@ -1148,25 +1169,82 @@ type
   }
   TJwWTSSessionList = class(TObjectList)
   protected
+    {@exclude}
     FOwner: TJwTerminalServer;
-
+    {@exclude}
     function GetItem(Index: Integer): TJwWTSSession;
+    {@exclude}
     procedure SetItem(Index: Integer; ASession: TJwWTSSession);
-
+    {@exclude}
     procedure SetOwner(const Value: TJwTerminalServer);
   public
+
+    {The @Name destructor destroys the @Classname instance.@br
+     Note that it is not necessary to manually free a @Classname as it will be
+     freed when the TJwTerminalServer instance that owns the @Classname
+     (Owner property) is freed.
+     @br@br
+     @bold(Remarks:) If you free a @Classname be sure to also set it to nil to
+     prevent the Owner to free it as well (which would produce an Access
+     Violation).
+    }
     destructor Destroy; reintroduce;
+
+    {@Name adds a Session to the end of the Sessionlist
+     @returns(returns the index of the inserted object.)
+    }
     function Add(ASession: TJwWTSSession): Integer;
+
+    {@Returns(the index of the Session object in the SessionList.)
+    }
     function IndexOf(ASession: TJwWTSSession): Integer;
+
+    {@Name Adds an object to the list at a specified position
+    }
     procedure Insert(Index: Integer; ASession: TJwWTSSession);
+
+    {The @Name properties gives access to a Session and it's properties@br
+     Example:
+     @longcode(#
+     var
+       ATerminalServer : TjwTerminalServer;
+     begin
+       ATerminalServer := TjwTerminalServer.Create;
+       ATerminalServer.Server := 'TS001';
+
+       if ATerminalServer.EnumerateSessions then
+       begin
+
+         for i := 0 to ATerminalServer.Sessions.Count - 1 do
+         begin
+           Memo1.Lines.Add(ATerminalServer.Sessions[i].Username);
+         end;
+
+       end;
+
+       ATerminalServer.Free;
+
+     end;
+     #)
+    }
     property Items[Index: Integer]: TJwWTSSession read GetItem write SetItem; default;
+
+    {@Name Specifies the TJwTerminalServer instance that owns the @Classname
+    }
     property Owner: TJwTerminalServer read FOwner write SetOwner;
+
+    {@Name removes the specified Session from the SessionList and if
+     OwnsObjects is true (default) frees the Session.
+     @returns(The value returned is the index of the object in the Items array
+     before it was removed. If the specified object is not found on the list,
+     Remove returns –1.)
+    }
     function Remove(ASession: TJwWTSSession): Integer;
   end;
 
   {@Abstract(@Name is the class that encapsulates a process that is running on
    a Terminal Server.)
-   
+
    A process is uniquely identified by the Process Id (PID) in combination with
    it's Creation Time (the OS reused PID's).@br
    @br@br
@@ -1234,18 +1312,18 @@ type
     }
     function Terminate(const dwExitCode: DWORD): boolean; overload;
   public
-   {@Name Specifies the TJwTerminalServer instance that owns the session)
+   {@Name specifies the TJwTerminalServer instance that owns the session)
     }
     property Owner: TJwWTSProcessList read FOwner write FOwner;
     {@Name the session identifier
     }
     property SessionId: TJwSessionId read FSessionId;
-    {@Name The elapsed time since the process was created in
+    {@Name the elapsed time since the process was created in
      100-nanosecond intervals since January 1, 1601 (TFileTime).
      @seealso(ProcessAgeStr)
     }
     property ProcessAge: Int64 read FProcessAge;
-    {@Name The elapsed time since the process was created as formatted
+    {@Name the elapsed time since the process was created as formatted
      string. The string is formatted according to the table below:
      @table(
      @rowHead(  @cell(days) @cell(hours) @cell(minutes) @cell(value))
@@ -1258,7 +1336,7 @@ type
     }
     property ProcessAgeStr: TJwString read FProcessAgeStr;
 
-    {@Name The total CPU Time (Usertime + Kerneltime) for the given process
+    {@Name the total CPU Time (Usertime + Kerneltime) for the given process
      in 100-nanosecond intervals since January 1, 1601 (TFileTime).@br
      @br@br
      @bold(Remarks:) This value matches the CPU Time column in Task Manager.
@@ -1266,7 +1344,7 @@ type
     }
     property ProcessCPUTime: Int64 read FProcessCPUTime;
 
-    {@Name The total CPU Time (Usertime + Kerneltime) for the given process
+    {@Name the total CPU Time (Usertime + Kerneltime) for the given process
      as formatted string. (On Delphi 7 and higher this is a localised string
      for older version it is fixed at hh:mm)@br
      @br@br
@@ -1275,25 +1353,25 @@ type
     }
     property ProcessCPUTimeStr: TJwString read FProcessCPUTimeStr;
 
-    {@Name The Process Creation Time formatted as localised string.
+    {@Name the Process Creation Time formatted as localised string.
     }
     property ProcessCreateTime: TJwString read FProcessCreateTime;
 
-    {@Name The Process Identifier or PID
+    {@Name the Process Identifier or PID
     }
     property ProcessId: TJwProcessId read FProcessId;
 
-    {@Name The Process Name
+    {@Name the Process Name
     }
     property ProcessName: TJwString read FProcessName;
 
-    {@Name The Amount of memory in Bytes used by the process
+    {@Name the Amount of memory in Bytes used by the process
      @br@br
      @bold(Remarks:) This value matches the Mem Usage column in Task Manager.
     }
     property ProcessMemUsage: DWORD read FProcessMemUsage;
 
-    {@Name The Amount of Virtual memory in Bytes used by the process
+    {@Name the Amount of Virtual memory in Bytes used by the process
      @br@br
      @bold(Remarks:) This value matches the VM Size column in Task Manager.
     }
@@ -1370,19 +1448,64 @@ type
   }
   TJwWTSProcessList = class(TObjectList)
   protected
+    {@exclude}
     FOwner: TJwTerminalServer;
-
+    {@exclude}
     function GetItem(Index: Integer): TJwWTSProcess;
+    {@exclude}
     procedure SetItem(Index: Integer; AProcess: TJwWTSProcess);
+    {@exclude}
     procedure SetOwner(const Value: TJwTerminalServer);
   public
+    {@Name adds a Process to the end of the Processlist
+     @returns(returns the index of the inserted object.)
+    }
     function Add(AProcess: TJwWTSProcess): Integer;
+
+    {@Returns(the index of the Process object in the ProcessList.)
+    }
     function IndexOf(AProcess: TJwWTSProcess): Integer;
+
+    {@Name Adds an object to the list at a specified position
+    }
     procedure Insert(Index: Integer; AProcess: TJwWTSProcess);
+
+    {The @Name properties gives access to a Process and it's properties@br
+     Example:
+     @longcode(#
+     var
+       ATerminalServer : TjwTerminalServer;
+     begin
+       ATerminalServer := TjwTerminalServer.Create;
+       ATerminalServer.Server := 'TS001';
+
+       if ATerminalServer.EnumerateProcesses then
+       begin
+
+         for i := 0 to ATerminalServer.Processes.Count - 1 do
+         begin
+           Memo1.Lines.Add(ATerminalServer.Processes[i].ProcessName);
+         end;
+
+       end;
+
+       ATerminalServer.Free;
+
+     end;
+     #)
+    }
     property Items[Index: Integer]: TJwWTSProcess read GetItem write SetItem; default;
-    {@Name Specifies the TJwTerminalServer instance that owns the ProcessList
+
+    {@Name specifies the TJwTerminalServer instance that owns the ProcessList
     }
     property Owner: TJwTerminalServer read FOwner write SetOwner;
+
+    {@Name removes the specified Session from the SessionList and if
+     OwnsObjects is true (default) frees the Session.
+     @returns(The value returned is the index of the object in the Items array
+     before it was removed. If the specified object is not found on the list,
+     Remove returns –1.)
+    }
     function Remove(AProcess: TJwWTSProcess): Integer;
   end;
 
@@ -1390,25 +1513,25 @@ type
   TShadowState =
     (
      {@Name The session is not Shadowing or Being Shadowed}
-     ssNone,// = 0,
+     ssNone,
      {@Name The session is not Shadowing another session}
-     ssShadowing,// = 1,
+     ssShadowing,
      {@Name The session is being Shadowed by another session}
-     ssBeingShadowed// = 2
+     ssBeingShadowed
   );
 
   {@Name indicates the Shadow Permissions of a session}
   TShadowMode = (
     {@Name The sessions cannot be shadowed}
-    smNoneAllowed, // = 0,
+    smNoneAllowed,
     {@Name The sessions be shadowed but needs the user's permission}
-    smFullControlWithPermission,// = 1,
+    smFullControlWithPermission,
     {@Name The sessions be shadowed without the user's permission}
-    smFullControlWithoutPermission,// = 2,
+    smFullControlWithoutPermission,
     {@Name The sessions can be viewed but needs the user's permission}
-    smViewOnlyWithPermission,// = 3,
+    smViewOnlyWithPermission,
     {@Name The sessions can be viewed without the user's permission}
-    smViewOnlyWithoutPermission// = 4
+    smViewOnlyWithoutPermission
   );
 
   {@Abstract(@Name class gives access to the ShadowState and Shadowmode of a
@@ -1422,17 +1545,31 @@ type
   }
   TJwWTSSessionShadow = class
   private
+    {@exclude}
     FWinStationShadowInformation : TWinStationShadowInformation;
+    {@exclude}
     FOwner : TJwWTSSession;
   protected
+    {@exclude}
     function GetShadowState : TShadowState;
+    {@exclude}
     function GetShadowMode : TShadowMode;
+    {@exclude}
     procedure SetShadowMode(const Value : TShadowMode);
+    {@exclude}
     procedure UpdateShadowInformation(const Modify : Boolean);
   public
-    constructor Create(AOwner : TJwWTSSession);
-    property ShadowState : TShadowState read GetShadowState;
-    property ShadowMode : TShadowMode read GetShadowMode write SetShadowMode;
+    {The @Name constructor creates an @ClassName instance.
+    }
+    constructor Create(AOwner: TJwWTSSession);
+
+    {The @Name property indicates the ShadowState of the Session
+    }
+    property ShadowState: TShadowState read GetShadowState;
+
+    {The @Name property indicates the ShadowMode of the Session
+    }
+    property ShadowMode: TShadowMode read GetShadowMode write SetShadowMode;
   end;
 
 {$ENDIF SL_IMPLEMENTATION_SECTION}
