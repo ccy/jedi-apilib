@@ -8,18 +8,16 @@ uses
   StdCtrls, StrUtils{, CommCtrl}, Math, Dialogs,
   VirtualTrees,
   NetApi, uTerminalServerThread, uAbout,
-  JwaWindows, //JwaVista,
+  JwaWindows,
   JwsclSid, JwsclTerminalServer;
 
 type
   PServerNodeData = ^TServerNodeData;
   TServerNodeData = record
-    Index: Integer;
-    OverlayIndex: Integer;
     Caption: string;
-    Thread: TTerminalServerThread;
-    cs: RTL_CRITICAL_SECTION;
+    OverlayIndex: Integer;
     TerminalServer: TJwTerminalServer;
+    Thread: TTerminalServerThread;
   end;
 
   PIterateServerTreeData = ^TIterateServerTreeData;
@@ -121,8 +119,17 @@ type
     actAbout: TAction;
     Button3: TButton;
     AutoRefresh: TCheckBox;
+    Button1: TButton;
+    SessionMenu: TPopupMenu;
+    Connect2: TMenuItem;
+    Disconnect2: TMenuItem;
+    SendMessage2: TMenuItem;
+    RemoteControl2: TMenuItem;
+    Reset3: TMenuItem;
+    Status1: TMenuItem;
+    Logoff2: TMenuItem;
+    N5: TMenuItem;
     procedure FormCreate(Sender: TObject);
-    procedure FormDestroy(Sender: TObject);
     procedure VSTUserGetText(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType;
       var CellText: WideString);
@@ -190,6 +197,8 @@ type
     procedure Button1Click(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure AutoRefreshClick(Sender: TObject);
+    procedure VSTServerExpanding(Sender: TBaseVirtualTree; Node: PVirtualNode;
+      var Allowed: Boolean);
   private
     { Private declarations }
     pThisComputerNode: PVirtualNode;
@@ -202,7 +211,7 @@ type
     procedure UpdateVirtualTree(const AVirtualTree: TBaseVirtualTree;
       const PSessionList: PJwWTSSessionList; PrevCount: Integer);
     procedure UpdateProcessVirtualTree(const AVirtualTree: TBaseVirtualTree;
-      const PProcessList: PJwWTSProcessList; const PrevCount: Integer; const ComparePointer:PJwWTSProcessList=nil);
+      const PProcessList: PJwWTSProcessList; const PrevCount: Integer);
     function GetCurrentSession(AVST: TBaseVirtualTree): TJwWTSSession; overload;
     function GetCurrentSession(AVST: TBaseVirtualTree; Node: PVirtualNode): TJwWTSSession; overload;
     function GetCurrentProcess(AVST: TBaseVirtualTree): TJwWTSProcess; overload;
@@ -320,22 +329,14 @@ begin
   // Clear current processlist
   TerminalServer.Processes.Clear;
 
-  // Enter CRITICAL_SECTION
-//  EnterCriticalSection(pServerData^.cs);
 
   // Assign the new processlist
   TerminalServer.Processes.Assign(pServerData^.Thread.ProcessList);
 
   // Free EnumProcessesData
-//  FreeAndNil(EnumProcessesData.ProcessList^);
   pServerData^.Thread.ProcessList.OwnsObjects := False;
   pServerData^.Thread.ProcessList.Free;
   pServerData^.Thread.ProcessList := nil;
-
-//  EnumProcessesData.Free;
-
-  // Leave CRITICAL_SECTION
-//  LeaveCriticalSection(pServerData^.cs);
 
   for i := 0 to TerminalServer.Processes.Count - 1 do
   begin
@@ -429,25 +430,14 @@ begin
   AVirtualTree.EndUpdate;
 end;
 
-//procedure TMainForm.UpdateProcessVirtualTree(const AVirtualTree: TBaseVirtualTree; const PProcessList: PJwWTSProcessList; PrevCount: Integer;  const ComparePointer:PJwWTSProcessList=nil);
 procedure TMainForm.UpdateProcessVirtualTree(const AVirtualTree: TBaseVirtualTree;
-      const PProcessList: PJwWTSProcessList; const PrevCount: Integer; const ComparePointer:PJwWTSProcessList=nil);
+      const PProcessList: PJwWTSProcessList; const PrevCount: Integer);
 var i: Integer;
   pNode: PVirtualNode;
   pPrevNode: PVirtualNode;
   pData: PProcessNodeData;
   NewCount: Integer;
-  CompareTo: PJwWTSProcessList;
 begin
-
-  if ComparePointer <> nil then
-  begin
-    CompareTo := ComparePointer;
-  end
-  else begin
-    CompareTo := PProcessList;
-  end;
-
   AVirtualTree.BeginUpdate;//big change in list, so notify it
 
   // Get the last node
@@ -462,7 +452,7 @@ begin
     pPrevNode := AVirtualTree.GetPrevious(pNode);
 
     // Is the node data pointing to CompareTo Pointer?
-    if pData^.List = CompareTo then
+    if pData^.List = PProcessList then
     begin
       // do we have data for this process?
       if pData^.Index > PProcessList^.Count-1 then
@@ -474,7 +464,7 @@ begin
       else begin
         // Invalidating the node will trigger the GetText event which will update
         // our data
-        if ComparePointer <> nil then
+        if PProcessList <> nil then
         begin
           // Point in to the new Pointer
           pData^.List := PProcessList;
@@ -511,9 +501,6 @@ begin
   begin
     // Get the previous session count
     PrevCount := Sessions.Count;
-
-    // Enumerate sessions
-//    EnumerateSessions;
 
     // Sychronize User and Session tree's with the SessionList
     UpdateVirtualTree(VSTUser, @Sessions, PrevCount);
@@ -578,39 +565,36 @@ var i: Integer;
   pDomainNode: PVirtualNode;
   pNode: PVirtualNode;
   pData: PServerNodeData;
+  TerminalServer: TJwTerminalServer;
 begin
-  with Sender as TJwTerminalServer do
+  TerminalServer := (Sender as TJwTerminalServer);
+
+  pDomainNode := TerminalServer.Data;
+
+  for i := 0 to TerminalServer.Servers.Count-1 do
   begin
-    pDomainNode := Data;
+    pNode := VSTServer.AddChild(pDomainNode);
+    pData := VSTServer.GetNodeData(pNode);
 
-    for i := 0 to ServerList.Count-1 do
-    begin
-      pNode := VSTServer.AddChild(pDomainNode);
-      pData := VSTServer.GetNodeData(pNode);
+    pData^.Caption := TerminalServer.Servers.Strings[i];
 
-      pData^.Index := -1;
-      pData^.Caption := ServerList.Strings[i];
+    // Assign a checkbox
+    pNode^.CheckType := ctCheckBox;
+  end;
 
-      // Assign a checkbox
-      pNode^.CheckType := ctCheckBox;
-    end;
+  pData := VSTServer.GetNodeData(pDomainNode);
 
-    pData := VSTServer.GetNodeData(pDomainNode);
-
-    if ServerList.Count > 0 then
-    begin
-      // No overlay
-      pData^.OverlayIndex := -1;
-    end
-    else begin
-      // Warning overlay
-      pData^.OverlayIndex := Integer(icExclMark);
-    end;
+  if TerminalServer.Servers.Count > 0 then
+  begin
+    // No overlay
+    pData^.OverlayIndex := -1;
+  end
+  else begin
+    // Warning overlay
+    pData^.OverlayIndex := Integer(icExclMark);
   end;
 
   VSTServer.FullExpand(pDomainNode);
-
-  FreeAndNil(Sender);
 end;
 
 procedure TMainForm.actAboutExecute(Sender: TObject);
@@ -626,11 +610,14 @@ var s: string;
   pNode: PVirtualNode;
   pData: PServerNodeData;
 begin
-  s := InputBox('Add Server', 'Type the name of the server you wish to add', '');;
+  s := UpperCase(InputBox('Add Server', 'Type the name of the server you wish to add', ''));
+
+  if s = '' then Exit;
+
   pNode := VSTServer.AddChild(pFavoritesNode);
   pData := VSTServer.GetNodeData(pNode);
 
-  pData^.Index := -1;
+//  pData^.Index := -1;
   pData^.Caption := s;
   pData^.Thread := nil;
 
@@ -860,8 +847,10 @@ begin
 
   // Hide the PageControl (this shows the Panel beneath it and the "wait for..."
   // caption on it. It also prevents new GetText events from the VirtualStringTree
+  AutoRefresh.Visible := False;
   PageControl1.Visible := False;
   Panel1.Font.Style := [fsBold];
+  Application.ProcessMessages;
 
   // Freeing the VSTServer tree will close all connections and free all
   // TerminalServer objects
@@ -900,22 +889,26 @@ begin
 
   // This is a node without a Terminal Server instance attached so we set
   // Index to -2 (never add a Terminal Server instance to it) and Pointer to nil
-  pData^.Caption := 'This Computer';
-  pData^.Index := -2;
-  pData^.Thread := nil;
+  if AreWeRunningTerminalServices then
+  begin
 
-  // Add a child node (local computer)
-  pNode := VSTServer.AddChild(pThisComputerNode);
+    pData^.Caption := 'This Computer';
+  //  pData^.Index := -2;
+    pData^.Thread := nil;
 
-  // This node can be checked
-  pNode^.CheckType := ctCheckBox;
-  // The this computer node is checked by default
-  pNode^.CheckState := csCheckedNormal;
-  // Trigger the OnChecked Event, this will fill the listviews for this computer
-  VSTServer.OnChecked(VSTServer, pNode);
+    // Add a child node (local computer)
+    pNode := VSTServer.AddChild(pThisComputerNode);
 
-  // Expand the This Computer Node
-  VSTServer.FullExpand(pThisComputerNode);
+    // This node can be checked
+    pNode^.CheckType := ctCheckBox;
+    // The this computer node is checked by default
+    pNode^.CheckState := csCheckedNormal;
+    // Trigger the OnChecked Event, this will fill the listviews for this computer
+    VSTServer.OnChecked(VSTServer, pNode);
+
+    // Expand the This Computer Node
+    VSTServer.FullExpand(pThisComputerNode);
+  end;
 
   // Create the Favorites node
   pFavoritesNode := VSTServer.AddChild(nil);
@@ -923,7 +916,7 @@ begin
   // This is a node without a Terminal Server instance attached so we set
   // Index to -2 (never add a Terminal Server instance to it) and Pointer to nil
   pData^.Caption := 'Favorites';
-  pData^.Index := -2;
+//  pData^.Index := -2;
   pData^.Thread := nil;
 
   // Create the 'All Listed Servers' parent node
@@ -933,21 +926,32 @@ begin
   // This is a node without a Terminal Server instance attached so we set
   // Index to -2 (never add a Terminal Server instance to it) and Pointer to nil
   pData^.Caption := 'All Listed Servers';
-  pData^.Index := -2;
+//  pData^.Index := -2;
   pData^.Thread := nil;
 
   DomainList := EnumerateDomains;
 
   for i := 0 to DomainList.Count - 1 do
   begin
-    pData := VSTServer.GetNodeData(VSTServer.AddChild(pAllListedServersNode));
-    pData^.Index := -2;
+    pNode := VSTServer.AddChild(pAllListedServersNode);
+    pData := VSTServer.GetNodeData(pNode);
+    pData^.OverlayIndex := -1;
     pData^.Caption := DomainList[i];
     pData^.Thread := nil;
+
+    // add dummy node
+    pNode := VSTServer.AddChild(pNode);
+    pData := VSTServer.GetNodeData(pNode);
+    pData^.Caption := 'dummy';
+    pData^.Thread := nil;
+
+    // The dummy node never gets visible. Therefore we explicitily Validate it
+    // so the NodeFree event will be triggered when the node is destroyed.
+    // This is needed to free string data (Caption)
+    VSTServer.ValidateNode(pNode, False);
   end;
 
   FreeAndNil(DomainList);
-  VSTServer.FullExpand(pAllListedServersNode);
 end;
 
 procedure TMainForm.VSTUserGetText(Sender: TBaseVirtualTree;
@@ -1246,17 +1250,20 @@ begin
     if pNode^.ChildCount = 0 then
     begin
       pServerData := VSTServer.GetNodeData(pNode);
-      // Add the hourglass
-      pServerData^.OverlayIndex := Integer(icHourGlass);
+      if pServerData^.OverlayIndex = -1 then
+      begin
+        // Add the hourglass
+        pServerData^.OverlayIndex := Integer(icHourGlass);
+        pServerData^.TerminalServer := TJwTerminalServer.Create;
 
-      strDomain := pServerData^.Caption;
+        strDomain := pServerData^.Caption;
 
-      ATerminalServer := TJwTerminalServer.Create;
-      ATerminalServer.OnServersEnumerated := OnEnumerateServersDone;
-      // store the node pointer
-      ATerminalServer.Data := pNode;
+        pServerData^.TerminalServer.OnServersEnumerated := OnEnumerateServersDone;
+        // store the node pointer
+        pServerData^.TerminalServer.Data := pNode;
 
-      ATerminalServer.EnumerateServers(strDomain);
+        pServerData^.TerminalServer.EnumerateServers(strDomain);
+      end;
     end;
   end;
 end;
@@ -1600,13 +1607,11 @@ begin
 
           Thread.Terminate;
           // Send a stop message to the thread!
-//          EnterCriticalSection(pServerData^.cs);
           PostThreadMessage(Thread.ThreadId, TM_THREAD_STOP, 0, 0);
           Thread.WaitFor;
 
           FreeAndNil(pServerData^.Thread);//.Free;
           OutputDebugString('Thread is nilled');
-//          DeleteCriticalSection(pServerData^.cs);
 
           Node^.CheckState := csUnCheckedNormal;
         end;
@@ -1618,14 +1623,11 @@ begin
   else if Node^.CheckState = csCheckedNormal then
   begin
     // Is this a server node?
-    if pServerData^.Index > -2 then
-    begin
+//    if pServerData^.Index > -2 then
+//    begin
       // Is a Terminal Server instance assigned?
       if pServerData^.TerminalServer = nil then
       begin
-        // Init CRITICAL_SECTION structure
-        InitializeCriticalSection(pServerData^.cs);
-
         pServerData^.TerminalServer := TJwTerminalServer.Create;
         pServerData^.TerminalServer.Server := pServerData^.Caption;
 
@@ -1637,13 +1639,13 @@ begin
         end;}
 
         pServerData^.Thread := TTerminalServerThread.Create(pServerData^.Caption,
-          Node, pServerData^.cs);
+          Node);
 
 //        pServerData^.Thread.Resume;
 
       end;
     end;
-  end;
+//  end;
 end;
 
 procedure TMainForm.VSTServerChecking(Sender: TBaseVirtualTree;
@@ -1706,6 +1708,49 @@ begin
   Result := CompareText(s1, s2);
 end;
 
+procedure TMainForm.VSTServerExpanding(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; var Allowed: Boolean);
+var
+  pServerData: PServerNodeData;
+  pNodeChild: PVirtualNode;
+  strDomain: string;
+begin
+  pNodeChild := Sender.GetNext(Node);
+
+  if (pNodeChild = nil) or (Node.Parent <> pAllListedServersNode) then
+  begin
+    Exit;
+  end;
+
+  pServerData := Sender.GetNodeData(pNodeChild);
+
+  if pServerData^.Caption = 'dummy' then
+  begin
+    // Delete dummy node
+    Sender.DeleteNode(pNodeChild);
+
+    pServerData := Sender.GetNodeData(Node);
+    if pServerData^.OverlayIndex = -1 then
+    begin
+      // Add the hourglass
+      pServerData^.OverlayIndex := Integer(icHourGlass);
+      pServerData^.TerminalServer := TJwTerminalServer.Create;
+
+      strDomain := pServerData^.Caption;
+
+      pServerData^.TerminalServer.OnServersEnumerated := OnEnumerateServersDone;
+      // store the node pointer
+      pServerData^.TerminalServer.Data := Node;
+
+      // Make sure we draw the hourglass
+      Sender.InvalidateNode(Node);
+
+      // Enumerate Servers
+      pServerData^.TerminalServer.EnumerateServers(strDomain);
+    end;
+  end;
+end;
+
 procedure TMainForm.VSTServerFreeNode(Sender: TBaseVirtualTree;
   Node: PVirtualNode);
 var pServerData: PServerNodeData;
@@ -1729,24 +1774,23 @@ begin
         Thread.Terminate;
         // Send a stop message to the thread!
         PostThreadMessage(Thread.ThreadId, TM_THREAD_STOP, 0, 0);
+
+        // Wait for thread to end
         Thread.WaitFor;
-        FreeAndNil(pServerData^.Thread);//.Free;
+
+        // Free and nil Thread
+        FreeAndNil(pServerData^.Thread);
 
         OutputDebugString('Thread is nilled');
         Node^.CheckState := csUnCheckedNormal;
 
       end;
     end;
-
-    DeleteCriticalSection(cs);
   end;
 
   FreeAndNil(pServerData^.TerminalServer);
-end;
+  Application.ProcessMessages;
 
-procedure TMainForm.FormDestroy(Sender: TObject);
-begin
-//  VSTServer.Free;
 end;
 
 end.

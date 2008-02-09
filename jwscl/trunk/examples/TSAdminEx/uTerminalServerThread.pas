@@ -7,16 +7,6 @@ uses
   VirtualTrees, //uTerminalServerThreadMsg,
   JwaWindows, JwsclTerminalServer, JwsclUtils;
 
-{$IFDEF MSWINDOWS}
-type
-  TThreadNameInfo = record
-    FType: LongWord;     // must be 0x1000
-    FName: PChar;        // pointer to name (in user address space)
-    FThreadID: LongWord; // thread ID (-1 indicates caller thread)
-    FFlags: LongWord;    // reserved for future use, must be zero
-  end;
-{$ENDIF}
-
 const
   TM_THREAD_RUNNING = WM_USER + 1;
   TM_ENUM_SESSIONS = WM_USER + 2;
@@ -33,18 +23,16 @@ type
   private
     { Private declarations }
   protected
-    FCriticalSection: RTL_CRITICAL_SECTION;
     FNode: PVirtualNode;
     FTerminalServer: TJwTerminalServer;
     FProcessListCopy: TJwWTSProcessList;
     FSessionListCopy: TJwWTSSessionList;
     procedure EnumSessions;
     procedure EnumProcesses;
-    procedure Execute; override;
   public
-    constructor Create(const Server: string; const Node: PVirtualNode;
-      const cs: RTL_CRITICAL_SECTION);
+    constructor Create(const Server: string; const Node: PVirtualNode);
     destructor Destroy; override;
+    procedure Execute; override;
     property Node: PVirtualNode read FNode write FNode;
     property ProcessList: TJwWTSProcessList read FProcessListCopy write FProcessListCopy;
     property SessionList: TJwWTSSessionList read FSessionListCopy write FSessionListCopy;
@@ -56,15 +44,13 @@ uses uMain;
 
 { EnumerateThread }
 constructor TTerminalServerThread.Create(const Server: string;
-  const Node: PVirtualNode; const cs: RTL_CRITICAL_SECTION);
+  const Node: PVirtualNode);
 begin
   inherited Create(False, Format('%s (%s)', [ClassName, Server]));
 
   OutputDebugString('TERMINALSERVERTHREAD CREATED');
   FreeOnTerminate := False;
 
-  // Store CRITICAL_SECTION
-  FCriticalSection := cs;
   FNode := Node;
 
   FTerminalServer := TJwTerminalServer.Create;
@@ -75,6 +61,7 @@ procedure TTerminalServerThread.Execute;
 var
   Msg: tagMsg;
 begin
+  inherited Execute;
   // Force Message Queue Creation
   PeekMessage(Msg, 0, WM_USER, WM_USER, PM_NOREMOVE);
 
@@ -181,8 +168,6 @@ begin
 end;
 
 destructor TTerminalServerThread.Destroy;
-var
-  i: Integer;
 begin
 
   FreeAndNil(FTerminalServer);

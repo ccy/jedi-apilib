@@ -1,9 +1,10 @@
 object MainForm: TMainForm
   Left = 0
   Top = 0
-  ActiveControl = VSTProcess
-  Caption = 'TSAdminEx'
-  ClientHeight = 445
+  Action = actAbout
+  ActiveControl = VSTSession
+  Caption = 'About'
+  ClientHeight = 502
   ClientWidth = 694
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -13,25 +14,22 @@ object MainForm: TMainForm
   Font.Style = []
   Menu = MainMenu1
   OldCreateOrder = False
+  OnClick = actAboutExecute
   OnClose = FormClose
   OnCreate = FormCreate
-  OnDestroy = FormDestroy
-  DesignSize = (
-    694
-    445)
   PixelsPerInch = 96
   TextHeight = 13
   object Splitter1: TSplitter
     Left = 0
     Top = 29
-    Height = 397
+    Height = 454
     ExplicitHeight = 368
   end
   object VSTServer: TVirtualStringTree
     Left = 3
     Top = 29
     Width = 201
-    Height = 397
+    Height = 454
     Align = alLeft
     CheckImageKind = ckLightTick
     Header.AutoSizeIndex = 0
@@ -51,11 +49,11 @@ object MainForm: TMainForm
     OnChecking = VSTServerChecking
     OnColumnDblClick = VSTServerColumnDblClick
     OnCompareNodes = VSTServerCompareNodes
+    OnExpanding = VSTServerExpanding
     OnFreeNode = VSTServerFreeNode
     OnGetText = VSTServerGetText
     OnGetImageIndex = VSTServerGetImageIndex
     OnGetNodeDataSize = VSTServerGetNodeDataSize
-    OnMouseDown = VSTServerMouseDown
     Columns = <>
   end
   object ToolBar1: TToolBar
@@ -156,7 +154,7 @@ object MainForm: TMainForm
   end
   object StatusBar1: TStatusBar
     Left = 0
-    Top = 426
+    Top = 483
     Width = 694
     Height = 19
     Panels = <>
@@ -176,7 +174,7 @@ object MainForm: TMainForm
     Left = 204
     Top = 29
     Width = 490
-    Height = 397
+    Height = 454
     Align = alClient
     BevelOuter = bvLowered
     Caption = 'Please wait while all connections are being closed'
@@ -187,21 +185,28 @@ object MainForm: TMainForm
     Font.Style = []
     ParentFont = False
     TabOrder = 1
+    DesignSize = (
+      490
+      454)
     object PageControl1: TPageControl
       Left = 1
       Top = 1
       Width = 488
-      Height = 395
-      ActivePage = TabSheet3
+      Height = 452
+      ActivePage = TabSheet2
       Align = alClient
       TabOrder = 0
       object TabSheet1: TTabSheet
         Caption = 'Users'
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object VSTUser: TVirtualStringTree
           Left = 0
           Top = 0
           Width = 480
-          Height = 367
+          Height = 424
           Align = alClient
           Header.AutoSizeIndex = -1
           Header.Font.Charset = DEFAULT_CHARSET
@@ -214,6 +219,7 @@ object MainForm: TMainForm
           Images = ImageList2
           IncrementalSearch = isVisibleOnly
           ParentShowHint = False
+          PopupMenu = SessionMenu
           ShowHint = True
           TabOrder = 0
           TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toInitOnSave, toReportMode, toToggleOnDblClick, toWheelPanning]
@@ -262,7 +268,7 @@ object MainForm: TMainForm
             item
               Alignment = taRightJustify
               Position = 6
-              Width = 218
+              Width = 222
               WideText = 'Logon Time'
             end>
         end
@@ -274,7 +280,7 @@ object MainForm: TMainForm
           Left = 0
           Top = 0
           Width = 480
-          Height = 367
+          Height = 424
           Align = alClient
           Header.AutoSizeIndex = -1
           Header.Font.Charset = DEFAULT_CHARSET
@@ -287,6 +293,7 @@ object MainForm: TMainForm
           Images = ImageList2
           IncrementalSearch = isAll
           ParentShowHint = False
+          PopupMenu = SessionMenu
           ShowHint = True
           TabOrder = 0
           TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toThemeAware, toUseBlendedImages]
@@ -365,11 +372,15 @@ object MainForm: TMainForm
       object TabSheet3: TTabSheet
         Caption = 'Processes'
         ImageIndex = 2
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object VSTProcess: TVirtualStringTree
           Left = 0
           Top = 0
           Width = 480
-          Height = 367
+          Height = 424
           Align = alClient
           Header.AutoSizeIndex = -1
           Header.Font.Charset = DEFAULT_CHARSET
@@ -445,17 +456,26 @@ object MainForm: TMainForm
         end
       end
     end
+    object AutoRefresh: TCheckBox
+      Left = 340
+      Top = 2
+      Width = 142
+      Height = 17
+      Alignment = taLeftJustify
+      Anchors = [akTop, akRight]
+      Caption = 'Auto Refresh ProcessList'
+      TabOrder = 1
+      OnClick = AutoRefreshClick
+    end
   end
-  object AutoRefresh: TCheckBox
-    Left = 544
-    Top = 31
-    Width = 142
-    Height = 17
-    Alignment = taLeftJustify
-    Anchors = [akTop, akRight]
-    Caption = 'Auto Refresh ProcessList'
+  object Button1: TButton
+    Left = 568
+    Top = -2
+    Width = 75
+    Height = 25
+    Caption = 'Button1'
     TabOrder = 5
-    OnClick = AutoRefreshClick
+    OnClick = Button1Click
   end
   object MainMenu1: TMainMenu
     Images = ImageList1
@@ -2089,6 +2109,34 @@ object MainForm: TMainForm
     Top = 288
     object AddServer1: TMenuItem
       Action = actAddServer
+    end
+  end
+  object SessionMenu: TPopupMenu
+    Left = 448
+    Top = 288
+    object Connect2: TMenuItem
+      Action = actConnect
+    end
+    object Disconnect2: TMenuItem
+      Action = actDisconnect
+    end
+    object SendMessage2: TMenuItem
+      Action = actSendMessage
+    end
+    object RemoteControl2: TMenuItem
+      Action = actRemoteControl
+    end
+    object Reset3: TMenuItem
+      Action = actReset
+    end
+    object Status1: TMenuItem
+      Action = actStatus
+    end
+    object N5: TMenuItem
+      Caption = '-'
+    end
+    object Logoff2: TMenuItem
+      Action = ActLogoff
     end
   end
 end
