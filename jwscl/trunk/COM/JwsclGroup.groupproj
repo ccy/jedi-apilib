@@ -1,19 +1,17 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <ProjectGuid>{f56d812b-2a3a-44b3-b370-8a6c0a30c80f}</ProjectGuid>
+    <ProjectGuid>{c6431ecf-c0de-49b8-a31b-cb17b4a60fd2}</ProjectGuid>
   </PropertyGroup>
   <ItemGroup />
   <ItemGroup>
     <Projects Include="JWSCLCom.dproj" />
-    <Projects Include="Test\Test1.dproj">
-      <Dependencies>JWSCLCom.dproj</Dependencies>
-    </Projects>
+    <Projects Include="Test\Test1.dproj" />
   </ItemGroup>
   <ProjectExtensions>
     <Borland.Personality>Default.Personality</Borland.Personality>
     <Borland.ProjectType />
     <BorlandProject>
-<BorlandProject xmlns=""><Default.Personality></Default.Personality></BorlandProject></BorlandProject>
+  <BorlandProject xmlns=""> <Default.Personality> </Default.Personality> </BorlandProject></BorlandProject>
   </ProjectExtensions>
   <Target Name="JWSCLCom">
     <MSBuild Projects="JWSCLCom.dproj" Targets="" />
@@ -24,13 +22,13 @@
   <Target Name="JWSCLCom:Make">
     <MSBuild Projects="JWSCLCom.dproj" Targets="Make" />
   </Target>
-  <Target Name="Test1" DependsOnTargets="JWSCLCom">
+  <Target Name="Test1">
     <MSBuild Projects="Test\Test1.dproj" Targets="" />
   </Target>
-  <Target Name="Test1:Clean" DependsOnTargets="JWSCLCom:Clean">
+  <Target Name="Test1:Clean">
     <MSBuild Projects="Test\Test1.dproj" Targets="Clean" />
   </Target>
-  <Target Name="Test1:Make" DependsOnTargets="JWSCLCom:Make">
+  <Target Name="Test1:Make">
     <MSBuild Projects="Test\Test1.dproj" Targets="Make" />
   </Target>
   <Target Name="Build">

@@ -26,7 +26,8 @@ end;
 
 procedure JwOleRaise(const Res : HRESULT);
 var Err : IErrorInfo;
-    Desc : WideString;
+    Desc,
+    Position : WideString;
     Exc : Exception;
     JExc : EJwsclSecurityException;
     List : TStringList;
@@ -43,6 +44,8 @@ begin
     List := TStringList.Create;
     List.CommaText := Desc;
 
+
+
     Exc := JwCreateException(List.Values[SJWEXCEPTIONNAME]).Create('');
     Exc.Message := List.Values[SJWMESSAGE];
 
@@ -56,14 +59,16 @@ begin
       JExc.SourceLine := StrToIntDef(List.Values[SJWSOURCELINE],0);
       JExc.LastError := StrToIntDef(List.Values[SJWGETLASTERROR],0);
       JExc.WinCallName := List.Values[SJWWINCALLNAME];
+
+      Position := Position + 'JWSCL:'+List.Values[SJWCLASSNAME]+'::'+List.Values[SJWMETHODNAME]+'('+
+        List.Values[SJWSOURCEFILE]+':'+List.Values[SJWSOURCELINE]+')'
     end;
 
-
     try
-      Exc.Message := Exc.Message + #13#10+
-        List.Values[SCOCLASSNAME]+'::'+List.Values[SCOMETHODNAME]+'('+
-        List.Values[SCOSOURCEFILE]+':'+List.Values[SCOSOURCELINE]+')';
+      OleCheck(Err.GetSource(Position));
+      Exc.Message := Exc.Message + #13#10+Position;
     except
+      Exc.Message := Exc.Message + #13#10+'(No COM Class information provided)';
     end;
 
 

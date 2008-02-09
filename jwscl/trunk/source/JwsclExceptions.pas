@@ -104,9 +104,9 @@ type
               the GetLastError() call is used.}
     class function GetLastErrorMessage(
       const iGetLastError: Cardinal = Cardinal(-1)): TJwString; virtual;
-
+  published
     {@Name contains the LastError error code provided the the CreateFmtEx constructor}
-    property LastError: Cardinal Read fLastError;
+    property LastError: Cardinal Read fLastError write fLastError;
 
     property SourceProc: string Read fSourceProc Write fSourceProc;
     property SourceClass: string
@@ -323,6 +323,34 @@ type
 
   EJwsclUnimplemented = class(EJwsclCryptException);
 
+
+  JwGeneralExceptionClass = class of Exception;
+
+
+type
+   TJwExceptionMapping = record
+     Name : WideString;
+     ID : TGUID;
+     ExcPtr : JwGeneralExceptionClass;
+   end;
+
+
+const JwExceptionMapping : array[0..2] of TJwExceptionMapping =
+      ((Name: 'Exception';
+        ID: '{138EDC0B-B10B-4FA3-BB5D-DFDABBEBDDA4}';
+        ExcPtr : Exception),
+       (Name: 'EJwsclSecurityException';
+        ID: '{F370AFCE-84F5-4849-9EF3-C65FD4BBB89C}';
+        ExcPtr : EJwsclSecurityException),
+       (Name: 'EJwsclNILParameterException';
+        ID: '{0EE0F32C-C4A5-410B-9522-C2E00FA55399}';
+        ExcPtr : EJwsclNILParameterException)
+      );
+
+function JwCreateException(const Name : WideString) : JwGeneralExceptionClass;
+function JwMapException(Const Id : TGuid) : WideString; overload;
+function JwMapException(Const Name : WideString) : TGuid; overload;
+
 {$ENDIF SL_IMPLEMENTATION_SECTION}
 
 {$IFNDEF SL_OMIT_SECTIONS}
@@ -332,6 +360,58 @@ implementation
 uses jclDebug;
 {$ENDIF}
 {$ENDIF SL_OMIT_SECTIONS}
+
+
+
+
+function JwMapException(Const Id : TGuid) : WideString;
+
+  function CompareGUID(const G1, G2: TGUID): boolean;
+  begin
+    Result := CompareMem(@G1, @G2, Sizeof(TGUID));
+  end;
+
+var i : Integer;
+begin
+  result := '';
+  for i := low(JwExceptionMapping) to high(JwExceptionMapping) do
+  begin
+    if CompareGUID(JwExceptionMapping[i].ID, Id) then
+    begin
+      result := JwExceptionMapping[i].Name;
+      exit;
+    end;
+  end;
+end;
+
+function JwMapException(Const Name : WideString) : TGuid;
+var i : Integer;
+begin
+  result := NULL_GUID;
+  for i := low(JwExceptionMapping) to high(JwExceptionMapping) do
+  begin
+    if WideCompareText(Name, JwExceptionMapping[i].Name) = 0 then
+    begin
+      result := JwExceptionMapping[i].Id;
+      exit;
+    end;
+  end;
+end;
+
+function JwCreateException(const Name : WideString) : JwGeneralExceptionClass;
+var i : Integer;
+begin
+  result := Exception;
+  for i := low(JwExceptionMapping) to high(JwExceptionMapping) do
+  begin
+    if WideCompareText(Name, JwExceptionMapping[i].Name) = 0 then
+    begin
+      result := JwExceptionMapping[i].ExcPtr;
+      exit;
+    end;
+  end;
+end;
+
 
 {$IFNDEF SL_INTERFACE_SECTION}
 constructor EJwsclSecurityException.Create(const Msg: string);

@@ -51,6 +51,7 @@ function JwSetCoException(const MethodName, ClassName, UnitName : WideString;
 var
   JE : EJwsclSecurityException;
   ErrorInfo: ICreateErrorInfo;
+  Position,
   Description : WideString;
   Data : TStringList;
 
@@ -61,6 +62,7 @@ begin
   Data := TStringList.Create;
 
   OleCheck(CreateErrorInfo(ErrorInfo));
+
 
   if ExceptionType is EJwsclSecurityException then
   begin
@@ -78,10 +80,16 @@ begin
     Data.Values[SCOCLASSNAME] := ClassName;
     Data.Values[SCOSOURCEFILE] := UnitName;
     Data.Values[SCOSOURCELINE] := '0';
+
+    Position := JwFormatString('COM:%s::%s(%s:%d);JWSCL:%s::%s(%s:%d)',
+        [ClassName, MethodName, UnitName, 0,
+         JE.SourceClass, JE.SourceProc, JE.SourceFile, JE.SourceLine
+        ]);
+
   end
   else
-  if ExceptionType is Exception then
-  begin 
+//  if ExceptionType is Exception then
+  begin
     Data.Values[SJWEXCEPTIONNAME] := ExceptionType.ClassName;
     Data.Values[SJWCLASSNAME] := IntToStr(GetLastError);
     Data.Values[SJWMESSAGE] := ExceptionType.Message;
@@ -89,11 +97,14 @@ begin
     Data.Values[SCOCLASSNAME] := ClassName;
     Data.Values[SCOSOURCEFILE] := UnitName;
     Data.Values[SCOSOURCELINE] := '0';
+
+    Position := JwFormatString('COM:%s::%s(%s:%d)',
+        [ClassName, MethodName, UnitName, 0  ]);
   end;
 
   OleCheck(ErrorInfo.SetGUID(JwMapException(ExceptionType.ClassName)));
-
-  Description := Data.CommaText;
+  OleCheck(ErrorInfo.SetSource(PWideChar(Position)));
+   Description := Data.CommaText;
   OleCheck(ErrorInfo.SetDescription(PWideChar(Description)));
   OleCheck(ErrorInfo.SetHelpContext(1));
   OleCheck(SetErrorInfo(0, (ErrorInfo as IErrorInfo)));

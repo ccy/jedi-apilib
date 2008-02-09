@@ -35,7 +35,9 @@ var CoSid : IJwCoSid;
 begin
   CoInitialize(0);
 
-  try 
+  JwOleRaise(0);
+
+  try
     Sid := TJwSecurityId.Create('S-1-1-0');
     CoSidData := JwCoConvertSid(Sid);
 

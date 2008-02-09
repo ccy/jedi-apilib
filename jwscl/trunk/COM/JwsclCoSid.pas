@@ -9,9 +9,11 @@ uses
   JwaWindows,TypInfo,
   JWSCLSid;
 type
-  TJwCoSid = class(TTypedComObject, IJwCoSid, ISupportErrorInfo)
+  TJwCoSid = class(TAutoObject, IJwCoSid, ISupportErrorInfo)
+  //TJwCoSid = class(TTypedComObject, IJwCoSid, ISupportErrorInfo)
   protected
     fInternalSid : TJwSecurityID;
+    function Method1: HResult; stdcall;
   protected
     function InterfaceSupportsErrorInfo(const iid: TIID): HResult; stdcall;
   protected
@@ -21,7 +23,11 @@ type
     function GetSidStream(out SidAsStream: IUnknown): HResult; stdcall;
     function InitByBinarySid(const BinarySid: WideString): HResult; stdcall;
     function InitByName(const SystemName, AccountName: WideString): HResult;     stdcall;
-    {IJwCoSid-Methoden hier deklarieren}
+
+    function Get_StringSid(out Value: WideString): HResult; stdcall;
+
+
+   {IJwCoSid-Methoden hier deklarieren}
 
   end;
 
@@ -120,7 +126,26 @@ begin
   end;
 end;
 
+
+function TJwCoSid.Get_StringSid(out Value: WideString): HResult;
+begin
+  result := S_OK;
+  try
+    Value := fInternalSid.StringSID;
+  except
+    On E : Exception do
+      JwSetCoException('InitBySid',ClassName, GetUnitName(Self), E, Result);
+  end;
+end;
+
+function TJwCoSid.Method1: HResult;
+begin
+
+end;
+
 initialization
-  TTypedComObjectFactory.Create(ComServer, TJwCoSid, Class_JwCoSid,
+ { TTypedComObjectFactory.Create(ComServer, TJwCoSid, Class_JwCoSid,
+    ciMultiInstance, tmApartment);}
+    TAutoObjectFactory.Create(ComServer, TJwCoSid, Class_JwCoSid,
     ciMultiInstance, tmApartment);
 end.
