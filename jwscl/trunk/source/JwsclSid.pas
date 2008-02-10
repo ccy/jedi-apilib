@@ -54,6 +54,7 @@ uses
 type
   TJwSecurityId = class;
 
+
     {@Name is a class that contains a list of SIDs instances.
      The SID instances can be freed automatically at the end of the list instance.}
   TJwSecurityIdList = class(TObjectList)
@@ -68,15 +69,24 @@ type
        @param(token_groups contains a list of SIDs to be copied into new instances)
 
        @raises(EJwsclWinCallFailedException will be raised if a call to CopySID failed)
+
+       COM: Also available as com method.
       }
     constructor Create(ownSIDs: boolean; token_groups: PTOKEN_GROUPS);
       overload;
 
+
+     {
+     COM: Also available as com method.
+     }
     constructor Create(SidAndAttributesArray : PSidAndAttributesArray);
       overload;
 
       {@Name creates an empty list.
-      @param(ownSIDs defines whether the SIDs are freed on the end of the list instance (true) or not)}
+      @param(ownSIDs defines whether the SIDs are freed on the end of the list instance (true) or not)
+
+      COM: Also available as com method.
+      }
     constructor Create(ownSIDs: boolean); overload;
 
       {@Name adds a SID instance to end end of the list
@@ -474,7 +484,11 @@ type
         The resulted SID will be checked by @link(CheckSID).
 
         @param(SecurityID receives a SID instance to be copied)
-        @raises(EJwsclSecurityException See @link(CheckSID) for exceptions description) }
+        @raises(EJwsclSecurityException See @link(CheckSID) for exceptions description)
+
+        COM: Also available as com method.
+
+        }
     constructor Create(const SecurityID: TJwSecurityId); overload;
 
        {@Name copies the given SID structure into a newly created instance.
@@ -482,7 +496,10 @@ type
 
         @param(SID receives a SID structure to be copied)
         @raises(EJwsclWinCallFailedException will be raised if a call to CopySID failed)
-        @raises(EJwsclSecurityException See @link(CheckSID) for exceptions description) }
+        @raises(EJwsclSecurityException See @link(CheckSID) for exceptions description)
+
+        COM: Also available as com method.
+       }
 
     constructor Create(const SID: PSID); overload;
 
@@ -492,7 +509,10 @@ type
 
         @param(SID receives a TSidAndAttributes structure to be copied)
         @raises(EJwsclWinCallFailedException will be raised if a call to CopySID failed)
-        @raises(EJwsclSecurityException See @link(CheckSID) for exceptions description) }
+        @raises(EJwsclSecurityException See @link(CheckSID) for exceptions description)
+
+        COM: Also available as com method.
+       }
 
     constructor Create(const SID: PSidAndAttributes); overload;
 
@@ -510,6 +530,8 @@ type
        {@Name copies the given parameters into a newly created instance.
         The resulted SID will be checked by @link(CheckSID).
 
+        COM: Also available as com method.
+
         This constructor calls Create(const Authorities : TJwSubAuthorityArray; Identifier: TSidIdentifierAuthority);
         @param(Authorities contains an array of authorities values copied into the authority structure of the SID.
          It can be an array of Cardinal values. However only the first 8 values are used.)
@@ -524,6 +546,9 @@ type
 
        {@Name creates a SID instance from a known well sid type.
         The resulted SID will be checked by @link(CheckSID).
+
+        COM: Also available as com method.
+
 
         @param(WellKnownSidType contains the sid type that is to be created)
         @param(DomainSid contains the domain SID where the new SID is associated. It can be nil to use the local computer.
@@ -556,6 +581,8 @@ type
                Where I = identifier authority and S = subautority (from 1 to 8))
         @raises(EJwsclWinCallFailedException will be raised if a call to ConvertStringSidToSid failed)
         @raises(EJwsclSecurityException See @link(CheckSID) for exceptions description)
+
+        COM: Also available as com method.
        }
     constructor Create(const BinarySID: TJwString); overload;
 
@@ -566,6 +593,8 @@ type
         @param(AccountName contains the user account name to be converted into a SID)
         @raises(EJwsclWinCallFailedException will be raised if a call to ConvertStringSidToSid failed)
         @raises(EJwsclSecurityException See @link(CheckSID) for exceptions description)
+
+        COM: Also available as com method.
        }
     constructor Create(const SystemName, AccountName: TJwString); overload;
 
@@ -595,16 +624,23 @@ type
   public
        {@Name contains a pointer to the internal SID structure.
         The SID structure must not be freed by CloseHandle otherwise the behavior of the instance is undefined.
+
+        COM: Also available as com method.
         }
     property SID: PSID Read fSid;
 
        {@Name returns the count of authority values.
-        A EJwsclWinCallFailedException exception will be raised if the count could not be retrieved.}
+        A EJwsclWinCallFailedException exception will be raised if the count could not be retrieved.
+
+        COM: Also available as com method.
+        }
     property SubAuthorityCount: Cardinal Read GetSidSubAuthorityCount;
 
        {@Name returns a copy of the sub authority values as a dynamic array.
         EJwsclWinCallFailedException will be raised if the array could not be retrieved because a call
          to  GetSidSubAuthority failed
+
+        COM: Also available as com method.
         }
     property SubAuthorityArray: TJwSubAuthorityArray
       Read GetSidSubAuthorityArray;
@@ -613,6 +649,8 @@ type
         The exception EJwsclIndexOutOfBoundsException will be raised if parameter index
         is smaller than 0 or greater equal than SubAuthorityCount.
 
+        COM: Also available as com method.
+
         EJwsclWinCallFailedException will be raised if the call to GetSidSubAuthority failed.
         }
     property SubAuthority[Index: Cardinal]: Cardinal Read GetSidSubAuthority;
@@ -620,20 +658,28 @@ type
        {@Name returns a copy of the sid identifier authority of the SID.
         You can use SidAuthToInt to convert the array into a 48bit number as a 64bit integer.
        EJwsclWinCallFailedException will be raised if the call to GetSidIdentifierAuthority failed.
+
+       COM: Also available as com method.
         }
     property IdentifierAuthority: TSidIdentifierAuthority
       Read GetSidIdentifierAuthority;
 
        {@Name returns the length of the SID structure.
        EJwsclWinCallFailedException will be raised if the call to GetLengthSID failed.
+
+       COM: Also available as com method.
        }
     property SIDLength: Cardinal Read GetLengthSID;
 
     {@Name returns the SID type as a well known sid type.
+
+     COM: Also available as com method.
     }
     property WellKnownSidType: TWellKnownSidType Read GetWellKnownSidType;
 
        {@Name returns whether this instance contains a well known sid (true) or not (false).
+
+       COM: Also available as com method.
         }
     property IsWellKnownSid: boolean Read GetWellKnownSid;
 
@@ -643,6 +689,8 @@ type
            Where I = identifier authority and S = subautority (from 1 to 8 values))
 
         EJwsclWinCallFailedException will be raised if the call to GetStringSID failed.
+
+        COM: Also available as com method.
          }
     property StringSID: TJwString Read GetStringSID;
 
@@ -650,15 +698,22 @@ type
        For more information see the see also section.
        EJwsclWinCallFailedException if the call to a winapi function failed
        @Seealso(GetAccountSidString);
+
+       COM: Also available as com method.
        }
     property AccountName[SystemName: TJwString]: TJwString Read GetAccountName;
 
+    {
+     COM: Also available as com method.
+    }
     property ChachedUserFromSid : WideString read GetCachedUserFromSid;
 
        {@Name returns the domain account name of the SID on the computer given in SystemName.
        For more information see the see also section.
        EJwsclWinCallFailedException if the call to a winapi function failed
        @Seealso(GetAccountSidString GetAccountName);
+
+       COM: Also available as com method.
        }
     property AccountDomainName[SystemName: TJwString]: TJwString
       Read GetAccountDomainName;
@@ -667,6 +722,8 @@ type
        For more information see the see also section.
        EJwsclWinCallFailedException if the call to a winapi function failed
        @Seealso(GetAccountSidString);
+
+       COM: Also available as com method.
        }
     property AccountNameUse[SystemName: TJwString]: TSidNameUse
       Read GetAccountNameUse;
@@ -676,6 +733,8 @@ type
 
         The attributes is also filled by token groups. However changing this
         value has no effect on the token sid. Use instead TJwSecurityToken methods.
+
+        COM: Also available as com method.
        }
     property Attributes: Cardinal Read fAttributes Write fAttributes;
 
@@ -685,6 +744,8 @@ type
         Setting a value does only support values that are listed in TJwSidAttribute
         but without sidaUnknown and SA_PADx (where x is between 0 and 5).
         Changing the value does also affect property Attributes.
+
+        COM: Also available as com method.
        }
     property AttributesType: TJwSidAttributeSet
       Read GetAttributesType Write SetAttributesType;
@@ -692,10 +753,12 @@ type
     property Trustee: TTrusteeEx Read GetTrustee;
 
    {@Name contains the system or domain name that was supplied when the instance
-    was created. 
+    was created.
     It is simply cached for later retrieving and can be used
     for AccountName, AccountDomainName or AccountNameUse to get the information
     in the context of the given system or domain.
+
+    COM: Also available as com method.
    }
     property CachedSystemName : TJwString read fCachedSystemName write fCachedSystemName;
   end;

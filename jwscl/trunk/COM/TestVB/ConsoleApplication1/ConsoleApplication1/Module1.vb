@@ -13,7 +13,7 @@
         Dim fso
         fso = CreateObject("JWSCLCom.JwCoSid")
         Try
-            JwOleRaise(fso.InitByName("", "Christian1"))
+            JwOleRaise(fso.InitByName("", "Christian"))
             Console.Write(fso.StringSid)
         Catch ex As Exception
             Console.Write(ex.Message)

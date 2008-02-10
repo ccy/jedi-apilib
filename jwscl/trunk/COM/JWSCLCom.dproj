@@ -20,6 +20,7 @@
     <DCC_Define>DEBUG;UNICODE</DCC_Define>
     <DCC_Warnings>False</DCC_Warnings>
     <DCC_RemoteDebug>True</DCC_RemoteDebug>
+    <DCC_Optimize>False</DCC_Optimize>
   </PropertyGroup>
   <ProjectExtensions>
     <Borland.Personality>Delphi.Personality</Borland.Personality>
