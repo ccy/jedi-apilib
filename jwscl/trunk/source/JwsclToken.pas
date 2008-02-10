@@ -3216,6 +3216,16 @@ begin
     iError := GetLastError;
     if (iError <> ERROR_INSUFFICIENT_BUFFER) and (iError <> 24) then
       Result := 0;
+    if iError = 24 then
+    begin
+      {on XP, this size of the following classtypes
+       returns 0.
+       We fix that here
+      }
+      case aTokenInformationClass of
+        JwaVista.TokenSessionId : result := 4;
+      end;
+    end;
   end;
 end;
 
