@@ -3223,7 +3223,7 @@ begin
        We fix that here
       }
       case aTokenInformationClass of
-        JwaVista.TokenSessionId : result := 4;
+        JwaVista.TokenSessionId : result := SizeOf(DWORD);
       end;
     end;
   end;
