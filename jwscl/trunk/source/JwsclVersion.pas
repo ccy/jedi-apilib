@@ -48,6 +48,29 @@ uses SysUtils, Contnrs, Classes,
 
 {$IFNDEF SL_IMPLEMENTATION_SECTION}
 type
+  TFileVersionInfo = record
+    CompanyName: TJwString;
+    FileDescription: TJwString;
+    FileVersion: TJwString;
+    InternalName: TJwString;
+    LegalCopyright: TJwString;
+    LegalTradeMarks: TJwString;
+    OriginalFilename: TJwString;
+    ProductName: TJwString;
+    ProductVersion: TJwString;
+    Comments: TJwString;
+  end;
+
+  TJwFileVersion = class(TObject)
+  private
+  protected
+  public
+    {@Name retrieves a TFileVersionInfo structure for a given Filename.@br
+    }
+    class function GetFileInfo(const Filename: TJwString;
+      var FileVersionInfo: TFileVersionInfo): Boolean;
+  end;
+
     {@Name provides methods to detect the windows version and product type.
      All methods are class methods so there is no need for an instance of @Name.
      }
@@ -253,6 +276,105 @@ uses SysConst;
 var
   fWindowsType: integer;
   fIsServer: boolean;
+
+class function TJwFileVersion.GetFileInfo(const Filename: TJwString;
+  var FileVersionInfo: TFileVersionInfo): Boolean;
+var VerInfoSize: DWORD;
+ DummyVar: DWORD;
+ VersionInfo: Pointer;
+ Translation: Pointer;
+ VersionValue: TJwString;
+
+function VerInfoQuery(VerInfo: Pointer; VerValue: TJwString): string;
+var VerInfoSize: DWORD;
+  VerInfoPtr: Pointer;
+begin
+  Result := '';
+
+  VerInfoSize := 0;
+{$IFDEF UNICODE}
+  if VerQueryValueW(VerInfo, PWideChar(VerValue), VerInfoPtr, VerInfoSize) then
+  begin
+    Result := Trim(PWideChar(VerInfoPtr));
+  end;
+{$ELSE}
+  if VerQueryValueA(VerInfo, PChar(VerValue), VerInfoPtr, VerInfoSize) then
+  begin
+    Result := Trim(PChar(VerInfoPtr));
+  end;
+{$ENDIF}
+
+  VerInfoPtr := nil; // Memory is freed when freeing VersionInfo Pointer
+end;
+
+begin
+  Result := False;
+  ZeroMemory(@FileVersionInfo, SizeOf(FileVersionInfo));
+
+  VerInfoSize :=
+{$IFDEF UNICODE}
+  GetFileVersionInfoSizeW(PWideChar(Filename), DummyVar);
+{$ELSE}
+  GetFileVersionInfoSizeA(PChar(Filename), DummyVar);
+{$ENDIF}
+  if VerInfoSize > 0 then begin
+
+    // GetFileVersionInfoSize returns bytes and not char's so should be okay
+    // for unicode and ansi
+    GetMem(VersionInfo, VerInfoSize);
+
+    try
+      Result :=
+{$IFDEF UNICODE}
+      GetFileVersionInfoW(PWideChar(Filename), 0, VerInfoSize, VersionInfo);
+{$ELSE}
+      GetFileVersionInfoA(PChar(Filename), 0, VerInfoSize, VersionInfo);
+{$ENDIF}
+
+      // Exit on failure
+      if not Result then Exit;
+
+      Result :=
+{$IFDEF UNICODE}
+      VerQueryValueW(VersionInfo, '\VarFileInfo\Translation',
+        Translation, VerInfoSize);
+{$ELSE}
+      VerQueryValueA(VersionInfo, '\VarFileInfo\Translation',
+        Translation, VerInfoSize);
+{$ENDIF}
+
+      // Exit on failure
+      if not Result then Exit;
+
+      VersionValue := Format('\StringFileInfo\%.4x%.4x\',
+        [LoWord(Integer(Translation^)), HiWord(Integer(Translation^))]);
+
+      FileVersionInfo.CompanyName := VerInfoQuery(VersionInfo,
+        VersionValue + 'CompanyName');
+      FileVersionInfo.FileDescription := VerInfoQuery(VersionInfo,
+        VersionValue + 'FileDescription');
+      FileVersionInfo.FileVersion := VerInfoQuery(VersionInfo,
+        VersionValue + 'FileVersion');
+      FileVersionInfo.InternalName := VerInfoQuery(VersionInfo,
+        VersionValue + 'InternalName');
+      FileVersionInfo.LegalCopyright := VerInfoQuery(VersionInfo,
+        VersionValue + 'LegalCopyright');
+      FileVersionInfo.LegalTradeMarks := VerInfoQuery(VersionInfo,
+        VersionValue + 'LegalTrademarks');
+      FileVersionInfo.OriginalFilename := VerInfoQuery(VersionInfo,
+        VersionValue + 'OriginalFilename');
+      FileVersionInfo.ProductName := VerInfoQuery(VersionInfo,
+        VersionValue + 'ProductName');
+      FileVersionInfo.ProductVersion := VerInfoQuery(VersionInfo,
+        VersionValue + 'ProductVersion');
+      FileVersionInfo.Comments := VerInfoQuery(VersionInfo,
+        VersionValue + 'Comments');
+
+    finally
+      FreeMem(VersionInfo);
+    end;
+  end;
+end;
 
 class procedure TJwWindowsVersion.CheckWindowsVersion(iWinVer: integer;
   bOrHigher: boolean; SourceProc, SourceClass, SourceFile: TJwString;
