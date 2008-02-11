@@ -175,7 +175,7 @@ p.unitlink a:active {
 p.hint_directive {
         color: Red;
 }
-table {
+table {		
         border-spacing: 2px;
         padding: 4px;
         width: 100%;
@@ -203,6 +203,44 @@ table.summary td.itemcode {
 table.detail td.itemcode {
         width: 100%;
 }
+
+table.table_tag { 
+		border-collapse: collapse; 
+}
+table.table_tag td { 
+		background-color: EFEFF7
+}
+
+table.table_tag td { 
+		border: 1pt solid #EFEFF7; 
+		padding: 0.3em; 
+		
+}
+table.table_tag th { 
+		border: 1pt solid #EFEFF7; padding: 0.3em; 
+		/*color: White;*/
+		color:Black
+}
+
+tr.head { 
+		/*background-color: #EFEFF7*/
+		background-color: #D6EEFF
+}
+
+
+
+tr.even { 
+		background: #F7F7FF
+}
+
+tr.odd { 
+		background: #FFFFFF
+		
+}
+
+		
+
+
 tr.list {
         width: 100%;
         background-color: #eeeeff;
@@ -255,7 +293,7 @@ acronym.mispelling {
 
 /* :::: This is my Delphi Settings ;-) :::: */
 span.pascal_string {
-        color: Fuchsia;
+        color: Blue;
         font-style: italic;
         font-family: "Courier New", Courier, monospace;
         font-weight: bold;
