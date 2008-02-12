@@ -85,7 +85,7 @@ procedure JwCreateProcessInSession(
 
 {$IFNDEF SL_OMIT_SECTIONS}
 implementation
-uses SysUtils, Classes, JwsclTerminalServer;
+uses SysUtils, Classes, Dialogs, JwsclTerminalServer, JwsclExceptions;
 
 {$ENDIF SL_OMIT_SECTIONS}
 
@@ -146,10 +146,13 @@ procedure JwCreateProcessInSession(
       ProcessID : DWORD;
   begin
     result := nil;
+    JwEnablePrivilege(SE_DEBUG_NAME,pst_EnableIfAvail);
 
     Log.Add('Running CreateTokenByProcessAndSession');
     TSrv := TJwTerminalServer.Create;
     try
+      TSrv.Connect;
+
       ProcessID := 0;
       if TSrv.EnumerateProcesses then
         for i := 0 to TSrv.Processes.Count-1 do
@@ -218,6 +221,21 @@ begin
       end;
     end;
 
+    if not Assigned(Output.UserToken) then
+    begin
+      try
+        raise EJwsclProcessIdNotAvailable.Create('There were no token found for specified session: '+IntToStr(SessionId));
+      except
+        on E : Exception do
+        begin
+          Log.Add(E.Message);
+          raise;
+        end;
+      end;
+
+      exit;
+    end;
+
     Log.Add('Loading user profile');
     try
       Output.UserToken.LoadUserProfile(Output.ProfileInfo, []);
@@ -235,7 +253,10 @@ begin
       GetPChar(CommandLine, lpCommandLine);
       GetPChar(CurrentDirectory, lpCurrentDirectory);
 
+      
+
       CreateEnvironmentBlock(@Output.EnvBlock, Output.UserToken.TokenHandle, true);
+
 
       if not CreateProcessAsUser(
         Output.UserToken.TokenHandle,//HANDLE hToken,
