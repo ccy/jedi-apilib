@@ -2474,7 +2474,7 @@ begin
   FConnected := False;
 end;
 
-function TJwTerminalServer.FileTime2DateTime(FileTime: _FILETIME): TDateTime;
+class function TJwTerminalServer.FileTime2DateTime(FileTime: _FILETIME): TDateTime;
 var
   LocalFileTime: TFileTime;
   SystemTime: TSystemTime;
