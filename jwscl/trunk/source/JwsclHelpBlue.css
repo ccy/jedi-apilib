@@ -6,6 +6,8 @@
 /* Ascanio Pressato pasdoc_v0.7.css compliant with CVS PasDoc 2005-06-26 */
 /* v0.2
    Modded by Jürgen Faff (juergen.faff at googlemail dot com) 11.02.2008 for Jedi Windows Security Code Library Help */
+/* v0.3
+   Changes by Remko Weijnen 12.02.2008 for Jedi Windows Security Code Library Help */
  
 /* pasdoc.css
    Styles used by PasDoc to generate HTML / Compiled HTML Documentation.*/  
@@ -26,6 +28,46 @@ img {
         vertical-align: middle;
         border: none;
 }
+
+pre.longcode { background: #F0F0F0 }
+
+span.pascal_string {
+        color: #0000FF;
+        font-family: "Courier New", Courier, monospace;
+}
+span.pascal_keyword {
+		color: #000080;
+        font-weight: bold;
+        font-family: "Courier New", Courier, monospace;
+}
+span.pascal_comment {
+        color: #008000;
+        font-style: italic;
+        font-family: "Courier New", Courier, monospace;
+}
+span.pascal_compiler_comment {
+        color: #008000;
+        font-style: italic;
+        font-family: "Courier New", Courier, monospace;
+}
+span.pascal_hex {
+        color: #0000FF;
+        font-family: "Courier New", Courier, monospace;
+}
+span.pascal_numeric {
+        color: #0000FF;
+        font-family: "Courier New", Courier, monospace;
+}
+span.pascal_asm {
+        color: Green;
+        font-family: "Courier New", Courier, monospace;
+}
+span.pascal_float {
+        color: #0000FF;
+        font-family: "Courier New", Courier, monospace;
+}
+
+
 h2 {
         background-color: #f5f5f5;
         margin-top: 30px;
@@ -58,7 +100,7 @@ body.navigationframe h2 {
 }
 h3 { 
   font-weight:bold; 
-  color:darkblue; 
+  color: #00008B ; 
 }
 a:link {
         color: #0000FF;
@@ -223,18 +265,17 @@ table.table_tag th {
 }
 
 tr.head { 
-		/*background-color: #EFEFF7*/
-		background-color: #D6EEFF
+		background-color: #67A4D6
 }
 
 
 
 tr.even { 
-		background: #F7F7FF
+		background-color: #F7F7FF
 }
 
 tr.odd { 
-		background: #FFFFFF
+		background-color: #FFFFFF
 		
 }
 
@@ -246,7 +287,7 @@ tr.list {
         background-color: #eeeeff;
         border: 1px solid #b0b0b0;
         margin: 2px;
-        padding: 2px;
+        padding: 4px;
         line-height: 140%;
 }       
 tr.list2 {
@@ -266,13 +307,14 @@ td {
 }
 td.itemname {
         white-space: nowrap;
-        background-color: #F4F4FB;
+        background-color: #C7C8F7;
         color: #602020;
 }
 td.itemunit {
         white-space: nowrap;
 }
 td.itemdesc {
+		background-color: #F4F4FB;
         width: 100%;
 }
 div.nodescription {
@@ -290,47 +332,6 @@ acronym.mispelling {
         font-style: italic;
         font-weight: normal;
 }
-
-/* :::: This is my Delphi Settings ;-) :::: */
-span.pascal_string {
-        color: Blue;
-        font-style: italic;
-        font-family: "Courier New", Courier, monospace;
-        font-weight: bold;
-}
-span.pascal_keyword {
-        font-weight: bolder;
-        font-family: "Courier New", Courier, monospace;
-}
-span.pascal_comment {
-        color: green;
-        font-style: italic;
-        background-color: white;
-        font-family: "Courier New", Courier, monospace;
-}
-span.pascal_compiler_comment {
-        color: #008000;
-        font-family: "Courier New", Courier, monospace;
-}
-span.pascal_hex {
-        color: Navy;
-        font-family: "Courier New", Courier, monospace;
-}
-span.pascal_numeric {
-        color: Red;
-        font-family: "Courier New", Courier, monospace;
-        font-weight: bold;
-}
-span.pascal_asm {/*Not Yet Implemented*/
-        color: Green;
-        font-family: "Courier New", Courier, monospace;
-}
-span.pascal_float {
-        color: Navy;
-        font-family: "Courier New", Courier, monospace;
-        font-weight: bold;
-}
-
 /* :::: Insert a <kbd> </kbd> in the HTML to view the tag content as a Keyborad Key (like Mozilla Firefox Help) :::: */
 kbd {
         font-family: "courier new", "courier", monospace;
