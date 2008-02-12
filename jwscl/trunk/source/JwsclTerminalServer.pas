@@ -36,21 +36,28 @@ The central object of the JwsclTerminalServer unit is the TJwTerminalServer
 object. It represents a Terminal Server, the connection to this server and
 holds the session- and processlist.
 
-Key functions of TJwTerminalServer are:@br
+Some Key functions of TJwTerminalServer are:@br
 
 @unorderedList(
-  @item(EnumerateSessions enumerates all Terminal Server sessions into a
-  TJwSessionList which can be accessed by the Sessions property.)
-  @Item(EnumerateProcesses enumerates all Terminal Server processes into a
-  TJwProcessList which can be accessed by the Processes property.)
-  @Item(EnumerateServers enumerates all Terminal Servers in a domain.)
-  @Item(Shutdown Shuts down and optionally restarts the specified
+  @item(TJwTerminalServer.EnumerateSessions enumerates all Terminal Server
+  sessions into a TJwSessionList which can be accessed by the Sessions property.)
+  @Item(TJwTerminalServer.EnumerateProcesses enumerates all Terminal Server
+  processes into a TJwProcessList which can be accessed by the Processes property.)
+  @Item(TJwTerminalServer.EnumerateServers enumerates all Terminal Servers in a
+  domain.)
+  @Item(TJwTerminalServer.Shutdown Shuts down and optionally restarts the specified
   Terminal Server.)
 )
 @br
 TJwTerminalServer also offers Events to monitor Terminal Server activity such as
 OnSessionConnect, OnSessionCreate, OnSessionLogon and OnSessionLogoff.@br
 @br@br
+A unique feature of TJwTerminalServer is that it's able to return detailled
+information about Terminal Server, Sessions and Processes that is not available
+using the normal Terminal Server API's or Microsoft Tools!@br
+This includes detailled process memory usage information and extended session
+information such as ShadowMode, ShadowState and Remote Address.@br
+@br
 The schema belows shows the relations between TJwTerminalServer,
 the TJwWTSSessionList with TJwWTSSessions and the TJwWTSProcessList with
 TjwWTSSessions.@br
@@ -185,7 +192,36 @@ type
      attempt was unsuccessfull)
      @br@br
      @bold(Remarks:) EnumerateSessions and EnumerateProcesses will automatically
-     connect to the Terminal Server when needed.
+     connect to the Terminal Server when needed.@br
+     @br
+     Example:
+     @longcode(#
+     var
+       ATerminalServer: TJwTerminalServer;
+       i: Integer;
+     begin
+       // Create Terminal Server instance and allocate memory for it
+       ATerminalServer := TjwTerminalServer.Create;
+
+       // Set servername (only in case of remote server)
+       ATerminalServer.Server := 'TS001';
+
+       // Remember that EnumerateProcesses will automatically connect to the
+       // Terminal Server for you. The connect function raises an Exception
+       // if the connection attempt was unsuccessfull, so better use try..except
+       try
+         Connect
+       except
+         on E: EJwsclWinCallFailedException do
+         begin
+           // Handle Exception here
+         end;
+       end;
+
+       // Free Memory
+       ATerminalServer.Free;
+     end;
+     #)
      }
     procedure Connect;
 
@@ -196,17 +232,28 @@ type
      @longcode(#
      var
        ATerminalServer: TJwTerminalServer;
+       s: String;
      begin
+
+       // Create Terminal Server instance and allocate memory for it
+       ATerminalServer := TJwTerminalServer.Create;
+
        s: String;
        s := 'Remember this text';
 
+       // Store pointer in Data property
        ATerminalServer.Data := PChar(s);
+
        s := '';
        ...
+
+       // and retreive it!
        s := ATerminalServer.Data;
 
+       // Don't forget to free!
        ATerminalServer.Free;
-     end
+
+     end;
      #)
      }
     property Data: Pointer read FData write FData;
@@ -215,10 +262,47 @@ type
      The Connected property can be used to check if we're already connected.
      @br@br
      @bold(Remarks:) If you disconnect you will not receive Session Events!
+     @br
+     Example:
+     @longcode(#
+     var
+       ATerminalServer: TJwTerminalServer;
+       i: Integer;
+     begin
+       // Create Terminal Server instance and allocate memory for it
+       ATerminalServer := TjwTerminalServer.Create;
+
+       // Set servername (only in case of remote server)
+       ATerminalServer.Server := 'TS001';
+
+       // Remember that EnumerateProcesses will automatically connect to the
+       // Terminal Server for you. The connect function raises an Exception
+       // if the connection attempt was unsuccessfull, so better use try..except
+       try
+         Connect
+       except
+         on E: EJwsclWinCallFailedException do
+         begin
+           // Handle Exception here
+         end;
+       end;
+
+       ...
+
+       // Disconnect
+       ATerminalServer.Disconnect;
+
+       // Free Memory (note that the free procedure will automatically
+       // disconnect from the server if connected)
+       ATerminalServer.Free;
+     end;
+    #)
      }
     procedure Disconnect;
 
-    {@Name returns the local computername
+    {@Name returns the local computername.@br
+     This property is convenient if you are connecting to Terminal Server
+     locally or want to check if a servername = computername.
     }
     property ComputerName: TJwString read FComputerName;
 
@@ -235,18 +319,35 @@ type
        ATerminalServer: TJwTerminalServer;
        i: Integer;
      begin
+       // Create Terminal Server instance and allocate memory for it
        ATerminalServer := TjwTerminalServer.Create;
+
+       // Set servername (only in case of remote server)
        ATerminalServer.Server := 'TS001';
 
-       if ATerminalServer.EnumerateProcesses then
-       begin
-
-         for i := 0 to ATerminalServer.Processes.Count - 1 do
+       // Remember that EnumerateProcesses will automatically connect to the
+       // Terminal Server for you. The connect function raises an Exception
+       // if the connection attempt was unsuccessfull, so better use try..except
+       try
+         if ATerminalServer.EnumerateProcesses then
          begin
-           Memo1.Lines.Add(ATerminalServer.Sessions[i].Username);
-         end;
+
+           // Now loop through the list
+           for i := 0 to ATerminalServer.Processes.Count - 1 do
+           begin
+             Memo1.Lines.Add(ATerminalServer.Processes[i].ProcessName);
+           end;
 
          end;
+       except
+         on E: EJwsclWinCallFailedException do
+         begin
+           // Handle Exception here
+         end;
+       end;
+
+       // Free Memory
+       ATerminalServer.Free;
      end;
     #)
     }
@@ -257,14 +358,53 @@ type
     {@Name enumerates all processes on the Terminal Server and fills the
      Processes property with a TJwProcessList. This list contains all processes
      and their properties such as Process Name, Process Id, Username, Memory
-     Usage and so on.
+     Usage and so on.@br
+     @br
+     Example:
+     @longcode(#
+     var
+       ATerminalServer: TJwTerminalServer;
+       i: Integer;
+     begin
+       // Create Terminal Server instance and allocate memory for it
+       ATerminalServer := TjwTerminalServer.Create;
+
+       // Set servername (only in case of remote server)
+       ATerminalServer.Server := 'TS001';
+
+       // Remember that EnumerateProcesses will automatically connect to the
+       // Terminal Server for you. The connect function raises an Exception
+       // if the connection attempt was unsuccessfull, so better use try..except
+       try
+         if ATerminalServer.EnumerateProcesses then
+         begin
+
+           // Now loop through the list
+           for i := 0 to ATerminalServer.Processes.Count - 1 do
+           begin
+             Memo1.Lines.Add(ATerminalServer.Processes[i].ProcessName);
+           end;
+
+         end;
+       except
+         on E: EJwsclWinCallFailedException do
+         begin
+           // Handle Exception here
+         end;
+       end;
+
+       // Free Memory
+       ATerminalServer.Free;
+     end;
+    #)
     }
     function EnumerateProcesses: Boolean;
 
     {@Name enumerates all Terminal Servers in the specified domain.
      @Param(ADomain name of the Domain to be queried, if empty string is
      specified the current domain is queried)
-     @br@br
+     @returns(If the function fails you can use GetLastError to get extended
+     error information)@br@br
      @bold(Remarks:) This functions enumerates all Terminal Servers that
      advertise themselves on the network. By default only Terminal Servers in
      Application Mode advertise themselves. You can override this behaviour by
@@ -289,18 +429,92 @@ type
     {@Name enumerates all sessions on the Terminal Server and fills the
      Sessions property with a TJwSessionList. This list contains all sessions
      and their properties such as Username, Session Id, Connection State, Idle
-     Time and son on.
+     Time and so on.@br
+     @returns(If the function fails you can use GetLastError to get extended
+     error information)@br
+     @br
+     Example:
+     @longcode(#
+     var
+       ATerminalServer: TJwTerminalServer;
+       i: Integer;
+     begin
+       // Create Terminal Server instance and allocate memory for it
+       ATerminalServer := TjwTerminalServer.Create;
+
+       // Set servername (only in case of remote server)
+       ATerminalServer.Server := 'TS001';
+
+       // Remember that EnumerateSessions will automatically connect to the
+       // Terminal Server for you. The connect function raises an Exception
+       // if the connection attempt was unsuccessfull, so better use try..except
+       try
+         if ATerminalServer.EnumerateSessions then
+         begin
+
+           // Now loop through the list
+           for i := 0 to ATerminalServer.Sessions.Count - 1 do
+           begin
+             Memo1.Lines.Add(ATerminalServer.Sessions[i].Username);
+           end;
+
+         end;
+       except
+         on E: EJwsclWinCallFailedException do
+         begin
+           // Handle Exception here
+         end;
+       end;
+
+       // Free Memory
+       ATerminalServer.Free;
+     end;
+    #)
     }
     function EnumerateSessions: boolean;
-    {@exclude}
-    function FileTime2DateTime(FileTime: TFileTime): TDateTime;
+
+    {@Name can be used to convert a non local (GMT time) FileTime to a
+     localised TDateTime var.@br
+     @param(FileTime TFileTime in GMT)
+     @returns(TDateTime in local time)
+     @br@br
+     @bold(Remarks:) A TFileTime can be casted to Int64 (number 100-nanosecond
+     intervals since January 1, 1601) and vice versa.
+     }
+    class function FileTime2DateTime(FileTime: TFileTime): TDateTime;
     {@exclude}
     property IdleProcessName: TJwString read GetIdleProcessName;
-    {@exclude}
+
+    {The @Name property can be used to see the Last Session Event that occured.
+     This is usefull if you are listening on multiple event types.@br
+     @seealso(OnSessionEvent)
+    }
     property LastEventFlag: DWORD read FLastEventFlag;
 
     {The @Name event signals that the Server Enumeration thread has finished.@br
-     The Enumerated Servers can be read through the Servers property
+     The Enumerated Servers can be read through the Servers property.@br
+     @br
+     Example:
+     @longcode(#
+     procedure TMainForm.OnEnumerateServersDone(Sender: TObject);
+     var
+       i: Integer;
+       TerminalServer: TJwTerminalServer;
+      begin
+
+        // Cast Sender to TJwTerminalServer
+        TerminalServer := (Sender as TJwTerminalServer);
+
+        // Loop through the enumerated Terminal Servers, if no servers were
+        // found the count is 0.
+        for i := 0 to TerminalServer.Servers.Count-1 do
+        begin
+          Memo1.Lines.Add(TerminalServer.Servers[i]);
+        end;
+
+        // Don't free TerminalServer var here!
+      end;
+     #)
     }
     property OnServersEnumerated: TNotifyEvent read FOnServersEnumerated write FOnServersEnumerated;
 
@@ -417,7 +631,9 @@ type
       @row(     @cell(WTS_WSD_REBOOT) @cell(Shuts down and then restarts the system on the terminal server. This is equivalent to calling ExitWindowsEx with EWX_REBOOT. The calling process must have the SE_SHUTDOWN_NAME privilege enabled.))
       @row(     @cell(WTS_WSD_SHUTDOWN) @cell(Shuts down the system on the terminal server. This is equivalent to calling the ExitWindowsEx function with EWX_SHUTDOWN. The calling process must have the SE_SHUTDOWN_NAME privilege enabled.))
       @row(     @cell(WTS_WSD_FASTREBOOT) @cell(This value is not supported currently.))
-      )
+      )@br
+     @returns(If the function fails you can use GetLastError to get extended
+     error information)@br@br
     }
     function Shutdown(AShutdownFlag: DWORD): Boolean;
 
@@ -444,34 +660,71 @@ type
    begin
      ATerminalServerList := TjwTerminalServerList.Create;
 
+     // Create a Terminal Server instance
      ATerminalServer := TJwTerminalServer.Create;
+
+     // and add it to the list
      ATerminalServerList.Add(ATerminalServer);
 
+     // Freeing the TerminalServerList will also free the Terminal Server
+     // instances it owns.
      ATerminalServerList.Free;
    end;
    #)
   }
   TJwTerminalServerList = class(TObjectList)
   protected
-    FOwnsObjects: Boolean;
+    {@exclude}
     FOwner: TComponent;
   protected
+    {@exclude}
     function GetItem(Index: Integer): TJwTerminalServer;
+    {@exclude}
     procedure SetItem(Index: Integer; ATerminalServer: TJwTerminalServer);
+    {@exclude}
     procedure SetOwner(const Value: TComponent);
   public
+    {@exclude}
     destructor Destroy; reintroduce;
+
+    {@Name adds a TerminalServer to the end of the TerminalServerList
+     @returns(returns the index of the inserted object.)
+    }
     function Add(ATerminalServer: TJwTerminalServer): Integer;
-    {@Name looks up a Terminal Server in the List by Servername}
-    function FindByServer(const ServerName: WideString; const IgnoreCase: boolean = False): TJwTerminalServer;
+    {@Name looks up a Terminal Server in the List by Servername
+     @Param(ServerName The Servername which is to be found)
+     @Param(IgnoreCase Default = True)
+     @Returns(If the server was found a TJwTerminalServer instance is returned.
+     Always check if it's not nil!)
+    }
+    function FindByServer(const ServerName: WideString;
+      const IgnoreCase: boolean = False): TJwTerminalServer;
+
+    {@Returns(the index of the TerminalServer object in the TerminalServerList.)
+    }
     function IndexOf(ATerminalServer: TJwTerminalServer): Integer;
+
+    {@Name adds a TerminalServer to the end of the TerminalServerList
+     @returns(returns the index of the inserted object.)
+    }
     procedure Insert(Index: Integer; ATerminalServer: TJwTerminalServer);
+
+    {The @Name property can be used to access the TerminalServer instances that
+     are held by the list.
+    }
     property Items[Index: Integer]: TJwTerminalServer read GetItem write SetItem; default;
+    {A @ClassName can be owned by any component eg a TApplication or TForm
+    }
     property Owner: TComponent read FOwner write SetOwner;
-    property OwnsObjects: Boolean read FOwnsObjects write FOwnsObjects;
+
+    {@Name removes the specified Terminal Server  from the TerminalServerList
+     and if OwnsObjects is true (default) frees the TerminalServer.
+     @returns(The value returned is the index of the object in the Items array
+     before it was removed. If the specified object is not found on the list,
+     Remove returns –1.)
+    }
     function Remove(ATerminalServer: TJwTerminalServer): Integer;
   end;
-
 
    {@Abstract(The @Name Thread waits for Terminal Server Events and notifies the
     caller by firing Events.)
@@ -490,10 +743,14 @@ type
   }
   TJwWTSEventThread = class(TJwThread)
   protected
+    {@exclude}
     FOwner: TJwTerminalServer;
+    {@exclude}
     FEventFlag: DWORD;
+    {@exclude}
     procedure DispatchEvent;
   public
+
     {Call @Name to create a @classname Thread.
      @Param(CreateSuspended If CreateSuspended is False, Execute is called
      immediately. If CreateSuspended is True, Execute won't be called until
@@ -501,6 +758,10 @@ type
      @Param(Owner Specifies the TJwTerminalServer instance that owns the thread)
     }
     constructor Create(CreateSuspended: Boolean; AOwner: TJwTerminalServer);
+
+    {@raises(EJwsclWinCallFailedException will be raised if WTSWaitSystemEvent
+     failed.)
+    }
     procedure Execute; override;
   end;
 
@@ -521,12 +782,19 @@ type
    }
   TJwWTSEnumServersThread = class(TJwThread)
   protected
+    {@exclude}
     FDomain: TJwString;
+    {@exclude}
     FOwner: TJwTerminalServer;
+    {@exclude}
     FServer: TJwString;
+    {@exclude}
     FTerminatedEvent: THandle;
+    {@exclude}
     procedure AddToServerList;
+    {@exclude}
     procedure ClearServerList;
+    {@exclude}
     procedure DispatchEvent;
   public
     {Call @Name to create a @classname Thread.
@@ -541,8 +809,6 @@ type
     constructor Create(CreateSuspended: Boolean; Owner: TJwTerminalServer;
       Domain: TJwString);
     procedure Execute; override;
-//    procedure Wait;
-//    function WaitFor: LongWord;
   end;
 
   {@Name is a pointer to a TJwWTSSession}
@@ -680,7 +946,7 @@ type
      @bold(Remarks:) It's not necessary to manually create a session instance.
      Enumerating sessions with the EnumerateSessions function will create a
      SessionList filled with Sessions.
-     @seealso(EnumerateSessions)
+     @seealso(TJwTerminalServer.EnumerateSessions)
     }
     constructor Create(const Owner: TJwWTSSessionList;
       const SessionId: TJwSessionId; const WinStationName: TJwString;
@@ -782,21 +1048,19 @@ type
     property CompressionRatio: TJwString read FCompressionRatio;
 
     {@Name returns the connection state of the session. Which can be one of the
-     following values:
-     @unorderedList(
-      @itemSpacing Compact
-      @item(WTSActive)
-      @item(WTSConnected)
-      @item(WTSConnectQuery)
-      @item(WTSShadow)
-      @item(WTSDisconnected)
-      @item(WTSIdle)
-      @item(WTSListen)
-      @item(WTSReset)
-      @item(WTSDown)
-      @item(WTSInit)
-     )
-     @br
+     following values:@br@br
+     @table(
+     @rowHead(  @cell(Session State) @cell(Description))
+      @row(     @cell(WTSActive) @cell(The session is connected, and a user is logged on to the server.))
+      @row(     @cell(WTSConnected) @cell(The session is connected, but there is no user logged on to the server.))
+      @row(     @cell(WTSConnectQuery) @cell(The session is in the process of connecting. If this state continues, it indicates a problem with the connection.))
+      @row(     @cell(WTSShadow) @cell(The session is in the process of remotely controlling another session.))
+      @row(     @cell(WTSDisconnected) @cell(The user is disconnected from the session, but the session is still attached to the server and can be reconnected at any time.))
+      @row(     @cell(WTSIdle) @cell(The session is initialized and ready to accept a connection. To optimize the performance of a server, two default (idle) sessions are initialized before any client connections are made.))
+      @row(     @cell(WTSReset) @cell(The session failed to initialize correctly or could not be terminated, and is not available. If this state continues, it indicates a problem with the connection of the session.))
+      @row(     @cell(WTSInit) @cell(The session is in the process of initializing.))
+      )
+     @br@br
      @bold(Remarks:) On Windows XP, however, the state for session 0 can be
      misleading because it will be WTSDisconnected even if there is no user
      logged on. To accurately determine if a user has logged on to session 0,
@@ -818,10 +1082,17 @@ type
      }
     property CurrentTime: TDateTime read FCurrentTime;
 
-    {The @Name function disconnects the logged-on user
-     from the specified Terminal Services session without closing the session.
-     If the user subsequently logs on to the same terminal server, the user is
-     reconnected to the same session.
+    {The @Name function disconnects the logged-on user from the specified
+     Terminal Services session without closing the session. The session remains
+     attached to the terminal server in the disconnected state and currently
+     running applications continue to run. When you attempt to reconnect to the
+     @bold( same server), you are reconnected to the same session from which you
+     disconnected, even if you are reconnecting from a different computer.
+     Applications that were left open when you disconnected remain running when
+     you reconnect to the session, with no loss of data.@br@br
+     In NLB (Network Load Balancing) environments the Session Directory
+     (starting from Server 2008 this is called TS Session Broker) care of
+     redirecting a user to the server where he has a disconnected session.@br@br
      @param(bWait Indicates whether the operation is synchronous. Specify TRUE
      to wait for the operation to complete, or FALSE to return immediately.)
      @returns(If the function fails you can use GetLastError to get extended
@@ -1025,7 +1296,57 @@ type
     }
     property Server: TJwString read GetServer;
 
-    {@Name the session identifier
+    {@Name the session identifier@br
+     @br@br
+     There are some reserved SessionId's that serve a special purpose. The
+     following table lists the reserved SessionId's:@br
+     @br
+     @table(
+     @rowHead(  @cell(Value) @cell(Meaning))
+      @row(     @cell(0) @cell(Console or Services session, see remarks))
+      @row(     @cell(65536) @cell(RDP Listener))
+      @row(     @cell(65537) @cell(ICA Listener))
+      )
+      @br@br
+      @bold(Remarks:)@br
+      @bold(Console Sessions)@br
+      The system console session is usually identified as session 0 in the
+      Session list when you connect to a terminal server. A console session is
+      defined as the session you connect to at the physical console of the
+      remote computer, as though you were logging on locally instead of
+      remotely. You can send a message to the console session, but you cannot
+      perform any of the other administrative actions on it.
+      In Windows XP, Microsoft Windows Server 2003, and earlier versions of the
+      Windows operating system, all services run in the same session as the
+      first user who logs on to the console. This session is called Session 0.
+      Running services and user applications together in Session 0 poses a
+      security risk because services run at elevated privilege and therefore are
+      targets for malicious agents who are looking for a way to elevate their
+      own privilege level. The Vista operating system mitigates this security
+      risk by isolating services in Session 0 and making Session 0
+      noninteractive. In Windows Vista, only system processes and services run
+      in Session 0. The first user logs on to Session 1, and subsequent users
+      log on to subsequent sessions. This means that services never run in the
+      same session as users’ applications and are therefore protected from
+      attacks that originate in application code.@br
+      @br
+      @bold(Listener Sessions)@br
+      Listener sessions are different from regular sessions.
+      These sessions listen for and accept new Remote Desktop Protocol (RDP)
+      client connections, thereby creating new sessions for the client requests.
+      If you have configured more than one connection in Terminal Services
+      Configuration, several listener sessions are available.@br
+      You have the option to reset a listener session. However, this is not
+      recommended, because doing so @bold(resets all sessions that use the same
+      Terminal Services connection.) Resetting a user's session without warning
+      can result in loss of data at the client.@br
+      @br
+      @bold(Idle sessions)@br
+      To optimize the performance of a terminal server, idle sessions are
+      initialized by the server before client connections are made.
+      These sessions are available to clients for connection.
+      Two idle sessions are created by default. User sessions can also be in
+      idle state.
     }
     property SessionId: TJwSessionId read FSessionId;
     {The @Name function starts the remote control of another Terminal Services
@@ -1145,25 +1466,37 @@ type
    TJwTerminalServer instance.@br
    @br
    Example:
-   @longCode(#
+   @longcode(#
    var
-     ATerminalServer : TjwTerminalServer;
+     ATerminalServer: TJwTerminalServer;
+     i: Integer;
    begin
+     // Create Terminal Server instance and allocate memory for it
      ATerminalServer := TjwTerminalServer.Create;
+
+     // Set servername (only in case of remote server)
      ATerminalServer.Server := 'TS001';
 
-     if ATerminalServer.EnumerateSessions then
-     begin
-
-       for i := 0 to ATerminalServer.Sessions.Count - 1 do
+     // Remember that EnumerateSessions will automatically connect to the
+     // Terminal Server for you. The connect function raises an Exception
+     // if the connection attempt was unsuccessfull, so better use try..except
+     try
+       if ATerminalServer.EnumerateSessions then
        begin
-         Memo1.Lines.Add(ATerminalServer.Sessions[i].Username);
+         for i := 0 to ATerminalServer.Sessions.Count-1 do
+         begin
+           Memo1.Lines.Add(ATerminalServer.Sessions[i].Username);
+         end;
        end;
-
+     except
+       on E: EJwsclWinCallFailedException do
+       begin
+        // Handle Exception here
+       end;
      end;
 
+     // Free Memory
      ATerminalServer.Free;
-
    end;
    #)
   }
@@ -1207,23 +1540,35 @@ type
      Example:
      @longcode(#
      var
-       ATerminalServer : TjwTerminalServer;
+       ATerminalServer: TJwTerminalServer;
+       i: Integer;
      begin
+       // Create Terminal Server instance and allocate memory for it
        ATerminalServer := TjwTerminalServer.Create;
+
+       // Set servername (only in case of remote server)
        ATerminalServer.Server := 'TS001';
 
-       if ATerminalServer.EnumerateSessions then
-       begin
-
-         for i := 0 to ATerminalServer.Sessions.Count - 1 do
+       // Remember that EnumerateSessions will automatically connect to the
+       // Terminal Server for you. The connect function raises an Exception
+       // if the connection attempt was unsuccessfull, so better use try..except
+       try
+         if ATerminalServer.EnumerateSessions then
          begin
-           Memo1.Lines.Add(ATerminalServer.Sessions[i].Username);
+           for i := 0 to ATerminalServer.Sessions.Count-1 do
+           begin
+             Memo1.Lines.Add(ATerminalServer.Sessions[i].Username);
+           end;
          end;
-
+       except
+         on E: EJwsclWinCallFailedException do
+         begin
+          // Handle Exception here
+         end;
        end;
 
+       // Free Memory
        ATerminalServer.Free;
-
      end;
      #)
     }
@@ -1361,7 +1706,13 @@ type
     }
     property ProcessId: TJwProcessId read FProcessId;
 
-    {@Name the Process Name
+    {@Name the Process Name@br
+     @br
+     @bold(Remarks:) Windows XP (at least SP2) has the following bug:@br
+     The Process Name is cut off at 18 characters for process on the local
+     machine and at 15 characters for remote servers (even if the remote server
+     is Windows Server 2003 which does not suffer from this bug).@br
+
     }
     property ProcessName: TJwString read FProcessName;
 
@@ -1424,25 +1775,37 @@ type
    TJwTerminalServer instance.@br
    @br
    Example:
-   @longCode(#
+   @longcode(#
    var
-     ATerminalServer: TjwTerminalServer;
+     ATerminalServer: TJwTerminalServer;
+     i: Integer;
    begin
+     // Create Terminal Server instance and allocate memory for it
      ATerminalServer := TjwTerminalServer.Create;
+
+     // Set servername (only in case of remote server)
      ATerminalServer.Server := 'TS001';
 
-     if ATerminalServer.EnumerateProcesses then
-     begin
-
-       for i := 0 to ATerminalServer.Processes.Count - 1 do
+     // Remember that EnumerateProcesses will automatically connect to the
+     // Terminal Server for you. The connect function raises an Exception
+     // if the connection attempt was unsuccessfull, so better use try..except
+     try
+       if ATerminalServer.EnumerateProcesses then
        begin
-         Memo1.Lines.Add(ATerminalServer.Processes[i].ProcessName);
+         for i := 0 to ATerminalServer.Processes.Count-1 do
+         begin
+           Memo1.Lines.Add(ATerminalServer.Processes[i].ProcessName);
+         end;
        end;
-
+     except
+       on E: EJwsclWinCallFailedException do
+       begin
+        // Handle Exception here
+       end;
      end;
 
+     // Free Memory
      ATerminalServer.Free;
-
    end;
    #)
   }
@@ -1474,23 +1837,35 @@ type
      Example:
      @longcode(#
      var
-       ATerminalServer : TjwTerminalServer;
+       ATerminalServer: TJwTerminalServer;
+       i: Integer;
      begin
+       // Create Terminal Server instance and allocate memory for it
        ATerminalServer := TjwTerminalServer.Create;
+
+       // Set servername (only in case of remote server)
        ATerminalServer.Server := 'TS001';
 
-       if ATerminalServer.EnumerateProcesses then
-       begin
-
-         for i := 0 to ATerminalServer.Processes.Count - 1 do
+       // Remember that EnumerateProcesses will automatically connect to the
+       // Terminal Server for you. The connect function raises an Exception
+       // if the connection attempt was unsuccessfull, so better use try..except
+       try
+         if ATerminalServer.EnumerateProcesses then
          begin
-           Memo1.Lines.Add(ATerminalServer.Processes[i].ProcessName);
+           for i := 0 to ATerminalServer.Processes.Count-1 do
+           begin
+             Memo1.Lines.Add(ATerminalServer.Processes[i].ProcessName);
+           end;
          end;
-
+       except
+         on E: EJwsclWinCallFailedException do
+         begin
+          // Handle Exception here
+         end;
        end;
 
+       // Free Memory
        ATerminalServer.Free;
-
      end;
      #)
     }
@@ -1512,25 +1887,25 @@ type
   {@Name indicates the Shadow State of a session}
   TShadowState =
     (
-     {@Name The session is not Shadowing or Being Shadowed}
+     {The session is not Shadowing or Being Shadowed}
      ssNone,
-     {@Name The session is not Shadowing another session}
+     {The session is not Shadowing another session}
      ssShadowing,
-     {@Name The session is being Shadowed by another session}
+     {The session is being Shadowed by another session}
      ssBeingShadowed
   );
 
   {@Name indicates the Shadow Permissions of a session}
   TShadowMode = (
-    {@Name The sessions cannot be shadowed}
+    {The sessions cannot be shadowed}
     smNoneAllowed,
-    {@Name The sessions be shadowed but needs the user's permission}
+    {The sessions be shadowed but needs the user's permission}
     smFullControlWithPermission,
-    {@Name The sessions be shadowed without the user's permission}
+    {The sessions be shadowed without the user's permission}
     smFullControlWithoutPermission,
-    {@Name The sessions can be viewed but needs the user's permission}
+    {The sessions can be viewed but needs the user's permission}
     smViewOnlyWithPermission,
-    {@Name The sessions can be viewed without the user's permission}
+    {The sessions can be viewed without the user's permission}
     smViewOnlyWithoutPermission
   );
 
@@ -2069,8 +2444,13 @@ begin
       // If WTSOpenServer fails the return value is 0
       if FServerHandle = 0 then
       begin
+        // Mark handle as invalid
+        FServerHandle := INVALID_HANDLE_VALUE;
+        FConnected := False;
+        
+        // and raise exception        
         raise EJwsclWinCallFailedException.CreateFmtWinCall(RsWinCallFailed,
-          'WTSOpenServer', ClassName, RsUNTerminalServer, 1000, True,
+          'WTSOpenServer', ClassName, RsUNTerminalServer, 0, True,
           'WTSOpenServer', ['WTSOpenServer', FServer]);
       end
       else
@@ -2124,22 +2504,25 @@ end;
 
 procedure TJwWTSEventThread.Execute;
 begin
-  inherited Execute;  
+  inherited Execute;
 
   while not Terminated do
   begin
+    // Wait some time to prevent duplicate event dispatch
+    Sleep(500);
     OutputDebugString('Entering WTSWaitSystemEvent');
     if WTSWaitSystemEvent(FOwner.ServerHandle, WTS_EVENT_ALL, FEventFlag) then
     begin
       if FEventFlag > WTS_EVENT_FLUSH then
       begin
-        // Wait some time to prevent duplicate event dispatch
         OutputDebugString('Dispatching');
         Synchronize(DispatchEvent);
       end;
     end
     else begin
-      OutputDebugString(PChar(Format('WTSWaitSystemEvent, False: %s', [SysErrorMessage(GetLastError)])));
+      raise EJwsclWinCallFailedException.CreateFmtWinCall(RsWinCallFailed,
+      'WTSWaitSystemEvent', ClassName, RsUNTerminalServer, 2132, True,
+          'WTSWaitSystemEvent', ['WTSWaitSystemEvent']);
     end;
     Sleep(0);
   end;
@@ -2147,7 +2530,7 @@ end;
 
 procedure TJwWTSEventThread.DispatchEvent;
 begin
-  if FEventFlag > WTS_EVENT_NONE then 
+  if FEventFlag > WTS_EVENT_NONE then
   begin
     FOwner.FireEvent(FEventFlag);
     FEventFlag := WTS_EVENT_NONE;
