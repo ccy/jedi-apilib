@@ -244,7 +244,7 @@ function GetResourceStringIdentifier(rs: PResStringRec) : Integer;
 implementation
 uses Registry, SysUtils, ActiveX, Dialogs, ShellApi,
      JwsclTypes,   JwsclExceptions, JwsclSid,     JwsclAcl,
-     JwsclVersion, JwsclConstants,  JwsclProcess, JwsclUtils,
+     JwsclVersion, JwsclConstants,  JwsclUtils,
      JwsclToken,
      JwsclDescriptor, JwsclKnownSid, JwsclMapping, JwsclResource;
 {$ENDIF SL_OMIT_SECTIONS}

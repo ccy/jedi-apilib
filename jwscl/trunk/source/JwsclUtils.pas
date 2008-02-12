@@ -294,6 +294,9 @@ function GetUnitName(argObject: TObject): string;
 
 procedure JwSetThreadName(const Name: String; const ThreadID : Cardinal = Cardinal(-1));
 
+{@Name returns true if Handle is neither zero nor INVALID_HANDLE_VALUE; otherwise false.}
+function IsHandleValid(const Handle : THandle) : Boolean;
+
 implementation
 uses SysUtils, JwsclToken, JwsclKnownSid, JwsclDescriptor, JwsclAcl,
      JwsclSecureObjects, JwsclMapping
@@ -315,6 +318,11 @@ begin
 end;
 {$ENDIF JW_TYPEINFO}
 
+
+function IsHandleValid(const Handle : THandle) : Boolean;
+begin
+  result := (Handle <> 0) and (Handle <> INVALID_HANDLE_VALUE);
+end;
 
 type
   TThreadNameInfo = record

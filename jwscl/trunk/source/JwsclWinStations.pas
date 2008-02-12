@@ -46,7 +46,7 @@ uses SysUtils, Classes, Registry, Contnrs,
   jwaWindows, StdCtrls, ComCtrls, ActiveX,
   JwsclTypes, JwsclExceptions, JwsclSid, JwsclAcl, JwsclToken,
   JwsclMapping, JwsclKnownSid, JwsclSecureObjects,
-  JwsclVersion, JwsclConstants, JwsclProcess, JwsclDescriptor,
+  JwsclVersion, JwsclConstants, JwsclDescriptor,
   JwsclStrings; //JwsclStrings, must be at the end of uses list!!!
 
 {$ENDIF SL_OMIT_SECTIONS}

@@ -1026,6 +1026,28 @@ type
 
   TWellKnownSidTypeSet = set of TWellKnownSidType;
 
+  TJwProfileMember = (
+    pmFlags,
+    pmUserName,
+    pmProfilePath,
+    pmDefaultPath,
+    pmServerName,
+    pmPolicyPath
+  );
+
+  TJwProfileMembers = set of TJwProfileMember;
+
+  TJwProfileInfo = record
+    Flags: DWORD;        // See flags above
+    UserName: TJwString;    // User name (required)
+    ProfilePath: TJwString; // Roaming profile path (optional, can be NULL)
+    DefaultPath: TJwString; // Default user profile path (optional, can be NULL)
+    ServerName: TJwString;  // Validating domain controller name in netbios format (optional, can be NULL but group NT4 style policy won't be applied)
+    PolicyPath: TJwString;  // Path to the NT4 style policy file (optional, can be NULL)
+    Profile: HANDLE;      // Filled in by the function.  Registry key handle open to the root.
+  end;
+
+
 {$ENDIF SL_IMPLEMENTATION_SECTION}
 
 {$IFNDEF SL_OMIT_SECTIONS}

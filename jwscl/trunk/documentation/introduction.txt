@@ -1,4 +1,4 @@
-JEDI Windows Security Library BETA 0.6
+JEDI Windows Security Library BETA 0.7
 This is the preliminary version of JWSCL.
 
 The suite is a bunch of classes that encapsulated MS Windows security functions in object oriented way.
@@ -40,8 +40,17 @@ For more information about the LGPL: http://www.gnu.org/copyleft/lesser.html
 
 Do not forget to send bugs, comments or greets to the author
 
-Christian Wimmer – DelphiSecurityLibrary(ät)teamchris(dot)info
-Stuttgart, Germany 05.10.2008
+Christian Wimmer – DelphiSecurityLibrary at teamchris dot info
+Stuttgart, Germany 05.10.2007
+
+Contributors (in alphabetical order)
+Philip Dittmann
+Danila Galimov
+Remko Weijnen
+
 
 In Memory Of
 Robert Marquardt
+
+
+Updated 11.02.2008

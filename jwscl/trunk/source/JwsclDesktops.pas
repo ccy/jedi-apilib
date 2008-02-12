@@ -53,7 +53,7 @@ uses SysUtils, Classes, Registry, Contnrs,
   JwsclUtils, JwsclResource,
   JwsclTypes, JwsclExceptions, JwsclSid, JwsclAcl, JwsclToken,
   JwsclMapping, JwsclKnownSid, JwsclSecureObjects,
-  JwsclVersion, JwsclConstants, JwsclProcess, JwsclDescriptor,
+  JwsclVersion, JwsclConstants, JwsclDescriptor,
   JwsclStrings; //JwsclStrings, must be at the end of uses list!!!
 
 {$ENDIF SL_OMIT_SECTIONS}
@@ -1144,9 +1144,12 @@ begin
 
   if Result = 0 then
   begin
-    raise EJwsclCreateDesktopException.CreateFmt(
+    raise EJwsclCreateDesktopException.CreateFmtWinCall(RsDesktopCreateFailed,
+       'CreateDesktop', ClassName, 'JWsclDesktops.pas',0,
+       true, 'CreateDesktop', [Name]);
+    {raise EJwsclCreateDesktopException.CreateFmt(
       RsDesktopCreateFailed,
-      [Name]);
+      [Name]);}
     exit;
   end;
 
@@ -1335,9 +1338,13 @@ begin
     begin
       L := GetLastError;
       if L <> 0 then
-        raise EJwsclDesktopException.CreateFmt(
+        {raise EJwsclDesktopException.CreateFmt(
           RsDesktopFailedSetThreadDesktop,
-          [Name]);
+          [Name]);}
+        raise EJwsclDesktopException.CreateFmtWinCall(RsDesktopFailedSetThreadDesktop,
+       'SetThreadDesktop', ClassName, 'JWsclDesktops.pas',0,
+       true, 'SetThreadDesktop', [Name]);
+
     end;
 end;
 
@@ -1373,9 +1380,13 @@ begin
     DesktopFlags), doInherit, aDesiredAccess);
 
   if Result = 0 then
-    raise EJwsclOpenDesktopException.CreateFmt(
+    raise EJwsclOpenDesktopException.CreateFmtWinCall(RsDesktopFailedOpenDesktop,
+       'OpenInputDesktop', ClassName, 'JWsclDesktops.pas',0,
+       true, 'OpenInputDesktop', [Name]);
+
+{    raise EJwsclOpenDesktopException.CreateFmt(
       RsDesktopFailedOpenDesktop,
-      [Name]);
+      [Name]);}
 
   fHandle := Result;
   fDesiredAccess := aDesiredAccess;

@@ -49,7 +49,7 @@ uses SysUtils, Contnrs, Classes,
   Windows, Dialogs,
   jwaWindows, JwaVista, JwsclResource, JwsclMapping,
   JwsclTypes, JwsclExceptions, JwsclSid, JwsclAcl,
-  JwsclVersion, JwsclConstants, JwsclProcess, JwsclUtils,
+  JwsclVersion, JwsclConstants,  JwsclUtils,
   JwsclStrings; //JwsclStrings, must be at the end of uses list!!!
 
 {$ENDIF SL_OMIT_SECTIONS}

@@ -65,7 +65,7 @@ uses
 
   JwsclTypes, JwsclExceptions, JwsclMapping, JwsclACL, JwsclToken,
   JwsclEnumerations,
-  JwsclVersion, JwsclConstants, JwsclProcess, JwsclSid, JwsclDescriptor,
+  JwsclVersion, JwsclConstants, JwsclSid, JwsclDescriptor,
   JwsclStrings; //JwsclStrings, must be at the end of uses list!!!
 {$ENDIF SL_OMIT_SECTIONS}
 

@@ -60,7 +60,7 @@ uses SysUtils, Contnrs, Classes,
   jwaWindows, JwsclResource, JwsclUtils, JwaVista,
   JwsclTypes, JwsclExceptions, JwsclSid, JwsclAcl,
   JwsclDescriptor, JwsclEnumerations,
-  JwsclVersion, JwsclConstants, JwsclProcess,
+  JwsclVersion, JwsclConstants,
   JwsclStrings; //JwsclStrings, must be at the end of uses list!!!
 {$ENDIF SL_OMIT_SECTIONS}
 
@@ -72,6 +72,7 @@ type
   TJwPrivilegeSet = class;
   TJwPrivilege    = class;
   TJwSecurityTokenStatistics = class;
+
 
 
      {@Name administers a token (impersonated or primary)
@@ -298,6 +299,7 @@ type
     }
     function GetMaximumAllowed: TAccessMask;
 
+
   public
     {@Name TBD.
      Using this constructor is stronly discouraged!
@@ -358,6 +360,9 @@ type
         }
     constructor CreateTokenByProcess(const aProcessHandle: TJwProcessHandle;
       const aDesiredAccess: TJwAccessMask); virtual;
+
+    constructor CreateTokenByProcessId(const ProcessID: DWORD;
+      const DesiredAccess: TJwAccessMask); virtual;
 
         {CreateTokenByThread creates a new instances and opens a thread token.
 
@@ -823,7 +828,9 @@ type
     }
     function GetCurrentUserRegKey(const DesiredAccess: TJwAccessMask): HKEY;
 
-
+    procedure LoadUserProfile(var ProfileInfo : TJwProfileInfo;
+        const ProfileMembers : TJwProfileMembers);
+    function UnLoadUserProfile(var ProfileInfo : TJwProfileInfo) : Boolean;
   public
     //instance function related to token context
 
@@ -870,6 +877,9 @@ type
          }
     class function GetThreadToken(const aDesiredAccess: TJwAccessMask;
       const anOpenAsSelf: boolean): TJwSecurityToken; virtual;
+
+    {@Name returns the username of the token user.}
+    function GetTokenUserName : TJwString;
 
     {@Name gets the security descriptor.
      The caller is responsible to free the returned instance.
@@ -1635,7 +1645,8 @@ function JwCheckAdministratorAccess: boolean;
 {$IFNDEF SL_OMIT_SECTIONS}
 implementation
 
-uses JwsclKnownSid, JwsclMapping, JwsclSecureObjects, Math;
+uses JwsclKnownSid, JwsclMapping, JwsclSecureObjects,
+      JwsclPrivileges, Math;
 
 
 
@@ -2742,6 +2753,23 @@ begin
 
 
   Shared := False;
+end;
+
+constructor TJwSecurityToken.CreateTokenByProcessId(const ProcessID: DWORD;
+  const DesiredAccess: TJwAccessMask);
+var P : IJwPrivilegeScope;
+    hProc : DWORD;
+begin
+   P := JwGetPrivilegeScope([SE_DEBUG_NAME],pst_EnableIfAvail);
+
+  try
+    hProc := OpenProcess(PROCESS_QUERY_INFORMATION or PROCESS_VM_READ,
+                False, ProcessID);
+
+    CreateTokenByProcess(hProc, DesiredAccess);
+  finally
+    CloseHandle(hProc);
+  end;
 end;
 
 constructor TJwSecurityToken.CreateTokenByThread(
@@ -4368,6 +4396,152 @@ begin
   Result := TJwSecurityTokenStatistics.Create(stat^);
 
   HeapFree(GetProcessHeap, 0, stat);
+end;
+
+function TJwSecurityToken.GetTokenUserName : TJwString;
+var U : TJwSecurityId;
+begin
+  U := TokenUser;
+  try
+    result := U.AccountName[U.CachedSystemName];
+  finally
+    U.Free;
+  end;
+end;
+
+function TJwSecurityToken.UnLoadUserProfile(var ProfileInfo : TJwProfileInfo) : Boolean;
+var IntProfileInfo : {$IFDEF UNICODE}TProfileInfoW;{$ELSE}TProfileInfoA;{$ENDIF}
+begin
+  result := false;
+  SetLastError(ERROR_INVALID_HANDLE);
+
+  if not IsHandleValid(ProfileInfo.Profile) then
+    exit;
+
+  result := JwaWindows.UnloadUserProfile(TokenHandle, ProfileInfo.Profile);
+
+  ProfileInfo.Profile := INVALID_HANDLE_VALUE;
+end;
+
+procedure TJwSecurityToken.LoadUserProfile(
+         var ProfileInfo : TJwProfileInfo;
+         const ProfileMembers : TJwProfileMembers);
+
+  function GetRoamingProfile(const UserName : TJwString) : TJwString;
+  var DomainControllerInfo : {$IFDEF UNICODE}PDomainControllerInfoW{$ELSE}PDomainControllerInfoA{$ENDIF};
+      Res : DWORD;
+      intServerName : TJwPChar;
+
+      Data     : LPBYTE;
+      UserInfo : PUSER_INFO_3;
+  begin
+    result := '';
+    DomainControllerInfo := nil;
+    
+    try
+      //ask domain controler for its name
+      Res := {$IFDEF UNICODE}DsGetDcNameW{$ELSE}DsGetDcNameA{$ENDIF}
+        (nil, nil, nil, nil, DS_BACKGROUND_ONLY or
+        DS_RETURN_FLAT_NAME, DomainControllerInfo);
+    except
+      //raises exception on Systems older than Win2000
+      Res := 1;
+    end;
+
+    if Res = ERROR_SUCCESS then
+      intServerName := DomainControllerInfo.DomainControllerName
+    else
+      intServerName := nil;
+
+    if DomainControllerInfo <> nil then
+      NetApiBufferFree(DomainControllerInfo);
+
+    //get user information for roaming profile   
+    if NetUserGetInfo(
+        PWideChar(WideString(intServerName)),//__in   LPCWSTR servername,
+        PWideChar(WideString(UserName)),//__in   LPCWSTR username,
+        3, //__in   DWORD level,
+        Data//__out  LPBYTE* bufptr
+      ) <> NERR_Success then
+      exit;
+
+    if Data <> nil then
+    begin
+      UserInfo := PUSER_INFO_3(Data);
+      result := TJwString(UserInfo.usri3_profile);
+
+      NetApiBufferFree(Data);
+    end;
+  end;
+
+var ProfilePath : TJwString;
+    IntProfileInfo : {$IFDEF UNICODE}TProfileInfoW;
+    {$ELSE}TProfileInfoA;{$ENDIF}
+begin
+  IntProfileInfo.dwSize := Sizeof(IntProfileInfo);
+
+  with IntProfileInfo do
+  begin
+    if not (pmFlags in ProfileMembers) then
+      dwFlags := PI_NOUI
+    else
+      dwFlags := ProfileInfo.Flags;
+
+    if not (pmUserName in ProfileMembers) then
+    begin
+      try
+        lpUserName := PAnsiChar(GetTokenUserName)
+      except
+        on E : EJwsclWinCallFailedException do
+          lpUserName := nil;
+      end;
+    end
+    else
+      lpUserName := TJwPChar(ProfileInfo.UserName);
+
+    if not (pmProfilePath in ProfileMembers) then
+    begin
+      ProfilePath := GetRoamingProfile(lpUserName); //must be saved in a stack var
+      lpProfilePath := TJwPChar(ProfilePath);
+      //lpProfilePath := nil;
+    end
+    else
+      lpProfilePath := TJwPChar(ProfileInfo.ProfilePath);
+
+    if not (pmDefaultPath in ProfileMembers) then
+      lpDefaultPath := nil
+    else
+      lpDefaultPath := TJwPChar(ProfileInfo.DefaultPath);
+
+    if not (pmServerName in ProfileMembers) then
+      lpServerName := nil
+    else
+      lpServerName := TJwPChar(ProfileInfo.ServerName);
+
+    if not (pmPolicyPath in ProfileMembers) then
+      lpPolicyPath := nil
+    else
+      lpPolicyPath := TJwPChar(ProfileInfo.PolicyPath);
+
+    hProfile := 0;
+  end;
+
+  if not {$IFDEF UNICODE}LoadUserProfileW{$ELSE}LoadUserProfileA{$ENDIF}
+    (TokenHandle, IntProfileInfo) then
+    raise EJwsclWinCallFailedException.CreateFmtEx(
+      RsWinCallFailed, 'LoadUserProfile',
+      ClassName, RsUNToken, 0, True, ['LoadUserProfile']);
+
+  with ProfileInfo do
+  begin
+    Flags        := IntProfileInfo.dwFlags;
+    UserName     := IntProfileInfo.lpUserName;
+    ProfilePath  := IntProfileInfo.lpProfilePath;
+    DefaultPath  := IntProfileInfo.lpDefaultPath;
+    ServerName   := IntProfileInfo.lpServerName;
+    PolicyPath   := IntProfileInfo.lpPolicyPath;
+    Profile      := IntProfileInfo.hProfile;
+  end;
 end;
 
 function TJwSecurityToken.GetCurrentUserRegKey(

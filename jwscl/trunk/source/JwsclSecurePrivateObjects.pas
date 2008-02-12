@@ -50,7 +50,7 @@ uses
   SysUtils, Contnrs, Classes,
   JwsclTypes, JwsclExceptions, JwsclAcl, JwsclMapping, JwsclSid,
   JwsclSecureObjects, JwsclResource,
-  JwsclVersion, JwsclConstants, JwsclProcess, JwsclDescriptor, JwsclToken,
+  JwsclVersion, JwsclConstants, JwsclDescriptor, JwsclToken,
   JwsclStrings; //JwsclStrings, must be at the end of uses list!!!
 {$ENDIF SL_OMIT_SECTIONS}
 

@@ -47,7 +47,7 @@ uses
   SysUtils, Contnrs,
   JwsclTypes, JwsclExceptions, JwsclAcl, JwsclMapping, JwsclSid,
   JwsclSecureObjects, JwsclResource, JwsclSecurePrivateObjects,
-  JwsclVersion, JwsclConstants, JwsclProcess, JwsclDescriptor, JwsclToken,
+  JwsclVersion, JwsclConstants,  JwsclDescriptor, JwsclToken,
   JwsclStrings; //JwsclStrings, must be at the end of uses list!!!
 
 
