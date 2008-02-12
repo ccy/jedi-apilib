@@ -73,6 +73,9 @@ type
 implementation
 
 { TJwTerminalServerTests }
+procedure Nop;
+begin
+end;
 
 procedure TJwTerminalServerTests.SetUp;
 begin
@@ -97,21 +100,25 @@ end;
 
 procedure TJwTerminalServerTests.TestCreate;
 begin
+  Nop;
 
 end;
 
 procedure TJwTerminalServerTests.TestEnumerate;
 begin
+  Nop;
 
 end;
 
 procedure TJwTerminalServerTests.TestFileTime2DateTime;
 begin
+  Nop;
 
 end;
 
 procedure TJwTerminalServerTests.TestOpen;
 begin
+  Nop;
 
 end;
 
@@ -119,31 +126,37 @@ end;
 
 procedure TJwWTSSessionTests.TestCreate;
 begin
+  Nop;
 
 end;
 
 procedure TJwWTSSessionTests.TestGetOwner;
 begin
+  Nop;
 
 end;
 
 procedure TJwWTSSessionTests.TestGetServerHandle;
 begin
+  Nop;
 
 end;
 
 procedure TJwWTSSessionTests.TestGetSessionInfoDWORD;
 begin
+  Nop;
 
 end;
 
 procedure TJwWTSSessionTests.TestGetSessionInfoPtr;
 begin
+  Nop;
 
 end;
 
 procedure TJwWTSSessionTests.TestGetSessionInfoStr;
 begin
+  Nop;
 
 end;
 
@@ -151,16 +164,19 @@ end;
 
 procedure TJwWTSSessionListTests.TestCreate;
 begin
+  Nop;
 
 end;
 
 procedure TJwWTSSessionListTests.TestGetItem;
 begin
+  Nop;
 
 end;
 
 procedure TJwWTSSessionListTests.TestGetOwner;
 begin
+  Nop;
 
 end;
 

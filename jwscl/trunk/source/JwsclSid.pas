@@ -46,7 +46,7 @@ uses
   SysUtils, Contnrs, Classes,
   JwaWindows, JwaVista, JwsclUtils, JwsclResource,
   JwsclTypes, JwsclExceptions, JwsclEnumerations,
-  JwsclVersion, JwsclConstants, J
+  JwsclVersion, JwsclConstants, 
   JwsclStrings; //JwsclStrings, must be at the end of uses list!!!
 {$ENDIF SL_OMIT_SECTIONS}
 
