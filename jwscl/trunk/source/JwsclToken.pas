@@ -1645,7 +1645,7 @@ function JwCheckAdministratorAccess: boolean;
 {$IFNDEF SL_OMIT_SECTIONS}
 implementation
 
-uses JwsclKnownSid, JwsclMapping, JwsclSecureObjects,
+uses JwsclKnownSid, JwsclMapping, JwsclSecureObjects, JwsclProcess,
       JwsclPrivileges, Math;
 
 
@@ -2767,6 +2767,8 @@ begin
                 False, ProcessID);
 
     CreateTokenByProcess(hProc, DesiredAccess);
+
+  //  ShowMessage(GetTokenUserName);
   finally
     CloseHandle(hProc);
   end;
