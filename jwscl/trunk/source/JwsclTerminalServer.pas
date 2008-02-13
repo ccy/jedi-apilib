@@ -2655,6 +2655,7 @@ begin
     // Wait some time to prevent duplicate event dispatch
     Sleep(500);
     OutputDebugString('Entering WTSWaitSystemEvent');
+
     if WTSWaitSystemEvent(FOwner.ServerHandle, WTS_EVENT_ALL, FEventFlag) then
     begin
       if FEventFlag > WTS_EVENT_FLUSH then
@@ -2663,10 +2664,11 @@ begin
         Synchronize(DispatchEvent);
       end;
     end
-    else begin
+    else if FEventFlag > WTS_EVENT_FLUSH then
+    begin
       raise EJwsclWinCallFailedException.CreateFmtWinCall(RsWinCallFailed,
-      'WTSWaitSystemEvent', ClassName, RsUNTerminalServer, 2132, True,
-          'WTSWaitSystemEvent', ['WTSWaitSystemEvent']);
+        'WTSWaitSystemEvent', ClassName, RsUNTerminalServer, 0, True,
+        'Server: %s LastEvent: %d', [FOwner.Server, FOwner.LastEventFlag]);
     end;
     Sleep(0);
   end;
