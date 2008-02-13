@@ -68,14 +68,15 @@ TjwWTSSessions.@br
 {$IFNDEF SL_OMIT_SECTIONS}
 unit JwsclTerminalServer;
 {$I Jwscl.inc}
+{$I .\..\..\..\jwapi\trunk\common\jedi.inc}
 
 interface
 
-uses Classes, Contnrs, DateUtils, SysUtils,
+uses
+  Classes, Contnrs, DateUtils, SysUtils,
   JwaWindows,
   JwsclExceptions, JwsclResource, JwsclSid, JwsclTypes,
-  JwsclUtils, JwsclToken,
-  JwsclVersion, JwsclStrings;
+  JwsclUtils, JwsclToken, JwsclVersion, JwsclStrings;
 
 {$ENDIF SL_OMIT_SECTIONS}
 
@@ -92,6 +93,10 @@ type
   TJwWTSSessionList = class;
   TJwWTSProcess = class;
   TJwWTSProcessList = class;
+{$IFDEF DELPHI2005_UP}
+  TSessionsEnumerator = class;
+  TProcessEnumerator = class;
+{$ENDIF DELPHI2005_UP}
 
   {@Name is a pointer to a TJwTerminalServer instance}
   PJwTerminalServer = ^TJwTerminalServer;
@@ -1528,6 +1533,56 @@ type
     }
     function Add(ASession: TJwWTSSession): Integer;
 
+{$IFDEF DELPHI2005_UP}
+    {@Returns(@Name returns an enumerator that can be used to iterate through
+     the image list collection with Delphi's for in loop (Delphi 2005 and
+     higher).@br
+     @br
+     @longcode(#
+     var
+       ATerminalServer: TJwTerminalServer;
+       Session: TJwWTSSession;
+     begin
+       // Create Terminal Server instance and allocate memory for it
+       ATerminalServer := TJwTerminalServer.Create;
+
+       // It's recommended to wrap the Connect call in a try..except block since
+       // a connection failure will raise an exception.
+       try
+         ATerminalServer.Connect;
+       except
+         on E: EJwsclWinCallFailedException do
+         begin
+           // Handle Exception here
+         end;
+       end;
+
+       // EnumerateSessions might fail and return false, so always check the
+       // result.
+       if ATerminalServer.EnumerateSessions then
+       begin
+
+         // Loop through the Sessions with the for..in loop (needs Delphi 2005
+         // or higher).
+         for Session in ATerminalServer.Sessions do
+         begin
+           Memo1.Lines.Add(Format('User %s has session %d, the session state is %s',
+             [Session.Username, Session.SessionId, Session.ConnectStateStr]));
+         end;
+
+       end;
+
+       // Free Memory (note that free will automatically disconnect an active
+       // connection)
+
+       ATerminalServer.Free;
+
+     end;
+     #)
+    }
+    function GetEnumerator: TSessionsEnumerator;
+{$ENDIF DELPHI2005_UP}
+
     {@Returns(the index of the Session object in the SessionList.)
     }
     function IndexOf(ASession: TJwWTSSession): Integer;
@@ -1825,6 +1880,55 @@ type
     }
     function Add(AProcess: TJwWTSProcess): Integer;
 
+{$IFDEF DELPHI2005_UP}
+    {@Returns(@Name returns an enumerator that can be used to iterate through
+     the image list collection with Delphi's for in loop (Delphi 2005 and
+     higher).@br
+     @br
+     @longcode(#
+     var
+       ATerminalServer: TJwTerminalServer;
+       Process: TJwWTSProcess;
+     begin
+       // Create Terminal Server instance and allocate memory for it
+       ATerminalServer := TJwTerminalServer.Create;
+
+       // It's recommended to wrap the Connect call in a try..except block since
+       // a connection failure will raise an exception.
+       try
+         ATerminalServer.Connect;
+       except
+         on E: EJwsclWinCallFailedException do
+         begin
+           // Handle Exception here
+         end;
+       end;
+
+       // EnumerateProcesses might fail and return false, so always check the
+       // result.
+       if ATerminalServer.EnumerateProcesses then
+       begin
+
+         // Loop through the Processes with the for..in loop (needs Delphi 2005
+         // or higher).
+         for Process in ATerminalServer.Processes do
+         begin
+           Memo1.Lines.Add(Format('Process %s runs in  session %d with PID %d',
+             [Process.Processname, Process.SessionId, Process.ProcessId]));
+         end;
+
+       end;
+
+       // Free Memory (note that free will automatically disconnect an active
+       // connection)
+
+       ATerminalServer.Free;
+
+     end;
+     #)
+    }
+    function GetEnumerator: TProcessEnumerator;
+
     {@Returns(the index of the Process object in the ProcessList.)
     }
     function IndexOf(AProcess: TJwWTSProcess): Integer;
@@ -1946,6 +2050,32 @@ type
     }
     property ShadowMode: TShadowMode read GetShadowMode write SetShadowMode;
   end;
+
+{$IFDEF DELPHI2005_UP}
+  TSessionsEnumerator = class
+  private
+    FIndex: Integer;
+    FSessions: TJwWTSSessionList;
+  public
+    constructor Create(ASessionList: TJwWTSSessionList);
+    function GetCurrent: TJwWTSSession;
+    function MoveNext: Boolean;
+    property Current: TJwWTSSession read GetCurrent;
+  end;
+{$ENDIF DELPHI2005_UP}
+
+{$IFDEF DELPHI2005_UP}
+  TProcessEnumerator = class
+  private
+    FIndex: Integer;
+    FProcesses: TJwWTSProcessList;
+  public
+    constructor Create(AProcessList: TJwWTSProcessList);
+    function GetCurrent: TJwWTSProcess;
+    function MoveNext: Boolean;
+    property Current: TJwWTSProcess read GetCurrent;
+  end;
+{$ENDIF DELPHI2005_UP}
 
 {$ENDIF SL_IMPLEMENTATION_SECTION}
 
@@ -2156,7 +2286,8 @@ begin
 end;
 
 function TJwTerminalServer.GetServer: TJwString;
-var nSize: DWORD;
+var
+  nSize: DWORD;
   pComputerName: TJwPChar;
 begin
   // If no server was specified we return the local computername
@@ -2184,7 +2315,8 @@ begin
 end;
 
 function TJwTerminalServer.GetWinStationName(const SessionId: DWORD): TJwString;
-var WinStationNamePtr: PWideChar;
+var
+  WinStationNamePtr: PWideChar;
 begin
   // Get and zero memory (
   GetMem(WinStationNamePtr, WINSTATIONNAME_LENGTH * SizeOf(WideChar));
@@ -2222,7 +2354,8 @@ begin
 end;
 
 function TJwTerminalServer.EnumerateProcesses: Boolean;
-var Count: Integer;
+var
+  Count: Integer;
   ProcessInfoPtr: PWINSTA_PROCESS_INFO_ARRAY;
   i: Integer;
   AProcess: TJwWTSProcess;
@@ -2347,8 +2480,13 @@ begin
 end;
 
 function TJwTerminalServer.EnumerateSessions: boolean;
-var SessionInfoPtr: {$IFDEF UNICODE}PJwWTSSessionInfoWArray;
-  {$ELSE}PJwWTSSessionInfoAArray;{$ENDIF UNICODE}
+var
+  SessionInfoPtr:
+{$IFDEF UNICODE}
+  PJwWTSSessionInfoWArray;
+{$ELSE}
+  PJwWTSSessionInfoAArray;
+{$ENDIF UNICODE}
   pCount: DWORD;
   i: integer;
   Res: Longbool;
@@ -2444,10 +2582,13 @@ begin
         FServerHandle := INVALID_HANDLE_VALUE;
         FConnected := False;
         
-        // and raise exception        
-        raise EJwsclWinCallFailedException.CreateFmtWinCall(RsWinCallFailed,
+        // and raise exception
+        raise EJwsclTerminalServerConnectException.CreateFmtWinCall(RsWinCallFailed,
           'WTSOpenServer', ClassName, RsUNTerminalServer, 0, True,
           'WTSOpenServer', ['WTSOpenServer', FServer]);
+{        raise EJwsclWinCallFailedException.CreateFmtWinCall(RsWinCallFailed,
+          'WTSOpenServer', ClassName, RsUNTerminalServer, 0, True,
+          'WTSOpenServer', ['WTSOpenServer', FServer]);}
       end
       else
       begin
@@ -2550,7 +2691,8 @@ end;
 procedure TJwWTSEnumServersThread.Execute;
 type
   PWTS_SERVER_INFO = {$IFDEF UNICODE}PWTS_SERVER_INFOW{$ELSE}PWTS_SERVER_INFOA{$ENDIF UNICODE};
-var ServerInfoPtr: PJwWtsServerInfoAArray;
+var
+  ServerInfoPtr: PJwWtsServerInfoAArray;
   pCount: DWORD;
   i: DWORD;
 begin
@@ -2662,6 +2804,13 @@ begin
   Result := inherited Add(ASession);
 end;
 
+{$IFDEF DELPHI2005_UP}
+function TJwWTSSessionList.GetEnumerator: TSessionsEnumerator;
+begin
+  Result := TSessionsEnumerator.Create(Self);
+end;
+{$ENDIF DELPHI2005_UP}
+
 function TJwWTSSessionList.GetItem(Index: Integer): TJwWTSSession;
 begin
   Result := TJwWTSSession(inherited Items[Index]);
@@ -2695,6 +2844,11 @@ end;
 function TJwWTSProcessList.Add(AProcess: TJwWTSProcess): Integer;
 begin
   Result := inherited Add(AProcess);
+end;
+
+function TJwWTSProcessList.GetEnumerator;
+begin
+
 end;
 
 function TJwWTSProcessList.GetItem(Index: Integer): TJwWTSProcess;
@@ -2768,7 +2922,8 @@ begin
 end;
 
 function TJwTerminalServer.GetIdleProcessName: TJwString;
-var hModule: THandle;
+var
+  hModule: THandle;
   lpBuffer: PWideChar;
   nBufferMax: Integer;
 begin
@@ -2797,7 +2952,8 @@ begin
 end;
 
 function TJwTerminalServerList.FindByServer(const ServerName: WideString; const IgnoreCase: boolean = False): TJwTerminalServer;
-var i: Integer;
+var
+  i: Integer;
 begin
   Result := nil;
   for i := 0 to Count-1 do
@@ -2870,7 +3026,8 @@ end;
 
 procedure TJwWTSSession.GetSessionInfoPtr(const WTSInfoClass: _WTS_INFO_CLASS;
   var ABuffer: Pointer);
-var dwBytesReturned: DWORD;
+var
+  dwBytesReturned: DWORD;
 begin
   ABuffer := nil;
 {$IFDEF UNICODE}
@@ -2897,7 +3054,8 @@ begin
 end;
 
 function TJwWTSSession.GetSessionInfoDWORD(const WTSInfoClass: _WTS_INFO_CLASS): DWORD;
-var ABuffer: Pointer;
+var
+  ABuffer: Pointer;
 begin
   result := 0;
   GetSessionInfoPtr(WTSInfoClass, aBuffer);
@@ -2919,7 +3077,8 @@ begin
 end;
 
 procedure TJwWTSSession.GetWinStationDriver;
-var WinStationDriver: _WD_CONFIGW;
+var
+  WinStationDriver: _WD_CONFIGW;
   dwReturnLength: DWORD;
 begin
   FWdName := '';
@@ -2938,7 +3097,8 @@ end;
 
 // #todo Remove IdleTime helper from JwaWinsta
 procedure TJwWTSSession.GetWinStationInformation;
-var WinStationInfo: _WINSTATION_INFORMATIONW;
+var
+  WinStationInfo: _WINSTATION_INFORMATIONW;
   dwReturnLength: DWORD;
   lpBuffer: PWideChar;
 begin
@@ -3029,7 +3189,8 @@ begin
 end;
 
 function TJwWTSSession.GetClientAddress: TJwString;
-var ClientAddressPtr: PWtsClientAddress;
+var
+  ClientAddressPtr: PWtsClientAddress;
 begin
   GetSessionInfoPtr(WTSClientAddress, Pointer(ClientAddressPtr));
   if ClientAddressPtr <> nil then
@@ -3058,7 +3219,8 @@ begin
 end;
 
 procedure TJwWTSSession.GetClientDisplay;
-var ClientDisplayPtr: PWtsClientDisplay;
+var
+  ClientDisplayPtr: PWtsClientDisplay;
 begin
   GetSessionInfoPtr(WTSClientDisplay, Pointer(ClientDisplayPtr));
   if ClientDisplayPtr <> nil then
@@ -3075,7 +3237,8 @@ end;
 constructor TJwWTSSession.Create(const Owner: TJwWTSSessionList;
   const SessionId: TJwSessionId; const WinStationName: TJwString;
   const ConnectState: TWtsConnectStateClass);
-var tempStr : String;
+var
+  tempStr : String;
 begin
   JwRaiseOnNilMemoryBlock(Owner, 'Create', ClassName, RsUNTerminalServer);
   JwRaiseOnNilMemoryBlock(Owner.Owner, 'Create', ClassName, RsUNTerminalServer);
@@ -3256,7 +3419,8 @@ begin
 end;
 
 function TJwWTSProcess.GetToken : TJwSecurityToken;
-var hProc : HANDLE;
+var
+  hProc : HANDLE;
 begin
   result := FToken;
   if Assigned(FToken) then
@@ -3335,4 +3499,49 @@ begin
   Result := WTSTerminateProcess(GetServerHandle, ProcessId, dwExitCode);
 end;
 
+{$IFDEF DELPHI2005_UP}
+constructor TSessionsEnumerator.Create(ASessionList: TJwWTSSessionList);
+begin
+  inherited Create;
+  FIndex := -1;
+  FSessions := ASessionList;
+end;
+
+function TSessionsEnumerator.GetCurrent;
+begin
+  Result := FSessions[FIndex];
+end;
+
+function TSessionsEnumerator.MoveNext: Boolean;
+begin
+  Result := FIndex < FSessions.Count - 1;
+  if Result then
+    Inc(FIndex);
+end;
+
+constructor TProcessEnumerator.Create(AProcessList: TJwWTSProcessList);
+begin
+  inherited Create;
+  FIndex := -1;
+  FProcesses := AProcessList;
+end;
+
+function TProcessEnumerator.GetCurrent;
+begin
+  Result := FProcesses[FIndex];
+end;
+
+function TProcessEnumerator.MoveNext: Boolean;
+begin
+  Result := FIndex < FProcesses.Count - 1;
+  if Result then
+    Inc(FIndex);
+end;
+{$ENDIF DELPHI2005_UP}
+
+{$ENDIF SL_INTERFACE_SECTION}
+
+{$IFNDEF SL_OMIT_SECTIONS}
 end.
+{$ENDIF SL_OMIT_SECTIONS}
+
