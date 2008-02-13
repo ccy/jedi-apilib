@@ -978,6 +978,7 @@ type
      address of a client as reported by the Terminal Server Client
      @br@br
      @bold(Remarks:) Console sessions always returns empty value.
+     @table(
      }
     property ClientAddress: TJwString read FClientAddress;
 
@@ -1794,12 +1795,16 @@ type
     {@Name returns the token of the session.
      The returned value is cached and must not be freed!
      If the value cannot be obtained the return value is nil.
+     @raises(In order to obtain the Token the SE_DEBUG_NAME privilege is enabled
+     , if this fails EJwsclPrivilegeException will be raised)
     }
     property Token : TJwSecurityToken read GetToken;
 
-    {@Name returns the logged on User of the session.
-    The returned value is cached and must not be freed!
-    If the value cannot be obtained the return value is nil.
+    {@Name returns a JwsclSid.TJwSecurityID instance pointing to the SID of the
+     user that is associated with the process.@br
+     @br
+     @bold(Remarks:) The returned value is cached and must not be freed!
+     If the value cannot be obtained the return value is nil.
     }
     property UserSid : TJwSecurityID read GetUserSid;
 
@@ -1814,7 +1819,7 @@ type
      Services session.@br
      For RDP this will be something like RDP-Tcp#023@br
      For ICA this will be something like ICA-tcp#014
-         }
+    }
     property WinStationName: TJwString read FWinStationname;
   end;
 
@@ -2848,7 +2853,7 @@ end;
 
 function TJwWTSProcessList.GetEnumerator;
 begin
-
+  Result := TProcessEnumerator.Create(Self);
 end;
 
 function TJwWTSProcessList.GetItem(Index: Integer): TJwWTSProcess;
@@ -3069,7 +3074,6 @@ end;
 function TJwWTSSession.GetServerHandle;
 begin
   // The ServerHandle is stored in TJwTerminalServer
-  //TODO: Owner = nil? or Owner.Owner = nil ?
   JwRaiseOnNilMemoryBlock(Owner, 'GetServerHandle', ClassName, RsUNTerminalServer);
   JwRaiseOnNilMemoryBlock(Owner.Owner, 'GetServerHandle', ClassName, RsUNTerminalServer);
 
@@ -3335,7 +3339,6 @@ end;
 
 function TJwWTSSession.GetServer: TJwString;
 begin
-  //TODO: Owner = nil? or Owner.Owner = nil ?
   JwRaiseOnNilMemoryBlock(Owner, 'GetServerName', ClassName, RsUNTerminalServer);
   JwRaiseOnNilMemoryBlock(Owner.Owner, 'GetServerName', ClassName, RsUNTerminalServer);
 
