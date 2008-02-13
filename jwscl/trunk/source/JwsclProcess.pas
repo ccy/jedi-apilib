@@ -131,6 +131,8 @@ procedure JwCreateProcessInSession(
   var LogInfo : TJwString
   );
 
+  var  F :TExtFile;
+
 
   procedure GetPChar(const Str : TJwString; var CharPtr : TJwPChar);
   begin
@@ -155,7 +157,7 @@ procedure JwCreateProcessInSession(
     //try to enable debug privs if available - otherwise nothing
     JwEnablePrivilege(SE_DEBUG_NAME,pst_EnableIfAvail);
 
-    Log.Add(Format('Running CreateTokenByProcessAndSession(SessionID: %d',[SessionID]));
+    Writeln(F,Format('Running CreateTokenByProcessAndSession(SessionID: %d',[SessionID]));
 
     TSrv := TJwTerminalServer.Create;
     try
@@ -164,10 +166,10 @@ procedure JwCreateProcessInSession(
       ProcessID := 0;
       if TSrv.EnumerateProcesses then
       begin
-        Log.Add('Proc count: ' + IntToStr(TSrv.Processes.Count));
+        Writeln(F,'Proc count: ' + IntToStr(TSrv.Processes.Count));
         for i := 0 to TSrv.Processes.Count-1 do
         begin
-          Log.Add(Format('Proc: %d, Name= %s SessionID: %d',[TSrv.Processes[i].ProcessId,
+          Writeln(F,Format('Proc: %d, Name= %s SessionID: %d',[TSrv.Processes[i].ProcessId,
             TSrv.Processes[i].ProcessName, TSrv.Processes[i].SessionId]));
 
           if
@@ -196,7 +198,7 @@ procedure JwCreateProcessInSession(
               {
                 Get token by process handle and duplicate it
               }
-              Log.Add('call CreateDuplicateExistingToken');
+              Writeln(F,'call CreateDuplicateExistingToken');
               result := TJwSecurityToken.CreateDuplicateExistingToken(TSrv.Processes[i].Token.TokenHandle,
                   MAXIMUM_ALLOWED);
               {DEBUG: raise Exception.Create('');}
@@ -204,7 +206,7 @@ procedure JwCreateProcessInSession(
               On E : Exception do
               begin
                 Succ := False;
-                Log.Add('CreateDuplicateExistingToken failed: '#13#10+E.Message);
+                Writeln(F,'CreateDuplicateExistingToken failed: '#13#10+E.Message);
 
 
                 //try to get the token the old fashioned way
@@ -221,7 +223,7 @@ procedure JwCreateProcessInSession(
                 except
                   On E : Exception do
                   begin
-                    Log.Add('Could not get user token by Process: '#13#10+E.Message);
+                    Writeln(F,'Could not get user token by Process: '#13#10+E.Message);
                     Succ := False;
                     ProcessID := 0;
                   end;
@@ -236,26 +238,31 @@ procedure JwCreateProcessInSession(
         end
       end
       else
-        Log.Add('EnumerateProcesses failed.');
+        Writeln(F,'EnumerateProcesses failed.');
 
       if ProcessID = 0 then
-        Log.Add('Could not find any process ID.');
+        Writeln(F,'Could not find any process ID.');
     finally
       TSrv.Free;
-      Log.Add('Exiting CreateTokenByProcessAndSession.');
+      Writeln(F,'Exiting CreateTokenByProcessAndSession.');
     end;
   end;
 
 
 var
 
-    F :TExtFile;
+
 
     lpApplicationName  : TJwPChar;
     lpCommandLine      : TJwPChar;
     lpCurrentDirectory : TJwPChar;
 begin
   JwInitWellKnownSIDs;
+
+  assignfile(f, 'C:\temp\pdf2.txt');
+  rewrite(F);
+  try
+
 
   Output.UserToken := nil;
   ZeroMemory(@Output.ProcessInfo, sizeof(Output.ProcessInfo));
@@ -265,21 +272,21 @@ begin
 
   Log := TStringList.Create;
   try
-    Log.Add(Format('Running CreateProcessInSession(Sesion=%d):',[SessionID]));
+    Writeln(F,Format('Running CreateProcessInSession(Sesion=%d):',[SessionID]));
     try
-      Log.Add('Getting user token CreateWTSQueryUserTokenEx...');
+      Writeln(F,'Getting user token CreateWTSQueryUserTokenEx...');
       Output.UserToken := TJwSecurityToken.CreateWTSQueryUserTokenEx(0, SessionID);
     except
       //on E2 : EJwsclUnsupportedWindowsVersionException do
       On E2 : Exception do
       begin
         try
-          Log.Add('Getting user token CreateTokenByProcessAndSession...');
+          Writeln(F,'Getting user token CreateTokenByProcessAndSession...');
           Output.UserToken := CreateTokenByProcessAndSession(SessionId);
         except
           on E : Exception do
           begin
-            Log.Add('Could not retrieve user token: '+#13#10+E.Message);
+            Writeln(F,'Could not retrieve user token: '+#13#10+E.Message);
             raise;
           end;
         end;
@@ -293,7 +300,7 @@ begin
       except
         on E : Exception do
         begin
-          Log.Add(E.Message);
+          Writeln(F,E.Message);
           raise;
         end;
       end;
@@ -303,7 +310,7 @@ begin
 
 
     try
-      Log.Add('Loading user profile');
+      Writeln(F,'Loading user profile');
      // raise Exception.Create('');
       Output.UserToken.LoadUserProfile(Output.ProfileInfo, []);
 
@@ -317,17 +324,17 @@ begin
       end;
 
 
-      Log.Add('Init strings');
+      Writeln(F,'Init strings');
       GetPChar(ApplicationName, lpApplicationName);
       GetPChar(CommandLine, lpCommandLine);
       GetPChar(CurrentDirectory, lpCurrentDirectory);
 
 
-      Log.Add('Init env block');
+      Writeln(F,'Init env block');
       if not CreateEnvironmentBlock(@Output.EnvBlock, Output.UserToken.TokenHandle, false) then
-        Log.Add('CreateEnvironmentBlock failed: '+IntToStr(GetLastError));
+        Writeln(F,'CreateEnvironmentBlock failed: '+IntToStr(GetLastError));
 
-      Log.Add('Call CreateProcessAsUser');
+      Writeln(F,'Call CreateProcessAsUser');
       if not {$IFDEF UNICODE}CreateProcessAsUserW{$ELSE}CreateProcessAsUserA{$ENDIF}(
         Output.UserToken.TokenHandle,//HANDLE hToken,
         lpApplicationName,//__in_opt     LPCTSTR lpApplicationName,
@@ -342,15 +349,15 @@ begin
         Output.ProcessInfo //__out        LPPROCESS_INFORMATION lpProcessInformation
       ) then
       begin
-        Log.Add('Failed CreateProcessAsUser.');
+        Writeln(F,'Failed CreateProcessAsUser.');
         RaiseLastOSError;
       end;
 
       if WaitForProcess then
       begin
-        Log.Add('Wait for process...');
+        Writeln(F,'Wait for process...');
         WaitForSingleObject(Output.ProcessInfo.hProcess, INFINITE);
-        Log.Add('Process exited... cleaning up');
+        Writeln(F,'Process exited... cleaning up');
 
         DestroyEnvironmentBlock(Output.EnvBlock);
         Output.EnvBlock := nil;
@@ -366,7 +373,7 @@ begin
         Output.UserToken.UnLoadUserProfile(Output.ProfileInfo);
         FreeAndNil(Output.UserToken);
 
-        Log.Add('Exception (between LoadUserProfile and CreateProcessAsUser) : '#13#10+E.Message);
+        Writeln(F,'Exception (between LoadUserProfile and CreateProcessAsUser) : '#13#10+E.Message);
         raise;
       end;
     end;
@@ -375,18 +382,19 @@ begin
     on E : EJwsclSecurityException do
     begin
 
-      Log.Add(Format('Exiting CreateProcessInSession(Sesion=%d):',[SessionID]));
+      Writeln(F,Format('Exiting CreateProcessInSession(Sesion=%d):',[SessionID]));
 
       LogInfo := LogInfo + #13#10 + Log.Text;
       E.Log := LogInfo;
       ShowMessage(E.Log);
       Log.Free;
 
-     { assignfile(f, 'C:\pdf2.txt');
-      rewrite(F);
-      writeln(f,E.Log);
-      closefile(F);  }
+
     end;
+  end;
+
+  finally
+    closefile(F);
   end;
 end;
 

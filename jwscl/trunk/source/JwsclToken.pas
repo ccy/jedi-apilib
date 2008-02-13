@@ -478,6 +478,22 @@ type
      This constructor can be used in Windows 2000 Terminal Server in contrary
      to CreateWTSQueryUserToken.
 
+     WARNING: Do not mix up parameter Server and SessionID
+     @longcode(#
+       //this call is wrong
+         CreateWTSQueryUserTokenEx(const Server: HANDLE;
+          SessionID: cardinal)
+
+     @param(Server defines the Terminal Server where this function will
+      be processed. Define be WTS_CURRENT_SERVER_HANDLE to use current server)
+      @param(SessionID defines the session which is used to obtain the token.
+         If set to INVALID_HANDLE_VALUE, the function does the following :
+         @orderedlist(
+          @item(Try to open the token of the actual console session. Using WtsGetActiveConsoleSessionID to obtain the session ID.)
+          @item(Try to open the token of the current session using the session ID WTS_CURRENT_SESSION)
+          )
+         If this fails an exception is raised.)
+
      @raises(EJwsclTerminalServiceNecessary will be raised if the no terminal
       service is running)
      @raises(EJwsclInvalidPrimaryToken will be raised if the process token
@@ -489,8 +505,8 @@ type
       a call to WinStationQueryUserToken failed)
 
      }
-    constructor CreateWTSQueryUserTokenEx(const Server: HANDLE = 0;
-      SessionID: cardinal = INVALID_HANDLE_VALUE); overload; virtual;
+    constructor CreateWTSQueryUserTokenEx(const Server: HANDLE;
+      SessionID: cardinal); overload; virtual;
 
 
     {@Name is a compatibility constructor for CreateWTSQueryUserToken which does
@@ -3020,7 +3036,7 @@ end;
 
 
 constructor TJwSecurityToken.CreateWTSQueryUserTokenEx(
-  const Server: HANDLE = 0; SessionID: cardinal = INVALID_HANDLE_VALUE);
+  const Server: HANDLE;SessionID: cardinal);
 begin
   RaiseOnInvalidPrimaryToken('CreateWTSQueryUserTokenEx');
 
@@ -4577,6 +4593,7 @@ begin
   }
   PrivScope := JwGetPrivilegeScope([SE_RESTORE_NAME, SE_BACKUP_NAME]);
 
+ 
 
   IntProfileInfo.dwSize := Sizeof(IntProfileInfo);
 
