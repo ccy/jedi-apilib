@@ -68,7 +68,7 @@ TjwWTSSessions.@br
 {$IFNDEF SL_OMIT_SECTIONS}
 unit JwsclTerminalServer;
 {$I Jwscl.inc}
-{$I .\..\..\..\jwapi\trunk\common\jedi.inc}
+
 
 interface
 
@@ -93,10 +93,10 @@ type
   TJwWTSSessionList = class;
   TJwWTSProcess = class;
   TJwWTSProcessList = class;
-{$IFDEF DELPHI2005_UP}
+
   TSessionsEnumerator = class;
   TProcessEnumerator = class;
-{$ENDIF DELPHI2005_UP}
+
 
   {@Name is a pointer to a TJwTerminalServer instance}
   PJwTerminalServer = ^TJwTerminalServer;
@@ -1534,7 +1534,7 @@ type
     }
     function Add(ASession: TJwWTSSession): Integer;
 
-{$IFDEF DELPHI2005_UP}
+
     {@Returns(@Name returns an enumerator that can be used to iterate through
      the image list collection with Delphi's for in loop (Delphi 2005 and
      higher).@br
@@ -1582,7 +1582,7 @@ type
      #)
     }
     function GetEnumerator: TSessionsEnumerator;
-{$ENDIF DELPHI2005_UP}
+
 
     {@Returns(the index of the Session object in the SessionList.)
     }
@@ -1885,7 +1885,7 @@ type
     }
     function Add(AProcess: TJwWTSProcess): Integer;
 
-{$IFDEF DELPHI2005_UP}
+
     {@Returns(@Name returns an enumerator that can be used to iterate through
      the image list collection with Delphi's for in loop (Delphi 2005 and
      higher).@br
@@ -1933,6 +1933,7 @@ type
      #)
     }
     function GetEnumerator: TProcessEnumerator;
+
 
     {@Returns(the index of the Process object in the ProcessList.)
     }
@@ -2056,7 +2057,7 @@ type
     property ShadowMode: TShadowMode read GetShadowMode write SetShadowMode;
   end;
 
-{$IFDEF DELPHI2005_UP}
+
   TSessionsEnumerator = class
   private
     FIndex: Integer;
@@ -2067,9 +2068,9 @@ type
     function MoveNext: Boolean;
     property Current: TJwWTSSession read GetCurrent;
   end;
-{$ENDIF DELPHI2005_UP}
 
-{$IFDEF DELPHI2005_UP}
+
+
   TProcessEnumerator = class
   private
     FIndex: Integer;
@@ -2080,14 +2081,15 @@ type
     function MoveNext: Boolean;
     property Current: TJwWTSProcess read GetCurrent;
   end;
-{$ENDIF DELPHI2005_UP}
+
 
 {$ENDIF SL_IMPLEMENTATION_SECTION}
 
 {$IFNDEF SL_OMIT_SECTIONS}
-
 implementation
 {$ENDIF SL_OMIT_SECTIONS}
+
+{$IFNDEF SL_INTERFACE_SECTION}
 
 type
   { array of TWtsSessionInfoA }
@@ -2809,12 +2811,11 @@ begin
   Result := inherited Add(ASession);
 end;
 
-{$IFDEF DELPHI2005_UP}
 function TJwWTSSessionList.GetEnumerator: TSessionsEnumerator;
 begin
   Result := TSessionsEnumerator.Create(Self);
 end;
-{$ENDIF DELPHI2005_UP}
+
 
 function TJwWTSSessionList.GetItem(Index: Integer): TJwWTSSession;
 begin
@@ -3503,7 +3504,7 @@ begin
   Result := WTSTerminateProcess(GetServerHandle, ProcessId, dwExitCode);
 end;
 
-{$IFDEF DELPHI2005_UP}
+
 constructor TSessionsEnumerator.Create(ASessionList: TJwWTSSessionList);
 begin
   inherited Create;
@@ -3541,7 +3542,7 @@ begin
   if Result then
     Inc(FIndex);
 end;
-{$ENDIF DELPHI2005_UP}
+
 
 {$ENDIF SL_INTERFACE_SECTION}
 

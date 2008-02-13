@@ -19,7 +19,8 @@ Of course they will fail if Vista stuff is called on them.
 }
 {$DEFINE VISTA}
 
-{$INCLUDE Compilers.inc}
+{.$INCLUDE Compilers.inc}
+{$I .\..\..\..\jwapi\trunk\common\jedi.inc}
 
 {$IFDEF FPC}
 {$mode delphi}{.$H+}
