@@ -303,10 +303,13 @@ type
 
   //general exception for terminal server methods
   EJwsclTerminalServerException = class(EJwsclSecurityException);
+  // Terminal Server Connection Exception
+  EJwsclTerminalServerConnectException = class(EJwsclTerminalServerException);
 
   EJwsclTerminalServiceException =  class(EJwsclSecurityException);
   EJwsclTerminalServiceNecessary =  class(EJwsclTerminalServiceException);
 
+  //general exception for terminal session methods
 
   //general exception for terminal session methods
   EJwsclTerminalSessionException = class(EJwsclTerminalServerException);
