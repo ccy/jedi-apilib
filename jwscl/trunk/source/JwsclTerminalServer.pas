@@ -2330,16 +2330,12 @@ begin
   ProcessInfoPtr := nil;
 end;
 
-function TJwTerminalServer.GetServers: {$IFDEF UNICODE}TWideStringList{$ELSE}TStringList{$ENDIF UNICODE};
+function TJwTerminalServer.GetServers: TStringList;
 begin
   // Create the list
   if not Assigned(FServers) then
   begin
-{$IFDEF UNICODE}
-    FServers := TWideStringList.Create;
-{$ELSE}
     FServers := TStringList.Create;
-{$ENDIF UNICODE}
     // The list was empty so fill it!
     EnumerateServers('');
   end;
