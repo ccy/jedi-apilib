@@ -40,7 +40,7 @@ unit JwsclProcess;
 
 interface
 
-uses jwaWindows, JwsclTypes, JwsclToken,
+uses jwaWindows, JwsclTypes, JwsclToken, JwsclSid,
   JwsclStrings; //JwsclStrings, must be at the end of uses list!!!
 {$ENDIF SL_OMIT_SECTIONS}
 
@@ -85,7 +85,9 @@ procedure JwCreateProcessInSession(
 
 {$IFNDEF SL_OMIT_SECTIONS}
 implementation
-uses SysUtils, Classes, Dialogs, JwsclTerminalServer, JwsclExceptions;
+uses SysUtils, Classes, Dialogs, JwsclTerminalServer, JwsclExceptions,
+  JwsclKnownSid,
+  JwsclAcl, JwsclConstants;
 
 {$ENDIF SL_OMIT_SECTIONS}
 
@@ -144,39 +146,97 @@ procedure JwCreateProcessInSession(
   var TSrv : TJwTerminalServer;
       i : Integer;
       ProcessID : DWORD;
+      Succ : Boolean;
+      Sid : TJwSecurityId;
   begin
     result := nil;
+
+    //try to enable debug privs if available - otherwise nothing
     JwEnablePrivilege(SE_DEBUG_NAME,pst_EnableIfAvail);
 
-    Log.Add('Running CreateTokenByProcessAndSession');
+    Log.Add(Format('Running CreateTokenByProcessAndSession(SessionID: %d',[SessionID]));
+
     TSrv := TJwTerminalServer.Create;
     try
       TSrv.Connect;
 
       ProcessID := 0;
       if TSrv.EnumerateProcesses then
+      begin
+        Log.Add('Proc count: ' + IntToStr(TSrv.Processes.Count));
         for i := 0 to TSrv.Processes.Count-1 do
         begin
-          if TSrv.Processes[i].SessionId = SessionID then
-          begin
-            ProcessID := TSrv.Processes[i].ProcessId;
-            break;
-          end;
-        end;
+          Log.Add(Format('Proc: %d, Name= %s SessionID: %d',[TSrv.Processes[i].ProcessId,
+            TSrv.Processes[i].ProcessName, TSrv.Processes[i].SessionId]));
 
-      if ProcessID > 0 then
-      begin
-        try
-          result := TJwSecurityToken.CreateTokenByProcessId(ProcessID, MAXIMUM_ALLOWED)
-        except
-          On E : Exception do
+          if
+            {
+              same session
+            }
+            (TSrv.Processes[i].SessionId = SessionID)
+
+            {
+              no idle process
+            }
+            and (TSrv.Processes[i].ProcessId > 0)
+            {
+              We have to check for system processes in that session.
+              So we ignore them otherwise the user gets a system elevated process.
+            }
+            and (Assigned(TSrv.Processes[i].UserSid) and not TSrv.Processes[i].UserSid.EqualSid(JwLocalSystemSID))
+
+            then
           begin
-            Log.Add('Could not get user token by Process: '#13#10+E.Message);
-            raise;
+            //found a process in that specified session
+            ProcessID := TSrv.Processes[i].ProcessId;
+
+            try
+              Succ := true;
+              {
+                Get token by process handle and duplicate it
+              }
+              result := TJwSecurityToken.CreateDuplicateExistingToken(TSrv.Processes[i].Token.TokenHandle,
+                  MAXIMUM_ALLOWED);
+              {DEBUG: raise Exception.Create('');}
+            except
+              On E : Exception do
+              begin
+                Succ := False;
+                Log.Add('CreateDuplicateExistingToken failed: '#13#10+E.Message);
+
+
+                //try to get the token the old fashioned way
+                try
+                  Succ := true;
+
+                  result := TJwSecurityToken.CreateTokenByProcessId(ProcessID,
+                  //these are the only necessary rights
+                    TOKEN_ASSIGN_PRIMARY or
+                    TOKEN_QUERY or TOKEN_IMPERSONATE or TOKEN_DUPLICATE or TOKEN_READ);
+
+                  //  MAXIMUM_ALLOWED); CreateTokenByProcessId copies the token handle so we always get full access
+
+                except
+                  On E : Exception do
+                  begin
+                    Log.Add('Could not get user token by Process: '#13#10+E.Message);
+                    Succ := False;
+                    ProcessID := 0;
+                  end;
+                end;
+              end;
+            end;
+
+            //quit loop if success and process is found
+            if Succ and (ProcessID > 0) then
+              break;
           end;
-        end;
+        end
       end
       else
+        Log.Add('EnumerateProcesses failed.');
+
+      if ProcessID = 0 then
         Log.Add('Could not find any process ID.');
     finally
       TSrv.Free;
@@ -193,6 +253,8 @@ var
     lpCommandLine      : TJwPChar;
     lpCurrentDirectory : TJwPChar;
 begin
+  JwInitWellKnownSIDs;
+
   Output.UserToken := nil;
   ZeroMemory(@Output.ProcessInfo, sizeof(Output.ProcessInfo));
   Output.EnvBlock := nil;
@@ -236,8 +298,9 @@ begin
       exit;
     end;
 
-    Log.Add('Loading user profile');
+
     try
+      Log.Add('Loading user profile');
       Output.UserToken.LoadUserProfile(Output.ProfileInfo, []);
 
       with StartupInfo do
@@ -249,15 +312,18 @@ begin
           lpDesktop   := TJwPChar(Desktop);
       end;
 
+
+      Log.Add('Init strings');
       GetPChar(ApplicationName, lpApplicationName);
       GetPChar(CommandLine, lpCommandLine);
       GetPChar(CurrentDirectory, lpCurrentDirectory);
 
-      
 
-      CreateEnvironmentBlock(@Output.EnvBlock, Output.UserToken.TokenHandle, true);
+      Log.Add('Init env block');
+      if not CreateEnvironmentBlock(@Output.EnvBlock, Output.UserToken.TokenHandle, false) then
+        Log.Add('CreateEnvironmentBlock failed: '+IntToStr(GetLastError));
 
-
+      Log.Add('Call CreateProcessAsUser');
       if not CreateProcessAsUser(
         Output.UserToken.TokenHandle,//HANDLE hToken,
         lpApplicationName,//__in_opt     LPCTSTR lpApplicationName,

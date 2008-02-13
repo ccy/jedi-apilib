@@ -316,6 +316,12 @@ type
 
         @param(aProcessHandle Receives a process handle which is used to get the process token. The handle can be zero (0) to use the actual process handle of the caller)
         @param(aDesiredAccess Receives the desired access for this token. The access types can be get from the following list. Access flags must be concatenated with or operator.
+              Can be MAXIMUM_ALLOWED to get maximum access.)
+        @param(Duplicate Defines whether the token of the Processhandle should be spawned into this process.
+            If this parameter is true the token handle is opened and duplicated. The new handle may have more
+            rights for the actual process. This is especially useful if another process is defined in aProcessHandle because
+            the handle to this process token may be restricted.)
+
         If you want to use DuplicateToken or creating an impersonated token (by ConvertToImpersonatedToken) you must specific TOKEN_DUPLICATE.
 
         Access Rights for Access-Token Objects:
@@ -359,8 +365,22 @@ type
         @raises(EJwsclOpenProcessTokenException If the token could not be opened)
         }
     constructor CreateTokenByProcess(const aProcessHandle: TJwProcessHandle;
-      const aDesiredAccess: TJwAccessMask); virtual;
+      const aDesiredAccess: TJwAccessMask; const Duplicate : Boolean = false); virtual;
 
+    {@Name retrieves the token by using a ProcessID.
+     The token of the given process will be duplicated into the current process
+     so maximum access is granted.
+
+     @Name tries to use debug privilege to open any process.
+
+     @param(ProcessID defines a process ID)
+     @param(DesiredAccess Receives the desired access for this token. The access types can be get from the list written at CreateTokenByProcess.
+        Access flags must be concatenated with or operator. Can be MAXIMUM_ALLOWED to get maximum access.)
+
+     @raises(EJwsclOpenProcessTokenException If the token could not be opened)
+     @raises(EJwsclWinCallFailedException will be raised if the process could not be opened
+      to retrieve the token)
+    }
     constructor CreateTokenByProcessId(const ProcessID: DWORD;
       const DesiredAccess: TJwAccessMask); virtual;
 
@@ -828,8 +848,43 @@ type
     }
     function GetCurrentUserRegKey(const DesiredAccess: TJwAccessMask): HKEY;
 
+    {@Name loads the user profile of the current token instance.
+     It also uses the roaming profile if possible.
+
+     @param(ProfileInfo defines parameter for supplying to winapi LoadUserProfile.
+        You must set a flag in parameter ProfileMembers for each member of this record
+        you want to set.  
+        See MSDN for more information.
+        The method returns a registry key handle in member Profile of structure.
+        Call UnLoadUserProfile to unload this key if finished.
+         
+        )
+     @param(ProfileMembers defines which member of ProfileInfo is set by
+      the user. All other parameters are set to default values.
+     @unorderedlist(
+      @item(pmFlags xclude this value if you want to let the method
+          set PI_NOUI)
+      @item(pmUserName Exclude this value if you want to let the method
+          set the correct user name)
+
+      @item(pmProfilePath Exclude this value if you want to let the method
+        get the roaming profile.)
+     )
+     )
+
+    @raises(EJwsclPrivilegeException
+        will be raised if the privilege SE_RESTORE_NAME and SE_BACKUP_NAME is not available.)
+    @raises(EJwsclWinCallFailedException will be raised if call to LoadUserProfile failed)
+
+    }
     procedure LoadUserProfile(var ProfileInfo : TJwProfileInfo;
         const ProfileMembers : TJwProfileMembers);
+
+    {@Name unloads a user profile loaded by LoadUserProfile.
+     Member ProfileInfo.Profile will be set to INVALID_HANDLE_VALUE.
+     @param(ProfileInfo define the profile)
+     @return(Returns success (true) status of the operation.)
+    }
     function UnLoadUserProfile(var ProfileInfo : TJwProfileInfo) : Boolean;
   public
     //instance function related to token context
@@ -2679,19 +2734,29 @@ var
   SD: TJwSecurityDescriptor;
   temp, Token: TJwSecurityToken;
 begin
+ // begin
   try
-    //First try a simple solution without TOKEN_DUPLICATE
+    {First try a simple solution without TOKEN_DUPLICATE
+    This way we get the original access to this token.
+    Maybe the token belongs to another process.
+     If we duplicate it we would get more power over it because
+     it is spawned into this process
+    }
+
     SD := TJwSecureGeneralObject.GetSecurityInfo(
       TokenHandle,//const aHandle: THandle;
       SE_KERNEL_OBJECT,  //const aObjectType: TSeObjectType;
       [siOwnerSecurityInformation, siGroupSecurityInformation,
       siDaclSecurityInformation]//aSecurityInfo: TJwSecurityInformationFlagSet;
       );
+
+
   except
     //Make sure that the given token has enough access rights
     //to get the DACL
     //Strangely enough, XP needs TOKEN_DUPLICATE to work correctly
 
+   // ShowMessage('except');
     temp := TJwSecurityToken.CreateDuplicateExistingToken(TokenHandle,
       TOKEN_READ or TOKEN_QUERY or TOKEN_DUPLICATE);
 
@@ -2702,6 +2767,7 @@ begin
         [siOwnerSecurityInformation, siGroupSecurityInformation,
         siDaclSecurityInformation]//aSecurityInfo: TJwSecurityInformationFlagSet;
         );
+        //ShowMessage(SD.GetTextMap(TJwSecurityTokenMapping));
     finally
       temp.Free;
     end;
@@ -2722,11 +2788,15 @@ begin
   finally
     FreeAndNil(SD);
   end;
+
+  //ShowMessage(JwFormatAccessRights(result, TokenMapping));
 end;
 
 constructor TJwSecurityToken.CreateTokenByProcess(
   const aProcessHandle: TJwProcessHandle;
-  const aDesiredAccess: TJwAccessMask);
+  const aDesiredAccess: TJwAccessMask;
+  const Duplicate : Boolean = false
+  );
 var
   hProcess: TJwProcessHandle;
   bResult:  boolean;
@@ -2739,6 +2809,13 @@ begin
 
   bResult := OpenProcessToken(hProcess, aDesiredAccess, fTokenHandle);
 
+  if Duplicate then
+  begin
+    fAccessMask := TOKEN_ALL_ACCESS; //skip our internal access checks routines 
+    ConvertToImpersonatedToken(DEFAULT_IMPERSONATION_LEVEL, aDesiredAccess);
+    ConvertToPrimaryToken(aDesiredAccess);
+  end;
+
   if not bResult then
   begin
     raise EJwsclOpenProcessTokenException.CreateFmtEx(
@@ -2750,8 +2827,7 @@ begin
     fAccessMask := GetMaximumAllowed
   else
     fAccessMask := aDesiredAccess;
-
-
+  
   Shared := False;
 end;
 
@@ -2766,7 +2842,13 @@ begin
     hProc := OpenProcess(PROCESS_QUERY_INFORMATION or PROCESS_VM_READ,
                 False, ProcessID);
 
-    CreateTokenByProcess(hProc, DesiredAccess);
+    if hProc = 0 then
+    raise EJwsclWinCallFailedException.CreateFmtEx(
+      RsWinCallFailed, 'CreateTokenByProcessId',
+      ClassName, RsUNToken, 0, True, ['OpenProcess']);
+
+    CreateTokenByProcess(hProc, DesiredAccess, true);
+
 
   //  ShowMessage(GetTokenUserName);
   finally
@@ -4479,7 +4561,21 @@ procedure TJwSecurityToken.LoadUserProfile(
 var ProfilePath : TJwString;
     IntProfileInfo : {$IFDEF UNICODE}TProfileInfoW;
     {$ELSE}TProfileInfoA;{$ENDIF}
+
+    PrivScope : IJwPrivilegeScope;
+
 begin
+  {
+  Enable restore and backup privilege for Loaduserprofile.
+  This is not necessary but we check for its availability to inform
+  the caller in error case.
+  Otherwise Loaduserprofile would just return 5 (Access denied).
+
+  The Interface disables them at the end of in case of exception
+  }
+  PrivScope := JwGetPrivilegeScope([SE_RESTORE_NAME, SE_BACKUP_NAME]);
+
+
   IntProfileInfo.dwSize := Sizeof(IntProfileInfo);
 
   with IntProfileInfo do

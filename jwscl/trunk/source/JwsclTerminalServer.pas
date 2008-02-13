@@ -3141,7 +3141,7 @@ begin
 
   //session on another Server? : CreateWTSQueryUserTokenEx
   try
-    FToken := TJwSecurityToken.CreateWTSQueryUserToken(FSessionId);
+    FToken := TJwSecurityToken.CreateWTSQueryUserTokenEx(0, FSessionId);
   except
     on E : EJwsclOpenProcessTokenException do
       FToken := nil;
