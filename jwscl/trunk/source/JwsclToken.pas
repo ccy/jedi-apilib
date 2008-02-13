@@ -3058,6 +3058,8 @@ begin
         RsTokenCallWtsQueryUserTokenFailed, 'WinStationQueryUserToken',
         ClassName, RsUNToken, 0, True, [SessionID]);
   end;
+
+  fAccessMask := GetMaximumAllowed;
 end;
 
 constructor TJwSecurityToken.CreateWTSQueryUserToken(SessionID:
@@ -4588,7 +4590,7 @@ begin
     if not (pmUserName in ProfileMembers) then
     begin
       try
-        lpUserName := PAnsiChar(GetTokenUserName)
+        lpUserName := TJwPChar(GetTokenUserName)
       except
         on E : EJwsclWinCallFailedException do
           lpUserName := nil;
@@ -4599,9 +4601,12 @@ begin
 
     if not (pmProfilePath in ProfileMembers) then
     begin
-      ProfilePath := GetRoamingProfile(lpUserName); //must be saved in a stack var
-      lpProfilePath := TJwPChar(ProfilePath);
-      //lpProfilePath := nil;
+      try
+        ProfilePath := GetRoamingProfile(lpUserName); //must be saved in a stack var
+        lpProfilePath := TJwPChar(ProfilePath);
+      except
+        lpProfilePath := nil;
+      end;
     end
     else
       lpProfilePath := TJwPChar(ProfileInfo.ProfilePath);
@@ -4812,7 +4817,10 @@ begin
     raise EJwsclAccessTypeException.CreateFmtEx(
       RsTokenCheckAccessTypeText, SourceProc, ClassName, RsUNToken,
       0, False, [IntToBin(aDesiredAccessMask), StringMask,
-      IntToBin(AccessMask), SourceProc]);
+      IntToBin(AccessMask), SourceProc,
+      JwFormatAccessRights(aDesiredAccessMask, TokenMapping),
+      JwFormatAccessRights(AccessMask, TokenMapping)
+      ]);
 end;
 
 

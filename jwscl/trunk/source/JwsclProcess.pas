@@ -140,9 +140,10 @@ procedure JwCreateProcessInSession(
       CharPtr := nil;
   end;
 
+  var Log : TStringList;
+
   function CreateTokenByProcessAndSession(
-    const SessionID : DWORD;
-    const Log : TStringList) : TJwSecurityToken;
+    const SessionID : DWORD) : TJwSecurityToken;
   var TSrv : TJwTerminalServer;
       i : Integer;
       ProcessID : DWORD;
@@ -195,6 +196,7 @@ procedure JwCreateProcessInSession(
               {
                 Get token by process handle and duplicate it
               }
+              Log.Add('call CreateDuplicateExistingToken');
               result := TJwSecurityToken.CreateDuplicateExistingToken(TSrv.Processes[i].Token.TokenHandle,
                   MAXIMUM_ALLOWED);
               {DEBUG: raise Exception.Create('');}
@@ -246,8 +248,8 @@ procedure JwCreateProcessInSession(
 
 
 var
-    Log : TStringList;
 
+    F :TExtFile;
 
     lpApplicationName  : TJwPChar;
     lpCommandLine      : TJwPChar;
@@ -265,14 +267,15 @@ begin
   try
     Log.Add(Format('Running CreateProcessInSession(Sesion=%d):',[SessionID]));
     try
-      Log.Add('Getting user token...');
-      Output.UserToken := TJwSecurityToken.CreateWTSQueryUserTokenEx(SessionID);
+      Log.Add('Getting user token CreateWTSQueryUserTokenEx...');
+      Output.UserToken := TJwSecurityToken.CreateWTSQueryUserTokenEx(0, SessionID);
     except
       //on E2 : EJwsclUnsupportedWindowsVersionException do
       On E2 : Exception do
       begin
         try
-          Output.UserToken := CreateTokenByProcessAndSession(SessionId,Log);
+          Log.Add('Getting user token CreateTokenByProcessAndSession...');
+          Output.UserToken := CreateTokenByProcessAndSession(SessionId);
         except
           on E : Exception do
           begin
@@ -301,6 +304,7 @@ begin
 
     try
       Log.Add('Loading user profile');
+     // raise Exception.Create('');
       Output.UserToken.LoadUserProfile(Output.ProfileInfo, []);
 
       with StartupInfo do
@@ -324,7 +328,7 @@ begin
         Log.Add('CreateEnvironmentBlock failed: '+IntToStr(GetLastError));
 
       Log.Add('Call CreateProcessAsUser');
-      if not CreateProcessAsUser(
+      if not {$IFDEF UNICODE}CreateProcessAsUserW{$ELSE}CreateProcessAsUserA{$ENDIF}(
         Output.UserToken.TokenHandle,//HANDLE hToken,
         lpApplicationName,//__in_opt     LPCTSTR lpApplicationName,
         lpCommandLine, //__inout_opt  LPTSTR lpCommandLine,
@@ -367,11 +371,22 @@ begin
       end;
     end;
 
-  finally
-    Log.Add(Format('Exiting CreateProcessInSession(Sesion=%d):',[SessionID]));
+  except
+    on E : EJwsclSecurityException do
+    begin
 
-    LogInfo := LogInfo + #13#10 + Log.Text;
-    Log.Free;
+      Log.Add(Format('Exiting CreateProcessInSession(Sesion=%d):',[SessionID]));
+
+      LogInfo := LogInfo + #13#10 + Log.Text;
+      E.Log := LogInfo;
+      ShowMessage(E.Log);
+      Log.Free;
+
+     { assignfile(f, 'C:\pdf2.txt');
+      rewrite(F);
+      writeln(f,E.Log);
+      closefile(F);  }
+    end;
   end;
 end;
 

@@ -63,6 +63,7 @@ type
     fsSourceFile: string;
     fiSourceLine: Cardinal;
     fWinCallName: string;
+    fLog : String;
   public
     constructor Create(const Msg: string); overload;
            {@Name creates an instance of the @classname exception.
@@ -119,6 +120,7 @@ type
     {@Name defines the winapi function name of the failed call.}
     property WinCallName: string Read fWinCallName Write fWinCallName;
 
+    property Log : String read fLog write fLog;
   end;
 
   //@name is raised if the thread token could not be opened
@@ -357,7 +359,7 @@ function JwMapException(Const Name : WideString) : TGuid; overload;
 implementation
 
 {$IFDEF SM_JCLDEBUG}
-uses jclDebug;
+uses jclDebug;       
 {$ENDIF}
 {$ENDIF SL_OMIT_SECTIONS}
 

@@ -380,7 +380,8 @@ const
   RsTokenFailedImpPipe = 'Could not impersonate pipe client.';
   RsTokenCheckAccessTypeText = 'The desired access mask is not included in t' +
     'he token access mask!\r\nyour  mask: \r\ntoken mask: \r\n%0:s (%1:s)\r\%2' +
-    ':s\r\nCheckTokenAccessType called by %3:s';
+    ':s\r\nCheckTokenAccessType called by %3:s'+#13#10+
+    'Token access rights:\r%s\rYour requested rights:\r%s';
   RsTokenStatisticsText = 'TokenID: %0:s\r\AuthenticationId: %1:s\r\nExpirat' +
     'ionTime: %2:s\r\nToken type: %3:d\r\nImpersonation level: 0x%4:x\r\nDynam' +
     'ic charged: 0x%5:x\r\nDynamic available: 0x%6:x\r\nGroup count: %7:d\r\nP' +

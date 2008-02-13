@@ -31,7 +31,7 @@ The Original Code is JwsclTerminalServer.pas.
 The Initial Developer of the Original Code is Remko Weijnen.
 Portions created by Remko Weijnen are Copyright (C) Remko Weijnen. All rights reserved.
 @br
-@br
+br
 The central object of the JwsclTerminalServer unit is the TJwTerminalServer
 object. It represents a Terminal Server, the connection to this server and
 holds the session- and processlist.
@@ -3430,6 +3430,7 @@ begin
     exit;
 
   result := nil;
+  //enable privilege is available
   JwEnablePrivilege(SE_DEBUG_NAME, pst_EnableIfAvail);
 
   SetLastError(0);
