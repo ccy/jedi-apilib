@@ -18,7 +18,7 @@ GNU Lesser General Public License (the  "LGPL License"), in which case the
 provisions of the LGPL License are applicable instead of those above.        
 If you wish to allow use of your version of this file only under the terms   
 of the LGPL License and not to allow others to use your version of this file 
-under the MPL, indicate your decision by deleting  the provisions above and  
+under the MPL, indicate your decision by deleting  the provisions above and
 replace  them with the notice and other provisions required by the LGPL      
 License.  If you do not delete the provisions above, a recipient may use     
 your version of this file under either the MPL or the LGPL License.          
@@ -32,12 +32,19 @@ Portions created by Christian Wimmer are Copyright (C) Christian Wimmer. All rig
 
 Description:
 
+
+Hint: Install JCL and compile this unit with compiler directive SM_JCLDEBUG
+    and TD32 Debug Info.
+
+
 }
 
 {$IFNDEF SL_OMIT_SECTIONS}
 unit JwsclExceptions;
 {$I Jwscl.inc}
 // Last modified: $Date: 2007-09-10 10:00:00 +0100 $
+
+{$DEFINE SM_JCLDEBUG}
 
 interface
 
@@ -63,7 +70,10 @@ type
     fsSourceFile: string;
     fiSourceLine: Cardinal;
     fWinCallName: string;
+    fComSource : String;
     fLog : String;
+
+    fStackTrace : String;
   public
     constructor Create(const Msg: string); overload;
            {@Name creates an instance of the @classname exception.
@@ -121,6 +131,8 @@ type
     property WinCallName: string Read fWinCallName Write fWinCallName;
 
     property Log : String read fLog write fLog;
+    property ComSource: String read fComSource write fComSource;
+    property StackTrace : String read fStackTrace write fStackTrace;
   end;
 
   //@name is raised if the thread token could not be opened
@@ -340,15 +352,18 @@ type
    end;
 
 
-const JwExceptionMapping : array[0..2] of TJwExceptionMapping =
+const JwExceptionMapping : array[0..3] of TJwExceptionMapping =
       ((Name: 'Exception';
         ID: '{138EDC0B-B10B-4FA3-BB5D-DFDABBEBDDA4}';
         ExcPtr : Exception),
+       (Name: 'EJwsclWinCallFailedException';
+        ID: '{138EDC0B-B10B-4FA3-BB5D-DFDABBEBDDA5}';
+        ExcPtr : EJwsclWinCallFailedException),
        (Name: 'EJwsclSecurityException';
-        ID: '{F370AFCE-84F5-4849-9EF3-C65FD4BBB89C}';
+        ID: '{138EDC0B-B10B-4FA3-BB5D-DFDABBEBDDA6}';
         ExcPtr : EJwsclSecurityException),
        (Name: 'EJwsclNILParameterException';
-        ID: '{0EE0F32C-C4A5-410B-9522-C2E00FA55399}';
+        ID: '{138EDC0B-B10B-4FA3-BB5D-DFDABBEBDDA7}';
         ExcPtr : EJwsclNILParameterException)
       );
 
@@ -362,7 +377,7 @@ function JwMapException(Const Name : WideString) : TGuid; overload;
 implementation
 
 {$IFDEF SM_JCLDEBUG}
-uses jclDebug;       
+uses jclDebug;
 {$ENDIF}
 {$ENDIF SL_OMIT_SECTIONS}
 
@@ -517,9 +532,12 @@ begin
                         false//IncludeVAdress: Boolean = False): Boolean;
                       ) ;
          sJCLText := CallStackStrings.Text;
+
+         fStackTrace := CallStackStrings.Text;
        end;
        CallStackStrings.Free;
     end;
+
   end;
 {$ENDIF}
 
@@ -607,6 +625,7 @@ begin
                         false//IncludeVAdress: Boolean = False): Boolean;
                       ) ;
          sJCLText := CallStackStrings.Text;
+         fStackTrace := CallStackStrings.Text;
        end;
        CallStackStrings.Free;
     end;
