@@ -4,7 +4,8 @@ uses
   ComServ,
   JWSCLCom_TLB in 'JWSCLCom_TLB.pas',
   JwsclCoSid in 'JwsclCoSid.pas' {JwCoSid: CoClass},
-  JwsclCOMExports in 'JwsclCOMExports.pas';
+  JwsclCOMExports in 'JwsclCOMExports.pas',
+  JWSCLCoException in 'JWSCLCoException.pas';
 
 exports
   DllGetClassObject,

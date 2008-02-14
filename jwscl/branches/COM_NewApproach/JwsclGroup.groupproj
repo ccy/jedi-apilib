@@ -1,11 +1,13 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <ProjectGuid>{c6431ecf-c0de-49b8-a31b-cb17b4a60fd2}</ProjectGuid>
+    <ProjectGuid>{74b0d160-a8f5-41c1-823c-eb8a4daccb59}</ProjectGuid>
   </PropertyGroup>
   <ItemGroup />
   <ItemGroup>
     <Projects Include="JWSCLCom.dproj" />
-    <Projects Include="Test\Test1.dproj" />
+    <Projects Include="UnitTests\JWSCLComTests.dproj">
+      <Dependencies>JWSCLCom.dproj</Dependencies>
+    </Projects>
   </ItemGroup>
   <ProjectExtensions>
     <Borland.Personality>Default.Personality</Borland.Personality>
@@ -22,23 +24,23 @@
   <Target Name="JWSCLCom:Make">
     <MSBuild Projects="JWSCLCom.dproj" Targets="Make" />
   </Target>
-  <Target Name="Test1">
-    <MSBuild Projects="Test\Test1.dproj" Targets="" />
+  <Target Name="JWSCLComTests" DependsOnTargets="JWSCLCom">
+    <MSBuild Projects="UnitTests\JWSCLComTests.dproj" Targets="" />
   </Target>
-  <Target Name="Test1:Clean">
-    <MSBuild Projects="Test\Test1.dproj" Targets="Clean" />
+  <Target Name="JWSCLComTests:Clean" DependsOnTargets="JWSCLCom:Clean">
+    <MSBuild Projects="UnitTests\JWSCLComTests.dproj" Targets="Clean" />
   </Target>
-  <Target Name="Test1:Make">
-    <MSBuild Projects="Test\Test1.dproj" Targets="Make" />
+  <Target Name="JWSCLComTests:Make" DependsOnTargets="JWSCLCom:Make">
+    <MSBuild Projects="UnitTests\JWSCLComTests.dproj" Targets="Make" />
   </Target>
   <Target Name="Build">
-    <CallTarget Targets="JWSCLCom;Test1" />
+    <CallTarget Targets="JWSCLCom;JWSCLComTests" />
   </Target>
   <Target Name="Clean">
-    <CallTarget Targets="JWSCLCom:Clean;Test1:Clean" />
+    <CallTarget Targets="JWSCLCom:Clean;JWSCLComTests:Clean" />
   </Target>
   <Target Name="Make">
-    <CallTarget Targets="JWSCLCom:Make;Test1:Make" />
+    <CallTarget Targets="JWSCLCom:Make;JWSCLComTests:Make" />
   </Target>
   <Import Condition="Exists('$(MSBuildBinPath)\Borland.Group.Targets')" Project="$(MSBuildBinPath)\Borland.Group.Targets" />
 </Project>
