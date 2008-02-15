@@ -69,7 +69,6 @@ TjwWTSSessions.@br
 unit JwsclTerminalServer;
 {$I Jwscl.inc}
 
-
 interface
 
 uses
@@ -978,7 +977,6 @@ type
      address of a client as reported by the Terminal Server Client
      @br@br
      @bold(Remarks:) Console sessions always returns empty value.
-     @table(
      }
     property ClientAddress: TJwString read FClientAddress;
 
@@ -1535,7 +1533,7 @@ type
     function Add(ASession: TJwWTSSession): Integer;
 
 
-    {@Returns(@Name returns an enumerator that can be used to iterate through
+    {(@Name returns an enumerator that can be used to iterate through
      the image list collection with Delphi's for in loop (Delphi 2005 and
      higher).@br
      @br
@@ -1795,8 +1793,9 @@ type
     {@Name returns the token of the session.
      The returned value is cached and must not be freed!
      If the value cannot be obtained the return value is nil.
-     @raises(In order to obtain the Token the SE_DEBUG_NAME privilege is enabled
-     , if this fails EJwsclPrivilegeException will be raised)
+     @br@br
+     @bold(Remarks:) In order to obtain the Token the SE_DEBUG_NAME privilege
+     is enabled, if this fails EJwsclPrivilegeException will be raised.
     }
     property Token : TJwSecurityToken read GetToken;
 
@@ -1886,7 +1885,7 @@ type
     function Add(AProcess: TJwWTSProcess): Integer;
 
 
-    {@Returns(@Name returns an enumerator that can be used to iterate through
+    {@Name returns an enumerator that can be used to iterate through
      the image list collection with Delphi's for in loop (Delphi 2005 and
      higher).@br
      @br
@@ -2339,7 +2338,10 @@ begin
     // Return disconnected if WinStationName = empty
     if Result = '' then
     begin
-      Result := PWideCharToJwString(StrConnectState(WTSDisconnected, False));
+//      Result := PWideCharToJwString(StrConnectState(WTSDisconnected, False));
+      // Confirm to TSAdmin behaviour and list sessionname as (Idle) (we use
+      // StrConnectState api to localise)
+      Result := '(' + PWideCharToJwString(StrConnectState(WTSIdle, False)) + ')';
     end;
   finally
     FreeMem(WinStationNamePtr);

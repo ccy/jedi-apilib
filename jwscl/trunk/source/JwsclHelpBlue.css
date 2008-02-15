@@ -29,7 +29,26 @@ img {
         border: none;
 }
 
-pre.longcode { background: #F0F0F0 }
+pre.longcode {
+	border: 1px solid #C0C0C0;
+	margin-left: 20px;
+	margin-right: 20px;
+	padding: 5px 20px;
+	white-space: pre;
+	background-color: #F5F5F5;
+	font-family: Lucida Console,monospace;
+	color: #000000;
+}
+
+pre.longcode {
+  margin-bottom: -10pt;
+}
+
+pre.longcode EM{
+	white-space: pre;
+	color: #9933CC;
+	font-style: normal;
+}
 
 span.pascal_string {
         color: #0000FF;
