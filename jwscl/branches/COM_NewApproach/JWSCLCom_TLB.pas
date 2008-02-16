@@ -12,7 +12,7 @@ unit JWSCLCom_TLB;
 // ************************************************************************ //
 
 // $Rev: 8291 $
-// File generated on 14.02.2008 21:22:55 from Type Library described below.
+// File generated on 15.02.2008 22:32:03 from Type Library described below.
 
 // ************************************************************************  //
 // Type Lib: P:\Eigene Dateien\Dezipaitor\Projekte\Delphi\7\jedi-api-lib\jwscl\trunk\COM\JWSCLCom.tlb (1)
@@ -99,6 +99,39 @@ type
   IJwSid = interface(IDispatch)
     ['{5134BF4E-3D59-44FF-A273-C052BB9B64DE}']
     procedure InitByBinarySid(const BinarySid: WideString); safecall;
+    procedure InitByStream(const SidAsStream: IUnknown); safecall;
+    procedure InitByName(const SystemName: WideString; const AccountName: WideString); safecall;
+    procedure InitByJwSid(const Sid: IJwSid); safecall;
+    procedure InitByWellKnownSid(SidType: SYSUINT); safecall;
+    procedure InitByAuthorities(Authorities: OleVariant; Identifier: OleVariant); safecall;
+    function IsStandardSid: WordBool; safecall;
+    function GetInternalObject: PChar; safecall;
+    function Get_SubAuthorityCount: SYSUINT; safecall;
+    function Get_SubAuthorityArray: OleVariant; safecall;
+    function Get_IdentifierAttributesCount: SYSUINT; safecall;
+    function Get_IdentifierAttributesArray: OleVariant; safecall;
+    function Get_IsWellKnownSidType: WordBool; safecall;
+    function GetAccountName(const SystemName: WideString): WideString; safecall;
+    function Get_CachedSystemName: WideString; safecall;
+    procedure Set_CachedSystemName(const Value: WideString); safecall;
+    function GetAccountDomainName(const SystemName: WideString): WideString; safecall;
+    function GetAccountNameInUse(const SystemName: WideString): WideString; safecall;
+    function GetCachedUserName: WideString; safecall;
+    function Get_Attributes: LongWord; safecall;
+    procedure Set_Attributes(Value: LongWord); safecall;
+    function Get_AttributesByType: OleVariant; safecall;
+    procedure Set_AttributesByType(Value: OleVariant); safecall;
+    function GetSidStream: IUnknown; safecall;
+    function Get_UserName: WideString; safecall;
+    property SubAuthorityCount: SYSUINT read Get_SubAuthorityCount;
+    property SubAuthorityArray: OleVariant read Get_SubAuthorityArray;
+    property IdentifierAttributesCount: SYSUINT read Get_IdentifierAttributesCount;
+    property IdentifierAttributesArray: OleVariant read Get_IdentifierAttributesArray;
+    property IsWellKnownSidType: WordBool read Get_IsWellKnownSidType;
+    property CachedSystemName: WideString read Get_CachedSystemName write Set_CachedSystemName;
+    property Attributes: LongWord read Get_Attributes write Set_Attributes;
+    property AttributesByType: OleVariant read Get_AttributesByType write Set_AttributesByType;
+    property UserName: WideString read Get_UserName;
   end;
 
 // *********************************************************************//
@@ -109,6 +142,27 @@ type
   IJwSidDisp = dispinterface
     ['{5134BF4E-3D59-44FF-A273-C052BB9B64DE}']
     procedure InitByBinarySid(const BinarySid: WideString); dispid 201;
+    procedure InitByStream(const SidAsStream: IUnknown); dispid 202;
+    procedure InitByName(const SystemName: WideString; const AccountName: WideString); dispid 203;
+    procedure InitByJwSid(const Sid: IJwSid); dispid 204;
+    procedure InitByWellKnownSid(SidType: SYSUINT); dispid 205;
+    procedure InitByAuthorities(Authorities: OleVariant; Identifier: OleVariant); dispid 206;
+    function IsStandardSid: WordBool; dispid 207;
+    function GetInternalObject: {??PChar}OleVariant; dispid 208;
+    property SubAuthorityCount: SYSUINT readonly dispid 209;
+    property SubAuthorityArray: OleVariant readonly dispid 210;
+    property IdentifierAttributesCount: SYSUINT readonly dispid 211;
+    property IdentifierAttributesArray: OleVariant readonly dispid 213;
+    property IsWellKnownSidType: WordBool readonly dispid 212;
+    function GetAccountName(const SystemName: WideString): WideString; dispid 214;
+    property CachedSystemName: WideString dispid 215;
+    function GetAccountDomainName(const SystemName: WideString): WideString; dispid 216;
+    function GetAccountNameInUse(const SystemName: WideString): WideString; dispid 217;
+    function GetCachedUserName: WideString; dispid 218;
+    property Attributes: LongWord dispid 219;
+    property AttributesByType: OleVariant dispid 220;
+    function GetSidStream: IUnknown; dispid 221;
+    property UserName: WideString readonly dispid 222;
   end;
 
 // *********************************************************************//
@@ -118,7 +172,17 @@ type
 // *********************************************************************//
   IJwSidList = interface(IDispatch)
     ['{C88787BF-0091-46F2-A732-0639244C54E5}']
-    procedure Method1; safecall;
+    procedure InitBySidList(const SidList: IUnknown); safecall;
+    procedure Add(const Sid: IJwSid); safecall;
+    procedure Insert(Index: Integer; const Sid: IJwSid); safecall;
+    procedure Remove(const Sid: IJwSid); safecall;
+    procedure Delete(Index: Integer); safecall;
+    function Get_Count: LongWord; safecall;
+    function Get_Item: IJwSid; safecall;
+    function Get__NewEnum: OleVariant; safecall;
+    property Count: LongWord read Get_Count;
+    property Item: IJwSid read Get_Item;
+    property _NewEnum: OleVariant read Get__NewEnum;
   end;
 
 // *********************************************************************//
@@ -128,7 +192,14 @@ type
 // *********************************************************************//
   IJwSidListDisp = dispinterface
     ['{C88787BF-0091-46F2-A732-0639244C54E5}']
-    procedure Method1; dispid 201;
+    procedure InitBySidList(const SidList: IUnknown); dispid 201;
+    procedure Add(const Sid: IJwSid); dispid 202;
+    procedure Insert(Index: Integer; const Sid: IJwSid); dispid 203;
+    procedure Remove(const Sid: IJwSid); dispid 204;
+    procedure Delete(Index: Integer); dispid 205;
+    property Count: LongWord readonly dispid 206;
+    property Item: IJwSid readonly dispid 0;
+    property _NewEnum: OleVariant readonly dispid -4;
   end;
 
 // *********************************************************************//

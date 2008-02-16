@@ -40,7 +40,8 @@ unit JwsclProcess;
 
 interface
 
-uses jwaWindows, JwsclTypes, JwsclToken, JwsclSid,
+uses jwaWindows, JwsclTypes, JwsclToken, JwsclSid, JwsclTerminalServer,
+  Classes,
   JwsclStrings; //JwsclStrings, must be at the end of uses list!!!
 {$ENDIF SL_OMIT_SECTIONS}
 
@@ -80,12 +81,14 @@ procedure JwCreateProcessInSession(
   var LogInfo : TJwString
   );
 
+function JwGetTokenFromProcess (const OnProcessFound : TJwOnProcessFound;
+  Log : TStringList; Data : Pointer) : TJwSecurityToken;
 
 {$ENDIF SL_IMPLEMENTATION_SECTION}
 
 {$IFNDEF SL_OMIT_SECTIONS}
 implementation
-uses SysUtils, Classes, Dialogs, JwsclTerminalServer, JwsclExceptions,
+uses SysUtils, Dialogs, JwsclExceptions,
   JwsclKnownSid,
   JwsclAcl, JwsclConstants;
 
@@ -110,9 +113,128 @@ begin
   end;
 end;
 
+type
+  PInternalProcessData = ^TInternalProcessData;
+  TInternalProcessData = record
+    SessionID : DWORD;
+  end;
+
+procedure OnProcessFoundInSameSession(const Sender1, Sender2 : TJwTerminalServer; var Process : TJwWTSProcess;
+      var Cancel : Boolean; Data : Pointer);
+var ProcessData : PInternalProcessData absolute Data;
+begin
+  Cancel :=
+      {
+        same session
+      }
+      (Process.SessionId = ProcessData.SessionID)
+
+      {
+        no idle process
+      }
+      and (Process.ProcessId > 0)
+      {
+        We have to check for system processes in that session.
+        So we ignore them otherwise the user gets a system elevated process.
+      }
+      and (Assigned(Process.UserSid) and not Process.UserSid.EqualSid(JwLocalSystemSID));
+end;
 
 
 
+function JwGetTokenFromProcess (const OnProcessFound : TJwOnProcessFound; Log : TStringList; Data : Pointer) : TJwSecurityToken;
+var TSrv : TJwTerminalServer;
+    i : Integer;
+    ProcessID : DWORD;
+    Succ : Boolean;
+    Sid : TJwSecurityId;
+    Cancel : Boolean;
+    Process : TJwWTSProcess;
+begin
+  result := nil;
+  Succ := false;
+
+  //try to enable debug privs if available - otherwise nothing
+  JwEnablePrivilege(SE_DEBUG_NAME,pst_EnableIfAvail);
+
+  Log.Add(Format('Running CreateTokenByProcessAndSession(SessionID: %d',[0]));
+
+  TSrv := TJwTerminalServer.Create;
+  try
+    TSrv.Connect;
+
+    ProcessID := 0;
+    if TSrv.EnumerateProcesses then
+    begin
+      Log.Add('Proc count: ' + IntToStr(TSrv.Processes.Count));
+      for i := 0 to TSrv.Processes.Count-1 do
+      begin
+        Log.Add(Format('Proc: %d, Name= %s SessionID: %d',[TSrv.Processes[i].ProcessId,
+          TSrv.Processes[i].ProcessName, TSrv.Processes[i].SessionId]));
+
+
+        Cancel := true;
+        Process := TSrv.Processes[i];
+        OnProcessFound(TSrv, Process, Cancel, Data);
+        if Cancel then
+        begin
+          //found a process in that specified session
+          ProcessID := TSrv.Processes[i].ProcessId;
+
+          try
+            Succ := true;
+            {
+              Get token by process handle and duplicate it
+            }
+            Log.Add('call CreateDuplicateExistingToken');
+            result := TJwSecurityToken.CreateDuplicateExistingToken(TSrv.Processes[i].Token.TokenHandle,
+                MAXIMUM_ALLOWED);
+            {DEBUG: raise Exception.Create('');}
+          except
+            On E : Exception do
+            begin
+              Succ := False;
+              Log.Add('CreateDuplicateExistingToken failed: '#13#10+E.Message);
+
+
+              //try to get the token the old fashioned way
+              try
+                Succ := true;
+
+                result := TJwSecurityToken.CreateTokenByProcessId(ProcessID,
+                //these are the only necessary rights
+                  TOKEN_ASSIGN_PRIMARY or
+                  TOKEN_QUERY or TOKEN_IMPERSONATE or TOKEN_DUPLICATE or TOKEN_READ);
+
+                //  MAXIMUM_ALLOWED); CreateTokenByProcessId copies the token handle so we always get full access
+
+              except
+                On E : Exception do
+                begin
+                  Log.Add('Could not get user token by Process: '#13#10+E.Message);
+                  Succ := False;
+                  ProcessID := 0;
+                end;
+              end;
+            end;
+          end;
+
+          //quit loop if success and process is found
+          if Succ and (ProcessID > 0) then
+            break;
+        end;
+      end
+    end
+    else
+      Log.Add('EnumerateProcesses failed.');
+
+    if ProcessID = 0 then
+      Log.Add('Could not find any process ID.');
+  finally
+    TSrv.Free;
+    Log.Add('Exiting CreateTokenByProcessAndSession.');
+  end;
+end;
 
 
 procedure JwCreateProcessInSession(
@@ -131,8 +253,6 @@ procedure JwCreateProcessInSession(
   var LogInfo : TJwString
   );
 
-  var  F :TExtFile;
-
 
   procedure GetPChar(const Str : TJwString; var CharPtr : TJwPChar);
   begin
@@ -142,125 +262,52 @@ procedure JwCreateProcessInSession(
       CharPtr := nil;
   end;
 
-  var Log : TStringList;
+  var //log data is stored here
+      Log : TStringList;
 
   function CreateTokenByProcessAndSession(
     const SessionID : DWORD) : TJwSecurityToken;
   var TSrv : TJwTerminalServer;
       i : Integer;
-      ProcessID : DWORD;
       Succ : Boolean;
       Sid : TJwSecurityId;
+      Meth : TMethod;
+      Data : TInternalProcessData;
   begin
     result := nil;
 
     //try to enable debug privs if available - otherwise nothing
     JwEnablePrivilege(SE_DEBUG_NAME,pst_EnableIfAvail);
 
-    Writeln(F,Format('Running CreateTokenByProcessAndSession(SessionID: %d',[SessionID]));
+    Log.Add(Format('Running CreateTokenByProcessAndSession(SessionID: %d',[SessionID]));
 
     TSrv := TJwTerminalServer.Create;
     try
       TSrv.Connect;
 
-      ProcessID := 0;
-      if TSrv.EnumerateProcesses then
-      begin
-        Writeln(F,'Proc count: ' + IntToStr(TSrv.Processes.Count));
-        for i := 0 to TSrv.Processes.Count-1 do
-        begin
-          Writeln(F,Format('Proc: %d, Name= %s SessionID: %d',[TSrv.Processes[i].ProcessId,
-            TSrv.Processes[i].ProcessName, TSrv.Processes[i].SessionId]));
+      //convert procedure into method
+      Meth.Code := @OnProcessFoundInSameSession;
+      Meth.Data := nil; //Self pointer
 
-          if
-            {
-              same session
-            }
-            (TSrv.Processes[i].SessionId = SessionID)
-
-            {
-              no idle process
-            }
-            and (TSrv.Processes[i].ProcessId > 0)
-            {
-              We have to check for system processes in that session.
-              So we ignore them otherwise the user gets a system elevated process.
-            }
-            and (Assigned(TSrv.Processes[i].UserSid) and not TSrv.Processes[i].UserSid.EqualSid(JwLocalSystemSID))
-
-            then
-          begin
-            //found a process in that specified session
-            ProcessID := TSrv.Processes[i].ProcessId;
-
-            try
-              Succ := true;
-              {
-                Get token by process handle and duplicate it
-              }
-              Writeln(F,'call CreateDuplicateExistingToken');
-              result := TJwSecurityToken.CreateDuplicateExistingToken(TSrv.Processes[i].Token.TokenHandle,
-                  MAXIMUM_ALLOWED);
-              {DEBUG: raise Exception.Create('');}
-            except
-              On E : Exception do
-              begin
-                Succ := False;
-                Writeln(F,'CreateDuplicateExistingToken failed: '#13#10+E.Message);
-
-
-                //try to get the token the old fashioned way
-                try
-                  Succ := true;
-
-                  result := TJwSecurityToken.CreateTokenByProcessId(ProcessID,
-                  //these are the only necessary rights
-                    TOKEN_ASSIGN_PRIMARY or
-                    TOKEN_QUERY or TOKEN_IMPERSONATE or TOKEN_DUPLICATE or TOKEN_READ);
-
-                  //  MAXIMUM_ALLOWED); CreateTokenByProcessId copies the token handle so we always get full access
-
-                except
-                  On E : Exception do
-                  begin
-                    Writeln(F,'Could not get user token by Process: '#13#10+E.Message);
-                    Succ := False;
-                    ProcessID := 0;
-                  end;
-                end;
-              end;
-            end;
-
-            //quit loop if success and process is found
-            if Succ and (ProcessID > 0) then
-              break;
-          end;
-        end
-      end
-      else
-        Writeln(F,'EnumerateProcesses failed.');
-
-      if ProcessID = 0 then
-        Writeln(F,'Could not find any process ID.');
+      Data.SessionID := SessionID;
+      // enumerate all processes of the terminal server
+      // we also get many
+      //
+      result := JwGetTokenFromProcess (TJwOnProcessFound(Meth), Log, @Data);
     finally
       TSrv.Free;
-      Writeln(F,'Exiting CreateTokenByProcessAndSession.');
+      Log.Add('Exiting CreateTokenByProcessAndSession.');
     end;
   end;
 
 
 var
-
-
-
     lpApplicationName  : TJwPChar;
     lpCommandLine      : TJwPChar;
     lpCurrentDirectory : TJwPChar;
 begin
   JwInitWellKnownSIDs;
 
-  assignfile(f, 'C:\temp\pdf2.txt');
-  rewrite(F);
   try
 
 
@@ -272,21 +319,21 @@ begin
 
   Log := TStringList.Create;
   try
-    Writeln(F,Format('Running CreateProcessInSession(Sesion=%d):',[SessionID]));
+    Log.Add(Format('Running CreateProcessInSession(Sesion=%d):',[SessionID]));
     try
-      Writeln(F,'Getting user token CreateWTSQueryUserTokenEx...');
+      Log.Add('Getting user token CreateWTSQueryUserTokenEx...');
       Output.UserToken := TJwSecurityToken.CreateWTSQueryUserTokenEx(0, SessionID);
     except
       //on E2 : EJwsclUnsupportedWindowsVersionException do
       On E2 : Exception do
       begin
         try
-          Writeln(F,'Getting user token CreateTokenByProcessAndSession...');
+          Log.Add('Getting user token CreateTokenByProcessAndSession...');
           Output.UserToken := CreateTokenByProcessAndSession(SessionId);
         except
           on E : Exception do
           begin
-            Writeln(F,'Could not retrieve user token: '+#13#10+E.Message);
+            Log.Add('Could not retrieve user token: '+#13#10+E.Message);
             raise;
           end;
         end;
@@ -300,7 +347,7 @@ begin
       except
         on E : Exception do
         begin
-          Writeln(F,E.Message);
+          Log.Add(E.Message);
           raise;
         end;
       end;
@@ -310,13 +357,16 @@ begin
 
 
     try
-      Writeln(F,'Loading user profile');
-     // raise Exception.Create('');
+      Log.Add('Loading user profile');
+      // Load user's profile
+      // We do not apply any in parameters, let the method do it automatically
+      // may fail with an exception
       Output.UserToken.LoadUserProfile(Output.ProfileInfo, []);
 
       with StartupInfo do
       begin
         cb          := SizeOf(StartupInfo);
+        //set default desktop if caller does not specify it
         if Length(Desktop) = 0 then
           lpDesktop   := 'WinSta0\Default'
         else
@@ -324,24 +374,27 @@ begin
       end;
 
 
-      Writeln(F,'Init strings');
+      Log.Add('Init strings');
+      //get p(w)char pointer from string
       GetPChar(ApplicationName, lpApplicationName);
       GetPChar(CommandLine, lpCommandLine);
       GetPChar(CurrentDirectory, lpCurrentDirectory);
 
 
-      Writeln(F,'Init env block');
+      Log.Add('Init env block');
+      //Create environment block from user token
+      //we do fail on that
       if not CreateEnvironmentBlock(@Output.EnvBlock, Output.UserToken.TokenHandle, false) then
-        Writeln(F,'CreateEnvironmentBlock failed: '+IntToStr(GetLastError));
+        Log.Add('CreateEnvironmentBlock failed: '+IntToStr(GetLastError));
 
-      Writeln(F,'Call CreateProcessAsUser');
+      Log.Add('Call CreateProcessAsUser');
       if not {$IFDEF UNICODE}CreateProcessAsUserW{$ELSE}CreateProcessAsUserA{$ENDIF}(
         Output.UserToken.TokenHandle,//HANDLE hToken,
         lpApplicationName,//__in_opt     LPCTSTR lpApplicationName,
         lpCommandLine, //__inout_opt  LPTSTR lpCommandLine,
         nil,//__in_opt     LPSECURITY_ATTRIBUTES lpProcessAttributes,
         nil,//__in_opt     LPSECURITY_ATTRIBUTES lpThreadAttributes,
-        true,//__in         BOOL bInheritHandles,
+        false,//__in         BOOL bInheritHandles,
         CreationFlags or CREATE_UNICODE_ENVIRONMENT,//__in         DWORD dwCreationFlags,
         Output.EnvBlock,//__in_opt     LPVOID lpEnvironment,
         lpCurrentDirectory,//__in_opt     LPCTSTR lpCurrentDirectory,
@@ -349,15 +402,15 @@ begin
         Output.ProcessInfo //__out        LPPROCESS_INFORMATION lpProcessInformation
       ) then
       begin
-        Writeln(F,'Failed CreateProcessAsUser.');
+        Log.Add('Failed CreateProcessAsUser.');
         RaiseLastOSError;
       end;
 
       if WaitForProcess then
       begin
-        Writeln(F,'Wait for process...');
+        Log.Add('Wait for process...');
         WaitForSingleObject(Output.ProcessInfo.hProcess, INFINITE);
-        Writeln(F,'Process exited... cleaning up');
+        Log.Add('Process exited... cleaning up');
 
         DestroyEnvironmentBlock(Output.EnvBlock);
         Output.EnvBlock := nil;
@@ -373,28 +426,29 @@ begin
         Output.UserToken.UnLoadUserProfile(Output.ProfileInfo);
         FreeAndNil(Output.UserToken);
 
-        Writeln(F,'Exception (between LoadUserProfile and CreateProcessAsUser) : '#13#10+E.Message);
+        Log.Add('Exception (between LoadUserProfile and CreateProcessAsUser) : '#13#10+E.Message);
         raise;
       end;
     end;
 
   except
-    on E : EJwsclSecurityException do
+    //make sure log is filled with exception data
+    on E : Exception do
     begin
-
-      Writeln(F,Format('Exiting CreateProcessInSession(Sesion=%d):',[SessionID]));
+      Log.Add(Format('Exiting CreateProcessInSession(Sesion=%d):',[SessionID]));
 
       LogInfo := LogInfo + #13#10 + Log.Text;
-      E.Log := LogInfo;
-      ShowMessage(E.Log);
+
+      if E is EJwsclSecurityException then
+        (E as EJwsclSecurityException).Log := LogInfo;
       Log.Free;
 
-
+      raise;
     end;
   end;
 
   finally
-    closefile(F);
+
   end;
 end;
 

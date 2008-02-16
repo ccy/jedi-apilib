@@ -96,6 +96,9 @@ type
   TSessionsEnumerator = class;
   TProcessEnumerator = class;
 
+  TJwOnProcessFound = procedure (
+      const Sender : TJwTerminalServer; var Process : TJwWTSProcess;
+      var Cancel : Boolean; Data : Pointer) of object;
 
   {@Name is a pointer to a TJwTerminalServer instance}
   PJwTerminalServer = ^TJwTerminalServer;
@@ -187,6 +190,10 @@ type
     procedure SetServer(const Value: TJwString);
     {@exclude}
     procedure FireEvent(EventFlag: DWORD);
+
+    procedure OnInternalProcessFound(
+      const Sender : TJwTerminalServer; var Process : TJwWTSProcess;
+      var Cancel : Boolean; Data : Pointer); virtual;
   public
 
     {@Name sets up the connection with the Terminal Server specified in the
@@ -402,7 +409,10 @@ type
      end;
     #)
     }
-    function EnumerateProcesses: Boolean;
+    function EnumerateProcesses: Boolean; overload;
+
+    function EnumerateProcesses(const OnProcessFound : TJwOnProcessFound;
+        Data : Pointer) : Boolean; overload;
 
     {@Name enumerates all Terminal Servers in the specified domain.
      @Param(ADomain name of the Domain to be queried, if empty string is
@@ -2362,7 +2372,22 @@ begin
   FComputerName := '';
 end;
 
+procedure TJwTerminalServer.OnInternalProcessFound(
+      const Sender : TJwTerminalServer; var Process : TJwWTSProcess;
+      var Cancel : Boolean; Data : Pointer);
+begin
+  Sender.FProcesses.Add(Process);
+end;
+
 function TJwTerminalServer.EnumerateProcesses: Boolean;
+begin
+  FProcesses.Clear;
+
+  result := EnumerateProcesses(OnInternalProcessFound, nil);
+end;
+
+function TJwTerminalServer.EnumerateProcesses(const OnProcessFound : TJwOnProcessFound;
+    Data : Pointer) : Boolean;
 var
   Count: Integer;
   ProcessInfoPtr: PWINSTA_PROCESS_INFO_ARRAY;
@@ -2373,100 +2398,113 @@ var
   lpBuffer: PWideChar;
   DiffTime: TDiffTime;
 //  strSid: TjwString;
+  Cancel : Boolean;
 begin
   ProcessInfoPtr := nil;
   Count := 0;
 
-  FProcesses.Clear;
+  JwRaiseOnNilParameter(@OnProcessFound, 'OnProcessFound','EnumerateProcesses',ClassName,RsUNTerminalServer);
 
   if not Connected then
   begin
     Connect;
   end;
 
+  Cancel := false;
   ProcessInfoPtr := nil;
 
   Result := WinStationGetAllProcesses(FServerHandle, 0, Count, ProcessInfoPtr);
-  if Result then
-  begin
-    for i := 0 to Count-1 do
-    begin
-      with ProcessInfoPtr^[i], ExtendedInfo^ do
-      begin
-        // System Idle Process
-        if ProcessId = 0 then
-        begin
-          strProcessName := GetIdleProcessName;
-          strUserName := 'SYSTEM';
-        end
-        else
-        begin
-          strProcessName := JwUnicodeStringToJwString(ProcessName);
 
-          if IsValidSid(pUserSid) then
+  try
+    if Result then
+    begin
+      for i := 0 to Count-1 do
+      begin
+        with ProcessInfoPtr^[i], ExtendedInfo^ do
+        begin
+          // System Idle Process
+          if ProcessId = 0 then
           begin
-            with TJwSecurityID.Create(pUserSid) do
+            strProcessName := GetIdleProcessName;
+            strUserName := 'SYSTEM';
+          end
+          else
+          begin
+            strProcessName := JwUnicodeStringToJwString(ProcessName);
+
+            if IsValidSid(pUserSid) then
             begin
-              strUsername := GetCachedUserFromSid;
-//              strSid := StringSID;
-              Free;
+              with TJwSecurityID.Create(pUserSid) do
+              begin
+                strUsername := GetCachedUserFromSid;
+  //              strSid := StringSID;
+                Free;
+              end;
             end;
           end;
-        end;
 
-        AProcess := TJwWTSProcess.Create(FProcesses, SessionId,
-          ProcessId, strProcessName, strUsername);
-        with AProcess do
-        begin
-          FProcesses.Add(AProcess);
+          AProcess := TJwWTSProcess.Create(FProcesses, SessionId,
+            ProcessId, strProcessName, strUsername);
+          with AProcess do
+          begin
+  //          FSidStr := strSid;
+            // Calculate Process Age
+            CalculateElapsedTime(@CreateTime, DiffTime);
 
-//          FSidStr := strSid;
-          // Calculate Process Age
-          CalculateElapsedTime(@CreateTime, DiffTime);
+              // Reserve Memory
+              GetMem(lpBuffer, ELAPSED_TIME_STRING_LENGTH * SizeOf(WCHAR));
+            try
+              // Format Elapsed Time String
+              ElapsedTimeStringSafe(@DiffTime, False, lpBuffer,
+                  ELAPSED_TIME_STRING_LENGTH);
+              FProcessAge := (DiffTime.wDays * SECONDS_PER_DAY) +
+                (DiffTime.wHours * SECONDS_PER_HOUR) +
+                (DiffTime.wMinutes * SECONDS_PER_MINUTE);
+              FProcessAgeStr := PWideCharToJwString(lpBuffer);
+            finally
+              // Free mem
+              FreeMem(lpBuffer);
+              lpBuffer := nil;
+            end;
 
-            // Reserve Memory
-            GetMem(lpBuffer, ELAPSED_TIME_STRING_LENGTH * SizeOf(WCHAR));
-          try
-            // Format Elapsed Time String
-            ElapsedTimeStringSafe(@DiffTime, False, lpBuffer,
-                ELAPSED_TIME_STRING_LENGTH);
-            FProcessAge := (DiffTime.wDays * SECONDS_PER_DAY) +
-              (DiffTime.wHours * SECONDS_PER_HOUR) +
-              (DiffTime.wMinutes * SECONDS_PER_MINUTE);
-            FProcessAgeStr := PWideCharToJwString(lpBuffer);
-          finally
-            // Free mem
-            FreeMem(lpBuffer);
-            lpBuffer := nil;
+            // Some of the used counters are explained here:
+            // http://msdn2.microsoft.com/en-us/library/aa394372.aspx
+
+            FProcessCreateTime :=
+              TimeToStr(FileTime2DateTime(FILETIME(CreateTime)));
+            // The CPU Time column in Taskmgr.exe is Usertime + Kerneltime
+            // So we take the sum of it and call it ProcessCPUTime
+            FProcessCPUTime := UserTime.QuadPart + KernelTime.QuadPart;
+
+            FProcessCPUTimeStr := CPUTime2Str(
+              LARGE_INTEGER(UserTime.QuadPart + KernelTime.QuadPart));
+            // Amount of memory in bytes that a process needs to execute
+            // efficiently. Maps to Mem Size column in Task Manager.
+            // So we call it ProcessMemUsage
+            FProcessMemUsage := VmCounters.WorkingSetSize;
+            // Pagefileusage is the amount of page file space that a process is
+            // using currently. This value is consistent with the VMSize value
+            // in TaskMgr.exe. So we call it ProcessVMSize
+            FProcessVMSize := VmCounters.PagefileUsage;
           end;
 
-          // Some of the used counters are explained here:
-          // http://msdn2.microsoft.com/en-us/library/aa394372.aspx
+          try
+            OnProcessFound(Self, AProcess, Cancel, Data);
+          finally
+            //warning: AProcess may be deleted in there
+          end;
 
-          FProcessCreateTime :=
-            TimeToStr(FileTime2DateTime(FILETIME(CreateTime)));
-          // The CPU Time column in Taskmgr.exe is Usertime + Kerneltime
-          // So we take the sum of it and call it ProcessCPUTime
-          FProcessCPUTime := UserTime.QuadPart + KernelTime.QuadPart;
-
-          FProcessCPUTimeStr := CPUTime2Str(
-            LARGE_INTEGER(UserTime.QuadPart + KernelTime.QuadPart));
-          // Amount of memory in bytes that a process needs to execute
-          // efficiently. Maps to Mem Size column in Task Manager.
-          // So we call it ProcessMemUsage
-          FProcessMemUsage := VmCounters.WorkingSetSize;
-          // Pagefileusage is the amount of page file space that a process is
-          // using currently. This value is consistent with the VMSize value
-          // in TaskMgr.exe. So we call it ProcessVMSize
-          FProcessVMSize := VmCounters.PagefileUsage;
+          if Cancel then
+              break;
         end;
       end;
     end;
-  end;
-  // Cleanup
-  if ProcessInfoPtr <> nil then
-  begin
-    WinStationFreeGAPMemory(0, ProcessInfoPtr, Count);
+  finally
+    // Cleanup
+    if ProcessInfoPtr <> nil then
+    begin
+      WinStationFreeGAPMemory(0, ProcessInfoPtr, Count);
+    end;
   end;
 
   ProcessInfoPtr := nil;

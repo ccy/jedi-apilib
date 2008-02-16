@@ -25,8 +25,6 @@
     <DCC_ResourcePath>;$(BDS)\Source\DUnit\src</DCC_ResourcePath>
     <DCC_ObjPath>;$(BDS)\Source\DUnit\src</DCC_ObjPath>
     <DCC_IncludePath>;$(BDS)\Source\DUnit\src</DCC_IncludePath>
-    <DCC_DebugInfoInExe>True</DCC_DebugInfoInExe>
-    <DCC_DebugVN>True</DCC_DebugVN>
   </PropertyGroup>
   <ProjectExtensions>
     <Borland.Personality>Delphi.Personality</Borland.Personality>
