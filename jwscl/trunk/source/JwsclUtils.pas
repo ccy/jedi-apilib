@@ -327,7 +327,7 @@ begin
   result := (Handle <> 0) and (Handle <> INVALID_HANDLE_VALUE);
 end;
 
-function TJwCheckBitMask(const Bitmask: Integer; const Check: Integer): Boolean;
+function JwCheckBitMask(const Bitmask: Integer; const Check: Integer): Boolean;
 begin
   Result := BitMask and Check = Check;
   
