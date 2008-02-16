@@ -505,7 +505,7 @@ type
       a call to WinStationQueryUserToken failed)
 
      }
-    constructor CreateWTSQueryUserTokenEx(const Server: HANDLE;
+    constructor CreateWTSQueryUserTokenEx(const Server: TObject;
       SessionID: cardinal); overload; virtual;
 
 
@@ -1717,6 +1717,7 @@ function JwCheckAdministratorAccess: boolean;
 implementation
 
 uses JwsclKnownSid, JwsclMapping, JwsclSecureObjects, JwsclProcess,
+     JwsclTerminalServer,
       JwsclPrivileges, Math;
 
 
@@ -3036,11 +3037,26 @@ end;
 
 
 constructor TJwSecurityToken.CreateWTSQueryUserTokenEx(
-  const Server: HANDLE;SessionID: cardinal);
+  const Server: TObject; SessionID: cardinal);
+var TS : TJwTerminalServer;
+    TSRunning : Boolean;
+    hServer : THANDLE;
 begin
   RaiseOnInvalidPrimaryToken('CreateWTSQueryUserTokenEx');
+//                    TJwServerInfo.IsTerminalServer
 
-  if (not TJwWindowsVersion.IsTerminalServiceRunning) then
+  hServer := WTS_CURRENT_SERVER_HANDLE;
+  if Assigned(Server) then
+  begin
+    TS := Server as TJwTerminalServer;
+    //TODO: @remko : TS.IsTerminalServiceRunning needs to be implemented
+    TSRunning := false;
+    hServer := TS.ServerHandle;
+  end
+  else
+    TSRunning := not TJwWindowsVersion.IsTerminalServiceRunning;
+
+  if (not TSRunning) then
     raise EJwsclTerminalServiceNecessary.CreateFmtEx(
       RsTokenUnsupportedWtsCall, 'Create', ClassName, RsUNToken, 0, False, []);
 
@@ -3059,9 +3075,9 @@ begin
 
   if SessionID = INVALID_HANDLE_VALUE then
   begin
-    if not WinStationQueryUserToken(Server, WtsGetActiveConsoleSessionID,
+    if not WinStationQueryUserToken(hServer, WtsGetActiveConsoleSessionID,
       fTokenHandle) then
-      if not WinStationQueryUserToken(Server, WTS_CURRENT_SESSION,
+      if not WinStationQueryUserToken(hServer, WTS_CURRENT_SESSION,
         fTokenHandle) then
         raise EJwsclWinCallFailedException.CreateFmtEx(
           RsTokenCallWtsQueryUserTokenFailed, 'WinStationQueryUserToken',
@@ -3069,7 +3085,7 @@ begin
   end
   else
   begin
-    if not WinStationQueryUserToken(Server, SessionID, fTokenHandle) then
+    if not WinStationQueryUserToken(hServer, SessionID, fTokenHandle) then
       raise EJwsclWinCallFailedException.CreateFmtEx(
         RsTokenCallWtsQueryUserTokenFailed, 'WinStationQueryUserToken',
         ClassName, RsUNToken, 0, True, [SessionID]);

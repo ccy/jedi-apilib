@@ -62,7 +62,7 @@ uses SysUtils, Classes, Registry, Contnrs,
 type
 
 
-{$IFNDEF DELPHI_6_UP}
+{$IFNDEF DELPHI6_UP}
   EOSError = EWin32Error;
 {$ENDIF}
 
@@ -568,7 +568,7 @@ type
     }
     class function IsStationLocked : Boolean;
 
-{$IFDEF DELPHI_7_UP}
+{$IFDEF DELPHI7_UP}
      {@Name returns the maximum heap size of the desktop heap.
       This function is only available on Delphi 7 or higher.
 	  @return(Returns the heap size in bytes)
@@ -756,7 +756,7 @@ end;
 
 
 
-{$IFDEF DELPHI_7_UP}
+{$IFDEF DELPHI7_UP}
 class function TJwSecurityDesktops.GetDesktopHeapSize: Cardinal;
 var Reg : TRegistry;
     Value, sSize : String;
@@ -965,7 +965,7 @@ begin
     if Assigned(Stations) then
     begin
       {TODO: search case insensetive in delphi 5}
-{$IFDEF DELPHI_7_UP}
+{$IFDEF DELPHI7_UP}
      // Stations.CaseSensitive := FALSE;
 {$ENDIF}
       for i := fDesktops.Count - 1 downto 0 do

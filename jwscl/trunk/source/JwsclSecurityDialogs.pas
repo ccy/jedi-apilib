@@ -1430,18 +1430,18 @@ end;
 
 {TODO: test for D5}
 procedure TJwSecurityDescriptorDialog.SetInheritTypeList(aList: TJwInheritTypeList);
-{.$UNDEF DELPHI_6_UP}
-{$IFNDEF DELPHI_6_UP}
+{.$UNDEF DELPHI6_UP}
+{$IFNDEF DELPHI6_UP}
 var
    i : Integer;         
    G : TGuid;
-{$ENDIF DELPHI_6_UP}
+{$ENDIF DELPHI6_UP}
 begin
 {$IFDEF FPC}
   fInheritTypeList.Assign(aList);
 {$ELSE}
 
-{$IFNDEF DELPHI_6_UP}
+{$IFNDEF DELPHI6_UP}
   fInheritTypeList.Clear;
   for i := 0 to aList.Count -1 do
   begin
@@ -1455,7 +1455,7 @@ begin
   end;
 {$ELSE}
   fInheritTypeList.Assign(aList);
-{$ENDIF DELPHI_6_UP}
+{$ENDIF DELPHI6_UP}
 {$ENDIF FPC}
 
 

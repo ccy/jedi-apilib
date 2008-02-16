@@ -306,7 +306,7 @@ begin
     end;
   end
   else
-{$IFDEF DELPHI_6_UP}
+{$IFDEF DELPHI6_UP}
     RaiseLastOSError;
 {$ELSE}
 {$IFDEF FPC}
@@ -314,7 +314,7 @@ begin
 {$ELSE}
   RaiseLastWin32Error;
 {$ENDIF FPC}
-{$ENDIF DELPHI_6_UP}
+{$ENDIF DELPHI6_UP}
 
   if (pS <> nil) then
   begin

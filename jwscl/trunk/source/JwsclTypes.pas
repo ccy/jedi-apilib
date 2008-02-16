@@ -49,16 +49,16 @@ uses
 
 {$IFNDEF SL_IMPLEMENTATION_SECTION}
 type
-{$IFNDEF COMPILER_6_UP}
+{$IFNDEF DELPHI6_UP}
   {@Name is defined for Delphi 5 because it does not know this types}
   PCardinal = ^Cardinal;
-{$ENDIF COMPILER_6_UP}
+{$ENDIF DELPHI6_UP}
 
-{$IFDEF DELPHI_6_UP}
+{$IFDEF DELPHI6_UP}
  {$ALIGN 4}  //warning do not remove. WinApi relies on that!
 {$ELSE}
  {$A-} //[warning] Enumeration types need to be 4 bytes long (not 1 byte)
-{$ENDIF DELPHI_6_UP}
+{$ENDIF DELPHI6_UP}
 
 
   {@Name is the type of a token handle}

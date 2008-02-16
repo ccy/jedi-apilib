@@ -322,7 +322,7 @@ begin
     Log.Add(Format('Running CreateProcessInSession(Sesion=%d):',[SessionID]));
     try
       Log.Add('Getting user token CreateWTSQueryUserTokenEx...');
-      Output.UserToken := TJwSecurityToken.CreateWTSQueryUserTokenEx(0, SessionID);
+      Output.UserToken := TJwSecurityToken.CreateWTSQueryUserTokenEx(nil, SessionID);
     except
       //on E2 : EJwsclUnsupportedWindowsVersionException do
       On E2 : Exception do

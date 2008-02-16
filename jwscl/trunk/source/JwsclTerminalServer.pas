@@ -3341,11 +3341,13 @@ begin
   if Assigned(FToken) then
     exit;
 
+  JwRaiseOnNilMemoryBlock(Owner,'GetToken',ClassName,RsUNTerminalServer);
+
+
   result := nil;
 
-  //session on another Server? : CreateWTSQueryUserTokenEx
   try
-    FToken := TJwSecurityToken.CreateWTSQueryUserTokenEx(0, FSessionId);
+    FToken := TJwSecurityToken.CreateWTSQueryUserTokenEx(Owner.Owner, FSessionId);
   except
     on E : EJwsclOpenProcessTokenException do
       FToken := nil;

@@ -4767,7 +4767,7 @@ end;
 
 constructor TJwSecureFileObject.Create(const FileName: TJwString);
 begin
-{$IFNDEF COMPILER_5}
+{$IFNDEF DELPHI5}
   if not DirectoryExists(FileName) and not FileExists(FileName) then
 {$ELSE}
   if not FileExists(FileName) then
