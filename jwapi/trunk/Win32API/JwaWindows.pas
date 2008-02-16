@@ -564,7 +564,7 @@ The list has no order!}
 {$I JwaBitscfg.pas}
 {$ENDIF JWA_INCLUDE_JWAADSTLB}
 
-
+{$I JwaWinInet.pas}
 
 {$DEFINE JWA_INCLUDEMODE}
 {$IFDEF COMPILER6_UP}
@@ -573,6 +573,8 @@ The list has no order!}
 {$IFDEF FPC}
  {$I JwaWinSta.pas}
 {$ENDIF}
+
+
 
 {.$I JwaWinternl.pas}  //not used anymore!
 
@@ -893,7 +895,7 @@ The list has no order!}
 {$I JwaBitscfg.pas}
 {$ENDIF JWA_INCLUDE_JWAADSTLB}
 
-
+{$I JwaWinInet.pas}
 
 {$DEFINE JWA_INCLUDEMODE}
 
@@ -906,6 +908,8 @@ The list has no order!}
 {$IFDEF FPC}
 {$I JwaWinSta.pas}
 {$ENDIF FPC}
+
+
 
 {$I ModuleLoader.pas}
 {$IFDEF JWA_INCLUDE_SETUP_API}

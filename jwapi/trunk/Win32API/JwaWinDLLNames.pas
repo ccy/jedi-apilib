@@ -118,6 +118,7 @@ const
   versionlib = 'version.dll';
   winberapi = 'wldap32.dll';
   winfax = 'winfax.dll';
+  winetdll = 'wininet.dll';
   winspool32 = 'winspool32.drv';
   winstaDLL = 'winsta.dll';
   winternl_lib = 'ntdll.dll';
@@ -129,6 +130,7 @@ const
   wtsapi = 'wtsapi32.dll';
   SetupApiModuleName = 'SetupApi.dll';
   CfgMgrDllName = 'cfgmgr32.dll';
+
 
 {$ENDIF JWA_IMPLEMENTATIONSECTION}
 
