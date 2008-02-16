@@ -329,8 +329,8 @@ end;
 
 function JwCheckBitMask(const Bitmask: Integer; const Check: Integer): Boolean;
 begin
+  // Dummy comment
   Result := BitMask and Check = Check;
-  
 end;
 
 type
