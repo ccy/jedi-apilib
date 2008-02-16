@@ -71,6 +71,131 @@ type
       var FileVersionInfo: TFileVersionInfo): Boolean;
   end;
 
+
+  TJwServerInfo = class(TObject)
+  private
+  protected
+    {@exclude}
+    FServer: TJwString;
+    {@exclude}
+    FMajorVersion: Integer;
+    {@exclude}
+    FMinorVersion: Integer;
+    {@exclude}
+    FIsServer: Boolean;
+    {@exclude}
+    FIsTerminalServer: Boolean;
+    {@exclude}
+    FWindowsType: Integer;
+  public
+    {The @Name constructor creates the @ClassName object and reserves memory
+     for it.@br
+     @param(Server the servername for which you would like to retreive
+     information. If Servername is empty string the local machine will be
+     queried.)
+    }
+    constructor Create(const Server: TJwString);
+
+    {@Name returns a constant that defines the windows version the process is running.
+     @return(The return value can be one of these constants defined in JwsclConstants
+     Actually these items are supported
+     @unorderedList(
+       @itemSpacing(Compact)
+       @item cOsUnknown = The system is unknown
+       @item cOsWinNT   = running on Windows NT
+       @item cOsWin2000 = running on Windows 2000
+       @item cOsXP      = running on Windows XP
+       @item cOS2003    = running on Windows 2003 or Windows 2003 Release 2
+       @item cOSXP64    = running on Windows XP 64 Edition (not supported at the moment)
+       @item cOsVista   = running on Windows Vista
+       @item cOsWin2008 = running on Windows 2008 (tested on rc)
+     ))
+    }
+    function GetWindowsType: Integer;
+
+    {@Name checks if the system is a server version
+     @return(@true if the system is a Server; otherwise @false (Workstation).)
+    }
+    property IsServer: Boolean read FIsServer;
+
+    {@Name checks if the system is a Terminal Server. A server is considered to
+     be a Terminal Server if it meets one of the following conditions:@br
+     @unorderedList(
+     @Item(The Terminal Server is in application mode)
+     @Item(The Terminal Server is advertising itsself on the network)
+     )
+     @returns(Returns @true if the system is a Terminal Server in application mode
+     ; otherwise @false.)
+     @seealso(TJwTerminalServer.EnumerateServers)
+    }
+    property IsTerminalServer: Boolean read FIsTerminalServer;
+
+    {@Name checks if the system has the version given in the function name.
+     @param(bOrHigher defines if the return value should also be @true if the system
+     is better/higher than the requested system version.)
+     @returns(@Name returns @true if the system is the requested version (or higher if bOrHigher is true);
+     otherwise @false.
+     If bOrHigher is @true the return value is the result of
+     @TRUE if (bOrHigher and (GetWindowsType > iVer)) is true;
+     @FALSE if GetWindowsType < (requested version)
+     )
+    }
+    function IsWindows2000(bOrHigher: boolean = False): boolean;
+
+    {@Name checks if the system has the version given in the function name.
+     @param(bOrHigher defines if the return value should also be @true if the system
+     is better/higher than the requested system version.)
+     @return(@Name returns @true if the system is the requested version (or higher if bOrHigher is true);
+     otherwise @false.
+     If bOrHigher is @true the return value is the result of
+     @TRUE if (bOrHigher and (GetWindowsType > iVer)) is true;
+     @FALSE if GetWindowsType < (requested version)
+     )
+    }
+    function IsWindows2003(bOrHigher: boolean = False): boolean;
+
+    {@Name checks if the system has the version given in the function name.
+     @param(bOrHigher defines if the return value should also be @true if the system
+     is better/higher than the requested system version.)
+     @return(@Name returns @true if the system is the requested version (or higher if bOrHigher is true);
+     otherwise @false.
+     If bOrHigher is @true the return value is the result of
+     @TRUE if (bOrHigher and (GetWindowsType > iVer)) is true;
+     @FALSE if GetWindowsType < (requested version)
+     )
+    }
+    function IsWindowsXP(bOrHigher: boolean = False): boolean;
+
+    {@Name checks if the system has the version given in the function name.
+     @param(bOrHigher defines if the return value should also be @true if the system
+     is better/higher than the requested system version.)
+     @return(@Name returns @true if the system is the requested version (or higher if bOrHigher is true);
+     otherwise @false.
+     If bOrHigher is @true the return value is the result of
+     @TRUE if (bOrHigher and (GetWindowsType > iVer)) is true;
+     @FALSE if GetWindowsType < (requested version)
+     )
+    }
+    function IsWindows2008(bOrHigher: boolean = False): boolean;
+
+
+    {@Name checks if the system has the version given in the function name.
+     @param(bOrHigher defines if the return value should also be @true if the system
+     is better/higher than the requested system version.)
+     @return(@Name returns @true if the system is the requested version (or higher if bOrHigher is true);
+     otherwise @false.
+     If bOrHigher is @true the return value is the result of
+     @TRUE if (bOrHigher and (GetWindowsType > iVer)) is true;
+     @FALSE if GetWindowsType < (requested version)
+     )
+    }
+    function IsWindowsVista(bOrHigher: boolean = False): boolean;
+
+    {@Name is the servername as returned by Windows Api}
+    property Server: TJwString read FServer;
+  end;
+
+
     {@Name provides methods to detect the windows version and product type.
      All methods are class methods so there is no need for an instance of @Name.
      }
@@ -375,6 +500,118 @@ begin
     end;
   end;
 end;
+
+
+constructor TJwServerInfo.Create(const Server: TJwString);
+var
+  nStatus: NET_API_STATUS;
+  pwServer: PWideChar;
+  ServerInfoPtr: PServerInfo101;
+begin
+  pwServer := PWideChar(WideString(Server));
+
+  nStatus := NetServerGetInfo(pwServer, 101, PByte(ServerInfoPtr));
+
+  if nStatus = NERR_Success then
+  begin
+    FServer := ServerInfoPtr^.sv101_name;
+    {Specifies, in the least significant 4 bits of the byte, the major release
+     version number of the operating system. The most significant 4 bits of the
+     byte specifies the server type. The mask MAJOR_VERSION_MASK should be used
+     to ensure correct results.}
+    FMajorVersion  := ServerInfoPtr^.sv101_version_major and MAJOR_VERSION_MASK;
+    FMinorVersion  := ServerInfoPtr^.sv101_version_minor;
+    FIsServer :=
+      (JwCheckBitMask(ServerInfoPtr^.sv101_type, SV_TYPE_DOMAIN_CTRL)) or
+      (JwCheckBitMask(ServerInfoPtr^.sv101_type, SV_TYPE_DOMAIN_BAKCTRL)) or
+      (JwCheckBitMask(ServerInfoPtr^.sv101_type, SV_TYPE_SERVER_NT));
+    FIsTerminalServer :=
+      (JwCheckBitMask(ServerInfoPtr^.sv101_type, SV_TYPE_TERMINALSERVER));
+    FWindowsType := GetWindowsType;
+
+    // Free Memory
+    NetApiBufferFree(ServerInfoPtr);
+  end
+  else begin
+    raise EJwsclWinCallFailedException.CreateFmtEx('',
+      'NetServerGetInfo', ClassName, RsUNVersion, 0, nStatus,
+          [FServer]);
+  end;
+end;
+
+function TJwServerInfo.GetWindowsType: Integer;
+begin
+  if FMajorVersion <= 4 then
+  begin
+    Result := cOsWinNT;
+  end
+  else if (FMajorVersion = 5) and (FMinorVersion = 0) then
+  begin
+    Result := cOsWin2000;
+  end
+  else if (FMajorVersion = 5) and (FMinorVersion = 1) then
+  begin
+    Result := cOsXP;
+  end
+  else if (FMajorVersion = 5) and (FMinorVersion = 2) then
+  begin
+    // Is there a way to determine 2003 R2 remotely?
+    Result := cOS2003;
+  end
+  else if (FMajorVersion = 6) and (FMinorVersion = 0) and (not fIsServer) then
+  begin
+    Result := cOsVista;
+  end
+  else if (FMajorVersion = 6) and (FMinorVersion = 0) and (fIsServer) then
+  begin
+    Result := cOsWin2008;
+  end
+  else if (FMajorVersion = 6) and (FMinorVersion = 0) then
+  begin
+    Result := cOsVista;
+  end
+  else
+  begin
+    Result := cOsUnknown;
+  end;
+end;
+
+function TJwServerInfo.IsWindows2000(bOrHigher: Boolean = False): Boolean;
+const
+  iVer = cOsWin2000;
+begin
+  Result := (FWindowsType = iVer) or (bOrHigher and (FWindowsType > iVer));
+end;
+
+function TJwServerInfo.IsWindows2003(bOrHigher: Boolean = False): Boolean;
+const
+  iVer = cOs2003;
+begin
+  Result := (FWindowsType = iVer) or (bOrHigher and (FWindowsType > iVer));
+end;
+
+function TJwServerInfo.IsWindowsXP(bOrHigher: Boolean = False): Boolean;
+const
+  iVer = cOsXP;
+begin
+  Result := (fWindowsType = iVer) or (bOrHigher and (fWindowsType > iVer));
+end;
+
+function TJwServerInfo.IsWindowsVista(bOrHigher: Boolean = False): Boolean;
+const
+  iVer = cOsVista;
+begin
+  Result := (FWindowsType = iVer) or (bOrHigher and (FWindowsType > iVer));
+end;
+
+function TJwServerInfo.IsWindows2008(bOrHigher: Boolean = False): Boolean;
+const
+  iVer = cOsWin2008;
+begin
+  Result := (FWindowsType = iVer) or (bOrHigher and (FWindowsType > iVer));
+end;
+
+
 
 class procedure TJwWindowsVersion.CheckWindowsVersion(iWinVer: integer;
   bOrHigher: boolean; SourceProc, SourceClass, SourceFile: TJwString;

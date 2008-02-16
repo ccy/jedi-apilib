@@ -297,6 +297,9 @@ procedure JwSetThreadName(const Name: String; const ThreadID : Cardinal = Cardin
 {@Name returns true if Handle is neither zero nor INVALID_HANDLE_VALUE; otherwise false.}
 function IsHandleValid(const Handle : THandle) : Boolean;
 
+{@name Checks if Bitmask and Check = Check}
+function JwCheckBitMask(const Bitmask: Integer; const Check: Integer): Boolean;
+
 implementation
 uses SysUtils, JwsclToken, JwsclKnownSid, JwsclDescriptor, JwsclAcl,
      JwsclSecureObjects, JwsclMapping
@@ -322,6 +325,12 @@ end;
 function IsHandleValid(const Handle : THandle) : Boolean;
 begin
   result := (Handle <> 0) and (Handle <> INVALID_HANDLE_VALUE);
+end;
+
+function TJwCheckBitMask(const Bitmask: Integer; const Check: Integer): Boolean;
+begin
+  Result := BitMask and Check = Check;
+  
 end;
 
 type
@@ -747,7 +756,7 @@ end;
 
 
 initialization
- 
+
   {
   S := LoadLocalizedString(50005, LANG_NEUTRAL, SUBLANG_NEUTRAL);
   S := LoadLocalizedString(50005, LANG_ENGLISH, SUBLANG_NEUTRAL, 0);

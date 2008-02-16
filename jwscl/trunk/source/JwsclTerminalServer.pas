@@ -93,12 +93,11 @@ type
   TJwWTSProcess = class;
   TJwWTSProcessList = class;
 
-  TSessionsEnumerator = class;
-  TProcessEnumerator = class;
+  TJwSessionsEnumerator = class;
+  TJwProcessEnumerator = class;
 
-  TJwOnProcessFound = procedure (
-      const Sender : TJwTerminalServer; var Process : TJwWTSProcess;
-      var Cancel : Boolean; Data : Pointer) of object;
+  TJwOnProcessFound = procedure(const Sender: TJwTerminalServer;
+    var Process: TJwWTSProcess; var Cancel: Boolean; Data: Pointer) of object;
 
   {@Name is a pointer to a TJwTerminalServer instance}
   PJwTerminalServer = ^TJwTerminalServer;
@@ -191,9 +190,8 @@ type
     {@exclude}
     procedure FireEvent(EventFlag: DWORD);
 
-    procedure OnInternalProcessFound(
-      const Sender : TJwTerminalServer; var Process : TJwWTSProcess;
-      var Cancel : Boolean; Data : Pointer); virtual;
+    procedure OnInternalProcessFound(const Sender: TJwTerminalServer;
+      var Process: TJwWTSProcess; var Cancel: Boolean; Data: Pointer); virtual;
   public
 
     {@Name sets up the connection with the Terminal Server specified in the
@@ -1589,7 +1587,7 @@ type
      end;
      #)
     }
-    function GetEnumerator: TSessionsEnumerator;
+    function GetEnumerator: TJwSessionsEnumerator;
 
 
     {@Returns(the index of the Session object in the SessionList.)
@@ -1941,7 +1939,7 @@ type
      end;
      #)
     }
-    function GetEnumerator: TProcessEnumerator;
+    function GetEnumerator: TJwProcessEnumerator;
 
 
     {@Returns(the index of the Process object in the ProcessList.)
@@ -2067,7 +2065,7 @@ type
   end;
 
 
-  TSessionsEnumerator = class
+  TJwSessionsEnumerator = class
   private
     FIndex: Integer;
     FSessions: TJwWTSSessionList;
@@ -2080,7 +2078,7 @@ type
 
 
 
-  TProcessEnumerator = class
+  TJwProcessEnumerator = class
   private
     FIndex: Integer;
     FProcesses: TJwWTSProcessList;
@@ -2853,9 +2851,9 @@ begin
   Result := inherited Add(ASession);
 end;
 
-function TJwWTSSessionList.GetEnumerator: TSessionsEnumerator;
+function TJwWTSSessionList.GetEnumerator: TJwSessionsEnumerator;
 begin
-  Result := TSessionsEnumerator.Create(Self);
+  Result := TJwSessionsEnumerator.Create(Self);
 end;
 
 
@@ -2894,9 +2892,9 @@ begin
   Result := inherited Add(AProcess);
 end;
 
-function TJwWTSProcessList.GetEnumerator;
+function TJwWTSProcessList.GetEnumerator: TJwProcessEnumerator;
 begin
-  Result := TProcessEnumerator.Create(Self);
+  Result := TJwProcessEnumerator.Create(Self);
 end;
 
 function TJwWTSProcessList.GetItem(Index: Integer): TJwWTSProcess;
@@ -3547,38 +3545,38 @@ begin
 end;
 
 
-constructor TSessionsEnumerator.Create(ASessionList: TJwWTSSessionList);
+constructor TJwSessionsEnumerator.Create(ASessionList: TJwWTSSessionList);
 begin
   inherited Create;
   FIndex := -1;
   FSessions := ASessionList;
 end;
 
-function TSessionsEnumerator.GetCurrent;
+function TJwSessionsEnumerator.GetCurrent;
 begin
   Result := FSessions[FIndex];
 end;
 
-function TSessionsEnumerator.MoveNext: Boolean;
+function TJwSessionsEnumerator.MoveNext: Boolean;
 begin
   Result := FIndex < FSessions.Count - 1;
   if Result then
     Inc(FIndex);
 end;
 
-constructor TProcessEnumerator.Create(AProcessList: TJwWTSProcessList);
+constructor TJwProcessEnumerator.Create(AProcessList: TJwWTSProcessList);
 begin
   inherited Create;
   FIndex := -1;
   FProcesses := AProcessList;
 end;
 
-function TProcessEnumerator.GetCurrent;
+function TJwProcessEnumerator.GetCurrent;
 begin
   Result := FProcesses[FIndex];
 end;
 
-function TProcessEnumerator.MoveNext: Boolean;
+function TJwProcessEnumerator.MoveNext: Boolean;
 begin
   Result := FIndex < FProcesses.Count - 1;
   if Result then
