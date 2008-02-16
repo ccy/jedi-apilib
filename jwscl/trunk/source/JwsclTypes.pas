@@ -1047,9 +1047,6 @@ type
     Profile: HANDLE;      // Filled in by the function.  Registry key handle open to the root.
   end;
 
-    TJwOnProcessFound = procedure (
-      const Sender : TJwTerminalServer; var Process : TJwWTSProcess;
-      var Cancel : Boolean; Data : Pointer) of object;
 
 
 

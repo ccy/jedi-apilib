@@ -15,7 +15,6 @@ uses
   JwsclResource,
   JwsclStrings;
 
-{$DEFINE SM_JCLDEBUG}
 
 procedure JwOleRaise(const Res : HRESULT); stdcall;
 procedure JwOleRaiseEx(const E_In : Exception; out E_out : Exception);

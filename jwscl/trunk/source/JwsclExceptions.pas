@@ -44,8 +44,6 @@ unit JwsclExceptions;
 {$I Jwscl.inc}
 // Last modified: $Date: 2007-09-10 10:00:00 +0100 $
 
-{$DEFINE SM_JCLDEBUG}
-
 interface
 
 uses SysUtils, Classes,
