@@ -386,11 +386,11 @@ function IsTerminalServiceRunning: boolean;
 // Tested and working on Windows XP but doesn't seem to work on
 // Windows Vista/2008. Better use W version to be sure!
 function LogonIdFromWinStationNameA(hServer: HANDLE; pWinStationName: LPSTR;
-  var SessionId: DWORD): BOOL; stdcall;
+  var SessionId: DWORD): Boolean; stdcall;
 
 // Tested and working on XP, 2003 and 2008
 function LogonIdFromWinStationNameW(hServer: HANDLE; pWinStationName: LPWSTR;
-  var SessionId: DWORD): BOOL; stdcall;
+  var SessionId: DWORD): Boolean; stdcall;
 
 // This is the version for NT Terminal Server, 2000, XP/2003 and Server 2008
 // Reserve 66 bytes for pWinStationName and 21 for pUserName
@@ -422,26 +422,26 @@ function WinStationCallBack(hServer:HANDLE; SessionId: DWORD;
 
 function WinStationConnectW(hServer: Handle; SessionId: DWORD;
   TargetSessionId: DWORD; pPassword: LPWSTR;
-  bWait: BOOL): BOOL; stdcall;
+  bWait: BOOL): Boolean; stdcall;
 
 function WinStationDisconnect(hServer: THandle; SessionId: DWORD;
-  bWait: BOOL): BOOL; stdcall;
+  bWait: BOOL): Boolean; stdcall;
 
 function WinStationEnumerateA(hServer: HANDLE;
-  var ppSessionInfo: PWTS_SESSION_INFOA; var pCount: DWORD): BOOL; stdcall;
+  var ppSessionInfo: PWTS_SESSION_INFOA; var pCount: DWORD): Boolean; stdcall;
 
 function WinStationEnumerateW(hServer: HANDLE;
-  var ppSessionInfo: PWTS_SESSION_INFOW; var pCount: DWORD): BOOL; stdcall;
+  var ppSessionInfo: PWTS_SESSION_INFOW; var pCount: DWORD): Boolean; stdcall;
 
 // Used to release memory allocated by WinStationGetAllProcesses
 function WinStationFreeGAPMemory(ClassIndex: DWORD;
-  pProcessInfo: PWINSTA_PROCESS_INFO_ARRAY; Count: Integer): BOOL; stdcall;
+  pProcessInfo: PWINSTA_PROCESS_INFO_ARRAY; Count: Integer): Boolean; stdcall;
 
 // Important! pProcessInfo must be nil before calling this function
 // by using Out parameter Delphi takes care of this for us
 function WinStationGetAllProcesses(hServer: HANDLE; ClassIndex: DWORD;
   var Count: Integer; out pProcessInfo: PWINSTA_PROCESS_INFO_ARRAY):
-  BOOL; stdcall;
+  Boolean stdcall;
 
 function WinStationGetLanAdapterNameW(hServer: HANDLE; LanaId: DWORD;
   ProtocolTypeLength: DWORD; ProtocolType: PWideChar;
@@ -449,20 +449,20 @@ function WinStationGetLanAdapterNameW(hServer: HANDLE; LanaId: DWORD;
 
 function WinStationGetProcessSid(hServer: Handle; dwPID: DWORD;
   ProcessStartTime: FILETIME; pProcessUserSid: PSID; var dwSidSize: DWORD):
-  BOOL; stdcall;
+  Boolean; stdcall;
 
 function WinStationGetRemoteIPAddress(hServer: HANDLE; SessionId: DWORD;
   var RemoteIPAddress: string; var Port: WORD): Boolean;
 
 function WinStationGetTermSrvCountersValue(hServer: Handle;
-  dwArraySize: DWORD; PCountersArray: PTERM_SRV_COUNTER_ARRAY): BOOL;
+  dwArraySize: DWORD; PCountersArray: PTERM_SRV_COUNTER_ARRAY): Boolean;
   stdcall;
 
 function WinStationNameFromLogonIdA(hServer: HANDLE; SessionId: ULONG;
-  pWinStationName: LPSTR): BOOL; stdcall;
+  pWinStationName: LPSTR): Boolean; stdcall;
 
 function WinStationNameFromLogonIdW(hServer: HANDLE; SessionId: ULONG;
-  pWinStationName: LPWSTR): BOOL; stdcall;
+  pWinStationName: LPWSTR): Boolean; stdcall;
 
 function WinStationQueryInformationW(hServer: HANDLE; SessionId: DWORD;
   WinStationInformationClass: Cardinal; pWinStationInformation: PVOID;
@@ -473,7 +473,7 @@ function WinStationQueryLogonCredentialsW(
   var LogonCredentials: _LOGON_CREDENTIALSW): HRESULT; stdcall;
 
 function WinstationQueryUserToken(hServer: HANDLE; SessionId: DWORD;
-  var hToken: HANDLE): BOOL;
+  var hToken: HANDLE): Boolean;
 
 // WinStationRename needs Admin rights and always returns true
 // need to check GetLastError
@@ -484,43 +484,45 @@ function WinstationQueryUserToken(hServer: HANDLE; SessionId: DWORD;
 
 // A version untested
 function WinStationRenameA(hServer: HANDLE; pOldWinStationName: LPSTR;
-  pNewWinStationName: LPSTR): BOOL; stdcall;
+  pNewWinStationName: LPSTR): Boolean; stdcall;
 
 // W version was tested
 function WinStationRenameW(hServer: HANDLE; pOldWinStationName: LPWSTR;
-  pNewWinStationName: LPWSTR): BOOL; stdcall;
+  pNewWinStationName: LPWSTR): Boolean; stdcall;
 
 function WinStationSendMessageA(hServer: HANDLE; SessionId: DWORD;
   pTitle: LPSTR; TitleLength: DWORD; pMessage: LPSTR; MessageLength: DWORD;
   Style: DWORD; Timeout: DWORD; var pResponse: DWORD;
-  bWait: BOOL): BOOL; stdcall;
+  bWait: BOOL): Boolean; stdcall;
 
 function WinStationSendMessageW(hServer: HANDLE; SessionId: DWORD;
   pTitle: LPWSTR; TitleLength: DWORD; pMessage: LPWSTR; MessageLength: DWORD;
   Style: DWORD; Timeout: DWORD; var pResponse: DWORD;
-  bWait: BOOL): BOOL; stdcall;
+  bWait: BOOL): Boolean; stdcall;
+
+function WinStationServerPing(hServer: HANDLE): BOOLEAN; stdcall;
 
 function WinStationSetInformationA(hServer: HANDLE; SessionID: DWORD;
   InformationClass: DWORD; InformationClassDATA: PVOID;
-  DataSize: DWORD): BOOL; stdcall;
+  DataSize: DWORD): Boolean; stdcall;
 
 function WinStationSetInformationW(hServer: HANDLE; SessionID: DWORD;
   InformationClass: DWORD; InformationClassDATA: PVOID;
-  DataSize: DWORD): BOOL; stdcall;
+  DataSize: DWORD): Boolean; stdcall;
 
 function WinStationShadow(hServer: Handle; pServerName: LPWSTR;
-  SessionId: DWORD; HotKey: DWORD; HKModifier: DWORD): BOOL; stdcall;
+  SessionId: DWORD; HotKey: DWORD; HKModifier: DWORD): Boolean; stdcall;
 
 // Admin can stop a shadowed session. SessionId is the targetsession
 // so the "victim" and not the one who is shadowing
 function WinStationShadowStop(hServer: Handle; SessionId: DWORD;
-  bWait: BOOL): BOOL; stdcall;
+  bWait: BOOL): Boolean; stdcall;
 
 function WinStationShutDownSystem(hSERVER: HANDLE;
-  ShutdownFlags: DWORD): BOOL; stdcall;
+  ShutdownFlags: DWORD): Boolean; stdcall;
 
 function WinStationTerminateProcess(hServer: Handle; dwPID: DWORD;
-  dwExitCode: DWORD): BOOL; stdcall;
+  dwExitCode: DWORD): Boolean; stdcall;
 
 {$ENDIF JWA_IMPLEMENTATIONSECTION}
 
@@ -574,6 +576,7 @@ function WinStationRenameA; external winstadll name 'WinStationRenameA';
 function WinStationRenameW; external winstadll name 'WinStationRenameW';
 function WinStationSendMessageA; external winstadll name 'WinStationSendMessageA';
 function WinStationSendMessageW; external winstadll name 'WinStationSendMessageW';
+function WinStationServerPing; external winstadll name 'WinStationServerPing';
 function WinStationSetInformationA; external winstadll name 'WinStationSetInformationA';
 function WinStationSetInformationW; external winstadll name 'WinStationSetInformationW';
 function WinStationShadow; external winstadll name 'WinStationShadow';
@@ -1013,6 +1016,19 @@ begin
         MOV     ESP, EBP
         POP     EBP
         JMP     [__WinStationSendMessageW]
+  end;
+end;
+
+var
+  __WinStationServerPing: Pointer;
+
+function WinStationServerPing;
+begin
+  GetProcedureAddress(__WinStationServerPing, winstadll, 'WinStationServerPing');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [__WinStationServerPing]
   end;
 end;
 
