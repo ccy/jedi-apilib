@@ -2002,7 +2002,7 @@ type
   end;
 
   {@Name indicates the Shadow State of a session}
-  TShadowState =
+  TJwShadowState =
     (
      {The session is not Shadowing or Being Shadowed}
      ssNone,
@@ -2013,7 +2013,7 @@ type
   );
 
   {@Name indicates the Shadow Permissions of a session}
-  TShadowMode = (
+  TJwShadowMode = (
     {The sessions cannot be shadowed}
     smNoneAllowed,
     {The sessions be shadowed but needs the user's permission}
@@ -2043,11 +2043,11 @@ type
     FOwner : TJwWTSSession;
   protected
     {@exclude}
-    function GetShadowState : TShadowState;
+    function GetShadowState : TJwShadowState;
     {@exclude}
-    function GetShadowMode : TShadowMode;
+    function GetShadowMode : TJwShadowMode;
     {@exclude}
-    procedure SetShadowMode(const Value : TShadowMode);
+    procedure SetShadowMode(const Value : TJwShadowMode);
     {@exclude}
     procedure UpdateShadowInformation(const Modify : Boolean);
   public
@@ -2057,11 +2057,11 @@ type
 
     {The @Name property indicates the ShadowState of the Session
     }
-    property ShadowState: TShadowState read GetShadowState;
+    property ShadowState: TJwShadowState read GetShadowState;
 
     {The @Name property indicates the ShadowMode of the Session
     }
-    property ShadowMode: TShadowMode read GetShadowMode write SetShadowMode;
+    property ShadowMode: TJwShadowMode read GetShadowMode write SetShadowMode;
   end;
 
 
@@ -2930,16 +2930,16 @@ end;
 function TJwWTSSessionShadow.GetShadowMode;
 begin
   UpdateShadowInformation(False);
-  Result := TShadowMode(FWinStationShadowInformation.ShadowMode);
+  Result := TJwShadowMode(FWinStationShadowInformation.ShadowMode);
 end;
 
-function TJwWTSSessionShadow.GetShadowState : TShadowState;
+function TJwWTSSessionShadow.GetShadowState : TJwShadowState;
 begin
   UpdateShadowInformation(False);
-  Result := TShadowState(FWinStationShadowInformation.CurrentShadowState);
+  Result := TJwShadowState(FWinStationShadowInformation.CurrentShadowState);
 end;
 
-procedure TJwWTSSessionShadow.SetShadowMode(Const Value : TShadowMode);
+procedure TJwWTSSessionShadow.SetShadowMode(Const Value : TJwShadowMode);
 begin
   FWinStationShadowInformation.ShadowMode := Ord(Value);
   UpdateShadowInformation(True);
@@ -3426,7 +3426,7 @@ begin
 {$ENDIF UNICODE}
 end;
 
-function TJwWTSSession.Shadow: boolean;
+function TJwWTSSession.Shadow: Boolean;
 begin
   // This function only exists in Unicode
   Result := WinStationShadow(GetServerHandle,
