@@ -415,7 +415,7 @@ type
   _WTS_CLIENT_DISPLAY = record
     HorizontalResolution: DWORD; // horizontal dimensions, in pixels
     VerticalResolution: DWORD;   // vertical dimensions, in pixels
-    ColorDepth: DWORD;           // 1=16, 2=256, 4=64K, 8=16M
+    ColorDepth: DWORD;           // 1=16, 2=256, 4=16M, 8=24M, 16=15M
   end;
   {$EXTERNALSYM _WTS_CLIENT_DISPLAY}
   WTS_CLIENT_DISPLAY = _WTS_CLIENT_DISPLAY;
