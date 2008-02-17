@@ -80,6 +80,9 @@ function JwStringArrayIndexOf(const StrArry: TJwTJwStringArray; const S: TJwStri
 {@Name formats a ansi- or unicode string and calls JwReplaceBreaks.}
 function JwFormatString(const Str : TJwString; const Args: array of const) : TJwString;
 
+{@Name behaves like JwFormatString but without calling JwReplaceBreaks}
+function JwFormatStringEx(const Str : TJwString; const Args: array of const) : TJwString;
+
 {@Name replaces "\r" and "\n" with break line chars.}
 procedure JwReplaceBreaks(var Str : TJwString);
 
@@ -204,6 +207,19 @@ begin
   result := Sysutils.Format(Str, Args);
   {$ENDIF UNICODE}
   JwReplaceBreaks(result);
+end;
+
+function JwFormatStringEx(const Str : TJwString; const Args: array of const) : TJwString;
+begin
+  {$IFDEF UNICODE}
+  {$IFDEF JCL}
+  result := JclWideFormat.WideFormat(Str, Args);
+  {$ELSE}
+  result := Sysutils.WideFormat(Str, Args);
+  {$ENDIF JCL}
+  {$ELSE}
+  result := Sysutils.Format(Str, Args);
+  {$ENDIF UNICODE}
 end;
 
 function JwStringArrayIndexOf(const StrArry: TJwTJwStringArray; const S: TJwString): integer;

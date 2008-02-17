@@ -46,6 +46,7 @@ Stuttgart, Germany 05.10.2007
 Contributors (in alphabetical order)
 Philip Dittmann
 Danila Galimov
+Binh Ly (ComLib.pas)
 Remko Weijnen
 
 

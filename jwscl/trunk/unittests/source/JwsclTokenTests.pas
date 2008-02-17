@@ -516,7 +516,7 @@ procedure TSecurityTokenTests.TestCreateWTSQueryUserTokenEx;
 var Token : TJwSecurityToken;
 begin
   try
-    Token := TJwSecurityToken.CreateWTSQueryUserTokenEx(0,0);
+    Token := TJwSecurityToken.CreateWTSQueryUserTokenEx(nil,0);
   finally
     Token.Free;
   end;

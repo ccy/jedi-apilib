@@ -298,7 +298,7 @@ procedure JwSetThreadName(const Name: String; const ThreadID : Cardinal = Cardin
 function IsHandleValid(const Handle : THandle) : Boolean;
 
 {@name Checks if Bitmask and Check = Check}
-function JwCheckBitMask(const Bitmask: Integer; const Check: Integer): Boolean;
+function JwCheckBitMask(const Bitmask: Integer; const Check: Integer): Boolean; 
 
 implementation
 uses SysUtils, JwsclToken, JwsclKnownSid, JwsclDescriptor, JwsclAcl,
@@ -329,7 +329,6 @@ end;
 
 function JwCheckBitMask(const Bitmask: Integer; const Check: Integer): Boolean;
 begin
-  // Dummy comment
   Result := BitMask and Check = Check;
 end;
 
