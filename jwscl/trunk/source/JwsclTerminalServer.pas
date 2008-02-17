@@ -173,6 +173,8 @@ type
     {@exclude}
     FServer: TJwString;
     {@exclude}
+    FSystemUserName: TJwString;
+    {@exclude}
     FTag: Integer;
 
     {@exclude}
@@ -181,6 +183,8 @@ type
     function GetServers: TStringList;
     {@exclude}
     function GetServer: TJwString;
+    {@exclude}
+    function GetSystemUsername: TJwString;
     {@exclude}
     function GetWinStationName(const SessionId: DWORD): TJwString;
     {@exclude}
@@ -648,6 +652,9 @@ type
     }
     function Shutdown(AShutdownFlag: DWORD): Boolean;
 
+    {@Name returns the (localised) name of the system user}
+    property SystemUserName: TJwString read GetSystemUserName;
+
     {@Name has no predefined meaning. The Tag property is provided for the
      convenience of developers. It can be used for storing an additional integer
      value or it can be typecast to any 32-bit value such as a component
@@ -946,7 +953,7 @@ type
     function GetToken : TJwSecurityToken;
     {@exclude}
     function GetUserSid : TJwSecurityID;
-
+  private
   public
     {The @Name constructor creates a TJwWTSSession instance and allocates memory for it
      @Param(Owner Specifies the TJwTerminalServer instance that owns the session)
@@ -1360,8 +1367,22 @@ type
       idle state.
     }
     property SessionId: TJwSessionId read FSessionId;
+
     {The @Name function starts the remote control of another Terminal Services
      session. You must call this function from a remote session.
+     @Param(Hotkey The virtual-key code that represents the key to press to
+     stop remote control of the session. The key that is defined in this
+     parameter is used with the HotkeyModifiers parameter. Default is VK_MULTIPY
+     (* on the numeric keypad).)
+     @Param(HKModifier The virtual modifier that represents the key to
+     press to stop remote control of the session. The virtual modifier is used
+     with the Hotkey parameter. The value can be:@br
+     @table(
+     @rowHead(  @cell(Value) @cell(Meaning))
+      @row(     @cell(MOD_SHIFT) @cell(The SHIFT key))
+      @row(     @cell(MOD_CONTROL) @cell(The CTRL key))
+      @row(     @cell(MOD_ALT) @cell(The ALT key))
+     ))@br
      @Return(If the function fails, the return value is zero. To get extended
      error information, call GetLastError)
      @br@br
@@ -1377,7 +1398,8 @@ type
      @seealso(TJwShadowMode)
      @seealso(TJwShadowState)
     }
-    function Shadow: boolean;
+    function Shadow(const Hotkey: DWORD = VK_MULTIPLY;
+      const HKModifier: DWORD = MOD_CONTROL): Boolean;
 
     {@Name returns information about the Shadow State and Shadow Mode of
     a session.
@@ -2346,6 +2368,20 @@ begin
   end;
 end;
 
+function TJwTerminalServer.GetSystemUsername: TJwString;
+var
+  JwSid: TJwSecurityId;
+begin
+  if FSystemUsername = '' then
+  begin
+    JwSid := TJwSecurityId.Create('S-1-5-18');
+    FSystemUsername := JwSid.GetCachedUserFromSid;
+    JwSid.Free;
+  end;
+
+  Result := FSystemUsername;
+end;
+
 function TJwTerminalServer.GetWinStationName(const SessionId: DWORD): TJwString;
 var
   WinStationNamePtr: PWideChar;
@@ -2442,7 +2478,7 @@ begin
           if ProcessId = 0 then
           begin
             strProcessName := GetIdleProcessName;
-            strUserName := 'SYSTEM';
+            strUserName := SystemUsername;
           end
           else
           begin
@@ -3047,6 +3083,7 @@ begin
       FreeLibrary(hModule);
     end;
   end;
+
   Result := FIdleProcessName;
 end;
 
@@ -3479,12 +3516,13 @@ begin
 {$ENDIF UNICODE}
 end;
 
-function TJwWTSSession.Shadow: Boolean;
+function TJwWTSSession.Shadow(const Hotkey: Cardinal = VK_MULTIPLY;
+  const HKModifier: Cardinal = MOD_CONTROL): Boolean;
 begin
-  // This function only exists in Unicode
+  // This function only exists in Unicode...
   Result := WinStationShadow(GetServerHandle,
-    PWideChar(WideString(GetServer)), FSessionId, VK_MULTIPLY,
-    MOD_CONTROL);
+    PWideChar(WideString(GetServer)), FSessionId, HotKey,
+    HKModifier);
 end;
 
 constructor TJwWTSProcess.Create(const Owner: TJwWTSProcessList;
