@@ -69,7 +69,7 @@ const
   // These names were found in winsta.dll because they have
   // corresponding unicode 2 ansi conversion functions.
   // Unknown: AsyncConfig, NasiConfig, OemTdConfig, PdConfig, PdConfig2
-  // PdParams UserConfig, WinStationCreate, WinStationPrinter
+  // PdParams UserConfig, WinStationPrinter
   //
   // The structures below are currently defined, constant names were
   // mapped on best guess:
@@ -87,6 +87,8 @@ const
   // Only System account is allowed to retrieve this!
   WinStationToken = 14;
 
+  WinStationResolution = 16;
+
   WinStationShadowInformation = 26;
   WinStationProductId = 27;
 
@@ -95,6 +97,8 @@ const
   WinStationLock = 28; // Locks or Unlocks the WinStation
 
   WinStationRemoteAddress = 29;
+
+  WinStationPipeInformation = 33;
 
   SECONDS_PER_DAY = 86400;
   SECONDS_PER_HOUR = 3600;
@@ -139,6 +143,10 @@ type
   TLogonCredentialsW = _LOGON_CREDENTIALSW;
   PLogonCredentialsW = PLOGON_CREDENTIALSW;
 
+  // WinStationToken (14)
+  // You must set ProcessId and ThreadId to the valid values
+  // Function actually duplicates a token handle to the
+  // process, which id (ProcessId and ThreadId) are set here.
   _WINSTA_USER_TOKEN = record
     ProcessId : DWORD;
     ThreadId : DWORD;
@@ -185,7 +193,7 @@ type
 
   // The following types are used for WinStationQueryInformationW
 
-  // WinStationCreate
+  // WinStationCreate (0)
   // Both functions (A and W) shares the single definition
 
   _WINSTATION_CREATE = record
@@ -196,7 +204,8 @@ type
   TWinStationCreate = _WINSTATION_CREATE;
   PWinStationCreate = PWINSTATION_CREATE;
 
-  // WinStationClient, returns information as provided by the
+  // WinStationClient (1)
+  // returns information as provided by the
   // Terminal Server client (mstsc).
   _WINSTATION_CLIENTW = record
     Comment: array[0..59] of WCHAR;
@@ -212,7 +221,8 @@ type
   TWinStationClientW = _WINSTATION_CLIENTW;
   PWinStationClientW = PWINSTATION_CLIENTW;
 
-  // WdConfig class, returns information about the WinStationDriver
+  // WdConfig class (3)
+  // returns information about the WinStationDriver
   _WD_CONFIGW = record
     WdName: array[0..32] of WCHAR;
     WdDLL: array[0..32] of WCHAR;
@@ -226,7 +236,8 @@ type
   TWdConfigW = _WD_CONFIGW;
   PWdConfigW = PWD_CONFIGW;
 
-  // WinStationConfig class, returns information about the client's
+  // WinStationConfig (6)
+  // class, returns information about the client's
   // configuration such as network, time(zone) settings and such
   _WINSTATION_CONFIGW = record
     Reserved1: DWORD;
@@ -258,7 +269,7 @@ type
   TWinStationConfigW = _WINSTATION_CONFIGW;
   PWinStationConfigW = PWINSTATION_CONFIGW;
 
-  // class WinStationInformationClass
+  // class WinStationInformation (8)
   // provides information about the current state of the client such as
   // idletime, sessionstatus and transferred/received bytes
   _WINSTATION_INFORMATIONW = record
@@ -292,6 +303,17 @@ type
   TWinStationInformationExW = _WINSTATION_INFORMATIONW;
   PWinStationInformationExW = PWINSTATION_INFORMATIONW;
 
+  // Class WinStationResolution (16)
+  _WINSTATION_RESOLUTION =  record
+     HorizontalResolution : WORD; // width
+     VerticalResolution : WORD;  // height
+     ColorDepth : WORD; // bits per pixel, see JwaWtsApi._WTS_CLIENT_DISPLAY.ColorDepth for format
+  end;
+  PWINSTATION_RESOLUTION = ^_WINSTATION_RESOLUTION;
+  TWinStationResolution = _WINSTATION_RESOLUTION;
+  PWinStationResolution = PWINSTATION_RESOLUTION;
+
+
   // WinStationRemoteAddress (class 29)
   // Definition is preliminary
   // AddressFamily can be AF_INET, AF_IPX, AF_NETBIOS, AF_UNSPEC
@@ -313,18 +335,29 @@ type
   TWinStationRemoteAddress = _WINSTATION_REMOTE_ADDRESS;
   PWinStationRemoteAddress = PWINSTATION_REMOTE_ADDRESS;
 
-  // WinStationShadowInformation
+  // WinStationShadowInformation (26)
   // Setting it requires the caller to be a local system, only ShadowMode field is used
   _WINSTATION_SHADOW_INFORMATION = record
     CurrentShadowState : DWORD;  //one of the SHADOW_STATE_XXX constants
     ShadowMode : DWORD;          // one of the SHADOW_MODE_XXX constants
     CurrentSessionId : DWORD;
-    Unknown1 : dword; // unknown; contains 2 or normal sessions, 0 on console and idle sessions
+    Unknown1 : DWORD; // unknown; contains 2 or normal sessions, 0 on console and idle sessions
   end;
   PWINSTATION_SHADOW_INFORMATION = ^_WINSTATION_SHADOW_INFORMATION;
   TWinStationShadowInformation = _WINSTATION_SHADOW_INFORMATION;
   PWinStationShadowInformation = PWINSTATION_SHADOW_INFORMATION;
 
+  // WinStationPipeInformation (33)
+  // returns name of the pipe (e.g. \\.\pipe\TerminalServer\g0djjEInbXQFxJ9JLPl\2)
+  // which is used to create processes in the target session
+  // by default, system can write and read to this pipe
+  _WINSTATION_PIPE_INFORMATIONW = record
+    PipeName : array [0..47] of WideChar;
+  end;
+  PWINSTATION_PIPE_INFORMATIONW = ^_WINSTATION_PIPE_INFORMATIONW;
+  TWinStationPipeInformationW = _WINSTATION_PIPE_INFORMATIONW;
+  PWinStationPipeInformationW = PWINSTATION_PIPE_INFORMATIONW;
+    
 function AreWeRunningTerminalServices: Boolean;
 
 procedure CachedGetUserFromSid(pSid: PSID; pUserName: LPWSTR;
@@ -1421,7 +1454,7 @@ begin
 end;
 
 function WinStationQueryUserToken(hServer: HANDLE; SessionId: DWORD;
-  var hToken: HANDLE): BOOL;
+  var hToken: HANDLE): Boolean;
 var WinstaUserToken: _WINSTA_USER_TOKEN;
   dwReturnLength: DWORD;
   LUID: _LUID;
