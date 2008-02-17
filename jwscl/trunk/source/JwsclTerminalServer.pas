@@ -189,7 +189,7 @@ type
     procedure SetServer(const Value: TJwString);
     {@exclude}
     procedure FireEvent(EventFlag: DWORD);
-
+    {@exclude}
     procedure OnInternalProcessFound(const Sender: TJwTerminalServer;
       var Process: TJwWTSProcess; var Cancel: Boolean; Data: Pointer); virtual;
   public
@@ -247,7 +247,6 @@ type
        // Create Terminal Server instance and allocate memory for it
        ATerminalServer := TJwTerminalServer.Create;
 
-       s: String;
        s := 'Remember this text';
 
        // Store pointer in Data property
@@ -538,7 +537,7 @@ type
     }
     property OnSessionEvent: TNotifyEvent read FOnSessionEvent write FOnSessionEvent;
 
-    {The @Name event is fired when a client connected to a session
+    {The @Name event is fired when a client connects to a session
      @seealso(OnSessionEvent Overview of which events are triggered and when)
     }
     property OnSessionConnect: TNotifyEvent read FOnSessionConnect write FOnSessionConnect;
@@ -1373,10 +1372,10 @@ type
      "fInheritShadow" = REG_DWORD:1
      "Shadow" = REG_DWORD:1
      #)
-     Where Shadow can be one of the TShadowMode values.
+     Where Shadow can be one of the TJwShadowMode values.
      @seealso(ShadowInformation)
-     @seealso(TShadowMode)
-     @seealso(TShadowState)
+     @seealso(TJwShadowMode)
+     @seealso(TJwShadowState)
     }
     function Shadow: boolean;
 
@@ -1388,14 +1387,36 @@ type
     @br@br
     Shadow Mode queries the shadow permissions for this session.
     @seealso(Shadow)
-    @seealso(TShadowMode)
-    @seealso(TShadowState)
+    @seealso(TJwShadowMode)
+    @seealso(TJwShadowState)
     }
     property ShadowInformation: TJwWTSSessionShadow read FShadow;
 
     {@Name the name of the user associated with the session.
     }
     property Username: TJwString read FUsername;
+
+    {@Name returns the token of the session.
+     This call needs the TCB privilege and the process must run under
+     SYSTEM account; otherwise EJwsclPrivilegeCheckException,
+     EJwsclWinCallFailedException is raised.
+     The returned value is cached and must not be freed!
+    }
+    property Token : TJwSecurityToken read GetToken;
+
+    {@Name returns the logged on User of the session.
+     This call needs the TCB privilege and the process must run under
+     SYSTEM account; otherwise EJwsclPrivilegeCheckException,
+     EJwsclWinCallFailedException is raised.@br
+     @br
+     The returned token is the user's primary access token which can be
+     passed directly to CreateProcessAsUser in order to launch a process in
+     the user's Session.@br
+     @br@br
+     @bold(Remarks:) The returned value is cached and must not be freed!@br
+     If the value cannot be obtained the return value is @nil.
+    }
+    property UserSid : TJwSecurityID read GetUserSid;
 
     property VerticalResolution: DWORD read FVerticalResolution;
 
@@ -1444,27 +1465,6 @@ type
     {@Name the default directory used when launching the initial program.}
     property WorkingDirectory: TJwString read FWorkingDirectory;
 
-    {@Name returns the token of the session.
-     This call needs the TCB privilege and the process must run under
-     SYSTEM account; otherwise EJwsclPrivilegeCheckException,
-     EJwsclWinCallFailedException is raised.
-     The returned value is cached and must not be freed!
-
-
-
-    }
-    property Token : TJwSecurityToken read GetToken;
-
-    {@Name returns the logged on User of the session.
-    This call needs the TCB privilege and the process must run under
-     SYSTEM account; otherwise EJwsclPrivilegeCheckException,
-     EJwsclWinCallFailedException is raised.
-
-     The returned value is cached and must not be freed!
-
-     If the value cannot be obtained the return value is nil.
-    }
-    property UserSid : TJwSecurityID read GetUserSid;
   end;
 
   {@Name is a pointer to a TJwWTSSessionList}
@@ -1539,6 +1539,24 @@ type
      @returns(returns the index of the inserted object.)
     }
     function Add(ASession: TJwWTSSession): Integer;
+
+    {@Name loops through the @Classname and returns the Session associated
+     with the requested SessionId.@br
+     @Param(SessionId The Session Identifier)
+     @Returns(TJwWTSSession)
+     @br@br
+     @bold(Remarks:) If the SessionId was not found return value will be @nil.
+    }
+    function FindBySessionId(const SessionId: DWORD): TJwWTSSession;
+
+    {@Name loops through the @Classname and returns the first Session associated
+     with the requested Username which is compared case insensitive.@br
+     @Param(Username The windows username)
+     @Returns(TJwWTSSession)
+     @br@br
+     @bold(Remarks:) If the Username was not found return value will be @nil.
+    }
+    function FindByUsername(const Username: TJwString): TJwWTSSession;
 
 
     {(@Name returns an enumerator that can be used to iterate through
@@ -2032,8 +2050,8 @@ type
    @br@bold(Remarks:) Please note that changing the shadow mode with the SetShadow
    function does not take affect until the sessions has been disconnected
    and reconnected.
-   @seealso(TShadowMode)
-   @seealso(TShadowState) 
+   @seealso(TJwShadowMode)
+   @seealso(TJwShadowState) 
   }
   TJwWTSSessionShadow = class
   private
@@ -2850,6 +2868,41 @@ function TJwWTSSessionList.Add(ASession: TJwWTSSession): Integer;
 begin
   Result := inherited Add(ASession);
 end;
+
+function TJwWTSSessionList.FindBySessionId(const SessionId: DWORD): TJwWTSSession;
+var
+  i: Integer;
+begin
+  Result := nil;
+
+  for i := 0 to Count - 1 do
+  begin
+    if Items[i].SessionId = SessionId then
+    begin
+      Result := Items[i];
+      Break;
+    end;
+  end;
+
+end;
+
+function TJwWTSSessionList.FindByUsername(const Username: TJwString): TJwWTSSession;
+var
+  i: Integer;
+begin
+  Result := nil;
+
+  for i := 0 to Count - 1 do
+  begin
+    if JwCompareString(Items[i].Username, Username, True) = 0 then
+    begin
+      Result := Items[i];
+      Break;
+    end;
+  end;
+
+end;
+
 
 function TJwWTSSessionList.GetEnumerator: TJwSessionsEnumerator;
 begin
