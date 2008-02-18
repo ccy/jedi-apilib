@@ -336,8 +336,9 @@ type
   {@Name is raised if JwInitWellKnownSIDs was not called.}
   EJwsclInitWellKnownException = class(EJwsclKeyException);
 
-  EJwsclUnimplemented = class(EJwsclCryptException);
+  EJwsclUnimplemented = class(EJwsclSecurityException);
 
+  EJwsclNilPointer = class(EJwsclSecurityException);
 
   JwGeneralExceptionClass = class of Exception;
 

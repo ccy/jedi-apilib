@@ -106,6 +106,7 @@ type
     property Name: String read FName write SetName;
   end;
 
+{@Name calls GlobalFree on parameter hMem and sets it to zero (0).}
 procedure JwGlobalFreeAndNil(var hMem: HGLOBAL);
 
 {@Name creates a managed memory handle by LocalAlloc.
@@ -278,13 +279,44 @@ sequence start: a_0 = 0
 }
 function JwCheckArray(const Objs : TJwObjectTypeArray; out Index : Integer) : Boolean; overload;
 
+{@Name raises exception EJwsclUnimplemented if compiler directive DEBUG
+was used to compile the source}
 procedure JwUNIMPLEMENTED_DEBUG;
+
+{@Name raises exception EJwsclUnimplemented}
 procedure JwUNIMPLEMENTED;
 
+{@Name raises an exception EJwsclNilPointer if parameter P
+ is nil; otherwise nothing happens.
+This function is like Assert but it will not be removed in a release build.
+
+@param(P defines a pointer to be validated)
+@param(ParameterName defines the name of the parameter which is validated and
+ belongs to this pointer)
+@param(MethodName defines the name of the method this parameter belongs to)
+@param(ClassName defines the name of the class the method belongs to. Can be
+  empty if the method does not belong to a class)
+@param(FileName defines the source file of the call to this procedure.)
+
+@raises(EJwsclNilPointer will be raised if P is nil)
+}
 procedure JwRaiseOnNilMemoryBlock(const P : Pointer;
   const MethodName, ClassName, FileName : TJwString);
 
-  
+{@Name raises an exception EJwsclNILParameterException if parameter P
+ is nil; otherwise nothing happens.
+This function is like Assert but it will not be removed in a release build.
+
+@param(P defines a pointer to be validated)
+@param(ParameterName defines the name of the parameter which is validated and
+ belongs to this pointer)
+@param(MethodName defines the name of the method this parameter belongs to)
+@param(ClassName defines the name of the class the method belongs to. Can be
+  empty if the method does not belong to a class)
+@param(FileName defines the source file of the call to this procedure.)
+
+@raises(EJwsclNILParameterException will be raised if P is nil)
+}
 procedure JwRaiseOnNilParameter(const P : Pointer;
   const ParameterName, MethodName, ClassName, FileName : TJwString);
 
@@ -292,9 +324,27 @@ procedure JwRaiseOnNilParameter(const P : Pointer;
 function GetUnitName(argObject: TObject): string;
 {$ENDIF JW_TYPEINFO}
 
+{@Name names a thread. A debugger can use this name to display a human readably
+identifier for a thread.
+@Name must be called without using parameter ThreadID
+ as a precondition to use JwGetThreadName .
+
+@param(Name defines an ansi name for the thread)
+@param(ThreadID defines which thread is named. A value of Cardinal(-1)  uses
+  the current thread)
+}
 procedure JwSetThreadName(const Name: String; const ThreadID : Cardinal = Cardinal(-1));
 
-{@Name returns true if Handle is neither zero nor INVALID_HANDLE_VALUE; otherwise false.}
+{@Name returns the name of a thread set by JwSetThreadName.
+ This function only returns the name of the current thread. It cannot be used
+ with different threads than the current one.
+
+@bold(Precondition:)
+ JwSetThreadName must be called with a value of Cardinal(-1) for parameter ThreadID.
+}
+function JwGetThreadName : String;
+
+{@Name returns true if Handle is neither zero (0) nor INVALID_HANDLE_VALUE; otherwise false.}
 function IsHandleValid(const Handle : THandle) : Boolean;
 
 {@name Checks if Bitmask and Check = Check}
@@ -368,6 +418,13 @@ begin
   SetName(Name);
 end;
 
+threadvar InternalThreadName : String;
+
+function JwGetThreadName : String;
+begin
+  result := InternalThreadName;
+end;
+
 //source http://msdn2.microsoft.com/en-us/library/xcb2z8hs(vs.71).aspx
 procedure JwSetThreadName(const Name: String; const ThreadID : Cardinal = Cardinal(-1));
 {$IFDEF MSWINDOWS}
@@ -378,6 +435,9 @@ begin
 {$IFDEF MSWINDOWS}
   ThreadNameInfo.FType := $1000;
   ThreadNameInfo.FName := PChar(Name);
+  if (ThreadID = Cardinal(-1)) or (ThreadID = GetCurrentThreadID) then
+    InternalThreadName := Name;
+
   ThreadNameInfo.FThreadID := ThreadID; //$FFFFFFFF;
   ThreadNameInfo.FFlags := 0;
 
@@ -402,7 +462,7 @@ end;
 procedure JwRaiseOnNilMemoryBlock(const P : Pointer; const MethodName, ClassName, FileName : TJwString);
 begin
   if P = nil then
-    raise EJwsclUnimplemented.CreateFmtEx(
+    raise EJwsclNilPointer.CreateFmtEx(
      RsNilPointer,
       MethodName, ClassName, FileName, 0, false, []);
 end;
