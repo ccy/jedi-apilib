@@ -40,8 +40,9 @@ unit JwsclProcess;
 
 interface
 
-uses jwaWindows, JwsclTypes, JwsclToken, JwsclSid, JwsclTerminalServer,
-  Classes,
+uses Classes, jwaWindows,
+  JwsclTypes, JwsclToken, JwsclSid, JwsclTerminalServer,
+  JwsclLogging,
   JwsclStrings; //JwsclStrings, must be at the end of uses list!!!
 {$ENDIF SL_OMIT_SECTIONS}
 
@@ -78,11 +79,11 @@ procedure JwCreateProcessInSession(
 
   WaitForProcess : Boolean;
   out Output : TJwProcessOutputInformation;
-  var LogInfo : TJwString
+  LogServer : IJwLogServer
   );
 
 function JwGetTokenFromProcess (const OnProcessFound : TJwOnProcessFound;
-  Log : TStringList; Data : Pointer) : TJwSecurityToken;
+  LogServer : IJwLogServer; Data : Pointer) : TJwSecurityToken;
 
 {$ENDIF SL_IMPLEMENTATION_SECTION}
 
@@ -142,7 +143,7 @@ end;
 
 
 
-function JwGetTokenFromProcess (const OnProcessFound : TJwOnProcessFound; Log : TStringList; Data : Pointer) : TJwSecurityToken;
+function JwGetTokenFromProcess (const OnProcessFound : TJwOnProcessFound; LogServer : IJwLogServer; Data : Pointer) : TJwSecurityToken;
 var TSrv : TJwTerminalServer;
     i : Integer;
     ProcessID : DWORD;
@@ -150,14 +151,17 @@ var TSrv : TJwTerminalServer;
     Sid : TJwSecurityId;
     Cancel : Boolean;
     Process : TJwWTSProcess;
+    Log : IJwLogClient;
 begin
+  Log := LogServer.Connect(etFunction, '', 'JwGetTokenFromProcess', 'JwsclProcess.pas','');
+
   result := nil;
   Succ := false;
 
   //try to enable debug privs if available - otherwise nothing
   JwEnablePrivilege(SE_DEBUG_NAME,pst_EnableIfAvail);
 
-  Log.Add(Format('Running CreateTokenByProcessAndSession(SessionID: %d',[0]));
+  Log.Log(lsMessage,Format('Running CreateTokenByProcessAndSession(SessionID: %d',[0]));
 
   TSrv := TJwTerminalServer.Create;
   try
@@ -166,10 +170,10 @@ begin
     ProcessID := 0;
     if TSrv.EnumerateProcesses then
     begin
-      Log.Add('Proc count: ' + IntToStr(TSrv.Processes.Count));
+      Log.Log(lsMessage, 'Proc count: ' + IntToStr(TSrv.Processes.Count));
       for i := 0 to TSrv.Processes.Count-1 do
       begin
-        Log.Add(Format('Proc: %d, Name= %s SessionID: %d',[TSrv.Processes[i].ProcessId,
+        Log.Log(lsMessage, Format('Proc: %d, Name= %s SessionID: %d',[TSrv.Processes[i].ProcessId,
           TSrv.Processes[i].ProcessName, TSrv.Processes[i].SessionId]));
 
 
@@ -186,7 +190,7 @@ begin
             {
               Get token by process handle and duplicate it
             }
-            Log.Add('call CreateDuplicateExistingToken');
+            Log.Log(lsMessage,'call CreateDuplicateExistingToken');
             result := TJwSecurityToken.CreateDuplicateExistingToken(TSrv.Processes[i].Token.TokenHandle,
                 MAXIMUM_ALLOWED);
             {DEBUG: raise Exception.Create('');}
@@ -194,7 +198,7 @@ begin
             On E : Exception do
             begin
               Succ := False;
-              Log.Add('CreateDuplicateExistingToken failed: '#13#10+E.Message);
+              Log.Log(lsWarning, 'CreateDuplicateExistingToken failed: '#13#10+E.Message);
 
 
               //try to get the token the old fashioned way
@@ -211,7 +215,8 @@ begin
               except
                 On E : Exception do
                 begin
-                  Log.Add('Could not get user token by Process: '#13#10+E.Message);
+                  Log.Exception(E);
+                  //Log.Add('Could not get user token by Process: '#13#10+E.Message);
                   Succ := False;
                   ProcessID := 0;
                 end;
@@ -226,13 +231,13 @@ begin
       end
     end
     else
-      Log.Add('EnumerateProcesses failed.');
+      Log.Log(lsMessage,'EnumerateProcesses failed.');
 
     if ProcessID = 0 then
-      Log.Add('Could not find any process ID.');
+      Log.Log(lsMessage,'Could not find any process ID.');
   finally
     TSrv.Free;
-    Log.Add('Exiting CreateTokenByProcessAndSession.');
+    Log.Log(lsMessage,'Exiting CreateTokenByProcessAndSession.');
   end;
 end;
 
@@ -250,7 +255,7 @@ procedure JwCreateProcessInSession(
 
   WaitForProcess : Boolean;
   out Output : TJwProcessOutputInformation;
-  var LogInfo : TJwString
+  LogServer : IJwLogServer
   );
 
 
@@ -262,9 +267,6 @@ procedure JwCreateProcessInSession(
       CharPtr := nil;
   end;
 
-  var //log data is stored here
-      Log : TStringList;
-
   function CreateTokenByProcessAndSession(
     const SessionID : DWORD) : TJwSecurityToken;
   var TSrv : TJwTerminalServer;
@@ -273,13 +275,15 @@ procedure JwCreateProcessInSession(
       Sid : TJwSecurityId;
       Meth : TMethod;
       Data : TInternalProcessData;
+      Log : IJwLogClient;
   begin
+    Log := LogServer.Connect(etFunction, '', 'CreateTokenByProcessAndSession', 'JwsclProcess.pas','');
     result := nil;
 
     //try to enable debug privs if available - otherwise nothing
     JwEnablePrivilege(SE_DEBUG_NAME,pst_EnableIfAvail);
 
-    Log.Add(Format('Running CreateTokenByProcessAndSession(SessionID: %d',[SessionID]));
+    Log.Log(lsMessage,Format('Running CreateTokenByProcessAndSession(SessionID: %d',[SessionID]));
 
     TSrv := TJwTerminalServer.Create;
     try
@@ -293,10 +297,10 @@ procedure JwCreateProcessInSession(
       // enumerate all processes of the terminal server
       // we also get many
       //
-      result := JwGetTokenFromProcess (TJwOnProcessFound(Meth), Log, @Data);
+      result := JwGetTokenFromProcess (TJwOnProcessFound(Meth), LogServer, @Data);
     finally
       TSrv.Free;
-      Log.Add('Exiting CreateTokenByProcessAndSession.');
+      Log.Log(lsMessage,'Exiting CreateTokenByProcessAndSession.');
     end;
   end;
 
@@ -305,7 +309,11 @@ var
     lpApplicationName  : TJwPChar;
     lpCommandLine      : TJwPChar;
     lpCurrentDirectory : TJwPChar;
+
+    Log : IJwLogClient;
 begin
+  Log := LogServer.Connect(etFunction, '', 'JwCreateProcessInSession', 'JwsclProcess.pas','');
+
   JwInitWellKnownSIDs;
 
   try
@@ -315,25 +323,25 @@ begin
   ZeroMemory(@Output.ProcessInfo, sizeof(Output.ProcessInfo));
   Output.EnvBlock := nil;
   ZeroMemory(@Output.ProfileInfo, sizeof(ProfileInfo));
-  LogInfo := '';
 
-  Log := TStringList.Create;
+  //Log := TStringList.Create;
   try
-    Log.Add(Format('Running CreateProcessInSession(Sesion=%d):',[SessionID]));
+    Log.Log(lsMessage, Format('Running CreateProcessInSession(Sesion=%d):',[SessionID]));
     try
-      Log.Add('Getting user token CreateWTSQueryUserTokenEx...');
+      Log.Log(lsMessage,'Getting user token CreateWTSQueryUserTokenEx...');
       Output.UserToken := TJwSecurityToken.CreateWTSQueryUserTokenEx(nil, SessionID);
     except
       //on E2 : EJwsclUnsupportedWindowsVersionException do
       On E2 : Exception do
       begin
         try
-          Log.Add('Getting user token CreateTokenByProcessAndSession...');
+          Log.Log(lsMessage,'Getting user token CreateTokenByProcessAndSession...');
           Output.UserToken := CreateTokenByProcessAndSession(SessionId);
         except
           on E : Exception do
           begin
-            Log.Add('Could not retrieve user token: '+#13#10+E.Message);
+            Log.Exception(E); 
+            //Log.Add('Could not retrieve user token: '+#13#10+E.Message);
             raise;
           end;
         end;
@@ -347,7 +355,8 @@ begin
       except
         on E : Exception do
         begin
-          Log.Add(E.Message);
+          //Log.Log(lsMessage,E.Message);
+          Log.Exception(E);
           raise;
         end;
       end;
@@ -357,7 +366,7 @@ begin
 
 
     try
-      Log.Add('Loading user profile');
+      Log.Log(lsMessage, 'Loading user profile');
       // Load user's profile
       // We do not apply any in parameters, let the method do it automatically
       // may fail with an exception
@@ -374,20 +383,20 @@ begin
       end;
 
 
-      Log.Add('Init strings');
+      Log.Log(lsMessage,'Init strings');
       //get p(w)char pointer from string
       GetPChar(ApplicationName, lpApplicationName);
       GetPChar(CommandLine, lpCommandLine);
       GetPChar(CurrentDirectory, lpCurrentDirectory);
 
 
-      Log.Add('Init env block');
+      Log.Log(lsMessage, 'Init env block');
       //Create environment block from user token
       //we do fail on that
       if not CreateEnvironmentBlock(@Output.EnvBlock, Output.UserToken.TokenHandle, false) then
-        Log.Add('CreateEnvironmentBlock failed: '+IntToStr(GetLastError));
+        Log.Log(lsMessage, 'CreateEnvironmentBlock failed: '+IntToStr(GetLastError));
 
-      Log.Add('Call CreateProcessAsUser');
+      Log.Log(lsMessage, 'Call CreateProcessAsUser');
       if not {$IFDEF UNICODE}CreateProcessAsUserW{$ELSE}CreateProcessAsUserA{$ENDIF}(
         Output.UserToken.TokenHandle,//HANDLE hToken,
         lpApplicationName,//__in_opt     LPCTSTR lpApplicationName,
@@ -402,15 +411,15 @@ begin
         Output.ProcessInfo //__out        LPPROCESS_INFORMATION lpProcessInformation
       ) then
       begin
-        Log.Add('Failed CreateProcessAsUser.');
+        Log.Log(lsMessage,'Failed CreateProcessAsUser.');
         RaiseLastOSError;
       end;
 
       if WaitForProcess then
       begin
-        Log.Add('Wait for process...');
+        Log.Signal(stWait,'','','Waiting for process to finish.');
         WaitForSingleObject(Output.ProcessInfo.hProcess, INFINITE);
-        Log.Add('Process exited... cleaning up');
+        Log.Signal(stReceived,'','','Process finished.');
 
         DestroyEnvironmentBlock(Output.EnvBlock);
         Output.EnvBlock := nil;
@@ -426,7 +435,7 @@ begin
         Output.UserToken.UnLoadUserProfile(Output.ProfileInfo);
         FreeAndNil(Output.UserToken);
 
-        Log.Add('Exception (between LoadUserProfile and CreateProcessAsUser) : '#13#10+E.Message);
+        Log.Log(lsMessage,'Exception (between LoadUserProfile and CreateProcessAsUser) : '#13#10+E.Message);
         raise;
       end;
     end;
@@ -435,13 +444,12 @@ begin
     //make sure log is filled with exception data
     on E : Exception do
     begin
-      Log.Add(Format('Exiting CreateProcessInSession(Sesion=%d):',[SessionID]));
+     // LogInfo := LogInfo + #13#10 + Log.Text;
 
-      LogInfo := LogInfo + #13#10 + Log.Text;
-
-      if E is EJwsclSecurityException then
+      {if E is EJwsclSecurityException then
         (E as EJwsclSecurityException).Log := LogInfo;
-      Log.Free;
+      Log.Free;}
+      Log.Exception(E);
 
       raise;
     end;
