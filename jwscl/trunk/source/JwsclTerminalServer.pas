@@ -1065,6 +1065,24 @@ type
     }
     property CompressionRatio: TJwString read FCompressionRatio;
 
+    {The @Name function allows you to connect to another Terminal Server session.@br
+     @bold(Remarks:) You can always connect to a session in which you are logged
+     on with the same user account. To connect to another user's session, you
+     must have either Full Control or User Access permission.@br
+     @br
+     You can connect to another session only from within an existing session.
+     You must use the @Name function from within a session to be able to connect
+     to another session.@br
+     @br
+     You can connect to a session only if it is in either an active or
+     disconnected state.@br
+     @br
+     You cannot connect to another session from the console session.@br
+     @br
+     Note that if you connect to another session your existing session will be
+     disconnected.
+    }
+    function Connect(Password: TJwString): Boolean;
     {@Name returns the connection state of the session. Which can be one of the
      following values:@br@br
      @table(
@@ -3416,6 +3434,12 @@ begin
 
   FToken := nil;
   FUserSid := nil;
+end;
+
+function TJwWTSSession.Connect(Password: TJwString): Boolean;
+begin
+  Result := WinStationConnectW(Owner.Owner.FServerHandle, WTS_CURRENT_SESSION,
+    FSessionId, PWideChar(WideString(Password)), False);
 end;
 
 destructor TJwWTSSession.Destroy;

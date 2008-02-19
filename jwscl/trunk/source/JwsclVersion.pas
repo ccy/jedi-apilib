@@ -92,7 +92,33 @@ type
      for it.@br
      @param(Server the servername for which you would like to retreive
      information. If Servername is empty string the local machine will be
-     queried.)
+     queried.)@br
+     @br
+     Example:
+     @longcode(#
+     var
+       ServerInfo: TJwServerInfo;
+
+     begin
+       // Create TJwServerInfo object and reserve memory for it
+       ServerInfo := TJwServerInfo.Create('REMOTESERVER');
+
+       // Are we running on a Server?
+       if ServerInfo.IsServer then
+       begin
+         Memo1.Lines.Add(Format('Server %s runs a Server OS', [ServerInfo.Server]));
+       end;
+
+       // Vista or higher code
+       if ServerInfo.IsWindowsVista(True) then
+       begin
+         // Do some Vista specific stuff
+       end;
+
+       // Free Memory!
+       ServerInfo.Free;
+     end;
+     #)
     }
     constructor Create(const Server: TJwString);
 
@@ -116,6 +142,7 @@ type
     {@Name checks if the system is a server version
      @return(@true if the system is a Server; otherwise @false (Workstation).)
     }
+
     property IsServer: Boolean read FIsServer;
 
     {@Name checks if the system is a Terminal Server. A server is considered to
