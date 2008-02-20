@@ -654,10 +654,9 @@ type
       @row(     @cell(WTS_WSD_SHUTDOWN) @cell(Shuts down the system on the terminal server. This is equivalent to calling the ExitWindowsEx function with EWX_SHUTDOWN. The calling process must have the SE_SHUTDOWN_NAME privilege enabled.))
       @row(     @cell(WTS_WSD_FASTREBOOT) @cell(This value is not supported currently.))
       )@br
-     @returns(If the function fails you can use GetLastError to get extended
-     error information)@br@br
+     @raises(EJwsclWinCallFailedException will be raised if the call fails.)
     }
-    function Shutdown(AShutdownFlag: DWORD): Boolean;
+    procedure Shutdown(AShutdownFlag: DWORD);
 
     {@Name returns the (localised) name of the system user}
     property SystemUserName: TJwString read GetSystemUserName;
@@ -1138,10 +1137,10 @@ type
      redirecting a user to the server where he has a disconnected session.@br@br
      @param(bWait Indicates whether the operation is synchronous. Specify TRUE
      to wait for the operation to complete, or FALSE to return immediately.)
-     @returns(If the function fails you can use GetLastError to get extended
-     error information)
+
+     @raises(EJwsclWinCallFailedException will be raised if the call fails.)
      }
-    function Disconnect(bWait: Boolean): Boolean;
+    procedure Disconnect(bWait: Boolean);
 
     {@Name the last client disconnection time.
     }
@@ -1212,10 +1211,10 @@ type
     {The @Name function logs off a specified Terminal Services session
      @param(bWait Indicates whether the operation is synchronous. Specify TRUE
      to wait for the operation to complete, or FALSE to return immediately.)
-     @returns(If the function fails you can use GetLastError to get extended
-     error information)
+
+     @raises(EJwsclWinCallFailedException will be raised if the call fails.)
      }
-    function Logoff(bWait: Boolean): Boolean;
+    procedure Logoff(bWait: Boolean);
 
     {@Name the time that the user logged on to the session in the number
      of 100-nanosecond intervals since January 1, 1601 (TFileTime).
@@ -2745,9 +2744,12 @@ begin
   Result := SystemTimeToDateTime(SystemTime);
 end;
 
-function TJwTerminalServer.Shutdown(AShutdownFlag: DWORD): Boolean;
+procedure TJwTerminalServer.Shutdown(AShutdownFlag: DWORD);
 begin
-  Result := WTSShutdownSystem(FServerHandle, AShutdownFlag);
+  if not WTSShutdownSystem(FServerHandle, AShutdownFlag) then
+    raise EJwsclWinCallFailedException.CreateFmtWinCall(RsWinCallFailed,
+        'Shutdown', ClassName, RsUNTerminalServer, 0, True,
+        '', ['WTSShutdownSystem']);
 end;
 
 constructor TJwWTSEventThread.Create(CreateSuspended: Boolean;
@@ -3509,14 +3511,20 @@ begin
   Result := Owner.Owner.Server;
 end;
 
-function TJwWTSSession.Logoff(bWait: Boolean): Boolean;
+procedure TJwWTSSession.Logoff(bWait: Boolean);
 begin
-  Result := WTSLogoffSession(GetServerHandle, FSessionId, bWait);
+  if not WTSLogoffSession(GetServerHandle, FSessionId, bWait) then
+    raise EJwsclWinCallFailedException.CreateFmtWinCall(RsWinCallFailed,
+        'Logoff', ClassName, RsUNTerminalServer, 0, True,
+        '', ['WTSLogoffSession']);
 end;
 
-function TJwWTSSession.Disconnect(bWait: Boolean): Boolean;
+procedure TJwWTSSession.Disconnect(bWait: Boolean);
 begin
-  Result := WTSDisconnectSession(GetServerHandle, FSessionId, bWait);
+  if not WTSDisconnectSession(GetServerHandle, FSessionId, bWait) then
+    raise EJwsclWinCallFailedException.CreateFmtWinCall(RsWinCallFailed,
+        'Disconnect', ClassName, RsUNTerminalServer, 0, True,
+        '', ['WTSDisconnectSession']);
 end;
 
 function TJwWTSSession.SendMessage(const AMessage: TJwString;
