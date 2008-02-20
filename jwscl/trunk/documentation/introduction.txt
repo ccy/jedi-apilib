@@ -44,14 +44,17 @@ Christian Wimmer – DelphiSecurityLibrary at teamchris dot info
 Stuttgart, Germany 05.10.2007
 
 Contributors (in alphabetical order)
-Philip Dittmann
-Danila Galimov
-Binh Ly (ComLib.pas)
-Remko Weijnen
 
+Philip Dittmann
+
+Danila Galimov
+
+Binh Ly (ComLib.pas)
+
+Remko Weijnen
 
 In Memory Of
 Robert Marquardt
 
 
-Updated 11.02.2008
+Updated 20.02.2008
