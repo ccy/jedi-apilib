@@ -478,12 +478,6 @@ type
      This constructor can be used in Windows 2000 Terminal Server in contrary
      to CreateWTSQueryUserToken.
 
-     WARNING: Do not mix up parameter Server and SessionID
-     @longcode(#
-       //this call is wrong
-         CreateWTSQueryUserTokenEx(const Server: HANDLE;
-          SessionID: cardinal)
-
      @param(Server defines the Terminal Server where this function will
       be processed. Define be WTS_CURRENT_SERVER_HANDLE to use current server)
       @param(SessionID defines the session which is used to obtain the token.
