@@ -49,23 +49,65 @@ uses Classes, jwaWindows,
 
 {$IFNDEF SL_IMPLEMENTATION_SECTION}
 type
-  TJwSecurityLibrary = class
+  {@Name contains methods related to libraries.}
+  TJwLibraryUtilities = class
   private
   protected
   public
+    {@Name tries to get a pointer to a function within a DLL.
+    @return(Return value is a function pointer to the specified function.
+     If the library could not be found or the function is not located
+     within the library the return value is nil. )
+    }
     class function LoadLibProc(const LibName: string;
       const ProcName: string): Pointer;
   end;
 
+  {@Name contains information about result from JwCreateProcessInSession.}
   TJwProcessOutputInformation = record
+    {@Name contains the token from the given Session ID.
+     Free the token if it is no more necessary.   }
     UserToken  : TJwSecurityToken;
+    {@Name receives information about the started process.  }
     ProcessInfo: TProcessInformation;
+    {@Name receives an environment block used the new process.
+     Call DestroyEnvironmentBlock to free its memory. }
     EnvBlock : Pointer;
+    {@Name contains the users profile.
+     You must call TJwSecurityToken.UnLoadUserProfile to unload this profile
+     after the process has ended. }
     ProfileInfo : TJwProfileInfo;
   end;
 
 
-{undocumented}  
+{@Name creates a new process in a user's session using various ways to
+achieve success.
+This procedure needs JwInitWellKnownSIDs to be called.
+
+
+@param(ApplicationName defines the application to be run in the session)
+@param(CommandLine defines the parameters for the application)
+@param(CurrentDirectory defines the start folder of the app. )
+@param(SessionID defines the target session where the new application is to be started.)
+@param(CreationFlags defines creation flags that are delivered to CreateProcess parameter with
+ same name)
+@param(Desktop defines the target windowstation and desktop name. If empty
+the default target is "winsta0\default")
+@param(StartupInfo defines startup info delivered to to CreateProcess parameter with
+ same name)
+@param(WaitForProcess defines whether the procedure should wait for the process to end
+and clean up all allocated resources or just return to the caller. In last case
+the caller is responsible to free the returned token, the environment block and
+the users profile)
+@param(Output contains returned data in case parameter WaitForProcess is false.
+The caller is responsible to free the contained member allocation)
+@param(LogServer receives a log server instance. It is used to log events for
+mostly debugging purposes. If this parameter is nil, no events are logged)  
+
+@raises(EJwsclProcessIdNotAvailable will be raised if no token could be found
+for the given SessionID)
+@raises(EJwsclNilPointer will be raised if JwInitWellKnownSIDs was not called before)
+}
 procedure JwCreateProcessInSession(
   const ApplicationName : TJwString;
   const CommandLine : TJwString;
@@ -82,6 +124,22 @@ procedure JwCreateProcessInSession(
   LogServer : IJwLogServer
   );
 
+{@Name tries to retrieve a token from a process.
+For this purpose it enumerates all processes on the local machine (even from
+other users) and calls the callback method OnProcessFound to determine
+whether the given process should be used to return the token.
+@param(OnProcessFound is a callback method that is called each time a process
+was found. The callback function determines whether the process should be used
+to return the token. If the process cannot be used to retrieve the token, @Name
+will continue enumerating)
+@param(LogServer receives a logging instance where log events are logged to.
+ Can be nil if no logging is used)
+@param(Data may contain user defined data to be assigned to a call to OnProcessFound)
+@return(@Name returns the primary token of a process. If no process could be used
+to get a token the return value is nil.)
+
+@raises(EJwsclNILParameterException will be raised if parameter OnProcessFound is nil) 
+}
 function JwGetTokenFromProcess (const OnProcessFound : TJwOnProcessFound;
   LogServer : IJwLogServer; Data : Pointer) : TJwSecurityToken;
 
@@ -90,14 +148,14 @@ function JwGetTokenFromProcess (const OnProcessFound : TJwOnProcessFound;
 {$IFNDEF SL_OMIT_SECTIONS}
 implementation
 uses SysUtils, Dialogs, JwsclExceptions,
-  JwsclKnownSid,
+  JwsclKnownSid, JwsclUtils,
   JwsclAcl, JwsclConstants;
 
 {$ENDIF SL_OMIT_SECTIONS}
 
 {$IFNDEF SL_INTERFACE_SECTION}
 
-class function TJwSecurityLibrary.LoadLibProc(const LibName: string; const ProcName: string): Pointer;
+class function TJwLibraryUtilities.LoadLibProc(const LibName: string; const ProcName: string): Pointer;
 var
   LibHandle: THandle;
 begin
@@ -153,7 +211,13 @@ var TSrv : TJwTerminalServer;
     Process : TJwWTSProcess;
     Log : IJwLogClient;
 begin
-  Log := LogServer.Connect(etFunction, '', 'JwGetTokenFromProcess', 'JwsclProcess.pas','');
+  JwRaiseOnNilParameter(@OnProcessFound,'OnProcessFound','JwGetTokenFromProcess','','JwsclProcess.pas');
+
+  //log to /dev/null
+  if not Assigned(LogServer) then
+    LogServer := CreateLogServer(nil, nil);
+
+  Log := LogServer.Connect(etFunction, '', 'JwGetTokenFromProcess123', 'JwsclProcess.pas','');
 
   result := nil;
   Succ := false;
@@ -197,9 +261,7 @@ begin
           except
             On E : Exception do
             begin
-              Succ := False;
               Log.Log(lsWarning, 'CreateDuplicateExistingToken failed: '#13#10+E.Message);
-
 
               //try to get the token the old fashioned way
               try
@@ -312,11 +374,15 @@ var
 
     Log : IJwLogClient;
 begin
+  JwRaiseOnNilMemoryBlock(JwLocalSystemSID,'JwCreateProcessInSession','','JwsclProcess.pas');
+
+
+  //log to /dev/null
+  if not Assigned(LogServer) then
+    LogServer := CreateLogServer(nil, nil);
+
   Log := LogServer.Connect(etFunction, '', 'JwCreateProcessInSession', 'JwsclProcess.pas','');
 
-  JwInitWellKnownSIDs;
-
-  try
 
 
   Output.UserToken := nil;
@@ -324,16 +390,16 @@ begin
   Output.EnvBlock := nil;
   ZeroMemory(@Output.ProfileInfo, sizeof(ProfileInfo));
 
-  //Log := TStringList.Create;
+  //First try WTS call to get token
   try
     Log.Log(lsMessage, Format('Running CreateProcessInSession(Sesion=%d):',[SessionID]));
     try
       Log.Log(lsMessage,'Getting user token CreateWTSQueryUserTokenEx...');
       Output.UserToken := TJwSecurityToken.CreateWTSQueryUserTokenEx(nil, SessionID);
     except
-      //on E2 : EJwsclUnsupportedWindowsVersionException do
       On E2 : Exception do
       begin
+        //as second chance we try to get the token from a process
         try
           Log.Log(lsMessage,'Getting user token CreateTokenByProcessAndSession...');
           Output.UserToken := CreateTokenByProcessAndSession(SessionId);
@@ -341,7 +407,7 @@ begin
           on E : Exception do
           begin
             Log.Exception(E); 
-            //Log.Add('Could not retrieve user token: '+#13#10+E.Message);
+
             raise;
           end;
         end;
@@ -455,9 +521,6 @@ begin
     end;
   end;
 
-  finally
-
-  end;
 end;
 
 

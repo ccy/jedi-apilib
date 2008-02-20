@@ -1182,8 +1182,7 @@ type
       pData: Pointer): integer;
   public
       {@Name creates an file object instance using a filestream (but not the file itself!)
-       The file handle will be duplicated using DuplicateHandle. By default
-       the same access mask is used.
+       
 
        FileStream does not support SACL retrieving or setting. The reason is because
        a TFilestream instance does not open the file with an access mask including ACCESS_SYSTEM_SECURITY
@@ -1195,20 +1194,38 @@ type
 
       @param F gets the filestream to be used to get or set the security data.
       @param AccessMask gets the desired access mask to the new file handle. If set to 0 the same access mask of the old handle is used.
-      @raises EJwsclSecurityObjectException will be raised if the file handle could not be copied.
+      @raises RsNilParameter will be raised if parameter F is nil)
       }
     constructor Create(const F: TFileStream; AccessMask: TJwAccessMask = 0);
       overload;
+
+    {@Name creates an file object instance using a filehandle
+      The file handle will be duplicated using DuplicateHandle. By default
+       the same access mask is used.
+
+      @param(FileHandle defines the file handle to be used.
+          It will be duplicated if parameter bDuplicateHandle is true. In this case
+          AccessMask defines which access will be allowed on to the handle. It always
+          can only equal or smaller than the original access mask. If AccessMask is zero (or DUPLICATE_SAME_ACCESS)
+          the handle will be duplicated with same access.
+          A duplicated file handle is automatically closed if the instace is destroyed.)
+      @param(AccessMask gets the desired access mask to the new file handle. If set to 0 the same access mask of the old handle is used.)
+      @param(bDuplicateHandle defines whether the file handle should be duplicated or directly be used)
+      @raises(EJwsclSecurityObjectException will be raised if the file handle could not be copied.)
+      }
     constructor Create(const FileHandle: THandle;
       AccessMask: TJwAccessMask = 0; bDuplicateHandle: boolean = False); overload;
 
-      {@Name creates a file or folder object instance using a filename (also a pathname).
-       The property Handle will not be used.
-       The file will only be touched if the Get- or Set-methods are called.
+    {@Name creates a file or folder object instance using a filename (also a folder name).
+     The property Handle will not be used.
 
-       @param FileName gets the full path to the file.
+     @Name does not open the file or folder immediately. Instead it uses the name
+     to do its operations.
 
-        }
+     @param(FileName gets the full path to the file or folder.)
+     @raises(EJwsclInvalidParameterException will be raised if the file or folder
+      could not be found) 
+     }
     constructor Create(const FileName: TJwString); overload;
 
       {@Name destroys the instance.
@@ -1238,12 +1255,15 @@ type
      @return(Returns a mandatory level entry which must be freed.)}
     function GetMandatoryLabel : TJwSystemMandatoryAccessControlEntry; override;
 
-    {@Name sets the mandatory level of the object.}
+    {@Name sets the mandatory level of the object.
+     @raises(EJwsclInvalidObjectException will be raised if the handle and name are invalid)
+     }
     procedure SetMandatoryLabel(const MandatoryLabel :
        TJwSystemMandatoryAccessControlEntry); override;
-      {@Name returns the owner of the file object.
-       @return The newly created instance must be destroyed by the caller!
-      }
+
+    {@Name returns the owner of the file object.
+      @return The newly created instance must be destroyed by the caller!
+    }
     function GetOwner: TJwSecurityId; override;
 
       {@Name returns the group of the file object.
@@ -1422,6 +1442,7 @@ type
       : boolean;
       overload; override;
 
+    {@Name checks the access to a security descriptor of a secure object.}
     procedure AccessCheck(
       DesiredAccess: TJwAccessMask;
       out PrivilegeSet: TJwPrivilegeSet;
@@ -1848,10 +1869,31 @@ type
       : integer; virtual;
   public
 
+    {@Name creates an registry object instance using a key handle.
+      The handle will be duplicated using DuplicateHandle. By default
+       the same access mask is used.
 
+      @param(RegKey defines the handle to be used.
+          It will be duplicated if parameter bDuplicateHandle is true. In this case
+          AccessMask defines which access will be allowed on to the handle. It always
+          can only equal or smaller than the original access mask. If AccessMask is zero (or DUPLICATE_SAME_ACCESS)
+          the handle will be duplicated with same access.
+          A duplicated handle is automatically closed if the instace is destroyed.)
+      @param(AccessMask gets the desired access mask to the new handle. If set to 0 the same access mask of the old handle is used.)
+      @param(bDuplicateHandle defines whether the handle should be duplicated or directly be used)
+      @raises(EJwsclSecurityObjectException will be raised if file handle could not be copied.)
+      }
     constructor Create(const RegKey: HKEY; AccessMask: TJwAccessMask = 0;
       bDuplicateHandle: boolean = False); overload;
-    constructor Create(const F: TRegistry; bUseName: boolean = False);
+
+    {@Name creates an instance using a VCL TRegistry to obtain key handle information.
+     @param(RegistryInstance receives a VCL registry instance that is used to get
+       key handle information. The handle will not be duplicated so that changes in the registry
+       instance will lead to problems when calling methods of TJwSecureRegistryKey.)
+     @param(bUseName is not used)
+     @raises(EJwsclNILParameterException will be raised if parameter RegistryInstance is nil)
+    }
+    constructor Create(const RegistryInstance: TRegistry; bUseName: boolean = False);
       overload;
 
       {@Name creates a registry instance using a path to the registry key.
@@ -1887,7 +1929,9 @@ type
      @return(Returns a mandatory level entry which must be freed.)}
     function GetMandatoryLabel : TJwSystemMandatoryAccessControlEntry; override;
 
-    {@Name sets the mandatory level of the object.}
+    {@Name sets the mandatory level of the object.
+    @raises(EJwsclInvalidObjectException will be raised if the handle and name are invalid)
+    }
     procedure SetMandatoryLabel(const MandatoryLabel :
       TJwSystemMandatoryAccessControlEntry); override;
       {@Name returns the owner of the file object.
@@ -4677,6 +4721,24 @@ begin
   fAccessMask := AccessMask;
 end;
 
+constructor TJwSecureFileObject.Create(const FileName: TJwString);
+begin
+{$IFNDEF DELPHI5}
+  if not DirectoryExists(FileName) and not FileExists(FileName) then
+{$ELSE}
+  if not FileExists(FileName) then
+{$ENDIF}
+    raise EJwsclInvalidParameterException.CreateFmtEx(
+      RsSecureObjectsFileFolderNotFound, 'TJwSecureFileObject.Create',
+      ClassName, RsUNSecureObjects, 0, False, [FileName]);
+
+  inherited Create;
+
+  fFileName := FileName;
+  fDuplicateHandle := False;
+  fAccessMask := FILE_ALL_ACCESS;
+end;
+
 class procedure TJwSecureFileObject.AccessCheck(
   const SecurityDescriptor: TJwSecurityDescriptor;
   const ClientToken: TJwSecurityToken; const DesiredAccess: TJwAccessMask;
@@ -4765,23 +4827,7 @@ begin
   inherited;
 end;
 
-constructor TJwSecureFileObject.Create(const FileName: TJwString);
-begin
-{$IFNDEF DELPHI5}
-  if not DirectoryExists(FileName) and not FileExists(FileName) then
-{$ELSE}
-  if not FileExists(FileName) then
-{$ENDIF}
-    raise EJwsclInvalidParameterException.CreateFmtEx(
-      RsSecureObjectsFileFolderNotFound, 'TJwSecureFileObject.Create',
-      ClassName, RsUNSecureObjects, 0, False, [FileName]);
 
-  inherited Create;
-
-  fFileName := FileName;
-  fDuplicateHandle := False;
-  fAccessMask := FILE_ALL_ACCESS;
-end;
 
 destructor TJwSecureFileObject.Destroy;
 begin
@@ -7017,15 +7063,17 @@ begin
   fKeyName := RegPath;
 end;
 
-constructor TJwSecureRegistryKey.Create(const F: TRegistry;
+constructor TJwSecureRegistryKey.Create(const RegistryInstance: TRegistry;
   bUseName: boolean = False);
   //  function RootKeyToString(const Key
 begin
+  JwRaiseOnNilParameter(RegistryInstance, 'RegistryInstance', 'Create', ClassName, RsUNSecureObjects);
+
   fReg := nil;
-  fHandle := F.CurrentKey;
+  fHandle := RegistryInstance.CurrentKey;
   //!!!!! F.RootKey
-  fKeyName := F.CurrentPath;
-  fAccessMask := F.Access;
+  fKeyName := RegistryInstance.CurrentPath;
+  fAccessMask := RegistryInstance.Access;
 end;
 
 constructor TJwSecureRegistryKey.Create(const RegKey: HKEY;

@@ -830,7 +830,7 @@ begin
 
   DateTimeToString(S, JwTimeOutputString, Now);
 
-  if fIdx >= 0 then
+  if (fIdx >= 0) and Assigned(fElements) then
   try
     //write end date and time into formatted string from .Create
     Value := JwFormatStringEx(fElements[fIdx], [S]);
@@ -838,7 +838,10 @@ begin
   except
   end;
 
-  fElements.Add(fWriter.EndWriteMultipleTags);
+  S := fWriter.EndWriteMultipleTags;
+
+  if Assigned(fElements) then
+    fElements.Add(S);
 
   fWriter.Done;
 

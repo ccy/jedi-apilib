@@ -96,6 +96,13 @@ type
   TJwSessionsEnumerator = class;
   TJwProcessEnumerator = class;
 
+  {@Name is called by EnumerateProcesses everytime a process is enumerated.
+   @param(Sender contains the instance which enumerates a process)
+   @param(Process contains information about the enumerated process.
+     The caller must free this instance because it will not be used anymore)
+   @param(Cancel stops the enumeration if true; otherwise continues)
+   @param(Data contains user data supplied by EnumerateProcesses' parmaeter Data)
+  }
   TJwOnProcessFound = procedure(const Sender: TJwTerminalServer;
     var Process: TJwWTSProcess; var Cancel: Boolean; Data: Pointer) of object;
 

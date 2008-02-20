@@ -4246,7 +4246,7 @@ begin
 
   CheckTokenAccessType(TOKEN_QUERY, 'TOKEN_QUERY', 'IsEqual');
   aToken.CheckTokenAccessType(TOKEN_QUERY, 'TOKEN_QUERY', 'IsEqual');
-  @NtCompareTokens := TJwSecurityLibrary.LoadLibProc(ntdll, 'NtCompareTokens');
+  @NtCompareTokens := TJwLibraryUtilities.LoadLibProc(ntdll, 'NtCompareTokens');
 
   SetLastError(0);
 

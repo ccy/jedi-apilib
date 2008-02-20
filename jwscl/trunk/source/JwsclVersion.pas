@@ -139,8 +139,8 @@ type
     }
     function GetWindowsType: Integer;
 
-    {@Name checks if the system is a server version
-     @return(@true if the system is a Server; otherwise @false (Workstation).)
+    {@Name checks if the system is a server version. @br
+     @Name returns @true if the system is a Server; otherwise @false (Workstation).
     }
 
     property IsServer: Boolean read FIsServer;
@@ -151,8 +151,9 @@ type
      @Item(The Terminal Server is in application mode)
      @Item(The Terminal Server is advertising itsself on the network)
      )
-     @returns(Returns @true if the system is a Terminal Server in application mode
-     ; otherwise @false.)
+     @br
+     @Name returns @true if the system is a Terminal Server in application mode
+     ; otherwise @false.
      @seealso(TJwTerminalServer.EnumerateServers)
     }
     property IsTerminalServer: Boolean read FIsTerminalServer;

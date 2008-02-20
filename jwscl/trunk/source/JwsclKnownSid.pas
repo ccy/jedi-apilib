@@ -92,14 +92,15 @@ var
    JwIntegrityLabelSID : array[TJwIntegrityLabelType] of TJwSecurityKnownSID;
     {@Name defines the current user SID that started the process.
      You need to call JwInitWellknownSIDs before accessing this variable!
-     Use this:
+     Use:
+     @longcode(#
       SD : TJwSecurityDescriptor;
       ...
       SD.OwnOwner := false;
       SD.Owner := JwSecurityProcessUserSID;
       ...
       SD.DACL.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil,[],FILE_EXECUTE,JwSecurityProcessUserSID, false)); //see?: false
-
+    #)
     }
   JwSecurityProcessUserSID,
 
@@ -108,126 +109,147 @@ var
      Do not free!!
      You need to call JwInitWellknownSIDs before accessing this variable!
 
-     Use this:
+     Use:
+     @longcode(#
       SD : TJwSecurityDescriptor;
       ...
       SD.OwnOwner := false;
       SD.Owner := JwAdministratorsSID;
       ...
       SD.DACL.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil,[],FILE_EXECUTE,JwSecurityCurrentThreadUserSID, false)); //see?: false
-
+     #)
     }
   JwAdministratorsSID,
     {@Name defines the local user group
      You need to call JwInitWellknownSIDs before accessing this variable!
     
-     Use this:
+     Use:
+     @longcode(#
       SD : TJwSecurityDescriptor;
       ...
       SD.OwnOwner := false;
       SD.Owner := JwUsersSID;
       SD.DACL.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil,[],FILE_EXECUTE,JwSecurityCurrentThreadUserSID, false)); //see?: false
+     #)
     }
   JwUsersSID,
     {@Name defines the local power user group - legacy in Vista
      You need to call JwInitWellknownSIDs before accessing this variable!
 
-     Use this:
+     Use:
+     @longcode(#
       SD : TJwSecurityDescriptor;
       ...
       SD.OwnOwner := false;
       SD.Owner := JwPowerUsersSID;
       SD.DACL.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil,[],FILE_EXECUTE,JwPowerUsersSID, false)); //see?: false
+     #)
     }
   JwPowerUsersSID,
     {@Name defines the local guest group
      You need to call JwInitWellknownSIDs before accessing this variable!
     
-     Use this:
+     Use:
+     @longcode(#
       SD : TJwSecurityDescriptor;
       ...
       SD.OwnOwner := false;
       SD.Owner := JwGuestsSID;
       SD.DACL.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil,[],FILE_EXECUTE,JwGuestsSID, false)); //see?: false
+     #)
     }
   JwGuestsSID,
     {@Name defines the local system account
      You need to call JwInitWellknownSIDs before accessing this variable!
 
-     Use this:
+     Use:
+     @longcode(#
       SD : TJwSecurityDescriptor;
       ...
       SD.OwnOwner := false;
       SD.Owner := JwLocalSystemSID;
       SD.DACL.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil,[],FILE_EXECUTE,JwLocalSystemSID, false)); //see?: false
+     #)
     }
   JwLocalSystemSID,
     {@Name defines the group that allows remote interaction with the machine
      You need to call JwInitWellknownSIDs before accessing this variable!
     
-     Use this:
+    Use:
+     @longcode(#
       SD : TJwSecurityDescriptor;
       ...
       SD.OwnOwner := false;
       SD.Owner := JwRemoteInteractiveLogonSID;
       SD.DACL.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil,[],FILE_EXECUTE,JwRemoteInteractiveLogonSID, false)); //see?: false
+     #)
     }
   JwRemoteInteractiveLogonSID,
     {@Name defines the NULL Logon SID
      You need to call JwInitWellknownSIDs before accessing this variable!
 
-     Use this:
+     Use:
+     @longcode(#
       SD : TJwSecurityDescriptor;
       ...
       SD.OwnOwner := false;
       SD.Owner := JwNullSID;
       SD.DACL.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil,[],FILE_EXECUTE,JwNullSID, false)); //see?: false
+     #)
     }
   JwNullSID,
     {@Name defines the Everybody group
      You need to call JwInitWellknownSIDs before accessing this variable!
 
-     Use this:
+     Use:
+     @longcode(#
       SD : TJwSecurityDescriptor;
       ...
       SD.OwnOwner := false;
       SD.Owner := JwWorldSID;
       SD.DACL.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil,[],FILE_EXECUTE,JwWorldSID, false)); //see?: false
+     #)
     }
   JwWorldSID,
     {@Name defines the local group
      You need to call JwInitWellknownSIDs before accessing this variable!
 
-     Use this:
+     Use:
+     @longcode(#
       SD : TJwSecurityDescriptor;
       ...
       SD.OwnOwner := false;
       SD.Owner := JwLocalGroupSID;
       SD.DACL.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil,[],FILE_EXECUTE,JwLocalGroupSID, false)); //see?: false
+     #)
     }
   JwLocalGroupSID,
 
   {@Name defines the network service group
      You need to call JwInitWellknownSIDs before accessing this variable!
 
-     Use this:
+    Use:
+     @longcode(#
       SD : TJwSecurityDescriptor;
       ...
       SD.OwnOwner := false;
       SD.Owner := JwLocalGroupSID;
       SD.DACL.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil,[],FILE_EXECUTE,JwNetworkServiceSID, false)); //see?: false
+     #)
     }
   JwNetworkServiceSID,
 
   {@Name defines the local service group
      You need to call JwInitWellknownSIDs before accessing this variable!
 
-     Use this:
+    Use:
+     @longcode(#
       SD : TJwSecurityDescriptor;
       ...
       SD.OwnOwner := false;
       SD.Owner := JwLocalGroupSID;
       SD.DACL.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil,[],FILE_EXECUTE,JwLocalServiceSID, false)); //see?: false
+     #)
     }
   JwLocalServiceSID,
 
@@ -245,14 +267,15 @@ var
 that is used to call this function.
 The caller is responsible to free the SecurityID instance.
 
-Use this:
+Use:
+@longcode(#
 SD : TJwSecurityDescriptor;
 ...
 SD.OwnOwner := true;
 SD.Owner := JwSecurityCurrentThreadUserSID;
 
-
 SD.DACL.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil,[],FILE_EXECUTE,JwSecurityCurrentThreadUserSID, true)); //see?: true
+#
 
 }
 function JwSecurityCurrentThreadUserSID: TJwSecurityThreadUserSID;
