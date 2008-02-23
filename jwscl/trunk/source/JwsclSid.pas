@@ -845,6 +845,7 @@ begin
 
   Create(SecurityID.SID);
   fCachedSystemName := SecurityID.CachedSystemName;
+  fAttributes := SecurityID.fAttributes;
 
   CheckSID;
 
@@ -917,7 +918,10 @@ begin
     Exit;
   end
   else
+  begin
     Create(SID.Sid);
+    Attributes := SID.Attributes;
+  end;
 end;
 
 constructor TJwSecurityId.Create(const Authorities: array of Cardinal;

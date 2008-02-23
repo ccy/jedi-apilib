@@ -339,6 +339,7 @@ type
   EJwsclUnimplemented = class(EJwsclSecurityException);
 
   EJwsclNilPointer = class(EJwsclSecurityException);
+  EJwsclCreateProcessFailed = class(EJwsclSecurityException);
 
   JwGeneralExceptionClass = class of Exception;
 

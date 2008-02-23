@@ -248,6 +248,7 @@ type {@Name defines log tag attribute types}
          @param(LogMessage defines the message to be shown)
          }
         procedure Log(const LogType : TJwLogType; const LogMessage : TJwString); overload; safecall;
+        procedure Log(const LogMessage : TJwString; const LogType : TJwLogType = lsMessage); overload; safecall;
 
         {@Name creates an ordinary log entry with log source information.
          @param(LogType defines the type of log entry. See TJwLogType for more information)
@@ -482,6 +483,7 @@ type TJwLogServerImpl = class;
 
        procedure Log(const LogType : TJwLogType; const LogMessage : TJwString); overload; safecall;
        procedure Log(const LogType : TJwLogType; const ClassName, MethodName, FileName, LogMessage : TJwString); overload; safecall;
+       procedure Log(const LogMessage : TJwString; const LogType : TJwLogType = lsMessage); overload; safecall;
 
        procedure Signal(const SignalType : TJwSignalType; const Source, Target, LogMessage : TJwString); overload; safecall;
        procedure Signal(const SignalType : TJwSignalType; const Source, Target, ClassName, MethodName, FileName, LogMessage : TJwString); overload; safecall;
@@ -626,6 +628,12 @@ begin
   finally
     fOwner.LeaveCriticalSection;
   end;
+end;
+
+procedure TJwLogClientImpl.Log(const LogMessage: TJwString;
+  const LogType: TJwLogType = lsMessage);
+begin
+  Log(LogType, LogMessage);
 end;
 
 
@@ -904,6 +912,8 @@ begin
   if Assigned(fCritical) then
     fCritical.Leave;
 end;
+
+
 
 
 

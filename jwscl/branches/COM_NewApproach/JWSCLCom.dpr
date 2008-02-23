@@ -13,7 +13,8 @@ exports
   DllRegisterServer,
   DllUnregisterServer,
   JwOleRaise,
-  JwHasException
+  JwHasException,
+  CreateSidAndAttributesStream
   ;
 
 

@@ -21,10 +21,32 @@ procedure JwOleRaiseEx(const E_In : Exception; out E_out : Exception);
 
 function JwHasException(const Res : HRESULT) : BOOL; stdcall;
 
+function CreateSidAndAttributesStream(const Sid : PSid; const Attributes : DWORD) : IStream; stdcall;
+
 implementation
 {$IFDEF SM_JCLDEBUG}
 uses jclDebug;
-{$ENDIF}
+{$ENDIF}         
+
+function CreateSidAndAttributesStream(const Sid : PSid; const Attributes : DWORD) : IStream;
+var S : TMemoryStream;
+    SidSize : Integer;
+begin
+  if not IsValidSid(Sid) then
+    RaiseLastOSError;
+
+  S := TMemoryStream.Create;
+  SidSize := GetLengthSID(Sid);
+
+  S.Write(SidSize, sizeof(SidSize));
+
+  S.Write(Sid^, SidSize);
+  S.Write(Attributes, sizeof(Attributes));
+
+  S.Position := 0;
+  result := TStreamAdapter.Create(S,soOwned) as IStream;
+  //TStreamAdapter frees the stream!!
+end;
 
 
 function JwHasException(const Res : HRESULT) : BOOL; stdcall;

@@ -275,7 +275,7 @@ SD.OwnOwner := true;
 SD.Owner := JwSecurityCurrentThreadUserSID;
 
 SD.DACL.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil,[],FILE_EXECUTE,JwSecurityCurrentThreadUserSID, true)); //see?: true
-#
+#)
 
 }
 function JwSecurityCurrentThreadUserSID: TJwSecurityThreadUserSID;

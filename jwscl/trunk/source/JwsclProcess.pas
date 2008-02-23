@@ -42,7 +42,7 @@ interface
 
 uses Classes, jwaWindows,
   JwsclTypes, JwsclToken, JwsclSid, JwsclTerminalServer,
-  JwsclLogging,
+  JwsclLogging, JwsclLsa, JwsclDescriptor,
   JwsclStrings; //JwsclStrings, must be at the end of uses list!!!
 {$ENDIF SL_OMIT_SECTIONS}
 
@@ -143,12 +143,173 @@ to get a token the return value is nil.)
 function JwGetTokenFromProcess (const OnProcessFound : TJwOnProcessFound;
   LogServer : IJwLogServer; Data : Pointer) : TJwSecurityToken;
 
+
+
+
+
+
+
+type {@Name contains information supplied to CreateProcessAsUser}
+     TJwCreateProcessParameters = record
+        {@Name defines the application to be run with administrators group}
+        lpApplicationName,
+        {@Name defines the parameters for the application}
+        lpCommandLine         :  TJwString;
+        {@Name defines the new process security descriptor}
+        ProcessAttributes,
+        {@Name defines the new thread security descriptor}
+        ThreadAttributes      : TJwSecurityDescriptor;
+
+        {@Name defines the handle inheritance of the ProcessAttributes member}
+        bProcInheritHandles,
+        {@Name defines the handle inheritance of the ThreadAttributes member}
+        bThreadInheritHandles,
+
+        {@Name defines whether handles are inherited. Supplied to CreateProcess.}
+        bInheritHandles       : Boolean;
+        {@Name defines creation flags that are delivered to CreateProcess parameter with
+        same name}
+        dwCreationFlags       : DWORD;
+        {@Name defines the start folder of the app.}
+        lpCurrentDirectory    : TJwString;
+      end;
+
+     {Test} 
+     TJwCreateProcessInfo = record
+       {@Name defines startup info delivered to to CreateProcess parameter with
+       same name}
+       StartupInfo : {$IFDEF UNICODE}TStartupInfoW{$ELSE}TStartupInfoA{$ENDIF};
+
+       AdditionalGroups : TJwSecurityIdList; //zusätzliche Groups fürs Token
+
+
+       {@Name defines the source name which is stored in the token}
+       SourceName : AnsiString;
+       {@Name defines the initiator name of the token}
+       OriginName : AnsiString;
+
+       {@Name defines the target session ID of the new process
+       if UseSessionID is true the new process will be spawn with this session ID.}
+       SessionID  : Cardinal;
+       {@Name defines whether the new process should get the sessionID.}
+       UseSessionID : Boolean;
+
+       {@Name If true the value StartupInfo.lpDesktop will be ignored and
+        'WinSta0\Default' used instead}
+       DefaultDesktop : Boolean;
+
+       {Defines the logon process name for LSA connection}
+       LogonProcessName : TJwString;
+
+       //entweder LogonToken oder LogonSID oder keines!
+       {@Name can contain the logon sid to be used for the new token.
+        May be nil. In this case the member LogonSID is used.}
+       LogonToken : TJwSecurityToken; //optionales logon Token für Tokengroups - LogonSid wird in diesem Token gesucht
+       {@Name can be the logon sid to be used for the new token.
+        May be nil. In this case (and LogonToken = nil) the logon sid of the token with the given SessionID
+        is used.}
+       LogonSID : TJwSecurityID; //optionales logon SID für Tokengroups - eigenes Token
+
+       {@Name contains parameters for CreateProcessAsUser}
+       Parameters : TJwCreateProcessParameters; //Parameter für CP
+
+     end;
+
+     {@Name contains output information after the process has started.
+      Some of these information must be freed manually.}
+     TJwCreateProcessOut = record
+       {@Name contains process information of the new process}
+       ProcessInfo: TProcessInformation;  //ProcessInfo von CP
+
+       {@Name receives the newly created token from the user logon.
+        This token may be restricted in Vista. (administrator groups is for deny only
+        access check)
+
+        Free the instance manually (even when an exception has occured.)
+       }
+       UserToken,             //Normales Token (in Vista ohne Admin)
+       {@Name receives the twin token in Vista.
+       This member is only valid if the user is member of administrator group.
+       In this case the token has the administrator group enabled.
+       In pre Vista OS versions this member is always nil.
+
+       Free the instance manually (even when an exception has occured.)
+       }
+       LinkedToken : TJwSecurityToken; //elevated Token (in Vista), sonst nil
+
+       {@Name flags whether a linked token is available (true) or not (false).}
+       IsLinked : Boolean; //true, wenn Vista Elevation aktiv
+
+       {@Name receives the profile information from LoadUserProfile.
+       Call TJwSecurityToken.UnloadUserProfile to unload the profile when
+       process finished.
+       }
+       ProfInfo: TJwProfileInfo; //LoadUserProfile output -> UnloadUserProfile
+
+       {@Name receives the users environment block.
+        Call DestroyEnvironmentBlock to free the space.}
+       EnvironmentBlock: Pointer;  //Environmentblock ->DestroyEnvBlock
+
+       //LSALogonUser Input
+       {@Name receives the unique source ID generated by
+        AllocateLocallyUniqueID}
+       Source: TTokenSource; //Token source
+
+       {@Name receives the LSA instance that was used to create the token.
+        The instance must be freed if no exception occured.     }
+       LSA : TJwSecurityLsa;  //LSA
+
+       //Output von LsaLogonUser
+       {@Name receives profile information about the logged on user.
+       Call LsaFreeReturnBuffer to free it if no exception occured.
+       }
+       ProfBuffer: PMSV1_0_INTERACTIVE_PROFILE; //->   LsaFreeReturnBuffer(ProfBuffer);
+       {@Name receives the memory size of ProfBuffer}
+       ProfBufferLen: Cardinal;
+
+       {@Name receives the LUID of the UserToken and LinkedToken.}
+       TokenLuid: TLUID;  //LUID des neuen Tokens (UserToken + LinkedToken)
+
+       {@Name receives information about quota limits}
+       QuotaLimits: QUOTA_LIMITS;
+       {@Name receives extended error information from LsaLogonUser}
+       SubStatus: integer; //Fehler von LSALogonUser
+     end;
+
+{@Name logs on a user and creates a new process under its logon session.
+The user will be a member of administrators group for this process but not
+in the user database.
+In Vista the linked token will be retrieved which has the administrator group enabled.
+The user does not have to be an administrator at all!
+
+@bold(Remarks:)
+This procedure needs JwInitWellKnownSIDs to be called.
+@Name can only run within a SYSTEM account and with TCB privilege available.
+
+@bold(BETA: This function has not been tested thoroughly!) 
+
+@param(LogServer receives a logging instance where log events are logged to.
+ Can be nil if no logging is used)
+@raises(EJwsclNilPointer will be raised if JwInitWellKnownSIDs was not called before)
+@raises(EJwsclPrivilegeException will be raised if the TCB privilege is not available)
+}
+
+procedure JwCreateProcessAsAdminUser(
+   const UserName, Domain, Password : TJwString;
+   const InVars : TJwCreateProcessInfo;
+   out OutVars : TJwCreateProcessOut;
+   LogServer : IJwLogServer
+   );
+
+
+
+
 {$ENDIF SL_IMPLEMENTATION_SECTION}
 
 {$IFNDEF SL_OMIT_SECTIONS}
 implementation
-uses SysUtils, Dialogs, JwsclExceptions,
-  JwsclKnownSid, JwsclUtils,
+uses SysUtils, Dialogs, Math, JwsclExceptions,
+  JwsclKnownSid, JwsclUtils, JwsclVersion,
   JwsclAcl, JwsclConstants;
 
 {$ENDIF SL_OMIT_SECTIONS}
@@ -171,6 +332,447 @@ begin
     end;
   end;
 end;
+
+
+
+
+procedure JwCreateProcessAsAdminUser(
+   const UserName, Domain, Password : TJwString;
+   const InVars : TJwCreateProcessInfo;
+   out OutVars : TJwCreateProcessOut;
+   LogServer : IJwLogServer);
+
+
+
+var pLogonData : PMSV1_0_INTERACTIVE_LOGON;
+    Authlen: Cardinal;
+    Groups : TJwSecurityIDList;
+    LogonSessionSID,
+    SID : TJwSecurityID;
+    SessionLogonToken : TJwSecurityToken;
+
+    UserToken : TJwSecurityToken;
+    StartupInfo : {$IFDEF UNICODE}TStartupInfoW{$ELSE}TStartupInfoA{$ENDIF};
+    LastError : DWORD;
+//
+    fTokenHandle : Cardinal;
+
+    CurrentDirectory,
+    AppName, CmdLine : TJwPchar;
+
+    Log : IJwLogClient;
+
+    lpProcAttr, lpThreadAttr :  PSecurityAttributes;
+
+    i : Integer;
+begin
+  JwRaiseOnNilMemoryBlock(JwLocalSystemSID,'JwCreateProcessAsAdminUser','','JwsclProcess.pas');
+
+  //log to /dev/null
+  if not Assigned(LogServer) then
+    LogServer := CreateLogServer(nil, nil);
+
+  Log := LogServer.Connect(etFunction, '', 'JwCreateProcessAsAdminUser', 'JwsclProcess.pas','');
+
+
+  ZeroMemory(@OutVars, sizeof(OutVars));
+
+  try //1.
+    Log.Log(lsMessage, 'Try to enable TCB privilege...');
+    JwEnablePrivilege(SE_TCB_NAME,pst_Enable);
+    Log.Log(lsMessage, 'Success');
+
+
+    Log.Log('Calling TJwSecurityLsa.Create');
+    OutVars.LSA := TJwSecurityLsa.Create(InVars.LogonProcessName);
+    Log.Log('Success');
+
+    ZeroMemory(@OutVars.Source.SourceName, 0);
+    StrLCopy(@OutVars.Source.SourceName,PChar(InVars.SourceName),
+                Min(sizeof(OutVars.Source.SourceName), Length(InVars.SourceName)));
+    AllocateLocallyUniqueID(OutVars.Source.SourceIdentifier);
+
+    SessionLogonToken := nil;
+    //
+    // Init LSALogonUser parameters
+    //
+    pLogonData := JwCreate_MSV1_0_INTERACTIVE_LOGON(
+                      MsV1_0InteractiveLogon, Domain, UserName, Password, Authlen);
+
+    Groups := TJwSecurityIDList.Create(True);
+    try //2.
+
+      //
+      // Add logon sid from caller if any.
+      //
+      if Assigned(InVars.LogonSID) then
+      begin
+        Log.Log('Adding user defined LogonSessionID to TokenGroups');
+        SID := TJwSecurityId.Create(InVars.LogonSID);
+        SID.Attributes := SE_GROUP_MANDATORY or
+                          SE_GROUP_ENABLED or
+                          SE_GROUP_ENABLED_BY_DEFAULT or
+                          SE_GROUP_LOGON_ID;
+        Groups.Add(SID); //"Groups" owns SID now
+      end
+      else
+      // ...otherwise
+      // Either use the callers token from InVars.LogonToken
+      // or get the token from a specified SessionID. 
+      //
+      begin
+        //
+        // The user did not provide use with a token
+        // so we must get the logon sid ourselves.
+        //
+        if not Assigned(InVars.LogonToken) then 
+        try //3.
+          Log.Log('Checking Windows Version...');
+
+          //
+          // Use a newer way to get the session token
+          //
+          if (TJwWindowsVersion.IsWindowsXP(true) or
+             TJwWindowsVersion.IsWindows2003(true) or
+             TJwWindowsVersion.IsWindows2003R2(true) or
+             TJwWindowsVersion.IsWindowsVista(true) or
+             TJwWindowsVersion.IsWindows2008(true)) then
+          begin
+            Log.Log('Getting user token from session: '+IntToStr(InVars.SessionID));
+
+            {
+            WARNING:
+              TCB priv must be available and process must run under SYSTEM account!
+            }
+            try
+              SessionLogonToken := TJwSecurityToken.CreateWTSQueryUserToken(InVars.SessionID);
+            except
+              {
+              Do the old way: if we cannot get a connection
+              and the session is should be the current session ID.
+              This way the code can run in a none service app if the
+               session id remains the current one.
+              }
+              on E : EJwsclWinCallFailedException do
+                if (E.LastError = ERROR_ACCESS_DENIED)
+                  and ((InVars.SessionID = INVALID_HANDLE_VALUE) or
+                       (InVars.SessionID = WTSGetActiveConsoleSessionId))
+                   then
+                  SessionLogonToken := TJwSecurityToken.CreateCompatibilityQueryUserToken(TOKEN_READ or TOKEN_QUERY or TOKEN_DUPLICATE)
+                else
+                  raise;
+            end;
+          end
+          else
+          //
+          // On Windows 2000 and earlier we use an old fashioned way
+          //
+          begin
+            Log.Log('Getting user token from session which has explorer.exe: ');
+            //TODO: use same mechanism as JwCreateProcessInSession to not rely on explorer.exe
+            SessionLogonToken := TJwSecurityToken.CreateCompatibilityQueryUserToken(TOKEN_READ or TOKEN_QUERY or TOKEN_DUPLICATE);
+          end;
+        except //3.
+          on E : Exception do
+          begin
+            SessionLogonToken := nil;
+            if InVars.UseSessionID then
+            begin
+              Log.Exception(E);
+
+              Log.Log(lsError,'Could not retrieve LogonSID ('+IntToStr(InVars.SessionID) + '): ');
+              raise EJwsclNoSuchLogonSession.CreateFmt('Could not retrieve a LogonSID %d: ',[InVars.SessionID]);
+            end
+            else
+              Log.Log('Failed to get LogonSID. Omitting step.');
+          end;
+        end; //3.
+      end;
+
+      //
+      // The user did not specify a logon SID
+      // but she provided a token OR
+      //  we got our own token
+      //
+      if not Assigned(InVars.LogonSID) and
+         (Assigned(SessionLogonToken) or Assigned(InVars.LogonToken)) then
+      begin
+        //
+        // replace SessionLogonToken by the users one
+        //
+        if Assigned(InVars.LogonToken) then
+        begin
+          FreeAndNil(SessionLogonToken);
+          SessionLogonToken := InVars.LogonToken;
+        end;
+
+        try
+          //
+          // Parse the logon sid from that token
+          //
+          Log.Log('Getting LogonSID...');
+          try
+            LogonSessionSID := JwGetLogonSID(SessionLogonToken);
+          except
+            on E : Exception do
+            begin
+              Log.Exception(E);
+              LogonSessionSID := nil;
+              Log.Log(lsError,'...call to JwGetLogonSID failed: ');
+            end;
+          end;
+
+          //
+          // add the logon sid from that token to the new token
+          //
+          if LogonSessionSID <> nil then
+          begin
+            Log.Log('Adding LogonSessionID to TokenGroups');
+            SID := LogonSessionSID;
+            SID.Attributes:= SE_GROUP_MANDATORY or
+                             SE_GROUP_ENABLED or
+                             SE_GROUP_ENABLED_BY_DEFAULT or
+                             SE_GROUP_LOGON_ID;
+            Groups.Add(SID); //"Groups" owns SID now
+          end;
+        finally
+          if not Assigned(InVars.LogonToken) then
+            FreeAndNil(SessionLogonToken);
+        end;
+      end;
+
+      //
+      // Add administrator group and enable it by default
+      //
+      Log.Log('Adding Administrator group to new token groups.');
+      SID := TJwSecurityID.Create(JwAdministratorsSID);
+      SID.Attributes:= SE_GROUP_MANDATORY or
+                        SE_GROUP_ENABLED or
+                        SE_GROUP_ENABLED_BY_DEFAULT;
+      Groups.Add(SID); //"Groups" owns SID now
+
+      //
+      // add user groups to that token
+      //
+      if Assigned(InVars.AdditionalGroups) then
+      begin
+        for i := 0 to InVars.AdditionalGroups.Count -1 do
+        begin
+          Sid := TJwSecurityId.Create(InVars.AdditionalGroups[i]);
+
+          //
+          // we do not want a foreign logon ID to be in it 
+          //
+          if (sidaGroupLogonId in Sid.AttributesType) then
+            Sid.AttributesType := Sid.AttributesType - [sidaGroupLogonId];
+
+          Groups.Add(Sid);
+        end;
+      end;
+
+      //
+      // Logon user with special adapted token information
+      //
+      Log.Log('Calling LsaLogonUser...');
+      try //4.
+        OutVars.LSA.LsaLogonUser(InVars.OriginName, JwaWindows.Interactive, MSV1_0_PACKAGE_NAME,
+                              pLogonData, Authlen, Groups, OutVars.Source,
+                           {out...}
+                              Pointer(OutVars.ProfBuffer), OutVars.ProfBufferLen,
+                              OutVars.TokenLuid, OutVars.UserToken, OutVars.QuotaLimits, OutVars.SubStatus);
+      except //4.
+        on E: Exception do
+        begin
+          FreeAndNil(Groups);
+
+          Log.Exception(E);
+          Log.Log(lsError,'LsaLogonUser failed');
+          raise;
+        end;
+      end; //4.
+
+      Log.Log('...successfully.');
+      FreeAndNil(Groups);
+
+      //
+      // On Vista or server 2008 LsaLogonUser creates a duplicate token
+      // if it encounters the administrator group.
+      // So we have to use the twin token for the new process
+      // which we want to start with administrator group.
+      //
+      try
+        OutVars.IsLinked := true;
+        OutVars.LinkedToken := OutVars.UserToken.LinkedToken;
+        UserToken := OutVars.LinkedToken; //token for CreateProcessAsUser
+      except
+        on E : Exception do
+        begin
+          Log.Exception(E);
+          Log.Log(lsError,'Could not get Linked Token. Using token from LsaLogonUser...continue');
+
+          OutVars.IsLinked := false;
+          OutVars.LinkedToken := nil;
+          UserToken := OutVars.UserToken;
+        end;
+      end;
+
+      StartupInfo := InVars.StartupInfo;
+      StartupInfo.cb := SizeOf(StartupInfo);
+
+      if InVars.DefaultDesktop then
+        StartupInfo.lpDesktop := 'WinSta0\Default';
+
+
+      //
+      // If the caller wants to set the tokens SessionID
+      // we do it here.
+      // The token needs the correct session ID to be set.
+      //
+      if InVars.UseSessionID then
+      begin
+        Log.Log('Setting TokenSession ID...');
+        try
+          UserToken.TokenSessionId := InVars.SessionID;//WtsGetActiveConsoleSessionID;
+        except
+          on E : Exception do
+          begin
+            Log.Exception(E);
+            Log.Log(lsError,'...Failed to set TokenSessionId. ');
+            raise;
+          end;
+        end;
+        Log.Log('...successfully.');
+      end;
+
+      //
+      // Load user profile
+      //  may throw exception
+      //
+      Log.Log('Try to load user profile...');
+      UserToken.LoadUserProfile(OutVars.ProfInfo, [{automatic config}]);
+      Log.Log('Profile loaded');
+
+
+      //
+      // Create environment variables for the user
+      //
+      if not CreateEnvironmentBlock(@OutVars.EnvironmentBlock, UserToken.TokenHandle, true) then
+        Log.Log(lsWarning,'Call to CreateEnvironmentBlock failed: '+EJwsclSecurityException.GetLastErrorMessage());
+
+      try //6.
+        AppName := nil;
+        CmdLine := nil;
+        CurrentDirectory := nil;
+        lpProcAttr := nil;
+        lpThreadAttr := nil;
+
+        //
+        // Copy variables to memory for CreateProcessAsUserX 
+        //
+
+        if Length(InVars.Parameters.lpApplicationName) > 0 then
+          AppName := TJwPChar(InVars.Parameters.lpApplicationName);
+
+        if Length(InVars.Parameters.lpCommandLine) > 0 then
+          CmdLine := TJwPChar(InVars.Parameters.lpCommandLine);
+
+        if Length(InVars.Parameters.lpCurrentDirectory) > 0 then
+          CurrentDirectory := TJwPChar(InVars.Parameters.lpCurrentDirectory);
+
+        if Assigned(InVars.Parameters.ProcessAttributes) then
+          lpProcAttr := InVars.Parameters.ProcessAttributes.Create_SA(InVars.Parameters.bProcInheritHandles);
+
+        if Assigned(InVars.Parameters.ThreadAttributes) then
+          lpThreadAttr := InVars.Parameters.ThreadAttributes.Create_SA(InVars.Parameters.bThreadInheritHandles);
+
+        //
+        // Create new process
+        //
+        Log.Log('Calling CreateProcessAsUser...');
+        SetLastError(0);
+        if not {$IFDEF UNICODE}CreateProcessAsUserW{$ELSE}CreateProcessAsUserA{$ENDIF}(
+              UserToken.TokenHandle,//HANDLE hToken,
+              AppName,//__in_opt     LPCTSTR lpApplicationName,
+              CmdLine, //__inout_opt  LPTSTR lpCommandLine,
+              LPSECURITY_ATTRIBUTES(lpProcAttr),//__in_opt     LPSECURITY_ATTRIBUTES lpProcessAttributes,
+              LPSECURITY_ATTRIBUTES(lpThreadAttr),//LPSECURITY_ATTRIBUTES(InVars.Parameters.lpThreadAttributes),//__in_opt     LPSECURITY_ATTRIBUTES lpThreadAttributes,
+              InVars.Parameters.bInheritHandles,//__in         BOOL bInheritHandles,
+              InVars.Parameters.dwCreationFlags,//__in         DWORD dwCreationFlags,
+              OutVars.EnvironmentBlock,//__in_opt     LPVOID lpEnvironment,
+              CurrentDirectory,//'',//TJwPChar(InVars.Parameters.lpCurrentDirectory),//__in_opt     LPCTSTR lpCurrentDirectory,
+              StartupInfo,//__in         LPSTARTUPINFO lpStartupInfo,
+              OutVars.ProcessInfo //__out        LPPROCESS_INFORMATION lpProcessInformation
+          ) then
+        begin
+          Log.Log('Call to CreateProcessAsUser succeeded. Returning.');
+        end
+        else
+        begin
+          LastError := GetLastError();
+          Log.Log(lsError,'CreateProcessAsUser failed: '+ EJwsclSecurityException.GetLastErrorMessage(LastError));
+
+          raise EJwsclCreateProcessFailed.CreateFmtEx(
+             'CreateProcessAsUser failed.',
+             'CreateProcessAsAdminUser', '', '0',
+             0, True, ['CreateProcessAsUser']);
+        end;
+      except //6.
+        on E : Exception do
+        begin
+          Log.Log('Clean up after CreateProcessAsUser failure....');
+
+          if lpProcAttr <> nil then
+            TJwSecurityDescriptor.Free_SA(lpProcAttr);
+
+          if lpThreadAttr <> nil then
+            TJwSecurityDescriptor.Free_SA(lpThreadAttr);
+
+          DestroyEnvironmentBlock(OutVars.EnvironmentBlock);
+            OutVars.EnvironmentBlock := nil;
+
+          OutVars.UserToken.UnloadUserProfile(OutVars.Profinfo);
+
+          FreeAndNil(OutVars.LinkedToken);
+          FreeAndNil(OutVars.UserToken);
+          UserToken := nil;
+
+          Log.Log('...sucessfully.');
+          raise;
+        end;
+      end; //6.
+
+    except //2.
+      LocalFree(Cardinal(pLogonData));
+      pLogonData := nil;
+
+      LsaFreeReturnBuffer(OutVars.ProfBuffer);
+      OutVars.ProfBuffer := nil;
+      OutVars.ProfBufferLen := 0;
+
+      raise;
+    end; //2.
+
+    //
+    //vars that must be freed
+    //
+    if pLogonData <> nil then
+      LocalFree(Cardinal(pLogonData));
+  except //1.
+    on E : Exception do
+    begin
+      Log.Exception(E);
+
+      FreeAndNil(OutVars.LSA);
+
+      raise;
+    end;
+  end; //1.
+end;
+
+
+
+
+
 
 type
   PInternalProcessData = ^TInternalProcessData;
