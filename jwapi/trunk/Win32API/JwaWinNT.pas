@@ -9047,12 +9047,12 @@ end;
 
 function Int32x32To64(a, b: LONG): LONGLONG;
 begin
-  Result := a * b;
+  Result := Int64(a) * Int64(b);
 end;
 
 function UInt32x32To64(a, b: DWORD): ULONGLONG;
 begin
-  Result := a * b;
+  Result := ULONGLONG(a) * ULONGLONG(b);
 end;
 
 {$ENDIF JWA_INCLUDEMODE}
