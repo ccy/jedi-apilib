@@ -1,0 +1,2161 @@
+Revision: 317
+Autor: dezipaitor
+Datum: 02:11:06, Montag, 25. Februar 2008
+Meldung:
++fixed comlib compile errors
++added more com stuff
++updated help
++added new help
+++added logo
+----
+Verändert : /jwscl/branches/COM_NewApproach/Common/ComLib.pas
+Verändert : /jwscl/branches/COM_NewApproach/JWSCLCom.dpr
+Verändert : /jwscl/branches/COM_NewApproach/JWSCLCom.dproj
+Verändert : /jwscl/branches/COM_NewApproach/JWSCLCom.tlb
+Verändert : /jwscl/branches/COM_NewApproach/JWSCLCom_TLB.pas
+Verändert : /jwscl/branches/COM_NewApproach/JwsclCoSid.pas
+Verändert : /jwscl/trunk/documentation/JWSCL help.chm
+Verändert : /jwscl/trunk/documentation/conclusion.txt
+Verändert : /jwscl/trunk/documentation/introduction.txt
+
+
+Revision: 316
+Autor: rweijnen
+Datum: 10:50:43, Sonntag, 24. Februar 2008
+Meldung:
+
+----
+Hinzugefügt : /jwscl/trunk/examples/dummy.txt
+
+
+Revision: 315
+Autor: dezipaitor
+Datum: 01:02:28, Sonntag, 24. Februar 2008
+Meldung:
++This fix was provided by a member of the jedi.apiconversion mailinglist : 
+For example the call Int32x32To64(2081, 10000000) correctly returns 20810000000 in VC++, but with the current implementation of the API-conversion it returns -664836480 in Delphi.
+With the fix below (added Int64-casts) it works as expected also in Delphi: 
++Precaution: Did the same thing for UInt32x32To64
+----
+Verändert : /jwapi/trunk/Win32API/JwaWinType.pas
+
+
+Revision: 314
+Autor: dezipaitor
+Datum: 00:54:04, Sonntag, 24. Februar 2008
+Meldung:
++This fix was provided by a member of the jedi.apiconversion mailinglist : 
+For example the call Int32x32To64(2081, 10000000) correctly returns 20810000000 in VC++, but with the current implementation of the API-conversion it returns -664836480 in Delphi.
+With the fix below (added Int64-casts) it works as expected also in Delphi: 
++Precaution: Did the same thing for UInt32x32To64
+----
+Verändert : /jwapi/trunk/Win32API/JwaWinNT.pas
+
+
+Revision: 313
+Autor: dezipaitor
+Datum: 01:39:03, Samstag, 23. Februar 2008
+Meldung:
++implemented more COM stuff
+++added CreateSidAndAttributesStream
+++did unit tests
++fixed some pasdoc errors
++added more Log methods (reversed parameters)
++added JwsclProcess.pas::JwCreateProcessAsAdminUser with documentation. BETA!
++fixed issue where constructor TJwSecurityId.Create(const SID: PSidAndAttributes);
+did not set attributes property
+----
+Verändert : /jwscl/branches/COM_NewApproach/JWSCLCom.dpr
+Verändert : /jwscl/branches/COM_NewApproach/JWSCLCom.tlb
+Verändert : /jwscl/branches/COM_NewApproach/JWSCLCom_TLB.pas
+Verändert : /jwscl/branches/COM_NewApproach/JwsclCOMExports.pas
+Verändert : /jwscl/branches/COM_NewApproach/JwsclCoSid.pas
+Verändert : /jwscl/branches/COM_NewApproach/JwsclGroup.groupproj
+Verändert : /jwscl/trunk/source/JwsclExceptions.pas
+Verändert : /jwscl/trunk/source/JwsclKnownSid.pas
+Verändert : /jwscl/trunk/source/JwsclLogging.pas
+Verändert : /jwscl/trunk/source/JwsclProcess.pas
+Verändert : /jwscl/trunk/source/JwsclSid.pas
+
+
+Revision: 312
+Autor: dezipaitor
+Datum: 20:27:52, Mittwoch, 20. Februar 2008
+Meldung:
+replaced some methods that returned GetLastError instead of exception
+----
+Verändert : /jwscl/trunk/source/JwsclTerminalServer.pas
+Verändert : /jwscl/trunk/source/JwsclTypes.pas
+
+
+Revision: 311
+Autor: dezipaitor
+Datum: 20:11:05, Mittwoch, 20. Februar 2008
+Meldung:
++updated internal and external docs
++fixed logging bug
++renamned TJwSecurityLibrary to TJwLibraryUtilities
++rearranged docs in TJwProfileInfo
++fixed pasdoc errors
+----
+Verändert : /jwscl/trunk/source/JwsclKnownSid.pas
+Verändert : /jwscl/trunk/source/JwsclLogging.pas
+Verändert : /jwscl/trunk/source/JwsclProcess.pas
+Verändert : /jwscl/trunk/source/JwsclSecureObjects.pas
+Verändert : /jwscl/trunk/source/JwsclTerminalServer.pas
+Verändert : /jwscl/trunk/source/JwsclToken.pas
+Verändert : /jwscl/trunk/source/JwsclTypes.pas
+Verändert : /jwscl/trunk/source/JwsclUtils.pas
+Verändert : /jwscl/trunk/source/JwsclVersion.pas
+
+
+Revision: 310
+Autor: dezipaitor
+Datum: 20:09:35, Mittwoch, 20. Februar 2008
+Meldung:
++updated internal and external docs
+----
+Verändert : /jwscl/trunk/documentation/JWSCL help.chm
+Verändert : /jwscl/trunk/documentation/introduction.txt
+
+
+Revision: 309
+Autor: dezipaitor
+Datum: 17:04:33, Mittwoch, 20. Februar 2008
+Meldung:
++added event log filtering
++fixed doc errors
+----
+Verändert : /jwscl/trunk/source/JwsclLogging.pas
+Verändert : /jwscl/trunk/source/JwsclToken.pas
+
+
+Revision: 308
+Autor: dezipaitor
+Datum: 00:13:25, Mittwoch, 20. Februar 2008
+Meldung:
++bug fixes in JwsclLogging.pas
++improvements in JwsclLogging.pas for multiple threads
+----
+Verändert : /jwscl/trunk/source/JwsclLogging.pas
+Verändert : /jwscl/trunk/source/JwsclProcess.pas
+
+
+Revision: 307
+Autor: rweijnen
+Datum: 23:32:51, Dienstag, 19. Februar 2008
+Meldung:
+Implemented TJwWTSSession.Connect function (WinStationConnect)
+Added sample code to TJwServerInfo
+----
+Verändert : /jwscl/trunk/source/JwsclTerminalServer.pas
+Verändert : /jwscl/trunk/source/JwsclVersion.pas
+
+
+Revision: 306
+Autor: dezipaitor
+Datum: 11:42:48, Montag, 18. Februar 2008
+Meldung:
++fixed inheritance bug in JwsclExceptions.pas
++added thread naming
++updated docs
+----
+Verändert : /jwscl/trunk/source/JwsclExceptions.pas
+Verändert : /jwscl/trunk/source/JwsclUtils.pas
+
+
+Revision: 305
+Autor: dgalimov
+Datum: 00:33:57, Montag, 18. Februar 2008
+Meldung:
+Fixed compile error (BOOL function result).
+Added WinStationResolution and WinStationPipeInformation classes.
+----
+Verändert : /jwapi/trunk/Win32API/JwaWinSta.pas
+
+
+Revision: 304
+Autor: dgalimov
+Datum: 00:29:52, Montag, 18. Februar 2008
+Meldung:
+Corrected color depth according to MSDN (http://msdn2.microsoft.com/en-us/library/aa383858(VS.85).aspx)
+----
+Verändert : /jwapi/trunk/Win32API/JwaWtsApi32.pas
+
+
+Revision: 303
+Autor: dezipaitor
+Datum: 23:35:21, Sonntag, 17. Februar 2008
+Meldung:
++added JwsclLogging.pas
++added ComLib.pas
++updated contribution
++added JwFormatStringEx
++fixed unit test
+----
+Verändert : /jwscl/trunk/documentation/introduction.txt
+Hinzugefügt : /jwscl/trunk/source/JwsclLogging.pas
+Verändert : /jwscl/trunk/source/JwsclStrings.pas
+Verändert : /jwscl/trunk/source/JwsclUtils.pas
+Verändert : /jwscl/trunk/unittests/source/JwsclTokenTests.pas
+
+
+Revision: 302
+Autor: dezipaitor
+Datum: 23:34:21, Sonntag, 17. Februar 2008
+Meldung:
++added ComLib.pas
+----
+Hinzugefügt : /jwscl/branches/COM_NewApproach/Common
+Hinzugefügt : /jwscl/branches/COM_NewApproach/Common/ComLib.pas
+
+
+Revision: 301
+Autor: rweijnen
+Datum: 23:01:36, Sonntag, 17. Februar 2008
+Meldung:
+Implemented SystemUserName property, added hotkey and hotkey modifier to shadow function
+----
+Verändert : /jwscl/trunk/source/JwsclTerminalServer.pas
+
+
+Revision: 300
+Autor: rweijnen
+Datum: 22:59:56, Sonntag, 17. Februar 2008
+Meldung:
+Corrected some TS functions that were declared with return BOOL but which should be BOOLEAN
+----
+Verändert : /jwapi/trunk/Win32API/JwaWinSta.pas
+
+
+Revision: 299
+Autor: rweijnen
+Datum: 10:25:15, Sonntag, 17. Februar 2008
+Meldung:
+Implemented TJwWTSSessionList.FindBySessionId and TJwWTSSessionList.FindByUsername
+----
+Verändert : /jwscl/trunk/source/JwsclTerminalServer.pas
+
+
+Revision: 298
+Autor: rweijnen
+Datum: 09:46:00, Sonntag, 17. Februar 2008
+Meldung:
+Started implementing actions like shadow, logoff and disconnect
+----
+Verändert : /jwscl/trunk/source/JwsclTerminalServer.pas
+
+
+Revision: 297
+Autor: rweijnen
+Datum: 00:25:45, Sonntag, 17. Februar 2008
+Meldung:
+
+----
+Verändert : /jwscl/trunk/source/JwsclUtils.pas
+
+
+Revision: 296
+Autor: dezipaitor
+Datum: 00:24:32, Sonntag, 17. Februar 2008
+Meldung:
+typo fixed: TJwCheckBitMask -> JwCheckBitMask
+----
+Verändert : /jwscl/trunk/source/JwsclUtils.pas
+
+
+Revision: 295
+Autor: dezipaitor
+Datum: 00:14:20, Sonntag, 17. Februar 2008
+Meldung:
++adapted compiler directives for jedi.inc instead of compilers.inc 
++fix TJwWTSSession.GetToken : TJwSecurityToken for using ServerHandle
++TJwSecurityToken.CreateWTSQueryUserTokenEx fix for using ServerHandle
+----
+Verändert : /jwscl/trunk/source/JwsclDesktops.pas
+Verändert : /jwscl/trunk/source/JwsclProcess.pas
+Verändert : /jwscl/trunk/source/JwsclSecureObjects.pas
+Verändert : /jwscl/trunk/source/JwsclSecurityDialogs.pas
+Verändert : /jwscl/trunk/source/JwsclStrings.pas
+Verändert : /jwscl/trunk/source/JwsclTerminalServer.pas
+Verändert : /jwscl/trunk/source/JwsclToken.pas
+Verändert : /jwscl/trunk/source/JwsclTypes.pas
+
+
+Revision: 294
+Autor: rweijnen
+Datum: 21:14:01, Samstag, 16. Februar 2008
+Meldung:
+- Renamed TSessionsEnumerator and TProcessEnumerator to TJwSessionEnumerator and TJwProcessEnumerator
+- Implemented  TJwCheckBitMask (simple bitmask check)
+- Implemented TJwServerInfo to retreive Remote Windows version info (might be extended with other remote server info)
+----
+Verändert : /jwscl/trunk/source/JwsclTerminalServer.pas
+Verändert : /jwscl/trunk/source/JwsclUtils.pas
+Verändert : /jwscl/trunk/source/JwsclVersion.pas
+
+
+Revision: 293
+Autor: dezipaitor
+Datum: 13:41:10, Samstag, 16. Februar 2008
+Meldung:
++removed unnecessary TJwOnProcessFound 
++removed JCL compiler directive from source
+----
+Verändert : /jwscl/branches/COM_NewApproach/JwsclCOMExports.pas
+Verändert : /jwscl/trunk/source/JwsclExceptions.pas
+Verändert : /jwscl/trunk/source/JwsclTypes.pas
+
+
+Revision: 292
+Autor: dezipaitor
+Datum: 03:04:39, Samstag, 16. Februar 2008
+Meldung:
+reg key security setting example
+----
+Hinzugefügt : /jwscl/trunk/examples/RegistrySecurity
+Hinzugefügt : /jwscl/trunk/examples/RegistrySecurity/SetKeySecurity.dpr
+
+
+Revision: 291
+Autor: dezipaitor
+Datum: 03:03:57, Samstag, 16. Februar 2008
+Meldung:
++updated COM
++added new TJwTerminalServer::EnumerateProcesses for callback enumeration
++updated stuff in JwsclProcess.pas
++new help with better look
+----
+Verändert : /jwscl/branches/COM_NewApproach/JWSCLCom.dproj
+Verändert : /jwscl/branches/COM_NewApproach/JWSCLCom.tlb
+Verändert : /jwscl/branches/COM_NewApproach/JWSCLCom_TLB.pas
+Verändert : /jwscl/branches/COM_NewApproach/JwsclCoSid.pas
+Verändert : /jwscl/branches/COM_NewApproach/JwsclGroup.groupproj
+Verändert : /jwscl/trunk/documentation/JWSCL help.chm
+Verändert : /jwscl/trunk/source/JwsclProcess.pas
+Verändert : /jwscl/trunk/source/JwsclTerminalServer.pas
+Verändert : /jwscl/trunk/source/JwsclTypes.pas
+Verändert : /jwscl/trunk/source/makehelp.bat
+
+
+Revision: 290
+Autor: dezipaitor
+Datum: 01:11:57, Samstag, 16. Februar 2008
+Meldung:
++added JwaVista.pas docs
++added JwaWinInet.pas and included into JwaWindows.pas
+--- not semantically tested ---
+----
+Verändert : /jwapi/trunk/Win32API/JwaVista.pas
+Verändert : /jwapi/trunk/Win32API/JwaWinDLLNames.pas
+Hinzugefügt : /jwapi/trunk/Win32API/JwaWinInet.pas
+Verändert : /jwapi/trunk/Win32API/JwaWindows.pas
+
+
+Revision: 289
+Autor: rweijnen
+Datum: 19:39:08, Freitag, 15. Februar 2008
+Meldung:
+Updated help for JwsclTerminalServer.pas and JwsclToken.pas.
+Adjusted JwsclHelpBlue.css to make code blocks look like the ones on Codegear Developer Network.
+----
+Verändert : /jwscl/trunk/source/JwsclHelpBlue.css
+Verändert : /jwscl/trunk/source/JwsclTerminalServer.pas
+Verändert : /jwscl/trunk/source/JwsclToken.pas
+
+
+Revision: 288
+Autor: dezipaitor
+Datum: 21:26:34, Donnerstag, 14. Februar 2008
+Meldung:
++Added COM(Server) + CLIENT stacktrace information in EJwsclSecurityException
+----
+Verändert : /jwscl/trunk/source/JwsclExceptions.pas
+
+
+Revision: 287
+Autor: dezipaitor
+Datum: 21:24:39, Donnerstag, 14. Februar 2008
+Meldung:
++COM using safecall, dual(dispatch+vtable) + automation
++retained JWSCL Exception supported
++Added COM(Server) + CLIENT stacktrace information in EJwsclSecurityException
+----
+Verändert : /jwscl/branches/COM_NewApproach/JWSCLCoException.pas
+Verändert : /jwscl/branches/COM_NewApproach/JWSCLCom.dpr
+Verändert : /jwscl/branches/COM_NewApproach/JWSCLCom.dproj
+Verändert : /jwscl/branches/COM_NewApproach/JWSCLCom.tlb
+Verändert : /jwscl/branches/COM_NewApproach/JWSCLCom_TLB.pas
+Verändert : /jwscl/branches/COM_NewApproach/JWSCLGroup.bpg
+Verändert : /jwscl/branches/COM_NewApproach/JwsclCOMExports.pas
+Verändert : /jwscl/branches/COM_NewApproach/JwsclCoSid.pas
+Verändert : /jwscl/branches/COM_NewApproach/JwsclGroup.groupproj
+
+
+Revision: 286
+Autor: dezipaitor
+Datum: 18:43:41, Donnerstag, 14. Februar 2008
+Meldung:
+try another approach using com and delphi safecall
+----
+Hinzugefügt : /jwscl/branches/COM_NewApproach(Kopiert von: /jwscl/trunk/COM, Revision, 285
+
+
+Revision: 285
+Autor: dezipaitor
+Datum: 23:14:37, Mittwoch, 13. Februar 2008
+Meldung:
+bugs
+----
+Verändert : /jwscl/trunk/source/JwsclProcess.pas
+Verändert : /jwscl/trunk/source/JwsclToken.pas
+
+
+Revision: 284
+Autor: rweijnen
+Datum: 16:12:26, Mittwoch, 13. Februar 2008
+Meldung:
+When sending WTS_EVENT_FLUSH to abort a WTSWaitSystemEvent the function calls fails with LastError 995. Changed so that exception is only raised if LastEvent > WTS_EVENT_FLUSH
+----
+Verändert : /jwscl/trunk/source/JwsclTerminalServer.pas
+
+
+Revision: 283
+Autor: dezipaitor
+Datum: 16:09:43, Mittwoch, 13. Februar 2008
+Meldung:
++revmoved D2005 ifdefs
++using jedi.inc instead of compilers.inc
+----
+Verändert : /jwscl/trunk/source/Jwscl.inc
+Verändert : /jwscl/trunk/source/JwsclTerminalServer.pas
+
+
+Revision: 282
+Autor: rweijnen
+Datum: 16:06:18, Mittwoch, 13. Februar 2008
+Meldung:
+
+----
+Verändert : /jwscl/trunk/source/JwsclExceptions.pas
+
+
+Revision: 281
+Autor: dezipaitor
+Datum: 16:02:13, Mittwoch, 13. Februar 2008
+Meldung:
++fixed bug in TJwSecurityToken.CreateWTSQueryUserTokenEx where Token AccessMask was not updated correctly
++unicode conversion fix
++added extended error information in exception if token mask does not include enough rights to call a method
++fixes in CreateTokenByProcessAndSession
++added EJwsclSecurityException.Log for user logging
+----
+Verändert : /jwscl/trunk/source/JwsclExceptions.pas
+Verändert : /jwscl/trunk/source/JwsclProcess.pas
+Verändert : /jwscl/trunk/source/JwsclResource.pas
+Verändert : /jwscl/trunk/source/JwsclTerminalServer.pas
+Verändert : /jwscl/trunk/source/JwsclToken.pas
+
+
+Revision: 280
+Autor: rweijnen
+Datum: 15:52:11, Mittwoch, 13. Februar 2008
+Meldung:
+minor changes
+----
+Verändert : /jwscl/trunk/source/JwsclTerminalServer.pas
+
+
+Revision: 279
+Autor: rweijnen
+Datum: 14:33:20, Mittwoch, 13. Februar 2008
+Meldung:
+Implemented GetEnumerator for TJwWTSProcessList and TJwWTSSessionList so delphi 2005 and higher users can use for..in loop. Also added code samples to documentation.
+----
+Verändert : /jwscl/trunk/source/JwsclTerminalServer.pas
+
+
+Revision: 278
+Autor: rweijnen
+Datum: 11:36:21, Mittwoch, 13. Februar 2008
+Meldung:
+Removed TWideStringList from GetServers
+----
+Verändert : /jwscl/trunk/source/JwsclTerminalServer.pas
+
+
+Revision: 277
+Autor: dezipaitor
+Datum: 03:26:33, Mittwoch, 13. Februar 2008
+Meldung:
++fixes in JwCreateProcessInSession
++use CreateWTSQueryUserTokenEx in TJwWTSSession.GetToken
++docs in TJwSecurityToken.GetMaximumAllowed
++more docs in JwsclToken.pas
++TJwSecurityToken.LoadUserProfile checks for SE_RESTORE_NAME, SE_BACKUP_NAME 
+----
+Verändert : /jwscl/trunk/source/JwsclProcess.pas
+Verändert : /jwscl/trunk/source/JwsclTerminalServer.pas
+Verändert : /jwscl/trunk/source/JwsclToken.pas
+
+
+Revision: 276
+Autor: dezipaitor
+Datum: 23:54:04, Dienstag, 12. Februar 2008
+Meldung:
+bugfixes
+----
+Verändert : /jwscl/trunk/source/JwsclProcess.pas
+
+
+Revision: 275
+Autor: rweijnen
+Datum: 23:31:38, Dienstag, 12. Februar 2008
+Meldung:
+Promoted FileTime2DateTime to class function
+----
+Verändert : /jwscl/trunk/source/JwsclTerminalServer.pas
+
+
+Revision: 274
+Autor: rweijnen
+Datum: 23:30:48, Dienstag, 12. Februar 2008
+Meldung:
+minor fixes
+----
+Verändert : /jwscl/trunk/source/JwsclSid.pas
+Verändert : /jwscl/trunk/unittests/source/JwsclTerminalServerTests.pas
+
+
+Revision: 273
+Autor: dezipaitor
+Datum: 23:29:08, Dienstag, 12. Februar 2008
+Meldung:
+missing unit
+----
+Verändert : /jwscl/trunk/source/JwsclToken.pas
+
+
+Revision: 272
+Autor: rweijnen
+Datum: 23:23:54, Dienstag, 12. Februar 2008
+Meldung:
+Changes to documentation, improved code samples by including try..except error handling
+----
+Verändert : /jwscl/trunk/source/JwsclTerminalServer.pas
+
+
+Revision: 271
+Autor: dezipaitor
+Datum: 23:17:33, Dienstag, 12. Februar 2008
+Meldung:
++removed unnecessary units from uses
++added JwsclProcess.pas::JwCreateProcessInSession
++added JwsclToken.pas::TJwSecurityToken.LoadUserProfile
++Desktops : changed exceptions types partly
++updated introduction.txt
+----
+Verändert : /jwscl/trunk/documentation/introduction.txt
+Verändert : /jwscl/trunk/source/JwsclAccounts.pas
+Verändert : /jwscl/trunk/source/JwsclAcl.pas
+Verändert : /jwscl/trunk/source/JwsclAuthCtx.pas
+Verändert : /jwscl/trunk/source/JwsclCredentials.pas
+Verändert : /jwscl/trunk/source/JwsclDescriptor.pas
+Verändert : /jwscl/trunk/source/JwsclDesktops.pas
+Verändert : /jwscl/trunk/source/JwsclElevation.pas
+Verändert : /jwscl/trunk/source/JwsclEncryption.pas
+Verändert : /jwscl/trunk/source/JwsclKnownSid.pas
+Verändert : /jwscl/trunk/source/JwsclLsa.pas
+Verändert : /jwscl/trunk/source/JwsclPrivileges.PAS
+Verändert : /jwscl/trunk/source/JwsclProcess.pas
+Verändert : /jwscl/trunk/source/JwsclSecureObjects.pas
+Verändert : /jwscl/trunk/source/JwsclSecurePrivateObjects.pas
+Verändert : /jwscl/trunk/source/JwsclSecureUserObjects.pas
+Verändert : /jwscl/trunk/source/JwsclSecurityDialogs.pas
+Verändert : /jwscl/trunk/source/JwsclSid.pas
+Verändert : /jwscl/trunk/source/JwsclToken.pas
+Verändert : /jwscl/trunk/source/JwsclTypes.pas
+Verändert : /jwscl/trunk/source/JwsclUtils.pas
+Verändert : /jwscl/trunk/source/JwsclWinStations.pas
+
+
+Revision: 270
+Autor: rweijnen
+Datum: 21:52:48, Dienstag, 12. Februar 2008
+Meldung:
+Changed color scheme for proper Syntax Highlighting and Tables
+----
+Verändert : /jwscl/trunk/source/JwsclHelpBlue.css
+
+
+Revision: 269
+Autor: dezipaitor
+Datum: 21:24:28, Montag, 11. Februar 2008
+Meldung:
+added jwaVista.pas to help compile
+----
+Verändert : /jwscl/trunk/source/makehelp.bat
+
+
+Revision: 268
+Autor: dezipaitor
+Datum: 20:52:29, Montag, 11. Februar 2008
+Meldung:
+adapted table 
+----
+Verändert : /jwscl/trunk/source/JwsclHelpBlue.css
+
+
+Revision: 267
+Autor: rweijnen
+Datum: 19:19:25, Montag, 11. Februar 2008
+Meldung:
+Added TJwFileVersion
+----
+Verändert : /jwscl/trunk/source/JwsclVersion.pas
+
+
+Revision: 266
+Autor: dezipaitor
+Datum: 19:19:05, Montag, 11. Februar 2008
+Meldung:
+added help css
+----
+Hinzugefügt : /jwscl/trunk/source/JwsclHelpBlue.css
+Verändert : /jwscl/trunk/source/makehelp.bat
+
+
+Revision: 265
+Autor: dezipaitor
+Datum: 22:48:59, Sonntag, 10. Februar 2008
+Meldung:
++JwsclSid contains info which method is available in com
++adapted com tests
+----
+Verändert : /jwscl/trunk/COM/JWSCLCom.dproj
+Verändert : /jwscl/trunk/COM/JWSCLCom.tlb
+Verändert : /jwscl/trunk/COM/JWSCLCom_TLB.pas
+Verändert : /jwscl/trunk/COM/JwsclCoSid.pas
+Verändert : /jwscl/trunk/COM/Test/Test1.dpr
+Verändert : /jwscl/trunk/COM/Test/Test1.dproj
+Verändert : /jwscl/trunk/COM/TestVB/ConsoleApplication1/ConsoleApplication1/Module1.vb
+Verändert : /jwscl/trunk/documentation/JWSCL help.chm
+Verändert : /jwscl/trunk/source/JwsclSid.pas
+
+
+Revision: 264
+Autor: rweijnen
+Datum: 22:34:08, Sonntag, 10. Februar 2008
+Meldung:
+-        JwaVista.TokenSessionId : result := 4;
++        JwaVista.TokenSessionId : result := SizeOf(DWORD);
+----
+Verändert : /jwscl/trunk/source/JwsclToken.pas
+
+
+Revision: 263
+Autor: dezipaitor
+Datum: 22:22:23, Sonntag, 10. Februar 2008
+Meldung:
+Fixed a bug where GetTokenInformationLength on XP systems failed if TokenSessionId was specified.
+----
+Verändert : /jwscl/trunk/source/JwsclToken.pas
+
+
+Revision: 262
+Autor: dezipaitor
+Datum: 20:43:01, Sonntag, 10. Februar 2008
+Meldung:
+
+----
+Gelöscht : /jwscl/tags/rev137_p/examples/TSAdminEx
+
+
+Revision: 261
+Autor: dezipaitor
+Datum: 20:41:54, Sonntag, 10. Februar 2008
+Meldung:
+
+----
+Gelöscht : /jwscl/tags/preNewACLImpl/trunk/examples/TSAdminEx
+
+
+Revision: 260
+Autor: dezipaitor
+Datum: 20:41:19, Sonntag, 10. Februar 2008
+Meldung:
+
+----
+Gelöscht : /jwscl/trunk/examples/TSAdminEx
+
+
+Revision: 259
+Autor: rweijnen
+Datum: 10:13:22, Samstag, 9. Februar 2008
+Meldung:
+Some code cleanup in uTerminalServerThread.pas
+Fixed a bug in Server Enumeration
+Implemented Server Enumeration by Expanding the Parent Tree Node (was previously on DoubleClick)
+----
+Verändert : /jwscl/trunk/examples/TSAdminEx/uMain.dfm
+Verändert : /jwscl/trunk/examples/TSAdminEx/uMain.pas
+Verändert : /jwscl/trunk/examples/TSAdminEx/uTerminalServerThread.pas
+
+
+Revision: 258
+Autor: dezipaitor
+Datum: 02:01:24, Samstag, 9. Februar 2008
+Meldung:
++updated new help file (new great TS stuff)
++added COM late binding tests in VB, Delphi and C++
++added: started to map com exception
+----
+Verändert : /jwscl/trunk/COM/JWSCLCoException.pas
+Verändert : /jwscl/trunk/COM/JWSCLCom.tlb
+Verändert : /jwscl/trunk/COM/JWSCLCom_TLB.pas
+Verändert : /jwscl/trunk/COM/JwsclCOMExports.pas
+Verändert : /jwscl/trunk/COM/JwsclCoSid.pas
+Verändert : /jwscl/trunk/COM/JwsclGroup.groupproj
+Verändert : /jwscl/trunk/COM/Test/Test1.dpr
+Verändert : /jwscl/trunk/COM/Test/Test1.dproj
+Hinzugefügt : /jwscl/trunk/COM/TestLateBindingCPP
+Hinzugefügt : /jwscl/trunk/COM/TestLateBindingCPP/LateBindingCPP
+Hinzugefügt : /jwscl/trunk/COM/TestLateBindingCPP/LateBindingCPP/LateBindingCPP.cpp
+Hinzugefügt : /jwscl/trunk/COM/TestLateBindingCPP/LateBindingCPP/LateBindingCPP.vcproj
+Hinzugefügt : /jwscl/trunk/COM/TestLateBindingCPP/LateBindingCPP/stdafx.cpp
+Hinzugefügt : /jwscl/trunk/COM/TestLateBindingCPP/LateBindingCPP/stdafx.h
+Hinzugefügt : /jwscl/trunk/COM/TestLateBindingCPP/LateBindingCPP.sln
+Verändert : /jwscl/trunk/COM/TestLateBindingDelphi/Project1.dpr
+Verändert : /jwscl/trunk/COM/TestVB/ConsoleApplication1/ConsoleApplication1/Module1.vb
+Verändert : /jwscl/trunk/source/JwsclExceptions.pas
+
+
+Revision: 257
+Autor: dezipaitor
+Datum: 23:58:52, Freitag, 8. Februar 2008
+Meldung:
+some more COM stuff
+----
+Verändert : /jwscl/trunk/COM/JWSCLCoException.pas
+Verändert : /jwscl/trunk/COM/JWSCLCom.dpr
+Verändert : /jwscl/trunk/COM/JWSCLCom.dproj
+Verändert : /jwscl/trunk/COM/JWSCLCom.tlb
+Verändert : /jwscl/trunk/COM/JWSCLCom_TLB.pas
+Hinzugefügt : /jwscl/trunk/COM/JwsclCOMExports.pas
+Verändert : /jwscl/trunk/COM/JwsclCoSid.pas
+Verändert : /jwscl/trunk/COM/Test/Test1.dpr
+Verändert : /jwscl/trunk/COM/Test/Test1.dproj
+Hinzugefügt : /jwscl/trunk/COM/TestLateBindingDelphi
+Hinzugefügt : /jwscl/trunk/COM/TestLateBindingDelphi/Project1.dpr
+Hinzugefügt : /jwscl/trunk/COM/TestVB
+Hinzugefügt : /jwscl/trunk/COM/TestVB/ConsoleApplication1
+Hinzugefügt : /jwscl/trunk/COM/TestVB/ConsoleApplication1/ConsoleApplication1
+Hinzugefügt : /jwscl/trunk/COM/TestVB/ConsoleApplication1/ConsoleApplication1/ConsoleApplication1.vbproj
+Hinzugefügt : /jwscl/trunk/COM/TestVB/ConsoleApplication1/ConsoleApplication1/Module1.vb
+Hinzugefügt : /jwscl/trunk/COM/TestVB/ConsoleApplication1/ConsoleApplication1.sln
+
+
+Revision: 256
+Autor: rweijnen
+Datum: 21:45:55, Freitag, 8. Februar 2008
+Meldung:
+
+----
+Hinzugefügt : /jwscl/trunk/documentation/TJwWTSEvents-Table.png
+
+
+Revision: 255
+Autor: dezipaitor
+Datum: 21:44:12, Freitag, 8. Februar 2008
+Meldung:
+startet adding COM implementation
+----
+Hinzugefügt : /jwscl/trunk/COM
+Hinzugefügt : /jwscl/trunk/COM/JWSCLCoException.pas
+Hinzugefügt : /jwscl/trunk/COM/JWSCLCom.dpr
+Hinzugefügt : /jwscl/trunk/COM/JWSCLCom.dproj
+Hinzugefügt : /jwscl/trunk/COM/JWSCLCom.tlb
+Hinzugefügt : /jwscl/trunk/COM/JWSCLCom_TLB.pas
+Hinzugefügt : /jwscl/trunk/COM/JWSCLGroup.bpg
+Hinzugefügt : /jwscl/trunk/COM/JwsclCoSid.pas
+Hinzugefügt : /jwscl/trunk/COM/JwsclGroup.groupproj
+Hinzugefügt : /jwscl/trunk/COM/Test
+Hinzugefügt : /jwscl/trunk/COM/Test/Test1.dpr
+Hinzugefügt : /jwscl/trunk/COM/Test/Test1.dproj
+
+
+Revision: 254
+Autor: rweijnen
+Datum: 21:38:40, Freitag, 8. Februar 2008
+Meldung:
+Completed the documentation.
+----
+Verändert : /jwscl/trunk/source/JwsclTerminalServer.pas
+
+
+Revision: 253
+Autor: rweijnen
+Datum: 12:37:11, Freitag, 8. Februar 2008
+Meldung:
+Changes in documentation
+----
+Verändert : /jwscl/trunk/source/JwsclTerminalServer.pas
+
+
+Revision: 252
+Autor: rweijnen
+Datum: 00:03:27, Freitag, 8. Februar 2008
+Meldung:
+Picture belonging to documentation
+----
+Hinzugefügt : /jwscl/trunk/documentation/TJwTerminalServer-Hierarchy.png
+
+
+Revision: 251
+Autor: rweijnen
+Datum: 00:02:49, Freitag, 8. Februar 2008
+Meldung:
+Added lots and lots of documentation
+----
+Verändert : /jwscl/trunk/source/JwsclTerminalServer.pas
+
+
+Revision: 250
+Autor: ApolloniusPerga
+Datum: 17:35:50, Donnerstag, 7. Februar 2008
+Meldung:
+Two examples ComputeSignature and VerifySignature added
+----
+Hinzugefügt : /jwscl/trunk/examples/Signature
+Hinzugefügt : /jwscl/trunk/examples/Signature/ComputeSignature.dpr
+Hinzugefügt : /jwscl/trunk/examples/Signature/VerifySignature.dpr
+
+
+Revision: 249
+Autor: rweijnen
+Datum: 16:21:18, Donnerstag, 7. Februar 2008
+Meldung:
+Made TJwWTSEnumServersThread a Named Thread
+----
+Verändert : /jwscl/trunk/source/JwsclTerminalServer.pas
+
+
+Revision: 248
+Autor: rweijnen
+Datum: 23:44:52, Mittwoch, 6. Februar 2008
+Meldung:
+Fixed typos
+----
+Verändert : /jwscl/trunk/source/JwsclTerminalServer.pas
+
+
+Revision: 247
+Autor: rweijnen
+Datum: 23:38:23, Mittwoch, 6. Februar 2008
+Meldung:
+Documented TJwWTSSession!
+----
+Verändert : /jwscl/trunk/source/JwsclTerminalServer.pas
+
+
+Revision: 246
+Autor: dezipaitor
+Datum: 20:05:24, Mittwoch, 6. Februar 2008
+Meldung:
++ups, added docs
+----
+Verändert : /jwscl/trunk/source/JwsclTerminalServer.pas
+
+
+Revision: 245
+Autor: dezipaitor
+Datum: 20:00:54, Mittwoch, 6. Februar 2008
+Meldung:
++Fixed unit tests 
++added unit tests
++fixed Token creation in JwsclTerminalServer.pas
+----
+Verändert : /jwscl/trunk/source/JwsclTerminalServer.pas
+Hinzugefügt : /jwscl/trunk/unittests/projects/d7/TokenUnitTest.dpr
+Hinzugefügt : /jwscl/trunk/unittests/projects/d7/UtilsUnitTest.dpr
+Verändert : /jwscl/trunk/unittests/source/JwsclDescriptorTests.pas
+Verändert : /jwscl/trunk/unittests/source/JwsclUnitUtilsTests.pas
+
+
+Revision: 244
+Autor: rweijnen
+Datum: 09:28:21, Mittwoch, 6. Februar 2008
+Meldung:
+Introduces AutoRefresh Checkbox and AutoSize columns in VST
+----
+Verändert : /jwscl/trunk/examples/TSAdminEx/uMain.dfm
+Verändert : /jwscl/trunk/examples/TSAdminEx/uMain.pas
+
+
+Revision: 243
+Autor: rweijnen
+Datum: 09:10:02, Mittwoch, 6. Februar 2008
+Meldung:
+Added Application.MainFormOnTaskBar := True for D2007
+----
+Verändert : /jwscl/trunk/examples/TSAdminEx/TSAdminEx.dpr
+
+
+Revision: 242
+Autor: rweijnen
+Datum: 09:07:31, Mittwoch, 6. Februar 2008
+Meldung:
+Fixed memory leak in OnClose event
+----
+Verändert : /jwscl/trunk/examples/TSAdminEx
+Verändert : /jwscl/trunk/examples/TSAdminEx/uMain.pas
+Verändert : /jwscl/trunk/examples/TSAdminEx/uTerminalServerThread.pas
+
+
+Revision: 241
+Autor: rweijnen
+Datum: 08:41:42, Mittwoch, 6. Februar 2008
+Meldung:
+Commented out the token retrieval sections
+----
+Verändert : /jwscl/trunk/source/JwsclTerminalServer.pas
+
+
+Revision: 240
+Autor: rweijnen
+Datum: 23:00:29, Dienstag, 5. Februar 2008
+Meldung:
+Added JwsclUtils to the uses clause
+----
+Verändert : /jwscl/trunk/examples/TSAdminEx/uTerminalServerThread.pas
+
+
+Revision: 239
+Autor: rweijnen
+Datum: 21:45:00, Dienstag, 5. Februar 2008
+Meldung:
+
+----
+Verändert : /jwscl/trunk/source/JwsclTerminalServer.pas
+
+
+Revision: 238
+Autor: rweijnen
+Datum: 21:43:53, Dienstag, 5. Februar 2008
+Meldung:
+Implemented all enumerations in seperate threads
+----
+Verändert : /jwscl/trunk/examples/TSAdminEx/uMain.dfm
+Verändert : /jwscl/trunk/examples/TSAdminEx/uMain.pas
+Hinzugefügt : /jwscl/trunk/examples/TSAdminEx/uTerminalServerThread.pas
+
+
+Revision: 237
+Autor: dezipaitor
+Datum: 21:41:57, Dienstag, 5. Februar 2008
+Meldung:
++Now JwsclKnownSid::JwInitMapping has a much better exception resume implementation
++move TJwThread from JwsclTerminalServer.pas to JwsclUtils.pas
++TJwThread now sets correctly the corresponding thread name
+----
+Verändert : /jwscl/trunk/source/JwsclKnownSid.pas
+Verändert : /jwscl/trunk/source/JwsclTerminalServer.pas
+Verändert : /jwscl/trunk/source/JwsclUtils.pas
+
+
+Revision: 236
+Autor: dezipaitor
+Datum: 17:49:50, Dienstag, 5. Februar 2008
+Meldung:
+Added f JwInitMapping, f JwSidMap, f JwAddMapSid, rec JwSidMapDef for
+easily use of strings/names as Sid representatives.
+----
+Verändert : /jwscl/trunk/source/JwsclKnownSid.pas
+
+
+Revision: 235
+Autor: dezipaitor
+Datum: 15:36:15, Dienstag, 5. Februar 2008
+Meldung:
++added manual examples
+----
+Hinzugefügt : /jwscl/trunk/examples/Manual/CreateProcessAsUser.dpr
+Hinzugefügt : /jwscl/trunk/examples/Manual/CreateRestrictedToken.dpr
+Hinzugefügt : /jwscl/trunk/examples/Manual/Desktops.dpr
+Hinzugefügt : /jwscl/trunk/examples/Manual/FileAttr.dpr
+Hinzugefügt : /jwscl/trunk/examples/Manual/FileDACL.dpr
+Hinzugefügt : /jwscl/trunk/examples/Manual/FileInheritance.dpr
+Hinzugefügt : /jwscl/trunk/examples/Manual/FileNotify.dpr
+Hinzugefügt : /jwscl/trunk/examples/Manual/FileProtectedACL.dpr
+Hinzugefügt : /jwscl/trunk/examples/Manual/Impersonate1.dpr
+Hinzugefügt : /jwscl/trunk/examples/Manual/SecurityID2a.dpr
+
+
+Revision: 234
+Autor: dezipaitor
+Datum: 15:35:14, Dienstag, 5. Februar 2008
+Meldung:
++added JwSecurityInformationACLFlagsOD
++added DACL, SACL protection into TJwSecurityDescriptor
++TJwSecureRegistryKey, TJwSecureFileObject have better inheritance protection- see TJwACLProtection
++JwsclTerminalServer.pas added Token and UserSid (TJwWTSProcess, TJwWTSSession) - untested
++JwsclUtils.pas::JwSetThreadName renaming threads
+----
+Verändert : /jwscl/trunk/source/JwsclConstants.pas
+Verändert : /jwscl/trunk/source/JwsclDescriptor.pas
+Verändert : /jwscl/trunk/source/JwsclSecureObjects.pas
+Verändert : /jwscl/trunk/source/JwsclTerminalServer.pas
+Verändert : /jwscl/trunk/source/JwsclTypes.pas
+Verändert : /jwscl/trunk/source/JwsclUtils.pas
+
+
+Revision: 233
+Autor: rweijnen
+Datum: 15:10:17, Dienstag, 5. Februar 2008
+Meldung:
+Introduced TJwThread a base class for threads (should be moved to another unit later on)
+Fixed bug in TJwTerminalServer.Destroy (moved Disconnect after free of EventThread)
+----
+Verändert : /jwscl/trunk/source/JwsclTerminalServer.pas
+
+
+Revision: 232
+Autor: rweijnen
+Datum: 22:27:18, Montag, 4. Februar 2008
+Meldung:
+
+----
+Verändert : /jwscl/trunk/source/JwsclTerminalServer.pas
+
+
+Revision: 231
+Autor: ApolloniusPerga
+Datum: 18:11:40, Montag, 4. Februar 2008
+Meldung:
+Several small mistakes in JwsclCryptProvider and JwsclTypes corrected. TJwHash.VerifySignature added.
+----
+Verändert : /jwscl/trunk/source/JwsclCryptProvider.pas
+Verändert : /jwscl/trunk/source/JwsclTypes.pas
+
+
+Revision: 230
+Autor: dezipaitor
+Datum: 20:50:48, Freitag, 1. Februar 2008
+Meldung:
++redid implementation of a callback function that was changed 
+----
+Verändert : /jwscl/trunk/examples/TakeOwnership/MainForm.pas
+
+
+Revision: 229
+Autor: dezipaitor
+Datum: 20:47:45, Freitag, 1. Februar 2008
+Meldung:
+removed resource file because: DEFINE JWSCL_INCLUDE_RES to include that resource file!!!
+Create new (empty) project and add this line in the main unit:
+Open taskmanager and add the Virtual Memory Size column via the View -> Select Columns menu. Record the current value of VM Size column.
+Compile and when the compilation has finished you can see 34,1 MB extra Virtual Memory is allocated.
+Compile again, 34,1 MB more is allocated. This continues with every compilation.
+Memory is not freed when closing the project, only restarting the IDE helps.
+http://qc.codegear.com/wc/qcmain.aspx?d=57701
+----
+Verändert : /jwscl/trunk/source/JwsclConstants.pas
+
+
+Revision: 228
+Autor: dezipaitor
+Datum: 12:42:07, Donnerstag, 31. Januar 2008
+Meldung:
++JwGetMachineSid only enumerates one user
+----
+Verändert : /jwscl/trunk/documentation/JWSCL help.chm
+Verändert : /jwscl/trunk/source/JwsclExceptions.pas
+Verändert : /jwscl/trunk/source/JwsclKnownSid.pas
+Verändert : /jwscl/trunk/source/JwsclUtils.pas
+Verändert : /jwscl/trunk/source/JwsclWinStations.pas
+Verändert : /jwscl/trunk/unittests/projects/d7/SidUnitTest.dpr
+Verändert : /jwscl/trunk/unittests/source/JwsclSIDTests.pas
+
+
+Revision: 227
+Autor: dezipaitor
+Datum: 16:08:37, Mittwoch, 30. Januar 2008
+Meldung:
++added retrieving machine sid example
+----
+Hinzugefügt : /jwscl/trunk/examples/Manual/MachineSid.dpr
+
+
+Revision: 226
+Autor: dezipaitor
+Datum: 22:34:50, Dienstag, 29. Januar 2008
+Meldung:
++added JwsclUtils::JwGetMachineSid .It retrieves a local or remote machine sid.
++added TJwSecurityId.CachedSystemName
+----
+Verändert : /jwscl/trunk/source/JwsclExceptions.pas
+Verändert : /jwscl/trunk/source/JwsclKnownSid.pas
+Verändert : /jwscl/trunk/source/JwsclResource.pas
+Verändert : /jwscl/trunk/source/JwsclSid.pas
+
+
+Revision: 225
+Autor: dezipaitor
+Datum: 20:41:59, Montag, 28. Januar 2008
+Meldung:
++fixed bug (redfined type) sorry :)
+----
+Verändert : /jwapi/trunk/Win32API/JwaNative.pas
+
+
+Revision: 224
+Autor: dezipaitor
+Datum: 19:19:16, Montag, 28. Januar 2008
+Meldung:
++readded some removed functions 
+jwaWinternl.pas was removed due to problems. However the functions in there are duplicates and now are available through JwaNative.pas
+----
+Verändert : /jwapi/trunk/Win32API/JwaNative.pas
+
+
+Revision: 223
+Autor: dezipaitor
+Datum: 21:19:46, Sonntag, 27. Januar 2008
+Meldung:
++extended EJwsclInvalidKnownSIDException for more information in JwInitWellKnownSIDsEx
++fixed Token.PrivilegeCheckEx (ignored parameter)
++JEDI Code Formatter on JwsclToken.pas
+----
+Verändert : /jwscl/trunk/source/JwsclExceptions.pas
+Verändert : /jwscl/trunk/source/JwsclKnownSid.pas
+Verändert : /jwscl/trunk/source/JwsclSid.pas
+Verändert : /jwscl/trunk/source/JwsclToken.pas
+Verändert : /jwscl/trunk/source/JwsclTypes.pas
+Verändert : /jwscl/trunk/unittests/source/JwsclTokenTests.pas
+
+
+Revision: 222
+Autor: dezipaitor
+Datum: 22:43:59, Donnerstag, 24. Januar 2008
+Meldung:
++added JwsclVersion.pas::IsTerminalServiceRunning
++added 
+TJwSecurityToken.CreateWTSQueryUserTokenEx for compatibility for Win2000
+TJwSecurityToken.GetCurrentUserRegKey
++added new exceptions
++reimplemented main unit test without admin login
+----
+Verändert : /jwscl/trunk/source/JwsclExceptions.pas
+Verändert : /jwscl/trunk/source/JwsclResource.pas
+Verändert : /jwscl/trunk/source/JwsclSecureUserObjects.pas
+Verändert : /jwscl/trunk/source/JwsclToken.pas
+Verändert : /jwscl/trunk/source/JwsclVersion.pas
+Verändert : /jwscl/trunk/unittests/projects/d7/UnitTests.dpr
+Verändert : /jwscl/trunk/unittests/source/JwsclTokenTests.pas
+
+
+Revision: 221
+Autor: dezipaitor
+Datum: 21:48:15, Montag, 21. Januar 2008
+Meldung:
++split unit tests up for convenience 
++replaced type TJwSecurityToken.MandatoryPolicy with enum set TJwTokenMandatoryPolicies
+----
+Verändert : /jwscl/trunk/source/JwsclEnumerations.pas
+Verändert : /jwscl/trunk/source/JwsclToken.pas
+Verändert : /jwscl/trunk/source/JwsclTypes.pas
+Hinzugefügt : /jwscl/trunk/unittests/projects/d7/AclUnitTest.dpr
+Hinzugefügt : /jwscl/trunk/unittests/projects/d7/DescriptorUnitTest.dpr
+Hinzugefügt : /jwscl/trunk/unittests/projects/d7/DesktopsUnitTest.dpr
+Hinzugefügt : /jwscl/trunk/unittests/projects/d7/ExceptionsUnitTest.dpr
+Hinzugefügt : /jwscl/trunk/unittests/projects/d7/MappingUnitTest.dpr
+Hinzugefügt : /jwscl/trunk/unittests/projects/d7/SecureObjectsUnitTest.dpr
+Hinzugefügt : /jwscl/trunk/unittests/projects/d7/SecurePrivateObjectsUnitTest.dpr
+Hinzugefügt : /jwscl/trunk/unittests/projects/d7/SecurityDialogsUnitTest.dpr
+Hinzugefügt : /jwscl/trunk/unittests/projects/d7/SidUnitTest.dpr
+Verändert : /jwscl/trunk/unittests/source/JwsclTokenTests.pas
+
+
+Revision: 220
+Autor: rweijnen
+Datum: 17:32:43, Montag, 21. Januar 2008
+Meldung:
+Provisional automatic process update working
+----
+Verändert : /jwscl/trunk/examples/TSAdminEx/uMain.dfm
+Verändert : /jwscl/trunk/examples/TSAdminEx/uMain.pas
+
+
+Revision: 219
+Autor: dezipaitor
+Datum: 16:38:52, Montag, 21. Januar 2008
+Meldung:
++fixed huge listview update
++some changes to processlist work
+----
+Verändert : /jwscl/trunk/examples/TSAdminEx/uMain.pas
+
+
+Revision: 218
+Autor: rweijnen
+Datum: 15:00:22, Montag, 21. Januar 2008
+Meldung:
+Implemented I_RpcBindingIsClientLocal
+----
+Verändert : /jwapi/trunk/Win32API/JwaRpcDce.pas
+
+
+Revision: 217
+Autor: rweijnen
+Datum: 14:58:48, Montag, 21. Januar 2008
+Meldung:
+
+----
+Hinzugefügt : /jwscl/trunk/examples/TSAdminEx/uAbout.dfm
+Hinzugefügt : /jwscl/trunk/examples/TSAdminEx/uAbout.pas
+
+
+Revision: 216
+Autor: rweijnen
+Datum: 14:23:08, Montag, 21. Januar 2008
+Meldung:
+
+----
+Verändert : /jwscl/trunk/source/JwsclTerminalServer.pas
+
+
+Revision: 215
+Autor: rweijnen
+Datum: 14:22:51, Montag, 21. Januar 2008
+Meldung:
+
+----
+Verändert : /jwscl/trunk/examples/TSAdminEx/TSAdminEx.dpr
+Verändert : /jwscl/trunk/examples/TSAdminEx/uMain.pas
+
+
+Revision: 214
+Autor: rweijnen
+Datum: 21:51:25, Sonntag, 20. Januar 2008
+Meldung:
+Minor changes
+----
+Verändert : /jwscl/trunk/source/JwsclTerminalServer.pas
+
+
+Revision: 213
+Autor: rweijnen
+Datum: 21:50:26, Sonntag, 20. Januar 2008
+Meldung:
+Implemented IncrementalSearch in the ListViews.
+Partial implementation of threaded process refresh (produces AV at this time, therefore disabled)
+----
+Verändert : /jwscl/trunk/examples/TSAdminEx/uMain.dfm
+Verändert : /jwscl/trunk/examples/TSAdminEx/uMain.pas
+
+
+Revision: 212
+Autor: rweijnen
+Datum: 00:28:50, Sonntag, 20. Januar 2008
+Meldung:
+Implemented GetCurrentSession and GetCurrentProcess to provide better nil handling and more readible code. 
+Implemented ActionList1Update so that correct TAction/Toolbar/Menu is enabled based upon visible tab (session/user/process) and session state.
+Implemented global Refresh (F5)
+----
+Verändert : /jwscl/trunk/examples/TSAdminEx/uMain.dfm
+Verändert : /jwscl/trunk/examples/TSAdminEx/uMain.pas
+
+
+Revision: 211
+Autor: dezipaitor
+Datum: 17:16:41, Freitag, 18. Januar 2008
+Meldung:
+some extra try/except
+----
+Verändert : /jwscl/trunk/source/JwsclLsa.pas
+Verändert : /jwscl/trunk/source/JwsclToken.pas
+
+
+Revision: 210
+Autor: dezipaitor
+Datum: 00:21:17, Freitag, 18. Januar 2008
+Meldung:
+added code so this app can run in none-service app.
+----
+Verändert : /jwscl/trunk/examples/UACAware/Unit1.pas
+
+
+Revision: 209
+Autor: dezipaitor
+Datum: 00:04:15, Freitag, 18. Januar 2008
+Meldung:
+PrimaryTok1.dpr:
+moved "try" to get more error handling
+----
+Verändert : /jwscl/trunk/examples/Manual/PrimaryTok1.dpr
+
+
+Revision: 208
+Autor: dezipaitor
+Datum: 13:36:22, Donnerstag, 17. Januar 2008
+Meldung:
++fixed pasdoc errors
++updated comments
++updated help file
++removed unnecessary files (make files will be replaced by proper make files in future)
+----
+Verändert : /jwscl/trunk/documentation/JWSCL help.chm
+Verändert : /jwscl/trunk/source/JwsclDescriptor.pas
+Verändert : /jwscl/trunk/source/JwsclUtils.pas
+Gelöscht : /jwscl/trunk/source/make.bat
+Gelöscht : /jwscl/trunk/source/make2005.bat
+Gelöscht : /jwscl/trunk/source/make2006.bat
+Gelöscht : /jwscl/trunk/source/make5.bat
+Gelöscht : /jwscl/trunk/source/make7.bat
+Verändert : /jwscl/trunk/source/makechm.bat
+
+
+Revision: 207
+Autor: dezipaitor
+Datum: 13:16:23, Donnerstag, 17. Januar 2008
+Meldung:
++extended TJwSecurityDescriptor.CreateDefaultByToken
+----
+Verändert : /jwscl/trunk/source/JwsclDescriptor.pas
+Verändert : /jwscl/trunk/source/JwsclTypes.pas
+
+
+Revision: 206
+Autor: rweijnen
+Datum: 23:27:07, Mittwoch, 16. Januar 2008
+Meldung:
+Changed toolbar appearance to previous (flat with edgeborders)
+----
+Verändert : /jwscl/trunk/examples/TSAdminEx/uMain.dfm
+
+
+Revision: 205
+Autor: rweijnen
+Datum: 22:55:09, Mittwoch, 16. Januar 2008
+Meldung:
+
+----
+Verändert : /jwscl/trunk/source/JwsclTerminalServer.pas
+
+
+Revision: 204
+Autor: dezipaitor
+Datum: 22:48:16, Mittwoch, 16. Januar 2008
+Meldung:
+fixed some bugs
+----
+Verändert : /jwscl/trunk/source/JwsclEnumerations.pas
+Verändert : /jwscl/trunk/source/JwsclSid.pas
+Verändert : /jwscl/trunk/source/JwsclTerminalServer.pas
+Verändert : /jwscl/trunk/source/JwsclTypes.pas
+
+
+Revision: 203
+Autor: dezipaitor
+Datum: 22:25:34, Mittwoch, 16. Januar 2008
+Meldung:
++did some improvements and changes
+----
+Verändert : /jwscl/trunk/examples/TSAdminEx/uMain.pas
+Verändert : /jwscl/trunk/source/JwsclTerminalServer.pas
+
+
+Revision: 202
+Autor: dgalimov
+Datum: 21:30:54, Mittwoch, 16. Januar 2008
+Meldung:
+Fixed typo
+----
+Verändert : /jwapi/trunk/Win32API/JwaWinSta.pas
+
+
+Revision: 201
+Autor: dezipaitor
+Datum: 21:16:12, Mittwoch, 16. Januar 2008
+Meldung:
++applied some JEDI rules
++Checked for nil owner
+----
+Verändert : /jwscl/trunk/source/JwsclTerminalServer.pas
+
+
+Revision: 200
+Autor: dezipaitor
+Datum: 20:38:00, Mittwoch, 16. Januar 2008
+Meldung:
+fixed some obvious errors
+and make JwsclTerminalServer.pas compilable again.
+----
+Verändert : /jwscl/trunk/examples/TSAdminEx/NetApi.pas
+Verändert : /jwscl/trunk/examples/TSAdminEx/uMain.dfm
+Verändert : /jwscl/trunk/examples/TSAdminEx/uMain.pas
+Verändert : /jwscl/trunk/source/JwsclTerminalServer.pas
+Verändert : /jwscl/trunk/source/RpcWinsta.pas
+
+
+Revision: 199
+Autor: dezipaitor
+Datum: 19:59:37, Mittwoch, 16. Januar 2008
+Meldung:
+make this unit available to JwsclTerminalServer
+-moved
+----
+Gelöscht : /jwscl/trunk/examples/TSAdminEx/RpcWinsta.pas
+
+
+Revision: 198
+Autor: dezipaitor
+Datum: 19:57:34, Mittwoch, 16. Januar 2008
+Meldung:
+make this unit available to JwsclTerminalServer
+----
+Hinzugefügt : /jwscl/trunk/source/RpcWinsta.pas
+
+
+Revision: 197
+Autor: dezipaitor
+Datum: 15:51:44, Mittwoch, 16. Januar 2008
+Meldung:
++fixed typo in JwsclAcl.pas
++UpdateDbgData only shows data if DEBUG is defined.
+----
+Verändert : /jwscl/trunk/source/JwsclAcl.pas
+Verändert : /jwscl/trunk/source/JwsclSid.pas
+
+
+Revision: 196
+Autor: dezipaitor
+Datum: 15:40:15, Mittwoch, 16. Januar 2008
+Meldung:
+Removed an legacy comment in the unit headers.
+----
+Verändert : /jwscl/trunk/source/JwsclComUtils.pas
+Verändert : /jwscl/trunk/source/JwsclElevation.pas
+Verändert : /jwscl/trunk/source/JwsclImpersonation.pas
+Verändert : /jwscl/trunk/source/JwsclSecureUserObjects.pas
+Verändert : /jwscl/trunk/source/JwsclTerminalServer.pas
+Verändert : /jwscl/trunk/source/JwsclVersion.pas
+Verändert : /jwscl/trunk/source/JwsclWinStations.pas
+
+
+Revision: 195
+Autor: rweijnen
+Datum: 15:34:56, Mittwoch, 16. Januar 2008
+Meldung:
+
+----
+Hinzugefügt : /jwscl/trunk/examples/TSAdminEx/RpcWinsta.pas
+
+
+Revision: 194
+Autor: dezipaitor
+Datum: 15:27:33, Mittwoch, 16. Januar 2008
+Meldung:
++updated comments
++TJwSecurityIdList does no longer free well known sids from JwsclKnownSid.pas
++added JwInitWellKnownSIDsExAll to init all well known sids
+----
+Verändert : /jwscl/trunk/source/JwsclAcl.pas
+Verändert : /jwscl/trunk/source/JwsclExceptions.pas
+Verändert : /jwscl/trunk/source/JwsclKnownSid.pas
+Verändert : /jwscl/trunk/source/JwsclSid.pas
+Verändert : /jwscl/trunk/source/JwsclToken.pas
+Verändert : /jwscl/trunk/unittests/source/JwsclSIDTests.pas
+
+
+Revision: 193
+Autor: rweijnen
+Datum: 22:49:46, Dienstag, 15. Januar 2008
+Meldung:
+
+----
+Verändert : /jwscl/trunk/source/JwsclTerminalServer.pas
+
+
+Revision: 192
+Autor: dezipaitor
+Datum: 19:25:45, Dienstag, 15. Januar 2008
+Meldung:
+
+----
+Hinzugefügt : /jwscl/trunk/examples/UACAware
+Hinzugefügt : /jwscl/trunk/examples/UACAware/UAC.manifest
+Hinzugefügt : /jwscl/trunk/examples/UACAware/UACAware.dpr
+Hinzugefügt : /jwscl/trunk/examples/UACAware/UACServiceTest.dpr
+Hinzugefügt : /jwscl/trunk/examples/UACAware/Unit1.dfm
+Hinzugefügt : /jwscl/trunk/examples/UACAware/Unit1.pas
+
+
+Revision: 191
+Autor: dezipaitor
+Datum: 18:32:22, Dienstag, 15. Januar 2008
+Meldung:
+added test project for CreateToken.
+----
+Hinzugefügt : /jwscl/trunk/examples/Manual/PrimaryTok1.dpr
+Hinzugefügt : /jwscl/trunk/examples/Manual/SecurityID2.dpr
+Hinzugefügt : /jwscl/trunk/examples/Manual/SecurityID3.dpr
+
+
+Revision: 190
+Autor: rweijnen
+Datum: 14:42:49, Dienstag, 15. Januar 2008
+Meldung:
+
+----
+Verändert : /jwscl/trunk/examples/TSAdminEx/uMain.dfm
+Verändert : /jwscl/trunk/examples/TSAdminEx/uMain.pas
+
+
+Revision: 189
+Autor: rweijnen
+Datum: 19:25:07, Montag, 14. Januar 2008
+Meldung:
+
+----
+Verändert : /jwscl/trunk/examples/TSAdminEx/uMain.dfm
+
+
+Revision: 188
+Autor: dezipaitor
+Datum: 17:02:34, Montag, 14. Januar 2008
+Meldung:
+fixed errors of last commit
+----
+Verändert : /jwscl/trunk/source/JwsclSid.pas
+
+
+Revision: 187
+Autor: dezipaitor
+Datum: 16:55:44, Montag, 14. Januar 2008
+Meldung:
+fixed error
++now TJwSecurityId.GetWellKnownSidType checks for all possible and known well known SIDs
+----
+Verändert : /jwscl/trunk/source/JwsclKnownSid.pas
+Verändert : /jwscl/trunk/source/JwsclSid.pas
+
+
+Revision: 186
+Autor: dezipaitor
+Datum: 16:40:52, Montag, 14. Januar 2008
+Meldung:
+added JwInitWellKnownSIDsEx for more known Sids
+----
+Verändert : /jwscl/trunk/source/JwsclKnownSid.pas
+Verändert : /jwscl/trunk/source/JwsclSid.pas
+
+
+Revision: 185
+Autor: rweijnen
+Datum: 16:14:22, Montag, 14. Januar 2008
+Meldung:
+Added Data + Tag properties to TJwTerminalServer, this way the user can store a custom pointer.
+Added domain property to EnumerateServers
+Removed Exception on failure to enumerate WinStationShadowInformation (this failure is not critical)
+----
+Verändert : /jwscl/trunk/source/JwsclTerminalServer.pas
+
+
+Revision: 184
+Autor: rweijnen
+Datum: 16:11:40, Montag, 14. Januar 2008
+Meldung:
+Added JwUnicodeStringToJwString and PWideCharToJwString, corresponding functions were removed from JwsclTerminalServer
+----
+Verändert : /jwscl/trunk/source/JwsclStrings.pas
+
+
+Revision: 183
+Autor: rweijnen
+Datum: 16:10:02, Montag, 14. Januar 2008
+Meldung:
+Updated sort handlers (OnCompare) to make code better readable.
+Check for system accounts is now done withs SID's instead of names because these are language dependant.
+Implemented Domain and Server enumeration into the ServerList TreeView
+Upon deselecting a server, the Terminal Server instance is free'd and nilled (this way the event thread is also terminated).
+When ending TSAdminEx while still enumerating servers the enumthread is killed after 1 second so we don't keep the user waiting.
+----
+Verändert : /jwscl/trunk/examples/TSAdminEx/NetApi.pas
+Verändert : /jwscl/trunk/examples/TSAdminEx/uMain.dfm
+Verändert : /jwscl/trunk/examples/TSAdminEx/uMain.pas
+
+
+Revision: 182
+Autor: dezipaitor
+Datum: 21:51:33, Sonntag, 13. Januar 2008
+Meldung:
+added JwLocalServiceSID
+----
+Verändert : /jwscl/trunk/source/JwsclKnownSid.pas
+
+
+Revision: 181
+Autor: dezipaitor
+Datum: 21:47:09, Sonntag, 13. Januar 2008
+Meldung:
+added JwNetworkServiceSID
+----
+Verändert : /jwscl/trunk/source/JwsclKnownSid.pas
+
+
+Revision: 180
+Autor: dezipaitor
+Datum: 03:15:19, Sonntag, 13. Januar 2008
+Meldung:
+Updated all internal source docs to compile with pasdoc without errors!!!
++Added new CHM Help.
+----
+Verändert : /jwscl/trunk/documentation/JWSCL help.chm
+Verändert : /jwscl/trunk/source/JwsclAcl.pas
+Verändert : /jwscl/trunk/source/JwsclAuthCtx.pas
+Verändert : /jwscl/trunk/source/JwsclCryptProvider.pas
+Verändert : /jwscl/trunk/source/JwsclSecureObjects.pas
+Verändert : /jwscl/trunk/source/JwsclTerminalServer.pas
+Verändert : /jwscl/trunk/source/JwsclToken.pas
+
+
+Revision: 179
+Autor: dgalimov
+Datum: 02:14:32, Sonntag, 13. Januar 2008
+Meldung:
+Refactoring + added shadow mode to connection state
+----
+Verändert : /jwscl/trunk/examples/TSAdminEx/uMain.pas
+
+
+Revision: 178
+Autor: dgalimov
+Datum: 02:12:47, Sonntag, 13. Januar 2008
+Meldung:
+Added initial shadow implementation
+----
+Verändert : /jwscl/trunk/source/JwsclTerminalServer.pas
+
+
+Revision: 177
+Autor: dgalimov
+Datum: 01:43:54, Sonntag, 13. Januar 2008
+Meldung:
+Added shadow and winstationcreate definitions
+----
+Verändert : /jwapi/trunk/Win32API/JwaWinSta.pas
+
+
+Revision: 176
+Autor: rweijnen
+Datum: 20:27:15, Samstag, 12. Januar 2008
+Meldung:
+Increased WINSTATIONNAME_LENGTH by 1 to 33.
+----
+Verändert : /jwapi/trunk/Win32API/JwaWtsApi32.pas
+
+
+Revision: 175
+Autor: rweijnen
+Datum: 20:26:00, Samstag, 12. Januar 2008
+Meldung:
+Re-Included some parts that were left out when using New Include Model. This was needed because of dropping JwaInternal
+----
+Verändert : /jwapi/trunk/Win32API/JwaNative.pas
+
+
+Revision: 174
+Autor: dezipaitor
+Datum: 18:53:46, Samstag, 12. Januar 2008
+Meldung:
++added documentation
++GetTextMap now shows accessmask even if no mapping is supplied
++TJwSecurityAccessControlList now can be createed using Explicit Access structure.
++added NullGenericMapping
+----
+Verändert : /jwscl/trunk/source/JwsclAcl.pas
+Verändert : /jwscl/trunk/source/JwsclAuthCtx.pas
+Verändert : /jwscl/trunk/source/JwsclConstants.pas
+Verändert : /jwscl/trunk/source/JwsclSecureObjects.pas
+
+
+Revision: 173
+Autor: dezipaitor
+Datum: 15:16:51, Samstag, 12. Januar 2008
+Meldung:
++all AccessCheck functions now support generic mappings (original AccessCheck from WinAPI does not! even it has an input parameter genericmapping)
++AccessCheckByTypeResultList implemented
+----
+Verändert : /jwscl/trunk/examples/Manual/ACE2.dpr
+Verändert : /jwscl/trunk/examples/Manual/AuthCtx2.dpr
+Verändert : /jwscl/trunk/examples/Manual/AuthCtx3.dpr
+Verändert : /jwscl/trunk/examples/Manual/AuthCtx4.dpr
+Verändert : /jwscl/trunk/examples/PrivateSD/MainForm.pas
+Verändert : /jwscl/trunk/source/JwsclAcl.pas
+Verändert : /jwscl/trunk/source/JwsclAuthCtx.pas
+Verändert : /jwscl/trunk/source/JwsclSecureObjects.pas
+
+
+Revision: 172
+Autor: rweijnen
+Datum: 10:37:58, Samstag, 12. Januar 2008
+Meldung:
+
+----
+Verändert : /jwscl/trunk/examples/TSAdminEx/NetApi.pas
+Verändert : /jwscl/trunk/examples/TSAdminEx/uMain.dfm
+Verändert : /jwscl/trunk/examples/TSAdminEx/uMain.pas
+
+
+Revision: 171
+Autor: rweijnen
+Datum: 10:37:12, Samstag, 12. Januar 2008
+Meldung:
+
+----
+Verändert : /jwscl/trunk/source/JwsclTerminalServer.pas
+
+
+Revision: 170
+Autor: rweijnen
+Datum: 16:19:49, Freitag, 11. Januar 2008
+Meldung:
+Implemented Icons and Imagelists.
+Added Checkbox into Server treeview
+----
+Hinzugefügt : /jwscl/trunk/examples/TSAdminEx/NetApi.pas
+Verändert : /jwscl/trunk/examples/TSAdminEx/uMain.dfm
+Verändert : /jwscl/trunk/examples/TSAdminEx/uMain.pas
+
+
+Revision: 169
+Autor: dezipaitor
+Datum: 13:33:05, Freitag, 11. Januar 2008
+Meldung:
++fixed bug where ACE of type object could not be added
++added ACL revision test to get wrong revision values
++test for failed InitializeACL
+----
+Verändert : /jwscl/trunk/examples/Manual/AuthCtx3.dpr
+Verändert : /jwscl/trunk/source/JwsclAcl.pas
+Verändert : /jwscl/trunk/source/JwsclAuthCtx.pas
+Verändert : /jwscl/trunk/source/JwsclExceptions.pas
+Verändert : /jwscl/trunk/source/JwsclKnownSid.pas
+Verändert : /jwscl/trunk/source/JwsclResource.pas
+Verändert : /jwscl/trunk/source/JwsclSecureObjects.pas
+Verändert : /jwscl/trunk/source/JwsclUtils.pas
+
+
+Revision: 168
+Autor: dezipaitor
+Datum: 20:41:31, Mittwoch, 9. Januar 2008
+Meldung:
+too much commited for this tag - hate this.
+----
+Gelöscht : /jwscl/tags/preNewACLImpl/branches
+Gelöscht : /jwscl/tags/preNewACLImpl/tags
+
+
+Revision: 167
+Autor: dezipaitor
+Datum: 20:38:37, Mittwoch, 9. Januar 2008
+Meldung:
++reimplemented ACL and ACE implementation to support callback and object ACE.
+I could have probably added some bugs - maybe ;-) UnitTests work fine.
++added more AuthZ examples
++added JwRaiseOnNilMemoryBlock and JwRaiseOnNilParameter to easily check for nil parameter
++TJwSecurityIdList.Free_PSID_Array and Free_PTOKEN_GROUPS are now class methods
++Finished JwsclAuthCtx.pas !!
+----
+Verändert : /jwscl/trunk/examples/Manual/AuthCtx.dpr
+Verändert : /jwscl/trunk/examples/Manual/AuthCtx2.dpr
+Hinzugefügt : /jwscl/trunk/examples/Manual/AuthCtx3.dpr
+Hinzugefügt : /jwscl/trunk/examples/Manual/AuthCtx3a.dpr
+Hinzugefügt : /jwscl/trunk/examples/Manual/AuthCtx4.dpr
+Verändert : /jwscl/trunk/source/JwsclAcl.pas
+Verändert : /jwscl/trunk/source/JwsclAuthCtx.pas
+Verändert : /jwscl/trunk/source/JwsclConstants.pas
+Verändert : /jwscl/trunk/source/JwsclDescriptor.pas
+Verändert : /jwscl/trunk/source/JwsclEnumerations.pas
+Verändert : /jwscl/trunk/source/JwsclExceptions.pas
+Verändert : /jwscl/trunk/source/JwsclResource.pas
+Verändert : /jwscl/trunk/source/JwsclSid.pas
+Verändert : /jwscl/trunk/source/JwsclTypes.pas
+Verändert : /jwscl/trunk/source/JwsclUtils.pas
+Verändert : /jwscl/trunk/unittests/source/JwsclAclTests.pas
+
+
+Revision: 166
+Autor: dezipaitor
+Datum: 20:06:16, Mittwoch, 9. Januar 2008
+Meldung:
+This tag was made because a huge change in ACL and ACE implementation (jwsclACL.pas) was made.
+----
+Hinzugefügt : /jwscl/tags/preNewACLImpl(Kopiert von: /jwscl, Revision, 165
+
+
+Revision: 165
+Autor: dezipaitor
+Datum: 19:59:56, Mittwoch, 9. Januar 2008
+Meldung:
+added extra stuff
+----
+Verändert : /jwapi/trunk/Packages/d7/JediApi_DynamicDebug.dof
+Verändert : /jwapi/trunk/Packages/d7/JediApi_DynamicRelease.dof
+Verändert : /jwapi/trunk/Packages/d7/JediApi_StaticDebug.dof
+Verändert : /jwapi/trunk/Packages/d7/JediApi_StaticRelease.dof
+Verändert : /jwapi/trunk/Win32API/JwaAuthz.pas
+Verändert : /jwapi/trunk/Win32API/JwaWindows.pas
+
+
+Revision: 164
+Autor: dezipaitor
+Datum: 14:31:14, Mittwoch, 9. Januar 2008
+Meldung:
+removed stuff that does not work
+----
+Verändert : /jwscl/trunk/source/JwsclWinStations.pas
+
+
+Revision: 163
+Autor: dgalimov
+Datum: 23:49:11, Dienstag, 8. Januar 2008
+Meldung:
+Fixed memory size, as it's in number of symbols, not bytes
+----
+Verändert : /jwscl/trunk/source/JwsclSid.pas
+
+
+Revision: 162
+Autor: rweijnen
+Datum: 23:09:24, Dienstag, 8. Januar 2008
+Meldung:
+Old EnumerateProcesses was removed and replaced by GetAllProcesses (which is renamed to EnumerateProcesses
+
+EnumerateServers was replaced by EnumerateServersEx
+
+Implemented FindByServer function in TerminalServerList
+
+Removed Vista only properties (replaced by Undocumented which are version independant)
+
+Introduced ProcessAge in seconds and renamed old ProcessAge to ProcessAgeStr
+
+Rewrote PWideCharTojwString
+
+Added some exceptions
+----
+Verändert : /jwscl/trunk/source/JwsclTerminalServer.pas
+
+
+Revision: 161
+Autor: rweijnen
+Datum: 23:04:30, Dienstag, 8. Januar 2008
+Meldung:
+Implemented sort handlers and automatic process updates (toggle with button)
+----
+Verändert : /jwscl/trunk/examples/TSAdminEx/uMain.dfm
+Verändert : /jwscl/trunk/examples/TSAdminEx/uMain.pas
+
+
+Revision: 160
+Autor: rweijnen
+Datum: 18:09:25, Dienstag, 8. Januar 2008
+Meldung:
+re-added FastMM define
+----
+Verändert : /jwscl/trunk/examples/TSAdminEx/uMain.dfm
+Verändert : /jwscl/trunk/examples/TSAdminEx/uMain.pas
+
+
+Revision: 159
+Autor: rweijnen
+Datum: 18:08:04, Dienstag, 8. Januar 2008
+Meldung:
+Added PJwWTSProcessList
+----
+Verändert : /jwscl/trunk/source/JwsclTerminalServer.pas
+
+
+Revision: 158
+Autor: rweijnen
+Datum: 18:02:17, Dienstag, 8. Januar 2008
+Meldung:
+Implemented Session and Process tab (both have no sort handler yet)
+----
+Verändert : /jwscl/trunk/examples/TSAdminEx/uMain.dfm
+Verändert : /jwscl/trunk/examples/TSAdminEx/uMain.pas
+
+
+Revision: 157
+Autor: dezipaitor
+Datum: 18:49:54, Samstag, 5. Januar 2008
+Meldung:
++added GPL as second license - this was defined already but not mentioned in the docs
++updated help
+-removed absolute paths from TSAdminEx.cfg 
+----
+Verändert : /jwscl/trunk/documentation/JWSCL help.chm
+Verändert : /jwscl/trunk/documentation/introduction.txt
+Verändert : /jwscl/trunk/examples/TSAdminEx/TSAdminEx.cfg
+Verändert : /jwscl/trunk/source/JwsclAccounts.pas
+Verändert : /jwscl/trunk/source/JwsclAcl.pas
+Verändert : /jwscl/trunk/source/JwsclAuthCtx.pas
+Verändert : /jwscl/trunk/source/JwsclComUtils.pas
+Verändert : /jwscl/trunk/source/JwsclConstants.pas
+Verändert : /jwscl/trunk/source/JwsclCredentials.pas
+Verändert : /jwscl/trunk/source/JwsclCryptProvider.pas
+Verändert : /jwscl/trunk/source/JwsclDescriptor.pas
+Verändert : /jwscl/trunk/source/JwsclDesktops.pas
+Verändert : /jwscl/trunk/source/JwsclElevation.pas
+Verändert : /jwscl/trunk/source/JwsclEncryption.pas
+Verändert : /jwscl/trunk/source/JwsclEnumerations.pas
+Verändert : /jwscl/trunk/source/JwsclExceptions.pas
+Verändert : /jwscl/trunk/source/JwsclImpersonation.pas
+Verändert : /jwscl/trunk/source/JwsclKnownSid.pas
+Verändert : /jwscl/trunk/source/JwsclLsa.pas
+Verändert : /jwscl/trunk/source/JwsclMapping.pas
+Verändert : /jwscl/trunk/source/JwsclPrivileges.PAS
+Verändert : /jwscl/trunk/source/JwsclProcess.pas
+Verändert : /jwscl/trunk/source/JwsclResource.pas
+Verändert : /jwscl/trunk/source/JwsclSecureObjects.pas
+Verändert : /jwscl/trunk/source/JwsclSecurePrivateObjects.pas
+Verändert : /jwscl/trunk/source/JwsclSecureUserObjects.pas
+Verändert : /jwscl/trunk/source/JwsclSecurityDialogs.pas
+Verändert : /jwscl/trunk/source/JwsclSid.pas
+Verändert : /jwscl/trunk/source/JwsclStrings.pas
+Verändert : /jwscl/trunk/source/JwsclTerminalServer.pas
+Verändert : /jwscl/trunk/source/JwsclToken.pas
+Verändert : /jwscl/trunk/source/JwsclTypes.pas
+Verändert : /jwscl/trunk/source/JwsclUtils.pas
+Verändert : /jwscl/trunk/source/JwsclVersion.pas
+Verändert : /jwscl/trunk/source/JwsclWinStations.pas
+
+
+Revision: 156
+Autor: marcovtje
+Datum: 16:07:32, Samstag, 5. Januar 2008
+Meldung:
+ * two last FPC fixes, the FPC branch is now fully synced.
+   - remove paths from jwawindows.
+   - in jwavista repeat function declaration also in implementation. This is mandatory in FPC (due to expanded linking possibilities)
+----
+Verändert : /jwapi/trunk/Win32API/JwaVista.pas
+Verändert : /jwapi/trunk/Win32API/JwaWindows.pas
+
+
+Revision: 155
+Autor: rweijnen
+Datum: 12:11:22, Samstag, 5. Januar 2008
+Meldung:
+Changed 
+    GetProcedureAddress(Pointer(@_CryptUnProtectMemory), Crypt32, 'CryptProtectMemory');
+To
+    GetProcedureAddress(Pointer(@_CryptUnProtectMemory), Crypt32, 'CryptUnProtectMemory');
+----
+Verändert : /jwscl/trunk/source/JwsclEncryption.pas
+
+
+Revision: 154
+Autor: marcovtje
+Datum: 00:44:53, Samstag, 5. Januar 2008
+Meldung:
+ * dispinterfaces enabled for fpc
+----
+Verändert : /jwapi/trunk/Common/jedi.inc
+
+
+Revision: 153
+Autor: marcovtje
+Datum: 00:38:17, Samstag, 5. Januar 2008
+Meldung:
+ * COMPILER6_UP use. Partially solved, partially worked around for now. (the ones relating to winsta inclusion.
+ * includefile must be included right after interface. winsta only did it after uses
+----
+Verändert : /jwapi/trunk/Common/jedi.inc
+Verändert : /jwapi/trunk/Win32API/JwaWinSta.pas
+Verändert : /jwapi/trunk/Win32API/JwaWindows.pas
+
+
+Revision: 152
+Autor: marcovtje
+Datum: 00:25:05, Samstag, 5. Januar 2008
+Meldung:
+ * partial path in file removed. Causes problems with jwapi in FPC distro.
+----
+Verändert : /jwapi/trunk/Win32API/JwaWindows.pas
+
+
+Revision: 151
+Autor: marcovtje
+Datum: 00:05:07, Samstag, 5. Januar 2008
+Meldung:
+ * 64-bit fixes for fibers mostly
+----
+Verändert : /jwapi/trunk/Win32API/JwaWinNT.pas
+
+
+Revision: 150
+Autor: marcovtje
+Datum: 23:43:49, Freitag, 4. Januar 2008
+Meldung:
+ * 64-bit fixes cleaned up.
+----
+Verändert : /jwapi/trunk/Win32API/JwaWinBase.pas
+
+
+Revision: 149
+Autor: marcovtje
+Datum: 23:30:56, Freitag, 4. Januar 2008
+Meldung:
+ * some more 64-bit fixes to assembler.
+----
+Verändert : /jwapi/trunk/Win32API/JwaNative.pas
+
+
+Revision: 148
+Autor: rweijnen
+Datum: 22:54:05, Freitag, 4. Januar 2008
+Meldung:
+issue with svn. Deleted an re-added
+----
+Hinzugefügt : /jwscl/trunk/source/JwsclTerminalServer.pas
+
+
+Revision: 147
+Autor: rweijnen
+Datum: 22:52:39, Freitag, 4. Januar 2008
+Meldung:
+Removed file/folder
+----
+Gelöscht : /jwscl/trunk/source/JwsclTerminalServer.pas
+
+
+Revision: 146
+Autor: rweijnen
+Datum: 20:07:52, Freitag, 4. Januar 2008
+Meldung:
+TListView has been replaced by TVirtualStringTree (at this time only ServerTree and Users tab are implemented. New JwsclTerminalServer features have been included.
+
+Experimental Remote Control dialog, dynamically loaded from taskmgr.exe has been included along with a simple wndproc.
+----
+Verändert : /jwscl/trunk/examples/TSAdminEx/TSAdminEx.cfg
+Verändert : /jwscl/trunk/examples/TSAdminEx/TSAdminEx.dpr
+Gelöscht : /jwscl/trunk/examples/TSAdminEx/VirtualStringTree
+Verändert : /jwscl/trunk/examples/TSAdminEx/uMain.dfm
+Verändert : /jwscl/trunk/examples/TSAdminEx/uMain.pas
+
+
+Revision: 145
+Autor: rweijnen
+Datum: 09:46:59, Freitag, 4. Januar 2008
+Meldung:
+Corrected a typo, GetCachedUserFromSid was GetChachedUserFromSid
+----
+Verändert : /jwscl/trunk/source/JwsclSid.pas
+
+
+Revision: 144
+Autor: dezipaitor
+Datum: 23:52:49, Donnerstag, 3. Januar 2008
+Meldung:
++TJwSecurityId.Create_PSID_AND_ATTRIBUTES sets its Attributes correctly now.
++Introduced new EJwsclUnimplemented exception
++did major improvements in JwsclAuthCtx.pas
++some make-up for JwaWindows.pas 
++JwAdministratorsSID in AuthCtx2.dpr does not work with AuthZ in XP, replaced by JwSecurityProcessUserSID
+----
+Verändert : /jwapi/trunk/Win32API/JwaWindows.pas
+Verändert : /jwscl/trunk/examples/Manual/AuthCtx2.dpr
+Verändert : /jwscl/trunk/source/JwsclAuthCtx.pas
+Verändert : /jwscl/trunk/source/JwsclExceptions.pas
+Verändert : /jwscl/trunk/source/JwsclSid.pas
+Verändert : /jwscl/trunk/source/JwsclUtils.pas
+
+
+Revision: 143
+Autor: dezipaitor
+Datum: 20:52:54, Donnerstag, 3. Januar 2008
+Meldung:
+
+----
+Gelöscht : /test.txt
+
+
+Revision: 142
+Autor: rweijnen
+Datum: 20:33:04, Donnerstag, 3. Januar 2008
+Meldung:
+Added pointer types to all Terminal Server types and implemented EnumerateServersEx (enumerates servers in thread)
+----
+Verändert : /jwscl/trunk/source/JwsclTerminalServer.pas
+
+
+Revision: 141
+Autor: marcovtje
+Datum: 22:11:04, Mittwoch, 2. Januar 2008
+Meldung:
+ * replaced a delphi6_up with the proper supports
+----
+Verändert : /jwapi/trunk/Win32API/JwaWsrm.pas
+
+
+Revision: 140
+Autor: dgalimov
+Datum: 17:27:55, Mittwoch, 2. Januar 2008
+Meldung:
+Testing the access
+----
+Hinzugefügt : /test.txt
+
+
+Revision: 139
+Autor: dezipaitor
+Datum: 15:09:14, Mittwoch, 2. Januar 2008
+Meldung:
+Freeze source code with all its flaws
+----
+Hinzugefügt : /jwapi/tags/rev135_p(Kopiert von: /jwapi/trunk, Revision, 138
+
+
+Revision: 138
+Autor: dezipaitor
+Datum: 15:07:37, Mittwoch, 2. Januar 2008
+Meldung:
+Freeze source code with all its flaws
+----
+Hinzugefügt : /jwscl/tags/rev137_p(Kopiert von: /jwscl/trunk, Revision, 137
+
+
+Revision: 137
+Autor: dezipaitor
+Datum: 15:01:23, Mittwoch, 2. Januar 2008
+Meldung:
+added changelog for future output
+----
+Hinzugefügt : /changelog
+Hinzugefügt : /changelog/changelog-rev136.txt
+
+
+Revision: 136
+Autor: dezipaitor
+Datum: 14:51:03, Mittwoch, 2. Januar 2008
+Meldung:
++AuthZ implementations
++Manual mini examples
+----
+Hinzugefügt : /jwscl/trunk/examples/Manual
+Hinzugefügt : /jwscl/trunk/examples/Manual/ACE.dpr
+Hinzugefügt : /jwscl/trunk/examples/Manual/ACE2.dpr
+Hinzugefügt : /jwscl/trunk/examples/Manual/ACL.dpr
+Hinzugefügt : /jwscl/trunk/examples/Manual/ACL2.dpr
+Hinzugefügt : /jwscl/trunk/examples/Manual/AuthCtx.dpr
+Hinzugefügt : /jwscl/trunk/examples/Manual/AuthCtx2.dpr
+Hinzugefügt : /jwscl/trunk/examples/Manual/FileAccessCheck.dpr
+Hinzugefügt : /jwscl/trunk/examples/Manual/Mapping.dpr
+Hinzugefügt : /jwscl/trunk/examples/Manual/Mapping2.dpr
+Hinzugefügt : /jwscl/trunk/examples/Manual/SecurityDescriptor2.dpr
+Hinzugefügt : /jwscl/trunk/examples/Manual/SecurityID.dpr
+Verändert : /jwscl/trunk/source/JwsclAuthCtx.pas
+
+
