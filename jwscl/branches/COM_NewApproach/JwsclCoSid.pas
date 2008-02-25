@@ -6,7 +6,7 @@ interface
 
 uses
   ComObj, ActiveX, StdVcl, Classes, JWSCLCom_TLB,
-  JwaWindows,JwaVista, TypInfo,
+  JwaWindows,JwaVista, TypInfo, ComLib,
   JWSCLSid;
 type
   TJwSid = class(TAutoObject, IJwSid)
@@ -33,7 +33,7 @@ type
       safecall;
     function GetCachedUserName: WideString; safecall;
     function GetInternalObject: PChar; safecall;
-    function GetSidStream: IUnknown; safecall;
+    function GetStream: IUnknown; safecall;
     function IsStandardSid: WordBool; safecall;
 
     procedure InitByBinarySid(const BinarySid: WideString); safecall;
@@ -46,6 +46,7 @@ type
     procedure Set_AttributesByType(Value: OleVariant); safecall;
     procedure Set_CachedSystemName(const Value: WideString); safecall;
     function IsEqualSid(const Sid: IJwSid): WordBool; safecall;
+    function ToString: WideString; safecall;
   public
    {IJwCoSid-Methoden hier deklarieren}
    procedure Initialize; override;
@@ -54,21 +55,29 @@ type
   end;
 
 
-  TJwSidList = class(TAutoObject, IJwSidList)
+  TJwSidList = class(TAutoObject, IJwSidList, IVariantCollection)
   //TJwCoSidList = class(TTypedComObject, IJwCoSidList, ISupportErrorInfo)
   protected
     fInternalSidIntList : TInterfaceList;//TJwSecurityIdList;
     fInternalSidList : TJwSecurityIdList;
     procedure Method1; safecall;
   protected
+     //used by enumerator to lock list
+    function GetController: IUnknown; stdcall;
+    //used by enumerator to determine how many items
+    function GetCount: integer; stdcall;
+    //used by enumerator to retrieve items
+    function GetItems (const Index: olevariant): olevariant; stdcall;
+
     function Get__NewEnum: OleVariant; safecall;
-    function Get_Count: LongWord; safecall;
-    function Get_Item: IJwSid; safecall;
     procedure Add(const Sid: IJwSid); safecall;
     procedure Delete(Index: Integer); safecall;
     procedure InitBySidList(const SidList: IUnknown); safecall;
     procedure Insert(Index: Integer; const Sid: IJwSid); safecall;
     procedure Remove(const Sid: IJwSid); safecall;
+    function Get_Count: LongWord; safecall;
+    function Get_Item(Index: LongWord): IJwSid; safecall;
+    procedure Clear; safecall;
   public
     procedure Initialize; override;
     destructor Destroy; override;
@@ -80,8 +89,20 @@ implementation
 
 uses ComServ,  SysUtils, Dialogs,
      JwsclUtils, JwsclExceptions, Variants,
-     JwsclCOMExports,
+     JwsclCOMExports, JwsclTypes,
      JWSCLCoException;
+
+type
+  PDWordArray = ^TDWordArray;
+  TDWordArray = array[0..16383] of DWord;
+
+function VarArrayLength(const V : Variant; Dim : Integer = 1) : Cardinal;
+var i1, i2 : Integer;
+begin
+  i1 := VarArrayHighBound(V,Dim);
+  i2 := VarArrayLowBound(V,Dim);
+  result := abs(abs(i1) - abs(i2))+1;
+end;
 
 { TJwCoSid }
 
@@ -95,7 +116,7 @@ procedure TJwSid.InitByBinarySid(const BinarySid: WideString);
 var fSid : TJwSecurityId;
 begin
   try
-    fInternalSid := TJwSecurityID.Create(BinarySid);
+    fSid := TJwSecurityID.Create(BinarySid);
   except
     on E : Exception do
       JwTrapAndReRaiseException('InitByBinarySid', ClassName, 'JwsclCoSid', E);
@@ -120,8 +141,19 @@ begin
 end;
 
 function TJwSid.Get_AttributesByType: OleVariant;
+var i : TJwSidAttribute;
 begin
-  result := Null;
+  if fInternalSid.SID = nil then;
+
+  result := VarArrayCreate([0, Integer(high(TJwSidAttribute))], varByte);
+
+  for i := low(TJwSidAttribute) to high(TJwSidAttribute) do
+  begin
+    if i in fInternalSid.AttributesType then
+      result[Byte(i)] := Byte(i)
+    else
+      result[Byte(i)] := 0;
+  end;
 end;
 
 function TJwSid.Get_CachedSystemName: WideString;
@@ -155,18 +187,23 @@ begin
 end;
 
 function TJwSid.Get_SubAuthorityArray: OleVariant;
-type TDWORDArray = array of DWORD;
+
 var i : Integer;
-    p : ^TDWORDArray;
+    A : PDWORDArray;
+    p : Pointer;
+    v : VARIANT;
 begin
   result := VarArrayCreate([0,fInternalSid.SubAuthorityCount-1], varLongWord);
+  //v := VarArrayCreate([0,2], varInteger); //varLongWord);
   p := VarArrayLock(result);
+  A := P;
   try
     for i := 0 to fInternalSid.SubAuthorityCount-1 do
     begin
-      p^[i] := fInternalSid.SubAuthority[i];
+      A^[i] := fInternalSid.SubAuthority[i];
     end;
   finally
+    A := nil;
     VarArrayUnlock(result);
   end;
 end;
@@ -212,7 +249,7 @@ begin
   result := PChar(fInternalSid);
 end;
 
-function TJwSid.GetSidStream: IUnknown;
+function TJwSid.GetStream: IUnknown;
 begin
   result := CreateSidAndAttributesStream(fInternalSid.SID, fInternalSid.Attributes);
 end;
@@ -223,12 +260,15 @@ begin
 end;
 
 
+
+
 procedure TJwSid.InitByAuthorities(Authorities, Identifier: OleVariant);
 var fSid : TJwSecurityId;
     Auth : TJwSubAuthorityArray;
     Ident : TSidIdentifierAuthority;
     AuthBuf,
     IdentBuf : Pointer;
+    i : Integer;
 begin
   AuthBuf := VarArrayLock(Authorities);
   try
@@ -236,15 +276,27 @@ begin
 
     try
       ZeroMemory(@Ident.Value, sizeof(Ident.Value));
-      CopyMemory(@Ident.Value, PByteArray(@IdentBuf), VarArrayHighBound(Identifier,1)-1);
+
+      ASSERT(VarArrayLowBound(Identifier,1) = 0);
+      for i := 0 to VarArrayHighBound(Identifier,1) do
+      begin
+        Ident.Value[i] := PByteArray(IdentBuf)^[i];
+      end;    
+
+      SetLength(Auth, VarArrayLength(Authorities));
+      for i := 0 to High(Auth) do
+      begin
+        Auth[i] := PDWordArray(AuthBuf)^[i];
+      end;
 
       try
-        fSid := TJwSecurityID.Create(TJwSubAuthorityArray(AuthBuf), Ident);
+        fSid := TJwSecurityID.Create(TJwSubAuthorityArray(Auth), Ident);
       except
         on E : Exception do
           JwTrapAndReRaiseException('InitByJwSid', ClassName, 'JwsclCoSid', E);
       end;
     finally
+      Auth := nil;
       VarArrayUnlock(Identifier);
     end;
   finally
@@ -354,8 +406,16 @@ begin
 end;
 
 procedure TJwSid.Set_AttributesByType(Value: OleVariant);
+var i : Integer;
+    Sets : TJwSidAttributeSet;
 begin
-  raise EAbstractError.Create('Unimplemented');
+  Sets := [];
+  for i := VarArrayLowBound(Value,1) to VarArrayHighBound(Value,1) do
+  begin
+    if Value[i] <> 0 then
+      Include(Sets, TJwSidAttribute(i));
+  end;
+  fInternalSid.AttributesType := Sets;
 end;
 
 procedure TJwSid.Set_CachedSystemName(const Value: WideString);
@@ -382,29 +442,37 @@ end;
 
 function TJwSidList.Get__NewEnum: OleVariant;
 begin
-  raise EAbstractError.Create('Unimplemented');
+  result := TEnumVariantCollection.Create(Self) as IUnknown;
 end;
 
-function TJwSidList.Get_Count: LongWord;
+function TJwSidList.GetController: IUnknown;
+begin
+  result := Self;
+end;
+
+function TJwSidList.GetCount: integer;
 begin
   result := fInternalSidList.Count;
 end;
 
-function TJwSidList.Get_Item: IJwSid;
+function TJwSidList.GetItems(const Index: olevariant): olevariant;
 begin
-  raise EAbstractError.Create('Unimplemented');
+  result := fInternalSidIntList.Items[Index] as IDispatch;
 end;
+
 
 destructor TJwSidList.Destroy;
 begin
-
+  FreeAndNil(fInternalSidIntList);
+  FreeAndNil(fInternalSidList);
   inherited;
 end;
 
 procedure TJwSidList.Initialize;
 begin
   inherited;
-
+  fInternalSidIntList := TInterfaceList.Create;
+  fInternalSidList := TJwSecurityIdList.Create(false);
 end;
 
 procedure TJwSidList.Method1;
@@ -415,31 +483,72 @@ end;
 
 procedure TJwSidList.Add(const Sid: IJwSid);
 begin
-
+  fInternalSidIntList.Add(Sid);
+  fInternalSidList.Add(TJwSecurityId(Sid.GetInternalObject));
 end;
 
 procedure TJwSidList.Delete(Index: Integer);
 begin
-
+  fInternalSidIntList.Delete(Index);
+  fInternalSidList.Delete(Index);
 end;
 
 procedure TJwSidList.InitBySidList(const SidList: IUnknown);
+var List : IJwSidList;
+    i : Integer;
+    Sid : IJwSid;
 begin
+  List := SidList as IJwSidList;
 
+  Self.Clear;
+
+  for i := 0 to List.Count - 1 do
+  begin
+    Sid := CoJwSid.Create;
+    Sid.InitByJwSid(List.Item[i]);
+
+    Self.Add(Sid);
+  end;
 end;
 
 procedure TJwSidList.Insert(Index: Integer; const Sid: IJwSid);
 begin
-
+  fInternalSidIntList.Insert(Index, Sid);
+  fInternalSidList.Insert(Index, TJwSecurityId(Sid.GetInternalObject));
 end;
 
 procedure TJwSidList.Remove(const Sid: IJwSid);
 begin
-
+  fInternalSidIntList.Remove(Sid);
+  fInternalSidList.Remove(TJwSecurityId(Sid.GetInternalObject));
 end;
 
 
 
+function TJwSidList.Get_Count: LongWord;
+begin
+  result := fInternalSidIntList.Count;
+end;
+
+function TJwSidList.Get_Item(Index: LongWord): IJwSid;
+begin
+  result := fInternalSidIntList.Items[Index] as IJwSid;
+end;
+
+function TJwSid.ToString: WideString;
+begin
+  result := fInternalSid.GetText(true);
+end;
+
+procedure TJwSidList.Clear;
+begin
+  try
+    fInternalSidList.OwnsObjects := false;
+    fInternalSidList.Clear;
+  finally
+    fInternalSidIntList.Clear;
+  end;
+end;
 
 initialization
 

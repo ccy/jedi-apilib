@@ -5,7 +5,8 @@ uses
   JWSCLCom_TLB in 'JWSCLCom_TLB.pas',
   JwsclCoSid in 'JwsclCoSid.pas' {JwCoSid: CoClass},
   JwsclCOMExports in 'JwsclCOMExports.pas',
-  JWSCLCoException in 'JWSCLCoException.pas';
+  JWSCLCoException in 'JWSCLCoException.pas',
+  ComLib in 'Common\ComLib.pas';
 
 exports
   DllGetClassObject,

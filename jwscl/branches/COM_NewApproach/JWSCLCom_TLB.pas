@@ -1,29 +1,29 @@
 unit JWSCLCom_TLB;
 
 // ************************************************************************ //
-// WARNUNG                                                                    
+// WARNING                                                                    
 // -------                                                                    
-// Die in dieser Datei deklarierten Typen wurden aus Daten einer Typbibliothek
-// generiert. Wenn diese Typbibliothek explizit oder indirekt (über eine     
-// andere Typbibliothek) reimportiert wird oder wenn die Anweisung            
-// 'Aktualisieren' im Typbibliotheks-Editor während des Bearbeitens der     
-// Typbibliothek aktiviert ist, wird der Inhalt dieser Datei neu generiert und 
-// alle manuell vorgenommenen Änderungen gehen verloren.                           
+// The types declared in this file were generated from data read from a       
+// Type Library. If this type library is explicitly or indirectly (via        
+// another type library referring to this type library) re-imported, or the   
+// 'Refresh' command of the Type Library Editor activated while editing the   
+// Type Library, the contents of this file will be regenerated and all        
+// manual modifications will be lost.                                         
 // ************************************************************************ //
 
-// PASTLWTR : 1.2
-// Datei generiert am 22.02.2008 23:59:44 aus der unten beschriebenen Typbibliothek.
+// $Rev: 8291 $
+// File generated on 24.02.2008 17:05:11 from Type Library described below.
 
 // ************************************************************************  //
-// Typbib: P:\Eigene Dateien\Dezipaitor\Projekte\Delphi\7\jedi-api-lib\jwscl\trunk\COM\JWSCLCom.tlb (1)
+// Type Lib: P:\Eigene Dateien\Dezipaitor\Projekte\Delphi\7\jedi-api-lib\jwscl\trunk\COM\JWSCLCom.tlb (1)
 // LIBID: {9EBCE2EF-4E69-4AC3-AA7F-F021E119E8BB}
 // LCID: 0
-// Hilfedatei: 
-// Hilfe-String: JWSCLCom Library
+// Helpfile: 
+// HelpString: JWSCLCom Library
 // DepndLst: 
 //   (1) v2.0 stdole, (C:\Windows\system32\stdole2.tlb)
 // ************************************************************************ //
-{$TYPEDADDRESS OFF} // Unit muß ohne Typüberprüfung für Zeiger compiliert werden. 
+{$TYPEDADDRESS OFF} // Unit must be compiled without type-checked pointers. 
 {$WARN SYMBOL_PLATFORM OFF}
 {$WRITEABLECONST ON}
 {$VARPROPSETTER ON}
@@ -33,15 +33,14 @@ uses Windows, ActiveX, Classes, Graphics, StdVCL, Variants;
   
 
 // *********************************************************************//
-// In dieser Typbibliothek deklarierte GUIDS . Es werden folgende         
-// Präfixe verwendet:                                                     
-//   Typbibliotheken     : LIBID_xxxx                                     
-//   CoClasses           : CLASS_xxxx                                     
-//   DISPInterfaces      : DIID_xxxx                                      
-//   Nicht-DISP-Schnittstellen: IID_xxxx                                       
+// GUIDS declared in the TypeLibrary. Following prefixes are used:        
+//   Type Libraries     : LIBID_xxxx                                      
+//   CoClasses          : CLASS_xxxx                                      
+//   DISPInterfaces     : DIID_xxxx                                       
+//   Non-DISP interfaces: IID_xxxx                                        
 // *********************************************************************//
 const
-  // Haupt- und Nebenversionen der Typbibliothek
+  // TypeLibrary Major and minor versions
   JWSCLComMajorVersion = 1;
   JWSCLComMinorVersion = 0;
 
@@ -55,9 +54,9 @@ const
   CLASS_JwTest2: TGUID = '{6859DD54-E45C-4857-B63C-443D0B5D57E4}';
 
 // *********************************************************************//
-// Deklaration von in der Typbibliothek definierten Enumerationen         
+// Declaration of Enumerations defined in Type Library                    
 // *********************************************************************//
-// Konstanten für enum JwCoFacilities
+// Constants for enum JwCoFacilities
 type
   JwCoFacilities = TOleEnum;
 const
@@ -66,7 +65,7 @@ const
 type
 
 // *********************************************************************//
-// Forward-Deklaration von in der Typbibliothek definierten Typen         
+// Forward declaration of types defined in TypeLibrary                    
 // *********************************************************************//
   IJwSid = interface;
   IJwSidDisp = dispinterface;
@@ -76,25 +75,24 @@ type
   IJwTestDisp = dispinterface;
 
 // *********************************************************************//
-// Deklaration von in der Typbibliothek definierten CoClasses             
-// (HINWEIS: Hier wird jede CoClass zu ihrer Standardschnittstelle        
-// zugewiesen)                                                            
+// Declaration of CoClasses defined in Type Library                       
+// (NOTE: Here we map each CoClass to its Default Interface)              
 // *********************************************************************//
   JwSid = IJwSid;
   JwSidList = IJwSidList;
   JwTest2 = IJwTest;
 
 
-// *********************************************************************// 
-// Deklaration von  Strukturen, Unions und Aliasen.                        
-// *********************************************************************// 
+// *********************************************************************//
+// Declaration of structures, unions and aliases.                         
+// *********************************************************************//
 
   PCoSid = PChar; 
   PCoSidAndAttributes = PChar; 
   PCoTokenGroups = PChar; 
 
 // *********************************************************************//
-// Schnittstelle: IJwSid
+// Interface: IJwSid
 // Flags:     (4416) Dual OleAutomation Dispatchable
 // GUID:      {5134BF4E-3D59-44FF-A273-C052BB9B64DE}
 // *********************************************************************//
@@ -123,10 +121,11 @@ type
     procedure Set_Attributes(Value: LongWord); safecall;
     function Get_AttributesByType: OleVariant; safecall;
     procedure Set_AttributesByType(Value: OleVariant); safecall;
-    function GetSidStream: IUnknown; safecall;
+    function GetStream: IUnknown; safecall;
     function Get_UserName: WideString; safecall;
     function IsEqualSid(const Sid: IJwSid): WordBool; safecall;
     function Get_StringSid: WideString; safecall;
+    function ToString: WideString; safecall;
     property SubAuthorityCount: SYSUINT read Get_SubAuthorityCount;
     property SubAuthorityArray: OleVariant read Get_SubAuthorityArray;
     property IdentifierAttributesCount: SYSUINT read Get_IdentifierAttributesCount;
@@ -166,14 +165,15 @@ type
     function GetCachedUserName: WideString; dispid 218;
     property Attributes: LongWord dispid 219;
     property AttributesByType: OleVariant dispid 220;
-    function GetSidStream: IUnknown; dispid 221;
+    function GetStream: IUnknown; dispid 221;
     property UserName: WideString readonly dispid 222;
     function IsEqualSid(const Sid: IJwSid): WordBool; dispid 223;
     property StringSid: WideString readonly dispid 224;
+    function ToString: WideString; dispid 225;
   end;
 
 // *********************************************************************//
-// Schnittstelle: IJwSidList
+// Interface: IJwSidList
 // Flags:     (4416) Dual OleAutomation Dispatchable
 // GUID:      {C88787BF-0091-46F2-A732-0639244C54E5}
 // *********************************************************************//
@@ -185,10 +185,11 @@ type
     procedure Remove(const Sid: IJwSid); safecall;
     procedure Delete(Index: Integer); safecall;
     function Get_Count: LongWord; safecall;
-    function Get_Item: IJwSid; safecall;
+    function Get_Item(Index: LongWord): IJwSid; safecall;
     function Get__NewEnum: OleVariant; safecall;
+    procedure Clear; safecall;
     property Count: LongWord read Get_Count;
-    property Item: IJwSid read Get_Item;
+    property Item[Index: LongWord]: IJwSid read Get_Item; default;
     property _NewEnum: OleVariant read Get__NewEnum;
   end;
 
@@ -205,12 +206,13 @@ type
     procedure Remove(const Sid: IJwSid); dispid 204;
     procedure Delete(Index: Integer); dispid 205;
     property Count: LongWord readonly dispid 206;
-    property Item: IJwSid readonly dispid 0;
+    property Item[Index: LongWord]: IJwSid readonly dispid 0; default;
     property _NewEnum: OleVariant readonly dispid -4;
+    procedure Clear; dispid 207;
   end;
 
 // *********************************************************************//
-// Schnittstelle: IJwTest
+// Interface: IJwTest
 // Flags:     (4416) Dual OleAutomation Dispatchable
 // GUID:      {392DA373-0FE2-45D5-AF98-89BCC8D2D0CD}
 // *********************************************************************//
@@ -230,11 +232,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwSid stellt die Methoden Create und CreateRemote zur      
-// Verfügung, um Instanzen der Standardschnittstelle IJwSid, dargestellt von
-// CoClass JwSid, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// The Class CoJwSid provides a Create and CreateRemote method to          
+// create instances of the default interface IJwSid exposed by              
+// the CoClass JwSid. The functions are intended to be used by             
+// clients wishing to automate the CoClass objects exposed by the         
+// server of this typelibrary.                                            
 // *********************************************************************//
   CoJwSid = class
     class function Create: IJwSid;
@@ -242,11 +244,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwSidList stellt die Methoden Create und CreateRemote zur      
-// Verfügung, um Instanzen der Standardschnittstelle IJwSidList, dargestellt von
-// CoClass JwSidList, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// The Class CoJwSidList provides a Create and CreateRemote method to          
+// create instances of the default interface IJwSidList exposed by              
+// the CoClass JwSidList. The functions are intended to be used by             
+// clients wishing to automate the CoClass objects exposed by the         
+// server of this typelibrary.                                            
 // *********************************************************************//
   CoJwSidList = class
     class function Create: IJwSidList;
@@ -254,11 +256,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwTest2 stellt die Methoden Create und CreateRemote zur      
-// Verfügung, um Instanzen der Standardschnittstelle IJwTest, dargestellt von
-// CoClass JwTest2, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// The Class CoJwTest2 provides a Create and CreateRemote method to          
+// create instances of the default interface IJwTest exposed by              
+// the CoClass JwTest2. The functions are intended to be used by             
+// clients wishing to automate the CoClass objects exposed by the         
+// server of this typelibrary.                                            
 // *********************************************************************//
   CoJwTest2 = class
     class function Create: IJwTest;

@@ -496,7 +496,7 @@ procedure InitializeCOMSecurity (iAuthLevel, iImpLevel: longint);
 implementation
 
 uses
-  Registry, SysUtils;
+  Registry, SysUtils, Variants;
 
 procedure DeleteRegValue (const sKey, sName: string);
 var
@@ -553,6 +553,7 @@ begin
   end;  { finally }
 end;
 
+{$WRITEABLECONST ON}
 { returns CLSID_StdGlobalInterfaceTable object }
 function GIT: IGlobalInterfaceTable;
 const
@@ -563,6 +564,7 @@ begin
       IGlobalInterfaceTable, cGIT));
   Result := cGIT;
 end;
+{$WRITEABLECONST OFF}
 
 { returns DCOMAccessControl object }
 function DCOMAccessControl: IAccessControl;

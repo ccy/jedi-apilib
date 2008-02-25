@@ -37,6 +37,7 @@
     <DelphiCompile Include="JWSCLCom.dpr">
       <MainSource>MainSource</MainSource>
     </DelphiCompile>
+    <DCCReference Include="Common\ComLib.pas" />
     <DCCReference Include="JWSCLCoException.pas" />
     <DCCReference Include="JwsclCOMExports.pas" />
     <DCCReference Include="JWSCLCom_TLB.pas" />
