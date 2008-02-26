@@ -8,6 +8,7 @@ uses
   ComObj, ActiveX, StdVcl, Classes, JWSCLCom_TLB,
   JwaWindows,JwaVista, TypInfo, ComLib,
   JWSCLSid;
+
 type
   TJwSid = class(TAutoObject, IJwSid)
   //TJwCoSid = class(TTypedComObject, IJwCoSid, ISupportErrorInfo)
@@ -16,7 +17,6 @@ type
     function Get_StringSid: WideString; safecall;
 
   protected
-
     function Get_Attributes: LongWord; safecall;
     function Get_AttributesByType: OleVariant; safecall;
     function Get_CachedSystemName: WideString; safecall;
@@ -78,6 +78,8 @@ type
     function Get_Count: LongWord; safecall;
     function Get_Item(Index: LongWord): IJwSid; safecall;
     procedure Clear; safecall;
+    function Find(const Sid: IJwSid; StartPos: Integer;
+      UsePreFix: WordBool): Integer; safecall;
   public
     procedure Initialize; override;
     destructor Destroy; override;
@@ -101,7 +103,7 @@ var i1, i2 : Integer;
 begin
   i1 := VarArrayHighBound(V,Dim);
   i2 := VarArrayLowBound(V,Dim);
-  result := abs(abs(i1) - abs(i2))+1;
+  result := abs(abs(i1) - abs(i2))+1;  
 end;
 
 { TJwCoSid }
@@ -140,6 +142,13 @@ begin
   result := fInternalSid.Attributes;
 end;
 
+
+{
+post:
+     (VarType(result) = varArray) and
+     (VarArrayLowBound(result) = 0) and
+     (VarType(result[i]) = varByte)
+}
 function TJwSid.Get_AttributesByType: OleVariant;
 var i : TJwSidAttribute;
 begin
@@ -161,6 +170,15 @@ begin
   result := fInternalSid.CachedSystemName;
 end;
 
+
+{
+post:
+     (VarType(result) = varArray) and
+     (VarArrayLowBound(result) = 0) and
+     (VarArrayHighBound(result) <= 5) and
+     (VarType(result[i]) = varByte)
+
+}
 function TJwSid.Get_IdentifierAttributesArray: OleVariant;
 var i : Integer;
     p : PByteArray;
@@ -186,6 +204,13 @@ begin
   result := fInternalSid.IsWellKnownSid;
 end;
 
+{
+post:
+     (VarType(result) = varArray) and
+     (VarArrayLowBound(result) = 0) and
+     (VarType(result[i]) = varLongWord)
+
+}
 function TJwSid.Get_SubAuthorityArray: OleVariant;
 
 var i : Integer;
@@ -194,13 +219,12 @@ var i : Integer;
     v : VARIANT;
 begin
   result := VarArrayCreate([0,fInternalSid.SubAuthorityCount-1], varLongWord);
-  //v := VarArrayCreate([0,2], varInteger); //varLongWord);
   p := VarArrayLock(result);
   A := P;
   try
     for i := 0 to fInternalSid.SubAuthorityCount-1 do
     begin
-      A^[i] := fInternalSid.SubAuthority[i];
+      A^[i] := DWORD(fInternalSid.SubAuthority[i]);
     end;
   finally
     A := nil;
@@ -261,7 +285,16 @@ end;
 
 
 
+{
+pre: (VarType(Authorities) = varArray) and
+     (VarArrayLowBound(Authorities) = 0) and
+     (VarType(Authorities[i]) = varLongWord)
 
+     (VarType(Identifier) = varArray) and
+     (VarArrayLowBound(Identifier) = 0) and
+     (VarArrayHighBound(Identifier) < 0) and
+     (VarType(Identifier[i]) = varByte)
+}
 procedure TJwSid.InitByAuthorities(Authorities, Identifier: OleVariant);
 var fSid : TJwSecurityId;
     Auth : TJwSubAuthorityArray;
@@ -270,6 +303,11 @@ var fSid : TJwSecurityId;
     IdentBuf : Pointer;
     i : Integer;
 begin
+  ASSERT(VarArrayLowBound(Identifier,1) = 0);
+  ASSERT(VarArrayHighBound(Identifier,1) <= 5);
+  ASSERT(VarArrayLowBound(Authorities,1) = 0);
+
+
   AuthBuf := VarArrayLock(Authorities);
   try
     IdentBuf := VarArrayLock(Identifier);
@@ -277,15 +315,16 @@ begin
     try
       ZeroMemory(@Ident.Value, sizeof(Ident.Value));
 
-      ASSERT(VarArrayLowBound(Identifier,1) = 0);
       for i := 0 to VarArrayHighBound(Identifier,1) do
       begin
+        ASSERT(VarType(Ident.Value[i]) = varByte);
         Ident.Value[i] := PByteArray(IdentBuf)^[i];
       end;    
 
       SetLength(Auth, VarArrayLength(Authorities));
-      for i := 0 to High(Auth) do
+      for i := Low(Auth) to High(Auth) do
       begin
+        ASSERT(VarType(Ident.Value[i]) = varLongWord);
         Auth[i] := PDWordArray(AuthBuf)^[i];
       end;
 
@@ -336,6 +375,15 @@ begin
   fInternalSid := fSid;
 end;
 
+{
+pre:
+SidAsStream.content(
+ SidSize: sizeof(Byte)
+ Sid: SidSize * sizeof(Byte)
+ Attributes: sizeof(DWORD)
+)
+
+}
 procedure TJwSid.InitByStream(const SidAsStream: IUnknown);
 var
     SidSize : Integer;
@@ -405,6 +453,9 @@ begin
   fInternalSid.Attributes := Value;
 end;
 
+{
+pre: (VarType(Value) = varArray)
+}
 procedure TJwSid.Set_AttributesByType(Value: OleVariant);
 var i : Integer;
     Sets : TJwSidAttributeSet;
@@ -493,6 +544,9 @@ begin
   fInternalSidList.Delete(Index);
 end;
 
+{
+pre: SidList is IJwSidList
+}
 procedure TJwSidList.InitBySidList(const SidList: IUnknown);
 var List : IJwSidList;
     i : Integer;
@@ -505,6 +559,7 @@ begin
   for i := 0 to List.Count - 1 do
   begin
     Sid := CoJwSid.Create;
+    //copy sids
     Sid.InitByJwSid(List.Item[i]);
 
     Self.Add(Sid);
@@ -548,6 +603,13 @@ begin
   finally
     fInternalSidIntList.Clear;
   end;
+end;
+
+
+function TJwSidList.Find(const Sid: IJwSid; StartPos: Integer;
+  UsePreFix: WordBool): Integer;
+begin
+  result := fInternalSidList.FindSid(TJwSecurityId(Sid.GetInternalObject), StartPos, Boolean(UsePreFix));
 end;
 
 initialization
