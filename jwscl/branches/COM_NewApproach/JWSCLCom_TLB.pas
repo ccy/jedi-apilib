@@ -12,7 +12,7 @@ unit JWSCLCom_TLB;
 // ************************************************************************ //
 
 // PASTLWTR : 1.2
-// Datei generiert am 26.02.2008 22:59:54 aus der unten beschriebenen Typbibliothek.
+// Datei generiert am 29.02.2008 22:56:06 aus der unten beschriebenen Typbibliothek.
 
 // ************************************************************************  //
 // Typbib: P:\Eigene Dateien\Dezipaitor\Projekte\Delphi\7\jedi-api-lib\jwscl\trunk\COM\JWSCLCom.tlb (1)
@@ -67,6 +67,55 @@ const
   CLASS_JwWindowsVersion: TGUID = '{8D6C4561-E2A7-4F91-8B28-2EB458B75318}';
   IID_IJwGenericMapping: TGUID = '{DD1015C5-9E4D-4062-8E0C-E2606705673A}';
   IID_IJwFileFolderMapping: TGUID = '{B713F708-5096-4A0B-868C-BF0B5451E54A}';
+  CLASS_JwGenericMapping: TGUID = '{47DDE0D2-C980-4438-B7E2-DDE2B2A10179}';
+  CLASS_JwFileFolderMapping: TGUID = '{EC6AEC6D-B278-46E6-8D70-51BB574680C3}';
+  IID_IJwFileMapping: TGUID = '{8E4EE90E-1864-475D-842E-C1FA9099EF0A}';
+  IID_IJwRegistryMapping: TGUID = '{4213A33D-F495-4C8F-A6A3-7CDD5E626B5D}';
+  IID_IJwWinStationMapping: TGUID = '{AF3DA16B-BDD7-43A7-BA86-BAB06E05C848}';
+  IID_IJwDesktopMapping: TGUID = '{C389C422-764A-4FF1-B02B-7DBAC4A255DE}';
+  IID_IJwServiceMapping: TGUID = '{D71696A4-36C1-4D75-9829-D470AD5B7623}';
+  IID_IJwServiceManagerMapping: TGUID = '{3714347D-12AA-424F-A525-254AD715EDD8}';
+  IID_IJwPrinterMapping: TGUID = '{0BCBBD6C-1DBD-41D9-A2D4-DC9540F3ECEB}';
+  IID_IJwShareMapping: TGUID = '{794FDFE5-4A60-4394-BEAB-D2FCFEE0984C}';
+  IID_IJwProcessMapping: TGUID = '{993CDB31-A24C-4EEA-BDD0-10BA1AB3D7E1}';
+  IID_IJwThreadMapping: TGUID = '{389BEEFC-7562-4E53-878E-6E3E61A510C0}';
+  IID_IJwJobMapping: TGUID = '{D5B64FC6-3A49-483C-9D7B-34A04E6E97C2}';
+  IID_IJwSemaphoreMapping: TGUID = '{28EEA5E2-21E7-4CB3-A585-6D4FF82BABB5}';
+  IID_IJwEventMapping: TGUID = '{64357431-6565-494D-83E5-0FAB085A9FF5}';
+  IID_IJwMutexMapping: TGUID = '{F15F1B47-4DB8-4F6F-A362-51B88DA5C5C4}';
+  IID_IJwFileMapMapping: TGUID = '{991D7CAB-58A1-4575-9F3B-CC34D6E2DE00}';
+  IID_IJwTimerMapping: TGUID = '{10F1574D-F097-4081-8DFD-F956581FBA2C}';
+  IID_IJwTokenMapping: TGUID = '{8F1F8AF3-42EA-4E51-93B0-3C5E04B47C49}';
+  IID_IJwPipeMapping: TGUID = '{48260C48-B275-4C7C-BDB5-4678E1E89160}';
+  CLASS_JwFileMapping: TGUID = '{3DF532B4-755F-42C9-BC59-A21E3CC708B0}';
+  CLASS_JwRegistryMapping: TGUID = '{FD3ECC15-5DCE-4C33-9AD8-3E1C684B0A92}';
+  CLASS_JwWinStationMapping: TGUID = '{992432AD-18A3-4258-9CC0-57FEB7E6B436}';
+  CLASS_JwDesktopMapping: TGUID = '{16F54095-1737-4096-B935-34EF65C5CDBC}';
+  CLASS_JwServiceMapping: TGUID = '{CFC4C3BE-DABA-4D6B-8E8B-7975BFC45565}';
+  CLASS_JwServiceMappingManager: TGUID = '{2527AF41-57A8-4155-A2A3-410CF38F2DD4}';
+  CLASS_JwPrinterMapping: TGUID = '{E93AFFDE-D202-41F5-BA0A-D581B522BD30}';
+  CLASS_JwShareMapping: TGUID = '{55E9D4B9-C7E8-42A0-A722-92F3D14C3F15}';
+  CLASS_JwProcessMapping: TGUID = '{43CA611E-9A39-4D87-9502-52DE539B9550}';
+  CLASS_JwThreadMapping: TGUID = '{BFEC9D3D-CF1C-4469-91CB-6A71B3FD5AA6}';
+  CLASS_JwJobMapping: TGUID = '{591054A9-C9F7-4CF6-8828-332B57B67118}';
+  CLASS_JwSemaphoreMapping: TGUID = '{C44DE038-2DCD-4110-A2F6-119765F1B831}';
+  CLASS_JwEventMapping: TGUID = '{C04BC95B-17F1-4724-9D11-B30CC8096329}';
+  CLASS_JwMutexMapping: TGUID = '{0B253007-A4B3-4C57-ABD4-E64369929B76}';
+  CLASS_JwFileMapMapping: TGUID = '{52E77685-6C77-4997-A765-10CDF08D05BE}';
+  CLASS_JwTimerMapping: TGUID = '{88D8E485-04C2-4CAD-BF71-0C16092C6615}';
+  CLASS_JwTokenMapping: TGUID = '{919E566A-F30C-40EF-91F8-0432E3EF19CA}';
+  CLASS_JwPipeMapping: TGUID = '{4BC9B8CC-9106-43D8-A2F4-4BD0D0D39678}';
+  IID_IJwLogServer: TGUID = '{213E956A-7BF3-4007-8191-1D743C818435}';
+  CLASS_JwLogServer: TGUID = '{348E3372-4F93-4548-B89B-4A6EACBF8DEC}';
+  IID_IJwWriterClass: TGUID = '{E225CFE1-FCAB-4109-8D64-B845D0C8FDD5}';
+  IID_IJwLogClient: TGUID = '{742092DA-9FD9-420A-84AF-56D6EA8508D4}';
+  CLASS_JwLogClient: TGUID = '{CB1006B5-4F9F-48D6-98AD-FCFDC71BDB95}';
+  IID_ITestInt: TGUID = '{D2B0D3F0-F029-4550-A7CC-07BC612BF10B}';
+  CLASS_TestInt: TGUID = '{D5B908FF-FE50-49AB-AFB2-5930687F4E82}';
+  IID_IJwXMLAttribute: TGUID = '{B7C4FFC9-32AF-4341-9434-4F33FEDF1707}';
+  IID_IJwEventType: TGUID = '{B95E0B5E-F424-4AC4-98F0-B1C79C19AD11}';
+  CLASS_JwXMLAttribute: TGUID = '{7AB2866B-0017-4B7D-89F2-B31EA7B70A3C}';
+  CLASS_JwEventType: TGUID = '{5EEE6B61-5685-4DBD-9740-ABF3109825AA}';
 
 // *********************************************************************//
 // Deklaration von in der Typbibliothek definierten Enumerationen         
@@ -105,6 +154,91 @@ const
   ltSystem = $00000004;
   ltProtected = $00000005;
 
+// Konstanten für enum JwEnumEnterType
+type
+  JwEnumEnterType = TOleEnum;
+const
+  etNone = $00000000;
+  etFunction = $00000001;
+  etMethod = $00000002;
+  etThread = $00000003;
+
+// Konstanten für enum JwEnumLogType
+type
+  JwEnumLogType = TOleEnum;
+const
+  lsNone = $00000000;
+  lsMessage = $00000001;
+  lsWarning = $00000002;
+  lsError = $00000003;
+  lsStop = $00000004;
+
+// Konstanten für enum JwEnumSignalType
+type
+  JwEnumSignalType = TOleEnum;
+const
+  stNone = $00000000;
+  stSend = $00000001;
+  stReceived = $00000002;
+  stWait = $00000003;
+
+// Konstanten für enum JwEnumXMLTag
+type
+  JwEnumXMLTag = TOleEnum;
+const
+  xtLogFile = $00000000;
+  xtLogProcess = $00000001;
+  xtEnter = $00000002;
+  xtLeave = $00000003;
+  xtSignal = $00000004;
+  xtMemory = $00000005;
+  xtLog = $00000006;
+  xtException = $00000007;
+  xtType = $00000008;
+  xtGuid = $00000009;
+  xtGetLastError = $0000000A;
+  xtWinApiFunction = $0000000B;
+  xtLogString = $0000000C;
+  xtComSource = $0000000D;
+  xtStackTrace = $0000000E;
+  xtMessage = $0000000F;
+  xtLastErrorString = $00000010;
+  xtSourceProc = $00000011;
+
+// Konstanten für enum JwXMLLogTag
+type
+  JwXMLLogTag = TOleEnum;
+const
+  ltEnter = $00000000;
+  ltLeave = $00000001;
+  ltSignal = $00000002;
+  ltMemory = $00000003;
+  ltLog = $00000004;
+  ltException = $00000005;
+
+// Konstanten für enum JwXMLAttrTag
+type
+  JwXMLAttrTag = TOleEnum;
+const
+  atStart = $00000000;
+  atEnd = $00000001;
+  atType = $00000002;
+  atMethod = $00000003;
+  atClass = $00000004;
+  atFile = $00000005;
+  atThread = $00000006;
+  atSource = $00000007;
+  atTarget = $00000008;
+  atMemType = $00000009;
+
+// Konstanten für enum JwEnumMemoryType
+type
+  JwEnumMemoryType = TOleEnum;
+const
+  mtNone = $00000000;
+  mtAlloc = $00000001;
+  mtDeAlloc = $00000002;
+
 type
 
 // *********************************************************************//
@@ -134,6 +268,54 @@ type
   IJwGenericMappingDisp = dispinterface;
   IJwFileFolderMapping = interface;
   IJwFileFolderMappingDisp = dispinterface;
+  IJwFileMapping = interface;
+  IJwFileMappingDisp = dispinterface;
+  IJwRegistryMapping = interface;
+  IJwRegistryMappingDisp = dispinterface;
+  IJwWinStationMapping = interface;
+  IJwWinStationMappingDisp = dispinterface;
+  IJwDesktopMapping = interface;
+  IJwDesktopMappingDisp = dispinterface;
+  IJwServiceMapping = interface;
+  IJwServiceMappingDisp = dispinterface;
+  IJwServiceManagerMapping = interface;
+  IJwServiceManagerMappingDisp = dispinterface;
+  IJwPrinterMapping = interface;
+  IJwPrinterMappingDisp = dispinterface;
+  IJwShareMapping = interface;
+  IJwShareMappingDisp = dispinterface;
+  IJwProcessMapping = interface;
+  IJwProcessMappingDisp = dispinterface;
+  IJwThreadMapping = interface;
+  IJwThreadMappingDisp = dispinterface;
+  IJwJobMapping = interface;
+  IJwJobMappingDisp = dispinterface;
+  IJwSemaphoreMapping = interface;
+  IJwSemaphoreMappingDisp = dispinterface;
+  IJwEventMapping = interface;
+  IJwEventMappingDisp = dispinterface;
+  IJwMutexMapping = interface;
+  IJwMutexMappingDisp = dispinterface;
+  IJwFileMapMapping = interface;
+  IJwFileMapMappingDisp = dispinterface;
+  IJwTimerMapping = interface;
+  IJwTimerMappingDisp = dispinterface;
+  IJwTokenMapping = interface;
+  IJwTokenMappingDisp = dispinterface;
+  IJwPipeMapping = interface;
+  IJwPipeMappingDisp = dispinterface;
+  IJwLogServer = interface;
+  IJwLogServerDisp = dispinterface;
+  IJwWriterClass = interface;
+  IJwWriterClassDisp = dispinterface;
+  IJwLogClient = interface;
+  IJwLogClientDisp = dispinterface;
+  ITestInt = interface;
+  ITestIntDisp = dispinterface;
+  IJwXMLAttribute = interface;
+  IJwXMLAttributeDisp = dispinterface;
+  IJwEventType = interface;
+  IJwEventTypeDisp = dispinterface;
 
 // *********************************************************************//
 // Deklaration von in der Typbibliothek definierten CoClasses             
@@ -148,6 +330,31 @@ type
   JwToken = IJwToken;
   JwPrivilegeList = IJwPrivilegeList;
   JwWindowsVersion = IJwWindowsVersion;
+  JwGenericMapping = IJwGenericMapping;
+  JwFileFolderMapping = IJwFileFolderMapping;
+  JwFileMapping = IJwFileMapping;
+  JwRegistryMapping = IJwRegistryMapping;
+  JwWinStationMapping = IJwWinStationMapping;
+  JwDesktopMapping = IJwDesktopMapping;
+  JwServiceMapping = IJwServiceMapping;
+  JwServiceMappingManager = IJwServiceManagerMapping;
+  JwPrinterMapping = IJwPrinterMapping;
+  JwShareMapping = IJwShareMapping;
+  JwProcessMapping = IJwProcessMapping;
+  JwThreadMapping = IJwThreadMapping;
+  JwJobMapping = IJwJobMapping;
+  JwSemaphoreMapping = IJwSemaphoreMapping;
+  JwEventMapping = IJwEventMapping;
+  JwMutexMapping = IJwMutexMapping;
+  JwFileMapMapping = IJwFileMapMapping;
+  JwTimerMapping = IJwTimerMapping;
+  JwTokenMapping = IJwTokenMapping;
+  JwPipeMapping = IJwPipeMapping;
+  JwLogServer = IJwLogServer;
+  JwLogClient = IJwLogClient;
+  TestInt = ITestInt;
+  JwXMLAttribute = IJwXMLAttribute;
+  JwEventType = IJwEventType;
 
 
 // *********************************************************************// 
@@ -505,8 +712,8 @@ type
     procedure InitByEffective(DesiredAccess: LongWord); safecall;
     procedure InitByProcessId(ProcessId: LongWord; DesiredAccess: LongWord); safecall;
     procedure InitByDuplicateToken(const Token: IJwToken; DesiredAccess: LongWord); safecall;
-    procedure InitWTSQueryUserToken(SessionId: LongWord); safecall;
-    procedure InitWTSQueryUserTokenEx(Server: LongWord; SessionId: LongWord); safecall;
+    procedure InitWTSQueryUserToken(SessionID: LongWord); safecall;
+    procedure InitWTSQueryUserTokenEx(Server: LongWord; SessionID: LongWord); safecall;
     procedure InitByCompatibilityQueryUserToken(DesiredAccess: LongWord; 
                                                 const ProcessName: WideString); safecall;
     procedure InitRestricted(const PreviousToken: IJwToken; AccessMask: LongWord; Flags: LongWord; 
@@ -570,8 +777,8 @@ type
     procedure InitByEffective(DesiredAccess: LongWord); dispid 217;
     procedure InitByProcessId(ProcessId: LongWord; DesiredAccess: LongWord); dispid 218;
     procedure InitByDuplicateToken(const Token: IJwToken; DesiredAccess: LongWord); dispid 219;
-    procedure InitWTSQueryUserToken(SessionId: LongWord); dispid 220;
-    procedure InitWTSQueryUserTokenEx(Server: LongWord; SessionId: LongWord); dispid 221;
+    procedure InitWTSQueryUserToken(SessionID: LongWord); dispid 220;
+    procedure InitWTSQueryUserTokenEx(Server: LongWord; SessionID: LongWord); dispid 221;
     procedure InitByCompatibilityQueryUserToken(DesiredAccess: LongWord; 
                                                 const ProcessName: WideString); dispid 222;
     procedure InitRestricted(const PreviousToken: IJwToken; AccessMask: LongWord; Flags: LongWord; 
@@ -769,6 +976,552 @@ type
   end;
 
 // *********************************************************************//
+// Schnittstelle: IJwFileMapping
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {8E4EE90E-1864-475D-842E-C1FA9099EF0A}
+// *********************************************************************//
+  IJwFileMapping = interface(IJwGenericMapping)
+    ['{8E4EE90E-1864-475D-842E-C1FA9099EF0A}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwFileMappingDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {8E4EE90E-1864-475D-842E-C1FA9099EF0A}
+// *********************************************************************//
+  IJwFileMappingDisp = dispinterface
+    ['{8E4EE90E-1864-475D-842E-C1FA9099EF0A}']
+    function GetMapping: {??TGenericMapping}OleVariant; dispid 201;
+    function MapAccessMaskToString(AccessMask: LongWord): WideString; dispid 202;
+    function GetAccessNames(out Count: LongWord): {??PChar}OleVariant; dispid 203;
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwRegistryMapping
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {4213A33D-F495-4C8F-A6A3-7CDD5E626B5D}
+// *********************************************************************//
+  IJwRegistryMapping = interface(IJwGenericMapping)
+    ['{4213A33D-F495-4C8F-A6A3-7CDD5E626B5D}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwRegistryMappingDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {4213A33D-F495-4C8F-A6A3-7CDD5E626B5D}
+// *********************************************************************//
+  IJwRegistryMappingDisp = dispinterface
+    ['{4213A33D-F495-4C8F-A6A3-7CDD5E626B5D}']
+    function GetMapping: {??TGenericMapping}OleVariant; dispid 201;
+    function MapAccessMaskToString(AccessMask: LongWord): WideString; dispid 202;
+    function GetAccessNames(out Count: LongWord): {??PChar}OleVariant; dispid 203;
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwWinStationMapping
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {AF3DA16B-BDD7-43A7-BA86-BAB06E05C848}
+// *********************************************************************//
+  IJwWinStationMapping = interface(IJwGenericMapping)
+    ['{AF3DA16B-BDD7-43A7-BA86-BAB06E05C848}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwWinStationMappingDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {AF3DA16B-BDD7-43A7-BA86-BAB06E05C848}
+// *********************************************************************//
+  IJwWinStationMappingDisp = dispinterface
+    ['{AF3DA16B-BDD7-43A7-BA86-BAB06E05C848}']
+    function GetMapping: {??TGenericMapping}OleVariant; dispid 201;
+    function MapAccessMaskToString(AccessMask: LongWord): WideString; dispid 202;
+    function GetAccessNames(out Count: LongWord): {??PChar}OleVariant; dispid 203;
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwDesktopMapping
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {C389C422-764A-4FF1-B02B-7DBAC4A255DE}
+// *********************************************************************//
+  IJwDesktopMapping = interface(IJwGenericMapping)
+    ['{C389C422-764A-4FF1-B02B-7DBAC4A255DE}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwDesktopMappingDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {C389C422-764A-4FF1-B02B-7DBAC4A255DE}
+// *********************************************************************//
+  IJwDesktopMappingDisp = dispinterface
+    ['{C389C422-764A-4FF1-B02B-7DBAC4A255DE}']
+    function GetMapping: {??TGenericMapping}OleVariant; dispid 201;
+    function MapAccessMaskToString(AccessMask: LongWord): WideString; dispid 202;
+    function GetAccessNames(out Count: LongWord): {??PChar}OleVariant; dispid 203;
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwServiceMapping
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {D71696A4-36C1-4D75-9829-D470AD5B7623}
+// *********************************************************************//
+  IJwServiceMapping = interface(IJwGenericMapping)
+    ['{D71696A4-36C1-4D75-9829-D470AD5B7623}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwServiceMappingDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {D71696A4-36C1-4D75-9829-D470AD5B7623}
+// *********************************************************************//
+  IJwServiceMappingDisp = dispinterface
+    ['{D71696A4-36C1-4D75-9829-D470AD5B7623}']
+    function GetMapping: {??TGenericMapping}OleVariant; dispid 201;
+    function MapAccessMaskToString(AccessMask: LongWord): WideString; dispid 202;
+    function GetAccessNames(out Count: LongWord): {??PChar}OleVariant; dispid 203;
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwServiceManagerMapping
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {3714347D-12AA-424F-A525-254AD715EDD8}
+// *********************************************************************//
+  IJwServiceManagerMapping = interface(IJwGenericMapping)
+    ['{3714347D-12AA-424F-A525-254AD715EDD8}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwServiceManagerMappingDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {3714347D-12AA-424F-A525-254AD715EDD8}
+// *********************************************************************//
+  IJwServiceManagerMappingDisp = dispinterface
+    ['{3714347D-12AA-424F-A525-254AD715EDD8}']
+    function GetMapping: {??TGenericMapping}OleVariant; dispid 201;
+    function MapAccessMaskToString(AccessMask: LongWord): WideString; dispid 202;
+    function GetAccessNames(out Count: LongWord): {??PChar}OleVariant; dispid 203;
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwPrinterMapping
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {0BCBBD6C-1DBD-41D9-A2D4-DC9540F3ECEB}
+// *********************************************************************//
+  IJwPrinterMapping = interface(IJwGenericMapping)
+    ['{0BCBBD6C-1DBD-41D9-A2D4-DC9540F3ECEB}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwPrinterMappingDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {0BCBBD6C-1DBD-41D9-A2D4-DC9540F3ECEB}
+// *********************************************************************//
+  IJwPrinterMappingDisp = dispinterface
+    ['{0BCBBD6C-1DBD-41D9-A2D4-DC9540F3ECEB}']
+    function GetMapping: {??TGenericMapping}OleVariant; dispid 201;
+    function MapAccessMaskToString(AccessMask: LongWord): WideString; dispid 202;
+    function GetAccessNames(out Count: LongWord): {??PChar}OleVariant; dispid 203;
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwShareMapping
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {794FDFE5-4A60-4394-BEAB-D2FCFEE0984C}
+// *********************************************************************//
+  IJwShareMapping = interface(IJwGenericMapping)
+    ['{794FDFE5-4A60-4394-BEAB-D2FCFEE0984C}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwShareMappingDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {794FDFE5-4A60-4394-BEAB-D2FCFEE0984C}
+// *********************************************************************//
+  IJwShareMappingDisp = dispinterface
+    ['{794FDFE5-4A60-4394-BEAB-D2FCFEE0984C}']
+    function GetMapping: {??TGenericMapping}OleVariant; dispid 201;
+    function MapAccessMaskToString(AccessMask: LongWord): WideString; dispid 202;
+    function GetAccessNames(out Count: LongWord): {??PChar}OleVariant; dispid 203;
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwProcessMapping
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {993CDB31-A24C-4EEA-BDD0-10BA1AB3D7E1}
+// *********************************************************************//
+  IJwProcessMapping = interface(IJwGenericMapping)
+    ['{993CDB31-A24C-4EEA-BDD0-10BA1AB3D7E1}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwProcessMappingDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {993CDB31-A24C-4EEA-BDD0-10BA1AB3D7E1}
+// *********************************************************************//
+  IJwProcessMappingDisp = dispinterface
+    ['{993CDB31-A24C-4EEA-BDD0-10BA1AB3D7E1}']
+    function GetMapping: {??TGenericMapping}OleVariant; dispid 201;
+    function MapAccessMaskToString(AccessMask: LongWord): WideString; dispid 202;
+    function GetAccessNames(out Count: LongWord): {??PChar}OleVariant; dispid 203;
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwThreadMapping
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {389BEEFC-7562-4E53-878E-6E3E61A510C0}
+// *********************************************************************//
+  IJwThreadMapping = interface(IJwGenericMapping)
+    ['{389BEEFC-7562-4E53-878E-6E3E61A510C0}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwThreadMappingDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {389BEEFC-7562-4E53-878E-6E3E61A510C0}
+// *********************************************************************//
+  IJwThreadMappingDisp = dispinterface
+    ['{389BEEFC-7562-4E53-878E-6E3E61A510C0}']
+    function GetMapping: {??TGenericMapping}OleVariant; dispid 201;
+    function MapAccessMaskToString(AccessMask: LongWord): WideString; dispid 202;
+    function GetAccessNames(out Count: LongWord): {??PChar}OleVariant; dispid 203;
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwJobMapping
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {D5B64FC6-3A49-483C-9D7B-34A04E6E97C2}
+// *********************************************************************//
+  IJwJobMapping = interface(IJwGenericMapping)
+    ['{D5B64FC6-3A49-483C-9D7B-34A04E6E97C2}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwJobMappingDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {D5B64FC6-3A49-483C-9D7B-34A04E6E97C2}
+// *********************************************************************//
+  IJwJobMappingDisp = dispinterface
+    ['{D5B64FC6-3A49-483C-9D7B-34A04E6E97C2}']
+    function GetMapping: {??TGenericMapping}OleVariant; dispid 201;
+    function MapAccessMaskToString(AccessMask: LongWord): WideString; dispid 202;
+    function GetAccessNames(out Count: LongWord): {??PChar}OleVariant; dispid 203;
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwSemaphoreMapping
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {28EEA5E2-21E7-4CB3-A585-6D4FF82BABB5}
+// *********************************************************************//
+  IJwSemaphoreMapping = interface(IJwGenericMapping)
+    ['{28EEA5E2-21E7-4CB3-A585-6D4FF82BABB5}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwSemaphoreMappingDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {28EEA5E2-21E7-4CB3-A585-6D4FF82BABB5}
+// *********************************************************************//
+  IJwSemaphoreMappingDisp = dispinterface
+    ['{28EEA5E2-21E7-4CB3-A585-6D4FF82BABB5}']
+    function GetMapping: {??TGenericMapping}OleVariant; dispid 201;
+    function MapAccessMaskToString(AccessMask: LongWord): WideString; dispid 202;
+    function GetAccessNames(out Count: LongWord): {??PChar}OleVariant; dispid 203;
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwEventMapping
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {64357431-6565-494D-83E5-0FAB085A9FF5}
+// *********************************************************************//
+  IJwEventMapping = interface(IJwGenericMapping)
+    ['{64357431-6565-494D-83E5-0FAB085A9FF5}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwEventMappingDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {64357431-6565-494D-83E5-0FAB085A9FF5}
+// *********************************************************************//
+  IJwEventMappingDisp = dispinterface
+    ['{64357431-6565-494D-83E5-0FAB085A9FF5}']
+    function GetMapping: {??TGenericMapping}OleVariant; dispid 201;
+    function MapAccessMaskToString(AccessMask: LongWord): WideString; dispid 202;
+    function GetAccessNames(out Count: LongWord): {??PChar}OleVariant; dispid 203;
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwMutexMapping
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {F15F1B47-4DB8-4F6F-A362-51B88DA5C5C4}
+// *********************************************************************//
+  IJwMutexMapping = interface(IJwGenericMapping)
+    ['{F15F1B47-4DB8-4F6F-A362-51B88DA5C5C4}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwMutexMappingDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {F15F1B47-4DB8-4F6F-A362-51B88DA5C5C4}
+// *********************************************************************//
+  IJwMutexMappingDisp = dispinterface
+    ['{F15F1B47-4DB8-4F6F-A362-51B88DA5C5C4}']
+    function GetMapping: {??TGenericMapping}OleVariant; dispid 201;
+    function MapAccessMaskToString(AccessMask: LongWord): WideString; dispid 202;
+    function GetAccessNames(out Count: LongWord): {??PChar}OleVariant; dispid 203;
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwFileMapMapping
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {991D7CAB-58A1-4575-9F3B-CC34D6E2DE00}
+// *********************************************************************//
+  IJwFileMapMapping = interface(IJwGenericMapping)
+    ['{991D7CAB-58A1-4575-9F3B-CC34D6E2DE00}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwFileMapMappingDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {991D7CAB-58A1-4575-9F3B-CC34D6E2DE00}
+// *********************************************************************//
+  IJwFileMapMappingDisp = dispinterface
+    ['{991D7CAB-58A1-4575-9F3B-CC34D6E2DE00}']
+    function GetMapping: {??TGenericMapping}OleVariant; dispid 201;
+    function MapAccessMaskToString(AccessMask: LongWord): WideString; dispid 202;
+    function GetAccessNames(out Count: LongWord): {??PChar}OleVariant; dispid 203;
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwTimerMapping
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {10F1574D-F097-4081-8DFD-F956581FBA2C}
+// *********************************************************************//
+  IJwTimerMapping = interface(IJwGenericMapping)
+    ['{10F1574D-F097-4081-8DFD-F956581FBA2C}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwTimerMappingDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {10F1574D-F097-4081-8DFD-F956581FBA2C}
+// *********************************************************************//
+  IJwTimerMappingDisp = dispinterface
+    ['{10F1574D-F097-4081-8DFD-F956581FBA2C}']
+    function GetMapping: {??TGenericMapping}OleVariant; dispid 201;
+    function MapAccessMaskToString(AccessMask: LongWord): WideString; dispid 202;
+    function GetAccessNames(out Count: LongWord): {??PChar}OleVariant; dispid 203;
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwTokenMapping
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {8F1F8AF3-42EA-4E51-93B0-3C5E04B47C49}
+// *********************************************************************//
+  IJwTokenMapping = interface(IJwGenericMapping)
+    ['{8F1F8AF3-42EA-4E51-93B0-3C5E04B47C49}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwTokenMappingDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {8F1F8AF3-42EA-4E51-93B0-3C5E04B47C49}
+// *********************************************************************//
+  IJwTokenMappingDisp = dispinterface
+    ['{8F1F8AF3-42EA-4E51-93B0-3C5E04B47C49}']
+    function GetMapping: {??TGenericMapping}OleVariant; dispid 201;
+    function MapAccessMaskToString(AccessMask: LongWord): WideString; dispid 202;
+    function GetAccessNames(out Count: LongWord): {??PChar}OleVariant; dispid 203;
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwPipeMapping
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {48260C48-B275-4C7C-BDB5-4678E1E89160}
+// *********************************************************************//
+  IJwPipeMapping = interface(IJwGenericMapping)
+    ['{48260C48-B275-4C7C-BDB5-4678E1E89160}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwPipeMappingDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {48260C48-B275-4C7C-BDB5-4678E1E89160}
+// *********************************************************************//
+  IJwPipeMappingDisp = dispinterface
+    ['{48260C48-B275-4C7C-BDB5-4678E1E89160}']
+    function GetMapping: {??TGenericMapping}OleVariant; dispid 201;
+    function MapAccessMaskToString(AccessMask: LongWord): WideString; dispid 202;
+    function GetAccessNames(out Count: LongWord): {??PChar}OleVariant; dispid 203;
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwLogServer
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {213E956A-7BF3-4007-8191-1D743C818435}
+// *********************************************************************//
+  IJwLogServer = interface(IDispatch)
+    ['{213E956A-7BF3-4007-8191-1D743C818435}']
+    function Get_WriterClass: IJwWriterClass; safecall;
+    procedure Set_WriterClass(const Value: IJwWriterClass); safecall;
+    function Get_LogTypes: OleVariant; safecall;
+    procedure Set_LogTypes(Value: OleVariant); safecall;
+    function Connect(EnterType: JwEnumEnterType; const ClassName: WideString; 
+                     const MethodName: WideString; const FileName: WideString; 
+                     const LogMessage: WideString): IJwLogClient; safecall;
+    property WriterClass: IJwWriterClass read Get_WriterClass write Set_WriterClass;
+    property LogTypes: OleVariant read Get_LogTypes write Set_LogTypes;
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwLogServerDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {213E956A-7BF3-4007-8191-1D743C818435}
+// *********************************************************************//
+  IJwLogServerDisp = dispinterface
+    ['{213E956A-7BF3-4007-8191-1D743C818435}']
+    property WriterClass: IJwWriterClass dispid 201;
+    property LogTypes: OleVariant dispid 202;
+    function Connect(EnterType: JwEnumEnterType; const ClassName: WideString; 
+                     const MethodName: WideString; const FileName: WideString; 
+                     const LogMessage: WideString): IJwLogClient; dispid 203;
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwWriterClass
+// Flags:     (320) Dual OleAutomation
+// GUID:      {E225CFE1-FCAB-4109-8D64-B845D0C8FDD5}
+// *********************************************************************//
+  IJwWriterClass = interface(IUnknown)
+    ['{E225CFE1-FCAB-4109-8D64-B845D0C8FDD5}']
+    function WriteSingleTag(IndentLevel: SYSINT; const TagName: WideString; 
+                            const Value: WideString; Attributes: OleVariant): WideString; safecall;
+    function StartWriteMultipleTags(IndentLevel: SYSINT; const TagName: WideString; 
+                                    Attributes: OleVariant): WideString; safecall;
+    function EndWriteMultipleTags: WideString; safecall;
+    procedure Done; safecall;
+    function CreateObject: IJwWriterClass; safecall;
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwWriterClassDisp
+// Flags:     (320) Dual OleAutomation
+// GUID:      {E225CFE1-FCAB-4109-8D64-B845D0C8FDD5}
+// *********************************************************************//
+  IJwWriterClassDisp = dispinterface
+    ['{E225CFE1-FCAB-4109-8D64-B845D0C8FDD5}']
+    function WriteSingleTag(IndentLevel: SYSINT; const TagName: WideString; 
+                            const Value: WideString; Attributes: OleVariant): WideString; dispid 201;
+    function StartWriteMultipleTags(IndentLevel: SYSINT; const TagName: WideString; 
+                                    Attributes: OleVariant): WideString; dispid 202;
+    function EndWriteMultipleTags: WideString; dispid 203;
+    procedure Done; dispid 204;
+    function CreateObject: IJwWriterClass; dispid 101;
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwLogClient
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {742092DA-9FD9-420A-84AF-56D6EA8508D4}
+// *********************************************************************//
+  IJwLogClient = interface(IDispatch)
+    ['{742092DA-9FD9-420A-84AF-56D6EA8508D4}']
+    procedure Log(LogType: JwEnumLogType; const LogMessage: WideString); safecall;
+    procedure Signal(LogType: JwEnumSignalType; const Source: WideString; const Target: WideString; 
+                     const LogMessage: WideString); safecall;
+    procedure Memory(LogType: JwEnumMemoryType; const MemType: WideString; 
+                     const LogMessage: WideString); safecall;
+    procedure Exception(Exception: OleVariant); safecall;
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwLogClientDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {742092DA-9FD9-420A-84AF-56D6EA8508D4}
+// *********************************************************************//
+  IJwLogClientDisp = dispinterface
+    ['{742092DA-9FD9-420A-84AF-56D6EA8508D4}']
+    procedure Log(LogType: JwEnumLogType; const LogMessage: WideString); dispid 201;
+    procedure Signal(LogType: JwEnumSignalType; const Source: WideString; const Target: WideString; 
+                     const LogMessage: WideString); dispid 202;
+    procedure Memory(LogType: JwEnumMemoryType; const MemType: WideString; 
+                     const LogMessage: WideString); dispid 203;
+    procedure Exception(Exception: OleVariant); dispid 204;
+  end;
+
+// *********************************************************************//
+// Schnittstelle: ITestInt
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {D2B0D3F0-F029-4550-A7CC-07BC612BF10B}
+// *********************************************************************//
+  ITestInt = interface(IDispatch)
+    ['{D2B0D3F0-F029-4550-A7CC-07BC612BF10B}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  ITestIntDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {D2B0D3F0-F029-4550-A7CC-07BC612BF10B}
+// *********************************************************************//
+  ITestIntDisp = dispinterface
+    ['{D2B0D3F0-F029-4550-A7CC-07BC612BF10B}']
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwXMLAttribute
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {B7C4FFC9-32AF-4341-9434-4F33FEDF1707}
+// *********************************************************************//
+  IJwXMLAttribute = interface(IDispatch)
+    ['{B7C4FFC9-32AF-4341-9434-4F33FEDF1707}']
+    function Get_Name: WideString; safecall;
+    procedure Set_Name(const Value: WideString); safecall;
+    function Get_Value: WideString; safecall;
+    procedure Set_Value(const Value: WideString); safecall;
+    function ToString: WideString; safecall;
+    property Name: WideString read Get_Name write Set_Name;
+    property Value: WideString read Get_Value write Set_Value;
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwXMLAttributeDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {B7C4FFC9-32AF-4341-9434-4F33FEDF1707}
+// *********************************************************************//
+  IJwXMLAttributeDisp = dispinterface
+    ['{B7C4FFC9-32AF-4341-9434-4F33FEDF1707}']
+    property Name: WideString dispid 201;
+    property Value: WideString dispid 202;
+    function ToString: WideString; dispid 203;
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwEventType
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {B95E0B5E-F424-4AC4-98F0-B1C79C19AD11}
+// *********************************************************************//
+  IJwEventType = interface(IDispatch)
+    ['{B95E0B5E-F424-4AC4-98F0-B1C79C19AD11}']
+    function Get_TagName: JwXMLLogTag; safecall;
+    procedure Set_TagName(Value: JwXMLLogTag); safecall;
+    function Get_TypeValue: SYSINT; safecall;
+    procedure Set_TypeValue(Value: SYSINT); safecall;
+    function ToString: WideString; safecall;
+    property TagName: JwXMLLogTag read Get_TagName write Set_TagName;
+    property TypeValue: SYSINT read Get_TypeValue write Set_TypeValue;
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwEventTypeDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {B95E0B5E-F424-4AC4-98F0-B1C79C19AD11}
+// *********************************************************************//
+  IJwEventTypeDisp = dispinterface
+    ['{B95E0B5E-F424-4AC4-98F0-B1C79C19AD11}']
+    property TagName: JwXMLLogTag dispid 201;
+    property TypeValue: SYSINT dispid 202;
+    function ToString: WideString; dispid 203;
+  end;
+
+// *********************************************************************//
 // Die Klasse CoJwSid stellt die Methoden Create und CreateRemote zur      
 // Verfügung, um Instanzen der Standardschnittstelle IJwSid, dargestellt von
 // CoClass JwSid, zu erzeugen. Diese Funktionen können                     
@@ -864,6 +1617,306 @@ type
     class function CreateRemote(const MachineName: string): IJwWindowsVersion;
   end;
 
+// *********************************************************************//
+// Die Klasse CoJwGenericMapping stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwGenericMapping, dargestellt von
+// CoClass JwGenericMapping, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwGenericMapping = class
+    class function Create: IJwGenericMapping;
+    class function CreateRemote(const MachineName: string): IJwGenericMapping;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwFileFolderMapping stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwFileFolderMapping, dargestellt von
+// CoClass JwFileFolderMapping, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwFileFolderMapping = class
+    class function Create: IJwFileFolderMapping;
+    class function CreateRemote(const MachineName: string): IJwFileFolderMapping;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwFileMapping stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwFileMapping, dargestellt von
+// CoClass JwFileMapping, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwFileMapping = class
+    class function Create: IJwFileMapping;
+    class function CreateRemote(const MachineName: string): IJwFileMapping;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwRegistryMapping stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwRegistryMapping, dargestellt von
+// CoClass JwRegistryMapping, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwRegistryMapping = class
+    class function Create: IJwRegistryMapping;
+    class function CreateRemote(const MachineName: string): IJwRegistryMapping;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwWinStationMapping stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwWinStationMapping, dargestellt von
+// CoClass JwWinStationMapping, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwWinStationMapping = class
+    class function Create: IJwWinStationMapping;
+    class function CreateRemote(const MachineName: string): IJwWinStationMapping;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwDesktopMapping stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwDesktopMapping, dargestellt von
+// CoClass JwDesktopMapping, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwDesktopMapping = class
+    class function Create: IJwDesktopMapping;
+    class function CreateRemote(const MachineName: string): IJwDesktopMapping;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwServiceMapping stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwServiceMapping, dargestellt von
+// CoClass JwServiceMapping, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwServiceMapping = class
+    class function Create: IJwServiceMapping;
+    class function CreateRemote(const MachineName: string): IJwServiceMapping;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwServiceMappingManager stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwServiceManagerMapping, dargestellt von
+// CoClass JwServiceMappingManager, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwServiceMappingManager = class
+    class function Create: IJwServiceManagerMapping;
+    class function CreateRemote(const MachineName: string): IJwServiceManagerMapping;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwPrinterMapping stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwPrinterMapping, dargestellt von
+// CoClass JwPrinterMapping, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwPrinterMapping = class
+    class function Create: IJwPrinterMapping;
+    class function CreateRemote(const MachineName: string): IJwPrinterMapping;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwShareMapping stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwShareMapping, dargestellt von
+// CoClass JwShareMapping, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwShareMapping = class
+    class function Create: IJwShareMapping;
+    class function CreateRemote(const MachineName: string): IJwShareMapping;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwProcessMapping stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwProcessMapping, dargestellt von
+// CoClass JwProcessMapping, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwProcessMapping = class
+    class function Create: IJwProcessMapping;
+    class function CreateRemote(const MachineName: string): IJwProcessMapping;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwThreadMapping stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwThreadMapping, dargestellt von
+// CoClass JwThreadMapping, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwThreadMapping = class
+    class function Create: IJwThreadMapping;
+    class function CreateRemote(const MachineName: string): IJwThreadMapping;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwJobMapping stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwJobMapping, dargestellt von
+// CoClass JwJobMapping, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwJobMapping = class
+    class function Create: IJwJobMapping;
+    class function CreateRemote(const MachineName: string): IJwJobMapping;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwSemaphoreMapping stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwSemaphoreMapping, dargestellt von
+// CoClass JwSemaphoreMapping, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwSemaphoreMapping = class
+    class function Create: IJwSemaphoreMapping;
+    class function CreateRemote(const MachineName: string): IJwSemaphoreMapping;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwEventMapping stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwEventMapping, dargestellt von
+// CoClass JwEventMapping, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwEventMapping = class
+    class function Create: IJwEventMapping;
+    class function CreateRemote(const MachineName: string): IJwEventMapping;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwMutexMapping stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwMutexMapping, dargestellt von
+// CoClass JwMutexMapping, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwMutexMapping = class
+    class function Create: IJwMutexMapping;
+    class function CreateRemote(const MachineName: string): IJwMutexMapping;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwFileMapMapping stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwFileMapMapping, dargestellt von
+// CoClass JwFileMapMapping, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwFileMapMapping = class
+    class function Create: IJwFileMapMapping;
+    class function CreateRemote(const MachineName: string): IJwFileMapMapping;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwTimerMapping stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwTimerMapping, dargestellt von
+// CoClass JwTimerMapping, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwTimerMapping = class
+    class function Create: IJwTimerMapping;
+    class function CreateRemote(const MachineName: string): IJwTimerMapping;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwTokenMapping stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwTokenMapping, dargestellt von
+// CoClass JwTokenMapping, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwTokenMapping = class
+    class function Create: IJwTokenMapping;
+    class function CreateRemote(const MachineName: string): IJwTokenMapping;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwPipeMapping stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwPipeMapping, dargestellt von
+// CoClass JwPipeMapping, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwPipeMapping = class
+    class function Create: IJwPipeMapping;
+    class function CreateRemote(const MachineName: string): IJwPipeMapping;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwLogServer stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwLogServer, dargestellt von
+// CoClass JwLogServer, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwLogServer = class
+    class function Create: IJwLogServer;
+    class function CreateRemote(const MachineName: string): IJwLogServer;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwLogClient stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwLogClient, dargestellt von
+// CoClass JwLogClient, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwLogClient = class
+    class function Create: IJwLogClient;
+    class function CreateRemote(const MachineName: string): IJwLogClient;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoTestInt stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle ITestInt, dargestellt von
+// CoClass TestInt, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoTestInt = class
+    class function Create: ITestInt;
+    class function CreateRemote(const MachineName: string): ITestInt;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwXMLAttribute stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwXMLAttribute, dargestellt von
+// CoClass JwXMLAttribute, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwXMLAttribute = class
+    class function Create: IJwXMLAttribute;
+    class function CreateRemote(const MachineName: string): IJwXMLAttribute;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwEventType stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwEventType, dargestellt von
+// CoClass JwEventType, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwEventType = class
+    class function Create: IJwEventType;
+    class function CreateRemote(const MachineName: string): IJwEventType;
+  end;
+
 implementation
 
 uses ComObj;
@@ -946,6 +1999,256 @@ end;
 class function CoJwWindowsVersion.CreateRemote(const MachineName: string): IJwWindowsVersion;
 begin
   Result := CreateRemoteComObject(MachineName, CLASS_JwWindowsVersion) as IJwWindowsVersion;
+end;
+
+class function CoJwGenericMapping.Create: IJwGenericMapping;
+begin
+  Result := CreateComObject(CLASS_JwGenericMapping) as IJwGenericMapping;
+end;
+
+class function CoJwGenericMapping.CreateRemote(const MachineName: string): IJwGenericMapping;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwGenericMapping) as IJwGenericMapping;
+end;
+
+class function CoJwFileFolderMapping.Create: IJwFileFolderMapping;
+begin
+  Result := CreateComObject(CLASS_JwFileFolderMapping) as IJwFileFolderMapping;
+end;
+
+class function CoJwFileFolderMapping.CreateRemote(const MachineName: string): IJwFileFolderMapping;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwFileFolderMapping) as IJwFileFolderMapping;
+end;
+
+class function CoJwFileMapping.Create: IJwFileMapping;
+begin
+  Result := CreateComObject(CLASS_JwFileMapping) as IJwFileMapping;
+end;
+
+class function CoJwFileMapping.CreateRemote(const MachineName: string): IJwFileMapping;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwFileMapping) as IJwFileMapping;
+end;
+
+class function CoJwRegistryMapping.Create: IJwRegistryMapping;
+begin
+  Result := CreateComObject(CLASS_JwRegistryMapping) as IJwRegistryMapping;
+end;
+
+class function CoJwRegistryMapping.CreateRemote(const MachineName: string): IJwRegistryMapping;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwRegistryMapping) as IJwRegistryMapping;
+end;
+
+class function CoJwWinStationMapping.Create: IJwWinStationMapping;
+begin
+  Result := CreateComObject(CLASS_JwWinStationMapping) as IJwWinStationMapping;
+end;
+
+class function CoJwWinStationMapping.CreateRemote(const MachineName: string): IJwWinStationMapping;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwWinStationMapping) as IJwWinStationMapping;
+end;
+
+class function CoJwDesktopMapping.Create: IJwDesktopMapping;
+begin
+  Result := CreateComObject(CLASS_JwDesktopMapping) as IJwDesktopMapping;
+end;
+
+class function CoJwDesktopMapping.CreateRemote(const MachineName: string): IJwDesktopMapping;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwDesktopMapping) as IJwDesktopMapping;
+end;
+
+class function CoJwServiceMapping.Create: IJwServiceMapping;
+begin
+  Result := CreateComObject(CLASS_JwServiceMapping) as IJwServiceMapping;
+end;
+
+class function CoJwServiceMapping.CreateRemote(const MachineName: string): IJwServiceMapping;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwServiceMapping) as IJwServiceMapping;
+end;
+
+class function CoJwServiceMappingManager.Create: IJwServiceManagerMapping;
+begin
+  Result := CreateComObject(CLASS_JwServiceMappingManager) as IJwServiceManagerMapping;
+end;
+
+class function CoJwServiceMappingManager.CreateRemote(const MachineName: string): IJwServiceManagerMapping;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwServiceMappingManager) as IJwServiceManagerMapping;
+end;
+
+class function CoJwPrinterMapping.Create: IJwPrinterMapping;
+begin
+  Result := CreateComObject(CLASS_JwPrinterMapping) as IJwPrinterMapping;
+end;
+
+class function CoJwPrinterMapping.CreateRemote(const MachineName: string): IJwPrinterMapping;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwPrinterMapping) as IJwPrinterMapping;
+end;
+
+class function CoJwShareMapping.Create: IJwShareMapping;
+begin
+  Result := CreateComObject(CLASS_JwShareMapping) as IJwShareMapping;
+end;
+
+class function CoJwShareMapping.CreateRemote(const MachineName: string): IJwShareMapping;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwShareMapping) as IJwShareMapping;
+end;
+
+class function CoJwProcessMapping.Create: IJwProcessMapping;
+begin
+  Result := CreateComObject(CLASS_JwProcessMapping) as IJwProcessMapping;
+end;
+
+class function CoJwProcessMapping.CreateRemote(const MachineName: string): IJwProcessMapping;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwProcessMapping) as IJwProcessMapping;
+end;
+
+class function CoJwThreadMapping.Create: IJwThreadMapping;
+begin
+  Result := CreateComObject(CLASS_JwThreadMapping) as IJwThreadMapping;
+end;
+
+class function CoJwThreadMapping.CreateRemote(const MachineName: string): IJwThreadMapping;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwThreadMapping) as IJwThreadMapping;
+end;
+
+class function CoJwJobMapping.Create: IJwJobMapping;
+begin
+  Result := CreateComObject(CLASS_JwJobMapping) as IJwJobMapping;
+end;
+
+class function CoJwJobMapping.CreateRemote(const MachineName: string): IJwJobMapping;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwJobMapping) as IJwJobMapping;
+end;
+
+class function CoJwSemaphoreMapping.Create: IJwSemaphoreMapping;
+begin
+  Result := CreateComObject(CLASS_JwSemaphoreMapping) as IJwSemaphoreMapping;
+end;
+
+class function CoJwSemaphoreMapping.CreateRemote(const MachineName: string): IJwSemaphoreMapping;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwSemaphoreMapping) as IJwSemaphoreMapping;
+end;
+
+class function CoJwEventMapping.Create: IJwEventMapping;
+begin
+  Result := CreateComObject(CLASS_JwEventMapping) as IJwEventMapping;
+end;
+
+class function CoJwEventMapping.CreateRemote(const MachineName: string): IJwEventMapping;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwEventMapping) as IJwEventMapping;
+end;
+
+class function CoJwMutexMapping.Create: IJwMutexMapping;
+begin
+  Result := CreateComObject(CLASS_JwMutexMapping) as IJwMutexMapping;
+end;
+
+class function CoJwMutexMapping.CreateRemote(const MachineName: string): IJwMutexMapping;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwMutexMapping) as IJwMutexMapping;
+end;
+
+class function CoJwFileMapMapping.Create: IJwFileMapMapping;
+begin
+  Result := CreateComObject(CLASS_JwFileMapMapping) as IJwFileMapMapping;
+end;
+
+class function CoJwFileMapMapping.CreateRemote(const MachineName: string): IJwFileMapMapping;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwFileMapMapping) as IJwFileMapMapping;
+end;
+
+class function CoJwTimerMapping.Create: IJwTimerMapping;
+begin
+  Result := CreateComObject(CLASS_JwTimerMapping) as IJwTimerMapping;
+end;
+
+class function CoJwTimerMapping.CreateRemote(const MachineName: string): IJwTimerMapping;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwTimerMapping) as IJwTimerMapping;
+end;
+
+class function CoJwTokenMapping.Create: IJwTokenMapping;
+begin
+  Result := CreateComObject(CLASS_JwTokenMapping) as IJwTokenMapping;
+end;
+
+class function CoJwTokenMapping.CreateRemote(const MachineName: string): IJwTokenMapping;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwTokenMapping) as IJwTokenMapping;
+end;
+
+class function CoJwPipeMapping.Create: IJwPipeMapping;
+begin
+  Result := CreateComObject(CLASS_JwPipeMapping) as IJwPipeMapping;
+end;
+
+class function CoJwPipeMapping.CreateRemote(const MachineName: string): IJwPipeMapping;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwPipeMapping) as IJwPipeMapping;
+end;
+
+class function CoJwLogServer.Create: IJwLogServer;
+begin
+  Result := CreateComObject(CLASS_JwLogServer) as IJwLogServer;
+end;
+
+class function CoJwLogServer.CreateRemote(const MachineName: string): IJwLogServer;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwLogServer) as IJwLogServer;
+end;
+
+class function CoJwLogClient.Create: IJwLogClient;
+begin
+  Result := CreateComObject(CLASS_JwLogClient) as IJwLogClient;
+end;
+
+class function CoJwLogClient.CreateRemote(const MachineName: string): IJwLogClient;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwLogClient) as IJwLogClient;
+end;
+
+class function CoTestInt.Create: ITestInt;
+begin
+  Result := CreateComObject(CLASS_TestInt) as ITestInt;
+end;
+
+class function CoTestInt.CreateRemote(const MachineName: string): ITestInt;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_TestInt) as ITestInt;
+end;
+
+class function CoJwXMLAttribute.Create: IJwXMLAttribute;
+begin
+  Result := CreateComObject(CLASS_JwXMLAttribute) as IJwXMLAttribute;
+end;
+
+class function CoJwXMLAttribute.CreateRemote(const MachineName: string): IJwXMLAttribute;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwXMLAttribute) as IJwXMLAttribute;
+end;
+
+class function CoJwEventType.Create: IJwEventType;
+begin
+  Result := CreateComObject(CLASS_JwEventType) as IJwEventType;
+end;
+
+class function CoJwEventType.CreateRemote(const MachineName: string): IJwEventType;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwEventType) as IJwEventType;
 end;
 
 end.

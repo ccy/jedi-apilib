@@ -6,8 +6,7 @@ interface
 
 uses
   ComObj, ActiveX, StdVcl, Classes, JWSCLCom_TLB,
-  JwaWindows,JwaVista, TypInfo, ComLib,
-  JWSCLSid;
+  JwaWindows,JwaVista, TypInfo, ComLib, JwsclCoLogging,  JWSCLSid;
 
 type
   TJwSid = class(TAutoObject, IJwSid)
@@ -612,8 +611,9 @@ begin
   result := fInternalSidList.FindSid(TJwSecurityId(Sid.GetInternalObject), StartPos, Boolean(UsePreFix));
 end;
 
-initialization
 
+
+initialization
 
   TAutoObjectFactory.Create(ComServer, TJwSid, Class_JwSid,
     ciMultiInstance, tmApartment);

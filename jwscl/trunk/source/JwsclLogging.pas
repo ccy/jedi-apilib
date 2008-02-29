@@ -38,9 +38,12 @@ unit JwsclLogging;
 
 {$INCLUDE Jwscl.inc}
 interface
-uses Classes,
+uses ActiveX,
+     ComServ,
+     ComObj,
+     Classes,
      SyncObjs,
-     SysUtils, 
+     SysUtils,
      JwsclStrings;
 
 type {@Name defines log tag attribute types}
@@ -121,7 +124,8 @@ type {@Name defines log tag attribute types}
         atMemType
         );
 
-     {@Name defines an attribute.
+     {
+     @Name defines an attribute.
       Attributes with empty name or value will be ignored
      }
      TJwXMLAttribute = record
@@ -146,12 +150,28 @@ type {@Name defines log tag attribute types}
      //@Name defines an dynamic array of attributes
      TJwXMLAttributes = array of TJwXMLAttribute;
 
+
+const IID_JwWriterCLASS : TGUID = '{02A5D97D-9017-45B1-A2E7-2217015536DE}';
+type
+     IJwWriterClass = interface
+     ['{02A5D97D-9017-45B1-A2E7-2217015536DE}']
+        function WriteSingleTag(IndentLevel: Integer; const TagName: TJwString;
+                                const Value: TJwString; Attributes: TJwXMLAttributes): TJwString; safecall;
+        function StartWriteMultipleTags(IndentLevel: Integer; const TagName: TJwString;
+                                        Attributes: TJwXMLAttributes): TJwString; safecall;
+        function EndWriteMultipleTags: TJwString; safecall;
+
+        procedure Done; safecall;
+
+        function CreateObject : IJwWriterClass; safecall;
+     end;
+
      {@Name defines a default and base class for xml write operations
      and other util functions.
      Overwrite this class and specify its class type to CreateLogServer
      for changed behavior.
      }
-     TJwLogWriter = class
+     TJwLogWriter = class(TInterfacedObject, IJwWriterClass)
      protected
        fStartMTags,
        fMultipleTags : Boolean;
@@ -165,8 +185,8 @@ type {@Name defines log tag attribute types}
        @param(Attributes defines an array of attributes to be added to the tag)
        @return(Returns the formatted xml tag.)
        }
-       function WriteSingleTag(IndLevel : Integer; const TagName, Value : TJwString;
-         const Attributes : TJwXMLAttributes) : TJwString; virtual;
+       function WriteSingleTag(IndentLevel: Integer; const TagName: TJwString;
+         const Value: TJwString; Attributes: TJwXMLAttributes): TJwString; safecall;
 
        {@Name starts a tag with sub tags. All subsequent calls to WriteSingleTag
         will create tag under this tag.
@@ -179,15 +199,17 @@ type {@Name defines log tag attribute types}
         @param(Attributes defines an array of attributes to be added to the tag)
         @return(Returns the formatted xml tag.)
        }
-       function StartWriteMultipleTags(const IndLevel : Integer; const TagName : TJwString;
-         const Attributes : TJwXMLAttributes) : TJwString; virtual;
+       function StartWriteMultipleTags(IndentLevel: Integer; const TagName: TJwString;
+          Attributes: TJwXMLAttributes): TJwString;safecall;
 
        {@Name ends creating sub tags which was commenced by StartWriteMultipleTags.
         @return(The return value is the last closing tag started by StartWriteMultipleTags)
        }
-       function EndWriteMultipleTags : TJwString; virtual;
+       function EndWriteMultipleTags : TJwString; safecall;
 
-       procedure Done; virtual;
+       procedure Done; safecall;
+
+       function CreateObject : IJwWriterClass; safecall;
 
        {@Name is a helper function that adds an attribute structure TJwXMLAttribute
         to an array TJwXMLAttributes.
@@ -234,7 +256,7 @@ type {@Name defines log tag attribute types}
        class procedure AddEventType(var Events : TJwEventTypes; const LogTag : TJwXMLLogTag; const TypeValues : Integer); virtual;
      end;
 
-     TJwLogWriterClass = class of TJwLogWriter;
+     //TJwLogWriterClass = class of TJwLogWriter;
 
      {@Name defines an interface for a log client.
       Use IJwLogServer.Connect to create an instance of this interface.
@@ -355,6 +377,18 @@ type {@Name defines log tag attribute types}
 
        {@Name stops the logging server and shut it down.}
        procedure Done; SafeCall;
+
+       {@Name sets type of log events which are logged}
+       procedure SetLogTypes(const LogTypes : TJwEventTypes); SafeCall;
+       {@Name gets type of log events which are logged}
+       function GetLogTypes : TJwEventTypes; SafeCall;
+       {@Name changes the writer class.
+        The writer class is called when an log event must be written to a database
+         (file, xml, db)
+       }
+       procedure SetWriterClass(const Writer : IJwWriterClass); SafeCall;
+       {@Name gets the writer class.}
+       function GetWriterClass : IJwWriterClass; SafeCall;
      end;
 
 {@Name creates a new log server that can hold several log clients (IJwLogClient).
@@ -366,7 +400,7 @@ behavior can be overwritten by using a non default WriterClass (TJwLogWriterClas
   )
 @param(LogTypes receives a list of TJwEventType records that contains tags and its
 attributes which ought to be logged.
-If the array is empty all types of events are logged. 
+If the array is empty all types of events are logged.
 )
 @param(WriterClass defines a custom class that can be used to change the
 default mechanism how xml is stored. By default (if nil) the TJwLogWriterClass
@@ -374,7 +408,7 @@ uses a string list implementation to store xml.)
 @return(Returns an instance of IJwLogServer for logging information)
 
 }
-function CreateLogServer(Elements : TStringList; const LogTypes : TJwEventTypes; const WriterClass : TJwLogWriterClass = nil) : IJwLogServer;
+function CreateLogServer(Elements : TStringList; const LogTypes : TJwEventTypes; const WriterClass : IJwWriterClass = nil) : IJwLogServer;
 
 
 var //JwStrNewLine : String = #13#10;
@@ -446,6 +480,10 @@ var //JwStrNewLine : String = #13#10;
         'target',
         'memtype');
 
+    JwXMLLogTagString : array[TJwXMLLogTag] of TJwString = (
+       'ltEnter', 'ltLeave', 'ltSignal', 'ltMemory', 'ltLog', 'ltException');
+
+
 implementation
 uses JwaWindows, JwsclExceptions, JwsclUtils;
 
@@ -468,7 +506,7 @@ type TJwLogServerImpl = class;
        fClassName,
        fMethodName, fFileName, fMessageText : TJwString;
        fEnterType : TJwEnterType;
-       fWriter : TJwLogWriter;
+       fWriter : IJwWriterClass;
 
        //ID connects enter and leave tag unambiguously
        fID : Int64;
@@ -502,8 +540,8 @@ type TJwLogServerImpl = class;
      TJwLogServerImpl = class(TInterfacedObject, IJwLogServer)
      protected
        fElements : TStringList;
-       fWriterClass : TJwLogWriterClass;
-       fWriter : TJwLogWriter;
+//       fWriterClass : IJwWriterClass;
+       fWriter : IJwWriterClass;
        fIndents : TThreadMapRecs;
 
        fEventTypes : TJwEventTypes;
@@ -525,16 +563,22 @@ type TJwLogServerImpl = class;
        //@Name creates a new unambiguous ID threadsafe.
        function GetID : Int64;
      public
-       constructor Create(const Elements : TStringList; const EventTypes : TJwEventTypes;  const WriterClass : TJwLogWriterClass);
+       constructor Create(const Elements : TStringList; const EventTypes : TJwEventTypes;  const WriterClass : IJwWriterClass);
        destructor Destroy; override;
 
        function Connect(const EnterType : TJwEnterType; const ClassName, MethodName, FileName, MessageText : TJwString) : IJwLogClient;safecall;
        procedure Disconnect(var Client : IJwLogClient); safecall;
 
        procedure Done; SafeCall;
+
+       procedure SetLogTypes(const LogTypes : TJwEventTypes); SafeCall;
+       function GetLogTypes : TJwEventTypes; SafeCall;
+       procedure SetWriterClass(const Writer : IJwWriterClass); SafeCall;
+       function GetWriterClass : IJwWriterClass; SafeCall;
+
      end;
 
-function CreateLogServer(Elements : TStringList; const LogTypes : TJwEventTypes; const WriterClass : TJwLogWriterClass = nil) : IJwLogServer;
+function CreateLogServer(Elements : TStringList; const LogTypes : TJwEventTypes; const WriterClass : IJwWriterClass = nil) : IJwLogServer;
 begin
   result := TJwLogServerImpl.Create(Elements,LogTypes, WriterClass);
 end;
@@ -558,19 +602,19 @@ begin
 
   fID := fOwner.GetID; //thread safe
 
-  fWriter := fOwner.fWriterClass.Create;
+  fWriter := fOwner.fWriter.CreateObject;
 
   fOwner.EnterCriticalSection;
   try
     fInd := fOwner.GetIdentByThread; //deep
 
     if (EnterType <> etNone) and
-      fOwner.fWriterClass.CheckLogEventType(ltEnter, Integer(0), fEventTypes) then
+      TJwLogWriter.CheckLogEventType(ltEnter, Integer(0), fEventTypes) then
     begin
-      fOwner.fWriterClass.AddAttribute(Attributes, JwXMLAttributeString[atType], JwEnterTypeString[EnterType]);
-      fOwner.fWriterClass.AddAttribute(Attributes, JwXMLAttributeString[atSource], IntToStr(fID));
-      fOwner.fWriterClass.AddAttributes(Attributes, fClassName, fMethodName, fFileName);
-      fOwner.fWriterClass.AddAttribute(Attributes, JwXMLAttributeString[atThread], fOwner.fWriterClass.GetThreadName);
+      TJwLogWriter.AddAttribute(Attributes, JwXMLAttributeString[atType], JwEnterTypeString[EnterType]);
+      TJwLogWriter.AddAttribute(Attributes, JwXMLAttributeString[atSource], IntToStr(fID));
+      TJwLogWriter.AddAttributes(Attributes, fClassName, fMethodName, fFileName);
+      TJwLogWriter.AddAttribute(Attributes, JwXMLAttributeString[atThread], TJwLogWriter.GetThreadName);
 
       AddToList(fWriter.WriteSingleTag(fInd, JwXMLTagsString[xtEnter], MessageText, Attributes));
 
@@ -587,18 +631,22 @@ destructor TJwLogClientImpl.Destroy;
 var Attributes : TJwXMLAttributes;
 begin
   if (fEnterType <> etNone) and
-    fOwner.fWriterClass.CheckLogEventType(ltLeave, Integer(0), fEventTypes) then
+    TJwLogWriter.CheckLogEventType(ltLeave, Integer(0), fEventTypes) then
   begin
     fOwner.EnterCriticalSection;
     try
       //get one step back of identation
       fOwner.SetIdent(fInd-1);
 
-      fOwner.fWriterClass.AddAttribute(Attributes, JwXMLAttributeString[atType], JwEnterTypeString[fEnterType]);
-      fOwner.fWriterClass.AddAttribute(Attributes, JwXMLAttributeString[atSource], IntToStr(fID));
-      fOwner.fWriterClass.AddAttributes(Attributes, fClassName, fMethodName, fFileName);
-      fOwner.fWriterClass.AddAttribute(Attributes, JwXMLAttributeString[atThread], fOwner.fWriterClass.GetThreadName);
-      AddToList(fWriter.WriteSingleTag(fInd-1, JwXMLTagsString[xtLeave], fMessageText, Attributes));
+      TJwLogWriter.AddAttribute(Attributes, JwXMLAttributeString[atType], JwEnterTypeString[fEnterType]);
+      TJwLogWriter.AddAttribute(Attributes, JwXMLAttributeString[atSource], IntToStr(fID));
+      TJwLogWriter.AddAttributes(Attributes, fClassName, fMethodName, fFileName);
+      TJwLogWriter.AddAttribute(Attributes, JwXMLAttributeString[atThread], TJwLogWriter.GetThreadName);
+      try
+        AddToList(fWriter.WriteSingleTag(fInd-1, JwXMLTagsString[xtLeave], fMessageText, Attributes));
+      except
+        raise;
+      end;
     finally
       fOwner.LeaveCriticalSection;
     end;
@@ -610,20 +658,20 @@ end;
 procedure TJwLogClientImpl.Log(const LogType: TJwLogType;
   const LogMessage: TJwString);
 begin
-  Log(LogType, '', '', '', LogMessage); 
+  Log(LogType, fClassName, fMethodName, fFileName, LogMessage);
 end;
 
 procedure TJwLogClientImpl.Log(const LogType : TJwLogType; const ClassName, MethodName, FileName, LogMessage : TJwString); safecall;
 var Attributes : TJwXMLAttributes;
 begin
-  if not fOwner.fWriterClass.CheckLogEventType(ltLog, Integer(LogType), fEventTypes) then
+  if not TJwLogWriter.CheckLogEventType(ltLog, Integer(LogType), fEventTypes) then
     exit;
 
   fOwner.EnterCriticalSection;
   try
-    fOwner.fWriterClass.AddAttribute(Attributes, JwXMLAttributeString[atType],JwLogTypeStrings[LogType]);
-    fOwner.fWriterClass.AddAttributes(Attributes, ClassName, MethodName, FileName);
-    fOwner.fWriterClass.AddAttribute(Attributes, JwXMLAttributeString[atThread], fOwner.fWriterClass.GetThreadName);
+    TJwLogWriter.AddAttribute(Attributes, JwXMLAttributeString[atType],JwLogTypeStrings[LogType]);
+    TJwLogWriter.AddAttributes(Attributes, ClassName, MethodName, FileName);
+    TJwLogWriter.AddAttribute(Attributes, JwXMLAttributeString[atThread], TJwLogWriter.GetThreadName);
     AddToList(fWriter.WriteSingleTag(fInd, JwXMLTagsString[xtLog], LogMessage, Attributes));
   finally
     fOwner.LeaveCriticalSection;
@@ -641,22 +689,22 @@ end;
 procedure TJwLogClientImpl.Memory(const MemoryType: TJwMemoryType;
   const MemType, LogMessage: TJwString);
 begin
-  Memory(MemoryType, MemType, '', '', '', LogMessage);
+  Memory(MemoryType, MemType, fClassName, fMethodName, fFileName, LogMessage);
 end;
 
 procedure TJwLogClientImpl.Memory(const MemoryType: TJwMemoryType;
   const MemType, ClassName, MethodName, FileName, LogMessage: TJwString);
 var Attributes : TJwXMLAttributes;
 begin
-  if not fOwner.fWriterClass.CheckLogEventType(ltMemory, Integer(MemoryType), fEventTypes) then
+  if not TJwLogWriter.CheckLogEventType(ltMemory, Integer(MemoryType), fEventTypes) then
     exit;
 
   fOwner.EnterCriticalSection;
   try
-    fOwner.fWriterClass.AddAttribute(Attributes, JwXMLAttributeString[atType], JwMemoryTypeString[MemoryType]);
-    fOwner.fWriterClass.AddAttribute(Attributes, JwXMLAttributeString[atMemType], MemType);
-    fOwner.fWriterClass.AddAttributes(Attributes, ClassName, MethodName, FileName);
-    fOwner.fWriterClass.AddAttribute(Attributes, JwXMLAttributeString[atThread], fOwner.fWriterClass.GetThreadName);
+    TJwLogWriter.AddAttribute(Attributes, JwXMLAttributeString[atType], JwMemoryTypeString[MemoryType]);
+    TJwLogWriter.AddAttribute(Attributes, JwXMLAttributeString[atMemType], MemType);
+    TJwLogWriter.AddAttributes(Attributes, ClassName, MethodName, FileName);
+    TJwLogWriter.AddAttribute(Attributes, JwXMLAttributeString[atThread], TJwLogWriter.GetThreadName);
     
     AddToList(fWriter.WriteSingleTag(fInd, JwXMLTagsString[xtMemory], LogMessage, Attributes));
   finally
@@ -667,7 +715,7 @@ end;
 procedure TJwLogClientImpl.Signal(const SignalType: TJwSignalType;
   const Source, Target, LogMessage: TJwString);
 begin
-  Signal(SignalType, Source, Target, '', '', '', LogMessage);
+  Signal(SignalType, Source, Target, fClassName, fMethodName, fFileName, LogMessage);
 end;
 
 procedure TJwLogClientImpl.Signal(const SignalType: TJwSignalType;
@@ -675,16 +723,16 @@ procedure TJwLogClientImpl.Signal(const SignalType: TJwSignalType;
   LogMessage: TJwString);
 var Attributes : TJwXMLAttributes;
 begin
-  if not fOwner.fWriterClass.CheckLogEventType(ltSignal, Integer(SignalType), fEventTypes) then
+  if not TJwLogWriter.CheckLogEventType(ltSignal, Integer(SignalType), fEventTypes) then
     exit;
 
   fOwner.EnterCriticalSection;
   try
-    fOwner.fWriterClass.AddAttribute(Attributes, JwXMLAttributeString[atType], JwSignalTypeString[SignalType]);
-    fOwner.fWriterClass.AddAttribute(Attributes, JwXMLAttributeString[atSource], Source);
-    fOwner.fWriterClass.AddAttribute(Attributes, JwXMLAttributeString[atTarget], Target);
-    fOwner.fWriterClass.AddAttributes(Attributes, ClassName, MethodName, FileName);
-    fOwner.fWriterClass.AddAttribute(Attributes, JwXMLAttributeString[atThread], fOwner.fWriterClass.GetThreadName);
+    TJwLogWriter.AddAttribute(Attributes, JwXMLAttributeString[atType], JwSignalTypeString[SignalType]);
+    TJwLogWriter.AddAttribute(Attributes, JwXMLAttributeString[atSource], Source);
+    TJwLogWriter.AddAttribute(Attributes, JwXMLAttributeString[atTarget], Target);
+    TJwLogWriter.AddAttributes(Attributes, ClassName, MethodName, FileName);
+    TJwLogWriter.AddAttribute(Attributes, JwXMLAttributeString[atThread], TJwLogWriter.GetThreadName);
     AddToList(fWriter.WriteSingleTag(fInd, JwXMLTagsString[xtSignal], LogMessage, Attributes));
   finally
     fOwner.LeaveCriticalSection;
@@ -694,61 +742,63 @@ end;
 
 procedure TJwLogClientImpl.Exception(const E: Exception);
 begin
-  Exception(E, '', '', '');
+  Exception(E, fClassName, fMethodName, fFileName);
 end;
 
 procedure TJwLogClientImpl.Exception(const E: Exception; const ClassName,
   MethodName, FileName: TJwString);
 var Attributes : TJwXMLAttributes;
-    Writer : TJwLogWriter;
+    Writer : IJwWriterClass;
     JE : EJwsclSecurityException;
 begin
-  if not fOwner.fWriterClass.CheckLogEventType(ltException, Integer(0), fEventTypes) then
+  if not TJwLogWriter.CheckLogEventType(ltException, Integer(0), fEventTypes) then
     exit;
+
+
+  //IJwWriterClass.QueryInterface(IID_JwWriterCLASS, Writer);
+  Writer := fWriter.CreateObject;
 
   fOwner.EnterCriticalSection;
   try
-    Writer := fOwner.fWriterClass.Create;
+    TJwLogWriter.AddAttributes(Attributes, ClassName, MethodName, FileName);
+    TJwLogWriter.AddAttribute(Attributes, JwXMLAttributeString[atThread], TJwLogWriter.GetThreadName);
 
-    fOwner.fWriterClass.AddAttributes(Attributes, ClassName, MethodName, FileName);
-    fOwner.fWriterClass.AddAttribute(Attributes, JwXMLAttributeString[atThread], fOwner.fWriterClass.GetThreadName);
+    AddToList(fWriter.StartWriteMultipleTags(fInd, JwXMLTagsString[xtException], Attributes));
 
-    AddToList(Writer.StartWriteMultipleTags(fInd, JwXMLTagsString[xtException], Attributes));
-
-    AddToList(Writer.WriteSingleTag(fInd,
+    AddToList(fWriter.WriteSingleTag(fInd,
         JwXMLTagsString[xtType], E.ClassName, Attributes));
 
-    AddToList(Writer.WriteSingleTag(fInd,
+    AddToList(fWriter.WriteSingleTag(fInd,
         JwXMLTagsString[xtGuid], GUIDToString(JwMapException(E.ClassName)) , Attributes));
         
     if E is EJwsclSecurityException then
     begin
       JE := E as EJwsclSecurityException;
 
-      AddToList(Writer.WriteSingleTag(fInd,
+      AddToList(fWriter.WriteSingleTag(fInd,
         JwXMLTagsString[xtGetLastError], IntToStr(JE.LastError), Attributes));
 
-      AddToList(Writer.WriteSingleTag(fInd,
+      AddToList(fWriter.WriteSingleTag(fInd,
         JwXMLTagsString[xtLastErrorString], JE.GetLastErrorMessage(JE.LastError), Attributes));
 
       if Length(Trim(JE.WinCallName)) > 0 then
-        AddToList(Writer.WriteSingleTag(fInd,
+        AddToList(fWriter.WriteSingleTag(fInd,
           JwXMLTagsString[xtWinApiFunction], JE.WinCallName, Attributes));
 
       if Length(Trim(JE.Log)) > 0 then
-        AddToList(Writer.WriteSingleTag(fInd,
+        AddToList(fWriter.WriteSingleTag(fInd,
           JwXMLTagsString[xtLogString], JE.Log , Attributes));
 
       if Length(Trim(JE.ComSource)) > 0 then
-        AddToList(Writer.WriteSingleTag(fInd,
+        AddToList(fWriter.WriteSingleTag(fInd,
           JwXMLTagsString[xtComSource], JE.ComSource, Attributes));
 
       if Length(Trim(JE.StackTrace)) > 0 then
-        AddToList(Writer.WriteSingleTag(fInd,
+        AddToList(fWriter.WriteSingleTag(fInd,
           JwXMLTagsString[xtStackTrace], JE.StackTrace , Attributes));
 
       if Length(Trim(JE.SourceProc)) > 0 then
-        AddToList(Writer.WriteSingleTag(fInd,
+        AddToList(fWriter.WriteSingleTag(fInd,
           JwXMLTagsString[xtSourceProc], JE.SourceProc , Attributes));
 
     end
@@ -757,14 +807,13 @@ begin
 
     end;
 
-    AddToList(Writer.WriteSingleTag(fInd,
+    AddToList(fWriter.WriteSingleTag(fInd,
         JwXMLTagsString[xtMessage], E.Message, Attributes));
-    AddToList(Writer.EndWriteMultipleTags);
+    AddToList(fWriter.EndWriteMultipleTags);
 
 
     //AddToList(fOwner.fWriter.WriteSingleTag(fOwner.fInd,
   finally
-    Writer.Free;
     fOwner.LeaveCriticalSection;
   end;
 end;
@@ -794,7 +843,7 @@ end;
 constructor TJwLogServerImpl.Create;
 var Attributes : TJwXMLAttributes;
     S : String;
-begin
+begin                                               
   fCritical := SyncObjs.TCriticalSection.Create;
   fElements := Elements;
 
@@ -804,18 +853,16 @@ begin
   fEventTypes := EventTypes;
 
   if Assigned(WriterClass) then
-    fWriterClass := WriterClass
+    fWriter := WriterClass
   else
-    fWriterClass := TJwLogWriter;
-
-  fWriter := fWriterClass.Create;
+    fWriter := TJwLogWriter.Create;
     
 
   DateTimeToString(S, JwTimeOutputString, Now);
 
-  fWriterClass.AddAttribute(Attributes, JwXMLAttributeString[atStart], S);
-  fWriterClass.AddAttribute(Attributes, JwXMLAttributeString[atThread], fWriterClass.GetThreadName);
-  fWriterClass.AddAttribute(Attributes, JwXMLAttributeString[atEnd], '%s'); //save space for end date and time
+  TJwLogWriter.AddAttribute(Attributes, JwXMLAttributeString[atStart], S);
+  TJwLogWriter.AddAttribute(Attributes, JwXMLAttributeString[atThread], TJwLogWriter.GetThreadName);
+  TJwLogWriter.AddAttribute(Attributes, JwXMLAttributeString[atEnd], '%s'); //save space for end date and time
 
   S := fWriter.StartWriteMultipleTags(1, JwXMLTagsString[xtLogProcess],Attributes);
   if Assigned(fElements) then
@@ -852,9 +899,9 @@ begin
     fElements.Add(S);
 
   fWriter.Done;
+  fWriter := nil;
 
   FreeAndNil(fCritical);
-  FreeAndNil(fWriter);
 end;
 
 procedure TJwLogServerImpl.Disconnect(var Client: IJwLogClient);
@@ -882,6 +929,26 @@ begin
      result := fIndents[i].Ident;
 end;
 
+function TJwLogServerImpl.GetLogTypes: TJwEventTypes;
+begin
+  EnterCriticalSection;
+  try
+    result := fEventTypes;
+  finally
+   LeaveCriticalSection;
+  end;
+end;
+
+function TJwLogServerImpl.GetWriterClass: IJwWriterClass;
+begin
+  EnterCriticalSection;
+  try
+    result := fWriter;
+  finally
+   LeaveCriticalSection;
+  end;
+end;
+
 procedure TJwLogServerImpl.SetIdent(Ident: Integer);
 var i : Integer;
     ID : DWORD;
@@ -897,6 +964,26 @@ begin
   SetLength(fIndents, Length(fIndents)+1);
   fIndents[high(fIndents)].ThreadID := ID;
   fIndents[high(fIndents)].Ident := Ident;
+end;
+
+procedure TJwLogServerImpl.SetLogTypes(const LogTypes: TJwEventTypes);
+begin
+  EnterCriticalSection;
+  try
+    fEventTypes := LogTypes;
+  finally
+   LeaveCriticalSection;
+  end;
+end;
+
+procedure TJwLogServerImpl.SetWriterClass(const Writer: IJwWriterClass);
+begin
+  EnterCriticalSection;
+  try
+    fWriter := Writer;
+  finally
+   LeaveCriticalSection;
+  end;
 end;
 
 function TJwLogServerImpl.GetID : Int64;
@@ -981,6 +1068,11 @@ begin
   end;
 end;
 
+function TJwLogWriter.CreateObject: IJwWriterClass;
+begin
+  result := TJwLogWriter.Create;
+end;
+
 procedure TJwLogWriter.Done;
 begin
 
@@ -1021,19 +1113,19 @@ begin
     result := IntToStr(GetCurrentThreadId);
 end;
 
-function TJwLogWriter.StartWriteMultipleTags(const IndLevel : Integer;
-  const TagName: TJwString; const Attributes: TJwXMLAttributes) : TJwString;
+function TJwLogWriter.StartWriteMultipleTags(IndentLevel: Integer; const TagName: TJwString;
+          Attributes: TJwXMLAttributes): TJwString;
 begin  
-  fIndLevel := IndLevel+1;
+  fIndLevel := IndentLevel+1;
   fTagName := TagName;
    fStartMTags := true;
-   result := WriteSingleTag(IndLevel, TagName, '', Attributes);
+   result := WriteSingleTag(IndentLevel, TagName, '', Attributes);
    fStartMTags := false;
   fMultipleTags := true;
 end;
 
-function TJwLogWriter.WriteSingleTag(IndLevel : Integer; const TagName, Value: TJwString;
-  const Attributes: TJwXMLAttributes): TJwString;
+function TJwLogWriter.WriteSingleTag(IndentLevel: Integer; const TagName: TJwString;
+                                const Value: TJwString; Attributes: TJwXMLAttributes): TJwString;
 var S, AttributesLine : TJwString;
     i : Integer;
 
@@ -1067,17 +1159,21 @@ begin
 
 
   if fMultipleTags then
-    IndLevel := fIndLevel;
+    IndentLevel := fIndLevel;
     //Inc(IndLevel);
 
-  for i := 1 to IndLevel do
+  for i := 1 to IndentLevel do
     result := JwStrIdent + result;
 
 {  if fMultipleTags then
     result := result + JwStrNewLine;  }
 end;
 
+initialization
 
+{ TComObjectFactory.Create(ComServer, TJwLogWriter, IID_JwWriterCLASS,
+    'JwLogWriter', '',ciMultiInstance,
+             tmApartment);}
 
 
 end.

@@ -416,6 +416,9 @@ type
        ATerminalServer.Free;
      end;
     #)
+	@br
+    @bold(Check for a nil property value Processes)
+
     }
     function EnumerateProcesses: Boolean; overload;
 
@@ -423,6 +426,9 @@ type
         Data : Pointer) : Boolean; overload;
 
     {@Name enumerates all Terminal Servers in the specified domain.
+	 The result will be stored in @bold(readonly) property Servers.
+	 	 
+	 
      @Param(ADomain name of the Domain to be queried, if empty string is
      specified the current domain is queried)
      @returns(If the function fails you can use GetLastError to get extended
@@ -435,6 +441,11 @@ type
      HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server
      "TSAdvertise" = REG_DWORD:1
      #)
+	 @bold(Changing this value may be an security issue. Do not alter it without
+	  the consent of the user!)
+	 @bold(Only use the values 0 and 1. Do not use any other values!)@br
+	 
+	 
      @br
      @br@br
      Please note that enumerating Terminal Servers in large environments might
@@ -445,6 +456,11 @@ type
      If the TJwTerminalServer Instance is destroyed and the enumeration thread
      is still busy, the TJwTerminalServer will wait max. 1 second for the thread
      to finish and then terminates it.
+	 @br
+	 @bold(This method is not threadsafe! Do not call or use the instance from
+	  several threads without locking mechanism)
+	 @br
+	 @bold(Check for a nil property value Servers)
     }
     function EnumerateServers(ADomain: String):Boolean;
 
@@ -492,6 +508,8 @@ type
        ATerminalServer.Free;
      end;
     #)
+	 @br
+	 @bold(Check for a nil property value Sessions)
     }
     function EnumerateSessions: boolean;
 
@@ -629,7 +647,8 @@ type
     {@exclude}
     property ServerHandle: THandle read FServerHandle;
 
-    {@Name contains the list of Enumerated Terminal Servers
+    {@Name contains the list of Enumerated Terminal Servers. 
+	 @bold(May be nil!)
      @seealso(EnumerateServers)
      }
     property Servers: TStringList read GetServers;

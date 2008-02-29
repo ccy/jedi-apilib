@@ -19,12 +19,12 @@
     <Version>7.0</Version>
     <DCC_Define>DEBUG;UNICODE</DCC_Define>
     <DCC_Warnings>False</DCC_Warnings>
-    <DCC_RemoteDebug>True</DCC_RemoteDebug>
     <DCC_Optimize>False</DCC_Optimize>
     <DCC_UnitSearchPath>;$(BDS)\Source\DUnit\src</DCC_UnitSearchPath>
     <DCC_ResourcePath>;$(BDS)\Source\DUnit\src</DCC_ResourcePath>
     <DCC_ObjPath>;$(BDS)\Source\DUnit\src</DCC_ObjPath>
     <DCC_IncludePath>;$(BDS)\Source\DUnit\src</DCC_IncludePath>
+    <DCC_RemoteDebug>True</DCC_RemoteDebug>
   </PropertyGroup>
   <ProjectExtensions>
     <Borland.Personality>Delphi.Personality</Borland.Personality>
@@ -39,7 +39,14 @@
     </DelphiCompile>
     <DCCReference Include="Common\ComLib.pas" />
     <DCCReference Include="JWSCLCoException.pas" />
+    <DCCReference Include="JwsclCoLogging.pas">
+      <CoClasses>JwsclCoLogging</CoClasses>
+      <DesignClass>C</DesignClass>
+      <Form>JwsclCoLogging</Form>
+    </DCCReference>
+    <DCCReference Include="JwsclCoMapping.pas" />
     <DCCReference Include="JwsclCOMExports.pas" />
+    <DCCReference Include="JwsclComRegistration.pas" />
     <DCCReference Include="JWSCLCom_TLB.pas" />
     <DCCReference Include="JwsclCoSid.pas">
       <CoClasses>JwCoSid</CoClasses>
