@@ -418,7 +418,7 @@ begin
   SetName(Name);
 end;
 
-threadvar InternalThreadName : String;
+threadvar InternalThreadName : WideString;
 
 function JwGetThreadName : String;
 begin

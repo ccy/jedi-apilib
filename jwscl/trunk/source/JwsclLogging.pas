@@ -108,7 +108,7 @@ type {@Name defines log tag attribute types}
         xtSourceProc);
 
     TJwXMLLogTag = (
-        ltEnter, ltLeave, ltSignal, ltMemory, ltLog, ltException);
+        ltEnter, ltLeave, ltSignal, ltMemory, ltLog, ltException, ltDisabled, ltNone);
 
     {@Name defines known xml tag attributes}
     TJwXMLAttrTag = (
@@ -391,6 +391,12 @@ type
        function GetWriterClass : IJwWriterClass; SafeCall;
      end;
 
+{@Name enables or disables logging. It just does not write output.}
+procedure SetEventTypesEnabled(const LogServer : IJwLogServer; const Enabled : Boolean);
+
+function GetEventTypesEnabled(const LogServer : IJwLogServer) : Boolean;
+
+
 {@Name creates a new log server that can hold several log clients (IJwLogClient).
 A log sever creates a new logprocess tag and closes it if it is destroyed.
 It saves each xml tag into a new string list item in parameter Elements. This
@@ -481,7 +487,7 @@ var //JwStrNewLine : String = #13#10;
         'memtype');
 
     JwXMLLogTagString : array[TJwXMLLogTag] of TJwString = (
-       'ltEnter', 'ltLeave', 'ltSignal', 'ltMemory', 'ltLog', 'ltException');
+       'ltEnter', 'ltLeave', 'ltSignal', 'ltMemory', 'ltLog', 'ltException', 'ltDisabled', 'ltNone');
 
 
 implementation
@@ -583,6 +589,62 @@ begin
   result := TJwLogServerImpl.Create(Elements,LogTypes, WriterClass);
 end;
 
+
+procedure SetEventTypesEnabled(const LogServer : IJwLogServer; const Enabled : Boolean);
+var i : Integer;
+    Events : TJwEventTypes;
+begin
+  //make multithread safe by copy events - GetLogTypes is thread safe
+  Events := LogServer.GetLogTypes;
+
+  for i := low(Events) to High(Events) do
+  begin
+    if Enabled and (Events[i].TagName = ltDisabled) then
+    begin
+      Events[i].TagName := ltNone;
+      LogServer.SetLogTypes(Events);
+      exit;
+    end
+    else
+    if not Enabled and (Events[i].TagName = ltNone) then
+    begin
+      Events[i].TagName := ltDisabled;
+      LogServer.SetLogTypes(Events);
+      exit;
+    end;
+  end;
+
+  if not Enabled then
+  begin
+    TJwLogWriter.AddEventType(Events, JwsclLogging.ltDisabled, -1);
+    //make multithread safe by using copy - SetLogTypes is thread safe
+    LogServer.SetLogTypes(Events);
+  end;
+end;
+
+function GetEventTypesEnabled(const LogServer : IJwLogServer) : Boolean;
+var i : Integer;
+    Events : TJwEventTypes;
+begin
+  //make multithread safe by copy events - GetLogTypes is thread safe
+  Events := LogServer.GetLogTypes;
+
+  result := true;
+  for i := low(Events) to High(Events) do
+  begin
+    if Events[i].TagName = ltDisabled then
+    begin
+      result := false;
+      exit;
+    end;
+  end;  
+end;
+
+
+
+
+
+
 { TJwLogClientImpl }
 
 constructor TJwLogClientImpl.Create(Owner : TJwLogServerImpl;
@@ -630,11 +692,12 @@ end;
 destructor TJwLogClientImpl.Destroy;
 var Attributes : TJwXMLAttributes;
 begin
-  if (fEnterType <> etNone) and
-    TJwLogWriter.CheckLogEventType(ltLeave, Integer(0), fEventTypes) then
-  begin
-    fOwner.EnterCriticalSection;
-    try
+  fOwner.EnterCriticalSection;
+  try
+    if (fEnterType <> etNone) and
+      TJwLogWriter.CheckLogEventType(ltLeave, Integer(0), fEventTypes) then
+    begin
+
       //get one step back of identation
       fOwner.SetIdent(fInd-1);
 
@@ -647,9 +710,9 @@ begin
       except
         raise;
       end;
-    finally
-      fOwner.LeaveCriticalSection;
     end;
+  finally
+    fOwner.LeaveCriticalSection;
   end;
 
   inherited;
@@ -664,11 +727,14 @@ end;
 procedure TJwLogClientImpl.Log(const LogType : TJwLogType; const ClassName, MethodName, FileName, LogMessage : TJwString); safecall;
 var Attributes : TJwXMLAttributes;
 begin
-  if not TJwLogWriter.CheckLogEventType(ltLog, Integer(LogType), fEventTypes) then
-    exit;
-
   fOwner.EnterCriticalSection;
   try
+    if not TJwLogWriter.CheckLogEventType(ltLog, Integer(LogType), fEventTypes) then
+    begin
+      fOwner.LeaveCriticalSection;
+      exit;
+    end;    
+
     TJwLogWriter.AddAttribute(Attributes, JwXMLAttributeString[atType],JwLogTypeStrings[LogType]);
     TJwLogWriter.AddAttributes(Attributes, ClassName, MethodName, FileName);
     TJwLogWriter.AddAttribute(Attributes, JwXMLAttributeString[atThread], TJwLogWriter.GetThreadName);
@@ -696,11 +762,14 @@ procedure TJwLogClientImpl.Memory(const MemoryType: TJwMemoryType;
   const MemType, ClassName, MethodName, FileName, LogMessage: TJwString);
 var Attributes : TJwXMLAttributes;
 begin
-  if not TJwLogWriter.CheckLogEventType(ltMemory, Integer(MemoryType), fEventTypes) then
-    exit;
-
   fOwner.EnterCriticalSection;
   try
+    if not TJwLogWriter.CheckLogEventType(ltMemory, Integer(MemoryType), fEventTypes) then
+    begin
+      fOwner.LeaveCriticalSection;
+      exit;
+    end;
+
     TJwLogWriter.AddAttribute(Attributes, JwXMLAttributeString[atType], JwMemoryTypeString[MemoryType]);
     TJwLogWriter.AddAttribute(Attributes, JwXMLAttributeString[atMemType], MemType);
     TJwLogWriter.AddAttributes(Attributes, ClassName, MethodName, FileName);
@@ -723,11 +792,14 @@ procedure TJwLogClientImpl.Signal(const SignalType: TJwSignalType;
   LogMessage: TJwString);
 var Attributes : TJwXMLAttributes;
 begin
-  if not TJwLogWriter.CheckLogEventType(ltSignal, Integer(SignalType), fEventTypes) then
-    exit;
-
   fOwner.EnterCriticalSection;
   try
+    if not TJwLogWriter.CheckLogEventType(ltSignal, Integer(SignalType), fEventTypes) then
+    begin
+      fOwner.LeaveCriticalSection;
+      exit;
+    end;
+
     TJwLogWriter.AddAttribute(Attributes, JwXMLAttributeString[atType], JwSignalTypeString[SignalType]);
     TJwLogWriter.AddAttribute(Attributes, JwXMLAttributeString[atSource], Source);
     TJwLogWriter.AddAttribute(Attributes, JwXMLAttributeString[atTarget], Target);
@@ -751,15 +823,19 @@ var Attributes : TJwXMLAttributes;
     Writer : IJwWriterClass;
     JE : EJwsclSecurityException;
 begin
-  if not TJwLogWriter.CheckLogEventType(ltException, Integer(0), fEventTypes) then
-    exit;
-
-
-  //IJwWriterClass.QueryInterface(IID_JwWriterCLASS, Writer);
-  Writer := fWriter.CreateObject;
-
   fOwner.EnterCriticalSection;
   try
+    if not TJwLogWriter.CheckLogEventType(ltException, Integer(0), fEventTypes) then
+    begin
+      fOwner.LeaveCriticalSection;
+      exit;
+    end;
+
+
+    Writer := fWriter.CreateObject;
+
+
+
     TJwLogWriter.AddAttributes(Attributes, ClassName, MethodName, FileName);
     TJwLogWriter.AddAttribute(Attributes, JwXMLAttributeString[atThread], TJwLogWriter.GetThreadName);
 
@@ -1060,6 +1136,11 @@ begin
   result := false;
   for i := low(AllowedTypes) to high(AllowedTypes) do
   begin
+    if AllowedTypes[i].TagName = ltDisabled then
+    begin
+      exit;
+    end;
+    
     if AllowedTypes[i].TagName = LogTag then
     begin
       result := (AllowedTypes[i].TypeValues and LogTypeValue) = LogTypeValue;
