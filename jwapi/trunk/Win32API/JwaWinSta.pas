@@ -378,13 +378,14 @@ function CurrentDateTimeString(out lpBuffer: PWideChar): Boolean; stdcall;
 function DateTimeString(DateTime: PFILETIME; lpBuffer: PWideChar): PWideChar;
   stdcall;
 
-// This is a wrapped for all OS versions
+// This is a wrapper for all OS versions, you are strongly recommended to use
+// only this version.
 function DateTimeStringSafe(DateTime: PFILETIME; lpBuffer: PWideChar;
   cchDest: SIZE_T): PWideChar; stdcall;
 
-// This is the Vista version which takes an additional parameter with
-// maximum buffer size (you have to set it) 
-function DateTimeStringVista(DateTime: PFILETIME; lpBuffer: PWideChar;
+// This is the Vista RTM version which takes an additional parameter with
+// maximum buffer size (you have to set it). This bug was fixed in SP1.
+function DateTimeStringVistaRTM(DateTime: PFILETIME; lpBuffer: PWideChar;
   cchDest: SIZE_T): PWideChar; stdcall;
 
 function DiffTimeString(FTLow: FILETIME; FTHigh: FILETIME;
@@ -394,13 +395,15 @@ function DiffTimeString(FTLow: FILETIME; FTHigh: FILETIME;
 function ElapsedTimeString(DiffTime: PDiffTime; bShowSeconds: Boolean;
   lpElapsedTime: PWideChar): Integer; stdcall;
 
-// This is a wrapped for all OS versions
+// This is a wrapper for all OS versions, you are strongly recommended to use
+// only this version.
 function ElapsedTimeStringSafe(DiffTime: PDiffTime; bShowSeconds: Boolean;
   lpElapsedTime: PWideChar; cchDest: SIZE_T): Integer;
 
-// This is the Vista version of ElapsedTimeString which takes an additional
+// This is the Vista RTM version of ElapsedTimeString which takes an additional
 // parameter with the count of characters for lpElapsedTime (you have to set it)
-function ElapsedTimeStringEx(DiffTime: PDiffTime; bShowSeconds: Boolean;
+// This bug was fixed in SP1.
+function ElapsedTimeStringVistaRTM(DiffTime: PDiffTime; bShowSeconds: Boolean;
   lpElapsedTime: PWideChar; cchDest: SIZE_T): HRESULT; stdcall;
 
 function FileTime2DateTime(FileTime: TFileTime): TDateTime;
@@ -431,13 +434,16 @@ function QueryCurrentWinStation(pWinStationName: LPWSTR;
   pUserName: LPWSTR; var SessionId: DWORD; var WdFlag: DWORD): Boolean;
   stdcall;
 
-// This is the Vista version of QueryCurrentWinStation which takes an
+// This is the Vista RTM version of QueryCurrentWinStation which takes an
 // additional parameter with the count of characters for pUserName
 // note that pWinStationname is Fixed Size!
-function QueryCurrentWinStationEx(pWinStationName: LPWSTR;
+// This bug was fixed in SP1.
+function QueryCurrentWinStationVistaRTM(pWinStationName: LPWSTR;
   pUserName: PWideChar; cchDest: DWORD; var SessionId: DWORD;
   var WdFlag: DWORD): Boolean; stdcall;
 
+// This is a wrapper for all OS versions, you are strongly recommended to use
+// only this version.
 function QueryCurrentWinStationSafe(pWinStationName: LPWSTR;
   pUserName: PWideChar; cchDest: DWORD; var SessionId: DWORD;
   var WdFlag: DWORD): Boolean; stdcall;
@@ -581,10 +587,10 @@ function CalculateDiffTime; external utildll name 'CalculateDiffTime';
 function CalculateElapsedTime; external utildll name 'CalculateElapsedTime';
 function CurrentDateTimeString; external utildll name 'CurrentDateTimeString';
 function DateTimeString; external utildll name 'DateTimeString';
-function DateTimeStringVista; external utildll name 'DateTimeString';
+function DateTimeStringVistaRTM; external utildll name 'DateTimeString';
 function ElapsedTimeString; external utildll name 'ElapsedTimeString';
 // Vista version of ElapsedTimeString, exported name is ElapsedTimeString
-function ElapsedTimeStringEx; external utildll name 'ElapsedTimeString';
+function ElapsedTimeStringRTM; external utildll name 'ElapsedTimeString';
 function GetUnknownString; external utildll name 'GetUnknownString';
 function LogonIdFromWinStationNameA; external winstadll name 'LogonIdFromWinStationNameA';
 function LogonIdFromWinStationNameW; external winstadll name 'LogonIdFromWinStationNameW';
@@ -685,15 +691,15 @@ begin
 end;
 
 var
-  __DateTimeStringVista: Pointer;
+  __DateTimeStringVistaRTM: Pointer;
 
-function DateTimeStringVista;
+function DateTimeStringVistaRTM;
 begin
-  GetProcedureAddress(__DateTimeStringVista, utildll, 'DateTimeString');
+  GetProcedureAddress(__DateTimeStringVistaRTM, utildll, 'DateTimeString');
   asm
         MOV     ESP, EBP
         POP     EBP
-        JMP     [__DateTimeStringVista]
+        JMP     [__DateTimeStringVistaRTM]
   end;
 end;
 
@@ -711,15 +717,15 @@ begin
 end;
 
 var
-  __ElapsedTimeStringEx: Pointer;
+  __ElapsedTimeStringVistaRTM: Pointer;
 
-function ElapsedTimeStringEx;
+function ElapsedTimeStringVistaRTM;
 begin
-  GetProcedureAddress(__ElapsedTimeStringEx, utildll, 'ElapsedTimeString');
+  GetProcedureAddress(__ElapsedTimeStringVistaRTM, utildll, 'ElapsedTimeString');
   asm
         MOV     ESP, EBP
         POP     EBP
-        JMP     [__ElapsedTimeStringEx]
+        JMP     [__ElapsedTimeStringVistaRTM]
   end;
 end;
 
@@ -777,15 +783,15 @@ begin
 end;
 
 var
-  __QueryCurrentWinStationEx: Pointer;
+  __QueryCurrentWinStationVistaRTM: Pointer;
 
-function QueryCurrentWinStationEx;
+function QueryCurrentWinStationVistaRTM;
 begin
-  GetProcedureAddress(__QueryCurrentWinStationEx, utildll, 'QueryCurrentWinStation');
+  GetProcedureAddress(__QueryCurrentWinStationVistaRTM, utildll, 'QueryCurrentWinStation');
   asm
         MOV     ESP, EBP
         POP     EBP
-        JMP     [__QueryCurrentWinStationEx]
+        JMP     [__QueryCurrentWinStationVistaRTM]
   end;
 end;
 
@@ -1147,6 +1153,21 @@ end;
 {$ENDIF DYNAMIC_LINK}
 
 // This function is not exported
+function IsVistaRTM: boolean;
+var VersionInfo: TOSVersionInfoEx;
+begin
+  // Zero Memory and set structure size
+  ZeroMemory(@VersionInfo, SizeOf(VersionInfo));
+  VersionInfo.dwOSVersionInfoSize := SizeOf(VersionInfo);
+  GetVersionEx(@VersionInfo);
+
+  // Are we running Vista RTM?
+  Result := (VersionInfo.dwMajorVersion = 6) and
+    (VersionInfo.dwMinorVersion = 0) and
+    (VersionInfo.wProductType = VER_NT_WORKSTATION) and
+    (VersionInfo.wServicePackMajor = 0); //If no Service Pack has been installed, the value is zero
+end;
+
 function IsVista: boolean;
 var VersionInfo: TOSVersionInfoEx;
 begin
@@ -1202,10 +1223,10 @@ begin
   ZeroMemory(lpBuffer, cchDest * SizeOf(WCHAR));
 
  // Are we running Vista?
-  if IsVista then
+  if IsVistaRTM then
   begin
     // Vista version
-    Result := DateTimeStringVista(DateTime, lpBuffer, cchDest);
+    Result := DateTimeStringVistaRTM(DateTime, lpBuffer, cchDest);
   end
   else begin
     // Other OS's (including server 2008!)
@@ -1258,9 +1279,9 @@ begin
   ZeroMemory(lpElapsedTime, cchDest * SizeOf(WCHAR));
 
  // Are we running Vista?
-  if IsVista then
+  if IsVistaRTM then
   begin
-    hr := ElapsedTimeStringEx(DiffTime, bShowSeconds, lpElapsedTime,
+    hr := ElapsedTimeStringVistaRTM(DiffTime, bShowSeconds, lpElapsedTime,
       cchDest);
     if Succeeded(hr) then
     begin
@@ -1401,9 +1422,9 @@ begin
   ZeroMemory(pUserName, cchDest * SizeOf(WCHAR));
 
   // Are we running Vista?
-  if IsVista then
+  if IsVistaRTM then
   begin
-    Result := QueryCurrentWinStationEx(pWinStationName, pUserName, cchDest,
+    Result := QueryCurrentWinStationVistaRTM(pWinStationName, pUserName, cchDest,
       SessionId, WdFlag);
   end
   else begin
