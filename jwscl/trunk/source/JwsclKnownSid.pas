@@ -67,7 +67,7 @@ type
   end;
 
    (*@Name is a class that describes the actually user that is running
-    the actual thread or process.
+    the current or process.
     Because the user must not be neccessary the actual logged on user
     it is called that way.
     Use the var JwSecurityProcessUserSID to get its date. But don't free it.
@@ -768,7 +768,6 @@ end;
 
 function JwGetLogonSID(const hWinStation: HWINSTA{TWindowStation})
 : TJwSecurityId;
-  {TODO: Use TWindowStation (if implemented) instead}
 var
   hAWinst: HWINSTA;
   logonSID: PSID;
@@ -777,12 +776,11 @@ begin
   haWinst := hWinStation;
   if (hWinStation = 0) or (hWinStation = INVALID_HANDLE_VALUE) then
     hAWinst := OpenWindowStation('winsta0',
-      False, READ_CONTROL
-      //READ_CONTROL or WRITE_DAC
+      False, WINSTA_READATTRIBUTES
       );
   Result := nil;
 
-  if (hWinStation = 0) or (hWinStation = INVALID_HANDLE_VALUE) then
+  if (hAWinst = 0) then
     exit;
 
   if not GetUserObjectInformation(hAWinst, UOI_USER_SID, nil, 0, dwSize) then
