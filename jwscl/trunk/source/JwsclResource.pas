@@ -276,7 +276,7 @@ const
     ' 8 authorities.';
   RsSidCallLookupAccountNameFailed = 'Call to LookupAccountName failed. Coul' +
     'd not get required buffer size.';
-  RsSidCallFailedCreateBinarySid = 'Call to ConvertStringSidToSid failed. "%' +
+  RsSidCallFailedCreateSIDString = 'Call to ConvertStringSidToSid failed. "%' +
     's"';
   RsSidSubAuthorityOutOfBound = 'Sub authority (%d) index out of bounds.';
   RsSidAlreadyInList = 'SID already in list';

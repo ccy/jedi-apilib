@@ -353,14 +353,14 @@ type
       nil): TJwInheritedFromArray;
     {PINHERITED_FROM pInheritArray} virtual;
 
-      {Name takes the ownership of an object given by a handle. If the actual thread has the SE_TAKE_OWNERSHIP_NAME
+      {Name takes the ownership of an object given by a handle. If the current has the SE_TAKE_OWNERSHIP_NAME
        available it is made active automatically.
-       The owner is set to to actual thread owner or given SID.
+       The owner is set to to current owner or given SID.
        To set the owner to an arbitrary one the caller must enable SE_RESTORE_PRIVILEGE. The function doesnt do it.
 
        @param Handle Defines a handle to the file or folder which owner is to be changed
        @param aObjectType Defines the type of object
-       @param(SID defines the new owner. If nil the actual thread user is used.)
+       @param(SID defines the new owner. If nil the current user is used.)
 
        @raises EJwsclSecurityException See SetNamedSecurityInfo for more exception
        }
@@ -368,14 +368,14 @@ type
       const aObjectType: TSeObjectType; SID: TJwSecurityId = nil);
       overload; virtual;
 
-       {Name takes the ownership of an object given by a handle. If the actual thread has the SE_TAKE_OWNERSHIP_NAME
+       {Name takes the ownership of an object given by a handle. If the current has the SE_TAKE_OWNERSHIP_NAME
        available it is made active automatically.
-       The owner is set to to actual thread owner or given SID.
+       The owner is set to to current owner or given SID.
        To set the owner to an arbitrary one the caller must enable SE_RESTORE_PRIVILEGE. The function doesnt do it.
 
        @param PathName Defines the file or folder which owner is to be changed
        @param aObjectType Defines the type of object
-       @param(SID defines the new owner. If nil the actual thread user is used.)
+       @param(SID defines the new owner. If nil the current user is used.)
 
        @raises EJwsclSecurityException See SetNamedSecurityInfo for more exception
        }
@@ -1089,14 +1089,14 @@ type
       out AccessStatus: TJwCardinalArray
     );  override;
 
-      {Name takes the ownership of an object given by a handle. If the actual thread has the SE_TAKE_OWNERSHIP_NAME
+      {Name takes the ownership of an object given by a handle. If the current has the SE_TAKE_OWNERSHIP_NAME
        available it is made active automatically.
-       The owner is set to to actual thread owner or given SID.
+       The owner is set to to current owner or given SID.
        To set the owner to an arbitrary one the caller must enable SE_RESTORE_PRIVILEGE. The function doesnt do it.
 
        @param Handle Defines a handle to the file or folder which owner is to be changed
        @param aObjectType Defines the type of object
-       @param(SID defines the new owner. If nil the actual thread user is used.)
+       @param(SID defines the new owner. If nil the current user is used.)
 
        @raises EJwsclSecurityException See SetNamedSecurityInfo for more exception
        }
@@ -1104,14 +1104,14 @@ type
       const aObjectType: TSeObjectType; SID: TJwSecurityId = nil);
       reintroduce; overload; override;
 
-       {Name takes the ownership of an object given by a handle. If the actual thread has the SE_TAKE_OWNERSHIP_NAME
+       {Name takes the ownership of an object given by a handle. If the current has the SE_TAKE_OWNERSHIP_NAME
        available it is made active automatically.
-       The owner is set to to actual thread owner or given SID.
+       The owner is set to to current owner or given SID.
        To set the owner to an arbitrary one the caller must enable SE_RESTORE_PRIVILEGE. The function doesnt do it.
 
        @param ObjectName Defines the object which owner is to be changed
        @param aObjectType Defines the type of object
-       @param(SID defines the new owner. If nil the actual thread user is used.)
+       @param(SID defines the new owner. If nil the current user is used.)
 
        @raises EJwsclSecurityException See SetNamedSecurityInfo for more exception
        }
@@ -1812,38 +1812,38 @@ type
     class function SupportACL(RootPathName: TJwString): boolean;
 
 
-      {Name takes the ownership of a file or folder. If the actual thread has the SE_TAKE_OWNERSHIP_NAME
+      {Name takes the ownership of a file or folder. If the current has the SE_TAKE_OWNERSHIP_NAME
        available it is made active automatically.
-       The owner is set to to actual thread owner or given SID.
+       The owner is set to to current owner or given SID.
        To set the owner to an arbitrary one the caller must enable SE_RESTORE_PRIVILEGE. The function doesnt do it.
 
        @param PathName Defines the file or folder which owner is to be changed
-       @param(SID defines the new owner. If nil the actual thread user is used.)
+       @param(SID defines the new owner. If nil the current user is used.)
 
        @raises EJwsclSecurityException See SetNamedSecurityInfo for more exception
        }
     class procedure TakeOwnerShip(const PathName: TJwString;
       SID: TJwSecurityId = nil); overload; virtual;
 
-      {Name takes the ownership of a file or folder. If the actual thread has the SE_TAKE_OWNERSHIP_NAME
+      {Name takes the ownership of a file or folder. If the current has the SE_TAKE_OWNERSHIP_NAME
        available it is made active automatically.
-       The owner is set to to actual thread owner or given SID.
+       The owner is set to to current owner or given SID.
        To set the owner to an arbitrary one the caller must enable SE_RESTORE_PRIVILEGE. The function doesnt do it.
 
        @param Handle Defines a handle to the file or folder which owner is to be changed
-       @param(SID defines the new owner. If nil the actual thread user is used.)
+       @param(SID defines the new owner. If nil the current user is used.)
 
        @raises EJwsclSecurityException See SetNamedSecurityInfo for more exception
        }
     class procedure TakeOwnerShip(const Handle: THandle;
       SID: TJwSecurityId = nil); overload; virtual;
 
-      {Name takes the ownership of a file or folder used by this instnace. If the actual thread has the SE_TAKE_OWNERSHIP_NAME
+      {Name takes the ownership of a file or folder used by this instnace. If the current has the SE_TAKE_OWNERSHIP_NAME
        available it is made active automatically.
-       The owner is set to to actual thread owner or given SID.
+       The owner is set to to current owner or given SID.
        To set the owner to an arbitrary one the caller must enable SE_RESTORE_PRIVILEGE. The function doesnt do it.
 
-       @param(SID defines the new owner. If nil the actual thread user is used.)
+       @param(SID defines the new owner. If nil the current user is used.)
 
        @raises EJwsclSecurityException See SetNamedSecurityInfo for more exception
        }
@@ -2534,26 +2534,26 @@ type
     procedure RestoreInheritanceFlow(bTakeOwnerShip: boolean = False);
       overload; virtual;
 
-      {Name takes the ownership of a file or folder. If the actual thread has the SE_TAKE_OWNERSHIP_NAME
+      {Name takes the ownership of a file or folder. If the current has the SE_TAKE_OWNERSHIP_NAME
        available it is made active automatically.
-       The owner is set to to actual thread owner or given SID.
+       The owner is set to to current owner or given SID.
        To set the owner to an arbitrary one the caller must enable SE_RESTORE_PRIVILEGE. The function doesnt do it.
 
        @param PathName Defines the file or folder which owner is to be changed
-       @param(SID defines the new owner. If nil the actual thread user is used.)
+       @param(SID defines the new owner. If nil the current user is used.)
 
        @raises EJwsclSecurityException See SetNamedSecurityInfo for more exception
        }
     class procedure TakeOwnerShip(const KeyName: TJwString;
       SID: TJwSecurityId = nil); overload; virtual;
 
-      {Name takes the ownership of a file or folder. If the actual thread has the SE_TAKE_OWNERSHIP_NAME
+      {Name takes the ownership of a file or folder. If the current has the SE_TAKE_OWNERSHIP_NAME
        available it is made active automatically.
-       The owner is set to to actual thread owner or given SID.
+       The owner is set to to current owner or given SID.
        To set the owner to an arbitrary one the caller must enable SE_RESTORE_PRIVILEGE. The function doesnt do it.
 
        @param Handle Defines a handle to the file or folder which owner is to be changed
-       @param(SID defines the new owner. If nil the actual thread user is used.)
+       @param(SID defines the new owner. If nil the current user is used.)
 
        @raises EJwsclSecurityException See SetNamedSecurityInfo for more exception
        }
@@ -2577,12 +2577,12 @@ type
       }
     class procedure CheckKeyNameValidity(const KeyName: TJwString); virtual;
 
-      {Name takes the ownership of a file or folder used by this instnace. If the actual thread has the SE_TAKE_OWNERSHIP_NAME
+      {Name takes the ownership of a file or folder used by this instnace. If the current has the SE_TAKE_OWNERSHIP_NAME
        available it is made active automatically.
-       The owner is set to to actual thread owner or given SID.
+       The owner is set to to current owner or given SID.
        To set the owner to an arbitrary one the caller must enable SE_RESTORE_PRIVILEGE. The function doesnt do it.
 
-       @param(SID defines the new owner. If nil the actual thread user is used.)
+       @param(SID defines the new owner. If nil the current user is used.)
 
        @raises EJwsclSecurityException See SetNamedSecurityInfo for more exception
        }
@@ -4723,6 +4723,7 @@ end;
 
 constructor TJwSecureFileObject.Create(const FileName: TJwString);
 begin
+(*
 {$IFNDEF DELPHI5}
   if not DirectoryExists(FileName) and not FileExists(FileName) then
 {$ELSE}
@@ -4731,7 +4732,7 @@ begin
     raise EJwsclInvalidParameterException.CreateFmtEx(
       RsSecureObjectsFileFolderNotFound, 'TJwSecureFileObject.Create',
       ClassName, RsUNSecureObjects, 0, False, [FileName]);
-
+  *)
   inherited Create;
 
   fFileName := FileName;

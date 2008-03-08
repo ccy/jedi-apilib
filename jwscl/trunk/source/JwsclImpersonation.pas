@@ -76,7 +76,7 @@ type {@Name defines an interface for TJwImpersonation. }
        property Token : TJwSecurityToken read fToken;
      end;
 
-{@Name impersonates the actual thread and returns an interface pointer to the
+{@Name impersonates the current and returns an interface pointer to the
 token. It's automatically freed and revert to self if run out of scope.
 @raises(EJwsclProcessIdNotAvailable will be raised it the process does not have
   SE_TCB_NAME privilege and a try to get the explorer handle failed)
@@ -84,13 +84,13 @@ token. It's automatically freed and revert to self if run out of scope.
 }
 function JwImpersonateLoggedOnUser: IJwImpersonation; overload;
 
-{@Name impersonates the actual thread and returns an interface pointer to the
+{@Name impersonates the current and returns an interface pointer to the
 token. It's automatically freed and revert to self if run out of scope.
 @param(LogonSessionId defines the user's logon session id.)
 }
 function JwImpersonateLoggedOnUser(const LogonSessionId : ULONG) : IJwImpersonation; overload;
 
-{@Name impersonates the actual thread and returns an interface pointer to the
+{@Name impersonates the current and returns an interface pointer to the
 token. It's automatically freed and revert to self if run out of scope.
 @param(LogonSessionLuid defines the session luid to be impersonated.)}
 function JwImpersonateLoggedOnUser(const LogonSessionLuid : TLuid) : IJwImpersonation; overload;

@@ -99,7 +99,7 @@ type
   end;
 
 {@Name creates an out of process COM object and returns it in ObjectInterface.
-If the actual thread is already elevated, the function just creates an COM object
+If the current is already elevated, the function just creates an COM object
 and returns it; otherwise the elevation dialog will be shown.
 
 The COM class must be registered in a COM type library.
@@ -130,7 +130,7 @@ function JwCoCreateInstanceAsEx(
 
 {@Name creates an out of process COM object with administrator rights
 and returns it in ObjectInterface.
-If the actual thread is already elevated, the function just creates an COM object
+If the current is already elevated, the function just creates an COM object
 and returns it; otherwise the elevation dialog will be shown.
 
 The COM class must be registered in a COM type library.
@@ -160,7 +160,7 @@ function JwCoCreateInstanceAsAdmin(
 
 {@Name creates an out of process COM object with highest possible rights
 and returns it in ObjectInterface.
-If the actual thread is already elevated, the function just creates an COM object
+If the current is already elevated, the function just creates an COM object
 and returns it; otherwise the elevation dialog will be shown.
 
 The COM class must be registered in a COM type library.
@@ -189,7 +189,7 @@ function JwCoCreateInstanceAsHighest(
 
 {@Name creates an out of process COM class factory object with administrator rights
 and returns it in ObjectInterface.
-If the actual thread is already elevated, the function just creates an COM object
+If the current is already elevated, the function just creates an COM object
 and returns it; otherwise the elevation dialog will be shown.
 
 The COM class must be registered in a COM type library.
@@ -217,7 +217,7 @@ function JwCoGetClassFactoyAsAdmin(
   out ObjectInterface) : HRESULT;
 
 {@Name runs a process with elevated privileges in Windows Vista.
-If the actual thread is already elevated the function simply opens the given
+If the current is already elevated the function simply opens the given
 filename. The verb of shellexecute cannot be changed.
 
 This function only works on Windows Vista and newer OS versions.

@@ -33,7 +33,6 @@ Portions created by Christian Wimmer are Copyright (C) Christian Wimmer. All rig
 Description:
 
 }
-{.$IFNDEF SL_OMIT_SECTIONS}
 unit JwsclLogging;
 
 {$INCLUDE Jwscl.inc}

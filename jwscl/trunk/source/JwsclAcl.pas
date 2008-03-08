@@ -164,10 +164,16 @@ type
     {@Name adds ACEs from another list to this one.
      The ACEs will be added using @Link(Add) so the ACL order will be correct.
 
+     @param(AclInstance contains an access control list to be duplicated)
+     @param(KeepOriginalOrder defines whether the order of elements in AclInstance
+      will be kept. In this case the list will be added at the top of the target list. This may
+      disturb the canonical order of elements.
+      If set to false, the elements are added into the target list using canonical order.)
+
      @raises(EJwsclNILParameterException will be raised if aObject is nil)
      @raises(EJwsclInvalidACEException will be raised if the classtype of this list instance is not the same of aObject)
      }
-    procedure AddACEs(AclInstance: TJwSecurityAccessControlList); virtual;
+    procedure AddACEs(AclInstance: TJwSecurityAccessControlList; KeepOriginalOrder : Boolean = true); virtual;
 
     {@Name adds an ACE instance to into the list. The ACE property ListOwner will be set to this list.
 
@@ -1799,7 +1805,7 @@ end;
 
 
 procedure TJwSecurityAccessControlList.AddACEs(
-  AclInstance: TJwSecurityAccessControlList);
+  AclInstance: TJwSecurityAccessControlList; KeepOriginalOrder : Boolean = true);
 var
   i: integer;
   E: TJwSecurityAccessControlEntry;
@@ -1821,7 +1827,10 @@ begin
     E.Assign(AclInstance[i]);
 
     //keep order of original ACL
-    Self.Insert(i, E);
+    if KeepOriginalOrder then
+      Self.Insert(i, E)
+    else
+      Self.Add(E);
   end;
 end;
 

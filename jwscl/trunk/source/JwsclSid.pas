@@ -577,14 +577,14 @@ type
        {@Name creates a SID instance from a string that represents a SID.
         The resulted SID will be checked by @link(CheckSID).
 
-        @param(BinarySID must be in form "S-1-III-SSS[-SSS]^7".
+        @param(SIDString must be in form "S-1-III-SSS[-SSS]^7".
                Where I = identifier authority and S = subautority (from 1 to 8))
         @raises(EJwsclWinCallFailedException will be raised if a call to ConvertStringSidToSid failed)
         @raises(EJwsclSecurityException See @link(CheckSID) for exceptions description)
 
         COM: Also available as com method.
        }
-    constructor Create(const BinarySID: TJwString); overload;
+    constructor Create(const SIDString: TJwString); overload;
 
        {@Name creates a SID instance from a user and domain account.
         The resulted SID will be checked by @link(CheckSID).
@@ -955,11 +955,6 @@ var
 begin
   Create;
 
-  if Length(Authorities) <> 8 then
-    raise EJwsclIndexOutOfBoundsException.CreateFmtEx(
-      RsSidInvalidAuthoritiesLength,
-      'Create', ClassName, RsUNSid, 0, False, []);
-
   fSID := NewSID;
 
   fSID.Revision := 1;
@@ -1024,12 +1019,12 @@ begin
   UpdateDbgData;
 end;
 
-constructor TJwSecurityId.Create(const BinarySID: TJwString);
+constructor TJwSecurityId.Create(const SIDString: TJwString);
 var
   c: TJwPChar;
   tempSID: PSID;
 begin
-  c := TJwPChar(BinarySID);
+  c := TJwPChar(SIDString);
 
   tempSID := nil;
   if not
@@ -1038,9 +1033,9 @@ begin
 {$ENDIF}
     (c, jwaWindows_PSID(tempSID)) then
     raise EJwsclWinCallFailedException.CreateFmtEx(
-      RsSidCallFailedCreateBinarySid,
-      'Create(const BinarySID : TJwString)', ClassName, RsUNSid, 0, True,
-      [string(BinarySID)]);
+      RsSidCallFailedCreateSIDString,
+      'Create(const SIDString : TJwString)', ClassName, RsUNSid, 0, True,
+      [string(SIDString)]);
          
   {
    WARNING:
@@ -1150,7 +1145,7 @@ begin
 {$ENDIF}
     (jwaWindows_PSID(fSID), TJwPChar(sSid)) then
     raise EJwsclWinCallFailedException.CreateFmtEx(
-      RsWinCallFailed, 'Create(const BinarySID : TJwString)',
+      RsWinCallFailed, 'Create(const SIDString : TJwString)',
       ClassName, RsUNSid, 0, True, ['ConvertStringSidToSid']);
 
   Result := TJwString(sSid);

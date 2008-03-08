@@ -590,6 +590,7 @@ type
 
     {@Name defines whether the DACL is protected against inheritance flow or not.
      Use aclpForceUnprotect instead of aclpUnprotected to let flow inheritance.
+
      }
     property InheritanceDACLProtection : TJwACLProtection index 0 read GetProtectedState write SetProtectedState;
 
@@ -767,6 +768,8 @@ begin
   fAuditInherited := False;
 
   OnHashCodeMethod := hashCode;
+
+  fControl := [];
 end;
 
 constructor TJwSecurityDescriptor.Create;
@@ -1577,11 +1580,9 @@ begin
     end;
   end;
 
-  //Control2 := TJwEnumMap.ConvertSecurityControl(result^.Control);
 
-
- // Result.Control := GetRMControl; Warning: GetRMControl not implemented!!
-  Result.Control := 0;
+  Result.Control := TJwEnumMap.ConvertSecurityControl(Control);
+//  Result.Control := 0;
 
   Result.Control := Result.Control or SE_DACL_PRESENT;
 
@@ -1590,6 +1591,8 @@ begin
     Result.Control := Result.Control or SE_DACL_DEFAULTED
   else
     Result.Control := Result.Control and not SE_DACL_DEFAULTED;
+
+
 
   if Assigned(aSACL) then
   begin
@@ -1609,6 +1612,13 @@ begin
   else
     Result.Control := Result.Control and not SE_SELF_RELATIVE;
 
+ { if InheritanceDACLProtection = fProtectionDACLState then
+    result.Control := Result.Control or SE_DACL_PROTECTED
+  else
+    result.Control := Result.Control and not SE_DACL_PROTECTED;
+
+  result.Control := Result.Control or SE_DACL_AUTO_INHERITed;
+  }
  // Control2 := TJwEnumMap.ConvertSecurityControl(result^.Control);
    
 

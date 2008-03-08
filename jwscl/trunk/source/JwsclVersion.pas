@@ -31,6 +31,7 @@ The Original Code is JwsclVersion.pas.
 
 The Initial Developer of the Original Code is Christian Wimmer.
 Portions created by Christian Wimmer are Copyright (C) Christian Wimmer. All rights reserved.
+
 }
 {$IFNDEF SL_OMIT_SECTIONS}
 unit JwsclVersion;
