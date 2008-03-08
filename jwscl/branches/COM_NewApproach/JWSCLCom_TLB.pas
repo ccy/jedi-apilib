@@ -12,7 +12,7 @@ unit JWSCLCom_TLB;
 // ************************************************************************ //
 
 // PASTLWTR : 1.2
-// Datei generiert am 29.02.2008 22:56:06 aus der unten beschriebenen Typbibliothek.
+// Datei generiert am 08.03.2008 23:08:40 aus der unten beschriebenen Typbibliothek.
 
 // ************************************************************************  //
 // Typbib: P:\Eigene Dateien\Dezipaitor\Projekte\Delphi\7\jedi-api-lib\jwscl\trunk\COM\JWSCLCom.tlb (1)
@@ -22,6 +22,20 @@ unit JWSCLCom_TLB;
 // Hilfe-String: JWSCLCom Library
 // DepndLst: 
 //   (1) v2.0 stdole, (C:\Windows\system32\stdole2.tlb)
+//   (2) v4.0 StdVCL, (C:\Windows\system32\stdvcl40.dll)
+//   (3) v4.0 StdVCL, (C:\Windows\system32\stdvcl40.dll)
+//   (4) v4.0 StdVCL, (C:\Windows\system32\stdvcl40.dll)
+//   (5) v4.0 StdVCL, (C:\Windows\system32\stdvcl40.dll)
+//   (6) v4.0 StdVCL, (C:\Windows\system32\stdvcl40.dll)
+//   (7) v4.0 StdVCL, (C:\Windows\system32\stdvcl40.dll)
+//   (8) v4.0 StdVCL, (C:\Windows\system32\stdvcl40.dll)
+//   (9) v4.0 StdVCL, (C:\Windows\system32\stdvcl40.dll)
+//   (10) v4.0 StdVCL, (C:\Windows\system32\stdvcl40.dll)
+//   (11) v4.0 StdVCL, (C:\Windows\system32\stdvcl40.dll)
+//   (12) v4.0 StdVCL, (C:\Windows\system32\stdvcl40.dll)
+//   (13) v4.0 StdVCL, (C:\Windows\system32\stdvcl40.dll)
+//   (14) v4.0 StdVCL, (C:\Windows\system32\stdvcl40.dll)
+//   (15) v4.0 StdVCL, (C:\Windows\system32\stdvcl40.dll)
 // ************************************************************************ //
 {$TYPEDADDRESS OFF} // Unit muß ohne Typüberprüfung für Zeiger compiliert werden. 
 {$WARN SYMBOL_PLATFORM OFF}
@@ -116,6 +130,110 @@ const
   IID_IJwEventType: TGUID = '{B95E0B5E-F424-4AC4-98F0-B1C79C19AD11}';
   CLASS_JwXMLAttribute: TGUID = '{7AB2866B-0017-4B7D-89F2-B31EA7B70A3C}';
   CLASS_JwEventType: TGUID = '{5EEE6B61-5685-4DBD-9740-ABF3109825AA}';
+  IID_IJwEncryptionApi: TGUID = '{4353CD92-7CD8-4D32-B9B4-DC920AC0751C}';
+  CLASS_JwEncryptionApi: TGUID = '{FEF1CB19-B79E-4C08-8B81-B1D9AEEE299E}';
+  IID_IJwEncryptMemory: TGUID = '{5A177321-4491-4CFA-950F-5CB6B362604A}';
+  CLASS_JwEncryptMemory: TGUID = '{9AB932A1-A20F-4C2F-847D-6F830D7BD2D3}';
+  IID_IJwEncryptData: TGUID = '{895D37EF-F714-405C-BAE6-D769CF71EFF2}';
+  CLASS_JwEncryptData: TGUID = '{AA19666B-0982-494E-86E7-D259EF24075B}';
+  IID_IJwRandomDataGenerator: TGUID = '{ECCDCFF9-E076-4F91-8650-BA249C1B9389}';
+  CLASS_JwRandomDataGenerator: TGUID = '{84E7C592-60FE-4D09-8115-63A57D61BACB}';
+  IID_IJwWindowStation: TGUID = '{78BA7899-943D-4A41-9727-661E618323B6}';
+  CLASS_JwWindowStation: TGUID = '{CA67E385-3E40-440A-BF34-6F50959D0252}';
+  IID_IJwWindowStations: TGUID = '{D97DA30D-F731-4500-ACAB-D3CEE4C17EAC}';
+  CLASS_JwWindowStations: TGUID = '{1A728EA7-874B-422D-8B36-BF35483E130A}';
+  IID_IJwDesktop: TGUID = '{CF634589-D54D-42C7-B1BD-623BBD8CF556}';
+  CLASS_JwDesktop: TGUID = '{359E87B0-225F-47A4-B990-C747A5820D13}';
+  IID_IJwDesktops: TGUID = '{6583CE41-64A2-4A2A-9BD5-5F4C4F90D21A}';
+  CLASS_JwDesktops: TGUID = '{83AB4423-1C0A-4CF5-ACE0-F0A575C92F45}';
+  IID_IJwCredentialsPrompt: TGUID = '{270A0E83-2D25-43A5-936F-C883AD0DAF05}';
+  CLASS_JwCredentialsPrompt: TGUID = '{6211C035-FD1D-4D3A-A54B-C79D3234156A}';
+  IID_IJwCredentialsTools: TGUID = '{C0605281-F33C-4B11-AFC3-A3D0B2CF633D}';
+  CLASS_JwCredentialsTools: TGUID = '{9F4C752C-A91E-478C-A14B-9086E697C9B4}';
+  IID_IJwCryptProvider: TGUID = '{1862AB82-BFAB-40CA-9FB7-DBB05CFE9605}';
+  CLASS_JwCryptProvider: TGUID = '{F1CDA518-1B98-4470-88FB-7E609AF52077}';
+  IID_IJwHash: TGUID = '{F4114A63-2B58-4560-B848-70EEA580BE7D}';
+  CLASS_JwHash: TGUID = '{43647697-24A7-4793-8D81-CB7872D3156C}';
+  IID_IJwCryptKey: TGUID = '{B7517765-DF7D-4407-83A5-D41C8E556988}';
+  CLASS_JwCryptKey: TGUID = '{20E2A33C-474E-44C3-9E63-1264BBD52051}';
+  IID_IJwImpersonation: TGUID = '{CB4ABE99-055F-4BBD-9676-2B2211DE1F1B}';
+  CLASS_JwImpersonation: TGUID = '{7889E6A6-4B0E-49ED-BD50-81B214E40B3B}';
+  IID_IJwKnownSIDs: TGUID = '{396C38B0-7628-424B-975A-98091E1EF70D}';
+  CLASS_JwKnownSIDs: TGUID = '{36269DEA-8801-4043-B4D8-E4B50FE6A99A}';
+  IID_IJwThreadUserSid: TGUID = '{30DB5A90-30C0-44E8-B248-CAD294BC3765}';
+  CLASS_JwThreadUserSid: TGUID = '{D8F38922-D2ED-4625-BB75-4CDAED4B3AB4}';
+  IID_IJwLSA: TGUID = '{3A2CBCD1-F335-4F05-9A4F-8424C6471994}';
+  CLASS_JwLSA: TGUID = '{2E6D17C4-E32B-458C-81E8-535ABB03E9E5}';
+  IID_IJwLSALogonSession: TGUID = '{15EC2F0C-301D-417D-8814-5555FA1DAB3B}';
+  CLASS_JwLSALogonSession: TGUID = '{1EA990E2-0999-414A-80E4-B79D60F01344}';
+  IID_IJwLSALogonSessionData: TGUID = '{8D30540B-8656-4427-A459-08B3B9873070}';
+  CLASS_JwLSALogonSessionData: TGUID = '{0E04C10C-ED62-4A40-895B-05C5AA62DBC2}';
+  IID_IJwPrivilegeScope: TGUID = '{8CD86140-4C99-4F30-8DA9-826CCD70B379}';
+  CLASS_JwPrivilegeScope: TGUID = '{A7DF1ED6-BA4F-4440-89F6-5862401406F3}';
+  IID_IJwProcessUtils: TGUID = '{D5D2ED6A-F5EF-4935-AD4C-643FEFF06C6F}';
+  CLASS_JwProcessUtils: TGUID = '{37A95D4C-B449-4403-837D-EFEF7F17875B}';
+  IID_IJwSecureBaseClass: TGUID = '{803DBAF9-3F7B-416F-AC5B-C55C8637ED38}';
+  IID_IJwSecureFileObject: TGUID = '{5D361B6A-ABEC-4B78-83E4-DF3944055E8C}';
+  IID_IJwSecureRegistryKey: TGUID = '{0762D432-FF95-400E-B80E-19ABC879B9D7}';
+  CLASS_JwSecureRegistryKey: TGUID = '{FE8239CF-0E92-47F7-AAB3-E0C1285227F6}';
+  CLASS_JwSecureFileObject: TGUID = '{D0A6C06B-3BB7-4E1C-908A-BCF7315E3517}';
+  CLASS_JwSecureBaseClass: TGUID = '{DBCD4006-2808-4E2D-8CCA-B64B774271B7}';
+  IID_IJwProgressCallback: TGUID = '{D3989545-CA0C-4883-941B-2AF9A6F54D6B}';
+  CLASS_JwProgressCallback: TGUID = '{D9F01405-DEEA-4456-8666-EBC83F37C113}';
+  IID_IJwAuthZAccessRequest: TGUID = '{C197E5D5-73F6-4658-904F-9E2AB42984E2}';
+  CLASS_JwAuthZAccessRequest: TGUID = '{9C4AAA33-59E4-49F0-A82A-FA769F68492D}';
+  IID_IJwAuthZAccessReply: TGUID = '{89269169-0B57-4E14-81F3-84AC738BFBD3}';
+  CLASS_JwAuthZAccessReply: TGUID = '{5B82A1A7-2799-4FBC-BE15-C85B7C782E09}';
+  IID_IJwAuthResourceManager: TGUID = '{328A999D-6055-4DEB-A091-1B2A299F5238}';
+  CLASS_JwAuthResourceManager: TGUID = '{53054D78-E724-44B3-9F52-6FCD7DB2CCA1}';
+  IID_IJwAuthContext: TGUID = '{7955406B-58EC-4ACF-9ADC-BD3CCA2FD379}';
+  CLASS_JwAuthContext: TGUID = '{AE4DE43C-E682-4C71-B62D-3F7C3505F82D}';
+  IID_IJwTerminalServer: TGUID = '{DA19C375-048E-40BA-99CC-F7DD98BFD76F}';
+  CLASS_JwTerminalServer: TGUID = '{DE467135-A2D0-40A0-924D-E0BE602D1655}';
+  IID_IJwTerminalServerList: TGUID = '{F085C70B-5BCA-4EBF-A8AA-D4551C17CEF7}';
+  CLASS_JwTerminalServerList: TGUID = '{DED763BD-17CF-4520-9CAA-BC21338E5DAF}';
+  IID_IJwWTSSession: TGUID = '{D512987D-F6DF-4B01-87FF-0611607FCD9C}';
+  CLASS_JwWTSSession: TGUID = '{887C4E1E-F5EF-4F3E-94ED-6CEEA2E69EFD}';
+  IID_IJwWTSSessionList: TGUID = '{C22216FB-9BC7-4707-A28C-D529492590C4}';
+  CLASS_JwWTSSessionList: TGUID = '{D01D87D9-75CF-4E82-94B0-214A082A1E42}';
+  IID_IJwWTSProcess: TGUID = '{B396DC6E-BEE7-4254-B4C8-A6101682685C}';
+  CLASS_JwWTSProcess: TGUID = '{441B4992-6636-4171-9405-90C774395B81}';
+  IID_IJwWTSProcessList: TGUID = '{B9E2DB7A-C45C-41F1-9323-8115BA49CAC1}';
+  CLASS_JwWTSProcessList: TGUID = '{7BBF9C1B-9427-4EB1-95F8-809961F0C865}';
+  IID_IJwWTSSessionShadow: TGUID = '{EA1DC736-38D8-4F63-B6DD-3AD9ED0208D0}';
+  CLASS_JwWTSSessionShadow: TGUID = '{AEB18080-3314-4F95-889C-BC973278995A}';
+  IID_IJwSecurityDescriptorDialogCallback: TGUID = '{BA33738E-2D3E-4214-BAC6-DD044DB5697C}';
+  IID_IJwInheritTypeList: TGUID = '{B6FBCBDC-7941-414F-9D8E-464BA97FB183}';
+  CLASS_JwInheritTypeList: TGUID = '{16B4A0DB-3C24-403E-8ADA-A1AA41623605}';
+  IID_IJwTerminalServerCallback: TGUID = '{C7387934-4900-44DD-A4A1-449A3C0564BD}';
+  IID_IJwUtils: TGUID = '{8FAE3B6B-F0BC-4F41-999B-8CC35AB90BE1}';
+  CLASS_JwUtils: TGUID = '{FDBDFB43-4514-4EB8-BB33-A212852CF48F}';
+  IID_IJwElevationClassFactory: TGUID = '{BDD24ED3-5200-4970-9B63-9965AF7F121F}';
+  CLASS_JwElevationClassFactory: TGUID = '{FAB73335-B2C4-4D8A-8B9E-EC59B6E66AB4}';
+  IID_IJwExplicitAccessArray: TGUID = '{381ADFDA-CF08-4FE8-B660-78588184524A}';
+  CLASS_JwExplicitAccessArray: TGUID = '{7EC861B5-E7F9-41A3-870B-4AC8741A86BD}';
+  IID_IJwExplicitAccess: TGUID = '{45379DC8-AC94-41DC-917E-4716063E1F38}';
+  CLASS_JwExplicitAccess: TGUID = '{A0A24861-E8A4-4166-ABBA-BD82CC5DFBCA}';
+  IID_IJwGuidArray: TGUID = '{039206C7-F45F-40E0-A942-D7CA7A1E65DE}';
+  CLASS_JwGuidArray: TGUID = '{553B1557-951C-48A7-A49D-FBABB2594C88}';
+  IID_IJwInheritedFromRecord: TGUID = '{DDFAF8BC-C644-4FBB-B5FF-041E1220F166}';
+  CLASS_JwInheritedFromRecord: TGUID = '{5839878C-006F-435E-BCA4-C000A4A887CA}';
+  IID_IJwInheritedFromArray: TGUID = '{174EA097-20D7-4D69-B37D-79AB8A182DDA}';
+  CLASS_JwInheritedFromArray: TGUID = '{76F23915-511F-4220-918D-8BCF76FBDC8B}';
+  IID_IJwRootTuple: TGUID = '{650D81E3-14D6-4EEF-B13D-3333FEFD6CAF}';
+  CLASS_JwRootTuple: TGUID = '{3159B8CD-E5D4-4769-8476-F450B2B366FA}';
+  IID_IJwKeyRootTupleArray: TGUID = '{89D1C10C-47E5-44D3-A9FC-48A99C565DA3}';
+  CLASS_JwKeyRootTupleArray: TGUID = '{626C626E-7FB2-4100-9A28-1E8EBAA127BB}';
+  IID_IJwAccessMaskArray: TGUID = '{EE079D32-8114-495A-A2B3-5449F12F0A8B}';
+  CLASS_JwAccessMaskArray: TGUID = '{A28E5A78-8817-45A8-8DE6-7F407779CC1B}';
+  IID_IJwObjectTypeList: TGUID = '{567A8ADD-41D4-4808-A982-620DA1313B75}';
+  CLASS_JwObjectTypeList: TGUID = '{2C5BE478-7284-4C7D-BD75-B8C397D547AC}';
+  IID_IJwObjectTypeListArray: TGUID = '{F395722F-3303-489D-AA27-A04944AC2456}';
+  CLASS_JwObjectTypeListArray: TGUID = '{04EAF380-259C-4BAA-BCC0-F963A37277C9}';
+  IID_IJwSIDInfoData: TGUID = '{2353CD1D-4E28-4CB9-B61A-1045049CF9A3}';
+  CLASS_JwSIDInfoData: TGUID = '{6ABF9717-7F4F-4DB4-8A9D-0582FF8AD8D3}';
+  IID_IJwSIDInfoDataArray: TGUID = '{1A82872F-EC91-475E-8520-E0C59F7D18CD}';
+  CLASS_JwSIDInfoDataArray: TGUID = '{33130D2F-79A5-479C-9B70-D93473BB881E}';
 
 // *********************************************************************//
 // Deklaration von in der Typbibliothek definierten Enumerationen         
@@ -215,6 +333,7 @@ const
   ltMemory = $00000003;
   ltLog = $00000004;
   ltException = $00000005;
+  ltDisabled = $00000006;
 
 // Konstanten für enum JwXMLAttrTag
 type
@@ -238,6 +357,240 @@ const
   mtNone = $00000000;
   mtAlloc = $00000001;
   mtDeAlloc = $00000002;
+
+// Konstanten für enum JwAceType
+type
+  JwAceType = TOleEnum;
+const
+  actAudit = $00000000;
+  actAuditCallback = $00000001;
+  actAuditObject = $00000002;
+  actAuditCallbackObject = $00000003;
+  actMandatory = $00000004;
+  actAllow = $00000005;
+  actAllowCallback = $00000006;
+  actAllowCallbackObject = $00000007;
+  actDeny = $00000008;
+  actDenyCallback = $00000009;
+  actDenyObject = $0000000A;
+  actDenyCallbackObject = $0000000B;
+  actUnknown = $0000000C;
+
+// Konstanten für enum JwProgInvokeSetting
+type
+  JwProgInvokeSetting = TOleEnum;
+const
+  pis_0 = $00000000;
+  pis_ProgressInvokeNever = $00000001;
+  pis_ProgressInvokeEveryObject = $00000002;
+  pis_ProgressInvokeOnError = $00000003;
+  pis_ProgressCancelOperation = $00000004;
+  pis_ProgressRetryOperation = $00000005;
+  pis_1 = $00000006;
+  pis_2 = $00000007;
+  pis_3 = $00000008;
+  pis_4 = $00000009;
+  pis_5 = $0000000A;
+  pis_6 = $0000000B;
+  pis_7 = $0000000C;
+  pis_8 = $0000000D;
+  pis_ProgressFinished = $0000000E;
+
+// Konstanten für enum JwAccessControlListType
+type
+  JwAccessControlListType = TOleEnum;
+const
+  acltDiscretionary = $00000000;
+  acltAuditing = $00000001;
+  acltMandatory = $00000002;
+
+// Konstanten für enum JwEqualAceType
+type
+  JwEqualAceType = TOleEnum;
+const
+  eactSameSid = $00000000;
+  eactSameFlags = $00000001;
+  eactSameAccessMask = $00000002;
+  eactSameType = $00000003;
+
+// Konstanten für enum JwSecurityInformationFlag
+type
+  JwSecurityInformationFlag = TOleEnum;
+const
+  siOwnerSecurityInformation = $00000000;
+  siGroupSecurityInformation = $00000001;
+  siDACLSecurityInformation = $00000002;
+  siSACLSecurityInforation = $00000003;
+  siLabelSecurityInformation = $00000004;
+  siProtectedDACLSecurityInformation = $00000005;
+  siProtectedSACLSecurityInformation = $00000006;
+  siUnprotectedDACLSecurityInformation = $00000007;
+  siUnprotectedSACLSecurityInformation = $00000008;
+
+// Konstanten für enum JwSecurityResetType
+type
+  JwSecurityResetType = TOleEnum;
+const
+  srNone = $00000000;
+  srOwner = $00000001;
+  srDACL = $00000002;
+  srSACL = $00000003;
+
+// Konstanten für enum JwTempResetEnum
+type
+  JwTempResetEnum = TOleEnum;
+const
+  treOwner = $00000000;
+  treGroup = $00000001;
+  treDACL = $00000002;
+  treSACL = $00000003;
+
+// Konstanten für enum JwSecurityDescriptorControl
+type
+  JwSecurityDescriptorControl = TOleEnum;
+const
+  sdcOwnerDefaulted = $00000000;
+  sdcGroupDefaulted = $00000001;
+  sdcDACLPresent = $00000002;
+  sdcSACLPresent = $00000003;
+  sdcDACLAutoInheritReq = $00000004;
+  sdcSACLAutoInheritReq = $00000005;
+  sdcDACLAutoInherited = $00000006;
+  sdcSACLAutoInherited = $00000007;
+  sdcDACLProtected = $00000008;
+  sdcSACLProtected = $00000009;
+  sdcRMControlValid = $0000000A;
+  sdcSelfRelative = $0000000B;
+
+// Konstanten für enum JwACLProtection
+type
+  JwACLProtection = TOleEnum;
+const
+  aclpUnprotected = $00000000;
+  aclpProtected = $00000001;
+  aclpForceUnprotect = $00000002;
+
+// Konstanten für enum JwTreeSetType
+type
+  JwTreeSetType = TOleEnum;
+const
+  tstSet = $00000000;
+  tstReset = $00000001;
+
+// Konstanten für enum JwRootRegKey
+type
+  JwRootRegKey = TOleEnum;
+const
+  rrkString = $00000000;
+  rrkLocalMachine = $00000001;
+  rrkCurrentUser = $00000002;
+  rrkUsers = $00000003;
+  rrkCurrentConfig = $00000004;
+  rrkClassesRoot = $00000005;
+
+// Konstanten für enum JwRootKeyEnum
+type
+  JwRootKeyEnum = TOleEnum;
+const
+  rkeLocal = $00000000;
+  rkeCurrentUser = $00000001;
+  rkeUsers = $00000002;
+  rkeConfig = $00000003;
+  rkeClasses = $00000004;
+
+// Konstanten für enum JwSecurityDialogFlag
+type
+  JwSecurityDialogFlag = TOleEnum;
+const
+  sdfEditDACL = $00000000;
+  sdfEditSACL = $00000001;
+  sdfEditOwner = $00000002;
+  sdfContainer = $00000003;
+  sdtReadOnly = $00000004;
+  sdfAdvanced = $00000005;
+  sdfReset = $00000006;
+  sdfOwnerReadOnly = $00000007;
+  sdfEditProperties = $00000008;
+  sdfOwnerRecurse = $00000009;
+  sdfNoACLProtect = $0000000A;
+  sdfNoTreeApply = $0000000B;
+  sdfServerIsDC = $0000000C;
+  sdfResetDACLTree = $0000000D;
+  sdfResetSACLTree = $0000000E;
+  sdfObjectGUID = $0000000F;
+  sdfEditEffective = $00000010;
+  sdfResetDACL = $00000011;
+  sdfResetSACL = $00000012;
+  sdfResetOwner = $00000013;
+  sdfNoAdditionalPermission = $00000014;
+  sdfMayWrite = $00000015;
+  sdfPageTitle = $00000016;
+
+// Konstanten für enum JwSecurityPageType
+type
+  JwSecurityPageType = TOleEnum;
+const
+  sptPageDACL = $00000000;
+  sptPageAdvPerm = $00000001;
+  sptPageSACL = $00000002;
+  sptPageOwner = $00000003;
+  sptPageEffective = $00000004;
+  sptPageTakeOwnerShip = $00000005;
+  sptPad1 = $00000006;
+  sptPad2 = $00000007;
+  sptPad3 = $00000008;
+  sptPad4 = $00000009;
+  sptPad5 = $0000000A;
+  sptPad6 = $0000000B;
+  sptPad7 = $0000000C;
+  sptPad8 = $0000000D;
+  sptPad9 = $0000000E;
+  sptACLWindow = $0000000F;
+  sptAdvWindow = $00000010;
+
+// Konstanten für enum JwSIDClassName
+type
+  JwSIDClassName = TOleEnum;
+const
+  scnNone = $00000000;
+  scnComputer = $00000001;
+  scnGroup = $00000002;
+  scnUnknown = $00000003;
+
+// Konstanten für enum JwDesktopCreationFlag
+type
+  JwDesktopCreationFlag = TOleEnum;
+const
+  dcfCreate = $00000000;
+  dcfOpen = $00000001;
+
+// Konstanten für enum JwDesktopFlag
+type
+  JwDesktopFlag = TOleEnum;
+const
+  dfPad0 = $00000000;
+  dfAllowOtherAccountHook = $00000001;
+
+// Konstanten für enum JwSIDAttribute
+type
+  JwSIDAttribute = TOleEnum;
+const
+  sidaUnknown = $00000000;
+  sidaGroupMandatory = $00000001;
+  sidaGroupEnabledByDefault = $00000002;
+  sidaGroupEnabled = $00000003;
+  sidaGroupOwner = $00000004;
+  sidaGroupUseForDenyOnly = $00000005;
+  sidaGroupLogonID = $00000006;
+  sidaGroupResource = $00000007;
+  sidaGroupIntegrity = $00000008;
+  sidaGroupIntegrityEnabled = $00000009;
+  sidaPad0 = $0000000A;
+  sidaPad1 = $0000000B;
+  sidaPad2 = $0000000C;
+  sidaPad3 = $0000000D;
+  sidaPad4 = $0000000E;
+  sidaPad5 = $0000000F;
 
 type
 
@@ -316,6 +669,111 @@ type
   IJwXMLAttributeDisp = dispinterface;
   IJwEventType = interface;
   IJwEventTypeDisp = dispinterface;
+  IJwEncryptionApi = interface;
+  IJwEncryptionApiDisp = dispinterface;
+  IJwEncryptMemory = interface;
+  IJwEncryptMemoryDisp = dispinterface;
+  IJwEncryptData = interface;
+  IJwEncryptDataDisp = dispinterface;
+  IJwRandomDataGenerator = interface;
+  IJwRandomDataGeneratorDisp = dispinterface;
+  IJwWindowStation = interface;
+  IJwWindowStationDisp = dispinterface;
+  IJwWindowStations = interface;
+  IJwWindowStationsDisp = dispinterface;
+  IJwDesktop = interface;
+  IJwDesktopDisp = dispinterface;
+  IJwDesktops = interface;
+  IJwDesktopsDisp = dispinterface;
+  IJwCredentialsPrompt = interface;
+  IJwCredentialsPromptDisp = dispinterface;
+  IJwCredentialsTools = interface;
+  IJwCredentialsToolsDisp = dispinterface;
+  IJwCryptProvider = interface;
+  IJwCryptProviderDisp = dispinterface;
+  IJwHash = interface;
+  IJwHashDisp = dispinterface;
+  IJwCryptKey = interface;
+  IJwCryptKeyDisp = dispinterface;
+  IJwImpersonation = interface;
+  IJwImpersonationDisp = dispinterface;
+  IJwKnownSIDs = interface;
+  IJwKnownSIDsDisp = dispinterface;
+  IJwThreadUserSid = interface;
+  IJwThreadUserSidDisp = dispinterface;
+  IJwLSA = interface;
+  IJwLSADisp = dispinterface;
+  IJwLSALogonSession = interface;
+  IJwLSALogonSessionDisp = dispinterface;
+  IJwLSALogonSessionData = interface;
+  IJwLSALogonSessionDataDisp = dispinterface;
+  IJwPrivilegeScope = interface;
+  IJwPrivilegeScopeDisp = dispinterface;
+  IJwProcessUtils = interface;
+  IJwProcessUtilsDisp = dispinterface;
+  IJwSecureBaseClass = interface;
+  IJwSecureBaseClassDisp = dispinterface;
+  IJwSecureFileObject = interface;
+  IJwSecureFileObjectDisp = dispinterface;
+  IJwSecureRegistryKey = interface;
+  IJwSecureRegistryKeyDisp = dispinterface;
+  IJwProgressCallback = interface;
+  IJwAuthZAccessRequest = interface;
+  IJwAuthZAccessRequestDisp = dispinterface;
+  IJwAuthZAccessReply = interface;
+  IJwAuthZAccessReplyDisp = dispinterface;
+  IJwAuthResourceManager = interface;
+  IJwAuthResourceManagerDisp = dispinterface;
+  IJwAuthContext = interface;
+  IJwAuthContextDisp = dispinterface;
+  IJwTerminalServer = interface;
+  IJwTerminalServerDisp = dispinterface;
+  IJwTerminalServerList = interface;
+  IJwTerminalServerListDisp = dispinterface;
+  IJwWTSSession = interface;
+  IJwWTSSessionDisp = dispinterface;
+  IJwWTSSessionList = interface;
+  IJwWTSSessionListDisp = dispinterface;
+  IJwWTSProcess = interface;
+  IJwWTSProcessDisp = dispinterface;
+  IJwWTSProcessList = interface;
+  IJwWTSProcessListDisp = dispinterface;
+  IJwWTSSessionShadow = interface;
+  IJwWTSSessionShadowDisp = dispinterface;
+  IJwSecurityDescriptorDialogCallback = interface;
+  IJwSecurityDescriptorDialogCallbackDisp = dispinterface;
+  IJwInheritTypeList = interface;
+  IJwInheritTypeListDisp = dispinterface;
+  IJwTerminalServerCallback = interface;
+  IJwTerminalServerCallbackDisp = dispinterface;
+  IJwUtils = interface;
+  IJwUtilsDisp = dispinterface;
+  IJwElevationClassFactory = interface;
+  IJwElevationClassFactoryDisp = dispinterface;
+  IJwExplicitAccessArray = interface;
+  IJwExplicitAccessArrayDisp = dispinterface;
+  IJwExplicitAccess = interface;
+  IJwExplicitAccessDisp = dispinterface;
+  IJwGuidArray = interface;
+  IJwGuidArrayDisp = dispinterface;
+  IJwInheritedFromRecord = interface;
+  IJwInheritedFromRecordDisp = dispinterface;
+  IJwInheritedFromArray = interface;
+  IJwInheritedFromArrayDisp = dispinterface;
+  IJwRootTuple = interface;
+  IJwRootTupleDisp = dispinterface;
+  IJwKeyRootTupleArray = interface;
+  IJwKeyRootTupleArrayDisp = dispinterface;
+  IJwAccessMaskArray = interface;
+  IJwAccessMaskArrayDisp = dispinterface;
+  IJwObjectTypeList = interface;
+  IJwObjectTypeListDisp = dispinterface;
+  IJwObjectTypeListArray = interface;
+  IJwObjectTypeListArrayDisp = dispinterface;
+  IJwSIDInfoData = interface;
+  IJwSIDInfoDataDisp = dispinterface;
+  IJwSIDInfoDataArray = interface;
+  IJwSIDInfoDataArrayDisp = dispinterface;
 
 // *********************************************************************//
 // Deklaration von in der Typbibliothek definierten CoClasses             
@@ -355,6 +813,57 @@ type
   TestInt = ITestInt;
   JwXMLAttribute = IJwXMLAttribute;
   JwEventType = IJwEventType;
+  JwEncryptionApi = IJwEncryptionApi;
+  JwEncryptMemory = IJwEncryptMemory;
+  JwEncryptData = IJwEncryptData;
+  JwRandomDataGenerator = IJwRandomDataGenerator;
+  JwWindowStation = IJwWindowStation;
+  JwWindowStations = IJwWindowStations;
+  JwDesktop = IJwDesktop;
+  JwDesktops = IJwDesktops;
+  JwCredentialsPrompt = IJwCredentialsPrompt;
+  JwCredentialsTools = IJwCredentialsTools;
+  JwCryptProvider = IJwCryptProvider;
+  JwHash = IJwHash;
+  JwCryptKey = IJwCryptKey;
+  JwImpersonation = IJwImpersonation;
+  JwKnownSIDs = IJwKnownSIDs;
+  JwThreadUserSid = IJwThreadUserSid;
+  JwLSA = IJwLSA;
+  JwLSALogonSession = IJwLSALogonSession;
+  JwLSALogonSessionData = IJwLSALogonSessionData;
+  JwPrivilegeScope = IJwPrivilegeScope;
+  JwProcessUtils = IJwProcessUtils;
+  JwSecureRegistryKey = IJwSecureRegistryKey;
+  JwSecureFileObject = IJwSecureFileObject;
+  JwSecureBaseClass = IJwSecureBaseClass;
+  JwProgressCallback = IJwProgressCallback;
+  JwAuthZAccessRequest = IJwAuthZAccessRequest;
+  JwAuthZAccessReply = IJwAuthZAccessReply;
+  JwAuthResourceManager = IJwAuthResourceManager;
+  JwAuthContext = IJwAuthContext;
+  JwTerminalServer = IJwTerminalServer;
+  JwTerminalServerList = IJwTerminalServerList;
+  JwWTSSession = IJwWTSSession;
+  JwWTSSessionList = IJwWTSSessionList;
+  JwWTSProcess = IJwWTSProcess;
+  JwWTSProcessList = IJwWTSProcessList;
+  JwWTSSessionShadow = IJwWTSSessionShadow;
+  JwInheritTypeList = IJwInheritTypeList;
+  JwUtils = IJwUtils;
+  JwElevationClassFactory = IJwElevationClassFactory;
+  JwExplicitAccessArray = IJwExplicitAccessArray;
+  JwExplicitAccess = IJwExplicitAccess;
+  JwGuidArray = IJwGuidArray;
+  JwInheritedFromRecord = IJwInheritedFromRecord;
+  JwInheritedFromArray = IJwInheritedFromArray;
+  JwRootTuple = IJwRootTuple;
+  JwKeyRootTupleArray = IJwKeyRootTupleArray;
+  JwAccessMaskArray = IJwAccessMaskArray;
+  JwObjectTypeList = IJwObjectTypeList;
+  JwObjectTypeListArray = IJwObjectTypeListArray;
+  JwSIDInfoData = IJwSIDInfoData;
+  JwSIDInfoDataArray = IJwSIDInfoDataArray;
 
 
 // *********************************************************************// 
@@ -373,6 +882,27 @@ type
     GenericAll: LongWord;
   end;
 
+  JwTokenHandle = LongWord; 
+  JwAccessMask = LongWord; 
+  JwThreadHandle = LongWord; 
+  JwProcessHandle = LongWord; 
+  JwLastError = LongWord; 
+  JwTokenAccessMask = LongWord; 
+  JwCSPHandle = LongWord; 
+  JwHandle = LongWord; 
+  JwKeyHandle = JwHandle; 
+  JwSessionID = JwHandle; 
+  JwState = JwHandle; 
+  JwProcessID = JwHandle; 
+  JwBitMask = LongWord; 
+  JwAceTypes = JwBitMask; 
+  JwEqualAceTypes = JwBitMask; 
+  JwSecurityInforationFlags = JwBitMask; 
+  JwExtDWORD = Int64; 
+  JwTempResetEnumSet = JwBitMask; 
+  JwSecurityDescriptorControls = JwBitMask; 
+  JwSecurityDialogFlags = JwBitMask; 
+  JwDesktopFlags = JwBitMask; 
 
 // *********************************************************************//
 // Schnittstelle: IJwSid
@@ -1522,6 +2052,951 @@ type
   end;
 
 // *********************************************************************//
+// Schnittstelle: IJwEncryptionApi
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {4353CD92-7CD8-4D32-B9B4-DC920AC0751C}
+// *********************************************************************//
+  IJwEncryptionApi = interface(IDispatch)
+    ['{4353CD92-7CD8-4D32-B9B4-DC920AC0751C}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwEncryptionApiDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {4353CD92-7CD8-4D32-B9B4-DC920AC0751C}
+// *********************************************************************//
+  IJwEncryptionApiDisp = dispinterface
+    ['{4353CD92-7CD8-4D32-B9B4-DC920AC0751C}']
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwEncryptMemory
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {5A177321-4491-4CFA-950F-5CB6B362604A}
+// *********************************************************************//
+  IJwEncryptMemory = interface(IDispatch)
+    ['{5A177321-4491-4CFA-950F-5CB6B362604A}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwEncryptMemoryDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {5A177321-4491-4CFA-950F-5CB6B362604A}
+// *********************************************************************//
+  IJwEncryptMemoryDisp = dispinterface
+    ['{5A177321-4491-4CFA-950F-5CB6B362604A}']
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwEncryptData
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {895D37EF-F714-405C-BAE6-D769CF71EFF2}
+// *********************************************************************//
+  IJwEncryptData = interface(IDispatch)
+    ['{895D37EF-F714-405C-BAE6-D769CF71EFF2}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwEncryptDataDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {895D37EF-F714-405C-BAE6-D769CF71EFF2}
+// *********************************************************************//
+  IJwEncryptDataDisp = dispinterface
+    ['{895D37EF-F714-405C-BAE6-D769CF71EFF2}']
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwRandomDataGenerator
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {ECCDCFF9-E076-4F91-8650-BA249C1B9389}
+// *********************************************************************//
+  IJwRandomDataGenerator = interface(IDispatch)
+    ['{ECCDCFF9-E076-4F91-8650-BA249C1B9389}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwRandomDataGeneratorDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {ECCDCFF9-E076-4F91-8650-BA249C1B9389}
+// *********************************************************************//
+  IJwRandomDataGeneratorDisp = dispinterface
+    ['{ECCDCFF9-E076-4F91-8650-BA249C1B9389}']
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwWindowStation
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {78BA7899-943D-4A41-9727-661E618323B6}
+// *********************************************************************//
+  IJwWindowStation = interface(IDispatch)
+    ['{78BA7899-943D-4A41-9727-661E618323B6}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwWindowStationDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {78BA7899-943D-4A41-9727-661E618323B6}
+// *********************************************************************//
+  IJwWindowStationDisp = dispinterface
+    ['{78BA7899-943D-4A41-9727-661E618323B6}']
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwWindowStations
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {D97DA30D-F731-4500-ACAB-D3CEE4C17EAC}
+// *********************************************************************//
+  IJwWindowStations = interface(IDispatch)
+    ['{D97DA30D-F731-4500-ACAB-D3CEE4C17EAC}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwWindowStationsDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {D97DA30D-F731-4500-ACAB-D3CEE4C17EAC}
+// *********************************************************************//
+  IJwWindowStationsDisp = dispinterface
+    ['{D97DA30D-F731-4500-ACAB-D3CEE4C17EAC}']
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwDesktop
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {CF634589-D54D-42C7-B1BD-623BBD8CF556}
+// *********************************************************************//
+  IJwDesktop = interface(IDispatch)
+    ['{CF634589-D54D-42C7-B1BD-623BBD8CF556}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwDesktopDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {CF634589-D54D-42C7-B1BD-623BBD8CF556}
+// *********************************************************************//
+  IJwDesktopDisp = dispinterface
+    ['{CF634589-D54D-42C7-B1BD-623BBD8CF556}']
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwDesktops
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {6583CE41-64A2-4A2A-9BD5-5F4C4F90D21A}
+// *********************************************************************//
+  IJwDesktops = interface(IDispatch)
+    ['{6583CE41-64A2-4A2A-9BD5-5F4C4F90D21A}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwDesktopsDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {6583CE41-64A2-4A2A-9BD5-5F4C4F90D21A}
+// *********************************************************************//
+  IJwDesktopsDisp = dispinterface
+    ['{6583CE41-64A2-4A2A-9BD5-5F4C4F90D21A}']
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwCredentialsPrompt
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {270A0E83-2D25-43A5-936F-C883AD0DAF05}
+// *********************************************************************//
+  IJwCredentialsPrompt = interface(IDispatch)
+    ['{270A0E83-2D25-43A5-936F-C883AD0DAF05}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwCredentialsPromptDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {270A0E83-2D25-43A5-936F-C883AD0DAF05}
+// *********************************************************************//
+  IJwCredentialsPromptDisp = dispinterface
+    ['{270A0E83-2D25-43A5-936F-C883AD0DAF05}']
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwCredentialsTools
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {C0605281-F33C-4B11-AFC3-A3D0B2CF633D}
+// *********************************************************************//
+  IJwCredentialsTools = interface(IDispatch)
+    ['{C0605281-F33C-4B11-AFC3-A3D0B2CF633D}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwCredentialsToolsDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {C0605281-F33C-4B11-AFC3-A3D0B2CF633D}
+// *********************************************************************//
+  IJwCredentialsToolsDisp = dispinterface
+    ['{C0605281-F33C-4B11-AFC3-A3D0B2CF633D}']
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwCryptProvider
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {1862AB82-BFAB-40CA-9FB7-DBB05CFE9605}
+// *********************************************************************//
+  IJwCryptProvider = interface(IDispatch)
+    ['{1862AB82-BFAB-40CA-9FB7-DBB05CFE9605}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwCryptProviderDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {1862AB82-BFAB-40CA-9FB7-DBB05CFE9605}
+// *********************************************************************//
+  IJwCryptProviderDisp = dispinterface
+    ['{1862AB82-BFAB-40CA-9FB7-DBB05CFE9605}']
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwHash
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {F4114A63-2B58-4560-B848-70EEA580BE7D}
+// *********************************************************************//
+  IJwHash = interface(IDispatch)
+    ['{F4114A63-2B58-4560-B848-70EEA580BE7D}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwHashDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {F4114A63-2B58-4560-B848-70EEA580BE7D}
+// *********************************************************************//
+  IJwHashDisp = dispinterface
+    ['{F4114A63-2B58-4560-B848-70EEA580BE7D}']
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwCryptKey
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {B7517765-DF7D-4407-83A5-D41C8E556988}
+// *********************************************************************//
+  IJwCryptKey = interface(IDispatch)
+    ['{B7517765-DF7D-4407-83A5-D41C8E556988}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwCryptKeyDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {B7517765-DF7D-4407-83A5-D41C8E556988}
+// *********************************************************************//
+  IJwCryptKeyDisp = dispinterface
+    ['{B7517765-DF7D-4407-83A5-D41C8E556988}']
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwImpersonation
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {CB4ABE99-055F-4BBD-9676-2B2211DE1F1B}
+// *********************************************************************//
+  IJwImpersonation = interface(IDispatch)
+    ['{CB4ABE99-055F-4BBD-9676-2B2211DE1F1B}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwImpersonationDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {CB4ABE99-055F-4BBD-9676-2B2211DE1F1B}
+// *********************************************************************//
+  IJwImpersonationDisp = dispinterface
+    ['{CB4ABE99-055F-4BBD-9676-2B2211DE1F1B}']
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwKnownSIDs
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {396C38B0-7628-424B-975A-98091E1EF70D}
+// *********************************************************************//
+  IJwKnownSIDs = interface(IDispatch)
+    ['{396C38B0-7628-424B-975A-98091E1EF70D}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwKnownSIDsDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {396C38B0-7628-424B-975A-98091E1EF70D}
+// *********************************************************************//
+  IJwKnownSIDsDisp = dispinterface
+    ['{396C38B0-7628-424B-975A-98091E1EF70D}']
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwThreadUserSid
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {30DB5A90-30C0-44E8-B248-CAD294BC3765}
+// *********************************************************************//
+  IJwThreadUserSid = interface(IDispatch)
+    ['{30DB5A90-30C0-44E8-B248-CAD294BC3765}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwThreadUserSidDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {30DB5A90-30C0-44E8-B248-CAD294BC3765}
+// *********************************************************************//
+  IJwThreadUserSidDisp = dispinterface
+    ['{30DB5A90-30C0-44E8-B248-CAD294BC3765}']
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwLSA
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {3A2CBCD1-F335-4F05-9A4F-8424C6471994}
+// *********************************************************************//
+  IJwLSA = interface(IDispatch)
+    ['{3A2CBCD1-F335-4F05-9A4F-8424C6471994}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwLSADisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {3A2CBCD1-F335-4F05-9A4F-8424C6471994}
+// *********************************************************************//
+  IJwLSADisp = dispinterface
+    ['{3A2CBCD1-F335-4F05-9A4F-8424C6471994}']
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwLSALogonSession
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {15EC2F0C-301D-417D-8814-5555FA1DAB3B}
+// *********************************************************************//
+  IJwLSALogonSession = interface(IDispatch)
+    ['{15EC2F0C-301D-417D-8814-5555FA1DAB3B}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwLSALogonSessionDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {15EC2F0C-301D-417D-8814-5555FA1DAB3B}
+// *********************************************************************//
+  IJwLSALogonSessionDisp = dispinterface
+    ['{15EC2F0C-301D-417D-8814-5555FA1DAB3B}']
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwLSALogonSessionData
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {8D30540B-8656-4427-A459-08B3B9873070}
+// *********************************************************************//
+  IJwLSALogonSessionData = interface(IDispatch)
+    ['{8D30540B-8656-4427-A459-08B3B9873070}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwLSALogonSessionDataDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {8D30540B-8656-4427-A459-08B3B9873070}
+// *********************************************************************//
+  IJwLSALogonSessionDataDisp = dispinterface
+    ['{8D30540B-8656-4427-A459-08B3B9873070}']
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwPrivilegeScope
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {8CD86140-4C99-4F30-8DA9-826CCD70B379}
+// *********************************************************************//
+  IJwPrivilegeScope = interface(IDispatch)
+    ['{8CD86140-4C99-4F30-8DA9-826CCD70B379}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwPrivilegeScopeDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {8CD86140-4C99-4F30-8DA9-826CCD70B379}
+// *********************************************************************//
+  IJwPrivilegeScopeDisp = dispinterface
+    ['{8CD86140-4C99-4F30-8DA9-826CCD70B379}']
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwProcessUtils
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {D5D2ED6A-F5EF-4935-AD4C-643FEFF06C6F}
+// *********************************************************************//
+  IJwProcessUtils = interface(IDispatch)
+    ['{D5D2ED6A-F5EF-4935-AD4C-643FEFF06C6F}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwProcessUtilsDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {D5D2ED6A-F5EF-4935-AD4C-643FEFF06C6F}
+// *********************************************************************//
+  IJwProcessUtilsDisp = dispinterface
+    ['{D5D2ED6A-F5EF-4935-AD4C-643FEFF06C6F}']
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwSecureBaseClass
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {803DBAF9-3F7B-416F-AC5B-C55C8637ED38}
+// *********************************************************************//
+  IJwSecureBaseClass = interface(IDispatch)
+    ['{803DBAF9-3F7B-416F-AC5B-C55C8637ED38}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwSecureBaseClassDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {803DBAF9-3F7B-416F-AC5B-C55C8637ED38}
+// *********************************************************************//
+  IJwSecureBaseClassDisp = dispinterface
+    ['{803DBAF9-3F7B-416F-AC5B-C55C8637ED38}']
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwSecureFileObject
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {5D361B6A-ABEC-4B78-83E4-DF3944055E8C}
+// *********************************************************************//
+  IJwSecureFileObject = interface(IJwSecureBaseClass)
+    ['{5D361B6A-ABEC-4B78-83E4-DF3944055E8C}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwSecureFileObjectDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {5D361B6A-ABEC-4B78-83E4-DF3944055E8C}
+// *********************************************************************//
+  IJwSecureFileObjectDisp = dispinterface
+    ['{5D361B6A-ABEC-4B78-83E4-DF3944055E8C}']
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwSecureRegistryKey
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {0762D432-FF95-400E-B80E-19ABC879B9D7}
+// *********************************************************************//
+  IJwSecureRegistryKey = interface(IJwSecureBaseClass)
+    ['{0762D432-FF95-400E-B80E-19ABC879B9D7}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwSecureRegistryKeyDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {0762D432-FF95-400E-B80E-19ABC879B9D7}
+// *********************************************************************//
+  IJwSecureRegistryKeyDisp = dispinterface
+    ['{0762D432-FF95-400E-B80E-19ABC879B9D7}']
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwProgressCallback
+// Flags:     (256) OleAutomation
+// GUID:      {D3989545-CA0C-4883-941B-2AF9A6F54D6B}
+// *********************************************************************//
+  IJwProgressCallback = interface(IUnknown)
+    ['{D3989545-CA0C-4883-941B-2AF9A6F54D6B}']
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwAuthZAccessRequest
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {C197E5D5-73F6-4658-904F-9E2AB42984E2}
+// *********************************************************************//
+  IJwAuthZAccessRequest = interface(IDispatch)
+    ['{C197E5D5-73F6-4658-904F-9E2AB42984E2}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwAuthZAccessRequestDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {C197E5D5-73F6-4658-904F-9E2AB42984E2}
+// *********************************************************************//
+  IJwAuthZAccessRequestDisp = dispinterface
+    ['{C197E5D5-73F6-4658-904F-9E2AB42984E2}']
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwAuthZAccessReply
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {89269169-0B57-4E14-81F3-84AC738BFBD3}
+// *********************************************************************//
+  IJwAuthZAccessReply = interface(IDispatch)
+    ['{89269169-0B57-4E14-81F3-84AC738BFBD3}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwAuthZAccessReplyDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {89269169-0B57-4E14-81F3-84AC738BFBD3}
+// *********************************************************************//
+  IJwAuthZAccessReplyDisp = dispinterface
+    ['{89269169-0B57-4E14-81F3-84AC738BFBD3}']
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwAuthResourceManager
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {328A999D-6055-4DEB-A091-1B2A299F5238}
+// *********************************************************************//
+  IJwAuthResourceManager = interface(IDispatch)
+    ['{328A999D-6055-4DEB-A091-1B2A299F5238}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwAuthResourceManagerDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {328A999D-6055-4DEB-A091-1B2A299F5238}
+// *********************************************************************//
+  IJwAuthResourceManagerDisp = dispinterface
+    ['{328A999D-6055-4DEB-A091-1B2A299F5238}']
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwAuthContext
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {7955406B-58EC-4ACF-9ADC-BD3CCA2FD379}
+// *********************************************************************//
+  IJwAuthContext = interface(IDispatch)
+    ['{7955406B-58EC-4ACF-9ADC-BD3CCA2FD379}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwAuthContextDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {7955406B-58EC-4ACF-9ADC-BD3CCA2FD379}
+// *********************************************************************//
+  IJwAuthContextDisp = dispinterface
+    ['{7955406B-58EC-4ACF-9ADC-BD3CCA2FD379}']
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwTerminalServer
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {DA19C375-048E-40BA-99CC-F7DD98BFD76F}
+// *********************************************************************//
+  IJwTerminalServer = interface(IDispatch)
+    ['{DA19C375-048E-40BA-99CC-F7DD98BFD76F}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwTerminalServerDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {DA19C375-048E-40BA-99CC-F7DD98BFD76F}
+// *********************************************************************//
+  IJwTerminalServerDisp = dispinterface
+    ['{DA19C375-048E-40BA-99CC-F7DD98BFD76F}']
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwTerminalServerList
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {F085C70B-5BCA-4EBF-A8AA-D4551C17CEF7}
+// *********************************************************************//
+  IJwTerminalServerList = interface(IDispatch)
+    ['{F085C70B-5BCA-4EBF-A8AA-D4551C17CEF7}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwTerminalServerListDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {F085C70B-5BCA-4EBF-A8AA-D4551C17CEF7}
+// *********************************************************************//
+  IJwTerminalServerListDisp = dispinterface
+    ['{F085C70B-5BCA-4EBF-A8AA-D4551C17CEF7}']
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwWTSSession
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {D512987D-F6DF-4B01-87FF-0611607FCD9C}
+// *********************************************************************//
+  IJwWTSSession = interface(IDispatch)
+    ['{D512987D-F6DF-4B01-87FF-0611607FCD9C}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwWTSSessionDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {D512987D-F6DF-4B01-87FF-0611607FCD9C}
+// *********************************************************************//
+  IJwWTSSessionDisp = dispinterface
+    ['{D512987D-F6DF-4B01-87FF-0611607FCD9C}']
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwWTSSessionList
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {C22216FB-9BC7-4707-A28C-D529492590C4}
+// *********************************************************************//
+  IJwWTSSessionList = interface(IDispatch)
+    ['{C22216FB-9BC7-4707-A28C-D529492590C4}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwWTSSessionListDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {C22216FB-9BC7-4707-A28C-D529492590C4}
+// *********************************************************************//
+  IJwWTSSessionListDisp = dispinterface
+    ['{C22216FB-9BC7-4707-A28C-D529492590C4}']
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwWTSProcess
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {B396DC6E-BEE7-4254-B4C8-A6101682685C}
+// *********************************************************************//
+  IJwWTSProcess = interface(IDispatch)
+    ['{B396DC6E-BEE7-4254-B4C8-A6101682685C}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwWTSProcessDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {B396DC6E-BEE7-4254-B4C8-A6101682685C}
+// *********************************************************************//
+  IJwWTSProcessDisp = dispinterface
+    ['{B396DC6E-BEE7-4254-B4C8-A6101682685C}']
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwWTSProcessList
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {B9E2DB7A-C45C-41F1-9323-8115BA49CAC1}
+// *********************************************************************//
+  IJwWTSProcessList = interface(IDispatch)
+    ['{B9E2DB7A-C45C-41F1-9323-8115BA49CAC1}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwWTSProcessListDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {B9E2DB7A-C45C-41F1-9323-8115BA49CAC1}
+// *********************************************************************//
+  IJwWTSProcessListDisp = dispinterface
+    ['{B9E2DB7A-C45C-41F1-9323-8115BA49CAC1}']
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwWTSSessionShadow
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {EA1DC736-38D8-4F63-B6DD-3AD9ED0208D0}
+// *********************************************************************//
+  IJwWTSSessionShadow = interface(IDispatch)
+    ['{EA1DC736-38D8-4F63-B6DD-3AD9ED0208D0}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwWTSSessionShadowDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {EA1DC736-38D8-4F63-B6DD-3AD9ED0208D0}
+// *********************************************************************//
+  IJwWTSSessionShadowDisp = dispinterface
+    ['{EA1DC736-38D8-4F63-B6DD-3AD9ED0208D0}']
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwSecurityDescriptorDialogCallback
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {BA33738E-2D3E-4214-BAC6-DD044DB5697C}
+// *********************************************************************//
+  IJwSecurityDescriptorDialogCallback = interface(IDispatch)
+    ['{BA33738E-2D3E-4214-BAC6-DD044DB5697C}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwSecurityDescriptorDialogCallbackDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {BA33738E-2D3E-4214-BAC6-DD044DB5697C}
+// *********************************************************************//
+  IJwSecurityDescriptorDialogCallbackDisp = dispinterface
+    ['{BA33738E-2D3E-4214-BAC6-DD044DB5697C}']
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwInheritTypeList
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {B6FBCBDC-7941-414F-9D8E-464BA97FB183}
+// *********************************************************************//
+  IJwInheritTypeList = interface(IDispatch)
+    ['{B6FBCBDC-7941-414F-9D8E-464BA97FB183}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwInheritTypeListDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {B6FBCBDC-7941-414F-9D8E-464BA97FB183}
+// *********************************************************************//
+  IJwInheritTypeListDisp = dispinterface
+    ['{B6FBCBDC-7941-414F-9D8E-464BA97FB183}']
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwTerminalServerCallback
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {C7387934-4900-44DD-A4A1-449A3C0564BD}
+// *********************************************************************//
+  IJwTerminalServerCallback = interface(IDispatch)
+    ['{C7387934-4900-44DD-A4A1-449A3C0564BD}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwTerminalServerCallbackDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {C7387934-4900-44DD-A4A1-449A3C0564BD}
+// *********************************************************************//
+  IJwTerminalServerCallbackDisp = dispinterface
+    ['{C7387934-4900-44DD-A4A1-449A3C0564BD}']
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwUtils
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {8FAE3B6B-F0BC-4F41-999B-8CC35AB90BE1}
+// *********************************************************************//
+  IJwUtils = interface(IDispatch)
+    ['{8FAE3B6B-F0BC-4F41-999B-8CC35AB90BE1}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwUtilsDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {8FAE3B6B-F0BC-4F41-999B-8CC35AB90BE1}
+// *********************************************************************//
+  IJwUtilsDisp = dispinterface
+    ['{8FAE3B6B-F0BC-4F41-999B-8CC35AB90BE1}']
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwElevationClassFactory
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {BDD24ED3-5200-4970-9B63-9965AF7F121F}
+// *********************************************************************//
+  IJwElevationClassFactory = interface(IDispatch)
+    ['{BDD24ED3-5200-4970-9B63-9965AF7F121F}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwElevationClassFactoryDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {BDD24ED3-5200-4970-9B63-9965AF7F121F}
+// *********************************************************************//
+  IJwElevationClassFactoryDisp = dispinterface
+    ['{BDD24ED3-5200-4970-9B63-9965AF7F121F}']
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwExplicitAccessArray
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {381ADFDA-CF08-4FE8-B660-78588184524A}
+// *********************************************************************//
+  IJwExplicitAccessArray = interface(IDispatch)
+    ['{381ADFDA-CF08-4FE8-B660-78588184524A}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwExplicitAccessArrayDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {381ADFDA-CF08-4FE8-B660-78588184524A}
+// *********************************************************************//
+  IJwExplicitAccessArrayDisp = dispinterface
+    ['{381ADFDA-CF08-4FE8-B660-78588184524A}']
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwExplicitAccess
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {45379DC8-AC94-41DC-917E-4716063E1F38}
+// *********************************************************************//
+  IJwExplicitAccess = interface(IDispatch)
+    ['{45379DC8-AC94-41DC-917E-4716063E1F38}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwExplicitAccessDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {45379DC8-AC94-41DC-917E-4716063E1F38}
+// *********************************************************************//
+  IJwExplicitAccessDisp = dispinterface
+    ['{45379DC8-AC94-41DC-917E-4716063E1F38}']
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwGuidArray
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {039206C7-F45F-40E0-A942-D7CA7A1E65DE}
+// *********************************************************************//
+  IJwGuidArray = interface(IDispatch)
+    ['{039206C7-F45F-40E0-A942-D7CA7A1E65DE}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwGuidArrayDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {039206C7-F45F-40E0-A942-D7CA7A1E65DE}
+// *********************************************************************//
+  IJwGuidArrayDisp = dispinterface
+    ['{039206C7-F45F-40E0-A942-D7CA7A1E65DE}']
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwInheritedFromRecord
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {DDFAF8BC-C644-4FBB-B5FF-041E1220F166}
+// *********************************************************************//
+  IJwInheritedFromRecord = interface(IDispatch)
+    ['{DDFAF8BC-C644-4FBB-B5FF-041E1220F166}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwInheritedFromRecordDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {DDFAF8BC-C644-4FBB-B5FF-041E1220F166}
+// *********************************************************************//
+  IJwInheritedFromRecordDisp = dispinterface
+    ['{DDFAF8BC-C644-4FBB-B5FF-041E1220F166}']
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwInheritedFromArray
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {174EA097-20D7-4D69-B37D-79AB8A182DDA}
+// *********************************************************************//
+  IJwInheritedFromArray = interface(IDispatch)
+    ['{174EA097-20D7-4D69-B37D-79AB8A182DDA}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwInheritedFromArrayDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {174EA097-20D7-4D69-B37D-79AB8A182DDA}
+// *********************************************************************//
+  IJwInheritedFromArrayDisp = dispinterface
+    ['{174EA097-20D7-4D69-B37D-79AB8A182DDA}']
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwRootTuple
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {650D81E3-14D6-4EEF-B13D-3333FEFD6CAF}
+// *********************************************************************//
+  IJwRootTuple = interface(IDispatch)
+    ['{650D81E3-14D6-4EEF-B13D-3333FEFD6CAF}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwRootTupleDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {650D81E3-14D6-4EEF-B13D-3333FEFD6CAF}
+// *********************************************************************//
+  IJwRootTupleDisp = dispinterface
+    ['{650D81E3-14D6-4EEF-B13D-3333FEFD6CAF}']
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwKeyRootTupleArray
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {89D1C10C-47E5-44D3-A9FC-48A99C565DA3}
+// *********************************************************************//
+  IJwKeyRootTupleArray = interface(IDispatch)
+    ['{89D1C10C-47E5-44D3-A9FC-48A99C565DA3}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwKeyRootTupleArrayDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {89D1C10C-47E5-44D3-A9FC-48A99C565DA3}
+// *********************************************************************//
+  IJwKeyRootTupleArrayDisp = dispinterface
+    ['{89D1C10C-47E5-44D3-A9FC-48A99C565DA3}']
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwAccessMaskArray
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {EE079D32-8114-495A-A2B3-5449F12F0A8B}
+// *********************************************************************//
+  IJwAccessMaskArray = interface(IDispatch)
+    ['{EE079D32-8114-495A-A2B3-5449F12F0A8B}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwAccessMaskArrayDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {EE079D32-8114-495A-A2B3-5449F12F0A8B}
+// *********************************************************************//
+  IJwAccessMaskArrayDisp = dispinterface
+    ['{EE079D32-8114-495A-A2B3-5449F12F0A8B}']
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwObjectTypeList
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {567A8ADD-41D4-4808-A982-620DA1313B75}
+// *********************************************************************//
+  IJwObjectTypeList = interface(IDispatch)
+    ['{567A8ADD-41D4-4808-A982-620DA1313B75}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwObjectTypeListDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {567A8ADD-41D4-4808-A982-620DA1313B75}
+// *********************************************************************//
+  IJwObjectTypeListDisp = dispinterface
+    ['{567A8ADD-41D4-4808-A982-620DA1313B75}']
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwObjectTypeListArray
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {F395722F-3303-489D-AA27-A04944AC2456}
+// *********************************************************************//
+  IJwObjectTypeListArray = interface(IDispatch)
+    ['{F395722F-3303-489D-AA27-A04944AC2456}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwObjectTypeListArrayDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {F395722F-3303-489D-AA27-A04944AC2456}
+// *********************************************************************//
+  IJwObjectTypeListArrayDisp = dispinterface
+    ['{F395722F-3303-489D-AA27-A04944AC2456}']
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwSIDInfoData
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {2353CD1D-4E28-4CB9-B61A-1045049CF9A3}
+// *********************************************************************//
+  IJwSIDInfoData = interface(IDispatch)
+    ['{2353CD1D-4E28-4CB9-B61A-1045049CF9A3}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwSIDInfoDataDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {2353CD1D-4E28-4CB9-B61A-1045049CF9A3}
+// *********************************************************************//
+  IJwSIDInfoDataDisp = dispinterface
+    ['{2353CD1D-4E28-4CB9-B61A-1045049CF9A3}']
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwSIDInfoDataArray
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {1A82872F-EC91-475E-8520-E0C59F7D18CD}
+// *********************************************************************//
+  IJwSIDInfoDataArray = interface(IDispatch)
+    ['{1A82872F-EC91-475E-8520-E0C59F7D18CD}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwSIDInfoDataArrayDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {1A82872F-EC91-475E-8520-E0C59F7D18CD}
+// *********************************************************************//
+  IJwSIDInfoDataArrayDisp = dispinterface
+    ['{1A82872F-EC91-475E-8520-E0C59F7D18CD}']
+  end;
+
+// *********************************************************************//
 // Die Klasse CoJwSid stellt die Methoden Create und CreateRemote zur      
 // Verfügung, um Instanzen der Standardschnittstelle IJwSid, dargestellt von
 // CoClass JwSid, zu erzeugen. Diese Funktionen können                     
@@ -1917,6 +3392,618 @@ type
     class function CreateRemote(const MachineName: string): IJwEventType;
   end;
 
+// *********************************************************************//
+// Die Klasse CoJwEncryptionApi stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwEncryptionApi, dargestellt von
+// CoClass JwEncryptionApi, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwEncryptionApi = class
+    class function Create: IJwEncryptionApi;
+    class function CreateRemote(const MachineName: string): IJwEncryptionApi;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwEncryptMemory stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwEncryptMemory, dargestellt von
+// CoClass JwEncryptMemory, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwEncryptMemory = class
+    class function Create: IJwEncryptMemory;
+    class function CreateRemote(const MachineName: string): IJwEncryptMemory;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwEncryptData stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwEncryptData, dargestellt von
+// CoClass JwEncryptData, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwEncryptData = class
+    class function Create: IJwEncryptData;
+    class function CreateRemote(const MachineName: string): IJwEncryptData;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwRandomDataGenerator stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwRandomDataGenerator, dargestellt von
+// CoClass JwRandomDataGenerator, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwRandomDataGenerator = class
+    class function Create: IJwRandomDataGenerator;
+    class function CreateRemote(const MachineName: string): IJwRandomDataGenerator;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwWindowStation stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwWindowStation, dargestellt von
+// CoClass JwWindowStation, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwWindowStation = class
+    class function Create: IJwWindowStation;
+    class function CreateRemote(const MachineName: string): IJwWindowStation;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwWindowStations stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwWindowStations, dargestellt von
+// CoClass JwWindowStations, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwWindowStations = class
+    class function Create: IJwWindowStations;
+    class function CreateRemote(const MachineName: string): IJwWindowStations;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwDesktop stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwDesktop, dargestellt von
+// CoClass JwDesktop, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwDesktop = class
+    class function Create: IJwDesktop;
+    class function CreateRemote(const MachineName: string): IJwDesktop;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwDesktops stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwDesktops, dargestellt von
+// CoClass JwDesktops, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwDesktops = class
+    class function Create: IJwDesktops;
+    class function CreateRemote(const MachineName: string): IJwDesktops;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwCredentialsPrompt stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwCredentialsPrompt, dargestellt von
+// CoClass JwCredentialsPrompt, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwCredentialsPrompt = class
+    class function Create: IJwCredentialsPrompt;
+    class function CreateRemote(const MachineName: string): IJwCredentialsPrompt;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwCredentialsTools stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwCredentialsTools, dargestellt von
+// CoClass JwCredentialsTools, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwCredentialsTools = class
+    class function Create: IJwCredentialsTools;
+    class function CreateRemote(const MachineName: string): IJwCredentialsTools;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwCryptProvider stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwCryptProvider, dargestellt von
+// CoClass JwCryptProvider, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwCryptProvider = class
+    class function Create: IJwCryptProvider;
+    class function CreateRemote(const MachineName: string): IJwCryptProvider;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwHash stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwHash, dargestellt von
+// CoClass JwHash, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwHash = class
+    class function Create: IJwHash;
+    class function CreateRemote(const MachineName: string): IJwHash;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwCryptKey stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwCryptKey, dargestellt von
+// CoClass JwCryptKey, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwCryptKey = class
+    class function Create: IJwCryptKey;
+    class function CreateRemote(const MachineName: string): IJwCryptKey;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwImpersonation stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwImpersonation, dargestellt von
+// CoClass JwImpersonation, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwImpersonation = class
+    class function Create: IJwImpersonation;
+    class function CreateRemote(const MachineName: string): IJwImpersonation;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwKnownSIDs stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwKnownSIDs, dargestellt von
+// CoClass JwKnownSIDs, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwKnownSIDs = class
+    class function Create: IJwKnownSIDs;
+    class function CreateRemote(const MachineName: string): IJwKnownSIDs;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwThreadUserSid stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwThreadUserSid, dargestellt von
+// CoClass JwThreadUserSid, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwThreadUserSid = class
+    class function Create: IJwThreadUserSid;
+    class function CreateRemote(const MachineName: string): IJwThreadUserSid;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwLSA stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwLSA, dargestellt von
+// CoClass JwLSA, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwLSA = class
+    class function Create: IJwLSA;
+    class function CreateRemote(const MachineName: string): IJwLSA;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwLSALogonSession stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwLSALogonSession, dargestellt von
+// CoClass JwLSALogonSession, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwLSALogonSession = class
+    class function Create: IJwLSALogonSession;
+    class function CreateRemote(const MachineName: string): IJwLSALogonSession;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwLSALogonSessionData stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwLSALogonSessionData, dargestellt von
+// CoClass JwLSALogonSessionData, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwLSALogonSessionData = class
+    class function Create: IJwLSALogonSessionData;
+    class function CreateRemote(const MachineName: string): IJwLSALogonSessionData;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwPrivilegeScope stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwPrivilegeScope, dargestellt von
+// CoClass JwPrivilegeScope, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwPrivilegeScope = class
+    class function Create: IJwPrivilegeScope;
+    class function CreateRemote(const MachineName: string): IJwPrivilegeScope;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwProcessUtils stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwProcessUtils, dargestellt von
+// CoClass JwProcessUtils, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwProcessUtils = class
+    class function Create: IJwProcessUtils;
+    class function CreateRemote(const MachineName: string): IJwProcessUtils;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwSecureRegistryKey stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwSecureRegistryKey, dargestellt von
+// CoClass JwSecureRegistryKey, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwSecureRegistryKey = class
+    class function Create: IJwSecureRegistryKey;
+    class function CreateRemote(const MachineName: string): IJwSecureRegistryKey;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwSecureFileObject stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwSecureFileObject, dargestellt von
+// CoClass JwSecureFileObject, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwSecureFileObject = class
+    class function Create: IJwSecureFileObject;
+    class function CreateRemote(const MachineName: string): IJwSecureFileObject;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwSecureBaseClass stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwSecureBaseClass, dargestellt von
+// CoClass JwSecureBaseClass, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwSecureBaseClass = class
+    class function Create: IJwSecureBaseClass;
+    class function CreateRemote(const MachineName: string): IJwSecureBaseClass;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwProgressCallback stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwProgressCallback, dargestellt von
+// CoClass JwProgressCallback, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwProgressCallback = class
+    class function Create: IJwProgressCallback;
+    class function CreateRemote(const MachineName: string): IJwProgressCallback;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwAuthZAccessRequest stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwAuthZAccessRequest, dargestellt von
+// CoClass JwAuthZAccessRequest, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwAuthZAccessRequest = class
+    class function Create: IJwAuthZAccessRequest;
+    class function CreateRemote(const MachineName: string): IJwAuthZAccessRequest;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwAuthZAccessReply stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwAuthZAccessReply, dargestellt von
+// CoClass JwAuthZAccessReply, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwAuthZAccessReply = class
+    class function Create: IJwAuthZAccessReply;
+    class function CreateRemote(const MachineName: string): IJwAuthZAccessReply;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwAuthResourceManager stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwAuthResourceManager, dargestellt von
+// CoClass JwAuthResourceManager, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwAuthResourceManager = class
+    class function Create: IJwAuthResourceManager;
+    class function CreateRemote(const MachineName: string): IJwAuthResourceManager;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwAuthContext stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwAuthContext, dargestellt von
+// CoClass JwAuthContext, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwAuthContext = class
+    class function Create: IJwAuthContext;
+    class function CreateRemote(const MachineName: string): IJwAuthContext;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwTerminalServer stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwTerminalServer, dargestellt von
+// CoClass JwTerminalServer, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwTerminalServer = class
+    class function Create: IJwTerminalServer;
+    class function CreateRemote(const MachineName: string): IJwTerminalServer;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwTerminalServerList stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwTerminalServerList, dargestellt von
+// CoClass JwTerminalServerList, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwTerminalServerList = class
+    class function Create: IJwTerminalServerList;
+    class function CreateRemote(const MachineName: string): IJwTerminalServerList;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwWTSSession stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwWTSSession, dargestellt von
+// CoClass JwWTSSession, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwWTSSession = class
+    class function Create: IJwWTSSession;
+    class function CreateRemote(const MachineName: string): IJwWTSSession;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwWTSSessionList stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwWTSSessionList, dargestellt von
+// CoClass JwWTSSessionList, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwWTSSessionList = class
+    class function Create: IJwWTSSessionList;
+    class function CreateRemote(const MachineName: string): IJwWTSSessionList;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwWTSProcess stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwWTSProcess, dargestellt von
+// CoClass JwWTSProcess, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwWTSProcess = class
+    class function Create: IJwWTSProcess;
+    class function CreateRemote(const MachineName: string): IJwWTSProcess;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwWTSProcessList stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwWTSProcessList, dargestellt von
+// CoClass JwWTSProcessList, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwWTSProcessList = class
+    class function Create: IJwWTSProcessList;
+    class function CreateRemote(const MachineName: string): IJwWTSProcessList;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwWTSSessionShadow stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwWTSSessionShadow, dargestellt von
+// CoClass JwWTSSessionShadow, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwWTSSessionShadow = class
+    class function Create: IJwWTSSessionShadow;
+    class function CreateRemote(const MachineName: string): IJwWTSSessionShadow;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwInheritTypeList stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwInheritTypeList, dargestellt von
+// CoClass JwInheritTypeList, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwInheritTypeList = class
+    class function Create: IJwInheritTypeList;
+    class function CreateRemote(const MachineName: string): IJwInheritTypeList;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwUtils stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwUtils, dargestellt von
+// CoClass JwUtils, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwUtils = class
+    class function Create: IJwUtils;
+    class function CreateRemote(const MachineName: string): IJwUtils;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwElevationClassFactory stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwElevationClassFactory, dargestellt von
+// CoClass JwElevationClassFactory, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwElevationClassFactory = class
+    class function Create: IJwElevationClassFactory;
+    class function CreateRemote(const MachineName: string): IJwElevationClassFactory;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwExplicitAccessArray stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwExplicitAccessArray, dargestellt von
+// CoClass JwExplicitAccessArray, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwExplicitAccessArray = class
+    class function Create: IJwExplicitAccessArray;
+    class function CreateRemote(const MachineName: string): IJwExplicitAccessArray;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwExplicitAccess stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwExplicitAccess, dargestellt von
+// CoClass JwExplicitAccess, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwExplicitAccess = class
+    class function Create: IJwExplicitAccess;
+    class function CreateRemote(const MachineName: string): IJwExplicitAccess;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwGuidArray stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwGuidArray, dargestellt von
+// CoClass JwGuidArray, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwGuidArray = class
+    class function Create: IJwGuidArray;
+    class function CreateRemote(const MachineName: string): IJwGuidArray;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwInheritedFromRecord stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwInheritedFromRecord, dargestellt von
+// CoClass JwInheritedFromRecord, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwInheritedFromRecord = class
+    class function Create: IJwInheritedFromRecord;
+    class function CreateRemote(const MachineName: string): IJwInheritedFromRecord;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwInheritedFromArray stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwInheritedFromArray, dargestellt von
+// CoClass JwInheritedFromArray, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwInheritedFromArray = class
+    class function Create: IJwInheritedFromArray;
+    class function CreateRemote(const MachineName: string): IJwInheritedFromArray;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwRootTuple stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwRootTuple, dargestellt von
+// CoClass JwRootTuple, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwRootTuple = class
+    class function Create: IJwRootTuple;
+    class function CreateRemote(const MachineName: string): IJwRootTuple;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwKeyRootTupleArray stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwKeyRootTupleArray, dargestellt von
+// CoClass JwKeyRootTupleArray, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwKeyRootTupleArray = class
+    class function Create: IJwKeyRootTupleArray;
+    class function CreateRemote(const MachineName: string): IJwKeyRootTupleArray;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwAccessMaskArray stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwAccessMaskArray, dargestellt von
+// CoClass JwAccessMaskArray, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwAccessMaskArray = class
+    class function Create: IJwAccessMaskArray;
+    class function CreateRemote(const MachineName: string): IJwAccessMaskArray;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwObjectTypeList stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwObjectTypeList, dargestellt von
+// CoClass JwObjectTypeList, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwObjectTypeList = class
+    class function Create: IJwObjectTypeList;
+    class function CreateRemote(const MachineName: string): IJwObjectTypeList;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwObjectTypeListArray stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwObjectTypeListArray, dargestellt von
+// CoClass JwObjectTypeListArray, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwObjectTypeListArray = class
+    class function Create: IJwObjectTypeListArray;
+    class function CreateRemote(const MachineName: string): IJwObjectTypeListArray;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwSIDInfoData stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwSIDInfoData, dargestellt von
+// CoClass JwSIDInfoData, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwSIDInfoData = class
+    class function Create: IJwSIDInfoData;
+    class function CreateRemote(const MachineName: string): IJwSIDInfoData;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwSIDInfoDataArray stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwSIDInfoDataArray, dargestellt von
+// CoClass JwSIDInfoDataArray, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwSIDInfoDataArray = class
+    class function Create: IJwSIDInfoDataArray;
+    class function CreateRemote(const MachineName: string): IJwSIDInfoDataArray;
+  end;
+
 implementation
 
 uses ComObj;
@@ -2249,6 +4336,516 @@ end;
 class function CoJwEventType.CreateRemote(const MachineName: string): IJwEventType;
 begin
   Result := CreateRemoteComObject(MachineName, CLASS_JwEventType) as IJwEventType;
+end;
+
+class function CoJwEncryptionApi.Create: IJwEncryptionApi;
+begin
+  Result := CreateComObject(CLASS_JwEncryptionApi) as IJwEncryptionApi;
+end;
+
+class function CoJwEncryptionApi.CreateRemote(const MachineName: string): IJwEncryptionApi;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwEncryptionApi) as IJwEncryptionApi;
+end;
+
+class function CoJwEncryptMemory.Create: IJwEncryptMemory;
+begin
+  Result := CreateComObject(CLASS_JwEncryptMemory) as IJwEncryptMemory;
+end;
+
+class function CoJwEncryptMemory.CreateRemote(const MachineName: string): IJwEncryptMemory;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwEncryptMemory) as IJwEncryptMemory;
+end;
+
+class function CoJwEncryptData.Create: IJwEncryptData;
+begin
+  Result := CreateComObject(CLASS_JwEncryptData) as IJwEncryptData;
+end;
+
+class function CoJwEncryptData.CreateRemote(const MachineName: string): IJwEncryptData;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwEncryptData) as IJwEncryptData;
+end;
+
+class function CoJwRandomDataGenerator.Create: IJwRandomDataGenerator;
+begin
+  Result := CreateComObject(CLASS_JwRandomDataGenerator) as IJwRandomDataGenerator;
+end;
+
+class function CoJwRandomDataGenerator.CreateRemote(const MachineName: string): IJwRandomDataGenerator;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwRandomDataGenerator) as IJwRandomDataGenerator;
+end;
+
+class function CoJwWindowStation.Create: IJwWindowStation;
+begin
+  Result := CreateComObject(CLASS_JwWindowStation) as IJwWindowStation;
+end;
+
+class function CoJwWindowStation.CreateRemote(const MachineName: string): IJwWindowStation;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwWindowStation) as IJwWindowStation;
+end;
+
+class function CoJwWindowStations.Create: IJwWindowStations;
+begin
+  Result := CreateComObject(CLASS_JwWindowStations) as IJwWindowStations;
+end;
+
+class function CoJwWindowStations.CreateRemote(const MachineName: string): IJwWindowStations;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwWindowStations) as IJwWindowStations;
+end;
+
+class function CoJwDesktop.Create: IJwDesktop;
+begin
+  Result := CreateComObject(CLASS_JwDesktop) as IJwDesktop;
+end;
+
+class function CoJwDesktop.CreateRemote(const MachineName: string): IJwDesktop;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwDesktop) as IJwDesktop;
+end;
+
+class function CoJwDesktops.Create: IJwDesktops;
+begin
+  Result := CreateComObject(CLASS_JwDesktops) as IJwDesktops;
+end;
+
+class function CoJwDesktops.CreateRemote(const MachineName: string): IJwDesktops;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwDesktops) as IJwDesktops;
+end;
+
+class function CoJwCredentialsPrompt.Create: IJwCredentialsPrompt;
+begin
+  Result := CreateComObject(CLASS_JwCredentialsPrompt) as IJwCredentialsPrompt;
+end;
+
+class function CoJwCredentialsPrompt.CreateRemote(const MachineName: string): IJwCredentialsPrompt;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwCredentialsPrompt) as IJwCredentialsPrompt;
+end;
+
+class function CoJwCredentialsTools.Create: IJwCredentialsTools;
+begin
+  Result := CreateComObject(CLASS_JwCredentialsTools) as IJwCredentialsTools;
+end;
+
+class function CoJwCredentialsTools.CreateRemote(const MachineName: string): IJwCredentialsTools;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwCredentialsTools) as IJwCredentialsTools;
+end;
+
+class function CoJwCryptProvider.Create: IJwCryptProvider;
+begin
+  Result := CreateComObject(CLASS_JwCryptProvider) as IJwCryptProvider;
+end;
+
+class function CoJwCryptProvider.CreateRemote(const MachineName: string): IJwCryptProvider;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwCryptProvider) as IJwCryptProvider;
+end;
+
+class function CoJwHash.Create: IJwHash;
+begin
+  Result := CreateComObject(CLASS_JwHash) as IJwHash;
+end;
+
+class function CoJwHash.CreateRemote(const MachineName: string): IJwHash;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwHash) as IJwHash;
+end;
+
+class function CoJwCryptKey.Create: IJwCryptKey;
+begin
+  Result := CreateComObject(CLASS_JwCryptKey) as IJwCryptKey;
+end;
+
+class function CoJwCryptKey.CreateRemote(const MachineName: string): IJwCryptKey;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwCryptKey) as IJwCryptKey;
+end;
+
+class function CoJwImpersonation.Create: IJwImpersonation;
+begin
+  Result := CreateComObject(CLASS_JwImpersonation) as IJwImpersonation;
+end;
+
+class function CoJwImpersonation.CreateRemote(const MachineName: string): IJwImpersonation;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwImpersonation) as IJwImpersonation;
+end;
+
+class function CoJwKnownSIDs.Create: IJwKnownSIDs;
+begin
+  Result := CreateComObject(CLASS_JwKnownSIDs) as IJwKnownSIDs;
+end;
+
+class function CoJwKnownSIDs.CreateRemote(const MachineName: string): IJwKnownSIDs;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwKnownSIDs) as IJwKnownSIDs;
+end;
+
+class function CoJwThreadUserSid.Create: IJwThreadUserSid;
+begin
+  Result := CreateComObject(CLASS_JwThreadUserSid) as IJwThreadUserSid;
+end;
+
+class function CoJwThreadUserSid.CreateRemote(const MachineName: string): IJwThreadUserSid;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwThreadUserSid) as IJwThreadUserSid;
+end;
+
+class function CoJwLSA.Create: IJwLSA;
+begin
+  Result := CreateComObject(CLASS_JwLSA) as IJwLSA;
+end;
+
+class function CoJwLSA.CreateRemote(const MachineName: string): IJwLSA;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwLSA) as IJwLSA;
+end;
+
+class function CoJwLSALogonSession.Create: IJwLSALogonSession;
+begin
+  Result := CreateComObject(CLASS_JwLSALogonSession) as IJwLSALogonSession;
+end;
+
+class function CoJwLSALogonSession.CreateRemote(const MachineName: string): IJwLSALogonSession;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwLSALogonSession) as IJwLSALogonSession;
+end;
+
+class function CoJwLSALogonSessionData.Create: IJwLSALogonSessionData;
+begin
+  Result := CreateComObject(CLASS_JwLSALogonSessionData) as IJwLSALogonSessionData;
+end;
+
+class function CoJwLSALogonSessionData.CreateRemote(const MachineName: string): IJwLSALogonSessionData;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwLSALogonSessionData) as IJwLSALogonSessionData;
+end;
+
+class function CoJwPrivilegeScope.Create: IJwPrivilegeScope;
+begin
+  Result := CreateComObject(CLASS_JwPrivilegeScope) as IJwPrivilegeScope;
+end;
+
+class function CoJwPrivilegeScope.CreateRemote(const MachineName: string): IJwPrivilegeScope;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwPrivilegeScope) as IJwPrivilegeScope;
+end;
+
+class function CoJwProcessUtils.Create: IJwProcessUtils;
+begin
+  Result := CreateComObject(CLASS_JwProcessUtils) as IJwProcessUtils;
+end;
+
+class function CoJwProcessUtils.CreateRemote(const MachineName: string): IJwProcessUtils;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwProcessUtils) as IJwProcessUtils;
+end;
+
+class function CoJwSecureRegistryKey.Create: IJwSecureRegistryKey;
+begin
+  Result := CreateComObject(CLASS_JwSecureRegistryKey) as IJwSecureRegistryKey;
+end;
+
+class function CoJwSecureRegistryKey.CreateRemote(const MachineName: string): IJwSecureRegistryKey;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwSecureRegistryKey) as IJwSecureRegistryKey;
+end;
+
+class function CoJwSecureFileObject.Create: IJwSecureFileObject;
+begin
+  Result := CreateComObject(CLASS_JwSecureFileObject) as IJwSecureFileObject;
+end;
+
+class function CoJwSecureFileObject.CreateRemote(const MachineName: string): IJwSecureFileObject;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwSecureFileObject) as IJwSecureFileObject;
+end;
+
+class function CoJwSecureBaseClass.Create: IJwSecureBaseClass;
+begin
+  Result := CreateComObject(CLASS_JwSecureBaseClass) as IJwSecureBaseClass;
+end;
+
+class function CoJwSecureBaseClass.CreateRemote(const MachineName: string): IJwSecureBaseClass;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwSecureBaseClass) as IJwSecureBaseClass;
+end;
+
+class function CoJwProgressCallback.Create: IJwProgressCallback;
+begin
+  Result := CreateComObject(CLASS_JwProgressCallback) as IJwProgressCallback;
+end;
+
+class function CoJwProgressCallback.CreateRemote(const MachineName: string): IJwProgressCallback;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwProgressCallback) as IJwProgressCallback;
+end;
+
+class function CoJwAuthZAccessRequest.Create: IJwAuthZAccessRequest;
+begin
+  Result := CreateComObject(CLASS_JwAuthZAccessRequest) as IJwAuthZAccessRequest;
+end;
+
+class function CoJwAuthZAccessRequest.CreateRemote(const MachineName: string): IJwAuthZAccessRequest;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwAuthZAccessRequest) as IJwAuthZAccessRequest;
+end;
+
+class function CoJwAuthZAccessReply.Create: IJwAuthZAccessReply;
+begin
+  Result := CreateComObject(CLASS_JwAuthZAccessReply) as IJwAuthZAccessReply;
+end;
+
+class function CoJwAuthZAccessReply.CreateRemote(const MachineName: string): IJwAuthZAccessReply;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwAuthZAccessReply) as IJwAuthZAccessReply;
+end;
+
+class function CoJwAuthResourceManager.Create: IJwAuthResourceManager;
+begin
+  Result := CreateComObject(CLASS_JwAuthResourceManager) as IJwAuthResourceManager;
+end;
+
+class function CoJwAuthResourceManager.CreateRemote(const MachineName: string): IJwAuthResourceManager;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwAuthResourceManager) as IJwAuthResourceManager;
+end;
+
+class function CoJwAuthContext.Create: IJwAuthContext;
+begin
+  Result := CreateComObject(CLASS_JwAuthContext) as IJwAuthContext;
+end;
+
+class function CoJwAuthContext.CreateRemote(const MachineName: string): IJwAuthContext;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwAuthContext) as IJwAuthContext;
+end;
+
+class function CoJwTerminalServer.Create: IJwTerminalServer;
+begin
+  Result := CreateComObject(CLASS_JwTerminalServer) as IJwTerminalServer;
+end;
+
+class function CoJwTerminalServer.CreateRemote(const MachineName: string): IJwTerminalServer;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwTerminalServer) as IJwTerminalServer;
+end;
+
+class function CoJwTerminalServerList.Create: IJwTerminalServerList;
+begin
+  Result := CreateComObject(CLASS_JwTerminalServerList) as IJwTerminalServerList;
+end;
+
+class function CoJwTerminalServerList.CreateRemote(const MachineName: string): IJwTerminalServerList;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwTerminalServerList) as IJwTerminalServerList;
+end;
+
+class function CoJwWTSSession.Create: IJwWTSSession;
+begin
+  Result := CreateComObject(CLASS_JwWTSSession) as IJwWTSSession;
+end;
+
+class function CoJwWTSSession.CreateRemote(const MachineName: string): IJwWTSSession;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwWTSSession) as IJwWTSSession;
+end;
+
+class function CoJwWTSSessionList.Create: IJwWTSSessionList;
+begin
+  Result := CreateComObject(CLASS_JwWTSSessionList) as IJwWTSSessionList;
+end;
+
+class function CoJwWTSSessionList.CreateRemote(const MachineName: string): IJwWTSSessionList;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwWTSSessionList) as IJwWTSSessionList;
+end;
+
+class function CoJwWTSProcess.Create: IJwWTSProcess;
+begin
+  Result := CreateComObject(CLASS_JwWTSProcess) as IJwWTSProcess;
+end;
+
+class function CoJwWTSProcess.CreateRemote(const MachineName: string): IJwWTSProcess;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwWTSProcess) as IJwWTSProcess;
+end;
+
+class function CoJwWTSProcessList.Create: IJwWTSProcessList;
+begin
+  Result := CreateComObject(CLASS_JwWTSProcessList) as IJwWTSProcessList;
+end;
+
+class function CoJwWTSProcessList.CreateRemote(const MachineName: string): IJwWTSProcessList;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwWTSProcessList) as IJwWTSProcessList;
+end;
+
+class function CoJwWTSSessionShadow.Create: IJwWTSSessionShadow;
+begin
+  Result := CreateComObject(CLASS_JwWTSSessionShadow) as IJwWTSSessionShadow;
+end;
+
+class function CoJwWTSSessionShadow.CreateRemote(const MachineName: string): IJwWTSSessionShadow;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwWTSSessionShadow) as IJwWTSSessionShadow;
+end;
+
+class function CoJwInheritTypeList.Create: IJwInheritTypeList;
+begin
+  Result := CreateComObject(CLASS_JwInheritTypeList) as IJwInheritTypeList;
+end;
+
+class function CoJwInheritTypeList.CreateRemote(const MachineName: string): IJwInheritTypeList;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwInheritTypeList) as IJwInheritTypeList;
+end;
+
+class function CoJwUtils.Create: IJwUtils;
+begin
+  Result := CreateComObject(CLASS_JwUtils) as IJwUtils;
+end;
+
+class function CoJwUtils.CreateRemote(const MachineName: string): IJwUtils;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwUtils) as IJwUtils;
+end;
+
+class function CoJwElevationClassFactory.Create: IJwElevationClassFactory;
+begin
+  Result := CreateComObject(CLASS_JwElevationClassFactory) as IJwElevationClassFactory;
+end;
+
+class function CoJwElevationClassFactory.CreateRemote(const MachineName: string): IJwElevationClassFactory;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwElevationClassFactory) as IJwElevationClassFactory;
+end;
+
+class function CoJwExplicitAccessArray.Create: IJwExplicitAccessArray;
+begin
+  Result := CreateComObject(CLASS_JwExplicitAccessArray) as IJwExplicitAccessArray;
+end;
+
+class function CoJwExplicitAccessArray.CreateRemote(const MachineName: string): IJwExplicitAccessArray;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwExplicitAccessArray) as IJwExplicitAccessArray;
+end;
+
+class function CoJwExplicitAccess.Create: IJwExplicitAccess;
+begin
+  Result := CreateComObject(CLASS_JwExplicitAccess) as IJwExplicitAccess;
+end;
+
+class function CoJwExplicitAccess.CreateRemote(const MachineName: string): IJwExplicitAccess;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwExplicitAccess) as IJwExplicitAccess;
+end;
+
+class function CoJwGuidArray.Create: IJwGuidArray;
+begin
+  Result := CreateComObject(CLASS_JwGuidArray) as IJwGuidArray;
+end;
+
+class function CoJwGuidArray.CreateRemote(const MachineName: string): IJwGuidArray;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwGuidArray) as IJwGuidArray;
+end;
+
+class function CoJwInheritedFromRecord.Create: IJwInheritedFromRecord;
+begin
+  Result := CreateComObject(CLASS_JwInheritedFromRecord) as IJwInheritedFromRecord;
+end;
+
+class function CoJwInheritedFromRecord.CreateRemote(const MachineName: string): IJwInheritedFromRecord;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwInheritedFromRecord) as IJwInheritedFromRecord;
+end;
+
+class function CoJwInheritedFromArray.Create: IJwInheritedFromArray;
+begin
+  Result := CreateComObject(CLASS_JwInheritedFromArray) as IJwInheritedFromArray;
+end;
+
+class function CoJwInheritedFromArray.CreateRemote(const MachineName: string): IJwInheritedFromArray;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwInheritedFromArray) as IJwInheritedFromArray;
+end;
+
+class function CoJwRootTuple.Create: IJwRootTuple;
+begin
+  Result := CreateComObject(CLASS_JwRootTuple) as IJwRootTuple;
+end;
+
+class function CoJwRootTuple.CreateRemote(const MachineName: string): IJwRootTuple;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwRootTuple) as IJwRootTuple;
+end;
+
+class function CoJwKeyRootTupleArray.Create: IJwKeyRootTupleArray;
+begin
+  Result := CreateComObject(CLASS_JwKeyRootTupleArray) as IJwKeyRootTupleArray;
+end;
+
+class function CoJwKeyRootTupleArray.CreateRemote(const MachineName: string): IJwKeyRootTupleArray;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwKeyRootTupleArray) as IJwKeyRootTupleArray;
+end;
+
+class function CoJwAccessMaskArray.Create: IJwAccessMaskArray;
+begin
+  Result := CreateComObject(CLASS_JwAccessMaskArray) as IJwAccessMaskArray;
+end;
+
+class function CoJwAccessMaskArray.CreateRemote(const MachineName: string): IJwAccessMaskArray;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwAccessMaskArray) as IJwAccessMaskArray;
+end;
+
+class function CoJwObjectTypeList.Create: IJwObjectTypeList;
+begin
+  Result := CreateComObject(CLASS_JwObjectTypeList) as IJwObjectTypeList;
+end;
+
+class function CoJwObjectTypeList.CreateRemote(const MachineName: string): IJwObjectTypeList;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwObjectTypeList) as IJwObjectTypeList;
+end;
+
+class function CoJwObjectTypeListArray.Create: IJwObjectTypeListArray;
+begin
+  Result := CreateComObject(CLASS_JwObjectTypeListArray) as IJwObjectTypeListArray;
+end;
+
+class function CoJwObjectTypeListArray.CreateRemote(const MachineName: string): IJwObjectTypeListArray;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwObjectTypeListArray) as IJwObjectTypeListArray;
+end;
+
+class function CoJwSIDInfoData.Create: IJwSIDInfoData;
+begin
+  Result := CreateComObject(CLASS_JwSIDInfoData) as IJwSIDInfoData;
+end;
+
+class function CoJwSIDInfoData.CreateRemote(const MachineName: string): IJwSIDInfoData;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwSIDInfoData) as IJwSIDInfoData;
+end;
+
+class function CoJwSIDInfoDataArray.Create: IJwSIDInfoDataArray;
+begin
+  Result := CreateComObject(CLASS_JwSIDInfoDataArray) as IJwSIDInfoDataArray;
+end;
+
+class function CoJwSIDInfoDataArray.CreateRemote(const MachineName: string): IJwSIDInfoDataArray;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwSIDInfoDataArray) as IJwSIDInfoDataArray;
 end;
 
 end.
