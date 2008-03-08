@@ -84,7 +84,7 @@ type
 
         @raises EJwsclInvalidParameterException will be raised if the username is not valid.
         @raises EJwsclInvalidParameterException will be raised if the allocated buffer for user or password buffer is to small.
-                Actually the buffer is limited to 500 (wide-) characters.
+                Currently the buffer is limited to 500 (wide-) characters.
        }
     class procedure ParseUserName(Input: TJwString;
       out User, Domain: TJwString);
@@ -177,7 +177,7 @@ type
 
        {@Name displays a GUI or console credential promp.t
        @param CommandLine If set to true, the commandline version of credential prompt is used.
-          Actually this feature does not work.
+          Currently this feature does not work.
 
        @raises EJwsclInvalidFlagsException will be raised if the flag cfFlagsExpectConfirmation is set but
           OnConfirmCredential is nil.

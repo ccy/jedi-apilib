@@ -66,9 +66,9 @@ type
     function IsStandardSID: boolean;  override;
   end;
 
-   (*@Name is a class that describes the actually user that is running
-    the current or process.
-    Because the user must not be neccessary the actual logged on user
+   (*@Name is a class that describes the current user that is running
+    the current thread or process.
+    Because the user must not be neccessary the current logged on user
     it is called that way.
     Use the var JwSecurityProcessUserSID to get its date. But don't free it.
    *)

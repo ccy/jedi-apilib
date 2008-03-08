@@ -201,7 +201,7 @@ type
   public
     { public declarations }
    {Constructor @Name creates a new instance of TJwSecurityDesktop.
-    This constructor can actually create and open a desktop object.
+    This constructor can create and open a desktop object.
 
     @param(aParent Contains the parent instance that administer the desktop.
              You can set it to nil if you want to administer the desktop yourself. In that case you
@@ -450,7 +450,7 @@ type
    {FindInpuTSecurityDesktop searches for the desktop that was created with OpenInputDesktop.
     
     Developer warning: 
-      Actually this function returns the first desktop that was created/opened by OpenInputDesktop 
+      Currently this function returns the first desktop that was created/opened by OpenInputDesktop 
     and not the actual real input desktop.
     TODO: change behaviour  
    }

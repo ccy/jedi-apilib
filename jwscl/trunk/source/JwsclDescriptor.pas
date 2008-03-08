@@ -398,7 +398,7 @@ type
 
         raises EJwsclStreamHashException will be raised if the hash ist not valid.
         raises EJwsclInvalidSecurityDescriptor will be raised if the security descriptor read from the stream is not valid (uses IsValidSecurityDescriptor)
-               Actually only the version of SD is tested.
+               Currently only the version of SD is tested.
 
        }
     procedure LoadFromStream(const Stream: TStream); virtual;
