@@ -12,7 +12,7 @@ unit JWSCLCom_TLB;
 // ************************************************************************ //
 
 // PASTLWTR : 1.2
-// Datei generiert am 08.03.2008 23:08:40 aus der unten beschriebenen Typbibliothek.
+// Datei generiert am 10.03.2008 00:35:12 aus der unten beschriebenen Typbibliothek.
 
 // ************************************************************************  //
 // Typbib: P:\Eigene Dateien\Dezipaitor\Projekte\Delphi\7\jedi-api-lib\jwscl\trunk\COM\JWSCLCom.tlb (1)
@@ -22,20 +22,6 @@ unit JWSCLCom_TLB;
 // Hilfe-String: JWSCLCom Library
 // DepndLst: 
 //   (1) v2.0 stdole, (C:\Windows\system32\stdole2.tlb)
-//   (2) v4.0 StdVCL, (C:\Windows\system32\stdvcl40.dll)
-//   (3) v4.0 StdVCL, (C:\Windows\system32\stdvcl40.dll)
-//   (4) v4.0 StdVCL, (C:\Windows\system32\stdvcl40.dll)
-//   (5) v4.0 StdVCL, (C:\Windows\system32\stdvcl40.dll)
-//   (6) v4.0 StdVCL, (C:\Windows\system32\stdvcl40.dll)
-//   (7) v4.0 StdVCL, (C:\Windows\system32\stdvcl40.dll)
-//   (8) v4.0 StdVCL, (C:\Windows\system32\stdvcl40.dll)
-//   (9) v4.0 StdVCL, (C:\Windows\system32\stdvcl40.dll)
-//   (10) v4.0 StdVCL, (C:\Windows\system32\stdvcl40.dll)
-//   (11) v4.0 StdVCL, (C:\Windows\system32\stdvcl40.dll)
-//   (12) v4.0 StdVCL, (C:\Windows\system32\stdvcl40.dll)
-//   (13) v4.0 StdVCL, (C:\Windows\system32\stdvcl40.dll)
-//   (14) v4.0 StdVCL, (C:\Windows\system32\stdvcl40.dll)
-//   (15) v4.0 StdVCL, (C:\Windows\system32\stdvcl40.dll)
 // ************************************************************************ //
 {$TYPEDADDRESS OFF} // Unit muß ohne Typüberprüfung für Zeiger compiliert werden. 
 {$WARN SYMBOL_PLATFORM OFF}
@@ -234,6 +220,26 @@ const
   CLASS_JwSIDInfoData: TGUID = '{6ABF9717-7F4F-4DB4-8A9D-0582FF8AD8D3}';
   IID_IJwSIDInfoDataArray: TGUID = '{1A82872F-EC91-475E-8520-E0C59F7D18CD}';
   CLASS_JwSIDInfoDataArray: TGUID = '{33130D2F-79A5-479C-9B70-D93473BB881E}';
+  IID_IJwSiAccessArray: TGUID = '{74C1DFB0-385B-45B2-A294-EABC12328331}';
+  CLASS_JwSiAccessArray: TGUID = '{21B1CF6C-6C78-497E-9714-99D4A5256F34}';
+  IID_IJwSiAccess: TGUID = '{FD37A14B-761E-4CA9-A055-54E359A006FA}';
+  CLASS_JwSiAccess: TGUID = '{613486C0-E72C-45EB-B475-107E205BDBB9}';
+  IID_IJwStringArray: TGUID = '{44648AFE-A9B3-470B-9030-558909895A4C}';
+  CLASS_JwStringArray: TGUID = '{AF43957D-FB58-47D1-9BAB-34EA84567876}';
+  IID_IJwEnumProviderArray: TGUID = '{705B38E4-A5FF-46E9-A97E-9D33F904F05D}';
+  CLASS_JwEnumProviderArray: TGUID = '{6EF59E54-952A-477D-BED6-15EEBB808F52}';
+  IID_IJwEnumAlgorithmsEntry: TGUID = '{43494DF5-7731-4CD6-B388-FA499AAB6685}';
+  CLASS_JwEnumAlgorithmsEntry: TGUID = '{B2A0F29B-9B37-4F8A-82CE-2199F123D2CB}';
+  IID_IJwEnumAlgorithms: TGUID = '{6F38C105-9A70-4C19-ADD5-DCB10209CC79}';
+  CLASS_JwEnumAlgorithms: TGUID = '{E30DB876-6828-47D0-84EE-2DC002380F21}';
+  IID_IJwEnumProviderEntry: TGUID = '{768D3A2E-BDBC-4BD5-A24B-797C901F43A6}';
+  CLASS_JwEnumProviderEntry: TGUID = '{461BE1C9-0AF3-4B2D-9D32-83CC8F0017BC}';
+  IID_IJwReplyErrorArray: TGUID = '{5B5558DC-FA4E-4E37-8A6E-E57A73AB555D}';
+  CLASS_JwReplyErrorArray: TGUID = '{960FD77C-028E-4383-9450-BEA243D0C559}';
+  IID_IJwPointerList: TGUID = '{6D9F64E1-7841-4968-A371-1548681DF6E8}';
+  CLASS_JwPointerList: TGUID = '{45774C59-A7AC-4F16-B0CC-C26BB0471C91}';
+  IID_IJwGenericList: TGUID = '{436180F0-1F5F-4065-B710-A680431380D2}';
+  CLASS_JwGenericList: TGUID = '{68D27916-FD9D-4D07-8218-D300B7CB3AF4}';
 
 // *********************************************************************//
 // Deklaration von in der Typbibliothek definierten Enumerationen         
@@ -253,9 +259,9 @@ const
   deDacl = $00000002;
   deSacl = $00000003;
 
-// Konstanten für enum JwEnumAclProtectionState
+// Konstanten für enum JwAclProtectionState
 type
-  JwEnumAclProtectionState = TOleEnum;
+  JwAclProtectionState = TOleEnum;
 const
   psUnprotected = $00000000;
   psProtected = $00000001;
@@ -592,6 +598,253 @@ const
   sidaPad4 = $0000000E;
   sidaPad5 = $0000000F;
 
+// Konstanten für enum JwIntegrityLabelType
+type
+  JwIntegrityLabelType = TOleEnum;
+const
+  iltNone = $00000000;
+  iltLow = $00000001;
+  iltMedium = $00000002;
+  iltHigh = $00000003;
+  iltSystem = $00000004;
+  iltProtected = $00000005;
+
+// Konstanten für enum JwSecurityObjectInformation
+type
+  JwSecurityObjectInformation = TOleEnum;
+const
+  soifLevel = $00000000;
+  soifObjectGUID = $00000001;
+  soifObjectName = $00000002;
+  soifObjectType = $00000003;
+  soifServerName = $00000004;
+
+// Konstanten für enum JwGetAccessCheckType
+type
+  JwGetAccessCheckType = TOleEnum;
+const
+  gactGetSecurity = $00000000;
+  gactSetSecurity = $00000001;
+
+// Konstanten für enum JwGetInheritFlagsType
+type
+  JwGetInheritFlagsType = TOleEnum;
+const
+  giftCreatePrivate = $00000000;
+  giftSetPrivate = $00000001;
+
+// Konstanten für enum JwInheritFlag
+type
+  JwInheritFlag = TOleEnum;
+const
+  ifDACLAutoInherit = $00000000;
+  ifSACLAutoInherit = $00000001;
+  ifDefaultDescriptor = $00000002;
+
+// Konstanten für enum JwCredentialFlag
+type
+  JwCredentialFlag = TOleEnum;
+const
+  cfFlagsAlwaysShowUI = $00000000;
+  cfFlagsExcludeCertificates = $00000001;
+  cfFlagsExpectConfirmation = $00000002;
+  cfFlagsGenericCredentials = $00000003;
+  cfFlagsIncorrectPassword = $00000004;
+  cfFlagsPersist = $00000005;
+  cfFlagsRequestAdministrator = $00000006;
+  cfFlagsRequireCertificate = $00000007;
+  cfFlagsRequireSmartCard = $00000008;
+  cfFlagsServerCredential = $00000009;
+  cfFlagsShowSaveCheckBox = $0000000A;
+  cfFlagsUserNameTargetCredentials = $0000000B;
+
+// Konstanten für enum JwCryptProtectFlag
+type
+  JwCryptProtectFlag = TOleEnum;
+const
+  cfLocalMachine = $00000000;
+  cfUIForbidden = $00000001;
+
+// Konstanten für enum JwCryptProtectOnPromptFlag
+type
+  JwCryptProtectOnPromptFlag = TOleEnum;
+const
+  cppf_Pad0 = $00000000;
+  cppf_PromptOnProtect = $00000001;
+  cppf_PromptOnUnprotect = $00000002;
+
+// Konstanten für enum JwProtectMemoryFlag
+type
+  JwProtectMemoryFlag = TOleEnum;
+const
+  pmSameProcess = $00000000;
+  pmCrossProcess = $00000001;
+  pmSameLogon = $00000002;
+
+// Konstanten für enum JwCopyFlag
+type
+  JwCopyFlag = TOleEnum;
+const
+  cfCopyInstance = $00000000;
+  cfPointAtInstance = $00000001;
+
+// Konstanten für enum JwCSPType
+type
+  JwCSPType = TOleEnum;
+const
+  ctUnknown = $00000000;
+  ctRSAFull = $00000001;
+  ctRSASig = $00000002;
+  ctRSASchannel = $00000003;
+  ctDSS = $00000004;
+  ctDSSDh = $00000005;
+  ctDhSchannel = $00000006;
+  ctFortezza = $00000007;
+  ctMSExchange = $00000008;
+  ctSSL = $00000009;
+
+// Konstanten für enum JwCSPCreationFlag
+type
+  JwCSPCreationFlag = TOleEnum;
+const
+  ccfVerifyContext = $00000000;
+  ccfNewKeySet = $00000001;
+  ccfMachineKeySet = $00000002;
+  ccfSilent = $00000003;
+
+// Konstanten für enum JwHashAlgorithm
+type
+  JwHashAlgorithm = TOleEnum;
+const
+  haUnknown = $00000000;
+  haMD2 = $00000001;
+  haMD4 = $00000002;
+  haMD5 = $00000003;
+  haSHA = $00000004;
+  haHMAC = $00000005;
+
+// Konstanten für enum JwEncryptionAlgorithm
+type
+  JwEncryptionAlgorithm = TOleEnum;
+const
+  eaUnknown = $00000000;
+  eaRSASign = $00000001;
+  eaRSAKeyX = $00000002;
+  eaDES = $00000003;
+  ea3DES = $00000004;
+  ea3DES112 = $00000005;
+  eaRC2 = $00000006;
+  eaRC4 = $00000007;
+  eaRC5 = $00000008;
+  eaSeal = $00000009;
+  eaDhSf = $0000000A;
+  eaDhEphem = $0000000B;
+  eaAgreedKeyAny = $0000000C;
+  eaKeaKeyX = $0000000D;
+  eaSkipjack = $0000000E;
+  eaTek = $0000000F;
+  eaCylinkMek = $00000010;
+
+// Konstanten für enum JwKeyFlag
+type
+  JwKeyFlag = TOleEnum;
+const
+  kfCreateSalt = $00000000;
+  kfPreGen = $00000001;
+  kfExportable = $00000002;
+  kfNoSalt = $00000003;
+  kfUserProtected = $00000004;
+  kfOaep = $00000005;
+  kfUpdateKey = $00000006;
+  kfDestroyKey = $00000007;
+  kfSSL2Fallback = $00000008;
+
+// Konstanten für enum JwKeyPairType
+type
+  JwKeyPairType = TOleEnum;
+const
+  kptKeyExchange = $00000000;
+  kptSignature = $00000001;
+  kptUnknown = $00000002;
+
+// Konstanten für enum JwKeyExportKind
+type
+  JwKeyExportKind = TOleEnum;
+const
+  kekOpaque = $00000000;
+  kekPrivate = $00000001;
+  kekPublic = $00000002;
+  kekSimple = $00000003;
+  kekPlainText = $00000004;
+  kekSymmetricWrap = $00000005;
+
+// Konstanten für enum JwMandatoryPolicy
+type
+  JwMandatoryPolicy = TOleEnum;
+const
+  mpNoWriteUp = $00000000;
+  mpNoReadUp = $00000001;
+  mpNoExecuteUp = $00000002;
+
+// Konstanten für enum JwSharedHandle
+type
+  JwSharedHandle = TOleEnum;
+const
+  shShared = $00000000;
+  shOwner = $00000001;
+
+// Konstanten für enum JwAuthZResourceManagerFlag
+type
+  JwAuthZResourceManagerFlag = TOleEnum;
+const
+  authRM_Default = $00000000;
+  authRM_NoAudit = $00000001;
+  authRM_InitializedUnderImpersonation = $00000002;
+
+// Konstanten für enum JwAuthZSIDContextFlag
+type
+  JwAuthZSIDContextFlag = TOleEnum;
+const
+  authZSF_Default = $00000000;
+  authZSF_SkipTokenGroups = $00000001;
+  authZSF_RequireS4ULogon = $00000002;
+  authZSF_ComputePrivileges = $00000003;
+
+// Konstanten für enum JwReplyErrorEnum
+type
+  JwReplyErrorEnum = TOleEnum;
+const
+  reSuccess = $00000000;
+  rePrivilegeNotHeld = $00000001;
+  reAccessDenied = $00000002;
+  reUnknown = $00000003;
+
+// Konstanten für enum JwTokenMandatoryPolicy
+type
+  JwTokenMandatoryPolicy = TOleEnum;
+const
+  rttAuto = $00000000;
+  rttTokenPrimary = $00000001;
+  rttTokenImpersonation = $00000002;
+
+// Konstanten für enum JwPrivCheck
+type
+  JwPrivCheck = TOleEnum;
+const
+  pcDefault = $00000000;
+  pcAllPrivsEnabled = $00000001;
+
+// Konstanten für enum JwProfileMember
+type
+  JwProfileMember = TOleEnum;
+const
+  pmFlags = $00000000;
+  pmUserName = $00000001;
+  pmProfilePath = $00000002;
+  pmDefaultPath = $00000003;
+  pmServerName = $00000004;
+  pmPolicyPath = $00000005;
+
 type
 
 // *********************************************************************//
@@ -774,6 +1027,26 @@ type
   IJwSIDInfoDataDisp = dispinterface;
   IJwSIDInfoDataArray = interface;
   IJwSIDInfoDataArrayDisp = dispinterface;
+  IJwSiAccessArray = interface;
+  IJwSiAccessArrayDisp = dispinterface;
+  IJwSiAccess = interface;
+  IJwSiAccessDisp = dispinterface;
+  IJwStringArray = interface;
+  IJwStringArrayDisp = dispinterface;
+  IJwEnumProviderArray = interface;
+  IJwEnumProviderArrayDisp = dispinterface;
+  IJwEnumAlgorithmsEntry = interface;
+  IJwEnumAlgorithmsEntryDisp = dispinterface;
+  IJwEnumAlgorithms = interface;
+  IJwEnumAlgorithmsDisp = dispinterface;
+  IJwEnumProviderEntry = interface;
+  IJwEnumProviderEntryDisp = dispinterface;
+  IJwReplyErrorArray = interface;
+  IJwReplyErrorArrayDisp = dispinterface;
+  IJwPointerList = interface;
+  IJwPointerListDisp = dispinterface;
+  IJwGenericList = interface;
+  IJwGenericListDisp = dispinterface;
 
 // *********************************************************************//
 // Deklaration von in der Typbibliothek definierten CoClasses             
@@ -864,6 +1137,16 @@ type
   JwObjectTypeListArray = IJwObjectTypeListArray;
   JwSIDInfoData = IJwSIDInfoData;
   JwSIDInfoDataArray = IJwSIDInfoDataArray;
+  JwSiAccessArray = IJwSiAccessArray;
+  JwSiAccess = IJwSiAccess;
+  JwStringArray = IJwStringArray;
+  JwEnumProviderArray = IJwEnumProviderArray;
+  JwEnumAlgorithmsEntry = IJwEnumAlgorithmsEntry;
+  JwEnumAlgorithms = IJwEnumAlgorithms;
+  JwEnumProviderEntry = IJwEnumProviderEntry;
+  JwReplyErrorArray = IJwReplyErrorArray;
+  JwPointerList = IJwPointerList;
+  JwGenericList = IJwGenericList;
 
 
 // *********************************************************************// 
@@ -903,6 +1186,21 @@ type
   JwSecurityDescriptorControls = JwBitMask; 
   JwSecurityDialogFlags = JwBitMask; 
   JwDesktopFlags = JwBitMask; 
+  JwSIDAttributes = JwBitMask; 
+  JwSecurityObjectInformationSet = JwBitMask; 
+  JwGetAccessCheckTypes = JwBitMask; 
+  JwInheritFlags = JwBitMask; 
+  JwCredentialFlags = JwBitMask; 
+  JwCryptProtectFlags = JwBitMask; 
+  JwCryptProtectOnPromptFlags = JwBitMask; 
+  JwProtectMemoryFlags = JwBitMask; 
+  JwCSPCreationFlags = JwBitMask; 
+  JwKeyFlagSet = JwBitMask; 
+  JwMandatoryPolicies = JwBitMask; 
+  JwAuthZSIDContextFlags = JwBitMask; 
+  IJwObjectTypeArray = IJwObjectTypeList; 
+  JwTokenMandatoryPolicies = JwBitMask; 
+  JwWellIKnownSidTypeSet = JwBitMask; 
 
 // *********************************************************************//
 // Schnittstelle: IJwSid
@@ -2997,6 +3295,243 @@ type
   end;
 
 // *********************************************************************//
+// Schnittstelle: IJwSiAccessArray
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {74C1DFB0-385B-45B2-A294-EABC12328331}
+// *********************************************************************//
+  IJwSiAccessArray = interface(IDispatch)
+    ['{74C1DFB0-385B-45B2-A294-EABC12328331}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwSiAccessArrayDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {74C1DFB0-385B-45B2-A294-EABC12328331}
+// *********************************************************************//
+  IJwSiAccessArrayDisp = dispinterface
+    ['{74C1DFB0-385B-45B2-A294-EABC12328331}']
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwSiAccess
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {FD37A14B-761E-4CA9-A055-54E359A006FA}
+// *********************************************************************//
+  IJwSiAccess = interface(IDispatch)
+    ['{FD37A14B-761E-4CA9-A055-54E359A006FA}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwSiAccessDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {FD37A14B-761E-4CA9-A055-54E359A006FA}
+// *********************************************************************//
+  IJwSiAccessDisp = dispinterface
+    ['{FD37A14B-761E-4CA9-A055-54E359A006FA}']
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwStringArray
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {44648AFE-A9B3-470B-9030-558909895A4C}
+// *********************************************************************//
+  IJwStringArray = interface(IDispatch)
+    ['{44648AFE-A9B3-470B-9030-558909895A4C}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwStringArrayDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {44648AFE-A9B3-470B-9030-558909895A4C}
+// *********************************************************************//
+  IJwStringArrayDisp = dispinterface
+    ['{44648AFE-A9B3-470B-9030-558909895A4C}']
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwEnumProviderArray
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {705B38E4-A5FF-46E9-A97E-9D33F904F05D}
+// *********************************************************************//
+  IJwEnumProviderArray = interface(IDispatch)
+    ['{705B38E4-A5FF-46E9-A97E-9D33F904F05D}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwEnumProviderArrayDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {705B38E4-A5FF-46E9-A97E-9D33F904F05D}
+// *********************************************************************//
+  IJwEnumProviderArrayDisp = dispinterface
+    ['{705B38E4-A5FF-46E9-A97E-9D33F904F05D}']
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwEnumAlgorithmsEntry
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {43494DF5-7731-4CD6-B388-FA499AAB6685}
+// *********************************************************************//
+  IJwEnumAlgorithmsEntry = interface(IDispatch)
+    ['{43494DF5-7731-4CD6-B388-FA499AAB6685}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwEnumAlgorithmsEntryDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {43494DF5-7731-4CD6-B388-FA499AAB6685}
+// *********************************************************************//
+  IJwEnumAlgorithmsEntryDisp = dispinterface
+    ['{43494DF5-7731-4CD6-B388-FA499AAB6685}']
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwEnumAlgorithms
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {6F38C105-9A70-4C19-ADD5-DCB10209CC79}
+// *********************************************************************//
+  IJwEnumAlgorithms = interface(IDispatch)
+    ['{6F38C105-9A70-4C19-ADD5-DCB10209CC79}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwEnumAlgorithmsDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {6F38C105-9A70-4C19-ADD5-DCB10209CC79}
+// *********************************************************************//
+  IJwEnumAlgorithmsDisp = dispinterface
+    ['{6F38C105-9A70-4C19-ADD5-DCB10209CC79}']
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwEnumProviderEntry
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {768D3A2E-BDBC-4BD5-A24B-797C901F43A6}
+// *********************************************************************//
+  IJwEnumProviderEntry = interface(IDispatch)
+    ['{768D3A2E-BDBC-4BD5-A24B-797C901F43A6}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwEnumProviderEntryDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {768D3A2E-BDBC-4BD5-A24B-797C901F43A6}
+// *********************************************************************//
+  IJwEnumProviderEntryDisp = dispinterface
+    ['{768D3A2E-BDBC-4BD5-A24B-797C901F43A6}']
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwReplyErrorArray
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {5B5558DC-FA4E-4E37-8A6E-E57A73AB555D}
+// *********************************************************************//
+  IJwReplyErrorArray = interface(IDispatch)
+    ['{5B5558DC-FA4E-4E37-8A6E-E57A73AB555D}']
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwReplyErrorArrayDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {5B5558DC-FA4E-4E37-8A6E-E57A73AB555D}
+// *********************************************************************//
+  IJwReplyErrorArrayDisp = dispinterface
+    ['{5B5558DC-FA4E-4E37-8A6E-E57A73AB555D}']
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwPointerList
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {6D9F64E1-7841-4968-A371-1548681DF6E8}
+// *********************************************************************//
+  IJwPointerList = interface(IDispatch)
+    ['{6D9F64E1-7841-4968-A371-1548681DF6E8}']
+    function GetData(Index: Integer): PChar; safecall;
+    function AddData(Data: PChar; Size: LongWord): Integer; safecall;
+    function Get_ReadOnly: WordBool; safecall;
+    procedure Set_ReadOnly(Value: WordBool); safecall;
+    procedure DeleteData(Index: Integer); safecall;
+    function Get_OwnData: WordBool; safecall;
+    procedure Set_OwnData(Value: WordBool); safecall;
+    function AddAndDuplicate(Data: PChar; Size: LongWord): Integer; safecall;
+    function Copy(Duplicate: WordBool): IJwPointerList; safecall;
+    function Get_Count: Integer; safecall;
+    function Get_ItemSize(Index: Integer): LongWord; safecall;
+    procedure InsertData(Index: Integer; Data: PChar; Size: LongWord); safecall;
+    function Get_Item(Index: Integer; Duplicate: WordBool): PChar; safecall;
+    procedure InsertDataAndDuplicate(Index: Integer; Data: PChar; Size: LongWord); safecall;
+    procedure Clear; safecall;
+    procedure Exchange(Index: Integer; Data: PChar; Size: LongWord); safecall;
+    property ReadOnly: WordBool read Get_ReadOnly write Set_ReadOnly;
+    property OwnData: WordBool read Get_OwnData write Set_OwnData;
+    property Count: Integer read Get_Count;
+    property ItemSize[Index: Integer]: LongWord read Get_ItemSize;
+    property Item[Index: Integer; Duplicate: WordBool]: PChar read Get_Item;
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwPointerListDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {6D9F64E1-7841-4968-A371-1548681DF6E8}
+// *********************************************************************//
+  IJwPointerListDisp = dispinterface
+    ['{6D9F64E1-7841-4968-A371-1548681DF6E8}']
+    function GetData(Index: Integer): {??PChar}OleVariant; dispid 201;
+    function AddData(Data: {??PChar}OleVariant; Size: LongWord): Integer; dispid 202;
+    property ReadOnly: WordBool dispid 203;
+    procedure DeleteData(Index: Integer); dispid 204;
+    property OwnData: WordBool dispid 205;
+    function AddAndDuplicate(Data: {??PChar}OleVariant; Size: LongWord): Integer; dispid 206;
+    function Copy(Duplicate: WordBool): IJwPointerList; dispid 207;
+    property Count: Integer readonly dispid 208;
+    property ItemSize[Index: Integer]: LongWord readonly dispid 209;
+    procedure InsertData(Index: Integer; Data: {??PChar}OleVariant; Size: LongWord); dispid 210;
+    property Item[Index: Integer; Duplicate: WordBool]: {??PChar}OleVariant readonly dispid 211;
+    procedure InsertDataAndDuplicate(Index: Integer; Data: {??PChar}OleVariant; Size: LongWord); dispid 212;
+    procedure Clear; dispid 213;
+    procedure Exchange(Index: Integer; Data: {??PChar}OleVariant; Size: LongWord); dispid 214;
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwGenericList
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {436180F0-1F5F-4065-B710-A680431380D2}
+// *********************************************************************//
+  IJwGenericList = interface(IDispatch)
+    ['{436180F0-1F5F-4065-B710-A680431380D2}']
+    procedure Add(Data: OleVariant); safecall;
+    procedure Insert(Index: Integer; Data: OleVariant); safecall;
+    function Get_ReadOnly: WordBool; safecall;
+    procedure Set_ReadOnly(Value: WordBool); safecall;
+    function Get_Count: Integer; safecall;
+    function Get_Item(Index: Integer): OleVariant; safecall;
+    procedure Delete(Index: Integer); safecall;
+    procedure Clear; safecall;
+    function Copy: IJwGenericList; safecall;
+    procedure Exchange(Index: Integer; Value: OleVariant); safecall;
+    property ReadOnly: WordBool read Get_ReadOnly write Set_ReadOnly;
+    property Count: Integer read Get_Count;
+    property Item[Index: Integer]: OleVariant read Get_Item;
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwGenericListDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {436180F0-1F5F-4065-B710-A680431380D2}
+// *********************************************************************//
+  IJwGenericListDisp = dispinterface
+    ['{436180F0-1F5F-4065-B710-A680431380D2}']
+    procedure Add(Data: OleVariant); dispid 201;
+    procedure Insert(Index: Integer; Data: OleVariant); dispid 202;
+    property ReadOnly: WordBool dispid 203;
+    property Count: Integer readonly dispid 204;
+    property Item[Index: Integer]: OleVariant readonly dispid 205;
+    procedure Delete(Index: Integer); dispid 206;
+    procedure Clear; dispid 207;
+    function Copy: IJwGenericList; dispid 208;
+    procedure Exchange(Index: Integer; Value: OleVariant); dispid 209;
+  end;
+
+// *********************************************************************//
 // Die Klasse CoJwSid stellt die Methoden Create und CreateRemote zur      
 // Verfügung, um Instanzen der Standardschnittstelle IJwSid, dargestellt von
 // CoClass JwSid, zu erzeugen. Diese Funktionen können                     
@@ -4004,6 +4539,126 @@ type
     class function CreateRemote(const MachineName: string): IJwSIDInfoDataArray;
   end;
 
+// *********************************************************************//
+// Die Klasse CoJwSiAccessArray stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwSiAccessArray, dargestellt von
+// CoClass JwSiAccessArray, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwSiAccessArray = class
+    class function Create: IJwSiAccessArray;
+    class function CreateRemote(const MachineName: string): IJwSiAccessArray;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwSiAccess stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwSiAccess, dargestellt von
+// CoClass JwSiAccess, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwSiAccess = class
+    class function Create: IJwSiAccess;
+    class function CreateRemote(const MachineName: string): IJwSiAccess;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwStringArray stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwStringArray, dargestellt von
+// CoClass JwStringArray, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwStringArray = class
+    class function Create: IJwStringArray;
+    class function CreateRemote(const MachineName: string): IJwStringArray;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwEnumProviderArray stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwEnumProviderArray, dargestellt von
+// CoClass JwEnumProviderArray, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwEnumProviderArray = class
+    class function Create: IJwEnumProviderArray;
+    class function CreateRemote(const MachineName: string): IJwEnumProviderArray;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwEnumAlgorithmsEntry stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwEnumAlgorithmsEntry, dargestellt von
+// CoClass JwEnumAlgorithmsEntry, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwEnumAlgorithmsEntry = class
+    class function Create: IJwEnumAlgorithmsEntry;
+    class function CreateRemote(const MachineName: string): IJwEnumAlgorithmsEntry;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwEnumAlgorithms stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwEnumAlgorithms, dargestellt von
+// CoClass JwEnumAlgorithms, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwEnumAlgorithms = class
+    class function Create: IJwEnumAlgorithms;
+    class function CreateRemote(const MachineName: string): IJwEnumAlgorithms;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwEnumProviderEntry stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwEnumProviderEntry, dargestellt von
+// CoClass JwEnumProviderEntry, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwEnumProviderEntry = class
+    class function Create: IJwEnumProviderEntry;
+    class function CreateRemote(const MachineName: string): IJwEnumProviderEntry;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwReplyErrorArray stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwReplyErrorArray, dargestellt von
+// CoClass JwReplyErrorArray, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwReplyErrorArray = class
+    class function Create: IJwReplyErrorArray;
+    class function CreateRemote(const MachineName: string): IJwReplyErrorArray;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwPointerList stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwPointerList, dargestellt von
+// CoClass JwPointerList, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwPointerList = class
+    class function Create: IJwPointerList;
+    class function CreateRemote(const MachineName: string): IJwPointerList;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoJwGenericList stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwGenericList, dargestellt von
+// CoClass JwGenericList, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwGenericList = class
+    class function Create: IJwGenericList;
+    class function CreateRemote(const MachineName: string): IJwGenericList;
+  end;
+
 implementation
 
 uses ComObj;
@@ -4846,6 +5501,106 @@ end;
 class function CoJwSIDInfoDataArray.CreateRemote(const MachineName: string): IJwSIDInfoDataArray;
 begin
   Result := CreateRemoteComObject(MachineName, CLASS_JwSIDInfoDataArray) as IJwSIDInfoDataArray;
+end;
+
+class function CoJwSiAccessArray.Create: IJwSiAccessArray;
+begin
+  Result := CreateComObject(CLASS_JwSiAccessArray) as IJwSiAccessArray;
+end;
+
+class function CoJwSiAccessArray.CreateRemote(const MachineName: string): IJwSiAccessArray;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwSiAccessArray) as IJwSiAccessArray;
+end;
+
+class function CoJwSiAccess.Create: IJwSiAccess;
+begin
+  Result := CreateComObject(CLASS_JwSiAccess) as IJwSiAccess;
+end;
+
+class function CoJwSiAccess.CreateRemote(const MachineName: string): IJwSiAccess;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwSiAccess) as IJwSiAccess;
+end;
+
+class function CoJwStringArray.Create: IJwStringArray;
+begin
+  Result := CreateComObject(CLASS_JwStringArray) as IJwStringArray;
+end;
+
+class function CoJwStringArray.CreateRemote(const MachineName: string): IJwStringArray;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwStringArray) as IJwStringArray;
+end;
+
+class function CoJwEnumProviderArray.Create: IJwEnumProviderArray;
+begin
+  Result := CreateComObject(CLASS_JwEnumProviderArray) as IJwEnumProviderArray;
+end;
+
+class function CoJwEnumProviderArray.CreateRemote(const MachineName: string): IJwEnumProviderArray;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwEnumProviderArray) as IJwEnumProviderArray;
+end;
+
+class function CoJwEnumAlgorithmsEntry.Create: IJwEnumAlgorithmsEntry;
+begin
+  Result := CreateComObject(CLASS_JwEnumAlgorithmsEntry) as IJwEnumAlgorithmsEntry;
+end;
+
+class function CoJwEnumAlgorithmsEntry.CreateRemote(const MachineName: string): IJwEnumAlgorithmsEntry;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwEnumAlgorithmsEntry) as IJwEnumAlgorithmsEntry;
+end;
+
+class function CoJwEnumAlgorithms.Create: IJwEnumAlgorithms;
+begin
+  Result := CreateComObject(CLASS_JwEnumAlgorithms) as IJwEnumAlgorithms;
+end;
+
+class function CoJwEnumAlgorithms.CreateRemote(const MachineName: string): IJwEnumAlgorithms;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwEnumAlgorithms) as IJwEnumAlgorithms;
+end;
+
+class function CoJwEnumProviderEntry.Create: IJwEnumProviderEntry;
+begin
+  Result := CreateComObject(CLASS_JwEnumProviderEntry) as IJwEnumProviderEntry;
+end;
+
+class function CoJwEnumProviderEntry.CreateRemote(const MachineName: string): IJwEnumProviderEntry;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwEnumProviderEntry) as IJwEnumProviderEntry;
+end;
+
+class function CoJwReplyErrorArray.Create: IJwReplyErrorArray;
+begin
+  Result := CreateComObject(CLASS_JwReplyErrorArray) as IJwReplyErrorArray;
+end;
+
+class function CoJwReplyErrorArray.CreateRemote(const MachineName: string): IJwReplyErrorArray;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwReplyErrorArray) as IJwReplyErrorArray;
+end;
+
+class function CoJwPointerList.Create: IJwPointerList;
+begin
+  Result := CreateComObject(CLASS_JwPointerList) as IJwPointerList;
+end;
+
+class function CoJwPointerList.CreateRemote(const MachineName: string): IJwPointerList;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwPointerList) as IJwPointerList;
+end;
+
+class function CoJwGenericList.Create: IJwGenericList;
+begin
+  Result := CreateComObject(CLASS_JwGenericList) as IJwGenericList;
+end;
+
+class function CoJwGenericList.CreateRemote(const MachineName: string): IJwGenericList;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwGenericList) as IJwGenericList;
 end;
 
 end.

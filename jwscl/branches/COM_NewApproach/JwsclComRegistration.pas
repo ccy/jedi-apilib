@@ -5,7 +5,7 @@ unit JwsclComRegistration;
 interface
 
 uses
-  ComObj, ActiveX, JWSCLCom_TLB, StdVcl;
+  ComObj, ActiveX, JWSCLCom_TLB, StdVcl, JwsclCoGenericList;
 
 
 
@@ -25,5 +25,7 @@ initialization
   TAutoObjectFactory.Create(ComServer, TInternalJwXMLAttribute, CLASS_JwXMLAttribute,
     ciMultiInstance, tmApartment);
 
+    TAutoObjectFactory.Create(ComServer, TJwGenericList, Class_JwGenericList,
+    ciMultiInstance, tmApartment);
 
 end.

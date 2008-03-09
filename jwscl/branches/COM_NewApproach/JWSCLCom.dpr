@@ -61,7 +61,18 @@ uses
   JwsclCoObjectTypeList in 'JwsclCoObjectTypeList.pas' {JwObjectTypeList: CoClass},
   JwsclCoObjectTypeListArray in 'JwsclCoObjectTypeListArray.pas' {JwObjectTypeListArray: CoClass},
   JwsclCoSIDInfoData in 'JwsclCoSIDInfoData.pas' {JwSIDInfoData: CoClass},
-  JwsclCoSIDInfoDataArray in 'JwsclCoSIDInfoDataArray.pas' {JwSIDInfoDataArray: CoClass};
+  JwsclCoSIDInfoDataArray in 'JwsclCoSIDInfoDataArray.pas' {JwSIDInfoDataArray: CoClass},
+  JwsclCoSIAccessArray in 'JwsclCoSIAccessArray.pas' {JwSiAccessArray: CoClass},
+  JwsclCoSIAccess in 'JwsclCoSIAccess.pas' {JwSiAccess: CoClass},
+  JwsclCoStringArray in 'JwsclCoStringArray.pas' {JwStringArray: CoClass},
+  JwsclCoEnumProviderArray in 'JwsclCoEnumProviderArray.pas' {JwEnumProviderArray: CoClass},
+  JwsclCoEnumAlgorithmsEntry in 'JwsclCoEnumAlgorithmsEntry.pas' {JwEnumAlgorithmsEntry: CoClass},
+  JwsclCoEnumAlgorithms in 'JwsclCoEnumAlgorithms.pas' {JwEnumAlgorithms: CoClass},
+  JwsclCoEnumProviderEntry in 'JwsclCoEnumProviderEntry.pas' {JwEnumProviderEntry: CoClass},
+  JwsclCoReplyErrorArray in 'JwsclCoReplyErrorArray.pas' {JwReplyErrorArray: CoClass},
+  JwsclCoPointerList in 'JwsclCoPointerList.pas' {JwPointerList: CoClass},
+  TestsJwsclCoGenericList in 'UnitTests\TestsJwsclCoGenericList.pas',
+  JwsclCoGenericList in 'JwsclCoGenericList.pas' {JwGenericList: CoClass};
 
 exports
   DllGetClassObject,
