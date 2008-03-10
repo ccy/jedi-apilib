@@ -5,7 +5,7 @@ unit JwsclCoPointerList;
 interface
 
 uses
-  JwaWindows, ComObj, Classes, ActiveX, JWSCLCom_TLB, StdVcl;
+  JwaWindows, ComObj, Classes, ActiveX, JWSCLCom_TLB, StdVcl, SyncObjs;
 
 type
   TJwPointerList = class(TAutoObject, IJwPointerList)
@@ -14,6 +14,7 @@ type
     fSizeList : TList;
     fReadOnly,
     fOwnData : Boolean;
+    fCS : TCriticalSection;
 
     function GetData(Index: Integer): PChar; safecall;
     function AddData(Data: PChar; Size: LongWord): Integer; safecall;
@@ -50,28 +51,43 @@ end;
 
 function TJwPointerList.AddData(Data: PChar; Size: LongWord): Integer;
 begin
-  Assert(not fReadOnly);
-  
-  if not fReadOnly then
-  begin
-    result := fList.Add(Data);
-    fSizeList.Add(Pointer(Size));
+  fCS.Enter;
+  try
+    Assert(not fReadOnly);
+
+    if not fReadOnly then
+    begin
+      result := fList.Add(Data);
+      fSizeList.Add(Pointer(Size));
+    end;
+  finally
+    fCS.Leave;
   end;
 end;
 
 function TJwPointerList.Get_ReadOnly: WordBool;
 begin
-  result := fReadOnly;
+  fCS.Enter;
+  try
+    result := fReadOnly;
+  finally
+    fCS.Leave;
+  end;
 end;
 
 procedure TJwPointerList.DeleteData(Index: Integer);
 begin
-  Assert(not fReadOnly);
+  fCS.Enter;
+  try
+    Assert(not fReadOnly);
 
-  if not fReadOnly then
-  begin
-    fList.Delete(Index);
-    fSizeList.Delete(Index);
+    if not fReadOnly then
+    begin
+      fList.Delete(Index);
+      fSizeList.Delete(Index);
+    end;
+  finally
+    fCS.Leave;
   end;
 end;
 
@@ -81,7 +97,14 @@ begin
   Assert(fReadOnly and not Value);
 
   if fReadOnly then
-    fReadOnly := Value;
+  begin
+    fCS.Enter;
+    try
+      fReadOnly := Value;
+    finally
+      fCS.Leave;
+    end;
+  end;
 end;
 
 procedure TJwPointerList.Initialize;
@@ -89,6 +112,7 @@ begin
   inherited;
   fList     := TList.Create;
   fSizeList := TList.Create;
+  fCS := TCriticalSection.Create;
 
   fOwnData := true;
   fReadOnly := false;
@@ -96,73 +120,118 @@ end;
 
 destructor TJwPointerList.Destroy;
 begin
-  fReadOnly := false;
+  fCS.Enter;
+  try
+    fReadOnly := false;
+  finally
+    fCS.Leave;
+  end;
 
   Clear;
 
-  fList.Free;
-  fSizeList.Free;
+  fCS.Enter;
+  try
+    fList.Free;
+    fSizeList.Free;
+  finally
+    fCS.Leave;
+    fCS.Free;
+  end;
   inherited;
 end;
 
 function TJwPointerList.Get_OwnData: WordBool;
 begin
-  result := fOwnData;
+  fCS.Enter;
+  try
+    result := fOwnData;
+  finally
+    fCS.Leave;
+  end;
 end;
 
 procedure TJwPointerList.Set_OwnData(Value: WordBool);
 begin
-  fOwnData := Value;
+  fCS.Enter;
+  try
+    fOwnData := Value;
+  finally
+    fCS.Leave;
+  end;
 end;
 
 function TJwPointerList.AddAndDuplicate(Data: PChar;
   Size: LongWord): Integer;
 var p : Pointer;
 begin
-  Assert(not fReadOnly);
-  Assert(fOwnData);
+  fCS.Enter;
+  try
+    Assert(not fReadOnly);
+    Assert(fOwnData);
 
-  if not fReadOnly then
-  begin
+    if not fReadOnly then
+    begin
+      P := CoTaskMemAlloc(Size + 10);
+      Assert(P <> nil);
 
-    P := CoTaskMemAlloc(Size + 10);
-    Assert(P <> nil);
-
-    ZeroMemory(P, Size + 10);
-    CopyMemory(P, Data, Size);
-    result := AddData(P, Size);
+      ZeroMemory(P, Size + 10);
+      CopyMemory(P, Data, Size);
+      result := AddData(P, Size);
+    end;
+  finally
+    fCS.Leave;
   end;
+
 end;
 
 function TJwPointerList.Copy(Duplicate: WordBool): IJwPointerList;
 var i : Integer;
 begin
-  Assert(fReadOnly and not Duplicate);
-  if fReadOnly and not Duplicate then
-  begin
-    result := nil;
-    exit;
+  fCS.Enter;
+  try
+    Assert(fReadOnly and not Duplicate);
+    if fReadOnly and not Duplicate then
+    begin
+      result := nil;
+      fCS.Leave;
+      exit;
+    end;
+
+    result := TJwPointerList.Create;
+    result.OwnData := Duplicate;
+    for i := 0 to Get_Count -1 do
+    begin
+      if Duplicate then
+        result.AddAndDuplicate(GetData(i),Get_ItemSize(i))
+      else
+        result.AddData(GetData(i),Get_ItemSize(i));
+    end;
+  finally
+    fCS.Leave;
   end;
 
-  result := TJwPointerList.Create;
-  result.OwnData := Duplicate;
-  for i := 0 to Get_Count -1 do
-  begin
-    if Duplicate then
-      result.AddAndDuplicate(GetData(i),Get_ItemSize(i))
-    else
-      result.AddData(GetData(i),Get_ItemSize(i));
-  end;
 end;
 
 function TJwPointerList.Get_Count: Integer;
 begin
-  result := fList.Count;
+  fCS.Enter;
+  try
+    result := fList.Count;
+  finally
+    fCS.Leave;
+  end;
+
 end;
 
 function TJwPointerList.Get_ItemSize(Index: Integer): LongWord;
 begin
-  result := LongWord(fSizeList[Index]);
+  fCS.Enter;
+  try
+    result := LongWord(fSizeList[Index]);
+  finally
+    fCS.Leave;
+  end;
+
 end;
 
 
@@ -170,83 +239,113 @@ function TJwPointerList.Get_Item(Index: Integer;
   Duplicate: WordBool): PChar;
 var P : Pointer;
 begin
-  P := fList.Items[Index];
-  Assert(P <> nil);
+  fCS.Enter;
+  try
+    P := fList.Items[Index];
+    Assert(P <> nil);
 
-  if Duplicate then
-  begin
-    result := CoTaskMemAlloc(DWORD(fSizeList[Index]));
-    Assert(result <> nil);
+    if Duplicate then
+    begin
+      result := CoTaskMemAlloc(DWORD(fSizeList[Index]));
+      Assert(result <> nil);
 
-    ZeroMemory(result, DWORD(fSizeList[Index]));
-    CopyMemory(result, P, DWORD(fSizeList[Index]));
-  end
-  else
-    result := P;
+      ZeroMemory(result, DWORD(fSizeList[Index]));
+      CopyMemory(result, P, DWORD(fSizeList[Index]));
+    end
+    else
+      result := P;
+  finally
+    fCS.Leave;
+  end;
+
 end;
 
 procedure TJwPointerList.InsertData(Index: Integer; Data: PChar; 
   Size: LongWord);
 begin
-  Assert(not fReadOnly);
+  fCS.Enter;
+  try
+    Assert(not fReadOnly);
 
-  if not fReadOnly then
-  begin
-    fList.Insert(Index, Data);
-    fSizeList.Insert(Index, Pointer(Size));
+    if not fReadOnly then
+    begin
+      fList.Insert(Index, Data);
+      fSizeList.Insert(Index, Pointer(Size));
+    end;
+  finally
+    fCS.Leave;
   end;
+
 end;
 
 procedure TJwPointerList.InsertDataAndDuplicate(Index: Integer;
   Data: PChar; Size: LongWord);
 var p : Pointer;
 begin
-  Assert(not fReadOnly);
+  fCS.Enter;
+  try
+    Assert(not fReadOnly);
 
-  if not fReadOnly then
-  begin
-    Assert(fOwnData);
+    if not fReadOnly then
+    begin
+      Assert(fOwnData);
 
-    P := CoTaskMemAlloc(Size + 10);
-    Assert(P <> nil);
+      P := CoTaskMemAlloc(Size + 10);
+      Assert(P <> nil);
 
-    ZeroMemory(P, Size + 10);
-    CopyMemory(P, Data, Size);
-    InsertData(Index, PChar(P), Size);
+      ZeroMemory(P, Size + 10);
+      CopyMemory(P, Data, Size);
+      InsertData(Index, PChar(P), Size);
+    end;
+  finally
+    fCS.Leave;
   end;
+
 end;
 
 procedure TJwPointerList.Clear;
 var i : Integer;
 begin
-  Assert(not fReadOnly);
+  fCS.Enter;
+  try
+    Assert(not fReadOnly);
 
-  if not fReadOnly and fOwnData then
-  begin
-    for i := 0 to fList.Count-1 do
+    if not fReadOnly and fOwnData then
     begin
-      CoTaskMemFree(fList[i]);
-    end;
+      for i := 0 to fList.Count-1 do
+      begin
+        CoTaskMemFree(fList[i]);
+      end;
 
-    fList.Clear;
-    fSizeList.Clear;
+      fList.Clear;
+      fSizeList.Clear;
+    end;
+  finally
+    fCS.Leave;
   end;
+
 end;
 
 procedure TJwPointerList.Exchange(Index: Integer; Data: PChar;
   Size: LongWord);
 var P : PVariant;
 begin
-  Assert(not fReadOnly);
+  fCS.Enter;
+  try
+    Assert(not fReadOnly);
 
-  if fReadOnly then
-  begin
-    DeleteData(Index);
-    if fOwnData then
-      InsertDataAndDuplicate(Index, Data, Size)
-    else
-      InsertData(Index, Data, Size);
+    if fReadOnly then
+    begin
+      DeleteData(Index);
+      if fOwnData then
+        InsertDataAndDuplicate(Index, Data, Size)
+      else
+        InsertData(Index, Data, Size);
+    end;
+  finally
+    fCS.Leave;
   end;
+    
 end;
 
 

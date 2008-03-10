@@ -5,13 +5,14 @@ unit JwsclCoGenericList;
 interface
 
 uses
-  ComObj, Classes, ActiveX, JWSCLCom_TLB, StdVcl;
+  ComObj, Classes, ActiveX, JWSCLCom_TLB, StdVcl, SyncObjs;
 
 type
   TJwGenericList = class(TAutoObject, IJwGenericList)
   protected
     fList : TList;
     fReadOnly : Boolean;
+    fCS : TCriticalSection;
 
     procedure Add(Data: OleVariant); safecall;
     function Copy: IJwGenericList; safecall;
@@ -35,22 +36,40 @@ uses ComServ;
 procedure TJwGenericList.Add(Data: OleVariant);
 var V : PVariant;
 begin
-  Assert(not fReadOnly);
+  fCS.Enter;
+  try
+    Assert(not fReadOnly);
 
-  if not fReadOnly then
-  begin
-    new(V);
-    V^ := Data;
+    if not fReadOnly then
+    begin
+      new(V);
+      V^ := Data;
 
-    fList.Add(V);
-  end;
+      fList.Add(V);
+    end;
+  finally
+    fCS.Leave;
+  end;    
 end;
 
 destructor TJwGenericList.Destroy;
 begin
-  fReadOnly := false; 
+  fCS.Enter;
+  try
+    fReadOnly := false;
+  finally
+    fCS.Leave;
+  end;
+
   Clear;
-  fList.Free;
+
+  fCS.Enter;
+  try
+    fList.Free;
+  finally
+    fCS.Leave;
+    fCS.Free;
+  end;
 
   inherited;
 end;
@@ -60,94 +79,140 @@ begin
   inherited;
   fList     := TList.Create;
   fReadOnly := false;
+  fCS := TCriticalSection.Create;
 end;
 
 function TJwGenericList.Copy: IJwGenericList;
 var i : Integer;
 begin
-  result := TJwGenericList.Create;
-  for i := 0 to Get_Count -1 do
-  begin
-    result.Add(Get_Item(i));
+  fCS.Enter;
+  try
+    result := TJwGenericList.Create;
+    for i := 0 to Get_Count -1 do
+    begin
+      result.Add(Get_Item(i));
+    end;
+  finally
+    fCS.Leave;
   end;
 end;
 
 function TJwGenericList.Get_Count: Integer;
 begin
-  result := fList.Count;
+  fCS.Enter;
+  try
+    result := fList.Count;
+  finally
+    fCS.Leave;
+  end;
 end;
 
 function TJwGenericList.Get_Item(Index: Integer): OleVariant;
 begin
-  result := PVariant(fList[Index])^;
+  fCS.Enter;
+  try
+    result := PVariant(fList[Index])^;
+  finally
+    fCS.Leave;
+  end;
 end;
 
 function TJwGenericList.Get_ReadOnly: WordBool;
 begin
-  result := fReadOnly;
+  fCS.Enter;
+  try
+    result := fReadOnly;
+  finally
+    fCS.Leave;
+  end;
 end;
 
 procedure TJwGenericList.Clear;
 var i : Integer;
 begin
-  Assert(not fReadOnly);
+  fCS.Enter;
+  try
+    Assert(not fReadOnly);
 
-  if not fReadOnly then
-  begin
-    for i := 0 to Get_Count -1 do
+    if not fReadOnly then
     begin
-      dispose(PVariant(fList[i]));
+      for i := 0 to Get_Count -1 do
+      begin
+        dispose(PVariant(fList[i]));
+      end;
+      fList.Clear;
     end;
-    fList.Clear;
+  finally
+    fCS.Leave;
   end;
 end;
 
 procedure TJwGenericList.Delete(Index: Integer);
 begin
-  Assert(not fReadOnly);
+  fCS.Enter;
+  try
+    Assert(not fReadOnly);
 
-  if not fReadOnly then
-  begin
-    dispose(fList[Index]);
-    fList.Delete(Index);
+    if not fReadOnly then
+    begin
+      dispose(fList[Index]);
+      fList.Delete(Index);
+    end;
+  finally
+    fCS.Leave;
   end;
 end;
 
 procedure TJwGenericList.Insert(Index: Integer; Data: OleVariant);
 var P : PVariant;
 begin
-  Assert(not fReadOnly);
+  fCS.Enter;
+  try
+    Assert(not fReadOnly);
 
-  if not fReadOnly then
-  begin
-    new(P);
-    P^ := Data;
+    if not fReadOnly then
+    begin
+      new(P);
+      P^ := Data;
 
-    fList.Insert(Index, P);
+      fList.Insert(Index, P);
+    end;
+  finally
+    fCS.Leave;
   end;
 end;
 
 procedure TJwGenericList.Set_ReadOnly(Value: WordBool);
 begin
-  //do not allow setting ReadOnly to false if fReadOnly was true
-  Assert((not fReadOnly) and Value);
+  fCS.Enter;
+  try
+    //do not allow setting ReadOnly to false if fReadOnly was true
+    Assert((not fReadOnly) and Value);
 
-  if not fReadOnly then
-    fReadOnly := Value;
+    if not fReadOnly then
+      fReadOnly := Value;
+  finally
+    fCS.Leave;
+  end;
 end;
 
 procedure TJwGenericList.Exchange(Index: Integer; Value: OleVariant);
 var P : PVariant;
 begin
-  Assert(not fReadOnly);
+  fCS.Enter;
+  try
+    Assert(not fReadOnly);
 
-  if not fReadOnly then
-  begin
-    dispose(PVariant(fList.Items[Index]));
+    if not fReadOnly then
+    begin
+      dispose(PVariant(fList.Items[Index]));
 
-    new(P);
-    P^ := Value;
-    fList.Items[Index] := P;
+      new(P);
+      P^ := Value;
+      fList.Items[Index] := P;
+    end;
+  finally
+    fCS.Leave;
   end;
 end;
 
