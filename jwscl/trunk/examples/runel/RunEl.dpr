@@ -8,7 +8,7 @@ uses
   JwaWindows,
   Dialogs,
   Math,
-  RVShellAPI,
+  ShellAPI,
   RunElCom_TLB,
   FileCtrl,
   Activex,
