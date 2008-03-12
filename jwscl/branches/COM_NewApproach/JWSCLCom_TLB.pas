@@ -12,7 +12,7 @@ unit JWSCLCom_TLB;
 // ************************************************************************ //
 
 // PASTLWTR : 1.2
-// Datei generiert am 10.03.2008 00:35:12 aus der unten beschriebenen Typbibliothek.
+// Datei generiert am 11.03.2008 20:57:14 aus der unten beschriebenen Typbibliothek.
 
 // ************************************************************************  //
 // Typbib: P:\Eigene Dateien\Dezipaitor\Projekte\Delphi\7\jedi-api-lib\jwscl\trunk\COM\JWSCLCom.tlb (1)
@@ -240,6 +240,9 @@ const
   CLASS_JwPointerList: TGUID = '{45774C59-A7AC-4F16-B0CC-C26BB0471C91}';
   IID_IJwGenericList: TGUID = '{436180F0-1F5F-4065-B710-A680431380D2}';
   CLASS_JwGenericList: TGUID = '{68D27916-FD9D-4D07-8218-D300B7CB3AF4}';
+  IID_IJwEnumSet: TGUID = '{F148A12D-6B3B-4845-9E91-92DE9E0C555D}';
+  CLASS_JwEnumSet: TGUID = '{C13D88C7-26E1-4FB8-AE2E-CAD12200181B}';
+  IID_IJwListFindCallback: TGUID = '{2E6FC382-A38A-4429-9364-8E29ED56C132}';
 
 // *********************************************************************//
 // Deklaration von in der Typbibliothek definierten Enumerationen         
@@ -845,6 +848,12 @@ const
   pmServerName = $00000004;
   pmPolicyPath = $00000005;
 
+// Konstanten für enum JwEnumSetType
+type
+  JwEnumSetType = TOleEnum;
+const
+  JwEnumSetSIDAttributes = $00000000;
+
 type
 
 // *********************************************************************//
@@ -1047,6 +1056,10 @@ type
   IJwPointerListDisp = dispinterface;
   IJwGenericList = interface;
   IJwGenericListDisp = dispinterface;
+  IJwEnumSet = interface;
+  IJwEnumSetDisp = dispinterface;
+  IJwListFindCallback = interface;
+  IJwListFindCallbackDisp = dispinterface;
 
 // *********************************************************************//
 // Deklaration von in der Typbibliothek definierten CoClasses             
@@ -1147,6 +1160,7 @@ type
   JwReplyErrorArray = IJwReplyErrorArray;
   JwPointerList = IJwPointerList;
   JwGenericList = IJwGenericList;
+  JwEnumSet = IJwEnumSet;
 
 
 // *********************************************************************// 
@@ -3461,11 +3475,15 @@ type
     procedure InsertDataAndDuplicate(Index: Integer; Data: PChar; Size: LongWord); safecall;
     procedure Clear; safecall;
     procedure Exchange(Index: Integer; Data: PChar; Size: LongWord); safecall;
+    function Find(UserData: PChar): Integer; safecall;
+    function Get_Callback: IJwListFindCallback; safecall;
+    procedure Set_Callback(const Value: IJwListFindCallback); safecall;
     property ReadOnly: WordBool read Get_ReadOnly write Set_ReadOnly;
     property OwnData: WordBool read Get_OwnData write Set_OwnData;
     property Count: Integer read Get_Count;
     property ItemSize[Index: Integer]: LongWord read Get_ItemSize;
     property Item[Index: Integer; Duplicate: WordBool]: PChar read Get_Item;
+    property Callback: IJwListFindCallback read Get_Callback write Set_Callback;
   end;
 
 // *********************************************************************//
@@ -3489,6 +3507,8 @@ type
     procedure InsertDataAndDuplicate(Index: Integer; Data: {??PChar}OleVariant; Size: LongWord); dispid 212;
     procedure Clear; dispid 213;
     procedure Exchange(Index: Integer; Data: {??PChar}OleVariant; Size: LongWord); dispid 214;
+    function Find(UserData: {??PChar}OleVariant): Integer; dispid 215;
+    property Callback: IJwListFindCallback dispid 216;
   end;
 
 // *********************************************************************//
@@ -3508,9 +3528,13 @@ type
     procedure Clear; safecall;
     function Copy: IJwGenericList; safecall;
     procedure Exchange(Index: Integer; Value: OleVariant); safecall;
+    function Get_Callback: IJwListFindCallback; safecall;
+    procedure Set_Callback(const Value: IJwListFindCallback); safecall;
+    function Find(Data: OleVariant; UserData: PChar): Integer; safecall;
     property ReadOnly: WordBool read Get_ReadOnly write Set_ReadOnly;
     property Count: Integer read Get_Count;
     property Item[Index: Integer]: OleVariant read Get_Item;
+    property Callback: IJwListFindCallback read Get_Callback write Set_Callback;
   end;
 
 // *********************************************************************//
@@ -3529,6 +3553,65 @@ type
     procedure Clear; dispid 207;
     function Copy: IJwGenericList; dispid 208;
     procedure Exchange(Index: Integer; Value: OleVariant); dispid 209;
+    property Callback: IJwListFindCallback dispid 210;
+    function Find(Data: OleVariant; UserData: {??PChar}OleVariant): Integer; dispid 211;
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwEnumSet
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {F148A12D-6B3B-4845-9E91-92DE9E0C555D}
+// *********************************************************************//
+  IJwEnumSet = interface(IDispatch)
+    ['{F148A12D-6B3B-4845-9E91-92DE9E0C555D}']
+    function Get_EnumType: JwEnumSetType; safecall;
+    procedure Set_EnumType(Value: JwEnumSetType); safecall;
+    procedure Include(EnumConst: Integer); safecall;
+    procedure Exclude(EnumConst: Integer); safecall;
+    function Get_BitMask: JwBitMask; safecall;
+    procedure Set_BitMask(Value: JwBitMask); safecall;
+    function State(EnumConst: Integer): WordBool; safecall;
+    function IsBitAvailable(EnumConst: Integer): WordBool; safecall;
+    property EnumType: JwEnumSetType read Get_EnumType write Set_EnumType;
+    property BitMask: JwBitMask read Get_BitMask write Set_BitMask;
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwEnumSetDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {F148A12D-6B3B-4845-9E91-92DE9E0C555D}
+// *********************************************************************//
+  IJwEnumSetDisp = dispinterface
+    ['{F148A12D-6B3B-4845-9E91-92DE9E0C555D}']
+    property EnumType: JwEnumSetType dispid 201;
+    procedure Include(EnumConst: Integer); dispid 202;
+    procedure Exclude(EnumConst: Integer); dispid 203;
+    property BitMask: JwBitMask dispid 204;
+    function State(EnumConst: Integer): WordBool; dispid 205;
+    function IsBitAvailable(EnumConst: Integer): WordBool; dispid 206;
+  end;
+
+// *********************************************************************//
+// Schnittstelle: IJwListFindCallback
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {2E6FC382-A38A-4429-9364-8E29ED56C132}
+// *********************************************************************//
+  IJwListFindCallback = interface(IDispatch)
+    ['{2E6FC382-A38A-4429-9364-8E29ED56C132}']
+    function OnIterateGeneric(Index: Integer; Data: OleVariant; UserData: PChar): WordBool; safecall;
+    function OnIteratePtr(Index: Integer; Data: PChar; Size: LongWord; UserData: PChar): WordBool; safecall;
+  end;
+
+// *********************************************************************//
+// DispIntf:  IJwListFindCallbackDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {2E6FC382-A38A-4429-9364-8E29ED56C132}
+// *********************************************************************//
+  IJwListFindCallbackDisp = dispinterface
+    ['{2E6FC382-A38A-4429-9364-8E29ED56C132}']
+    function OnIterateGeneric(Index: Integer; Data: OleVariant; UserData: {??PChar}OleVariant): WordBool; dispid 201;
+    function OnIteratePtr(Index: Integer; Data: {??PChar}OleVariant; Size: LongWord; 
+                          UserData: {??PChar}OleVariant): WordBool; dispid 202;
   end;
 
 // *********************************************************************//
@@ -4659,6 +4742,18 @@ type
     class function CreateRemote(const MachineName: string): IJwGenericList;
   end;
 
+// *********************************************************************//
+// Die Klasse CoJwEnumSet stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwEnumSet, dargestellt von
+// CoClass JwEnumSet, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwEnumSet = class
+    class function Create: IJwEnumSet;
+    class function CreateRemote(const MachineName: string): IJwEnumSet;
+  end;
+
 implementation
 
 uses ComObj;
@@ -5601,6 +5696,16 @@ end;
 class function CoJwGenericList.CreateRemote(const MachineName: string): IJwGenericList;
 begin
   Result := CreateRemoteComObject(MachineName, CLASS_JwGenericList) as IJwGenericList;
+end;
+
+class function CoJwEnumSet.Create: IJwEnumSet;
+begin
+  Result := CreateComObject(CLASS_JwEnumSet) as IJwEnumSet;
+end;
+
+class function CoJwEnumSet.CreateRemote(const MachineName: string): IJwEnumSet;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwEnumSet) as IJwEnumSet;
 end;
 
 end.

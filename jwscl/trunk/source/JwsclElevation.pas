@@ -45,7 +45,7 @@ unit JwsclElevation;
 {$IFNDEF SL_IMPLEMENTATION_SECTION}
 
 interface
-uses ComObj, JwaWindows, JwsclStrings;
+uses ComObj, JwaWindows, ShellApi,JwsclStrings;
 
 type
   {@Name provides a registration for a typed com object.
@@ -216,6 +216,10 @@ function JwCoGetClassFactoyAsAdmin(
   const IID: TGUID;
   out ObjectInterface) : HRESULT;
 
+
+type TJwShellExecuteFlag = (sefNoUi, sefFixDirWithRunAs);
+     TJwShellExecuteFlags = set of TJwShellExecuteFlag;
+
 {@Name runs a process with elevated privileges in Windows Vista.
 If the current is already elevated the function simply opens the given
 filename. The verb of shellexecute cannot be changed.
@@ -229,36 +233,40 @@ GetLastError contains more information.
 )
 }
 function JwShellExecute(const hWnd: HWND; FileName, Parameters,
-  Directory: TJwString; ShowCmd: Integer): HINST;
+  Directory: TJwString; ShowCmd: Integer; Flags : TJwShellExecuteFlags = []): HINST;
 
-{@Name converts a delphi resourcestring into a resource identifier.
-Use @<ResourcestringName> as parameter rs.
 
-The function cannot fail for correct delphi resourcestring identifiers.
-}
-function GetResourceStringIdentifier(rs: PResStringRec) : Integer;
+
+const
+  E_USER_CANCELED_OPERATION = HRESULT($800704C7);//
+  E_CLASS_IS_NOT_SETUP = HRESULT($80080017); 
+
+
 
 {$ENDIF SL_IMPLEMENTATION_SECTION}
 
+
+
 {$IFNDEF SL_OMIT_SECTIONS}
 implementation
-uses Registry, SysUtils, ActiveX, Dialogs, ShellApi,
+uses Registry, SysUtils, ActiveX, Dialogs,
      JwsclTypes,   JwsclExceptions, JwsclSid,     JwsclAcl,
      JwsclVersion, JwsclConstants,  JwsclUtils,
-     JwsclToken,
+     JwsclToken, JwaVista,
      JwsclDescriptor, JwsclKnownSid, JwsclMapping, JwsclResource;
 {$ENDIF SL_OMIT_SECTIONS}
 
 {$IFNDEF SL_INTERFACE_SECTION}
 
 function JwShellExecute(const hWnd: HWND;  FileName, Parameters,
-  Directory: TJwString; ShowCmd: Integer): HINST;
+  Directory: TJwString; ShowCmd: Integer; Flags : TJwShellExecuteFlags = []): HINST;
 var
   shExecInfo : {$IFDEF UNICODE}SHELLEXECUTEINFOW{$ELSE}SHELLEXECUTEINFOA{$ENDIF};
   Token : TJwSecurityToken;
+
 begin
   result := 0;
-  
+
   SetLastError(0);
   ZeroMemory(@shExecInfo,sizeof(shExecInfo));
 
@@ -266,56 +274,52 @@ begin
 
   try
     if Token.RunElevation = 0 then
-      shExecInfo.lpVerb := TJwPChar('runas')
-    else //type mismatch? Recompile whole project: ansicode <-> unicode 
-      shExecInfo.lpVerb := TJwPChar('open');
+      shExecInfo.lpVerb := TJwPChar(TJwString('runas'))
+    else //type mismatch? Recompile whole project: ansicode <-> unicode
+      shExecInfo.lpVerb := TJwPChar(TJwString('open'))
   finally
     Token.Free;
   end;
 
   shExecInfo.cbSize := sizeof(SHELLEXECUTEINFO);
   shExecInfo.fMask := SEE_MASK_NOCLOSEPROCESS;
+  if sefNoUi in Flags then
+    shExecInfo.fMask := shExecInfo.fMask or SEE_MASK_FLAG_NO_UI;
+    
   shExecInfo.Wnd := hWnd;
 
-  shExecInfo.lpFile := TJwPChar(FileName);
-  shExecInfo.lpParameters := TJwPChar(Parameters);
-  shExecInfo.lpDirectory := TJwPChar(Directory);
+
+  if (sefFixDirWithRunAs in Flags) and (Length(Directory) > 0) then
+  begin
+    shExecInfo.lpFile := 'cmd.exe';
+    {Shellexecute does not set directory when combined with verb "runas"
+    so we call cmd, set the directory and then call the application
+    This may lead to a remaining cmd window
+    }
+    shExecInfo.lpParameters := TJwPChar(TJwString('/C cd /d "'+Directory+'" & '+ FileName + ' '+Parameters));
+    shExecInfo.lpDirectory := nil;
+  end
+  else
+  begin
+    shExecInfo.lpFile := TJwPChar(FileName);
+    shExecInfo.lpParameters := TJwPChar(Parameters);
+    shExecInfo.lpDirectory := TJwPChar(Directory);
+  end;
+  //shExecInfo.lpDirectory := TJwPChar('"'+Directory+'"');
+
+
+
   shExecInfo.nShow := ShowCmd;
   shExecInfo.hInstApp := NULL;
   
-  if ShellExecuteEx(@shExecInfo) then
+  if {$IFDEF UNICODE}ShellExecuteExW{$ELSE}ShellExecuteExA{$ENDIF}(@shExecInfo) then
     result := shExecInfo.hProcess;
 end;
 
-function GetResourceStringIdentifier(rs: PResStringRec) : Integer;
-var oldProtect : Cardinal;
-begin
-  VirtualProtect(rs, SizeOf(rs^), PAGE_EXECUTE_READWRITE, @oldProtect);
-  result := rs^.Identifier;
-  VirtualProtect(rs, SizeOf(rs^), oldProtect, @oldProtect);
-end;
 
-type
-  //TODO: port to jedi api
-  BIND_OPTS3 = packed record
-    cbStruct:            DWORD;
-    grfFlags:            DWORD;
-    grfMode:             DWORD;
-    dwTickCountDeadline: DWORD;
-    dwTrackFlags:        DWORD;
-    dwClassContext:      DWORD;
-    locale:              LCID;
-    pServerInfo:         PCOSERVERINFO;
-    hwnd:                HWND;
-  end;
-  PBIND_OPTS3 = ^BIND_OPTS3;
-  TBindOpts3 = BIND_OPTS3;
-  PBindOpts3 = ^TBindOpts3;
 
-function CoGetObject(pszName: PWideChar; pBindOptions: PBIND_OPTS3;
-  const iid: TIID; out ppv
-): HResult; stdcall; external 'ole32.dll' name 'CoGetObject';
 
+threadvar ResultValue : HRESULT;
 
 function JwCoCreateInstanceAsEx(
   const MonikerSequence : WideString;
@@ -327,8 +331,11 @@ var
   MonikerName : WideString;
   BindOptions : TBindOpts3;
   Token : TJwSecurityToken;
+  LastError,
   iLen : Cardinal;
 begin
+  ResultValue := 0;
+
   Token := TJwSecurityToken.CreateTokenEffective(TOKEN_QUERY or TOKEN_READ);
 
   try
@@ -344,6 +351,14 @@ begin
       BindOptions.hwnd := ParentWindowHandle;
 
       result := CoGetObject(PWideChar(MonikerName), @BindOptions, IID, ObjectInterface);
+      if result = E_USER_CANCELED_OPERATION then
+        ResultValue := ERROR_CANCELLED
+      else
+      if result = E_CLASS_IS_NOT_SETUP then
+        ResultValue := ERROR_INVALID_ACCESS
+      else
+        //ResultValue := ERROR_ACCESS_DENIED;
+        ResultValue := 0;
     end
     else
     begin
@@ -359,9 +374,11 @@ function JwCoCreateInstanceAsAdmin(
   const ClassId: TGUID;
   const IID: TGUID;
  out ObjectInterface) : HRESULT;
+var iLen : Cardinal;
 begin
   result := JwCoCreateInstanceAsEx(
     'Elevation:Administrator!new:', ParentWindowHandle, ClassId, IID, ObjectInterface);
+  SetLastError(ResultValue);
 end;
 
 
@@ -373,6 +390,7 @@ function JwCoCreateInstanceAsHighest(
 begin
   result := JwCoCreateInstanceAsEx(
     'Elevation:Highest!new:', ParentWindowHandle, ClassId, IID, ObjectInterface);
+  SetLastError(ResultValue);
 end;
 
 function JwCoGetClassFactoyAsAdmin(
@@ -383,6 +401,7 @@ function JwCoGetClassFactoyAsAdmin(
 begin
   result := JwCoCreateInstanceAsEx(
     'Elevation:Administrator!clsid:', ParentWindowHandle, ClassId, IID, ObjectInterface);
+  SetLastError(ResultValue);
 end;
 
 
@@ -625,24 +644,24 @@ begin
   end
   else
   begin
-    Reg := TRegistry.Create(KEY_SET_VALUE or KEY_WRITE {or DELETE});
+    Reg := TRegistry.Create(KEY_SET_VALUE or KEY_WRITE or DELETE);
     Reg.RootKey := RootKey;
     try
       if Reg.KeyExists(ClassesKey+AppIdKey+DllName) then
-        if not Reg.DeleteKey(ClassesKey+AppIdKey+DllName) then
-          RaiseRegError(RsElevationRegDeleteError, ClassesKey+AppIdKey+DllName);
+        if not Reg.DeleteKey(ClassesKey+AppIdKey+DllName) then;
+          //RaiseRegError(RsElevationRegDeleteError, ClassesKey+AppIdKey+DllName);
 
       if Reg.KeyExists(ClassesKey+AppIdKey+GuidString) then
-        if not Reg.DeleteKey(ClassesKey+AppIdKey+GuidString) then
-          RaiseRegError(RsElevationRegDeleteError, ClassesKey+AppIdKey+GuidString);
+        if not Reg.DeleteKey(ClassesKey+AppIdKey+GuidString) then;
+          //RaiseRegError(RsElevationRegDeleteError, ClassesKey+AppIdKey+GuidString);
 
       if Reg.KeyExists(ClassesKey+ClsIdKey+GuidString+ElevationKey) then
-        if not Reg.DeleteKey(ClassesKey+ClsIdKey+GuidString+ElevationKey) then
-          RaiseRegError(RsElevationRegDeleteError, ClassesKey+ClsIdKey+GuidString+ElevationKey);
+        if not Reg.DeleteKey(ClassesKey+ClsIdKey+GuidString+ElevationKey) then;
+          //RaiseRegError(RsElevationRegDeleteError, ClassesKey+ClsIdKey+GuidString+ElevationKey);
 
       if Reg.KeyExists(ClassesKey+ClsIdKey+GuidString) then
-        if not Reg.DeleteKey(ClassesKey+ClsIdKey+GuidString) then
-          RaiseRegError(RsElevationRegDeleteError, ClassesKey+ClsIdKey+GuidString);
+        if not Reg.DeleteKey(ClassesKey+ClsIdKey+GuidString) then;
+          //RaiseRegError(RsElevationRegDeleteError, ClassesKey+ClsIdKey+GuidString);
     finally
       Reg.Free;
     end;

@@ -1682,6 +1682,7 @@ type
   PPTCHAR = ^PTCHAR;
   LPLPCTSTR = ^LPCTSTR;
 
+  TFarProc = Pointer;
 
 {$ENDIF JWA_IMPLEMENTATIONSECTION}
 //***

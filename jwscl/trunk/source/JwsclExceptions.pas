@@ -657,6 +657,7 @@ class function EJwsclSecurityException.GetErrorMessage(errNumber: TJwLastError)
 : TJwString;
 var
   s: TJwPChar;
+  i : DWORD;
 begin
   if (
 {$IFDEF UNICODE}
@@ -665,11 +666,15 @@ begin
     FormatMessageA
 {$ENDIF}
     (FORMAT_MESSAGE_ALLOCATE_BUFFER or
-    FORMAT_MESSAGE_FROM_SYSTEM, nil,
+    FORMAT_MESSAGE_FROM_SYSTEM or
+    FORMAT_MESSAGE_IGNORE_INSERTS //see http://blogs.msdn.com/oldnewthing/archive/2007/11/28/6564257.aspx
+    ,
+    nil,
     errNumber, 0, TJwPChar(@s),
     0, nil) = 0) then
   begin
     Result := RsUnknownGetLastError;
+    i := GetLasterror;
     exit;
   end;
   Result := s;

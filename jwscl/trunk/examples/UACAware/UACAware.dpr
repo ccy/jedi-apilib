@@ -8,7 +8,7 @@ uses
   jwaWindows,
   jwsclToken, jwsclLsa, jwsclSid, jwsclTypes, jwsclImpersonation,jwsclStrings;
 
-const Name = 'E:\Proggen\Borland\Delphi7\Projects\UACAware\ok.txt';
+const Name = 'ok.txt';
 var F : TextFile;
 begin
   writeln('enter...');

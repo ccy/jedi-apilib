@@ -15,6 +15,7 @@ type
     fReadOnly,
     fOwnData : Boolean;
     fCS : TCriticalSection;
+    fCallback : IJwListFindCallback;
 
     function GetData(Index: Integer): PChar; safecall;
     function AddData(Data: PChar; Size: LongWord): Integer; safecall;
@@ -34,6 +35,9 @@ type
       Size: LongWord); safecall;
     procedure Clear; safecall;
     procedure Exchange(Index: Integer; Data: PChar; Size: LongWord); safecall;
+    function Find(UserData: PChar): Integer; safecall;
+    function Get_Callback: IJwListFindCallback; safecall;
+    procedure Set_Callback(const Value: IJwListFindCallback); safecall;
 
   public
     procedure Initialize; override;
@@ -348,6 +352,48 @@ begin
     
 end;
 
+
+function TJwPointerList.Find(UserData: PChar): Integer;
+var i : Integer;
+
+begin
+  result := -1;
+  if not Assigned(fCallback) then
+    exit;
+
+  fCS.Enter;
+  try
+    for i := 0 to fList.Count-1 do
+    begin
+      if fCallback.OnIteratePtr(I, PCHAR(fList[i]), DWORD(fSizeList[i]), UserData) then
+      begin
+        result := i;
+        break;
+      end;
+    end;
+  finally
+    fCS.Leave;
+  end;
+end;
+function TJwPointerList.Get_Callback: IJwListFindCallback;
+begin
+  fCS.Enter;
+  try
+    result := fCallback;
+  finally
+    fCS.Leave;
+  end;
+end;
+
+procedure TJwPointerList.Set_Callback(const Value: IJwListFindCallback);
+begin
+  fCS.Enter;
+  try
+    fCallback := Value;
+  finally
+    fCS.Leave;
+  end;
+end;
 
 initialization
   TAutoObjectFactory.Create(ComServer, TJwPointerList, Class_JwPointerList,

@@ -47,7 +47,7 @@ unit JwaVista;
 
 interface
 
-uses JwaWindows;
+uses JwaWindows, ActiveX;
 
 
 type
@@ -345,7 +345,7 @@ const
   SECURITY_MANDATORY_UNTRUSTED_RID = $0;
   SECURITY_MANDATORY_LOW_RID = $1000;
   SECURITY_MANDATORY_MEDIUM_RID = $2000;
-  SECURITY_MANDATORY_HIGH_RID = $3000;          
+  SECURITY_MANDATORY_HIGH_RID = $3000;
   SECURITY_MANDATORY_SYSTEM_RID = $4000;
   SECURITY_MANDATORY_PROTECTED_PROCESS_RID = $5000;
 
@@ -361,6 +361,25 @@ const
   {$EXTERNALSYM AddMandatoryAce}
 
 
+type
+  BIND_OPTS3 = packed record
+    cbStruct:            DWORD;
+    grfFlags:            DWORD;
+    grfMode:             DWORD;
+    dwTickCountDeadline: DWORD;
+    dwTrackFlags:        DWORD;
+    dwClassContext:      DWORD;
+    locale:              LCID;
+    pServerInfo:         PCOSERVERINFO;
+    hwnd:                HWND;
+  end;
+  PBIND_OPTS3 = ^BIND_OPTS3;
+  TBindOpts3 = BIND_OPTS3;
+  PBindOpts3 = ^TBindOpts3;
+
+ function CoGetObject(pszName: PWideChar; pBindOptions: PBIND_OPTS3;
+    const iid: TIID; out ppv): HResult; stdcall;
+
 
 implementation
 uses JwaWinDLLNames;
@@ -368,18 +387,36 @@ uses JwaWinDLLNames;
 {$IFNDEF DYNAMIC_LINK}
   function AddMandatoryAce(pAcl: PACL; dwAceRevision, AceFlags, MandatoryPolicy: DWORD;
     pLabelSid: PSID): BOOL; stdcall; external advapi32 name 'AddMandatoryAce';
+
+  function CoGetObject(pszName: PWideChar; pBindOptions: PBIND_OPTS3;
+     const iid: TIID; out ppv): HResult; stdcall; external 'ole32.dll' name 'CoGetObject';
 {$ELSE}
 
 var
   _AddMandatoryAce: Pointer;
 
-function AddMandatoryAce;
+function AddMandatoryAce(pAcl: PACL; dwAceRevision, AceFlags, MandatoryPolicy: DWORD;
+    pLabelSid: PSID): BOOL;
 begin
   GetProcedureAddress(_AddMandatoryAce, advapi32, 'AddMandatoryAce');
   asm
         MOV     ESP, EBP
         POP     EBP
         JMP     [_AddMandatoryAce]
+  end;
+end;
+
+var
+  _CoGetObject: Pointer;
+
+function CoGetObject(pszName: PWideChar; pBindOptions: PBIND_OPTS3;
+     const iid: TIID; out ppv): HResult;
+begin
+  GetProcedureAddress(_CoGetObject, 'ole32.dll', 'CoGetObject');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_CoGetObject]
   end;
 end;
 

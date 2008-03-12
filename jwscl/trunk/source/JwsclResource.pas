@@ -506,6 +506,24 @@ const
   RsUnLibrary = 'JwscLibrary.pas';
 
   RsUNCryptProvider = 'JwsclCryptProvider.pas';
+
+{@Name converts a delphi resourcestring into a resource identifier.
+Use @<ResourcestringName> as parameter rs.
+
+The function cannot fail for correct delphi resourcestring identifiers.
+}
+function GetResourceStringIdentifier(rs: PResStringRec) : Integer;
+
+
 implementation
+uses JwaWindows;
+
+function GetResourceStringIdentifier(rs: PResStringRec) : Integer;
+var oldProtect : Cardinal;
+begin
+  VirtualProtect(rs, SizeOf(rs^), PAGE_EXECUTE_READWRITE, @oldProtect);
+  result := rs^.Identifier;
+  VirtualProtect(rs, SizeOf(rs^), oldProtect, @oldProtect);
+end;
 
 end.

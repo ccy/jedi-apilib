@@ -72,7 +72,8 @@ uses
   JwsclCoReplyErrorArray in 'JwsclCoReplyErrorArray.pas' {JwReplyErrorArray: CoClass},
   JwsclCoPointerList in 'JwsclCoPointerList.pas' {JwPointerList: CoClass},
   TestsJwsclCoGenericList in 'UnitTests\TestsJwsclCoGenericList.pas',
-  JwsclCoGenericList in 'JwsclCoGenericList.pas' {JwGenericList: CoClass};
+  JwsclCoGenericList in 'JwsclCoGenericList.pas' {JwGenericList: CoClass},
+  JwsclCoEnumSet in 'JwsclCoEnumSet.pas' {JwEnumSet: CoClass};
 
 exports
   DllGetClassObject,

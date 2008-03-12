@@ -34,8 +34,6 @@ begin
   Result := ServiceController;
 end;
 
-type
-  EJwsclCreateProcessFailed = class(EJwsclSecurityException);
 
 type  TCreateProcessParameters = record
         lpApplicationName,

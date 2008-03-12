@@ -13,7 +13,7 @@ program VistaElevation;
 uses
   SysUtils, Activex, ComObj, VistaElevationDLL_TLB,
   JwaWindows,
-  JwsclElevation in '..\..\JwsclElevation.pas';
+  JwsclElevation;
 
 var  ElevatedObject: IElevationDemoObject;
 begin

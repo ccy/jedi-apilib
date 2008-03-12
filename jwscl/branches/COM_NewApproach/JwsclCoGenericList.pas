@@ -13,6 +13,7 @@ type
     fList : TList;
     fReadOnly : Boolean;
     fCS : TCriticalSection;
+    fCallback : IJwListFindCallback;
 
     procedure Add(Data: OleVariant); safecall;
     function Copy: IJwGenericList; safecall;
@@ -24,6 +25,9 @@ type
     procedure Insert(Index: Integer; Data: OleVariant); safecall;
     procedure Set_ReadOnly(Value: WordBool); safecall;
     procedure Exchange(Index: Integer; Value: OleVariant); safecall;
+    function Find(Data: OleVariant; UserData: PChar): Integer; safecall;
+    function Get_Callback: IJwListFindCallback; safecall;
+    procedure Set_Callback(const Value: IJwListFindCallback); safecall;
   public
     procedure Initialize; override;
     destructor Destroy; override;
@@ -211,6 +215,51 @@ begin
       P^ := Value;
       fList.Items[Index] := P;
     end;
+  finally
+    fCS.Leave;
+  end;
+end;
+
+function TJwGenericList.Find(Data: OleVariant; UserData: PChar): Integer;
+var i : Integer;
+
+begin
+  result := -1;
+
+  fCS.Enter;
+  try
+    for i := 0 to fList.Count-1 do
+    begin
+      if (not Assigned(fCallback) and
+       (PVariant(fList[i])^ = Data)) or
+
+        (Assigned(fCallback) and
+        fCallback.OnIterateGeneric(I, PVariant(fList[i])^, UserData)) then
+      begin
+        result := i;
+        break;
+      end;
+    end;
+  finally
+    fCS.Leave;
+  end;
+end;
+
+function TJwGenericList.Get_Callback: IJwListFindCallback;
+begin
+  fCS.Enter;
+  try
+    result := fCallback;
+  finally
+    fCS.Leave;
+  end;
+end;
+
+procedure TJwGenericList.Set_Callback(const Value: IJwListFindCallback);
+begin
+  fCS.Enter;
+  try
+   fCallback := Value;
   finally
     fCS.Leave;
   end;
