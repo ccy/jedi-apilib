@@ -355,7 +355,7 @@ begin
         ResultValue := ERROR_CANCELLED
       else
       if result = E_CLASS_IS_NOT_SETUP then
-        ResultValue := ERROR_INVALID_ACCESS
+        ResultValue := E_CLASS_IS_NOT_SETUP//ERROR_INVALID_ACCESS
       else
         //ResultValue := ERROR_ACCESS_DENIED;
         ResultValue := 0;
