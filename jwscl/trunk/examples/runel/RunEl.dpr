@@ -263,6 +263,11 @@ begin
     try
       Elevate(Options, Name, Parameter, GetCurrentDir);
     except
+      on e : EProcessFailed do
+      begin
+        Writeln('The process returned an error: (',E.LastError,') '+E.GetErrorMessage(E.LastError));
+        HaltValue := E.LastError;
+      end;
       on E : EJwsclSecurityException do
       begin
         Writeln('Elevation failed. (',E.LastError,') '+E.GetErrorMessage(E.LastError));
