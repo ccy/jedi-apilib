@@ -73,8 +73,12 @@ begin
         CloseHandle(NewProcessHandle);
     end;
 
-    if (NewProcessHandle = 0) and (LastError <> 0) then
+    if (NewProcessHandle = 0) then
+    begin
+      if (LastError = 0) then
+        LastError := DWORD(E_USER_CANCELED_OPERATION);
       raise EUACCanceled.CreateFmtEx('','','','',0,LastError,[]);
+    end;
     exit;
   end
   else
