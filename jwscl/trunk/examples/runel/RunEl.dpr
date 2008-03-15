@@ -57,7 +57,7 @@ begin
     NewProcessHandle := 0;
     try
       NewProcessHandle := JwShellExecute(ForeGroundWindow, Name, Parameter, Directory, SW_NORMAL,
-        [sefNoUi, sefFixDirWithRunAs, sefIgnoreElevationIfNotAvailable]);
+        [sefNoUi, sefFixDirWithRunAs, sefIgnoreElevationIfNotAvailable, sefNoClosehProcess]);
     except
       On E : EJwsclWinCallFailedException do
       begin

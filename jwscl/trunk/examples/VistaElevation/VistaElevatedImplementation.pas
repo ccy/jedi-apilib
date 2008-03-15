@@ -66,7 +66,7 @@ end;
 
 
 initialization
-  TElevationClassFactory.Create(
+  TJwElevationClassFactory.Create(
     @ElevationDescription, true,
     ComServer, TElevationDemoObject,
     CLASS_ElevationDemoObject,

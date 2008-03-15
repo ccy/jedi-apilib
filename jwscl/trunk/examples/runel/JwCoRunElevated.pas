@@ -98,7 +98,7 @@ end;
 
 initialization
   try
-   TElevationClassFactory.Create(
+   TJwElevationClassFactory.Create(
     @ElevationDescription, true,
     ComServer, TJwRunElevated,
     CLASS_JwRunElevated,

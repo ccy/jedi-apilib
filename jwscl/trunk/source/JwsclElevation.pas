@@ -50,7 +50,7 @@ uses ComObj, JwaWindows, ShellApi,JwsclStrings;
 type
   {@Name provides a registration for a typed com object.
    It also creates the necessary registry entries.}
-  TElevationClassFactory = class(TTypedComObjectFactory)
+  TJwElevationClassFactory = class(TTypedComObjectFactory)
   private
     fResourceId: AnsiString;
     fDisableProcessIsolation : Boolean;
@@ -231,7 +231,11 @@ type {@Name controls execution of JwShellExecute }
          for the target app.
          This may lead to a command line window in background
         }
-        sefFixDirWithRunAs);
+        sefFixDirWithRunAs,
+
+        //does not close returned process handle
+        sefNoClosehProcess
+        );
      TJwShellExecuteFlags = set of TJwShellExecuteFlag;
 
 {@Name runs a process with elevated privileges in Windows Vista.
@@ -248,7 +252,7 @@ an exception is raised.
 @raises(EJwsclWinCallFailedException will be raised if a call to ShellExecuteEx failed)
 }
 function JwShellExecute(const hWnd: HWND; FileName, Parameters,
-  Directory: TJwString; ShowCmd: Integer; Flags : TJwShellExecuteFlags = []): HINST;
+  Directory: TJwString; ShowCmd: Integer; Flags : TJwShellExecuteFlags = [sefNoClosehProcess]): HANDLE;
 
 
 
@@ -274,7 +278,7 @@ uses Registry, SysUtils, ActiveX, Dialogs,
 {$IFNDEF SL_INTERFACE_SECTION}
 
 function JwShellExecute(const hWnd: HWND;  FileName, Parameters,
-  Directory: TJwString; ShowCmd: Integer; Flags : TJwShellExecuteFlags = []): HINST;
+  Directory: TJwString; ShowCmd: Integer; Flags : TJwShellExecuteFlags = [sefNoClosehProcess]): HANDLE;
 var
   shExecInfo : {$IFDEF UNICODE}SHELLEXECUTEINFOW{$ELSE}SHELLEXECUTEINFOA{$ENDIF};
   Token : TJwSecurityToken;
@@ -344,6 +348,12 @@ begin
   else
     raise EJwsclWinCallFailedException.CreateFmtWinCall(RsWinCallFailed,'src','','JwsclElevation.pas',0,
           true,'ShellExecuteEx',['ShellExecuteEx']);
+
+  if (result <> 0) and not (sefNoClosehProcess in Flags) then
+  begin
+    CloseHandle(result);
+    result := 0;
+  end;
 end;
 
 
@@ -388,7 +398,7 @@ begin
         ResultValue := E_CLASS_IS_NOT_SETUP//ERROR_INVALID_ACCESS
       else
         //ResultValue := ERROR_ACCESS_DENIED;
-        ResultValue := 0;
+        ResultValue := result;
     end
     else
     begin
@@ -435,9 +445,9 @@ begin
 end;
 
 
-{ TElevationClassFactory }
+{ TJwElevationClassFactory }
 
-constructor TElevationClassFactory.Create(const ResourceId: AnsiString;
+constructor TJwElevationClassFactory.Create(const ResourceId: AnsiString;
   const DisableProcessIsolation : Boolean;
   const ComServer: TComServerObject; const TypedComClass: TTypedComClass;
   const ClassId: TGUID; const Instancing: TClassInstancing;
@@ -448,7 +458,7 @@ begin
   fDisableProcessIsolation := DisableProcessIsolation;
 end;
 
-constructor TElevationClassFactory.Create(const ResourceId: PResStringRec;
+constructor TJwElevationClassFactory.Create(const ResourceId: PResStringRec;
   const DisableProcessIsolation : Boolean;
   const ComServer: TComServerObject; const TypedComClass: TTypedComClass;
   const ClassId: TGUID; const Instancing: TClassInstancing;
@@ -478,9 +488,9 @@ HKEY_LOCAL_MACHINE\SOFTWARE\Classes
 
 
 {$IFDEF UNIT_TEST}
-class procedure TElevationClassFactory.UpdateRegistry(RegisterFactory: Boolean);
+class procedure TJwElevationClassFactory.UpdateRegistry(RegisterFactory: Boolean);
 {$ELSE}
-procedure TElevationClassFactory.UpdateRegistry(RegisterFactory: Boolean);
+procedure TJwElevationClassFactory.UpdateRegistry(RegisterFactory: Boolean);
 
   procedure RaiseRegError(Reason, Key : String);
   begin
