@@ -54,8 +54,18 @@ begin
   //use Shellexecute to start
   if not (oCOMDll in Options) then
   begin
-    NewProcessHandle := JwShellExecute(ForeGroundWindow, Name, Parameter, Directory, SW_NORMAL, [sefNoUi, sefFixDirWithRunAs]);
-    LastError := GetLastError; //save error
+    NewProcessHandle := 0;
+    try
+      NewProcessHandle := JwShellExecute(ForeGroundWindow, Name, Parameter, Directory, SW_NORMAL,
+        [sefNoUi, sefFixDirWithRunAs, sefIgnoreElevationIfNotAvailable]);
+    except
+      On E : EJwsclWinCallFailedException do
+      begin
+        LastError := E.LastError;
+        NewProcessHandle := 0;
+
+      end;
+    end;
 
     try
       if (oWait in Options) and (NewProcessHandle <> 0) then
@@ -184,7 +194,7 @@ begin
     TJwWindowsVersion.IsWindows2008(true)) then
   begin
     Writeln('The operating system is not supported. Only Windows Vista, Server 2008 and newer are supported');
-    Halt(ERROR_INVALID_FUNCTION);
+    Halt($DB8); //3512 : The software requires a newer version of the operating system.
   end;
 
   if ParamCount = 0 then
@@ -272,14 +282,25 @@ begin
         Writeln('The process returned an error: (',E.LastError,') '+E.GetErrorMessage(E.LastError));
         HaltValue := E.LastError;
       end;
+      on E : EJwsclUnsupportedWindowsVersionException do
+      begin
+        Writeln('Elevation is not supported on this system.');
+        HaltValue := 740;
+      end;
       on E : EJwsclSecurityException do
       begin
         Writeln('Elevation failed. (',E.LastError,') '+E.GetErrorMessage(E.LastError));
         HaltValue := E.LastError;
       end;
     end;
-  finally
-    CoUninitialize;
-    Halt(HaltValue);
+  except
+    on E : Exception do
+    begin
+      Writeln('Abnormal program termination');
+      Writeln(E.Message);
+      HaltValue := -2147286790;
+    end;
   end;
+  CoUninitialize;
+  Halt(HaltValue);
 end.
