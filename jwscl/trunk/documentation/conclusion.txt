@@ -40,6 +40,11 @@ in your credit dialog box, readme file, contribution file or anywhere a user can
 Some third party source, images and tools are used in this library and documentation. The copyright stays at the original authors. 
 The respective license is the same as listed above in this section.
 
+@section(2 L6 Binary/Compiled Applications and Libraries)
+Applications and libraries are free to use if there is no other saying. However the Copyright must stay intact.
+Binary/Compiled Applications and Libraries are distributed on an "AS IS" basis,  
+WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+
 @html(
 <a href="http://sf.net/projects/jedi-apilib">Visit Source Forge Project Site</a><br>
 <a href="http://jwscl.delphi-jedi.net/blog/index.html">Visit Webblog</a>)
