@@ -5,14 +5,14 @@ unit JwsclCoGenericList;
 interface
 
 uses
-  ComObj, Classes, ActiveX, JWSCLCom_TLB, StdVcl, SyncObjs;
+  ComObj, Classes, SysUtils, ActiveX, JWSCLCom_TLB, StdVcl, SyncObjs;
 
 type
   TJwGenericList = class(TAutoObject, IJwGenericList)
   protected
     fList : TList;
     fReadOnly : Boolean;
-    fCS : TCriticalSection;
+    fLock : TMultiReadExclusiveWriteSynchronizer;
     fCallback : IJwListFindCallback;
 
     procedure Add(Data: OleVariant); safecall;
@@ -40,7 +40,7 @@ uses ComServ;
 procedure TJwGenericList.Add(Data: OleVariant);
 var V : PVariant;
 begin
-  fCS.Enter;
+  fLock.BeginWrite;
   try
     Assert(not fReadOnly);
 
@@ -52,27 +52,27 @@ begin
       fList.Add(V);
     end;
   finally
-    fCS.Leave;
+    fLock.EndWrite;
   end;    
 end;
 
 destructor TJwGenericList.Destroy;
 begin
-  fCS.Enter;
+  fLock.BeginWrite;
   try
     fReadOnly := false;
   finally
-    fCS.Leave;
+    fLock.EndWrite;
   end;
 
   Clear;
 
-  fCS.Enter;
+  fLock.BeginWrite;
   try
     fList.Free;
   finally
-    fCS.Leave;
-    fCS.Free;
+    fLock.EndWrite;
+    fLock.Free;
   end;
 
   inherited;
@@ -83,13 +83,13 @@ begin
   inherited;
   fList     := TList.Create;
   fReadOnly := false;
-  fCS := TCriticalSection.Create;
+  fLock := TMultiReadExclusiveWriteSynchronizer.Create;
 end;
 
 function TJwGenericList.Copy: IJwGenericList;
 var i : Integer;
 begin
-  fCS.Enter;
+  fLock.BeginWrite;
   try
     result := TJwGenericList.Create;
     for i := 0 to Get_Count -1 do
@@ -97,44 +97,44 @@ begin
       result.Add(Get_Item(i));
     end;
   finally
-    fCS.Leave;
+    fLock.EndWrite;
   end;
 end;
 
 function TJwGenericList.Get_Count: Integer;
 begin
-  fCS.Enter;
+  fLock.BeginRead;
   try
     result := fList.Count;
   finally
-    fCS.Leave;
+    fLock.EndRead;
   end;
 end;
 
 function TJwGenericList.Get_Item(Index: Integer): OleVariant;
 begin
-  fCS.Enter;
+  fLock.BeginRead;
   try
     result := PVariant(fList[Index])^;
   finally
-    fCS.Leave;
+    fLock.EndRead;
   end;
 end;
 
 function TJwGenericList.Get_ReadOnly: WordBool;
 begin
-  fCS.Enter;
+  fLock.BeginRead;
   try
     result := fReadOnly;
   finally
-    fCS.Leave;
+    fLock.EndRead;
   end;
 end;
 
 procedure TJwGenericList.Clear;
 var i : Integer;
 begin
-  fCS.Enter;
+  fLock.BeginWrite;
   try
     Assert(not fReadOnly);
 
@@ -147,13 +147,13 @@ begin
       fList.Clear;
     end;
   finally
-    fCS.Leave;
+    fLock.EndWrite;
   end;
 end;
 
 procedure TJwGenericList.Delete(Index: Integer);
 begin
-  fCS.Enter;
+  fLock.BeginWrite;
   try
     Assert(not fReadOnly);
 
@@ -163,14 +163,14 @@ begin
       fList.Delete(Index);
     end;
   finally
-    fCS.Leave;
+    fLock.EndWrite;
   end;
 end;
 
 procedure TJwGenericList.Insert(Index: Integer; Data: OleVariant);
 var P : PVariant;
 begin
-  fCS.Enter;
+  fLock.BeginWrite;
   try
     Assert(not fReadOnly);
 
@@ -182,13 +182,13 @@ begin
       fList.Insert(Index, P);
     end;
   finally
-    fCS.Leave;
+    fLock.EndWrite;
   end;
 end;
 
 procedure TJwGenericList.Set_ReadOnly(Value: WordBool);
 begin
-  fCS.Enter;
+  fLock.BeginWrite;
   try
     //do not allow setting ReadOnly to false if fReadOnly was true
     Assert((not fReadOnly) and Value);
@@ -196,14 +196,14 @@ begin
     if not fReadOnly then
       fReadOnly := Value;
   finally
-    fCS.Leave;
+    fLock.EndWrite;
   end;
 end;
 
 procedure TJwGenericList.Exchange(Index: Integer; Value: OleVariant);
 var P : PVariant;
 begin
-  fCS.Enter;
+  fLock.BeginWrite;
   try
     Assert(not fReadOnly);
 
@@ -216,7 +216,7 @@ begin
       fList.Items[Index] := P;
     end;
   finally
-    fCS.Leave;
+    fLock.EndWrite;
   end;
 end;
 
@@ -226,7 +226,7 @@ var i : Integer;
 begin
   result := -1;
 
-  fCS.Enter;
+  fLock.BeginWrite;
   try
     for i := 0 to fList.Count-1 do
     begin
@@ -241,27 +241,27 @@ begin
       end;
     end;
   finally
-    fCS.Leave;
+    fLock.EndWrite;
   end;
 end;
 
 function TJwGenericList.Get_Callback: IJwListFindCallback;
 begin
-  fCS.Enter;
+  fLock.BeginRead;
   try
     result := fCallback;
   finally
-    fCS.Leave;
+    fLock.EndRead;
   end;
 end;
 
 procedure TJwGenericList.Set_Callback(const Value: IJwListFindCallback);
 begin
-  fCS.Enter;
+  fLock.BeginWrite;
   try
    fCallback := Value;
   finally
-    fCS.Leave;
+    fLock.EndWrite;
   end;
 end;
 

@@ -71,9 +71,11 @@ uses
   JwsclCoEnumProviderEntry in 'JwsclCoEnumProviderEntry.pas' {JwEnumProviderEntry: CoClass},
   JwsclCoReplyErrorArray in 'JwsclCoReplyErrorArray.pas' {JwReplyErrorArray: CoClass},
   JwsclCoPointerList in 'JwsclCoPointerList.pas' {JwPointerList: CoClass},
-  TestsJwsclCoGenericList in 'UnitTests\TestsJwsclCoGenericList.pas',
   JwsclCoGenericList in 'JwsclCoGenericList.pas' {JwGenericList: CoClass},
-  JwsclCoEnumSet in 'JwsclCoEnumSet.pas' {JwEnumSet: CoClass};
+  JwsclCoEnumSet in 'JwsclCoEnumSet.pas' {JwEnumSet: CoClass},
+  JwsclCoAccessControlList in 'JwsclCoAccessControlList.pas' {test1: CoClass},
+  JwsclCoAccessControlListTests in 'UnitTests\JwsclCoAccessControlListTests.pas',
+  JwsclCoAccessControlEntry in 'JwsclCoAccessControlEntry.pas' {IJwAccessControlEntry2: CoClass};
 
 exports
   DllGetClassObject,

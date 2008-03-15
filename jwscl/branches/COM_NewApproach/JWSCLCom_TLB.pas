@@ -12,7 +12,7 @@ unit JWSCLCom_TLB;
 // ************************************************************************ //
 
 // PASTLWTR : 1.2
-// Datei generiert am 11.03.2008 20:57:14 aus der unten beschriebenen Typbibliothek.
+// Datei generiert am 14.03.2008 15:42:58 aus der unten beschriebenen Typbibliothek.
 
 // ************************************************************************  //
 // Typbib: P:\Eigene Dateien\Dezipaitor\Projekte\Delphi\7\jedi-api-lib\jwscl\trunk\COM\JWSCLCom.tlb (1)
@@ -22,6 +22,7 @@ unit JWSCLCom_TLB;
 // Hilfe-String: JWSCLCom Library
 // DepndLst: 
 //   (1) v2.0 stdole, (C:\Windows\system32\stdole2.tlb)
+//   (2) v4.0 StdVCL, (C:\Windows\system32\stdvcl40.dll)
 // ************************************************************************ //
 {$TYPEDADDRESS OFF} // Unit muß ohne Typüberprüfung für Zeiger compiliert werden. 
 {$WARN SYMBOL_PLATFORM OFF}
@@ -51,8 +52,6 @@ const
   IID_IJwSidList: TGUID = '{C88787BF-0091-46F2-A732-0639244C54E5}';
   CLASS_JwSid: TGUID = '{95B55CCE-E93B-4DE1-AEBA-18E006FD06F6}';
   CLASS_JwSidList: TGUID = '{6F10E768-10B0-44E6-A14E-30C905B5B01E}';
-  IID_IJwTest: TGUID = '{392DA373-0FE2-45D5-AF98-89BCC8D2D0CD}';
-  CLASS_JwTest2: TGUID = '{6859DD54-E45C-4857-B63C-443D0B5D57E4}';
   IID_IJwAccessControlList: TGUID = '{41FB5FBD-E101-4A32-94AB-BD463E1536BE}';
   CLASS_JwAccessControlList: TGUID = '{99AF508A-33AA-439B-993E-4D771F0C4334}';
   IID_IJwAccessControlEntry: TGUID = '{FEB78113-1787-408A-B877-7063F23604ED}';
@@ -243,6 +242,7 @@ const
   IID_IJwEnumSet: TGUID = '{F148A12D-6B3B-4845-9E91-92DE9E0C555D}';
   CLASS_JwEnumSet: TGUID = '{C13D88C7-26E1-4FB8-AE2E-CAD12200181B}';
   IID_IJwListFindCallback: TGUID = '{2E6FC382-A38A-4429-9364-8E29ED56C132}';
+  CLASS_JwAccessControlEntry: TGUID = '{CF1746A5-59C0-417D-8D07-C83EA21F81D4}';
 
 // *********************************************************************//
 // Deklaration von in der Typbibliothek definierten Enumerationen         
@@ -863,8 +863,6 @@ type
   IJwSidDisp = dispinterface;
   IJwSidList = interface;
   IJwSidListDisp = dispinterface;
-  IJwTest = interface;
-  IJwTestDisp = dispinterface;
   IJwAccessControlList = interface;
   IJwAccessControlListDisp = dispinterface;
   IJwAccessControlEntry = interface;
@@ -1068,7 +1066,6 @@ type
 // *********************************************************************//
   JwSid = IJwSid;
   JwSidList = IJwSidList;
-  JwTest2 = IJwTest;
   JwAccessControlList = IJwAccessControlList;
   JwSecurityDescriptor = IJwSecurityDescriptor;
   JwToken = IJwToken;
@@ -1161,6 +1158,7 @@ type
   JwPointerList = IJwPointerList;
   JwGenericList = IJwGenericList;
   JwEnumSet = IJwEnumSet;
+  JwAccessControlEntry = IJwAccessControlEntry;
 
 
 // *********************************************************************// 
@@ -1336,26 +1334,6 @@ type
     property _NewEnum: OleVariant readonly dispid -4;
     procedure Clear; dispid 207;
     function Find(const Sid: IJwSid; StartPos: Integer; UsePreFix: WordBool): Integer; dispid 208;
-  end;
-
-// *********************************************************************//
-// Schnittstelle: IJwTest
-// Flags:     (4416) Dual OleAutomation Dispatchable
-// GUID:      {392DA373-0FE2-45D5-AF98-89BCC8D2D0CD}
-// *********************************************************************//
-  IJwTest = interface(IDispatch)
-    ['{392DA373-0FE2-45D5-AF98-89BCC8D2D0CD}']
-    procedure Method1; safecall;
-  end;
-
-// *********************************************************************//
-// DispIntf:  IJwTestDisp
-// Flags:     (4416) Dual OleAutomation Dispatchable
-// GUID:      {392DA373-0FE2-45D5-AF98-89BCC8D2D0CD}
-// *********************************************************************//
-  IJwTestDisp = dispinterface
-    ['{392DA373-0FE2-45D5-AF98-89BCC8D2D0CD}']
-    procedure Method1; dispid 201;
   end;
 
 // *********************************************************************//
@@ -3559,7 +3537,7 @@ type
 
 // *********************************************************************//
 // Schnittstelle: IJwEnumSet
-// Flags:     (4416) Dual OleAutomation Dispatchable
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
 // GUID:      {F148A12D-6B3B-4845-9E91-92DE9E0C555D}
 // *********************************************************************//
   IJwEnumSet = interface(IDispatch)
@@ -3578,7 +3556,7 @@ type
 
 // *********************************************************************//
 // DispIntf:  IJwEnumSetDisp
-// Flags:     (4416) Dual OleAutomation Dispatchable
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
 // GUID:      {F148A12D-6B3B-4845-9E91-92DE9E0C555D}
 // *********************************************************************//
   IJwEnumSetDisp = dispinterface
@@ -3636,18 +3614,6 @@ type
   CoJwSidList = class
     class function Create: IJwSidList;
     class function CreateRemote(const MachineName: string): IJwSidList;
-  end;
-
-// *********************************************************************//
-// Die Klasse CoJwTest2 stellt die Methoden Create und CreateRemote zur      
-// Verfügung, um Instanzen der Standardschnittstelle IJwTest, dargestellt von
-// CoClass JwTest2, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
-// *********************************************************************//
-  CoJwTest2 = class
-    class function Create: IJwTest;
-    class function CreateRemote(const MachineName: string): IJwTest;
   end;
 
 // *********************************************************************//
@@ -4754,6 +4720,18 @@ type
     class function CreateRemote(const MachineName: string): IJwEnumSet;
   end;
 
+// *********************************************************************//
+// Die Klasse CoJwAccessControlEntry stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IJwAccessControlEntry, dargestellt von
+// CoClass JwAccessControlEntry, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoJwAccessControlEntry = class
+    class function Create: IJwAccessControlEntry;
+    class function CreateRemote(const MachineName: string): IJwAccessControlEntry;
+  end;
+
 implementation
 
 uses ComObj;
@@ -4776,16 +4754,6 @@ end;
 class function CoJwSidList.CreateRemote(const MachineName: string): IJwSidList;
 begin
   Result := CreateRemoteComObject(MachineName, CLASS_JwSidList) as IJwSidList;
-end;
-
-class function CoJwTest2.Create: IJwTest;
-begin
-  Result := CreateComObject(CLASS_JwTest2) as IJwTest;
-end;
-
-class function CoJwTest2.CreateRemote(const MachineName: string): IJwTest;
-begin
-  Result := CreateRemoteComObject(MachineName, CLASS_JwTest2) as IJwTest;
 end;
 
 class function CoJwAccessControlList.Create: IJwAccessControlList;
@@ -5706,6 +5674,16 @@ end;
 class function CoJwEnumSet.CreateRemote(const MachineName: string): IJwEnumSet;
 begin
   Result := CreateRemoteComObject(MachineName, CLASS_JwEnumSet) as IJwEnumSet;
+end;
+
+class function CoJwAccessControlEntry.Create: IJwAccessControlEntry;
+begin
+  Result := CreateComObject(CLASS_JwAccessControlEntry) as IJwAccessControlEntry;
+end;
+
+class function CoJwAccessControlEntry.CreateRemote(const MachineName: string): IJwAccessControlEntry;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_JwAccessControlEntry) as IJwAccessControlEntry;
 end;
 
 end.

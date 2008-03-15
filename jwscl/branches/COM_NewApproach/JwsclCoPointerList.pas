@@ -5,7 +5,7 @@ unit JwsclCoPointerList;
 interface
 
 uses
-  JwaWindows, ComObj, Classes, ActiveX, JWSCLCom_TLB, StdVcl, SyncObjs;
+  JwaWindows, ComObj, SysUtils, Classes, ActiveX, JWSCLCom_TLB, StdVcl, SyncObjs;
 
 type
   TJwPointerList = class(TAutoObject, IJwPointerList)
@@ -14,7 +14,7 @@ type
     fSizeList : TList;
     fReadOnly,
     fOwnData : Boolean;
-    fCS : TCriticalSection;
+    fLock : TMultiReadExclusiveWriteSynchronizer;
     fCallback : IJwListFindCallback;
 
     function GetData(Index: Integer): PChar; safecall;
@@ -55,7 +55,7 @@ end;
 
 function TJwPointerList.AddData(Data: PChar; Size: LongWord): Integer;
 begin
-  fCS.Enter;
+  fLock.BeginWrite;
   try
     Assert(not fReadOnly);
 
@@ -65,23 +65,23 @@ begin
       fSizeList.Add(Pointer(Size));
     end;
   finally
-    fCS.Leave;
+    fLock.EndWrite;
   end;
 end;
 
 function TJwPointerList.Get_ReadOnly: WordBool;
 begin
-  fCS.Enter;
+  fLock.BeginRead;
   try
     result := fReadOnly;
   finally
-    fCS.Leave;
+    fLock.EndRead;
   end;
 end;
 
 procedure TJwPointerList.DeleteData(Index: Integer);
 begin
-  fCS.Enter;
+  fLock.BeginWrite;
   try
     Assert(not fReadOnly);
 
@@ -91,7 +91,7 @@ begin
       fSizeList.Delete(Index);
     end;
   finally
-    fCS.Leave;
+    fLock.EndWrite;
   end;
 end;
 
@@ -102,11 +102,11 @@ begin
 
   if fReadOnly then
   begin
-    fCS.Enter;
+    fLock.BeginWrite;
     try
       fReadOnly := Value;
     finally
-      fCS.Leave;
+      fLock.EndWrite;
     end;
   end;
 end;
@@ -116,7 +116,7 @@ begin
   inherited;
   fList     := TList.Create;
   fSizeList := TList.Create;
-  fCS := TCriticalSection.Create;
+  fLock := TMultiReadExclusiveWriteSynchronizer.Create;
 
   fOwnData := true;
   fReadOnly := false;
@@ -124,43 +124,43 @@ end;
 
 destructor TJwPointerList.Destroy;
 begin
-  fCS.Enter;
+  fLock.BeginWrite;
   try
     fReadOnly := false;
   finally
-    fCS.Leave;
+    fLock.EndWrite;
   end;
 
   Clear;
 
-  fCS.Enter;
+  fLock.BeginWrite;
   try
     fList.Free;
     fSizeList.Free;
   finally
-    fCS.Leave;
-    fCS.Free;
+    fLock.EndWrite;
+    FreeAndNil(fLock);
   end;
   inherited;
 end;
 
 function TJwPointerList.Get_OwnData: WordBool;
 begin
-  fCS.Enter;
+  fLock.BeginRead;
   try
     result := fOwnData;
   finally
-    fCS.Leave;
+    fLock.EndRead;
   end;
 end;
 
 procedure TJwPointerList.Set_OwnData(Value: WordBool);
 begin
-  fCS.Enter;
+  fLock.BeginWrite;
   try
     fOwnData := Value;
   finally
-    fCS.Leave;
+    fLock.EndWrite;
   end;
 end;
 
@@ -168,7 +168,7 @@ function TJwPointerList.AddAndDuplicate(Data: PChar;
   Size: LongWord): Integer;
 var p : Pointer;
 begin
-  fCS.Enter;
+  fLock.BeginWrite;
   try
     Assert(not fReadOnly);
     Assert(fOwnData);
@@ -183,7 +183,7 @@ begin
       result := AddData(P, Size);
     end;
   finally
-    fCS.Leave;
+    fLock.EndWrite;
   end;
 
 end;
@@ -191,13 +191,13 @@ end;
 function TJwPointerList.Copy(Duplicate: WordBool): IJwPointerList;
 var i : Integer;
 begin
-  fCS.Enter;
+  fLock.BeginWrite;
   try
     Assert(fReadOnly and not Duplicate);
     if fReadOnly and not Duplicate then
     begin
       result := nil;
-      fCS.Leave;
+      fLock.EndWrite;
       exit;
     end;
 
@@ -211,29 +211,29 @@ begin
         result.AddData(GetData(i),Get_ItemSize(i));
     end;
   finally
-    fCS.Leave;
+    fLock.EndWrite;
   end;
 
 end;
 
 function TJwPointerList.Get_Count: Integer;
 begin
-  fCS.Enter;
+  fLock.BeginRead;
   try
     result := fList.Count;
   finally
-    fCS.Leave;
+    fLock.EndRead;
   end;
 
 end;
 
 function TJwPointerList.Get_ItemSize(Index: Integer): LongWord;
 begin
-  fCS.Enter;
+  fLock.BeginRead;
   try
     result := LongWord(fSizeList[Index]);
   finally
-    fCS.Leave;
+    fLock.EndRead;
   end;
 
 end;
@@ -243,7 +243,7 @@ function TJwPointerList.Get_Item(Index: Integer;
   Duplicate: WordBool): PChar;
 var P : Pointer;
 begin
-  fCS.Enter;
+  fLock.BeginRead;
   try
     P := fList.Items[Index];
     Assert(P <> nil);
@@ -259,7 +259,7 @@ begin
     else
       result := P;
   finally
-    fCS.Leave;
+    fLock.EndRead;
   end;
 
 end;
@@ -267,7 +267,7 @@ end;
 procedure TJwPointerList.InsertData(Index: Integer; Data: PChar; 
   Size: LongWord);
 begin
-  fCS.Enter;
+  fLock.BeginWrite;
   try
     Assert(not fReadOnly);
 
@@ -277,7 +277,7 @@ begin
       fSizeList.Insert(Index, Pointer(Size));
     end;
   finally
-    fCS.Leave;
+    fLock.EndWrite;
   end;
 
 end;
@@ -286,7 +286,7 @@ procedure TJwPointerList.InsertDataAndDuplicate(Index: Integer;
   Data: PChar; Size: LongWord);
 var p : Pointer;
 begin
-  fCS.Enter;
+  fLock.BeginWrite;
   try
     Assert(not fReadOnly);
 
@@ -302,7 +302,7 @@ begin
       InsertData(Index, PChar(P), Size);
     end;
   finally
-    fCS.Leave;
+    fLock.EndWrite;
   end;
 
 end;
@@ -310,7 +310,7 @@ end;
 procedure TJwPointerList.Clear;
 var i : Integer;
 begin
-  fCS.Enter;
+  fLock.BeginWrite;
   try
     Assert(not fReadOnly);
 
@@ -325,7 +325,7 @@ begin
       fSizeList.Clear;
     end;
   finally
-    fCS.Leave;
+    fLock.EndWrite;
   end;
 
 end;
@@ -334,7 +334,7 @@ procedure TJwPointerList.Exchange(Index: Integer; Data: PChar;
   Size: LongWord);
 var P : PVariant;
 begin
-  fCS.Enter;
+  fLock.BeginWrite;
   try
     Assert(not fReadOnly);
 
@@ -347,7 +347,7 @@ begin
         InsertData(Index, Data, Size);
     end;
   finally
-    fCS.Leave;
+    fLock.EndWrite;
   end;
     
 end;
@@ -361,7 +361,7 @@ begin
   if not Assigned(fCallback) then
     exit;
 
-  fCS.Enter;
+  fLock.BeginWrite; //make sure Data is not changed
   try
     for i := 0 to fList.Count-1 do
     begin
@@ -372,26 +372,26 @@ begin
       end;
     end;
   finally
-    fCS.Leave;
+    fLock.EndWrite;
   end;
 end;
 function TJwPointerList.Get_Callback: IJwListFindCallback;
 begin
-  fCS.Enter;
+  fLock.BeginRead;
   try
     result := fCallback;
   finally
-    fCS.Leave;
+    fLock.EndRead;
   end;
 end;
 
 procedure TJwPointerList.Set_Callback(const Value: IJwListFindCallback);
 begin
-  fCS.Enter;
+  fLock.BeginWrite;
   try
     fCallback := Value;
   finally
-    fCS.Leave;
+    fLock.EndWrite;
   end;
 end;
 

@@ -14,7 +14,11 @@ uses
   JWSCLCoException in '..\JWSCLCoException.pas',
   ComLib in '..\Common\ComLib.pas',
   TestsJwsclCoGenericList in 'TestsJwsclCoGenericList.pas',
-  JwsclCoEnumSetTests in 'JwsclCoEnumSetTests.pas';
+  JwsclCoEnumSetTests in 'JwsclCoEnumSetTests.pas',
+  JwsclCoAccessControlListTests in 'JwsclCoAccessControlListTests.pas',
+  JwsclCoAccessControlList in '..\JwsclCoAccessControlList.pas' {test1: CoClass};
+
+
 
 {$R *.RES}
 
