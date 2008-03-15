@@ -217,7 +217,21 @@ function JwCoGetClassFactoyAsAdmin(
   out ObjectInterface) : HRESULT;
 
 
-type TJwShellExecuteFlag = (sefNoUi, sefFixDirWithRunAs);
+type {@Name controls execution of JwShellExecute }
+     TJwShellExecuteFlag = (
+        //does not display GUI elements on errors
+        sefNoUi,
+        {does not try to elevate if it is not available
+         In this case verb "open" is used.
+        }
+        sefIgnoreElevationIfNotAvailable,
+        {On Elevation and a given directory it uses
+         a trick to set the correct path for the target application
+         This is because ShellExecute does not set given directory
+         for the target app.
+         This may lead to a command line window in background
+        }
+        sefFixDirWithRunAs);
      TJwShellExecuteFlags = set of TJwShellExecuteFlag;
 
 {@Name runs a process with elevated privileges in Windows Vista.
@@ -229,8 +243,9 @@ This function only works on Windows Vista and newer OS versions.
 @return(The return value contains the instance of the newly created app.
 The function returns before the new application has started therfore the app
 can fail. If ShellExecute determines an error the return value is 0 and
-GetLastError contains more information.
+an exception is raised.
 )
+@raises(EJwsclWinCallFailedException will be raised if a call to ShellExecuteEx failed)
 }
 function JwShellExecute(const hWnd: HWND; FileName, Parameters,
   Directory: TJwString; ShowCmd: Integer; Flags : TJwShellExecuteFlags = []): HINST;
@@ -263,7 +278,7 @@ function JwShellExecute(const hWnd: HWND;  FileName, Parameters,
 var
   shExecInfo : {$IFDEF UNICODE}SHELLEXECUTEINFOW{$ELSE}SHELLEXECUTEINFOA{$ENDIF};
   Token : TJwSecurityToken;
-
+  IsElevated : Boolean;
 begin
   result := 0;
 
@@ -273,13 +288,21 @@ begin
   Token := TJwSecurityToken.CreateTokenEffective(TOKEN_QUERY or TOKEN_READ);
 
   try
-    if Token.RunElevation = 0 then
-      shExecInfo.lpVerb := TJwPChar(TJwString('runas'))
-    else //type mismatch? Recompile whole project: ansicode <-> unicode
-      shExecInfo.lpVerb := TJwPChar(TJwString('open'))
-  finally
-    Token.Free;
+    IsElevated := Token.RunElevation <> 0;
+  except
+    on E : EJwsclSecurityException do
+    begin
+      Token.Free;
+      if not (sefIgnoreElevationIfNotAvailable in Flags) then
+        raise;
+    end;
   end;
+
+  if not IsElevated then
+    shExecInfo.lpVerb := TJwPChar(TJwString('runas'))
+  else //type mismatch? Recompile whole project: ansicode <-> unicode
+    shExecInfo.lpVerb := TJwPChar(TJwString('open'));
+
 
   shExecInfo.cbSize := sizeof(SHELLEXECUTEINFO);
   shExecInfo.fMask := SEE_MASK_NOCLOSEPROCESS;
@@ -289,7 +312,8 @@ begin
   shExecInfo.Wnd := hWnd;
 
 
-  if (sefFixDirWithRunAs in Flags) and (Length(Directory) > 0) then
+  if (sefFixDirWithRunAs in Flags) and (Length(Directory) > 0) and
+    not IsElevated then
   begin
     shExecInfo.lpFile := 'cmd.exe';
     {Shellexecute does not set directory when combined with verb "runas"
@@ -297,6 +321,8 @@ begin
     This may lead to a remaining cmd window
     }
     shExecInfo.lpParameters := TJwPChar(TJwString('/C cd /d "'+Directory+'" & '+ FileName + ' '+Parameters));
+    //shExecInfo.lpFile := 'cmd';
+    //shExecInfo.lpParameters := TJwPChar(TJwString('/c "start /D "'+Directory+'" "'+ FileName + '" '+Parameters)+'"');
     shExecInfo.lpDirectory := nil;
   end
   else
@@ -311,9 +337,13 @@ begin
 
   shExecInfo.nShow := ShowCmd;
   shExecInfo.hInstApp := NULL;
-  
+
+  SetLastError(0);
   if {$IFDEF UNICODE}ShellExecuteExW{$ELSE}ShellExecuteExA{$ENDIF}(@shExecInfo) then
-    result := shExecInfo.hProcess;
+    result := shExecInfo.hProcess
+  else
+    raise EJwsclWinCallFailedException.CreateFmtWinCall(RsWinCallFailed,'src','','JwsclElevation.pas',0,
+          true,'ShellExecuteEx',['ShellExecuteEx']);
 end;
 
 
