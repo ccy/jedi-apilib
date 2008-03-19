@@ -120,6 +120,8 @@ function GetWindowModuleFileNameA(hwnd: HWND; lpFileName: LPSTR; cchFileName: UI
 function GetWindowModuleFileName(hwnd: HWND; lpFileName: LPTSTR; cchFileName: UINT): UINT; stdcall;
 {$EXTERNALSYM GetWindowModuleFileName}
 
+{$ENDIF JWA_INCLUDEMODE}
+
 //
 // This returns FALSE if the caller doesn't have permissions to do this
 // esp. if someone else is dorking with input.  I.E., if some other thread
@@ -130,6 +132,7 @@ function GetWindowModuleFileName(hwnd: HWND; lpFileName: LPTSTR; cchFileName: UI
 function BlockInput(fBlockIt: BOOL): BOOL; stdcall;
 {$EXTERNALSYM BlockInput}
 
+{$IFNDEF JWA_INCLUDEMODE}
 //
 // Note that the dwFlags field uses the same flags as keybd_event and
 // mouse_event, depending on what type of input this is.
@@ -703,6 +706,8 @@ begin
   end;
 end;
 
+
+{$ENDIF JWA_INCLUDEMODE}
 var
   _BlockInput: Pointer;
 
@@ -716,6 +721,8 @@ begin
   end;
 end;
 
+
+{$IFNDEF JWA_INCLUDEMODE}
 var
   _SendInput: Pointer;
 
@@ -774,12 +781,12 @@ end;
 
 {$ELSE}
 
+function BlockInput; external user32 name 'BlockInput';
 {$IFNDEF JWA_INCLUDEMODE}
 function GetGUIThreadInfo; external user32 name 'GetGUIThreadInfo';
 function GetWindowModuleFileNameW; external user32 name 'GetWindowModuleFileNameW';
 function GetWindowModuleFileNameA; external user32 name 'GetWindowModuleFileNameA';
 function GetWindowModuleFileName; external user32 name 'GetWindowModuleFileName' + AWSuffix;
-function BlockInput; external user32 name 'BlockInput';
 function SendInput; external user32 name 'SendInput';
 procedure NotifyWinEvent; external user32 name 'NotifyWinEvent';
 function SetWinEventHook; external user32 name 'SetWinEventHook';
