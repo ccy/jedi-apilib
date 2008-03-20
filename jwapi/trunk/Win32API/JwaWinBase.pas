@@ -2790,7 +2790,7 @@ function ConnectNamedPipe(hNamedPipe: HANDLE; lpOverlapped: LPOVERLAPPED): BOOL;
 function DisconnectNamedPipe(hNamedPipe: HANDLE): BOOL; stdcall;
 {$EXTERNALSYM DisconnectNamedPipe}
 
-function SetNamedPipeHandleState(hNamedPipe: HANDLE; var lpMode: DWORD;
+function SetNamedPipeHandleState(hNamedPipe: HANDLE; lpMode: LPDWORD;
   lpMaxCollectionCount: LPDWORD; lpCollectDataTimeout: LPDWORD): BOOL; stdcall;
 {$EXTERNALSYM SetNamedPipeHandleState}
 
