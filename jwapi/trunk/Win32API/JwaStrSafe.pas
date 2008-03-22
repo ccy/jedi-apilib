@@ -48,6 +48,8 @@
 { and inline only                                                              }
 {  StringCchGets, StringCbGets, StringCchGetsEx, StringCbGetsEx                }
 {                                                                              }
+{ The functions are not exported by any DLL.                                   }
+{                                                                              }
 {                                                                              }
 {******************************************************************************}
 {$IFNDEF JWA_OMIT_SECTIONS}
@@ -71,6 +73,7 @@ uses JwaWinType;
 {$LINK JwaStrSafe.obj}
 
 type
+{$IFNDEF JWA_OMIT_SECTIONS}
 //strsafe.obj must include 64bit code to work with _WIN64
 {$IFDEF _WIN64}
   size_t = ULONGLONG;
@@ -78,6 +81,7 @@ type
   size_t = Cardinal;//ULONG_PTR;
 {$ENDIF}
   PSize_t = ^size_t;
+{$ENDIF JWA_OMIT_SECTIONS}
 
   STRSAFE_LPSTR = PCHAR;
   PSTRSAFE_LPSTR = ^STRSAFE_LPSTR;

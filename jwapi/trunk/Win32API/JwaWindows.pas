@@ -574,6 +574,8 @@ The list has no order!}
  {$I JwaWinSta.pas}
 {$ENDIF}
 
+{$I JwaStrSafe.pas}
+
 
 
 {.$I JwaWinternl.pas}  //not used anymore!
@@ -909,6 +911,7 @@ The list has no order!}
 {$I JwaWinSta.pas}
 {$ENDIF FPC}
 
+{$I JwaStrSafe.pas}
 
 
 {$I ModuleLoader.pas}
