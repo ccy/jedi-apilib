@@ -68,14 +68,14 @@ uses JwaWinType;
 
 {$IFNDEF JWA_IMPLEMENTATIONSECTION}
 
-{$LINK strsafe.obj}
+{$LINK JwaStrSafe.obj}
 
 type
 //strsafe.obj must include 64bit code to work with _WIN64
 {$IFDEF _WIN64}
   size_t = ULONGLONG;
 {$ELSE}
-  size_t = ULONG_PTR;
+  size_t = Cardinal;//ULONG_PTR;
 {$ENDIF}
   PSize_t = ^size_t;
 
@@ -91,7 +91,7 @@ type
   STRSAFE_LPCWSTR = PWIDECHAR;
   PSTRSAFE_LPCWSTR = ^STRSAFE_LPCWSTR;
 
-{$DEFINE UNICODE}
+
 {$IFDEF UNICODE}
   STRSAFE_LPTSTR = STRSAFE_LPWSTR;
   PSTRSAFE_LPTSTR = ^STRSAFE_LPTSTR;
@@ -215,19 +215,19 @@ Return Value:
 
 --}
 function StringCchCopyW(
-    {__out_ecount(cchDest)}var pszDest : STRSAFE_LPWSTR;
-    {__in}const cchDest : size_t;
-    {__in}const pszSrc : STRSAFE_LPCWSTR) : HRESULT; stdcall; external;
+    {__out_ecount(cchDest)}pszDest : STRSAFE_LPWSTR;
+    {__in} cchDest : size_t;
+    {__in} const pszSrc : STRSAFE_LPCWSTR) : HRESULT; stdcall; forward; external;
 
 function StringCchCopyA(
-    {__out_ecount(cchDest)}var pszDest : STRSAFE_LPSTR;
-    {__in}const cchDest : size_t;
-    {__in}const pszSrc : STRSAFE_LPCSTR) : HRESULT; stdcall; external;
+    {__out_ecount(cchDest)}pszDest : STRSAFE_LPSTR;
+    {__in}cchDest : size_t;
+    {__in}const pszSrc : STRSAFE_LPCSTR) : HRESULT; stdcall; forward; external;
 
 function StringCchCopy(
-    {__out_ecount(cchDest)}var pszDest : STRSAFE_LPSTR;
-    {__in}const cchDest : size_t;
-    {__in}const pszSrc : STRSAFE_LPCSTR) : HRESULT; stdcall;
+    {__out_ecount(cchDest)}pszDest : STRSAFE_LPTSTR;
+    {__in}cchDest : size_t;
+    {__in}const pszSrc : STRSAFE_LPCTSTR) : HRESULT; stdcall;
 
 
 {++
@@ -299,19 +299,19 @@ Return Value:
 
 
 function StringCbCopyA(
-    {__out_bcount(cbDest)}var pszDest : STRSAFE_LPSTR;
-    {__in}const cbDest  : size_t;
-    {__in}const pszSrc : STRSAFE_LPCSTR) : HRESULT; stdcall; external;
+    {__out_bcount(cbDest)}pszDest : STRSAFE_LPSTR;
+    {__in}cbDest  : size_t;
+    {__in}const pszSrc : STRSAFE_LPCSTR) : HRESULT; stdcall; forward; external;
 
 function StringCbCopyW(
-    {__out_bcount(cbDest)}var pszDest : STRSAFE_LPWSTR;
+    {__out_bcount(cbDest)}pszDest : STRSAFE_LPWSTR;
     {__in}cbDest  : size_t;
-    {__in}pszSrc : STRSAFE_LPCWSTR) : HRESULT; stdcall; external;
+    {__in}const pszSrc : STRSAFE_LPCWSTR) : HRESULT; stdcall; forward; external;
 
 function StringCbCopy(
-    {__out_bcount(cbDest)}var pszDest : STRSAFE_LPTSTR;
+    {__out_bcount(cbDest)}pszDest : STRSAFE_LPTSTR;
     {__in}cbDest  : size_t;
-    {__in}pszSrc : STRSAFE_LPCTSTR) : HRESULT; stdcall;
+    {__in}const pszSrc : STRSAFE_LPCTSTR) : HRESULT; stdcall;
 
 {++
 
@@ -407,28 +407,28 @@ Return Value:
 --}
 
 function StringCchCopyExA(
-    {__out_ecount(cchDest)}var pszDest : STRSAFE_LPSTR;
-    {__in}const cchDest : size_t;
+    {__out_ecount(cchDest)}pszDest : STRSAFE_LPSTR;
+    {__in}cchDest : size_t;
     {__in}const pszSrc : STRSAFE_LPCSTR;
     {__deref_opt_out_ecount(pcchRemaining^)}ppszDestEnd : PSTRSAFE_LPSTR;
     {__out_opt}pcchRemaining : PSize_t;
-    {__in}const dwFlags : Cardinal) : HRESULT; stdcall; external;
+    {__in}dwFlags : Cardinal) : HRESULT; stdcall; forward; external;
 
 function StringCchCopyExW(
-    {__out_ecount(cchDest)}var pszDest : STRSAFE_LPWSTR;
-    {__in}const cchDest : size_t;
+    {__out_ecount(cchDest)}pszDest : STRSAFE_LPWSTR;
+    {__in}cchDest : size_t;
     {__in}const pszSrc : STRSAFE_LPCWSTR;
     {__deref_opt_out_ecount(pcchRemaining^)}ppszDestEnd : PSTRSAFE_LPWSTR;
     {__out_opt}pcchRemaining : PSize_t;
-    {__in}const dwFlags : Cardinal) : HRESULT; stdcall; external;
+    {__in}dwFlags : Cardinal) : HRESULT; stdcall; forward; external;
 
 function StringCchCopyEx(
-    {__out_ecount(cchDest)}var pszDest : STRSAFE_LPTSTR;
-    {__in}const cchDest : size_t;
+    {__out_ecount(cchDest)}pszDest : STRSAFE_LPTSTR;
+    {__in}cchDest : size_t;
     {__in}const pszSrc : STRSAFE_LPCTSTR;
     {__deref_opt_out_ecount(pcchRemaining^)}ppszDestEnd : PSTRSAFE_LPTSTR;
     {__out_opt}pcchRemaining : PSize_t;
-    {__in}const dwFlags : Cardinal) : HRESULT; stdcall;
+    {__in}dwFlags : Cardinal) : HRESULT; stdcall;
 
 {++
 
@@ -523,28 +523,28 @@ Return Value:
 
 --}
 function StringCbCopyExA(
-    {__out_bcount(cbDest)}var pszDest : STRSAFE_LPSTR;
-    {__in}const cchDest : size_t;
+    {__out_bcount(cbDest)}pszDest : STRSAFE_LPSTR;
+    {__in}cchDest : size_t;
     {__in}const pszSrc : STRSAFE_LPCSTR;
     {__deref_opt_out_bcount(pcbRemaining^)}ppszDestEnd : PSTRSAFE_LPSTR;
     {__out_opt}pcbRemaining : PSize_t;
-    {__in}const dwFlags : Cardinal) : HRESULT; stdcall; external;
+    {__in}dwFlags : Cardinal) : HRESULT; stdcall; forward; external;
 
 function StringCbCopyExW(
-    {__out_bcount(cbDest)}var pszDest : STRSAFE_LPWSTR;
-    {__in}const cchDest : size_t;
+    {__out_bcount(cbDest)}pszDest : STRSAFE_LPWSTR;
+    {__in}cchDest : size_t;
     {__in}const pszSrc : STRSAFE_LPCWSTR;
     {__deref_opt_out_bcount(pcbRemaining^)}ppszDestEnd : PSTRSAFE_LPWSTR;
     {__out_opt}pcbRemaining : PSize_t;
-    {__in}const dwFlags : Cardinal) : HRESULT; stdcall; external;
+    {__in}dwFlags : Cardinal) : HRESULT; stdcall; forward; external;
 
 function StringCbCopyEx(
-    {__out_bcount(cbDest)}var pszDest : STRSAFE_LPTSTR;
-    {__in}const cchDest : size_t;
+    {__out_bcount(cbDest)}pszDest : STRSAFE_LPTSTR;
+    {__in}cchDest : size_t;
     {__in}const pszSrc : STRSAFE_LPCTSTR;
     {__deref_opt_out_bcount(pcbRemaining^)}ppszDestEnd : PSTRSAFE_LPTSTR;
     {__out_opt}pcbRemaining : PSize_t;
-    {__in}const dwFlags : Cardinal) : HRESULT; stdcall;
+    {__in}dwFlags : Cardinal) : HRESULT; stdcall;
 
 
 {++
@@ -615,22 +615,22 @@ Return Value:
 
 --}
 function StringCchCopyNA(
-    {__out_ecount(cchDest)}var pszDest : STRSAFE_LPSTR;
-    {__in}const cchDest : size_t;
+    {__out_ecount(cchDest)}pszDest : STRSAFE_LPSTR;
+    {__in}cchDest : size_t;
     {__in}const pszSrc : STRSAFE_LPCSTR;
-    {__in}const cchToCopy : size_t) : HRESULT; stdcall; external;
+    {__in}cchToCopy : size_t) : HRESULT; stdcall; forward; external;
 
 function StringCchCopyNW(
-    {__out_ecount(cchDest)}var pszDest : STRSAFE_LPWSTR;
-    {__in}const cchDest : size_t;
+    {__out_ecount(cchDest)}pszDest : STRSAFE_LPWSTR;
+    {__in}cchDest : size_t;
     {__in}const pszSrc : STRSAFE_LPCWSTR;
-    {__in}const cchToCopy : size_t) : HRESULT; stdcall; external;
+    {__in}cchToCopy : size_t) : HRESULT; stdcall; forward; external;
 
 function StringCchCopyN(
-    {__out_ecount(cchDest)}var pszDest : STRSAFE_LPTSTR;
-    {__in}const cchDest : size_t;
+    {__out_ecount(cchDest)}pszDest : STRSAFE_LPTSTR;
+    {__in}cchDest : size_t;
     {__in}const pszSrc : STRSAFE_LPCTSTR;
-    {__in}const cchToCopy : size_t) : HRESULT; stdcall;
+    {__in}cchToCopy : size_t) : HRESULT; stdcall;
 
 {++
 
@@ -702,22 +702,22 @@ Return Value:
 --}
 
 function StringCbCopyNA(
-    {__out_bcount(cbDest)}var pszDest : STRSAFE_LPSTR;
-    {__in}const cchDest : size_t;
+    {__out_bcount(cbDest)}pszDest : STRSAFE_LPSTR;
+    {__in}cchDest : size_t;
     {__in}const pszSrc : STRSAFE_LPCSTR;
-    {__in}const cchToCopy : size_t) : HRESULT; stdcall; external;
+    {__in}cchToCopy : size_t) : HRESULT; stdcall; forward; external;
 
 function StringCbCopyNW(
-    {__out_bcount(cbDest)}var pszDest : STRSAFE_LPWSTR;
-    {__in}const cchDest : size_t;
+    {__out_bcount(cbDest)}pszDest : STRSAFE_LPWSTR;
+    {__in}cchDest : size_t;
     {__in}const pszSrc : STRSAFE_LPCWSTR;
-    {__in}const cchToCopy : size_t) : HRESULT; stdcall; external;
+    {__in}cchToCopy : size_t) : HRESULT; stdcall; forward; external;
 
 function StringCbCopyN(
-    {__out_bcount(cbDest)}var pszDest : STRSAFE_LPTSTR;
-    {__in}const cchDest : size_t;
+    {__out_bcount(cbDest)}pszDest : STRSAFE_LPTSTR;
+    {__in}cchDest : size_t;
     {__in}const pszSrc : STRSAFE_LPCTSTR;
-    {__in}const cchToCopy : size_t) : HRESULT; stdcall;
+    {__in}cchToCopy : size_t) : HRESULT; stdcall;
 
 
 {++
@@ -822,32 +822,32 @@ Return Value:
 
 --}
 function StringCchCopyNExA(
-    {__in_ecount(cchDest)}var pszDest : STRSAFE_LPSTR;
-    {__in}const cchDest : size_t;
+    {__in_ecount(cchDest)}pszDest : STRSAFE_LPSTR;
+    {__in}cchDest : size_t;
     {__in_ecount(cchToCopy)}const pszSrc : STRSAFE_LPCSTR;
-    {__in}const cchToCopy : size_t;
+    {__in}cchToCopy : size_t;
     {__deref_opt_out_ecount(pcchRemaining^)}ppszDestEnd : PSTRSAFE_LPSTR;
     {__out_opt size_t}pcchRemaining : PSize_t;
-    {__in}const dwFlags : Cardinal)  : HRESULT; stdcall; external;
+    {__in}dwFlags : Cardinal)  : HRESULT; stdcall; forward; external;
 
 function StringCchCopyNExW(
-    {__in_ecount(cchDest)}var pszDest : STRSAFE_LPWSTR;
-    {__in}const cchDest : size_t;
+    {__in_ecount(cchDest)}pszDest : STRSAFE_LPWSTR;
+    {__in}cchDest : size_t;
     {__in_ecount(cchToCopy)}const pszSrc : STRSAFE_LPCWSTR;
-    {__in}const cchToCopy : size_t;
+    {__in}cchToCopy : size_t;
     {__deref_opt_out_ecount(pcchRemaining^)}ppszDestEnd : PSTRSAFE_LPWSTR;
     {__out_opt size_t}pcchRemaining : PSize_t;
-    {__in}const dwFlags : Cardinal)  : HRESULT; stdcall; external;
+    {__in}dwFlags : Cardinal)  : HRESULT; stdcall; forward; external;
 
 
 function StringCchCopyNEx(
-    {__in_ecount(cchDest)}var pszDest : STRSAFE_LPTSTR;
-    {__in}const cchDest : size_t;
+    {__in_ecount(cchDest)}pszDest : STRSAFE_LPTSTR;
+    {__in}cchDest : size_t;
     {__in_ecount(cchToCopy)}const pszSrc : STRSAFE_LPCTSTR;
-    {__in}const cchToCopy : size_t;
+    {__in}cchToCopy : size_t;
     {__deref_opt_out_ecount(pcchRemaining^)}ppszDestEnd : PSTRSAFE_LPTSTR;
     {__out_opt size_t}pcchRemaining : PSize_t;
-    {__in}const dwFlags : Cardinal)  : HRESULT; stdcall;
+    {__in}dwFlags : Cardinal)  : HRESULT; stdcall;
 {++
 
 STDAPI
@@ -948,31 +948,31 @@ Return Value:
 
 --}
 function StringCbCopyNExA(
-    {__out_bcount(cbDest) }var pszDest : STRSAFE_LPSTR;
-    {__in}const cchDest : size_t;
+    {__out_bcount(cbDest) }pszDest : STRSAFE_LPSTR;
+    {__in}cchDest : size_t;
     {__in_bcount(cbToCopy) }const pszSrc : STRSAFE_LPCSTR;
-    {__in}const cchToCopy : size_t;
+    {__in}cchToCopy : size_t;
     {__deref_opt_out_bcount(pcbRemaining^)}ppszDestEnd : PSTRSAFE_LPSTR;
     {__out_opt}pcchRemaining : PSize_t;
-    {__in}const dwFlags : Cardinal)  : HRESULT; stdcall; external;
+    {__in}dwFlags : Cardinal)  : HRESULT; stdcall; forward; external;
 
 function StringCbCopyNExW(
-    {__out_bcount(cbDest) }var pszDest : STRSAFE_LPWSTR;
-    {__in}const cchDest : size_t;
+    {__out_bcount(cbDest) }pszDest : STRSAFE_LPWSTR;
+    {__in}cchDest : size_t;
     {__in_bcount(cbToCopy) }const pszSrc : STRSAFE_LPCWSTR;
-    {__in}const cchToCopy : size_t;
+    {__in}cchToCopy : size_t;
     {__deref_opt_out_bcount(pcbRemaining^)}ppszDestEnd : PSTRSAFE_LPWSTR;
     {__out_opt}pcchRemaining : PSize_t;
-    {__in}const dwFlags : Cardinal)  : HRESULT; stdcall; external;
+    {__in}dwFlags : Cardinal)  : HRESULT; stdcall; forward; external;
 
 function StringCbCopyNEx(
-    {__out_bcount(cbDest) }var pszDest : STRSAFE_LPTSTR;
-    {__in}const cchDest : size_t;
+    {__out_bcount(cbDest) }pszDest : STRSAFE_LPTSTR;
+    {__in}cchDest : size_t;
     {__in_bcount(cbToCopy) }const pszSrc : STRSAFE_LPCTSTR;
-    {__in}const cchToCopy : size_t;
+    {__in}cchToCopy : size_t;
     {__deref_opt_out_bcount(pcbRemaining^)}ppszDestEnd : PSTRSAFE_LPTSTR;
     {__out_opt}pcchRemaining : PSize_t;
-    {__in}const dwFlags : Cardinal)  : HRESULT; stdcall;
+    {__in}dwFlags : Cardinal)  : HRESULT; stdcall;
 
 
 {
@@ -1035,18 +1035,18 @@ Return Value:
 
 --}
 function StringCchCatA(
-    {__inout_ecount(cchDest)}var pszDest : STRSAFE_LPSTR;
-    {__in}const cchDest : size_t;
-    {__in}const pszSrc : STRSAFE_LPCSTR) : HRESULT; stdcall; external;
+    {__inout_ecount(cchDest)}pszDest : STRSAFE_LPSTR;
+    {__in}cchDest : size_t;
+    {__in}const pszSrc : STRSAFE_LPCSTR) : HRESULT; stdcall; forward; external;
 
 function StringCchCatW(
-    {__inout_ecount(cchDest)}var pszDest : STRSAFE_LPWSTR;
-    {__in}const cchDest : size_t;
-    {__in}const pszSrc : STRSAFE_LPCWSTR) : HRESULT; stdcall; external;
+    {__inout_ecount(cchDest)}pszDest : STRSAFE_LPWSTR;
+    {__in}cchDest : size_t;
+    {__in}const pszSrc : STRSAFE_LPCWSTR) : HRESULT; stdcall; forward; external;
 
 function StringCchCat(
-    {__inout_ecount(cchDest)}var pszDest : STRSAFE_LPTSTR;
-    {__in}const cchDest : size_t;
+    {__inout_ecount(cchDest)}pszDest : STRSAFE_LPTSTR;
+    {__in}cchDest : size_t;
     {__in}const pszSrc : STRSAFE_LPCTSTR) : HRESULT; stdcall;
 
 {++
@@ -1110,19 +1110,19 @@ Return Value:
 --}
 
 function StringCbCatA(
-    {__inout_bcount(cbDest)}var pszDest : STRSAFE_LPSTR;
-    {__in}const cchDest : size_t;
-    {__in}const pszSrc : STRSAFE_LPCSTR) : HRESULT; stdcall; external;
+    {__inout_bcount(cbDest)}pszDest : STRSAFE_LPSTR;
+    {__in}cchDest : size_t;
+    {__in}const pszSrc : STRSAFE_LPCSTR) : HRESULT; stdcall; forward; external;
 
 
 function StringCbCatW(
-    {__inout_bcount(cbDest)}var pszDest : STRSAFE_LPWSTR;
-    {__in}const cbDest : size_t;
-    {__in}const pszSrc : STRSAFE_LPCWSTR) : HRESULT; stdcall; external;
+    {__inout_bcount(cbDest)}pszDest : STRSAFE_LPWSTR;
+    {__in}cbDest : size_t;
+    {__in}const pszSrc : STRSAFE_LPCWSTR) : HRESULT; stdcall; forward; external;
 
 function StringCbCat(
-    {__inout_bcount(cbDest)}var pszDest : STRSAFE_LPTSTR;
-    {__in}const cbDest : size_t;
+    {__inout_bcount(cbDest)}pszDest : STRSAFE_LPTSTR;
+    {__in}cbDest : size_t;
     {__in}const pszSrc : STRSAFE_LPCTSTR) : HRESULT; stdcall;
 {++
 
@@ -1220,28 +1220,28 @@ Return Value:
 
 --}
 function StringCchCatExA(
-    {__inout_ecount(cchDest)}var pszDest : STRSAFE_LPSTR;
-    {__in}const cchDest : size_t;
+    {__inout_ecount(cchDest)}pszDest : STRSAFE_LPSTR;
+    {__in}cchDest : size_t;
     {__in}const pszSrc : STRSAFE_LPCSTR;
     {__deref_opt_out_ecount(pcchRemaining^)}ppszDestEnd : PSTRSAFE_LPSTR;
     {__out_opt} pcchRemaining : PSize_t;
-    {__in}const dwFlags : Cardinal) : HRESULT; stdcall; external;
+    {__in}dwFlags : Cardinal) : HRESULT; stdcall; forward; external;
 
 function StringCchCatExW(
-    {__inout_ecount(cchDest)}var pszDest : STRSAFE_LPWSTR;
-    {__in}const cchDest : size_t;
+    {__inout_ecount(cchDest)}pszDest : STRSAFE_LPWSTR;
+    {__in}cchDest : size_t;
     {__in}const pszSrc : STRSAFE_LPCWSTR;
     {__deref_opt_out_ecount(pcchRemaining^)}ppszDestEnd : PSTRSAFE_LPWSTR;
     {__out_opt} pcchRemaining : PSize_t;
-    {__in}const dwFlags : Cardinal) : HRESULT; stdcall; external;
+    {__in}dwFlags : Cardinal) : HRESULT; stdcall; forward; external;
 
 function StringCchCatEx(
-    {__inout_ecount(cchDest)}var pszDest : STRSAFE_LPTSTR;
-    {__in}const cchDest : size_t;
+    {__inout_ecount(cchDest)}pszDest : STRSAFE_LPTSTR;
+    {__in} cchDest : size_t;
     {__in}const pszSrc : STRSAFE_LPCTSTR;
     {__deref_opt_out_ecount(pcchRemaining^)}ppszDestEnd : PSTRSAFE_LPTSTR;
     {__out_opt} pcchRemaining : PSize_t;
-    {__in}const dwFlags : Cardinal) : HRESULT; stdcall;
+    {__in}dwFlags : Cardinal) : HRESULT; stdcall;
 
 {++
 
@@ -1339,28 +1339,28 @@ Return Value:
 
 --}
 function StringCbCatExA(
-    {__inout_bcount(cbDest)}var pszDest : STRSAFE_LPSTR;
-    {__in}const cchDest : size_t;
+    {__inout_bcount(cbDest)}pszDest : STRSAFE_LPSTR;
+    {__in}cchDest : size_t;
     {__in}const pszSrc : STRSAFE_LPCSTR;
     {__deref_opt_out_bcount(pcbRemaining^)}ppszDestEnd : PSTRSAFE_LPSTR;
     {__out_opt} pcchRemaining : PSize_t;
-    {__in}const dwFlags : Cardinal) : HRESULT; stdcall; external;
+    {__in}dwFlags : Cardinal) : HRESULT; stdcall; forward; external;
 
 function StringCbCatExW(
-    {__inout_bcount(cbDest)}var pszDest : STRSAFE_LPWSTR;
-    {__in}const cchDest : size_t;
+    {__inout_bcount(cbDest)}pszDest : STRSAFE_LPWSTR;
+    {__in}cchDest : size_t;
     {__in}const pszSrc : STRSAFE_LPCWSTR;
     {__deref_opt_out_bcount(pcbRemaining^)}ppszDestEnd : PSTRSAFE_LPWSTR;
     {__out_opt} pcchRemaining : PSize_t;
-    {__in}const dwFlags : Cardinal) : HRESULT; stdcall; external;
+    {__in}dwFlags : Cardinal) : HRESULT; stdcall; forward; external;
 
 function StringCbCatEx(
-    {__inout_bcount(cbDest)}var pszDest : STRSAFE_LPTSTR;
-    {__in}const cchDest : size_t;
+    {__inout_bcount(cbDest)}pszDest : STRSAFE_LPTSTR;
+    {__in}cchDest : size_t;
     {__in}const pszSrc : STRSAFE_LPCTSTR;
     {__deref_opt_out_bcount(pcbRemaining^)}ppszDestEnd : PSTRSAFE_LPTSTR;
     {__out_opt} pcchRemaining : PSize_t;
-    {__in}const dwFlags : Cardinal) : HRESULT; stdcall;
+    {__in}dwFlags : Cardinal) : HRESULT; stdcall;
 
 {++
 
@@ -1428,22 +1428,22 @@ Return Value:
 
 --}
 function StringCchCatNA(
-    {__inout_ecount(cchDest)}var pszDest : STRSAFE_LPSTR;
-    {__in}const cchDest : size_t;
+    {__inout_ecount(cchDest)}pszDest : STRSAFE_LPSTR;
+    {__in}cchDest : size_t;
     {__in_ecount(cchToAppend)}const pszSrc : STRSAFE_LPCSTR;
-    {__in}const cchToAppend : Cardinal) : HRESULT; stdcall; external;
+    {__in}cchToAppend : Cardinal) : HRESULT; stdcall; forward; external;
 
 function StringCchCatNW(
-    {__inout_ecount(cchDest)}var pszDest : STRSAFE_LPWSTR;
-    {__in}const cchDest : size_t;
+    {__inout_ecount(cchDest)}pszDest : STRSAFE_LPWSTR;
+    {__in}cchDest : size_t;
     {__in_ecount(cchToAppend)}const pszSrc : STRSAFE_LPCWSTR;
-    {__in}const cchToAppend : Cardinal) : HRESULT; stdcall; external;
+    {__in}cchToAppend : Cardinal) : HRESULT; stdcall; forward; external;
 
 function StringCchCatN(
-    {__inout_ecount(cchDest)}var pszDest : STRSAFE_LPTSTR;
-    {__in}const cchDest : size_t;
+    {__inout_ecount(cchDest)}pszDest : STRSAFE_LPTSTR;
+    {__in}cchDest : size_t;
     {__in_ecount(cchToAppend)}const pszSrc : STRSAFE_LPCTSTR;
-    {__in}const cchToAppend : Cardinal) : HRESULT; stdcall;
+    {__in}cchToAppend : Cardinal) : HRESULT; stdcall;
 
 {++
 
@@ -1511,22 +1511,22 @@ Return Value:
 
 --}
 function StringCbCatNA(
-    {__inout_bcount(cbDest)}var pszDest : STRSAFE_LPSTR;
-    {__in}const cchDest : size_t;
+    {__inout_bcount(cbDest)}pszDest : STRSAFE_LPSTR;
+    {__in}cchDest : size_t;
     {__in_bcount(cbToAppend)}const pszSrc : STRSAFE_LPCSTR;
-    {__in}const cchToAppend : Cardinal) : HRESULT; stdcall; external;
+    {__in}cchToAppend : Cardinal) : HRESULT; stdcall; forward; external;
 
 function StringCbCatNW(
-    {__inout_bcount(cbDest)}var pszDest : STRSAFE_LPWSTR;
-    {__in}const cchDest : size_t;
+    {__inout_bcount(cbDest)}pszDest : STRSAFE_LPWSTR;
+    {__in}cchDest : size_t;
     {__in_bcount(cbToAppend)}const pszSrc : STRSAFE_LPCWSTR;
-    {__in}const cchToAppend : Cardinal) : HRESULT; stdcall; external;
+    {__in}cchToAppend : Cardinal) : HRESULT; stdcall; forward; external;
 
 function StringCbCatN(
-    {__inout_bcount(cbDest)}var pszDest : STRSAFE_LPTSTR;
-    {__in}const cchDest : size_t;
+    {__inout_bcount(cbDest)}pszDest : STRSAFE_LPTSTR;
+    {__in}cchDest : size_t;
     {__in_bcount(cbToAppend)}const pszSrc : STRSAFE_LPCTSTR;
-    {__in}const cchToAppend : Cardinal) : HRESULT; stdcall;
+    {__in}cchToAppend : Cardinal) : HRESULT; stdcall;
 
 {++
 
@@ -1627,31 +1627,31 @@ Return Value:
 
 --}
 function StringCchCatNExA(
-    {__inout_ecount(cchDest)}var pszDest : STRSAFE_LPSTR;
-    {__in}const cchDest : size_t;
+    {__inout_ecount(cchDest)}pszDest : STRSAFE_LPSTR;
+    {__in} cchDest : size_t;
     {__in_ecount(cchToAppend)}const pszSrc : STRSAFE_LPCSTR;
-    {__in}const cchToAppend : Cardinal;
+    {__in}cchToAppend : Cardinal;
     {__deref_opt_out_ecount(pcchRemaining^)}ppszDestEnd : PSTRSAFE_LPSTR;
     {__out_opt}pcchRemaining : PSize_t;
-    {__in}const dwFlags : Cardinal) : HRESULT; stdcall; external;
+    {__in}dwFlags : Cardinal) : HRESULT; stdcall; forward; external;
 
 function StringCchCatNExW(
-    {__inout_ecount(cchDest)}var pszDest : STRSAFE_LPWSTR;
-    {__in}const cchDest : size_t;
+    {__inout_ecount(cchDest)}pszDest : STRSAFE_LPWSTR;
+    {__in}cchDest : size_t;
     {__in_ecount(cchToAppend)}const pszSrc : STRSAFE_LPCWSTR;
-    {__in}const cchToAppend : Cardinal;
+    {__in}cchToAppend : Cardinal;
     {__deref_opt_out_ecount(pcchRemaining^)}ppszDestEnd : PSTRSAFE_LPWSTR;
     {__out_opt}pcchRemaining : PSize_t;
-    {__in}const dwFlags : Cardinal) : HRESULT; stdcall; external;
+    {__in}dwFlags : Cardinal) : HRESULT; stdcall; forward; external;
 
 function StringCchCatNEx(
-    {__inout_ecount(cchDest)}var pszDest : STRSAFE_LPTSTR;
-    {__in}const cchDest : size_t;
+    {__inout_ecount(cchDest)}pszDest : STRSAFE_LPTSTR;
+    {__in}cchDest : size_t;
     {__in_ecount(cchToAppend)}const pszSrc : STRSAFE_LPCTSTR;
-    {__in}const cchToAppend : Cardinal;
+    {__in}cchToAppend : Cardinal;
     {__deref_opt_out_ecount(pcchRemaining^)}ppszDestEnd : PSTRSAFE_LPTSTR;
     {__out_opt}pcchRemaining : PSize_t;
-    {__in}const dwFlags : Cardinal) : HRESULT; stdcall;
+    {__in}dwFlags : Cardinal) : HRESULT; stdcall;
 
 {++
 
@@ -1752,31 +1752,31 @@ Return Value:
 
 --}
 function StringCbCatNExA(
-    {__inout_bcount(cbDest)}var pszDest : STRSAFE_LPSTR;
-    {__in}const cchDest : size_t;
+    {__inout_bcount(cbDest)}pszDest : STRSAFE_LPSTR;
+    {__in}cchDest : size_t;
     {__in_bcount(cbToAppend)}const pszSrc : STRSAFE_LPCSTR;
-    {__in}const cchToAppend : Cardinal;
+    {__in}cchToAppend : Cardinal;
     {__deref_opt_out_bcount(pcbRemaining^)}ppszDestEnd : PSTRSAFE_LPSTR;
     {__out_opt}pcchRemaining : PSize_t;
-    {__in}const dwFlags : Cardinal) : HRESULT; stdcall; external;
+    {__in}dwFlags : Cardinal) : HRESULT; stdcall; forward; external;
 
 function StringCbCatNExW(
-    {__inout_bcount(cbDest)}var pszDest : STRSAFE_LPWSTR;
-    {__in}const cchDest : size_t;
+    {__inout_bcount(cbDest)}pszDest : STRSAFE_LPWSTR;
+    {__in}cchDest : size_t;
     {__in_bcount(cbToAppend)}const pszSrc : STRSAFE_LPCWSTR;
-    {__in}const cchToAppend : Cardinal;
+    {__in}cchToAppend : Cardinal;
     {__deref_opt_out_bcount(pcbRemaining^)}ppszDestEnd : PSTRSAFE_LPWSTR;
     {__out_opt}pcchRemaining : PSize_t;
-    {__in}const dwFlags : Cardinal) : HRESULT; stdcall; external;
+    {__in}dwFlags : Cardinal) : HRESULT; stdcall; forward; external;
 
 function StringCbCatNEx(
-    {__inout_bcount(cbDest)}var pszDest : STRSAFE_LPTSTR;
-    {__in}const cchDest : size_t;
+    {__inout_bcount(cbDest)}pszDest : STRSAFE_LPTSTR;
+    {__in}cchDest : size_t;
     {__in_bcount(cbToAppend)}const pszSrc : STRSAFE_LPCTSTR;
-    {__in}const cchToAppend : Cardinal;
+    {__in}cchToAppend : Cardinal;
     {__deref_opt_out_bcount(pcbRemaining^)}ppszDestEnd : PSTRSAFE_LPTSTR;
     {__out_opt}pcchRemaining : PSize_t;
-    {__in}const dwFlags : Cardinal) : HRESULT; stdcall;
+    {__in}dwFlags : Cardinal) : HRESULT; stdcall;
  
 {++
 
@@ -1828,18 +1828,18 @@ Return Value:
 --}
 function StringCchLengthA(
     {__in}const psz : STRSAFE_LPCSTR;
-    {__in}const cchMax : size_t;
-    {__out_opt} pcchLength : PSize_t) : HRESULT; stdcall; external;
+    {__in}cchMax : size_t;
+    {__out_opt}pcchLength : PSize_t) : HRESULT; stdcall; forward; external;
 
 function StringCchLengthW(
     {__in}const psz : STRSAFE_LPCWSTR;
-    {__in}const cchMax : size_t;
-    {__out_opt} pcchLength : PSize_t) : HRESULT; stdcall; external;
+    {__in}cchMax : size_t;
+    {__out_opt}pcchLength : PSize_t) : HRESULT; stdcall; forward; external;
 
 function StringCchLength(
     {__in}const psz : STRSAFE_LPCTSTR;
-    {__in}const cchMax : size_t;
-    {__out_opt} pcchLength : PSize_t) : HRESULT; stdcall;
+    {__in}cchMax : size_t;
+    {__out_opt}pcchLength : PSize_t) : HRESULT; stdcall;
 
 {++
 
@@ -1891,18 +1891,18 @@ Return Value:
 --}
 function StringCbLengthA(
     {__in}const psz : STRSAFE_LPCSTR;
-    {__in}const cbMax : size_t;
-    {__out_opt} pcbLength : PSize_t) : HRESULT; stdcall; external;
+    {__in}cbMax : size_t;
+    {__out_opt}pcbLength : PSize_t) : HRESULT; stdcall; forward;external;
 
 function StringCbLengthW(
     {__in}const psz : STRSAFE_LPCWSTR;
-    {__in}const cbMax : size_t;
-    {__out_opt} pcbLength : PSize_t) : HRESULT; stdcall; external;
+    {__in}cbMax : size_t;
+    {__out_opt}pcbLength : PSize_t) : HRESULT; stdcall; forward;external;
 
 function StringCbLength(
     {__in}const psz : STRSAFE_LPCTSTR;
-    {__in}const cbMax : size_t;
-    {__out_opt} pcbLength : PSize_t) : HRESULT; stdcall;
+    {__in}cbMax : size_t;
+    {__out_opt}pcbLength : PSize_t) : HRESULT; stdcall;
 
 
 {$ENDIF JWA_IMPLEMENTATIONSECTION}
@@ -1910,9 +1910,15 @@ function StringCbLength(
 {$IFNDEF JWA_OMIT_SECTIONS}
 implementation
 uses Sysutils;
+
+{$DEFINE StrSafe_WARNINGS}
+{$WARNINGS OFF}
+
+
 {$ENDIF JWA_OMIT_SECTIONS}
 
 {$IFNDEF JWA_INTERFACESECTION}
+
 
 
 function _memset ( Ptr : Pointer; Value : Integer; Num : Size_T) : Pointer; cdecl;
@@ -1958,9 +1964,9 @@ end;
 
 var _StringCchCopy : Pointer;
 function StringCchCopy(
-    {__out_ecount(cchDest)}var pszDest : STRSAFE_LPSTR;
-    {__in}const cchDest : size_t;
-    {__in}const pszSrc : STRSAFE_LPCSTR) : HRESULT; stdcall;
+    {__out_ecount(cchDest)}pszDest : STRSAFE_LPTSTR;
+    {__in}cchDest : size_t;
+    {__in}const pszSrc : STRSAFE_LPCTSTR) : HRESULT; stdcall;
 begin
 {$IFDEF UNICODE}
     _StringCchCopy := @StringCchCopyW;
@@ -1971,15 +1977,15 @@ begin
     MOV     ESP, EBP
     POP     EBP
     JMP     [_StringCchCopy]
-  end; 
+  end;
 end;
 
 var _StringCbCopy : Pointer;
 
 function StringCbCopy(
-    {__out_bcount(cbDest)}var pszDest : STRSAFE_LPTSTR;
+    {__out_bcount(cbDest)}pszDest : STRSAFE_LPTSTR;
     {__in}cbDest  : size_t;
-    {__in}pszSrc : STRSAFE_LPCTSTR) : HRESULT; stdcall;
+    {__in}const pszSrc : STRSAFE_LPCTSTR) : HRESULT; stdcall;
 begin
   _StringCbCopy :=
 {$IFDEF UNICODE}@StringCbCopyW{$ELSE}@StringCbCopyA{$ENDIF};
@@ -1988,17 +1994,17 @@ begin
     POP     EBP
     JMP     [_StringCbCopy]
   end; 
-end;	
+end;
 	
 
-var _StringCchCopyEx : Pointer;	
+var _StringCchCopyEx : Pointer;
 function StringCchCopyEx(
-    {__out_ecount(cchDest)}var pszDest : STRSAFE_LPTSTR;
-    {__in}const cchDest : size_t;
+    {__out_ecount(cchDest)}pszDest : STRSAFE_LPTSTR;
+    {__in}cchDest : size_t;
     {__in}const pszSrc : STRSAFE_LPCTSTR;
     {__deref_opt_out_ecount(pcchRemaining^)}ppszDestEnd : PSTRSAFE_LPTSTR;
     {__out_opt}pcchRemaining : PSize_t;
-    {__in}const dwFlags : Cardinal) : HRESULT; stdcall;
+    {__in}dwFlags : Cardinal) : HRESULT; stdcall;
 begin
   _StringCchCopyEx :=
 {$IFDEF UNICODE}@StringCchCopyExW{$ELSE}@StringCchCopyExA{$ENDIF};
@@ -2007,17 +2013,17 @@ begin
     POP     EBP
     JMP     [_StringCchCopyEx]
   end; 
-end;	
+end;
 	
 	
-var _StringCbCopyEx : Pointer;	
+var _StringCbCopyEx : Pointer;
 function StringCbCopyEx(
-    {__out_bcount(cbDest)}var pszDest : STRSAFE_LPTSTR;
-    {__in}const cchDest : size_t;
+    {__out_bcount(cbDest)} pszDest : STRSAFE_LPTSTR;
+    {__in}cchDest : size_t;
     {__in}const pszSrc : STRSAFE_LPCTSTR;
     {__deref_opt_out_bcount(pcbRemaining^)}ppszDestEnd : PSTRSAFE_LPTSTR;
     {__out_opt}pcbRemaining : PSize_t;
-    {__in}const dwFlags : Cardinal) : HRESULT; stdcall;
+    {__in}dwFlags : Cardinal) : HRESULT; stdcall;
 begin
   _StringCbCopyEx :=
 {$IFDEF UNICODE}@StringCbCopyExA{$ELSE}@StringCbCopyExA{$ENDIF};
@@ -2026,15 +2032,15 @@ begin
     POP     EBP
     JMP     [_StringCbCopyEx]
   end; 
-end;	
+end;
 	
 	
 var _StringCchCopyN : Pointer;	
 function StringCchCopyN(
-    {__out_ecount(cchDest)}var pszDest : STRSAFE_LPTSTR;
-    {__in}const cchDest : size_t;
+    {__out_ecount(cchDest)} pszDest : STRSAFE_LPTSTR;
+    {__in}cchDest : size_t;
     {__in}const pszSrc : STRSAFE_LPCTSTR;
-    {__in}const cchToCopy : size_t) : HRESULT; stdcall;
+    {__in}cchToCopy : size_t) : HRESULT; stdcall;
 begin
   _StringCchCopyN :=
 {$IFDEF UNICODE}@StringCchCopyNW{$ELSE}@StringCchCopyNA{$ENDIF};
@@ -2043,14 +2049,14 @@ begin
     POP     EBP
     JMP     [_StringCchCopyN]
   end; 
-end;	
+end;
 	
 var _StringCbCopyN : Pointer;		
 function StringCbCopyN(
-    {__out_bcount(cbDest)}var pszDest : STRSAFE_LPTSTR;
-    {__in}const cchDest : size_t;
+    {__out_bcount(cbDest)} pszDest : STRSAFE_LPTSTR;
+    {__in}cchDest : size_t;
     {__in}const pszSrc : STRSAFE_LPCTSTR;
-    {__in}const cchToCopy : size_t) : HRESULT; stdcall;	
+    {__in}cchToCopy : size_t) : HRESULT; stdcall;
 begin
   _StringCbCopyN :=
 {$IFDEF UNICODE}@StringCbCopyNW{$ELSE}@StringCbCopyNA{$ENDIF};
@@ -2059,18 +2065,18 @@ begin
     POP     EBP
     JMP     [_StringCbCopyN]
   end; 
-end;	
-	
+end;
+
 	
 var _StringCchCopyNEx : Pointer;		
 function StringCchCopyNEx(
-    {__in_ecount(cchDest)}var pszDest : STRSAFE_LPTSTR;
-    {__in}const cchDest : size_t;
+    {__in_ecount(cchDest)} pszDest : STRSAFE_LPTSTR;
+    {__in}cchDest : size_t;
     {__in_ecount(cchToCopy)}const pszSrc : STRSAFE_LPCTSTR;
-    {__in}const cchToCopy : size_t;
+    {__in}cchToCopy : size_t;
     {__deref_opt_out_ecount(pcchRemaining^)}ppszDestEnd : PSTRSAFE_LPTSTR;
     {__out_opt size_t}pcchRemaining : PSize_t;
-    {__in}const dwFlags : Cardinal)  : HRESULT; stdcall;
+    {__in}dwFlags : Cardinal)  : HRESULT; stdcall;
 begin
   _StringCchCopyNEx :=
 {$IFDEF UNICODE}@StringCchCopyNExW{$ELSE}@StringCchCopyNExA{$ENDIF};
@@ -2084,13 +2090,13 @@ end;
 	
 var _StringCbCopyNEx : Pointer;		
 function StringCbCopyNEx(
-    {__out_bcount(cbDest) }var pszDest : STRSAFE_LPTSTR;
-    {__in}const cchDest : size_t;
+    {__out_bcount(cbDest) } pszDest : STRSAFE_LPTSTR;
+    {__in}cchDest : size_t;
     {__in_bcount(cbToCopy) }const pszSrc : STRSAFE_LPCTSTR;
-    {__in}const cchToCopy : size_t;
+    {__in}cchToCopy : size_t;
     {__deref_opt_out_bcount(pcbRemaining^)}ppszDestEnd : PSTRSAFE_LPTSTR;
     {__out_opt}pcchRemaining : PSize_t;
-    {__in}const dwFlags : Cardinal)  : HRESULT; stdcall;	
+    {__in}dwFlags : Cardinal)  : HRESULT; stdcall;
 begin
   _StringCbCopyNEx :=
 {$IFDEF UNICODE}@StringCbCopyNExW{$ELSE}@StringCbCopyNExA{$ENDIF};
@@ -2104,8 +2110,8 @@ end;
 	
 var _StringCchCat : Pointer;	
 function StringCchCat(
-    {__inout_ecount(cchDest)}var pszDest : STRSAFE_LPTSTR;
-    {__in}const cchDest : size_t;
+    {__inout_ecount(cchDest)} pszDest : STRSAFE_LPTSTR;
+    {__in}cchDest : size_t;
     {__in}const pszSrc : STRSAFE_LPCTSTR) : HRESULT; stdcall;
 begin
   _StringCchCat :=
@@ -2120,8 +2126,8 @@ end;
 	
 var _StringCbCat : Pointer;		
 function StringCbCat(
-    {__inout_bcount(cbDest)}var pszDest : STRSAFE_LPTSTR;
-    {__in}const cbDest : size_t;
+    {__inout_bcount(cbDest)} pszDest : STRSAFE_LPTSTR;
+    {__in}cbDest : size_t;
     {__in}const pszSrc : STRSAFE_LPCTSTR) : HRESULT; stdcall;	
 begin
   _StringCbCat :=
@@ -2136,12 +2142,12 @@ end;
 	
 var _StringCchCatEx : Pointer;		
 function StringCchCatEx(
-    {__inout_ecount(cchDest)}var pszDest : STRSAFE_LPTSTR;
-    {__in}const cchDest : size_t;
+    {__inout_ecount(cchDest)} pszDest : STRSAFE_LPTSTR;
+    {__in}cchDest : size_t;
     {__in}const pszSrc : STRSAFE_LPCTSTR;
     {__deref_opt_out_ecount(pcchRemaining^)}ppszDestEnd : PSTRSAFE_LPTSTR;
     {__out_opt} pcchRemaining : PSize_t;
-    {__in}const dwFlags : Cardinal) : HRESULT; stdcall;	
+    {__in}dwFlags : Cardinal) : HRESULT; stdcall;
 begin
   _StringCchCatEx :=
 {$IFDEF UNICODE}@StringCchCatExW{$ELSE}@StringCchCatExA{$ENDIF};
@@ -2155,12 +2161,12 @@ end;
 	
 var _StringCbCatEx : Pointer;		
 function StringCbCatEx(
-    {__inout_bcount(cbDest)}var pszDest : STRSAFE_LPTSTR;
-    {__in}const cchDest : size_t;
+    {__inout_bcount(cbDest)} pszDest : STRSAFE_LPTSTR;
+    {__in}cchDest : size_t;
     {__in}const pszSrc : STRSAFE_LPCTSTR;
     {__deref_opt_out_bcount(pcbRemaining^)}ppszDestEnd : PSTRSAFE_LPTSTR;
     {__out_opt} pcchRemaining : PSize_t;
-    {__in}const dwFlags : Cardinal) : HRESULT; stdcall;	
+    {__in}dwFlags : Cardinal) : HRESULT; stdcall;
 begin
   _StringCbCatEx :=
 {$IFDEF UNICODE}@StringCbCatExW{$ELSE}@StringCbCatExA{$ENDIF};
@@ -2174,10 +2180,10 @@ end;
 	
 var _StringCchCatN : Pointer;		
 function StringCchCatN(
-    {__inout_ecount(cchDest)}var pszDest : STRSAFE_LPTSTR;
-    {__in}const cchDest : size_t;
+    {__inout_ecount(cchDest)} pszDest : STRSAFE_LPTSTR;
+    {__in}cchDest : size_t;
     {__in_ecount(cchToAppend)}const pszSrc : STRSAFE_LPCTSTR;
-    {__in}const cchToAppend : Cardinal) : HRESULT; stdcall;	
+    {__in}cchToAppend : Cardinal) : HRESULT; stdcall;
 begin
   _StringCchCatN :=
 {$IFDEF UNICODE}@StringCchCatNW{$ELSE}@StringCchCatNA{$ENDIF};
@@ -2191,10 +2197,10 @@ end;
 	
 var _StringCbCatN : Pointer;		
 function StringCbCatN(
-    {__inout_bcount(cbDest)}var pszDest : STRSAFE_LPTSTR;
-    {__in}const cchDest : size_t;
+    {__inout_bcount(cbDest)} pszDest : STRSAFE_LPTSTR;
+    {__in}cchDest : size_t;
     {__in_bcount(cbToAppend)}const pszSrc : STRSAFE_LPCTSTR;
-    {__in}const cchToAppend : Cardinal) : HRESULT; stdcall;	
+    {__in}cchToAppend : Cardinal) : HRESULT; stdcall;
 begin
   _StringCbCatN :=
 {$IFDEF UNICODE}@StringCbCatNW{$ELSE}@StringCbCatNA{$ENDIF};
@@ -2208,13 +2214,13 @@ end;
 	
 var _StringCchCatNEx : Pointer;		
 function StringCchCatNEx(
-    {__inout_ecount(cchDest)}var pszDest : STRSAFE_LPTSTR;
-    {__in}const cchDest : size_t;
+    {__inout_ecount(cchDest)} pszDest : STRSAFE_LPTSTR;
+    {__in}cchDest : size_t;
     {__in_ecount(cchToAppend)}const pszSrc : STRSAFE_LPCTSTR;
-    {__in}const cchToAppend : Cardinal;
+    {__in}cchToAppend : Cardinal;
     {__deref_opt_out_ecount(pcchRemaining^)}ppszDestEnd : PSTRSAFE_LPTSTR;
     {__out_opt}pcchRemaining : PSize_t;
-    {__in}const dwFlags : Cardinal) : HRESULT; stdcall;	
+    {__in}dwFlags : Cardinal) : HRESULT; stdcall;
 begin
   _StringCchCatNEx :=
 {$IFDEF UNICODE}@StringCchCatNExW{$ELSE}@StringCchCatNExA{$ENDIF};
@@ -2230,13 +2236,13 @@ end;
 	
 var _StringCbCatNEx : Pointer;		
 function StringCbCatNEx(
-    {__inout_bcount(cbDest)}var pszDest : STRSAFE_LPTSTR;
-    {__in}const cchDest : size_t;
+    {__inout_bcount(cbDest)} pszDest : STRSAFE_LPTSTR;
+    {__in}cchDest : size_t;
     {__in_bcount(cbToAppend)}const pszSrc : STRSAFE_LPCTSTR;
-    {__in}const cchToAppend : Cardinal;
+    {__in}cchToAppend : Cardinal;
     {__deref_opt_out_bcount(pcbRemaining^)}ppszDestEnd : PSTRSAFE_LPTSTR;
     {__out_opt}pcchRemaining : PSize_t;
-    {__in}const dwFlags : Cardinal) : HRESULT; stdcall;
+    {__in}dwFlags : Cardinal) : HRESULT; stdcall;
 begin
   _StringCbCatNEx :=
 {$IFDEF UNICODE}@StringCbCatNExW{$ELSE}@StringCbCatNExA{$ENDIF};
@@ -2250,7 +2256,7 @@ end;
 var _StringCchLength : Pointer;	
 function StringCchLength(
     {__in}const psz : STRSAFE_LPCTSTR;
-    {__in}const cchMax : size_t;
+    {__in}cchMax : size_t;
     {__out_opt} pcchLength : PSize_t) : HRESULT; stdcall;
 begin
   _StringCchLength :=
@@ -2263,27 +2269,41 @@ begin
 end;	
 
 
-var _StringCbLength : Pointer;	
+
+
+var _StringCbLength : Pointer;
 function StringCbLength(
     {__in}const psz : STRSAFE_LPCTSTR;
-    {__in}const cbMax : size_t;
+    {__in}cbMax : size_t;
     {__out_opt} pcbLength : PSize_t) : HRESULT; stdcall;
 begin
   _StringCbLength :=
-{$IFDEF UNICODE}@StringCbLengthW{$ELSE}@_StringCbLengthA{$ENDIF};
+{$IFDEF UNICODE}@StringCbLengthW{$ELSE}@StringCbLengthA{$ENDIF};
+{$IFDEF UNICODE}
   asm
     MOV     ESP, EBP
     POP     EBP
     JMP     [_StringCbLength]
-  end; 
-end;	
+  end;
+{$ELSE}
+  asm
+    MOV     ESP, EBP
+    POP     EBP
+    JMP     [_StringCbLength]
+  end;
+{$ENDIF}
+end;
 
-
-	
 
 
 {$ENDIF JWA_INTERFACESECTION}
 
 {$IFNDEF JWA_OMIT_SECTIONS}
+
+
 end.
+
+{$IFDEF StrSafe_WARNINGS}
+{$WARNINGS ON}
+{$ENDIF}
 {$ENDIF JWA_OMIT_SECTIONS}
