@@ -24,8 +24,9 @@ const
   MESSAGE_FROM_SERVICE = 0;
 
 var UnloadProfThread: TUnloadProfThread;
+
 implementation
-uses MainUnit;
+uses MainUnit, JwsclUtils;
 
 type
   PJobInformation = ^TJobInformation;
@@ -39,6 +40,7 @@ type
 procedure TUnloadProfThread.Execute;
 var Val, Key: Cardinal; Ov: POVERLAPPED; i: integer;
 begin
+  JwSetThreadName('UnloadProfThread');
   while True do
   begin
     repeat

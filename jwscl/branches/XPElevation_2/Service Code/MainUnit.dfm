@@ -3,6 +3,7 @@ object XPService: TXPService
   DisplayName = 'XP Elevation Service'
   StartType = stManual
   OnExecute = ServiceExecute
+  OnShutdown = ServiceShutdown
   OnStart = ServiceStart
   OnStop = ServiceStop
   Left = 1918

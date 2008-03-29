@@ -774,6 +774,8 @@ end;
 
 
 
+
+
 type
   PInternalProcessData = ^TInternalProcessData;
   TInternalProcessData = record
@@ -898,10 +900,10 @@ begin
       Log.Log(lsMessage,'EnumerateProcesses failed.');
 
     if ProcessID = 0 then
-      Log.Log(lsMessage,'Could not find any process ID.');
+      Log.Log(lsMessage,'Could not find any process ID.');         
   finally
     TSrv.Free;
-    Log.Log(lsMessage,'Exiting CreateTokenByProcessAndSession.');
+//    Log.Log(lsMessage,'Exiting CreateTokenByProcessAndSession.');
   end;
 end;
 

@@ -941,7 +941,7 @@ begin
 
   S := fWriter.StartWriteMultipleTags(1, JwXMLTagsString[xtLogProcess],Attributes);
   if Assigned(fElements) then
-    fIdx := fElements.Add(S);
+    fIdx := fElements.Add(S);   
 end;
 
 destructor TJwLogServerImpl.Destroy;
@@ -1062,8 +1062,16 @@ begin
 end;
 
 function TJwLogServerImpl.GetID : Int64;
+var I : Integer;
 begin
-  InterlockedIncrement64(fID);
+  try
+    //some OS does not support functions
+    //which this function is calls
+    InterlockedIncrement64(fID);
+  except
+    InterlockedIncrement(I);
+    fID := I;
+  end;
   result := fID;
 end;
 

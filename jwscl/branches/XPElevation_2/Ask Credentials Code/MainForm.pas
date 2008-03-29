@@ -6,7 +6,8 @@ uses
   jwaWindows, ShellApi,
   Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, ExtCtrls, JvExControls, JvButton, JvTransparentButton, StdCtrls,
-  Menus;
+  SessionPipe,
+  Menus, JvComponent;
 
 type
   TFormMain = class(TForm)
@@ -27,12 +28,14 @@ type
     { Private-Deklarationen }
     fButtons : array of TJvTransparentButton;
     fJobs : array of TProcessInformation;
+
   public
     { Public-Deklarationen }
   end;
 
 var
   FormMain: TFormMain;
+
 
 
 implementation
@@ -103,6 +106,8 @@ begin
   end;
 
   PopupMenu := PopupMenuMain;
+
+
 end;
 
 

@@ -16,11 +16,18 @@ uses
   Controls,
   Forms,
   CredentialsForm,
-  MainForm in 'MainForm.pas' {FormMain};
+  MainForm in 'MainForm.pas' {FormMain},
+  SessionPipe in 'SessionPipe.pas',
+  UserProfileImage in 'UserProfileImage.pas';
 
+var HookHandle: HHOOK;
 
 var ScreenBitmap : TBitmap;
-    Resolution : TRect;  
+    Resolution : TRect;
+    PipeSession : TClientSessionPipe;
+    SessionInfo : TSessionInfo;
+
+var Haltresult : Integer = 0;
 
 function BitBltBlack(DestDC: HDC; DestX, DestY: Integer; nWidth, nHeight: integer; SrcDC: HDC; SrcX, SrcY: integer; Black: byte): LongBool;
 var BlendStruct: BLENDFUNCTION;
@@ -33,7 +40,7 @@ begin
   Result:=AlphaBlend(DestDC, DestX, DestY, nWidth, nHeight, SrcDC, SrcX, SrcY, NWidth, nHeight, BlendStruct);
 end;
 
-var HookHandle: HHOOK;
+
 
 function HookProcToDisableCombo(nCode: integer; wp: WParam; lp: LParam): LRESULT; stdcall;
 var Buffer: array[0..255] of char;
@@ -73,7 +80,9 @@ begin
   end;
 end;
 
-function AskPassword(AppToStart: String; UserAndDomain: string; out Password: string): boolean;
+function AskPassword(var SessionInfo : TSessionInfo
+//AppToStart: String; UserAndDomain: string; out Password: string
+ ): boolean;
 
 var Prompt: TJwCredentialsPrompt; OldDesk: HDESK; OldWallpaperPath: PChar; DesktopWallpaperPath: string;
      Bmp: Graphics.TBitmap; DeskDC: HDC; Desktop: TJwSecurityDesktop; Descr: TJwSecurityDescriptor;
@@ -83,10 +92,11 @@ begin
 
     try //2.
       OldDesk:=GetThreadDesktop(GetCurrentThreadID);
-      Desktop:=TJwSecurityDesktop.CreateDesktop(nil, true, 'UACinXPAskCredentialsDesk', [], false, GENERIC_ALL,  Descr);
-      Desktop.SetThreadDesktop;
+      Desktop:=TJwSecurityDesktop.CreateDesktop(nil, true, 'UACinXPAskCredentialsDesk', [],
+         false, GENERIC_ALL,  Descr);
+     // Desktop.SetThreadDesktop;
       try
-        Desktop.SwitchDesktop;
+     //   Desktop.SwitchDesktop;
         try
          { Application.Initialize;
           Application.CreateForm(TFormMain, FormMain);
@@ -97,7 +107,7 @@ begin
           Application := TApplication.Create(nil);
           Application.Initialize;
           Application.CreateForm(TFormMain, FormMain);
-          FormMain.Image1.Picture.Bitmap.Assign(ScreenBitmap);
+  FormMain.Image1.Picture.Bitmap.Assign(ScreenBitmap);
           FormMain.Image1.Align  := alClient;
 
           FormMain.BoundsRect := Resolution;
@@ -128,10 +138,10 @@ begin
             Prompt.Free;
           end;    *)
         finally
-          Desktop.SwitchDesktopBack;
+     //     Desktop.SwitchDesktopBack;
         end;
       finally
-        SetThreadDesktop(OldDesk);
+     //   SetThreadDesktop(OldDesk);
 
      //   SystemParametersInfo(SPI_SETDESKWALLPAPER, 0, OldWallpaperPath, 0);
       end;
@@ -231,41 +241,71 @@ var Dummy: Cardinal;
 begin
   ScreenBitmap := GetScreenBitmap(Resolution);
   try
-   { if Pipe=0 then
-      exit;}
-    Password := '';
-    if not AskPassword(Paramstr(1), Paramstr(2), Password) then
-    ;
-   {   WriteFile(Pipe, @StrLenCancelled, SizeOf(StrLenCancelled), @Dummy, nil)
-    else
+    SessionInfo.Password := 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
+    SessionInfo.Password := '';
+    if not AskPassword(SessionInfo) then
     begin
-      if Length(Password)>0 then
-        WriteFile(Pipe, Pointer(integer(Password)-4), SizeOf(Cardinal)+Length(Password), @Dummy, nil)
-      else
-        WriteFile(Pipe, @Null, SizeOf(Null), @Dummy, nil);
-    end;  }
-  except
-    on E: Exception do
-      MessageBox(0, PChar(E.ClassType.ClassName+#13#10+E.Message), '', MB_OK);
+      SessionInfo.Flags := $0;
+    end
+    else
+      SessionInfo.Flags := $1;
+
+    Haltresult := 2;
+    PipeSession.SendClientData(SessionInfo);
+
+  finally
+    ScreenBitmap.Free;
   end;
-  ScreenBitmap.Free;
+
 end;
 
 
-
-
+procedure C;
 begin
-  Application.Free;
-  //FreeAndNil(Application);
-  {if (Paramstr(2)='') then
-    Halt(Integer(@Pipe)); }
+  Application.Initialize;
+  Application.CreateForm(TFormCredentials, FormCredentials);
+  Application.Run;
+  halt;
 
+end;
+
+var p : String;
+    i : Integer;
+begin
+  C;
+
+  p := '';
+  for i := 0 to ParamCount do
+  begin
+    p := p + #13#10 + IntToStr(i) + ': '+ParamStr(i);
+  end;
+  MessageBoxW(0, PWideChar(WideString(p)),'Information',MB_OK);
+
+  PipeSession := TClientSessionPipe.Create;
+  try
+    Haltresult := 1;
+    PipeSession.Connect(ParamStr(1));
+    Haltresult := 2;
+    PipeSession.ReadServerData(SessionInfo);
+
+    Haltresult := 2;
+    Application.Free;
+  //FreeAndNil(Application);
+ { if (Paramstr(2)='') then
+    Halt(Integer(@Pipe));
+  }
 
 
   //WaitForSingleObject(CreateThread(nil, 0, @func, nil, 0, nil), Infinite);
-  try
     Func(0);
-  finally
-    halt(0);
+    Haltresult := 0;
+  //finally
+  except
+    on E : Exception do
+    begin
+      MessageBoxW(0, PWideChar(WideString(E.Message)),'Error',MB_OK);
+    end;
   end;
+  PipeSession.Free;
+  halt(HaltResult);
 end.

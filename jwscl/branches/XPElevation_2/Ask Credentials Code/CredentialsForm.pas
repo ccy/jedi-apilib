@@ -5,7 +5,10 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, Buttons, ExtCtrls, JwsclStrings, JvExControls,
-  JvLookOut, JvExExtCtrls, JvBevel, JvButton, JvTransparentButton;
+  JvLookOut, JvExExtCtrls, JvBevel, JvButton, JvTransparentButton,
+  JvComponent, JvExStdCtrls, JvHtControls, JvLinkLabel, JvExtComponent,
+  JvLinkLabelTools, UserProfileImage,
+  JvPanel, jpeg, JvLabel, JvComponentBase, JvComputerInfoEx, JvImage;
 
 type
   TFormCredentials = class(TForm)
@@ -22,6 +25,12 @@ type
     JvBevel1: TJvBevel;
     JvBevel2: TJvBevel;
     ButtonUser: TJvTransparentButton;
+    JvPanel1: TJvPanel;
+    JvLinkLabel1: TJvLinkLabel;
+    Image3: TImage;
+    JvLinkLabel2: TJvLinkLabel;
+    JvComputerInfoEx1: TJvComputerInfoEx;
+    JvImage1: TJvImage;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure EditPassword1Change(Sender: TObject);
@@ -31,12 +40,22 @@ type
     procedure UsersComboBoxChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure CheckBoxSaveLogonClick(Sender: TObject);
+    procedure BitBtn2Click(Sender: TObject);
+    procedure BitBtn1Click(Sender: TObject);
+    procedure JvBevel1MouseMove(Sender: TObject; Shift: TShiftState; X,
+      Y: Integer);
+    procedure UsersComboBoxEnter(Sender: TObject);
+    procedure JvLinkLabel1LinkClick(Sender: TObject; LinkNumber: Integer;
+      LinkText, LinkParam: String);
   private
     { Private-Deklarationen }
     fSaveLogon : Boolean;
     fUserName,
     fPassword : TJwString;
     internalMsg : Boolean;
+
+    function GetUserPicture(): TBitmap;
+    procedure OnGetImage;
   public
     procedure CenterInMonitor(const i : Integer);
     { Public-Deklarationen }
@@ -60,8 +79,35 @@ begin
 
 
 
-  Application.Terminate;
+ // Application.Terminate;
 end;
+
+function GetUserName(): string;
+var
+  Buffer: array [0..MAX_COMPUTERNAME_LENGTH + 1] of Char;
+  Size: DWord;
+begin
+  Size := Pred(SizeOf(Buffer));
+  Windows.GetUserName(Buffer, Size);
+  Result := StrPas(Buffer);
+end;
+
+function TFormCredentials.GetUserPicture(): TBitmap;
+var
+  CommonDataPath, UserName: string;
+begin
+  Result := TBitmap.Create;
+
+  UserName := GetUserName;
+  CommonDataPath := JvComputerInfoEx1.Folders.CommonAppData + '\Microsoft\User Account Pictures\' + UserName + '.bmp';
+
+  if FileExists(CommonDataPath) then
+  begin
+    Result.Handle := LoadImage(0, PChar(CommonDataPath), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+  end
+  else ShowMessage(Format('%s'#13#10'"%s"', ['File not found:', CommonDataPath]));
+end;
+
 
 procedure TFormCredentials.FormCloseQuery(Sender: TObject;
   var CanClose: Boolean);
@@ -70,6 +116,7 @@ var bButtons,
     bUser : Boolean;
 begin
   CanClose := true;
+
   if ModalResult = mrOk then
   begin
     try
@@ -142,6 +189,7 @@ begin
       UsersComboBox.SetFocus
     else
       EditPassword2.SetFocus;
+
   end;
   internalMsg := false;
 end;
@@ -160,6 +208,9 @@ end;
 procedure TFormCredentials.FormCreate(Sender: TObject);
 begin
   internalMsg := false;
+//  Image1.Picture.Bitmap := GetUserPicture;
+
+  RetrieveProfileImage(OnGetImage);
 end;
 
 procedure TFormCredentials.CenterInMonitor(const i : Integer);
@@ -189,6 +240,55 @@ begin
   DefaultMonitor := dmPrimary;
   Position := poScreenCenter;   }
 
+end;
+
+procedure TFormCredentials.BitBtn2Click(Sender: TObject);
+begin
+  ModalResult := mrOk;
+  Close;
+end;
+
+procedure TFormCredentials.BitBtn1Click(Sender: TObject);
+begin
+  ModalResult := mrCancel;
+  Close;
+
+end;
+
+procedure TFormCredentials.JvBevel1MouseMove(Sender: TObject;
+  Shift: TShiftState; X, Y: Integer);
+begin
+  try
+    JvLinkLabel2.Caption := TControl(Sender).Name + #13#10+
+      TControl(Sender).Hint;
+
+  except
+  end;
+end;
+
+procedure TFormCredentials.UsersComboBoxEnter(Sender: TObject);
+begin
+ try
+    JvLinkLabel2.Caption := TControl(Sender).Name + #13#10+
+      TControl(Sender).Hint;
+  except
+  end;
+end;
+
+procedure TFormCredentials.JvLinkLabel1LinkClick(Sender: TObject;
+  LinkNumber: Integer; LinkText, LinkParam: String);
+begin
+  //
+  TWebTools.OpenWebPage('http://blog.delphi-jedi.net');
+end;
+
+procedure TFormCredentials.OnGetImage;
+begin
+  //
+ // ImageStream.SaveToFile('E:\Temp\_test.jpg');
+  JvImage1.LoadFromStream(ImageStream);
+  FreeAndNil(ImageStream);
+  //Image1.Picture.LoadFromFile('E:\temp\bild-16.jpg');
 end;
 
 end.
