@@ -590,12 +590,12 @@ function DateTimeString; external utildll name 'DateTimeString';
 function DateTimeStringVistaRTM; external utildll name 'DateTimeString';
 function ElapsedTimeString; external utildll name 'ElapsedTimeString';
 // Vista version of ElapsedTimeString, exported name is ElapsedTimeString
-function ElapsedTimeStringRTM; external utildll name 'ElapsedTimeString';
+//function ElapsedTimeStringRTM; external utildll name 'ElapsedTimeString';
 function GetUnknownString; external utildll name 'GetUnknownString';
 function LogonIdFromWinStationNameA; external winstadll name 'LogonIdFromWinStationNameA';
 function LogonIdFromWinStationNameW; external winstadll name 'LogonIdFromWinStationNameW';
 function QueryCurrentWinStation; external utildll name 'QueryCurrentWinStation';
-function QueryCurrentWinStationEx; external utildll name 'QueryCurrentWinStation';
+//function QueryCurrentWinStationEx; external utildll name 'QueryCurrentWinStation';
 function StrConnectState; external utildll name 'StrConnectState';
 function WinStationBroadcastSystemMessage; external winstadll name 'WinStationBroadcastSystemMessage';
 function WinStationCallBack; external winstadll name 'WinStationCallBack';

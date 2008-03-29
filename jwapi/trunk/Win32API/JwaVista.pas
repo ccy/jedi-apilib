@@ -361,6 +361,15 @@ const
   {$EXTERNALSYM AddMandatoryAce}
 
 
+const
+  PROCESS_DEP_ENABLE = 1;
+  PROCESS_DEP_DISABLE_ATL_THUNK_EMULATION = 2;
+
+  {http://msdn2.microsoft.com/en-us/library/bb736299(VS.85).aspx}
+  function SetProcessDEPPolicy({__in}dwFlags : DWORD) : Boolean; stdcall;
+  {$EXTERNALSYM SetProcessDEPPolicy}
+
+
 type
   BIND_OPTS3 = packed record
     cbStruct:            DWORD;
@@ -390,6 +399,8 @@ uses JwaWinDLLNames;
 
   function CoGetObject(pszName: PWideChar; pBindOptions: PBIND_OPTS3;
      const iid: TIID; out ppv): HResult; stdcall; external 'ole32.dll' name 'CoGetObject';
+
+  function SetProcessDEPPolicy({__in}dwFlags : DWORD) : Boolean;  stdcall external kernel32;
 {$ELSE}
 
 var
@@ -419,6 +430,20 @@ begin
         JMP     [_CoGetObject]
   end;
 end;
+
+var
+  _SetProcessDEPPolicy: Pointer;
+
+function SetProcessDEPPolicy({__in}dwFlags : DWORD) : Boolean;
+begin
+  GetProcedureAddress(_SetProcessDEPPolicy, advapi32, 'SetProcessDEPPolicy');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_SetProcessDEPPolicy]
+  end;
+end;
+
 
 {$ENDIF DYNAMIC_LINK}
 
