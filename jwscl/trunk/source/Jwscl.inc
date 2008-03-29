@@ -26,5 +26,10 @@ Of course they will fail if Vista stuff is called on them.
 {$mode delphi}{.$H+}
 {$ENDIF}
 
+{$IFDEF DEBUG}
+  {$WARNINGS OFF}
+{$ENDIF DEBUG}
+
+
 //the following line must be at the end of this file!!
 {Warning: This line is printed because an identifier has no pasdoc comment. This error must be fixed.}

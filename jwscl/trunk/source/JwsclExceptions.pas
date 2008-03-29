@@ -657,7 +657,7 @@ class function EJwsclSecurityException.GetErrorMessage(errNumber: TJwLastError)
 : TJwString;
 var
   s: TJwPChar;
-  i : DWORD;
+//  i : DWORD;
 begin
   if (
 {$IFDEF UNICODE}
@@ -674,7 +674,7 @@ begin
     0, nil) = 0) then
   begin
     Result := RsUnknownGetLastError;
-    i := GetLasterror;
+//    i := GetLasterror;
     exit;
   end;
   Result := s;

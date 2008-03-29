@@ -83,6 +83,7 @@ function JwFormatString(const Str : TJwString; const Args: array of const) : TJw
 {@Name behaves like JwFormatString but without calling JwReplaceBreaks}
 function JwFormatStringEx(const Str : TJwString; const Args: array of const) : TJwString;
 
+
 {@Name replaces "\r" and "\n" with break line chars.}
 procedure JwReplaceBreaks(var Str : TJwString);
 

@@ -33,8 +33,6 @@ The Original Code is JwsclImpersonation.pas.
 The Initial Developer of the Original Code is Christian Wimmer.
 Portions created by Christian Wimmer are Copyright (C) Christian Wimmer. All rights reserved.
 
-Warning:
- To be implemented!
 }
 unit JwsclImpersonation;
 {$INCLUDE Jwscl.inc}

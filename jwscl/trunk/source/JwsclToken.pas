@@ -2820,7 +2820,7 @@ begin
 
   bResult := OpenProcessToken(hProcess, aDesiredAccess, fTokenHandle);
 
-  if Duplicate then
+  if Duplicate and bResult then
   begin
     fAccessMask := TOKEN_ALL_ACCESS; //skip our internal access checks routines 
     ConvertToImpersonatedToken(DEFAULT_IMPERSONATION_LEVEL, aDesiredAccess);

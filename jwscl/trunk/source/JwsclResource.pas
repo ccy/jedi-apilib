@@ -518,6 +518,7 @@ function GetResourceStringIdentifier(rs: PResStringRec) : Integer;
 implementation
 uses JwaWindows;
 
+
 function GetResourceStringIdentifier(rs: PResStringRec) : Integer;
 var oldProtect : Cardinal;
 begin
