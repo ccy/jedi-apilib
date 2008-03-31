@@ -761,6 +761,7 @@ begin
     begin
       // Found the logon SID; make a copy of it.
       Result := TJwSecurityId.Create(ptg[i].CreateCopyOfSID);
+      Result.AttributesType := [sidaGroupLogonId];
       Break;
     end;
   end;

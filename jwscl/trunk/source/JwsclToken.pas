@@ -504,7 +504,7 @@ type
 
 
     {@Name is a compatibility constructor for CreateWTSQueryUserToken which does
-     not work in Windows 2000.
+     not work in Windows 2000 (only Terminal Server).
      It creates a token of the current logged on user.
 
      This constructor seeks a process of the user and gets its token.
@@ -3048,7 +3048,7 @@ begin
     hServer := TS.ServerHandle;
   end
   else
-    TSRunning := not TJwWindowsVersion.IsTerminalServiceRunning;
+    TSRunning := TJwWindowsVersion.IsTerminalServiceRunning;
 
   if (not TSRunning) then
     raise EJwsclTerminalServiceNecessary.CreateFmtEx(
