@@ -1702,7 +1702,9 @@ tokens, which are quite common since Windows XP and especially Vista.
 }
 function JwCheckAdministratorAccess: boolean;
 
-
+{@Name returns the logon session ID of the current process.
+@return(A integer value that defines the current session ID)}
+function GetProcessLogonSession : Cardinal;
 
 
 {$ENDIF SL_IMPLEMENTATION_SECTION}
@@ -1720,6 +1722,16 @@ uses JwsclKnownSid, JwsclMapping, JwsclSecureObjects, JwsclProcess,
 
 {$IFNDEF SL_INTERFACE_SECTION}
 
+function GetProcessLogonSession : Cardinal;
+var T : TJwSecurityToken;
+begin
+  T := TJwSecurityToken.CreateTokenByProcess(0, TOKEN_READ or TOKEN_QUERY);
+  try
+    result := T.TokenSessionId;
+  finally
+    T.Free;
+  end;
+end;
 
 
 function JwCheckAdministratorAccess: boolean;
