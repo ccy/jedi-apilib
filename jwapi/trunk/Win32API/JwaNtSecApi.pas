@@ -1717,7 +1717,7 @@ function LsaForestTrustFindMatch(PolicyHandle: LSA_HANDLE; Type_: ULONG; Name: P
 //
 
 function LsaStorePrivateData(PolicyHandle: LSA_HANDLE;
-  const KeyName: LSA_UNICODE_STRING; PrivateData: PLSA_UNICODE_STRING): NTSTATUS; stdcall;
+  const KeyName: PLSA_UNICODE_STRING; PrivateData: PLSA_UNICODE_STRING): NTSTATUS; stdcall;
 {$EXTERNALSYM LsaStorePrivateData}
 
 function LsaRetrievePrivateData(PolicyHandle: LSA_HANDLE;
