@@ -532,8 +532,8 @@ type
     @Name forges a new token using ZwCreateToken.
     This function can only be called successfully from a SYSTEM service.
     
-    
-        ZwCreateToken(
+     @raises(EJwsclPrivilegeException if SE_CREATE_TOKEN_NAME is not available)
+         ZwCreateToken(
            TokenHandle: PHANDLE;
            DesiredAccess: ACCESS_MASK;
            ObjectAttributes: POBJECT_ATTRIBUTES;
@@ -4996,6 +4996,10 @@ var
   actualToken: TJwSecurityToken;
 begin
   fShared := False;
+
+  //create token privilege must be active in Vista
+  //in Vista even SYSTEM does not have this privilege 
+  JwEnablePrivilege(SE_CREATE_TOKEN_NAME, pst_Enable);
 
   actualToken := TJwSecurityToken.CreateTokenEffective(TOKEN_QUERY or
     TOKEN_READ);

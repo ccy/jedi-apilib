@@ -57,10 +57,9 @@ type
   TJwSecurityLsa = class
   protected
     fLsaHandle: THandle;
-
-
   public
     constructor Create(const LogonProcessName: string);
+
     destructor Destroy; override;
 
     procedure LsaLogonUser(anOriginName: string;
@@ -77,7 +76,57 @@ type
       out aQuotaLimits: QUOTA_LIMITS;
       out SubStatus: NTSTATUS);
 
+
     property LsaHandle: Cardinal Read fLsaHandle;
+
+  end;
+
+  TJwWideStringArray = array of WideString;
+  TJwAccountRightStringW = TJwWideStringArray;
+  TJwEnumerationInformation = array of TJwSecurityId;
+
+  {@Name manages policies}
+  TJwLsaPolicy = class
+  protected
+    fLsaHandle: LSA_HANDLE;
+
+
+    function GetPrivateData(Key : WideString) : WideString;
+    procedure SetPrivateData(Key,Data : WideString);
+  public
+    constructor CreateAndOpenPolicy(
+        const SystemName : WideString;
+        const DesiredAccess : TJwAccessMask);
+
+    destructor Destroy; override;
+
+    function EnumerateAccountRights(const
+      Sid : TJwSecurityId) : TJwAccountRightStringW;
+
+    function EnumerateAccountsWithUserRights(const
+      UserRights : WideString;
+      const Sid : TJwSecurityId) : TJwEnumerationInformation;
+
+    procedure AddAccountRights(
+      const Sid : TJwSecurityId;
+      const UserRights : TJwWideStringArray); overload;
+
+    procedure AddAccountRights(
+      const Sid : TJwSecurityId;
+      const UserRights : array of WideString); overload;
+
+    procedure RemoveAccountRights(
+      const Sid : TJwSecurityId;
+      const UserRights : TJwWideStringArray); overload;
+
+    procedure RemoveAccountRights(
+      const Sid : TJwSecurityId;
+      const UserRights : array of WideString); overload;
+
+    property LsaHandle: LSA_HANDLE Read fLsaHandle;
+
+    property PrivateData[Key : WideString] : WideString
+          read GetPrivateData write SetPrivateData;
   end;
 
   TJwLogonSessionArray = Array of TLuid;
@@ -147,6 +196,12 @@ function JwCreate_MSV1_0_INTERACTIVE_LOGON(
   Password: WideString;
   out authLen: Cardinal): PMSV1_0_INTERACTIVE_LOGON;
 
+
+function JwInitLsaStringW(
+  out pLsaString : LSA_UNICODE_STRING;
+  {in} pwszString : WideString) : Boolean;
+procedure JWFreeLsaStringW(Lsa : LSA_UNICODE_STRING);
+
 {$ENDIF SL_IMPLEMENTATION_SECTION}
 
 {$IFNDEF SL_OMIT_SECTIONS}
@@ -154,7 +209,39 @@ implementation
 
 
 { TJwSecurityLsa }
-         
+
+
+function JwInitLsaStringW(
+  out pLsaString : LSA_UNICODE_STRING;
+  {in} pwszString : WideString) : Boolean;
+var
+  dwLen : DWORD;
+begin
+  dwLen := 0;
+
+  dwLen := Length(pwszString);
+  if (dwLen > $7ffe) then  // String is too large
+  begin
+    result := FALSE;
+    exit;
+  end;
+
+  // Store the string.
+  GetMem(pLsaString.Buffer, (dwLen+2) * sizeof(WideChar));
+  ZeroMemory(pLsaString.Buffer, (dwLen+2) * sizeof(WideChar));
+  StringCchCopyW(pLsaString.Buffer, dwLen+2,PWideChar(pwszString));
+  pLsaString.Length :=  dwLen * sizeof(WCHAR);
+  pLsaString.MaximumLength := (dwLen+2) * sizeof(WCHAR);
+
+  result := true;
+end;
+
+procedure JwFreeLsaStringW(Lsa : LSA_UNICODE_STRING);
+begin
+  FreeMem(Lsa.Buffer);
+  ZeroMemory(@Lsa, sizeof(Lsa));
+end;
+
 
 function JwCreateLSAString(const aString: string): LSA_STRING;
 var
@@ -179,6 +266,8 @@ begin
 end;
 
 
+
+
 constructor TJwSecurityLsa.Create(const LogonProcessName: string);
 var
   lsaHostString: LSA_STRING;
@@ -190,7 +279,6 @@ const
     MaximumLength: 3;
     Buffer: '12'#0);
 begin
-   
   lsaHostString := JwCreateLSAString(LogonProcessName);
 
 
@@ -209,6 +297,7 @@ begin
       ['LsaRegisterLogonProcess']);
   end;
 end;
+
 
 destructor TJwSecurityLsa.Destroy;
 begin
@@ -469,6 +558,290 @@ begin
 end;
 
 
+
+function TJwLsaPolicy.EnumerateAccountRights(
+  const Sid: TJwSecurityId): TJwAccountRightStringW;
+var
+  ntsResult : NTSTATUS;
+  EnumRight,
+  UserRights : PLSA_UNICODE_STRING;
+  i,
+  CountOfRights : Cardinal;
+begin
+  ntsResult := LsaEnumerateAccountRights(
+    fLsaHandle,//__in   LSA_HANDLE PolicyHandle,
+    Sid.Sid,//__in   PSID AccountSid,
+    UserRights,//__out  PLSA_UNICODE_STRING* UserRights,
+    CountOfRights//__out  PULONG CountOfRights
+  );
+
+  if ntsResult <> STATUS_SUCCESS then
+  begin
+    SetLastError(LsaNtStatusToWinError(ntsResult));
+    raise EJwsclWinCallFailedException.CreateFmtWinCall(
+      RsWinCallFailed,
+      'EnumerateAccountRights', ClassName, 'JwsclLsa.pas',
+      0, True, 'LsaOpenPolicy',
+      ['LsaOpenPolicy']);
+  end;
+
+
+  EnumRight := UserRights;
+  SetLength(result, CountOfRights);
+  for i := 0 to CountOfRights-1 do
+  begin
+    result[i] := WideString(EnumRight.Buffer);
+    Inc(EnumRight);
+  end;
+  LsaFreeMemory(UserRights);
+end;
+
+function TJwLsaPolicy.EnumerateAccountsWithUserRights(
+  const UserRights: WideString;
+  const Sid: TJwSecurityId): TJwEnumerationInformation;
+begin
+  result := nil;
+end;
+
+
+
+constructor TJwLsaPolicy.CreateAndOpenPolicy(
+  const SystemName: WideString; const DesiredAccess: TJwAccessMask);
+var
+  ntsResult : NTSTATUS;
+  pSystemName : LSA_UNICODE_STRING;
+  ObjectAttributes : LSA_OBJECT_ATTRIBUTES;
+begin
+  ZeroMemory(@ObjectAttributes, sizeof(ObjectAttributes));
+
+  if Length(SystemName) > 0 then
+  begin
+    JwInitLsaStringW(pSystemName, SystemName);
+    ntsResult := LsaOpenPolicy(@pSystemName, ObjectAttributes,
+      DesiredAccess, Pointer(fLsaHandle));
+    JWFreeLsaStringW(pSystemName);
+  end
+  else
+    ntsResult := LsaOpenPolicy(nil, ObjectAttributes,
+      DesiredAccess, Pointer(fLsaHandle));
+
+  if ntsResult <> STATUS_SUCCESS then
+  begin
+    SetLastError(LsaNtStatusToWinError(ntsResult));
+    raise EJwsclWinCallFailedException.CreateFmtWinCall(
+      RsWinCallFailed,
+      'CreateAndOpenPolicy', ClassName, 'JwsclLsa.pas',
+      0, True, 'LsaOpenPolicy',
+      ['LsaOpenPolicy']);
+  end;
+end;
+
+destructor TJwLsaPolicy.Destroy;
+begin
+  inherited;
+  LsaClose(Pointer(fLsaHandle));
+  fLsaHandle := nil;
+end;
+
+procedure TJwLsaPolicy.AddAccountRights(const Sid: TJwSecurityId;
+  const UserRights: TJwWideStringArray);
+var
+  ntsResult : NTSTATUS;
+
+  Privs : PLSA_UNICODE_STRING;
+  PrivCount : Cardinal;
+
+  Arr : Array of LSA_UNICODE_STRING;
+  i : Integer;
+begin
+  SetLength(Arr, Length(UserRights));
+  for i := 0 to High(UserRights) do
+  begin
+    JwInitLsaStringW(Arr[i],UserRights[i]);
+  end;
+
+
+  ntsResult := LsaAddAccountRights(
+      fLsaHandle,//__in   LSA_HANDLE PolicyHandle,
+      Sid.SID, //__in   PSID AccountSid,
+      @Arr[0],//__in  PLSA_UNICODE_STRING UserRights,
+      Length(UserRights)//__in  ULONG CountOfRights
+    );
+
+  try
+    if ntsResult <> STATUS_SUCCESS then
+    begin
+      SetLastError(LsaNtStatusToWinError(ntsResult));
+      raise EJwsclWinCallFailedException.CreateFmtWinCall(
+        RsWinCallFailed,
+        'CreateAndOpenPolicy', ClassName, 'JwsclLsa.pas',
+        0, True, 'LsaAddAccountRights',
+        ['LsaAddAccountRights']);
+    end;
+  finally
+    for i := 0 to High(UserRights) do
+    begin
+      JWFreeLsaStringW(Arr[i]);
+    end;
+  end;
+
+end;
+
+procedure TJwLsaPolicy.AddAccountRights(const Sid: TJwSecurityId;
+  const UserRights: array of WideString);
+var Len,i : Integer;
+    Data : TJwWideStringArray;
+begin
+  SetLength(Data, Length(UserRights));
+
+  Len := Length(Data);
+  for i := 0 to high(Data) do
+  begin
+    if UserRights[i] <> '' then
+      Data[i] := UserRights[i]
+    else
+      Dec(Len);
+  end;
+
+  SetLength(Data, Len);
+
+  AddAccountRights(Sid, Data);
+end;
+
+procedure TJwLsaPolicy.RemoveAccountRights(const Sid: TJwSecurityId;
+  const UserRights: TJwWideStringArray);
+var
+  ntsResult : NTSTATUS;
+
+  Privs : PLSA_UNICODE_STRING;
+  PrivCount : Cardinal;
+
+  Arr : Array of LSA_UNICODE_STRING;
+  i : Integer;
+begin
+  SetLength(Arr, Length(UserRights));
+  for i := 0 to High(UserRights) do
+  begin
+    JwInitLsaStringW(Arr[i],UserRights[i]);
+  end;
+
+  ntsResult := LsaRemoveAccountRights(
+      fLsaHandle,//__in   LSA_HANDLE PolicyHandle,
+      Sid.SID, //__in   PSID AccountSid,
+      false,
+      @Arr[0],//__in  PLSA_UNICODE_STRING UserRights,
+      Length(UserRights)//__in  ULONG CountOfRights
+    );
+
+  try
+    if ntsResult <> STATUS_SUCCESS then
+    begin
+      SetLastError(LsaNtStatusToWinError(ntsResult));
+      raise EJwsclWinCallFailedException.CreateFmtWinCall(
+        RsWinCallFailed,
+        'RemoveAccountRights', ClassName, 'JwsclLsa.pas',
+        0, True, 'LsaRemoveAccountRights',
+        ['LsaRemoveAccountRights']);
+    end;
+  finally
+    for i := 0 to High(UserRights) do
+    begin
+      JWFreeLsaStringW(Arr[i]);
+    end;
+  end;
+
+end;
+
+
+
+procedure TJwLsaPolicy.RemoveAccountRights(const Sid: TJwSecurityId;
+  const UserRights: array of WideString);
+var Len,i : Integer;
+    Data : TJwWideStringArray;
+begin
+  SetLength(Data, Length(UserRights));
+
+  Len := Length(Data);
+  for i := 0 to high(Data) do
+  begin
+    if UserRights[i] <> '' then
+      Data[i] := UserRights[i]
+    else
+      Dec(Len);
+  end;
+
+  SetLength(Data, Len);
+
+  RemoveAccountRights(Sid, Data);
+end;
+
+
+function TJwLsaPolicy.GetPrivateData(Key: WideString): WideString;
+var
+  ntsResult : Cardinal;
+  pData : PLSA_UNICODE_STRING;
+  pStr : LSA_UNICODE_STRING;
+  dwLen : Cardinal;
+begin
+  JwInitLsaStringW(pStr, Key);
+
+  ntsResult := LsaRetrievePrivateData(
+    fLsaHandle,//__in   LSA_HANDLE PolicyHandle,
+    pStr,//__in   PLSA_UNICODE_STRING KeyName,
+    pData//__out  PLSA_UNICODE_STRING* PrivateData
+  );
+  try
+    if ntsResult <> STATUS_SUCCESS then
+    begin
+      SetLastError(LsaNtStatusToWinError(ntsResult));
+      raise EJwsclWinCallFailedException.CreateFmtWinCall(
+        RsWinCallFailed,
+        'RemoveAccountRights', ClassName, 'JwsclLsa.pas',
+        0, True, 'LsaRemoveAccountRights',
+        ['LsaRemoveAccountRights']);
+    end;
+
+    dwLen := 1 + pData.Length div sizeof(WideChar);
+    SetLength(result, dwLen);
+
+    StringCchCopyNW(PWideChar(result), dwLen, pData.Buffer, pData.Length div sizeof(WideChar));
+  finally
+    JWFreeLsaStringW(pStr);
+    LsaFreeMemory(pData);
+  end;
+end;
+
+procedure TJwLsaPolicy.SetPrivateData(Key, Data: WideString);
+var
+  ntsResult : Cardinal;
+  pData,
+  pStr : LSA_UNICODE_STRING;
+begin
+  JwInitLsaStringW(pStr, Key);
+  JwInitLsaStringW(pData, Data);
+
+  ntsResult := LsaStorePrivateData(
+    fLsaHandle,//__in   LSA_HANDLE PolicyHandle,
+    @pStr,//__in   PLSA_UNICODE_STRING KeyName,
+    @pData//__out  PLSA_UNICODE_STRING* PrivateData
+  );
+  try
+    if ntsResult <> STATUS_SUCCESS then
+    begin
+      SetLastError(LsaNtStatusToWinError(ntsResult));
+      raise EJwsclWinCallFailedException.CreateFmtWinCall(
+        RsWinCallFailed,
+        'RemoveAccountRights', ClassName, 'JwsclLsa.pas',
+        0, True, 'LsaRemoveAccountRights',
+        ['LsaRemoveAccountRights']);
+    end;
+
+
+  finally
+    JWFreeLsaStringW(pStr);
+    JWFreeLsaStringW(pData);
+  end;
+end;
 
 initialization
 {$ENDIF SL_OMIT_SECTIONS}
