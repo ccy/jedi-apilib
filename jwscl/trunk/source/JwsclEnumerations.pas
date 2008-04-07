@@ -196,6 +196,20 @@ type
       const AceType: Cardinal): TJwAceType; overload;
 
 
+     class function ConvertJobLimitType(
+      const FlagSet: TJwJobLimits): Cardinal; overload;
+    class function ConvertJobLimit(
+      const FlagBits: Cardinal): TJwJobLimits; overload;
+
+    class function ConvertJobUiLimitType(
+      const FlagSet: TJwJobUiLimits): Cardinal; overload;
+    class function ConvertJobUiLimit(
+      const FlagBits: Cardinal): TJwJobUiLimits; overload;
+
+    class function ConvertJobMessageType(
+      const FlagSet: TJwJobMessages): Cardinal; overload;
+    class function ConvertJobMessage(
+      const FlagBits: Cardinal): TJwJobMessages; overload;
 
   end;
 
@@ -431,7 +445,6 @@ const
     TOKEN_MANDATORY_POLICY_NO_WRITE_UP,
     TOKEN_MANDATORY_POLICY_NEW_PROCESS_MIN
    );
-
   AuthZResourceManagerValues : array[TJwAuthZResourceManagerFlag] of Cardinal = (
    0
    ,AUTHZ_RM_FLAG_NO_AUDIT
@@ -471,6 +484,57 @@ const
     ACCESS_DENIED_CALLBACK_OBJECT_ACE_TYPE,//actDenyCallbackObject
 
     $FFFFF
+   );
+
+
+
+
+   JwJobLimitEnumValues : array[TJwJobLimit] of Cardinal = (
+      JOB_OBJECT_LIMIT_WORKINGSET,
+      JOB_OBJECT_LIMIT_PROCESS_TIME,
+      JOB_OBJECT_LIMIT_JOB_TIME,
+      JOB_OBJECT_LIMIT_ACTIVE_PROCESS,
+      JOB_OBJECT_LIMIT_AFFINITY,
+      JOB_OBJECT_LIMIT_PRIORITY_CLASS,
+      JOB_OBJECT_LIMIT_PRESERVE_JOB_TIME,
+      JOB_OBJECT_LIMIT_SCHEDULING_CLASS,
+      JOB_OBJECT_LIMIT_PROCESS_MEMORY,
+      JOB_OBJECT_LIMIT_JOB_MEMORY,
+      JOB_OBJECT_LIMIT_DIE_ON_UNHANDLED_EXCEPTION,
+      JOB_OBJECT_LIMIT_BREAKAWAY_OK,
+      JOB_OBJECT_LIMIT_SILENT_BREAKAWAY_OK,
+      JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE,
+      JOB_OBJECT_LIMIT_RESERVED2,
+      JOB_OBJECT_LIMIT_RESERVED3,
+      JOB_OBJECT_LIMIT_RESERVED4,
+      JOB_OBJECT_LIMIT_RESERVED5,
+      JOB_OBJECT_LIMIT_RESERVED6,
+      0
+   );
+
+   JwJobUiLimitEnumValues : array[TJwJobUiLimit] of Cardinal = (
+      JOB_OBJECT_UILIMIT_HANDLES,
+      JOB_OBJECT_UILIMIT_READCLIPBOARD,
+      JOB_OBJECT_UILIMIT_WRITECLIPBOARD,
+      JOB_OBJECT_UILIMIT_SYSTEMPARAMETERS,
+      JOB_OBJECT_UILIMIT_DISPLAYSETTINGS,
+      JOB_OBJECT_UILIMIT_GLOBALATOMS,
+      JOB_OBJECT_UILIMIT_DESKTOP,
+      JOB_OBJECT_UILIMIT_EXITWINDOWS,
+      0
+   );
+
+   JwJobMessagesEnumValues : array[TJwJobMessage] of Cardinal = (
+      0,
+      JOB_OBJECT_MSG_ACTIVE_PROCESS_ZERO,
+      JOB_OBJECT_MSG_END_OF_PROCESS_TIME,
+      JOB_OBJECT_MSG_ACTIVE_PROCESS_LIMIT,
+      JOB_OBJECT_MSG_PROCESS_MEMORY_LIMIT,
+      JOB_OBJECT_MSG_JOB_MEMORY_LIMIT,
+      JOB_OBJECT_MSG_NEW_PROCESS,
+      JOB_OBJECT_MSG_EXIT_PROCESS,
+      JOB_OBJECT_MSG_ABNORMAL_EXIT_PROCESS,
+      JOB_OBJECT_MSG_END_OF_JOB_TIME
    );
 
 
@@ -1069,6 +1133,87 @@ begin
     end;
   end;
 end;
+
+
+
+class function TJwEnumMap.ConvertJobLimit(
+  const FlagBits: Cardinal): TJwJobLimits;
+var I : TJwJobLimit;
+begin
+  result := [];
+  for I := Low(TJwJobLimit) to High(TJwJobLimit) do
+  begin
+    if (FlagBits and JwJobLimitEnumValues[I]) = JwJobLimitEnumValues[I] then
+      Include(result, I);
+  end;
+end;
+
+class function TJwEnumMap.ConvertJobLimitType(
+  const FlagSet: TJwJobLimits): Cardinal;
+var I : TJwJobLimit;
+begin
+  result := 0;
+  for I := Low(TJwJobLimit) to High(TJwJobLimit) do
+  begin
+    if I in FlagSet then
+      result := result or JwJobLimitEnumValues[I];
+  end;
+end;
+
+class function TJwEnumMap.ConvertJobUiLimit(
+  const FlagBits: Cardinal): TJwJobUiLimits;
+var I : TJwJobUiLimit;
+begin
+  result := [];
+  for I := Low(TJwJobUiLimit) to High(TJwJobUiLimit) do
+  begin
+    if (FlagBits and JwJobUiLimitEnumValues[I]) = JwJobUiLimitEnumValues[I] then
+      Include(result, I);
+  end;
+end;
+
+class function TJwEnumMap.ConvertJobUiLimitType(
+  const FlagSet: TJwJobUiLimits): Cardinal;
+var I : TJwJobUiLimit;
+begin
+  result := 0;
+  for I := Low(TJwJobUiLimit) to High(TJwJobUiLimit) do
+  begin
+    if I in FlagSet then
+      result := result or JwJobUiLimitEnumValues[I];
+  end;
+end;
+
+class function TJwEnumMap.ConvertJobMessageType(
+      const FlagSet: TJwJobMessages): Cardinal;
+var I : TJwJobMessage;
+begin
+  result := 0;
+  for I := Low(TJwJobMessage) to High(TJwJobMessage) do
+  begin
+    if I in FlagSet then
+      result := result or JwJobMessagesEnumValues[I];
+  end;
+end;
+
+
+class function TJwEnumMap.ConvertJobMessage(
+      const FlagBits: Cardinal): TJwJobMessages;
+var I : TJwJobMessage;
+begin
+  result := [];
+  for I := Low(TJwJobMessage) to High(TJwJobMessage) do
+  begin
+    if (FlagBits and JwJobMessagesEnumValues[I]) = JwJobMessagesEnumValues[I] then
+      Include(result, I);
+  end;
+end;
+
+
+
+
+
+
 
 {$ENDIF SL_INTERFACE_SECTION}
 

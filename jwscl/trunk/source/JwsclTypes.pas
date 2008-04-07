@@ -1,5 +1,5 @@
 {
-@abstract(Contains types that are used by the units of)
+@abstract(Contains types that are used by the units of JWSCL)
 @author(Christian Wimmer)
 @created(03/23/2007)
 @lastmod(11/27/2007)
@@ -1057,7 +1057,66 @@ type
     Profile: HANDLE;
   end;
 
-  
+
+  TJwPointerType = (
+    ptUnknown,
+    ptNew,
+    ptGetMem,
+    ptLocalAlloc,
+    ptClass);
+
+  TJwJobLimit = (
+    jlWORKINGSET,
+    jlPROCESSTIME,
+    jlJOBTIME,
+    jlACTIVEPROCESS,
+    jlAFFINITY,
+    jlPRIORITYCLASS,
+    jlPRESERVEJOBTIME,
+    jlSCHEDULINGCLASS,
+    jlPROCESSMEMORY,
+    jlJOBMEMORY,
+    jlDIEONUNHANDLEDEXCEPTION,
+    jlBREAKAWAYOK,
+    jlSILENTBREAKAWAYOK,
+    jlKILLONJOBCLOSE,
+    jlRESERVED2,
+    jlRESERVED3,
+    jlRESERVED4,
+    jlRESERVED5,
+    jlRESERVED6,
+    jlNone
+  );
+  TJwJobLimits = set of TJwJobLimit;
+
+  TJwJobUiLimit = (
+    juilHANDLES,
+    juilREADCLIPBOARD,
+    juilWRITECLIPBOARD,
+    juilSYSTEMPARAMETERS,
+    juilDISPLAYSETTINGS,
+    juilGLOBALATOMS,
+    juilDESKTOP,
+    juilEXITWINDOWS,
+    juilNone
+  );
+  TJwJobUiLimits = set of TJwJobUiLimit;
+
+  TJwJobMessage = (
+    jmsgUnknown,
+    jmsgACTIVEPROCESSZERO,
+    jmsgENDOFPROCESSTIME,
+    jmsgACTIVEPROCESSLIMIT,
+    jmsgPROCESSMEMORYLIMIT,
+    jmsgJOBMEMORYLIMIT,
+    jmsgNEWPROCESS,
+    jmsgEXITPROCESS,
+    jmsgABNORMALEXITPROCESS,
+    jmsgENDOFJOBTIME
+  );
+  TJwJobMessages = set of TJwJobMessage;
+
+
 
 
 

@@ -446,6 +446,9 @@ const
 //Unit JwsclAuthCtx.pas
   RsInvalidObjectTypeList = 'The given array of ObjectType is invalid around index %0:d. ';
 
+//Unit JwsclComUtils.pas
+  RsInvalidPointerType = 'The given pointer type is not applicable.';
+
 //General strings
   RsBracketNil = '(nil)';
   RsWinCallFailedWithNTStatus = 'Call to %0:s failed. NTError: %1:d';
@@ -478,7 +481,8 @@ const
   RsUNAccountControl     = 'JwsclAccountControl.pas';
   RsUNAcl                = 'JwsclAcl.pas.pas';
   RsUNAnsi_UniCode       = 'JwsclAnsi_Unicode.pas';
-  RsUNAuthZCtx           = 'JwsclAuthCtx.pas'; 
+  RsUNAuthZCtx           = 'JwsclAuthCtx.pas';
+  RsUNComUtils           = 'JwsclComUtils.pas';
   RsUNConstants          = 'JwsclConstants.pas';
   RsUNCredentials        = 'JwsclCredentials.pas';
   RsUNDescriptor         = 'JwsclDescriptor.pas';

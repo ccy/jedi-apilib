@@ -1707,6 +1707,8 @@ function JwCheckAdministratorAccess: boolean;
 function GetProcessLogonSession : Cardinal;
 
 
+function JwIsSystem : Boolean;
+
 {$ENDIF SL_IMPLEMENTATION_SECTION}
 
 {$IFNDEF SL_OMIT_SECTIONS}
@@ -1733,6 +1735,19 @@ begin
   end;
 end;
 
+function JwIsSystem : Boolean;
+var T : TJwSecurityToken;
+    Stat : TJwSecurityTokenStatistics;
+begin
+  T := TJwSecurityToken.CreateTokenByProcess(0, TOKEN_READ or TOKEN_QUERY);
+  try
+    Stat := T.GetTokenStatistics;
+    result := CompareMem(@Stat.fAuthenticationId, @SYSTEM_LUID, sizeof(TLUID));
+    Stat.Free;
+  finally
+    T.Free;
+  end;
+end;
 
 function JwCheckAdministratorAccess: boolean;
 var

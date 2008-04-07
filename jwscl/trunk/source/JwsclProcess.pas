@@ -22,7 +22,7 @@ under the MPL, indicate your decision by deleting  the provisions above and
 replace  them with the notice and other provisions required by the LGPL      
 License.  If you do not delete the provisions above, a recipient may use     
 your version of this file under either the MPL or the LGPL License.          
-                                                                             
+
 For more information about the LGPL: http://www.gnu.org/copyleft/lesser.html 
 
 The Original Code is JwsclProcess.pas.
@@ -41,13 +41,18 @@ unit JwsclProcess;
 interface
 
 uses Classes, jwaWindows,
-  JwsclTypes, JwsclToken, JwsclSid, JwsclTerminalServer,
-  JwsclLogging, JwsclLsa, JwsclDescriptor,
+  JwsclTypes, JwsclToken, JwsclSid, JwsclTerminalServer, JwsclUtils,
+  JwsclLogging, JwsclLsa, JwsclDescriptor,JwsclEnumerations,
   JwsclStrings; //JwsclStrings, must be at the end of uses list!!!
 {$ENDIF SL_OMIT_SECTIONS}
 
 
 {$IFNDEF SL_IMPLEMENTATION_SECTION}
+
+const
+  IID_IJwJobObject = '{5F6DBA7A-B8DC-498E-A151-49AD0DCD8CF8}';
+  IOJOBNAME = 'IOJobCompletion\';
+
 type
   {@Name contains methods related to libraries.}
   TJwLibraryUtilities = class
@@ -61,6 +66,240 @@ type
     }
     class function LoadLibProc(const LibName: string;
       const ProcName: string): Pointer;
+  end;
+{
+  IJwJobObject = interface
+   [IID_IJwJobObject]
+     procedure AssignProcessToJobObject(hProcess : TJwProcessHandle);
+
+BOOL WINAPI AssignProcessToJobObject(HANDLE hJob, HANDLE hProcess);
+HANDLE WINAPI CreateJobObject(LPSECURITY_ATTRIBUTES lpJobAttributes,LPCTSTR lpName);
+HANDLE WINAPI OpenJobObject(DWORD dwDesiredAccess,BOOL bInheritHandles, LPCTSTR lpName);
+BOOL WINAPI SetInformationJobObject(HANDLE hJob,JOBOBJECTINFOCLASS JobObjectInfoClass,
+        LPVOID lpJobObjectInfo,DWORD cbJobObjectInfoLength);
+BOOL WINAPI QueryInformationJobObject(HANDLE hJob, JOBOBJECTINFOCLASS JobObjectInfoClass,
+        LPVOID lpJobObjectInfo, DWORD cbJobObjectInfoLength, LPDWORD lpReturnLength);
+BOOL WINAPI IsProcessInJob(HANDLE ProcessHandle, HANDLE JobHandle, PBOOL Result);
+BOOL WINAPI TerminateJobObject(HANDLE hJob, UINT uExitCode);
+
+  end;
+ }
+  TJwProcessList = array of TJwProcessId;
+
+  TJwWaitState = (wsNonSignaled, wsSignaled, wsTimeOut);
+
+
+  TJwJobObject = class;
+
+  TJwOnJobNotification = procedure (Sender : TJwJobObject; Process : TJwProcessId;
+    JobLimits : TJwJobMessages) {of object};
+
+  TJwOnNoActiveProcesses = procedure (Sender : TJwJobObject) {of object};
+
+
+  TJwInternalJobObjectIOCompletitionThread = Class(TJwThread)
+  protected
+    fJwJobObject : TJwJobObject;
+    fIOHandle : THandle;
+    fRemainPort : Boolean;
+  public
+    constructor Create(const Parent: TJwJobObject; const CreateSuspended: Boolean; const Name: String);
+    constructor CreateWithIOPort(const Parent: TJwJobObject; IOPort : THandle; const CreateSuspended: Boolean; const Name: String);
+    procedure Execute; override;
+
+    procedure Terminate; reintroduce;
+    property IOHandle : THandle read fIOHandle;
+  end;
+
+  TJwJobObject = class
+  protected
+    fHandle : THandle;
+    fAccessMask : TJwAccessMask;
+
+    fIOUniqueID : Integer;
+
+    fJobName : TJwString;
+
+    fTerminateOnDestroy : Boolean;
+
+    fNotification : TJwOnJobNotification;
+    fOnNoActiveProcesses : TJwOnNoActiveProcesses;
+
+    fThread: TJwInternalJobObjectIOCompletitionThread;
+
+    function GetJobObjectInformationLength(
+       const JobObjectInfoClass : JOBOBJECTINFOCLASS) : Cardinal;
+
+    procedure GetJobObjectInformation(
+       const JobObjectInfoClass : JOBOBJECTINFOCLASS;
+       out Data : Pointer);
+  protected
+    function GetProcesses : TJwProcessList;
+    function GetProcessesCount : Cardinal;
+
+    function GetBasicAndIOInformation : TJobObjectBasicAndIoAccountingInformation;
+    function GetBasicLimitInformation : TJobObjectBasicLimitInformation;
+    function GetBasicUIRestrictions : TJobObjectBasicUiRestrictions;
+    procedure SetBasicUIRestrictions(Info : TJobObjectBasicUiRestrictions);
+
+    function GetExtendedLimitInformation : TJobObjectExtendedLimitInformation;
+    procedure SetExtendedLimitInformation(Info : TJobObjectExtendedLimitInformation);
+
+    procedure SetBasicLimitInformation(Info : TJobObjectBasicLimitInformation);
+
+
+    function GetAllotedCPUTimeSignalState : Boolean;
+
+    function GetJobLimit : TJwJobLimits;
+    procedure SetJobLimit(const Limit : TJwJobLimits);
+
+    function GetJobUiLimit : TJwJobUiLimits;
+    procedure SetJobUiLimit(const Limit : TJwJobUiLimits);
+
+    function GetActiveProcessCount : Cardinal;
+
+    procedure SetObjectAssociateCompletionPortInformation(
+        const CompletionKey : Pointer; CompletionPort : THandle);
+
+    //not supported by winapi
+    procedure GetObjectAssociateCompletionPortInformation(
+        out CompletionKey : Pointer; out CompletionPort : THandle);
+
+    function GetIOHandle : THandle;
+  public
+    {@Param SecurityAttributes defines the security information for the job object.
+      Use TJwSecurityDescriptor.InheritHandles to control handle inheritance.
+    }
+    constructor Create(const Name : TJwString;
+      const ErrorIfAlreadyExists : Boolean;
+      const SecurityAttributes : TJwSecurityDescriptor); overload;
+
+    {@Name creates a new job object using an existing job object
+    @param(Name defines the name of the existing job object)
+    @param(DesiredAccess defines the desired access to open the job object)
+    @param(InheritHandles defines whether processes created by this process
+        will inherit the handle. Otherwise, the processes do not inherit this handle.)
+    @param(CompletionKey defines an existing completion key to be assigned or
+     used by the opened object. It is used for notifications.)
+    @param(CompletionPort defines an existing completion handle to be assigned or
+     used by the opened object. It is used for notifications.)
+
+    }
+    constructor Create(const Name : TJwString; const DesiredAccess : TJwAccessMask;
+      const InheritHandles : Boolean; CompletionKey : Integer; CompletionPort : THandle); overload;
+
+    destructor Destroy; override;
+
+    {@Name returns whether a process is assigned to the job.
+    @param(hProcess defines any handle to the process that is tested for membership.)
+    @param(Returns tre if the process is a member of the job; otherwise false.)
+    @raises(EJwsclWinCallFailedException can be raised if the call to an winapi function failed.)
+
+    }
+    function IsProcessInJob(hProcess : TJwProcessHandle) : Boolean;
+
+    {
+    @Name assigns an existing process to the job. The process must not already be
+    assigned to a job. The process can be created with the flag CREATE_BREAKAWAY_FROM_JOB
+    to be reassignable.
+    @raises(EJwsclWinCallFailedException can be raised if the call to an winapi function failed.)
+    }
+    procedure AssignProcessToJobObject(hProcess : TJwProcessHandle);
+
+    {@Name terminates all processes in the job with a predefined
+     exit code.
+    @raises(EJwsclWinCallFailedException can be raised if the call to an winapi function failed.)
+    }
+    procedure TerminateJobObject(const ExitCode : DWORD);
+
+    {@Name resets the internal IO completition thread. This thread is necessary
+    for triggering OnNotification and OnNoActiveProcesses.
+      @param(Force defines whether the currenct IO thread should be forcibly terminated
+       and restarted. If true the thread is shutdown and a new thread is created.
+       However the IO port is not replaced. In fact there is no way to reassign a new
+       port to the existing job object. If the parameter Force is set to false,
+       the thread is only reset if it is not running.)
+    @raises(EJwsclWinCallFailedException can be raised if the call to an winapi function failed.)
+    }
+    procedure ResetIOThread(const Force : Boolean);
+
+    {
+    @raises(EJwsclWinCallFailedException can be raised if the call to an winapi function failed.)
+    }
+    function WaitForAllotedCPUTimeSignal(const TimeOut : DWORD) : TJwWaitState;
+
+
+
+    {@Name defines whether all processes should be terminated. If set to true
+     and the @Classname instance is freed all processes assigned to this job
+     are terminated. Default value is false. No process will be terminated.
+    }
+    property TerminateOnDestroy : Boolean read fTerminateOnDestroy write fTerminateOnDestroy;
+
+    {@Name reads or sets User Interface limits of this job.
+     This property has the same effect as property BasicUIRestrictions.
+
+     May raise EJwsclWinCallFailedException if an error occurs.
+    }
+    property UiLimits : TJwJobUiLimits read GetJobUiLimit write SetJobUiLimit;
+
+    {@Name receives the signal state of the job. It is set to true
+    if all processes has allotted their CPU time restriction; otherwise it is false.
+    }
+    property AllotedCPUTimeSignalState : Boolean read GetAllotedCPUTimeSignalState;
+
+    {@Name reads or sets basic limit information of this job.
+     May raise EJwsclWinCallFailedException if an error occurs.
+    }
+    property BasicLimitInformation : TJobObjectBasicLimitInformation
+      read GetBasicLimitInformation write SetBasicLimitInformation;
+
+    {@Name reads or sets basic limit and IO information of this job.
+     May raise EJwsclWinCallFailedException if an error occurs.
+    }
+    property BasicAndIOInformation : TJobObjectBasicAndIoAccountingInformation read GetBasicAndIOInformation;
+
+    {@Name reads or sets basic limit and IO information of this job.
+     This property has the same effect as property UiLimits.
+
+     May raise EJwsclWinCallFailedException if an error occurs.
+    }
+    property BasicUiRestrictions : TJobObjectBasicUiRestrictions read GetBasicUIRestrictions write SetBasicUIRestrictions;
+
+    {@Name reads or sets extended limit information of this job.
+     May raise EJwsclWinCallFailedException if an error occurs.
+    }
+    property ExtendedLimitInformation : TJobObjectExtendedLimitInformation read GetExtendedLimitInformation write SetExtendedLimitInformation;
+
+    {@Name returns the current active count of processes in this job.
+    May raise EJwsclWinCallFailedException if an error occurs.
+    }
+    property ActiveProcessCount : Cardinal read GetActiveProcessCount;
+
+    {@Name returns the handle of the job}
+    property Handle : THandle read fHandle;
+
+    {@Name returns the access mask of this job object as specified in Create
+    when opening an existing job object}
+    property AccessMask : TJwAccessMask read fAccessMask;
+
+    {@Name returns an array of process ID values.
+     Valud values are from low(Processes) to high(Processes).
+     Always use a temporary variable for this property because
+     each access to this property needs a system call.
+     }
+    property Processes : TJwProcessList read GetProcesses;
+
+    {@Name returns a unique IO completion ID that was assigned to the IO
+     completion port as key ID.
+    }
+    property IOUniqueID : Integer read fIOUniqueID;
+    property IOHandle : THandle read GetIOHandle;
+
+    property Name : TJwString read fJobName;
+
+    property OnNotification : TJwOnJobNotification read fNotification write fNotification;
+    property OnNoActiveProcesses : TJwOnNoActiveProcesses read fOnNoActiveProcesses write fOnNoActiveProcesses;
   end;
 
   {@Name contains information about result from JwCreateProcessInSession.}
@@ -138,7 +377,7 @@ will continue enumerating)
 @return(@Name returns the primary token of a process. If no process could be used
 to get a token the return value is nil.)
 
-@raises(EJwsclNILParameterException will be raised if parameter OnProcessFound is nil) 
+@raises(EJwsclNILParameterException will be raised if parameter OnProcessFound is nil)
 }
 function JwGetTokenFromProcess (const OnProcessFound : TJwOnProcessFound;
   LogServer : IJwLogServer; Data : Pointer) : TJwSecurityToken;
@@ -309,7 +548,7 @@ procedure JwCreateProcessAsAdminUser(
 {$IFNDEF SL_OMIT_SECTIONS}
 implementation
 uses SysUtils, Dialogs, Math, JwsclExceptions,
-  JwsclKnownSid, JwsclUtils, JwsclVersion,
+  JwsclKnownSid, JwsclVersion,
   JwsclAcl, JwsclConstants;
 
 {$ENDIF SL_OMIT_SECTIONS}
@@ -1126,6 +1365,805 @@ begin
   end;
 
 end;
+
+{
+
+BOOL WINAPI AssignProcessToJobObject(HANDLE hJob, HANDLE hProcess);
+HANDLE WINAPI CreateJobObject(LPSECURITY_ATTRIBUTES lpJobAttributes,LPCTSTR lpName);
+HANDLE WINAPI OpenJobObject(DWORD dwDesiredAccess,BOOL bInheritHandles, LPCTSTR lpName);
+BOOL WINAPI SetInformationJobObject(HANDLE hJob,JOBOBJECTINFOCLASS JobObjectInfoClass,
+        LPVOID lpJobObjectInfo,DWORD cbJobObjectInfoLength);
+BOOL WINAPI QueryInformationJobObject(HANDLE hJob, JOBOBJECTINFOCLASS JobObjectInfoClass,
+        LPVOID lpJobObjectInfo, DWORD cbJobObjectInfoLength, LPDWORD lpReturnLength);
+BOOL WINAPI IsProcessInJob(HANDLE ProcessHandle, HANDLE JobHandle, PBOOL Result);
+BOOL WINAPI TerminateJobObject(HANDLE hJob, UINT uExitCode);
+}
+
+{TJwJobObject}
+var CompletionUniqueID : Integer = 1;
+
+
+constructor TJwJobObject.Create(const Name : TJwString;
+  const ErrorIfAlreadyExists : Boolean;
+  const SecurityAttributes : TJwSecurityDescriptor);
+
+begin
+  SetLastError(0);
+
+  OnNotification := nil;
+  OnNoActiveProcesses := nil;
+  fIOUniqueID := InterlockedIncrement(CompletionUniqueID);
+
+  fJobName := Name;
+
+  if Length(Name) > 0 then
+  begin
+    fHandle := {$IFDEF UNICODE}CreateJobObjectW{$ELSE}CreateJobObjectA{$ENDIF}
+      (nil, TJwPChar(Name));
+    fThread := TJwInternalJobObjectIOCompletitionThread.Create(Self, true,IOJOBNAME+Name);
+  end
+  else
+  begin
+    fHandle := {$IFDEF UNICODE}CreateJobObjectW{$ELSE}CreateJobObjectA{$ENDIF}
+      (nil, nil);
+    fThread := TJwInternalJobObjectIOCompletitionThread.Create(Self, true,IOJOBNAME+IntToStr(GetCurrentThreadId));
+  end;
+
+  fAccessMask := JOB_OBJECT_ALL_ACCESS;
+  fTerminateOnDestroy := false;
+
+
+  if (fHandle = 0) or
+   (ErrorIfAlreadyExists and (GetLastError() = ERROR_ALREADY_EXISTS))
+  then
+  begin
+    FreeAndNil(fThread);
+    if (GetLastError() <> 0) and (fHandle <> 0) then
+      CloseHandle(fHandle);
+    raise EJwsclWinCallFailedException.CreateFmtWinCall(
+      '',
+      'Create',                                //sSourceProc
+      ClassName,                                //sSourceClass
+      '',                          //sSourceFile
+      0,                                           //iSourceLine
+      True,                                  //bShowLastError
+      'CreateJobObject',                   //sWinCall
+      ['CreateJobObject']);                                  //const Args: array of const
+  end;
+
+  fThread.Resume;
+
+  SetObjectAssociateCompletionPortInformation(Pointer(fIOUniqueID),
+    fThread.IOHandle);
+end;
+
+constructor TJwJobObject.Create(const Name : TJwString; const DesiredAccess : TJwAccessMask;
+  const InheritHandles : Boolean; CompletionKey : Integer; CompletionPort : THandle);
+var
+  IOPort : THandle;
+begin
+  fHandle := {$IFDEF UNICODE}OpenJobObjectW{$ELSE}OpenJobObjectA{$ENDIF}
+    (DesiredAccess, InheritHandles, TJwPChar(Name));
+
+  fJobName := Name;
+
+  OnNotification := nil;
+  OnNoActiveProcesses := nil;
+
+  fAccessMask := DesiredAccess;
+  fTerminateOnDestroy := false;
+
+
+  if (fHandle = 0) then
+  begin
+    if fHandle <> 0 then
+      CloseHandle(fHandle);
+    raise EJwsclWinCallFailedException.CreateFmtWinCall(
+      '',
+      'Create',                                //sSourceProc
+      ClassName,                                //sSourceClass
+      '',                          //sSourceFile
+      0,                                           //iSourceLine
+      True,                                  //bShowLastError
+      'OpenJobObject',                   //sWinCall
+      ['OpenJobObject']);                                  //const Args: array of const
+  end;
+
+  fIOUniqueID := INVALID_HANDLE_VALUE;
+  fThread := nil;
+
+  {We cannot get CompletionKey and CompletionPort for an existing job object.
+  So the user has to supply them
+  }
+  if (CompletionPort <> INVALID_HANDLE_VALUE) and
+     (CompletionPort <> 0)
+    and not DuplicateHandle(
+     GetCurrentProcess,//__in        HANDLE hSourceProcessHandle,
+      CompletionPort,//__in        HANDLE hSourceHandle,
+     GetCurrentProcess,//__in        HANDLE hTargetProcessHandle,
+      @IOPort,//__deref_out LPHANDLE lpTargetHandle,
+      0,//__in        DWORD dwDesiredAccess,
+      true,//__in        BOOL bInheritHandle,
+      DUPLICATE_SAME_ACCESS//__in        DWORD dwOptions
+    )
+  then
+  begin
+    if fHandle <> 0 then
+      CloseHandle(fHandle);
+    RaiseLastOSError;
+  end
+  else
+  if (CompletionPort <> INVALID_HANDLE_VALUE) and
+     (CompletionPort <> 0) then
+  begin
+    fIOUniqueID := CompletionKey;
+    fThread := TJwInternalJobObjectIOCompletitionThread.CreateWithIOPort(Self, IOPort, false, IOJOBNAME+Name);
+
+    try
+      SetObjectAssociateCompletionPortInformation(Pointer(fIOUniqueID),
+        fThread.IOHandle);
+    except
+      //may fail, but doesn't matter
+    end;
+  end;
+end;
+
+destructor TJwJobObject.Destroy;
+begin
+  if TerminateOnDestroy then
+    TerminateJobObject(0);
+
+  if Assigned(fThread) then
+  begin
+    fThread.Terminate;
+    fThread.WaitFor;
+    FreeAndNil(fThread);
+  end;
+
+  if (fHandle <> 0) then
+    CloseHandle(fHandle);
+end;
+
+function TJwJobObject.GetAllotedCPUTimeSignalState : Boolean;
+begin
+  result := WaitForSingleObject(fHandle,0) = WAIT_OBJECT_0;
+end;
+
+function TJwJobObject.WaitForAllotedCPUTimeSignal(const TimeOut : DWORD) : TJwWaitState;
+begin
+  case WaitForSingleObject(fHandle,TimeOut) of
+    WAIT_OBJECT_0 : result := wsSignaled;
+    WAIT_TIMEOUT  : result := wsTimeOut
+  else
+    result := wsNonSignaled;
+  end;
+end;
+
+
+function TJwJobObject.GetProcesses : TJwProcessList;
+var Data : Pointer;
+    List : PJobObjectBasicProcessIdList;
+  len, i,
+  rlen,
+  res : DWORD;
+begin
+  rlen := 0;
+  len := 0;
+  Data := nil;
+
+  Len := GetJobObjectInformationLength(JobObjectBasicProcessIdList);
+
+  GetMem(List, len);
+  ZeroMemory(List, len);
+
+  try
+    if not QueryInformationJobObject(
+      fHandle,//__in_opt   HANDLE hJob,
+      JobObjectBasicProcessIdList,//__in       JOBOBJECTINFOCLASS JobObjectInfoClass,
+      List,//__out      LPVOID lpJobObjectInfo,
+      len,//__in       DWORD cbJobObjectInfoLength,
+      @rlen//__out_opt  LPDWORD lpReturnLength
+      ) then
+     raise EJwsclWinCallFailedException.CreateFmtWinCall(
+          '',
+          'GetJobObjectInformation',                                //sSourceProc
+          ClassName,                                //sSourceClass
+          '',                          //sSourceFile
+          0,                                           //iSourceLine
+          True,                                  //bShowLastError
+          'QueryInformationJobObject',                   //sWinCall
+          ['QueryInformationJobObject']);                                  //const Args: array of const
+
+    SetLength(result, List^.NumberOfProcessIdsInList);
+
+    for i := low(result) to high(result) do
+      result[i] :=   List^.ProcessIdList[i];
+
+  finally
+    FreeMem(List);
+  end;
+end;
+
+function TJwJobObject.GetProcessesCount : Cardinal;
+var Data : Pointer;
+    List : PJobObjectBasicProcessIdList;
+begin
+  try
+    result := GetBasicAndIOInformation.BasicInfo.ActiveProcesses;
+  except
+    on E : EJwsclWinCallFailedException do
+    begin
+      E.SourceProc := 'GetProcessesCount';
+      raise E;
+    end;
+  end;
+end;
+
+function TJwJobObject.GetBasicAndIOInformation : TJobObjectBasicAndIoAccountingInformation;
+var
+  len : DWORD;
+begin
+  Len := sizeof(result); //return static structure
+
+  try
+    if not QueryInformationJobObject(
+      fHandle,//__in_opt   HANDLE hJob,
+      JobObjectBasicAndIoAccountingInformation,//__in       JOBOBJECTINFOCLASS JobObjectInfoClass,
+      @result,//__out      LPVOID lpJobObjectInfo,
+      len,//__in       DWORD cbJobObjectInfoLength,
+      nil//__out_opt  LPDWORD lpReturnLength
+      ) then
+     raise EJwsclWinCallFailedException.CreateFmtWinCall(
+          '',
+          'GetBasicInformation',                                //sSourceProc
+          ClassName,                                //sSourceClass
+          '',                          //sSourceFile
+          0,                                           //iSourceLine
+          True,                                  //bShowLastError
+          'QueryInformationJobObject',                   //sWinCall
+          ['QueryInformationJobObject']);                                  //const Args: array of const
+  finally
+  end;
+end;
+
+function TJwJobObject.GetBasicLimitInformation : TJobObjectBasicLimitInformation;
+var
+  len : DWORD;
+begin
+  Len := sizeof(result); //return static structure
+
+  try
+    if not QueryInformationJobObject(
+      fHandle,//__in_opt   HANDLE hJob,
+      JobObjectBasicLimitInformation,//__in       JOBOBJECTINFOCLASS JobObjectInfoClass,
+      @result,//__out      LPVOID lpJobObjectInfo,
+      len,//__in       DWORD cbJobObjectInfoLength,
+      nil//__out_opt  LPDWORD lpReturnLength
+      ) then
+     raise EJwsclWinCallFailedException.CreateFmtWinCall(
+          '',
+          'GetBasicLimitInformation',                                //sSourceProc
+          ClassName,                                //sSourceClass
+          '',                          //sSourceFile
+          0,                                           //iSourceLine
+          True,                                  //bShowLastError
+          'QueryInformationJobObject',                   //sWinCall
+          ['QueryInformationJobObject']);                                  //const Args: array of const
+  finally
+  end;
+end;
+
+
+
+function TJwJobObject.GetBasicUIRestrictions : TJobObjectBasicUiRestrictions;
+var
+  len : DWORD;
+begin
+  Len := sizeof(result); //return static structure
+
+  try
+    if not QueryInformationJobObject(
+      fHandle,//__in_opt   HANDLE hJob,
+      JobObjectBasicUIRestrictions,//__in       JOBOBJECTINFOCLASS JobObjectInfoClass,
+      @result,//__out      LPVOID lpJobObjectInfo,
+      len,//__in       DWORD cbJobObjectInfoLength,
+      nil//__out_opt  LPDWORD lpReturnLength
+      ) then
+     raise EJwsclWinCallFailedException.CreateFmtWinCall(
+          '',
+          'GetBasicUIRestrictions',                                //sSourceProc
+          ClassName,                                //sSourceClass
+          '',                          //sSourceFile
+          0,                                           //iSourceLine
+          True,                                  //bShowLastError
+          'QueryInformationJobObject',                   //sWinCall
+          ['QueryInformationJobObject']);                                  //const Args: array of const
+  finally
+  end;
+end;
+
+
+procedure TJwJobObject.SetBasicLimitInformation(Info : TJobObjectBasicLimitInformation);
+begin
+  if not SetInformationJobObject(
+      fHandle,//__in  HANDLE hJob,
+      JobObjectBasicLimitInformation,//__in  JOBOBJECTINFOCLASS JobObjectInfoClass,
+      @Info,//__in  LPVOID lpJobObjectInfo,
+      sizeof(Info)//__in  DWORD cbJobObjectInfoLength
+    ) then
+     raise EJwsclWinCallFailedException.CreateFmtWinCall(
+          '',
+          'GetBasicUIRestrictions',                                //sSourceProc
+          ClassName,                                //sSourceClass
+          '',                          //sSourceFile
+          0,                                           //iSourceLine
+          True,                                  //bShowLastError
+          'QueryInformationJobObject',                   //sWinCall
+          ['QueryInformationJobObject']);                                  //const Args: array of const
+end;
+
+procedure TJwJobObject.SetBasicUIRestrictions(Info : TJobObjectBasicUiRestrictions);
+begin
+  if not SetInformationJobObject(
+      fHandle,//__in  HANDLE hJob,
+      JobObjectBasicUIRestrictions,//__in  JOBOBJECTINFOCLASS JobObjectInfoClass,
+      @Info,//__in  LPVOID lpJobObjectInfo,
+      sizeof(Info)//__in  DWORD cbJobObjectInfoLength
+    ) then
+     raise EJwsclWinCallFailedException.CreateFmtWinCall(
+          '',
+          'GetBasicUIRestrictions',                                //sSourceProc
+          ClassName,                                //sSourceClass
+          '',                          //sSourceFile
+          0,                                           //iSourceLine
+          True,                                  //bShowLastError
+          'QueryInformationJobObject',                   //sWinCall
+          ['QueryInformationJobObject']);                                  //const Args: array of const
+end;
+
+procedure TJwJobObject.GetObjectAssociateCompletionPortInformation(
+        out CompletionKey : Pointer; out CompletionPort : THandle);
+var
+  len : DWORD;
+  Data : TJobObjectAssociateCompletionPort;
+begin
+  Len := sizeof(Data); //return static structure
+
+  try
+    if not QueryInformationJobObject(
+      fHandle,//__in_opt   HANDLE hJob,
+      JobObjectAssociateCompletionPortInformation,//__in       JOBOBJECTINFOCLASS JobObjectInfoClass,
+      @Data,//__out      LPVOID lpJobObjectInfo,
+      Len,//__in       DWORD cbJobObjectInfoLength,
+      nil//__out_opt  LPDWORD lpReturnLength
+      ) then
+     raise EJwsclWinCallFailedException.CreateFmtWinCall(
+          '',
+          'GetBasicUIRestrictions',                                //sSourceProc
+          ClassName,                                //sSourceClass
+          '',                          //sSourceFile
+          0,                                           //iSourceLine
+          True,                                  //bShowLastError
+          'QueryInformationJobObject',                   //sWinCall
+          ['QueryInformationJobObject']);                                  //const Args: array of const
+  finally
+  end;
+  CompletionKey := Data.CompletionKey;
+  CompletionPort := Data.CompletionPort;
+end;
+
+function TJwJobObject.GetIOHandle : THandle;
+begin
+  if Assigned(fThread) then
+  begin
+    result := fThread.fIOHandle;
+  end
+  else
+    result := INVALID_HANDLE_VALUE;
+end;
+
+procedure TJwJobObject.SetObjectAssociateCompletionPortInformation(
+    const CompletionKey : Pointer; CompletionPort : THandle);
+var
+  Data : TJobObjectAssociateCompletionPort;
+  Len : Cardinal;
+begin
+  Len := sizeof(Data);
+  Data.CompletionKey := CompletionKey;
+  Data.CompletionPort := CompletionPort;
+
+  if not SetInformationJobObject(
+      fHandle,//__in  HANDLE hJob,
+      JobObjectAssociateCompletionPortInformation,//__in  JOBOBJECTINFOCLASS JobObjectInfoClass,
+      @Data,//__in  LPVOID lpJobObjectInfo,
+      len//__in  DWORD cbJobObjectInfoLength
+    ) then
+     raise EJwsclWinCallFailedException.CreateFmtWinCall(
+          '',
+          'SetObjectAssociateCompletionPortInformation',                                //sSourceProc
+          ClassName,                                //sSourceClass
+          '',                          //sSourceFile
+          0,                                           //iSourceLine
+          True,                                  //bShowLastError
+          'SetInformationJobObject',                   //sWinCall
+          ['SetInformationJobObject']);                                  //const Args: array of const
+end;
+
+function TJwJobObject.GetExtendedLimitInformation : TJobObjectExtendedLimitInformation;
+var
+  len : DWORD;
+begin
+  Len := sizeof(result); //return static structure
+
+  ZeroMemory(@result, sizeof(result));
+
+  try
+    if not QueryInformationJobObject(
+      fHandle,//__in_opt   HANDLE hJob,
+      JobObjectExtendedLimitInformation,//__in       JOBOBJECTINFOCLASS JobObjectInfoClass,
+      @result,//__out      LPVOID lpJobObjectInfo,
+      len,//__in       DWORD cbJobObjectInfoLength,
+      nil//__out_opt  LPDWORD lpReturnLength
+      ) then
+     raise EJwsclWinCallFailedException.CreateFmtWinCall(
+          '',
+          'GetBasicUIRestrictions',                                //sSourceProc
+          ClassName,                                //sSourceClass
+          '',                          //sSourceFile
+          0,                                           //iSourceLine
+          True,                                  //bShowLastError
+          'QueryInformationJobObject',                   //sWinCall
+          ['QueryInformationJobObject']);                                  //const Args: array of const
+  finally
+  end;
+end;
+
+procedure TJwJobObject.SetExtendedLimitInformation(Info : TJobObjectExtendedLimitInformation);
+var i : Integer;
+begin
+  i := sizeof(Info);
+  if not SetInformationJobObject(
+      fHandle,//__in  HANDLE hJob,
+      JobObjectExtendedLimitInformation,//__in  JOBOBJECTINFOCLASS JobObjectInfoClass,
+      @Info,//__in  LPVOID lpJobObjectInfo,
+      i//__in  DWORD cbJobObjectInfoLength
+    ) then
+     raise EJwsclWinCallFailedException.CreateFmtWinCall(
+          '',
+          'SetExtendedLimitInformation',                                //sSourceProc
+          ClassName,                                //sSourceClass
+          '',                          //sSourceFile
+          0,                                           //iSourceLine
+          True,                                  //bShowLastError
+          'SetInformationJobObject',                   //sWinCall
+          ['SetInformationJobObject']);                                  //const Args: array of const
+end;
+
+
+
+function TJwJobObject.GetJobObjectInformationLength(
+   const JobObjectInfoClass : JOBOBJECTINFOCLASS) : Cardinal;
+var
+  len,
+  rlen,
+  res : DWORD;
+  Data : Pointer;
+begin
+  rlen := 0;
+  len := 32;
+  Data := nil;
+
+
+  SetLastError(ERROR_MORE_DATA);
+
+  while (GetLastError = ERROR_MORE_DATA) do
+  begin
+    GetMem(Data, len);
+    try
+      SetLastError(0);
+
+      if not QueryInformationJobObject(
+        fHandle,//__in_opt   HANDLE hJob,
+        JobObjectInfoClass,//__in       JOBOBJECTINFOCLASS JobObjectInfoClass,
+        Data,//__out      LPVOID lpJobObjectInfo,
+        len,//__in       DWORD cbJobObjectInfoLength,
+        @rlen//__out_opt  LPDWORD lpReturnLength
+        )
+        and (GetLastError <> ERROR_MORE_DATA) then
+
+       raise EJwsclWinCallFailedException.CreateFmtWinCall(
+            '',
+            'GetJobObjectInformationLength',                                //sSourceProc
+            ClassName,                                //sSourceClass
+            '',                          //sSourceFile
+            0,                                           //iSourceLine
+            True,                                  //bShowLastError
+            'QueryInformationJobObject',                   //sWinCall
+            ['QueryInformationJobObject'])
+      else
+      begin
+        SetLastError(0);
+        rlen := len;
+      end;
+    finally
+      FreeMem(Data);
+      if (GetLastError = ERROR_MORE_DATA) then
+      begin
+        Inc(Len, 32);
+        SetLastError(ERROR_MORE_DATA);
+      end;
+    end;
+  end;
+  result := rlen;
+end;
+
+procedure TJwJobObject.GetJobObjectInformation(
+   const JobObjectInfoClass : JOBOBJECTINFOCLASS;
+   out Data : Pointer);
+var
+  len,
+  rlen,
+  res : DWORD;
+
+begin
+  rlen := 0;
+  len := GetJobObjectInformationLength(JobObjectInfoClass);
+  GetMem(Data, len);
+  ZeroMemory(Data, len);
+
+  if Data = nil then
+    RaiseLastOSError;
+
+  if not QueryInformationJobObject(
+    fHandle,//__in_opt   HANDLE hJob,
+    JobObjectInfoClass,//__in       JOBOBJECTINFOCLASS JobObjectInfoClass,
+    Data,//__out      LPVOID lpJobObjectInfo,
+    len,//__in       DWORD cbJobObjectInfoLength,
+    @rlen//__out_opt  LPDWORD lpReturnLength
+    ) then
+   raise EJwsclWinCallFailedException.CreateFmtWinCall(
+        '',
+        'GetJobObjectInformation',                                //sSourceProc
+        ClassName,                                //sSourceClass
+        '',                          //sSourceFile
+        0,                                           //iSourceLine
+        True,                                  //bShowLastError
+        'QueryInformationJobObject',                   //sWinCall
+        ['QueryInformationJobObject']);                                  //const Args: array of const
+end;
+
+function TJwJobObject.IsProcessInJob(hProcess : TJwProcessHandle) : Boolean;
+var LB : LongBool;
+begin
+  if not JwaWindows.IsProcessInJob(hProcess, fHandle, LB) then
+     raise EJwsclWinCallFailedException.CreateFmtWinCall(
+        '',
+        'IsProcessInJob',                                //sSourceProc
+        ClassName,                                //sSourceClass
+        '',                          //sSourceFile
+        0,                                           //iSourceLine
+        True,                                  //bShowLastError
+        'IsProcessInJob',                   //sWinCall
+        ['IsProcessInJob']);                                  //const Args: array of const
+  result := LB;
+end;
+
+procedure TJwJobObject.AssignProcessToJobObject(hProcess : TJwProcessHandle);
+begin
+  if not JwaWindows.AssignProcessToJobObject(fHandle, hProcess) then
+     raise EJwsclWinCallFailedException.CreateFmtWinCall(
+        '',
+        'AssignProcessToJobObject',                                //sSourceProc
+        ClassName,                                //sSourceClass
+        '',                          //sSourceFile
+        0,                                           //iSourceLine
+        True,                                  //bShowLastError
+        'AssignProcessToJobObject',                   //sWinCall
+        ['AssignProcessToJobObject']);                                  //const Args: array of const
+end;
+
+procedure TJwJobObject.TerminateJobObject(const ExitCode : DWORD);
+begin
+  if not JwaWindows.TerminateJobObject(fHandle, ExitCode) then
+     raise EJwsclWinCallFailedException.CreateFmtWinCall(
+        '',
+        'TerminateJobObject',                                //sSourceProc
+        ClassName,                                //sSourceClass
+        '',                          //sSourceFile
+        0,                                           //iSourceLine
+        True,                                  //bShowLastError
+        'TerminateJobObject',                   //sWinCall
+        ['TerminateJobObject']);                                  //const Args: array of const
+end;
+
+function TJwJobObject.GetJobLimit : TJwJobLimits;
+var
+  Info : TJobObjectBasicLimitInformation;
+begin
+  Info := GetBasicLimitInformation;
+  Result := TJwEnumMap.ConvertJobLimit(Info.LimitFlags);
+end;
+
+procedure TJwJobObject.SetJobLimit(const Limit : TJwJobLimits);
+var
+  Info : TJobObjectBasicLimitInformation;
+begin
+  Info := GetBasicLimitInformation;
+  Info.LimitFlags := TJwEnumMap.ConvertJobLimitType(Limit);
+  SetBasicLimitInformation(Info);
+end;
+
+function TJwJobObject.GetJobUiLimit : TJwJobUiLimits;
+var
+  Info : TJobObjectBasicUiRestrictions;
+begin
+  Info := GetBasicUIRestrictions;
+  Result := TJwEnumMap.ConvertJobUiLimit(Info.UIRestrictionsClass);
+end;
+
+procedure TJwJobObject.SetJobUiLimit(const Limit : TJwJobUiLimits);
+var
+  Info : TJobObjectBasicUiRestrictions;
+begin
+  Info := GetBasicUIRestrictions;
+  Info.UIRestrictionsClass := TJwEnumMap.ConvertJobUiLimitType(Limit);
+  SetBasicUIRestrictions(Info);
+end;
+
+function TJwJobObject.GetActiveProcessCount : Cardinal;
+begin
+  result := GetBasicAndIOInformation.BasicInfo.ActiveProcesses;
+end;
+
+
+procedure TJwJobObject.ResetIOThread(const Force : Boolean);
+var
+  IOPort : THandle;
+begin
+  if not Assigned(fThread) then
+  begin
+    fThread := TJwInternalJobObjectIOCompletitionThread.Create(Self, false,IOJOBNAME+Name);
+  end
+  else 
+  begin
+    if not Force and not fThread.Terminated then
+      exit;
+
+    fThread.fRemainPort := true;
+    IOPort := fThread.IOHandle;
+
+    fThread.Terminate;
+    case WaitForSingleObject(fThread.Handle, 4000) of
+      WAIT_TIMEOUT : TerminateThread(fThread.Handle, ERROR_TIMEOUT);
+      WAIT_OBJECT_0 : ;
+    end;
+
+    try
+      FreeAndNil(fThread);
+    except
+    end;
+    
+    fThread := TJwInternalJobObjectIOCompletitionThread.CreateWithIOPort(Self, IOPort,false,IOJOBNAME+Name);
+  end;
+end;
+
+
+constructor TJwInternalJobObjectIOCompletitionThread.Create(
+ const Parent: TJwJobObject;const CreateSuspended: Boolean; const Name: String);
+begin
+  fJwJobObject := Parent;
+  fIOHandle := CreateIoCompletionPort(
+                  INVALID_HANDLE_VALUE,//__in      HANDLE FileHandle,
+                  0,//__in_opt  HANDLE ExistingCompletionPort,
+                  Parent.IOUniqueID,//__in      ULONG_PTR CompletionKey,
+                  0,//__in      DWORD NumberOfConcurrentThreads
+                );
+  if fIOHandle = 0 then
+    RaiseLastOSError;
+
+  Self.FreeOnTerminate := false;
+  fRemainPort := false;
+
+  inherited Create(CreateSuspended,Name);
+end;
+
+constructor TJwInternalJobObjectIOCompletitionThread.CreateWithIOPort(
+  const Parent: TJwJobObject; IOPort : THandle;
+  const CreateSuspended: Boolean; const Name: String);
+begin
+  fJwJobObject := Parent;
+  fIOHandle := IOPort;
+  if fIOHandle = 0 then
+  begin
+    SetLastError(ERROR_INVALID_HANDLE);
+    RaiseLastOSError;
+  end;
+
+  Self.FreeOnTerminate := false;
+  fRemainPort := false;
+
+  inherited Create(CreateSuspended,Name);
+end;
+
+procedure TJwInternalJobObjectIOCompletitionThread.Execute;
+var
+  pOV : POverlapped;
+  lpNumberOfBytes,
+  lpCompletionKey : Cardinal;
+  Res : Boolean;
+  L : DWORD;
+const ERROR_ABANDONED_WAIT_0 = 735;
+
+begin
+  inherited; //sets thread name
+  
+  fRemainPort := false;
+  pOV := nil;
+  ReturnValue := 0;
+
+  try
+    repeat
+      SetLastError(0);
+      Res := GetQueuedCompletionStatus(
+        fIOHandle,//__in   HANDLE CompletionPort,
+        lpNumberOfBytes,//__out  LPDWORD lpNumberOfBytes,
+        lpCompletionKey,//__out  PULONG_PTR lpCompletionKey,
+        pOV,//__out  LPOVERLAPPED* lpOverlapped,
+        INFINITE//__in   DWORD dwMilliseconds
+      );
+
+      L := GetLastError();
+      if (not Res and (L <> 0)) or
+         fRemainPort or Terminated then
+      begin
+        ReturnValue := L;
+
+        inherited Terminate;
+        break;
+      end
+      else
+      if Assigned(fJwJobObject) and Res then
+      begin
+        if Assigned(fJwJobObject.OnNoActiveProcesses) and
+          (fJwJobObject.GetActiveProcessCount = 0) then
+        begin
+          try
+            fJwJobObject.OnNoActiveProcesses(fJwJobObject);
+          except
+          end;
+        end;
+
+        if Assigned(fJwJobObject.OnNotification) then
+        begin
+          try
+            fJwJobObject.OnNotification(fJwJobObject, TJwProcessId(pOV),
+              TJwEnumMap.ConvertJobMessage(lpNumberOfBytes));
+          except
+          end;
+        end;
+      end;
+    until Terminated;
+  finally
+    if not fRemainPort then
+    begin
+      CloseHandle(fIOHandle);
+      fIOHandle := INVALID_HANDLE_VALUE;
+      fRemainPort := false;
+    end;
+  end;
+end;
+
+
+procedure TJwInternalJobObjectIOCompletitionThread.Terminate;
+begin
+  inherited;
+  if not fRemainPort then
+  begin
+    //send dummy completion for GetQueuedCompletionStatus to return
+    PostQueuedCompletionStatus(fIOHandle,0,0,nil);
+  end;
+end;
+
 
 
 {$ENDIF SL_INTERFACE_SECTION}

@@ -34,7 +34,7 @@ Description:
 
 
 Hint: Install JCL and compile this unit with compiler directive SM_JCLDEBUG
-    and TD32 Debug Info.
+   and TD32 Debug Info.
 
 
 }
@@ -340,6 +340,7 @@ type
 
   EJwsclNilPointer = class(EJwsclSecurityException);
   EJwsclCreateProcessFailed = class(EJwsclSecurityException);
+  EJwsclInvalidPointerType = class(EJwsclSecurityException);
 
   JwGeneralExceptionClass = class of Exception;
 

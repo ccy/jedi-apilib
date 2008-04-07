@@ -90,6 +90,7 @@ type
     fOwnerInherited, fPrimaryGroupInherited: boolean;
     fDACLInherited, fAuditInherited: boolean;
 
+    fInheritHandles : Boolean;
 
     fControl: TJwSecurityDescriptorControlSet;
 
@@ -702,6 +703,14 @@ type
        }
     property OnHashCodeMethod: TJwHashCodeMethod
       Read fOnHashCodeMethod Write fOnHashCodeMethod;
+
+    {@Name is custom flag that defines whether handles are inherited (true) or not.
+     This property is not used by @ClassName. However some JWSCL methods use
+     it instead of the structure SECURITY_ATTRIBUTES. @NAme is used instead of
+     the member bInheritHandle of SECURITY_ATTRIBUTES. In fact it is mapped internally
+     into a SECURITY_ATTRIBUTES structure.
+     }
+    property InheritHandles : Boolean read fInheritHandles write fInheritHandles;
   end;
 
 const {@Name is the header string that initiates a security descriptor stream block used
@@ -768,6 +777,8 @@ begin
   fAuditInherited := False;
 
   OnHashCodeMethod := hashCode;
+
+  fInheritHandles := false;
 
   fControl := [];
 end;
