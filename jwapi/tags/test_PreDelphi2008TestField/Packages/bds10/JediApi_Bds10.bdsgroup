@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<PersonalityInfo>
+		<Option>
+			<Option Name="Personality">Default.Personality</Option>
+			<Option Name="ProjectType"></Option>
+			<Option Name="Version">1.0</Option>
+			<Option Name="GUID">{CB57185B-3AAA-47F5-9E60-CACC0046268F}</Option>
+		</Option>
+	</PersonalityInfo>
+	<Default.Personality>  <Projects>
+      <Projects Name="JediApi_DynamicDebug.bpl">JediApi_DynamicDebug.bdsproj</Projects>
+      <Projects Name="JediApi_DynamicRelease.bpl">JediApi_DynamicRelease.bdsproj</Projects>
+      <Projects Name="JediApi_StaticDebug.bpl">JediApi_StaticDebug.bdsproj</Projects>
+      <Projects Name="JediApi_StaticRelease.bpl">JediApi_StaticRelease.bdsproj</Projects>
+      <Projects Name="Targets">JediApi_DynamicDebug.bpl JediApi_DynamicRelease.bpl JediApi_StaticDebug.bpl JediApi_StaticRelease.bpl</Projects>
+    </Projects>
+    <Dependencies/>
+  </Default.Personality>
+</BorlandProject>
