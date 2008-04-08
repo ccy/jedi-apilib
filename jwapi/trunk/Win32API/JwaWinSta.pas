@@ -491,7 +491,7 @@ function WinStationGetProcessSid(hServer: Handle; dwPID: DWORD;
   Boolean; stdcall;
 
 function WinStationGetRemoteIPAddress(hServer: HANDLE; SessionId: DWORD;
-  var RemoteIPAddress: string; var Port: WORD): Boolean;
+  var RemoteIPAddress: WideString; var Port: WORD): Boolean;
 
 function WinStationGetTermSrvCountersValue(hServer: Handle;
   dwArraySize: DWORD; PCountersArray: PTERM_SRV_COUNTER_ARRAY): Boolean;
@@ -1436,7 +1436,7 @@ begin
 end;
 
 function WinStationGetRemoteIPAddress(hServer: HANDLE; SessionId: DWORD;
-  var RemoteIPAddress: string; var Port: WORD): Boolean;
+  var RemoteIPAddress: WideString; var Port: WORD): Boolean;
 var WinStationRemoteIPAddress: TWinStationRemoteAddress;
   pReturnLength: DWORD;
 begin
