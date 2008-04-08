@@ -3419,7 +3419,7 @@ constructor TJwWTSSession.Create(const Owner: TJwWTSSessionList;
   const SessionId: TJwSessionId; const WinStationName: TJwString;
   const ConnectState: TWtsConnectStateClass);
 var
-  tempStr : String;
+  tempStr : wideString;
 begin
   JwRaiseOnNilMemoryBlock(Owner, 'Create', ClassName, RsUNTerminalServer);
   JwRaiseOnNilMemoryBlock(Owner.Owner, 'Create', ClassName, RsUNTerminalServer);
