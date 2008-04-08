@@ -1877,7 +1877,7 @@ function TJwSecurityAccessControlList.Create_PACL: PACL;
           ACE.Revision,//__in     DWORD dwAceRevision,
           MAXDWORD,//__in     DWORD dwStartingAceIndex,
           ppACE,//__in     LPVOID pAceList,
-          AceSize,//__in     DWORD nAceListLength
+          AceSize//__in     DWORD nAceListLength
         );
 
       GlobalFree(Cardinal(ppACE));
