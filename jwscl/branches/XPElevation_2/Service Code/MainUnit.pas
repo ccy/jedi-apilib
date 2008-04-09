@@ -171,7 +171,8 @@ end;
 procedure TXPService.ServiceExecute(Sender: TService);
 var Pipe: THandle; OvLapped: OVERLAPPED;
     ar: array[0..2] of THandle;
-    AppName: String; PipeSize: Cardinal; Descr: TJwSecurityDescriptor; SecAttr: PSECURITY_ATTRIBUTES;
+    AppName: String; PipeSize: Cardinal; Descr: TJwSecurityDescriptor;
+    SecAttr: JwaWindows.PSECURITY_ATTRIBUTES;
     i: integer;
     Log : IJwLogClient;
     WaitResult : DWORD;
@@ -287,8 +288,8 @@ begin
         finally
           if Assigned(SecAttr) then
           begin
-            TJwSecurityDescriptor.Free_SD(PSECURITY_DESCRIPTOR(SecAttr.lpSecurityDescriptor));
-            FreeMem(SecAttr);
+            TJwSecurityDescriptor.Free_SA(SecAttr);
+//            FreeMem(SecAttr);
           end;
           CloseHandle(OvLapped.hEvent);
         end;
