@@ -61,6 +61,8 @@ var i : Integer;
    Parameters : String;
 begin
   JwInitWellKnownSIDs;
+  
+  
   if JwIsPrivilegeSet(SE_TCB_NAME, pqt_Available) and
    {  JwIsPrivilegeSet(SE_CREATE_TOKEN_NAME, pqt_Available) and}
      (JwSecurityProcessUserSID.EqualSid(JwLocalSystemSID)) then
@@ -104,7 +106,10 @@ begin
   else
   begin
     try
-      if not (TJwWindowsVersion.IsWindowsVista(true) or
+      if ParamCount = 0 then
+	    halt(1);
+	  
+	  if not (TJwWindowsVersion.IsWindowsVista(true) or
         TJwWindowsVersion.IsWindows2008(true)) then
       begin
         ShowMessage('You have to logon as administrator. Please enter your admin credentials.');
@@ -126,7 +131,7 @@ begin
     except
       on E : EJwsclWinCallFailedException do
       begin
-        if E.LastError <> 1223 then
+        if E.LastError <> E_USER_CANCELED_OPERATION then
           ShowMessage(e.Message);
         halt(E.LastError);  
       end;

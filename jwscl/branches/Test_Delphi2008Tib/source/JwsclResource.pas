@@ -107,6 +107,13 @@ const
   RsACEMismatch = 'The type of the ACE class and the type of the ACE header do not match.';
   RsInvalidRevision = 'The given revision level %0:d is not supported.';
 
+  RsRightGeneric = '[Generic]';
+  RsRightReserved = '[Reserved]';
+  RsRightMaximumAllowed = '[maximum allowed]';
+  RsRightSacl = '[SACL]';
+  RsRightStandard = '[Standard]';
+  RsRightSpecific = '[Specific]';
+
 //Unit  JwsclCredentials.pas
   RsCredentialsLocalName = 'local';
   RsUNCredentialsInvalidParameters = 'One or more parameters of CredUIParseU' +

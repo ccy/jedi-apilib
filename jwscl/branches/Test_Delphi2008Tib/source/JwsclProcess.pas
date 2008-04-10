@@ -42,7 +42,8 @@ interface
 
 uses Classes, jwaWindows,
   JwsclTypes, JwsclToken, JwsclSid, JwsclTerminalServer, JwsclUtils,
-  JwsclLogging, JwsclLsa, JwsclDescriptor,JwsclEnumerations,
+  JwsclSecureObjects,
+  JwsclLogging, JwsclLsa, JwsclDescriptor,JwsclEnumerations, JwsclComUtils,
   JwsclStrings; //JwsclStrings, must be at the end of uses list!!!
 {$ENDIF SL_OMIT_SECTIONS}
 
@@ -166,6 +167,8 @@ BOOL WINAPI TerminateJobObject(HANDLE hJob, UINT uExitCode);
         out CompletionKey : Pointer; out CompletionPort : THandle);
 
     function GetIOHandle : THandle;
+
+
   public
     {@Param SecurityAttributes defines the security information for the job object.
       Use TJwSecurityDescriptor.InheritHandles to control handle inheritance.
@@ -228,7 +231,7 @@ BOOL WINAPI TerminateJobObject(HANDLE hJob, UINT uExitCode);
     }
     function WaitForAllotedCPUTimeSignal(const TimeOut : DWORD) : TJwWaitState;
 
-
+    function GetSecurityDescriptor(const Si : TJwSecurityInformationFlagSet) : TJwSecurityDescriptor;
 
     {@Name defines whether all processes should be terminated. If set to true
      and the @Classname instance is freed all processes assigned to this job
@@ -1387,6 +1390,8 @@ constructor TJwJobObject.Create(const Name : TJwString;
   const ErrorIfAlreadyExists : Boolean;
   const SecurityAttributes : TJwSecurityDescriptor);
 
+var
+  pSA : LPSECURITY_ATTRIBUTES;
 begin
   SetLastError(0);
 
@@ -1396,18 +1401,27 @@ begin
 
   fJobName := Name;
 
+
+  if Assigned(SecurityAttributes) then
+    pSA := LPSECURITY_ATTRIBUTES(SecurityAttributes.Create_SA2())
+  else
+    pSA := nil;
+
+
   if Length(Name) > 0 then
   begin
     fHandle := {$IFDEF UNICODE}CreateJobObjectW{$ELSE}CreateJobObjectA{$ENDIF}
-      (nil, TJwPChar(Name));
+      (pSA, TJwPChar(Name));
     fThread := TJwInternalJobObjectIOCompletitionThread.Create(Self, true,IOJOBNAME+Name);
   end
   else
   begin
     fHandle := {$IFDEF UNICODE}CreateJobObjectW{$ELSE}CreateJobObjectA{$ENDIF}
-      (nil, nil);
+      (pSA, nil);
     fThread := TJwInternalJobObjectIOCompletitionThread.Create(Self, true,IOJOBNAME+IntToStr(GetCurrentThreadId));
   end;
+
+  TJwSecurityDescriptor.Free_SA(PSecurityAttributes(pSA));
 
   fAccessMask := JOB_OBJECT_ALL_ACCESS;
   fTerminateOnDestroy := false;
@@ -1839,6 +1853,12 @@ begin
           ['SetInformationJobObject']);                                  //const Args: array of const
 end;
 
+function TJwJobObject.GetSecurityDescriptor(const Si :
+  TJwSecurityInformationFlagSet) : TJwSecurityDescriptor;
+begin
+  result := TJwSecureGeneralObject.GetSecurityInfo(Handle, SE_KERNEL_OBJECT,
+    Si);
+end;
 
 
 function TJwJobObject.GetJobObjectInformationLength(

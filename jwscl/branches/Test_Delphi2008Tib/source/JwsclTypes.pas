@@ -1117,7 +1117,15 @@ type
   TJwJobMessages = set of TJwJobMessage;
 
 
-
+  TJwRightType = (
+    rtUnknown,
+    rtNone,
+    rtGeneric,
+    rtReserved,
+    rtMaximum,
+    rtSystem,
+    rtStandard,
+    rtSpecific);
 
 
 {$ENDIF SL_IMPLEMENTATION_SECTION}

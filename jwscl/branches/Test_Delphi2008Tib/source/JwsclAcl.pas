@@ -1462,12 +1462,94 @@ type
       write SetMandatoryPolicy;
   end;
 
+  {@Name creates a formatted string that splits up an access mask
+  into its rights constants. The constants can be named if parameter
+  RightsMapping is used.
+
+  Each line contains a checkbox that defines whether the access mask
+   contains this specifc right or not. Furthermore it contains the name of the
+   right.
+  A line may look like this:
+    [X] <right> [<right type>]
+
+  @param(GrantedAccess defines an array of access masks. Each
+    array element will get its own column (zero based).)
+  @param(RightsMapping defines a map structure that maps between constants
+   and strings (e.g. JwsclConstants.FileMapping )
+  @return(Returns the access mask with its rights states. Each line is
+   separated by a line break (#13#10))
+
+  }
   function JwFormatAccessRights(const Access : Cardinal;
      RightsMapping : Array of TJwRightsMapping) : TJwString; overload;
+
+  {@Name creates a formatted string that splits up several access massk
+  into its rights constants. The constants can be named if parameter
+  RightsMapping is used.
+
+  Each line contains one or more checkboxes that define whether the access masks
+   contain a specifc right or not. Furthermore it contains the name of the
+   right.
+  A line may look like this:
+    [X] [ ] [X] <right> [<right type>]
+    [X] [ ] [2] <right> [<right type>]
+
+  @param(GrantedAccess defines an array of access masks. Each
+    array element will get its own column (zero based).)
+  @param(AccessStatus defines an array of the error status of the
+    right. If status is neither zero nor 5 (access denied) instead of
+    an emtyp or checked checkbox ([ ] or [X]),
+    the status will be shown in the checkbox (e.g. [2]).
+    The array index of GrantedAccess will be used to get the error status
+    index from AccessStatus. Thus the length of array AccessStatus and
+    GrantedStatus must be the same.)
+  @param(RightsMapping defines a map structure that maps between constants
+   and strings (e.g. JwsclConstants.FileMapping ))
+  @return(Returns the access mask with its rights states. Each line is
+   separated by a line break (#13#10))
+
+  }
   function JwFormatAccessRights(
     const GrantedAccess : TJwAccessMaskArray;
     const AccessStatus : TJwCardinalArray;
     RightsMapping : Array of TJwRightsMapping) : TJwString; overload;
+
+
+
+  {@Name returns true if the given right has a standard (16-23) bit set;
+   otherwise false.}
+  function IsStandardRight(const Right : Cardinal) : Boolean;
+
+  {@Name returns true if the given right has a generic (31-28) bit set;
+   otherwise false.}
+  function IsGenericRight(const Right : Cardinal) : Boolean;
+
+  {@Name returns true if the given right has a reserved (27, 25) bit set;
+   otherwise false.}
+  function IsReservedRight(const Right : Cardinal) : Boolean;
+
+  {@Name returns true if the given right has the maximum allowed (26) bit set;
+   otherwise false.}
+  function IsMaximumRight(const Right : Cardinal) : Boolean;
+
+  {@Name returns true if the given right has an object specific (0..15) bit set;
+   otherwise false.}
+  function IsSpecificRight(const Right : Cardinal) : Boolean;
+
+  {@Name returns true if the given right has the system (24) bit set;
+   otherwise false.}
+  function IsSACLRight(const Right : Cardinal) : Boolean;
+
+  {@Name returns the type of a given right. The function checks the bits
+   of parameter Right from higher bits to lower bits and returns the type when it
+   finds a set bit.
+   The order it returns a type is the following :
+     Generic, Reserved, Maximum, SACL, Standard, Specific,
+
+   @return(Returns the type of right as TJwRightType. It returns rtNone
+    if parameter Right is zero.) 
+  }
+  function JwRightType(const Right : Cardinal) : TJwRightType;
 
 {$ENDIF SL_IMPLEMENTATION_SECTION}
 
@@ -1503,9 +1585,78 @@ begin
       Result := Result + '[ ] ';
 
     //names may vary depeding on resource string contents
-    Result := Result + RightsMapping[i].Name + #13#10;
+    Result := Result + RightsMapping[i].Name;
+
+    case JwRightType(RightsMapping[i].Right ) of
+      rtGeneric  : result := result + ' ' + RsRightGeneric;
+      rtReserved : result := result + ' ' + RsRightReserved;
+      rtMaximum  : result := result + ' ' + RsRightMaximumAllowed;
+      rtSystem   : result := result + ' ' + RsRightSacl;
+      rtStandard : result := result + ' ' + RsRightStandard;
+      rtSpecific : result := result + ' ' + RsRightSpecific;
+    end;
+
+    result := result + #13#10;
   end;
 end;
+
+function IsStandardRight(const Right : Cardinal) : Boolean;
+begin
+  result := (Right and $FF0000) <> 0;
+end;
+
+function IsGenericRight(const Right : Cardinal) : Boolean;
+begin
+  result := (Right and $F0000000) <> 0;
+end;
+
+function IsReservedRight(const Right : Cardinal) : Boolean;
+begin
+  result := (Right and $A000000) <> 0;
+end;
+
+function IsMaximumRight(const Right : Cardinal) : Boolean;
+begin
+  result := (Right and MAXIMUM_ALLOWED) <> 0;
+end;
+
+function IsSpecificRight(const Right : Cardinal) : Boolean;
+begin
+  result := (Right and $FFFF) <> 0;
+end;
+
+function IsSACLRight(const Right : Cardinal) : Boolean;
+begin
+  result := (Right and ACCESS_SYSTEM_SECURITY) <> 0;
+end;
+
+function JwRightType(const Right : Cardinal) : TJwRightType;
+begin
+  result := rtNone;
+  if Right = 0 then
+    exit;
+
+  result := rtUnknown;
+
+  if IsGenericRight(Right) then
+    result := rtGeneric
+  else
+  if IsReservedRight(Right) then
+    result := rtReserved
+  else
+  if IsMaximumRight(Right) then
+    result := rtMaximum
+  else
+  if IsSACLRight(Right) then
+    result := rtSystem
+  else
+  if IsStandardRight(Right) then
+    result := rtStandard
+  else
+  if IsSpecificRight(Right) then
+    result := rtSpecific;
+end;
+
 
 function JwFormatAccessRights(
     const GrantedAccess : TJwAccessMaskArray;
@@ -1516,11 +1667,6 @@ begin
   result := '- generic'#13#10;
   for i := low(RightsMapping) to high(RightsMapping) do
   begin
-    if i = 7 then
-      result := result + '- specific' + #13#10;
-    if i = 17 then
-      result := result + '- standard' + #13#10;
-
     for i2 := 0 to High(GrantedAccess) do
     begin
       if GrantedAccess[i2] and RightsMapping[i].Right =
@@ -1536,7 +1682,18 @@ begin
     end;
 
     //names may vary depeding on resource string contents
-    result := result + ' ' + RightsMapping[i].Name + #13#10;
+    result := result + ' ' + RightsMapping[i].Name;
+
+    case JwRightType(RightsMapping[i].Right ) of
+      rtGeneric  : result := result + ' ' + RsRightGeneric;
+      rtReserved : result := result + ' ' + RsRightReserved;
+      rtMaximum  : result := result + ' ' + RsRightMaximumAllowed;
+      rtSystem   : result := result + ' ' + RsRightSacl;
+      rtStandard : result := result + ' ' + RsRightStandard;
+      rtSpecific : result := result + ' ' + RsRightSpecific;
+    end;
+
+    result := result + #13#10;
   end;
 end;
 

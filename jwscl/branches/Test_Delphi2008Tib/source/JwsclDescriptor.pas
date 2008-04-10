@@ -334,6 +334,13 @@ type
     function Create_SA(bInheritHandle: boolean = False;
       bSDRelative: boolean = False): PSecurityAttributes;
 
+    {@Name does the same as Create_SA, but uses the property InheritHandles
+     to initialize the result.
+
+     See Create_SA for more information.
+     }
+    function Create_SA2(bSDRelative: boolean = False): PSecurityAttributes;
+
        {@Name creates a security attributes structure on the stack. However the internal security descriptor will be created on heap.
 
         The SA structure must be freed by Free_SAEx. The internal SD structure is automatically freed.
@@ -351,6 +358,14 @@ type
     function Create_SAEx(bInheritHandle: boolean = False;
       bSDRelative: boolean = False): TSecurityAttributes;
 
+    {@Name does the same as Create_SAEx, but uses the property InheritHandles
+     to initialize the result.
+
+     See Create_SAEx for more information.
+     }
+    function Create_SAEx2(bSDRelative: boolean = False): TSecurityAttributes;
+
+
        {@Name frees a security attribute created by Create_SA.
 
         This method uses FreeMem, so do not use this function with security attributes structure that was created using LocalAlloc,
@@ -362,6 +377,8 @@ type
        }
     class procedure Free_SA(var SA: PSecurityAttributes);
 
+  //  class procedure Free_LPSA(var SA: LPSECURITY_ATTRIBUTES);
+
        {@Name frees a security attribute created by Create_SAEx.
 
         This method uses FreeMem, so do not use this function with security attributes structure that was created using LocalAlloc,
@@ -371,6 +388,8 @@ type
         @raises EJwsclSecurityException The exception EJwsclSecurityException is raised if the internal nLength component is not the sizeof TSecurityAttributes.
        }
     class procedure Free_SAEx(var SA: TSecurityAttributes);
+
+ //   class procedure Free_LPSAEx(var SA: LPSECURITY_ATTRIBUTES);
 
        {@Name writes a relative security descriptor into a stream.
         The method uses a magic header to check for position errors in a stream.
@@ -1672,6 +1691,11 @@ begin
   SD := nil;
 end;
 
+function TJwSecurityDescriptor.Create_SAEx2(bSDRelative: boolean = False): TSecurityAttributes;
+begin
+  result := Self.Create_SAEx(Self.InheritHandles, bSDRelative);
+end;
+
 function TJwSecurityDescriptor.Create_SAEx(bInheritHandle: boolean = False;
   bSDRelative: boolean = False): TSecurityAttributes;
 begin
@@ -1689,6 +1713,10 @@ begin
   end;
 end;
 
+function TJwSecurityDescriptor.Create_SA2(bSDRelative: boolean = False): PSecurityAttributes;
+begin
+  result := Create_SA(Self.InheritHandles, bSDRelative);
+end;
 
 function TJwSecurityDescriptor.Create_SA(bInheritHandle: boolean = False;
   bSDRelative: boolean = False): PSecurityAttributes;
