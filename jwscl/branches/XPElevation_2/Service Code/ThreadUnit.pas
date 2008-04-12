@@ -17,11 +17,8 @@ type
   public
     constructor Create;
     procedure Add(Job, Profile: Cardinal; Token: TJwSecurityToken);
-    property IOCompletionPort: THandle read fIOCompletionPort;
+    procedure RequestTerminate; //Terminate is not virtual, so use a new method instead
   end;
-
-const
-  MESSAGE_FROM_SERVICE = 0;
 
 var UnloadProfThread: TUnloadProfThread;
 
@@ -45,10 +42,9 @@ begin
   begin
     repeat
       GetQueuedCompletionStatus(fIOCompletionPort, Val, Key, Ov, INFINITE);
-    until (Key = MESSAGE_FROM_SERVICE) or
-     (Val=JOB_OBJECT_MSG_ACTIVE_PROCESS_ZERO);
+    until (Val=JOB_OBJECT_MSG_ACTIVE_PROCESS_ZERO);
 
-    if Key = MESSAGE_FROM_SERVICE then //Is this a stop message?
+    if Ov <> nil then //Is this a stop message?
     begin
       with fList.LockList do
       begin
@@ -96,6 +92,12 @@ begin
   JobInformation.Job := Job;
   JobInformation.Profile := Profile;
   JobInformation.Token := Token;
+
+  {The following can be dangerous. It assumes that there are
+  no more than 2^32 processes started by the service. If this
+  is not the case, an id might be doubled. We could use the list
+  lock to lock other threads while checking if the current id
+  does already exist, but this would be time expensive.}
   JobInformation.Id := InterlockedExchangeAdd(fCurrentId, 1);
   AssocPort.CompletionPort := fIOCompletionPort;
   AssocPort.CompletionKey := Pointer(JobInformation.Id);
@@ -113,11 +115,17 @@ begin
   XPService.LogEvent('UnloadProfThread terminates');
 end;
 
+procedure TUnloadProfThread.RequestTerminate;
+begin
+  Terminate;
+  PostQueuedCompletionStatus(fIOCompletionPort, JOB_OBJECT_MSG_ACTIVE_PROCESS_ZERO, 0, Pointer(1));
+end;
+
 constructor TUnloadProfThread.Create;
 begin
   fList := TThreadList.Create;
   fIOCompletionPort := CreateIOCompletionPort(INVALID_HANDLE_VALUE, 0, 0, 1);
-  fCurrentId := MESSAGE_FROM_SERVICE+1; //MESSAGE_FROM_SERVICE is reserved for the stop message
+  fCurrentId := 0;
   inherited Create(false);
 end;
 

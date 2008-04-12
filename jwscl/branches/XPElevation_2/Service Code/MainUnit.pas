@@ -270,7 +270,7 @@ begin
             end;
           finally
             CloseHandle(Pipe);
-            PostQueuedCompletionStatus(UnloadProfThread.IOCompletionPort, 0, MESSAGE_FROM_SERVICE, nil);
+            UnloadProfThread.RequestTerminate;
 
             {Wait for all threads to be stopped
             }
