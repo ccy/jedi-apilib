@@ -483,6 +483,11 @@ const
 
   RsInvalidComputer = 'The given computer name is invalid.';
 
+// jwsclProcess.pas
+  RsInvalidParameterIndex = 'The given index "%0:d" in parameter "%1:s" is out of range.';
+  RsMissingEvent = 'The event "%0:s" needs to be assigned. It must not be nil.';
+  RsInvalidJobObject = 'The returned job object is invalid and cannot be used to assign a job to.';
+
 const
 // Unit names - do not localize
   RsUNAccountControl     = 'JwsclAccountControl.pas';

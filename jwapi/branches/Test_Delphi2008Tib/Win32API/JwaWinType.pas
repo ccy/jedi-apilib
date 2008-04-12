@@ -210,16 +210,17 @@ type
 // ANSI (Multi-byte Character) types
 //
 
-  LPCH = ^Char;
+
+  LPCH = ^AnsiChar;
   {$EXTERNALSYM LPCH}
-  PCH = ^Char;
+  PCH = ^AnsiChar;
   {$EXTERNALSYM PCH}
 
-  LPCCH = ^Char;
+  LPCCH = ^AnsiChar;
   {$EXTERNALSYM LPCCH}
-  PCCH = ^Char;
+  PCCH = ^AnsiChar;
   {$EXTERNALSYM PCCH}
-  NPSTR = ^Char;
+  NPSTR = ^AnsiChar;
   {$EXTERNALSYM NPSTR}
   LPSTR = {$IFDEF USE_DELPHI_TYPES} Windows.LPSTR {$ELSE} PAnsiChar {$ENDIF};
   {$EXTERNALSYM LPSTR}
@@ -302,7 +303,7 @@ type
 
   {$ELSE}
 
-  TCHAR = Char;
+  TCHAR = AnsiChar;
   {$EXTERNALSYM TCHAR}
   PTCHAR = PChar;
   {$EXTERNALSYM PTCHAR}

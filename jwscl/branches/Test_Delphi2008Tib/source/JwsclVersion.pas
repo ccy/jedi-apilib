@@ -408,7 +408,23 @@ type
       SourcePos: Cardinal); virtual;
 
     class function IsTerminalServiceRunning : Boolean;
+
+    // @Name returns processor architecture of the current Windows version
+    class function GetNativeProcessorArchitecture : Cardinal;
+
+    // @Name returns true if the process is running on a Windows x64 version
+    class function IsWindowsX64 : boolean;
+
+    // @Name returns true if the process is running on a Windows IA64 version
+    class function IsWindowsIA64 : boolean;
+
+    // @Name returns true if the process is running on any 64 bit Windows version
+    class function IsWindows64 : boolean;
+
+    // @Name returns true if we are currently in a 64 bit process
+    class function IsProcess64 : boolean;
   end;
+
 
 
 {$ENDIF SL_IMPLEMENTATION_SECTION}
@@ -835,6 +851,57 @@ end;
 class function TJwWindowsVersion.IsTerminalServiceRunning: Boolean;
 begin
   result := JwaWindows.IsTerminalServiceRunning;
+end;
+
+
+  
+
+class function TJwWindowsVersion.GetNativeProcessorArchitecture : Cardinal;
+var
+  SystemInfo : SYSTEM_INFO;
+  // only available on Windows >= 5.1 so we have to link it dynamically
+  GetNativeSystemInfo : procedure (lpSystemInfo: LPSYSTEM_INFO); stdcall;
+begin
+  GetNativeSystemInfo := GetProcAddress(GetModuleHandle('kernel32.dll'), 'GetNativeSystemInfo');
+  if @GetNativeSystemInfo <> nil
+    then
+      begin
+        GetNativeSystemInfo(@SystemInfo);
+        result := SystemInfo.wProcessorArchitecture;
+      end
+    else
+      result := PROCESSOR_ARCHITECTURE_INTEL;
+end;
+
+
+class function TJwWindowsVersion.IsWindowsX64 : boolean;
+begin
+  result := GetNativeProcessorArchitecture = PROCESSOR_ARCHITECTURE_AMD64;
+end;
+
+
+class function TJwWindowsVersion.IsWindowsIA64 : boolean;
+begin
+  result := GetNativeProcessorArchitecture = PROCESSOR_ARCHITECTURE_IA64;
+end;
+
+
+class function TJwWindowsVersion.IsWindows64 : boolean;
+begin
+  result := IsWindowsX64 or IsWindowsIA64;
+end;
+
+
+class function TJwWindowsVersion.IsProcess64 : boolean;
+var
+  RunningInsideWOW64 : BOOL;
+begin
+  // If we are on a 64 bit Windows but NOT inside WOW64 we are running natively
+  if IsWindows64 and IsWow64Process(GetCurrentProcess(), RunningInsideWOW64)
+    then
+      result := not RunningInsideWOW64
+    else
+      result := false;
 end;
 
 {$ENDIF SL_INTERFACE_SECTION}

@@ -342,6 +342,8 @@ type
   EJwsclCreateProcessFailed = class(EJwsclSecurityException);
   EJwsclInvalidPointerType = class(EJwsclSecurityException);
 
+  EJwsclMissingEvent = class(EJwsclSecurityException);
+
   JwGeneralExceptionClass = class of Exception;
 
 

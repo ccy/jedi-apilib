@@ -40,9 +40,9 @@ unit JwsclProcess;
 
 interface
 
-uses Classes, jwaWindows,
+uses Classes, jwaWindows, SysUtils,
   JwsclTypes, JwsclToken, JwsclSid, JwsclTerminalServer, JwsclUtils,
-  JwsclSecureObjects,
+  JwsclSecureObjects, JwsclResource,
   JwsclLogging, JwsclLsa, JwsclDescriptor,JwsclEnumerations, JwsclComUtils,
   JwsclStrings; //JwsclStrings, must be at the end of uses list!!!
 {$ENDIF SL_OMIT_SECTIONS}
@@ -90,7 +90,10 @@ BOOL WINAPI TerminateJobObject(HANDLE hJob, UINT uExitCode);
   TJwWaitState = (wsNonSignaled, wsSignaled, wsTimeOut);
 
 
+
   TJwJobObject = class;
+  TJwJobObjectSessionList = class;
+
 
   TJwOnJobNotification = procedure (Sender : TJwJobObject; Process : TJwProcessId;
     JobLimits : TJwJobMessages) {of object};
@@ -231,6 +234,8 @@ BOOL WINAPI TerminateJobObject(HANDLE hJob, UINT uExitCode);
     }
     function WaitForAllotedCPUTimeSignal(const TimeOut : DWORD) : TJwWaitState;
 
+    {@Name returns a security descriptor filled with the parts given
+     in parameter Si.}
     function GetSecurityDescriptor(const Si : TJwSecurityInformationFlagSet) : TJwSecurityDescriptor;
 
     {@Name defines whether all processes should be terminated. If set to true
@@ -299,10 +304,162 @@ BOOL WINAPI TerminateJobObject(HANDLE hJob, UINT uExitCode);
     property IOUniqueID : Integer read fIOUniqueID;
     property IOHandle : THandle read GetIOHandle;
 
+    {@Name returns the name of the job object give at creation time.}
     property Name : TJwString read fJobName;
 
+    {@Name can be used to be informed about changed information of a process }
     property OnNotification : TJwOnJobNotification read fNotification write fNotification;
+
+    {@Name will be called when the last process terminates}
     property OnNoActiveProcesses : TJwOnNoActiveProcesses read fOnNoActiveProcesses write fOnNoActiveProcesses;
+  end;
+
+
+
+
+  {@Name is called by TJwJobObjectSessionList.AssignProcessToJob
+  for every new job object that mus be created.
+  The callback event must create a new job object and return it
+   through parameter NewJobObject. The return value must not be nil.
+  The new job object does not need to have a name.
+  @param(Sender defines the job object list instance that calls this event)
+  @param(ProcessHandle defines the process to be assigned to the job)
+  @param(ProcessSessionID defines the session id that the given process
+   belongs to)
+  @param(CurrentSessionID defines a session index. The event method can
+   be called several times for one call of AssignProcessToJob. This happens
+   when the job list contains a lot less job objects than the process session ID.
+   E.g. if the job object list contains no
+    jobs (Count = 0) and a job with session ID 2 is to be assigned, the
+    event method is called 3 times (session 0,1,2) and the process
+    is assigned to the job object with index 2. )
+  @param(NewJobObject receives a valid instance of a job object.
+    Must not be nil; otherwise AssignProcessToJob will fail.)
+  }
+  TJwOnNewJobObject = procedure (Sender : TJwJobObjectSessionList;
+      ProcessHandle : TJwProcessHandle;
+      ProcessSessionID,
+      CurrentSessionID : Cardinal;
+      var NewJobObject : TJwJobObject);
+
+  {@Name manages a list of job objects threadsafe.
+  Since every process in a job must be in the same session,
+   the list manages one job object per session.
+
+  }
+  TJwJobObjectSessionList = class
+  private
+    fList : TList;
+    fLock : TMultiReadExclusiveWriteSynchronizer;
+    fOnNewJobObject: TJwOnNewJobObject;
+
+    function GetJobObject(SessionIndex : Cardinal) : TJwJobObject; virtual;
+    function GetProcessHandle(SessionIndex, ProcessIndex : Cardinal) : THandle; virtual;
+    function GetCount : Cardinal; virtual;
+
+    procedure SetTerminateJobsOnFree(Terminate : Boolean); virtual;
+  public
+    {@Name creates a new instance of @Classname.
+     @param(NewJobObjectEvent defines an event that is called in
+       AssignProcessToJob. It must not be nil; otherwise EJwsclNILParameterException
+       will be raised)
+      @raise(EJwsclNILParameterException will be raised if parameter NewJobObjectEvent
+       is nil)
+    }
+    constructor Create(const NewJobObjectEvent: TJwOnNewJobObject);
+    
+    destructor Destroy; override;
+
+    {@Name removes all job objects in the list.
+     @param(TerminateJob defines whether or not processes in the job objects
+      are to be terminated.
+      jtAll terminates all processes in all jobs.
+      jtNone leaves all processes intact.
+      Set jtSubjection to use TJwJobObject.TerminateOnDestroy instead.
+    }
+    procedure Clear(const TerminateJob : TJwJobTermination = jtSubjection); virtual;
+
+    {@Name adds a process to a job using the process' session id to determine
+    which job object must be used. If the job object with the neccessary session
+    id is not available it will be created. For this task the event
+    OnNewJobObject must be set. OnNewJobObject will be called for every
+    job object that must be created. E.g. if the job object list contains no
+    jobs (Count = 0) and a job with session ID 2 is to be assigned, the
+    event OnNewJobObject is called 3 times (session 0,1,2) and the process
+    is assigned to the job object with index 2.
+
+    The assignment is threadsafe to avoid complication with other methods.
+
+    @param(Process defines a process handle to be added to an job object)
+    @raises(EJwsclMissingEvent will be raised if event OnNewJobObject is nil)
+    @raises(EJwsclInvalidParameterException will be raised if the job object
+      pointer returned by OnNewJobObject is nil)
+    @raises(EJwsclWinCallFailedException can be raised if the call to an winapi function failed.)
+    }
+    procedure AssignProcessToJob(Process : TJwProcessHandle); overload; virtual;
+
+    {@Name adds a process to a job using the process' session id to determine
+    which job object must be used. If the job object with the neccessary session
+    id is not available it will be created. For this task the event
+    OnNewJobObject must be set. OnNewJobObject will be called for every
+    job object that must be created. E.g. if the job object list contains no
+    jobs (Count = 0) and a job with session ID 2 is to be assigned, the
+    event OnNewJobObject is called 3 times (session 0,1,2) and the process
+    is assigned to the job object with index 2.
+
+    The assignment is threadsafe to avoid complication with other methods.
+
+    @param(Process defines a process handle to be added to an job object)
+    @param(JobObjectIndex returns the session ID (or job object index) of the
+      process wherein it was assigned to)
+    @raises(EJwsclMissingEvent will be raised if event OnNewJobObject is nil)
+    @raises(EJwsclInvalidParameterException will be raised if the job object
+      pointer returned by OnNewJobObject is nil)
+    @raises(EJwsclWinCallFailedException can be raised if the call to an winapi function failed.)
+    }
+    procedure AssignProcessToJob(Process : TJwProcessHandle; out JobObjectIndex : Cardinal); overload; virtual;
+
+    {@Name returns a pointer to an internal job object.
+    The assignment is threadsafe to avoid complication with other methods.
+    }
+    property JobObject[SessionIndex : Cardinal] : TJwJobObject read GetJobObject;
+
+    {@Name returns a process handle of a specific job object.
+
+    The assignment is threadsafe to avoid complication with other methods.
+    }
+    property ProcessHandle[SessionIndex, ProcessIndex : Cardinal] : THandle read GetProcessHandle;
+
+    {@Name returns the count of available job objects/sessions.}
+    property Count : Cardinal read GetCount;
+
+    {@Name defines whether all or no processes in all job objects
+     should be terminated. This property has no read value because
+     it just goes through all job objects and sets TJwJobObject.TerminateOnDestroy
+     to the given value. 
+    }
+    property TerminateJobsOnFree : Boolean write SetTerminateJobsOnFree;
+
+    {@Name defines a callback event that is called every time a new job object
+    must be generated. It is used in AssignProcessToJob.
+    The event must not be nil otherwise the method fails.
+    }
+    property OnNewJobObject: TJwOnNewJobObject read fOnNewJobObject write fOnNewJobObject;
+
+    {@Name returns the internal thread syncronisation object.
+    It can be used to avoid problems with several threads.
+    It should be used for property JobObject because calls to this property
+     may become invalid during processing.
+    @longcode(#
+        Job.Lock.BeginWrite;
+        try
+          do sth with Job.JobObject[x]
+        finally
+          Job.Lock.EndWrite;
+        end;
+    #)
+    }
+    property Lock : TMultiReadExclusiveWriteSynchronizer read fLock;
   end;
 
   {@Name contains information about result from JwCreateProcessInSession.}
@@ -387,6 +544,22 @@ function JwGetTokenFromProcess (const OnProcessFound : TJwOnProcessFound;
 
 
 
+{@Name returns the session ID of a process given by handle or ID.
+@param(ProcessIDorHandle defines the process ID or handle. Which one is
+  used, is defined by parameter ParameterType.)
+@param(ParameterType defines whether parameter ProcessIDorHandle is a process
+  or a handle)
+@return(Returns the session ID (zero based).
+@raises(EJwsclSecurityException @Name can raise a child class of this
+  exception class. The following functions are used that can fail:
+   @unorderedlist(
+     @item(TJwSecurityToken.CreateTokenByProcess)
+     @item(TJwSecurityToken.CreateTokenByProcessId)
+     @item(TJwSecurityToken.TokenSessionId)
+   ))
+}
+function GetProcessSessionID(const ProcessIDorHandle : Cardinal;
+  const ParameterType : TJwProcessParameterType) : Cardinal;
 
 
 
@@ -550,13 +723,30 @@ procedure JwCreateProcessAsAdminUser(
 
 {$IFNDEF SL_OMIT_SECTIONS}
 implementation
-uses SysUtils, Dialogs, Math, JwsclExceptions,
+uses Dialogs, Math, JwsclExceptions,
   JwsclKnownSid, JwsclVersion,
   JwsclAcl, JwsclConstants;
 
 {$ENDIF SL_OMIT_SECTIONS}
 
 {$IFNDEF SL_INTERFACE_SECTION}
+
+
+function GetProcessSessionID(const ProcessIDorHandle : Cardinal;
+  const ParameterType : TJwProcessParameterType) : Cardinal;
+var Token : TJwSecurityToken;
+begin
+  case ParameterType of
+    pptHandle : Token := TJwSecurityToken.CreateTokenByProcess(ProcessIDorHandle, TOKEN_READ or TOKEN_QUERY);
+    pptID : Token := TJwSecurityToken.CreateTokenByProcessId(ProcessIDorHandle, TOKEN_READ or TOKEN_QUERY);
+  end;
+  try
+    result := Token.TokenSessionId;
+  finally
+    Token.Free;
+  end;
+end;
+
 
 class function TJwLibraryUtilities.LoadLibProc(const LibName: AnsiString; const ProcName: AnsiString): Pointer;
 var
@@ -2183,6 +2373,159 @@ begin
     PostQueuedCompletionStatus(fIOHandle,0,0,nil);
   end;
 end;
+
+
+{TJwJobObjectSessionList}
+function TJwJobObjectSessionList.GetJobObject(SessionIndex : Cardinal) : TJwJobObject;
+begin
+  fLock.BeginRead;
+  try
+    result := TJwJobObject(fList[SessionIndex]);
+  finally
+    fLock.EndRead;
+  end;
+end;
+
+procedure TJwJobObjectSessionList.Clear(const TerminateJob : TJwJobTermination = jtSubjection);
+var i : Integer;
+begin
+  fLock.BeginWrite;
+  try
+    for i := 0 to Count -1 do
+    begin
+      if fList[i] <> nil then
+      begin
+        try
+          case TerminateJob of
+            jtAll  : TJwJobObject(fList[i]).TerminateOnDestroy := true;
+            jtNone : TJwJobObject(fList[i]).TerminateOnDestroy := false;
+          end;
+          TJwJobObject(fList[i]).Free;
+        finally
+          fList[i] := nil;
+        end;
+      end;
+    end;
+    fList.Clear;
+  finally
+    fLock.EndWrite;
+  end;
+end;
+
+function TJwJobObjectSessionList.GetProcessHandle(SessionIndex, ProcessIndex : Cardinal) : THandle;
+var Processes : TJwProcessList;
+begin
+  fLock.BeginRead;
+  try
+    Processes := TJwJobObject(fList[SessionIndex]).Processes;
+    if (ProcessIndex < Low(Processes)) and
+       (ProcessIndex > High(Processes)) then
+       raise ERangeError.CreateFmt(RsInvalidParameterIndex, [ProcessIndex,'ProcessIndex']);
+
+    try
+      result := Processes[ProcessIndex];
+    finally
+      Processes := Nil;
+    end;
+  finally
+    fLock.EndRead;
+  end;
+end;
+
+
+function TJwJobObjectSessionList.GetCount : Cardinal;
+begin
+  fLock.BeginRead;
+  try
+    result := fList.Count;
+  finally
+    fLock.EndRead;
+  end;
+end;
+
+constructor TJwJobObjectSessionList.Create(const NewJobObjectEvent: TJwOnNewJobObject);
+begin
+  JwRaiseOnNilParameter(NewJobObjectEvent, 'NewJobObjectEvent','Create', ClassName, RsUNProcess);
+
+  inherited;
+  fLock := TMultiReadExclusiveWriteSynchronizer.Create;
+
+  fList := TList.Create;
+  fOnNewJobObject := NewJobObjectEvent;
+end;
+
+destructor TJwJobObjectSessionList.Destroy;
+begin
+  Clear(jtSubjection);
+
+  fLock.BeginWrite;
+  try
+    FreeAndNil(fList);
+  finally
+    fLock.EndWrite;
+    FreeAndNil(fLock);
+  end;
+
+  inherited;
+end;
+
+
+procedure TJwJobObjectSessionList.AssignProcessToJob(Process : TJwProcessHandle);
+var JobObjectIndex : Cardinal;
+begin
+  AssignProcessToJob(Process, JobObjectIndex);
+end;
+
+procedure TJwJobObjectSessionList.AssignProcessToJob(Process : TJwProcessHandle; out JobObjectIndex : Cardinal);
+var
+  i, ID : Cardinal;
+  NewObject : TJwJobObject;
+begin
+  if not Assigned(OnNewJobObject) then
+    raise EJwsclMissingEvent.CreateFmtEx(RsMissingEvent,
+        'AssignProcessToJob',ClassName, RsUNProcess, 0, 0, ['OnNewJobObject']);
+
+  fLock.BeginWrite;
+  try
+    ID := GetProcessSessionID(Process, pptHandle);
+    JobObjectIndex := ID;
+    NewObject := nil;
+
+    while ID >= fList.Count do
+    begin
+      NewObject := nil;
+      OnNewJobObject(Self, Process, ID, fList.Count ,NewObject);
+      if not Assigned(NewObject) then
+        raise EJwsclInvalidParameterException.CreateFmtEx(RsInvalidJobObject,
+          'AssignProcessToJob',ClassName, RsUNProcess, 0, 0, ['OnNewJobObject']);
+
+      fList.Add(NewObject);
+    end;
+
+    if not Assigned(NewObject) then
+      NewObject := TJwJobObject(fList[ID]); 
+
+    NewObject.AssignProcessToJobObject(Process);
+  finally
+    fLock.EndWrite;
+  end;
+end;
+
+procedure TJwJobObjectSessionList.SetTerminateJobsOnFree(Terminate : Boolean);
+var i : Integer;
+begin
+  fLock.BeginWrite;
+  try
+    for i := Count -1 downto 0 do
+    begin
+      if fList[i] <> nil then
+        TJwJobObject(fList[i]).TerminateOnDestroy := Terminate;
+    end;
+  finally
+    fLock.EndWrite;
+  end;
+end;
+
 
 
 

@@ -1127,6 +1127,21 @@ type
     rtStandard,
     rtSpecific);
 
+  TJwProcessParameterType = (
+    pptHandle,
+    pptID);
+
+  {@Name defines how processes in job objects are terminated
+   when the job list instance is freed.}
+  TJwJobTermination = (
+    {Terminate all processes in all job objects, ignoring TJwJobObject.TerminateOnDestroy}
+    jtAll,
+    {Do not terminate any processes in all job objects, ignoring TJwJobObject.TerminateOnDestroy}
+    jtNone,
+    {Depending on TJwJobObject.TerminateOnDestroy terminate processes or leave them alive.}
+    jtSubjection
+  );
+
 
 {$ENDIF SL_IMPLEMENTATION_SECTION}
 
