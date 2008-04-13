@@ -7607,7 +7607,7 @@ type
   PRTL_VERIFIER_THUNK_DESCRIPTOR = ^RTL_VERIFIER_THUNK_DESCRIPTOR;
   {$EXTERNALSYM PRTL_VERIFIER_THUNK_DESCRIPTOR}
   _RTL_VERIFIER_THUNK_DESCRIPTOR = record
-    ThunkName: PCHAR;
+    ThunkName: PAnsiChar;
     ThunkOldAddress: PVOID;
     ThunkNewAddress: PVOID;
   end;
@@ -7855,11 +7855,11 @@ const
 VOID NTAPI
 RtlApplicationVerifierStop (
     ULONG_PTR Code,
-    PCHAR Message,
-    ULONG_PTR Param1, PCHAR Description1,
-    ULONG_PTR Param2, PCHAR Description2,
-    ULONG_PTR Param3, PCHAR Description3,
-    ULONG_PTR Param4, PCHAR Description4
+    PAnsiChar Message,
+    ULONG_PTR Param1, PAnsiChar Description1,
+    ULONG_PTR Param2, PAnsiChar Description2,
+    ULONG_PTR Param3, PAnsiChar Description3,
+    ULONG_PTR Param4, PAnsiChar Description4
     );
 *)
 

@@ -138,7 +138,7 @@ const
 // Microsoft extended APIs.
 //
 
-function WSARecvEx(s: TSocket; buf: PChar; len: Integer; var flags: Integer): Integer; stdcall;
+function WSARecvEx(s: TSocket; buf: PAnsiChar; len: Integer; var flags: Integer): Integer; stdcall;
 {$EXTERNALSYM WSARecvEx}
 
 type

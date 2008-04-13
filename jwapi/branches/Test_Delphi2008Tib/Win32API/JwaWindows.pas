@@ -128,6 +128,7 @@ the one of the project.
 {$ENDIF PACKAGE_CONDITIONS}
 
 
+{.$DEFINE UNICODE}
 
 {------ end of your business ------}
 
@@ -166,6 +167,7 @@ the one of the project.
 //extra compiler options
 {$I jedi.inc}
 {$I jediapilib.inc} //add "..\..\Common" to source path if not found
+
 
 
 

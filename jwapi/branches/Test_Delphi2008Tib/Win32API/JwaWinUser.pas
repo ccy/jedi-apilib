@@ -250,7 +250,7 @@ const
   {$EXTERNALSYM MAXIMUM_RESERVED_MANIFEST_RESOURCE_ID}
 
 type
-  va_list = PChar;
+  va_list = PAnsiChar;
   {$EXTERNALSYM va_list}
 
 function wvsprintfA(Output: LPSTR; Format: LPCSTR; arglist: va_list): Integer; stdcall;

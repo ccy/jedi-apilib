@@ -3205,7 +3205,7 @@ type
   _KERB_NET_ADDRESS = record
     Family: ULONG;
     Length: ULONG;
-    Address: PCHAR;
+    Address: PAnsiChar;
   end;
   {$EXTERNALSYM _KERB_NET_ADDRESS}
   KERB_NET_ADDRESS = _KERB_NET_ADDRESS;

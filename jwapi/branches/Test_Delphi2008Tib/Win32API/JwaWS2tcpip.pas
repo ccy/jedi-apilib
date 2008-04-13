@@ -467,7 +467,7 @@ type
     ai_socktype: Integer;    // SOCK_xxx
     ai_protocol: Integer;    // 0 or IPPROTO_xxx for IPv4 and IPv6
     ai_addrlen: size_t;  // Length of ai_addr
-    ai_canonname: PChar; // Canonical name for nodename
+    ai_canonname: PAnsiChar; // Canonical name for nodename
     ai_addr: PSockAddr;  // Binary address
     ai_next: LPADDRINFO;  // Next structure in linked list
   end;
@@ -485,7 +485,7 @@ const
   AI_NUMERICHOST = $4; // Nodename must be a numeric address string
   {$EXTERNALSYM AI_NUMERICHOST}
 
-function getaddrinfo(nodename, servname: PChar; hints: PAddrInfo; var res: PAddrInfo): Integer; stdcall;
+function getaddrinfo(nodename, servname: PAnsiChar; hints: PAddrInfo; var res: PAddrInfo): Integer; stdcall;
 {$EXTERNALSYM getaddrinfo}
 
 procedure freeaddrinfo(ai: PAddrInfo); stdcall;
@@ -512,7 +512,7 @@ type
   socklen_t = Integer;
   {$EXTERNALSYM socklen_t}
 
-function getnameinfo(sa: PSockAddr; salen: socklen_t; host: PChar; hostlen: DWORD; serv: PChar; servlen: DWORD; flags: Integer): Integer; stdcall;
+function getnameinfo(sa: PSockAddr; salen: socklen_t; host: PAnsiChar; hostlen: DWORD; serv: PAnsiChar; servlen: DWORD; flags: Integer): Integer; stdcall;
 {$EXTERNALSYM getnameinfo}
 
 const

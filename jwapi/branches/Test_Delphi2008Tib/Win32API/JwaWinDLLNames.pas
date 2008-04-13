@@ -56,6 +56,7 @@ const
   advapi32 = 'advapi32.dll';
   authzlib = 'authz.dll';
   adslib = 'activeds.dll';
+  bcryptdll = 'bcrypt.dll';
   btapi = 'irprops.cpl';
   comctl32 = 'comctl32.dll';
   credapi = 'advapi32.dll';
@@ -86,6 +87,7 @@ const
   msilib = 'msi.dll';
   msimg32 = 'msimg32.dll';
   mswsocklib = 'mswsock.dll';
+  ncryptdll = 'ncrypt.dll';
   netapi32 = 'netapi32.dll';
   netsh = 'netsh.exe';
   nsplib = 'wsock32.dll';

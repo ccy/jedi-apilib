@@ -694,7 +694,7 @@ function InternetTimeFromSystemTimeW(const pst: TSystemTime;
   dwRFC: DWORD; lpszTime: PWideChar; cbTime: DWORD): BOOL; stdcall;
 {$EXTERNALSYM InternetTimeFromSystemTime}
 function InternetTimeFromSystemTime(const pst: TSystemTime;
-  dwRFC: DWORD; lpszTime: PChar; cbTime: DWORD): BOOL; stdcall;
+  dwRFC: DWORD; lpszTime: PTSTR; cbTime: DWORD): BOOL; stdcall;
 
 // constants for InternetTimeFromSystemTime
 
@@ -711,7 +711,7 @@ function InternetTimeToSystemTimeA(lpszTime: PAnsiChar;
 function InternetTimeToSystemTimeW(lpszTime: PWideChar;
   out pst: TSystemTime; dwReserved: DWORD): BOOL; stdcall;
 {$EXTERNALSYM InternetTimeToSystemTime}
-function InternetTimeToSystemTime(lpszTime: PChar;
+function InternetTimeToSystemTime(lpszTime: PTSTR;
   out pst: TSystemTime; dwReserved: DWORD): BOOL; stdcall;
 
 {$EXTERNALSYM InternetCrackUrlA}
@@ -721,7 +721,7 @@ function InternetCrackUrlA(lpszUrl: PAnsiChar; dwUrlLength, dwFlags: DWORD;
 function InternetCrackUrlW(lpszUrl: PWideChar; dwUrlLength, dwFlags: DWORD;
   out UrlComponents: TURLComponentsW): BOOL; stdcall;
 {$EXTERNALSYM InternetCrackUrl}
-function InternetCrackUrl(lpszUrl: PChar; dwUrlLength, dwFlags: DWORD;
+function InternetCrackUrl(lpszUrl: PTSTR; dwUrlLength, dwFlags: DWORD;
   out UrlComponents: TURLComponents): BOOL; stdcall;
 
 {$EXTERNALSYM InternetCreateUrlA}
@@ -732,7 +732,7 @@ function InternetCreateUrlW(var lpUrlComponents: TURLComponentsW;
   dwFlags: DWORD; lpszUrl: PWideChar; var lpdwUrlLength: DWORD): BOOL;  stdcall;
 {$EXTERNALSYM InternetCreateUrl}
 function InternetCreateUrl(var lpUrlComponents: TURLComponents;
-  dwFlags: DWORD; lpszUrl: PChar; var lpdwUrlLength: DWORD): BOOL;  stdcall;
+  dwFlags: DWORD; lpszUrl: PTSTR; var lpdwUrlLength: DWORD): BOOL;  stdcall;
 
 {$EXTERNALSYM InternetCanonicalizeUrlA}
 function InternetCanonicalizeUrlA(lpszUrl: PAnsiChar;
@@ -741,8 +741,8 @@ function InternetCanonicalizeUrlA(lpszUrl: PAnsiChar;
 function InternetCanonicalizeUrlW(lpszUrl: PWideChar;
   lpszBuffer: PWideChar; var lpdwBufferLength: DWORD; dwFlags: DWORD): BOOL; stdcall;
 {$EXTERNALSYM InternetCanonicalizeUrl}
-function InternetCanonicalizeUrl(lpszUrl: PChar;
-  lpszBuffer: PChar; var lpdwBufferLength: DWORD; dwFlags: DWORD): BOOL; stdcall;
+function InternetCanonicalizeUrl(lpszUrl: PTSTR;
+  lpszBuffer: PTSTR; var lpdwBufferLength: DWORD; dwFlags: DWORD): BOOL; stdcall;
 
 {$EXTERNALSYM InternetCombineUrlA}
 function InternetCombineUrlA(lpszBaseUrl, lpszRelativeUrl: PAnsiChar;
@@ -751,8 +751,8 @@ function InternetCombineUrlA(lpszBaseUrl, lpszRelativeUrl: PAnsiChar;
 function InternetCombineUrlW(lpszBaseUrl, lpszRelativeUrl: PWideChar;
   lpszBuffer: PWideChar; dwFlags: DWORD): BOOL; stdcall;
 {$EXTERNALSYM InternetCombineUrl}
-function InternetCombineUrl(lpszBaseUrl, lpszRelativeUrl: PChar;
-  lpszBuffer: PChar; dwFlags: DWORD): BOOL; stdcall;
+function InternetCombineUrl(lpszBaseUrl, lpszRelativeUrl: PTSTR;
+  lpszBuffer: PTSTR; dwFlags: DWORD): BOOL; stdcall;
 
 
 const
@@ -784,8 +784,8 @@ function InternetOpenA(lpszAgent: PAnsiChar; dwAccessType: DWORD;
   lpszProxy, lpszProxyBypass: PAnsiChar; dwFlags: DWORD): HInternet; stdcall;
 function InternetOpenW(lpszAgent: PWideChar; dwAccessType: DWORD;
   lpszProxy, lpszProxyBypass: PWideChar; dwFlags: DWORD): HInternet; stdcall;
-function InternetOpen(lpszAgent: PChar; dwAccessType: DWORD;
-  lpszProxy, lpszProxyBypass: PChar; dwFlags: DWORD): HInternet; stdcall;
+function InternetOpen(lpszAgent: PTSTR; dwAccessType: DWORD;
+  lpszProxy, lpszProxyBypass: PTSTR; dwFlags: DWORD): HInternet; stdcall;
 
 const
 
@@ -824,8 +824,8 @@ function InternetConnectW(hInternet: HINTERNET;
   dwService, dwFlags, dwContext: DWORD): HINTERNET; stdcall;
 {$EXTERNALSYM InternetConnect}
 function InternetConnect(hInternet: HINTERNET;
-  lpszServerName: PChar; nServerPort: TInternetPort;
-  lpszUserName, lpszPassword: PChar;
+  lpszServerName: PTSTR; nServerPort: TInternetPort;
+  lpszUserName, lpszPassword: PTSTR;
   dwService, dwFlags, dwContext: DWORD): HINTERNET; stdcall;
 
 
@@ -854,7 +854,7 @@ function InternetConnectUrlA(hInternet: HINTERNET; lpszUrl: PAnsiChar;
 function InternetConnectUrlW(hInternet: HINTERNET; lpszUrl: PWideChar;
   dwFlags, dwContext: DWORD): HINTERNET;
 {$EXTERNALSYM InternetConnectUrl}
-function InternetConnectUrl(hInternet: HINTERNET; lpszUrl: PChar;
+function InternetConnectUrl(hInternet: HINTERNET; lpszUrl: PTSTR;
   dwFlags, dwContext: DWORD): HINTERNET;
 
 {$EXTERNALSYM InternetOpenUrlA}
@@ -864,7 +864,7 @@ function InternetOpenUrlA(hInternet: HINTERNET; lpszUrl, lpszHeaders: PAnsiChar;
 function InternetOpenUrlW(hInternet: HINTERNET; lpszUrl, lpszHeaders: PWideChar;
   dwHeadersLength, dwFlags, dwContext: DWORD): HINTERNET; stdcall;
 {$EXTERNALSYM InternetOpenUrl}
-function InternetOpenUrl(hInternet: HINTERNET; lpszUrl, lpszHeaders: PChar;
+function InternetOpenUrl(hInternet: HINTERNET; lpszUrl, lpszHeaders: PTSTR;
   dwHeadersLength, dwFlags, dwContext: DWORD): HINTERNET; stdcall;
 
 {$EXTERNALSYM InternetReadFile}
@@ -1218,7 +1218,7 @@ function InternetGetLastResponseInfoW(var lpdwError: DWORD;
   lpszBuffer: PWideChar; var lpdwBufferLength: DWORD): BOOL; stdcall;
 {$EXTERNALSYM InternetGetLastResponseInfo}
 function InternetGetLastResponseInfo(var lpdwError: DWORD;
-  lpszBuffer: PChar; var lpdwBufferLength: DWORD): BOOL; stdcall;
+  lpszBuffer: PTSTR; var lpdwBufferLength: DWORD): BOOL; stdcall;
 
 // callback function for InternetSetStatusCallback
 
@@ -1319,7 +1319,7 @@ function FtpFindFirstFileW(hConnect: HINTERNET;
   dwFlags, dwContext: DWORD): HINTERNET; stdcall;
 {$EXTERNALSYM FtpFindFirstFile}
 function FtpFindFirstFile(hConnect: HINTERNET;
-  lpszSearchFile: PChar; lpFindFileData: PWin32FindData;
+  lpszSearchFile: PTSTR; lpFindFileData: PWin32FindData;
   dwFlags, dwContext: DWORD): HINTERNET; stdcall;
 
 {$EXTERNALSYM FtpGetFileA}
@@ -1332,7 +1332,7 @@ function FtpGetFileW(hConnect: HINTERNET;
   dwFlagsAndAttributes, dwFlags, dwContext: DWORD): BOOL; stdcall;
 {$EXTERNALSYM FtpGetFile}
 function FtpGetFile(hConnect: HINTERNET;
-  lpszRemoteFile, lpszNewFile: PChar; fFailIfExists: BOOL;
+  lpszRemoteFile, lpszNewFile: PTSTR; fFailIfExists: BOOL;
   dwFlagsAndAttributes, dwFlags, dwContext: DWORD): BOOL; stdcall;
 
 {$EXTERNALSYM FtpPutFileA}
@@ -1343,7 +1343,7 @@ function FtpPutFileW(hConnect: HINTERNET; lpszLocalFile,
   lpszNewRemoteFile: PWideChar; dwFlags, dwContext: DWORD): BOOL; stdcall;
 {$EXTERNALSYM FtpPutFile}
 function FtpPutFile(hConnect: HINTERNET; lpszLocalFile,
-  lpszNewRemoteFile: PChar; dwFlags, dwContext: DWORD): BOOL; stdcall;
+  lpszNewRemoteFile: PTSTR; dwFlags, dwContext: DWORD): BOOL; stdcall;
 
 {$EXTERNALSYM FtpGetFileEx}
 function FtpGetFileEx(hFtpSession: HINTERNET; lpszRemoteFile: LPCSTR;
@@ -1360,7 +1360,7 @@ function FtpDeleteFileA(hConnect: HINTERNET; lpszFileName: PAnsiChar): BOOL; std
 {$EXTERNALSYM FtpDeleteFileW}
 function FtpDeleteFileW(hConnect: HINTERNET; lpszFileName: PWideChar): BOOL; stdcall;
 {$EXTERNALSYM FtpDeleteFile}
-function FtpDeleteFile(hConnect: HINTERNET; lpszFileName: PChar): BOOL; stdcall;
+function FtpDeleteFile(hConnect: HINTERNET; lpszFileName: PTSTR): BOOL; stdcall;
 
 {$EXTERNALSYM FtpRenameFileA}
 function FtpRenameFileA(hConnect: HINTERNET;
@@ -1370,7 +1370,7 @@ function FtpRenameFileW(hConnect: HINTERNET;
   lpszExisting, lpszNew: PWideChar): BOOL; stdcall;
 {$EXTERNALSYM FtpRenameFile}
 function FtpRenameFile(hConnect: HINTERNET;
-  lpszExisting, lpszNew: PChar): BOOL; stdcall;
+  lpszExisting, lpszNew: PTSTR): BOOL; stdcall;
 
 {$EXTERNALSYM FtpOpenFileA}
 function FtpOpenFileA(hConnect: HINTERNET; lpszFileName: PAnsiChar;
@@ -1379,7 +1379,7 @@ function FtpOpenFileA(hConnect: HINTERNET; lpszFileName: PAnsiChar;
 function FtpOpenFileW(hConnect: HINTERNET; lpszFileName: PWideChar;
   dwAccess, dwFlags, dwContext: DWORD): HINTERNET; stdcall;
 {$EXTERNALSYM FtpOpenFile}
-function FtpOpenFile(hConnect: HINTERNET; lpszFileName: PChar;
+function FtpOpenFile(hConnect: HINTERNET; lpszFileName: PTSTR;
   dwAccess, dwFlags, dwContext: DWORD): HINTERNET; stdcall;
 
 {$EXTERNALSYM FtpCreateDirectoryA}
@@ -1387,14 +1387,14 @@ function FtpCreateDirectoryA(hConnect: HINTERNET; lpszDirectory: PAnsiChar): BOO
 {$EXTERNALSYM FtpCreateDirectoryW}
 function FtpCreateDirectoryW(hConnect: HINTERNET; lpszDirectory: PWideChar): BOOL; stdcall;
 {$EXTERNALSYM FtpCreateDirectory}
-function FtpCreateDirectory(hConnect: HINTERNET; lpszDirectory: PChar): BOOL; stdcall;
+function FtpCreateDirectory(hConnect: HINTERNET; lpszDirectory: PTSTR): BOOL; stdcall;
 
 {$EXTERNALSYM FtpRemoveDirectoryA}
 function FtpRemoveDirectoryA(hConnect: HINTERNET; lpszDirectory: PAnsiChar): BOOL; stdcall;
 {$EXTERNALSYM FtpRemoveDirectoryW}
 function FtpRemoveDirectoryW(hConnect: HINTERNET; lpszDirectory: PWideChar): BOOL; stdcall;
 {$EXTERNALSYM FtpRemoveDirectory}
-function FtpRemoveDirectory(hConnect: HINTERNET; lpszDirectory: PChar): BOOL; stdcall;
+function FtpRemoveDirectory(hConnect: HINTERNET; lpszDirectory: PTSTR): BOOL; stdcall;
 
 {$EXTERNALSYM FtpSetCurrentDirectoryA}
 function FtpSetCurrentDirectoryA(hConnect: HINTERNET;
@@ -1413,7 +1413,7 @@ function FtpGetCurrentDirectoryA(hConnect: HINTERNET; lpszCurrentDirectory: PAns
 function FtpGetCurrentDirectoryW(hConnect: HINTERNET; lpszCurrentDirectory: PWideChar;
   var lpdwCurrentDirectory: DWORD): BOOL; stdcall;
 {$EXTERNALSYM FtpGetCurrentDirectory}
-function FtpGetCurrentDirectory(hConnect: HINTERNET; lpszCurrentDirectory: PChar;
+function FtpGetCurrentDirectory(hConnect: HINTERNET; lpszCurrentDirectory: PTSTR;
   var lpdwCurrentDirectory: DWORD): BOOL; stdcall;
 
 {$EXTERNALSYM FtpCommandA}
@@ -1426,7 +1426,7 @@ function FtpCommandW(hConnect: HINTERNET; fExpectResponse: BOOL;
   out phFtpCommand: HINTERNET): BOOL; stdcall;
 {$EXTERNALSYM FtpCommand}
 function FtpCommand(hConnect: HINTERNET; fExpectResponse: BOOL;
-  dwFlags: DWORD; lpszCommand: PChar; dwContext: DWORD_PTR;
+  dwFlags: DWORD; lpszCommand: PTSTR; dwContext: DWORD_PTR;
   out phFtpCommand: HINTERNET): BOOL; stdcall;
 
 {$EXTERNALSYM FtpGetFileSize}
@@ -1872,9 +1872,9 @@ function GopherCreateLocatorW(lpszHost: PWideChar; nServerPort: TInternetPort;
   lpszDisplayString, lpszSelectorString: PWideChar; dwGopherType: DWORD;
   lpszLocator: PWideChar; lpdwBufferLength: DWORD): BOOL; stdcall;
 {$EXTERNALSYM GopherCreateLocator}
-function GopherCreateLocator(lpszHost: PChar; nServerPort: TInternetPort;
-  lpszDisplayString, lpszSelectorString: PChar; dwGopherType: DWORD;
-  lpszLocator: PChar; lpdwBufferLength: DWORD): BOOL; stdcall;
+function GopherCreateLocator(lpszHost: PTSTR; nServerPort: TInternetPort;
+  lpszDisplayString, lpszSelectorString: PTSTR; dwGopherType: DWORD;
+  lpszLocator: PTSTR; lpdwBufferLength: DWORD): BOOL; stdcall;
 
 {$EXTERNALSYM GopherGetLocatorTypeA}
 function GopherGetLocatorTypeA(lpszLocator: PAnsiChar;
@@ -1883,7 +1883,7 @@ function GopherGetLocatorTypeA(lpszLocator: PAnsiChar;
 function GopherGetLocatorTypeW(lpszLocator: PWideChar;
   var lpdwGopherType: DWORD): BOOL; stdcall;
 {$EXTERNALSYM GopherGetLocatorType}
-function GopherGetLocatorType(lpszLocator: PChar;
+function GopherGetLocatorType(lpszLocator: PTSTR;
   var lpdwGopherType: DWORD): BOOL; stdcall;
 
 {$EXTERNALSYM GopherFindFirstFileA}
@@ -1893,7 +1893,7 @@ function GopherFindFirstFileA(hConnect: HINTERNET; lpszLocator, lpszSearchString
 function GopherFindFirstFileW(hConnect: HINTERNET; lpszLocator, lpszSearchString: PWideChar;
   lpFindDat: PGopherFindDataW; dwFlags, dwContext: DWORD): HINTERNET; stdcall;
 {$EXTERNALSYM GopherFindFirstFile}
-function GopherFindFirstFile(hConnect: HINTERNET; lpszLocator, lpszSearchString: PChar;
+function GopherFindFirstFile(hConnect: HINTERNET; lpszLocator, lpszSearchString: PTSTR;
   lpFindDat: PGopherFindData; dwFlags, dwContext: DWORD): HINTERNET; stdcall;
 
 {$EXTERNALSYM GopherOpenFileA}
@@ -1903,7 +1903,7 @@ function GopherOpenFileA(hConnect: HINTERNET; lpszLocator, lpszView: PAnsiChar;
 function GopherOpenFileW(hConnect: HINTERNET; lpszLocator, lpszView: PWideChar;
   dwFlags, dwContext: DWORD): HINTERNET; stdcall;
 {$EXTERNALSYM GopherOpenFile}
-function GopherOpenFile(hConnect: HINTERNET; lpszLocator, lpszView: PChar;
+function GopherOpenFile(hConnect: HINTERNET; lpszLocator, lpszView: PTSTR;
   dwFlags, dwContext: DWORD): HINTERNET; stdcall;
 
 type
@@ -1924,7 +1924,7 @@ function GopherGetAttributeW(hConnect: HINTERNET; lpszLocator,
   TGopherAttributeEnumerator; dwContext: DWORD): BOOL; stdcall;
 {$EXTERNALSYM GopherGetAttribute}
 function GopherGetAttribute(hConnect: HINTERNET; lpszLocator,
-  lpszAttributeName: PChar; lpBuffer: PByte; dwBufferLength: DWORD;
+  lpszAttributeName: PTSTR; lpBuffer: PByte; dwBufferLength: DWORD;
   var lpdwCharactersReturned: DWORD; lpfnEnumerator:
   TGopherAttributeEnumerator; dwContext: DWORD): BOOL; stdcall;
 
@@ -2267,7 +2267,7 @@ function HttpOpenRequestW(hConnect: HINTERNET; lpszVerb, lpszObjectName,
   dwFlags, dwContext: DWORD): HINTERNET; stdcall;
 {$EXTERNALSYM HttpOpenRequest}
 function HttpOpenRequest(hConnect: HINTERNET; lpszVerb, lpszObjectName,
-  lpszVersion,lpszReferrer: PChar; lplpszAcceptTypes: PChar;
+  lpszVersion,lpszReferrer: PTSTR; lplpszAcceptTypes: PTSTR;
   dwFlags, dwContext: DWORD): HINTERNET; stdcall;
 
 {$EXTERNALSYM HttpAddRequestHeadersA}
@@ -2277,7 +2277,7 @@ function HttpAddRequestHeadersA(hRequest: HINTERNET; lpszHeaders: PAnsiChar;
 function HttpAddRequestHeadersW(hRequest: HINTERNET; lpszHeaders: PWideChar;
   dwHeadersLength, dwModifiers: DWORD): BOOL; stdcall;
 {$EXTERNALSYM HttpAddRequestHeaders}
-function HttpAddRequestHeaders(hRequest: HINTERNET; lpszHeaders: PChar;
+function HttpAddRequestHeaders(hRequest: HINTERNET; lpszHeaders: PTSTR;
   dwHeadersLength, dwModifiers: DWORD): BOOL; stdcall;
 
 // values for dwModifiers parameter of HttpAddRequestHeaders()
@@ -2328,7 +2328,7 @@ function HttpSendRequestA(hRequest: HINTERNET; lpszHeaders: PAnsiChar;
 function HttpSendRequestW(hRequest: HINTERNET; lpszHeaders: PWideChar;
   dwHeadersLength: DWORD; lpOptional: Pointer; dwOptionalLength: DWORD): BOOL; stdcall;
 {$EXTERNALSYM HttpSendRequest}
-function HttpSendRequest(hRequest: HINTERNET; lpszHeaders: PChar;
+function HttpSendRequest(hRequest: HINTERNET; lpszHeaders: PTSTR;
   dwHeadersLength: DWORD; lpOptional: Pointer; dwOptionalLength: DWORD): BOOL; stdcall;
 
 {$EXTERNALSYM HttpSendRequestExA}
@@ -2389,7 +2389,7 @@ function InternetSetCookieW(lpszUrl, lpszCookieName,
   lpszCookieData: PWideChar): BOOL; stdcall;
 {$EXTERNALSYM InternetSetCookie}
 function InternetSetCookie(lpszUrl, lpszCookieName,
-  lpszCookieData: PChar): BOOL; stdcall;
+  lpszCookieData: PTSTR): BOOL; stdcall;
 
 {$EXTERNALSYM InternetGetCookieA}
 function InternetGetCookieA(lpszUrl, lpszCookieName: PAnsiChar;
@@ -2398,8 +2398,8 @@ function InternetGetCookieA(lpszUrl, lpszCookieName: PAnsiChar;
 function InternetGetCookieW(lpszUrl, lpszCookieName: PWideChar;
   lpCookieData: PWideChar; var lpdwSize: DWORD): BOOL; stdcall;
 {$EXTERNALSYM InternetGetCookie}
-function InternetGetCookie(lpszUrl, lpszCookieName: PChar;
-  lpCookieData: PChar; var lpdwSize: DWORD): BOOL; stdcall;
+function InternetGetCookie(lpszUrl, lpszCookieName: PTSTR;
+  lpCookieData: PTSTR; var lpdwSize: DWORD): BOOL; stdcall;
 
 
 //
@@ -2415,7 +2415,7 @@ function InternetCheckConnectionA(lpszUrl: PAnsiChar;
 function InternetCheckConnectionW(lpszUrl: PWideChar;
   dwFlags, dwReserved: DWORD): BOOL; stdcall;
 {$EXTERNALSYM InternetCheckConnection}
-function InternetCheckConnection(lpszUrl: PChar;
+function InternetCheckConnection(lpszUrl: PTSTR;
   dwFlags, dwReserved: DWORD): BOOL; stdcall;
 
 const
@@ -2483,7 +2483,7 @@ function InternetConfirmZoneCrossingA(hWnd: HWND; szUrlPrev, szUrlNew: PAnsiChar
 function InternetConfirmZoneCrossingW(hWnd: HWND; szUrlPrev, szUrlNew: PWideChar;
   bPost: BOOL): DWORD; stdcall;
 {$EXTERNALSYM InternetConfirmZoneCrossing}
-function InternetConfirmZoneCrossing(hWnd: HWND; szUrlPrev, szUrlNew: PChar;
+function InternetConfirmZoneCrossing(hWnd: HWND; szUrlPrev, szUrlNew: PTSTR;
   bPost: BOOL): DWORD; stdcall;
 
 //
@@ -2918,8 +2918,8 @@ function CreateUrlCacheEntryA(lpszUrlName: PAnsiChar; dwExpectedFileSize: DWORD;
 function CreateUrlCacheEntryW(lpszUrlName: PWideChar; dwExpectedFileSize: DWORD;
  lpszFileExtension: PWideChar; lpszFileName: PWideChar; dwReserved: DWORD): BOOL; stdcall;
 {$EXTERNALSYM CreateUrlCacheEntry}
-function CreateUrlCacheEntry(lpszUrlName: PChar; dwExpectedFileSize: DWORD;
- lpszFileExtension: PChar; lpszFileName: PChar; dwReserved: DWORD): BOOL; stdcall;
+function CreateUrlCacheEntry(lpszUrlName: PTSTR; dwExpectedFileSize: DWORD;
+ lpszFileExtension: PTSTR; lpszFileName: PTSTR; dwReserved: DWORD): BOOL; stdcall;
 
 // Temporary state of affairs until we reconcile our apis.
 
@@ -2943,10 +2943,10 @@ function CommitUrlCacheEntryW(lpszUrlName, lpszLocalFileName: PWideChar;
   lpHeaderInfo: PByte; dwHeaderSize: DWORD; lpszFileExtension: PWideChar;
   lpszOriginalUrl: PWideChar): BOOL; stdcall;
 {$EXTERNALSYM CommitUrlCacheEntry}
-function CommitUrlCacheEntry(lpszUrlName, lpszLocalFileName: PChar;
+function CommitUrlCacheEntry(lpszUrlName, lpszLocalFileName: PTSTR;
   ExpireTime, LastModifiedTime: TFileTime; CacheEntryType: DWORD;
-  lpHeaderInfo: PByte; dwHeaderSize: DWORD; lpszFileExtension: PChar;
-  lpszOriginalUrl: PChar): BOOL; stdcall;
+  lpHeaderInfo: PByte; dwHeaderSize: DWORD; lpszFileExtension: PTSTR;
+  lpszOriginalUrl: PTSTR): BOOL; stdcall;
 
 {$EXTERNALSYM RetrieveUrlCacheEntryFileA}
 function RetrieveUrlCacheEntryFileA(lpszUrlName: PAnsiChar; lpCacheEntryInfo:
@@ -2968,7 +2968,7 @@ function UnlockUrlCacheEntryFileA(lpszUrlName: PAnsiChar;
 function UnlockUrlCacheEntryFileW(lpszUrlName: PWideChar;
   dwReserved: DWORD): BOOL; stdcall;
 {$EXTERNALSYM UnlockUrlCacheEntryFile}
-function UnlockUrlCacheEntryFile(lpszUrlName: PChar;
+function UnlockUrlCacheEntryFile(lpszUrlName: PTSTR;
   dwReserved: DWORD): BOOL; stdcall;
 
 {$EXTERNALSYM RetrieveUrlCacheEntryStreamA}
@@ -2980,7 +2980,7 @@ function RetrieveUrlCacheEntryStreamW(lpszUrlName: PWideChar; lpCacheEntryInfo:
   PInternetCacheEntryInfoW; var lpdwCacheEntryInfoBufferSize: DWORD;
   fRandomRead: BOOL; dwReserved: DWORD): THandle; stdcall;
 {$EXTERNALSYM RetrieveUrlCacheEntryStream}
-function RetrieveUrlCacheEntryStream(lpszUrlName: PChar; lpCacheEntryInfo:
+function RetrieveUrlCacheEntryStream(lpszUrlName: PTSTR; lpCacheEntryInfo:
   PInternetCacheEntryInfo; var lpdwCacheEntryInfoBufferSize: DWORD;
   fRandomRead: BOOL; dwReserved: DWORD): THandle; stdcall;
 
@@ -2997,7 +2997,7 @@ function GetUrlCacheEntryInfoA(lpszUrlName: PAnsiChar; lpCacheEntryInfo:
 function GetUrlCacheEntryInfoW(lpszUrlName: PWideChar; lpCacheEntryInfo:
   PInternetCacheEntryInfoW; var lpdwCacheEntryInfoBufferSize: DWORD): BOOL; stdcall;
 {$EXTERNALSYM GetUrlCacheEntryInfo}
-function GetUrlCacheEntryInfo(lpszUrlName: PChar; lpCacheEntryInfo:
+function GetUrlCacheEntryInfo(lpszUrlName: PTSTR; lpCacheEntryInfo:
   PInternetCacheEntryInfo; var lpdwCacheEntryInfoBufferSize: DWORD): BOOL; stdcall;
 
 //
@@ -3061,9 +3061,9 @@ function GetUrlCacheEntryInfoExW(lpszUrl: PWideChar; lpCacheEntryInfo:
   lpszReserved: PWideChar; lpdwReserved: LPDWORD; lpReserved: Pointer;
   dwFlag: DWORD): BOOL; stdcall;
 {$EXTERNALSYM GetUrlCacheEntryInfoEx}
-function GetUrlCacheEntryInfoEx(lpszUrl: PChar; lpCacheEntryInfo:
+function GetUrlCacheEntryInfoEx(lpszUrl: PTSTR; lpCacheEntryInfo:
   PInternetCacheEntryInfo; var lpdwCacheEntryInfoBufSize: DWORD;
-  lpszReserved: PChar; lpdwReserved: LPDWORD; lpReserved: Pointer;
+  lpszReserved: PTSTR; lpdwReserved: LPDWORD; lpReserved: Pointer;
   dwFlag: DWORD): BOOL; stdcall;
 
 const
@@ -3092,7 +3092,7 @@ function SetUrlCacheEntryInfoA(lpszUrlName: PAnsiChar; lpCacheEntryInfo:
 function SetUrlCacheEntryInfoW(lpszUrlName: PWideChar; lpCacheEntryInfo:
   PInternetCacheEntryInfoW; dwFieldControl: DWORD): BOOL; stdcall;
 {$EXTERNALSYM SetUrlCacheEntryInfo}
-function SetUrlCacheEntryInfo(lpszUrlName: PChar; lpCacheEntryInfo:
+function SetUrlCacheEntryInfo(lpszUrlName: PTSTR; lpCacheEntryInfo:
   PInternetCacheEntryInfo; dwFieldControl: DWORD): BOOL; stdcall;
 
 // Flags for SetUrlCacheEntryGroup
@@ -3109,7 +3109,7 @@ function SetUrlCacheEntryGroupA(lpszUrlName: PAnsiChar; dwFlags: DWORD; GroupId:
 function SetUrlCacheEntryGroupW(lpszUrlName: PWideChar; dwFlags: DWORD; GroupId: GROUPID;
   pbGroupAttributes: PByte; cbGroupAttributes: DWORD; lpReserved: Pointer): BOOL; stdcall;
 {$EXTERNALSYM SetUrlCacheEntryGroup}
-function SetUrlCacheEntryGroup(lpszUrlName: PChar; dwFlags: DWORD; GroupId: GROUPID;
+function SetUrlCacheEntryGroup(lpszUrlName: PTSTR; dwFlags: DWORD; GroupId: GROUPID;
   pbGroupAttributes: PByte; cbGroupAttributes: DWORD; lpReserved: Pointer): BOOL; stdcall;
 
 {$EXTERNALSYM FindFirstUrlCacheEntryExA}
@@ -3125,7 +3125,7 @@ function FindFirstUrlCacheEntryExW(lpszUrlSearchPattern: PWideChar; dwFlags,
   lpGroupAttributes: Pointer; pcbGroupAttributes: LPDWORD;
   lpReserved: Pointer): THandle; stdcall;
 {$EXTERNALSYM FindFirstUrlCacheEntryEx}
-function FindFirstUrlCacheEntryEx(lpszUrlSearchPattern: PChar; dwFlags,
+function FindFirstUrlCacheEntryEx(lpszUrlSearchPattern: PTSTR; dwFlags,
   dwFilter: DWORD; GroupId: TGroupID; lpFirstCacheEntryInfo:
   PInternetCacheEntryInfo; var lpdwFirstCacheEntryInfoBufferSize: DWORD;
   lpGroupAttributes: Pointer; pcbGroupAttributes: LPDWORD;
@@ -3156,7 +3156,7 @@ function FindFirstUrlCacheEntryW(lpszUrlSearchPattern: PWideChar;
   lpFirstCacheEntryInfo: PInternetCacheEntryInfoW;
   var lpdwFirstCacheEntryInfoBufferSize: DWORD): THandle; stdcall;
 {$EXTERNALSYM FindFirstUrlCacheEntry}
-function FindFirstUrlCacheEntry(lpszUrlSearchPattern: PChar;
+function FindFirstUrlCacheEntry(lpszUrlSearchPattern: PTSTR;
   lpFirstCacheEntryInfo: PInternetCacheEntryInfo;
   var lpdwFirstCacheEntryInfoBufferSize: DWORD): THandle; stdcall;
 
@@ -3178,7 +3178,7 @@ function DeleteUrlCacheEntryA(lpszUrlName: PAnsiChar): BOOL; stdcall;
 {$EXTERNALSYM DeleteUrlCacheEntry}
 function DeleteUrlCacheEntryW(lpszUrlName: PWideChar): BOOL; stdcall;
 {$EXTERNALSYM DeleteUrlCacheEntry}
-function DeleteUrlCacheEntry(lpszUrlName: PChar): BOOL; stdcall;
+function DeleteUrlCacheEntry(lpszUrlName: PTSTR): BOOL; stdcall;
 
 //
 // Autodial APIs
@@ -3191,7 +3191,7 @@ function InternetDialA(hwndParent: HWND; lpszConnectoid: PAnsiChar; dwFlags: DWO
 function InternetDialW(hwndParent: HWND; lpszConnectoid: PWideChar; dwFlags: DWORD;
   out lpdwConnection: DWORD_PTR; dwReserved: DWORD): DWORD; stdcall;
 {$EXTERNALSYM InternetDial}
-function InternetDial(hwndParent: HWND; lpszConnectoid: PChar; dwFlags: DWORD;
+function InternetDial(hwndParent: HWND; lpszConnectoid: PTSTR; dwFlags: DWORD;
   out lpdwConnection: DWORD_PTR; dwReserved: DWORD): DWORD; stdcall;
 
 // Flags for InternetDial - must not conflict with InternetAutodial flags
@@ -3219,7 +3219,7 @@ function InternetGoOnlineA(lpszURL: PAnsiChar; hwndParent: HWND; dwFlag: DWORD):
 {$EXTERNALSYM InternetGoOnlineW}
 function InternetGoOnlineW(lpszURL: PWideChar; hwndParent: HWND; dwFlag: DWORD): BOOL; stdcall;
 {$EXTERNALSYM InternetGoOnline}
-function InternetGoOnline(lpszURL: PChar; hwndParent: HWND; dwFlag: DWORD): BOOL; stdcall;
+function InternetGoOnline(lpszURL: PTSTR; hwndParent: HWND; dwFlag: DWORD): BOOL; stdcall;
 {$EXTERNALSYM InternetAutodial}
 function InternetAutodial(dwFlags, dwReserved: DWORD): BOOL; stdcall;
 
@@ -3249,7 +3249,7 @@ function InternetGetConnectedStateExW(out lpdwFlags: DWORD;
   lpszConnectionName: PWideChar; dwNameLen, dwReserved: DWORD): BOOL; stdcall;
 {$EXTERNALSYM InternetGetConnectedStateEx}
 function InternetGetConnectedStateEx(out lpdwFlags: DWORD;
-  lpszConnectionName: PChar; dwNameLen, dwReserved: DWORD): BOOL; stdcall;
+  lpszConnectionName: PTSTR; dwNameLen, dwReserved: DWORD): BOOL; stdcall;
 
 {$EXTERNALSYM InternetInitializeAutoProxyDll}
 function InternetInitializeAutoProxyDll(dwReserved: DWORD): BOOL; stdcall;
@@ -3309,7 +3309,7 @@ function InternetSetDialStateA(lpszConnectoid: PAnsiChar;
 function InternetSetDialStateW(lpszConnectoid: PWideChar;
   dwState, dwReserved: DWORD): BOOL; stdcall;
 {$EXTERNALSYM InternetSetDialState}
-function InternetSetDialState(lpszConnectoid: PChar;
+function InternetSetDialState(lpszConnectoid: PTSTR;
   dwState, dwReserved: DWORD): BOOL; stdcall;
 
 const
@@ -3343,7 +3343,7 @@ begin
   Result := InternetConnectW(hInternet, lpszUrl, INTERNET_INVALID_PORT_NUMBER,
     nil, nil, INTERNET_SERVICE_URL, dwFlags, dwContext);
 end;
-function InternetConnectUrl(hInternet: HINTERNET; lpszUrl: PChar;
+function InternetConnectUrl(hInternet: HINTERNET; lpszUrl: PTSTR;
   dwFlags, dwContext: DWORD): HINTERNET;
 begin
   Result := InternetConnect(hInternet, lpszUrl, INTERNET_INVALID_PORT_NUMBER,

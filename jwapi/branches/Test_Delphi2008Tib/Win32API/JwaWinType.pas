@@ -224,11 +224,11 @@ type
   {$EXTERNALSYM NPSTR}
   LPSTR = {$IFDEF USE_DELPHI_TYPES} Windows.LPSTR {$ELSE} PAnsiChar {$ENDIF};
   {$EXTERNALSYM LPSTR}
-  PSTR = PChar;
+  PSTR = PAnsiChar;
   {$EXTERNALSYM PSTR}
   LPCSTR = {$IFDEF USE_DELPHI_TYPES} Windows.LPCSTR {$ELSE} PAnsiChar {$ENDIF};
   {$EXTERNALSYM LPCSTR}
-  PCSTR = PChar;
+  PCSTR = PAnsiChar;
   {$EXTERNALSYM PCSTR}
 
 // (rom) moved down to have LPSTR etc always declared
@@ -249,7 +249,7 @@ type
   PPWCHAR = ^PWCHAR;
 
   PPTSTR = ^PTSTR;
-  PPChar = ^PChar;
+  PPChar = ^PAnsiChar;
   PPWideChar = ^PWideChar;
   PPointer = ^Pointer;
 
@@ -305,7 +305,7 @@ type
 
   TCHAR = AnsiChar;
   {$EXTERNALSYM TCHAR}
-  PTCHAR = PChar;
+  PTCHAR = PAnsiChar;
   {$EXTERNALSYM PTCHAR}
   TUCHAR = Byte;
   {$EXTERNALSYM TUCHAR}
@@ -718,7 +718,7 @@ type
   _STRING = record
     Length: USHORT;
     MaximumLength: USHORT;
-    Buffer: PCHAR;
+    Buffer: PAnsiChar;
   end;
   {$EXTERNALSYM _STRING}
   TString = _STRING;
@@ -741,7 +741,7 @@ type
   _CSTRING = record
     Length: USHORT;
     MaximumLength: USHORT;
-    Buffer: PCHAR;
+    Buffer: PAnsiChar;
   end;
   {$EXTERNALSYM _CSTRING}
   CSTRING = _CSTRING;

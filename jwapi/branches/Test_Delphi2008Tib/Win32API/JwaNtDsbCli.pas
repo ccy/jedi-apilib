@@ -162,8 +162,8 @@ type
   PEDB_RSTMAPA = ^EDB_RSTMAPA;
   {$EXTERNALSYM PEDB_RSTMAPA}
   tagEDB_RSTMAPA = record
-    szDatabaseName: PChar;
-    szNewDtabaseName: PChar;
+    szDatabaseName: PAnsiChar;
+    szNewDtabaseName: PAnsiChar;
   end;
   {$EXTERNALSYM tagEDB_RSTMAPA}
   EDB_RSTMAPA = tagEDB_RSTMAPA;

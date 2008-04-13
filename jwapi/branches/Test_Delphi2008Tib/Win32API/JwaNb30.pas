@@ -91,7 +91,7 @@ type
     ncb_retcode: UCHAR;  // return code
     ncb_lsn: UCHAR;      // local session number
     ncb_num: UCHAR;      // number of our network name
-    ncb_buffer: PChar;   // address of message buffer
+    ncb_buffer: PAnsiChar;   // address of message buffer
     ncb_length: Word;    // size of message buffer
     ncb_callname: array [0..NCBNAMSZ - 1] of Char; // blank-padded name of remote
     ncb_name: array [0..NCBNAMSZ - 1] of Char;     // our blank-padded netname

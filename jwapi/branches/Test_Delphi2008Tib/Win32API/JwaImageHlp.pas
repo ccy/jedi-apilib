@@ -1087,7 +1087,7 @@ type
     SizeOfStruct: DWORD; // set to sizeof(IMAGEHLP_LINE64)
     Key: PVOID; // internal
     LineNumber: DWORD; // line number in file
-    FileName: PCHAR; // full filename
+    FileName: PAnsiChar; // full filename
     Address: DWORD64; // first instruction of line
   end;
   {$EXTERNALSYM _IMAGEHLP_LINE64}
@@ -1102,7 +1102,7 @@ type
     SizeOfStruct: DWORD; // set to sizeof(IMAGEHLP_LINE)
     Key: PVOID; // internal
     LineNumber: DWORD; // line number in file
-    FileName: PCHAR; // full filename
+    FileName: PAnsiChar; // full filename
     Address: DWORD; // first instruction of line
   end;
   {$EXTERNALSYM _IMAGEHLP_LINE}
@@ -1118,7 +1118,7 @@ type
 type
   _SOURCEFILE = record
     ModBase: DWORD64;                // base address of loaded module
-    FileName: PCHAR;                 // full filename of source
+    FileName: PAnsiChar;                 // full filename of source
   end;
   {$EXTERNALSYM _SOURCEFILE}
   SOURCEFILE = _SOURCEFILE;
@@ -1186,7 +1186,7 @@ type
   _IMAGEHLP_CBA_EVENT = record
     severity: DWORD;                                     // values from sevInfo to sevFatal
     code: DWORD;                                         // numerical code IDs the error
-    desc: PCHAR;                                         // may contain a text description of the error
+    desc: PAnsiChar;                                         // may contain a text description of the error
     object_: PVOID;                                      // value dependant upon the error code
   end;
   {$EXTERNALSYM _IMAGEHLP_CBA_EVENT}

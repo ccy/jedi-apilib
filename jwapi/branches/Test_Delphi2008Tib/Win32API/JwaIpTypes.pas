@@ -397,7 +397,7 @@ type
           IfIndex: DWORD);
     end;
     Next: PIP_ADAPTER_ADDRESSES;
-    AdapterName: PCHAR;
+    AdapterName: PAnsiChar;
     FirstUnicastAddress: PIP_ADAPTER_UNICAST_ADDRESS;
     FirstAnycastAddress: PIP_ADAPTER_ANYCAST_ADDRESS;
     FirstMulticastAddress: PIP_ADAPTER_MULTICAST_ADDRESS;
