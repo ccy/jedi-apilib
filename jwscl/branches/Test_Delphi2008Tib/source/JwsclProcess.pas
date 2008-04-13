@@ -180,6 +180,12 @@ BOOL WINAPI TerminateJobObject(HANDLE hJob, UINT uExitCode);
       const ErrorIfAlreadyExists : Boolean;
       const SecurityAttributes : TJwSecurityDescriptor); overload;
 
+    {@Name creates a new job object using an existing completition port.}  
+    constructor Create(const Name : TJwString;
+      const ErrorIfAlreadyExists : Boolean;
+      const SecurityAttributes : TJwSecurityDescriptor;
+      CompletionKey : Integer; CompletionPort : THandle); overload;
+
     {@Name creates a new job object using an existing job object
     @param(Name defines the name of the existing job object)
     @param(DesiredAccess defines the desired access to open the job object)
@@ -1641,6 +1647,68 @@ begin
     fThread.IOHandle);
 end;
 
+
+constructor TJwJobObject.Create(const Name : TJwString;
+      const ErrorIfAlreadyExists : Boolean;
+      const SecurityAttributes : TJwSecurityDescriptor;
+      CompletionKey : Integer; CompletionPort : THandle);
+var
+  pSA : LPSECURITY_ATTRIBUTES;
+begin
+  SetLastError(0);
+
+  OnNotification := nil;
+  OnNoActiveProcesses := nil;
+  fIOUniqueID := CompletionKey;
+
+  fJobName := Name;
+
+
+  if Assigned(SecurityAttributes) then
+    pSA := LPSECURITY_ATTRIBUTES(SecurityAttributes.Create_SA2())
+  else
+    pSA := nil;
+
+
+  if Length(Name) > 0 then
+  begin
+    fHandle := {$IFDEF UNICODE}CreateJobObjectW{$ELSE}CreateJobObjectA{$ENDIF}
+      (pSA, TJwPChar(Name));
+  end
+  else
+  begin
+    fHandle := {$IFDEF UNICODE}CreateJobObjectW{$ELSE}CreateJobObjectA{$ENDIF}
+      (pSA, nil);
+  end;
+
+  TJwSecurityDescriptor.Free_SA(PSecurityAttributes(pSA));
+
+  fAccessMask := JOB_OBJECT_ALL_ACCESS;
+  fTerminateOnDestroy := false;
+
+
+  if (fHandle = 0) or
+   (ErrorIfAlreadyExists and (GetLastError() = ERROR_ALREADY_EXISTS))
+  then
+  begin
+    if (GetLastError() <> 0) and (fHandle <> 0) then
+      CloseHandle(fHandle);
+    raise EJwsclWinCallFailedException.CreateFmtWinCall(
+      '',
+      'Create',                                //sSourceProc
+      ClassName,                                //sSourceClass
+      '',                          //sSourceFile
+      0,                                           //iSourceLine
+      True,                                  //bShowLastError
+      'CreateJobObject',                   //sWinCall
+      ['CreateJobObject']);                                  //const Args: array of const
+  end;
+
+  SetObjectAssociateCompletionPortInformation(Pointer(CompletionKey),
+    CompletionPort);
+end;
+
+
 constructor TJwJobObject.Create(const Name : TJwString; const DesiredAccess : TJwAccessMask;
   const InheritHandles : Boolean; CompletionKey : Integer; CompletionPort : THandle);
 var
@@ -2445,9 +2513,9 @@ end;
 
 constructor TJwJobObjectSessionList.Create(const NewJobObjectEvent: TJwOnNewJobObject);
 begin
-  JwRaiseOnNilParameter(NewJobObjectEvent, 'NewJobObjectEvent','Create', ClassName, RsUNProcess);
+  JwRaiseOnNilParameter(@NewJobObjectEvent, 'NewJobObjectEvent','Create', ClassName, RsUNProcess);
 
-  inherited;
+  inherited Create;
   fLock := TMultiReadExclusiveWriteSynchronizer.Create;
 
   fList := TList.Create;
