@@ -55,7 +55,7 @@ unit JwaWinInet;
 interface
 
 uses
-  Windows;
+  JwaWinBase, JwaWinUser, JwaWinType;
 {
   Set up Structure Packing to be 4 bytes
   for all wininet structures
@@ -102,7 +102,7 @@ const
   INTERNET_DEFAULT_HTTPS_PORT     = 443;        //    "     "  HTTPS  " 
   {$EXTERNALSYM INTERNET_DEFAULT_SOCKS_PORT}
   INTERNET_DEFAULT_SOCKS_PORT     = 1080;       // default for SOCKS firewall servers. 
- 
+
 // 
 // maximum field lengths (arbitrary) 
 // 
@@ -114,8 +114,8 @@ const
   INTERNET_MAX_PASSWORD_LENGTH    = 128;
 
 {$IFNDEF JWA_INCLUDEMODE}
-  {$NODEFINE DWORD_PTR}
-  DWORD_PTR = DWORD;
+  {..$NODEFINE DWORD_PTR}
+  //DWORD_PTR = DWORD;
 {$ENDIF JWA_INCLUDEMODE}
 
   {$EXTERNALSYM INTERNET_MAX_PORT_NUMBER_LENGTH}

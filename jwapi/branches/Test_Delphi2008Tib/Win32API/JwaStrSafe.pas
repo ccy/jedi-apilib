@@ -61,7 +61,7 @@ unit JwaStrSafe;
 interface
 //use either JwaWindows.pas or single mode units
 {$IFDEF JWA_WINDOWS}
-uses JwaWindows;
+uses JwaWindows; 
 {$ELSE}
 uses JwaWinType;
 {$ENDIF}

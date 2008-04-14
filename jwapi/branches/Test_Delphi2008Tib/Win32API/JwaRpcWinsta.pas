@@ -39,6 +39,7 @@
 { uses clause. To use this unit you must compile JwaWindows.pas with include   }
 { mode.                                                                        }
 
+{$IFNDEF JWA_OMIT_SECTIONS}
 unit JwaRpcWinsta;
 
 interface
@@ -46,7 +47,15 @@ interface
 uses
 // Using JwaWindows for now for easier testing (because of the new Include model)
 // Should be JwaWinType
+{$IFDEF JWA_WINDOWS}
   JwaWindows;
+{$ELSE}
+  JwaWinType, JwaWinNT;
+{$ENDIF JWA_WINDOWS}
+
+{$ENDIF JWA_OMIT_SECTIONS}
+
+{$IFNDEF JWA_IMPLEMENTATIONSECTION}
 
 // Constants used for aligning bitsets
 const
@@ -67,7 +76,9 @@ const
   DIRECTORY_LENGTH = 256;
   INITIALPROGRAM_LENGTH = 256;
   USERNAME_LENGTH = 20;
+{$IFNDEF JWA_INCLUDEMODE}
   DOMAIN_LENGTH = 17;
+{$ENDIF JWA_INCLUDEMODE}  
   PASSWORD_LENGTH = 14;
   NASISPECIFICNAME_LENGTH = 14;
   NASIUSERNAME_LENGTH = 47;
@@ -83,7 +94,9 @@ const
   CLIENTMODEM_LENGTH = 40;
   CLIENT_PRODUCT_ID_LENGTH = 32;
   MAX_COUNTER_EXTENSIONS = 2; {/* actual value not known*/}
+{$IFNDEF JWA_INCLUDEMODE}
   WINSTATIONNAME_LENGTH = 32;
+{$ENDIF JWA_INCLUDEMODE}  
 
 type
   _SDCLASS = (
@@ -1719,14 +1732,17 @@ type
 {=********************* }
 
 const
+{$IFNDEF JWA_INCLUDEMODE}
   IDTIMEOUT = 32000;
   IDASYNC = 32001;
+{$ENDIF JWA_INCLUDEMODE}  
   WSD_LOGOFF = $00000001;
   WSD_SHUTDOWN = $00000002;
   WSD_REBOOT = $00000004;
   WSD_POWEROFF = $00000008;
   WSD_FASTREBOOT = $00000010;
 
+{$IFNDEF JWA_INCLUDEMODE}
 const
   WTS_CONSOLE_CONNECT = $1;
   WTS_CONSOLE_DISCONNECT = $2;
@@ -1737,6 +1753,7 @@ const
   WTS_SESSION_LOCK = $7;
   WTS_SESSION_UNLOCK = $8;
   WTS_SESSION_REMOTE_CONTROL = $9;
+{$ENDIF JWA_INCLUDEMODE}  
 
 
 // We cannot convert the CREATE_MASK macro below to Delphi
@@ -1827,7 +1844,25 @@ const
 
 {$ENDIF _TS_CONNECTIONTYPE_GUID_}
 
+{$ENDIF JWA_IMPLEMENTATIONSECTION}
+
+{$IFNDEF JWA_OMIT_SECTIONS}
 implementation
 
-end.
+{$ENDIF JWA_OMIT_SECTIONS}
 
+
+
+{$IFNDEF JWA_INTERFACESECTION}
+
+{$IFNDEF DYNAMIC_LINK}
+//static link
+{$ELSE}
+//dynamic link
+{$ENDIF DYNAMIC_LINK}
+
+{$ENDIF JWA_INTERFACESECTION}
+
+{$IFNDEF JWA_OMIT_SECTIONS}
+end.
+{$ENDIF JWA_OMIT_SECTIONS}

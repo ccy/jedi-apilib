@@ -43,11 +43,22 @@
 { This unit is not part of JwaWindows.pas and MUST be included by uses clause. }
 { To use this unit you must compile JwaWindows.pas with include mode.}
 
+{$IFDEF JWA_INCLUDEMODE}
+This unit must not be included in JwaWindows.pas because it is not compatible!
+{$ENDIF JWA_INCLUDEMODE}
+
 unit JwaVista;
 
 interface
 
-uses JwaWindows, ActiveX;
+
+uses
+{$IFDEF JWA_WINDOWS}
+  JwaWindows,
+{$ELSE}
+  JwaWinType, JwaWinNT,
+{$ENDIF}
+  ActiveX;
 
 
 type

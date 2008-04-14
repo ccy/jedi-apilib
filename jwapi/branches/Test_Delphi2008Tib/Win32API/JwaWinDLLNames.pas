@@ -108,6 +108,7 @@ const
   sensapilib = 'sensapi.dll';
   Sfclib = 'sfc.dll';
   sisbkuplib = 'sisbkup.dll';
+  ShFolderDll = 'shfolder.dll';
   snmpapilib = 'snmpapi.dll';
   softpub = 'softpub.dll';
   sporderlib = 'sporder.dll';
@@ -136,7 +137,7 @@ const
 //RV
 const
   shell32 = 'shell32.dll';
-  shdocvw = 'shdocvw.dll';
+  shdocvwDll = 'shdocvw.dll';
   mydocs = 'mydocs.dll';
   shlwapidll  = 'shlwapi.dll';
   kernel32dll = 'kernel32.dll';  

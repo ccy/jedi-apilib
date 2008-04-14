@@ -83,7 +83,7 @@ type
   EJwaLoadLibraryError = class(EJwaError);
   EJwaGetProcAddressError = class(EJwaError);
 
-procedure GetProcedureAddress(var P: Pointer; const ModuleName, ProcName: string);
+procedure GetProcedureAddress(var P: Pointer; const ModuleName, ProcName: AnsiString);
 
 type
   // (rom) moved from JwaRpc.pas
@@ -301,7 +301,7 @@ type
   __TEXT = WideString;
   {$EXTERNALSYM __TEXT}
 
-  {$ELSE}
+{$ELSE}
 
   TCHAR = AnsiChar;
   {$EXTERNALSYM TCHAR}
@@ -1833,7 +1833,7 @@ const
   RsELibraryNotFound = 'Library not found: %s';
   RsEFunctionNotFound = 'Function not found: %s.%s';
 
-procedure GetProcedureAddress(var P: Pointer; const ModuleName, ProcName: string);
+procedure GetProcedureAddress(var P: Pointer; const ModuleName, ProcName: AnsiString);
 var
   ModuleHandle: HMODULE;
 begin
@@ -1852,7 +1852,7 @@ begin
         raise EJwaLoadLibraryError.CreateFmt(RsELibraryNotFound, [ModuleName]);
     end;
     P := Pointer({$IFDEF JWA_INCLUDEMODE}jwaWinType_GetProcAddress
-                    {$ELSE}GetProcAddressA
+                    {$ELSE}GetProcAddress
                     {$ENDIF JWA_INCLUDEMODE}(ModuleHandle, PAnsiChar(ProcName)));
     if not Assigned(P) then
       raise EJwaGetProcAddressError.CreateFmt(RsEFunctionNotFound, [ModuleName, ProcName]);

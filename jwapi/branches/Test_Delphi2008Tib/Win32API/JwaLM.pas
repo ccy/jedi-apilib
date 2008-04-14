@@ -43,6 +43,11 @@
 
 // $Id: JwaLM.pas,v 1.11 2007/09/05 11:58:50 dezipaitor Exp $
 
+{$IFNDEF JWA_INCLUDEMODE}
+This unit must not be included in JwaWindows.pas because the members are
+already declared.
+{$ENDIF JWA_INCLUDEMODE}
+
 {$IFNDEF JWA_OMIT_SECTIONS}
 unit JwaLM;
 

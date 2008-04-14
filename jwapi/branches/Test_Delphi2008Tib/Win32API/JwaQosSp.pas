@@ -64,7 +64,7 @@ uses
   {$IFDEF USE_DELPHI_TYPES}
   Windows,
   {$ELSE}
-  JwaWinType,
+  JwaWinType, 
   {$ENDIF USE_DELPHI_TYPES}
   JwaWinSock2, JwaQos;
 
@@ -134,6 +134,12 @@ type
 
   LPCIN_ADDR_IPV6 = ^IN_ADDR_IPV6;
   {$EXTERNALSYM LPCIN_ADDR_IPV6}
+
+{$IFNDEF JWA_INCLUDEMODE}
+{$IFDEF USE_DELPHI_TYPES}
+  USHORT = Word;
+{$ENDIF}
+{$ENDIF}
 
 (*
  * IPV4 addressing for RSVP FILTERSPECS

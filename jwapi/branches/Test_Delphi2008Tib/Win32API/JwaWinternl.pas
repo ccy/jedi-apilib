@@ -93,10 +93,16 @@ unit JwaWinternl;
 interface
 
 uses
+{$IFDEF JWA_WINDOWS}
+  JwaWindows,
+{$ELSE}
+  JwaWinType, JwaWinNT
+{$ENDIF}
   {$IFDEF USE_DELPHI_TYPES}
-  Windows,
+  ,Windows
+  ,JwaWinDllNames
   {$ENDIF USE_DELPHI_TYPES}
-  JwaWindows;
+  ;
 {$ENDIF JWA_OMIT_SECTIONS}
 
 
@@ -760,9 +766,7 @@ type
 
 {$IFNDEF JWA_OMIT_SECTIONS}
 implementation
-         
-uses
-  JwaWinDLLNames;
+
 {$ENDIF JWA_OMIT_SECTIONS}
 
 
