@@ -1,9 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<BorlandProject>
-	<Transactions>
-    <Transaction>2007.10.08 11:29:50.095.bdsgroup,P:\Eigene Dateien\Dezipaitor\Borland Studio-Projekte\ProjectGroup1.bdsgroup=P:\Eigene Dateien\Dezipaitor\Projekte\Delphi\7\jwaUnits\Packages\bds10\JediApi_Bds10.bdsgroup</Transaction>
-  </Transactions>
-	<Default.Personality>
-		<Projects ActiveProject="JediApi_DynamicDebug.bpl"/>
-	</Default.Personality>
-</BorlandProject>
