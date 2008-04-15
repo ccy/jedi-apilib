@@ -30,6 +30,7 @@ package JediApi_DynamicRelease;
 {$DEFINE JWA_INCLUDE_JWAADSTLB}
 {$DEFINE RELEASE}
 {$DEFINE DYNAMIC_LINK}
+{$DEFINE JWA_WINDOWS}
 
 requires
   rtl,
