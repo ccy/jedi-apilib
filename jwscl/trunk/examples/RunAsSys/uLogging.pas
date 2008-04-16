@@ -151,14 +151,6 @@ begin
 
   LogFileNameLocation := Format('%s%s_%s.log',
       [LogFileNameLocation, FileName, FormatDateTime('dd_mm_yyyy__hh_nn_ss', now)]);
-
-  try
-  {  AssignFile(F, LogFileNameLocation);
-    Rewrite(f);
-    CloseFile(F); }
-  except
-
-  end;
 end;
 
 initialization
