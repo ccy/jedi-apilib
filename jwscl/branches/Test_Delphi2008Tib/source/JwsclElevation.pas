@@ -296,6 +296,8 @@ begin
   except
     on E : EJwsclSecurityException do
     begin
+      //On 2000,XP admin is elevated
+      IsElevated := JwCheckAdministratorAccess;
       Token.Free;
       if not (sefIgnoreElevationIfNotAvailable in Flags) then
         raise;

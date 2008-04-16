@@ -479,7 +479,7 @@ type
      to CreateWTSQueryUserToken.
 
      @param(Server defines the Terminal Server where this function will
-      be processed. Define be WTS_CURRENT_SERVER_HANDLE to use current server)
+      be processed. Use nil to use current server.)
       @param(SessionID defines the session which is used to obtain the token.
          If set to INVALID_HANDLE_VALUE, the function does the following :
          @orderedlist(
@@ -1195,6 +1195,7 @@ type
         @param(stats contains the token statistic structure provided by GetTokenInformation. )}
     constructor Create(stats: TTokenStatistics);
 
+    {@Name returns token statistics as text.}
     function GetText: TJwString; virtual;
        {@Name contains the luid of the token.
         See also : http://msdn2.microsoft.com/en-us/library/aa379632.aspx}
@@ -1681,6 +1682,14 @@ SE_XXXXX [enabled]
 SE_XXXXX [disabled]
 }
 function JwGetPrivilegesText: TJwString; overload;
+
+{@Name returns a string filled with privilege names (of current token) and their states seperated by #13#10.
+SE_XXXXX [enabled]
+SE_XXXXX [disabled]
+This function returns the status of the given privileges in parameter DisplayPrivileges.
+@param(DisplayPrivileges defines an array of privilege names that are checked for status and availability.)
+}
+
 function JwGetPrivilegesText(
   const DisplayPrivileges: array of AnsiString): TJwString;
   overload;
@@ -1704,7 +1713,7 @@ function JwCheckAdministratorAccess: boolean;
 
 {@Name returns the logon session ID of the current process.
 @return(A integer value that defines the current session ID)}
-function GetProcessLogonSession : Cardinal;
+function JwGetProcessLogonSession : Cardinal;
 
 
 function JwIsSystem : Boolean;
@@ -1724,7 +1733,7 @@ uses JwsclKnownSid, JwsclMapping, JwsclSecureObjects, JwsclProcess,
 
 {$IFNDEF SL_INTERFACE_SECTION}
 
-function GetProcessLogonSession : Cardinal;
+function JwGetProcessLogonSession : Cardinal;
 var T : TJwSecurityToken;
 begin
   T := TJwSecurityToken.CreateTokenByProcess(0, TOKEN_READ or TOKEN_QUERY);
