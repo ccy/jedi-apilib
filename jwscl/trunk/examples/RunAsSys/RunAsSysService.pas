@@ -4,7 +4,7 @@ interface
 
 uses
   JWaWindows, JwsclToken, JwsclProcess,
-  JwsclTerminalServer, JwsclKnownSid,
+  JwsclTerminalServer, JwsclKnownSid, JwsclLogging, uLogging,
   Messages, SysUtils, Classes, Graphics, Controls, SvcMgr, Dialogs;
 
 type
@@ -32,6 +32,10 @@ var
 implementation
 
 {$R *.DFM}
+
+function GetParameterValue(const Name : AnsiString) : AnsiString;
+begin
+end;
 
 
 type
@@ -127,7 +131,10 @@ var
 
   Data : TInternalProcessData;
   Meth : TMethod;
+  Log : IJwLogClient;
 begin
+  Log := uLogging.LogServer.Connect(etThread, '','Service Execute','RunAsSysService.pas','Entering service main thread');
+
   //Sleep(10000);
 
   CmdLine := '';
@@ -135,12 +142,15 @@ begin
   begin
     CmdLine := CmdLine + #13#10 + _Param(iP);
   end;
+  Log.Log('Command line: '+CmdLine);
+
   LogMessage(CmdLine,EVENTLOG_INFORMATION_TYPE	,000,000);
 
   if (_ParamCount < 2) or (
       ((_ParamCount > 0) and (StrToIntDef(_Param(1),-1) < 0))) then
   begin
     Win32ErrCode := ERROR_INVALID_PARAMETER;
+    Log.Log(lsError, 'Invalid Parameter count');
     exit;
   end;
 
@@ -151,6 +161,7 @@ begin
   begin
     LogMessage('Given parameter SessionID is invalid',EVENTLOG_ERROR_TYPE);
     Win32ErrCode := ERROR_INVALID_PARAMETER;
+    Log.Log(lsError, 'Invalid Parameter session');
     exit;
   end;
 
@@ -200,15 +211,21 @@ begin
     RaiseLastOSError;
      except
       on e: Exception do
+      begin
+        Log.Exception(E);
         LogMessage('Could not start process:'+E.Message,EVENTLOG_ERROR_TYPE);
+      end;
     end;
 
+    LogMessage('CreateProcess succeeded.');
     DestroyEnvironmentBlock(P);
     CloseHandle(ProcessInfo.hProcess);
     CloseHandle(ProcessInfo.hThread);
   finally
     UserToken.Free;
   end;
+
+
 end;
 
 procedure TRunAsSysSvc3.ServiceStart(Sender: TService;
