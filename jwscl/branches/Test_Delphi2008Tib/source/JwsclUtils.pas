@@ -350,6 +350,11 @@ function IsHandleValid(const Handle : THandle) : Boolean;
 {@name Checks if Bitmask and Check = Check}
 function JwCheckBitMask(const Bitmask: Integer; const Check: Integer): Boolean; 
 
+{@name encapsulates MsgWaitForMultipleObjects using an open array
+parameter.}
+function JwMsgWaitForMultipleObjects(const Handles: array of THandle; bWaitAll: LongBool;
+           dwMilliseconds: DWord; dwWakeMask: DWord): DWord;
+
 implementation
 uses SysUtils, JwsclToken, JwsclKnownSid, JwsclDescriptor, JwsclAcl,
      JwsclSecureObjects, JwsclMapping
@@ -632,6 +637,12 @@ begin
     if bSuccess then
       MappingRecord[i].Name := S;
   end;
+end;
+
+function JwMsgWaitForMultipleObjects(const Handles: array of THandle; bWaitAll: LongBool;
+           dwMilliseconds: DWord; dwWakeMask: DWord): DWord;
+begin
+  Result := MsgWaitForMultipleObjects(Length(Handles), @Handles[0], bWaitAll, dwMilliseconds, dwWakeMask);
 end;
 
 
