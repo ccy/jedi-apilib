@@ -35,7 +35,7 @@
     <DCC_ResourcePath>.;..\;..\..\common;..\..\Win32Api</DCC_ResourcePath>
     <DCC_ObjPath>.;..\;..\..\common;..\..\Win32Api</DCC_ObjPath>
     <DCC_IncludePath>.;..\;..\..\common;..\..\Win32Api</DCC_IncludePath>
-    <DCC_Define>PACKAGE_CONDITIONS;JWA_INCLUDE_SETUP_API;JWA_INCLUDE_JWAADSTLB;DEBUG;DYNAMIC_LINK;DEBUG</DCC_Define>
+    <DCC_Define>PACKAGE_CONDITIONS;JWA_INCLUDE_SETUP_API;JWA_INCLUDE_JWAADSTLB;DEBUG;DYNAMIC_LINK;JWA_WINDOWS</DCC_Define>
   </PropertyGroup>
   <ProjectExtensions>
     <Borland.Personality>Delphi.Personality</Borland.Personality>

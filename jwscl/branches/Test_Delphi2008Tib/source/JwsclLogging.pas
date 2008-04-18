@@ -832,13 +832,19 @@ begin
 end;
 
 procedure TJwLogClientImpl.Log(const LogType : TJwLogType; const ClassName, MethodName, FileName, LogMessage : TJwString); safecall;
-var Attributes : TJwXMLAttributes;
+var
+Attributes : TJwXMLAttributes;
 begin
   fOwner.EnterCriticalSection;
   try
     if not TJwLogWriter.CheckLogEventType(ltLog, Integer(LogType), fEventTypes) then
     begin
-      fOwner.LeaveCriticalSection;
+      {
+      In XP SP2, calling LeaveCriticalSection twice results in an
+       hang in EnterCriticalSection, next time executed.
+
+      finally is executed here, so we don't call LeaveCriticalSection here
+      }
       exit;
     end;    
 
@@ -873,7 +879,12 @@ begin
   try
     if not TJwLogWriter.CheckLogEventType(ltMemory, Integer(MemoryType), fEventTypes) then
     begin
-      fOwner.LeaveCriticalSection;
+      {
+      In XP SP2, calling LeaveCriticalSection twice results in an
+       hang in EnterCriticalSection, next time executed.
+
+      finally is executed here, so we don't call LeaveCriticalSection here
+      }
       exit;
     end;
 
@@ -903,7 +914,12 @@ begin
   try
     if not TJwLogWriter.CheckLogEventType(ltSignal, Integer(SignalType), fEventTypes) then
     begin
-      fOwner.LeaveCriticalSection;
+      {
+      In XP SP2, calling LeaveCriticalSection twice results in an
+       hang in EnterCriticalSection, next time executed.
+
+      finally is executed here, so we don't call LeaveCriticalSection here
+      }
       exit;
     end;
 
@@ -934,7 +950,12 @@ begin
   try
     if not TJwLogWriter.CheckLogEventType(ltException, Integer(0), fEventTypes) then
     begin
-      fOwner.LeaveCriticalSection;
+      {
+      In XP SP2, calling LeaveCriticalSection twice results in an
+       hang in EnterCriticalSection, next time executed.
+
+      finally is executed here, so we don't call LeaveCriticalSection here
+      }
       exit;
     end;
 
@@ -1199,7 +1220,9 @@ begin
   try
     //some OS does not support functions
     //which this function is calls
-    InterlockedIncrement64(fID);
+   // InterlockedIncrement64(fID);
+   InterlockedIncrement(I);
+   fID := I;
   except
     InterlockedIncrement(I);
     fID := I;

@@ -75,6 +75,7 @@ function CheckParameters(Log : IJwLogClient) : AnsiString;
 var
   SysPath : Array[0..MAX_PATH] of AnsiChar;
   hres : HRESULT;
+  Temp1 : AnsiString;
 begin
   result := '';
 
@@ -85,7 +86,11 @@ begin
 
     hres := SHGetFolderPathA(0,CSIDL_SYSTEMX86,0,0, SysPath);
     if SUCCEEDED(hres) then
-       result := '"' +IncludeTrailingBackslash(SysPath)+'cmd.exe"'
+    begin
+      Temp1 := StringReplace(SysPath,'\\','\',[rfReplaceAll]);
+      Temp1 := IncludeTrailingBackslash(Temp1);
+      result := '"' +Temp1+'cmd.exe"'
+    end
     else
     begin
       if Assigned(Log) then

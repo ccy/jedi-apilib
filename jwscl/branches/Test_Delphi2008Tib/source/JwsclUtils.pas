@@ -355,6 +355,9 @@ parameter.}
 function JwMsgWaitForMultipleObjects(const Handles: array of THandle; bWaitAll: LongBool;
            dwMilliseconds: DWord; dwWakeMask: DWord): DWord;
 
+function JwWaitForMultipleObjects(const Handles: array of THandle; bWaitAll: LongBool;
+           dwMilliseconds: DWord): DWord;
+
 implementation
 uses SysUtils, JwsclToken, JwsclKnownSid, JwsclDescriptor, JwsclAcl,
      JwsclSecureObjects, JwsclMapping
@@ -643,6 +646,12 @@ function JwMsgWaitForMultipleObjects(const Handles: array of THandle; bWaitAll: 
            dwMilliseconds: DWord; dwWakeMask: DWord): DWord;
 begin
   Result := MsgWaitForMultipleObjects(Length(Handles), @Handles[0], bWaitAll, dwMilliseconds, dwWakeMask);
+end;
+
+function JwWaitForMultipleObjects(const Handles: array of THandle; bWaitAll: LongBool;
+           dwMilliseconds: DWord): DWord;
+begin
+  Result := WaitForMultipleObjects(Length(Handles), @Handles[0], bWaitAll, dwMilliseconds);
 end;
 
 
