@@ -106,6 +106,25 @@ type
     property Name: AnsiString read FName write SetName;
   end;
 
+  TJwIntTupleList = class
+  private
+    procedure Delete(Index: DWORD);
+  protected
+    fList : TList;
+    function GetItem(Index : DWORD) : Pointer;
+    procedure SetItem(Index : DWORD; Value : Pointer);
+    function GetCount : Cardinal;
+  public
+    constructor Create;
+    destructor Destroy; override;
+
+    procedure Add(Index : DWORD; Value : Pointer);
+    procedure DeleteIndex(Index : DWORD);
+
+    property Items[Index : DWORD] : Pointer read GetItem write SetItem; default;
+    property Count : Cardinal read GetCount;
+  end;
+
 {@Name calls GlobalFree on parameter hMem and sets it to zero (0).}
 procedure JwGlobalFreeAndNil(var hMem: HGLOBAL);
 
@@ -832,6 +851,103 @@ end;
     i : Integer;     }
 
 
+
+{ TJwIntTupleList }
+
+type
+  PIntTuple = ^TIntTuple;
+  TIntTuple = record
+    Index : DWORD;
+    Value : Pointer;
+  end;
+
+procedure TJwIntTupleList.Add(Index : DWORD; Value: Pointer);
+var P : PIntTuple;
+begin
+  new(P);
+  P^.Index := Index;
+  P^.Value := Value;
+  fList.Add(P);
+end;
+
+constructor TJwIntTupleList.Create;
+begin
+  fList := TList.Create;
+end;
+
+procedure TJwIntTupleList.Delete(Index: DWORD);
+var i : Integer;
+begin
+  for i := 0 to fList.Count - 1 do
+  begin
+    if PIntTuple(fList[i])^.Index = Index then
+    begin
+      Dispose(PIntTuple(fList[i]));
+
+      fList.Delete(i);
+      exit;
+    end;
+  end;
+
+  raise ERangeError.CreateFmt('Index value %d not found',[Index]);
+end;
+
+
+procedure TJwIntTupleList.DeleteIndex(Index: DWORD);
+var i : Integer;
+begin
+  for i := 0 to fList.Count - 1 do
+  begin
+    if PIntTuple(fList[i])^.Index = Index then
+    begin
+      dispose(PIntTuple(fList[i]));
+      exit;
+    end;
+  end;
+
+  raise ERangeError.CreateFmt('Value %d not found',[Index]);
+end;
+
+
+destructor TJwIntTupleList.Destroy;
+begin
+  FreeAndNil(fList);
+  inherited;
+end;
+
+function TJwIntTupleList.GetCount: Cardinal;
+begin
+  result := fList.Count;
+end;
+
+function TJwIntTupleList.GetItem(Index: DWORD): Pointer;
+var i : Integer;
+begin
+  for i := 0 to fList.Count - 1 do
+  begin
+    if PIntTuple(fList[i])^.Index = Index then
+    begin
+      result := PIntTuple(fList[i])^.Value;
+    end;
+  end;
+
+  raise ERangeError.CreateFmt('Value %d not found',[Index]);
+end;
+
+procedure TJwIntTupleList.SetItem(Index : DWORD; Value: Pointer);
+var i : Integer;
+begin
+  for i := 0 to fList.Count - 1 do
+  begin
+    if PIntTuple(fList[i])^.Index = Index then
+    begin
+      PIntTuple(fList[i])^.Value := Value;
+      exit;
+    end;
+  end;
+
+  raise ERangeError.CreateFmt('Value %d not found',[Index]);
+end;
 
 initialization
 

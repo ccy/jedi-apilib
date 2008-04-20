@@ -89,7 +89,7 @@
 {** functions that are available to usermode code.                           **}
 {**                                                                          **}
 {** Note that the functions prefixed with "Nt" and "Zw" usually appear in    **}
-{** pairs, though not always! For details see http://native.assarbad.net     **}
+{** pairs, though not always! For details see http://assarbad.net    			**}
 {**                                                                          **}
 {** Most of the Native API is undocumented. However, Microsoft recently      **}
 {** started to document a subset of the API in "winternl.h" in the Platform  **}

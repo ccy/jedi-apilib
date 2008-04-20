@@ -126,7 +126,7 @@ type
         @return Returns the count of privilege stack elements.
        }
     function PopPrivileges: cardinal;
-              {@Name saves the actual privilege enabled states in a stack.
+    {@Name saves the actual privilege enabled states in a stack.
         They can be restored with a correctly nested call to PopPrivileges.
                TODO: to test
         @return
@@ -386,9 +386,15 @@ type
 
         {CreateTokenByThread creates a new instances and opens a thread token.
 
-        @param(aProcessHandle Receives a process handle which is used to get the process token. The handle can be zero (0) to use the actual process handle of the caller)
-        @param(aDesiredAccess Receives the desired access for this token. The access types can be get from the following list. Access flags must be concatenated with or operator.
-        If you want to use DuplicateToken or creating an impersonated token (by ConvertToImpersonatedToken) you must specific TOKEN_DUPLICATE.
+        @param aThreadHandle Receives a thread handle which is used to get 
+				the process token. The handle can be zero (0) to use the current 
+				process handle of the caller
+        @param aDesiredAccess Receives the desired access for this token. The access types can be get 
+			from the following list. Access flags must be concatenated with or operator.
+		@param anOpenAsSelf TBD
+        
+		@remarks
+		If you want to use DuplicateToken or creating an impersonated token (by ConvertToImpersonatedToken) you must specific TOKEN_DUPLICATE.
 
         See @link(CreateTokenByProcess CreateTokenByProcess) for a list of access rights.)
         @param(anOpenAsSelf Indicates whether the access check is to be made against the security context of the thread calling the CreateTokenByThread function or against the
@@ -422,12 +428,12 @@ type
      New: @Name creates in every case a second handle. Shared will be set to false so the handle is closed
       if instance is freed.
 
-     @param(aTokenHandle The token handle to be copied.)
-     @param(aDesiredAccess The desired access rights of the new token.
+     @param aTokenHandle The token handle to be copied.
+     @param aDesiredAccess The desired access rights of the new token.
        It can be MAXIMUM_ALLOWED to get the maximum possible access.
-      )
-     @param(UseDuplicateExistingToken For C++ compability only. If you are using C++ and want to use this constructor instead of Create.
-          Set this parameter to true of false. This parameter is ignored!)
+      
+     @param UseDuplicateExistingToken For C++ compability only. If you are using C++ and want to use this constructor instead of Create.
+          Set this parameter to true of false. This parameter is ignored!
      }
     constructor CreateDuplicateExistingToken(
       const aTokenHandle: TJwTokenHandle; const aDesiredAccess: TJwAccessMask;
@@ -510,8 +516,8 @@ type
      This constructor seeks a process of the user and gets its token.
      It only works in the same (terminal) session of the process.
 
-     @param(DesiredAccess defines the desired access to the token)
-     @param(ProcessName defines which process is used to get the token of the user.
+     @param DesiredAccess defines the desired access to the token
+     @param ProcessName defines which process is used to get the token of the user.
        The name must match exactly but can ignore case sensitivity.)
 
      @raises(EJwsclProcessNotFound will be raised if process handle given in parameter

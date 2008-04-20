@@ -95,10 +95,10 @@ BOOL WINAPI TerminateJobObject(HANDLE hJob, UINT uExitCode);
   TJwJobObjectSessionList = class;
 
 
-  TJwOnJobNotification = procedure (Sender : TJwJobObject; Process : TJwProcessId;
-    JobLimits : TJwJobMessages) {of object};
+  TJwOnJobNotification = procedure (Sender : TJwJobObject; ProcessId : TJwProcessId;
+    JobLimits : TJwJobMessages; Data : Pointer) of object;
 
-  TJwOnNoActiveProcesses = procedure (Sender : TJwJobObject) {of object};
+  TJwOnNoActiveProcesses = procedure (Sender : TJwJobObject) of object;
 
 
   TJwInternalJobObjectIOCompletitionThread = Class(TJwThread)
@@ -120,9 +120,13 @@ BOOL WINAPI TerminateJobObject(HANDLE hJob, UINT uExitCode);
     fHandle : THandle;
     fAccessMask : TJwAccessMask;
 
+    fLock : TMultiReadExclusiveWriteSynchronizer;
+    fDataList : TJwIntTupleList;
+
     fIOUniqueID : Integer;
 
     fJobName : TJwString;
+    fSession : TJwSessionId;
 
     fTerminateOnDestroy : Boolean;
 
@@ -216,7 +220,7 @@ BOOL WINAPI TerminateJobObject(HANDLE hJob, UINT uExitCode);
     to be reassignable.
     @raises(EJwsclWinCallFailedException can be raised if the call to an winapi function failed.)
     }
-    procedure AssignProcessToJobObject(hProcess : TJwProcessHandle);
+    procedure AssignProcessToJobObject(hProcess : TJwProcessHandle; Data : Pointer);
 
     {@Name terminates all processes in the job with a predefined
      exit code.
@@ -318,6 +322,12 @@ BOOL WINAPI TerminateJobObject(HANDLE hJob, UINT uExitCode);
 
     {@Name will be called when the last process terminates}
     property OnNoActiveProcesses : TJwOnNoActiveProcesses read fOnNoActiveProcesses write fOnNoActiveProcesses;
+
+    {@Name defines the session of the containg projects}
+    property Session : TJwSessionId read fSession write fSession;
+
+    property Lock : TMultiReadExclusiveWriteSynchronizer read fLock;
+    property DataList : TJwIntTupleList read fDataList;
   end;
 
 
@@ -346,7 +356,7 @@ BOOL WINAPI TerminateJobObject(HANDLE hJob, UINT uExitCode);
       ProcessHandle : TJwProcessHandle;
       ProcessSessionID,
       CurrentSessionID : Cardinal;
-      var NewJobObject : TJwJobObject);
+      var NewJobObject : TJwJobObject) of object;
 
   {@Name manages a list of job objects threadsafe.
   Since every process in a job must be in the same session,
@@ -402,7 +412,7 @@ BOOL WINAPI TerminateJobObject(HANDLE hJob, UINT uExitCode);
       pointer returned by OnNewJobObject is nil)
     @raises(EJwsclWinCallFailedException can be raised if the call to an winapi function failed.)
     }
-    procedure AssignProcessToJob(Process : TJwProcessHandle); overload; virtual;
+    procedure AssignProcessToJob(Process : TJwProcessHandle; Data : Pointer); overload; virtual;
 
     {@Name adds a process to a job using the process' session id to determine
     which job object must be used. If the job object with the neccessary session
@@ -423,7 +433,7 @@ BOOL WINAPI TerminateJobObject(HANDLE hJob, UINT uExitCode);
       pointer returned by OnNewJobObject is nil)
     @raises(EJwsclWinCallFailedException can be raised if the call to an winapi function failed.)
     }
-    procedure AssignProcessToJob(Process : TJwProcessHandle; out JobObjectIndex : Cardinal); overload; virtual;
+    procedure AssignProcessToJob(Process : TJwProcessHandle; Data : Pointer; out JobObjectIndex : Cardinal); overload; virtual;
 
     {@Name returns a pointer to an internal job object.
     The assignment is threadsafe to avoid complication with other methods.
@@ -1641,6 +1651,10 @@ begin
       ['CreateJobObject']);                                  //const Args: array of const
   end;
 
+  fLock := TMultiReadExclusiveWriteSynchronizer.Create;
+  fDataList := TJwIntTupleList.Create;
+
+
   fThread.Resume;
 
   SetObjectAssociateCompletionPortInformation(Pointer(fIOUniqueID),
@@ -1704,6 +1718,9 @@ begin
       ['CreateJobObject']);                                  //const Args: array of const
   end;
 
+  fLock := TMultiReadExclusiveWriteSynchronizer.Create;
+  fDataList := TJwIntTupleList.Create;
+
   SetObjectAssociateCompletionPortInformation(Pointer(CompletionKey),
     CompletionPort);
 end;
@@ -1744,6 +1761,8 @@ begin
   fIOUniqueID := INVALID_HANDLE_VALUE;
   fThread := nil;
 
+
+
   {We cannot get CompletionKey and CompletionPort for an existing job object.
   So the user has to supply them
   }
@@ -1778,12 +1797,23 @@ begin
       //may fail, but doesn't matter
     end;
   end;
+
+  fLock := TMultiReadExclusiveWriteSynchronizer.Create;
+  fDataList := TJwIntTupleList.Create;
 end;
 
 destructor TJwJobObject.Destroy;
 begin
   if TerminateOnDestroy then
     TerminateJobObject(0);
+
+  fLock.BeginWrite;
+  try
+    FreeAndNil(fDataList);
+  finally
+    fLock.EndWrite;
+  end;
+  FreeAndNil(fLock);
 
   if Assigned(fThread) then
   begin
@@ -1794,6 +1824,9 @@ begin
 
   if (fHandle <> 0) then
     CloseHandle(fHandle);
+
+
+
 end;
 
 function TJwJobObject.GetAllotedCPUTimeSignalState : Boolean;
@@ -2226,18 +2259,30 @@ begin
   result := LB;
 end;
 
-procedure TJwJobObject.AssignProcessToJobObject(hProcess : TJwProcessHandle);
+procedure TJwJobObject.AssignProcessToJobObject(hProcess : TJwProcessHandle; Data : Pointer);
 begin
-  if not JwaWindows.AssignProcessToJobObject(fHandle, hProcess) then
-     raise EJwsclWinCallFailedException.CreateFmtWinCall(
-        '',
-        'AssignProcessToJobObject',                                //sSourceProc
-        ClassName,                                //sSourceClass
-        '',                          //sSourceFile
-        0,                                           //iSourceLine
-        True,                                  //bShowLastError
-        'AssignProcessToJobObject',                   //sWinCall
-        ['AssignProcessToJobObject']);                                  //const Args: array of const
+  fLock.BeginWrite;
+  try
+    fDataList.Add(GetProcessId(hProcess),Data);
+
+    try
+      if not JwaWindows.AssignProcessToJobObject(fHandle, hProcess) then
+         raise EJwsclWinCallFailedException.CreateFmtWinCall(
+            '',
+            'AssignProcessToJobObject',                                //sSourceProc
+            ClassName,                                //sSourceClass
+            '',                          //sSourceFile
+            0,                                           //iSourceLine
+            True,                                  //bShowLastError
+            'AssignProcessToJobObject',                   //sWinCall
+            ['AssignProcessToJobObject']);                                  //const Args: array of const
+    except
+      fDataList.DeleteIndex(GetProcessId(hProcess));
+      raise
+    end;
+  finally
+    fLock.EndWrite;
+  end;
 end;
 
 procedure TJwJobObject.TerminateJobObject(const ExitCode : DWORD);
@@ -2364,12 +2409,31 @@ begin
 end;
 
 procedure TJwInternalJobObjectIOCompletitionThread.Execute;
+
+  function GetUserData(ProcessID : DWORD) : Pointer;
+  var i : Integer;
+  begin
+    result := nil;
+    fJwJobObject.fLock.BeginRead;
+    try
+      try
+        result := fJwJobObject.fDataList[ProcessID];
+      except
+        result := nil;
+      end;
+    finally
+      fJwJobObject.fLock.EndRead;
+    end;
+  end;
 var
   pOV : POverlapped;
   lpNumberOfBytes,
   lpCompletionKey : Cardinal;
   Res : Boolean;
   L : DWORD;
+  ID : DWORD;
+  Data : Pointer;
+  
 const ERROR_ABANDONED_WAIT_0 = 735;
 
 begin
@@ -2411,11 +2475,13 @@ begin
           end;
         end;
 
+
         if Assigned(fJwJobObject.OnNotification) then
         begin
+          Data := GetUserData(TJwProcessId(pOV));
           try
             fJwJobObject.OnNotification(fJwJobObject, TJwProcessId(pOV),
-              TJwEnumMap.ConvertJobMessage(lpNumberOfBytes));
+              TJwEnumMap.ConvertJobMessage(lpNumberOfBytes), Data);
           except
           end;
         end;
@@ -2538,13 +2604,13 @@ begin
 end;
 
 
-procedure TJwJobObjectSessionList.AssignProcessToJob(Process : TJwProcessHandle);
+procedure TJwJobObjectSessionList.AssignProcessToJob(Process : TJwProcessHandle; Data : Pointer);
 var JobObjectIndex : Cardinal;
 begin
-  AssignProcessToJob(Process, JobObjectIndex);
+  AssignProcessToJob(Process, Data, JobObjectIndex);
 end;
 
-procedure TJwJobObjectSessionList.AssignProcessToJob(Process : TJwProcessHandle; out JobObjectIndex : Cardinal);
+procedure TJwJobObjectSessionList.AssignProcessToJob(Process : TJwProcessHandle; Data : Pointer; out JobObjectIndex : Cardinal);
 var
   i, ID : Cardinal;
   NewObject : TJwJobObject;
@@ -2571,9 +2637,9 @@ begin
     end;
 
     if not Assigned(NewObject) then
-      NewObject := TJwJobObject(fList[ID]); 
+      NewObject := TJwJobObject(fList[ID]);
 
-    NewObject.AssignProcessToJobObject(Process);
+    NewObject.AssignProcessToJobObject(Process, Data);
   finally
     fLock.EndWrite;
   end;
