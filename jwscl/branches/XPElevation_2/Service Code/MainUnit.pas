@@ -16,35 +16,7 @@ uses
 type
   TLogType=(ltInfo, ltError);
 
-type {PClientBuffer = ^TClientBuffer;
-     TClientBuffer = record
-       Signature : array[0..15] of Char;
-       UserName  :  array[0..UNLEN] of WideChar;
-       Domain      : array[0..MAX_DOMAIN_NAME_LEN] of WideChar;
-       Password  : array[0..MAX_PASSWD_LEN] of WideChar;
-       Flags     : DWORD;
-     end;
-
-     PServerBuffer = ^TServerBuffer;
-     TServerBuffer = record
-       Signature   : array[0..15] of Char;
-       Application : array[0..MAX_PATH] of WideChar;
-       UserName    : array[0..UNLEN] of WideChar;
-       Domain      : array[0..MAX_DOMAIN_NAME_LEN] of WideChar;
-       TimeOut   : DWORD;
-       Flags     : DWORD;
-     end;
-
-     TSessionInfo = record
-       UserName,
-       Domain,
-       Password  : WideString;
-       Flags  : DWORD;
-     end; }
-
-
-
-
+type
   TXPService = class(TService)
     procedure ServiceExecute(Sender: TService);
     procedure ServiceStop(Sender: TService; var Stopped: Boolean);
@@ -53,7 +25,8 @@ type {PClientBuffer = ^TClientBuffer;
   private
     { Private declarations }
     fServiceStopEvent,
-    fThreadsStopEvent:           THandle;
+    fThreadsStoppedEvent:           THandle;
+    fJobs : TJwJobObjectSessionList;
 
     fLogCriticalSection:  TCriticalSection;
     //fLogFile:             Textfile;
@@ -70,13 +43,22 @@ type {PClientBuffer = ^TClientBuffer;
     function AskCredentials(Token: TJwSecurityToken;
         AppToStart: String;
         var SessionInfo : TSessionInfo): boolean;
+
+    procedure OnJobNotification(Sender : TJwJobObject; ProcessId : TJwProcessId; JobLimits : TJwJobMessages; Data : Pointer);
+    procedure OnNoActiveProcesses(Sender : TJwJobObject);
+    procedure OnNewJobObject(Sender : TJwJobObjectSessionList;    ProcessHandle : TJwProcessHandle;
+      ProcessSessionID,
+      CurrentSessionID : Cardinal;
+      var NewJobObject : TJwJobObject);
+
+
   public
     fHReqThreadCount:     Integer;
     function GetServiceController: TServiceController; override;
     procedure StartApp(AppToStart: String);
     procedure LogEvent(Event: String; EventType: TLogType=ltInfo);
     { Public declarations }
-    property ThreadsStopEvent: THandle read fThreadsStopEvent;
+    property ThreadsStopEvent: THandle read fThreadsStoppedEvent;
     property ServiceStopEvent: THandle read fServiceStopEvent;
 
     property Stopped: boolean read fStopped write SetStopped;
@@ -91,7 +73,7 @@ var
 
 
 implementation
-uses ThreadUnit, HandleRequestThread, Registry;
+uses ThreadUnit, HandleRequestThread, Registry, ElevationHandler;
 {$R *.DFM}
 
 
@@ -169,6 +151,63 @@ begin
   fPasswords.UnlockList;
 end;
 
+procedure TXPService.OnJobNotification(Sender: TJwJobObject;
+  ProcessId: TJwProcessId; JobLimits: TJwJobMessages; Data : Pointer);
+
+var
+  P : PProcessJobData;
+  Log : IJwLogClient;
+begin
+  Log := uLogging.LogServer.Connect(
+      etMethod,ClassName,'OnJobNotification','MainUnitpas',
+          JwFormatString('Received Job notifiction on ProcessID %d in session %d',
+            [ProcessId, Sender.Session]));
+
+  try
+    if jmsgEXITPROCESS in JobLimits then
+    begin
+      Sender.Lock.BeginWrite;
+      try
+        P := Sender.DataList[ProcessId];
+        if (P <> nil) and Assigned(P^.UserToken) then
+        begin
+          Log.Log('Unloading profile.');
+          P^.UserToken.UnLoadUserProfile(P^.UserProfile);
+          Dispose(P);
+          try
+            Sender.DataList.DeleteIndex(ProcessId);
+          except
+          end;
+       end;
+      finally
+        Sender.Lock.EndWrite;
+      end;
+    end;
+  except
+    on E : Exception do
+      Log.Exception(E);
+  end;
+end;
+
+procedure TXPService.OnNewJobObject(Sender: TJwJobObjectSessionList;
+  ProcessHandle: TJwProcessHandle; ProcessSessionID, CurrentSessionID: Cardinal;
+  var NewJobObject: TJwJobObject);
+var Name : TJwString;
+begin
+  Name := JwFormatString('XPElevationJobObject%d.%d.%d(%d)',
+    [CurrentSessionID, ProcessSessionID, GetProcessId(ProcessHandle), ProcessHandle]);
+
+  NewJobObject                     := TJwJobObject.Create(Name,true, nil);
+  NewJobObject.OnNotification      := OnJobNotification;
+  NewJobObject.OnNoActiveProcesses := OnNoActiveProcesses;
+  NewJobObject.Session             := ProcessSessionID;
+end;
+
+procedure TXPService.OnNoActiveProcesses(Sender: TJwJobObject);
+begin
+
+end;
+
 procedure TXPService.ServiceExecute(Sender: TService);
 var Pipe: THandle; OvLapped: OVERLAPPED;
     ar: array[0..2] of THandle;
@@ -182,132 +221,115 @@ begin
   Log := uLogging.LogServer.Connect(etMethod,ClassName,
           'ServiceExecute','MainUnit.pas','');
 
+  
   try
-//    Descr:=TJwSecurityDescriptor.Create;
-//    try
-//      fDesktop:=TJwSecurityDesktop.CreateDesktop(nil, true, 'UACinXPAskCredentialsDesktop', [], false, GENERIC_ALL, Descr);
-//    finally
-//      Descr.Free;
-//    end;
-    fThreadsStopEvent   := CreateEvent(nil, true, false, nil);
-    fServiceStopEvent  := CreateEvent(nil, true, true, nil);
-    Sleep(1000);
-
     try
-      try
-        SecAttr := nil;
-        ZeroMemory(@OvLapped, sizeof(OvLapped));
-        OvLapped.hEvent := CreateEvent(nil, false, false, nil);
-        try
-          Descr:=TJwSecurityDescriptor.Create;
-          try
-            //LogEvent('Create Pipe 1');
-            Log.Log('Create Pipe 1');
-            Descr.Owner := JwSecurityProcessUserSID;
-            Descr.PrimaryGroup := JwAdministratorsSID;
-            //Descr.DACL:=nil;
-            Descr.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil,[],GENERIC_ALL,JwLocalSystemSID,false));
-            Descr.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil,[],GENERIC_ALL,JwAdministratorsSID,false));
-            Descr.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil,[],GENERIC_ALL,JwWorldSID,false));
-            SecAttr:=Descr.Create_SA(false);
-            //SecAttr:= nil;
-            Pipe:=CreateNamedPipe('\\.\pipe\XPElevationPipe', PIPE_ACCESS_INBOUND or FILE_FLAG_OVERLAPPED, PIPE_WAIT, PIPE_UNLIMITED_INSTANCES, 0, 0, 0, LPSECURITY_ATTRIBUTES(SecAttr));
-          finally
-            Descr.Free;
-          end;
-          if Pipe=INVALID_HANDLE_VALUE then
-          begin
-//            MessageBox(0, PChar('Error occured during pipe creation: '+SysErrorMessage(GetLastError)), 'UAC-Nachbildung', MB_SERVICE_NOTIFICATION or MB_OK);
-            //Log.Log('Error occured during pipe creation: '+SysErrorMessage(GetLastError), lsError);
-            LogAndRaiseLastOsError(Log,ClassName, 'ServiceExecute::(winapi)CreateNamedPipe OUT', 'ElevationHandler.pas');
-            abort;
-          end;
-//        MessageBox(0, PChar('Pipe ('+inttostr(Pipe)+') created successfully'), 'UAC-Nachbildung', MB_SERVICE_NOTIFICATION or MB_OK);
-          InitAllowedSIDs;
-          try
-            UnloadProfThread := TUnloadProfThread.Create;
+      fThreadsStoppedEvent   := CreateEvent(nil, true, false, nil);
+      fServiceStopEvent   := CreateEvent(nil, true, true, nil);
+      Sleep(1000);
 
-            ar[0] := fServiceStopEvent;
-            ar[1] := OvLapped.hEvent;
+
+      SecAttr := nil;
+      ZeroMemory(@OvLapped, sizeof(OvLapped));
+      OvLapped.hEvent := CreateEvent(nil, false, false, nil);
+      try
+        Descr:=TJwSecurityDescriptor.Create;
+        try
+          Log.Log('Create Pipe 1');
+          Descr.Owner := JwSecurityProcessUserSID;
+          Descr.PrimaryGroup := JwAdministratorsSID;
+
+{$IFDEF DEBUG}
+          Descr.DACL:=nil;
+{$ELSE}
+          Descr.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil,[],GENERIC_ALL,JwLocalSystemSID,false));
+          Descr.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil,[],GENERIC_ALL,JwAdministratorsSID,false));
+          //Descr.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil,[],GENERIC_ALL,JwWorldSID,false));
+{$ENDIF}          
+          SecAttr:=Descr.Create_SA(false);
+
+          Pipe := CreateNamedPipe('\\.\pipe\XPElevationPipe', PIPE_ACCESS_INBOUND or FILE_FLAG_OVERLAPPED, PIPE_WAIT, PIPE_UNLIMITED_INSTANCES, 0, 0, 0, LPSECURITY_ATTRIBUTES(SecAttr));
+        finally
+          Descr.Free;
+        end;
+        if Pipe = INVALID_HANDLE_VALUE then
+        begin
+          LogAndRaiseLastOsError(Log,ClassName, 'ServiceExecute::(winapi)CreateNamedPipe OUT', 'ElevationHandler.pas');
+          abort;
+        end;
+
+        InitAllowedSIDs;
+        try
+          UnloadProfThread := TUnloadProfThread.Create;
+          fJobs := TJwJobObjectSessionList.Create(OnNewJobObject);
+          
+          repeat
             ConnectNamedPipe(Pipe, @OvLapped);
 
             repeat
               ServiceThread.ProcessRequests(False);
-              WaitResult := MsgWaitForMultipleObjects(2, @ar[0], false, INFINITE, QS_ALLINPUT)
-            until WaitResult <> WAIT_OBJECT_0+2;
+              WaitResult := JwMsgWaitForMultipleObjects([fServiceStopEvent, OvLapped.hEvent], false, INFINITE, QS_ALLINPUT);
+            until WaitResult <> WAIT_OBJECT_0 + 2; //any event we declared
 
-            while not Stopped do
+            with THandleRequestThread.Create(
+              true, //Create suspended
+              fJobs,
+              fAllowedSIDs,//const AllowedSIDs:  TJwSecurityIdList;
+              fPasswords,//const Passwords   : TPasswordList;
+              fServiceStopEvent,//const StopEvent  : THandle;
+              fThreadsStoppedEvent,
+              ServiceThread.ProcessRequests,//const OnServiceProcessRequest : TOnServiceProcessRequest;
+
+              @fStopped //const StopState : PBoolean
+              ) do
             begin
-              with THandleRequestThread.Create(
-                true, //
-                fAllowedSIDs,//const AllowedSIDs:  TJwSecurityIdList;
-                fPasswords,//const Passwords   : TPasswordList;
-                fServiceStopEvent,//const StopEvent  : THandle;
-                fThreadsStopEvent,
-                ServiceThread.ProcessRequests,//const OnServiceProcessRequest : TOnServiceProcessRequest;
-
-                @fStopped //const StopState : PBoolean
-                ) do
-              begin
-                FreeOnTerminate := True;
-                PipeHandle := Pipe;
-                Resume;
-              end;
-              LogEvent('Create Pipe 2');
-              Pipe := CreateNamedPipe('\\.\pipe\XPElevationPipe', PIPE_ACCESS_INBOUND or FILE_FLAG_OVERLAPPED, PIPE_WAIT, PIPE_UNLIMITED_INSTANCES, 0, 0, 0, LPSECURITY_ATTRIBUTES(SecAttr));
-              if Pipe = INVALID_HANDLE_VALUE then
-              begin
-//                MessageBox(0, PChar('Error occured during pipe creation: '+SysErrorMessage(GetLastError)), 'UAC-Nachbildung', MB_SERVICE_NOTIFICATION or MB_OK);
-                LogAndRaiseLastOsError(Log,ClassName, 'ServiceExecute::(winapi)CreateNamedPipe IN', 'ElevationHandler.pas');
-                //Log.Log ('Error occured during pipe creation: '+SysErrorMessage(GetLastError), ltError);
-                //abort;
-              end;
-
-              ConnectNamedPipe(Pipe, @OvLapped);
-              repeat
-                ServiceThread.ProcessRequests(False);
-                WaitResult := MsgWaitForMultipleObjects(2, @ar[0], false, INFINITE, QS_ALLINPUT and not QS_POSTMESSAGE or QS_ALLPOSTMESSAGE)
-              until WaitResult <> WAIT_OBJECT_0+2;
+              FreeOnTerminate := True;
+              PipeHandle := Pipe;
+              Resume;
             end;
-          finally
-            CloseHandle(Pipe);
-            UnloadProfThread.RequestTerminate;
+            LogEvent('Create Pipe 2');
 
-            {Wait for all threads to be stopped
-            }
-            WaitForSingleObject(ThreadsStopEvent, 10000);
-//            Sleep(1000);
-            fAllowedSIDs.Free;
-          {  with fPasswords.LockList do
-              for i:=0 to Count-1 do
-                if (Items[i]<>nil) and (Items[i]<>EmptyPass) then
-                  FreeMem(Items[i]);   }
-            fPasswords.Free;
-            UnloadProfThread.WaitFor;
-            UnloadProfThread.Free;
-          end;
+            Pipe := CreateNamedPipe('\\.\pipe\XPElevationPipe', PIPE_ACCESS_INBOUND or FILE_FLAG_OVERLAPPED, PIPE_WAIT, PIPE_UNLIMITED_INSTANCES, 0, 0, 0, LPSECURITY_ATTRIBUTES(SecAttr));
+            if Pipe = INVALID_HANDLE_VALUE then
+            begin
+              LogAndRaiseLastOsError(Log,ClassName, 'ServiceExecute::(winapi)CreateNamedPipe IN', 'ElevationHandler.pas');
+            end;
+          until Stopped;
+
         finally
-          if Assigned(SecAttr) then
-          begin
-            TJwSecurityDescriptor.Free_SA(SecAttr);
-//            FreeMem(SecAttr);
-          end;
-          CloseHandle(OvLapped.hEvent);
+          CloseHandle(Pipe);
+
+          //unload user profiles
+          UnloadProfThread.RequestTerminate;
+
+          //signal server shutdown
+          SetEvent(fServiceStopEvent);
+            
+          {Wait for all threads to be stopped or timeout
+          }
+          WaitForSingleObject(ThreadsStopEvent, 60 * 1000);
+          fAllowedSIDs.Free;
+
+          fPasswords.Free;
+          UnloadProfThread.WaitFor;
+          UnloadProfThread.Free;
+          FreeAndNil(fJobs);
         end;
       finally
-//        fDesktop.Free;
-//        MessageBox(0, 'Ending', 'UAC-Nachbildung', MB_SERVICE_NOTIFICATION or MB_OK);
-//        Log.Log('*** XP Elevation Service finished.');
+        if Assigned(SecAttr) then
+        begin
+          TJwSecurityDescriptor.Free_SA(SecAttr);
+        end;
+        CloseHandle(OvLapped.hEvent);
       end;
-    finally
-      CloseHandle(fStopEvent);
-      CloseHandle(fThreadsStopped);
+    except
+      on E : Exception do
+        Log.Exception(E);
     end;
   finally
-    //LogEvent('*** XP Elevation Service finished. ');
+    Log.Log(lsStop,'*** XP Elevation Service finished. ');
 
     DeleteCriticalSection(fLogCriticalSection);
-    //CloseFile(fLogFile);
   end;
 end;
 
@@ -327,7 +349,7 @@ begin
   if Value then
   begin
     Log.Log('Stopevent executed....');
-    SetEvent(fStopEvent);
+//    SetEvent(fStopEvent);
   end;
 end;
 

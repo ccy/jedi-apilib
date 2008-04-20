@@ -4,7 +4,7 @@ interface
 
 uses
   Classes, JwaWindows, ElevationHandler, JwsclToken, JwsclSid,
-  JwsclUtils, SessionPipe, SysUtils,
+  JwsclUtils, SessionPipe, SysUtils, JwsclLogging, uLogging, JwsclProcess,
   ThreadedPasswords;
 
 type
@@ -13,180 +13,151 @@ type
     { Private declarations }
     fPipeHandle: THandle;
     fAllowedSIDs:  TJwSecurityIdList;
+    fJobs : TJwJobObjectSessionList;
     fPasswords   : TPasswordList;
-    fThreadsStopEvent,
+    fThreadsStoppedEvent,
     fServiceStopEvent  : THandle;
     fOnServiceProcessRequest : TOnServiceProcessRequest;
     fStopState : PBoolean;
-  protected
-    procedure Execute; override;
+
+    procedure IncreaseRequestThreadCount;
+    procedure DecreaseRequestThreadCount;
   public
     constructor Create(
         CreateSuspended: Boolean;
+        const Jobs : TJwJobObjectSessionList;
         const AllowedSIDs:  TJwSecurityIdList;
         const Passwords   : TPasswordList;
         const ServiceStopEvent : THandle;
-        const ThreadsStopEvent : THandle;
+        const ThreadsStoppedEvent : THandle;
 
         const OnServiceProcessRequest : TOnServiceProcessRequest;
         const StopState : PBoolean);
     property PipeHandle: THandle read fPipeHandle write fPipeHandle;
+
+    procedure Execute; override;
   end;
-
-//function StringCbLengthHelper(
-//    {__in}const psz : STRSAFE_LPCTSTR;
-//    {__in}cbMax : size_t) : Size_t;
-
-function StringCbLengthHelperA(
-    {__in}const psz : STRSAFE_LPCSTR;
-    {__in}cbMax : size_t) : Size_t;
-
-function StringCbLengthHelperW(
-    {__in}const psz : STRSAFE_LPCWSTR;
-    {__in}cbMax : size_t) : Size_t;
-
-function StringCchLengthHelperA(
-    {__in}const psz : STRSAFE_LPCSTR;
-    {__in}cchMax : size_t) : Size_t;
-
-function StringCchLengthHelperW(
-    {__in}const psz : STRSAFE_LPCWSTR;
-    {__in}cchMax : size_t) : Size_t;
-
-//function StringCchLengthHelper(
-//    {__in}const psz : STRSAFE_LPCTSTR;
-//    {__in}cchMax : size_t) : Size_t;
-
 
 implementation
 uses MainUnit, ComObj;
-{ Important: Methods and properties of objects in visual components can only be
-  used in a method called using Synchronize, for example,
-
-      Synchronize(UpdateCaption);
-
-  and UpdateCaption could look like,
-
-    procedure THandleRequestThread.UpdateCaption;
-    begin
-      Form1.Caption := 'Updated in a thread';
-    end; }
 
 { THandleRequestThread }
 
 constructor THandleRequestThread.Create(
   CreateSuspended: Boolean;
+  const Jobs : TJwJobObjectSessionList;
   const AllowedSIDs: TJwSecurityIdList;
   const Passwords: TPasswordList;
   const ServiceStopEvent: THandle;
-  const ThreadsStopEvent : THandle;
+  const ThreadsStoppedEvent : THandle;
   const OnServiceProcessRequest: TOnServiceProcessRequest;
   const StopState: PBoolean);
 begin
 
+  fJobs := Jobs;
   fAllowedSIDs := AllowedSIDs;
   fPasswords := Passwords;
   fServiceStopEvent := ServiceStopEvent;
-  fThreadsStopEvent := ThreadsStopEvent;
+  fThreadsStoppedEvent := ThreadsStoppedEvent;
   fOnServiceProcessRequest := OnServiceProcessRequest;
   fStopState := StopState;
 
   inherited Create(CreateSuspended,'HandleRequest');
 end;
 
+procedure THandleRequestThread.IncreaseRequestThreadCount;
+begin
+  if InterlockedExchangeAdd(XPService.fHReqThreadCount, 1) = 0 then
+    ResetEvent(fThreadsStoppedEvent);
+end;
+
 procedure THandleRequestThread.Execute;
 var AppName: string; PipeSize: Cardinal;
     OvLapped: OVERLAPPED;
-    ar: array[0..1] of THandle;
     ElevationObj : TElevationHandler;
+    Log : IJwLogClient;
 begin
   Self.Name := 'HandleRequest: '+IntToStr(fPipeHandle);
-  if InterlockedExchangeAdd(XPService.fHReqThreadCount, 1)=0 then
-   ResetEvent(fThreadsStopEvent);
+
+  Log := uLogging.LogServer.Connect(etThread,ClassName,'Execute','HandleRequestThread.pas','Init Requestthread: '+Name);
+
+  //count number of threads
+  IncreaseRequestThreadCount;
+
   try
-    if XPService.Stopped then
-     exit;
-
-    OvLapped.hEvent := CreateEvent(nil, false, false, nil);
     try
-      ar[0] := OvLapped.hEvent;
-      ar[1] := XPService.ServiceStopEvent;
-      
-      ReadFile(fPipeHandle, nil, 0, nil, @OvLapped);
-      case WaitForMultipleObjects(2, @ar[0], false, 10000) of
-        WAIT_TIMEOUT:
-        begin
-          XPService.LogEvent('HandleRequestThread was timed out');
-          exit;
-        end;
-        WAIT_OBJECT_0+1: exit;
+
+      if (fStopState <> nil) and (fStopState^) then
+      begin
+        Log.Log(lsStop,'XPService.Stopped = true ');
+        exit;
       end;
 
-      PeekNamedPipe(fPipeHandle, nil, 0, nil, @PipeSize, nil);
-      SetLength(AppName, PipeSize);
-      ReadFile(fPipeHandle, @AppName[1], PipeSize, nil, @OvLapped);
-      WaitForSingleObject(OvLapped.hEvent, INFINITE);
-    //              MessageBox(0, PChar(AppName), 'App is to start', MB_SERVICE_NOTIFICATION or MB_OK);
-      TJwSecurityToken.ImpersonateNamedPipeClient(fPipeHandle);
-
-      ElevationObj := TElevationHandler.Create(
-         fAllowedSIDs,
-         fPasswords,
-         fServiceStopEvent,
-         fOnServiceProcessRequest,
-         fStopState);
+      OvLapped.hEvent := CreateEvent(nil, false, false, nil);
       try
-        ElevationObj.StartApplication(AppName);
+        If not ReadFile(fPipeHandle, nil, 0, nil, @OvLapped) then
+          LogAndRaiseLastOsError(Log,ClassName,'ReadFile@Execute','');
+
+        case JwWaitForMultipleObjects([OvLapped.hEvent, XPService.ServiceStopEvent], false, 10000) of
+          WAIT_TIMEOUT:
+          begin
+            XPService.LogEvent('HandleRequestThread was timed out');
+            exit;
+          end;
+          WAIT_OBJECT_0+1:
+          begin
+            Log.Log('Server shutdown registered.');
+            exit;
+          end;
+        end;
+
+        if not PeekNamedPipe(fPipeHandle, nil, 0, nil, @PipeSize, nil) then
+          LogAndRaiseLastOsError(Log,ClassName,'PeekNamedPipe@Execute','');
+
+        SetLength(AppName, PipeSize);
+
+        if not ReadFile(fPipeHandle, @AppName[1], PipeSize, nil, @OvLapped) then
+          LogAndRaiseLastOsError(Log,ClassName,'ReadFile@Execute','');
+
+        Log.Log('Waiting for path name to be received...');
+        //Wait for incoming application name to elevate
+        WaitForSingleObject(OvLapped.hEvent, INFINITE);
+
+        TJwSecurityToken.ImpersonateNamedPipeClient(fPipeHandle);
+        //impersonated thread is used in elevation handler
+
+        ElevationObj := TElevationHandler.Create(
+           fAllowedSIDs,
+           fJobs,
+           fPasswords,
+           fServiceStopEvent,
+           fStopState);
+        try
+          ElevationObj.StartApplication(AppName);
+        finally
+          ElevationObj.Free;
+        end;
+
       finally
-        ElevationObj.Free;
+        CloseHandle(OvLapped.hEvent);
+        DisconnectNamedPipe(fPipeHandle);
+        CloseHandle(fPipeHandle);
       end;
-    //  TJwSecurityToken.RevertToSelf; //now made in StartApp
+
     finally
-      CloseHandle(OvLapped.hEvent);
-      DisconnectNamedPipe(fPipeHandle);
-      CloseHandle(fPipeHandle);
+      DecreaseRequestThreadCount;
     end;
-  finally
-    if InterlockedExchangeAdd(XPService.fHReqThreadCount, -1)=1 then
-      SetEvent(fThreadsStopEvent);
+  except
+    on E : Exception do
+     Log.Exception(E);
   end;
+
 end;
 
-
-//function StringCbLengthHelper(
-//    {__in}const psz : STRSAFE_LPCTSTR;
-//    {__in}cbMax : size_t) : Size_t;
-
-function StringCbLengthHelperA(
-    {__in}const psz : STRSAFE_LPCSTR;
-    {__in}cbMax : size_t) : Size_t;
+procedure THandleRequestThread.DecreaseRequestThreadCount;
 begin
-  OleCheck(StringCbLengthA(psz, cbMax, @result));
+  if InterlockedExchangeAdd(XPService.fHReqThreadCount, -1) = 1 then
+    SetEvent(fThreadsStoppedEvent);
 end;
-
-function StringCbLengthHelperW(
-    {__in}const psz : STRSAFE_LPCWSTR;
-    {__in}cbMax : size_t) : Size_t;
-begin
-  OleCheck(StringCbLengthW(psz, cbMax, @result));
-end;
-
-function StringCchLengthHelperA(
-    {__in}const psz : STRSAFE_LPCSTR;
-    {__in}cchMax : size_t) : Size_t;
-begin
-  OleCheck(StringCchLengthA(psz, cchMax, @result));
-end;
-
-function StringCchLengthHelperW(
-    {__in}const psz : STRSAFE_LPCWSTR;
-    {__in}cchMax : size_t) : Size_t;
-begin
-  OleCheck(StringCchLengthW(psz, cchMax, @result));
-end;
-
-//function StringCchLengthHelper(
-//    {__in}const psz : STRSAFE_LPCTSTR;
-//    {__in}cchMax : size_t) : Size_t;
 
 end.

@@ -1,7 +1,8 @@
 unit SessionPipe;
 
 interface
-uses SysUtils, JwaWindows, ComObj, SvcMgr, ULogging, JwsclLogging;
+uses SysUtils, JwaWindows, ComObj, SvcMgr, ULogging, JwsclUtils, JwsclLogging,
+    JwsclExceptions;
 
 type
   PClientBuffer = ^TClientBuffer;
@@ -50,7 +51,10 @@ type
     Flags  : DWORD;
   end;
 
-  type TOnServiceProcessRequest = procedure (WaitForMessage: Boolean) of object;
+  ETimeOutException = class(Exception);
+  EShutdownException = class(Exception);
+
+  TOnServiceProcessRequest = procedure (WaitForMessage: Boolean) of object;
 
   TSessionPipe = class(TObject)
   protected
@@ -97,7 +101,6 @@ type
 
   protected
     { protected-Deklarationen }
-    fOnProcessRequest : TOnServiceProcessRequest;
   public
     { public-Deklarationen }
     constructor Create();
@@ -114,12 +117,12 @@ type
 
 
     procedure SendServerData(const SessionInfo : TSessionInfo);
+    procedure SendServerResult(const Value, LastError : DWORD);
+
     procedure ReadClientData(out SessionInfo : TSessionInfo);
 
-    procedure SendServerProcessResult(const Value, LastError : DWORD);
+//    procedure SendServerProcessResult(const Value, LastError : DWORD);
 
-    property OnProcessRequest : TOnServiceProcessRequest read fOnProcessRequest
-        write fOnProcessRequest;
 
   end;
 
@@ -221,7 +224,7 @@ var ClientBuffer : TClientBuffer;
     Data, P : Pointer;
 begin
   Log := uLogging.LogServer.Connect(etMethod,ClassName,
-          'ReadClientData','ElevationHandler.pas','');
+          'ReadServerProcessResult','ElevationHandler.pas','');
   ZeroMemory(@ClientBuffer, sizeof(ClientBuffer));
 
   GetMem(Data, sizeof(Value) + sizeof(LastError));
@@ -430,6 +433,31 @@ begin
   end;
 end;
 
+procedure TServerSessionPipe.SendServerResult(const Value, LastError : DWORD);
+var NumBytesWritten: DWORD;
+    Log : IJwLogClient;
+    A : Array[0..1] of DWORD;
+begin
+  Log := uLogging.LogServer.Connect(etMethod,ClassName,
+          'SendServerResult','ElevationHandler.pas','');
+
+  A[0] := Value;
+  A[1] := LastError;
+  try
+    if not WriteFile(
+         fPipe,//hFile: HANDLE;
+         Pointer(@A),//lpBuffer: LPCVOID;
+         sizeof(A),//nNumberOfBytesToWrite: DWORD;
+         @NumBytesWritten,//lpNumberOfBytesWritten: LPDWORD;
+         @OvLapped//lpOverlapped: LPOVERLAPPED
+         ) then
+    begin
+      LogAndRaiseLastOsError(Log,ClassName, 'SendServerResult::(Winapi)WriteFile','SessionPipe.pas');
+    end;
+  finally
+  end;
+end;
+
 procedure TServerSessionPipe.SendServerData(const SessionInfo: TSessionInfo);
 var ServerBuffer : TServerBuffer;
     NumBytesWritten: DWORD;
@@ -475,7 +503,7 @@ end;
 
 
 
-procedure TServerSessionPipe.SendServerProcessResult(const Value, LastError: DWORD);
+{procedure TServerSessionPipe.SendServerProcessResult(const Value, LastError: DWORD);
 var ServerBuffer : TServerBuffer;
     NumBytesWritten: DWORD;
     Log : IJwLogClient;
@@ -512,7 +540,7 @@ begin
   finally
     FreeMem(Data);
   end;
-end;
+end; }
 
 function TServerSessionPipe.WaitForClientAnswer(const TimeOut: DWORD;
 
@@ -559,24 +587,22 @@ begin
         @OvLapped//__out_opt  LPDWORD lpBytesLeftThisMessage
       );
 
-      Ar[0] := StopEvent;
-      Ar[1] := fTimer;
-
-      result := WaitForMultipleObjects(2, @Ar[0], false, 50);
+      {wait for 50msec or event
+        0 : StopEvent - Server shuts down
+        1 : connection timeout occured
+      }
+      result := JwWaitForMultipleObjects([StopEvent, fTimer], false, 50);
       if result = WAIT_OBJECT_0+1 then
       begin
         Log.Log(lsWarning,'Server timeout limit reached. Aborting elevation...');
-        Abort;
+        raise ETimeOutException.Create('');
       end;
       if result = WAIT_OBJECT_0 then
       begin
-        Log.Log(lsWarning,'Server canceling introduced...');
-        Abort;
+        Log.Log(lsWarning,'Server shutdown introduced...');
+        raise EShutdownException.Create('');
       end;
-      //WAIT_TIMEOUT is only for update purposes 
 
-      if Assigned(OnProcessRequest) then
-        OnProcessRequest(False);
     end;
   finally
     CloseHandle(fTimer);
@@ -584,7 +610,10 @@ begin
 end;
 
 
-
+{returns
+0 - Server shuts down
+1 - client connects to pipe
+}
 function TServerSessionPipe.WaitForClientToConnect(const ProcessID,
   TimeOut: DWORD; const StopEvent: HANDLE): DWORD;
 var NumBytesRead,
@@ -593,34 +622,21 @@ var NumBytesRead,
     Data : DWORD;
     TimeOutInt64 : LARGE_INTEGER;
     fTimer : THANDLE;
-    Ar: Array[0..2] of THandle;
     Log : IJwLogClient;
 
 begin
   Log := uLogging.LogServer.Connect(etMethod,ClassName,
           'WaitForClientToConnect','ElevationHandler.pas','');
 
-  ar[0] := StopEvent;
-  ar[1] := OvLapped.hEvent;
   ConnectNamedPipe(fPipe, @OvLapped);
 
-  result := WAIT_OBJECT_0+2;
-  while result = WAIT_OBJECT_0+2 do
-  begin
-    result := MsgWaitForMultipleObjects(2, @ar[0], false, INFINITE, QS_ALLINPUT);
-    if Assigned(OnProcessRequest) then
-       OnProcessRequest(False);
-  end;
+  repeat
+    result := JwWaitForMultipleObjects([StopEvent,OvLapped.hEvent], false, INFINITE);
+  until result <> WAIT_OBJECT_0+2;
 
 end;
 
 
-
-
-
-//function StringCbLengthHelper(
-//    {__in}const psz : STRSAFE_LPCTSTR;
-//    {__in}cbMax : size_t) : Size_t;
 
 function StringCbLengthHelperA(
     {__in}const psz : STRSAFE_LPCSTR;

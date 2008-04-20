@@ -7,12 +7,12 @@ uses
   ThreadUnit in 'ThreadUnit.pas',
   Windows,
   JwsclKnownSID,
-  uLogging,
   JwsclLogging,
   HandleRequestThread in 'HandleRequestThread.pas',
   SessionPipe in '..\SessionPipe.pas',
   ElevationHandler in 'ElevationHandler.pas',
-  ThreadedPasswords in 'ThreadedPasswords.pas';
+  ThreadedPasswords in 'ThreadedPasswords.pas',
+  uLogging in 'uLogging.pas';
 
 {$R *.RES}
 
@@ -44,7 +44,7 @@ begin
   try
     Application.Initialize;
     Application.CreateForm(TXPService, XPService);
-    //XPService.ServiceExecute(nil);
+  //XPService.ServiceExecute(nil);
     Application.Run;
   finally
     DoneLog;
