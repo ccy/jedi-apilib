@@ -631,7 +631,9 @@ begin
   ConnectNamedPipe(fPipe, @OvLapped);
 
   repeat
-    result := JwWaitForMultipleObjects([StopEvent,OvLapped.hEvent], false, INFINITE);
+    result := JwWaitForMultipleObjects([StopEvent,OvLapped.hEvent], false, TimeOut);
+    if result = WAIT_TIMEOUT then
+      break;   
   until result <> WAIT_OBJECT_0+2;
 
 end;

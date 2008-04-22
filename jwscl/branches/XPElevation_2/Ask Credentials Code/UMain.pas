@@ -98,11 +98,6 @@ begin
       try
      //   Desktop.SwitchDesktop;
         try
-         { Application.Initialize;
-          Application.CreateForm(TFormMain, FormMain);
-          Application.CreateForm(TFormCredentials, FormCredentials);
-          FormCredentials.ShowModal;   }
-
 
           Application := TApplication.Create(nil);
           Application.Initialize;
@@ -269,18 +264,17 @@ begin
 
 end;
 
+procedure Main;
 var p : String;
     i : Integer;
 begin
-  C;
-
-  p := '';
+  {p := '';
   for i := 0 to ParamCount do
   begin
     p := p + #13#10 + IntToStr(i) + ': '+ParamStr(i);
   end;
   MessageBoxW(0, PWideChar(WideString(p)),'Information',MB_OK);
-
+  }
   PipeSession := TClientSessionPipe.Create;
   try
     Haltresult := 1;
@@ -290,16 +284,9 @@ begin
 
     Haltresult := 2;
     Application.Free;
-  //FreeAndNil(Application);
- { if (Paramstr(2)='') then
-    Halt(Integer(@Pipe));
-  }
 
-
-  //WaitForSingleObject(CreateThread(nil, 0, @func, nil, 0, nil), Infinite);
     Func(0);
     Haltresult := 0;
-  //finally
   except
     on E : Exception do
     begin
@@ -308,5 +295,4 @@ begin
   end;
   PipeSession.Free;
   halt(HaltResult);
-
 end.

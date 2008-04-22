@@ -179,10 +179,14 @@ begin
       LogAndRaiseLastOsError(Log, ClassName, 'AskCredentials::(winapi)CreateProcessAsUserW', 'ElevationHandler.pas');
     end;
 
+    WaitForInputIdle()
+    WaitForSingleObject(ProcInfo.hProcess, 1 * 1000);
+
+
     LastProcessID := GetProcessId(ProcInfo.hProcess);
 
     try
-      if ServerPipe.WaitForClientToConnect(0, 0, StopEvent) = 1{pipe event} then
+      if ServerPipe.WaitForClientToConnect(0, 10 * 1000{secs}, StopEvent) = 1{pipe event} then
       begin
 
   //VISTA
