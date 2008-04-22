@@ -1046,7 +1046,7 @@ end;
 
 constructor TJwLogServerImpl.Create;
 var Attributes : TJwXMLAttributes;
-    S : String;
+    S : String;  //in Tiburon this String is WideString. no prob
 begin                                               
   fCritical := SyncObjs.TCriticalSection.Create;
   fElements := Elements;
@@ -1087,7 +1087,10 @@ end;
 procedure TJwLogServerImpl.Done;
 var
   Attributes : TJwXMLAttributes;
-  S : String;
+  AnsiStr : AnsiString;
+  WideStr : WideString;
+  S : TJwString;
+
   Value : TJwString;
   IndentLevel: Integer;
   TagName: TJwString;
@@ -1095,7 +1098,12 @@ begin
   if not Assigned(fCritical) then
     exit;
 
-  DateTimeToString(S, String(JwTimeOutputString), Now);
+  DateTimeToString(AnsiStr, String(JwTimeOutputString), Now);
+{$IFDEF UNICODE}
+  S := WideString(AnsiStr);
+{$ELSE}
+  S := AnsiStr;
+{$ENDIF}
 
   //Send end process time 
   if Assigned(fOnXMLWriting) then
