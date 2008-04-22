@@ -3464,7 +3464,7 @@ begin
   FUserSid := nil;
 end;
 
-function TJwWTSSession.Connect(Password: TJwString): Boolean;
+function TJwWTSSession.Connect(const Password: WideString): Boolean;
 begin
   Result := WinStationConnectW(Owner.Owner.FServerHandle, WTS_CURRENT_SESSION,
     FSessionId, PWideChar(WideString(Password)), False);
