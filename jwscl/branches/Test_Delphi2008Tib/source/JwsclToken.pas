@@ -391,15 +391,10 @@ type
 				process handle of the caller
         @param aDesiredAccess Receives the desired access for this token. The access types can be get 
 			from the following list. Access flags must be concatenated with or operator.
-		@param anOpenAsSelf TBD
-        
-		@remarks
-		If you want to use DuplicateToken or creating an impersonated token (by ConvertToImpersonatedToken) you must specific TOKEN_DUPLICATE.
-
-        See @link(CreateTokenByProcess CreateTokenByProcess) for a list of access rights.)
-        @param(anOpenAsSelf Indicates whether the access check is to be made against the security context of the thread calling the CreateTokenByThread function or against the
-                                security context of the process for the calling thread)
-
+			If you want to use DuplicateToken or creating an impersonated token (by ConvertToImpersonatedToken) you must specific TOKEN_DUPLICATE.
+			See CreateTokenByProcess for a list of access rights.
+        @param anOpenAsSelf Indicates whether the access check is to be made against the security context of the thread calling the CreateTokenByThread function or against the
+                                security context of the process for the calling thread
 
         @raises(EJwsclNoThreadTokenAvailable will be raised if you try to call @name in a process rather than thread)
         @raises(EJwsclOpenThreadTokenException will be raised if the threak token could not be opened)

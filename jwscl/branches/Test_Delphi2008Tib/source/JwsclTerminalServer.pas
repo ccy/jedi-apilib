@@ -1107,7 +1107,7 @@ type
      Note that if you connect to another session your existing session will be
      disconnected.
     }
-    function Connect(Password: TJwString): Boolean;
+    function Connect(const Password: WideString): Boolean;
     {@Name returns the connection state of the session. Which can be one of the
      following values:@br@br
      @table(
