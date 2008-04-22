@@ -231,7 +231,7 @@ class function TJwAutoPointer.CreateInstance(
   const ClassReference : TComponentClass;
   const Owner : TComponent): IJwAutoPointer;
 begin
-  Result := Wrap(classReference.Create(nil));
+  Result := Wrap(classReference.Create(Owner));
 end;
 
 
