@@ -132,6 +132,7 @@ var
   Data : TInternalProcessData;
   Meth : TMethod;
   Log : IJwLogClient;
+  Flags : Cardinal;
 begin
   Log := uLogging.LogServer.Connect(etThread, '','Service Execute','RunAsSysService.pas','Entering service main thread');
 
@@ -177,7 +178,15 @@ begin
     end;
   end;
   try
-    CreateEnvironmentBlock(@P, UserToken.TokenHandle, true);
+    Flags := CREATE_UNICODE_ENVIRONMENT or CREATE_NEW_CONSOLE;
+
+    if not CreateEnvironmentBlock(@P, UserToken.TokenHandle, true) then
+    begin
+      Log.Log(lsError, 'Could not get user environment: '+IntToStr(GetLastError));
+      P := nil;
+      Flags := Flags and not CREATE_UNICODE_ENVIRONMENT;
+    end;
+
 
     //get rest of parameters
     Parameter := _Param(2);
@@ -195,6 +204,7 @@ begin
     ZeroMemory(@StartupInfo, sizeof(StartupInfo));
     StartupInfo.lpDesktop := ('winsta0\default');
     try
+      Log.Log(lsMessage, 'Calling CreateProcessAsUser...');
       if not CreateProcessAsUserW(
             UserToken.TokenHandle,
                 PWideCHAR(Parameter),
@@ -202,13 +212,14 @@ begin
                 nil,
                 nil,
                 true,
-                CREATE_NEW_CONSOLE or CREATE_UNICODE_ENVIRONMENT,
+                Flags,
                 P,
                 nil,
                 StartupInfo,//__in         LPSTARTUPINFO lpStartupInfo,
                 ProcessInfo //__out        LPPROCESS_INFORMATION lpProcessInformation
             ) then
     RaiseLastOSError;
+       Log.Log(lsMessage, 'Call to CreateProcessAsUser successful.');
      except
       on e: Exception do
       begin
@@ -218,7 +229,8 @@ begin
     end;
 
     LogMessage('CreateProcess succeeded.');
-    DestroyEnvironmentBlock(P);
+    if P <> nil then
+      DestroyEnvironmentBlock(P);
     CloseHandle(ProcessInfo.hProcess);
     CloseHandle(ProcessInfo.hThread);
   finally
