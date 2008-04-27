@@ -1996,9 +1996,14 @@ type
 
        The list is copied into the file object.
 
-       @param Protection is not supported of this method.
-          Instead use TJwSecurityDescriptor.InheritanceDACLProtection or
-             TJwSecurityDescriptor.InheritanceSACLProtection to control inheritance. 
+       @param Protection defines which TJwSecurityInformationFlag Flag is used:
+        
+          # apNone uses simply siDaclSecurityInformation to set DACL 
+          # apProtected uses siProtectedDaclSecurityInformation to set a protected DACL 
+          # apUnprotected uses siUnprotectedDaclSecurityInformation to set
+              an unprotected DACL and let flow the inheritance stream 
+          
+
        }
     procedure SetDACL(const list: TJwDAccessControlList;
      const Protection : TJwACLProtectionState = apNone); overload; override;
@@ -2009,9 +2014,14 @@ type
 
        The list is copied into the file object.
 
-       @param Protection is not supported of this method.
-          Instead use TJwSecurityDescriptor.InheritanceDACLProtection or
-             TJwSecurityDescriptor.InheritanceSACLProtection to control inheritance. 
+       @param Protection defines which TJwSecurityInformationFlag Flag is used:
+        
+          # apNone uses simply siDaclSecurityInformation to set DACL 
+          # apProtected uses siProtectedDaclSecurityInformation to set a protected DACL 
+          # apUnprotected uses siUnprotectedDaclSecurityInformation to set
+              an unprotected DACL and let flow the inheritance stream 
+          
+       
        }
 
     procedure SetSACL(const list: TJwSAccessControlList;
