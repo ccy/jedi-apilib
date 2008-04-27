@@ -1142,6 +1142,12 @@ type
     jtSubjection
   );
 
+  TJwUserDataCopy = (
+    //copy given memory into extra memory
+    ucCopyMemory,
+    //use given memory
+    ucUseMemory);
+
 
 {$ENDIF SL_IMPLEMENTATION_SECTION}
 

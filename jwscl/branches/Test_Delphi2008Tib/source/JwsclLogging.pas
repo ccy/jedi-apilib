@@ -852,6 +852,16 @@ begin
     TJwLogWriter.AddAttributes(Attributes, ClassName, MethodName, FileName);
     TJwLogWriter.AddAttribute(Attributes, JwXMLAttributeString[atThread], TJwLogWriter.GetThreadName);
     AddToList(fWriter.WriteSingleTag(fInd, JwXMLTagsString[xtLog], LogMessage, Attributes));
+{$IFDEF DEBUG}
+{$IFDEF UNICODE}OutputDebugStringW{$ELSE}OutputDebugStringA{$ENDIF}(
+        TJwPChar(JwFormatString('[%0:s] %1:s::%2:s.%3:s: %4:s',
+          [JwLogTypeStrings[LogType], //0
+           FileName,   //1
+           ClassName,  //2
+           MethodName, //3
+           LogMessage  //4
+          ])));
+{$ENDIF DEBUG}
   finally
     fOwner.LeaveCriticalSection;
   end;

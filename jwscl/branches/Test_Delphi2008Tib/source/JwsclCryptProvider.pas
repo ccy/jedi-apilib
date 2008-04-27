@@ -300,9 +300,9 @@ type
 
     {@Name verifies that the given signature is correct for the
      data previously added to the hash using @link(HashData).
-     @param(The signature which should be verified)
-     @param(The length of the signature)
-     @key(The public key that corresponds to the private key with
+     @param(Signature The signature which should be verified)
+     @param(Len The length of the signature)
+     @param(Key The public key that corresponds to the private key with
           with which the signature was created)
      @raises(EJwsclHashApiException will be raised if the underlying
              Windows call fails due to an incorrect signature or for other

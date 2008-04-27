@@ -89,7 +89,7 @@ type
     {@exclude}
     FWindowsType: Integer;
   public
-    {The @Name constructor creates the @ClassName object and reserves memory
+    {The @Name constructor creates the TJwServerInfo object and reserves memory
      for it.@br
      @param(Server the servername for which you would like to retreive
      information. If Servername is empty string the local machine will be
@@ -125,9 +125,9 @@ type
 
     {@Name returns a constant that defines the windows version the process is running.
      @return(The return value can be one of these constants defined in JwsclConstants
-     Actually these items are supported
+     Actually these items are supported)
      @unorderedList(
-       @itemSpacing(Compact)
+       @item Spacing(Compact)
        @item cOsUnknown = The system is unknown
        @item cOsWinNT   = running on Windows NT
        @item cOsWin2000 = running on Windows 2000
@@ -141,7 +141,7 @@ type
     function GetWindowsType: Integer;
 
     {@Name checks if the system is a server version. @br
-     @Name returns @true if the system is a Server; otherwise @false (Workstation).
+     @Name returns <B>true</B> if the system is a Server; otherwise <B>false</B> (Workstation).
     }
 
     property IsServer: Boolean read FIsServer;
@@ -153,69 +153,69 @@ type
      @Item(The Terminal Server is advertising itsself on the network)
      )
      @br
-     @Name returns @true if the system is a Terminal Server in application mode
-     ; otherwise @false.
+     @Name returns <B>true</B> if the system is a Terminal Server in application mode
+     ; otherwise <B>false</B>.
      @seealso(TJwTerminalServer.EnumerateServers)
     }
     property IsTerminalServer: Boolean read FIsTerminalServer;
 
     {@Name checks if the system has the version given in the function name.
-     @param(bOrHigher defines if the return value should also be @true if the system
+     @param(bOrHigher defines if the return value should also be <B>true</B> if the system
      is better/higher than the requested system version.)
-     @returns(@Name returns @true if the system is the requested version (or higher if bOrHigher is true);
-     otherwise @false.
-     If bOrHigher is @true the return value is the result of
-     @TRUE if (bOrHigher and (GetWindowsType > iVer)) is true;
-     @FALSE if GetWindowsType < (requested version)
+     @returns(@Name returns <B>true</B> if the system is the requested version (or higher if bOrHigher is true);
+     otherwise <B>false</B>.
+     If bOrHigher is <B>true</B> the return value is the result of
+     <B>true</B> if (bOrHigher and (GetWindowsType > iVer)) is true;
+     <B>false</B> if GetWindowsType < (requested version)
      )
     }
     function IsWindows2000(bOrHigher: boolean = False): boolean;
 
     {@Name checks if the system has the version given in the function name.
-     @param(bOrHigher defines if the return value should also be @true if the system
+     @param(bOrHigher defines if the return value should also be <B>true</B> if the system
      is better/higher than the requested system version.)
-     @return(@Name returns @true if the system is the requested version (or higher if bOrHigher is true);
-     otherwise @false.
-     If bOrHigher is @true the return value is the result of
-     @TRUE if (bOrHigher and (GetWindowsType > iVer)) is true;
-     @FALSE if GetWindowsType < (requested version)
+     @return(@Name returns <B>true</B> if the system is the requested version (or higher if bOrHigher is true);
+     otherwise <B>false</B>.
+     If bOrHigher is <B>true</B> the return value is the result of
+     <B>true</B> if (bOrHigher and (GetWindowsType > iVer)) is true;
+     <B>false</B> if GetWindowsType < (requested version)
      )
     }
     function IsWindows2003(bOrHigher: boolean = False): boolean;
 
     {@Name checks if the system has the version given in the function name.
-     @param(bOrHigher defines if the return value should also be @true if the system
+     @param(bOrHigher defines if the return value should also be <B>true</B> if the system
      is better/higher than the requested system version.)
-     @return(@Name returns @true if the system is the requested version (or higher if bOrHigher is true);
-     otherwise @false.
-     If bOrHigher is @true the return value is the result of
-     @TRUE if (bOrHigher and (GetWindowsType > iVer)) is true;
-     @FALSE if GetWindowsType < (requested version)
+     @return(@Name returns <B>true</B> if the system is the requested version (or higher if bOrHigher is true);
+     otherwise <B>false</B>.
+     If bOrHigher is <B>true</B> the return value is the result of
+     <B>true</B> if (bOrHigher and (GetWindowsType > iVer)) is true;
+     <B>false</B> if GetWindowsType < (requested version)
      )
     }
     function IsWindowsXP(bOrHigher: boolean = False): boolean;
 
     {@Name checks if the system has the version given in the function name.
-     @param(bOrHigher defines if the return value should also be @true if the system
+     @param(bOrHigher defines if the return value should also be <B>true</B> if the system
      is better/higher than the requested system version.)
-     @return(@Name returns @true if the system is the requested version (or higher if bOrHigher is true);
-     otherwise @false.
-     If bOrHigher is @true the return value is the result of
-     @TRUE if (bOrHigher and (GetWindowsType > iVer)) is true;
-     @FALSE if GetWindowsType < (requested version)
+     @return(@Name returns <B>true</B> if the system is the requested version (or higher if bOrHigher is true);
+     otherwise <B>false</B>.
+     If bOrHigher is <B>true</B> the return value is the result of
+     <B>true</B> if (bOrHigher and (GetWindowsType > iVer)) is true;
+     <B>false</B> if GetWindowsType < (requested version)
      )
     }
     function IsWindows2008(bOrHigher: boolean = False): boolean;
 
 
     {@Name checks if the system has the version given in the function name.
-     @param(bOrHigher defines if the return value should also be @true if the system
+     @param(bOrHigher defines if the return value should also be <B>true</B> if the system
      is better/higher than the requested system version.)
-     @return(@Name returns @true if the system is the requested version (or higher if bOrHigher is true);
-     otherwise @false.
-     If bOrHigher is @true the return value is the result of
-     @TRUE if (bOrHigher and (GetWindowsType > iVer)) is true;
-     @FALSE if GetWindowsType < (requested version)
+     @return(@Name returns <B>true</B> if the system is the requested version (or higher if bOrHigher is true);
+     otherwise <B>false</B>.
+     If bOrHigher is <B>true</B> the return value is the result of
+     <B>true</B> if (bOrHigher and (GetWindowsType > iVer)) is true;
+     <B>false</B> if GetWindowsType < (requested version)
      )
     }
     function IsWindowsVista(bOrHigher: boolean = False): boolean;
@@ -255,25 +255,25 @@ type
     class function GetWindowsType: integer; virtual;
 
       {@Name checks if the system has the version given in the function name.
-       @param(bOrHigher defines if the return value should also be @true if the system
+       @param(bOrHigher defines if the return value should also be <B>true</B> if the system
               is better/higher than the requested system version.)
-       @return(@Name returns @true if the system is the requested version (or higher if bOrHigher is true);
-               otherwise @false.
-               If bOrHigher is @true the return value is the result of
-                @TRUE if (bOrHigher and (GetWindowsType > iVer)) is true;
-                @FALSE if GetWindowsType < (requested version)
+       @return(@Name returns <B>true</B> if the system is the requested version (or higher if bOrHigher is true);
+               otherwise <B>false</B>.
+               If bOrHigher is <B>true</B> the return value is the result of
+                <B>true</B> if (bOrHigher and (GetWindowsType > iVer)) is true;
+                <B>false</B> if GetWindowsType < (requested version)
                )
        }
     class function IsWindows95(bOrHigher: boolean = False): boolean;
       virtual;
       {@Name checks if the system has the version given in the function name.
-       @param(bOrHigher defines if the return value should also be @true if the system
+       @param(bOrHigher defines if the return value should also be <B>true</B> if the system
               is better/higher than the requested system version.)
-       @return(@Name returns @true if the system is the requested version (or higher if bOrHigher is true);
-               otherwise @false.
-               If bOrHigher is @true the return value is the result of
-                @TRUE if (bOrHigher and (GetWindowsType > iVer)) is true;
-                @FALSE if GetWindowsType < (requested version)
+       @return(@Name returns <B>true</B> if the system is the requested version (or higher if bOrHigher is true);
+               otherwise <B>false</B>.
+               If bOrHigher is <B>true</B> the return value is the result of
+                <B>true</B> if (bOrHigher and (GetWindowsType > iVer)) is true;
+                <B>false</B> if GetWindowsType < (requested version)
                )
        }
 
@@ -281,13 +281,13 @@ type
       virtual;
 
       {@Name checks if the system has the version given in the function name.
-       @param(bOrHigher defines if the return value should also be @true if the system
+       @param(bOrHigher defines if the return value should also be <B>true</B> if the system
               is better/higher than the requested system version.)
-       @return(@Name returns @true if the system is the requested version (or higher if bOrHigher is true);
-               otherwise @false.
-               If bOrHigher is @true the return value is the result of
-                @TRUE if (bOrHigher and (GetWindowsType > iVer)) is true;
-                @FALSE if GetWindowsType < (requested version)
+       @return(@Name returns <B>true</B> if the system is the requested version (or higher if bOrHigher is true);
+               otherwise <B>false</B>.
+               If bOrHigher is <B>true</B> the return value is the result of
+                <B>true</B> if (bOrHigher and (GetWindowsType > iVer)) is true;
+                <B>false</B> if GetWindowsType < (requested version)
                )
        }
 
@@ -295,13 +295,13 @@ type
       virtual;
 
             {@Name checks if the system has the version given in the function name.
-       @param(bOrHigher defines if the return value should also be @true if the system
+       @param(bOrHigher defines if the return value should also be <B>true</B> if the system
               is better/higher than the requested system version.)
-       @return(@Name returns @true if the system is the requested version (or higher if bOrHigher is true);
-               otherwise @false.
-               If bOrHigher is @true the return value is the result of
-                @TRUE if (bOrHigher and (GetWindowsType > iVer)) is true;
-                @FALSE if GetWindowsType < (requested version)
+       @return(@Name returns <B>true</B> if the system is the requested version (or higher if bOrHigher is true);
+               otherwise <B>false</B>.
+               If bOrHigher is <B>true</B> the return value is the result of
+                <B>true</B> if (bOrHigher and (GetWindowsType > iVer)) is true;
+                <B>false</B> if GetWindowsType < (requested version)
                )
        }
     class function IsWindows2000(bOrHigher: boolean = False): boolean;
@@ -309,13 +309,13 @@ type
 
 
       {@Name checks if the system has the version given in the function name.
-       @param(bOrHigher defines if the return value should also be @true if the system
+       @param(bOrHigher defines if the return value should also be <B>true</B> if the system
               is better/higher than the requested system version.)
-       @return(@Name returns @true if the system is the requested version (or higher if bOrHigher is true);
-               otherwise @false.
-               If bOrHigher is @true the return value is the result of
-                @TRUE if (bOrHigher and (GetWindowsType > iVer)) is true;
-                @FALSE if GetWindowsType < (requested version)
+       @return(@Name returns <B>true</B> if the system is the requested version (or higher if bOrHigher is true);
+               otherwise <B>false</B>.
+               If bOrHigher is <B>true</B> the return value is the result of
+                <B>true</B> if (bOrHigher and (GetWindowsType > iVer)) is true;
+                <B>false</B> if GetWindowsType < (requested version)
                )
        }
     class function IsWindows2003(bOrHigher: boolean = False): boolean;
@@ -323,13 +323,13 @@ type
 
 
       {@Name checks if the system has the version given in the function name.
-       @param(bOrHigher defines if the return value should also be @true if the system
+       @param(bOrHigher defines if the return value should also be <B>true</B> if the system
               is better/higher than the requested system version.)
-       @return(@Name returns @true if the system is the requested version (or higher if bOrHigher is true);
-               otherwise @false.
-               If bOrHigher is @true the return value is the result of
-                @TRUE if (bOrHigher and (GetWindowsType > iVer)) is true;
-                @FALSE if GetWindowsType < (requested version)
+       @return(@Name returns <B>true</B> if the system is the requested version (or higher if bOrHigher is true);
+               otherwise <B>false</B>.
+               If bOrHigher is <B>true</B> the return value is the result of
+                <B>true</B> if (bOrHigher and (GetWindowsType > iVer)) is true;
+                <B>false</B> if GetWindowsType < (requested version)
                )
        }
     class function IsWindows2003R2(bOrHigher: boolean = False): boolean;
@@ -337,13 +337,13 @@ type
 
 
       {@Name checks if the system has the version given in the function name.
-       @param(bOrHigher defines if the return value should also be @true if the system
+       @param(bOrHigher defines if the return value should also be <B>true</B> if the system
               is better/higher than the requested system version.)
-       @return(@Name returns @true if the system is the requested version (or higher if bOrHigher is true);
-               otherwise @false.
-               If bOrHigher is @true the return value is the result of
-                @TRUE if (bOrHigher and (GetWindowsType > iVer)) is true;
-                @FALSE if GetWindowsType < (requested version)
+       @return(@Name returns <B>true</B> if the system is the requested version (or higher if bOrHigher is true);
+               otherwise <B>false</B>.
+               If bOrHigher is <B>true</B> the return value is the result of
+                <B>true</B> if (bOrHigher and (GetWindowsType > iVer)) is true;
+                <B>false</B> if GetWindowsType < (requested version)
                )
        }
     class function IsWindowsXP(bOrHigher: boolean = False): boolean;
@@ -354,13 +354,13 @@ type
 
        Actually the parameter bOrHigher has no meaning in this function!
 
-       @param(bOrHigher defines if the return value should also be @true if the system
+       @param(bOrHigher defines if the return value should also be <B>true</B> if the system
               is better/higher than the requested system version.)
-       @return(@Name returns @true if the system is the requested version (or higher if bOrHigher is true);
-               otherwise @false.
-               If bOrHigher is @true the return value is the result of
-                @TRUE if (bOrHigher and (GetWindowsType > iVer)) is true;
-                @FALSE if GetWindowsType < (requested version)
+       @return(@Name returns <B>true</B> if the system is the requested version (or higher if bOrHigher is true);
+               otherwise <B>false</B>.
+               If bOrHigher is <B>true</B> the return value is the result of
+                <B>true</B> if (bOrHigher and (GetWindowsType > iVer)) is true;
+                <B>false</B> if GetWindowsType < (requested version)
                )
        }
     class function IsWindowsVista(bOrHigher: boolean = False): boolean;
@@ -370,13 +370,13 @@ type
 
        Actually the parameter bOrHigher has no meaning in this function!
 
-       @param(bOrHigher defines if the return value should also be @true if the system
+       @param(bOrHigher defines if the return value should also be <B>true</B> if the system
               is better/higher than the requested system version.)
-       @return(@Name returns @true if the system is the requested version (or higher if bOrHigher is true);
-               otherwise @false.
-               If bOrHigher is @true the return value is the result of
-                @TRUE if (bOrHigher and (GetWindowsType > iVer)) is true;
-                @FALSE if GetWindowsType < (requested version)
+       @return(@Name returns <B>true</B> if the system is the requested version (or higher if bOrHigher is true);
+               otherwise <B>false</B>.
+               If bOrHigher is <B>true</B> the return value is the result of
+                <B>true</B> if (bOrHigher and (GetWindowsType > iVer)) is true;
+                <B>false</B> if GetWindowsType < (requested version)
                )
        }
     class function IsWindows2008(bOrHigher: boolean = False): boolean;

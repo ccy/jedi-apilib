@@ -344,6 +344,11 @@ type
 
   EJwsclMissingEvent = class(EJwsclSecurityException);
 
+  EJwsclInvalidSession = class(EJwsclSecurityException);
+  EJwsclInvalidIndex = class(EJwsclSecurityException);
+
+
+
   JwGeneralExceptionClass = class of Exception;
 
 
