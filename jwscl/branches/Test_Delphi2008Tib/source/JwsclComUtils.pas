@@ -1,8 +1,8 @@
 {
-@abstract(Contains structures to support auto free class instances.)
+<B>Abstract</B>Contains structures to support auto free class instances. 
 @author(Christian Wimmer)
-@created(03/23/2007)
-@lastmod(09/10/2007)
+<B>Created:</B>03/23/2007 
+<B>Last modification:</B>09/10/2007 
 
 
 
@@ -36,7 +36,7 @@ TODO:
 Same for FreeMem, and so on
 
 To use this code simply to the follwoing:
-@longCode(#
+<code lang="Delphi">
 var myClass : TMyClass;
 begin
   myClass := TMyClass.Create;
@@ -44,7 +44,7 @@ begin
 
   ... your code here ...
 end; //autodestruction of myClass here.
-#)
+</code>
 
 
 }
@@ -92,75 +92,75 @@ type
     function Lock : IJwAutoLock;
   end;
 
-  {@Name implements tool functions for creating new and wrapping existing
+  {<B>TJwAutoPointer</B> implements tool functions for creating new and wrapping existing
    pointers and classes for auto destruction. }
   TJwAutoPointer = class
-    {@Name wraps an existing class instance for auto pointer desctruction.
+    {<B>Wrap</B> wraps an existing class instance for auto pointer desctruction.
      When the returned auto pointer interface goes out of scope the
      given instance will be destroyed.
-    @param(Instance defines the class instance that will be automatically
-     destroyed)
-    @return(Returns an auto pointer interface that is resposible for
-      auto destruction.)}
+    @param Instance defines the class instance that will be automatically
+     destroyed 
+    @return Returns an auto pointer interface that is resposible for
+      auto destruction. }
     class function Wrap(const Instance  : TObject) : IJwAutoPointer; overload;
 
-    {@Name wraps an existing pointer for auto desctruction.
+    {<B>Wrap</B> wraps an existing pointer for auto desctruction.
      When the returned auto pointer interface goes out of scope the
      given pointer will be destroyed.
-     @param(Ptr Defines a pointer that is automatically destroyed.)
-     @param(Size Defines the size of the pointer data. If size is
+     @param Ptr Defines a pointer that is automatically destroyed. 
+     @param Size Defines the size of the pointer data. If size is
         not zero, the memory will be overwritten with zeroes before
-        it is freed.)
-     @param(PointerType Defines the pointer type. It is used to call
-      the appropriate free function.)
-     @return(Returns an auto pointer interface that is resposible for
-      auto destruction.)
+        it is freed. 
+     @param PointerType Defines the pointer type. It is used to call
+      the appropriate free function. 
+     @return Returns an auto pointer interface that is resposible for
+      auto destruction. 
      }
     class function Wrap(const Ptr : Pointer;
         Size : Cardinal;
         PointerType : TJwPointerType) : IJwAutoPointer; overload;
 
-    {@Name creates a new auto pointer class instance and also
+    {<B>CreateInstance</B> creates a new auto pointer class instance and also
      creates the given class with a default constructor (no parameters).
      Use instead Wrap if you cannot use standard constructor or
       your class does not support a standard constructor.
-     @param(ClassReference defines the class type which is to be created)
-     @return(Returns an auto pointer interface that is resposible for
-      auto destruction.)
+     @param ClassReference defines the class type which is to be created 
+     @return Returns an auto pointer interface that is resposible for
+      auto destruction. 
      }
     class function CreateInstance(
       const ClassReference : TClass) : IJwAutoPointer; overload;
 
-    {@Name creates a new auto pointer class instance and also
+    {<B>CreateInstance</B> creates a new auto pointer class instance and also
      creates the given component class.
      Use instead Wrap if you cannot use standard component constructor or
       your class does not support a standard component constructor.
-     @param(ClassReference defines the class type which is to be created)
-     @param(Owner defines the component owner which is applied to the
-      component constructor.)
-     @return(Returns an auto pointer interface that is resposible for
-      auto destruction.)
+     @param ClassReference defines the class type which is to be created 
+     @param Owner defines the component owner which is applied to the
+      component constructor. 
+     @return Returns an auto pointer interface that is resposible for
+      auto destruction. 
      }
     class function CreateInstance(
       const ClassReference : TComponentClass;
       const Owner          : TComponent = nil) : IJwAutoPointer; overload;
 
-    {@Name creates a new pointer or wraps an existing one.
+    {<B>CreateNewPointer</B> creates a new pointer or wraps an existing one.
      The following pointer types are created automatically :
-      @unorderedlist(
-        @item(ptGetMem)
-        @item(ptLocalAlloc)
-      )
+      
+        # ptGetMem 
+        # ptLocalAlloc 
+      
      The following pointer types are tunneled through and must
      be created by the caller:
-      @unorderedlist(
-        @item(ptNew )
-      )
+      
+        # ptNew  
+      
      The following pointer types are not supported and raises EJwsclInvalidPointerType
-      @unorderedlist(
-        @item(ptUnknown)
-        @item(ptClass)
-      )
+      
+        # ptUnknown 
+        # ptClass 
+      
 
      }
     class function CreateNewPointer(

@@ -1,7 +1,7 @@
-{@abstract(Contains exceptions that are used by the units of the JWSCL)
+{<B>Abstract</B>Contains exceptions that are used by the units of the JWSCL 
 @author(Christian Wimmer)
-@created(03/23/2007)
-@lastmod(11/19/2007)
+<B>Created:</B>03/23/2007 
+<B>Last modification:</B>11/19/2007 
 
 Project JEDI Windows Security Code Library (JWSCL)
 
@@ -58,7 +58,7 @@ uses SysUtils, Classes,
 
 {$IFNDEF SL_IMPLEMENTATION_SECTION}
 type
-  {@Name is the main exception class that is used if an error occurs in any
+  {<B>EJwsclSecurityException</B> is the main exception class that is used if an error occurs in any
         Security Library unit.
   }
   EJwsclSecurityException = class(Exception)
@@ -74,13 +74,13 @@ type
     fStackTrace : AnsiString;
   public
     constructor Create(const Msg: AnsiString); overload;
-           {@Name creates an instance of the @classname exception.
-            @param(sMsg contains a description of the exception.)
-            @param(sSourceProc contains the caller method name)
-            @param(sSourceClass contains the caller method class name)
-            @param(iSourceLine contains the caller source position)
-            @param(bShowLastError defines if windows GetLastError information is used)
-            @param(Args contains string formatting information for sMsg.)
+           {<B>CreateFmtEx</B> creates an instance of the @classname exception.
+            @param sMsg contains a description of the exception. 
+            @param sSourceProc contains the caller method name 
+            @param sSourceClass contains the caller method class name 
+            @param iSourceLine contains the caller source position 
+            @param bShowLastError defines if windows GetLastError information is used 
+            @param Args contains string formatting information for sMsg. 
             }
     constructor CreateFmtEx(const MessageString: AnsiString;
       sSourceProc, sSourceClass,
@@ -103,18 +103,18 @@ type
     constructor Create(const anException: EJwsclSecurityException);
       overload;
 
-           {@Name creates a windows error string from a LastError.
-           @param(errNumber contains a GetLastError error number.)}
+           {<B>GetErrorMessage</B> creates a windows error string from a LastError.
+           @param errNumber contains a GetLastError error number. }
     class function GetErrorMessage(errNumber: TJwLastError): TJwString;
       virtual;
 
-           {@Name creates a windows error string from the last call to GetLastError or a defined error message.
+           {<B>GetLastErrorMessage</B> creates a windows error string from the last call to GetLastError or a defined error message.
             @param iGetLastError defines the error ID to be translated into a string. If set to high(Cardinal)
               the GetLastError() call is used.}
     class function GetLastErrorMessage(
       const iGetLastError: Cardinal = Cardinal(-1)): TJwString; virtual;
   published
-    {@Name contains the LastError error code provided the the CreateFmtEx constructor}
+    {<B>LastError</B> contains the LastError error code provided the the CreateFmtEx constructor}
     property LastError: Cardinal Read fLastError write fLastError;
 
     property SourceProc: AnsiString Read fSourceProc Write fSourceProc;
@@ -125,7 +125,7 @@ type
     property SourceLine: Cardinal
       Read fiSourceLine Write fiSourceLine;
 
-    {@Name defines the winapi function name of the failed call.}
+    {<B>WinCallName</B> defines the winapi function name of the failed call.}
     property WinCallName: AnsiString Read fWinCallName Write fWinCallName;
 
     property Log : AnsiString read fLog write fLog;
@@ -133,53 +133,53 @@ type
     property StackTrace : AnsiString read fStackTrace write fStackTrace;
   end;
 
-  //@name is raised if the thread token could not be opened
+  //<B>EJwsclOpenThreadTokenException</B> is raised if the thread token could not be opened
   EJwsclOpenThreadTokenException = class(EJwsclSecurityException);
-  //@name is raised if the process token could not be opened
+  //<B>EJwsclOpenProcessTokenException</B> is raised if the process token could not be opened
   EJwsclOpenProcessTokenException = class(EJwsclSecurityException);
-  //@name is raised is not used.
+  //<B>EJwsclSharedTokenException</B> is raised is not used.
   EJwsclSharedTokenException = class(EJwsclSecurityException);
-  //@name is raised if token information could not be retrieved.
+  //<B>EJwsclTokenInformationException</B> is raised if token information could not be retrieved.
   EJwsclTokenInformationException = class(EJwsclSecurityException);
-  //@name is raised if the token could not be converted to an impersonated token.
+  //<B>EJwsclTokenImpersonationException</B> is raised if the token could not be converted to an impersonated token.
   EJwsclTokenImpersonationException = class(EJwsclSecurityException);
-  //@name is raised if the requested primary token could not be retrieved. For more information see LastError.
+  //<B>EJwsclTokenPrimaryException</B> is raised if the requested primary token could not be retrieved. For more information see LastError.
   EJwsclTokenPrimaryException = class(EJwsclSecurityException);
   EJwsclInvalidPrimaryToken = class(EJwsclTokenPrimaryException);
 
 
-  //@name is raised if the given owner is invalid say nil.
+  //<B>EJwsclInvalidOwnerException</B> is raised if the given owner is invalid say nil.
   EJwsclInvalidOwnerException = class(EJwsclSecurityException);
-  //@name is raised if a call to DuplicateTokenEx failed
+  //<B>EJwsclDuplicateTokenException</B> is raised if a call to DuplicateTokenEx failed
   EJwsclDuplicateTokenException = class(EJwsclSecurityException);
-  //@name is raised if the requested impersonated token could not be retrieved
+  //<B>EJwsclNoThreadTokenAvailable</B> is raised if the requested impersonated token could not be retrieved
   EJwsclNoThreadTokenAvailable = class(EJwsclSecurityException);
-  //@name is raised if the handle of the token is invalid
+  //<B>EJwsclInvalidTokenHandle</B> is raised if the handle of the token is invalid
   EJwsclInvalidTokenHandle = class(EJwsclSecurityException);
-  //@name is raised if a allocation function could not allocate a buffer in memory because of not enough memory
+  //<B>EJwsclNotEnoughMemory</B> is raised if a allocation function could not allocate a buffer in memory because of not enough memory
   EJwsclNotEnoughMemory = class(EJwsclSecurityException);
-  //@name is raised if an errors occurs that includes a problem with a privilege
+  //<B>EJwsclPrivilegeException</B> is raised if an errors occurs that includes a problem with a privilege
   EJwsclPrivilegeException = class(EJwsclSecurityException);
-  //@name is raised if the given index is out of bounds of the privileges list
+  //<B>EJwsclInvalidIndexPrivilegeException</B> is raised if the given index is out of bounds of the privileges list
   EJwsclInvalidIndexPrivilegeException =
     class(EJwsclPrivilegeException);
-  //@name is raised if a given privilege was not found
+  //<B>EJwsclPrivilegeNotFoundException</B> is raised if a given privilege was not found
   EJwsclPrivilegeNotFoundException = class(EJwsclPrivilegeException);
-  //@name is raised if a given privilege was not found in the list of privileges of the token
+  //<B>EJwsclPrivilegeCheckException</B> is raised if a given privilege was not found in the list of privileges of the token
   EJwsclPrivilegeCheckException = class(EJwsclPrivilegeException);
-  //@name is raised if the privileges of a token could not be changed
+  //<B>EJwsclAdjustPrivilegeException</B> is raised if the privileges of a token could not be changed
   EJwsclAdjustPrivilegeException = class(EJwsclPrivilegeException);
-  //@name is raised if the desired access mask is not included in the token access mask!
+  //<B>EJwsclAccessTypeException</B> is raised if the desired access mask is not included in the token access mask!
   EJwsclAccessTypeException = class(EJwsclSecurityException);
-  //@name is raised if the called method is not implemented yet.
+  //<B>EJwsclNotImplementedException</B> is raised if the called method is not implemented yet.
   EJwsclNotImplementedException = class(EJwsclSecurityException);
-  //@name is raised if the called function is not supported under the running windows version
+  //<B>EJwsclUnsupportedWindowsVersionException</B> is raised if the called function is not supported under the running windows version
   EJwsclUnsupportedWindowsVersionException =  class(EJwsclSecurityException);
 
 
 
 
-  //@name is raised if a call to a windows API function failed. For more information see the LastError property
+  //<B>EJwsclWinCallFailedException</B> is raised if a call to a windows API function failed. For more information see the LastError property
   EJwsclWinCallFailedException = class(EJwsclSecurityException);
   EJwsclProcessIdNotAvailable = class(EJwsclSecurityException);
 
@@ -188,26 +188,26 @@ type
   EJwsclInheritanceSourceNotSupportedException =
     class(EJwsclSecurityException);
 
-  //@name is raised if a given parameter is nil which is invalid.
+  //<B>EJwsclNILParameterException</B> is raised if a given parameter is nil which is invalid.
   EJwsclNILParameterException = class(EJwsclSecurityException);
   EJwsclEmptyACLException = class(EJwsclSecurityException);
   EJwsclInvalidMandatoryLevelException = class(EJwsclSecurityException);
 
   EJwsclInvalidSecurityListException = class(EJwsclSecurityException);
 
-  //@name is raised if a SID has an invalid structure
+  //<B>EJwsclInvalidSIDException</B> is raised if a SID has an invalid structure
   EJwsclInvalidSIDException = class(EJwsclSecurityException);
   EJwsclInvalidOwnerSIDException = class(EJwsclInvalidSIDException);
   EJwsclInvalidGroupSIDException = class(EJwsclInvalidSIDException);
 
   EJwsclInvalidComputer = class(EJwsclSecurityException);
 
-  {@Name is raised if TJwSecurityId.CreateWellKnownSid fails}
+  {<B>EJwsclInvalidKnownSIDException</B> is raised if TJwSecurityId.CreateWellKnownSid fails}
   EJwsclInvalidKnownSIDException = class(EJwsclInvalidSIDException)
   protected
     fSidType : TWellKnownSidType;
   public
-    {@Name contains information which sid type was used
+    {<B>SidType</B> contains information which sid type was used
      but could not be found}
     property SidType : TWellKnownSidType read fSidType write fSidType;
   end;
@@ -215,10 +215,10 @@ type
   EJwsclInvalidSidAuthorityValue = class(EJwsclInvalidSIDException);
 
 
-  //@name is raised if an given index is not within the bounds of a list
+  //<B>EJwsclIndexOutOfBoundsException</B> is raised if an given index is not within the bounds of a list
   EJwsclIndexOutOfBoundsException = class(EJwsclSecurityException);
 
-  //@name is raised if a SID was already added to a list
+  //<B>EJwsclDuplicateListEntryException</B> is raised if a SID was already added to a list
   EJwsclDuplicateListEntryException = class(EJwsclSecurityException);
 
   EJwsclReadOnlyPropertyException = class(EJwsclSecurityException);
@@ -258,7 +258,7 @@ type
   ESetSecurityException = class(EJwsclSecurityException);
   ESetOwnerException = class(EJwsclStreamException);
 
-  //@Name is the class of EJwsclSecurityException
+  //<B>EJwsclExceptionClass</B> is the class of EJwsclSecurityException
   EJwsclExceptionClass = class of EJwsclSecurityException;
 
   EJwsclLSAException = class(EJwsclSecurityException);
@@ -333,7 +333,7 @@ type
   EJwsclKeyException = class(EJwsclCryptException);
   EJwsclKeyApiException = class(EJwsclKeyException);
 
-  {@Name is raised if JwInitWellKnownSIDs was not called.}
+  {<B>EJwsclInitWellKnownException</B> is raised if JwInitWellKnownSIDs was not called.}
   EJwsclInitWellKnownException = class(EJwsclKeyException);
 
   EJwsclUnimplemented = class(EJwsclSecurityException);

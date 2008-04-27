@@ -1,8 +1,8 @@
 {
-@abstract(Contains structures to support vista elevation.)
+<B>Abstract</B>Contains structures to support vista elevation. 
 @author(Christian Wimmer)
-@created(03/23/2007)
-@lastmod(09/10/2007)
+<B>Created:</B>03/23/2007 
+<B>Last modification:</B>09/10/2007 
 
 
 
@@ -48,19 +48,19 @@ interface
 uses ComObj, JwaWindows, ShellApi,JwsclStrings;
 
 type
-  {@Name provides a registration for a typed com object.
+  {<B>TJwElevationClassFactory</B> provides a registration for a typed com object.
    It also creates the necessary registry entries.}
   TJwElevationClassFactory = class(TTypedComObjectFactory)
   private
     fResourceId: AnsiString;
     fDisableProcessIsolation : Boolean;
   public
-    {@Name registers a com object.
+    {<B>Create</B> registers a com object.
      Every com object that must be elevated must be registered by this constructor.
 
-    @param(ResourceId defines a resource id as a string)
-    @param(DisableProcessIsolation defines whether the elevated com process
-     should be isolated (true) or not.)}
+    @param ResourceId defines a resource id as a string 
+    @param DisableProcessIsolation defines whether the elevated com process
+     should be isolated (true) or not. }
     constructor Create(
       const ResourceId: AnsiString;
       const DisableProcessIsolation : Boolean;
@@ -71,13 +71,13 @@ type
       const ThreadingModel: TThreadingModel = tmApartment
     ); overload;
 
-    {@Name registers a com object.
+    {<B>Create</B> registers a com object.
     Every com object that must be elevated must be registered by this constructor.
 
-    @param(ResourceId defines a delphi resource id.
-      This id must be created by "resourcestring". Use @<ResourcestringName> as parameter input)
-    @param(DisableProcessIsolation defines whether the elevated com process
-     should be isolated (true) or not.)}
+    @param ResourceId defines a delphi resource id.
+      This id must be created by "resourcestring". Use @<ResourcestringName> as parameter input 
+    @param DisableProcessIsolation defines whether the elevated com process
+     should be isolated (true) or not. }
     constructor Create(
       const ResourceId: PResStringRec;
       const DisableProcessIsolation : Boolean;
@@ -88,7 +88,7 @@ type
       const ThreadingModel: TThreadingModel = tmApartment
     ); overload;
 
-    {@Name registers or unregisters a com library.
+    {<B>UpdateRegistry</B> registers or unregisters a com library.
      Use "regsvr32.exe <lib>" to register and "regsvr32.exe /u <lib>" to
      unregister a com library.}
 {$IFDEF UNIT_TEST}
@@ -98,7 +98,7 @@ type
 {$ENDIF UNIT_TEST}
   end;
 
-{@Name creates an out of process COM object and returns it in ObjectInterface.
+{<B>JwCoCreateInstanceAsEx</B> creates an out of process COM object and returns it in ObjectInterface.
 If the current is already elevated, the function just creates an COM object
 and returns it; otherwise the elevation dialog will be shown.
 
@@ -110,15 +110,15 @@ The executable which call this function must contain a manifest that defines
 This function needs CoInitialize to be called.
 This function only works on Windows Vista and newer OS versions.
 
-@param(MonikerSequence defines a string that contains information how to use the moniker)
-@param(ParentWindowHandle defines the window handle that is used to display the elevation dialog.
+@param MonikerSequence defines a string that contains information how to use the moniker 
+@param ParentWindowHandle defines the window handle that is used to display the elevation dialog.
  If this parameter is 0 or the window is has not the input the elevation dialog
  will not be shown but a new task is displayed it the taskbar. Otherwise the elevation dialog
- will be shown direclty.)
-@param(ClassId defines a guid that describes a registered com object)
-@param(IID defines the requested com object to be returned)
-@param(ObjectInterface returns the requested and elevated com object)
-@return(Returns a COM result code. If the call was successfull the return value is S_OK)
+ will be shown direclty. 
+@param ClassId defines a guid that describes a registered com object 
+@param IID defines the requested com object to be returned 
+@param ObjectInterface returns the requested and elevated com object 
+@return Returns a COM result code. If the call was successfull the return value is S_OK 
 }
 function JwCoCreateInstanceAsEx(
   const MonikerSequence : WideString;
@@ -128,7 +128,7 @@ function JwCoCreateInstanceAsEx(
   out ObjectInterface) : HRESULT;
 
 
-{@Name creates an out of process COM object with administrator rights
+{<B>JwCoCreateInstanceAsAdmin</B> creates an out of process COM object with administrator rights
 and returns it in ObjectInterface.
 If the current is already elevated, the function just creates an COM object
 and returns it; otherwise the elevation dialog will be shown.
@@ -141,14 +141,14 @@ The executable which call this function must contain a manifest that defines
 This function needs CoInitialize to be called.
 This function only works on Windows Vista and newer OS versions.
 
-@param(ParentWindowHandle defines the window handle that is used to display the elevation dialog.
+@param ParentWindowHandle defines the window handle that is used to display the elevation dialog.
  If this parameter is 0 or the window is has not the input the elevation dialog
  will not be shown but a new task is displayed it the taskbar. Otherwise the elevation dialog
- will be shown direclty.)
-@param(ClassId defines a guid that describes a registered com object)
-@param(IID defines the requested com object to be returned)
-@param(ObjectInterface returns the requested and elevated com object)
-@return(Returns a COM result code. If the call was successfull the return value is S_OK)
+ will be shown direclty. 
+@param ClassId defines a guid that describes a registered com object 
+@param IID defines the requested com object to be returned 
+@param ObjectInterface returns the requested and elevated com object 
+@return Returns a COM result code. If the call was successfull the return value is S_OK 
 }
 function JwCoCreateInstanceAsAdmin(
   const ParentWindowHandle: HWND;
@@ -158,7 +158,7 @@ function JwCoCreateInstanceAsAdmin(
 ) : HRESULT;
 
 
-{@Name creates an out of process COM object with highest possible rights
+{<B>JwCoCreateInstanceAsHighest</B> creates an out of process COM object with highest possible rights
 and returns it in ObjectInterface.
 If the current is already elevated, the function just creates an COM object
 and returns it; otherwise the elevation dialog will be shown.
@@ -171,14 +171,14 @@ The executable which call this function must contain a manifest that defines
 This function needs CoInitialize to be called.
 This function only works on Windows Vista and newer OS versions.
 
-@param(ParentWindowHandle defines the window handle that is used to display the elevation dialog.
+@param ParentWindowHandle defines the window handle that is used to display the elevation dialog.
  If this parameter is 0 or the window is has not the input the elevation dialog
  will not be shown but a new task is displayed it the taskbar. Otherwise the elevation dialog
- will be shown direclty.)
-@param(ClassId defines a guid that describes a registered com object)
-@param(IID defines the requested com object to be returned)
-@param(ObjectInterface returns the requested and elevated com object)
-@return(Returns a COM result code. If the call was successfull the return value is S_OK)
+ will be shown direclty. 
+@param ClassId defines a guid that describes a registered com object 
+@param IID defines the requested com object to be returned 
+@param ObjectInterface returns the requested and elevated com object 
+@return Returns a COM result code. If the call was successfull the return value is S_OK 
 }
 function JwCoCreateInstanceAsHighest(
   const ParentWindowHandle: HWND;
@@ -187,7 +187,7 @@ function JwCoCreateInstanceAsHighest(
   out ObjectInterface
 ) : HRESULT;
 
-{@Name creates an out of process COM class factory object with administrator rights
+{<B>JwCoGetClassFactoyAsAdmin</B> creates an out of process COM class factory object with administrator rights
 and returns it in ObjectInterface.
 If the current is already elevated, the function just creates an COM object
 and returns it; otherwise the elevation dialog will be shown.
@@ -201,14 +201,14 @@ This function needs CoInitialize to be called.
 
 This function only works on Windows Vista and newer OS versions.
 
-@param(ParentWindowHandle defines the window handle that is used to display the elevation dialog.
+@param ParentWindowHandle defines the window handle that is used to display the elevation dialog.
  If this parameter is 0 or the window is has not the input the elevation dialog
  will not be shown but a new task is displayed it the taskbar. Otherwise the elevation dialog
- will be shown direclty.)
-@param(ClassId defines a guid that describes a registered com object)
-@param(IID defines the requested com object to be returned)
-@param(ObjectInterface returns the requested and elevated com object)
-@return(Returns a COM result code. If the call was successfull the return value is S_OK)
+ will be shown direclty. 
+@param ClassId defines a guid that describes a registered com object 
+@param IID defines the requested com object to be returned 
+@param ObjectInterface returns the requested and elevated com object 
+@return Returns a COM result code. If the call was successfull the return value is S_OK 
 }
 function JwCoGetClassFactoyAsAdmin(
   const ParentWindowHandle: HWND;
@@ -217,7 +217,7 @@ function JwCoGetClassFactoyAsAdmin(
   out ObjectInterface) : HRESULT;
 
 
-type {@Name controls execution of JwShellExecute }
+type {<B>TJwShellExecuteFlag</B> controls execution of JwShellExecute }
      TJwShellExecuteFlag = (
         //does not display GUI elements on errors
         sefNoUi,
@@ -238,18 +238,19 @@ type {@Name controls execution of JwShellExecute }
         );
      TJwShellExecuteFlags = set of TJwShellExecuteFlag;
 
-{@Name runs a process with elevated privileges in Windows Vista.
+{<B>JwShellExecute</B> runs a process with elevated privileges in Windows Vista.
 If the current is already elevated the function simply opens the given
 filename. The verb of shellexecute cannot be changed.
 
 This function only works on Windows Vista and newer OS versions.
 
-@return(The return value contains the instance of the newly created app.
+@return The return value contains the instance of the newly created app.
 The function returns before the new application has started therfore the app
 can fail. If ShellExecute determines an error the return value is 0 and
 an exception is raised.
-)
-@raises(EJwsclWinCallFailedException will be raised if a call to ShellExecuteEx failed)
+ 
+raises
+ EJwsclWinCallFailedException:  will be raised if a call to ShellExecuteEx failed 
 }
 function JwShellExecute(const hWnd: HWND; FileName, Parameters,
   Directory: TJwString; ShowCmd: Integer; Flags : TJwShellExecuteFlags = [sefNoClosehProcess]): HANDLE;

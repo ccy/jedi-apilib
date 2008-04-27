@@ -1,7 +1,7 @@
-{@abstract(Contains Windows account control classes - Not implemented yet)
+{<B>Abstract</B>Contains Windows account control classes - Not implemented yet 
 @author(Christian Wimmer)
-@created(03/23/2007)
-@lastmod(09/10/2007)
+<B>Created:</B>03/23/2007 
+<B>Last modification:</B>09/10/2007 
 
 Project JEDI Windows Security Code Library (JWSCL)
 
@@ -55,7 +55,7 @@ uses
 
 {$IFNDEF SL_IMPLEMENTATION_SECTION}
 type
-  {@Name is not implemented yet}
+  {<B>TJwUserAccounts</B> is not implemented yet}
   TJwUserAccounts = class(TObjectList)
   private
 
@@ -69,7 +69,7 @@ type
 
   end;
 
-  {@Name is not implemented yet}
+  {<B>TJwGroupAccounts</B> is not implemented yet}
   TJwGroupAccounts = class(TObjectList)
   private
 
@@ -82,7 +82,7 @@ type
     //constructor CreateBySystemAccounts(const System: TJwString);
   end;
 
-  {@Name is not implemented yet}
+  {<B>TJwUserAccount</B> is not implemented yet}
   TJwUserAccount = class(TObject)
   private
 
@@ -107,7 +107,7 @@ type
     //property UserToken: TToken;
   end;
 
-  {@Name is not implemented yet}
+  {<B>TJwGroupAccount</B> is not implemented yet}
   TJwGroupAccount = class(TObject)
   public
     //gehoert der Benutzer zu einer Gruppe?
@@ -125,17 +125,17 @@ type
 
 
 {TODO: do testing!} 
-{@Name checks whether a given account on a given computer or domain
+{<B>JwHasAccountPassword</B> checks whether a given account on a given computer or domain
 has an empty password.
 
 This function does not raise exceptions!
 
-@param(UserName defines the user account that is checked for an empty password)
-@param(ComputerDomainName defines the computer or domain name that is used
+@param UserName defines the user account that is checked for an empty password 
+@param ComputerDomainName defines the computer or domain name that is used
 for the user account.
-WARNING: This parameter was not tested!)
-@return(@Name returns true if the password is empty; otherwise false. It also
-returns false if an error has occoured.)
+WARNING: This parameter was not tested! 
+@return <B>JwHasAccountPassword</B> returns true if the password is empty; otherwise false. It also
+returns false if an error has occoured. 
 }
 function JwHasAccountPassword(
     const UserName : TJwString;

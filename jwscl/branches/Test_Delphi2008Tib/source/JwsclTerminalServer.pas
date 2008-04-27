@@ -1,8 +1,8 @@
-{@abstract(This unit provides access to Terminal Server api functions through it's
- key object TJwTerminalServer)
+{<B>Abstract</B>This unit provides access to Terminal Server api functions through it's
+ key object TJwTerminalServer 
 @author(Remko Weijnen)
-@created(10/26/2007)
-@lastmod(10/26/2007)
+<B>Created:</B>10/26/2007 
+<B>Last modification:</B>10/26/2007 
 
 Project JEDI Windows Security Code Library (JWSCL)
 
@@ -30,38 +30,38 @@ The Original Code is JwsclTerminalServer.pas.
 
 The Initial Developer of the Original Code is Remko Weijnen.
 Portions created by Remko Weijnen are Copyright (C) Remko Weijnen. All rights reserved.
-@br
+
 br
 The central object of the JwsclTerminalServer unit is the TJwTerminalServer
 object. It represents a Terminal Server, the connection to this server and
 holds the session- and processlist.
 
-Some Key functions of TJwTerminalServer are:@br
+Some Key functions of TJwTerminalServer are:
 
-@unorderedList(
-  @item(TJwTerminalServer.EnumerateSessions enumerates all Terminal Server
-  sessions into a TJwSessionList which can be accessed by the Sessions property.)
-  @Item(TJwTerminalServer.EnumerateProcesses enumerates all Terminal Server
-  processes into a TJwProcessList which can be accessed by the Processes property.)
-  @Item(TJwTerminalServer.EnumerateServers enumerates all Terminal Servers in a
-  domain.)
-  @Item(TJwTerminalServer.Shutdown Shuts down and optionally restarts the specified
-  Terminal Server.)
-)
-@br
+
+  # TJwTerminalServer.EnumerateSessions enumerates all Terminal Server
+  sessions into a TJwSessionList which can be accessed by the Sessions property. 
+  # TJwTerminalServer.EnumerateProcesses enumerates all Terminal Server
+  processes into a TJwProcessList which can be accessed by the Processes property. 
+  # TJwTerminalServer.EnumerateServers enumerates all Terminal Servers in a
+  domain. 
+  # TJwTerminalServer.Shutdown Shuts down and optionally restarts the specified
+  Terminal Server. 
+
+
 TJwTerminalServer also offers Events to monitor Terminal Server activity such as
-OnSessionConnect, OnSessionCreate, OnSessionLogon and OnSessionLogoff.@br
-@br@br
+OnSessionConnect, OnSessionCreate, OnSessionLogon and OnSessionLogoff.
+
 A unique feature of TJwTerminalServer is that it's able to return detailled
 information about Terminal Server, Sessions and Processes that is not available
-using the normal Terminal Server API's or Microsoft Tools!@br
+using the normal Terminal Server API's or Microsoft Tools!
 This includes detailled process memory usage information and extended session
-information such as ShadowMode, ShadowState and Remote Address.@br
-@br
+information such as ShadowMode, ShadowState and Remote Address.
+
 The schema belows shows the relations between TJwTerminalServer,
 the TJwWTSSessionList with TJwWTSSessions and the TJwWTSProcessList with
-TjwWTSSessions.@br
-@br
+TjwWTSSessions.
+
 @image(.\..\documentation\TJwTerminalServer-Hierarchy.png)
 }
 
@@ -96,39 +96,39 @@ type
   TJwSessionsEnumerator = class;
   TJwProcessEnumerator = class;
 
-  {@Name is called by EnumerateProcesses everytime a process is enumerated.
-   @param(Sender contains the instance which enumerates a process)
-   @param(Process contains information about the enumerated process.
-     The caller must free this instance because it will not be used anymore)
-   @param(Cancel stops the enumeration if true; otherwise continues)
-   @param(Data contains user data supplied by EnumerateProcesses' parmaeter Data)
+  {<B>TJwOnProcessFound</B> is called by EnumerateProcesses everytime a process is enumerated.
+   @param Sender contains the instance which enumerates a process 
+   @param Process contains information about the enumerated process.
+     The caller must free this instance because it will not be used anymore 
+   @param Cancel stops the enumeration if true; otherwise continues 
+   @param Data contains user data supplied by EnumerateProcesses' parmaeter Data 
   }
   TJwOnProcessFound = procedure(const Sender: TJwTerminalServer;
     var Process: TJwWTSProcess; var Cancel: Boolean; Data: Pointer) of object;
 
-  {@Name is a pointer to a TJwTerminalServer instance}
+  {<B>PJwTerminalServer</B> is a pointer to a TJwTerminalServer instance}
   PJwTerminalServer = ^TJwTerminalServer;
-  {@Abstract(@Name is the central object of JwsclTerminalServer and holds the session- and processlist.)
+  {<B>Abstract</B><B>TJwTerminalServer</B> is the central object of JwsclTerminalServer and holds the session- and processlist. 
 
-   @Name offers connection to a Terminal Server which you can specify with the
-   Server property. Key functions of @Name are:@br
-   @unorderedList(
-   @item(EnumerateSessions enumerates all Terminal Server sessions into a
-   TJwSessionList which can be accessed by the Sessions property.)
-   @Item(EnumerateProcesses enumerates all Terminal Server processes into a
-   TJwProcessList which can be accessed by the Processes property.)
-   @Item(EnumerateServers enumerates all Terminal Servers in a domain.)
-   @Item(Shutdown Shuts down and optionally restarts the specified
-   Terminal Server.)
-   )
-   @br
-   @Name also offers Events to monitor Terminal Server activity such as
-   OnSessionConnect, OnSessionCreate, OnSessionLogon and OnSessionLogoff.@br
-   @br@br
+   <B>TJwTerminalServer</B> offers connection to a Terminal Server which you can specify with the
+   Server property. Key functions of <B>TJwTerminalServer</B> are:
+   
+   # EnumerateSessions enumerates all Terminal Server sessions into a
+   TJwSessionList which can be accessed by the Sessions property. 
+   # EnumerateProcesses enumerates all Terminal Server processes into a
+   TJwProcessList which can be accessed by the Processes property. 
+   # EnumerateServers enumerates all Terminal Servers in a domain. 
+   # Shutdown Shuts down and optionally restarts the specified
+   Terminal Server. 
+   
+   
+   <B>TJwTerminalServer</B> also offers Events to monitor Terminal Server activity such as
+   OnSessionConnect, OnSessionCreate, OnSessionLogon and OnSessionLogoff.
+   
    The schema belows shows the relations between TJwTerminalServer,
    the TJwWTSSessionList with TJwWTSSessions and the TJwWTSProcessList with
-   TjwWTSSessions.@br
-   @br
+   TjwWTSSessions.
+   
    @image(.\..\documentation\TJwTerminalServer-Hierarchy.png)
   }
   TJwTerminalServer = class(TObject)
@@ -205,17 +205,18 @@ type
       var Process: TJwWTSProcess; var Cancel: Boolean; Data: Pointer); virtual;
   public
 
-    {@Name sets up the connection with the Terminal Server specified in the
-     Server property.@br
+    {<B>Connect</B> sets up the connection with the Terminal Server specified in the
+     Server property.
      The Connected property can be used to check if we're already connected.
-     @raises(EJwsclWinCallFailedException will be raised if the connection
-     attempt was unsuccessfull)
-     @br@br
-     @bold(Remarks:) EnumerateSessions and EnumerateProcesses will automatically
-     connect to the Terminal Server when needed.@br
-     @br
+     raises
+ EJwsclWinCallFailedException:  will be raised if the connection
+     attempt was unsuccessfull 
+     
+     <B>Remarks:</B>  EnumerateSessions and EnumerateProcesses will automatically
+     connect to the Terminal Server when needed.
+     
      Example:
-     @longcode(#
+     <code lang="Delphi">
      var
        ATerminalServer: TJwTerminalServer;
        i: Integer;
@@ -241,15 +242,15 @@ type
        // Free Memory
        ATerminalServer.Free;
      end;
-     #)
+     </code>
      }
     procedure Connect;
 
-    {@Name allows storage of a pointer to user specific data and can be freely
-     used.@br
-     @br
+    {<B>Data</B> allows storage of a pointer to user specific data and can be freely
+     used.
+     
      Example:
-     @longcode(#
+     <code lang="Delphi">
      var
        ATerminalServer: TJwTerminalServer;
        s: AnsiString;
@@ -273,17 +274,17 @@ type
        ATerminalServer.Free;
 
      end;
-     #)
+     </code>
      }
     property Data: Pointer read FData write FData;
 
-    {@Name will disconnect an existing connection to the Terminal Server.
+    {<B>Disconnect</B> will disconnect an existing connection to the Terminal Server.
      The Connected property can be used to check if we're already connected.
-     @br@br
-     @bold(Remarks:) If you disconnect you will not receive Session Events!
-     @br
+     
+     <B>Remarks:</B>  If you disconnect you will not receive Session Events!
+     
      Example:
-     @longcode(#
+     <code lang="Delphi">
      var
        ATerminalServer: TJwTerminalServer;
        i: Integer;
@@ -315,25 +316,25 @@ type
        // disconnect from the server if connected)
        ATerminalServer.Free;
      end;
-    #)
+    </code>
      }
     procedure Disconnect;
 
-    {@Name returns the local computername.@br
+    {<B>ComputerName</B> returns the local computername.
      This property is convenient if you are connecting to Terminal Server
      locally or want to check if a servername = computername.
     }
     property ComputerName: TJwString read FComputerName;
 
-    {@Name indicates if we are connected to the Terminal Server
+    {<B>Connected</B> indicates if we are connected to the Terminal Server
     }
     property Connected: Boolean read FConnected;
 
-    {The @Name constructor creates a TJwTerminalServer instance and reservers
-     memory for it.@br
-     @br
+    {The <B>Create</B> constructor creates a TJwTerminalServer instance and reservers
+     memory for it.
+     
      Example:
-     @longcode(#
+     <code lang="Delphi">
      var
        ATerminalServer: TJwTerminalServer;
        i: Integer;
@@ -368,19 +369,19 @@ type
        // Free Memory
        ATerminalServer.Free;
      end;
-    #)
+    </code>
     }
     constructor Create;
     {@exclude}
     destructor Destroy; override;
 
-    {@Name enumerates all processes on the Terminal Server and fills the
+    {<B>EnumerateProcesses</B> enumerates all processes on the Terminal Server and fills the
      Processes property with a TJwProcessList. This list contains all processes
      and their properties such as Process Name, Process Id, Username, Memory
-     Usage and so on.@br
-     @br
+     Usage and so on.
+     
      Example:
-     @longcode(#
+     <code lang="Delphi">
      var
        ATerminalServer: TJwTerminalServer;
        i: Integer;
@@ -415,9 +416,9 @@ type
        // Free Memory
        ATerminalServer.Free;
      end;
-    #)
-	@br
-    @bold(Check for a nil property value Processes)
+    </code>
+	
+    <B>Check for a nil property value Processes</B> 
 
     }
     function EnumerateProcesses: Boolean; overload;
@@ -425,54 +426,54 @@ type
     function EnumerateProcesses(const OnProcessFound : TJwOnProcessFound;
         Data : Pointer) : Boolean; overload;
 
-    {@Name enumerates all Terminal Servers in the specified domain.
-	 The result will be stored in @bold(readonly) property Servers.
+    {<B>EnumerateServers</B> enumerates all Terminal Servers in the specified domain.
+	 The result will be stored in <B>readonly</B>  property Servers.
 	 	 
 	 
-     @Param(ADomain name of the Domain to be queried, if empty string is
-     specified the current domain is queried)
-     @returns(If the function fails you can use GetLastError to get extended
-     error information)@br@br
-     @bold(Remarks:) This functions enumerates all Terminal Servers that
+     @Param ADomain name of the Domain to be queried, if empty string is
+     specified the current domain is queried 
+     @returns If the function fails you can use GetLastError to get extended
+     error information 
+     <B>Remarks:</B>  This functions enumerates all Terminal Servers that
      advertise themselves on the network. By default only Terminal Servers in
      Application Mode advertise themselves. You can override this behaviour by
      modifying the following registry key:
-     @longcode(#
+     <code lang="Delphi">
      HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server
      "TSAdvertise" = REG_DWORD:1
-     #)
-	 @bold(Changing this value may be an security issue. Do not alter it without
-	  the consent of the user!)
-	 @bold(Only use the values 0 and 1. Do not use any other values!)@br
+     </code>
+	 <B>Changing this value may be an security issue. Do not alter it without
+	  the consent of the user!</B> 
+	 <B>Only use the values 0 and 1. Do not use any other values!</B> 
 	 
 	 
-     @br
-     @br@br
+     
+     
      Please note that enumerating Terminal Servers in large environments might
      take some time (especially over slow WAN links). Therefore this function
-     runs in a seperate thread and signals the OnServersEnumerated Event.@br
-     The enumerated servers can be retreived by reading the Servers property.@br
-     @br
+     runs in a seperate thread and signals the OnServersEnumerated Event.
+     The enumerated servers can be retreived by reading the Servers property.
+     
      If the TJwTerminalServer Instance is destroyed and the enumeration thread
      is still busy, the TJwTerminalServer will wait max. 1 second for the thread
      to finish and then terminates it.
-	 @br
-	 @bold(This method is not threadsafe! Do not call or use the instance from
-	  several threads without locking mechanism)
-	 @br
-	 @bold(Check for a nil property value Servers)
+	 
+	 <B>This method is not threadsafe! Do not call or use the instance from
+	  several threads without locking mechanism</B> 
+	 
+	 <B>Check for a nil property value Servers</B> 
     }
     function EnumerateServers(ADomain: AnsiString):Boolean;
 
-    {@Name enumerates all sessions on the Terminal Server and fills the
+    {<B>EnumerateSessions</B> enumerates all sessions on the Terminal Server and fills the
      Sessions property with a TJwSessionList. This list contains all sessions
      and their properties such as Username, Session Id, Connection State, Idle
-     Time and so on.@br
-     @returns(If the function fails you can use GetLastError to get extended
-     error information)@br
-     @br
+     Time and so on.
+     @returns If the function fails you can use GetLastError to get extended
+     error information 
+     
      Example:
-     @longcode(#
+     <code lang="Delphi">
      var
        ATerminalServer: TJwTerminalServer;
        i: Integer;
@@ -507,35 +508,35 @@ type
        // Free Memory
        ATerminalServer.Free;
      end;
-    #)
-	 @br
-	 @bold(Check for a nil property value Sessions)
+    </code>
+	 
+	 <B>Check for a nil property value Sessions</B> 
     }
     function EnumerateSessions: boolean;
 
-    {@Name can be used to convert a non local (GMT time) FileTime to a
-     localised TDateTime var.@br
-     @param(FileTime TFileTime in GMT)
-     @returns(TDateTime in local time)
-     @br@br
-     @bold(Remarks:) A TFileTime can be casted to Int64 (number 100-nanosecond
+    {<B>FileTime2DateTime</B> can be used to convert a non local (GMT time) FileTime to a
+     localised TDateTime var.
+     @param FileTime TFileTime in GMT 
+     @returns TDateTime in local time 
+     
+     <B>Remarks:</B>  A TFileTime can be casted to Int64 (number 100-nanosecond
      intervals since January 1, 1601) and vice versa.
      }
     class function FileTime2DateTime(FileTime: TFileTime): TDateTime;
     {@exclude}
     property IdleProcessName: TJwString read GetIdleProcessName;
 
-    {The @Name property can be used to see the Last Session Event that occured.
-     This is usefull if you are listening on multiple event types.@br
+    {The <B>LastEventFlag</B> property can be used to see the Last Session Event that occured.
+     This is usefull if you are listening on multiple event types.
      @seealso(OnSessionEvent)
     }
     property LastEventFlag: DWORD read FLastEventFlag;
 
-    {The @Name event signals that the Server Enumeration thread has finished.@br
-     The Enumerated Servers can be read through the Servers property.@br
-     @br
+    {The <B>OnServersEnumerated</B> event signals that the Server Enumeration thread has finished.
+     The Enumerated Servers can be read through the Servers property.
+     
      Example:
-     @longcode(#
+     <code lang="Delphi">
      procedure TMainForm.OnEnumerateServersDone(Sender: TObject);
      var
        i: Integer;
@@ -554,92 +555,92 @@ type
 
         // Don't free TerminalServer var here!
       end;
-     #)
+     </code>
     }
     property OnServersEnumerated: TNotifyEvent read FOnServersEnumerated write FOnServersEnumerated;
 
-    {The @Name is a generic event which is fired if anything happens that is
+    {The <B>OnSessionEvent</B> is a generic event which is fired if anything happens that is
      session related, like statechange, logon/logoff, disconnect and (re)connect.
-     @br@br
-     The table below shows which Terminal Server event triggers which event:@br
+     
+     The table below shows which Terminal Server event triggers which event:
      @image(.\..\documentation\TJwWTSEvents-Table.png)
     }
     property OnSessionEvent: TNotifyEvent read FOnSessionEvent write FOnSessionEvent;
 
-    {The @Name event is fired when a client connects to a session
+    {The <B>OnSessionConnect</B> event is fired when a client connects to a session
      @seealso(OnSessionEvent Overview of which events are triggered and when)
     }
     property OnSessionConnect: TNotifyEvent read FOnSessionConnect write FOnSessionConnect;
 
-    {The @Name event is fired when a session is created
+    {The <B>OnSessionCreate</B> event is fired when a session is created
      @seealso(OnSessionEvent Overview of which events are triggered and when)
     }
     property OnSessionCreate: TNotifyEvent read FOnSessionCreate write FOnSessionCreate;
 
-    {The @Name event is fired when a session is deleted
+    {The <B>OnSessionDelete</B> event is fired when a session is deleted
      @seealso(OnSessionEvent Overview of which events are triggered and when)
     }
     property OnSessionDelete: TNotifyEvent read FOnSessionDelete write FOnSessionDelete;
 
-    {The @Name event is fired when a session is disconnected
+    {The <B>OnSessionDisconnect</B> event is fired when a session is disconnected
      @seealso(OnSessionEvent Overview of which events are triggered and when)
     }
     property OnSessionDisconnect: TNotifyEvent read FOnSessionDisconnect write FOnSessionDisconnect;
 
-    {The @Name event is fired when when a license is added or deleted using
+    {The <B>OnLicenseStateChange</B> event is fired when when a license is added or deleted using
      License Manager.
      @seealso(OnSessionEvent Overview of which events are triggered and when)
     }
     property OnLicenseStateChange: TNotifyEvent read FOnLicenseStateChange write FOnLicenseStateChange;
 
-    {The @Name event is fired when a client logs on either through the console
+    {The <B>OnSessionLogon</B> event is fired when a client logs on either through the console
      or a session
      @seealso(OnSessionEvent Overview of which events are triggered and when)
     }
     property OnSessionLogon: TNotifyEvent read FOnSessionLogon write FOnSessionLogon;
 
-    {The @Name event is fired when a client logs off either from the console
+    {The <B>OnSessionLogoff</B> event is fired when a client logs off either from the console
      or a session
      @seealso(OnSessionEvent Overview of which events are triggered and when)
     }
     property OnSessionLogoff: TNotifyEvent read FOnSessionLogoff write FOnSessionLogoff;
 
-    {The @Name event is fired when an existing session has been renamed
+    {The <B>OnWinStationRename</B> event is fired when an existing session has been renamed
      @seealso(OnSessionEvent Overview of which events are triggered and when)
     }
     property OnWinStationRename: TNotifyEvent read FOnWinStationRename write FOnWinStationRename;
 
-    {The @Name event is fired when the connectstate of a session has changed
+    {The <B>OnSessionStateChange</B> event is fired when the connectstate of a session has changed
      @seealso(OnSessionEvent Overview of which events are triggered and when)
     }
     property OnSessionStateChange: TNotifyEvent read FOnSessionStateChange write FOnSessionStateChange;
 
-    {@Name contains a TJwWTSProcessList of which each item contains a
+    {<B>Processes</B> contains a TJwWTSProcessList of which each item contains a
      TJwWTSProcess. This processlist contains all enumerated processes
      and their properties such as Process Name, Process Id, Username, Memory
      Usage and so on.
-     @br@br
-     @bold(Remarks:) The Processlist is filled by calling the EnumerateProcesses
+     
+     <B>Remarks:</B>  The Processlist is filled by calling the EnumerateProcesses
      function.
     }
     property Processes: TJwWTSProcessList read FProcesses write FProcesses;
 
-    {@Name the netbios name of the Terminal Server.@br
-     @br
-     @bold(Remarks:) If you want to connect to a Terminal Server locally
+    {<B>Server</B> the netbios name of the Terminal Server.
+     
+     <B>Remarks:</B>  If you want to connect to a Terminal Server locally
      you should not specify the server name. Please note that in the case of a
-     local connection this property @bold(will return the computername))
-     @br@br
+     local connection this property <B>will return the computername</B> )
+     
      Note that Windows XP SP 2 by default does not allow remote
-     RPC connection to Terminal Server (enumerating sessions and processes).@br
+     RPC connection to Terminal Server (enumerating sessions and processes).
      You can change this behaviour by creating the following registry entry
-     on the XP machine:@br
-     @br
-     @longcode(#
+     on the XP machine:
+     
+     <code lang="Delphi">
      HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server
      "AllowRemoteRPC" = REG_DWORD:1
-     #)
-     @br
+     </code>
+     
      Also make sure that the Windows firewall on the client is configured to
      allow File and Print sharing, as well as Remote Desktop.
     }
@@ -647,23 +648,23 @@ type
     {@exclude}
     property ServerHandle: THandle read FServerHandle;
 
-    {@Name contains the list of Enumerated Terminal Servers. 
-	 @bold(May be nil!)
+    {<B>Servers</B> contains the list of Enumerated Terminal Servers. 
+	 <B>May be nil!</B> 
      @seealso(EnumerateServers)
      }
     property Servers: TStringList read GetServers;
 
-    {@Name contains a TJwWTSSessionList of which each item contains a
+    {<B>Sessions</B> contains a TJwWTSSessionList of which each item contains a
      TJwWTSSession. This sessionlist contains all enumerated sessions
      and their properties such as Username, Connection State, Idle Time and so
      on.
-     @br@br
-     @bold(Remarks:) The Sessionlist is filled by calling the EnumerateSessions
+     
+     <B>Remarks:</B>  The Sessionlist is filled by calling the EnumerateSessions
      function.
     }
     property Sessions: TJwWTSSessionList read FSessions write FSessions;
 
-    {@Name shuts down (and optionally restarts) the specified terminal server.@br
+    {<B>Shutdown</B> shuts down (and optionally restarts) the specified terminal server.
      @Param AShutdownFlag can be one of the following values:
      @table(
      @rowHead(  @cell(Value) @cell(Meaning))
@@ -672,15 +673,16 @@ type
       @row(     @cell(WTS_WSD_REBOOT) @cell(Shuts down and then restarts the system on the terminal server. This is equivalent to calling ExitWindowsEx with EWX_REBOOT. The calling process must have the SE_SHUTDOWN_NAME privilege enabled.))
       @row(     @cell(WTS_WSD_SHUTDOWN) @cell(Shuts down the system on the terminal server. This is equivalent to calling the ExitWindowsEx function with EWX_SHUTDOWN. The calling process must have the SE_SHUTDOWN_NAME privilege enabled.))
       @row(     @cell(WTS_WSD_FASTREBOOT) @cell(This value is not supported currently.))
-      )@br
-     @raises(EJwsclWinCallFailedException will be raised if the call fails.)
+      )
+     raises
+ EJwsclWinCallFailedException:  will be raised if the call fails. 
     }
     procedure Shutdown(AShutdownFlag: DWORD);
 
-    {@Name returns the (localised) name of the system user}
+    {<B>SystemUserName</B> returns the (localised) name of the system user}
     property SystemUserName: TJwString read GetSystemUserName;
 
-    {@Name has no predefined meaning. The Tag property is provided for the
+    {<B>Tag</B> has no predefined meaning. The Tag property is provided for the
      convenience of developers. It can be used for storing an additional integer
      value or it can be typecast to any 32-bit value such as a component
      reference or a pointer.
@@ -688,15 +690,15 @@ type
     property Tag: Integer read FTag write FTag;
   end;
 
-  {@Name is a pointer to a TJwTerminalServerList}
+  {<B>PJwTerminalServerList</B> is a pointer to a TJwTerminalServerList}
   PJwTerminalServerList = ^TJwTerminalServerList;
-  {@Abstract(@Name is a List of TJwTerminalServer Objects.)
+  {<B>Abstract</B><B>TJwTerminalServerList</B> is a List of TJwTerminalServer Objects. 
 
    Each item in the list points to a TJwTerminalServer object that can be queried
-   and manipulated.@br
-   The list can be filled by adding TJwTerminalServer instances.@br
+   and manipulated.
+   The list can be filled by adding TJwTerminalServer instances.
    Example:
-   @longcode(#
+   <code lang="Delphi">
    var
      ATerminalServerList : TjwTerminalServerList;
      ATerminalServer : TJwTerminalServer;
@@ -713,7 +715,7 @@ type
      // instances it owns.
      ATerminalServerList.Free;
    end;
-   #)
+   </code>
   }
   TJwTerminalServerList = class(TObjectList)
   protected
@@ -730,29 +732,29 @@ type
     {@exclude}
     destructor Destroy; reintroduce;
 
-    {@Name adds a TerminalServer to the end of the TerminalServerList
-     @returns(returns the index of the inserted object.)
+    {<B>Add</B> adds a TerminalServer to the end of the TerminalServerList
+     @returns returns the index of the inserted object. 
     }
     function Add(ATerminalServer: TJwTerminalServer): Integer;
-    {@Name looks up a Terminal Server in the List by Servername
-     @Param(ServerName The Servername which is to be found)
-     @Param(IgnoreCase Default = True)
-     @Returns(If the server was found a TJwTerminalServer instance is returned.
-     Always check if it's not nil!)
+    {<B>FindByServer</B> looks up a Terminal Server in the List by Servername
+     @Param ServerName The Servername which is to be found 
+     @Param IgnoreCase Default = True 
+     @Returns If the server was found a TJwTerminalServer instance is returned.
+     Always check if it's not nil! 
     }
     function FindByServer(const ServerName: WideString;
       const IgnoreCase: boolean = False): TJwTerminalServer;
 
-    {@Returns(the index of the TerminalServer object in the TerminalServerList.)
+    {@Returns the index of the TerminalServer object in the TerminalServerList. 
     }
     function IndexOf(ATerminalServer: TJwTerminalServer): Integer;
 
-    {@Name adds a TerminalServer to the end of the TerminalServerList
-     @returns(returns the index of the inserted object.)
+    {<B>Insert</B> adds a TerminalServer to the end of the TerminalServerList
+     @returns returns the index of the inserted object. 
     }
     procedure Insert(Index: Integer; ATerminalServer: TJwTerminalServer);
 
-    {The @Name property can be used to access the TerminalServer instances that
+    {The <B>Items[Index</B> property can be used to access the TerminalServer instances that
      are held by the list.
     }
     property Items[Index: Integer]: TJwTerminalServer read GetItem write SetItem; default;
@@ -760,28 +762,28 @@ type
     }
     property Owner: TComponent read FOwner write SetOwner;
 
-    {@Name removes the specified Terminal Server  from the TerminalServerList
+    {<B>Remove</B> removes the specified Terminal Server  from the TerminalServerList
      and if OwnsObjects is true (default) frees the TerminalServer.
-     @returns(The value returned is the index of the object in the Items array
+     @returns The value returned is the index of the object in the Items array
      before it was removed. If the specified object is not found on the list,
-     Remove returns –1.)
+     Remove returns –1. 
     }
     function Remove(ATerminalServer: TJwTerminalServer): Integer;
   end;
 
-   {@Abstract(The @Name Thread waits for Terminal Server Events and notifies the
-    caller by firing Events.)
+   {<B>Abstract</B>The <B>TJwWTSEventThread</B> Thread waits for Terminal Server Events and notifies the
+    caller by firing Events. 
 
-    It's not necessary to manually create an @Name Thread because
+    It's not necessary to manually create an <B>TJwWTSEventThread</B> Thread because
     TJwTerminalServer does this automatically after a successfull call to the
-    EnumerateSessions function.@br
-    @br
-    @Name is Owned by a TJwTerminalServer instance
-    @br@br
-    @bold(Remarks:) @Name uses the WTSWaitSystemEvent API Call which can hang
+    EnumerateSessions function.
+    
+    <B>TJwWTSEventThread</B> is Owned by a TJwTerminalServer instance
+    
+    <B>Remarks:</B>  <B>TJwWTSEventThread</B> uses the WTSWaitSystemEvent API Call which can hang
     on Windows Vista after sending a WTS_FLUSH event. The bug was first
-    corrected in winsta.dll version 6.0.6000.20664.@br
-    @br
+    corrected in winsta.dll version 6.0.6000.20664.
+    
     See also: http://www.remkoweijnen.nl/blog/2008/01/25/using-wtswaitsystemevent/
   }
   TJwWTSEventThread = class(TJwThread)
@@ -794,33 +796,34 @@ type
     procedure DispatchEvent;
   public
 
-    {Call @Name to create a @classname Thread.
-     @Param(CreateSuspended If CreateSuspended is False, Execute is called
+    {Call <B>Create</B> to create a @classname Thread.
+     @Param CreateSuspended If CreateSuspended is False, Execute is called
      immediately. If CreateSuspended is True, Execute won't be called until
-     after Resume is called.)
-     @Param(Owner Specifies the TJwTerminalServer instance that owns the thread)
+     after Resume is called. 
+     @Param Owner Specifies the TJwTerminalServer instance that owns the thread 
     }
     constructor Create(CreateSuspended: Boolean; AOwner: TJwTerminalServer);
 
-    {@raises(EJwsclWinCallFailedException will be raised if WTSWaitSystemEvent
-     failed.)
+    {raises
+ EJwsclWinCallFailedException:  will be raised if WTSWaitSystemEvent
+     failed. 
     }
     procedure Execute; override;
   end;
 
-  {@Abstract(@Name is a Thread that enumerates all Terminal Server in the
-   specified domain.)
+  {<B>Abstract</B><B>TJwWTSEnumServersThread</B> is a Thread that enumerates all Terminal Server in the
+   specified domain. 
 
    The Enumeration is done from a thread because it can take some time to
-   enumerate all server, especially over a slow WAN connection.@br
-   @br
+   enumerate all server, especially over a slow WAN connection.
+   
    The thread is created by calling the EnumerateServers procedure from a
    TJwTerminalServer instance. Although allowed you normally don't create
    a TJwWTSEnumServersThread manually.
-   @br@br
+   
    Enumerated servers are returned by firing the OnServerEnumerated Event
    from the parent TJwTerminalServer instance.
-   @br@br
+   
    A TJwWTSEnumServersThread is owned by a TJwTerminalServer instance.
    }
   TJwWTSEnumServersThread = class(TJwThread)
@@ -840,29 +843,29 @@ type
     {@exclude}
     procedure DispatchEvent;
   public
-    {Call @Name to create a @classname Thread.
-     @Param(CreateSuspended If CreateSuspended is False, Execute is called
+    {Call <B>Create</B> to create a @classname Thread.
+     @Param CreateSuspended If CreateSuspended is False, Execute is called
      immediately. If CreateSuspended is True, Execute won't be called until
-     after Resume is called.)
-     @Param(Owner Specifies the TJwTerminalServer instance that owns the thread)
-     @Param(Domain Specifies the Domain that should be Enumerated. if you want
+     after Resume is called. 
+     @Param Owner Specifies the TJwTerminalServer instance that owns the thread 
+     @Param Domain Specifies the Domain that should be Enumerated. if you want
      to Enumerate the current domain (from a domain member) you can specify an
-     empty string)
+     empty string 
     }
     constructor Create(CreateSuspended: Boolean; Owner: TJwTerminalServer;
       Domain: TJwString);
     procedure Execute; override;
   end;
 
-  {@Name is a pointer to a TJwWTSSession}
+  {<B>PJwWTSSession</B> is a pointer to a TJwWTSSession}
   PJwWTSSession = ^TJwWTSSession;
 
-  {@abstract(@Name is a Class that encapsulates a Terminal Server session and
-   it's properties)
+  {<B>Abstract</B><B>TJwWTSSession</B> is a Class that encapsulates a Terminal Server session and
+   it's properties 
 
    A session is uniquely identified with a SessionID, this is a number
-   between 0 and 65535.@br
-   @br
+   between 0 and 65535.
+   
    A TJwWTSSession is owned by a JTwWTSSessionList.
    }
   TJwWTSSession = class(TObject)
@@ -980,13 +983,13 @@ type
     function GetUserSid : TJwSecurityID;
   private
   public
-    {The @Name constructor creates a TJwWTSSession instance and allocates memory for it
-     @Param(Owner Specifies the TJwTerminalServer instance that owns the session)
-     @Param(SessionId The Session Identifier)
-     @Param(WinStationName The Session Name)
-     @Param(ConnectState The current connection state of the session)
-     @br@br
-     @bold(Remarks:) It's not necessary to manually create a session instance.
+    {The <B>Create</B> constructor creates a TJwWTSSession instance and allocates memory for it
+     @Param Owner Specifies the TJwTerminalServer instance that owns the session 
+     @Param SessionId The Session Identifier 
+     @Param WinStationName The Session Name 
+     @Param ConnectState The current connection state of the session 
+     
+     <B>Remarks:</B>  It's not necessary to manually create a session instance.
      Enumerating sessions with the EnumerateSessions function will create a
      SessionList filled with Sessions.
      @seealso(TJwTerminalServer.EnumerateSessions)
@@ -995,63 +998,63 @@ type
       const SessionId: TJwSessionId; const WinStationName: TJwString;
       const ConnectState: TWtsConnectStateClass);
 
-    {The @Name destructor disposes the Session object.
-     @br@br
-     @bold(Remarks:) Since a session is Owned by a SessionList by default
-     @bold(you should not destroy/free a session manually). The only scenario
+    {The <B>Destroy</B> destructor disposes the Session object.
+     
+     <B>Remarks:</B>  Since a session is Owned by a SessionList by default
+     <B>you should not destroy/free a session manually</B> . The only scenario
      where a sessions would need to be freed is when you manually create a
      sessionlist and specify False for the OwnsObject parameter.
     }
     destructor Destroy; override;
 
-    {@Name returns the the startup application as specified in the
+    {<B>ApplicationName</B> returns the the startup application as specified in the
      Terminal Server client. If no startup application was specified
      an empty string is returned.
-     @br@br
-     @bold(Remarks:) Console sessions always returns empty value.
+     
+     <B>Remarks:</B>  Console sessions always returns empty value.
      }
     property ApplicationName: TJwString read FApplicationName;
 
-    {@Name returns the Client IP Address as string. This is the local IP
+    {<B>ClientAddress</B> returns the Client IP Address as string. This is the local IP
      address of a client as reported by the Terminal Server Client
-     @br@br
-     @bold(Remarks:) Console sessions always returns empty value.
+     
+     <B>Remarks:</B>  Console sessions always returns empty value.
      }
     property ClientAddress: TJwString read FClientAddress;
 
-    {@Name returns the version number of the Terminal Server Client
-     @br@br
-     @bold(Remarks:) Console sessions always returns empty value.
+    {<B>ClientBuildNumber</B> returns the version number of the Terminal Server Client
+     
+     <B>Remarks:</B>  Console sessions always returns empty value.
      @seealso(RemoteAddress)
      @seealso(RemotePort)
      }
      property ClientBuildNumber: DWORD read FClientBuildNumber;
 
-    {@Name returns the version number of the Terminal Server Client
-     @br@br
-     @bold(Remarks:) Console sessions always returns empty value.
+    {<B>ClientDirectory</B> returns the version number of the Terminal Server Client
+     
+     <B>Remarks:</B>  Console sessions always returns empty value.
      }
     property ClientDirectory: TJwString read FClientDirectory;
 
-    {@Name returns a client-specific hardware identifier
-     @br@br
-     @bold(Remarks:) Console sessions always returns empty value.
+    {<B>ClientHardwareId</B> returns a client-specific hardware identifier
+     
+     <B>Remarks:</B>  Console sessions always returns empty value.
      }
     property ClientHardwareId: DWORD read FClientHardwareId;
 
-    {@Name returns the local computer name of the client
-     @br@br
-     @bold(Remarks:) Console sessions always returns empty value.
+    {<B>ClientName</B> returns the local computer name of the client
+     
+     <B>Remarks:</B>  Console sessions always returns empty value.
      }
     property ClientName: TJwString read FClientName;
 
-    {@Name returns a client-specific product identifier.
-     @br@br
-     @bold(Remarks:) Console sessions always returns empty value.
+    {<B>ClientProductId</B> returns a client-specific product identifier.
+     
+     <B>Remarks:</B>  Console sessions always returns empty value.
      }
     property ClientProductId: WORD read FClientProductId;
 
-    {@Name returns a value that indicates the protocol type
+    {<B>ClientProtocolType</B> returns a value that indicates the protocol type
      This is one of the following values:
      @table(
      @rowHead(  @cell(ClientProtocolType) @cell(Meaning))
@@ -1065,7 +1068,7 @@ type
       }
     property ClientProtocolType: WORD read FClientProtocolType;
 
-    {@Name returns a string  that indicates the protocol type
+    {<B>ClientProtocolStr</B> returns a string  that indicates the protocol type
      This is one of the following values:
      @table(
      @rowHead(  @cell(ClientProtocolType) @cell(Value))
@@ -1081,35 +1084,35 @@ type
 
     property ColorDepth: DWORD read FColorDepth;
 
-    {@Name returns the current compression ratio as string with 2 decimals.
+    {<B>CompressionRatio</B> returns the current compression ratio as string with 2 decimals.
      Compression Ratio equals OutgoingCompressBytes / OutgoingBytescompressed
      Console sessions always returns empty value.
-     @br@br
+     
      @seealso(IncomingBytes)
      @seealso(OutgoingBytes)
     }
     property CompressionRatio: TJwString read FCompressionRatio;
 
-    {The @Name function allows you to connect to another Terminal Server session.@br
-     @bold(Remarks:) You can always connect to a session in which you are logged
+    {The <B>Connect</B> function allows you to connect to another Terminal Server session.
+     <B>Remarks:</B>  You can always connect to a session in which you are logged
      on with the same user account. To connect to another user's session, you
-     must have either Full Control or User Access permission.@br
-     @br
+     must have either Full Control or User Access permission.
+     
      You can connect to another session only from within an existing session.
-     You must use the @Name function from within a session to be able to connect
-     to another session.@br
-     @br
+     You must use the <B>Connect</B> function from within a session to be able to connect
+     to another session.
+     
      You can connect to a session only if it is in either an active or
-     disconnected state.@br
-     @br
-     You cannot connect to another session from the console session.@br
-     @br
+     disconnected state.
+     
+     You cannot connect to another session from the console session.
+     
      Note that if you connect to another session your existing session will be
      disconnected.
     }
     function Connect(const Password: WideString): Boolean;
-    {@Name returns the connection state of the session. Which can be one of the
-     following values:@br@br
+    {<B>ConnectState</B> returns the connection state of the session. Which can be one of the
+     following values:
      @table(
      @rowHead(  @cell(Session State) @cell(Description))
       @row(     @cell(WTSActive) @cell(The session is connected, and a user is logged on to the server.))
@@ -1121,50 +1124,51 @@ type
       @row(     @cell(WTSReset) @cell(The session failed to initialize correctly or could not be terminated, and is not available. If this state continues, it indicates a problem with the connection of the session.))
       @row(     @cell(WTSInit) @cell(The session is in the process of initializing.))
       )
-     @br@br
-     @bold(Remarks:) On Windows XP, however, the state for session 0 can be
+     
+     <B>Remarks:</B>  On Windows XP, however, the state for session 0 can be
      misleading because it will be WTSDisconnected even if there is no user
      logged on. To accurately determine if a user has logged on to session 0,
      you can use the Username property
-    @br
+    
     http://support.microsoft.com/kb/307642/en-us
     }
     property ConnectState: TWtsConnectStateClass read FConnectState;
-    {@Name returns a localised connection state string.
+    {<B>ConnectStateStr</B> returns a localised connection state string.
      }
     property ConnectStateStr: TJwString read FConnectStateStr;
 
-    {@Name The most recent client connection time.
+    {<B>ConnectTime</B> The most recent client connection time.
      }
     property ConnectTime: TDateTime read FConnectTime;
 
-    {@Name the time that the TJwWTSSession info was queried. This can be
+    {<B>CurrentTime</B> the time that the TJwWTSSession info was queried. This can be
      used to calculate time differences such as idle time
      }
     property CurrentTime: TDateTime read FCurrentTime;
 
-    {The @Name function disconnects the logged-on user from the specified
+    {The <B>Disconnect</B> function disconnects the logged-on user from the specified
      Terminal Services session without closing the session. The session remains
      attached to the terminal server in the disconnected state and currently
      running applications continue to run. When you attempt to reconnect to the
-     @bold( same server), you are reconnected to the same session from which you
+     <B> same server</B> , you are reconnected to the same session from which you
      disconnected, even if you are reconnecting from a different computer.
      Applications that were left open when you disconnected remain running when
-     you reconnect to the session, with no loss of data.@br@br
+     you reconnect to the session, with no loss of data.
      In NLB (Network Load Balancing) environments the Session Directory
      (starting from Server 2008 this is called TS Session Broker) care of
-     redirecting a user to the server where he has a disconnected session.@br@br
-     @param(bWait Indicates whether the operation is synchronous. Specify TRUE
-     to wait for the operation to complete, or FALSE to return immediately.)
+     redirecting a user to the server where he has a disconnected session.
+     @param bWait Indicates whether the operation is synchronous. Specify TRUE
+     to wait for the operation to complete, or FALSE to return immediately. 
 
-     @raises(EJwsclWinCallFailedException will be raised if the call fails.)
+     raises
+ EJwsclWinCallFailedException:  will be raised if the call fails. 
      }
     procedure Disconnect(bWait: Boolean);
 
-    {@Name the last client disconnection time.
+    {<B>DisconnectTime</B> the last client disconnection time.
     }
     property DisconnectTime: TDateTime read FDisconnectTime;
-    {@Name the domain of the logged-on user
+    {<B>Domain</B> the domain of the logged-on user
     }
     property Domain: TJwString read FDomain;
 
@@ -1175,14 +1179,14 @@ type
     function GetServerHandle: THandle;
     property HorizontalResolution: DWORD read FHorizontalResolution;
 
-    {@Name the elapsed time (relative to CurrentTime) since last user input in
+    {<B>IdleTime</B> the elapsed time (relative to CurrentTime) since last user input in
      the session expressed in the number of 100-nanosecond intervals since
      January 1, 1601 (TFileTime).
-     @br@br
-     @bold(Remarks:) Please note the following remarks about Idle Time:@br
+     
+     <B>Remarks:</B>  Please note the following remarks about Idle Time:
      A disconnected session is Idle since DisconnectTime. A session without a
      user is never idle, usually these are special sessions like Listener,
-     Services or console session.@br
+     Services or console session.
      IdleTimeStr returns a convenient formatted idle time string
      which can be used for displaying. This value is more convenient however for
      calculations such as sorting or comparing idle times.
@@ -1190,7 +1194,7 @@ type
     }
     property IdleTime: Int64 read FIdleTime;
 
-    {@Name the elapsed time (relative to CurrentTime) since last user input in
+    {<B>IdleTimeStr</B> the elapsed time (relative to CurrentTime) since last user input in
      the session as formatted string. The string is formatted according to the
      table below:
      @table(
@@ -1200,8 +1204,8 @@ type
       @row(     @cell(0)    @cell(0)     @cell(any)     @cell(mm))
       @row(     @cell(0)    @cell(0)     @cell(0)       @cell(.))
       )
-     @br@br
-     @bold(Remarks:) Please note the following remarks about Idle Time:@br
+     
+     <B>Remarks:</B>  Please note the following remarks about Idle Time:
      A disconnected session is Idle since DisconnectTime. A session without a
      user is never idle, usually these are special sessions like Listener,
      Services or console session.
@@ -1210,65 +1214,66 @@ type
     }
     property IdleTimeStr: TJwString read FIdleTimeStr;
 
-    {@Name uncompressed Remote Desktop Protocol (RDP) data from the client
+    {<B>IncomingBytes</B> uncompressed Remote Desktop Protocol (RDP) data from the client
      to the server.
-     @bold(Remarks:) This value is not returned for console sessions.
+     <B>Remarks:</B>  This value is not returned for console sessions.
      @seealso(OutgoingBytes)
      @seealso(CompressionRatio)
     }
     property IncomingBytes: DWORD read FIncomingBytes;
 
-    {@Name string containing the name of the initial program that
+    {<B>InitialProgram</B> string containing the name of the initial program that
      Terminal Services runs when the user logs on.
     }
     property InitialProgram: TJwString read FInitialProgram;
 
-    {@Name the time of the last user input in the session.
+    {<B>LastInputTime</B> the time of the last user input in the session.
     }
     property LastInputTime: TDateTime read FLastInputTime;
 
-    {The @Name function logs off a specified Terminal Services session
-     @param(bWait Indicates whether the operation is synchronous. Specify TRUE
-     to wait for the operation to complete, or FALSE to return immediately.)
+    {The <B>Logoff</B> function logs off a specified Terminal Services session
+     @param bWait Indicates whether the operation is synchronous. Specify TRUE
+     to wait for the operation to complete, or FALSE to return immediately. 
 
-     @raises(EJwsclWinCallFailedException will be raised if the call fails.)
+     raises
+ EJwsclWinCallFailedException:  will be raised if the call fails. 
      }
     procedure Logoff(bWait: Boolean);
 
-    {@Name the time that the user logged on to the session in the number
+    {<B>LogonTime</B> the time that the user logged on to the session in the number
      of 100-nanosecond intervals since January 1, 1601 (TFileTime).
      @seealso(LogonTimeStr)
     }
     property LogonTime: Int64 read FLogonTime;
 
-    {@Name the time that the user logged on to the session as a localised
+    {<B>LogonTimeStr</B> the time that the user logged on to the session as a localised
      Date Time string.
      @seealso(LogonTime)
     }
     property LogonTimeStr: TJwString read FLogonTimeStr;
 
-    {@Name of this session object, which can only be a TJwWTSSessionList
+    {<B>Owner</B> of this session object, which can only be a TJwWTSSessionList
     }
     property Owner: TJwWTSSessionList read FOwner write FOwner;
-    {@Name uncompressed RDP data from the server to the client.
-     @br@br
-     @bold(Remarks:) This value is not returned for console sessions.
+    {<B>OutgoingBytes</B> uncompressed RDP data from the server to the client.
+     
+     <B>Remarks:</B>  This value is not returned for console sessions.
      @seealso(IncomingBytes)
      @seealso(CompressionRatio)
     }
     property OutgoingBytes: DWORD read FOutgoingBytes;
 
-    {The @Name function displays a message box on the client desktop.
-     @param(AMessage: string that contains the message to be displayed)
-     @param(ACaption: string that contains the dialog box title.)
-     @param(uType: Specifies the contents and behavior of the message box.
+    {The <B>PostMessage</B> function displays a message box on the client desktop.
+     @param AMessage: string that contains the message to be displayed 
+     @param ACaption: string that contains the dialog box title. 
+     @param uType: Specifies the contents and behavior of the message box.
      This value is typically MB_OK. For a complete list of values, see the
-     uType parameter of the MessageBox function.)
-     @br
-     @returns(If the function fails you can use GetLastError to get extended
-     error information)
-     @br@br
-     @bold(Remarks:) PostMessage does not wait for the user to respond.
+     uType parameter of the MessageBox function. 
+     
+     @returns If the function fails you can use GetLastError to get extended
+     error information 
+     
+     <B>Remarks:</B>  PostMessage does not wait for the user to respond.
      @seealso(SendMessage)
     }
     function PostMessage(const AMessage: TJwString; const ACaption: TJwString;
@@ -1277,55 +1282,55 @@ type
     {@exclude}
     function ProtocolTypeToStr(const AProtocolType: DWORD): TJwString;
 
-    {@Name returns the real IP Address that is connected to the Terminal Server.
-     @br@br
-     @bold(Remarks:) @Name returns the IP address that is actually connected
+    {<B>RemoteAddress</B> returns the real IP Address that is connected to the Terminal Server.
+     
+     <B>Remarks:</B>  <B>RemoteAddress</B> returns the IP address that is actually connected
      to the Terminal Server (as opposed to ClientAddress which returns the
      address as reported by the client which is usually just it's local ip
-     address).@br
-     @Name is the same adddress you will see when you examine netstat output@br
-     @longcode(#
+     address).
+     <B>RemoteAddress</B> is the same adddress you will see when you examine netstat output
+     <code lang="Delphi">
      C:\Documents and Settings\Remko>netstat -n | find /i "3389"
      TCP    192.168.2.2:3389       192.168.2.3:4096       ESTABLISHED
-     #)
+     </code>
      In the output above, 192.168.2.2 is the IP Address of the Terminal Server
      which listens on port 3389. It has currently one Session from Remote IP
-     192.168.2.3 on TCP port 4096. The @Name property is usefull because netstat
-     cannot relate a connection to a Session Id.@br
+     192.168.2.3 on TCP port 4096. The <B>RemoteAddress</B> property is usefull because netstat
+     cannot relate a connection to a Session Id.
      If you want to convert the to IP Address to a sockaddr structure you can
      use the WSAStringToAddress API.
      @seealso(RemotePort)
     }
     property RemoteAddress: TJwString read FRemoteAddress;
 
-    {@Name returns the Remote Port number which is is connected to the
+    {<B>RemotePort</B> returns the Remote Port number which is is connected to the
      Terminal Server. The Terminal Server listens (by default) on port 3389
      but the client connects with a random available port.
-     @Name is the same port number you will see when you examine netstat output@br
-     @longcode(#
+     <B>RemotePort</B> is the same port number you will see when you examine netstat output
+     <code lang="Delphi">
      C:\Documents and Settings\Remko>netstat -n | find /i "3389"
      TCP    192.168.2.2:3389       192.168.2.3:4096       ESTABLISHED
-     #)
+     </code>
      In the output above, 192.168.2.2 is the IP Address of the Terminal Server
      which listens on port 3389. It has currently one Session from Remote IP
-     192.168.2.3 on TCP port 4096. The RemoteAddress and @Name properties are
-     usefull because netstat cannot relate a connection to a Session Id.@br
+     192.168.2.3 on TCP port 4096. The RemoteAddress and <B>RemotePort</B> properties are
+     usefull because netstat cannot relate a connection to a Session Id.
      @seealso(RemoteAddress)
     }
     property RemotePort: WORD read FRemotePort;
 
-    {The @Name function displays a message box on the client desktop.
-     @param(AMessage string that contains the message to be displayed.)
-     @param(ACaption string that contains the dialog box title.)
-     @param(uType Specifies the contents and behavior of the message box.
+    {The <B>SendMessage</B> function displays a message box on the client desktop.
+     @param AMessage string that contains the message to be displayed. 
+     @param ACaption string that contains the dialog box title. 
+     @param uType Specifies the contents and behavior of the message box.
      This value is typically MB_OK. For a complete list of values, see the
-     uType parameter of the MessageBox function.)
-     @param(ATimeOut Specifies the time, in seconds, that the SendMessage
+     uType parameter of the MessageBox function. 
+     @param ATimeOut Specifies the time, in seconds, that the SendMessage
      function waits for the user's response. If the user does not respond within
      the time-out interval, the pResponse parameter returns IDTIMEOUT.
      If the Timeout parameter is zero, WTSSendMessage will wait indefinitely
-     for the user to respond.)
-     @return(@Name returns the user's response, which can be one of the
+     for the user to respond. 
+     @return <B>SendMessage</B> returns the user's response, which can be one of the
      following values:
      @table(
      @rowHead(  @cell(Value) @cell(Meaning))
@@ -1337,40 +1342,40 @@ type
       @row(     @cell(IDYES) @cell(Yes button was selected.))
       @row(     @cell(IDASYNC) @cell(The bWait parameter was FALSE, so the function returned without waiting for a response.))
       @row(     @cell(IDTIMEOUT) @cell(The bWait parameter was TRUE and the time-out interval elapsed.))
-      ))
-     @br
-     @returns(If the function fails you can use GetLastError to get extended
-     error information)
-     @br@br
-     @bold(Remarks:) If you don't need to wait for the user's response you can
+      ) 
+     
+     @returns If the function fails you can use GetLastError to get extended
+     error information 
+     
+     <B>Remarks:</B>  If you don't need to wait for the user's response you can
      use the PostMessage function
      @seealso(PostMessage)
     }
     function SendMessage(const AMessage: TJwString; const ACaption: TJwString;
       const uType: DWORD; const ATimeOut: DWORD): DWORD;
 
-    {@Name the netbios name of the Terminal Server.
-     @br@br
-     @bold(Remarks:) If you want to connect to a Terminal Server locally
+    {<B>Server</B> the netbios name of the Terminal Server.
+     
+     <B>Remarks:</B>  If you want to connect to a Terminal Server locally
      you should not specify the server name. Please note that in the case of a
-     local connection this property @bold(will return the computername))
+     local connection this property <B>will return the computername</B> )
     }
     property Server: TJwString read GetServer;
 
-    {@Name the session identifier@br
-     @br@br
+    {<B>SessionId</B> the session identifier
+     
      There are some reserved SessionId's that serve a special purpose. The
-     following table lists the reserved SessionId's:@br
-     @br
+     following table lists the reserved SessionId's:
+     
      @table(
      @rowHead(  @cell(Value) @cell(Meaning))
       @row(     @cell(0) @cell(Console or Services session, see remarks))
       @row(     @cell(65536) @cell(RDP Listener))
       @row(     @cell(65537) @cell(ICA Listener))
       )
-      @br@br
-      @bold(Remarks:)@br
-      @bold(Console Sessions)@br
+      
+      <B>Remarks:</B> 
+      <B>Console Sessions</B> 
       The system console session is usually identified as session 0 in the
       Session list when you connect to a terminal server. A console session is
       defined as the session you connect to at the physical console of the
@@ -1389,20 +1394,20 @@ type
       in Session 0. The first user logs on to Session 1, and subsequent users
       log on to subsequent sessions. This means that services never run in the
       same session as users’ applications and are therefore protected from
-      attacks that originate in application code.@br
-      @br
-      @bold(Listener Sessions)@br
+      attacks that originate in application code.
+      
+      <B>Listener Sessions</B> 
       Listener sessions are different from regular sessions.
       These sessions listen for and accept new Remote Desktop Protocol (RDP)
       client connections, thereby creating new sessions for the client requests.
       If you have configured more than one connection in Terminal Services
-      Configuration, several listener sessions are available.@br
+      Configuration, several listener sessions are available.
       You have the option to reset a listener session. However, this is not
-      recommended, because doing so @bold(resets all sessions that use the same
-      Terminal Services connection.) Resetting a user's session without warning
-      can result in loss of data at the client.@br
-      @br
-      @bold(Idle sessions)@br
+      recommended, because doing so <B>resets all sessions that use the same
+      Terminal Services connection.</B>  Resetting a user's session without warning
+      can result in loss of data at the client.
+      
+      <B>Idle sessions</B> 
       To optimize the performance of a terminal server, idle sessions are
       initialized by the server before client connections are made.
       These sessions are available to clients for connection.
@@ -1411,31 +1416,31 @@ type
     }
     property SessionId: TJwSessionId read FSessionId;
 
-    {The @Name function starts the remote control of another Terminal Services
+    {The <B>Shadow</B> function starts the remote control of another Terminal Services
      session. You must call this function from a remote session.
-     @Param(Hotkey The virtual-key code that represents the key to press to
+     @Param Hotkey The virtual-key code that represents the key to press to
      stop remote control of the session. The key that is defined in this
      parameter is used with the HotkeyModifiers parameter. Default is VK_MULTIPY
-     (* on the numeric keypad).)
-     @Param(HKModifier The virtual modifier that represents the key to
+     (* on the numeric keypad). 
+     @Param HKModifier The virtual modifier that represents the key to
      press to stop remote control of the session. The virtual modifier is used
-     with the Hotkey parameter. The value can be:@br
+     with the Hotkey parameter. The value can be:
      @table(
      @rowHead(  @cell(Value) @cell(Meaning))
       @row(     @cell(MOD_SHIFT) @cell(The SHIFT key))
       @row(     @cell(MOD_CONTROL) @cell(The CTRL key))
       @row(     @cell(MOD_ALT) @cell(The ALT key))
-     ))@br
-     @Return(If the function fails, the return value is zero. To get extended
-     error information, call GetLastError)
-     @br@br
-     @bold(Remarks:) By default the console session cannot be shadowed. You can
+     ) 
+     @Return If the function fails, the return value is zero. To get extended
+     error information, call GetLastError 
+     
+     <B>Remarks:</B>  By default the console session cannot be shadowed. You can
      change this by modifying the following registry keys:
-     @longcode(#
+     <code lang="Delphi">
      HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\Console
      "fInheritShadow" = REG_DWORD:1
      "Shadow" = REG_DWORD:1
-     #)
+     </code>
      Where Shadow can be one of the TJwShadowMode values.
      @seealso(ShadowInformation)
      @seealso(TJwShadowMode)
@@ -1444,12 +1449,12 @@ type
     function Shadow(const Hotkey: DWORD = VK_MULTIPLY;
       const HKModifier: DWORD = MOD_CONTROL): Boolean;
 
-    {@Name returns information about the Shadow State and Shadow Mode of
+    {<B>ShadowInformation</B> returns information about the Shadow State and Shadow Mode of
     a session.
-    @br
+    
     Shadow State shows if the session is shadowing another session or is being
     shadowed by another session.
-    @br@br
+    
     Shadow Mode queries the shadow permissions for this session.
     @seealso(Shadow)
     @seealso(TJwShadowMode)
@@ -1457,11 +1462,11 @@ type
     }
     property ShadowInformation: TJwWTSSessionShadow read FShadow;
 
-    {@Name the name of the user associated with the session.
+    {<B>Username</B> the name of the user associated with the session.
     }
     property Username: TJwString read FUsername;
 
-    {@Name returns the token of the session.
+    {<B>Token</B> returns the token of the session.
      This call needs the TCB privilege and the process must run under
      SYSTEM account; otherwise EJwsclPrivilegeCheckException,
      EJwsclWinCallFailedException is raised.
@@ -1469,23 +1474,23 @@ type
     }
     property Token : TJwSecurityToken read GetToken;
 
-    {@Name returns the logged on User of the session.
+    {<B>UserSid</B> returns the logged on User of the session.
      This call needs the TCB privilege and the process must run under
      SYSTEM account; otherwise EJwsclPrivilegeCheckException,
-     EJwsclWinCallFailedException is raised.@br
-     @br
+     EJwsclWinCallFailedException is raised.
+     
      The returned token is the user's primary access token which can be
      passed directly to CreateProcessAsUser in order to launch a process in
-     the user's Session.@br
-     @br@br
-     @bold(Remarks:) The returned value is cached and must not be freed!@br
+     the user's Session.
+     
+     <B>Remarks:</B>  The returned value is cached and must not be freed!
      If the value cannot be obtained the return value is @nil.
     }
     property UserSid : TJwSecurityID read GetUserSid;
 
     property VerticalResolution: DWORD read FVerticalResolution;
 
-    {WinStationDriver Flag (@Name) returns a value indicating the protocol and
+    {WinStationDriver Flag (<B>WdFlag</B>) returns a value indicating the protocol and
      connection type. It's usefull for easy determination of console session.
      Possible values:
      @table(
@@ -1498,7 +1503,7 @@ type
     }
     property WdFlag: DWORD read FWdFlag;
 
-    {WinStationDriver Name (@Name) returns a value indicating the protocol and
+    {WinStationDriver Name (<B>WinStationDriverName</B>) returns a value indicating the protocol and
      protocol type.
      Known Microsoft values:
      @table(
@@ -1517,33 +1522,33 @@ type
     }
     property WinStationDriverName: TJwString read FWdName;
 
-    {@Name returns the session name.
-     @br@br
-     @bold(Remarks:) Despite its name, specifying this property does not return
+    {<B>WinStationName</B> returns the session name.
+     
+     <B>Remarks:</B>  Despite its name, specifying this property does not return
      the window station name. Rather, it returns the name of the Terminal
-     Services session.@br
-     For RDP this will be something like RDP-Tcp#023@br
+     Services session.
+     For RDP this will be something like RDP-Tcp#023
      For ICA this will be something like ICA-tcp#014
          }
     property WinStationName: TJwString read FWinStationName;
 
-    {@Name the default directory used when launching the initial program.}
+    {<B>WorkingDirectory</B> the default directory used when launching the initial program.}
     property WorkingDirectory: TJwString read FWorkingDirectory;
 
   end;
 
-  {@Name is a pointer to a TJwWTSSessionList}
+  {<B>PJwWTSSessionList</B> is a pointer to a TJwWTSSessionList}
   PJwWTSSessionList = ^TJwWTSSessionList;
-  {@Abstract(@Name is a List of all Sessions running on the Terminal Server
-   and their properties)
+  {<B>Abstract</B><B>TJwWTSSessionList</B> is a List of all Sessions running on the Terminal Server
+   and their properties 
 
    Each item in the list points to a TJwWTSSession object that can be queried
-   and manipulated.@br
+   and manipulated.
    The list is filled by calling the EnumerateSessions function of the owning
-   TJwTerminalServer instance.@br
-   @br
+   TJwTerminalServer instance.
+   
    Example:
-   @longcode(#
+   <code lang="Delphi">
    var
      ATerminalServer: TJwTerminalServer;
      i: Integer;
@@ -1575,7 +1580,7 @@ type
      // Free Memory
      ATerminalServer.Free;
    end;
-   #)
+   </code>
   }
   TJwWTSSessionList = class(TObjectList)
   protected
@@ -1589,46 +1594,46 @@ type
     procedure SetOwner(const Value: TJwTerminalServer);
   public
 
-    {The @Name destructor destroys the @Classname instance.@br
+    {The <B>Destroy</B> destructor destroys the @Classname instance.
      Note that it is not necessary to manually free a @Classname as it will be
      freed when the TJwTerminalServer instance that owns the @Classname
      (Owner property) is freed.
-     @br@br
-     @bold(Remarks:) If you free a @Classname be sure to also set it to nil to
+     
+     <B>Remarks:</B>  If you free a @Classname be sure to also set it to nil to
      prevent the Owner to free it as well (which would produce an Access
      Violation).
     }
     destructor Destroy; reintroduce;
 
-    {@Name adds a Session to the end of the Sessionlist
-     @returns(returns the index of the inserted object.)
+    {<B>Add</B> adds a Session to the end of the Sessionlist
+     @returns returns the index of the inserted object. 
     }
     function Add(ASession: TJwWTSSession): Integer;
 
-    {@Name loops through the @Classname and returns the Session associated
-     with the requested SessionId.@br
-     @Param(SessionId The Session Identifier)
-     @Returns(TJwWTSSession)
-     @br@br
-     @bold(Remarks:) If the SessionId was not found return value will be @nil.
+    {<B>FindBySessionId</B> loops through the @Classname and returns the Session associated
+     with the requested SessionId.
+     @Param SessionId The Session Identifier 
+     @Returns TJwWTSSession 
+     
+     <B>Remarks:</B>  If the SessionId was not found return value will be @nil.
     }
     function FindBySessionId(const SessionId: DWORD): TJwWTSSession;
 
-    {@Name loops through the @Classname and returns the first Session associated
-     with the requested Username which is compared case insensitive.@br
-     @Param(Username The windows username)
-     @Returns(TJwWTSSession)
-     @br@br
-     @bold(Remarks:) If the Username was not found return value will be @nil.
+    {<B>FindByUsername</B> loops through the @Classname and returns the first Session associated
+     with the requested Username which is compared case insensitive.
+     @Param Username The windows username 
+     @Returns TJwWTSSession 
+     
+     <B>Remarks:</B>  If the Username was not found return value will be @nil.
     }
     function FindByUsername(const Username: TJwString): TJwWTSSession;
 
 
-    {(@Name returns an enumerator that can be used to iterate through
+    {(<B>GetEnumerator</B> returns an enumerator that can be used to iterate through
      the image list collection with Delphi's for in loop (Delphi 2005 and
-     higher).@br
-     @br
-     @longcode(#
+     higher).
+     
+     <code lang="Delphi">
      var
        ATerminalServer: TJwTerminalServer;
        Session: TJwWTSSession;
@@ -1668,22 +1673,22 @@ type
        ATerminalServer.Free;
 
      end;
-     #)
+     </code>
     }
     function GetEnumerator: TJwSessionsEnumerator;
 
 
-    {@Returns(the index of the Session object in the SessionList.)
+    {@Returns the index of the Session object in the SessionList. 
     }
     function IndexOf(ASession: TJwWTSSession): Integer;
 
-    {@Name Adds an object to the list at a specified position
+    {<B>Insert</B> Adds an object to the list at a specified position
     }
     procedure Insert(Index: Integer; ASession: TJwWTSSession);
 
-    {The @Name properties gives access to a Session and it's properties@br
+    {The <B>Items[Index</B> properties gives access to a Session and it's properties
      Example:
-     @longcode(#
+     <code lang="Delphi">
      var
        ATerminalServer: TJwTerminalServer;
        i: Integer;
@@ -1715,30 +1720,30 @@ type
        // Free Memory
        ATerminalServer.Free;
      end;
-     #)
+     </code>
     }
     property Items[Index: Integer]: TJwWTSSession read GetItem write SetItem; default;
 
-    {@Name Specifies the TJwTerminalServer instance that owns the @Classname
+    {<B>Owner</B> Specifies the TJwTerminalServer instance that owns the @Classname
     }
     property Owner: TJwTerminalServer read FOwner write SetOwner;
 
-    {@Name removes the specified Session from the SessionList and if
+    {<B>Remove</B> removes the specified Session from the SessionList and if
      OwnsObjects is true (default) frees the Session.
-     @returns(The value returned is the index of the object in the Items array
+     @returns The value returned is the index of the object in the Items array
      before it was removed. If the specified object is not found on the list,
-     Remove returns –1.)
+     Remove returns –1. 
     }
     function Remove(ASession: TJwWTSSession): Integer;
   end;
 
-  {@Abstract(@Name is the class that encapsulates a process that is running on
-   a Terminal Server.)
+  {<B>Abstract</B><B>TJwWTSProcess</B> is the class that encapsulates a process that is running on
+   a Terminal Server. 
 
    A process is uniquely identified by the Process Id (PID) in combination with
-   it's Creation Time (the OS reused PID's).@br
-   @br@br
-   A @Name is owned by a TJwWTSProcessList.
+   it's Creation Time (the OS reused PID's).
+   
+   A <B>TJwWTSProcess</B> is owned by a TJwWTSProcessList.
    }
   TJwWTSProcess = class(TObject)
   protected
@@ -1780,40 +1785,40 @@ type
     function GetUserSid : TJwSecurityID;
     function GetServerHandle: THandle; virtual;
   public
-    {@Name create a TJwWTSProcess instance.
-     @Param(Owner Specifies the TJwTerminalServer instance that owns the process.)
-     @Param(SessionId The Session Identifier.)
-     @Param(ProcessId The Process Identifier.)
-     @Param(ProcessName The Process Name.)
-    {@Param(Username the name of the user associated with the process.)
+    {<B>Create</B> create a TJwWTSProcess instance.
+     @Param Owner Specifies the TJwTerminalServer instance that owns the process. 
+     @Param SessionId The Session Identifier. 
+     @Param ProcessId The Process Identifier. 
+     @Param ProcessName The Process Name. 
+    {@Param Username the name of the user associated with the process. 
     }
     constructor Create(const Owner: TJwWTSProcessList;
       const SessionId: TJwSessionId; const ProcessID: TJwProcessId;
       const ProcessName: TJwString; const Username: TJwString);
     destructor Destroy; override;
   public
-    {The @Name function terminates the specified process on the specified
+    {The <B>Terminate</B> function terminates the specified process on the specified
      terminal server.
     }
     function Terminate: boolean; overload;
-    {The @Name function terminates the specified process on the specified
+    {The <B>Terminate</B> function terminates the specified process on the specified
      terminal server.
-     @Param(dwExitCode Specifies the exit code for the terminated process.)
+     @Param dwExitCode Specifies the exit code for the terminated process. 
     }
     function Terminate(const dwExitCode: DWORD): boolean; overload;
   public
-   {@Name specifies the TJwTerminalServer instance that owns the session)
+   {<B>Owner</B> specifies the TJwTerminalServer instance that owns the session)
     }
     property Owner: TJwWTSProcessList read FOwner write FOwner;
-    {@Name the session identifier
+    {<B>SessionId</B> the session identifier
     }
     property SessionId: TJwSessionId read FSessionId;
-    {@Name the elapsed time since the process was created in
+    {<B>ProcessAge</B> the elapsed time since the process was created in
      100-nanosecond intervals since January 1, 1601 (TFileTime).
      @seealso(ProcessAgeStr)
     }
     property ProcessAge: Int64 read FProcessAge;
-    {@Name the elapsed time since the process was created as formatted
+    {<B>ProcessAgeStr</B> the elapsed time since the process was created as formatted
      string. The string is formatted according to the table below:
      @table(
      @rowHead(  @cell(days) @cell(hours) @cell(minutes) @cell(value))
@@ -1826,106 +1831,106 @@ type
     }
     property ProcessAgeStr: TJwString read FProcessAgeStr;
 
-    {@Name the total CPU Time (Usertime + Kerneltime) for the given process
-     in 100-nanosecond intervals since January 1, 1601 (TFileTime).@br
-     @br@br
-     @bold(Remarks:) This value matches the CPU Time column in Task Manager.
+    {<B>ProcessCPUTime</B> the total CPU Time (Usertime + Kerneltime) for the given process
+     in 100-nanosecond intervals since January 1, 1601 (TFileTime).
+     
+     <B>Remarks:</B>  This value matches the CPU Time column in Task Manager.
      @seealso(ProcessCPUTimeStr)
     }
     property ProcessCPUTime: Int64 read FProcessCPUTime;
 
-    {@Name the total CPU Time (Usertime + Kerneltime) for the given process
+    {<B>ProcessCPUTimeStr</B> the total CPU Time (Usertime + Kerneltime) for the given process
      as formatted string. (On Delphi 7 and higher this is a localised string
-     for older version it is fixed at hh:mm)@br
-     @br@br
-     @bold(Remarks:) This value matches the CPU Time column in Task Manager.
+     for older version it is fixed at hh:mm)
+     
+     <B>Remarks:</B>  This value matches the CPU Time column in Task Manager.
      @seealso(ProcessCPUTime)
     }
     property ProcessCPUTimeStr: TJwString read FProcessCPUTimeStr;
 
-    {@Name the Process Creation Time formatted as localised string.
+    {<B>ProcessCreateTime</B> the Process Creation Time formatted as localised string.
     }
     property ProcessCreateTime: TJwString read FProcessCreateTime;
 
-    {@Name the Process Identifier or PID
+    {<B>ProcessId</B> the Process Identifier or PID
     }
     property ProcessId: TJwProcessId read FProcessId;
 
-    {@Name the Process Name@br
-     @br
-     @bold(Remarks:) Windows XP (at least SP2) has the following bug:@br
+    {<B>ProcessName</B> the Process Name
+     
+     <B>Remarks:</B>  Windows XP (at least SP2) has the following bug:
      The Process Name is cut off at 18 characters for process on the local
      machine and at 15 characters for remote servers (even if the remote server
-     is Windows Server 2003 which does not suffer from this bug).@br
+     is Windows Server 2003 which does not suffer from this bug).
 
     }
     property ProcessName: TJwString read FProcessName;
 
-    {@Name the Amount of memory in Bytes used by the process
-     @br@br
-     @bold(Remarks:) This value matches the Mem Usage column in Task Manager.
+    {<B>ProcessMemUsage</B> the Amount of memory in Bytes used by the process
+     
+     <B>Remarks:</B>  This value matches the Mem Usage column in Task Manager.
     }
     property ProcessMemUsage: DWORD read FProcessMemUsage;
 
-    {@Name the Amount of Virtual memory in Bytes used by the process
-     @br@br
-     @bold(Remarks:) This value matches the VM Size column in Task Manager.
+    {<B>ProcessVMSize</B> the Amount of Virtual memory in Bytes used by the process
+     
+     <B>Remarks:</B>  This value matches the VM Size column in Task Manager.
     }
     property ProcessVMSize: DWORD read FProcessVMSize;
 
-    {@Name the netbios name of the Terminal Server.
-     @br@br
-     @bold(Remarks:) If you want to connect to a Terminal Server locally
+    {<B>Server</B> the netbios name of the Terminal Server.
+     
+     <B>Remarks:</B>  If you want to connect to a Terminal Server locally
      you should not specify the server name. Please note that in the case of a
-     local connection this property @bold(will return the computername))
+     local connection this property <B>will return the computername</B> )
     }
     property Server: TJwString read GetServer;
 
-    {@Name returns the token of the session.
+    {<B>Token</B> returns the token of the session.
      The returned value is cached and must not be freed!
      If the value cannot be obtained the return value is nil.
-     @br@br
-     @bold(Remarks:) In order to obtain the Token the SE_DEBUG_NAME privilege
+     
+     <B>Remarks:</B>  In order to obtain the Token the SE_DEBUG_NAME privilege
      is enabled, if this fails EJwsclPrivilegeException will be raised.
     }
     property Token : TJwSecurityToken read GetToken;
 
-    {@Name returns a JwsclSid.TJwSecurityID instance pointing to the SID of the
-     user that is associated with the process.@br
-     @br
-     @bold(Remarks:) The returned value is cached and must not be freed!
+    {<B>UserSid</B> returns a JwsclSid.TJwSecurityID instance pointing to the SID of the
+     user that is associated with the process.
+     
+     <B>Remarks:</B>  The returned value is cached and must not be freed!
      If the value cannot be obtained the return value is nil.
     }
     property UserSid : TJwSecurityID read GetUserSid;
 
-    {@Name the name of the user associated with the process.
+    {<B>Username</B> the name of the user associated with the process.
     }
     property Username: TJwString read FUsername;
 
-    {@Name returns the session name.
-     @br@br
-     @bold(Remarks:) Despite its name, specifying this property does not return
+    {<B>WinStationName</B> returns the session name.
+     
+     <B>Remarks:</B>  Despite its name, specifying this property does not return
      the window station name. Rather, it returns the name of the Terminal
-     Services session.@br
-     For RDP this will be something like RDP-Tcp#023@br
+     Services session.
+     For RDP this will be something like RDP-Tcp#023
      For ICA this will be something like ICA-tcp#014
     }
     property WinStationName: TJwString read FWinStationname;
   end;
 
-  {@Name is a pointer to a TJwWTSProcessList}
+  {<B>PJwWTSProcessList</B> is a pointer to a TJwWTSProcessList}
   PJwWTSProcessList = ^TJwWTSProcessList;
 
-  {@Abstract(@Name is a List of all Processes running on the Terminal Server
-   and their properties)
+  {<B>Abstract</B><B>TJwWTSProcessList</B> is a List of all Processes running on the Terminal Server
+   and their properties 
 
    Each item in the list points to a TJwWTSProcess object that can be queried
-   and manipulated.@br
+   and manipulated.
    The list is filled by calling the EnumerateProcesses function of the owning
-   TJwTerminalServer instance.@br
-   @br
+   TJwTerminalServer instance.
+   
    Example:
-   @longcode(#
+   <code lang="Delphi">
    var
      ATerminalServer: TJwTerminalServer;
      i: Integer;
@@ -1957,7 +1962,7 @@ type
      // Free Memory
      ATerminalServer.Free;
    end;
-   #)
+   </code>
   }
   TJwWTSProcessList = class(TObjectList)
   protected
@@ -1970,17 +1975,17 @@ type
     {@exclude}
     procedure SetOwner(const Value: TJwTerminalServer);
   public
-    {@Name adds a Process to the end of the Processlist
-     @returns(returns the index of the inserted object.)
+    {<B>Add</B> adds a Process to the end of the Processlist
+     @returns returns the index of the inserted object. 
     }
     function Add(AProcess: TJwWTSProcess): Integer;
 
 
-    {@Name returns an enumerator that can be used to iterate through
+    {<B>GetEnumerator</B> returns an enumerator that can be used to iterate through
      the image list collection with Delphi's for in loop (Delphi 2005 and
-     higher).@br
-     @br
-     @longcode(#
+     higher).
+     
+     <code lang="Delphi">
      var
        ATerminalServer: TJwTerminalServer;
        Process: TJwWTSProcess;
@@ -2020,22 +2025,22 @@ type
        ATerminalServer.Free;
 
      end;
-     #)
+     </code>
     }
     function GetEnumerator: TJwProcessEnumerator;
 
 
-    {@Returns(the index of the Process object in the ProcessList.)
+    {@Returns the index of the Process object in the ProcessList. 
     }
     function IndexOf(AProcess: TJwWTSProcess): Integer;
 
-    {@Name Adds an object to the list at a specified position
+    {<B>Insert</B> Adds an object to the list at a specified position
     }
     procedure Insert(Index: Integer; AProcess: TJwWTSProcess);
 
-    {The @Name properties gives access to a Process and it's properties@br
+    {The <B>Items[Index</B> properties gives access to a Process and it's properties
      Example:
-     @longcode(#
+     <code lang="Delphi">
      var
        ATerminalServer: TJwTerminalServer;
        i: Integer;
@@ -2067,24 +2072,24 @@ type
        // Free Memory
        ATerminalServer.Free;
      end;
-     #)
+     </code>
     }
     property Items[Index: Integer]: TJwWTSProcess read GetItem write SetItem; default;
 
-    {@Name specifies the TJwTerminalServer instance that owns the ProcessList
+    {<B>Owner</B> specifies the TJwTerminalServer instance that owns the ProcessList
     }
     property Owner: TJwTerminalServer read FOwner write SetOwner;
 
-    {@Name removes the specified Session from the SessionList and if
+    {<B>Remove</B> removes the specified Session from the SessionList and if
      OwnsObjects is true (default) frees the Session.
-     @returns(The value returned is the index of the object in the Items array
+     @returns The value returned is the index of the object in the Items array
      before it was removed. If the specified object is not found on the list,
-     Remove returns –1.)
+     Remove returns –1. 
     }
     function Remove(AProcess: TJwWTSProcess): Integer;
   end;
 
-  {@Name indicates the Shadow State of a session}
+  {<B>TJwShadowState</B> indicates the Shadow State of a session}
   TJwShadowState =
     (
      {The session is not Shadowing or Being Shadowed}
@@ -2095,7 +2100,7 @@ type
      ssBeingShadowed
   );
 
-  {@Name indicates the Shadow Permissions of a session}
+  {<B>TJwShadowMode</B> indicates the Shadow Permissions of a session}
   TJwShadowMode = (
     {The sessions cannot be shadowed}
     smNoneAllowed,
@@ -2109,10 +2114,10 @@ type
     smViewOnlyWithoutPermission
   );
 
-  {@Abstract(@Name class gives access to the ShadowState and Shadowmode of a
-   session.)
+  {<B>Abstract</B><B>TJwWTSSessionShadow</B> class gives access to the ShadowState and Shadowmode of a
+   session. 
 
-   @br@bold(Remarks:) Please note that changing the shadow mode with the SetShadow
+   <B>Remarks:</B>  Please note that changing the shadow mode with the SetShadow
    function does not take affect until the sessions has been disconnected
    and reconnected.
    @seealso(TJwShadowMode)
@@ -2134,15 +2139,15 @@ type
     {@exclude}
     procedure UpdateShadowInformation(const Modify : Boolean);
   public
-    {The @Name constructor creates an @ClassName instance.
+    {The <B>Create</B> constructor creates an @ClassName instance.
     }
     constructor Create(AOwner: TJwWTSSession);
 
-    {The @Name property indicates the ShadowState of the Session
+    {The <B>ShadowState</B> property indicates the ShadowState of the Session
     }
     property ShadowState: TJwShadowState read GetShadowState;
 
-    {The @Name property indicates the ShadowMode of the Session
+    {The <B>ShadowMode</B> property indicates the ShadowMode of the Session
     }
     property ShadowMode: TJwShadowMode read GetShadowMode write SetShadowMode;
   end;

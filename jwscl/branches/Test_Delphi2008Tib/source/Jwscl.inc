@@ -1,7 +1,7 @@
 {Jedi Windows Security Code Library Header File
-Do not add pasdoc comments into this file!}
+Do not add DocOMatic comments into this file!}
 
-//Freepascal compability mode
+//Freepascal compability mode (not fully supported)
 {.$DEFINE FPC}
 
 //use JEDI Component Library
@@ -19,8 +19,8 @@ Of course they will fail if Vista stuff is called on them.
 }
 {$DEFINE VISTA}
 
-{.$INCLUDE Compilers.inc}
-{$I .\..\..\..\jwapi\trunk\common\jedi.inc}
+//adds compiler version directives
+{$I jedi.inc}
 
 {$IFDEF FPC}
 {$mode delphi}{.$H+}

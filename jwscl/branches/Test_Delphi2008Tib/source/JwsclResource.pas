@@ -1,7 +1,7 @@
-{@abstract(Contains resource strings used by JSWCL)
+{<B>Abstract</B>Contains resource strings used by JSWCL 
 @author(Christian Wimmer)
-@created(03/23/2007)
-@lastmod(11/19/2007)
+<B>Created:</B>03/23/2007 
+<B>Last modification:</B>11/19/2007 
 
 Project JEDI Windows Security Code Library (JWSCL)
 
@@ -523,7 +523,7 @@ const
 
   RsUNCryptProvider = 'JwsclCryptProvider.pas';
 
-{@Name converts a delphi resourcestring into a resource identifier.
+{<B>GetResourceStringIdentifier</B> converts a delphi resourcestring into a resource identifier.
 Use @<ResourcestringName> as parameter rs.
 
 The function cannot fail for correct delphi resourcestring identifiers.

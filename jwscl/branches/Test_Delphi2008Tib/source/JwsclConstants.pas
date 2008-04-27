@@ -1,8 +1,8 @@
 {
-@abstract(Contains constants that are used by the units of JWSCL)
+<B>Abstract</B>Contains constants that are used by the units of JWSCL 
 @author(Christian Wimmer (DelphiSecurityLibrary@teamchris.info))
-@created(03/23/2007)
-@lastmod(09/10/2007)
+<B>Created:</B>03/23/2007 
+<B>Last modification:</B>09/10/2007 
 
 Project JEDI Windows Security Code Library (JWSCL)
 
@@ -105,7 +105,7 @@ const
 
   JwAllSecurityAccess = READ_CONTROL or WRITE_DAC or WRITE_OWNER or SYNCHRONIZE;
 
-    {@Name is used as an additional constant for GetSystemMetrics
+    {<B>SM_SERVERR2</B> is used as an additional constant for GetSystemMetrics
      to detect the second release of Win2003
     }
   SM_SERVERR2 = 98;
@@ -126,7 +126,7 @@ const
   cOsVista   = 10; //The system is a Vista
   cOsWin2008 = 11; //The system is a 2008 Server (tested with RC)
 
-  {@Name contains the windows version as text}
+  {<B>sOSVerString</B> contains the windows version as text}
   sOSVerString: array[-1..15] of TJwString =
     ('Unknown',
     'Windows 95',
@@ -150,7 +150,7 @@ const
 
 
 
-  {@Name can be used in TJwSecurityDescriptor.getStringSid as the parameter value to
+  {<B>ALL_SECURITY_INFORMATION</B> can be used in TJwSecurityDescriptor.getStringSid as the parameter value to
    get all SID information at once.
    This value is defined as zero and also as a or combination of the given values.
   }
@@ -162,15 +162,15 @@ const
     LABEL_SECURITY_INFORMATION;
 
 
-  //@Name defines a LUID structure that is invalid
+  //<B>LUID_INVALID</B> defines a LUID structure that is invalid
   LUID_INVALID: TLuid = (LowPart: 0; HighPart: -1);
-  //@Name defines a LUID structure that is undefined
+  //<B>LUID_NULL</B> defines a LUID structure that is undefined
   LUID_NULL: TLuid = (LowPart: 0; HighPart: 0);
 
-  //@Name defines a Luid_and_attributes structure that is invalid
+  //<B>LUID_A_INVALID</B> defines a Luid_and_attributes structure that is invalid
   LUID_A_INVALID: TLuidAndAttributes =
     (Luid: (LowPart: 0; HighPart: -1); Attributes: 0);
-  //@Name defines a Luid_and_attributes structure that is undefined
+  //<B>LUID_A_NULL</B> defines a Luid_and_attributes structure that is undefined
   LUID_A_NULL: TLuidAndAttributes =
     (Luid: (LowPart: 0; HighPart: 0); Attributes: 0);
 
@@ -1444,7 +1444,7 @@ const
 
 
 
-{@Name translate all the rights mapping arrays using the resource.
+{<B>JwInitLocalizedMappings</B> translate all the rights mapping arrays using the resource.
 
 // user language or neutral if not found
 // JwInitLocalizedMappings(PRIMARYLANGID(GetUserDefaultUILanguage),
@@ -1461,9 +1461,9 @@ const
 //  JwInitLocalizedMappings(LANG_NEUTRAL, SUBLANG_SYS_DEFAULT);
 //  JwInitLocalizedMappings(0,0);
 
-@param(PrimaryLanguage defines the primary language id)
-@param(SubLanguage defines the primary language id)
-@param(Inst defines the resource source)
+@param PrimaryLanguage defines the primary language id 
+@param SubLanguage defines the primary language id 
+@param Inst defines the resource source 
 
 }
 procedure JwInitLocalizedMappings(PrimaryLanguage,

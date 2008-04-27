@@ -1,8 +1,8 @@
 {
-@abstract(This unit hosts utilty functions.)
+<B>Abstract</B>This unit hosts utilty functions. 
 @author(Christian Wimmer)
-@created(03/23/2007)
-@lastmod(09/10/2007)
+<B>Created:</B>03/23/2007 
+<B>Last modification:</B>09/10/2007 
 
 Project JEDI Windows Security Code Library (JWSCL)
 
@@ -72,7 +72,7 @@ uses
 
 
 type
-  {@Name defines a thread base class
+  {<B>TJwThread</B> defines a thread base class
   which offers a name for the thread.
   Override Execute and call it at first
   to have any effect.
@@ -86,20 +86,20 @@ type
   protected
     FTerminatedEvent: THandle;
   public
-    {@Name is the main execution procedure of thread.
+    {<B>Execute</B> is the main execution procedure of thread.
      Override it and call it at first.
     }
     procedure Execute; override;
   public
-    {@Name create a thread instance.
-     @param(CreateSuspended defines whether the thread is created
-      and commenced immediately (false) or suspended (true).)
-     @param(Name defines the thread's name)
+    {<B>Create</B> create a thread instance.
+     @param CreateSuspended defines whether the thread is created
+      and commenced immediately (false) or suspended (true). 
+     @param Name defines the thread's name 
      }
     constructor Create(const CreateSuspended: Boolean; const Name: AnsiString);
     destructor Destroy; override;
 
-    {@Name sets or gets the threads name.
+    {<B>Name</B> sets or gets the threads name.
      The name is retrieved from internal variable. Changing the thread's name
      using foreign code does not affect this property.
     }
@@ -125,10 +125,10 @@ type
     property Count : Cardinal read GetCount;
   end;
 
-{@Name calls GlobalFree on parameter hMem and sets it to zero (0).}
+{<B>JwGlobalFreeAndNil</B> calls GlobalFree on parameter hMem and sets it to zero (0).}
 procedure JwGlobalFreeAndNil(var hMem: HGLOBAL);
 
-{@Name creates a managed memory handle by LocalAlloc.
+{<B>JwLocalAllocMem</B> creates a managed memory handle by LocalAlloc.
 Some memory leak managers do not recognize leaks created by
 LocalAlloc and GlobalAlloc. Thus we create for them a GetMem
 memory block.
@@ -145,13 +145,14 @@ This behavior is rare but the API documentation will (mostly) say it.
 Refer to MSDN documentation for more information.}
 function JwLocalAllocMem(uFlags: UINT; uBytes: SIZE_T): HLOCAL;
 
-{@Name frees a managed LocalAlloc handle created by JwLocalAllocMem.
+{<B>JwLocalFreeMem</B> frees a managed LocalAlloc handle created by JwLocalAllocMem.
 The given handle will be set to 0.
 Refer to MSDN documentation for more information.
-@raises(EInvalidPointer if the given handle was not created by JwLocalAllocMem).}
+raises
+ EInvalidPointer:  if the given handle was not created by JwLocalAllocMem .}
 function JwLocalFreeMem(var hMem: HLOCAL): HLOCAL;
 
-{@Name creates a managed memory handle by LocalAlloc.
+{<B>JwGlobalAllocMem</B> creates a managed memory handle by LocalAlloc.
 Some memory leak managers do not recognize leaks created by
 LocalAlloc and GlobalAlloc. Thus we create for them a GetMem
 memory block.
@@ -168,24 +169,25 @@ This behavior is rare but the API documentation will (mostly) say it.
 Refer to MSDN documentation for more information.}
 function JwGlobalAllocMem(uFlags: UINT; uBytes: SIZE_T): HGLOBAL;
 
-{@Name frees a managed GlobalAlloc handle created by JwGlobalAllocMem.
+{<B>JwGlobalFreeMem</B> frees a managed GlobalAlloc handle created by JwGlobalAllocMem.
 The given handle will be set to 0.
 Refer to MSDN documentation for more information.
-@raises EInvalidPointer if the given handle was not created by JwGlobalAllocMem.}
+raises
+ EInvalidPointer:  if the given handle was not created by JwGlobalAllocMem.}
 function JwGlobalFreeMem(var hMem: HGLOBAL): HGLOBAL;
 
 
 
 
 
-{@Name loads the resource strings of a TJwRightsMapping record array
+{<B>LocalizeMapping</B> loads the resource strings of a TJwRightsMapping record array
 defined in JwsclTypes.pas.
 To convert a rights mapping record array define a start resource string
 index, say 4000. This is the starting point of the resource strings, but
 it does not define a string. It simply contains a number that defines the count
 of array elements, say 4.
 So the record array must look like this :
-@longcode(#
+<code lang="Delphi">
   MyMapping: array[1..4] of TJwRightsMapping =
     (
     (Right: STANDARD_RIGHTS_ALL; Name: 'STANDARD_RIGHTS_ALL';
@@ -196,7 +198,7 @@ So the record array must look like this :
     Flags: 0),
     (Right: STANDARD_RIGHTS_EXECUTE; Name: 'STANDARD_RIGHTS_EXECUTE';
     Flags: 0));
-#)
+</code>
 Each element is linked to the resource string. e.g.
  MyMapping[1].Name is read from string resource with index [4001]
  MyMapping[2].Name is read from string resource with index [4002] and so on.
@@ -214,42 +216,43 @@ It is discouraged to use absolute values because they do not depend on the
 parameter StartStringId. Changing this value and the resource strings
 will lead to EJwsclResourceNotFound exception.
 
-@param(MappingRecord @italic([in,out]) receives an array of TJwRightsMapping which
-  string member Name is replaced by the resource string.)
+@param MappingRecord @italic([in,out]) receives an array of TJwRightsMapping which
+  string member Name is replaced by the resource string. 
 
-@param(StartStringId defines the starting position of the index counting.
+@param StartStringId defines the starting position of the index counting.
  It must be an absolute resource string index, which context contains a number
- that defines the count of array elements.)
+ that defines the count of array elements. 
 
-@param(PrimaryLanguageId defines the primary language id.
+@param PrimaryLanguageId defines the primary language id.
 use PRIMARYLANGID(GetUserDefaultUILanguage), SUBLANGID(GetUserDefaultUILanguage)
-to get user language.)
+to get user language. 
 
-@param(SubLanguageId defines the sub language id.)
+@param SubLanguageId defines the sub language id. 
 
-@param(UseDefaultOnError defines whether EJwsclResourceNotFound is thrown if a
+@param UseDefaultOnError defines whether EJwsclResourceNotFound is thrown if a
 resource index is invalid (could not be found in resource) (false) or not (true).
 If UseDefaultOnError is true the function does the following.
-@orderedlist(
-@item(Try to load resource string at index given by member StringId)
-@item(if fails : try to load resource string ignoring member StringId)
-@item(if fails : leave the text member Name to default value)
-))
 
-@param(ModuleInstance defines where the resource strings can be found. It is simply
+1. Try to load resource string at index given by member StringId 
+2. if fails : try to load resource string ignoring member StringId 
+3. if fails : leave the text member Name to default value 
+ 
+
+@param ModuleInstance defines where the resource strings can be found. It is simply
 put through to LoadString function. It can be an instance of a dll file which
-contains localized versions of the strings.)
+contains localized versions of the strings. 
 
-@raises(EJwsclResourceInitFailed is raised if the given value in parameter
-StartStringId could not be found in the string resource)
+raises
+ EJwsclResourceInitFailed:  is raised if the given value in parameter
+StartStringId could not be found in the string resource 
 
-@raises(EJwsclResourceUnequalCount is raised if the count of the members of
+ EJwsclResourceUnequalCount: is raised if the count of the members of
 the given array (MappingRecord) is not equal to the number given in the resource
-string at index StartStringId.)
+string at index StartStringId. 
 
-@raises(EJwsclResourceNotFound is raised if UseDefaultOnError is false and
+ EJwsclResourceNotFound: is raised if UseDefaultOnError is false and
 a given resource index of a member of the array of TJwRightsMapping could not
-be found)}
+be found }
 procedure LocalizeMapping(var MappingRecord : array of TJwRightsMapping;
   const StartStringId : Cardinal;
   const PrimaryLanguageId, SubLanguageId : Word;
@@ -257,84 +260,86 @@ procedure LocalizeMapping(var MappingRecord : array of TJwRightsMapping;
   ModuleInstance : HINST = 0
   );
 
-{@Name checks whether a object type list array is correctly formed.
+{<B>JwCheckArray</B> checks whether a object type list array is correctly formed.
 The array must be in a post fix order. This sequence describes the
 Level structure.
 
-@preformatted(
-Objs[i].Level = a_i
+<pre>
+Objs[i .Level = a_i
         { a_i +1        | a_i - a_(i-1) = 1 AND a_i < 4
 a_i+1 = { a_i - t       | a_i - t AND t >= 0
         { ERROR_INVALID_PARAMETER | else
-)
+</pre> 
 
 sequence start: a_0 = 0
 
-@param(Objs contains the object list)
-@return(Returns true if the object type list is correct; otherwise false.
+@param Objs contains the object list 
+@return Returns true if the object type list is correct; otherwise false.
       It returns false if Objs is nil or does not contain any element.
-      It also returns false if any GUID member is nil.)
+      It also returns false if any GUID member is nil. 
 }
 function JwCheckArray(const Objs : TJwObjectTypeArray) : Boolean; overload;
 
-{@Name checks whether a object type list array is correctly formed.
+{<B>JwCheckArray</B> checks whether a object type list array is correctly formed.
 The array must be in a post fix order. This sequence describes the
 Level structure.
 
-@preformatted(
-Objs[i].Level = a_i
+<pre>
+Objs[i .Level = a_i
         { a_i +1        | a_i - a_(i-1) = 1 AND a_i < 4
 a_i+1 = { a_i - t       | a_i - t AND t >= 0
         { ERROR_INVALID_PARAMETER | else
-)
+</pre> 
 
 sequence start: a_0 = 0
 
-@param(Objs contains the object list)
-@param(Index returns the index where an error occured.)
-@return(Returns true if the object type list is correct; otherwise false.
+@param Objs contains the object list 
+@param Index returns the index where an error occured. 
+@return Returns true if the object type list is correct; otherwise false.
       It returns false if Objs is nil or does not contain any element.
-      It also returns false if any GUID member is nil.)
+      It also returns false if any GUID member is nil. 
 }
 function JwCheckArray(const Objs : TJwObjectTypeArray; out Index : Integer) : Boolean; overload;
 
-{@Name raises exception EJwsclUnimplemented if compiler directive DEBUG
+{<B>JwUNIMPLEMENTED_DEBUG</B> raises exception EJwsclUnimplemented if compiler directive DEBUG
 was used to compile the source}
 procedure JwUNIMPLEMENTED_DEBUG;
 
-{@Name raises exception EJwsclUnimplemented}
+{<B>JwUNIMPLEMENTED</B> raises exception EJwsclUnimplemented}
 procedure JwUNIMPLEMENTED;
 
-{@Name raises an exception EJwsclNilPointer if parameter P
+{<B>JwRaiseOnNilMemoryBlock</B> raises an exception EJwsclNilPointer if parameter P
  is nil; otherwise nothing happens.
 This function is like Assert but it will not be removed in a release build.
 
-@param(P defines a pointer to be validated)
-@param(ParameterName defines the name of the parameter which is validated and
- belongs to this pointer)
-@param(MethodName defines the name of the method this parameter belongs to)
-@param(ClassName defines the name of the class the method belongs to. Can be
-  empty if the method does not belong to a class)
-@param(FileName defines the source file of the call to this procedure.)
+@param P defines a pointer to be validated 
+@param ParameterName defines the name of the parameter which is validated and
+ belongs to this pointer 
+@param MethodName defines the name of the method this parameter belongs to 
+@param ClassName defines the name of the class the method belongs to. Can be
+  empty if the method does not belong to a class 
+@param FileName defines the source file of the call to this procedure. 
 
-@raises(EJwsclNilPointer will be raised if P is nil)
+raises
+ EJwsclNilPointer:  will be raised if P is nil 
 }
 procedure JwRaiseOnNilMemoryBlock(const P : Pointer;
   const MethodName, ClassName, FileName : TJwString);
 
-{@Name raises an exception EJwsclNILParameterException if parameter P
+{<B>JwRaiseOnNilParameter</B> raises an exception EJwsclNILParameterException if parameter P
  is nil; otherwise nothing happens.
 This function is like Assert but it will not be removed in a release build.
 
-@param(P defines a pointer to be validated)
-@param(ParameterName defines the name of the parameter which is validated and
- belongs to this pointer)
-@param(MethodName defines the name of the method this parameter belongs to)
-@param(ClassName defines the name of the class the method belongs to. Can be
-  empty if the method does not belong to a class)
-@param(FileName defines the source file of the call to this procedure.)
+@param P defines a pointer to be validated 
+@param ParameterName defines the name of the parameter which is validated and
+ belongs to this pointer 
+@param MethodName defines the name of the method this parameter belongs to 
+@param ClassName defines the name of the class the method belongs to. Can be
+  empty if the method does not belong to a class 
+@param FileName defines the source file of the call to this procedure. 
 
-@raises(EJwsclNILParameterException will be raised if P is nil)
+raises
+ EJwsclNILParameterException:  will be raised if P is nil 
 }
 procedure JwRaiseOnNilParameter(const P : Pointer;
   const ParameterName, MethodName, ClassName, FileName : TJwString);
@@ -343,33 +348,33 @@ procedure JwRaiseOnNilParameter(const P : Pointer;
 function GetUnitName(argObject: TObject): AnsiString;
 {$ENDIF JW_TYPEINFO}
 
-{@Name names a thread. A debugger can use this name to display a human readably
+{<B>JwSetThreadName</B> names a thread. A debugger can use this name to display a human readably
 identifier for a thread.
-@Name must be called without using parameter ThreadID
+<B>JwSetThreadName</B> must be called without using parameter ThreadID
  as a precondition to use JwGetThreadName .
 
-@param(Name defines an ansi name for the thread)
-@param(ThreadID defines which thread is named. A value of Cardinal(-1)  uses
-  the current thread)
+@param Name defines an ansi name for the thread 
+@param ThreadID defines which thread is named. A value of Cardinal(-1)  uses
+  the current thread 
 }
 procedure JwSetThreadName(const Name: AnsiString; const ThreadID : Cardinal = Cardinal(-1));
 
-{@Name returns the name of a thread set by JwSetThreadName.
+{<B>JwGetThreadName</B> returns the name of a thread set by JwSetThreadName.
  This function only returns the name of the current thread. It cannot be used
  with different threads than the current one.
 
-@bold(Precondition:)
+<B>Precondition:</B> 
  JwSetThreadName must be called with a value of Cardinal(-1) for parameter ThreadID.
 }
 function JwGetThreadName : WideString;
 
-{@Name returns true if Handle is neither zero (0) nor INVALID_HANDLE_VALUE; otherwise false.}
+{<B>IsHandleValid</B> returns true if Handle is neither zero (0) nor INVALID_HANDLE_VALUE; otherwise false.}
 function IsHandleValid(const Handle : THandle) : Boolean;
 
-{@name Checks if Bitmask and Check = Check}
+{<B>JwCheckBitMask</B> Checks if Bitmask and Check = Check}
 function JwCheckBitMask(const Bitmask: Integer; const Check: Integer): Boolean; 
 
-{@name encapsulates MsgWaitForMultipleObjects using an open array
+{<B>JwMsgWaitForMultipleObjects</B> encapsulates MsgWaitForMultipleObjects using an open array
 parameter.}
 function JwMsgWaitForMultipleObjects(const Handles: array of THandle; bWaitAll: LongBool;
            dwMilliseconds: DWord; dwWakeMask: DWord): DWord;

@@ -1,8 +1,8 @@
 {
-@abstract(Contains types that are used by the units of JWSCL)
+<B>Abstract</B>Contains types that are used by the units of JWSCL 
 @author(Christian Wimmer)
-@created(03/23/2007)
-@lastmod(11/27/2007)
+<B>Created:</B>03/23/2007 
+<B>Last modification:</B>11/27/2007 
 
 Project JEDI Windows Security Code Library (JWSCL)
 
@@ -50,7 +50,7 @@ uses
 {$IFNDEF SL_IMPLEMENTATION_SECTION}
 type
 {$IFNDEF DELPHI6_UP}
-  {@Name is defined for Delphi 5 because it does not know this types}
+  {<B>PCardinal</B> is defined for Delphi 5 because it does not know this types}
   PCardinal = ^Cardinal;
 {$ENDIF DELPHI6_UP}
 
@@ -61,31 +61,31 @@ type
 {$ENDIF DELPHI6_UP}
 
 
-  {@Name is the type of a token handle}
+  {<B>TJwTokenHandle</B> is the type of a token handle}
   TJwTokenHandle   = Cardinal;
-  //@Name is the type of an access mask
+  //<B>TJwAccessMask</B> is the type of an access mask
   TJwAccessMask    = Cardinal;
-  //@Name is the type of a thread handle
+  //<B>TJwThreadHandle</B> is the type of a thread handle
   TJwThreadHandle  = Cardinal;
-  //@Name is the type of a process handle
+  //<B>TJwProcessHandle</B> is the type of a process handle
   TJwProcessHandle = Cardinal;
-  //@Name is the type of a last error code
+  //<B>TJwLastError</B> is the type of a last error code
   TJwLastError     = Cardinal;
-  //@Name defines the access mask of a token
+  //<B>TJwTokenAccessMask</B> defines the access mask of a token
   TJwTokenAccessMask = TJwAccessMask;
-  //@Name is the type of a cryptographic service provider handle
+  //<B>TJwCSPHandle</B> is the type of a cryptographic service provider handle
   TJwCSPHandle     = Cardinal;
-  //@Name is the type of a hash handle
+  //<B>TJwHashHandle</B> is the type of a hash handle
   TJwHashHandle    = Cardinal;
-  //@Name is the type of a handle to a cryptographic key
+  //<B>TJwKeyHandle</B> is the type of a handle to a cryptographic key
   TJwKeyHandle = Cardinal;
 
 
-  //@Name is the type of a Terminal Server Session Identifier
+  //<B>TJwSessionId</B> is the type of a Terminal Server Session Identifier
   TJwSessionId = DWORD;
-  //@Name is the type of a Terminal Server Session State
+  //<B>TJwState</B> is the type of a Terminal Server Session State
   TJwState = DWORD;
-  //@Name is the type of a Terminal Server Process Identifier
+  //<B>TJwProcessId</B> is the type of a Terminal Server Process Identifier
   TJwProcessId = DWORD;
 
 
@@ -245,7 +245,7 @@ type
 type
 
   PAce = ^TAce;
-  {@Name defines a low level access control entry data structure.
+  {<B>TAce</B> defines a low level access control entry data structure.
    It is used to communicate with WinAPI functions.
   TODO:[hint] migrate to JEDI API LIB
    }
@@ -314,17 +314,17 @@ type
 
   TCardinalE = -1..high(Cardinal);
 
-  {@Name is used to gather information about
+  {<B>TJwInheritedFromRecord</B> is used to gather information about
    an inheritance flow
   }
   TJwInheritedFromRecord = record
-    {@Name defines the gap between the source and heirs.
+    {<B>GenerationGap</B> defines the gap between the source and heirs.
     -1 defines that the gap could not be determined.}
     GenerationGap: TCardinalE;
-    {@Name defines the name of the acestor. (Always unicode.
-     See @link(TJwInheritedFromArrayEx))}
+    {<B>AncestorName</B> defines the name of the acestor. (Always unicode.
+     See TJwInheritedFromArrayEx )}
     AncestorName:  WideString;
-    {@Name defines the name of the Sid which this record is dealing with.
+    {<B>SID</B> defines the name of the Sid which this record is dealing with.
      It looks like <SID account name>@<S-X-X...> }
     SID:           WideString;
   end;
@@ -346,12 +346,12 @@ type
 
 
 type
-  {@Name defines caches stored in a TJwSecureFileObject}
+  {<B>TJwTempResetEnum</B> defines caches stored in a TJwSecureFileObject}
   TJwTempResetEnum    = (treOwner, treGroup, treDacl, treSacl);
   TJwTempResetEnumSet = set of TJwTempResetEnum;
 
 const
-  {@Name defines a reset state that resets all caches of a TJwSecureFileObject}
+  {<B>JwResetEnumSetAll</B> defines a reset state that resets all caches of a TJwSecureFileObject}
   JwResetEnumSetAll = [treOwner, treGroup, treDacl, treSacl];
 
 type
@@ -366,7 +366,7 @@ type
    jwaWindows_PSecurity_Descriptor = jwaWindows.PSecurity_Descriptor;
 {$ENDIF}
 
-  {@Name defines control flags which defines a security descriptor.
+  {<B>TJwSecurityDescriptorControl</B> defines control flags which defines a security descriptor.
   }
   TJwSecurityDescriptorControl =
     (sdcOwnerDefaulted,
@@ -387,7 +387,7 @@ type
 
   TJwSecurityDescriptorControlSet = set of TJwSecurityDescriptorControl;
 
-  {@Name control the protection of an acl.}
+  {<B>TJwACLProtection</B> control the protection of an acl.}
   TJwACLProtection =
     ({The acl is not protected and can contain inherited ace.
      This flag is only for reading purpose. Use aclpForceUnprotect to
@@ -404,7 +404,7 @@ type
      aclpForceUnprotect);
 
 
-  {@Name defines the type of change to a object tree}
+  {<B>TJwTreeSetType</B> defines the type of change to a object tree}
   TJwTreeSetType = ({Set security information}
     tstSet,
     {remove security information and reset it}
@@ -438,7 +438,7 @@ type
   TJwKeyRootTupleArray = array[TJwRootKeyEnum] of TJwRootTuple;
 
 const
-  {@Name defines a connection between root key handle and string
+  {<B>JwKeyRootTupleArray</B> defines a connection between root key handle and string
    DO NOT LOCALIZE!! 
   }
   JwKeyRootTupleArray: TJwKeyRootTupleArray =
@@ -471,7 +471,7 @@ type
     Right: Cardinal;
     Name:  WideString;
     Flags: Cardinal;
-    {@Name contains the resource string index
+    {<B>StringId</B> contains the resource string index
      0: use default index
      >0: use relative index (relative of first start index)
      <0: use absolute index (-index)
@@ -479,7 +479,7 @@ type
     StringId : Integer; 
   end;
 
-  {@Name defines the flags of the TJwSecurityDescriptorDialog .}
+  {<B>TJwSecurityDialogFlag</B> defines the flags of the TJwSecurityDescriptorDialog .}
   TJwSecurityDialogFlag  = (
     sdfEditDacl,
     sdfEditSacl,
@@ -552,18 +552,18 @@ type
   TJwSidClassName = (scnNone, scnComputer, scnUser, scnGroup,
     scnUnknown);
 
-  {@Name provides information about a SID that could not be
+  {<B>TJwSidInfoRecord</B> provides information about a SID that could not be
   translated into a human readable name.
   }
   TJwSidInfoRecord = record
     pSid:      TObject;{TJwSecurityId;}
-    {@Name defines the users principal name for display (ex. full name)}
+    {<B>sUPN</B> defines the users principal name for display (ex. full name)}
     sCommonName,
-    {@Name defines the users principal logon name}
+    {<B>sUPN</B> defines the users principal logon name}
     sUPN:      WideString;
-    {@Name defines which type the user belongs to (computer, user, group)}
+    {<B>sClass</B> defines which type the user belongs to (computer, user, group)}
     sClass:    TJwSidClassName;
-    {@Name contains the exception which occured when TJwSecurityDescriptorDialog
+    {<B>Exception</B> contains the exception which occured when TJwSecurityDescriptorDialog
      tried to translate the Sid into the Name.
      This member can be nil if the Sid could be translated into a name.
      In this case sCommonName contains the translated name.
@@ -575,9 +575,9 @@ type
 
  {TCreationFlags defines how a TDesktop object is to be created}
   TJwDesktopCreationFlag = (
-    //@Name creates a new desktop with the given flags
+    //<B>	dcfOpen)</B> creates a new desktop with the given flags
     dcfCreate, 
-	//@Name opens an existing desktop with the given flags)
+	//<B>	dcfOpen)</B> opens an existing desktop with the given flags)
 	dcfOpen);
 
 
@@ -596,7 +596,7 @@ type
   Use [] as a aparameter if you don't want other applications to create hooks. Otherwise
   use [dfAllowOtherAccountHook].
   Never use [dfPad0]!
-  See also @Link(TJwSecurityDesktopFlags) }
+  See also TJwSecurityDesktopFlags  }
   TJwSecurityDesktopFlags = set of TJwSecurityDesktopFlag;
 
 
@@ -700,7 +700,7 @@ type
    );
    TJwInheritFlagSet = set of TJwInheritFlag;
 
-   {@Name defines the winapi credential flags as an enumeration type.}
+   {<B>TJwCredentialFlag</B> defines the winapi credential flags as an enumeration type.}
   TJwCredentialFlag    = (
     cfFlagsAlwaysShowUi
     //Specifies that a user interface will be shown even if the credentials can be returned from an existing credential in credential manager. This flag is permitted only if CREDUI_FLAGS_GENERIC_CREDENTIALS is also specified.
@@ -729,11 +729,11 @@ type
     , cfFlagsUserNameTargetCredentials
     //The credential is a "runas" credential. The TargetName parameter specifies the name of the command or program being run. It is used for prompting purposes only.
     );
-  {@Name defines the winapi credential flags bitmask as a set}
+  {<B>TJwCredentialFlagSet</B> defines the winapi credential flags bitmask as a set}
   TJwCredentialFlagSet = set of TJwCredentialFlag;
 
 
-  {@Name defines flag states for encryption}
+  {<B>TJwCryptProtectFlag</B> defines flag states for encryption}
   TJwCryptProtectFlag =
    (//data can only be decrypted on the same machine
     cfLocalMachine,
@@ -743,7 +743,7 @@ type
     cfVerifyProtection});
   TJwCryptProtectFlagSet = set of  TJwCryptProtectFlag;
 
-  {@Name defines when a prompt should occur.}
+  {<B>TJwCryptProtectOnPromptFlag</B> defines when a prompt should occur.}
   TJwCryptProtectOnPromptFlag =
    (cppf_Pad0,
     //prompt on data protection
@@ -753,7 +753,7 @@ type
   TJwCryptProtectOnPromptFlagSet = set of TJwCryptProtectOnPromptFlag;
 
   PJwGetMemBlob = ^TJwGetMemBlob;
-  {@Name defines a blob that contains data created
+  {<B>TJwGetMemBlob</B> defines a blob that contains data created
    by GetMem}
   TJwGetMemBlob = record
     //Data created by GetMem
@@ -762,7 +762,7 @@ type
     Size : Cardinal;
   end;
 
-  {@Name defines a memory manager type}
+  {<B>TJwMemoryType</B> defines a memory manager type}
   TJwMemoryType =
    (//delphi memory manager
     mtGetMem,
@@ -772,7 +772,7 @@ type
     mtGlobal
     );
 
-  {@Name defines who can decrypt a memory block}
+  {<B>TJwProtectMemoryFlag</B> defines who can decrypt a memory block}
   TJwProtectMemoryFlag =
    (//only the same process can decrypt the memory
     pmSameProcess,
@@ -783,18 +783,18 @@ type
     );
   TJwProtectMemoryFlagSet = set of TJwProtectMemoryFlag;
 
-  {@Name defines the mechanism how an instance
+  {<B>TJwCopyFlag</B> defines the mechanism how an instance
    will be treated it added to a list.
    If you use this flag you must also include this source (with comment)
    on every implementation.
-   @longcode(#
+   <code lang="Delphi">
    (*this const declaration prevents changing the type TJwCopyFlag
     without notice of this implementation. The compiler will
     show an error and source code must be adapted.
     This code will be removed by the optimizer
     *)
     const CopyFlagCheck : array[TJwCopyFlag] of byte = (0,1);
-   #)
+   </code>
   }
   TJwCopyFlag =(
      //Copy the instance data into a newly created instance
@@ -802,7 +802,7 @@ type
      //use the given instance and simply add it to the list
      cfPointAtInstance);
 
-  //@Name defines the type of a cryptographic service provider.
+  //<B>TJwCSPType</B> defines the type of a cryptographic service provider.
   //See http://msdn2.microsoft.com/en-us/library/aa380244.aspx for more information.
   TJwCSPType = (
      //This value is returned by conversion functions only.
@@ -820,7 +820,7 @@ type
      ctMsExchange,
      ctSsl);
 
-  //@Name defines the flags for a call to CryptAcquireContext
+  //<B>TJwCSPCreationFlag</B> defines the flags for a call to CryptAcquireContext
   TJwCSPCreationFlag = (
      //This flag is specified when there is no need for access to private keys.
      ccfVerifyContext,
@@ -903,13 +903,13 @@ const
   DecryptKeyFlags  = [kfOaep];
 type
   {Each key container usually contains two key pairs.
-   Functions require a parameter of type @name if the
+   Functions require a parameter of type <B>TJwKeyPairType</B> if the
    programmer should decide which of the key pairs should be used.}
   TJwKeyPairType = (kptKeyExchange,
                     kptSignature,
                     kptUnknown);
 
-    {An array of @Name is returned by TJwCryptProvider.EnumProviders
+    {An array of <B>TJwEnumProviderEntry</B> is returned by TJwCryptProvider.EnumProviders
    and TJwCryptProvider.EnumProviderTypes. The meaning of Name
    depends on the function.}
   TJwEnumProviderEntry = record
@@ -920,7 +920,7 @@ type
   end;
   TJwEnumProviderArray = array of TJwEnumProviderEntry;
 
-  {An array of @Name is returned by TJwCryptProvider.EnumAlgorithms.
+  {An array of <B>TJwEnumAlgorithmsEntry</B> is returned by TJwCryptProvider.EnumAlgorithms.
    It is mostly the same as PROV_ENUMALGS_EX (see
    http://msdn2.microsoft.com/en-us/library/aa387441.aspx), but
    uses delphi strings.}
@@ -947,7 +947,7 @@ type
   end;
   TJwEnumAlgorithms = array of TJwEnumAlgorithmsEntry;
 
-  //@Name specifies how a key should be exported. See
+  //<B>TJwKeyExportKind</B> specifies how a key should be exported. See
   //http://msdn2.microsoft.com/en-us/library/ms938025.aspx
   //for more information
   TJwKeyExportKind = (
@@ -964,7 +964,7 @@ type
   //Ued to export session keys encrypted with another session key
     kekSymmetricWrap);
 
-  {@Name is used by TJwSecureFileObject to set inheritance protection.
+  {<B>TJwACLProtectionState</B> is used by TJwSecureFileObject to set inheritance protection.
    Do not mix up with TJwACLProtection which is used by TJwSecurityDescriptor
    to set and get the protection state.
   }
@@ -1037,7 +1037,7 @@ type
 
   TJwProfileMembers = set of TJwProfileMember;
 
-  {@Name contains and receives information
+  {<B>TJwProfileInfo</B> contains and receives information
    about a users profile.
   }
   TJwProfileInfo = record
@@ -1131,7 +1131,7 @@ type
     pptHandle,
     pptID);
 
-  {@Name defines how processes in job objects are terminated
+  {<B>TJwJobTermination</B> defines how processes in job objects are terminated
    when the job list instance is freed.}
   TJwJobTermination = (
     {Terminate all processes in all job objects, ignoring TJwJobObject.TerminateOnDestroy}

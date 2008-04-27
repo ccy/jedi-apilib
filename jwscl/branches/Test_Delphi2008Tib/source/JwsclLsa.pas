@@ -1,7 +1,7 @@
-{@abstract(This unit provides access to the Local Security Authority Subsystem that provides function like LSALogonUser to create a logon session.)
+{<B>Abstract</B>This unit provides access to the Local Security Authority Subsystem that provides function like LSALogonUser to create a logon session. 
 @author(Christian Wimmer)
-@created(03/23/2007)
-@lastmod(09/10/2007)
+<B>Created:</B>03/23/2007 
+<B>Last modification:</B>09/10/2007 
 
 Project JEDI Windows Security Code Library (JWSCL)
 
@@ -53,7 +53,7 @@ uses SysUtils,
 
 
 type
-  {@Name is the main entry class for LSA calls.}
+  {<B>TJwSecurityLsa</B> is the main entry class for LSA calls.}
   TJwSecurityLsa = class
   protected
     fLsaHandle: THandle;
@@ -85,7 +85,7 @@ type
   TJwAccountRightStringW = TJwWideStringArray;
   TJwEnumerationInformation = array of TJwSecurityId;
 
-  {@Name manages policies}
+  {<B>TJwLsaPolicy</B> manages policies}
   TJwLsaPolicy = class
   protected
     fLsaHandle: LSA_HANDLE;
@@ -131,7 +131,7 @@ type
 
   TJwLogonSessionArray = Array of TLuid;
 
-  {@Name contains readonly information about a logon session.}
+  {<B>TJwLsaLogonSessionData</B> contains readonly information about a logon session.}
   TJwLsaLogonSessionData = class
   protected
     fSize : ULONG;
@@ -166,18 +166,20 @@ type
     property Upn : WideString read fUpn;
   end;
 
-  {@Name provides function for enumerating principal logon sessions
+  {<B>TJwLsaLogonSession</B> provides function for enumerating principal logon sessions
   and its data.}
   TJwLsaLogonSession = class
   protected
   public
-     {@Name returns an array of logon ids (TLUID)
-      @raises EJwsclWinCallFailedException if a call to LsaEnumerateLogonSessions failed.
+     {<B>GetSessions</B> returns an array of logon ids (TLUID)
+      raises
+ EJwsclWinCallFailedException:  if a call to LsaEnumerateLogonSessions failed.
      }
      class function GetSessions : TJwLogonSessionArray;
-     {@Name returns TJwLsaLogonSessionData for a specific logon id.
+     {<B>GetSessionData</B> returns TJwLsaLogonSessionData for a specific logon id.
      @param LogonID defines the logon id to be retrieved information from.
-     @raises EJwsclWinCallFailedException if a call to LsaGetLogonSessionData failed.
+     raises
+ EJwsclWinCallFailedException:  if a call to LsaGetLogonSessionData failed.
      }
      class function GetSessionData(const LogonID : TLuid) :
        TJwLsaLogonSessionData;
@@ -185,7 +187,7 @@ type
   end;
 
 
-{@Name is a helper function to create a MSV1_0_INTERACTIVE_LOGON
+{<B>JwCreate_MSV1_0_INTERACTIVE_LOGON</B> is a helper function to create a MSV1_0_INTERACTIVE_LOGON
 structure with strings that are added right behind the structure memory
 so it can be used by LsaLogonUser.
 The returned pointer can be freed by LocalFree .
