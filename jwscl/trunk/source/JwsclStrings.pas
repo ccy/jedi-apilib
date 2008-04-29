@@ -1,8 +1,8 @@
 {
-@abstract(Contains ansi- and unicode string types that are used by the units of JWSCL)
+<B>Abstract</B>Contains ansi- and unicode string types that are used by the units of JWSCL 
 @author(Christian Wimmer)
-@created(03/23/2007)
-@lastmod(09/10/2007)
+<B>Created:</B>03/23/2007 
+<B>Last modification:</B>09/10/2007 
 
 Project JEDI Windows Security Code Library (JWSCL)
 
@@ -50,26 +50,26 @@ uses JwaWindows;
 {$IFNDEF SL_IMPLEMENTATION_SECTION}
 type
   {$IFDEF UNICODE}
-  //@Name defines an unicode string type if compiler directive UNICODE is defined; otherwise ansicode
+  //<B>TJwString</B> defines an unicode string type if compiler directive UNICODE is defined; otherwise ansicode
   TJwString = WideString;
-  //@Name defines an unicode pointer to wide char type if compiler directive UNICODE is defined; otherwise ansicode
+  //<B>TJwPChar</B> defines an unicode pointer to wide char type if compiler directive UNICODE is defined; otherwise ansicode
   TJwPChar  = PWideChar;
-  //@Name defines an unicode wide char type if compiler directive UNICODE is defined; otherwise ansicode
+  //<B>TJwChar</B> defines an unicode wide char type if compiler directive UNICODE is defined; otherwise ansicode
   TJwChar   = WideChar;
   {$ELSE}
-  //@Name defines an ansicode string type if compiler directive UNICODE is not defined; otherwise unicode
+  //<B>TJwString</B> defines an ansicode string type if compiler directive UNICODE is not defined; otherwise unicode
   TJwString = AnsiString;
-  //@Name defines an ansicode pointer to ansi char type if compiler directive UNICODE is not defined; otherwise unicode
-  TJwPChar  = PChar;
-  //@Name defines an ansicode char type if compiler directive UNICODE is not defined; otherwise unicode
-  TJwChar   = Char;
+  //<B>TJwPChar</B> defines an ansicode pointer to ansi char type if compiler directive UNICODE is not defined; otherwise unicode
+  TJwPChar  = PAnsiChar;
+  //<B>TJwChar</B> defines an ansicode char type if compiler directive UNICODE is not defined; otherwise unicode
+  TJwChar   = AnsiChar;
   {$ENDIF UNICODE}
 
   TJwTJwStringArray = array of TJwString;
 
 
 const
-  {@Name defines the size of an char in an ansi- or unicode compilation. }
+  {<B>TJwCharSize</B> defines the size of an char in an ansi- or unicode compilation. }
   TJwCharSize = SizeOf(TJwChar);
 
 function JwCompareString(const S1, S2: TJwString;
@@ -77,26 +77,27 @@ function JwCompareString(const S1, S2: TJwString;
 
 function JwStringArrayIndexOf(const StrArry: TJwTJwStringArray; const S: TJwString): integer;
 
-{@Name formats a ansi- or unicode string and calls JwReplaceBreaks.}
+{<B>JwFormatString</B> formats a ansi- or unicode string and calls JwReplaceBreaks.}
 function JwFormatString(const Str : TJwString; const Args: array of const) : TJwString;
 
-{@Name behaves like JwFormatString but without calling JwReplaceBreaks}
+{<B>JwFormatStringEx</B> behaves like JwFormatString but without calling JwReplaceBreaks}
 function JwFormatStringEx(const Str : TJwString; const Args: array of const) : TJwString;
 
 
-{@Name replaces "\r" and "\n" with break line chars.}
+{<B>JwReplaceBreaks</B> replaces "\r" and "\n" with break line chars.}
 procedure JwReplaceBreaks(var Str : TJwString);
 
 
-{@Name loads a string from a resource using a language id.
+{<B>LoadLocalizedString</B> loads a string from a resource using a language id.
 @param Index defines the string index to be loaded.
-@param(PrimaryLanguageId defines the primary language id.
+@param PrimaryLanguageId defines the primary language id.
 use PRIMARYLANGID(GetUserDefaultUILanguage), SUBLANGID(GetUserDefaultUILanguage)
-to get user language.)
-@param(SubLanguageId defines the sub language id.)
+to get user language. 
+@param SubLanguageId defines the sub language id. 
 @param Instance defines the location of the resource. Can be null to use current module.
 @return Returns the resource string.
-@raises EJwsclOSError if the resource could not be located.
+raises
+ EJwsclOSError:  if the resource could not be located.
 }
 function LoadLocalizedString(const Index : Cardinal;
   const PrimaryLanguageId, SubLanguageId : Word;
@@ -116,7 +117,7 @@ function JwUnicodeStringToJwString(const AUnicodeString: TUnicodeString):
   TJwString;
 
   
-function JwCreateLSAString(const aString: string): LSA_STRING;
+function JwCreateLSAString(const aString: AnsiString): LSA_STRING;
 procedure JwFreeLSAString(var aString: LSA_STRING);
 
 function PWideCharToJwString(const APWideChar: PWideChar): TJwString;
@@ -257,16 +258,16 @@ begin
     Dec(Result, 2);
 end;
 
-function JwCreateLSAString(const aString: string): LSA_STRING;
+function JwCreateLSAString(const aString: AnsiString): LSA_STRING;
 var
-  pStr: PChar;
+  pStr: PAnsiChar;
 begin
   Result.Length := Length(aString);
   Result.MaximumLength := Result.Length;
 
   GetMem(pStr, Length(aString) + 2);
   FillChar(pStr^, Length(aString) + 2, 0);
-  StrLCopy(pStr, PChar(aString), Length(aString));
+  StrLCopy(pStr, PAnsiChar(aString), Length(aString));
 
   Result.Buffer := pStr;
 end;

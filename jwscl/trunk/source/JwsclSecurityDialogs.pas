@@ -1,7 +1,7 @@
-{@abstract(This unit provides access to the Windows 2000 (and above) security ACL dialog also used by Windows Explorer.)
+{<B>Abstract</B>This unit provides access to the Windows 2000 (and above) security ACL dialog also used by Windows Explorer. 
 @author(Christian Wimmer)
-@created(03/23/2007)
-@lastmod(09/10/2007)
+<B>Created:</B>03/23/2007 
+<B>Last modification:</B>09/10/2007 
 
 Project JEDI Windows Security Code Library (JWSCL)
 
@@ -61,7 +61,7 @@ type
 
 
   //TOnSecurityApply = procedure
-     {@Name is a callback procedure that is called when a supported window has a handle
+     {<B>TJwOnInitSecurityDialog</B> is a callback procedure that is called when a supported window has a handle
       and was initialized. Supported windows are the constants in TJwSecurityPageType.
       The window handles can be retrieved from the dialog instance (property WindowHandle, AdvWindowHandle and AdvancedPages)
 
@@ -70,7 +70,7 @@ type
      }
   TJwOnInitSecurityDialog = procedure(Sender: TJwSecurityDescriptorDialog;
     PageType: TJwSecurityPageType) of object;
-     {@Name is a callback procedure that is called if a supported window is about to be initialized.
+     {<B>TJwOnInitSecurityPageCreate</B> is a callback procedure that is called if a supported window is about to be initialized.
       At this point the window does not have a valid window handle.
 
       @param Sender Contains the dialog instance that called this callback message.
@@ -79,7 +79,7 @@ type
   TJwOnInitSecurityPageCreate = procedure(Sender: TJwSecurityDescriptorDialog;
     PageType: TJwSecurityPageType) of object;
 
-     {@Name is a callback procedure that is called if a supported window is about to be destroyed.
+     {<B>TJwOnInitSecurityPageDestroy</B> is a callback procedure that is called if a supported window is about to be destroyed.
       At this point the window does have a valid window handle.
 
       @param Sender Contains the dialog instance that called this callback message.
@@ -88,7 +88,7 @@ type
   TJwOnInitSecurityPageDestroy = procedure(Sender: TJwSecurityDescriptorDialog;
     PageType: TJwSecurityPageType) of object;
 
-     {@Name is a callback function that is called if the ACL editor needs the source of inheritance for
+     {<B>TJwOnGetInheriteSource</B> is a callback function that is called if the ACL editor needs the source of inheritance for
       a list of access control entries. The parameter ACL contains the entries which inheritance
       must be retrieved. The parameter InheritanceArray receives the inheritance strings. It is resized to
       the count of access control entries.
@@ -96,15 +96,15 @@ type
       @param Sender Contains the dialog instance that called this callback message.
       @param Info Defines which security information (SACL or DACL) must be processed.
       @param ACL Defines the ACL which inheritance must be retrieved.
-      @param(InheritanceArray This array receives the inheritance sources for all entries of the ACL.
+      @param InheritanceArray This array receives the inheritance sources for all entries of the ACL.
              If the AncestorName is empty, the source is automatically a parent.
              The SID member of the array elements is not used.
              If the AncestorName is empty the ACL editor automatically sets the display string to
                1. inherited from superior object (if the ACE contains afInheritedAce in its flags)
                2. not inherited (if the ACE does not contain afInheritedAce)
-             )
-      @return(The function must return S_OK if the inheritance source could be retrieved. Otherwise
-            S_FALSE.)
+              
+      @return The function must return S_OK if the inheritance source could be retrieved. Otherwise
+            S_FALSE. 
       }
   TJwOnGetInheriteSource = function(Sender: TJwSecurityDescriptorDialog;
     const Info: TJwSecurityInformationFlagSet;
@@ -112,21 +112,21 @@ type
     var InheritanceArray: TJwInheritedFromArray)
     : Cardinal of object;
 
-     {@Name is a callback function that is called if the user wants to get the
+     {<B>TJwOnGetEffectivePermissions</B> is a callback function that is called if the user wants to get the
        effective permissions for a user on the effective permission tab of the ACL editor.
 
       @param Sender Contains the dialog instance that called this callback message.
       @param GuidObjectType defines the GUID of the object. Cann be GUID_NULL.
       @param sServerName defines the name of the server.
       @param SD defines the security descriptor that is used to check against the permissions
-      @param(ObjectTypeList defines a list of objects types that are used for the check.
-              It can be ignored to use default object type list.)
-      @param(GrantedAccessList defines an array of granted access. It is automatically set to count of 1
+      @param ObjectTypeList defines a list of objects types that are used for the check.
+              It can be ignored to use default object type list. 
+      @param GrantedAccessList defines an array of granted access. It is automatically set to count of 1
             if the call to GetEffectiveRightsFromAcl was sucessfull. However it can be changed.
             If the size of the array is zero the effective permissions are not display. Instead an error message
-            is shown)
-      @return(The return value defines the sucess of the operation. If it is set to any other value than S_OK
-            the effective permissions are not shown in the ACL editor.)
+            is shown 
+      @return The return value defines the sucess of the operation. If it is set to any other value than S_OK
+            the effective permissions are not shown in the ACL editor. 
      }
   TJwOnGetEffectivePermissions = function(Sender: TJwSecurityDescriptorDialog;
     const GuidObjectType: TGUID;
@@ -141,25 +141,25 @@ type
     const SIDList: TJwSecurityIdList;
     var SIDInfoList: TJwSidInfoRecordArray): Cardinal of object;
 
-     {@Name is a callback procedure that is called if the an ACL has to be checked for correctness.
+     {<B>TOnJwIsDaclCanonical</B> is a callback procedure that is called if the an ACL has to be checked for correctness.
       @param Sender Contains the dialog instance that called this callback message.
       @param ACL defines the access control list which must be checked.
-      @param(IsCanonical defines the result of the process that checks the ACL. Set it to true if the order of the ACL is correct,
+      @param IsCanonical defines the result of the process that checks the ACL. Set it to true if the order of the ACL is correct,
               otherwise false. If it set to false the ACL editor shows a message that informs the user about the incorrect order.
-              The ACL is automatically checked for correct order and the result value is predefined in IsCanonical.)
+              The ACL is automatically checked for correct order and the result value is predefined in IsCanonical. 
       }
   TOnJwIsDaclCanonical = procedure(Sender: TJwSecurityDescriptorDialog;
     const ACL: TJwSecurityAccessControlList; var IsCanonical: boolean) of object;
 
-     {@Name is a callback procedure that is called if the ACL editor needs information about the security descriptor.
+     {<B>TJwOnGetSecurity</B> is a callback procedure that is called if the ACL editor needs information about the security descriptor.
       Usually the property SecurityDescriptor of Sender is used. However if the parameter SD is not nil
       the parameter SD is used instead. If it is nil the property SecurityDescriptor is used.
 
       @param Sender Contains the dialog instance that called this callback message.
-      @param(Information defines a set of security information flags that have to be stored in the security descriptor)
-      @param(bDefault TBD)
-      @param(SD defines a security descriptor that provides information for the ACL editor. It can be nil to use
-              the property SecurityDescriptor of Sender is used)
+      @param Information defines a set of security information flags that have to be stored in the security descriptor 
+      @param bDefault TBD 
+      @param SD defines a security descriptor that provides information for the ACL editor. It can be nil to use
+              the property SecurityDescriptor of Sender is used 
 
       }
   TJwOnGetSecurity = procedure(Sender: TJwSecurityDescriptorDialog;
@@ -167,7 +167,7 @@ type
     const bDefault: boolean;
     var SD: TJwSecurityDescriptor) of object;
 
-     {@Name defines a callback function that is called every time a window message is processed to
+     {<B>TJwOnWindowProcCallBack</B> defines a callback function that is called every time a window message is processed to
       any supported window (see TJwSecurityPageType) in the ACL editor. This function is called before the default window proc of the window is
       processed.
 
@@ -178,7 +178,7 @@ type
       @param ParamW Contains additional information about the message.
       @param ParamL Contains additional information about the message.
       @param ProcessDefaultProc defines whether message is forwarded to the default window proc (true) or not (false).
-      @return(The return value is used to return the status of the window message. The return value is only used if ProcessDefaultProc is false.)
+      @return The return value is used to return the status of the window message. The return value is only used if ProcessDefaultProc is false. 
      }
   TJwOnWindowProcCallBack = function(Sender: TJwSecurityDescriptorDialog;
     PageType: TJwSecurityPageType;
@@ -190,7 +190,7 @@ type
     : longint;
 
 
-     {@Name is a class that administers a list of SI_INHERIT_TYPE structures.
+     {<B>TJwInheritTypeList</B> is a class that administers a list of SI_INHERIT_TYPE structures.
       The structure is used to provide information how access control entries
       can be inherited to its children.
 
@@ -210,7 +210,7 @@ type
     function GetArray: PSI_INHERIT_TYPE;
   public
     destructor Destroy; override;
-        {@Name adds a new entry to the list.
+        {<B>Add</B> adds a new entry to the list.
          @param GUID defines the GUID of the inheritance information. Can be NULL_GUID
          @param Flags defines a set of flags that defines the inheritance. see TJwAceFlags .
          @param Name defines a description that is displayed in the combo box for this item.
@@ -219,13 +219,14 @@ type
       const Name: WideString): integer;
 
         {Removes an item from the list.
-         @raises Exception is raised if the index is invalid.}
+         raises
+ Exception:  is raised if the index is invalid.}
     procedure Delete(Index: integer);
 
     function First: PSiInheritType;
     function IndexOf(Item: PSiInheritType): integer;
         {
-        @Name inserts a new entry to the list.
+        <B>Insert</B> inserts a new entry to the list.
          @param Index defines the position in list where to add it.
          @param GUID defines the GUID of the inheritance information. Can be NULL_GUID
          @param Flags defines a set of flags that defines the inheritance. see TJwAceFlags .
@@ -235,11 +236,11 @@ type
       const Flags: TJwAceFlags; const Name: WideString);
     function Last: PSiInheritType;
 
-    {@Name sets or gets a SI_INHERIT_TYPE. Do not free it!}
+    {<B>Items[Index</B> sets or gets a SI_INHERIT_TYPE. Do not free it!}
     property Items[Index: integer]: PSiInheritType Read Get Write Put;
       default;
 
-        {@Name returns an array of SI_INHERIT_TYPE entries. It is used for winapi calls.
+        {<B>ItemsArray</B> returns an array of SI_INHERIT_TYPE entries. It is used for winapi calls.
          The Array is created every read call to it and the previous list ist destroyed.
          If the TJwInheritTypeList instance is destroyed the array is also destroyed.
         }
@@ -287,25 +288,25 @@ type
 
 
 
-     {@Name is a callback procedure that is called if the user hit the OK or Apply Button.
+     {<B>TJwOnSetSecurity</B> is a callback procedure that is called if the user hit the OK or Apply Button.
       If the function is not called the security descriptor is not changed and
       the user cannot apply the security information.
 
 
       @param Sender Sender contains the TJwSecurityDescriptorDialog implementation.
       @param SecurityType contains information which part of the SD is changed.
-      @param(SecurityDialogFlags contains information about flags, states and checkboxes states
-              in the dialog that are set)
+      @param SecurityDialogFlags contains information about flags, states and checkboxes states
+              in the dialog that are set 
       @param SecurityResetType defines whether the SD must be recursively iterated through the objects.
       @param Settings contains the SD control bits of the parameter NewSecurityDescriptor.
-      @param(NewSecurityDescriptor is the security descriptor which contains the security information
-               that was changed in the dialog)
-      @param(MergedSecurityDescriptor contains the merged security information from
-              NewSecurityDescriptor and the property SecurityDescriptor)
-      @param(bSuccess Defines whether the security information could be set. Its default value is false.
+      @param NewSecurityDescriptor is the security descriptor which contains the security information
+               that was changed in the dialog 
+      @param MergedSecurityDescriptor contains the merged security information from
+              NewSecurityDescriptor and the property SecurityDescriptor 
+      @param bSuccess Defines whether the security information could be set. Its default value is false.
             If true, the property SecurityDescriptor is to MergedSecurityDescriptor and the ACL editor updates its data.
             If false the ACL editor resets its data.
-            )
+             
 
       }
   TJwOnSetSecurity = procedure(Sender: TJwSecurityDescriptorDialog;
@@ -321,19 +322,19 @@ type
   PJwMsgRec = ^TJwMsgRec;
   {for internal use only}
   TJwMsgRec = record
-    {@Name contains a pointer to a saved default window proc}
+    {<B>pProc</B> contains a pointer to a saved default window proc}
     pProc:    Pointer;
-    {@Name contains a handle to the window which proc is saved}
+    {<B>hHandle</B> contains a handle to the window which proc is saved}
     hHandle:  HWND;
-    {@Name contains information about the page type of the window}
+    {<B>uPage</B> contains information about the page type of the window}
     uPage:    SI_PAGE_TYPE;
-    {@Name defines the security dialog instance which holds this record}
+    {<B>Dlg</B> defines the security dialog instance which holds this record}
     Dlg:      TJwSecurityDescriptorDialog;
-    {@Name contains the previous GWLP_USERDATA pointer}
+    {<B>userData</B> contains the previous GWLP_USERDATA pointer}
     userData: Pointer;
   end;
 
-  {@Name is  for internal use only.
+  {<B>ISecurityObjectTypeInfoW</B> is  for internal use only.
    Todo: export to JEDI Api lib
   }
   ISecurityObjectTypeInfoW = interface(IUnknown)
@@ -345,7 +346,7 @@ type
 
   
 
-     {@Name is a easy to use class to show a security ACL editor.
+     {<B>TJwSecurityDescriptorDialog</B> is a easy to use class to show a security ACL editor.
       It is generic, so many types of secure objects can be shown (not only files).
       }
   TJwSecurityDescriptorDialog = class({TInterfacedObject,}TObject,
@@ -391,7 +392,7 @@ type
     {ISecurityInformation2}
     function IsDaclCanonical(pDacl: PACL): BOOL; stdcall;
 
-    {@Name is not supported. See source code for more information}
+    {<B>LookupSids</B> is not supported. See source code for more information}
     function LookupSids(cSids: ULONG; rgpSids: PPSID;
       out ppdo: IDataObject): HRESULT; stdcall;
 
@@ -461,92 +462,92 @@ type
 
     function GetAdvWindowHandle(Page: TJwSecurityPageType): HWND; virtual;
   public
-    {@Name creates a new ACL editor using a window handle as parent.}
+    {<B>Create</B> creates a new ACL editor using a window handle as parent.}
     constructor Create(hParent: HWND);
     destructor Destroy; override;
 
-    {@Name shows the security dialog.}
+    {<B>ShowModal</B> shows the security dialog.}
     function ShowModal: boolean; virtual;
 
-    {@Name defines flags which controls the display of the ACL editor.}
+    {<B>Flags</B> defines flags which controls the display of the ACL editor.}
     property Flags: TJwSecurityDialogFlags Read fFlags Write fFlags;
 
-    {@Name defines the instance that is used to retrieve resource strings and more.}
+    {<B>Instance</B> defines the instance that is used to retrieve resource strings and more.}
     property Instance: Cardinal Read fInstance Write fInstance;
-    {@Name defines a server name}
+    {<B>ServerName</B> defines a server name}
     property ServerName: TJwString Read fServerName Write fServerName;
-    {@Name defines an object name which security information is shown/changed.
-     If the length of @Name is smaller than 2 chars it will be filled by spaced
+    {<B>ObjectName</B> defines an object name which security information is shown/changed.
+     If the length of <B>ObjectName</B> is smaller than 2 chars it will be filled by spaced
      due to a bug in the security dialog api.
     }
     property ObjectName: TJwString Read fObjectName Write fObjectName;
-    {@Name defines the title of the page in the simple ACL tab sheet.}
+    {<B>PageTitle</B> defines the title of the page in the simple ACL tab sheet.}
     property PageTitle: TJwString Read fPageTitle Write fPageTitle;
-    {@Name defines an object GUID. Can be NULL_GUID (default)}
+    {<B>ObjectType</B> defines an object GUID. Can be NULL_GUID (default)}
     property ObjectType: TGUID Read fObjectType Write fObjectType;
 
-    {@Name defines a security descriptor which is shown in the ACL editor.}
+    {<B>SecurityDescriptor</B> defines a security descriptor which is shown in the ACL editor.}
     property SecurityDescriptor: TJwSecurityDescriptor
       Read GetSecurityDescriptor Write SetSecurityDescriptor;
 
-    {@Name defines an Owner. This instance points directly to the owner of the property SecurityDescriptor.}
+    {<B>Owner</B> defines an Owner. This instance points directly to the owner of the property SecurityDescriptor.}
     property Owner: TJwSecurityId Read GetOwner Write SetOwner;
-    {@Name defines an DACL. This instance points directly to the DACL of the property SecurityDescriptor.}
+    {<B>DACL</B> defines an DACL. This instance points directly to the DACL of the property SecurityDescriptor.}
     property DACL: TJwDAccessControlList Read GetDACL Write SetDACL;
-    {@Name defines an SACL. This instance points directly to the SACL of the property SecurityDescriptor.}
+    {<B>SACL</B> defines an SACL. This instance points directly to the SACL of the property SecurityDescriptor.}
     property SACL: TJwSAccessControlList Read GetSACL Write SetSACL;
 
-        {@Name defines a class that provides information about a specific security information.
+        {<B>Mapping</B> defines a class that provides information about a specific security information.
          It includes GENERIC mapping and converting access rights to description (shown in access rightslist).
         }
     property Mapping: TJwSecurityGenericMappingClass
       Read fMapping Write fMapping;
 
 
-    {see @link(TJwOnInitSecurityDialog)}
+    {see TJwOnInitSecurityDialog }
     property OnInitSecurityDialog: TJwOnInitSecurityDialog
       Read fOnInitSecurityDialog Write fOnInitSecurityDialog;
-    {see @link(TJwOnInitSecurityPageCreate)}
+    {see TJwOnInitSecurityPageCreate }
     property OnInitSecurityPageCreate: TJwOnInitSecurityPageCreate
       Read fOnInitSecurityPageCreate Write fOnInitSecurityPageCreate;
-    {see @link(TJwOnInitSecurityPageDestroy)}
+    {see TJwOnInitSecurityPageDestroy }
     property OnInitSecurityPageDestroy: TJwOnInitSecurityPageDestroy
       Read fOnInitSecurityPageDestroy Write fOnInitSecurityPageDestroy;
-    {see @link(TJwOnSetSecurity)}
+    {see TJwOnSetSecurity }
     property OnSetSecurity: TJwOnSetSecurity
       Read fOnSetSecurity Write fOnSetSecurity;
-    {see @link(TJwOnGetInheriteSource)}
+    {see TJwOnGetInheriteSource }
     property OnGetInheriteSource: TJwOnGetInheriteSource
       Read fOnGetInheriteSource Write fOnGetInheriteSource;
-    {see @link(TJwOnGetEffectivePermissions)}
+    {see TJwOnGetEffectivePermissions }
     property OnGetEffectivePermissions: TJwOnGetEffectivePermissions
       Read fOnGetEffectivePermissions Write fOnGetEffectivePermissions;
-    {@Name is not supported actually and must not be used!}
+    {<B>OnLookupSIDs</B> is not supported actually and must not be used!}
     property OnLookupSIDs: TJwOnLookupSIDs
       Read fOnLookupSIDs Write fOnLookupSIDs;
-    {see @link(TOnJwIsDaclCanonical)}
+    {see TOnJwIsDaclCanonical }
     property OnIsDACLCanonical: TOnJwIsDaclCanonical
       Read fOnIsDACLCanonical Write fOnIsDACLCanonical;
-    {see @link(TJwOnGetSecurity)}
+    {see TJwOnGetSecurity }
     property OnGetSecurity: TJwOnGetSecurity
       Read fOnGetSecurity Write fOnGetSecurity;
-    {see @link(TJwOnWindowProcCallBack)}
+    {see TJwOnWindowProcCallBack }
     property OnWindowProcCallBack: TJwOnWindowProcCallBack
       Read fOnWindowProcCallBack Write fOnWindowProcCallBack;
 
 
-        {@Name can contain a list of inherit type entries that are shown in the property dialog
+        {<B>InheritTypeList</B> can contain a list of inherit type entries that are shown in the property dialog
          of an ACE entry. Each entry defines how an ACE is inherited to children.
         }
     property InheritTypeList: TJwInheritTypeList
       Read fInheritTypeList Write SetInheritTypeList;
 
-    {@Name contains the window handle of the simple ACL editor window. If the window handle does not exist it is 0.}
+    {<B>WindowHandle</B> contains the window handle of the simple ACL editor window. If the window handle does not exist it is 0.}
     property WindowHandle: HWND Read fWindowHandle;
-    {@Name contains the window handle of the advanced ACL editor window. If the window handle does not exist it is 0.}
+    {<B>AdvWindowHandle</B> contains the window handle of the advanced ACL editor window. If the window handle does not exist it is 0.}
     property AdvWindowHandle: HWND Read fAdvWindowHandle;
 
-    {@Name contains the window handle of the pages of the advanced ACL editor. If the window handle does not exist it is 0.}
+    {<B>AdvancedPages[Page</B> contains the window handle of the pages of the advanced ACL editor. If the window handle does not exist it is 0.}
     property AdvancedPages[Page: TJwSecurityPageType]: HWND
       Read GetAdvWindowHandle;
 

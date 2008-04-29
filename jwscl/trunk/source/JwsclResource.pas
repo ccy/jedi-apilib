@@ -1,7 +1,7 @@
-{@abstract(Contains resource strings used by JSWCL)
+{<B>Abstract</B>Contains resource strings used by JSWCL 
 @author(Christian Wimmer)
-@created(03/23/2007)
-@lastmod(11/19/2007)
+<B>Created:</B>03/23/2007 
+<B>Last modification:</B>11/19/2007 
 
 Project JEDI Windows Security Code Library (JWSCL)
 
@@ -106,6 +106,13 @@ const
   RsInvalidAceType = 'The type of the ACE structure is unknown.';
   RsACEMismatch = 'The type of the ACE class and the type of the ACE header do not match.';
   RsInvalidRevision = 'The given revision level %0:d is not supported.';
+
+  RsRightGeneric = '[Generic]';
+  RsRightReserved = '[Reserved]';
+  RsRightMaximumAllowed = '[maximum allowed]';
+  RsRightSacl = '[SACL]';
+  RsRightStandard = '[Standard]';
+  RsRightSpecific = '[Specific]';
 
 //Unit  JwsclCredentials.pas
   RsCredentialsLocalName = 'local';
@@ -476,6 +483,11 @@ const
 
   RsInvalidComputer = 'The given computer name is invalid.';
 
+// jwsclProcess.pas
+  RsInvalidParameterIndex = 'The given index "%0:d" in parameter "%1:s" is out of range.';
+  RsMissingEvent = 'The event "%0:s" needs to be assigned. It must not be nil.';
+  RsInvalidJobObject = 'The returned job object is invalid and cannot be used to assign a job to.';
+
 const
 // Unit names - do not localize
   RsUNAccountControl     = 'JwsclAccountControl.pas';
@@ -511,7 +523,7 @@ const
 
   RsUNCryptProvider = 'JwsclCryptProvider.pas';
 
-{@Name converts a delphi resourcestring into a resource identifier.
+{<B>GetResourceStringIdentifier</B> converts a delphi resourcestring into a resource identifier.
 Use @<ResourcestringName> as parameter rs.
 
 The function cannot fail for correct delphi resourcestring identifiers.

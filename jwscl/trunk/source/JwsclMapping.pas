@@ -1,7 +1,7 @@
-{@abstract(Contains the Access Mask Mapping class)
+{<B>Abstract</B>Contains the Access Mask Mapping class 
 @author(Christian Wimmer)
-@created(03/23/2007)
-@lastmod(09/10/2007)
+<B>Created:</B>03/23/2007 
+<B>Last modification:</B>09/10/2007 
 
 Project JEDI Windows Security Code Library (JWSCL)
 
@@ -57,14 +57,14 @@ type
     var Text: WideString) of object;
 
 
-     {@Name defines a general access mapping.
-      To create your own access map, derive a class from @Name
+     {<B>TJwSecurityGenericMapping</B> defines a general access mapping.
+      To create your own access map, derive a class from <B>TJwSecurityGenericMapping</B>
       and override the class method GetMapping.
      }
 
   TJwSecurityGenericMapping = class(TPersistent)
   protected
-       {@Name checks for a given bit and removes it from the mask.
+       {<B>CheckAndStrip</B> checks for a given bit and removes it from the mask.
         @param Access Mask to be used.
         @param BitState}
     class function CheckAndStrip(var Access: TJwAccessMask;
@@ -81,39 +81,40 @@ type
       Maps: array of TJwRightsMapping): TJwString; virtual;
 
   public
-    {@Name returns an description of a specific bit value given in Idx.
+    {<B>GetBitMappingString</B> returns an description of a specific bit value given in Idx.
      This function only supports one bit per call.
-     @param(Idx Defines a bit position between 0 and 31)
-     @return(Returns the name and description of the given bit or an empty string
-       if the bit is invalid.)
+     @param Idx Defines a bit position between 0 and 31 
+     @return Returns the name and description of the given bit or an empty string
+       if the bit is invalid. 
      }
     class function GetBitMappingString(Idx: Cardinal): TJwString; virtual;
 
-       {@Name creates a string represenative for the given access mask.
+       {<B>MapAccessMaskToString</B> creates a string represenative for the given access mask.
         The look of the string depends on the result of GetMapping}
     class function MapAccessMaskToString(Access: TJwAccessMask): TJwString;
       virtual;
 
-       {@Name maps one of the generic access mask (GENERIC_READ, GENERIC_WRITE, GENERIC_EXECUTE, GENERIC_ALL)
+       {<B>Map</B> maps one of the generic access mask (GENERIC_READ, GENERIC_WRITE, GENERIC_EXECUTE, GENERIC_ALL)
         to the specific access mask.
         The specific access mask depends on GetMapping. GetMapping can be overriden in derived classes
         to change the behaviour.
         In TJwSecurityGenericMapping the result is always 0.
         @param genericAccessMask receives one of the generic access constants (GENERIC_READ, GENERIC_WRITE, GENERIC_EXECUTE, GENERIC_ALL).
         @return Returns the mapped access rights.
-        @raises EJwsclInvalidGenericAccessMask is raised, if genericAccessMask does not contain one of the GENERIC access masks.
+        raises
+ EJwsclInvalidGenericAccessMask:  is raised, if genericAccessMask does not contain one of the GENERIC access masks.
        }
     class function Map(genericAccessMask: TJwAccessMask): TJwAccessMask;
 
-    {@Name maps an access mask using the winapi MapGenericMask.}
+    {<B>GenericMap</B> maps an access mask using the winapi MapGenericMask.}
     class function GenericMap(
       const AccessMask: TJwAccessMask): TJwAccessMask;
 
-       {@Name creates a generic mapping.
+       {<B>GetMapping</B> creates a generic mapping.
        @return In TJwSecurityGenericMapping this method returns the standard rights.}
     class function GetMapping: TGenericMapping; virtual;
 
-    {@Name returns a pointer to a SI_ACCESS structure.
+    {<B>GetAccessNames</B> returns a pointer to a SI_ACCESS structure.
      The caller must free the returned value by using FreeAccessNames.
     }
     class function GetAccessNames(out iCount: Cardinal): PSI_ACCESS;
@@ -129,7 +130,7 @@ type
     class function GenericMap(Mapping: TGenericMapping;
       const AccessMask: TJwAccessMask): TJwAccessMask; reintroduce; virtual;
 
-    {@Name returns the generic mapping for file objects.}
+    {<B>GetMapping</B> returns the generic mapping for file objects.}
     class function GetMapping(Mapping: TGenericMapping): TGenericMapping;
       reintroduce; virtual;
     class function MapAccessMaskToString(Access: TJwAccessMask;
@@ -138,10 +139,10 @@ type
       out iCount: Cardinal): PSI_ACCESS; reintroduce; virtual;
   end;
 
-  {@Name defines a generic mapping for file access rights}
+  {<B>TJwSecurityFileMapping</B> defines a generic mapping for file access rights}
   TJwSecurityFileMapping = class(TJwSecurityGenericMapping)
   public
-    {@Name returns the generic mapping for file objects.}
+    {<B>GetMapping</B> returns the generic mapping for file objects.}
     class function GetMapping: TGenericMapping; override;
     class function MapAccessMaskToString(Access: TJwAccessMask): TJwString;
       override;
@@ -149,10 +150,10 @@ type
       override;
   end;
 
-  {@Name defines a generic mapping for file access rights}
+  {<B>TJwSecurityRegistryMapping</B> defines a generic mapping for file access rights}
   TJwSecurityRegistryMapping = class(TJwSecurityGenericMapping)
   public
-    {@Name returns the generic mapping for registry objects.}
+    {<B>GetMapping</B> returns the generic mapping for registry objects.}
     class function GetMapping: jwaWindows.TGenericMapping; override;
     class function MapAccessMaskToString(Access: TJwAccessMask): TJwString;
       override;
@@ -162,7 +163,7 @@ type
 
   TJwSecurityWinStationMapping = class(TJwSecurityGenericMapping)
   public
-    {@Name returns the generic mapping for registry objects.}
+    {<B>GetMapping</B> returns the generic mapping for registry objects.}
     class function GetMapping: jwaWindows.TGenericMapping; override;
     class function MapAccessMaskToString(Access: TJwAccessMask): TJwString;
       override;
@@ -172,7 +173,7 @@ type
 
   TJwSecurityDesktopMapping = class(TJwSecurityGenericMapping)
   public
-    {@Name returns the generic mapping for registry objects.}
+    {<B>GetMapping</B> returns the generic mapping for registry objects.}
     class function GetMapping: jwaWindows.TGenericMapping; override;
     class function MapAccessMaskToString(Access: TJwAccessMask): TJwString;
       override;
@@ -181,10 +182,10 @@ type
   end;
 
   {-------}
-  {@Name defines a generic mapping for file access rights}
+  {<B>TJwSecurityFileFolderMapping</B> defines a generic mapping for file access rights}
   TJwSecurityFileFolderMapping = class(TJwSecurityGenericMapping)
   public
-    {@Name returns the generic mapping for file objects.}
+    {<B>GetMapping</B> returns the generic mapping for file objects.}
     class function GetMapping: TGenericMapping; override;
     class function MapAccessMaskToString(Access: TJwAccessMask): TJwString;
       override;
@@ -193,10 +194,10 @@ type
   end;
 
 
-  {@Name defines a generic mapping for file access rights}
+  {<B>TJwSecurityServiceMapping</B> defines a generic mapping for file access rights}
   TJwSecurityServiceMapping = class(TJwSecurityGenericMapping)
   public
-    {@Name returns the generic mapping for file objects.}
+    {<B>GetMapping</B> returns the generic mapping for file objects.}
     class function GetMapping: TGenericMapping; override;
     class function MapAccessMaskToString(Access: TJwAccessMask): TJwString;
       override;
@@ -204,10 +205,10 @@ type
       override;
   end;
 
-  {@Name defines a generic mapping for file access rights}
+  {<B>TJwSecurityServiceManagerMapping</B> defines a generic mapping for file access rights}
   TJwSecurityServiceManagerMapping = class(TJwSecurityGenericMapping)
   public
-    {@Name returns the generic mapping for file objects.}
+    {<B>GetMapping</B> returns the generic mapping for file objects.}
     class function GetMapping: TGenericMapping; override;
     class function MapAccessMaskToString(Access: TJwAccessMask): TJwString;
       override;
@@ -215,10 +216,10 @@ type
       override;
   end;
 
-  {@Name defines a generic mapping for file access rights}
+  {<B>TJwSecurityPrinterMapping</B> defines a generic mapping for file access rights}
   TJwSecurityPrinterMapping = class(TJwSecurityGenericMapping)
   public
-    {@Name returns the generic mapping for file objects.}
+    {<B>GetMapping</B> returns the generic mapping for file objects.}
     class function GetMapping: TGenericMapping; override;
     class function MapAccessMaskToString(Access: TJwAccessMask): TJwString;
       override;
@@ -226,10 +227,10 @@ type
       override;
   end;
 
-  {@Name defines a generic mapping for file access rights}
+  {<B>TJwSecurityShareMapping</B> defines a generic mapping for file access rights}
   TJwSecurityShareMapping = class(TJwSecurityGenericMapping)
   public
-    {@Name returns the generic mapping for file objects.}
+    {<B>GetMapping</B> returns the generic mapping for file objects.}
     class function GetMapping: TGenericMapping; override;
     class function MapAccessMaskToString(Access: TJwAccessMask): TJwString;
       override;
@@ -237,10 +238,10 @@ type
       override;
   end;
 
-  {@Name defines a generic mapping for file access rights}
+  {<B>TJwSecurityProcessMapping</B> defines a generic mapping for file access rights}
   TJwSecurityProcessMapping = class(TJwSecurityGenericMapping)
   public
-    {@Name returns the generic mapping for file objects.}
+    {<B>GetMapping</B> returns the generic mapping for file objects.}
     class function GetMapping: TGenericMapping; override;
     class function MapAccessMaskToString(Access: TJwAccessMask): TJwString;
       override;
@@ -249,10 +250,10 @@ type
   end;
 
 
-  {@Name defines a generic mapping for file access rights}
+  {<B>TJwSecurityThreadMapping</B> defines a generic mapping for file access rights}
   TJwSecurityThreadMapping = class(TJwSecurityGenericMapping)
   public
-    {@Name returns the generic mapping for file objects.}
+    {<B>GetMapping</B> returns the generic mapping for file objects.}
     class function GetMapping: TGenericMapping; override;
     class function MapAccessMaskToString(Access: TJwAccessMask): TJwString;
       override;
@@ -260,10 +261,10 @@ type
       override;
   end;
 
-  {@Name defines a generic mapping for file access rights}
+  {<B>TJwSecurityJobMapping</B> defines a generic mapping for file access rights}
   TJwSecurityJobMapping = class(TJwSecurityGenericMapping)
   public
-    {@Name returns the generic mapping for file objects.}
+    {<B>GetMapping</B> returns the generic mapping for file objects.}
     class function GetMapping: TGenericMapping; override;
     class function MapAccessMaskToString(Access: TJwAccessMask): TJwString;
       override;
@@ -272,10 +273,10 @@ type
   end;
 
 
-  {@Name defines a generic mapping for file access rights}
+  {<B>TJwSecuritySemaphoreMapping</B> defines a generic mapping for file access rights}
   TJwSecuritySemaphoreMapping = class(TJwSecurityGenericMapping)
   public
-    {@Name returns the generic mapping for file objects.}
+    {<B>GetMapping</B> returns the generic mapping for file objects.}
     class function GetMapping: TGenericMapping; override;
     class function MapAccessMaskToString(Access: TJwAccessMask): TJwString;
       override;
@@ -284,10 +285,10 @@ type
   end;
 
 
-  {@Name defines a generic mapping for file access rights}
+  {<B>TJwSecurityEventMapping</B> defines a generic mapping for file access rights}
   TJwSecurityEventMapping = class(TJwSecurityGenericMapping)
   public
-    {@Name returns the generic mapping for file objects.}
+    {<B>GetMapping</B> returns the generic mapping for file objects.}
     class function GetMapping: TGenericMapping; override;
     class function MapAccessMaskToString(Access: TJwAccessMask): TJwString;
       override;
@@ -296,10 +297,10 @@ type
   end;
 
 
-  {@Name defines a generic mapping for file access rights}
+  {<B>TJwSecurityMutexMapping</B> defines a generic mapping for file access rights}
   TJwSecurityMutexMapping = class(TJwSecurityGenericMapping)
   public
-    {@Name returns the generic mapping for file objects.}
+    {<B>GetMapping</B> returns the generic mapping for file objects.}
     class function GetMapping: TGenericMapping; override;
     class function MapAccessMaskToString(Access: TJwAccessMask): TJwString;
       override;
@@ -309,10 +310,10 @@ type
 
 
 
-  {@Name defines a generic mapping for file access rights}
+  {<B>TJwSecurityFileMapMapping</B> defines a generic mapping for file access rights}
   TJwSecurityFileMapMapping = class(TJwSecurityGenericMapping)
   public
-    {@Name returns the generic mapping for file objects.}
+    {<B>GetMapping</B> returns the generic mapping for file objects.}
     class function GetMapping: TGenericMapping; override;
     class function MapAccessMaskToString(Access: TJwAccessMask): TJwString;
       override;
@@ -320,10 +321,10 @@ type
       override;
   end;
 
-  {@Name defines a generic mapping for file access rights}
+  {<B>TJwSecurityTimerMapping</B> defines a generic mapping for file access rights}
   TJwSecurityTimerMapping = class(TJwSecurityGenericMapping)
   public
-    {@Name returns the generic mapping for file objects.}
+    {<B>GetMapping</B> returns the generic mapping for file objects.}
     class function GetMapping: TGenericMapping; override;
     class function MapAccessMaskToString(Access: TJwAccessMask): TJwString;
       override;
@@ -331,10 +332,10 @@ type
       override;
   end;
 
-  {@Name defines a generic mapping for file access rights}
+  {<B>TJwSecurityTokenMapping</B> defines a generic mapping for file access rights}
   TJwSecurityTokenMapping = class(TJwSecurityGenericMapping)
   public
-    {@Name returns the generic mapping for file objects.}
+    {<B>GetMapping</B> returns the generic mapping for file objects.}
     class function GetMapping: TGenericMapping; override;
     class function MapAccessMaskToString(Access: TJwAccessMask): TJwString;
       override;
@@ -342,10 +343,10 @@ type
       override;
   end;
 
-  {@Name defines a generic mapping for file access rights}
+  {<B>TJwSecurityPipeMapping</B> defines a generic mapping for file access rights}
   TJwSecurityPipeMapping = class(TJwSecurityGenericMapping)
   public
-    {@Name returns the generic mapping for file objects.}
+    {<B>GetMapping</B> returns the generic mapping for file objects.}
     class function GetMapping: TGenericMapping; override;
     class function MapAccessMaskToString(Access: TJwAccessMask): TJwString;
       override;

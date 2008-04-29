@@ -1,7 +1,7 @@
-{@abstract(This unit provides access to winstation api functions)
+{<B>Abstract</B>This unit provides access to winstation api functions 
 @author(Christian Wimmer)
-@created(03/23/2007)
-@lastmod(09/10/2007)
+<B>Created:</B>03/23/2007 
+<B>Last modification:</B>09/10/2007 
 
 
 
@@ -59,7 +59,7 @@ type
 
   TJwSecurityWindowStationArray = array of TJwSecurityWindowStation;
 
-  {@Name provides access to window station api.}
+  {<B>TJwSecurityWindowStation</B> provides access to window station api.}
   TJwSecurityWindowStation = class(TPersistent)
   private
   protected
@@ -84,18 +84,19 @@ type
     procedure PutSD(Info: TJwSecurityInformationFlagSet;
       aSD: TJwSecurityDescriptor); virtual;
   public
-     {@Name opens a window station using a name and desired access rights.
+     {<B>Open</B> opens a window station using a name and desired access rights.
       The window station must be of the actual session.
      @param sName defines the name of the window station.
      @param bInherit TBD
      @param cDesiredAccess defines winstation access righs
 
-     @raises EJwsclOpenWindowStationException if the window station could not be opened.
+     raises
+ EJwsclOpenWindowStationException:  if the window station could not be opened.
      }
     constructor Open(const sName: TJwString; bInherit: boolean;
       cDesiredAccess: TJwAccessMask);
 
-     {@Name creates a new window station. It exists until all handles to it are closed.
+     {<B>Create</B> creates a new window station. It exists until all handles to it are closed.
       @param sName
       @param bInherit
       @param cDesiredAccess defines winstation access righs
@@ -104,7 +105,8 @@ type
 
       @param SecurityDescriptor(Defines which security is set on the new window station.
                 It can be nil. In that case everybody has full access)
-      @raises EJwsclWinCallFailedException if a call to CreateWindowStation failed.
+      raises
+ EJwsclWinCallFailedException:  if a call to CreateWindowStation failed.
      }
     constructor Create(const sName: TJwString; bInherit: boolean;
       cDesiredAccess: TJwAccessMask; bCreateOnly: boolean;
@@ -112,57 +114,59 @@ type
 
     destructor Destroy; override;
 
-     {@Name changes the actual window station for the process to the given on in the actual instance.
-      @raises EJwsclWinCallFailedException if a call to SetProcessWindowStation failed.
+     {<B>SetWindowStation</B> changes the actual window station for the process to the given on in the actual instance.
+      raises
+ EJwsclWinCallFailedException:  if a call to SetProcessWindowStation failed.
      }
     procedure SetWindowStation;
 
-     {@Name reverts to the saved window station from SetWindowStation.
-     @raises(EJwsclWinCallFailedException if a call to SetProcessWindowStation failed.)
+     {<B>RevertWindowStation</B> reverts to the saved window station from SetWindowStation.
+     raises
+ EJwsclWinCallFailedException:  if a call to SetProcessWindowStation failed. 
      }
     procedure RevertWindowStation;
 
-     {@Name contains the handle of the window station. @Name is 0 if
+     {<B>Handle</B> contains the handle of the window station. <B>Handle</B> is 0 if
       the window station was not opened or created.
       }
     property Handle: HWINSTA Read fHandle;
 
-     {@Name defines whether a call to CloseHandle is done on instance destroying (true)
+     {<B>DestroyWinSta</B> defines whether a call to CloseHandle is done on instance destroying (true)
       or not.
      }
     property DestroyWinSta: boolean
       Read fDestroyWinSta Write fDestroyWinSta;
 
-     {@Name returns an arrays of desktop names (TJwString)
+     {<B>DesktopNames</B> returns an arrays of desktop names (TJwString)
       This method raises EJwsclWinCallFailedException if a call to EnumDesktops failed.
      }
     property DesktopNames: TJwTJwStringArray Read GetDesktopNames;
 
-     {@Name returns the name of the window station.
+     {<B>Name</B> returns the name of the window station.
       This method raises EJwsclWinCallFailedException if a call to GetUserObjectInformation failed.
      }
     property Name: TJwString Read GetName;
 
-     {@Name sets or gets window station flags.
+     {<B>Flags</B> sets or gets window station flags.
       This method raises EJwsclWinCallFailedException if a call to SetUserObjectInformation or GetUserObjectInformation failed.}
     property Flags: TUserObjectFlags Read GetFlags Write SetFlags;
 
-     {@Name returns a string of this object ("window station")
+     {<B>ObjectType</B> returns a string of this object ("window station")
      This method raises EJwsclWinCallFailedException if a call to GetUserObjectInformation failed.}
     property ObjectType: TJwString Read GetObjectType;
 
-     {@Name returns the user of this window station.
+     {<B>UserSID</B> returns the user of this window station.
       This method raises EJwsclWinCallFailedException if a call to GetUserObjectInformation failed.}
     property UserSID: TJwSecurityId Read GetUserSID;
 
-     {@Name sets or gets the security descriptor of the actual window station.
+     {<B>SecurityDescriptor[Info</B> sets or gets the security descriptor of the actual window station.
       This property uses a parameter Info to set which information is to be set or get.
        ex. SecurityDescriptor[[sif_XXXX,sif_XXXX]]
 
       If used for getting the SD the caller is responsible for freeing the instance.
 
-      Getting the security parameter uses @link(TJwSecureGeneralObject.GetSecurityInfo),
-      setting the security parameter uses @link(TJwSecureGeneralObject.SetSecurityInfo),
+      Getting the security parameter uses TJwSecureGeneralObject.GetSecurityInfo ,
+      setting the security parameter uses TJwSecureGeneralObject.SetSecurityInfo ,
       see the methods for more informations and errors.
      }
     property SecurityDescriptor[Info: TJwSecurityInformationFlagSet]
@@ -170,7 +174,7 @@ type
   end;
 
 
-  {@Name provides access to window stations}
+  {<B>TJwSecurityWindowStations</B> provides access to window stations}
   TJwSecurityWindowStations = class(TPersistent)
   private
   protected
@@ -179,7 +183,7 @@ type
 
   public
     { public declarations }
-     {@Name creates an instance of @ClassName which can be used
+     {<B>Create</B> creates an instance of @ClassName which can be used
       to get a list of window station instances.
      }
     constructor Create; overload;
@@ -190,15 +194,16 @@ type
     destructor Destroy; override;
 
 
-     {@Name returns a list of window station of the actual session.
-      @raises EJwsclWinCallFailedException if a call to EnumWindowStationsW failed.}
+     {<B>GetWindowStationNames</B> returns a list of window station of the actual session.
+      raises
+ EJwsclWinCallFailedException:  if a call to EnumWindowStationsW failed.}
     class function GetWindowStationNames: TJwTJwStringArray; virtual;
     //property WindowStationNames : TJwTJwStringArray read GetWindowStationNames;
 
-    {@Name returns the SessionID}
+    {<B>SessionID</B> returns the SessionID}
     property SessionID: TJwSessionID Read fSessionID;
 
-     {@Name returns a list of window station instances.
+     {<B>WindowStations</B> returns a list of window station instances.
       Do not free these instances - they are automatically freed on destruction.
       The window station list is made on creating the @ClassName instance.
      }
@@ -429,7 +434,7 @@ begin
   if fHandle = 0 then
     raise EJwsclWinCallFailedException.CreateFmtWinCall(
       RsWinStationCreateFailed,
-      //const sMsg: string;
+      //const sMsg: AnsiString;
       'Create',                               //sSourceProc
       ClassName,                                //sSourceClass
       RsUNWinStation,                          //sSourceFile
@@ -685,7 +690,7 @@ begin
   if fHandle = 0 then
     raise EJwsclOpenWindowStationException.CreateFmtWinCall(
       RsWinStationOpenFailed,
-      //const sMsg: string;
+      //const sMsg: AnsiString;
       'Open',                               //sSourceProc
       ClassName,                                //sSourceClass
       RsUNWinStation,                          //sSourceFile

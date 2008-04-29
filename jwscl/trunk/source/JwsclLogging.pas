@@ -1,7 +1,7 @@
-{@abstract(This unit contains a log mechanisms)
+{<B>Abstract</B>This unit contains a log mechanisms 
 @author(Christian Wimmer)
-@created(03/23/2007)
-@lastmod(09/10/2007)
+<B>Created:</B>03/23/2007 
+<B>Last modification:</B>09/10/2007 
 
 Project JEDI Windows Security Code Library (JWSCL)
 
@@ -45,7 +45,7 @@ uses ActiveX,
      SysUtils,
      JwsclStrings;
 
-type {@Name defines log tag attribute types}
+type {<B>TJwLogType</B> defines log tag attribute types}
      TJwLogType = (
         lsNone,
         //logs a message. Information about ths.
@@ -56,7 +56,7 @@ type {@Name defines log tag attribute types}
         lsError,
         //logs an showstopper
         lsStop);
-     {@Name defines an enter/leave attribute type}
+     {<B>TJwEnterType</B> defines an enter/leave attribute type}
      TJwEnterType = (
         //unknown or unsupported enter/leave
         etNone,
@@ -67,7 +67,7 @@ type {@Name defines log tag attribute types}
         //enter or leave a thread main func. body
         etThread);
 
-     {@Name defines a signal attribute type}
+     {<B>TJwSignalType</B> defines a signal attribute type}
      TJwSignalType = (
         stNone,
         //log sent signal 
@@ -77,7 +77,7 @@ type {@Name defines log tag attribute types}
         //log wait for signal
         stWait);
 
-     {@Name defines a memory attribute type}   
+     {<B>TJwMemoryType</B> defines a memory attribute type}   
      TJwMemoryType = (
         mtNone,
         //log memory allocation
@@ -85,7 +85,7 @@ type {@Name defines log tag attribute types}
         //log memory deallocation
         mtDeAlloc);
 
-    {@Name defines known XML tag names}    
+    {<B>TJwXMLTag</B> defines known XML tag names}    
     TJwXMLTag = (
         xtLogFile,
         xtLogProcess,
@@ -109,7 +109,7 @@ type {@Name defines log tag attribute types}
     TJwXMLLogTag = (
         ltEnter, ltLeave, ltSignal, ltMemory, ltLog, ltException, ltDisabled, ltNone);
 
-    {@Name defines known xml tag attributes}
+    {<B>TJwXMLAttrTag</B> defines known xml tag attributes}
     TJwXMLAttrTag = (
         atStart,
         atEnd,
@@ -124,20 +124,20 @@ type {@Name defines log tag attribute types}
         );
 
      {
-     @Name defines an attribute.
+     <B>TJwXMLAttribute</B> defines an attribute.
       Attributes with empty name or value will be ignored
      }
      TJwXMLAttribute = record
-       //@Name defines the name of the attribute
+       //<B>Value</B> defines the name of the attribute
        Name,
-       //@Name contains the content of the attribute
+       //<B>Value</B> contains the content of the attribute
        Value : TJwString;
      end;
 
      TJwEventType = record
-       {@Name defines an event that can be logged.}
+       {<B>TagName</B> defines an event that can be logged.}
        TagName   : TJwXMLLogTag;
-       {@Name contains an or combined bit mask of enumeration constants
+       {<B>TypeValues</B> contains an or combined bit mask of enumeration constants
         from TJwLogType, TJwEnterType, TJwMemoryType or TJwSignalType.
         Set to -1 if all event type are to be logged. 
        }
@@ -146,26 +146,74 @@ type {@Name defines log tag attribute types}
 
      TJwEventTypes = array of TJwEventType;
 
-     //@Name defines an dynamic array of attributes
+     //<B>TJwXMLAttributes</B> defines an dynamic array of attributes
      TJwXMLAttributes = array of TJwXMLAttribute;
 
 
 const IID_JwWriterCLASS : TGUID = '{02A5D97D-9017-45B1-A2E7-2217015536DE}';
 type
+      TJwXMLEventType = (
+       //is called for every WriteSingleTag call
+       etWriteSingleTag,
+       //is called for every StartWriteMultipleTags call
+       etStartWriteMultipleTags,
+       //is called for every StartWriteMultipleTags call
+       etEndWriteMultipleTags,
+       {is called in TJwLogServerImpl.Done when the process end time is updated
+       in the first xml line}
+       etSetProcessEndTime);
+
+      IJwWriterClass = interface;
+
+     {<B>TJwOnXMLWriting</B> is called before code is processed in IJwWriterClass
+      The function receives information about the xml line to be generated.
+     }
+     TJwOnXMLWriting = procedure(
+        IJwWriterClass : IJwWriterClass;
+
+        const EventType : TJwXMLEventType;
+        var IndentLevel: Integer;
+        var TagName: TJwString;
+        var Value: TJwString;
+        var Attributes: TJwXMLAttributes) of object;
+
+     {<B>TJwOnXMLWrite</B> is called after the xml lines has been generated.
+      Its value is stored into parameter Result. Set parameter
+      result to empty if you don't want the xml line to be stored
+      into the internal string list.
+     }
+     TJwOnXMLWrite = procedure(
+        IJwWriterClass : IJwWriterClass;
+        var Result : TJwString)  of object;
+
+
+
      IJwWriterClass = interface
      ['{02A5D97D-9017-45B1-A2E7-2217015536DE}']
-        function WriteSingleTag(IndentLevel: Integer; const TagName: TJwString;
-                                const Value: TJwString; Attributes: TJwXMLAttributes): TJwString; safecall;
-        function StartWriteMultipleTags(IndentLevel: Integer; const TagName: TJwString;
+        function WriteSingleTag(IndentLevel: Integer;  TagName: TJwString;
+                                 Value: TJwString; Attributes: TJwXMLAttributes): TJwString; safecall;
+        function StartWriteMultipleTags(IndentLevel: Integer;  TagName: TJwString;
                                         Attributes: TJwXMLAttributes): TJwString; safecall;
         function EndWriteMultipleTags: TJwString; safecall;
 
         procedure Done; safecall;
 
         function CreateObject : IJwWriterClass; safecall;
+
+        function GetOnXMLWrite : TJwOnXMLWrite;
+        procedure SetOnXMLWrite(Event : TJwOnXMLWrite);
+
+        property OnXMLWrite : TJwOnXMLWrite read GetOnXMLWrite write SetOnXMLWrite;
+
+        function GetOnXMLWriting : TJwOnXMLWriting;
+        procedure SetOnXMLWriting(Event : TJwOnXMLWriting);
+
+        property OnXMLWriting : TJwOnXMLWriting read GetOnXMLWriting write SetOnXMLWriting;
      end;
 
-     {@Name defines a default and base class for xml write operations
+
+
+     {<B>TJwLogWriter</B> defines a default and base class for xml write operations
      and other util functions.
      Overwrite this class and specify its class type to CreateLogServer
      for changed behavior.
@@ -176,33 +224,35 @@ type
        fMultipleTags : Boolean;
        fTagName : TJwString;
        fIndLevel : Integer;
+       fOnXMLWrite : TJwOnXMLWrite;
+       fOnXMLWriting : TJwOnXMLWriting;
      public
-       {@Name writes a single tag.
-       @param(IndLevel defines the indentation level.)
-       @param(TagName defines the name of the tag)
-       @param(Value defines the value of the tag. If empty the tag has no value)
-       @param(Attributes defines an array of attributes to be added to the tag)
-       @return(Returns the formatted xml tag.)
+       {<B>WriteSingleTag</B> writes a single tag.
+       @param IndLevel defines the indentation level. 
+       @param TagName defines the name of the tag 
+       @param Value defines the value of the tag. If empty the tag has no value 
+       @param Attributes defines an array of attributes to be added to the tag 
+       @return Returns the formatted xml tag. 
        }
-       function WriteSingleTag(IndentLevel: Integer; const TagName: TJwString;
-         const Value: TJwString; Attributes: TJwXMLAttributes): TJwString; safecall;
+       function WriteSingleTag(IndentLevel: Integer; TagName: TJwString;
+         Value: TJwString; Attributes: TJwXMLAttributes): TJwString; safecall;
 
-       {@Name starts a tag with sub tags. All subsequent calls to WriteSingleTag
+       {<B>StartWriteMultipleTags</B> starts a tag with sub tags. All subsequent calls to WriteSingleTag
         will create tag under this tag.
         Call EndWriteMultipleTags to end creating sub tags.
         Multiple sub tags is not supported directly. Instead the instance
         is created again.
 
-        @param(IndLevel defines the indentation level.)
-        @param(TagName defines the name of the tag)
-        @param(Attributes defines an array of attributes to be added to the tag)
-        @return(Returns the formatted xml tag.)
+        @param IndLevel defines the indentation level. 
+        @param TagName defines the name of the tag 
+        @param Attributes defines an array of attributes to be added to the tag 
+        @return Returns the formatted xml tag. 
        }
-       function StartWriteMultipleTags(IndentLevel: Integer; const TagName: TJwString;
+       function StartWriteMultipleTags(IndentLevel: Integer; TagName: TJwString;
           Attributes: TJwXMLAttributes): TJwString;safecall;
 
-       {@Name ends creating sub tags which was commenced by StartWriteMultipleTags.
-        @return(The return value is the last closing tag started by StartWriteMultipleTags)
+       {<B>EndWriteMultipleTags</B> ends creating sub tags which was commenced by StartWriteMultipleTags.
+        @return The return value is the last closing tag started by StartWriteMultipleTags 
        }
        function EndWriteMultipleTags : TJwString; safecall;
 
@@ -210,218 +260,258 @@ type
 
        function CreateObject : IJwWriterClass; safecall;
 
-       {@Name is a helper function that adds an attribute structure TJwXMLAttribute
+       {<B>AddAttribute</B> is a helper function that adds an attribute structure TJwXMLAttribute
         to an array TJwXMLAttributes.
-        @param(Attr receives an TJwXMLAttributes where the new attribute is added to the end)
-        @param(Name defines a name for the attribute. The function does not check for duplicates)
-        @param(Value defines the value of the attribute)
+        @param Attr receives an TJwXMLAttributes where the new attribute is added to the end 
+        @param Name defines a name for the attribute. The function does not check for duplicates 
+        @param Value defines the value of the attribute 
         }
        class procedure AddAttribute(var Attr : TJwXMLAttributes; const Name, Value : TJwString); virtual;
 
-       {@Name is a helper function that adds source code location attribute like
+       {<B>AddAttributes</B> is a helper function that adds source code location attribute like
          classname, methodname and filename from where the log is made.
-        @param(Attr receives an TJwXMLAttributes where the new attribute is added to the end)
-        @param(ClassName defines the classname where the method is located. Can be empty
-          if the method is not in a class. In this case the attribute is ignored.)
-        @param(Methodname defines the name of the method or function)
-        @param(Filename defines the filename where the method is located. The filename can contain
-          a source line at the end of string succeeded by a colon.)
+        @param Attr receives an TJwXMLAttributes where the new attribute is added to the end 
+        @param ClassName defines the classname where the method is located. Can be empty
+          if the method is not in a class. In this case the attribute is ignored. 
+        @param Methodname defines the name of the method or function 
+        @param Filename defines the filename where the method is located. The filename can contain
+          a source line at the end of string succeeded by a colon. 
         }
        class procedure AddAttributes(var Attr : TJwXMLAttributes; const ClassName, MethodName, FileName : TJwString); virtual;
 
-       {@Name is a helper function that is used to format a tag value.
+       {<B>FormatString</B> is a helper function that is used to format a tag value.
         It replaces line breaks with c style line breaks (\n).}
        class function FormatString(const Str : TJwString) : TJwString; virtual;
 
-       {@Name returns the value of the attribute thread which contains the name (or ID)
+       {<B>GetThreadName</B> returns the value of the attribute thread which contains the name (or ID)
         of the thread which logged a message.
-        @return(Name and/or ID of thread) 
+        @return Name and/or ID of thread  
          }
        class function GetThreadName : TJwString; virtual;
 
-       {@Name checks whether a log type and its type value should be logged to file.
-        @param(LogTag defines a log tag which is checked)
-        @param(LogTypeValue defines a or bitmask of types (a type like TJwLogType).)
-        @param(AllowedTypes defines a list of event types that can be logged)
+       {<B>CheckLogEventType</B> checks whether a log type and its type value should be logged to file.
+        @param LogTag defines a log tag which is checked 
+        @param LogTypeValue defines a or bitmask of types (a type like TJwLogType). 
+        @param AllowedTypes defines a list of event types that can be logged 
        }
        class function CheckLogEventType(const LogTag : TJwXMLLogTag; const LogTypeValue : Integer;
             const AllowedTypes : TJwEventTypes) : Boolean; virtual;
 
-       {@Name adds an event type to an events list.
-        @param(Event defines a list of events that can be logged)
-        @param(LogTag defines an event to be logged)
-        @param(TypeValues defines a or bitmask of types (like TJwLogType).)
+       {<B>AddEventType</B> adds an event type to an events list.
+        @param Event defines a list of events that can be logged 
+        @param LogTag defines an event to be logged 
+        @param TypeValues defines a or bitmask of types (like TJwLogType). 
         }
        class procedure AddEventType(var Events : TJwEventTypes; const LogTag : TJwXMLLogTag; const TypeValues : Integer); virtual;
+
+       function GetOnXMLWrite : TJwOnXMLWrite;
+       procedure SetOnXMLWrite(Event : TJwOnXMLWrite);
+
+       function GetOnXMLWriting : TJwOnXMLWriting;
+       procedure SetOnXMLWriting(Event : TJwOnXMLWriting);
+
      end;
 
      //TJwLogWriterClass = class of TJwLogWriter;
 
-     {@Name defines an interface for a log client.
+     {<B>IJwLogClient</B> defines an interface for a log client.
       Use IJwLogServer.Connect to create an instance of this interface.
       Each log function is multi thread safe. Different log calls in different threads
       will wait for each other.
      }
      IJwLogClient = interface (IInterface)
        ['{B7202309-4766-4D62-9E16-ECE5953C2AEA}']
-        {@Name creates an ordinary log entry.
-         @param(LogType defines the type of log entry. See TJwLogType for more information)
-         @param(LogMessage defines the message to be shown)
+        {<B>Log</B> creates an ordinary log entry.
+         @param LogType defines the type of log entry. See TJwLogType for more information 
+         @param LogMessage defines the message to be shown 
          }
         procedure Log(const LogType : TJwLogType; const LogMessage : TJwString); overload; safecall;
+
+         {<B>Log</B> creates an ordinary log entry.
+         @param LogType defines the type of log entry. See TJwLogType for more information 
+         @param LogMessage defines the message to be shown 
+         }
         procedure Log(const LogMessage : TJwString; const LogType : TJwLogType = lsMessage); overload; safecall;
 
-        {@Name creates an ordinary log entry with log source information.
-         @param(LogType defines the type of log entry. See TJwLogType for more information)
-         @param(ClassName defines the classname where the method is located. Can be empty
-          if the method is not in a class. In this case the attribute is ignored.)
-         @param(Methodname defines the name of the method or function)
-         @param(Filename defines the filename where the method is located. The filename can contain
-          a source line at the end of string succeeded by a colon.)
-         @param(LogMessage defines the message to be shown)
+        {<B>Log</B> creates an ordinary log entry with log source information.
+         @param LogType defines the type of log entry. See TJwLogType for more information 
+         @param ClassName defines the classname where the method is located. Can be empty
+          if the method is not in a class. In this case the attribute is ignored. 
+         @param Methodname defines the name of the method or function 
+         @param Filename defines the filename where the method is located. The filename can contain
+          a source line at the end of string succeeded by a colon. 
+         @param LogMessage defines the message to be shown 
          }
         procedure Log(const LogType : TJwLogType; const ClassName, MethodName, FileName, LogMessage : TJwString); overload; safecall;
 
-        {@Name creates a signal log entry. A signal log entries is used for communcation logging.
+        {<B>Signal</B> creates a signal log entry. A signal log entries is used for communcation logging.
          Threads or processes may use events to signal special events.
-         @param(SignalType defines the type of signal entry. See TJwSignalType for more information)
-         @param(Source defines the source of the signal, like another thread or process ID.)
-         @param(Target defines the target of the signal, like another thread or process ID.)
-         @param(LogMessage defines the message to be shown)
+         @param SignalType defines the type of signal entry. See TJwSignalType for more information 
+         @param Source defines the source of the signal, like another thread or process ID. 
+         @param Target defines the target of the signal, like another thread or process ID. 
+         @param LogMessage defines the message to be shown 
          }
         procedure Signal(const SignalType : TJwSignalType; const Source, Target, LogMessage : TJwString); overload; safecall;
 
-        {@Name creates a signal log entry. A signal log entries is used for communcation logging.
+        {<B>Signal</B> creates a signal log entry. A signal log entries is used for communcation logging.
          Threads or processes may use events to signal special events.
-         @param(LogType defines the type of log entry. See TJwLogType for more information)
-         @param(Source defines the source of the signal, like another thread or process ID.)
-         @param(Target defines the target of the signal, like another thread or process ID.)
-         @param(ClassName defines the classname where the method is located. Can be empty
-          if the method is not in a class. In this case the attribute is ignored.)
-         @param(Methodname defines the name of the method or function)
-         @param(Filename defines the filename where the method is located. The filename can contain
-          a source line at the end of string succeeded by a colon.)
-         @param(LogMessage defines the message to be shown)
+         @param LogType defines the type of log entry. See TJwLogType for more information 
+         @param Source defines the source of the signal, like another thread or process ID. 
+         @param Target defines the target of the signal, like another thread or process ID. 
+         @param ClassName defines the classname where the method is located. Can be empty
+          if the method is not in a class. In this case the attribute is ignored. 
+         @param Methodname defines the name of the method or function 
+         @param Filename defines the filename where the method is located. The filename can contain
+          a source line at the end of string succeeded by a colon. 
+         @param LogMessage defines the message to be shown 
          }
         procedure Signal(const SignalType : TJwSignalType; const Source, Target, ClassName, MethodName, FileName, LogMessage : TJwString); overload; safecall;
 
-        {@Name creates a memory information log entry.
+        {<B>Memory</B> creates a memory information log entry.
          Application can log allocations and deallocations of memory for leak search. 
 
-         @param(MemoryType defines the type of memory allocation. See TJwMemoryType for more information)
-         @param(MemType defines which type of (de-)allocation mechanism is used (like GetMem))
-         @param(LogMessage defines the message to be shown.)
+         @param MemoryType defines the type of memory allocation. See TJwMemoryType for more information 
+         @param MemType defines which type of (de-)allocation mechanism is used (like GetMem) 
+         @param LogMessage defines the message to be shown. 
          }
         procedure Memory(const MemoryType : TJwMemoryType; const MemType, LogMessage : TJwString); overload; safecall;
 
-        {@Name creates a memory information log entry with log source information.
+        {<B>Memory</B> creates a memory information log entry with log source information.
          Application can log allocations and deallocations of memory for leak search. 
 
-         @param(MemoryType defines the type of memory allocation. See TJwMemoryType for more information)
-         @param(MemType defines which type of (de-)allocation mechanism is used (like GetMem))
-         @param(ClassName defines the classname where the method is located. Can be empty
-          if the method is not in a class. In this case the attribute is ignored.)
-         @param(Methodname defines the name of the method or function)
-         @param(Filename defines the filename where the method is located. The filename can contain
-          a source line at the end of string succeeded by a colon.)
-         @param(LogMessage defines the message to be shown.)
+         @param MemoryType defines the type of memory allocation. See TJwMemoryType for more information 
+         @param MemType defines which type of (de-)allocation mechanism is used (like GetMem) 
+         @param ClassName defines the classname where the method is located. Can be empty
+          if the method is not in a class. In this case the attribute is ignored. 
+         @param Methodname defines the name of the method or function 
+         @param Filename defines the filename where the method is located. The filename can contain
+          a source line at the end of string succeeded by a colon. 
+         @param LogMessage defines the message to be shown. 
          }
         procedure Memory(const MemoryType : TJwMemoryType; const MemType, ClassName, MethodName, FileName, LogMessage : TJwString); overload; safecall;
 
-        {@Name creates an exception information log entry.
+        {<B>Exception</B> creates an exception information log entry.
 
-         @param(E contains an exception object which content is logged.
-            The object can be of class EJwsclSecurityException. In this case more information is available in the log.)
-         @param(LogMessage defines the message to be shown.)
+         @param E contains an exception object which content is logged.
+            The object can be of class EJwsclSecurityException. In this case more information is available in the log. 
+         @param LogMessage defines the message to be shown. 
          }
         procedure Exception(const E : Exception); overload; safecall;
 
-        {@Name creates an exception information log entry with log source information.
+        {<B>Exception</B> creates an exception information log entry with log source information.
 
-         @param(E contains an exception object which content is logged.
-            The object can be of class EJwsclSecurityException. In this case more information is available in the log.)
-         @param(ClassName defines the classname where the method is located. Can be empty
-          if the method is not in a class. In this case the attribute is ignored.)
-         @param(Methodname defines the name of the method or function)
-         @param(Filename defines the filename where the method is located. The filename can contain
-          a source line at the end of string succeeded by a colon.)
-         @param(LogMessage defines the message to be shown.)
+         @param E contains an exception object which content is logged.
+            The object can be of class EJwsclSecurityException. In this case more information is available in the log. 
+         @param ClassName defines the classname where the method is located. Can be empty
+          if the method is not in a class. In this case the attribute is ignored. 
+         @param Methodname defines the name of the method or function 
+         @param Filename defines the filename where the method is located. The filename can contain
+          a source line at the end of string succeeded by a colon. 
+         @param LogMessage defines the message to be shown. 
          }
         procedure Exception(const E : Exception; const ClassName, MethodName, FileName : TJwString); overload; safecall;
 
-        {@Name sets the type of events which are logged of this log client}
+        {<B>SetEventTypes</B> sets the type of events which are logged of this log client}
         procedure SetEventTypes(const EventTypes : TJwEventTypes); safecall;
      end;
 
      IJwLogServer = interface (IInterface)
        ['{1B3EC217-2F6D-4FE2-A9DC-BF7E8C025D4F}']
-       {@Name creates a new log client. A log client (IJwLogClient) provides access to logging mechanisms.
+       {<B>Connect</B> creates a new log client. A log client (IJwLogClient) provides access to logging mechanisms.
         Use this function at the beginning of a process, thread or function start. Obtain an instance
         of IJwLogClient and start to log information.
-        @param(EnterType define of which kind this log client consists. A log client automatically
+
+        Warning:
+          Do not store the result into a global variable. The reason is that the global interface
+          variable will be destroyed after the LogServer has been freed. This may lead to an assertion
+          (in TJwLogServerImpl.EnterCriticalSection).
+
+        @param EnterType define of which kind this log client consists. A log client automatically
          creates an enter tag using this parameter. Specify etNone to do not create an enter log.
          If the instance is destroyed the log client will automatically create
-         a leave tag.)
-        @param(ClassName defines the classname where the method is located. Can be empty
-          if the method is not in a class. In this case the attribute is ignored.)
-        @param(Methodname defines the name of the method or function)
-        @param(Filename defines the filename where the method is located. The filename can contain
-          a source line at the end of string succeeded by a colon.)
-        @param(MessageText defines the message to be used for the enter log entry.)
+         a leave tag. 
+        @param ClassName defines the classname where the method is located. Can be empty
+          if the method is not in a class. In this case the attribute is ignored. 
+        @param Methodname defines the name of the method or function 
+        @param Filename defines the filename where the method is located. The filename can contain
+          a source line at the end of string succeeded by a colon. 
+        @param MessageText defines the message to be used for the enter log entry. 
        }
        function Connect(const EnterType : TJwEnterType; const ClassName, MethodName, FileName, MessageText : TJwString) : IJwLogClient; safecall;
 
-       {@Name nils the log instance and frees it if reference count is zero.}
+       {<B>Disconnect</B> nils the log instance and frees it if reference count is zero.}
        procedure Disconnect(var Client : IJwLogClient); safecall;
 
-       {@Name stops the logging server and shut it down.}
+       {<B>Done</B> stops the logging server and shut it down.}
        procedure Done; SafeCall;
 
-       {@Name sets type of log events which are logged}
+       {<B>SetLogTypes</B> sets type of log events which are logged}
        procedure SetLogTypes(const LogTypes : TJwEventTypes); SafeCall;
-       {@Name gets type of log events which are logged}
+       {<B>GetLogTypes</B> gets type of log events which are logged}
        function GetLogTypes : TJwEventTypes; SafeCall;
-       {@Name changes the writer class.
+       {<B>SetWriterClass</B> changes the writer class.
         The writer class is called when an log event must be written to a database
          (file, xml, db)
        }
        procedure SetWriterClass(const Writer : IJwWriterClass); SafeCall;
-       {@Name gets the writer class.}
+       {<B>GetWriterClass</B> gets the writer class.}
        function GetWriterClass : IJwWriterClass; SafeCall;
+
+       function GetOnXMLWrite : TJwOnXMLWrite;
+       procedure SetOnXMLWrite(Event : TJwOnXMLWrite);
+
+       property OnXMLWrite : TJwOnXMLWrite read GetOnXMLWrite write SetOnXMLWrite;
+
+       function GetOnXMLWriting : TJwOnXMLWriting;
+       procedure SetOnXMLWriting(Event : TJwOnXMLWriting);
+
+       property OnXMLWriting : TJwOnXMLWriting read GetOnXMLWriting write SetOnXMLWriting;
      end;
 
-{@Name enables or disables logging. It just does not write output.}
+{<B>SetEventTypesEnabled</B> enables or disables logging. It just does not write output.}
 procedure SetEventTypesEnabled(const LogServer : IJwLogServer; const Enabled : Boolean);
 
 function GetEventTypesEnabled(const LogServer : IJwLogServer) : Boolean;
 
 
-{@Name creates a new log server that can hold several log clients (IJwLogClient).
+{<B>CreateLogServer</B> creates a new log server that can hold several log clients (IJwLogClient).
 A log sever creates a new logprocess tag and closes it if it is destroyed.
 It saves each xml tag into a new string list item in parameter Elements. This
 behavior can be overwritten by using a non default WriterClass (TJwLogWriterClass)
-@param(Elements receives the xml tags. Each item contains a whole line of an xml tag.
+@param Elements receives the xml tags. Each item contains a whole line of an xml tag.
   Must not be nil if parameter WriterClass is left nil.
-  )
-@param(LogTypes receives a list of TJwEventType records that contains tags and its
+   
+@param LogTypes receives a list of TJwEventType records that contains tags and its
 attributes which ought to be logged.
 If the array is empty all types of events are logged.
-)
-@param(WriterClass defines a custom class that can be used to change the
+ 
+
+@param OnXMLWrite is a callback method that will be called when an xml
+ line is going to be stored into the log file. The xml line can be adapted or even removed 
+
+@param OnXMLWriting is a callback method that will be called when an xml
+ line is going to be created. Some parameters can be changed. 
+
+@param WriterClass defines a custom class that can be used to change the
 default mechanism how xml is stored. By default (if nil) the TJwLogWriterClass
-uses a string list implementation to store xml.)
-@return(Returns an instance of IJwLogServer for logging information)
+uses a string list implementation to store xml. 
+
+@return Returns an instance of IJwLogServer for logging information 
 
 }
-function CreateLogServer(Elements : TStringList; const LogTypes : TJwEventTypes; const WriterClass : IJwWriterClass = nil) : IJwLogServer;
+function CreateLogServer(Elements : TStringList;
+  const LogTypes : TJwEventTypes;
+  const OnXMLWrite : TJwOnXMLWrite = nil;
+  const OnXMLWriting : TJwOnXMLWriting = nil;
+  const WriterClass : IJwWriterClass = nil) : IJwLogServer;
 
 
-var //JwStrNewLine : String = #13#10;
+var //JwStrNewLine : AnsiString = #13#10;
     //identation string (default #9 = tabulator char)
-    JwStrIdent : String = #9;
+    JwStrIdent : AnsiString = #9;
 
     //format of start attribute value for processlog tag
-    JwTimeOutputString : String = 'dd.mm.yyyy hh:nn:ss:zzz';
+    JwTimeOutputString : AnsiString = 'dd.mm.yyyy hh:nn:ss:zzz';
 
     //strings for log tag value
     JwLogTypeStrings : array[TJwLogType] of TJwString = (
@@ -552,10 +642,12 @@ type TJwLogServerImpl = class;
        fEventTypes : TJwEventTypes;
 
        fCritical : SyncObjs.TCriticalSection;
-       //ID connects enter and leave tag unambiguously 
+       //ID connects enter and leave tag unambiguously
        fID : Int64;
 
        fIdx : Integer;
+       fOnXMLWrite : TJwOnXMLWrite;
+       fOnXMLWriting : TJwOnXMLWriting;
 
        procedure EnterCriticalSection;
        procedure LeaveCriticalSection;
@@ -565,10 +657,22 @@ type TJwLogServerImpl = class;
        //sets or adds identation for a specific thread
        procedure SetIdent(Ident : Integer);
 
-       //@Name creates a new unambiguous ID threadsafe.
+       //<B>GetID</B> creates a new unambiguous ID threadsafe.
        function GetID : Int64;
+
+       function GetOnXMLWrite : TJwOnXMLWrite;
+       procedure SetOnXMLWrite(Event : TJwOnXMLWrite);
+
+       function GetOnXMLWriting : TJwOnXMLWriting;
+       procedure SetOnXMLWriting(Event : TJwOnXMLWriting);
+
+
      public
-       constructor Create(const Elements : TStringList; const EventTypes : TJwEventTypes;  const WriterClass : IJwWriterClass);
+       constructor Create(const Elements : TStringList;
+         const EventTypes : TJwEventTypes;
+         const OnXMLWrite : TJwOnXMLWrite;
+         const OnXMLWriting : TJwOnXMLWriting;
+         const WriterClass : IJwWriterClass);
        destructor Destroy; override;
 
        function Connect(const EnterType : TJwEnterType; const ClassName, MethodName, FileName, MessageText : TJwString) : IJwLogClient;safecall;
@@ -583,9 +687,13 @@ type TJwLogServerImpl = class;
 
      end;
 
-function CreateLogServer(Elements : TStringList; const LogTypes : TJwEventTypes; const WriterClass : IJwWriterClass = nil) : IJwLogServer;
+function CreateLogServer(Elements : TStringList;
+  const LogTypes : TJwEventTypes;
+  const OnXMLWrite : TJwOnXMLWrite = nil;
+  const OnXMLWriting : TJwOnXMLWriting = nil;
+  const WriterClass : IJwWriterClass = nil) : IJwLogServer;
 begin
-  result := TJwLogServerImpl.Create(Elements,LogTypes, WriterClass);
+  result := TJwLogServerImpl.Create(Elements,LogTypes, OnXMLWrite, OnXMLWriting, WriterClass);
 end;
 
 
@@ -724,13 +832,19 @@ begin
 end;
 
 procedure TJwLogClientImpl.Log(const LogType : TJwLogType; const ClassName, MethodName, FileName, LogMessage : TJwString); safecall;
-var Attributes : TJwXMLAttributes;
+var
+Attributes : TJwXMLAttributes;
 begin
   fOwner.EnterCriticalSection;
   try
     if not TJwLogWriter.CheckLogEventType(ltLog, Integer(LogType), fEventTypes) then
     begin
-      fOwner.LeaveCriticalSection;
+      {
+      In XP SP2, calling LeaveCriticalSection twice results in an
+       hang in EnterCriticalSection, next time executed.
+
+      finally is executed here, so we don't call LeaveCriticalSection here
+      }
       exit;
     end;    
 
@@ -738,6 +852,16 @@ begin
     TJwLogWriter.AddAttributes(Attributes, ClassName, MethodName, FileName);
     TJwLogWriter.AddAttribute(Attributes, JwXMLAttributeString[atThread], TJwLogWriter.GetThreadName);
     AddToList(fWriter.WriteSingleTag(fInd, JwXMLTagsString[xtLog], LogMessage, Attributes));
+{$IFDEF DEBUG}
+{$IFDEF UNICODE}OutputDebugStringW{$ELSE}OutputDebugStringA{$ENDIF}(
+        TJwPChar(JwFormatString('[%0:s] %1:s::%2:s.%3:s: %4:s',
+          [JwLogTypeStrings[LogType], //0
+           FileName,   //1
+           ClassName,  //2
+           MethodName, //3
+           LogMessage  //4
+          ])));
+{$ENDIF DEBUG}
   finally
     fOwner.LeaveCriticalSection;
   end;
@@ -765,7 +889,12 @@ begin
   try
     if not TJwLogWriter.CheckLogEventType(ltMemory, Integer(MemoryType), fEventTypes) then
     begin
-      fOwner.LeaveCriticalSection;
+      {
+      In XP SP2, calling LeaveCriticalSection twice results in an
+       hang in EnterCriticalSection, next time executed.
+
+      finally is executed here, so we don't call LeaveCriticalSection here
+      }
       exit;
     end;
 
@@ -795,7 +924,12 @@ begin
   try
     if not TJwLogWriter.CheckLogEventType(ltSignal, Integer(SignalType), fEventTypes) then
     begin
-      fOwner.LeaveCriticalSection;
+      {
+      In XP SP2, calling LeaveCriticalSection twice results in an
+       hang in EnterCriticalSection, next time executed.
+
+      finally is executed here, so we don't call LeaveCriticalSection here
+      }
       exit;
     end;
 
@@ -826,7 +960,12 @@ begin
   try
     if not TJwLogWriter.CheckLogEventType(ltException, Integer(0), fEventTypes) then
     begin
-      fOwner.LeaveCriticalSection;
+      {
+      In XP SP2, calling LeaveCriticalSection twice results in an
+       hang in EnterCriticalSection, next time executed.
+
+      finally is executed here, so we don't call LeaveCriticalSection here
+      }
       exit;
     end;
 
@@ -902,7 +1041,7 @@ end;
 function TJwLogClientImpl.AddToList(const S: TJwString): Integer;
 begin
   result := 0;
-  if Assigned(fOwner.fElements) then
+  if Assigned(fOwner.fElements) and (Length(S) > 0) then
     result := fOwner.fElements.Add(S);
 end;
 
@@ -917,7 +1056,7 @@ end;
 
 constructor TJwLogServerImpl.Create;
 var Attributes : TJwXMLAttributes;
-    S : String;
+    S : String;  //in Tiburon this String is WideString. no prob
 begin                                               
   fCritical := SyncObjs.TCriticalSection.Create;
   fElements := Elements;
@@ -931,17 +1070,22 @@ begin
     fWriter := WriterClass
   else
     fWriter := TJwLogWriter.Create;
-    
 
-  DateTimeToString(S, JwTimeOutputString, Now);
+  fWriter.OnXMLWrite := OnXMLWrite;
+  fWriter.OnXMLWriting := OnXMLWriting;
+  fOnXMLWrite := OnXMLWrite;
+  fOnXMLWriting := OnXMLWriting;
+
+
+  DateTimeToString(S, String(JwTimeOutputString), Now);
 
   TJwLogWriter.AddAttribute(Attributes, JwXMLAttributeString[atStart], S);
   TJwLogWriter.AddAttribute(Attributes, JwXMLAttributeString[atThread], TJwLogWriter.GetThreadName);
   TJwLogWriter.AddAttribute(Attributes, JwXMLAttributeString[atEnd], '%s'); //save space for end date and time
 
   S := fWriter.StartWriteMultipleTags(1, JwXMLTagsString[xtLogProcess],Attributes);
-  if Assigned(fElements) then
-    fIdx := fElements.Add(S);   
+  if Assigned(fElements) and (Length(S) > 0) then
+    fIdx := fElements.Add(S);
 end;
 
 destructor TJwLogServerImpl.Destroy;
@@ -951,14 +1095,31 @@ begin
 end;
 
 procedure TJwLogServerImpl.Done;
-var Attributes : TJwXMLAttributes;
-    S : String;
-    Value : TJwString;
+var
+  Attributes : TJwXMLAttributes;
+  AnsiStr : AnsiString;
+  WideStr : WideString;
+  S : TJwString;
+
+  Value : TJwString;
+  IndentLevel: Integer;
+  TagName: TJwString;
 begin
   if not Assigned(fCritical) then
     exit;
 
-  DateTimeToString(S, JwTimeOutputString, Now);
+  DateTimeToString(AnsiStr, String(JwTimeOutputString), Now);
+{$IFDEF UNICODE}
+  S := WideString(AnsiStr);
+{$ELSE}
+  S := AnsiStr;
+{$ENDIF}
+
+  //Send end process time 
+  if Assigned(fOnXMLWriting) then
+    fOnXMLWriting(nil,etSetProcessEndTime,
+        IndentLevel, TagName,
+        S, Attributes);
 
   if (fIdx >= 0) and Assigned(fElements) then
   try
@@ -970,7 +1131,7 @@ begin
 
   S := fWriter.EndWriteMultipleTags;
 
-  if Assigned(fElements) then
+  if Assigned(fElements) and (Length(S) > 0) then
     fElements.Add(S);
 
   fWriter.Done;
@@ -1061,13 +1222,25 @@ begin
   end;
 end;
 
+function TJwLogServerImpl.GetOnXMLWrite : TJwOnXMLWrite;
+begin
+  result := fOnXMLWrite;
+end;
+procedure TJwLogServerImpl.SetOnXMLWrite(Event : TJwOnXMLWrite);
+begin
+  fOnXMLWrite := Event;
+end;
+
+
 function TJwLogServerImpl.GetID : Int64;
 var I : Integer;
 begin
   try
     //some OS does not support functions
     //which this function is calls
-    InterlockedIncrement64(fID);
+   // InterlockedIncrement64(fID);
+   InterlockedIncrement(I);
+   fID := I;
   except
     InterlockedIncrement(I);
     fID := I;
@@ -1129,6 +1302,16 @@ begin
   Events[high(Events)].TypeValues := TypeValues;
 end;
 
+function TJwLogWriter.GetOnXMLWrite : TJwOnXMLWrite;
+begin
+  result := fOnXMLWrite;
+end;
+procedure TJwLogWriter.SetOnXMLWrite(Event : TJwOnXMLWrite);
+begin
+  fOnXMLWrite := Event;
+end;
+
+
 class function TJwLogWriter.CheckLogEventType(const LogTag: TJwXMLLogTag;
   const LogTypeValue: Integer; const AllowedTypes: TJwEventTypes): Boolean;
 
@@ -1159,6 +1342,9 @@ end;
 function TJwLogWriter.CreateObject: IJwWriterClass;
 begin
   result := TJwLogWriter.Create;
+  result.OnXMLWrite := Self.fOnXMLWrite;
+  result.OnXMLWriting := Self.fOnXMLWriting;
+
 end;
 
 procedure TJwLogWriter.Done;
@@ -1168,13 +1354,32 @@ end;
 
 function TJwLogWriter.EndWriteMultipleTags(): TJwString;
 var i : Integer;
+ IndentLevel: Integer;
+ TagName: TJwString;
+ Value: TJwString;
+ Attributes: TJwXMLAttributes;
 begin
+  IndentLevel := fIndLevel;
+
+
+  if Assigned(fOnXMLWriting) then
+    fOnXMLWriting(Self,
+        etEndWriteMultipleTags,//const EventType : TJwXMLEventType;
+        IndentLevel,//var IndentLevel: Integer;
+        TagName,//var TagName: TJwString;
+        Value,//var Value: TJwString;
+        Attributes//var Attributes: TJwXMLAttributes
+        );
+
   result := '';
   for i := 1 to fIndLevel-1 do
     result := JwStrIdent + result;
   result := result + '</'+fTagName+'>';
 
   fMultipleTags := false;
+
+  if Assigned(fOnXMLWrite) then
+    fOnXMLWrite(Self, Result);
 end;
 
 class function TJwLogWriter.FormatString(const Str: TJwString): TJwString;
@@ -1201,23 +1406,47 @@ begin
     result := IntToStr(GetCurrentThreadId);
 end;
 
-function TJwLogWriter.StartWriteMultipleTags(IndentLevel: Integer; const TagName: TJwString;
+function TJwLogWriter.StartWriteMultipleTags(IndentLevel: Integer; TagName: TJwString;
           Attributes: TJwXMLAttributes): TJwString;
-begin  
+var Value: TJwString;
+begin
+  if Assigned(fOnXMLWriting) then
+    fOnXMLWriting(Self,
+        etStartWriteMultipleTags,//const EventType : TJwXMLEventType;
+        IndentLevel,//var IndentLevel: Integer;
+        TagName,//var TagName: TJwString;
+        Value,//var Value: TJwString;
+        Attributes//var Attributes: TJwXMLAttributes
+        );
+
   fIndLevel := IndentLevel+1;
   fTagName := TagName;
    fStartMTags := true;
    result := WriteSingleTag(IndentLevel, TagName, '', Attributes);
    fStartMTags := false;
   fMultipleTags := true;
+
+  {
+  Already done in WriteSingleTag
+  if Assigned(fOnXMLWrite) then
+    fOnXMLWrite(Self, Result);  }
 end;
 
-function TJwLogWriter.WriteSingleTag(IndentLevel: Integer; const TagName: TJwString;
-                                const Value: TJwString; Attributes: TJwXMLAttributes): TJwString;
+function TJwLogWriter.WriteSingleTag(IndentLevel: Integer; TagName: TJwString;
+                                Value: TJwString; Attributes: TJwXMLAttributes): TJwString;
 var S, AttributesLine : TJwString;
     i : Integer;
 
 begin
+  if Assigned(fOnXMLWriting) then
+    fOnXMLWriting(Self,
+        etWriteSingleTag,//const EventType : TJwXMLEventType;
+        IndentLevel,//var IndentLevel: Integer;
+        TagName,//var TagName: TJwString;
+        Value,//var Value: TJwString;
+        Attributes//var Attributes: TJwXMLAttributes
+        );
+
   AttributesLine := '';
   for i := Low(Attributes) to high(Attributes) do
   begin
@@ -1253,8 +1482,33 @@ begin
   for i := 1 to IndentLevel do
     result := JwStrIdent + result;
 
+  if Assigned(fOnXMLWrite) then
+    fOnXMLWrite(Self, Result);
+
+
 {  if fMultipleTags then
     result := result + JwStrNewLine;  }
+end;
+
+function TJwLogServerImpl.GetOnXMLWriting: TJwOnXMLWriting;
+begin
+  result := fOnXMLWriting;
+end;
+
+procedure TJwLogServerImpl.SetOnXMLWriting(Event: TJwOnXMLWriting);
+begin
+  fOnXMLWriting := Event;
+  fWriter.OnXMLWriting := Event;
+end;
+
+function TJwLogWriter.GetOnXMLWriting: TJwOnXMLWriting;
+begin
+  result := fOnXMLWriting;
+end;
+
+procedure TJwLogWriter.SetOnXMLWriting(Event: TJwOnXMLWriting);
+begin
+  fOnXMLWriting := Event;
 end;
 
 initialization

@@ -1,7 +1,7 @@
-{@abstract(Contains access control classes that are used by the units of JWSCL)
+{<B>Abstract</B>Contains access control classes that are used by the units of JWSCL 
 @author(Christian Wimmer)
-@created(03/23/2007)
-@lastmod(09/10/2007)
+<B>Created:</B>03/23/2007 
+<B>Last modification:</B>09/10/2007 
 
 Project JEDI Windows Security Code Library (JWSCL)
 
@@ -56,7 +56,7 @@ uses SysUtils, Contnrs, Classes,
 
 {$IFNDEF SL_IMPLEMENTATION_SECTION}
 type
-   {@Name defines a callback method for calculating a hash value.
+   {<B>TJwHashCodeMethod</B> defines a callback method for calculating a hash value.
      Its used by  TJwSecurityDescriptor.OnHashCodeMethod .
    @param val Contains a pointer to data which is used to calculate the hash
    @param size Contains the size of the data in val. 
@@ -71,7 +71,7 @@ type
   TJwSecurityDescriptorArray = array of TJwSecurityDescriptor;
 
 
-  {@Name contains information about a security descriptor.
+  {<B>TJwSecurityDescriptor</B> contains information about a security descriptor.
       It does not hold a pointer to a security descriptor.
        It is created on demand.
       }
@@ -114,14 +114,14 @@ type
     function GetSACL: TJwSAccessControlList;
     procedure SetSACL(anACL: TJwSAccessControlList);
 
-    //@Name receives a SD and initialises the instance member variables
+    //<B>InitializeSD</B> receives a SD and initialises the instance member variables
     procedure InitializeSD(aSecurityDescriptor:
       jwaWindows.PSecurityDescriptor);
 
-    //@Name destroys the var members of the instance
+    //<B>Done</B> destroys the var members of the instance
     procedure Done; virtual;
 
-    //@Name see property Text for more information
+    //<B>GetText</B> see property Text for more information
     function GetText: TJwString; virtual;
 
     function GetRMControl: jwaWindows.TSecurityDescriptorControl; virtual;
@@ -134,7 +134,7 @@ type
     procedure SetProtectedState(Index : Integer; const Protect : TJwACLProtection); virtual;
     function GetProtectedState(Index : Integer) : TJwACLProtection; virtual;
   public
-       {@Name creates an empty security descriptor.
+       {<B>Create</B> creates an empty security descriptor.
         The property pSD is initialised and ready to be filled.
 
         By default the DACL is initialized with no entries so everyone is denied access.
@@ -143,7 +143,7 @@ type
         }
     constructor Create; overload;
 
-       {@Name creates a new TJwSecurityDescriptor instance by copying from an existing one defined in the lonely parameter.
+       {<B>Create</B> creates a new TJwSecurityDescriptor instance by copying from an existing one defined in the lonely parameter.
         For this purpose it uses Assign.
         If aSecurityDescriptor is nil the new instance will be empty.
 
@@ -152,13 +152,13 @@ type
     constructor Create(aSecurityDescriptor: TJwSecurityDescriptor);
       overload;
 
-    {@Name combines a parent and a creator security descriptor into a new security descriptor.
+    {<B>CreatePrivateObjectSecurity</B> combines a parent and a creator security descriptor into a new security descriptor.
      For detailed information see MSDN http://msdn2.microsoft.com/en-us/library/aa446581.aspx
 
-     @param(ObjectType A Pointer to a GUID that defines the type. Set to nil if it does not exist.)
-     @param(GenericMap Defines the generic map class which maps generic access rights to specific access rights.)
-     @param(Token defines the token instance which is used to check for access. Can be nil to use
-          process or thread token.)
+     @param ObjectType A Pointer to a GUID that defines the type. Set to nil if it does not exist. 
+     @param GenericMap Defines the generic map class which maps generic access rights to specific access rights. 
+     @param Token defines the token instance which is used to check for access. Can be nil to use
+          process or thread token. 
 
      }
     constructor CreatePrivateObjectSecurity(
@@ -171,79 +171,82 @@ type
       const Token : TObject = nil);
 
 
-    {@Name creates a new security descriptor and copies the defines members
+    {<B>Create</B> creates a new security descriptor and copies the defines members
      of a default security descriptor.
-     @param(SecurityInformationSet defines which members are copied from
-       the default security descriptor)
+     @param SecurityInformationSet defines which members are copied from
+       the default security descriptor 
     }
     constructor Create(const SecurityInformationSet : TJwSecurityInformationFlagSet;
       SecurityDescriptor: TJwSecurityDescriptor);
       overload;
 
-    {@Name creates a default security descriptor. It will contain the same
+    {<B>CreateDefaultByToken</B> creates a default security descriptor. It will contain the same
     elements as if a securable object (like mutex) is created without a SD.
-    @param(DefaultToken defines a user defined token to be used. It must be of type
-            TJwSecurityToken. (because of unit dependings it cannot be the correct type))
-    @param(RequestedTokenType defines which token should be used for the new SD.
+    @param DefaultToken defines a user defined token to be used. It must be of type
+            TJwSecurityToken. (because of unit dependings it cannot be the correct type) 
+    @param RequestedTokenType defines which token should be used for the new SD.
            If parameter DefaultToken is not nil, RequestedTokenType will be ignored.
           The following values are possible.  
-          @unorderedlist(
-            @item(rttAuto The token of the thread will be used if any; otherwise
-                  the process token.)
-            @item(rttTokenPrimary The process token is forced to use.
-                    See TJwSecurityToken.CreateTokenByProcess for more information)
-            @item(rttTokenImpersonation The thread token is forced to use.
+          
+            # rttAuto The token of the thread will be used if any; otherwise
+                  the process token. 
+            # rttTokenPrimary The process token is forced to use.
+                    See TJwSecurityToken.CreateTokenByProcess for more information 
+            # rttTokenImpersonation The thread token is forced to use.
                   The token is opened against the process rights.
-                    See TJwSecurityToken.CreateTokenByThread for more information)
-          )
-     )
-    @raises(EJwsclInvalidParameterException will be raised if parameter DefaultToken
-        is not of type TJwSecurityToken.)
-    @raises(EJwsclNoThreadTokenAvailable will be raised if parameter RequestedTokenType
-       defines rttTokenImpersonation and no thread token is available)
+                    See TJwSecurityToken.CreateTokenByThread for more information 
+          
+      
+    raises
+ EJwsclInvalidParameterException:  will be raised if parameter DefaultToken
+        is not of type TJwSecurityToken. 
+     EJwsclNoThreadTokenAvailable: will be raised if parameter RequestedTokenType
+       defines rttTokenImpersonation and no thread token is available 
     }
     constructor CreateDefaultByToken(const DefaultToken : TObject = nil;
         const RequestedTokenType: TJwRequestedTokenType = rttAuto);
 
-       {@Name create a new TJwSecurityDescriptor instance from a security descriptor.
+       {<B>Create</B> create a new TJwSecurityDescriptor instance from a security descriptor.
         The sd can be a self relative or absolute sd.
 
         @param aSecurityDescriptor Defines a winapi PSecurityDescriptor
-        @raises EJwsclNILParameterException will be raised if parameter aSecurityDescriptor is nil.
+        raises
+ EJwsclNILParameterException:  will be raised if parameter aSecurityDescriptor is nil.
        }
     constructor Create(aSecurityDescriptor:
       jwaWindows.PSecurityDescriptor);
       overload;
 
-       {@Name creates a new TJwSecurityDescriptor instance from a winapi security string.
+       {<B>Create</B> creates a new TJwSecurityDescriptor instance from a winapi security string.
         For more information see http://msdn2.microsoft.com/en-us/library/aa379570.aspx
 
         @param aSDString contains the string to be parsed into a sd.
-        @raises EJwsclWinCallFailedException will be raised if the string could not be parsed correctly.
+        raises
+ EJwsclWinCallFailedException:  will be raised if the string could not be parsed correctly.
         }
 
     constructor Create(aSDString:
  {$IFNDEF SL_OMIT_SECTIONS}JwsclStrings.{$ENDIF SL_OMIT_SECTIONS}TJwString);
       overload;
 
-       {@Name creates a new TJwSecurityDescriptor using information from a stream.
-        See @link(LoadFromStream) for more information.
+       {<B>Create</B> creates a new TJwSecurityDescriptor using information from a stream.
+        See LoadFromStream  for more information.
        }
     constructor Create(const Stream: TStream); overload;
 
-       {@Name destroys the instance and its properties if necessary.
+       {<B>Destroy</B> destroys the instance and its properties if necessary.
 
-       @unorderedlist(
-        @item Owner will be freed if OwnOwner is true
-        @item PrimaryGroup will be freed if OwnPrimaryGroup is true
-        @item DACL will always be freed. The ACEs will be freed if DACL.ownObjects is true.
-        @item AuditACL/SACL will alway be freed. The ACEs will be freed if DACL.ownObjects is true.
-        )
+       
+        #  Owner will be freed if OwnOwner is true
+        #  PrimaryGroup will be freed if OwnPrimaryGroup is true
+        #  DACL will always be freed. The ACEs will be freed if DACL.ownObjects is true.
+        #  AuditACL/SACL will alway be freed. The ACEs will be freed if DACL.ownObjects is true.
+        
 
        }
     destructor Destroy; override;
 
-       {@Name copies all properties from another SD.
+       {<B>Assign</B> copies all properties from another SD.
         It creates new instances of (if not nil)
         Owner, PrimaryGroup
         DACL and AuditACL will be cleared and filled with the ACL of the SD aObject.
@@ -254,7 +257,7 @@ type
        }
     procedure Assign(aObject: TJwSecurityDescriptor);
 
-       {@Name creates a self relative (continuous block of memory) or an absolute (using pointers to owner, DACL, ...)
+       {<B>Create_SD</B> creates a self relative (continuous block of memory) or an absolute (using pointers to owner, DACL, ...)
          security descriptor (SD).
         The created SD must be freed using Free_SD .
 
@@ -263,7 +266,7 @@ type
         A case for a failure can be an incorrect owner SID, DACLs or out of memory.
 
         Do not edit the memory block manually or even free sub structures (as owner, dacl...)
-        @Name uses GetMem for sd memory allocation.
+        <B>Create_SD</B> uses GetMem for sd memory allocation.
 
         You can set Control or RMControl to modify the resulting control value of the security descriptor block.
         The values SE_DACL_PRESENT and SE_SACL_PRESENT are always automatically set.
@@ -272,14 +275,15 @@ type
 
         @param bRelative The boolean parameter defines whether the sd is a self relative if true or otherwise an absolute SD (false).
 
-        @raises EJwsclWinCallFailedException If a call to a winapi function failed.
+        raises
+ EJwsclWinCallFailedException:  If a call to a winapi function failed.
 
        }
     function Create_SD(bRelative: boolean = True): PSecurityDescriptor;
       overload;
 
 
-       {@Name creates a self relative (continuous block of memory) or an absolute (using pointers to owner, DACL, ...)
+       {<B>Create_SD</B> creates a self relative (continuous block of memory) or an absolute (using pointers to owner, DACL, ...)
          security descriptor (SD).
 
         The function calls a lot of winapi function that can fail. So check for exception. See the exceptions.
@@ -287,7 +291,7 @@ type
         A case for a failure can be an incorrect owner SID, DACLs or out of memory.
 
         Do not edit the memory block manually or even free sub structures (as owner, dacl...)
-        @Name uses GetMem for sd memory allocation.
+        <B>Create_SD</B> uses GetMem for sd memory allocation.
 
         You can set Control or RMControl to modify the resulting control value of the security descriptor block.
         The values SE_DACL_PRESENT and SE_SACL_PRESENT are always automatically set.
@@ -299,24 +303,25 @@ type
 
         @param bRelative The boolean parameter defines whether the sd is a self relative if true or otherwise an absolute SD (false).
 
-        @raises EJwsclWinCallFailedException If a call to a winapi function failed.
+        raises
+ EJwsclWinCallFailedException:  If a call to a winapi function failed.
        }
     function Create_SD(out ipSDSize: Cardinal;
       bRelative: boolean {= true}): PSecurityDescriptor; overload;
 
-       {@Name frees an security descriptor that was allocated by Create_SD.
-        Only use a SD that was created by Create_SD. @Name uses FreeMem and
+       {<B>Free_SD</B> frees an security descriptor that was allocated by Create_SD.
+        Only use a SD that was created by Create_SD. <B>Free_SD</B> uses FreeMem and
           TJwSecurityAccessControlList.Free_PACL to free memory.
         For unknown reasons some winapi calls fails if the the applied memory was allocated with GetMem.
 
-        @Name does not raise a SM exception. However there can be exception because of pointer problems.
+        <B>Free_SD</B> does not raise a SM exception. However there can be exception because of pointer problems.
         Do not edit the memory block manually or even free sub structures (as owner, dacl...)
 
         @param SD The SD parameter contains the SD to be freed. It is nil afterwards. If a nil pointer was given the function does nothing.
        }
     class procedure Free_SD(var SD: PSecurityDescriptor);
 
-       {@Name creates a Security Attributes structure and initialises it with the security descriptor of this instance.
+       {<B>Create_SA</B> creates a Security Attributes structure and initialises it with the security descriptor of this instance.
         The SA structure must be freed by Free_SA. The internal SD structure is automatically freed.
 
         This method uses GetMem.
@@ -329,12 +334,20 @@ type
         @param bInheritHandle A Boolean value that specifies whether the returned handle is inherited when a new process is created. If this member is TRUE, the new process inherits the handle.
         @param bSDRelative A Boolean value that defines whether the internal security descriptor is relative (true) or absolute (false).
         @return Returns a pointer to a security attribute.
-        @raises EJwsclWinCallFailedException see Create_SD for more information about raised exception.
+        raises
+ EJwsclWinCallFailedException:  see Create_SD for more information about raised exception.
        }
     function Create_SA(bInheritHandle: boolean = False;
       bSDRelative: boolean = False): PSecurityAttributes;
 
-       {@Name creates a security attributes structure on the stack. However the internal security descriptor will be created on heap.
+    {<B>Create_SA2</B> does the same as Create_SA, but uses the property InheritHandles
+     to initialize the result.
+
+     See Create_SA for more information.
+     }
+    function Create_SA2(bSDRelative: boolean = False): PSecurityAttributes;
+
+       {<B>Create_SAEx</B> creates a security attributes structure on the stack. However the internal security descriptor will be created on heap.
 
         The SA structure must be freed by Free_SAEx. The internal SD structure is automatically freed.
 
@@ -346,52 +359,67 @@ type
         @param bInheritHandle A Boolean value that specifies whether the returned handle is inherited when a new process is created. If this member is TRUE, the new process inherits the handle.
         @param bSDRelative A Boolean value that defines whether the internal security descriptor is relative (true) or absolute (false).
         @return Returns security attribute structure.
-        @raises EJwsclWinCallFailedException see Create_SD for more information about raised exception.
+        raises
+ EJwsclWinCallFailedException:  see Create_SD for more information about raised exception.
        }
     function Create_SAEx(bInheritHandle: boolean = False;
       bSDRelative: boolean = False): TSecurityAttributes;
 
-       {@Name frees a security attribute created by Create_SA.
+    {<B>Create_SAEx2</B> does the same as Create_SAEx, but uses the property InheritHandles
+     to initialize the result.
+
+     See Create_SAEx for more information.
+     }
+    function Create_SAEx2(bSDRelative: boolean = False): TSecurityAttributes;
+
+
+       {<B>Free_SA</B> frees a security attribute created by Create_SA.
 
         This method uses FreeMem, so do not use this function with security attributes structure that was created using LocalAlloc,
         GlobalAlloc or other incompatible functions.
 
 
         @param SA [in,out] SA receives the security attribute to be freed. It is set to nil after an successfull deallocation.
-        @raises EJwsclSecurityException The exception EJwsclSecurityException is raised if the internal nLength component is not the sizeof TSecurityAttributes.
+        raises
+ EJwsclSecurityException:  The exception EJwsclSecurityException is raised if the internal nLength component is not the sizeof TSecurityAttributes.
        }
     class procedure Free_SA(var SA: PSecurityAttributes);
 
-       {@Name frees a security attribute created by Create_SAEx.
+  //  class procedure Free_LPSA(var SA: LPSECURITY_ATTRIBUTES);
+
+       {<B>Free_SAEx</B> frees a security attribute created by Create_SAEx.
 
         This method uses FreeMem, so do not use this function with security attributes structure that was created using LocalAlloc,
         GlobalAlloc or other incompatible functions.
 
         @param SA [in,out] SA receives the security attribute to be freed. Its members are set to nil after an successfull deallocation.
-        @raises EJwsclSecurityException The exception EJwsclSecurityException is raised if the internal nLength component is not the sizeof TSecurityAttributes.
+        raises
+ EJwsclSecurityException:  The exception EJwsclSecurityException is raised if the internal nLength component is not the sizeof TSecurityAttributes.
        }
     class procedure Free_SAEx(var SA: TSecurityAttributes);
 
-       {@Name writes a relative security descriptor into a stream.
+ //   class procedure Free_LPSAEx(var SA: LPSECURITY_ATTRIBUTES);
+
+       {<B>SaveToStream</B> writes a relative security descriptor into a stream.
         The method uses a magic header to check for position errors in a stream.
 
-        @unorderedlist(
-        @item(Bytes         |  Value)
-        @item(1..5 (5)      |  SD_MAGIC_HEADER (byte array))
-        @item(6..9 (4)      |  SD size (Cardinal))
-        @item(10..17 (8)    |  hash value (Cardinal))
-        @item(18..18 (1)    |  hash value in use (byte) true if 255 otherwise false.
-               == SD_HEADER_SIZE)
-        @item(19..sd (size) |  security descriptor data)
-    )
+        
+        # Bytes         |  Value 
+        # 1..5 (5)      |  SD_MAGIC_HEADER (byte array) 
+        # 6..9 (4)      |  SD size (Cardinal) 
+        # 10..17 (8)    |  hash value (Cardinal) 
+        # 18..18 (1)    |  hash value in use (byte) true if 255 otherwise false.
+               == SD_HEADER_SIZE 
+        # 19..sd (size) |  security descriptor data 
+    
 
 
        }
     procedure SaveToStream(const Stream: TStream); virtual;
 
-       {@Name loads a security descriptor from a stream.
+       {<B>LoadFromStream</B> loads a security descriptor from a stream.
 
-        The stream position must be on the first value of the magic header. (see @link(SaveToStream)).
+        The stream position must be on the first value of the magic header. (see SaveToStream ).
         If the following values are true the hash value will be checked and an exception EJwsclStreamHashException will
         be raised if the read hash is not equal to the calculated one.
           Assigned(OnHashCodeMethod) and (ReadHash > 0) and (CalculatedHash > 0) and (iCHash <> iRHash)
@@ -404,7 +432,7 @@ type
        }
     procedure LoadFromStream(const Stream: TStream); virtual;
 
-       {@Name creates a value out of a buffer with a given size.
+       {<B>hashCode</B> creates a value out of a buffer with a given size.
         This pseudo hash function is not intended for production uses and
         should be replaced by a custom method using property OnHashCodeMethod.
        }
@@ -418,31 +446,32 @@ type
     function GetSecurityDescriptorString(SIFlags: TSecurityInformation): TJwString; overload;
     function GetSecurityDescriptorString(SIFlags: TJwSecurityInformationFlagSet): TJwString; overload;
 
-    {@Name replaces the security descriptor elements given in SecurityInformationSet with
+    {<B>ReplaceDescriptorElements</B> replaces the security descriptor elements given in SecurityInformationSet with
      the ones in SecurityDescriptor.
-     @param(SecurityInformationSet Contains the members of the SD to be replaced.)
-     @param(SecurityDescriptor defines the SD which is used to copy the members into
-        the instance.)
+     @param SecurityInformationSet Contains the members of the SD to be replaced. 
+     @param SecurityDescriptor defines the SD which is used to copy the members into
+        the instance. 
     }
     procedure ReplaceDescriptorElements(const SecurityInformationSet :
       TJwSecurityInformationFlagSet;
       const SecurityDescriptor : TJwSecurityDescriptor); virtual;
 
-    {@Name combines a parent and a creator security descriptor into a new security descriptor.
+    {<B>SetPrivateObjectSecurity</B> combines a parent and a creator security descriptor into a new security descriptor.
      For detailed information see MSDN http://msdn2.microsoft.com/en-us/library/aa379581.aspx
 
      If parameter Token is not nil and SecurityInformation contains siSaclSecurityInformation
      you must explicit activate SE_SECURITY_NAME privilege.
 
-     @param(GenericMap Defines the generic map class which maps generic access rights to specific access rights.)
-     @param(Token defines the token instance which is used to check for access. Can be nil to use
-          process or thread token.)
+     @param GenericMap Defines the generic map class which maps generic access rights to specific access rights. 
+     @param Token defines the token instance which is used to check for access. Can be nil to use
+          process or thread token. 
 
-     @raises(EJwsclNILParameterException will be raised if ModificationDescriptor is nil)
-     @raises(EJwsclInvalidParameterException will be raisef if the type of parameter Token
-      is not a TJwSecurityToken class)
-     @raises(EJwsclSACLAccessDenied will be raised if SecurityInformation contains siSaclSecurityInformation,
-      Token is nil and the current token does not hold SE_SECURITY_NAME privilege)
+     raises
+ EJwsclNILParameterException:  will be raised if ModificationDescriptor is nil 
+      EJwsclInvalidParameterException: will be raisef if the type of parameter Token
+      is not a TJwSecurityToken class 
+      EJwsclSACLAccessDenied: will be raised if SecurityInformation contains siSaclSecurityInformation,
+      Token is nil and the current token does not hold SE_SECURITY_NAME privilege 
 
      }
     procedure SetPrivateObjectSecurity(
@@ -458,7 +487,7 @@ type
     function GetTextMap(const Mapping: TJwSecurityGenericMappingClass =
       nil): TJwString;
   public
-    {@Name sets or gets the owner of the SD.
+    {<B>Owner</B> sets or gets the owner of the SD.
     If the property OwnOwner is true and the property is set, the old Owner TJwSecurityId instance will be freed and
      the new owner will be copied into a new instance. So there will be two instances of this SID and
       the original instance is not touched and must be freed if necessary.
@@ -467,7 +496,7 @@ type
 
     The following code can be used to set a newly created instance.
 
-    @longcode(#
+    <code lang="Delphi">
        //first free or disconnect old owner
        //1. If OwnOwner is true, the Owner instance will be freed
        //2. If OwnOwner is false, the property will be set to nil
@@ -475,21 +504,21 @@ type
        OwnOwner := false; //set to false so the next step does not copy the security id in a new instance
        Owner := TJwSecurityID.Create(..); //set new Sid
        OwnOwner := true; //lets free the Sid automatically
-    #)
+    </code>
 
     Use this code to release old owner and copy new owner into a new instance:
-    @longcode(#
+    <code lang="Delphi">
        Owner := nil; //free or release old owner
        OwnOwner := true; //next set copies owner
        Owner := SecurityDescriptor.Owner; //create copy of owner and set it
-    #)
+    </code>
     This code is equivalent:
-    @longcode(#
+    <code lang="Delphi">
        Owner := nil; //free or release old owner
        OwnOwner := false; //set to false so the next step does not copy the security id in a new instance
        Owner := TJwSecurityID.Create(SecurityDescriptor.Owner);
        OwnOwner := true; //lets free the Sid automatically
-    #)
+    </code>
 
 
     Use this code to use the same instance from another SD instance in both
@@ -498,28 +527,28 @@ type
     if the original instance is freed you cannot access the owner because
     it is invalid but differs from nil.
 
-    @longcode(#
+    <code lang="Delphi">
      Owner := nil; //free or release old owner
      OwnOwner := false; //do not free owner
      Owner := SecurityDescriptor.Owner; //just point to this instance
-    #)
+    </code>
     }
     property Owner: TJwSecurityId Read fOwner Write SetOwner;
 
-       {@Name sets or gets the group of the SD.
+       {<B>PrimaryGroup</B> sets or gets the group of the SD.
          If the property OwnPrimaryGroup is true and the property is set, the old Owner TJwSecurityId instance will be freed and
          the new owner will be copied into a new instance. So there will be two instances of this SID and
           the original instance is not touched and must be freed if necessary.
         If the property OwnPrimaryGroup is false, the old Owner TJwSecurityId will not be freed and
         the new one will directly point to the new SID.
 
-        See @link(Owner) for information about how to use this property.
+        See Owner  for information about how to use this property.
        }
     property PrimaryGroup: TJwSecurityId
       Read fPrimaryGroup Write SetPrimaryGroup;
 
 
-     {@Name sets or gets the discretionary access control list.
+     {<B>DACL</B> sets or gets the discretionary access control list.
       The read value is the internal used DACL. So do not free it directly. Instead set the write value to nil.
       The write value is copied into a new DACL (using Assign) if the property OwnDACL is true
        otherwise the given DACL instance directly used.
@@ -529,7 +558,7 @@ type
       The following code releases an old DACL and copies an existing one
       into the SD. At the end there are two DACL instances that will contain
       the same content.
-      @longcode(#
+      <code lang="Delphi">
       //first release old DACL.
       //1. if OwnDACL is true, the DACL is freed
       //2. if OwnDACL is false, the DACL is dismissed without freeing it
@@ -538,13 +567,13 @@ type
       OwnDACL := false;
       DACL := SecurityDescriptor.DACL;
       //Now let handle the SD freeing it on destruction.
-      OwnDACL := true;#)
+      OwnDACL := true;</code>
 
       The following code can be used if an old DACL must be released and
       a new one created. The newly created instance will directly become
       the value of the DACL property. It will not be copied but freed on
       destruction of the security descriptor instance.
-      @longcode(#
+      <code lang="Delphi">
       //first release old DACL.
       //1. if OwnDACL is true, the DACL is freed
       //2. if OwnDACL is false, the DACL is dismissed without freeing it
@@ -553,29 +582,29 @@ type
       OwnDACL := true;
       DACL := TJwDAccessControlList.Create;
       //Now let handle the SD freeing it on destruction.
-      OwnDACL := true;#)
+      OwnDACL := true;</code>
      }
     property DACL: TJwDAccessControlList Read GetDACL Write SetDACL;
 
-    {@Name defines whether the DACL is copied into a new instance (true) and freed at the end
+    {<B>OwnDACL</B> defines whether the DACL is copied into a new instance (true) and freed at the end
         or points directly to the set DACL.
     }
     property OwnDACL: boolean Read fOwnDACL Write fOwnDACL;
 
-       {@Name gets the auditing access control list.
+       {<B>AuditACL</B> gets the auditing access control list.
         It returns the internal auditing access control list so do not call Free.
         If the audit ACL is set, it copies the SACL into a new structure, so
          the original list is not touched. 
        }
     property AuditACL: TJwSAccessControlList Read GetSACL Write SetSACL;
 
-       {@Name is the same as the property AuditACL.
+       {<B>SACL</B> is the same as the property AuditACL.
         If the audit ACL is set, it copies the SACL into a new structure, so
          the original list is not touched.
         }
     property SACL: TJwSAccessControlList Read GetSACL Write SetSACL;
 
-   {@Name sets or gets the resource managercontrol values of the sd.
+   {<B>RMControl</B> sets or gets the resource managercontrol values of the sd.
     Do not change them if you do not know what it means.
         For more information see MSDN.
     This value is ignored in actual version.
@@ -584,25 +613,25 @@ type
       Read GetRMControl Write SetRMControl;
 
 
-    {@Name defines internal security descriptor controls. Do not
+    {<B>Control</B> defines internal security descriptor controls. Do not
     make write calls to it.}
     property Control: TJwSecurityDescriptorControlSet
       Read fControl Write SetControl;
 
-    {@Name defines whether the DACL is protected against inheritance flow or not.
+    {<B>InheritanceDACLProtection</B> defines whether the DACL is protected against inheritance flow or not.
      Use aclpForceUnprotect instead of aclpUnprotected to let flow inheritance.
 
      }
     property InheritanceDACLProtection : TJwACLProtection index 0 read GetProtectedState write SetProtectedState;
 
-    {@Name defines whether the SACL is protected against inheritance flow or not.
+    {<B>InheritanceSACLProtection</B> defines whether the SACL is protected against inheritance flow or not.
      Use aclpForceUnprotect instead of aclpUnprotected to let flow inheritance.
      }
     property InheritanceSACLProtection : TJwACLProtection index 1 read GetProtectedState write SetProtectedState;
 
 
 
-     {@Name defines whether the owner SID shall be freed on destruction (true) or not (false)
+     {<B>OwnOwner</B> defines whether the owner SID shall be freed on destruction (true) or not (false)
       If the property OwnOwner is true and the property Owner is set, the old Owner TJwSecurityId instance will be freed and
        the new owner will be copied into a new instance. So there will be two instances of this SID and
         the original instance is not touched and must be freed if necessary.
@@ -610,11 +639,11 @@ type
        If the property OwnOwner is false, the old Owner TJwSecurityId will not be freed and
       the new one will directly point to the new SID.
 
-      See @link(Owner) for information about how to use this property.
+      See Owner  for information about how to use this property.
       }
     property OwnOwner: boolean Read fOwnOwner Write fOwnOwner;
 
-       {@Name defines whether the group SID shall be freed on destruction (true) or not (false)
+       {<B>OwnPrimaryGroup</B> defines whether the group SID shall be freed on destruction (true) or not (false)
 
         If the property OwnPrimaryGroup is true and the property is set, the old Owner TJwSecurityId instance will be freed and
          the new owner will be copied into a new instance. So there will be two instances of this SID and
@@ -622,12 +651,12 @@ type
         If the property OwnPrimaryGroup is false, the old Owner TJwSecurityId will not be freed and
         the new one will directly point to the new SID.
 
-        See @link(Owner) for information about how to use this property.
+        See Owner  for information about how to use this property.
         }
     property OwnPrimaryGroup: boolean
       Read fOwnPrimaryGroup Write fOwnPrimaryGroup;
 
-       {@Name defines whether the owner sid is inherited (true) or not (false)
+       {<B>OwnerInherited</B> defines whether the owner sid is inherited (true) or not (false)
         Indicates whether the owner information is derived from a default mechanism.
         If this value is TRUE, it is default information. The function stores this value as
         the SE_OWNER_DEFAULTED flag in the SECURITY_DESCRIPTOR_CONTROL structure.
@@ -639,7 +668,7 @@ type
     property OwnerInherited: boolean
       Read fOwnerInherited Write fOwnerInherited;
 
-       {@Name defines whethere the group sid is inherited (true) or not (false)
+       {<B>PrimaryGroupInherited</B> defines whethere the group sid is inherited (true) or not (false)
 
         Indicates whether the primary group information was derived from a default mechanism.
         If this value is TRUE, it is default information, and the function stores this value as the
@@ -679,50 +708,50 @@ type
     property AuditInherited: boolean
       Read fAuditInherited Write fAuditInherited;
 
-(*       {@Name creates a security string descriptor.
+(*       {<B>Text</B> creates a security string descriptor.
         You can set flags to define which information is placed in the newly created string.
         The following flags can be combined with OR:
-        @unorderedlist(
-         @item OWNER_SECURITY_INFORMATION
-         @item GROUP_SECURITY_INFORMATION
-         @item DACL_SECURITY_INFORMATION
-         @item SACL_SECURITY_INFORMATION
-         @item LABEL_SECURITY_INFORMATION (only available in Vista; otherwise it is ignored)
-         @item ALL_SECURITY_INFORMATION - combines all flags above
-         )
+        
+         #  OWNER_SECURITY_INFORMATION
+         #  GROUP_SECURITY_INFORMATION
+         #  DACL_SECURITY_INFORMATION
+         #  SACL_SECURITY_INFORMATION
+         #  LABEL_SECURITY_INFORMATION (only available in Vista; otherwise it is ignored)
+         #  ALL_SECURITY_INFORMATION - combines all flags above
+         
         }
     property StringSD[SIFlags: TSecurityInformation]: TJwString
       Read GetSecurityDescriptorString;   *)
 
-    {@Name returns a text that descripes the security descriptor in a human readable format.}
+    {<B>Text</B> returns a text that descripes the security descriptor in a human readable format.}
     property Text: TJwString Read GetText;
 
-       {@Name sets or gets the stream hash function used by SavetoStream and LoadFromStream
+       {<B>OnHashCodeMethod</B> sets or gets the stream hash function used by SavetoStream and LoadFromStream
         to generate a hash value. If the property is nil the hash code in the stream is set to
         0 in SaveToStream and an loaded hash value is ignored in LoadFromStream.
        }
     property OnHashCodeMethod: TJwHashCodeMethod
       Read fOnHashCodeMethod Write fOnHashCodeMethod;
 
-    {@Name is custom flag that defines whether handles are inherited (true) or not.
+    {<B>InheritHandles</B> is custom flag that defines whether handles are inherited (true) or not.
      This property is not used by @ClassName. However some JWSCL methods use
-     it instead of the structure SECURITY_ATTRIBUTES. @NAme is used instead of
+     it instead of the structure SECURITY_ATTRIBUTES. <B>InheritHandles</B> is used instead of
      the member bInheritHandle of SECURITY_ATTRIBUTES. In fact it is mapped internally
      into a SECURITY_ATTRIBUTES structure.
      }
     property InheritHandles : Boolean read fInheritHandles write fInheritHandles;
   end;
 
-const {@Name is the header string that initiates a security descriptor stream block used
+const {<B>SD_MAGIC_HEADER</B> is the header string that initiates a security descriptor stream block used
        by TJwSecurityDescriptor.SaveToStream and TJwSecurityDescriptor.LoadFromStream.
       }
   SD_MAGIC_HEADER = #3#4'SDH';
 
-      {@Name is the size of the magic header length in a security descriptor stream.
+      {<B>SD_MAGIC_LENGTH</B> is the size of the magic header length in a security descriptor stream.
        See TJwSecurityDescriptor.SaveToStream and TJwSecurityDescriptor.LoadFromStream}
   SD_MAGIC_LENGTH = 5;
 
-      {@Name is the size of the header written into a stream by TJwSecurityDescriptor.SaveToStream 
+      {<B>SD_HEADER_SIZE</B> is the size of the header written into a stream by TJwSecurityDescriptor.SaveToStream 
        and TJwSecurityDescriptor.LoadFromStream }
   SD_HEADER_SIZE = 19;
 
@@ -1672,6 +1701,11 @@ begin
   SD := nil;
 end;
 
+function TJwSecurityDescriptor.Create_SAEx2(bSDRelative: boolean = False): TSecurityAttributes;
+begin
+  result := Self.Create_SAEx(Self.InheritHandles, bSDRelative);
+end;
+
 function TJwSecurityDescriptor.Create_SAEx(bInheritHandle: boolean = False;
   bSDRelative: boolean = False): TSecurityAttributes;
 begin
@@ -1689,6 +1723,10 @@ begin
   end;
 end;
 
+function TJwSecurityDescriptor.Create_SA2(bSDRelative: boolean = False): PSecurityAttributes;
+begin
+  result := Create_SA(Self.InheritHandles, bSDRelative);
+end;
 
 function TJwSecurityDescriptor.Create_SA(bInheritHandle: boolean = False;
   bSDRelative: boolean = False): PSecurityAttributes;

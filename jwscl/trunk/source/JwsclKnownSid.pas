@@ -1,7 +1,7 @@
-{@abstract(Contains well known sids)
+{<B>Abstract</B>Contains well known sids 
 @author(Christian Wimmer)
-@created(03/23/2007)
-@lastmod(09/10/2007)
+<B>Created:</B>03/23/2007 
+<B>Last modification:</B>09/10/2007 
 
 Project JEDI Windows Security Code Library (JWSCL)
 
@@ -54,7 +54,7 @@ uses SysUtils, Classes,
 type
   TJwSecurityKnownSID = class(TJwSecurityId)
   public
-     (*@Name frees a known security instance.
+     (*<B>Free</B> frees a known security instance.
        Do not call!
      *)
     procedure Free;
@@ -66,7 +66,7 @@ type
     function IsStandardSID: boolean;  override;
   end;
 
-   (*@Name is a class that describes the current user that is running
+   (*<B>TJwSecurityThreadUserSID</B> is a class that describes the current user that is running
     the current thread or process.
     Because the user must not be neccessary the current logged on user
     it is called that way.
@@ -90,172 +90,172 @@ const JwLowIL = 'S-1-16-4096';
       JwProtectedProcessIL = 'S-1-16-20480';
 var
    JwIntegrityLabelSID : array[TJwIntegrityLabelType] of TJwSecurityKnownSID;
-    {@Name defines the current user SID that started the process.
+    {<B>JwPrincipalSid</B> defines the current user SID that started the process.
      You need to call JwInitWellknownSIDs before accessing this variable!
      Use:
-     @longcode(#
+     <code lang="Delphi">
       SD : TJwSecurityDescriptor;
       ...
       SD.OwnOwner := false;
       SD.Owner := JwSecurityProcessUserSID;
       ...
       SD.DACL.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil,[],FILE_EXECUTE,JwSecurityProcessUserSID, false)); //see?: false
-    #)
+    </code>
     }
   JwSecurityProcessUserSID,
 
 
-    {@Name defines the local administrator group
+    {<B>JwPrincipalSid</B> defines the local administrator group
      Do not free!!
      You need to call JwInitWellknownSIDs before accessing this variable!
 
      Use:
-     @longcode(#
+     <code lang="Delphi">
       SD : TJwSecurityDescriptor;
       ...
       SD.OwnOwner := false;
       SD.Owner := JwAdministratorsSID;
       ...
       SD.DACL.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil,[],FILE_EXECUTE,JwSecurityCurrentThreadUserSID, false)); //see?: false
-     #)
+     </code>
     }
   JwAdministratorsSID,
-    {@Name defines the local user group
+    {<B>JwPrincipalSid</B> defines the local user group
      You need to call JwInitWellknownSIDs before accessing this variable!
     
      Use:
-     @longcode(#
+     <code lang="Delphi">
       SD : TJwSecurityDescriptor;
       ...
       SD.OwnOwner := false;
       SD.Owner := JwUsersSID;
       SD.DACL.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil,[],FILE_EXECUTE,JwSecurityCurrentThreadUserSID, false)); //see?: false
-     #)
+     </code>
     }
   JwUsersSID,
-    {@Name defines the local power user group - legacy in Vista
+    {<B>JwPrincipalSid</B> defines the local power user group - legacy in Vista
      You need to call JwInitWellknownSIDs before accessing this variable!
 
      Use:
-     @longcode(#
+     <code lang="Delphi">
       SD : TJwSecurityDescriptor;
       ...
       SD.OwnOwner := false;
       SD.Owner := JwPowerUsersSID;
       SD.DACL.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil,[],FILE_EXECUTE,JwPowerUsersSID, false)); //see?: false
-     #)
+     </code>
     }
   JwPowerUsersSID,
-    {@Name defines the local guest group
+    {<B>JwPrincipalSid</B> defines the local guest group
      You need to call JwInitWellknownSIDs before accessing this variable!
     
      Use:
-     @longcode(#
+     <code lang="Delphi">
       SD : TJwSecurityDescriptor;
       ...
       SD.OwnOwner := false;
       SD.Owner := JwGuestsSID;
       SD.DACL.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil,[],FILE_EXECUTE,JwGuestsSID, false)); //see?: false
-     #)
+     </code>
     }
   JwGuestsSID,
-    {@Name defines the local system account
+    {<B>JwPrincipalSid</B> defines the local system account
      You need to call JwInitWellknownSIDs before accessing this variable!
 
      Use:
-     @longcode(#
+     <code lang="Delphi">
       SD : TJwSecurityDescriptor;
       ...
       SD.OwnOwner := false;
       SD.Owner := JwLocalSystemSID;
       SD.DACL.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil,[],FILE_EXECUTE,JwLocalSystemSID, false)); //see?: false
-     #)
+     </code>
     }
   JwLocalSystemSID,
-    {@Name defines the group that allows remote interaction with the machine
+    {<B>JwPrincipalSid</B> defines the group that allows remote interaction with the machine
      You need to call JwInitWellknownSIDs before accessing this variable!
     
     Use:
-     @longcode(#
+     <code lang="Delphi">
       SD : TJwSecurityDescriptor;
       ...
       SD.OwnOwner := false;
       SD.Owner := JwRemoteInteractiveLogonSID;
       SD.DACL.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil,[],FILE_EXECUTE,JwRemoteInteractiveLogonSID, false)); //see?: false
-     #)
+     </code>
     }
   JwRemoteInteractiveLogonSID,
-    {@Name defines the NULL Logon SID
+    {<B>JwPrincipalSid</B> defines the NULL Logon SID
      You need to call JwInitWellknownSIDs before accessing this variable!
 
      Use:
-     @longcode(#
+     <code lang="Delphi">
       SD : TJwSecurityDescriptor;
       ...
       SD.OwnOwner := false;
       SD.Owner := JwNullSID;
       SD.DACL.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil,[],FILE_EXECUTE,JwNullSID, false)); //see?: false
-     #)
+     </code>
     }
   JwNullSID,
-    {@Name defines the Everybody group
+    {<B>JwPrincipalSid</B> defines the Everybody group
      You need to call JwInitWellknownSIDs before accessing this variable!
 
      Use:
-     @longcode(#
+     <code lang="Delphi">
       SD : TJwSecurityDescriptor;
       ...
       SD.OwnOwner := false;
       SD.Owner := JwWorldSID;
       SD.DACL.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil,[],FILE_EXECUTE,JwWorldSID, false)); //see?: false
-     #)
+     </code>
     }
   JwWorldSID,
-    {@Name defines the local group
+    {<B>JwPrincipalSid</B> defines the local group
      You need to call JwInitWellknownSIDs before accessing this variable!
 
      Use:
-     @longcode(#
+     <code lang="Delphi">
       SD : TJwSecurityDescriptor;
       ...
       SD.OwnOwner := false;
       SD.Owner := JwLocalGroupSID;
       SD.DACL.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil,[],FILE_EXECUTE,JwLocalGroupSID, false)); //see?: false
-     #)
+     </code>
     }
   JwLocalGroupSID,
 
-  {@Name defines the network service group
+  {<B>JwPrincipalSid</B> defines the network service group
      You need to call JwInitWellknownSIDs before accessing this variable!
 
     Use:
-     @longcode(#
+     <code lang="Delphi">
       SD : TJwSecurityDescriptor;
       ...
       SD.OwnOwner := false;
       SD.Owner := JwLocalGroupSID;
       SD.DACL.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil,[],FILE_EXECUTE,JwNetworkServiceSID, false)); //see?: false
-     #)
+     </code>
     }
   JwNetworkServiceSID,
 
-  {@Name defines the local service group
+  {<B>JwPrincipalSid</B> defines the local service group
      You need to call JwInitWellknownSIDs before accessing this variable!
 
     Use:
-     @longcode(#
+     <code lang="Delphi">
       SD : TJwSecurityDescriptor;
       ...
       SD.OwnOwner := false;
       SD.Owner := JwLocalGroupSID;
       SD.DACL.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil,[],FILE_EXECUTE,JwLocalServiceSID, false)); //see?: false
-     #)
+     </code>
     }
   JwLocalServiceSID,
 
   JwPrincipalSid    : TJwSecurityKnownSID;
 
-  {@Name contains a set of known sids. It is (partly) initialized
+  {<B>JwKnownSid</B> contains a set of known sids. It is (partly) initialized
    by a call to JwInitWellKnownSIDsEx.
   }
   JwKnownSid : array[TWellKnownSidType] of TJwSecurityKnownSID;
@@ -263,25 +263,25 @@ var
 
 //    LocalAdministratorSID : TJwSecurityKnownSID;
 
-{@Name gets the current owner or impersonated thread owner of the current thread
+{<B>JwSecurityCurrentThreadUserSID</B> gets the current owner or impersonated thread owner of the current thread
 that is used to call this function.
 The caller is responsible to free the SecurityID instance.
 
 Use:
-@longcode(#
+<code lang="Delphi">
 SD : TJwSecurityDescriptor;
 ...
 SD.OwnOwner := true;
 SD.Owner := JwSecurityCurrentThreadUserSID;
 
 SD.DACL.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil,[],FILE_EXECUTE,JwSecurityCurrentThreadUserSID, true)); //see?: true
-#)
+</code>
 
 }
 function JwSecurityCurrentThreadUserSID: TJwSecurityThreadUserSID;
 
 
-{@Name gets the logon SID of the given window station.
+{<B>JwGetLogonSID</B> gets the logon SID of the given window station.
 
 
 Remark:
@@ -291,7 +291,8 @@ This does not work if the user is not logged on as an interactive user.
 
 @param hWinStation defines the window station that is used. If 0 the window station "WinSta0" is used. 
 @return The logon SID.
-@raises EJwsclWinCallFailedException will be raised if a call to GetUserObjectInformation failed.
+raises
+ EJwsclWinCallFailedException:  will be raised if a call to GetUserObjectInformation failed.
 }
 function JwGetLogonSID(const hWinStation: HWINSTA{TWindowStation} = 0)
   : TJwSecurityId; overload;
@@ -299,38 +300,39 @@ function JwGetLogonSID(const hWinStation: HWINSTA{TWindowStation} = 0)
 function JwGetLogonSID(aToken: TJwSecurityToken): TJwSecurityId; overload;
 
  
-{@Name returns a local or remote machine's SID.
+{<B>JwGetMachineSid</B> returns a local or remote machine's SID.
 Warning: This function may need some time on remote machines.
 
-@param(ComputerOrDNS defines a DNS or NetBIOS name of the remote server.
-      If empty the local machine is used)
-@return(Returns an instance of TJwSecurityId which presents the machine)
-@raises(EJwsclAccessDenied is raised if retrieving of the machine sid is denied.
- This usually occurs if a remote system could not authenticate the local one.)
-@raises(EJwsclInvalidComputer is called if the system in parameter ComputerOrDNS
- could not be resolved.)
-@raises(EJwsclWinCallFailedException is raised if a call to NetUserEnum failed.)
-@raises(EJwsclNILParameterException is raied if data returned by NetUserEnum
-  is nil.)
+@param ComputerOrDNS defines a DNS or NetBIOS name of the remote server.
+      If empty the local machine is used 
+@return Returns an instance of TJwSecurityId which presents the machine 
+raises
+ EJwsclAccessDenied:  is raised if retrieving of the machine sid is denied.
+ This usually occurs if a remote system could not authenticate the local one. 
+ EJwsclInvalidComputer: is called if the system in parameter ComputerOrDNS
+ could not be resolved. 
+ EJwsclWinCallFailedException: is raised if a call to NetUserEnum failed. 
+ EJwsclNILParameterException: is raied if data returned by NetUserEnum
+  is nil. 
 }
 function JwGetMachineSid(const ComputerOrDNS : WideString = '') : TJwSecurityId;
 
 {const
   AllWellKnownSid : TWellKnownSidTypeSet = ($FFFF);}
 
-{@Name initializes the WellKnownSID variables.
+{<B>JwInitWellKnownSIDs</B> initializes the WellKnownSID variables.
  This function should not be called during initialization of
  a Jwscl-unit since it indirectly accesses various global variables,
  e.g. JwProcessHeap, which might not have been initialized yet.
 }
 procedure JwInitWellKnownSIDs;
 
-{@Name works like @link(JwInitWellKnownSIDs) but also inits the array
+{<B>JwInitWellKnownSIDsEx</B> works like JwInitWellKnownSIDs  but also inits the array
 JwKnownSid for additional known SIDs. It calls JwInitWellKnownSIDs automatically.
 
-@param(Sids defines a set of SIDs of type TWellKnownSidType that ought to be
+@param Sids defines a set of SIDs of type TWellKnownSidType that ought to be
   initialized. The function can be called several times with more or the same
-   parameter values.)
+   parameter values. 
 }
 procedure JwInitWellKnownSIDsEx(const Sids : TWellKnownSidTypeSet);
 procedure JwInitWellKnownSIDsExAll();
@@ -339,28 +341,28 @@ procedure JwInitWellKnownSIDsExAll();
 type
   PJwSidMap = ^TJwSidMap;
 
-  {@Name defines a map between a name and its Sid instance.}
+  {<B>TJwSidMap</B> defines a map between a name and its Sid instance.}
   TJwSidMap = record
-    {@Name defines a name that is can be used for Sid retrieving.
+    {<B>SidString</B> defines a name that is can be used for Sid retrieving.
      Searching is case insensitive.
     }
     Name,
-    {@Name defines binary string Sid. It is converted to
+    {<B>SidString</B> defines binary string Sid. It is converted to
      a TJwSecurity instance in JwInitMapping.
      Only used in JwSidMapDef.
-     If @Name starts with "-", JwInitMapping will add the local machine Sid
+     If <B>SidString</B> starts with "-", JwInitMapping will add the local machine Sid
      at front of it.
     }
     SidString : TJwString;
 
-    {@Name defines the Sid instance. Can be nil.}
+    {<B>Sid</B> defines the Sid instance. Can be nil.}
     Sid  : TJwSecurityId;
   end;
 
-{@Name initialises Sid name mapping.
+{<B>JwInitMapping</B> initialises Sid name mapping.
 Must be called before using JwAddMapSid and JwSidMap.
 
-@Name reads JwSidMapDef and adds it to the internal list of
+<B>JwInitMapping</B> reads JwSidMapDef and adds it to the internal list of
 name to Sid mappings.
 If a mapping could not be made, JwSidMapDefErrors will contain the index
 (JwSidMapDef) of the problem.
@@ -368,32 +370,34 @@ If a mapping could not be made, JwSidMapDefErrors will contain the index
 }
 procedure JwInitMapping;
 
-{@Name adds a string to the string Sid map list.
+{<B>JwAddMapSid</B> adds a string to the string Sid map list.
 JwInitMapping must be called before.
 
-@param(Name defines the name of the Sid to be used.
-The name can be used for retrieving the Sid. It is case insensitive.)
-@param(Sid defines the Sid instance that represents the name. Can not be nil)
-@raises(EJwsclNILParameterException will be raised if Sid is nil or
- JwInitMapping was not called)
+@param Name defines the name of the Sid to be used.
+The name can be used for retrieving the Sid. It is case insensitive. 
+@param Sid defines the Sid instance that represents the name. Can not be nil 
+raises
+ EJwsclNILParameterException:  will be raised if Sid is nil or
+ JwInitMapping was not called 
 }
 procedure JwAddMapSid(const Name : TJwString; const Sid : TJwSecurityID);
 
 {
-@Name returns a Sid instance that was connected to a name.
+<B>JwSidMap</B> returns a Sid instance that was connected to a name.
 The advantage of this type is that names are not translated. They are always
 the same.
 
 JwInitMapping must be called before.
 
-@param(Name defines the Sid name which is to be retrieved.
- It is case insensitive.)
-@raises(EJwsclNILParameterException will be raised if JwInitMapping was not called)
+@param Name defines the Sid name which is to be retrieved.
+ It is case insensitive. 
+raises
+ EJwsclNILParameterException:  will be raised if JwInitMapping was not called 
 }
 function JwSidMap(const Name : TJwString) : TJwSecurityID;
 
 
-var {@Name defines a list of mapped known Sids which are used
+var {<B>JwSidMapDef</B> defines a list of mapped known Sids which are used
      to retrieve by JwSidMap.
      See TJwSidMap for more information
     }
@@ -422,7 +426,7 @@ var {@Name defines a list of mapped known Sids which are used
      SidString : '')
     );
 
-    {@Name contains a list of numbers that defines which index
+    {<B>JwSidMapDefErrors</B> contains a list of numbers that defines which index
      in JwSidMapDef could not be resolved.
     }
     JwSidMapDefErrors : TList;
@@ -733,7 +737,7 @@ begin
     On E : Exception do
     begin
 {$IFDEF DEBUG}
-      OutputDebugStringA(Pchar(Format('%s. Security id: %s ',[E.Message,KnownSids[Idx]])));
+      OutputDebugStringA(PAnsiChar(Format('%s. Security id: %s ',[E.Message,KnownSids[Idx]])));
 {$ENDIF DEBUG}
       SID := nil;
     end;

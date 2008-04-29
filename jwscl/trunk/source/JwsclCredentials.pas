@@ -1,7 +1,7 @@
-{@abstract(Provides access to credentials tools functions)
+{<B>Abstract</B>Provides access to credentials tools functions 
 @author(Christian Wimmer)
-@created(03/23/2007)
-@lastmod(09/10/2007)
+<B>Created:</B>03/23/2007 
+<B>Last modification:</B>09/10/2007 
 
 Project JEDI Windows Security Code Library (JWSCL)
 
@@ -58,7 +58,7 @@ type
 
   TJwCredentialsPrompt = class;
 
-     {@Name is a callback method that is called if the flag cfFlagsExpectConfirmation is set.
+     {<B>TJwOnConfirmCredential</B> is a callback method that is called if the flag cfFlagsExpectConfirmation is set.
       It is used to verify the input by the application.
       To verify the inputs one can use the properties in parameter Dialog.
 
@@ -71,26 +71,27 @@ type
   TJwOnConfirmCredential = procedure(const Dialog: TJwCredentialsPrompt;
     var bConfirm: boolean) of object;
 
-     {@Name provides static methods to maniplute credential values.
+     {<B>TJwCredentialsTools</B> provides static methods to maniplute credential values.
      }
   TJwCredentialsTools = class
   public
-       {@Name splits a fully qualified name into domain and username.
+       {<B>ParseUserName</B> splits a fully qualified name into domain and username.
         See CredUIParseUserName (http://msdn2.microsoft.com/en-us/library/aa375175.aspx)
 
         @param Input [in] gets a fully qualified name to be parsed.
         @param User [out] receives the username
         @param Domain [out] receives the domain name. If Input specifies a certificate, the parameter is empty. 
 
-        @raises EJwsclInvalidParameterException will be raised if the username is not valid.
-        @raises EJwsclInvalidParameterException will be raised if the allocated buffer for user or password buffer is to small.
+        raises
+ EJwsclInvalidParameterException:  will be raised if the username is not valid.
+         EJwsclInvalidParameterException: will be raised if the allocated buffer for user or password buffer is to small.
                 Currently the buffer is limited to 500 (wide-) characters.
        }
     class procedure ParseUserName(Input: TJwString;
       out User, Domain: TJwString);
   end;
 
-  {@Name provides methods and properties to create a credential command prompt under Windows XP.}
+  {<B>TJwCredentialsPrompt</B> provides methods and properties to create a credential command prompt under Windows XP.}
   TJwCredentialsPrompt = class
   protected
     fMessageText, fCaption: TJwString;
@@ -111,91 +112,93 @@ type
     procedure SetServerName(Name: TJwString);
 
   public
-       {@Name creates an credential prompt instance.
-        @raises EJwsclUnsupportedWindowsVersionException if the credential prompt api is not available on the system.}
+       {<B>Create</B> creates an credential prompt instance.
+        raises
+ EJwsclUnsupportedWindowsVersionException:  if the credential prompt api is not available on the system.}
     constructor Create();
 
-       {@Name frees the instance.
+       {<B>Destroy</B> frees the instance.
         It also clears UserName and Password in a secure way by overwriting it with zeros.}
     destructor Destroy; override;
 
-    {@Name receives a text that is displayed in the dialog}
+    {<B>MessageText</B> receives a text that is displayed in the dialog}
     property MessageText: TJwString Read fMessageText Write fMessageText;
-    {@Name receives a text that is displayed in the caption bar of the dialog}
+    {<B>Caption</B> receives a text that is displayed in the caption bar of the dialog}
     property Caption: TJwString Read fCaption Write fCaption;
-    {@Name receives the parent handle. It is automatically set to the active window.}
+    {<B>ParentWindow</B> receives the parent handle. It is automatically set to the active window.}
     property ParentWindow: HWND Read fParentWindow Write fParentWindow;
-    {@Name receives a banner bitmap that is displayed in the dialog}
+    {<B>Banner</B> receives a banner bitmap that is displayed in the dialog}
     property Banner: Graphics.TBitmap Read fBanner Write fBanner;
 
-    {@Name receives an NTERROR value that is used by the credential dialog to perfom actions.}
+    {<B>AuthError</B> receives an NTERROR value that is used by the credential dialog to perfom actions.}
     property AuthError: Cardinal Read fAuthError Write fAuthError;
 
-    {@Name receives a servername. This value must not be empty otherwise EJwsclInvalidParameterException will be raised!}
+    {<B>ServerName</B> receives a servername. This value must not be empty otherwise EJwsclInvalidParameterException will be raised!}
     property ServerName: TJwString Read fServerName Write SetServerName;
 
-       {@Name sets and gets the username that will be displayed in the prompt.
+       {<B>UserName</B> sets and gets the username that will be displayed in the prompt.
         It is automatically reset to the users input string if the the prompt is not cancelled.
         The username will be secure deleted on instance freeing.
         }
     property UserName: TJwString Read fUserName Write fUserName;
-       {@Name sets and gets the password that will be displayed in the prompt.
+       {<B>Password</B> sets and gets the password that will be displayed in the prompt.
        It is automatically reset to the users input string if the the prompt is not cancelled.
         The username will be secure deleted on instance freeing.
        }
     property Password: TJwString Read fPassword Write fPassword;
 
-       {@Name sets or gets the maximum (input) length of the username.
+       {<B>MaxUserNameLength</B> sets or gets the maximum (input) length of the username.
         Do not set it to greater CRED_MAX_USERNAME_LENGTH.
          }
     property MaxUserNameLength: Cardinal
       Read fMaxUserNameLength Write fMaxUserNameLength;
 
-       {@Name sets or gets the maximum (input) length of the password.
+       {<B>MaxPasswordLength</B> sets or gets the maximum (input) length of the password.
         Do not set it to greater CREDUI_MAX_PASSWORD_LENGTH.
          }
     property MaxPasswordLength: Cardinal
       Read fMaxPasswordLength Write fMaxPasswordLength;
 
-       {@Name sets or gets the save checkbox state.
+       {<B>SaveCheck</B> sets or gets the save checkbox state.
          It is automatically reset to the checkbox state in the prompt.
         }
     property SaveCheck: boolean Read fSaveCheck Write fSaveCheck;
 
-       {@Name sets or gets the flags for the credential prompt.
+       {<B>Flags</B> sets or gets the flags for the credential prompt.
         See MSDN (http://msdn2.microsoft.com/en-us/library/aa375171.aspx) for more information.
         Some flags are mutualyl exclusive.
         If the flag cfFlagsExpectConfirmation is set you must define property OnConfirmCredential
         }
     property Flags: TJwCredentialFlagSet Read fFlags Write fFlags;
 
-       {@Name sets or gets a credential confirmation callback method that is called if the
-        flag cfFlagsExpectConfirmation is set. In this case @Name must not be nil!
+       {<B>OnConfirmCredential</B> sets or gets a credential confirmation callback method that is called if the
+        flag cfFlagsExpectConfirmation is set. In this case <B>OnConfirmCredential</B> must not be nil!
         }
     property OnConfirmCredential: TJwOnConfirmCredential
       Read fOnConfirmCredential Write fOnConfirmCredential;
 
-       {@Name displays a GUI or console credential promp.t
+       {<B>ShowModal</B> displays a GUI or console credential promp.t
        @param CommandLine If set to true, the commandline version of credential prompt is used.
           Currently this feature does not work.
 
-       @raises EJwsclInvalidFlagsException will be raised if the flag cfFlagsExpectConfirmation is set but
+       raises
+ EJwsclInvalidFlagsException:  will be raised if the flag cfFlagsExpectConfirmation is set but
           OnConfirmCredential is nil.
-       @raises EJwsclInvalidParameterException will be raised if
-         @unorderedlist(
-           @item(Length of Servername exceeds CREDUI_MAX_DOMAIN_TARGET_LENGTH)
-           @item(Length of Servername is zero)
-           @item(One or more parameters of CredUIPromptForCredentials are invalid!)
-         )
-       @raises EJwsclInvalidFlagsException will raised if fhe property Flags is invalid! This message comes from a winapi call and does not contain more information
-       @raises EJwsclNoSuchLogonSession will raised if there is no such logon session! This message comes from a winapi call and does not contain more information
+        EJwsclInvalidParameterException: will be raised if
+         
+           # Length of Servername exceeds CREDUI_MAX_DOMAIN_TARGET_LENGTH 
+           # Length of Servername is zero 
+           # One or more parameters of CredUIPromptForCredentials are invalid! 
+         
+        EJwsclInvalidFlagsException: will raised if fhe property Flags is invalid! This message comes from a winapi call and does not contain more information
+        EJwsclNoSuchLogonSession: will raised if there is no such logon session! This message comes from a winapi call and does not contain more information
 
-       @return @Name returns true if the credential prompt was closed by OK; otherwise false.
+       @return <B>ShowModal</B> returns true if the credential prompt was closed by OK; otherwise false.
                 If OnConfirmCredential is not nil, the parameter bConfirm will be used as the result.
        }
     function ShowModal(const CommandLine: boolean = False): boolean;
 
-       {@Name parses the property UserName into the user and domain.
+       {<B>ParseInstanceUserName</B> parses the property UserName into the user and domain.
 
         See TJwCredentialsTools.ParseUserName for more information.
        }
@@ -494,7 +497,7 @@ begin
   if (lResult = NO_ERROR) then
   begin
   {$IFDEF UNICODE}
-      SetLength(fUserName,fMaxUserNameLength);
+    SetLength(fUserName,fMaxUserNameLength);
   {$ELSE}
     SetLength(fUserName, StrLen(pUser));
   {$ENDIF}
@@ -502,11 +505,11 @@ begin
     fUserName := TJwString(pUser);
 
   {$IFDEF UNICODE}
-      SetLength(fPassword,fMaxPasswordLength);
+    SetLength(fPassword,fMaxPasswordLength);
   {$ELSE}
     SetLength(fPassword, StrLen(pPass));
   {$ENDIF}
-    fPassword := string(pPass);
+    fPassword := TJwString(pPass);
 
 
     FillChar(pUser^, fMaxUserNameLength, 0);

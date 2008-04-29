@@ -1,8 +1,8 @@
 {
-@abstract(Contains structures to support scopy based impersonation.)
+<B>Abstract</B>Contains structures to support scopy based impersonation. 
 @author(Christian Wimmer)
-@created(03/23/2007)
-@lastmod(09/10/2007)
+<B>Created:</B>03/23/2007 
+<B>Last modification:</B>09/10/2007 
 
 
 
@@ -51,11 +51,11 @@ uses ActiveX,
      JwsclExceptions,
      JwsclComUtils;
 
-type {@Name defines an interface for TJwImpersonation. }
+type {<B>IJwImpersonation</B> defines an interface for TJwImpersonation. }
     IJwImpersonation = Interface(IUnknown)
      end;
 
-     {@Name provides methods to impersonate a logged on client.
+     {<B>TJwImpersonation</B> provides methods to impersonate a logged on client.
       Do not use this class instead use JwImpersonateLoggedOnUser, JwImpersonateLoggedOnUser or
       JwImpersonateLoggedOnUser.
      }
@@ -74,23 +74,24 @@ type {@Name defines an interface for TJwImpersonation. }
        property Token : TJwSecurityToken read fToken;
      end;
 
-{@Name impersonates the current and returns an interface pointer to the
+{<B>JwImpersonateLoggedOnUser</B> impersonates the current and returns an interface pointer to the
 token. It's automatically freed and revert to self if run out of scope.
-@raises(EJwsclProcessIdNotAvailable will be raised it the process does not have
-  SE_TCB_NAME privilege and a try to get the explorer handle failed)
-@raises(EJwsclWinCallFailedException will be raised if OpenProcess fails)
+raises
+ EJwsclProcessIdNotAvailable:  will be raised it the process does not have
+  SE_TCB_NAME privilege and a try to get the explorer handle failed 
+ EJwsclWinCallFailedException: will be raised if OpenProcess fails 
 }
 function JwImpersonateLoggedOnUser: IJwImpersonation; overload;
 
-{@Name impersonates the current and returns an interface pointer to the
+{<B>JwImpersonateLoggedOnUser</B> impersonates the current and returns an interface pointer to the
 token. It's automatically freed and revert to self if run out of scope.
-@param(LogonSessionId defines the user's logon session id.)
+@param LogonSessionId defines the user's logon session id. 
 }
 function JwImpersonateLoggedOnUser(const LogonSessionId : ULONG) : IJwImpersonation; overload;
 
-{@Name impersonates the current and returns an interface pointer to the
+{<B>JwImpersonateLoggedOnUser</B> impersonates the current and returns an interface pointer to the
 token. It's automatically freed and revert to self if run out of scope.
-@param(LogonSessionLuid defines the session luid to be impersonated.)}
+@param LogonSessionLuid defines the session luid to be impersonated. }
 function JwImpersonateLoggedOnUser(const LogonSessionLuid : TLuid) : IJwImpersonation; overload;
 
 

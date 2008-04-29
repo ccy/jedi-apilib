@@ -1,7 +1,7 @@
-{@abstract(This unit provides conversion functions from windows api constants to delphi enumeration types and vice versa.)
+{<B>Abstract</B>This unit provides conversion functions from windows api constants to delphi enumeration types and vice versa. 
 @author(Christian Wimmer)
-@created(03/23/2007)
-@lastmod(11/27/2007)
+<B>Created:</B>03/23/2007 
+<B>Last modification:</B>11/27/2007 
 
 Project JEDI Windows Security Code Library (JWSCL)
 
@@ -55,7 +55,7 @@ uses
 {$IFNDEF SL_IMPLEMENTATION_SECTION}
 
 type
-  {@Name provides class methods to convert windows api constants
+  {<B>TJwEnumMap</B> provides class methods to convert windows api constants
    to delphi enumeration types and vice versa.
    There is no need to create an instance of it.}
   TJwEnumMap = class
@@ -85,17 +85,17 @@ type
     class function ConvertFlags(Flags: Cardinal): TJwSecurityDialogFlags;
       overload; virtual;
 
-    {@Name converts a set of ACE flags to a bit combined Cardinal value.
-     @param(AceFlags receives the set of flags to be converted. It can be emtpy [].
-            See @link(TJwAceFlags) for more information.)
-     @return(The return value contains the set as a value.)
+    {<B>ConvertAceFlags</B> converts a set of ACE flags to a bit combined Cardinal value.
+     @param AceFlags receives the set of flags to be converted. It can be emtpy [].
+            See TJwAceFlags  for more information. 
+     @return The return value contains the set as a value. 
     }
     class function ConvertAceFlags(const AceFlags: TJwAceFlags): Cardinal; overload; virtual;
 
-    {@Name converts a cardianl value to set of ACE flags.
-     @param(AceFlags receives the value to be converted to a set of flags.
-            Unknown bits are ignored in the result. )
-     @return(The return value contains the set of ace flags. See @link(TJwAceFlags) for more information.)
+    {<B>ConvertAceFlags</B> converts a cardianl value to set of ACE flags.
+     @param AceFlags receives the value to be converted to a set of flags.
+            Unknown bits are ignored in the result.  
+     @return The return value contains the set of ace flags. See TJwAceFlags  for more information. 
     }
     class function ConvertAceFlags(
       const AceFlags: Cardinal): TJwAceFlags; overload; virtual;

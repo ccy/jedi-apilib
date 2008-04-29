@@ -1,7 +1,7 @@
-{@abstract(This unit provides simple privilege administration.)
+{<B>Abstract</B>This unit provides simple privilege administration. 
 @author(Christian Wimmer)
-@created(03/23/2007)
-@lastmod(09/10/2007)
+<B>Created:</B>03/23/2007 
+<B>Last modification:</B>09/10/2007 
 
 Project JEDI Windows Security Code Library (JWSCL)
 
@@ -58,7 +58,7 @@ uses
 
 
 type
-  {@Name provides an interface to a scope based
+  {<B>IJwPrivilegeScope</B> provides an interface to a scope based
    privilege administration.
    See JwGetPrivilegeScope how to use this.
   }
@@ -69,41 +69,42 @@ type
   end;
 
 
-  {@Name provides an interface to a scope based
+  {<B>TJwPrivilegeScope</B> provides an interface to a scope based
    privilege administration.}
   TJwPrivilegeScope = class (TInterfacedObject, IJwPrivilegeScope)
   protected
     fEnabledPrivileges : TJwStringArray;
     function GetEnabledPrivileges : TJwStringArray;
   public
-    {@Name creates a new @classname instance and activates
+    {<B>Create</B> creates a new @classname instance and activates
      all privileges specified in parameter Privileges.
      These privileges will be disabled on destruction of this instance.
      @param defines a list of privileges to be enabled.
-     @param(SetType defines whether the privileges should be enabled or disabled.
+     @param SetType defines whether the privileges should be enabled or disabled.
       Define pst_EnableIfAvail if you dont want to raise an exception if the
-      privlege does not exist.)
-     @raises(EJwsclPrivilegeException will be raised if the privilege is not available and query is pst_Enable,
+      privlege does not exist. 
+     raises
+ EJwsclPrivilegeException:  will be raised if the privilege is not available and query is pst_Enable,
         otherwise the return value is false. If query is pst_EnableIfAvail the return is false, if the privilege could not be enabled.
         In this case no exception is raised.
         If an exception is raised all privileges enabled to this point are
-        disabled)
+        disabled 
     }
-    constructor Create(const Privileges : array of String; const SetType : TJwPrivilegeSetType);
+    constructor Create(const Privileges : array of AnsiString; const SetType : TJwPrivilegeSetType);
     destructor Destroy; override;
 
-    {@Name returns an array of privileges that were given to to constructor.}
+    {<B>EnabledPrivileges</B> returns an array of privileges that were given to to constructor.}
     property EnabledPrivileges : TJwStringArray read GetEnabledPrivileges;
   end;
 
 
 
-  {@Name creates a new privilege scope instance and activates
+  {<B>JwGetPrivilegeScope</B> creates a new privilege scope instance and activates
      all privileges specified in parameter Privileges.
      These privileges will be disabled on destruction of this instance.
      The instance will be automatically be destroyed if the instance pointer
      runs out of scope.
-     @longcode(#
+     <code lang="Delphi">
       var P : IJwPrivilegeScope;
       begin
         try
@@ -114,22 +115,23 @@ type
         end;
         //do things on success that needs privileges enabled
       end; //here the privileges are automatically disabled
-     #)
+     </code>
      There is no need for an exception handling if parameter SetType is set to
      pst_EnableIfAvail.
 
      @param defines a list of privileges to be enabled.
-     @param(SetType defines whether the privileges should be enabled or disabled.
+     @param SetType defines whether the privileges should be enabled or disabled.
       Define pst_EnableIfAvail if you dont want to raise an exception if the
-      privlege does not exist.)
-     @raises(EJwsclPrivilegeException will be raised if the privilege is not available and query is pst_Enable,
+      privlege does not exist. 
+     raises
+ EJwsclPrivilegeException:  will be raised if the privilege is not available and query is pst_Enable,
         otherwise the return value is false. If query is pst_EnableIfAvail the return is false, if the privilege could not be enabled.
         In this case no exception is raised.
         If an exception is raised all privileges enabled to this point are
-        disabled)
+        disabled 
     
   }
-  function JwGetPrivilegeScope(const Privileges : array of String;
+  function JwGetPrivilegeScope(const Privileges : array of AnsiString;
     const SetType : TJwPrivilegeSetType = pst_Enable) : IJwPrivilegeScope;
 
 {$ENDIF SL_IMPLEMENTATION_SECTION}
@@ -143,7 +145,7 @@ implementation
 {$ENDIF SL_INTERFACE_SECTION}
 
 {$IFNDEF SL_OMIT_SECTIONS}
-function JwGetPrivilegeScope(const Privileges : array of String;
+function JwGetPrivilegeScope(const Privileges : array of AnsiString;
   const SetType : TJwPrivilegeSetType = pst_Enable) : IJwPrivilegeScope;
 begin
   result := TJwPrivilegeScope.Create(Privileges, SetType);
@@ -153,7 +155,7 @@ end;
 
 { TJwPrivilegeScope }
 
-constructor TJwPrivilegeScope.Create(const Privileges: array of String;
+constructor TJwPrivilegeScope.Create(const Privileges: array of AnsiString;
   const SetType : TJwPrivilegeSetType);
 var i : Integer;
 begin
