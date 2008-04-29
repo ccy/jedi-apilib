@@ -59,7 +59,7 @@ interface
 uses
   CommCtrl,
   {$IFDEF SETUPAPI_LINKONREQUEST}
-  ModuleLoader,
+  JwaModuleLoader,
   {$ENDIF SETUPAPI_LINKONREQUEST}
   JwaWinReg, JwaWinType;
 
@@ -7200,7 +7200,7 @@ begin
 {$IFNDEF JWA_INCLUDEMODE}
   Result := LoadModule(SetupApiLib, SetupApiModuleName);
 {$ELSE}
-  Result := ModuleLoader_LoadModule(SetupApiLib, SetupApiModuleName);
+  Result := JwaModuleLoader_LoadModule(SetupApiLib, SetupApiModuleName);
 {$ENDIF JWA_INCLUDEMODE}
   if Result then
   begin
@@ -7694,7 +7694,7 @@ begin
   Dec(SetupApiLoadCount);
   if SetupApiLoadCount > 0 then
     Exit;
-  {$IFNDEF JWA_INCLUDEMODE}ModuleLoader.{$ENDIF JWA_INCLUDEMODE}UnloadModule(SetupApiLib);
+  {$IFNDEF JWA_INCLUDEMODE}JwaModuleLoader.{$ENDIF JWA_INCLUDEMODE}UnloadModule(SetupApiLib);
   {$IFDEF WINXP_UP}
   SetupGetFileQueueCount := nil;
   SetupGetFileQueueFlags := nil;

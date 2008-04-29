@@ -562,6 +562,10 @@ The list has no order!}
 {$I JwaImapiError.pas}
 {$I JwaIme.pas}
 {$I JwaBits1_5.pas}
+{$I JwaBits2_0.pas}
+{$I JwaBits2_5.pas}
+{$I JwaBits3_0.pas}
+{$I Jwadwmapi.pas}
 {$I JwaIoEvent.pas}
 {$I JwaIpIfCons.pas}
 {$I JwaIpInfoId.pas}
@@ -616,7 +620,7 @@ The list has no order!}
 
 {.$I JwaWinternl.pas}  //not used anymore!
 
-{$I ModuleLoader.pas}//set source path ..\..\Common if not found
+{$I JwaModuleLoader.pas}//set source path ..\..\Common if not found
 
 {$IFDEF JWA_INCLUDE_SETUP_API}
   {$DEFINE SETUPAPI_LINKONREQUEST}
@@ -919,6 +923,10 @@ The list has no order!}
 {$I JwaImapiError.pas}
 {$I JwaIme.pas}
 {$I JwaBits1_5.pas}
+{$I JwaBits2_0.pas}
+{$I JwaBits2_5.pas}
+{$I JwaBits3_0.pas}
+{$I Jwadwmapi.pas}
 {$I JwaIoEvent.pas}
 {$I JwaIpIfCons.pas}
 {$I JwaIpInfoId.pas}
@@ -971,7 +979,7 @@ The list has no order!}
 {$I JwaNCrypt.pas}
 
 
-{$I ModuleLoader.pas}
+{$I JwaModuleLoader.pas}
 {$IFDEF JWA_INCLUDE_SETUP_API}
 {$DEFINE SETUPAPI_LINKONREQUEST}
 

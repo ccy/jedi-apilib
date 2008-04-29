@@ -27,7 +27,7 @@
 {                                                                  }
 {******************************************************************}
 {$IFNDEF JWA_OMIT_SECTIONS}
-unit ModuleLoader;
+unit JwaModuleLoader;
 {$ENDIF JWA_OMIT_SECTIONS}
 
 {.$I jvcl.inc}
@@ -76,7 +76,7 @@ const
 {$IFNDEF JWA_INCLUDEMODE}
 function LoadModule(var Module: TModuleHandle; FileName: string): Boolean;
 {$ELSE}
-function ModuleLoader_LoadModule(var Module: TModuleHandle; FileName: string): Boolean;
+function JwaModuleLoader_LoadModule(var Module: TModuleHandle; FileName: string): Boolean;
 {$ENDIF JWA_INCLUDEMODE}
 
 function LoadModuleEx(var Module: TModuleHandle; FileName: string; Flags: Cardinal): Boolean;
@@ -103,7 +103,7 @@ type
   TModuleLoadMethod = (ltDontResolveDllReferences, ltLoadAsDataFile, ltAlteredSearchPath);
   TModuleLoadMethods = set of TModuleLoadMethod;
 
-  TModuleLoader = class(TObject)
+  TJwaModuleLoader = class(TObject)
   private
     FHandle: TModuleHandle;
     FDLLName: string;
@@ -165,7 +165,7 @@ type
 {$IFNDEF JWA_INCLUDEMODE}
 function LoadModule(var Module: TModuleHandle; FileName: string): Boolean;
 {$ELSE}
-function ModuleLoader_LoadModule(var Module: TModuleHandle; FileName: string): Boolean;
+function JwaModuleLoader_LoadModule(var Module: TModuleHandle; FileName: string): Boolean;
 {$ENDIF JWA_INCLUDEMODE}
 begin
   if Module = INVALID_MODULEHANDLE_VALUE then
@@ -276,7 +276,7 @@ const
 {$IFNDEF JWA_INCLUDEMODE}
 function LoadModule(var Module: TModuleHandle; FileName: string): Boolean;
 {$ELSE}
-function ModuleLoader_LoadModule(var Module: TModuleHandle; FileName: string): Boolean;
+function JwaModuleLoader_LoadModule(var Module: TModuleHandle; FileName: string): Boolean;
 {$ENDIF JWA_INCLUDEMODE}
 begin
   if Module = INVALID_MODULEHANDLE_VALUE then
@@ -372,9 +372,9 @@ end;
 
 {$ENDIF UNIX}
 
-//=== { TModuleLoader } ======================================================
+//=== { TJwaModuleLoader } ======================================================
 
-constructor TModuleLoader.Create(const ADLLName: string; LoadMethods: TModuleLoadMethods = []);
+constructor TJwaModuleLoader.Create(const ADLLName: string; LoadMethods: TModuleLoadMethods = []);
 begin
   inherited Create;
   FHandle := INVALID_MODULEHANDLE_VALUE;
@@ -382,18 +382,18 @@ begin
   Load(LoadMethods);
 end;
 
-destructor TModuleLoader.Destroy;
+destructor TJwaModuleLoader.Destroy;
 begin
   Unload;
   inherited Destroy;
 end;
 
-procedure TModuleLoader.Error(ErrorCode: Cardinal);
+procedure TJwaModuleLoader.Error(ErrorCode: Cardinal);
 begin
   // overriden classes should handle this
 end;
 
-function TModuleLoader.GetExportedSymbol(const AName: AnsiString; var Buffer;
+function TJwaModuleLoader.GetExportedSymbol(const AName: AnsiString; var Buffer;
   Size: Integer): Boolean;
 var
   ASymbol: Pointer;
@@ -403,12 +403,12 @@ begin
     Move(ASymbol^, Buffer, Size);
 end;
 
-function TModuleLoader.GetLoaded: Boolean;
+function TJwaModuleLoader.GetLoaded: Boolean;
 begin
   Result := Handle <> INVALID_MODULEHANDLE_VALUE;
 end;
 
-function TModuleLoader.GetProcedure(const AName: Ansistring; var AProc: Pointer): Boolean;
+function TJwaModuleLoader.GetProcedure(const AName: Ansistring; var AProc: Pointer): Boolean;
 begin
   Result := Loaded;
   if Result and not Assigned(AProc) then
@@ -423,7 +423,7 @@ begin
   end;
 end;
 
-class function TModuleLoader.IsAvailable(const ADLLName: string; const AProcName: Ansistring = ''): Boolean;
+class function TJwaModuleLoader.IsAvailable(const ADLLName: string; const AProcName: Ansistring = ''): Boolean;
 var
   Module: TModuleHandle;
   P: Pointer;
@@ -431,7 +431,7 @@ begin
 {$IFNDEF JWA_INCLUDEMODE}
   Result := LoadModule(Module, ADLLName);
 {$ELSE}
-  Result := ModuleLoader_LoadModule(Module, ADLLName);
+  Result := JwaModuleLoader_LoadModule(Module, ADLLName);
 {$ENDIF JWA_INCLUDEMODE}
 
   if Result then
@@ -445,7 +445,7 @@ begin
   end;
 end;
 
-procedure TModuleLoader.Load(LoadMethods: TModuleLoadMethods);
+procedure TJwaModuleLoader.Load(LoadMethods: TModuleLoadMethods);
 const
   cLoadMethods: array [TModuleLoadMethod] of DWORD =
     {$IFDEF MSWINDOWS}
@@ -468,7 +468,7 @@ begin
     Error(GetLastError);
 end;
 
-function TModuleLoader.SetExportedSymbol(const AName: string; var Buffer;
+function TJwaModuleLoader.SetExportedSymbol(const AName: string; var Buffer;
   Size: Integer): Boolean;
 var
   ASymbol: Pointer;
@@ -478,7 +478,7 @@ begin
     Move(Buffer, ASymbol^, Size);
 end;
 
-procedure TModuleLoader.Unload;
+procedure TJwaModuleLoader.Unload;
 begin
   if FHandle <> INVALID_MODULEHANDLE_VALUE then
     UnloadModule(FHandle);

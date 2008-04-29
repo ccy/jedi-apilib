@@ -59,7 +59,7 @@ uses
 {$ENDIF JWA_OMIT_SECTIONS}
 
 
-
+{$IFNDEF JWA_IMPLEMENTATIONSECTION}
 
 const
   DWM_BB_ENABLE                 = $00000001;  // fEnable has been specified
@@ -435,8 +435,13 @@ type
   {$EXTERNALSYM MIL_MATRIX3X2D}
 
   function DwmGetGraphicsStreamTransformHint(uIndex : UINT; out pTransform : MIL_MATRIX3X2D) : HRESULT; stdcall;
+  {$EXTERNALSYM DwmGetGraphicsStreamTransformHint}
   function DwmGetGraphicsStreamClient(uIndex : UINT; out pClientUuid : TGUID) : HRESULT; stdcall;
+  {$EXTERNALSYM DwmGetGraphicsStreamClient}
   function DwmGetTransportAttributes(hWnd : HWND; out pTimingInfo : DWM_TIMING_INFO) : HRESULT; stdcall;
+  {$EXTERNALSYM DwmGetTransportAttributes}
+
+{$ENDIF JWA_IMPLEMENTATIONSECTION}
 
 {$IFNDEF JWA_OMIT_SECTIONS}
 implementation

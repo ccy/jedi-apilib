@@ -4015,7 +4015,7 @@ procedure UnloadConfigManagerApi;
 implementation
 {$IFDEF CFGMGR32_LINKONREQUEST}
 uses
-  ModuleLoader;
+  JwaModuleLoader;
 {$ENDIF CFGMGR32_LINKONREQUEST}
 {$ENDIF JWA_OMIT_SECTIONS}
 
@@ -4059,7 +4059,7 @@ begin
   {$IFNDEF JWA_INCLUDEMODE}
   Result := LoadModule(CfgMgrApiLib, CfgMgrDllName);
   {$ELSE}
-  Result := ModuleLoader_LoadModule(CfgMgrApiLib, CfgMgrDllName);
+  Result := JwaModuleLoader_LoadModule(CfgMgrApiLib, CfgMgrDllName);
   {$ENDIF JWA_INCLUDEMODE}
   if Result then
   begin

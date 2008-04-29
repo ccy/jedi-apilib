@@ -70,6 +70,7 @@ const
   dsprop = 'dsprop.dll';
   dssec = 'dssec.dll';
   dsuiext = 'dsuiext.dll';
+  dwmlib = 'dwmapi.dll';
   faultreplib = 'faultrep.dll';
   gdi32 = 'gdi32.dll';
   gpeditlib = 'gpedit.dll';
