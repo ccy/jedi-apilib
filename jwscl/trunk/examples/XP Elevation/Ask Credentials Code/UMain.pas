@@ -17,7 +17,7 @@ uses SysUtils,
   SessionPipe;
 
 
-procedure Main;
+function Main : Integer;
 
 implementation
 
@@ -100,7 +100,7 @@ begin
       try
      //   Desktop.SwitchDesktop;
         try
-          Application.Free;
+          FreeAndNil(Application);
           Application := TApplication.Create(nil);
           Application.Initialize;
 {$IFNDEF TEST}
@@ -265,8 +265,6 @@ begin
     Haltresult := 2;
 {$IFNDEF TEST}
     PipeSession.SendClientData(SessionInfo);
-{$ENDIF}
-
     {
     i = 1 : Error. SendClientData -> ReadClientData failed in Service
     i = 2 : Error. CreateProcessfailed.
@@ -290,7 +288,7 @@ begin
         end;
       end;
     end;
-  
+{$ENDIF}
   finally
     ScreenBitmap.Free;
   end;
@@ -298,7 +296,7 @@ begin
 end;
 
 
-procedure Main;
+function Main : Integer;
 var p : String;
     i : Integer;
 begin
@@ -325,7 +323,8 @@ begin
     ZeroMemory(@SessionInfo, sizeof(SessionInfo));
     SessionInfo.Application := 'C:\Windows\System32\cmd.exe';
 {$ENDIF TEST}
-    Application.Free;
+    //FreeAndNil(Application);
+    Application := Nil;
 
 
     Haltresult := AskCredential();
@@ -336,7 +335,7 @@ begin
     end;
   end;
   PipeSession.Free;
-  halt(HaltResult);
+  result := HaltResult;
 end;
 
 end.

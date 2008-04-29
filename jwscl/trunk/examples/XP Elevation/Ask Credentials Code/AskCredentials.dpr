@@ -5,6 +5,7 @@ program AskCredentials;
 {$R *.res}
 
 uses
+  ExceptionLog,
   SysUtils,
   JwaWindows,
   JwsclDescriptor,
@@ -21,6 +22,7 @@ uses
   CredentialsForm in 'CredentialsForm.pas' {FormCredentials},
   uLogging in '..\Service Code\uLogging.pas';
 
+var Res : Integer;
 begin
   uLogging.ApplicationFileName := 'AskCredentials';
   uLogging.InitFileLocation;
@@ -28,8 +30,9 @@ begin
   uLogging.SwitchLog(true);
   try
   //  MessageBox(0,'Debug breakpoint','',MB_ICONEXCLAMATION or MB_OK);
-    Main;
+    Res := Main;
   finally
     uLogging.DoneLog;
   end;
+  Halt(Res);
 end.
