@@ -1,14 +1,23 @@
-program Service;
+program XPElevationService;
 
 uses
   SvcMgr,
-  MainUnit in 'MainUnit.pas' {Service1: TService},
+  Classes,
+  MainUnit in 'MainUnit.pas' {XPService: TService},
   ThreadUnit in 'ThreadUnit.pas',
-  HandleRequestThread in 'HandleRequestThread.pas';
+  Windows,
+  JwsclKnownSID,
+  JwsclLogging,
+  HandleRequestThread in 'HandleRequestThread.pas',
+  SessionPipe in '..\SessionPipe.pas',
+  ElevationHandler in 'ElevationHandler.pas',
+  ThreadedPasswords in 'ThreadedPasswords.pas',
+  uLogging in 'uLogging.pas';
 
 {$R *.RES}
 
 begin
+  JwInitWellknownSIDs;
   // Windows 2003 Server requires StartServiceCtrlDispatcher to be
   // called before CoRegisterClassObject, which can be called indirectly
   // by Application.Initialize. TServiceApplication.DelayInitialize allows
@@ -24,7 +33,23 @@ begin
   // Application.DelayInitialize := True;
   //
  { if not Application.DelayInitialize or Application.Installing then  }
+  uLogging.ApplicationFileName := 'XPElevation';
+  uLogging.InitFileLocation;
+
+  uLogging.InitLog;
+
+  //log by default in debug version
+{$IFDEF DEBUG}
+  uLogging.SwitchLog(true);
+{$ENDIF DEBUG}
+
+  try
     Application.Initialize;
-  Application.CreateForm(TService1, Service1);
-  Application.Run;
+    Application.CreateForm(TXPService, XPService);
+    XPService.ServiceExecute(nil);
+  //  Application.Run;
+  finally
+    DoneLog;
+  end;
+
 end.
