@@ -370,7 +370,7 @@ function CalculateDiffTime(TimeLow: INT64; TimeHigh: INT64): INT64;
 function CalculateElapsedTime(lpFileTime: PFILETIME; var DiffTime: TDiffTime):
   Boolean; stdcall;
 
-function CpuTime2Str(ACPUTime: LARGE_INTEGER): string;
+function CpuTime2Str(ACPUTime: LARGE_INTEGER): AnsiString;
 
 function CurrentDateTimeString(out lpBuffer: PWideChar): Boolean; stdcall;
 
@@ -1202,7 +1202,7 @@ end;
 
 // This functions converts CPU times as returned by
 // TSystemProcesses structure to a string
-function CpuTime2Str(ACPUTime: LARGE_INTEGER): String;
+function CpuTime2Str(ACPUTime: LARGE_INTEGER): AnsiString;
 var SystemTime: TSystemTime;
 {$IFDEF COMPILER7_UP}
   FS: TFormatSettings;

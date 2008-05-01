@@ -227,7 +227,7 @@ type
   _LSA_STRING = record
     Length: USHORT;
     MaximumLength: USHORT;
-    Buffer: PCHAR;
+    Buffer: PANSICHAR;
   end;
   {$EXTERNALSYM _LSA_STRING}
   LSA_STRING = _LSA_STRING;
@@ -3205,7 +3205,7 @@ type
   _KERB_NET_ADDRESS = record
     Family: ULONG;
     Length: ULONG;
-    Address: PCHAR;
+    Address: PAnsiChar;
   end;
   {$EXTERNALSYM _KERB_NET_ADDRESS}
   KERB_NET_ADDRESS = _KERB_NET_ADDRESS;

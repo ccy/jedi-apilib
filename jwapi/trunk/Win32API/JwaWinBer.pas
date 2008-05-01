@@ -172,7 +172,7 @@ function ber_peek_tag(pBerElement: PBerElement; var pLen: ULONG): ULONG; cdecl;
 // subsequent invocations of ber_next_element().
 //
 
-function ber_first_element(pBerElement: PBerElement; var pLen: ULONG; var ppOpaque: PChar): ULONG; cdecl;
+function ber_first_element(pBerElement: PBerElement; var pLen: ULONG; var ppOpaque: PAnsiChar): ULONG; cdecl;
 {$EXTERNALSYM ber_first_element}
 
 //
@@ -183,7 +183,7 @@ function ber_first_element(pBerElement: PBerElement; var pLen: ULONG; var ppOpaq
 // is returned.
 //
 
-function ber_next_element(pBerElement: PBerElement; var pLen: ULONG; opaque: PChar): ULONG; cdecl;
+function ber_next_element(pBerElement: PBerElement; var pLen: ULONG; opaque: PAnsiChar): ULONG; cdecl;
 {$EXTERNALSYM ber_next_element}
 
 //
@@ -276,7 +276,7 @@ The format string can contain the following format characters:
         be used with this format character.
 *)
 
-//WINBERAPI INT BERAPI ber_printf( BerElement *pBerElement, PCHAR fmt, ... );
+//WINBERAPI INT BERAPI ber_printf( BerElement *pBerElement, PAnsiChar fmt, ... );
 
 (*
 The ber_scanf() routine is used to decode a BER element in much the same
@@ -368,7 +368,7 @@ contain the following characters:
 
 *)
 
-//WINBERAPI ULONG BERAPI ber_scanf( BerElement *pBerElement, PCHAR fmt, ... );
+//WINBERAPI ULONG BERAPI ber_scanf( BerElement *pBerElement, PAnsiChar fmt, ... );
 
 {$ENDIF JWA_IMPLEMENTATIONSECTION}
 

@@ -190,7 +190,7 @@ type
   {$EXTERNALSYM LPWSPGETSOCKNAME}
   TWspGetSockName = LPWSPGETSOCKNAME;
 
-  LPWSPGETSOCKOPT = function(s: TSocket; level, optname: Integer; optval: PChar; var optlen, lpErrno: Integer): Integer; stdcall;
+  LPWSPGETSOCKOPT = function(s: TSocket; level, optname: Integer; optval: PAnsiChar; var optlen, lpErrno: Integer): Integer; stdcall;
   {$EXTERNALSYM LPWSPGETSOCKOPT}
   TWspGetSockOpt = LPWSPGETSOCKOPT;
 
@@ -254,7 +254,7 @@ type
   {$EXTERNALSYM LPWSPSENDTO}
   TWspSendTo = LPWSPSENDTO;
 
-  LPWSPSETSOCKOPT = function(s: TSocket; level, optname: Integer; optval: PChar; optlen: Integer; var lpErrno: Integer): Integer; stdcall;
+  LPWSPSETSOCKOPT = function(s: TSocket; level, optname: Integer; optval: PAnsiChar; optlen: Integer; var lpErrno: Integer): Integer; stdcall;
   {$EXTERNALSYM LPWSPSETSOCKOPT}
   TWspSetSockOpt = LPWSPSETSOCKOPT;
 

@@ -773,17 +773,17 @@ var
   Path: string;
 begin
   R := ERROR_PATH_NOT_FOUND;
-  if RegOpenKeyExA(HKEY_CLASSES_ROOT, PChar(HHPathRegKey), 0, KEY_QUERY_VALUE, HHKey) = ERROR_SUCCESS then
+  if RegOpenKeyExA(HKEY_CLASSES_ROOT, PAnsiChar(HHPathRegKey), 0, KEY_QUERY_VALUE, HHKey) = ERROR_SUCCESS then
   begin
     ValueType := 0;
     PathSize := 0;
-    if RegQueryValueExA(HHKey, PChar(''), nil, @ValueType, nil, @PathSize) = ERROR_SUCCESS then
+    if RegQueryValueExA(HHKey, PAnsiChar(''), nil, @ValueType, nil, @PathSize) = ERROR_SUCCESS then
     begin
       if ValueType = REG_SZ then
       begin
         SetLength(Path, PathSize);
-        R := RegQueryValueExA(HHKey, PChar(''), nil, @ValueType, PByte(Path), @PathSize);
-        Result := PChar(Path);
+        R := RegQueryValueExA(HHKey, PAnsiChar(''), nil, @ValueType, PByte(Path), @PathSize);
+        Result := PAnsiChar(Path);
       end;
     end;
     RegCloseKey(HHKey);

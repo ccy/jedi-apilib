@@ -125,9 +125,15 @@ the one of the project.
     {$UNDEF JWA_INCLUDE_JWAADSTLB}
     {$UNDEF JWA_INCLUDE_SETUP_API}
   {$ENDIF FPC}
+
+  {$DEFINE JWA_INCLUDE_SHELLAPI}
+
+  {$DEFINE JWA_NEW_WINSTA}
 {$ENDIF PACKAGE_CONDITIONS}
 
+{.$DEFINE JWA_NEW_WINSTA}
 
+{.$DEFINE UNICODE}
 
 {------ end of your business ------}
 
@@ -169,6 +175,7 @@ the one of the project.
 
 
 
+
 interface
 
 
@@ -199,6 +206,11 @@ uses
   ,Graphics,
   StdVCL
 {$ENDIF}
+
+{$IFDEF JWA_INCLUDE_SHELLAPI}
+  ,msxml
+{$ENDIF JWA_INCLUDE_SHELLAPI}
+
   ;
 
 
@@ -207,10 +219,10 @@ uses
   {$ifndef FPC}
     type PCardinal = ^Cardinal;
   {$ELSE}
-    {$ALIGN 4}
+    {$ALIGN 8}  
   {$ENDIF}
 {$ELSE}
-{$ALIGN 4}
+{$ALIGN 8}
 {$ENDIF}
 
 (* To include a new converted header file
@@ -550,6 +562,10 @@ The list has no order!}
 {$I JwaImapiError.pas}
 {$I JwaIme.pas}
 {$I JwaBits1_5.pas}
+{$I JwaBits2_0.pas}
+{$I JwaBits2_5.pas}
+{$I JwaBits3_0.pas}
+{$I Jwadwmapi.pas}
 {$I JwaIoEvent.pas}
 {$I JwaIpIfCons.pas}
 {$I JwaIpInfoId.pas}
@@ -567,20 +583,44 @@ The list has no order!}
 {$I JwaWinInet.pas}
 
 {$DEFINE JWA_INCLUDEMODE}
-{$IFDEF COMPILER6_UP}
- {$I JwaWinSta.pas}
-{$ENDIF}
-{$IFDEF FPC}
- {$I JwaWinSta.pas}
+
+//these files needs a newer version due to missing units
+{$IFDEF JWA_NEW_WINSTA}
+  {$I JwaRpcWinsta.pas}
+{$ELSE}
+  {$IFDEF COMPILER6_UP}
+   {$I JwaWinSta.pas}
+  {$ENDIF}
+  {$IFDEF FPC}
+   {$I JwaWinSta.pas}
+  {$ENDIF}
 {$ENDIF}
 
 {$I JwaStrSafe.pas}
 
 
+{$IFDEF JWA_INCLUDE_SHELLAPI}
+{$I JwaUrlHist.pas}         
+{$I JwaUrlMon.pas}
+{$I JwaSHFolder.pas}
+{$I JwaSHAppMgr.pas}
+{$I JwaShellAPI.pas}
+
+{$I JwaShlDisp.pas}
+{$I JwaShlObj.pas}
+{$I JwaShlWAPI.pas}
+
+{$ENDIF}
+
+{$I JwaBCrypt.pas}
+{$I JwaNCrypt.pas}
+
+
+
 
 {.$I JwaWinternl.pas}  //not used anymore!
 
-{$I ModuleLoader.pas}//set source path ..\..\Common if not found
+{$I JwaModuleLoader.pas}//set source path ..\..\Common if not found
 
 {$IFDEF JWA_INCLUDE_SETUP_API}
   {$DEFINE SETUPAPI_LINKONREQUEST}
@@ -883,6 +923,10 @@ The list has no order!}
 {$I JwaImapiError.pas}
 {$I JwaIme.pas}
 {$I JwaBits1_5.pas}
+{$I JwaBits2_0.pas}
+{$I JwaBits2_5.pas}
+{$I JwaBits3_0.pas}
+{$I Jwadwmapi.pas}
 {$I JwaIoEvent.pas}
 {$I JwaIpIfCons.pas}
 {$I JwaIpInfoId.pas}
@@ -904,17 +948,38 @@ The list has no order!}
 {.$I JwaWinternl.pas} //not used anymore!
 
 //these files needs a newer version due to missing units
-{$IFDEF COMPILER6_UP}
-{$I JwaWinSta.pas}
-{$ENDIF COMPILER6_UP}
-{$IFDEF FPC}
-{$I JwaWinSta.pas}
-{$ENDIF FPC}
+{$IFDEF JWA_NEW_WINSTA}
+  {$I JwaRpcWinsta.pas}
+{$ELSE}
+  {$IFDEF COMPILER6_UP}
+   {$I JwaWinSta.pas}
+  {$ENDIF}
+  {$IFDEF FPC}
+   {$I JwaWinSta.pas}
+  {$ENDIF}
+{$ENDIF}
 
 {$I JwaStrSafe.pas}
+{$I JwaRpcWinsta.pas}
 
 
-{$I ModuleLoader.pas}
+{$IFDEF JWA_INCLUDE_SHELLAPI}
+{$I JwaUrlHist.pas}
+{$I JwaUrlMon.pas}
+{$I JwaSHFolder.pas}
+{$I JwaSHAppMgr.pas}
+{$I JwaShellAPI.pas}
+
+{$I JwaShlDisp.pas}
+{$I JwaShlObj.pas}
+{$I JwaShlWAPI.pas}
+{$ENDIF}
+
+{$I JwaBCrypt.pas}
+{$I JwaNCrypt.pas}
+
+
+{$I JwaModuleLoader.pas}
 {$IFDEF JWA_INCLUDE_SETUP_API}
 {$DEFINE SETUPAPI_LINKONREQUEST}
 
@@ -936,6 +1001,7 @@ If you get this error you should do the things described or upgrade.
 {$UNDEF JWA_OMIT_SECTIONS}
 
 end.
+
 
 
 

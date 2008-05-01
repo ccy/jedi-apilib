@@ -61,7 +61,7 @@ unit JwaStrSafe;
 interface
 //use either JwaWindows.pas or single mode units
 {$IFDEF JWA_WINDOWS}
-uses JwaWindows;
+uses JwaWindows; 
 {$ELSE}
 uses JwaWinType;
 {$ENDIF}
@@ -83,10 +83,10 @@ type
   PSize_t = ^size_t;
 {$ENDIF JWA_OMIT_SECTIONS}
 
-  STRSAFE_LPSTR = PCHAR;
+  STRSAFE_LPSTR = PAnsiChar;
   PSTRSAFE_LPSTR = ^STRSAFE_LPSTR;
 
-  STRSAFE_LPCSTR = PCHAR;
+  STRSAFE_LPCSTR = PAnsiChar;
   PSTRSAFE_LPCSTR = ^STRSAFE_LPCSTR;
 
   STRSAFE_LPWSTR = PWIDECHAR;
