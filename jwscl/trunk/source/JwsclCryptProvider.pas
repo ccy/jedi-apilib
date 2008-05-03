@@ -831,7 +831,7 @@ end;
 
 procedure TJwHash.HashData(Data: Pointer; Size: Cardinal);
 begin
-  if not CryptHashData(fHashHandle, @Data, Size, 0) then
+  if not CryptHashData(fHashHandle, Data, Size, 0) then
     RaiseApiError('HashData', 'CryptHashData');
 end;
 
