@@ -125,7 +125,7 @@
 			<Directories Name="PackageDCPOutputDir">bin\debug\dynamic</Directories>
 			<Directories Name="SearchPath">.;..\;..\..\common;..\..\Win32Api</Directories>
 			<Directories Name="Packages"></Directories>
-			<Directories Name="Conditionals">PACKAGE_CONDITIONS;JWA_INCLUDE_SETUP_API;JWA_INCLUDE_JWAADSTLB;DEBUG;DYNAMIC_LINK</Directories>
+			<Directories Name="Conditionals">PACKAGE_CONDITIONS;JWA_INCLUDE_SETUP_API;JWA_INCLUDE_JWAADSTLB;DEBUG;DYNAMIC_LINK;JWA_WINDOWS</Directories>
 			<Directories Name="DebugSourceDirs">.;..\;..\..\common;..\..\Win32Api</Directories>
 			<Directories Name="UsePackages">False</Directories>
 		</Directories>
