@@ -15,8 +15,7 @@ uses
   JwsclElevation,
   JwsclVersion,
   JwsclExceptions,
-  RunAsSysService in 'RunAsSysService.pas' {RunAsSysSvc3: TService},
-  RunAsSysCreateToken in 'RunAsSysCreateToken.pas';
+  RunAsSysService in 'RunAsSysService.pas' {RunAsSysSvc3: TService};
 
 {$R *.RES}
 
@@ -210,8 +209,9 @@ begin
           Parameters := '';
           for i := 1 to ParamCount do
           begin
-            Parameters := Parameters + ' ' +ParamStr(i);
+            Parameters := Parameters + ' "' +ParamStr(i)+'"';
           end;
+          System.Delete(Parameters, 1,1);
         end;
 
         Log.Log(Format('Try to elevate with these parameters: %s',[Parameters]));
