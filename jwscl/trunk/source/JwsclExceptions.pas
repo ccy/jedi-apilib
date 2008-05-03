@@ -347,6 +347,7 @@ type
   EJwsclInvalidSession = class(EJwsclSecurityException);
   EJwsclInvalidIndex = class(EJwsclSecurityException);
 
+  EJwsclInvalidHandle = class(EJwsclSecurityException);
 
 
   JwGeneralExceptionClass = class of Exception;

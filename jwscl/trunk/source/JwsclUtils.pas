@@ -933,6 +933,7 @@ begin
     if PIntTuple(fList[i])^.Index = Index then
     begin
       result := PIntTuple(fList[i])^.Value;
+      exit;
     end;
   end;
 

@@ -1063,6 +1063,7 @@ type
     ptNew,
     ptGetMem,
     ptLocalAlloc,
+    ptHandle,
     ptClass);
 
   TJwJobLimit = (

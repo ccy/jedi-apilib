@@ -6,7 +6,7 @@ uses
   JwaWindows, JwsclToken, JwsclLsa, JwsclCredentials, JwsclDescriptor, JwsclDesktops,
   JwsclExceptions, JwsclSID, JwsclAcl,JwsclKnownSID, JwsclEncryption, JwsclTypes,
   JwsclProcess,
-  SessionPipe, ThreadUnit, JwsclLogging, uLogging, ThreadedPasswords,
+  SessionPipe, JwsclLogging, uLogging, ThreadedPasswords,
   JwsclStrings;
 
 type
@@ -45,7 +45,7 @@ type
         out LastProcessID: TJwProcessId;
         var SessionInfo : TSessionInfo): Boolean;
 
-    property StopEvent: THandle read fStopEvent;
+//    property StopEvent: THandle read fStopEvent;
     property StopState : Boolean read GetStopState;
   end;
 
@@ -86,7 +86,8 @@ function TElevationHandler.AskCredentials(
   out LastProcessID: TJwProcessId;
   var SessionInfo: TSessionInfo): boolean;
 
-const TIMEOUT = 3000;
+
+const TIMEOUT = {$IFNDEF DEBUG}3000;{$ELSE}INFINITE;{$ENDIF}
 var
   StartInfo: STARTUPINFOW;
   ProcInfo: PROCESS_INFORMATION;
@@ -139,10 +140,13 @@ begin
           SecAttr
           );
       LastError := GetLastError;
-      if LastError <> ERROR_ALREADY_EXISTS then
-        Log.Log(lsError, JwFormatStringEx('Pipe creation of "%s" failed with %d',[PipeName, LastError]))
-      else
-        LogAndRaiseLastOsError(Log, ClassName, 'AskCredentials::(winapi)CreateNamedPipeW', 'ElevationHandler.pas');
+      if LastError <> 0 then
+      begin
+        if LastError <> ERROR_ALREADY_EXISTS then
+          Log.Log(lsError, JwFormatStringEx('Pipe creation of "%s" failed with %d',[PipeName, LastError]))
+        else
+          LogAndRaiseLastOsError(Log, ClassName, 'AskCredentials::(winapi)CreateNamedPipeW', 'ElevationHandler.pas');
+      end;
     until hPipe <> 0;
 
     ServerPipe.Assign(hPipe, TIMEOUT);
@@ -179,14 +183,14 @@ begin
       LogAndRaiseLastOsError(Log, ClassName, 'AskCredentials::(winapi)CreateProcessAsUserW', 'ElevationHandler.pas');
     end;
 
-    WaitForInputIdle()
-    WaitForSingleObject(ProcInfo.hProcess, 1 * 1000);
-
-
     LastProcessID := GetProcessId(ProcInfo.hProcess);
 
     try
-      if ServerPipe.WaitForClientToConnect(0, 10 * 1000{secs}, StopEvent) = 1{pipe event} then
+{$IFNDEF DEBUG}
+      if ServerPipe.WaitForClientToConnect(0, 10 * 1000{secs}, fStopEvent) = 1{pipe event} then
+{$ELSE}
+      if ServerPipe.WaitForClientToConnect(0, INFINITE, fStopEvent) = 1{pipe event} then
+{$ENDIF}
       begin
 
   //VISTA
@@ -201,10 +205,12 @@ begin
            Server    -> Client : Send service result for createprocess
         }
         try
+          SessionInfo.TimeOut := TIMEOUT;
+         try 
           ServerPipe.SendServerData(SessionInfo);
 
-          try
-            ServerPipe.WaitForClientAnswer(TIMEOUT, StopEvent);
+        {  try
+            ServerPipe.WaitForClientAnswer(TIMEOUT, fStopEvent);
           except
             on E1 : ETimeOutException do
             begin
@@ -218,35 +224,54 @@ begin
               Log.Log(lsError,'Shutdown received before credential app connected.');
               raise;
             end;
-          end;
+          end;   }
 
-          try
-            ServerPipe.ReadClientData(SessionInfo);
+
+            ServerPipe.ReadClientData(SessionInfo,TIMEOUT, fStopEvent);
+
+
           except
-            on E1 : EOSError do //ReadFile failed
+            on E1a : ETimeOutException do
             begin
-              ServerPipe.SendServerResult(1, E1.ErrorCode);
-              Log.Exception(E1);
+              ServerPipe.SendServerResult(ERROR_TIMEOUT, 0);
+              Log.Exception(E1a);
+              FreeAndNil(ServerPipe);
+              raise;
+            end;
+
+
+            on E1b : EShutdownException do //service shuts down
+            begin
+              ServerPipe.SendServerResult(ERROR_SHUTDOWN, 0);
+              Log.Exception(E1b);
+              FreeAndNil(ServerPipe);
+              raise;
+            end;
+
+            on E1c : EOSError do //ReadFile failed
+            begin
+              ServerPipe.SendServerResult(ERROR_WIN32, E1c.ErrorCode);
+              Log.Exception(E1c);
               FreeAndNil(ServerPipe);
               raise;
             end;
             on E2 : EAbort do //recevied data error
             begin
-              ServerPipe.SendServerResult(2, 0);
+              ServerPipe.SendServerResult(ERROR_ABORT, 0);
               Log.Exception(E2);
               FreeAndNil(ServerPipe);
               raise;
             end;
             on E3 : EOleError do //string copying failed
             begin
-              ServerPipe.SendServerResult(3, 0);
+              ServerPipe.SendServerResult(ERROR_ABORT, 0);
               Log.Exception(E3);
               FreeAndNil(ServerPipe);
               raise;
             end;
             on E4 : Exception do //string copying failed
             begin
-              ServerPipe.SendServerResult(4, 0);
+              ServerPipe.SendServerResult(ERROR_GENERAL_EXCEPTION, 0);
               Log.Exception(E4);
               FreeAndNil(ServerPipe);
               raise;
@@ -254,7 +279,7 @@ begin
           end;
 
           try
-            ServerPipe.SendServerResult(0,0);
+            ServerPipe.SendServerResult(ERROR_SUCCESS,0);
           except
             on E : Exception do //string copying failed
             begin
@@ -281,6 +306,7 @@ begin
   finally
   end;
 
+  result := SessionInfo.Flags and CLIENT_CANCELED <> CLIENT_CANCELED;
 
 end;
 
@@ -320,7 +346,9 @@ procedure TElevationHandler.StartApplication(
   const ApplicationPath: WideString);
 
 var Password,
-    Username, Domain: Widestring; LSA: TJwSecurityLsa;
+    Username,
+    DefaultUserName,
+    Domain: Widestring; LSA: TJwSecurityLsa;
 
     plogonData : PMSV1_0_INTERACTIVE_LOGON; Authlen: Cardinal;
     Source: TTokenSource; ProfBuffer: PMSV1_0_INTERACTIVE_PROFILE; ProfBufferLen: Cardinal;
@@ -335,7 +363,7 @@ var Password,
 
      Save: Boolean;
 
-    PassEntry : PPassEntry;
+
 
     InVars : TJwCreateProcessInfo;
     OutVars : TJwCreateProcessOut;
@@ -343,7 +371,8 @@ var Password,
 const EncryptionBlockSize = 8;
 var SessionInfo : TSessionInfo;
     Log : IJwLogClient;
-    LockedList : TList;
+
+    SessionID,
     ErrorResult : DWORD;
     ProcessID : TJwProcessId;
     UserData : PProcessJobData;
@@ -368,6 +397,7 @@ begin
           abort;
         end; 
         Username := SID.AccountName[''];
+        DefaultUserName := Username;
         try //4.
           Domain := SID.GetAccountDomainName('');
         except //4.
@@ -380,21 +410,32 @@ begin
       TJwSecurityToken.RevertToSelf;
 
       Token.ConvertToPrimaryToken(TOKEN_ALL_ACCESS);
-      LockedList := fPasswords.LockList;
+
+      SessionID := Token.TokenSessionId;
 
       try //5.
-        PassEntry := LockedList.Items[SIDIndex];
-
         Log.Log('Credentials for user '+Username+' are requested.');
 
         SessionInfo.Application := ApplicationPath;
-        SessionInfo.UserName := Username;
-        SessionInfo.Domain   := Domain;
-        SessionInfo.Password := '';
+        SessionInfo.Commandline := '';
 
-        //using cached password is possible
-        if PassEntry <> nil then
-          SessionInfo.Flags := SERVER_CACHEAVAILABLE;
+        //is password cache available?
+        if fPasswords.IsSessionValid(SessionID) then
+        begin
+          fPasswords.GetBySession(SessionID,
+            SessionInfo.Domain,
+            SessionInfo.UserName,
+            SessionInfo.Password);
+          SessionInfo.Flags    := SERVER_CACHEAVAILABLE;
+        end
+        else
+        begin
+          SessionInfo.UserName := Username;
+          SessionInfo.Domain   := Domain;
+          SessionInfo.Password := '';
+
+          SessionInfo.Flags    := 0;
+        end;
 
         //creates new process which asks user for credentials
         //ServerPipe is created here
@@ -402,16 +443,27 @@ begin
           if not AskCredentials(Token, ProcessID, SessionInfo) then
           begin
             Log.Log('Credentials prompt for '+ApplicationPath+' aborted by user');
+            try
+              ServerPipe.SendServerResult(ERROR_ABORTBYUSER, 0);
+            except
+            end;
             exit;
           end;
         except //6.
           on E : Exception do
           begin
+            try
+              ServerPipe.SendServerResult(ERROR_GENERAL_EXCEPTION, 0);
+            except
+            end;
             //credential process is already informed- FreeAndNil(ServerPipe) was called
             Log.Log('Error: Credentials prompt for '+ApplicationPath+' canceled. '+E.Message);
             exit;
           end;
         end;
+
+        if Length(Trim(SessionInfo.UserName)) = 0 then
+          SessionInfo.UserName := DefaultUserName;
 
         try  //6a.
           {Get password from cache.
@@ -419,38 +471,38 @@ begin
            are ignored
           }
           if (SessionInfo.Flags and CLIENT_USECACHECREDS = CLIENT_USECACHECREDS) and
-             (PassEntry <> nil) and (SessionInfo.Password = '') then
+             (fPasswords.IsSessionValid(SessionID)) and (SessionInfo.Password = '') then
           begin
             Log.Log('Credentials for user '+Username+' are retrieved from the cache');
 
-            fPasswords.Get(SIDIndex, Domain, Username, Password);
+            fPasswords.GetBySession(SIDIndex, Domain, Username, Password);
           end;
 
-          {Save the new credentials into the cache
+          {Add/Save the new credentials into the cache
            +only if no existing cache is used
           }
           if (SessionInfo.Flags and CLIENT_CACHECREDS = CLIENT_CACHECREDS) and
              (SessionInfo.Flags and CLIENT_USECACHECREDS <> CLIENT_USECACHECREDS) then
           begin
-            fPasswords.FreeIndex(SIDIndex);
-            LockedList.Items[SIDIndex] := TPasswordList.CreatePassEntry(
-               SessionInfo.Domain, SessionInfo.UserName, SessionInfo.Password);
-
-            Domain   := SessionInfo.Domain;
-            Username := SessionInfo.UserName;
-            Password := SessionInfo.Password;
+            fPasswords.SetBySession(SessionID, SessionInfo.Domain, SessionInfo.UserName, SessionInfo.Password);
 
             SessionInfo.Password := FILL_PASSWORD;
           end;
 
+          Domain   := SessionInfo.Domain;
+          Username := SessionInfo.UserName;
+          Password := SessionInfo.Password;
+
+
           ZeroMemory(@InVars.StartupInfo, sizeof(InVars.StartupInfo));
-          
+
           //Add specific group
           Sid := TJwSecurityId.Create(JwFormatString('S-1-5-5-%d-%d',
             [10000+Token.TokenSessionId, ProcessID]));
           Invars.AdditionalGroups := TJwSecurityIdList.Create;
           Sid.AttributesType := [sidaGroupMandatory,sidaGroupEnabled];
-          Invars.AdditionalGroups.Add(Sid);
+          Invars.AdditionalGroups.Add(Sid);    
+
           
           InVars.SourceName := 'XPElevation';
           InVars.SessionID := Token.TokenSessionId;
@@ -470,7 +522,7 @@ begin
           try //7.
             try
               JwCreateProcessAsAdminUser(
-                 UserName,//const UserName, 
+                 UserName,//const UserName,
                  Domain,//Domain,
                  Password,//Password : TJwString;
                  InVars,//const InVars : TJwCreateProcessInfo;
@@ -480,7 +532,7 @@ begin
 
               //send success
               try
-                ServerPipe.SendServerResult(0,0);
+                ServerPipe.SendServerResult(ERROR_SUCCESS,0);
               except
               end;
             
@@ -489,19 +541,21 @@ begin
               UserData.UserToken   := OutVars.UserToken;
               UserData.UserProfile := OutVars.ProfInfo;
               try
-                fJobs.AssignProcessToJob(OutVars.ProcessInfo.hProcess, 
+                fJobs.AssignProcessToJob(OutVars.ProcessInfo.hProcess,
                   Pointer(UserData));
               except
                 //TODO: oops job assignment failed
               end;
+              ResumeThread(OutVars.ProcessInfo.hThread);
             finally
               //free process handles 
               FreeAndNil(InVars.AdditionalGroups);
-              
+
               FreeAndNil(OutVars.LinkedToken);
               FreeAndNil(OutVars.LSA);
               LsaFreeReturnBuffer(OutVars.ProfBuffer);
               DestroyEnvironmentBlock(OutVars.EnvironmentBlock);
+
 
               CloseHandle(OutVars.ProcessInfo.hProcess);
               CloseHandle(OutVars.ProcessInfo.hThread);
@@ -513,31 +567,31 @@ begin
             on E1 : EJwsclWinCallFailedException do
             begin
               Log.Exception(E1);
-              ServerPipe.SendServerResult(5,E1.LastError);
+              ServerPipe.SendServerResult(ERROR_WIN32,E1.LastError);
             end;
             on E2 : EJwsclNoSuchLogonSession do
             begin
               Log.Exception(E2);
-              ServerPipe.SendServerResult(6,0);
+              ServerPipe.SendServerResult(ERROR_NO_SUCH_LOGONSESSION,0);
             end;
             on E3 : EJwsclCreateProcessFailed do
             begin
               Log.Exception(E3);
-              ServerPipe.SendServerResult(7,E3.LastError);
+              ServerPipe.SendServerResult(ERROR_CREATEPROCESSASUSER_FAILED, E3.LastError);
             end;
           
             on E : Exception do
             begin
               Log.Exception(E);
-              ServerPipe.SendServerResult(8,0);
+              ServerPipe.SendServerResult(ERROR_GENERAL_EXCEPTION,0);
             end;
-          
+
           end;
         finally //6a.
       
         end;
       finally  //5.
-
+        
       end;
     finally //2.
       FreeAndNil(Token);

@@ -1,7 +1,8 @@
 unit uLogging;
 
 interface
-uses Classes, SysUtils, JwsclLogging, FileCtrl, JwsclStrings;
+uses Classes, SysUtils, JwsclLogging, FileCtrl, JwsclStrings,
+  JwsclToken;
 
 //inits LogServer
 procedure InitLog;
@@ -19,8 +20,14 @@ procedure SwitchLog(const Enabled : Boolean);
 procedure LogAndRaiseLastOsError(Log : IJwLogClient;
     const ClassName, MethodName, FileName : TJwString);
 
+procedure InitFileLocation;
+
 var //log filename + path
     LogFileNameLocation : WideString = '';
+    LogFilePath : String = '';
+
+    ApplicationFileName : String = '';
+
 
     {
     Type of events that are logged.
@@ -70,7 +77,7 @@ begin
   try
     Strings.SaveToFile(LogFileNameLocation);
   finally
-    Strings.Free;
+    FreeAndNil(Strings);
   end;
 end;
 
@@ -104,25 +111,33 @@ end;
 
 
 procedure InitFileLocation;
-var S : String;
+var S, FileName: String;
     F : TextFile;
+    Token : TJwSecurityToken;
 begin
-  LogFileNameLocation := RegGetFullPath(LogFileKey);
-
+  Token := TJwSecurityToken.CreateTokenEffective(TOKEN_READ or TOKEN_QUERY);
   try
-    AssignFile(F, LogFileNameLocation);
-    Rewrite(f);
-    CloseFile(F);
+    FileName := Token.GetTokenUserName + IntToStr(JwGetProcessLogonSession)
   except
-    LogFileNameLocation := ExtractFilePath(ParamStr(0));
-    S := Format('%sXPElevation_%s.log',
-      [LogFileNameLocation, FormatDateTime('dd_mm_yyyy__hh_nn_ss', now)]);
-    LogFileNameLocation := LogFileNameLocation + S;
+    FileName := IntToStr(JwGetProcessLogonSession);
   end;
-end;
+  Token.Free;
+  if JwIsSystem then
+    FileName := 'SYSTEM'
+  else
+  if JwCheckAdministratorAccess then
+    FileName := FileName + '_Admin';
 
-initialization
-  InitFileLocation;
+
+  if (Length(LogFilePath) > 0) and DirectoryExists(LogFilePath) then
+    LogFileNameLocation := LogFilePath  
+  else
+    LogFileNameLocation := ExtractFilePath(ParamStr(0));
+  LogFileNameLocation := IncludeTrailingBackslash(LogFileNameLocation);
+
+  LogFileNameLocation := Format('%s%s_%s_%s.log',
+      [LogFileNameLocation, ApplicationFileName, FileName, FormatDateTime('dd_mm_yyyy__hh_nn_ss', now)]);
+end;
 
 
 end.

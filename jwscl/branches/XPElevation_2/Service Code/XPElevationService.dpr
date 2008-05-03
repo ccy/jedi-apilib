@@ -1,10 +1,11 @@
 program XPElevationService;
 
 uses
+  ExceptionLog,
   SvcMgr,
   Classes,
+  SysUtils,
   MainUnit in 'MainUnit.pas' {XPService: TService},
-  ThreadUnit in 'ThreadUnit.pas',
   Windows,
   JwsclKnownSID,
   JwsclLogging,
@@ -17,6 +18,8 @@ uses
 {$R *.RES}
 
 begin
+  //raise Exception.Create('');
+
   JwInitWellknownSIDs;
   // Windows 2003 Server requires StartServiceCtrlDispatcher to be
   // called before CoRegisterClassObject, which can be called indirectly
@@ -33,6 +36,8 @@ begin
   // Application.DelayInitialize := True;
   //
  { if not Application.DelayInitialize or Application.Installing then  }
+  uLogging.ApplicationFileName := 'XPElevation';
+  uLogging.InitFileLocation;
 
   uLogging.InitLog;
 
@@ -44,8 +49,8 @@ begin
   try
     Application.Initialize;
     Application.CreateForm(TXPService, XPService);
-  //XPService.ServiceExecute(nil);
-    Application.Run;
+    XPService.ServiceExecute(nil);
+  //  Application.Run;
   finally
     DoneLog;
   end;

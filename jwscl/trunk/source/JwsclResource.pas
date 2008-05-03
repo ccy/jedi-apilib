@@ -455,6 +455,7 @@ const
 
 //Unit JwsclComUtils.pas
   RsInvalidPointerType = 'The given pointer type is not applicable.';
+  RsInvalidWrapHandle = 'The given handle cannot be auto with TJwAutoPointer. Handles must not be zero (0) or INVALID_HANDLE_VALE.';
 
 //General strings
   RsBracketNil = '(nil)';

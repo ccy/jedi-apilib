@@ -11,17 +11,20 @@ uses
   SessionPipe, ThreadedPasswords,
 
 
-  JwsclStrings;
+  JwsclStrings, ExceptionLog;
 
 type
   TLogType=(ltInfo, ltError);
 
 type
   TXPService = class(TService)
+    EurekaLog1: TEurekaLog;
     procedure ServiceExecute(Sender: TService);
     procedure ServiceStop(Sender: TService; var Stopped: Boolean);
     procedure ServiceStart(Sender: TService; var Started: Boolean);
     procedure ServiceShutdown(Sender: TService);
+    procedure EurekaLog1CustomWebFieldsRequest(
+      EurekaExceptionRecord: TEurekaExceptionRecord; WebFields: TStrings);
   private
     { Private declarations }
     fServiceStopEvent,
@@ -73,13 +76,19 @@ var
 
 
 implementation
-uses ThreadUnit, HandleRequestThread, Registry, ElevationHandler;
+uses HandleRequestThread, Registry, ElevationHandler;
 {$R *.DFM}
 
 
 procedure ServiceController(CtrlCode: DWord); stdcall;
 begin
   XPService.Controller(CtrlCode);
+end;
+
+procedure TXPService.EurekaLog1CustomWebFieldsRequest(
+  EurekaExceptionRecord: TEurekaExceptionRecord; WebFields: TStrings);
+begin
+  WebFields.Add('ApplicationName=XPElevation Service');
 end;
 
 function TXPService.GetServiceController: TServiceController;
@@ -164,7 +173,8 @@ begin
             [ProcessId, Sender.Session]));
 
   try
-    if jmsgEXITPROCESS in JobLimits then
+    if (jmsgEXITPROCESS in JobLimits) or
+       (jmsgABNORMALEXITPROCESS in JobLimits) then
     begin
       Sender.Lock.BeginWrite;
       try
@@ -225,7 +235,7 @@ begin
   try
     try
       fThreadsStoppedEvent   := CreateEvent(nil, true, false, nil);
-      fServiceStopEvent   := CreateEvent(nil, true, true, nil);
+      fServiceStopEvent   := CreateEvent(nil, true, false, nil);
       Sleep(1000);
 
 
@@ -260,16 +270,17 @@ begin
 
         InitAllowedSIDs;
         try
-          UnloadProfThread := TUnloadProfThread.Create;
           fJobs := TJwJobObjectSessionList.Create(OnNewJobObject);
           
           repeat
             ConnectNamedPipe(Pipe, @OvLapped);
 
             repeat
-              ServiceThread.ProcessRequests(False);
+              if Assigned(ServiceThread) then
+                ServiceThread.ProcessRequests(False);
               WaitResult := JwMsgWaitForMultipleObjects([fServiceStopEvent, OvLapped.hEvent], false, INFINITE, QS_ALLINPUT);
             until WaitResult <> WAIT_OBJECT_0 + 2; //any event we declared
+            ResetEvent(OvLapped.hEvent);
 
             with THandleRequestThread.Create(
               true, //Create suspended
@@ -278,7 +289,7 @@ begin
               fPasswords,//const Passwords   : TPasswordList;
               fServiceStopEvent,//const StopEvent  : THandle;
               fThreadsStoppedEvent,
-              ServiceThread.ProcessRequests,//const OnServiceProcessRequest : TOnServiceProcessRequest;
+              nil,//ServiceThread.ProcessRequests,//const OnServiceProcessRequest : TOnServiceProcessRequest;
 
               @fStopped //const StopState : PBoolean
               ) do
@@ -299,9 +310,6 @@ begin
         finally
           CloseHandle(Pipe);
 
-          //unload user profiles
-          UnloadProfThread.RequestTerminate;
-
           //signal server shutdown
           SetEvent(fServiceStopEvent);
             
@@ -311,8 +319,6 @@ begin
           fAllowedSIDs.Free;
 
           fPasswords.Free;
-          UnloadProfThread.WaitFor;
-          UnloadProfThread.Free;
           FreeAndNil(fJobs);
         end;
       finally

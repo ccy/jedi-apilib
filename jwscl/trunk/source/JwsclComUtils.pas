@@ -72,6 +72,7 @@ type
     function GetPointer   : Pointer;
     function GetInstance  : TObject;
     function GetPointerType : TJwPointerType;
+    function GetHandle : THandle;
 
     procedure UnLock;
 
@@ -85,6 +86,8 @@ type
     function GetPointer   : Pointer;
     function GetInstance  : TObject;
     function GetPointerType : TJwPointerType;
+    function GetHandle : THandle;
+
     property Pointer   : Pointer read GetPointer;
     property Instance  : TObject read GetInstance;
     property PointerType  : TJwPointerType read GetPointerType;
@@ -119,6 +122,9 @@ type
     class function Wrap(const Ptr : Pointer;
         Size : Cardinal;
         PointerType : TJwPointerType) : IJwAutoPointer; overload;
+
+    class function Wrap(const Handle : THandle; const
+       ShowLastError : Boolean = false) : IJwAutoPointer; overload;
 
     {<B>CreateInstance</B> creates a new auto pointer class instance and also
      creates the given class with a default constructor (no parameters).
@@ -184,10 +190,12 @@ type
     fPointerType : TJwPointerType;
     fSize : Cardinal;
     fSection : TCriticalSection;
+    fHandle : THandle;
 
     function GetInstance: TObject;
     function GetPointer: Pointer;
     function GetPointerType : TJwPointerType;
+    function GetHandle : THandle;
   public
     constructor Create(const Instance : TObject); overload;
     constructor Create(const Ptr : Pointer; Size : Cardinal; PointerType : TJwPointerType); overload;
@@ -207,6 +215,7 @@ type
     function GetPointer   : Pointer;
     function GetInstance  : TObject;
     function GetPointerType : TJwPointerType;
+    function GetHandle : THandle;
 
     procedure BeforeDestruction;
 
@@ -251,6 +260,17 @@ begin
   Result := Wrap(Ptr, Size, PointerType);
 end;
 
+class function TJwAutoPointer.Wrap(const Handle: THandle; const
+       ShowLastError : Boolean = false): IJwAutoPointer;
+begin
+  if (Handle = 0) or (Handle = INVALID_HANDLE_VALUE) then
+    raise EJwsclInvalidHandle.CreateFmtEx(
+      RsInvalidWrapHandle, 'Wrap', ClassName, RsUNComUtils,
+      0, ShowLastError, []);
+  
+  result := Wrap(Pointer(Handle), Cardinal(-1), ptHandle);
+end;
+
 class function TJwAutoPointer.Wrap(const Ptr: Pointer;
   Size : Cardinal;
   PointerType: TJwPointerType): IJwAutoPointer;
@@ -259,6 +279,11 @@ begin
 end;
 
 { TAutoPinterImpl }
+
+function TJwAutoPointerImpl.GetHandle: THandle;
+begin
+  result := fHandle;
+end;
 
 function TJwAutoPointerImpl.GetInstance : TObject;
 begin
@@ -285,6 +310,7 @@ begin
       ptGetMem : FreeMem(fPointer);
       ptLocalAlloc : LocalFree(Cardinal(fPointer));
       ptNew : Dispose(fPointer);
+      ptHandle : CloseHandle(fHandle); 
     end;
 
     fPointer := nil;
@@ -302,6 +328,7 @@ begin
   fInstance := Instance;
   fPointerType := ptClass;
   fSection := TCriticalSection.Create;
+  fHandle := INVALID_HANDLE_VALUE;
 end;
 
 constructor TJwAutoPointerImpl.Create(const Ptr: Pointer;
@@ -312,6 +339,12 @@ begin
   fPointerType := PointerType;
   fSize := Size;
   fSection := TCriticalSection.Create;
+  if Size = Cardinal(-1) then
+  begin
+    fHandle := DWORD(Ptr);
+    fPointer := nil;
+  end;
+
 end;
 
 function TJwAutoPointerImpl.GetPointerType: TJwPointerType;
@@ -349,6 +382,11 @@ end;
 function TJwAutoLock.GetAutoPointer: IJwAutoPointer;
 begin
   result := fAutoPointer;
+end;
+
+function TJwAutoLock.GetHandle: THandle;
+begin
+  result := fAutoPointer.GetHandle;
 end;
 
 function TJwAutoLock.GetInstance: TObject;

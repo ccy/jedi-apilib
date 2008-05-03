@@ -107,7 +107,9 @@ begin
 
   PopupMenu := PopupMenuMain;
 
-
+{$IFDEF TEST}
+  Visible := false;
+{$ENDIF}
 end;
 
 

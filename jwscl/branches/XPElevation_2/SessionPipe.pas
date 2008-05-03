@@ -2,26 +2,26 @@ unit SessionPipe;
 
 interface
 uses SysUtils, JwaWindows, ComObj, SvcMgr, ULogging, JwsclUtils, JwsclLogging,
-    JwsclExceptions;
+    JwsclExceptions, JwsclComUtils;
 
 type
   PClientBuffer = ^TClientBuffer;
   TClientBuffer = record
     Signature : array[0..15] of Char;
     UserName  :  array[0..UNLEN] of WideChar;
-    Domain      : array[0..MAX_DOMAIN_NAME_LEN] of WideChar;
+    Domain    : array[0..MAX_DOMAIN_NAME_LEN] of WideChar;
     Password  : array[0..MAX_PASSWD_LEN] of WideChar;
     Flags     : DWORD;
   end;
 
 const CLIENT_CANCELED = $1;
-      CLIENT_USECACHECREDS = $2;
-      CLIENT_CACHECREDS = $3;
-      CLIENT_CLEARCACHE = $4;
+      CLIENT_USECACHECREDS = $2;   //to server: use cached password
+      CLIENT_CACHECREDS = $3;      //to server: save given password to cache
+      CLIENT_CLEARCACHE = $4;      //to server: clear user password from cache
 
-      SERVER_TIMEOUT = $1;
-      SERVER_USECACHEDCREDS = $2;
-      SERVER_CACHEAVAILABLE = $3;
+      SERVER_TIMEOUT = $1;         //
+      SERVER_USECACHEDCREDS = $2;  //
+      SERVER_CACHEAVAILABLE = $3;  //to client: Password is available through cache
 
       FILL_PASSWORD : WideString = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
 
@@ -31,12 +31,22 @@ const CLIENT_CANCELED = $1;
       ERROR_LOGONUSERFAILED = 4;
       ERROR_LOADUSERPROFILE = 5;
 
+      ERROR_TIMEOUT = 6;
+      ERROR_SHUTDOWN = 7;
+      ERROR_WIN32 = 8;
+      ERROR_ABORT = 9;
+      ERROR_GENERAL_EXCEPTION = 10;
+
+      ERROR_NO_SUCH_LOGONSESSION = 11;
+
+
 
 type
   PServerBuffer = ^TServerBuffer;
   TServerBuffer = record
     Signature   : array[0..15] of Char;
-    Application : array[0..MAX_PATH] of WideChar;
+    Application,
+    Commandline : array[0..MAX_PATH] of WideChar;
     UserName    : array[0..UNLEN] of WideChar;
     Domain      : array[0..MAX_DOMAIN_NAME_LEN] of WideChar;
     TimeOut   : DWORD;
@@ -45,10 +55,12 @@ type
 
   TSessionInfo = record
     Application,
+    Commandline,
     UserName,
     Domain,
     Password  : WideString;
     Flags  : DWORD;
+    TimeOut : DWORD;
   end;
 
   ETimeOutException = class(Exception);
@@ -60,7 +72,6 @@ type
   protected
     fPipe : HANDLE;
     fTimeOut : DWORD;
-    OvLapped : TOverlapped;
     fEvent : HANDLE;
   protected
 
@@ -70,6 +81,8 @@ type
     procedure Connect(const PipeName : WideString); virtual;
 
     class function IsValidPipe(const SessionPipe : TSessionPipe) : Boolean;
+
+    function GetOverlappedResult(const lpOverlapped : TOverlapped; const Wait : Boolean) : DWORD;
 
     property ServerTimeOut : DWORD read fTimeOut;
     property Handle : HANDLE read fPipe;
@@ -119,7 +132,7 @@ type
     procedure SendServerData(const SessionInfo : TSessionInfo);
     procedure SendServerResult(const Value, LastError : DWORD);
 
-    procedure ReadClientData(out SessionInfo : TSessionInfo);
+    procedure ReadClientData(out SessionInfo : TSessionInfo; const TimeOut: DWORD; const StopEvent: HANDLE);
 
 //    procedure SendServerProcessResult(const Value, LastError : DWORD);
 
@@ -168,48 +181,60 @@ begin
   inherited;
 end;
 
+
+function CheckPipe(const Value : Boolean) : Boolean;
+begin
+  result := (Value )
+      or (not Value and (GetLastError() = ERROR_IO_PENDING));
+end;
+
 procedure TClientSessionPipe.ReadServerData(out SessionInfo: TSessionInfo);
 var ServerBuffer : TServerBuffer;
     lpNumberOfBytesRead,
     nNumberOfBytesToRead : DWORD;
 
     Log : IJwLogClient;
-
+   { OvLapped : TOverlapped;}
 begin
   Log := uLogging.LogServer.Connect(etMethod,ClassName,
           'ReadServerData','ElevationHandler.pas','');
 
-  if not ReadFile(
+  {ZeroMemory(@OvLapped, sizeof(OvLapped));
+  OvLapped.hEvent := TJwAutoPointer.Wrap(CreateEvent(nil, false, false, nil)).GetHandle;
+  }
+  if not CheckPipe(ReadFile(
     fPipe,//__in         HANDLE hFile,
     @ServerBuffer,//__out        LPVOID lpBuffer,
     sizeof(ServerBuffer),//__in         DWORD nNumberOfBytesToRead,
     @lpNumberOfBytesRead,//__out_opt    LPDWORD lpNumberOfBytesRead,
     nil//@OvLapped//__inout_opt  LPOVERLAPPED lpOverlapped
-  ) then
+  )) then
     LogAndRaiseLastOsError(Log,ClassName, 'ReadServerData::(Winapi)ReadFile','SessionPipe.pas');
 
+  if lpNumberOfBytesRead < sizeof(TServerBuffer) then
+  begin
+    SetLastError(ERROR_BAD_FORMAT);
+    Log.Log(lsError, 'ReadFile returned invalid buffer size.');
+    LogAndRaiseLastOsError(Log,ClassName, 'ReadClientDataReadServerData','SessionPipe.pas');
+  end;
+
+  if ServerBuffer.Signature <> 'server' then
+  begin
+    SetLastError(ERROR_INVALID_SIGNATURE);
+    Log.Log(lsError, 'ReadFile returned invalid signature.');
+    LogAndRaiseLastOsError(Log,ClassName, 'ReadClientDataReadServerData','SessionPipe.pas');
+  end;
+
+ 
   ZeroMemory(@SessionInfo, sizeof(SessionInfo));
-  SetLength(SessionInfo.Application,
-    StringCbLengthHelperW(ServerBuffer.Application, sizeof(ServerBuffer.Application)));
-  SetLength(SessionInfo.UserName,
-    StringCbLengthHelperW(ServerBuffer.UserName, sizeof(ServerBuffer.UserName)));
-  SetLength(SessionInfo.Domain,
-    StringCbLengthHelperW(ServerBuffer.Domain, sizeof(ServerBuffer.Domain)));
+  SessionInfo.Application := ServerBuffer.Application;
+  SessionInfo.Commandline := ServerBuffer.Commandline;
 
-
-  OleCheck(StringCchCopyW(@PWideChar(SessionInfo.Application)[1],
-    Length(SessionInfo.Application), ServerBuffer.Application));
-  //SessionInfo.Application := ServerBuffer.Application;
-
-  OleCheck(StringCchCopyW(@PWideChar(SessionInfo.UserName)[1],
-    Length(SessionInfo.UserName), ServerBuffer.UserName));
-  //SessionInfo.UserName  := ServerBuffer.UserName;
-
-  OleCheck(StringCchCopyW(@PWideChar(SessionInfo.Domain)[1],
-    Length(SessionInfo.Domain), ServerBuffer.Domain));
-  //SessionInfo.Domain    := ServerBuffer.Domain;
+  SessionInfo.UserName  := ServerBuffer.UserName;
+  SessionInfo.Domain    := ServerBuffer.Domain;
 
   SessionInfo.Flags     := ServerBuffer.Flags;
+  SessionInfo.TimeOut     := ServerBuffer.TimeOut;
   fTimeOut := ServerBuffer.TimeOut;
 
   ZeroMemory(@ServerBuffer, sizeof(ServerBuffer));
@@ -229,17 +254,23 @@ begin
 
   GetMem(Data, sizeof(Value) + sizeof(LastError));
   try
-    if not ReadFile(
+    if not CheckPipe(ReadFile(
        fPipe,//__in         HANDLE hFile,
-       Pointer(@Data),//__out        LPVOID lpBuffer,
+       Pointer(Data),//__out        LPVOID lpBuffer,
        sizeof(Value) + sizeof(LastError),//__in         DWORD nNumberOfBytesToRead,
        @NumBytesRead,//__out_opt    LPDWORD lpNumberOfBytesRead,
-       @OvLapped//__inout_opt  LPOVERLAPPED lpOverlapped
-        ) then
+       nil//@OvLapped//__inout_opt  LPOVERLAPPED lpOverlapped
+        )) then
     begin
       LogAndRaiseLastOsError(Log,ClassName, 'ReadServerProcessResult::(Winapi)ReadFile','SessionPipe.pas');
     end;
 
+
+    {if JwWaitForMultipleObjects([OvLapped.hEvent, StopEvent],false,INFINITE) =
+      WAIT_OBJECT_0 + 1 then
+        raise EShutdownException.Create('');
+
+    }
     CopyMemory(@Value, Data, sizeof(Value));
     P := Data;
     Inc(DWORD(P), sizeof(LastError));
@@ -251,7 +282,7 @@ end;
 
 procedure TClientSessionPipe.SendClientData(const SessionInfo: TSessionInfo);
 var ClientBuffer : TClientBuffer;
-    nNumberOfBytesToRead : DWORD;
+    nNumberOfBytesToWritten : DWORD;
     Log : IJwLogClient;
 
 begin
@@ -263,15 +294,15 @@ begin
   ClientBuffer.Signature := 'client';
   try
     OleCheck(StringCbCopyW(ClientBuffer.UserName, sizeof(ClientBuffer.UserName),
-      @PWideChar(SessionInfo.UserName)[1]));
+      PWideChar(SessionInfo.UserName)));
     //lstrcpynW(@ClientBuffer.UserName, PWideChar(SessionInfo.UserName), sizeof(ClientBuffer.UserName)-1);
 
     OleCheck(StringCbCopyW(ClientBuffer.Domain, sizeof(ClientBuffer.Domain),
-      @PWideChar(SessionInfo.Domain)[1]));
+      PWideChar(SessionInfo.Domain)));
     //lstrcpynW(@ClientBuffer.Domain, PWideChar(SessionInfo.Domain), sizeof(ClientBuffer.Domain)-1);
 
     OleCheck(StringCbCopyW(ClientBuffer.Password, sizeof(ClientBuffer.Password),
-      @PWideChar(SessionInfo.Password)[1]));
+      PWideChar(SessionInfo.Password)));
     //lstrcpynW(@ClientBuffer.Password, PWideChar(SessionInfo.Password), sizeof(ClientBuffer.Password)-1);
 
     
@@ -281,8 +312,8 @@ begin
       fPipe,//__in         HANDLE hFile,
       @ClientBuffer,//__out        LPVOID lpBuffer,
       sizeof(ClientBuffer),//__in         DWORD nNumberOfBytesToRead,
-      nil,//
-      nil//
+      @nNumberOfBytesToWritten,//
+      nil//@OvLapped//
     ) then
     begin
       LogAndRaiseLastOsError(Log,ClassName, 'Connect::(Winapi)WriteFile','SessionPipe.pas');
@@ -309,7 +340,7 @@ begin
     0,//__in      DWORD dwShareMode,
     nil,//__in_opt  LPSECURITY_ATTRIBUTES lpSecurityAttributes,
     OPEN_EXISTING,//__in      DWORD dwCreationDisposition,
-    {FILE_FLAG_OVERLAPPED}0,//__in      DWORD dwFlagsAndAttributes,
+    FILE_FLAG_OVERLAPPED,//__in      DWORD dwFlagsAndAttributes,
     0//__in_opt  HANDLE hTemplateFile
    );
   if fPipe = INVALID_HANDLE_VALUE then
@@ -337,9 +368,6 @@ constructor TSessionPipe.Create;
 begin
   inherited;
   fPipe := INVALID_HANDLE_VALUE;
-
-  ZeroMemory(@OvLapped, sizeof(OvLapped));
-  OvLapped.hEvent := CreateEvent(nil, false, false, nil);
 end;
 
 destructor TSessionPipe.Destroy;
@@ -348,6 +376,13 @@ begin
      (fPipe <> 0) then
     CloseHandle(fPipe);
   inherited;
+end;
+
+function TSessionPipe.GetOverlappedResult(const lpOverlapped: TOverlapped;
+  const Wait: Boolean): DWORD;
+begin
+  if not JwaWindows.GetOverlappedResult(fPipe, lpOverlapped, result, Wait) then
+    RaiseLastOSError;
 end;
 
 class function TSessionPipe.IsValidPipe(
@@ -379,29 +414,39 @@ begin
 end;
 
 procedure TServerSessionPipe.ReadClientData(
-  out SessionInfo: TSessionInfo);
+  out SessionInfo: TSessionInfo;const TimeOut: DWORD; const StopEvent: HANDLE);
 var ClientBuffer : TClientBuffer;
     NumBytesRead : DWORD;
     Log : IJwLogClient;
-
+    res : DWORD;
+    OvLapped : TOverlapped;
 begin
   Log := uLogging.LogServer.Connect(etMethod,ClassName,
           'ReadClientData','ElevationHandler.pas','');
   ZeroMemory(@ClientBuffer, sizeof(ClientBuffer));
 
+  ZeroMemory(@OvLapped, sizeof(OvLapped));
+  OvLapped.hEvent := TJwAutoPointer.Wrap(CreateEvent(nil, false, false, nil)).GetHandle;
   try
-    if not ReadFile(
+    if not CheckPipe(ReadFile(
        fPipe,//__in         HANDLE hFile,
        Pointer(@ClientBuffer),//__out        LPVOID lpBuffer,
        sizeof(TClientBuffer),//__in         DWORD nNumberOfBytesToRead,
        @NumBytesRead,//__out_opt    LPDWORD lpNumberOfBytesRead,
        @OvLapped//__inout_opt  LPOVERLAPPED lpOverlapped
-        ) then
+        )) then
     begin
       LogAndRaiseLastOsError(Log,ClassName, 'ReadClientData::(Winapi)ReadFile','SessionPipe.pas');
     end;
 
-    if NumBytesRead < sizeof(TClientBuffer) then
+    res := JwWaitForMultipleObjects([OvLapped.hEvent, StopEvent], false, TimeOut);
+    if res = WAIT_TIMEOUT then
+      raise ETimeOutException.Create('');
+    
+    if res = WAIT_OBJECT_0 + 1 then
+      raise EShutdownException.Create('');
+
+    if GetOverlappedResult(OvLapped, false) < sizeof(TClientBuffer) then
     begin
       SetLastError(ERROR_BAD_FORMAT);
       Log.Log(lsError, 'ReadFile returned invalid buffer size.');
@@ -411,21 +456,17 @@ begin
 
     if ClientBuffer.Signature <> 'client' then
     begin
-      Abort;
+      SetLastError(ERROR_INVALID_SIGNATURE);
+      Log.Log(lsError, 'ReadFile returned invalid signature.');
+      LogAndRaiseLastOsError(Log,ClassName, 'ReadClientDataReadServerData','SessionPipe.pas');
     end;
 
-    SetLength(SessionInfo.UserName, StringCbLengthHelperW(ClientBuffer.UserName, sizeof(ClientBuffer.UserName)));
-    SetLength(SessionInfo.Domain, StringCbLengthHelperW(ClientBuffer.Domain, sizeof(ClientBuffer.Domain)));
-    SetLength(SessionInfo.Password, StringCbLengthHelperW(ClientBuffer.Password, sizeof(ClientBuffer.Password)));
-
-    OleCheck(StringCchCopyW(@PWideChar(SessionInfo.UserName)[1], Length(SessionInfo.UserName), ClientBuffer.UserName));
-    //SessionInfo.UserName := ClientBuffer.UserName;
-
-    OleCheck(StringCchCopyW(@PWideChar(SessionInfo.Domain)[1], Length(SessionInfo.Domain), ClientBuffer.Domain));
-    //SessionInfo.Domain := ClientBuffer.Domain;
-
-    OleCheck(StringCchCopyW(@PWideChar(SessionInfo.Password)[1], Length(SessionInfo.Password), ClientBuffer.Password));
-    //SessionInfo.Password := ClientBuffer.Password;
+    if ClientBuffer.Flags and CLIENT_CANCELED <> CLIENT_CANCELED then
+    begin
+      SessionInfo.UserName := ClientBuffer.UserName;
+      SessionInfo.Domain := ClientBuffer.Domain;
+      SessionInfo.Password := ClientBuffer.Password;
+    end;
 
     SessionInfo.Flags := ClientBuffer.Flags;
   finally
@@ -449,7 +490,7 @@ begin
          Pointer(@A),//lpBuffer: LPCVOID;
          sizeof(A),//nNumberOfBytesToWrite: DWORD;
          @NumBytesWritten,//lpNumberOfBytesWritten: LPDWORD;
-         @OvLapped//lpOverlapped: LPOVERLAPPED
+         nil//@OvLapped//lpOverlapped: LPOVERLAPPED
          ) then
     begin
       LogAndRaiseLastOsError(Log,ClassName, 'SendServerResult::(Winapi)WriteFile','SessionPipe.pas');
@@ -478,11 +519,15 @@ begin
     OleCheck(StringCbCopyW(ServerBuffer.Application, sizeof(ServerBuffer.Application),
        PWideChar(WideString(SessionInfo.Application))));
 
-    OleCheck(StringCbCopyW(ServerBuffer.UserName, sizeof(SessionInfo.UserName),
-       PWideChar(WideString(ServerBuffer.UserName))));
+    OleCheck(StringCbCopyW(ServerBuffer.Commandline, sizeof(ServerBuffer.Commandline),
+       PWideChar(WideString(SessionInfo.Commandline))));
 
-    OleCheck(StringCbCopyW(ServerBuffer.Domain, sizeof(SessionInfo.Domain),
-       PWideChar(WideString(ServerBuffer.Domain))));
+
+    OleCheck(StringCbCopyW(ServerBuffer.UserName, sizeof(ServerBuffer.UserName),
+       PWideChar(WideString(SessionInfo.UserName))));
+
+    OleCheck(StringCbCopyW(ServerBuffer.Domain, sizeof(ServerBuffer.Domain),
+       PWideChar(WideString(SessionInfo.Domain))));
 
     ServerBuffer.Flags := 0;
 
@@ -491,7 +536,7 @@ begin
          Pointer(@ServerBuffer),//lpBuffer: LPCVOID;
          sizeof(TServerBuffer),//nNumberOfBytesToWrite: DWORD;
          @NumBytesWritten,//lpNumberOfBytesWritten: LPDWORD;
-         @OvLapped//lpOverlapped: LPOVERLAPPED
+         nil//@OvLapped//lpOverlapped: LPOVERLAPPED
          ) then
     begin
       LogAndRaiseLastOsError(Log,ClassName, 'SendServerData::(Winapi)WriteFile','SessionPipe.pas');
@@ -584,7 +629,7 @@ begin
         sizeof(Data),//__in       DWORD nBufferSize,
         @NumBytesRead,//__out_opt  LPDWORD lpBytesRead,
         @NumBytesToBeRead,//__out_opt  LPDWORD lpTotalBytesAvail,
-        @OvLapped//__out_opt  LPDWORD lpBytesLeftThisMessage
+        nil//@OvLapped//__out_opt  LPDWORD lpBytesLeftThisMessage
       );
 
       {wait for 50msec or event
@@ -624,17 +669,27 @@ var NumBytesRead,
     fTimer : THANDLE;
     Log : IJwLogClient;
 
+    OvLapped : TOverlapped;
 begin
   Log := uLogging.LogServer.Connect(etMethod,ClassName,
           'WaitForClientToConnect','ElevationHandler.pas','');
 
-  ConnectNamedPipe(fPipe, @OvLapped);
+  ZeroMemory(@OvLapped, sizeof(OvLapped));
+//error
+   OvLapped.hEvent := TJwAutoPointer.Wrap(CreateEvent(nil, false, false, nil)).GetHandle;
 
-  repeat
-    result := JwWaitForMultipleObjects([StopEvent,OvLapped.hEvent], false, TimeOut);
-    if result = WAIT_TIMEOUT then
-      break;   
-  until result <> WAIT_OBJECT_0+2;
+    if not ConnectNamedPipe(fPipe, @OvLapped) then
+      if (GetLastError() <> ERROR_IO_PENDING) and
+         (GetLastError() <> ERROR_PIPE_CONNECTED) then
+        LogAndRaiseLastOsError(Log, ClassName, 'WaitForClientToConnect','ElevationHandler.pas');
+
+    repeat
+      result := JwWaitForMultipleObjects([StopEvent,OvLapped.hEvent], false, TimeOut);
+      if result = WAIT_FAILED then
+        LogAndRaiseLastOsError(Log, ClassName, 'WaitForClientToConnect','ElevationHandler.pas');
+      if result = WAIT_TIMEOUT then
+        break;
+    until result <> WAIT_OBJECT_0+2;
 
 end;
 

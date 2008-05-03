@@ -98,7 +98,7 @@ begin
         If not ReadFile(fPipeHandle, nil, 0, nil, @OvLapped) then
           LogAndRaiseLastOsError(Log,ClassName,'ReadFile@Execute','');
 
-        case JwWaitForMultipleObjects([OvLapped.hEvent, XPService.ServiceStopEvent], false, 10000) of
+        case JwWaitForMultipleObjects([OvLapped.hEvent, XPService.ServiceStopEvent], false, 10 *1000) of
           WAIT_TIMEOUT:
           begin
             XPService.LogEvent('HandleRequestThread was timed out');

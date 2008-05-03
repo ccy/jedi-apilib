@@ -8,4 +8,9 @@ object XPService: TXPService
   OnStop = ServiceStop
   Height = 150
   Width = 215
+  object EurekaLog1: TEurekaLog
+    OnCustomWebFieldsRequest = EurekaLog1CustomWebFieldsRequest
+    Left = 48
+    Top = 40
+  end
 end

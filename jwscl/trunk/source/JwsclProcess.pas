@@ -1149,7 +1149,7 @@ begin
         //
         Log.Log('Calling CreateProcessAsUser...');
         SetLastError(0);
-        if not {$IFDEF UNICODE}CreateProcessAsUserW{$ELSE}CreateProcessAsUserA{$ENDIF}(
+        if {$IFDEF UNICODE}CreateProcessAsUserW{$ELSE}CreateProcessAsUserA{$ENDIF}(
               UserToken.TokenHandle,//HANDLE hToken,
               AppName,//__in_opt     LPCTSTR lpApplicationName,
               CmdLine, //__inout_opt  LPTSTR lpCommandLine,
@@ -2487,7 +2487,7 @@ begin
         end;
 
 
-        if Assigned(fJwJobObject.OnNotification) then
+        if Assigned(fJwJobObject.OnNotification) and Assigned(pOV) then
         begin
           Data := GetUserData(TJwProcessId(pOV));
           try

@@ -11,11 +11,13 @@ uses SysUtils,
   Registry,
   Controls,
   Forms,
+  Dialogs,
   CredentialsForm,
   MainForm,
-  UserProfileImage,
   SessionPipe;
 
+
+function Main : Integer;
 
 implementation
 
@@ -80,12 +82,12 @@ begin
   end;
 end;
 
-function AskPassword(var SessionInfo : TSessionInfo
-//AppToStart: String; UserAndDomain: string; out Password: string
- ): boolean;
+function AskPassword(var SessionInfo : TSessionInfo): boolean;
 
 var Prompt: TJwCredentialsPrompt; OldDesk: HDESK; OldWallpaperPath: PChar; DesktopWallpaperPath: string;
-     Bmp: Graphics.TBitmap; DeskDC: HDC; Desktop: TJwSecurityDesktop; Descr: TJwSecurityDescriptor;
+     Bmp: Graphics.TBitmap; DeskDC: HDC;
+     Desktop: TJwSecurityDesktop;
+     Descr: TJwSecurityDescriptor;
 begin
   try  //1.
     Descr:=TJwSecurityDescriptor.CreateDefaultByToken;
@@ -98,47 +100,61 @@ begin
       try
      //   Desktop.SwitchDesktop;
         try
-
+          FreeAndNil(Application);
           Application := TApplication.Create(nil);
           Application.Initialize;
+{$IFNDEF TEST}
           Application.CreateForm(TFormMain, FormMain);
-  FormMain.Image1.Picture.Bitmap.Assign(ScreenBitmap);
+
+          FormMain.Image1.Picture.Bitmap.Assign(ScreenBitmap);
           FormMain.Image1.Align  := alClient;
 
-          FormMain.BoundsRect := Resolution;
-          FormMain.Show;
-
+          //FormMain.BoundsRect := Resolution;
+          //FormMain.Show;
+          FormMain.Hide;
+{$ENDIF TEST}
 
           Application.CreateForm(TFormCredentials, FormCredentials);
-          //FormCredentials.CenterInMonitor(1);
+          FormCredentials.CenterInMonitor(0);
+
+{$IFNDEF TEST}
+          FormCredentials.AppName := SessionInfo.Application;
+          FormCredentials.AppCmdLine := SessionInfo.Commandline;
+
+          FormCredentials.UserName := SessionInfo.UserName;
+     //     FormCredentials.Password := SessionInfo.Password; //pass is not sent by server
+          FormCredentials.Flags := SessionInfo.Flags;
+          FormCredentials.TimeOut := SessionInfo.TimeOut;
+{$ELSE}
+          FormCredentials.AppName := 'C:\Windows\Explorer.exe';
+          FormCredentials.AppCmdLine := '/separate,/e,/idlist,:49333:2321,::{20DFFFE0-3AFA-10A9-A348-0DF23442309D}';
+
+          FormCredentials.UserName := 'Christian';
+          FormCredentials.Password := '';
+          FormCredentials.Flags := SERVER_CACHEAVAILABLE;
+          FormCredentials.TimeOut := 60*1000;
+{$ENDIF TEST}
+
           FormCredentials.Show;
           Application.Run;
+          result := FormCredentials.ModalResult = mrOk;
+          if result then
+          begin
+            SessionInfo.UserName := FormCredentials.UserName;
+            SessionInfo.Password := FormCredentials.Password;
+            SessionInfo.Flags    := FormCredentials.Flags;
+          end
+          else
+            SessionInfo.Flags    := CLIENT_CANCELED;
+
           Application.Free;
-          {Application.Run; }
 
-
-         (* SystemParametersInfo(SPI_SETDESKWALLPAPER, 0, PChar(DesktopWallpaperPath), 0);
-          Prompt:=TJwCredentialsPrompt.Create;
-          try
-            Prompt.Caption:='UAC in XP';
-            Prompt.MessageText:='The application '+AppToStart+' shall be run as the user '+UserAndDomain+' as an administrator. '+
-                                'Enter your credentials to continue!';
-            Prompt.UserName:=UserAndDomain;
-            Prompt.Flags:=Prompt.Flags+[cfFlagsDoNotPersist];
-            HookHandle:=SetWindowsHookEx(WH_CALLWNDPROCRET, HookProcToDisableCombo, 0, GetCurrentThreadId);
-            Result:=Prompt.ShowModal;
-            UnhookWindowsHookEx(HookHandle);
-            Password:=Prompt.Password;
-          finally
-            Prompt.Free;
-          end;    *)
         finally
      //     Desktop.SwitchDesktopBack;
         end;
       finally
      //   SetThreadDesktop(OldDesk);
 
-     //   SystemParametersInfo(SPI_SETDESKWALLPAPER, 0, OldWallpaperPath, 0);
       end;
     finally //2.
       Descr.Free;
@@ -149,19 +165,9 @@ begin
       Application := TApplication.Create(nil);
     end;
   finally  //1
-    //FreeMem(OldWallpaperPath);
-
   end;
-  //DeleteFile(PChar(DesktopWallpaperPath));
 end;
 
-function IfThen(Cond: Boolean; TrueVal, FalseVal: String): String;
-begin
-  if Cond then
-    result:=TrueVal
-  else
-    result:=FalseVal;
-end;
 
 function HasAccessRights(Handle: THandle; RequestedMask: Cardinal): boolean;
 var Dup: THandle;
@@ -229,25 +235,67 @@ end;
 var Password: String; Pipe: THandle;
 
 
-function func(p: pointer): LRESULT; stdcall;
+function AskCredential: LRESULT; stdcall;
 const StrLenCancelled: Cardinal=Cardinal(-1);
       Null: Cardinal=0;
-var Dummy: Cardinal;
+var
+  Dummy,
+  i,
+  LastError,
+  Value : Cardinal;
+
+  ErrorResults : array[1..2] of String;
+  ErrorMessage : String;
+
 begin
+  ErrorResults[1] := 'Invalid data';
+  ErrorResults[2] := 'Process creation failed';
+
+  result := 0;
   ScreenBitmap := GetScreenBitmap(Resolution);
   try
-    SessionInfo.Password := 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
+    SessionInfo.Password := GetFillPasswd;
     SessionInfo.Password := '';
     if not AskPassword(SessionInfo) then
-    begin
-      SessionInfo.Flags := $0;
-    end
-    else
-      SessionInfo.Flags := $1;
+      SessionInfo.Flags := CLIENT_CANCELED;
 
     Haltresult := 2;
+{$IFNDEF TEST}
     PipeSession.SendClientData(SessionInfo);
 
+    
+
+
+    for i := 1 to 2 do
+    begin
+        PipeSession.ReadServerProcessResult(Value, LastError, 0);
+        if Value = ERROR_WIN32 then
+        begin
+          SetLastError(LastError);
+          MessageDlg(ErrorResults[i]+#13#10+SysErrorMessage(LastError),mtError,[mbok],0);
+        end
+        else
+        if (Value <> ERROR_SUCCESS) and (Value <> ERROR_ABORTBYUSER) then
+        begin
+          case Value of
+            ERROR_CREATEPROCESSASUSER_FAILED : ErrorMessage := ''+#13#10+SysErrorMessage(LastError);
+            ERROR_INVALID_USER : ErrorMessage := '';
+            ERROR_ABORTBYUSER : ErrorMessage := '';
+            ERROR_LOGONUSERFAILED : ErrorMessage := '';
+            ERROR_LOADUSERPROFILE : ErrorMessage := '';
+
+            ERROR_TIMEOUT : ErrorMessage := '';
+            ERROR_SHUTDOWN : ErrorMessage := '';
+            ERROR_WIN32 : ErrorMessage := '';
+            ERROR_GENERAL_EXCEPTION : ErrorMessage := '';
+            ERROR_NO_SUCH_LOGONSESSION : ErrorMessage := '';
+          else
+            ErrorMessage := '';
+          end;
+          MessageDlg(ErrorMessage+#13#10+SysErrorMessage(LastError),mtError,[mbok],0);
+        end;
+    end;
+{$ENDIF}
   finally
     ScreenBitmap.Free;
   end;
@@ -255,19 +303,13 @@ begin
 end;
 
 
-procedure C;
-begin
-  Application.Initialize;
-  Application.CreateForm(TFormCredentials, FormCredentials);
-  Application.Run;
-  halt;
-
-end;
-
-procedure Main;
+function Main : Integer;
 var p : String;
     i : Integer;
 begin
+  //if ParamStr(1) <> '/cred' then
+  //  halt(10);
+    
   {p := '';
   for i := 0 to ParamCount do
   begin
@@ -277,22 +319,32 @@ begin
   }
   PipeSession := TClientSessionPipe.Create;
   try
+{$IFNDEF TEST}
     Haltresult := 1;
-    PipeSession.Connect(ParamStr(1));
+    PipeSession.Connect(ParamStr(2));
     Haltresult := 2;
     PipeSession.ReadServerData(SessionInfo);
 
     Haltresult := 2;
-    Application.Free;
+{$ELSE}
+    ZeroMemory(@SessionInfo, sizeof(SessionInfo));
+    SessionInfo.Application := 'C:\Windows\System32\cmd.exe';
+{$ENDIF TEST}
+    //FreeAndNil(Application);
+    Application := Nil;
 
-    Func(0);
-    Haltresult := 0;
+
+    Haltresult := AskCredential();
   except
+ {   on E : EOSError do
+      HaltResult := E.ErrorCode; }
     on E : Exception do
     begin
       MessageBoxW(0, PWideChar(WideString(E.Message)),'Error',MB_OK);
     end;
   end;
   PipeSession.Free;
-  halt(HaltResult);
+  result := HaltResult;
+end;
+
 end.
