@@ -62,10 +62,19 @@ begin
       Reg.RootKey := HKEY_LOCAL_MACHINE;
       if Reg.OpenKey('Software\JEDI\WSCL\RunAsSys\1.0', false) then
       begin
-        result := Reg.ReadBool('LogEnabled');
-        LogPath := Reg.ReadString('LogPath')
+        try
+          result := Reg.ReadBool('LogEnabled');
+        except
+          result := false;
+        end;
+        try
+          LogPath := Reg.ReadString('LogPath');
+        except
+          LogPath := '';
+        end;
       end;
     finally
+      Reg.Free;
     end;
   except
   end;

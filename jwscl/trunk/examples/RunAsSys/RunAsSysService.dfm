@@ -6,8 +6,8 @@ object RunAsSysSvc3: TRunAsSysSvc3
   StartType = stManual
   OnExecute = ServiceExecute
   OnStart = ServiceStart
-  Left = 1248
-  Top = 131
+  Left = 1916
+  Top = 239
   Height = 150
   Width = 215
 end

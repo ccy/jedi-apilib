@@ -1,6 +1,7 @@
 program RunAsSys;
 
 uses
+  ExceptionLog,
   SvcMgr,
   SysUtils,
   Dialogs,

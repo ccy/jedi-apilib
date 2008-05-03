@@ -384,7 +384,7 @@ BOOL WINAPI TerminateJobObject(HANDLE hJob, UINT uExitCode);
      @param NewJobObjectEvent defines an event that is called in
        AssignProcessToJob. It must not be nil; otherwise EJwsclNILParameterException
        will be raised 
-      @raise EJwsclNILParameterException will be raised if parameter NewJobObjectEvent
+      raises EJwsclNILParameterException will be raised if parameter NewJobObjectEvent
        is nil 
     }
     constructor Create(const NewJobObjectEvent: TJwOnNewJobObject);

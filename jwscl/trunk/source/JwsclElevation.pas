@@ -291,71 +291,74 @@ begin
   ZeroMemory(@shExecInfo,sizeof(shExecInfo));
 
   Token := TJwSecurityToken.CreateTokenEffective(TOKEN_QUERY or TOKEN_READ);
-
   try
-    IsElevated := Token.RunElevation <> 0;
-  except
-    on E : EJwsclSecurityException do
-    begin
-      //On 2000,XP admin is elevated
-      IsElevated := JwCheckAdministratorAccess;
-      Token.Free;
-      if not (sefIgnoreElevationIfNotAvailable in Flags) then
-        raise;
+    try
+      IsElevated := Token.RunElevation <> 0;
+    except
+      on E : EJwsclSecurityException do
+      begin
+        //On 2000,XP admin is elevated
+        IsElevated := JwCheckAdministratorAccess;
+        FreeAndNil(Token);
+        if not (sefIgnoreElevationIfNotAvailable in Flags) then
+          raise;
+      end;
     end;
-  end;
 
-  if not IsElevated then
-    shExecInfo.lpVerb := TJwPChar(TJwString('runas'))
-  else //type mismatch? Recompile whole project: ansicode <-> unicode
-    shExecInfo.lpVerb := TJwPChar(TJwString('open'));
+    if not IsElevated then
+      shExecInfo.lpVerb := TJwPChar(TJwString('runas'))
+    else //type mismatch? Recompile whole project: ansicode <-> unicode
+      shExecInfo.lpVerb := TJwPChar(TJwString('open'));
 
 
-  shExecInfo.cbSize := sizeof(SHELLEXECUTEINFO);
-  shExecInfo.fMask := SEE_MASK_NOCLOSEPROCESS;
-  if sefNoUi in Flags then
-    shExecInfo.fMask := shExecInfo.fMask or SEE_MASK_FLAG_NO_UI;
+    shExecInfo.cbSize := sizeof(SHELLEXECUTEINFO);
+    shExecInfo.fMask := SEE_MASK_NOCLOSEPROCESS;
+    if sefNoUi in Flags then
+      shExecInfo.fMask := shExecInfo.fMask or SEE_MASK_FLAG_NO_UI;
     
-  shExecInfo.Wnd := hWnd;
+    shExecInfo.Wnd := hWnd;
 
 
-  if (sefFixDirWithRunAs in Flags) and (Length(Directory) > 0) and
-    not IsElevated then
-  begin
-    shExecInfo.lpFile := 'cmd.exe';
-    {Shellexecute does not set directory when combined with verb "runas"
-    so we call cmd, set the directory and then call the application
-    This may lead to a remaining cmd window
-    }
-    shExecInfo.lpParameters := TJwPChar(TJwString('/C cd /d "'+Directory+'" & '+ FileName + ' '+Parameters));
-    //shExecInfo.lpFile := 'cmd';
-    //shExecInfo.lpParameters := TJwPChar(TJwString('/c "start /D "'+Directory+'" "'+ FileName + '" '+Parameters)+'"');
-    shExecInfo.lpDirectory := nil;
-  end
-  else
-  begin
-    shExecInfo.lpFile := TJwPChar(FileName);
-    shExecInfo.lpParameters := TJwPChar(Parameters);
-    shExecInfo.lpDirectory := TJwPChar(Directory);
-  end;
-  //shExecInfo.lpDirectory := TJwPChar('"'+Directory+'"');
+    if (sefFixDirWithRunAs in Flags) and (Length(Directory) > 0) and
+      not IsElevated then
+    begin
+      shExecInfo.lpFile := 'cmd.exe';
+      {Shellexecute does not set directory when combined with verb "runas"
+      so we call cmd, set the directory and then call the application
+      This may lead to a remaining cmd window
+      }
+      shExecInfo.lpParameters := TJwPChar(TJwString('/C cd /d "'+Directory+'" & '+ FileName + ' '+Parameters));
+      //shExecInfo.lpFile := 'cmd';
+      //shExecInfo.lpParameters := TJwPChar(TJwString('/c "start /D "'+Directory+'" "'+ FileName + '" '+Parameters)+'"');
+      shExecInfo.lpDirectory := nil;
+    end
+    else
+    begin
+      shExecInfo.lpFile := TJwPChar(FileName);
+      shExecInfo.lpParameters := TJwPChar(Parameters);
+      shExecInfo.lpDirectory := TJwPChar(Directory);
+    end;
+    //shExecInfo.lpDirectory := TJwPChar('"'+Directory+'"');
 
 
 
-  shExecInfo.nShow := ShowCmd;
-  shExecInfo.hInstApp := NULL;
+    shExecInfo.nShow := ShowCmd;
+    shExecInfo.hInstApp := NULL;
 
-  SetLastError(0);
-  if {$IFDEF UNICODE}ShellExecuteExW{$ELSE}ShellExecuteExA{$ENDIF}(@shExecInfo) then
-    result := shExecInfo.hProcess
-  else
-    raise EJwsclWinCallFailedException.CreateFmtWinCall(RsWinCallFailed,'src','','JwsclElevation.pas',0,
-          true,'ShellExecuteEx',['ShellExecuteEx']);
+    SetLastError(0);
+    if {$IFDEF UNICODE}ShellExecuteExW{$ELSE}ShellExecuteExA{$ENDIF}(@shExecInfo) then
+      result := shExecInfo.hProcess
+    else
+      raise EJwsclWinCallFailedException.CreateFmtWinCall(RsWinCallFailed,'src','','JwsclElevation.pas',0,
+            true,'ShellExecuteEx',['ShellExecuteEx']);
 
-  if (result <> 0) and not (sefNoClosehProcess in Flags) then
-  begin
-    CloseHandle(result);
-    result := 0;
+    if (result <> 0) and not (sefNoClosehProcess in Flags) then
+    begin
+      CloseHandle(result);
+      result := 0;
+    end;
+  finally
+    FreeAndNil(Token);
   end;
 end;
 
