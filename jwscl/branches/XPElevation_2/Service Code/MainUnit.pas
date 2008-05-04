@@ -23,15 +23,19 @@ type
     procedure ServiceStop(Sender: TService; var Stopped: Boolean);
     procedure ServiceStart(Sender: TService; var Started: Boolean);
     procedure ServiceShutdown(Sender: TService);
-    procedure EurekaLog1CustomWebFieldsRequest(
-      EurekaExceptionRecord: TEurekaExceptionRecord; WebFields: TStrings);
+    procedure ServiceCreate(Sender: TObject);
+    procedure EurekaLog1ExceptionActionNotify(
+      EurekaExceptionRecord: TEurekaExceptionRecord;
+      EurekaAction: TEurekaActionType; var Execute: Boolean);
+    procedure EurekaLog1HandledExceptionNotify(
+      EurekaExceptionRecord: TEurekaExceptionRecord; var Handled: Boolean);
   private
     { Private declarations }
     fServiceStopEvent,
     fThreadsStoppedEvent:           THandle;
     fJobs : TJwJobObjectSessionList;
 
-    fLogCriticalSection:  TCriticalSection;
+    fStopCriticalSection :  TMultiReadExclusiveWriteSynchronizer;
     //fLogFile:             Textfile;
     fStopped:             boolean;
     fTimer    : HANDLE;
@@ -43,9 +47,6 @@ type
     procedure InitAllowedSIDs;
     procedure SetStopped(const Value: boolean);
     function MayUserBeElevated(User: TJwSecurityID): boolean;
-    function AskCredentials(Token: TJwSecurityToken;
-        AppToStart: String;
-        var SessionInfo : TSessionInfo): boolean;
 
     procedure OnJobNotification(Sender : TJwJobObject; ProcessId : TJwProcessId; JobLimits : TJwJobMessages; Data : Pointer);
     procedure OnNoActiveProcesses(Sender : TJwJobObject);
@@ -57,9 +58,13 @@ type
 
   public
     fHReqThreadCount:     Integer;
+
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
+
+
     function GetServiceController: TServiceController; override;
     procedure StartApp(AppToStart: String);
-    procedure LogEvent(Event: String; EventType: TLogType=ltInfo);
     { Public declarations }
     property ThreadsStopEvent: THandle read fThreadsStoppedEvent;
     property ServiceStopEvent: THandle read fServiceStopEvent;
@@ -85,10 +90,32 @@ begin
   XPService.Controller(CtrlCode);
 end;
 
-procedure TXPService.EurekaLog1CustomWebFieldsRequest(
-  EurekaExceptionRecord: TEurekaExceptionRecord; WebFields: TStrings);
+destructor TXPService.Destroy;
 begin
-  WebFields.Add('ApplicationName=XPElevation Service');
+  FreeAndNil(fStopCriticalSection);
+  inherited;
+end;
+
+procedure TXPService.EurekaLog1ExceptionActionNotify(
+  EurekaExceptionRecord: TEurekaExceptionRecord;
+  EurekaAction: TEurekaActionType; var Execute: Boolean);
+begin
+  if EurekaAction = atShowingExceptionInfo then
+  begin
+{$IFDEF DEBUG}
+    Execute := True;
+{$ELSE}
+    Execute := false;
+{$ENDIF DEBUG}
+  end;
+
+  
+end;
+
+procedure TXPService.EurekaLog1HandledExceptionNotify(
+  EurekaExceptionRecord: TEurekaExceptionRecord; var Handled: Boolean);
+begin
+  //
 end;
 
 function TXPService.GetServiceController: TServiceController;
@@ -96,31 +123,15 @@ begin
   Result := ServiceController;
 end;
 
-procedure TXPService.LogEvent(Event: String; EventType: TLogType=ltInfo);
-begin
-{  EnterCriticalSection(fLogCriticalSection);
-  try
-    case EventType of
-      ltInfo: Writeln(fLogfile, DateTimeToStr(Now)+' '+Event);
-      ltError: Writeln(fLogfile, DateTimeToStr(Now), ' ERROR: ', Event);
-    end;
-    Flush(fLogfile);
-  finally
-    LeaveCriticalSection(fLogCriticalSection);
-  end;}
-end;
-
-
-
-function TXPService.AskCredentials(Token: TJwSecurityToken; AppToStart: string;
-  var SessionInfo : TSessionInfo): boolean;
-begin
-end;
 
 
 function TXPService.MayUserBeElevated(User: TJwSecurityID): boolean;
 begin
-  result:=fAllowedSIDs.FindSid(User)<>-1;
+  try
+    result := fAllowedSIDs.FindSid(User)<>-1;
+  except
+    result := false;
+  end;
 end;
 
 const EmptyPass = Pointer(-1);
@@ -218,18 +229,36 @@ begin
 
 end;
 
+constructor TXPService.Create(AOwner: TComponent);
+begin
+  inherited;
+  
+
+end;
+
+procedure TXPService.ServiceCreate(Sender: TObject);
+
+begin
+  fStopCriticalSection := TMultiReadExclusiveWriteSynchronizer.Create;
+
+end;
+
 procedure TXPService.ServiceExecute(Sender: TService);
 var Pipe: THandle; OvLapped: OVERLAPPED;
-    ar: array[0..2] of THandle;
+
+    
     AppName: String; PipeSize: Cardinal; Descr: TJwSecurityDescriptor;
     SecAttr: JwaWindows.PSECURITY_ATTRIBUTES;
     i: integer;
     Log : IJwLogClient;
     WaitResult : DWORD;
+
 begin
+
   JwSetThreadName('XP Elevation Service Thread');
   Log := uLogging.LogServer.Connect(etMethod,ClassName,
           'ServiceExecute','MainUnit.pas','');
+
 
   
   try
@@ -255,7 +284,7 @@ begin
           Descr.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil,[],GENERIC_ALL,JwLocalSystemSID,false));
           Descr.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil,[],GENERIC_ALL,JwAdministratorsSID,false));
           //Descr.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil,[],GENERIC_ALL,JwWorldSID,false));
-{$ENDIF}          
+{$ENDIF}
           SecAttr:=Descr.Create_SA(false);
 
           Pipe := CreateNamedPipe('\\.\pipe\XPElevationPipe', PIPE_ACCESS_INBOUND or FILE_FLAG_OVERLAPPED, PIPE_WAIT, PIPE_UNLIMITED_INSTANCES, 0, 0, 0, LPSECURITY_ATTRIBUTES(SecAttr));
@@ -282,28 +311,30 @@ begin
             until WaitResult <> WAIT_OBJECT_0 + 2; //any event we declared
             ResetEvent(OvLapped.hEvent);
 
-            with THandleRequestThread.Create(
-              true, //Create suspended
-              fJobs,
-              fAllowedSIDs,//const AllowedSIDs:  TJwSecurityIdList;
-              fPasswords,//const Passwords   : TPasswordList;
-              fServiceStopEvent,//const StopEvent  : THandle;
-              fThreadsStoppedEvent,
-              nil,//ServiceThread.ProcessRequests,//const OnServiceProcessRequest : TOnServiceProcessRequest;
-
-              @fStopped //const StopState : PBoolean
-              ) do
+            if WaitResult = WAIT_OBJECT_0 +1 then
             begin
-              FreeOnTerminate := True;
-              PipeHandle := Pipe;
-              Resume;
-            end;
-            LogEvent('Create Pipe 2');
+              with THandleRequestThread.Create(
+                true, //Create suspended
+                fJobs,
+                fAllowedSIDs,//const AllowedSIDs:  TJwSecurityIdList;
+                fPasswords,//const Passwords   : TPasswordList;
+                fServiceStopEvent,//const StopEvent  : THandle;
+                fThreadsStoppedEvent,
+                nil,//ServiceThread.ProcessRequests,//const OnServiceProcessRequest : TOnServiceProcessRequest;
 
-            Pipe := CreateNamedPipe('\\.\pipe\XPElevationPipe', PIPE_ACCESS_INBOUND or FILE_FLAG_OVERLAPPED, PIPE_WAIT, PIPE_UNLIMITED_INSTANCES, 0, 0, 0, LPSECURITY_ATTRIBUTES(SecAttr));
-            if Pipe = INVALID_HANDLE_VALUE then
-            begin
-              LogAndRaiseLastOsError(Log,ClassName, 'ServiceExecute::(winapi)CreateNamedPipe IN', 'ElevationHandler.pas');
+                @fStopped //const StopState : PBoolean
+                ) do
+              begin
+                FreeOnTerminate := True;
+                PipeHandle := Pipe;
+                Resume;
+              end;
+
+              Pipe := CreateNamedPipe('\\.\pipe\XPElevationPipe', PIPE_ACCESS_INBOUND or FILE_FLAG_OVERLAPPED, PIPE_WAIT, PIPE_UNLIMITED_INSTANCES, 0, 0, 0, LPSECURITY_ATTRIBUTES(SecAttr));
+              if Pipe = INVALID_HANDLE_VALUE then
+              begin
+                LogAndRaiseLastOsError(Log,ClassName, 'ServiceExecute::(winapi)CreateNamedPipe IN', 'ElevationHandler.pas');
+              end;
             end;
           until Stopped;
 
@@ -311,7 +342,7 @@ begin
           CloseHandle(Pipe);
 
           //signal server shutdown
-          SetEvent(fServiceStopEvent);
+          Stopped := true;
             
           {Wait for all threads to be stopped or timeout
           }
@@ -334,8 +365,6 @@ begin
     end;
   finally
     Log.Log(lsStop,'*** XP Elevation Service finished. ');
-
-    DeleteCriticalSection(fLogCriticalSection);
   end;
 end;
 
@@ -349,19 +378,32 @@ procedure TXPService.SetStopped(const Value: boolean);
 var    Log : IJwLogClient;
 begin
   Log := uLogging.LogServer.Connect(etNone,ClassName,
-          'SetStopped','MainUnit.pas','');
+            'SetStopped','MainUnit.pas','');
 
-  FStopped := Value;
-  if Value then
-  begin
-    Log.Log('Stopevent executed....');
-//    SetEvent(fStopEvent);
+
+  fStopCriticalSection.BeginWrite;
+  try
+    FStopped := Value;
+    
+    if not Value then
+    begin
+      Log.Log('Stopevent resetted....');
+      ResetEvent(fServiceStopEvent);
+    end
+    else
+    begin
+      Log.Log('Stopevent executed....');
+      SetEvent(fServiceStopEvent);
+    end;
+  finally
+    fStopCriticalSection.EndWrite;
   end;
 end;
 
 procedure TXPService.ServiceStart(Sender: TService; var Started: Boolean);
 begin
   Started := true;
+  fStopCriticalSection := TMultiReadExclusiveWriteSynchronizer.Create;
 end;
 
 

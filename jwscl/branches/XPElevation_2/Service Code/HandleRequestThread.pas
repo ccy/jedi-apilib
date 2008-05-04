@@ -101,7 +101,7 @@ begin
         case JwWaitForMultipleObjects([OvLapped.hEvent, XPService.ServiceStopEvent], false, 10 *1000) of
           WAIT_TIMEOUT:
           begin
-            XPService.LogEvent('HandleRequestThread was timed out');
+            Log.Log('HandleRequestThread was timed out');
             exit;
           end;
           WAIT_OBJECT_0+1:

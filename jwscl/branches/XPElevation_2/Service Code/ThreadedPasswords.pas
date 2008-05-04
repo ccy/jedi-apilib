@@ -106,11 +106,11 @@ begin
       mtGetMem);
 
   OleCheck(StringCbCopyW(P^.EDomain, SizeDomain, PWideChar(Domain)));
-  TJwEncryptMemory.EncryptMemory(P^.EDomain, SizeUser, [pmSameProcess],
+  TJwEncryptMemory.EncryptMemory(P^.EDomain, SizeDomain, [pmSameProcess],
       mtGetMem);
 
   OleCheck(StringCbCopyW(P^.EPassword, SizePass, PWideChar(Password)));
-  TJwEncryptMemory.EncryptMemory(P^.EPassword, SizeUser, [pmSameProcess],
+  TJwEncryptMemory.EncryptMemory(P^.EPassword, SizePass, [pmSameProcess],
       mtGetMem);
 
   P^.SizeUser := SizeUser;
@@ -259,7 +259,7 @@ var
   i : Integer;
   P : PPassEntry;
 begin
-  result := INVALID_HANDLE_VALUE;
+  result := -1;
 
   L := LockList;
   try
@@ -300,7 +300,7 @@ var
   P : PPassEntry;
 begin
   i := SessionToIndex(Session);
-  if i <> INVALID_HANDLE_VALUE then
+  if i <> -1 then
     SetByIndex(i, Session, Domain, UserName, Password)
   else
     Add(Session, Domain, UserName,Password);

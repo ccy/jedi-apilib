@@ -82,12 +82,16 @@ begin
   end;
 end;
 
-function AskPassword(var SessionInfo : TSessionInfo): boolean;
+function AskPassword(var SessionInfo : TSessionInfo): Short;
 
 var Prompt: TJwCredentialsPrompt; OldDesk: HDESK; OldWallpaperPath: PChar; DesktopWallpaperPath: string;
      Bmp: Graphics.TBitmap; DeskDC: HDC;
      Desktop: TJwSecurityDesktop;
      Descr: TJwSecurityDescriptor;
+const
+  sFALSE = 0;
+  sTRUE = 1;
+  sDI = -1;
 begin
   try  //1.
     Descr:=TJwSecurityDescriptor.CreateDefaultByToken;
@@ -104,14 +108,14 @@ begin
           Application := TApplication.Create(nil);
           Application.Initialize;
 {$IFNDEF TEST}
-          Application.CreateForm(TFormMain, FormMain);
+          {Application.CreateForm(TFormMain, FormMain);
 
           FormMain.Image1.Picture.Bitmap.Assign(ScreenBitmap);
           FormMain.Image1.Align  := alClient;
-
+           }
           //FormMain.BoundsRect := Resolution;
           //FormMain.Show;
-          FormMain.Hide;
+          //FormMain.Hide;
 {$ENDIF TEST}
 
           Application.CreateForm(TFormCredentials, FormCredentials);
@@ -137,12 +141,22 @@ begin
 
           FormCredentials.Show;
           Application.Run;
-          result := FormCredentials.ModalResult = mrOk;
-          if result then
+          case FormCredentials.ModalResult of
+            mrOk : result := sTRUE;
+            mrCancel : result := sFALSE;
+            mrAbort : result := sDI;
+          end;
+          if result = sTRUE then
           begin
             SessionInfo.UserName := FormCredentials.UserName;
             SessionInfo.Password := FormCredentials.Password;
             SessionInfo.Flags    := FormCredentials.Flags;
+          end
+          else
+          if result = sDI then
+          begin
+            //service terminates only if also canceled
+            SessionInfo.Flags    := CLIENT_CANCELED or CLIENT_DEBUGTERMINATE;
           end
           else
             SessionInfo.Flags    := CLIENT_CANCELED;
@@ -256,8 +270,7 @@ begin
   try
     SessionInfo.Password := GetFillPasswd;
     SessionInfo.Password := '';
-    if not AskPassword(SessionInfo) then
-      SessionInfo.Flags := CLIENT_CANCELED;
+    AskPassword(SessionInfo);
 
     Haltresult := 2;
 {$IFNDEF TEST}

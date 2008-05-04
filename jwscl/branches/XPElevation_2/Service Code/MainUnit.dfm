@@ -1,5 +1,6 @@
 object XPService: TXPService
   OldCreateOrder = False
+  OnCreate = ServiceCreate
   DisplayName = 'XP Elevation Service'
   StartType = stManual
   OnExecute = ServiceExecute
@@ -9,8 +10,7 @@ object XPService: TXPService
   Height = 150
   Width = 215
   object EurekaLog1: TEurekaLog
-    OnCustomWebFieldsRequest = EurekaLog1CustomWebFieldsRequest
-    Left = 48
-    Top = 40
+    Left = 88
+    Top = 56
   end
 end

@@ -29,7 +29,7 @@ begin
   uLogging.InitLog;
   uLogging.SwitchLog(true);
   try
-    MessageBox(0,'Debug breakpoint','',MB_ICONEXCLAMATION or MB_OK);
+  //  MessageBox(0,'Debug breakpoint','',MB_ICONEXCLAMATION or MB_OK);
     Res := Main;
   finally
     uLogging.DoneLog;

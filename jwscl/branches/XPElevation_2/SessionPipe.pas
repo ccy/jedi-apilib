@@ -15,13 +15,14 @@ type
   end;
 
 const CLIENT_CANCELED = $1;
-      CLIENT_USECACHECREDS = $2;   //to server: use cached password
-      CLIENT_CACHECREDS = $3;      //to server: save given password to cache
-      CLIENT_CLEARCACHE = $4;      //to server: clear user password from cache
+      CLIENT_USECACHECREDS = $2;   //to server: use cached passw  ord
+      CLIENT_CACHECREDS = $4;      //to server: save given password to cache
+      CLIENT_CLEARCACHE = $8;      //to server: clear user password from cache
+      CLIENT_DEBUGTERMINATE = $1024;
 
       SERVER_TIMEOUT = $1;         //
       SERVER_USECACHEDCREDS = $2;  //
-      SERVER_CACHEAVAILABLE = $3;  //to client: Password is available through cache
+      SERVER_CACHEAVAILABLE = $4;  //to client: Password is available through cache
 
       FILL_PASSWORD : WideString = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
 
@@ -271,10 +272,17 @@ begin
         raise EShutdownException.Create('');
 
     }
+    if NumBytesRead < sizeof(Value) + sizeof(LastError) then
+    begin
+      SetLastError(ERROR_INVALID_DATA);
+      LogAndRaiseLastOsError(Log,ClassName, 'ReadServerProcessResult::(Winapi)ReadFile','SessionPipe.pas');
+    end;
+
     CopyMemory(@Value, Data, sizeof(Value));
     P := Data;
     Inc(DWORD(P), sizeof(LastError));
     CopyMemory(@LastError, P, sizeof(LastError));
+
   finally
     FreeMem(Data);
   end;

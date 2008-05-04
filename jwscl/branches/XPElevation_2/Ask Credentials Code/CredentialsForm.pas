@@ -44,6 +44,7 @@ type
     JvEdit_AppName: TJvEdit;
     EditPassword1: TJvEdit;
     EditPassword2: TJvEdit;
+    Button1: TButton;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure EditPassword1Change(Sender: TObject);
@@ -66,6 +67,7 @@ type
     procedure UsersComboBoxMouseEnter(Sender: TObject);
     procedure JvProgressBarMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
+    procedure Button1Click(Sender: TObject);
   private
     { Private-Deklarationen }
     fSaveLogon : Boolean;
@@ -209,9 +211,12 @@ begin
   if internalMsg then
     exit;
   internalMsg := true;
-  begin
+
+  if Sender = EditPassword2 then
+    ButtonUser.Click
+  else
+  if Sender = EditPassword1 then
     ButtonDefaultUser.Click;
-  end;
 
   if (Length(TJvEdit(Sender).Text) > 0) then
   begin
@@ -259,6 +264,12 @@ begin
     ButtonUser.Click;
   end;
   internalMsg := false;
+end;
+
+procedure TFormCredentials.Button1Click(Sender: TObject);
+begin
+  ModalResult := mrAbort;
+  Close;
 end;
 
 procedure TFormCredentials.ButtonDefaultUserClick(Sender: TObject);
@@ -382,13 +393,14 @@ begin
   end;
 
   UsersComboBox.Text := UserName;
-  if Length(UserName) > 0 then
+ { if Length(UserName) > 0 then
   begin
     ButtonUser.Click;
   end
-  else
+  else  }
   begin
     ButtonDefaultUser.Click;
+    EditPassword1.SetFocus;
   end;
 
   Signed := IsSigned(AppName ,Publisher);
@@ -401,7 +413,14 @@ begin
   JvGradient_UnsignedApp.Visible := not Signed;
   JvLabel_SignedApp.Visible := Signed;
   JvLabel_UnsignedApp.Visible := not Signed;
-  
+
+  try
+
+    BringToFront;
+    SetFocus;
+  except
+
+  end;
 end;
 
 procedure TFormCredentials.CenterInMonitor(const i : Integer);

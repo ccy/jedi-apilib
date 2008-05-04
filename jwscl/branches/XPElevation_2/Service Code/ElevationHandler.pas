@@ -5,7 +5,7 @@ uses
   Messages, SysUtils, Classes, Graphics, Controls, SvcMgr, Dialogs, Math, ComObj,
   JwaWindows, JwsclToken, JwsclLsa, JwsclCredentials, JwsclDescriptor, JwsclDesktops,
   JwsclExceptions, JwsclSID, JwsclAcl,JwsclKnownSID, JwsclEncryption, JwsclTypes,
-  JwsclProcess,
+  JwsclProcess, JwsclComUtils,
   SessionPipe, JwsclLogging, uLogging, ThreadedPasswords,
   JwsclStrings;
 
@@ -56,7 +56,7 @@ const
 
 
 implementation
-uses Registry;
+uses Registry, MainUnit;
 
 function RegGetFullPath(PathKey: string): string;
 var Reg: TRegistry; Unresolved: string;
@@ -111,7 +111,9 @@ begin
   {if not Assigned(ClientPipeUserToken) then
     exit;}
 
-  Desc := TJwSecurityDescriptor.Create;
+
+
+  Desc :=  TJwAutoPointer.Wrap(TJwSecurityDescriptor.Create).Instance as TJwSecurityDescriptor;
   try
 {$IFDEF DEBUG}
     Desc.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil, [], GENERIC_ALL, JwWorldSID));
@@ -122,45 +124,45 @@ begin
 {$ENDIF}
 
     SecAttr := LPSECURITY_ATTRIBUTES(Desc.Create_SA());
+    try
+      repeat
+        PipeName := '\\.\pipe\XPCredentials'+IntToStr(GetCurrentThreadId);
 
-    repeat
-      PipeName := '\\.\pipe\XPCredentials'+IntToStr(GetCurrentThreadId);
+        SetLastError(0);
+        hPipe := CreateNamedPipeW(
+            PWideChar(PipeName),//lpName: LPCWSTR;
+            PIPE_ACCESS_DUPLEX or FILE_FLAG_OVERLAPPED,//dwOpenMode,
+            PIPE_TYPE_MESSAGE or       // message type pipe
+              PIPE_READMODE_MESSAGE or   // message-read mode
+              PIPE_WAIT,//dwPipeMode,
+            1,//nMaxInstances,
+            max(sizeof(TServerBuffer) ,sizeof(TClientBuffer)),//nOutBufferSize,
+            max(sizeof(TServerBuffer) ,sizeof(TClientBuffer)),//nInBufferSize,
+            10000,//nDefaultTimeOut: DWORD;
+            SecAttr
+            );
+        LastError := GetLastError;
+        if LastError <> 0 then
+        begin
+          if LastError <> ERROR_ALREADY_EXISTS then
+            Log.Log(lsError, JwFormatStringEx('Pipe creation of "%s" failed with %d',[PipeName, LastError]))
+          else
+            LogAndRaiseLastOsError(Log, ClassName, 'AskCredentials::(winapi)CreateNamedPipeW', 'ElevationHandler.pas');
+        end;
+      until hPipe <> 0;
 
-      SetLastError(0);
-      hPipe := CreateNamedPipeW(
-          PWideChar(PipeName),//lpName: LPCWSTR;
-          PIPE_ACCESS_DUPLEX or FILE_FLAG_OVERLAPPED,//dwOpenMode,
-          PIPE_TYPE_MESSAGE or       // message type pipe
-            PIPE_READMODE_MESSAGE or   // message-read mode
-            PIPE_WAIT,//dwPipeMode,
-          1,//nMaxInstances,
-          max(sizeof(TServerBuffer) ,sizeof(TClientBuffer)),//nOutBufferSize,
-          max(sizeof(TServerBuffer) ,sizeof(TClientBuffer)),//nInBufferSize,
-          10000,//nDefaultTimeOut: DWORD;
-          SecAttr
-          );
-      LastError := GetLastError;
-      if LastError <> 0 then
+      ServerPipe.Assign(hPipe, TIMEOUT);
+
+    except
+      on E : Exception do
       begin
-        if LastError <> ERROR_ALREADY_EXISTS then
-          Log.Log(lsError, JwFormatStringEx('Pipe creation of "%s" failed with %d',[PipeName, LastError]))
-        else
-          LogAndRaiseLastOsError(Log, ClassName, 'AskCredentials::(winapi)CreateNamedPipeW', 'ElevationHandler.pas');
+        FreeAndNil(ServerPipe);
+
+        raise;
       end;
-    until hPipe <> 0;
-
-    ServerPipe.Assign(hPipe, TIMEOUT);
-
-  except
-    on E : Exception do
-    begin
-      FreeAndNil(ServerPipe);
-
-      TJwSecurityDescriptor.Free_SA(PSecurityAttributes(SecAttr));
-      FreeAndNil(Desc);
-      
-      raise;
     end;
+  finally
+    TJwSecurityDescriptor.Free_SA(PSecurityAttributes(SecAttr));
   end;
 
   try
@@ -419,14 +421,21 @@ begin
         SessionInfo.Application := ApplicationPath;
         SessionInfo.Commandline := '';
 
+        SessionInfo.Flags := 0;
         //is password cache available?
         if fPasswords.IsSessionValid(SessionID) then
         begin
-          fPasswords.GetBySession(SessionID,
-            SessionInfo.Domain,
-            SessionInfo.UserName,
-            SessionInfo.Password);
-          SessionInfo.Flags    := SERVER_CACHEAVAILABLE;
+          try
+            Log.Log('Retrieving cached credentials');
+            fPasswords.GetBySession(SessionID,
+              SessionInfo.Domain,
+              SessionInfo.UserName,
+              SessionInfo.Password);
+            SessionInfo.Flags    := SERVER_CACHEAVAILABLE;
+          except
+            on E : Exception do
+              Log.Exception(E);
+          end;
         end
         else
         begin
@@ -447,11 +456,19 @@ begin
               ServerPipe.SendServerResult(ERROR_ABORTBYUSER, 0);
             except
             end;
+{$IFDEF DEBUG}
+             if (SessionInfo.Flags and CLIENT_DEBUGTERMINATE = CLIENT_DEBUGTERMINATE) then
+             begin
+               Log.Log('DEBUG: Termination of service initiated');
+               XPService.Stopped := true;
+             end;
+{$ENDIF DEBUG}
             exit;
           end;
         except //6.
           on E : Exception do
           begin
+            if Assigned(ServerPipe) then            
             try
               ServerPipe.SendServerResult(ERROR_GENERAL_EXCEPTION, 0);
             except
@@ -475,7 +492,13 @@ begin
           begin
             Log.Log('Credentials for user '+Username+' are retrieved from the cache');
 
-            fPasswords.GetBySession(SIDIndex, Domain, Username, Password);
+            try
+              Log.Log('Retrieving cached credentials');
+              fPasswords.GetBySession(SIDIndex, Domain, Username, Password);
+            except
+            on E : Exception do
+              Log.Exception(E);
+            end;
           end;
 
           {Add/Save the new credentials into the cache
@@ -484,81 +507,93 @@ begin
           if (SessionInfo.Flags and CLIENT_CACHECREDS = CLIENT_CACHECREDS) and
              (SessionInfo.Flags and CLIENT_USECACHECREDS <> CLIENT_USECACHECREDS) then
           begin
-            fPasswords.SetBySession(SessionID, SessionInfo.Domain, SessionInfo.UserName, SessionInfo.Password);
-
-            SessionInfo.Password := FILL_PASSWORD;
-          end;
-
-          Domain   := SessionInfo.Domain;
-          Username := SessionInfo.UserName;
-          Password := SessionInfo.Password;
-
-
-          ZeroMemory(@InVars.StartupInfo, sizeof(InVars.StartupInfo));
-
-          //Add specific group
-          Sid := TJwSecurityId.Create(JwFormatString('S-1-5-5-%d-%d',
-            [10000+Token.TokenSessionId, ProcessID]));
-          Invars.AdditionalGroups := TJwSecurityIdList.Create;
-          Sid.AttributesType := [sidaGroupMandatory,sidaGroupEnabled];
-          Invars.AdditionalGroups.Add(Sid);    
-
-          
-          InVars.SourceName := 'XPElevation';
-          InVars.SessionID := Token.TokenSessionId;
-          InVars.UseSessionID := true;
-          InVars.DefaultDesktop := true;
-          InVars.LogonProcessName := 'XPElevation';
-          InVars.LogonToken := nil;
-          InVars.LogonSID := nil;
-
-          ZeroMemory(@InVars.Parameters, sizeof(InVars.Parameters));
-          InVars.Parameters.lpApplicationName := ApplicationPath;
-          InVars.Parameters.lpCommandLine := '';
-          InVars.Parameters.dwCreationFlags := CREATE_NEW_CONSOLE or 
-              CREATE_SUSPENDED or CREATE_UNICODE_ENVIRONMENT or CREATE_BREAKAWAY_FROM_JOB;
-          InVars.Parameters.lpCurrentDirectory := ''; {TODO: }
-          
-          try //7.
             try
-              JwCreateProcessAsAdminUser(
-                 UserName,//const UserName,
-                 Domain,//Domain,
-                 Password,//Password : TJwString;
-                 InVars,//const InVars : TJwCreateProcessInfo;
-                 OutVars,//out OutVars : TJwCreateProcessOut;
-                 uLogging.LogServer//LogServer : IJwLogServer
-                 );
+              Log.Log('Caching user input');
+              fPasswords.SetBySession(SessionID, SessionInfo.Domain, SessionInfo.UserName, SessionInfo.Password);
+            except
+            on E : Exception do
+              Log.Exception(E);
+            end;
 
-              //send success
+
+
+          end;
+          try
+            Domain   := SessionInfo.Domain;
+            Username := SessionInfo.UserName;
+            Password := SessionInfo.Password;
+            SessionInfo.Password := FILL_PASSWORD;
+
+            ZeroMemory(@InVars.StartupInfo, sizeof(InVars.StartupInfo));
+
+            //Add specific group
+            Sid := TJwSecurityId.Create(JwFormatString('S-1-5-5-%d-%d',
+              [10000+Token.TokenSessionId, ProcessID]));
+            Invars.AdditionalGroups := TJwSecurityIdList.Create;
+            Sid.AttributesType := [sidaGroupMandatory,sidaGroupEnabled];
+            Invars.AdditionalGroups.Add(Sid);    
+
+          
+            InVars.SourceName := 'XPElevation';
+            InVars.SessionID := Token.TokenSessionId;
+            InVars.UseSessionID := true;
+            InVars.DefaultDesktop := true;
+            InVars.LogonProcessName := 'XPElevation';
+            InVars.LogonToken := nil;
+            InVars.LogonSID := nil;
+
+            ZeroMemory(@InVars.Parameters, sizeof(InVars.Parameters));
+            InVars.Parameters.lpApplicationName := ApplicationPath;
+            InVars.Parameters.lpCommandLine := '';
+            InVars.Parameters.dwCreationFlags := CREATE_NEW_CONSOLE or 
+                CREATE_SUSPENDED or CREATE_UNICODE_ENVIRONMENT or CREATE_BREAKAWAY_FROM_JOB;
+            InVars.Parameters.lpCurrentDirectory := ''; {TODO: }
+          
+            try //7.
               try
-                ServerPipe.SendServerResult(ERROR_SUCCESS,0);
-              except
-              end;
+                JwCreateProcessAsAdminUser(
+                   UserName,//const UserName,
+                   Domain,//Domain,
+                   Password,//Password : TJwString;
+                   InVars,//const InVars : TJwCreateProcessInfo;
+                   OutVars,//out OutVars : TJwCreateProcessOut;
+                   uLogging.LogServer//LogServer : IJwLogServer
+                   );
+
+                //send success
+                try
+                  ServerPipe.SendServerResult(ERROR_SUCCESS,0);
+                except
+                end;
             
-              //save user profile for later unloading
-              New(UserData);
-              UserData.UserToken   := OutVars.UserToken;
-              UserData.UserProfile := OutVars.ProfInfo;
-              try
-                fJobs.AssignProcessToJob(OutVars.ProcessInfo.hProcess,
-                  Pointer(UserData));
-              except
-                //TODO: oops job assignment failed
+                //save user profile for later unloading
+                New(UserData);
+                UserData.UserToken   := OutVars.UserToken;
+                UserData.UserProfile := OutVars.ProfInfo;
+                try
+                  fJobs.AssignProcessToJob(OutVars.ProcessInfo.hProcess,
+                    Pointer(UserData));
+                except
+                  //TODO: oops job assignment failed
+                end;
+                ResumeThread(OutVars.ProcessInfo.hThread);
+              finally
+
+
+                //free process handles 
+                FreeAndNil(InVars.AdditionalGroups);
+
+                FreeAndNil(OutVars.LinkedToken);
+                FreeAndNil(OutVars.LSA);
+                LsaFreeReturnBuffer(OutVars.ProfBuffer);
+                DestroyEnvironmentBlock(OutVars.EnvironmentBlock);
+
+
+                CloseHandle(OutVars.ProcessInfo.hProcess);
+                CloseHandle(OutVars.ProcessInfo.hThread);
               end;
-              ResumeThread(OutVars.ProcessInfo.hThread);
             finally
-              //free process handles 
-              FreeAndNil(InVars.AdditionalGroups);
-
-              FreeAndNil(OutVars.LinkedToken);
-              FreeAndNil(OutVars.LSA);
-              LsaFreeReturnBuffer(OutVars.ProfBuffer);
-              DestroyEnvironmentBlock(OutVars.EnvironmentBlock);
-
-
-              CloseHandle(OutVars.ProcessInfo.hProcess);
-              CloseHandle(OutVars.ProcessInfo.hThread);
+              Password := FILL_PASSWORD;
             end;
 
             
