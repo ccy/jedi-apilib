@@ -96,6 +96,10 @@ const
   IDASYNC   = 32001;
   {$EXTERNALSYM IDASYNC}
 
+  USERNAME_LENGTH = 20;
+  CLIENTNAME_LENGTH = 20;
+  CLIENTADDRESS_LENGTH = 30;
+
 //
 //  Shutdown flags
 //
@@ -119,10 +123,8 @@ const
 // Added from Server 2008 pre-release SDK
   MAX_ELAPSED_TIME_LENGTH = 15;
   MAX_DATE_TIME_LENGTH = 56;
-// In the PSDK this is the value: WINSTATIONNAME_LENGTH = 32 but it seems
-// incorrect because internal winsta.dll and utildll.dll functions expect
-// 66 bytes. So we set value 33 here
-  WINSTATIONNAME_LENGTH = 33;
+//changed from 33 to 32 according to the Windows PSDK v6.1
+  WINSTATIONNAME_LENGTH = 32;
   DOMAIN_LENGTH = 17;
 
 //==============================================================================
@@ -383,10 +385,169 @@ type
     WTSClientHardwareId,
     WTSClientAddress,
     WTSClientDisplay,
-    WTSClientProtocolType);
+    WTSClientProtocolType,
+    WTSIdleTime,
+    WTSLogonTime,
+    WTSIncomingBytes,
+    WTSOutgoingBytes,
+    WTSIncomingFrames,
+    WTSOutgoingFrames,
+    WTSClientInfo,
+    WTSSessionInfo);
   {$EXTERNALSYM _WTS_INFO_CLASS}
   WTS_INFO_CLASS = _WTS_INFO_CLASS;
   TWtsInfoClass = WTS_INFO_CLASS;
+  
+//==============================================================================
+// WTS Session Information (Unicode)
+//==============================================================================
+
+type
+  _WTSINFOW = record
+    State : WTS_CONNECTSTATE_CLASS ;  // connection state (see enum)
+    SessionId : DWORD;                // session id
+    IncomingBytes : DWORD;
+    OutgoingBytes : DWORD;
+    IncomingFrames : DWORD;
+    OutgoingFrames : DWORD;
+    IncomingCompressedBytes : DWORD;
+    OutgoingCompressedBytes : DWORD;
+    WinStationName : array[0..WINSTATIONNAME_LENGTH - 1] of WCHAR;
+    Domain : array[0..DOMAIN_LENGTH - 1] of WCHAR;
+    UserName : array[0..USERNAME_LENGTH{ + 1 - 1}] of WCHAR;// name of WinStation this session is
+                                                           // connected to
+    ConnectTime : LARGE_INTEGER;
+    DisconnectTime : LARGE_INTEGER;
+    LastInputTime : LARGE_INTEGER;
+    LogonTime : LARGE_INTEGER;
+    CurrentTime : LARGE_INTEGER;
+  end;
+  {$EXTERNALSYM _WTSINFOW}
+  WTSINFOW = _WTSINFOW;
+  {$EXTERNALSYM WTSINFOW}
+  PWTSINFOW = ^WTSINFOW;
+  {$EXTERNALSYM PWTSINFOW}
+  TWtsInfoW = WTSINFOW;
+
+//==============================================================================
+// WTS Session Information (Non-Unicode)
+//==============================================================================
+
+type
+  _WTSINFOA = record
+    State : WTS_CONNECTSTATE_CLASS ; // connection state (see enum)
+    SessionId : DWORD;             // session id
+    IncomingBytes : DWORD;
+    OutgoingBytes : DWORD;
+    IncomingFrames : DWORD;
+    OutgoingFrames : DWORD;
+    IncomingCompressedBytes : DWORD;
+    OutgoingCompressedBytes : DWORD;
+    WinStationName : array[0..WINSTATIONNAME_LENGTH - 1] of CHAR;
+    Domain : array[0..DOMAIN_LENGTH - 1] of CHAR;
+    UserName : array[0..USERNAME_LENGTH{ + 1 - 1}] of CHAR;// name of WinStation this session is
+                                                           // connected to
+    ConnectTime : LARGE_INTEGER;
+    DisconnectTime : LARGE_INTEGER;
+    LastInputTime : LARGE_INTEGER;
+    LogonTime : LARGE_INTEGER;
+    CurrentTime : LARGE_INTEGER;
+  end;
+  {$EXTERNALSYM _WTSINFOA}
+  WTSINFOA = _WTSINFOA;
+  {$EXTERNALSYM WTSINFOA}
+  PWTSINFOA = ^WTSINFOA;
+  {$EXTERNALSYM PWTSINFOW}
+  TWtsInfoA = WTSINFOA;
+
+//==============================================================================
+// WTS Client Information (Unicode)
+//==============================================================================
+
+type
+  _WTSCLIENTW = record
+    ClientName : array[0..CLIENTNAME_LENGTH { + 1 - 1}] of WCHAR;
+    Domain : array[0..DOMAIN_LENGTH { + 1 - 1}] of WCHAR;
+    UserName : array[0..USERNAME_LENGTH { + 1 - 1}] of WCHAR;
+    WorkDirectory : array[0..MAX_PATH { + 1 - 1}] of WCHAR;
+    InitialProgram : array[0..MAX_PATH { + 1 - 1}] of WCHAR;
+    EncryptionLevel : BYTE;       // security level of encryption pd
+    ClientAddressFamily : ULONG;
+    ClientAddress : array[0..CLIENTADDRESS_LENGTH { + 1 - 1}] of USHORT;
+    HRes : USHORT;
+    VRes : USHORT;
+    ColorDepth : USHORT;
+    ClientDirectory : array[0..MAX_PATH { + 1 - 1}] of WCHAR;
+    ClientBuildNumber : ULONG;
+    ClientHardwareId : ULONG;    // client software serial number
+    ClientProductId : USHORT;     // client software product id
+    OutBufCountHost : USHORT;     // number of outbufs on host
+    OutBufCountClient : USHORT;   // number of outbufs on client
+    OutBufLength : USHORT;        // length of outbufs in bytes
+    DeviceId : array[0..MAX_PATH { + 1 - 1}] of WCHAR;
+  end;
+  {$EXTERNALSYM _WTSCLIENTW}
+  WTSCLIENTW = _WTSCLIENTW;
+  {$EXTERNALSYM WTSCLIENTW}
+  PWTSCLIENTW = ^WTSCLIENTW;
+  {$EXTERNALSYM PWTSCLIENTW}
+  TWtsClientW = WTSCLIENTW;
+
+//==============================================================================
+// WTS Client Information (Non-Unicode)
+//==============================================================================
+
+type
+  _WTSCLIENTA = record
+    ClientName : array[0..CLIENTNAME_LENGTH { + 1 - 1}] of CHAR;
+    Domain : array[0..DOMAIN_LENGTH { + 1 - 1}] of CHAR;
+    UserName : array[0..USERNAME_LENGTH { + 1 - 1}] of CHAR;
+    WorkDirectory : array[0..MAX_PATH { + 1 - 1}] of CHAR;
+    InitialProgram : array[0..MAX_PATH { + 1 - 1}] of CHAR;
+    EncryptionLevel : BYTE;       // security level of encryption pd
+    ClientAddressFamily : ULONG;
+    ClientAddress : array[0..CLIENTADDRESS_LENGTH { + 1 - 1}] of USHORT;
+    HRes : USHORT;
+    VRes : USHORT;
+    ColorDepth : USHORT;
+    ClientDirectory : array[0..MAX_PATH { + 1 - 1}] of CHAR;
+    ClientBuildNumber : ULONG;
+    ClientHardwareId : ULONG;    // client software serial number
+    ClientProductId : USHORT;     // client software product id
+    OutBufCountHost : USHORT;     // number of outbufs on host
+    OutBufCountClient : USHORT;   // number of outbufs on client
+    OutBufLength : USHORT;        // length of outbufs in bytes
+    DeviceId : array[0..MAX_PATH { + 1 - 1}] of CHAR;
+  end;
+  {$EXTERNALSYM _WTSCLIENTA}
+  WTSCLIENTA = _WTSCLIENTA;
+  {$EXTERNALSYM WTSCLIENTA}
+  PWTSCLIENTA = ^WTSCLIENTA;
+  {$EXTERNALSYM PWTSCLIENTA}
+  TWtsClientA = WTSCLIENTA;
+
+  {$IFDEF UNICODE}
+    WTSINFO = WTSINFOW;
+    {$EXTERNALSYM WTSINFO}
+    PWTSINFO = PWTSINFOW;
+    {$EXTERNALSYM PWTSINFO}
+    WTSCLIENT = WTSCLIENTW;
+    {$EXTERNALSYM WTSCLIENT}
+    PWTSCLIENT = PWTSCLIENTW;
+    {$EXTERNALSYM PWTSCLIENT}
+  {$ELSE}
+    WTSINFO = WTSINFOA;
+    {$EXTERNALSYM WTSINFO}
+    PWTSINFO = PWTSINFOA;
+    {$EXTERNALSYM PWTSINFO}
+    WTSCLIENT = WTSCLIENTA;
+    {$EXTERNALSYM WTSCLIENT}
+    PWTSCLIENT = PWTSCLIENTA;
+    {$EXTERNALSYM PWTSCLIENT}
+  {$ENDIF}
+  TWtsInfo = WTSINFO;
+  TWtsClient = WTSCLIENT;
+
 
 //==============================================================================
 // WTSQuerySessionInformation - (WTSClientAddress)
@@ -540,6 +701,18 @@ const
   {$EXTERNALSYM WTS_EVENT_FLUSH}
 
 //==============================================================================
+// Flags for HotkeyModifiers in WTSStartRemoteControlSession
+//==============================================================================
+
+const
+  REMOTECONTROL_KBDSHIFT_HOTKEY = $1;    // Shift key
+  {$EXTERNALSYM REMOTECONTROL_KBDSHIFT_HOTKEY}
+  REMOTECONTROL_KBDCTRL_HOTKEY  = $2;    // Ctrl key
+  {$EXTERNALSYM REMOTECONTROL_KBDCTRL_HOTKEY}
+  REMOTECONTROL_KBDALT_HOTKEY   = $4;    // Alt key
+  {$EXTERNALSYM REMOTECONTROL_KBDALT_HOTKEY}
+
+//==============================================================================
 // WTS_VIRTUAL_CLASS - WTSVirtualChannelQuery
 //==============================================================================
 
@@ -553,6 +726,49 @@ type
 //==============================================================================
 // Windows Terminal Server public APIs
 //==============================================================================
+
+function WTSStopRemoteControlSession(LogonId : ULONG): BOOL; stdcall;
+{$EXTERNALSYM WTSStopRemoteControlSession}
+
+function WTSStartRemoteControlSessionW(pTargetServerName : LPWSTR;
+                                       TargetLogonId : ULONG;
+                                       HotkeyVk : BYTE;
+                                       HotkeyModifiers : USHORT): BOOL; stdcall;
+{$EXTERNALSYM WTSStartRemoteControlSessionW}
+
+function WTSStartRemoteControlSessionA(pTargetServerName : LPSTR;
+                                       TargetLogonId : ULONG;
+                                       HotkeyVk : BYTE;
+                                       HotkeyModifiers : USHORT): BOOL; stdcall;
+{$EXTERNALSYM WTSStartRemoteControlSessionA}
+
+function WTSStartRemoteControlSession(pTargetServerName : LPSTR;
+                                      TargetLogonId : ULONG;
+                                      HotkeyVk : BYTE;
+                                      HotkeyModifiers : USHORT): BOOL; stdcall;
+{$EXTERNALSYM WTSStartRemoteControlSession}
+
+//------------------------------------------------------------------------------
+
+function WTSConnectSessionA(LogonId : ULONG;
+                            TargetLogonId : ULONG;
+                            pPassword : PSTR;
+                            bWait : BOOL): BOOL; stdcall;
+{$EXTERNALSYM WTSConnectSessionA}
+
+function WTSConnectSessionW(LogonId : ULONG;
+                            TargetLogonId : ULONG;
+                            pPassword : PWSTR;
+                            bWait : BOOL): BOOL; stdcall;
+{$EXTERNALSYM WTSConnectSessionW}
+
+function WTSConnectSession(LogonId : ULONG;
+                           TargetLogonId : ULONG;
+                           pPassword : PSTR;
+                           bWait : BOOL): BOOL; stdcall;
+{$EXTERNALSYM WTSConnectSession}
+
+//------------------------------------------------------------------------------
 
 function WTSEnumerateServersA(pDomainName: LPSTR; Reserved, Version: DWORD;
   var ppServerInfo: PWTS_SERVER_INFOA; var pCount: DWORD): BOOL; stdcall;
@@ -685,6 +901,23 @@ function WTSVirtualChannelOpen(hServer: HANDLE; SessionId: DWORD;
   pVirtualName: LPSTR): HANDLE; stdcall;
 {$EXTERNALSYM WTSVirtualChannelOpen}
 
+const
+  WTS_CHANNEL_OPTION_DYNAMIC          = $00000001;        // dynamic channel
+  {$EXTERNALSYM WTS_CHANNEL_OPTION_DYNAMIC}                    // priorities
+  WTS_CHANNEL_OPTION_DYNAMIC_PRI_LOW  = $00000000;
+  {$EXTERNALSYM WTS_CHANNEL_OPTION_DYNAMIC_PRI_LOW}
+  WTS_CHANNEL_OPTION_DYNAMIC_PRI_MED  = $00000002;
+  {$EXTERNALSYM WTS_CHANNEL_OPTION_DYNAMIC_PRI_MED}
+  WTS_CHANNEL_OPTION_DYNAMIC_PRI_HIGH = $00000004;
+  {$EXTERNALSYM WTS_CHANNEL_OPTION_DYNAMIC_PRI_HIGH}
+  WTS_CHANNEL_OPTION_DYNAMIC_PRI_REAL = $00000006;
+  {$EXTERNALSYM WTS_CHANNEL_OPTION_DYNAMIC_PRI_REAL}
+
+function WTSVirtualChannelOpenEx(SessionId : DWORD;
+                                 pVirtualName : LPSTR;
+                                 flags : DWORD) : HANDLE; stdcall;
+{$EXTERNALSYM WTSVirtualChannelOpenEx}
+
 function WTSVirtualChannelClose(hChannelHandle: HANDLE): BOOL; stdcall;
 {$EXTERNALSYM WTSVirtualChannelClose}
 
@@ -725,6 +958,15 @@ function WTSRegisterSessionNotification(hWnd: HWND; dwFlags: DWORD): BOOL; stdca
 function WTSUnRegisterSessionNotification(hWnd: HWND): BOOL; stdcall;
 {$EXTERNALSYM WTSUnRegisterSessionNotification}
 
+function WTSRegisterSessionNotificationEx(hServer : Handle;
+                                          hWnd : HWND;
+                                          dwFlags : DWORD): BOOL; stdcall;
+{$EXTERNALSYM WTSRegisterSessionNotificationEx}
+
+function WTSUnRegisterSessionNotificationEx(hServer : Handle;
+                                            hWnd : HWND): BOOL; stdcall;
+{$EXTERNALSYM WTSUnRegisterSessionNotificationEx}
+
 function WTSQueryUserToken(SessionId: ULONG; var phToken: HANDLE): BOOL; stdcall;
 {$EXTERNALSYM WTSQueryUserToken}
 {$ENDIF JWA_IMPLEMENTATIONSECTION}
@@ -747,6 +989,97 @@ const
 {$ENDIF JWA_INCLUDEMODE}
 
 {$IFDEF DYNAMIC_LINK}
+
+var
+  _WTSStopRemoteControlSession: Pointer;
+
+function WTSStopRemoteControlSession;
+begin
+  GetProcedureAddress(_WTSStopRemoteControlSession, wtsapi, 'WTSStopRemoteControlSession');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_WTSStopRemoteControlSession]
+  end;
+end;
+
+var
+  _WTSStartRemoteControlSessionW: Pointer;
+
+function WTSStartRemoteControlSessionW;
+begin
+  GetProcedureAddress(_WTSStartRemoteControlSessionW, wtsapi, 'WTSStartRemoteControlSessionW');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_WTSStartRemoteControlSessionW]
+  end;
+end;
+
+var
+  _WTSStartRemoteControlSessionA: Pointer;
+
+function WTSStartRemoteControlSessionA;
+begin
+  GetProcedureAddress(_WTSStartRemoteControlSessionA, wtsapi, 'WTSStartRemoteControlSessionA');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_WTSStartRemoteControlSessionA]
+  end;
+end;
+
+var
+  _WTSStartRemoteControlSession: Pointer;
+
+function WTSStartRemoteControlSession;
+begin
+  GetProcedureAddress(_WTSStartRemoteControlSession, wtsapi, 'WTSStartRemoteControlSession' + AWSuffix);
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_WTSStartRemoteControlSession]
+  end;
+end;
+
+var
+  _WTSConnectSessionA: Pointer;
+
+function WTSConnectSessionA;
+begin
+  GetProcedureAddress(_WTSConnectSessionA, wtsapi, 'WTSConnectSessionA');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_WTSConnectSessionA]
+  end;
+end;
+
+var
+  _WTSConnectSessionW: Pointer;
+
+function WTSConnectSessionW;
+begin
+  GetProcedureAddress(_WTSConnectSessionW, wtsapi, 'WTSConnectSessionW');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_WTSConnectSessionW]
+  end;
+end;
+
+var
+  _WTSConnectSession: Pointer;
+
+function WTSConnectSession;
+begin
+  GetProcedureAddress(_WTSConnectSession, wtsapi, 'WTSConnectSession' + AWSuffix);
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_WTSConnectSession]
+  end;
+end;
 
 var
   _WTSEnumerateServersA: Pointer;
@@ -1152,6 +1485,19 @@ begin
 end;
 
 var
+  _WTSVirtualChannelOpenEx: Pointer;
+
+function WTSVirtualChannelOpenEx;
+begin
+  GetProcedureAddress(_WTSVirtualChannelOpenEx, wtsapi, 'WTSVirtualChannelOpenEx');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_WTSVirtualChannelOpenEx]
+  end;
+end;
+
+var
   _WTSVirtualChannelClose: Pointer;
 
 function WTSVirtualChannelClose;
@@ -1269,6 +1615,32 @@ begin
 end;
 
 var
+  _WTSRegisterSessionNotificationEx: Pointer;
+
+function WTSRegisterSessionNotificationEx;
+begin
+  GetProcedureAddress(_WTSRegisterSessionNotificationEx, wtsapi, 'WTSRegisterSessionNotificationEx');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_WTSRegisterSessionNotificationEx]
+  end;
+end;
+
+var
+  _WTSUnRegisterSessionNotificationEx: Pointer;
+
+function WTSUnRegisterSessionNotificationEx;
+begin
+  GetProcedureAddress(_WTSUnRegisterSessionNotificationEx, wtsapi, 'WTSUnRegisterSessionNotificationEx');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_WTSUnRegisterSessionNotificationEx]
+  end;
+end;
+
+var
   _WTSQueryUserToken: Pointer;
 
 function WTSQueryUserToken;
@@ -1283,6 +1655,13 @@ end;
 
 {$ELSE}
 
+function WTSStopRemoteControlSession; external wtsapi name 'WTSStopRemoteControlSession';
+function WTSStartRemoteControlSessionW; external wtsapi name 'WTSStartRemoteControlSessionW';
+function WTSStartRemoteControlSessionA; external wtsapi name 'WTSStartRemoteControlSessionA';
+function WTSConnectSessionA; external wtsapi name 'WTSConnectSessionA';
+function WTSConnectSessionW; external wtsapi name 'WTSConnectSessionW';
+function WTSConnectSession; external wtsapi name 'WTSConnectSession' + AWSuffix;
+function WTSStartRemoteControlSession; external wtsapi name 'WTSStartRemoteControlSession' + AWSuffix;
 function WTSEnumerateServersA; external wtsapi name 'WTSEnumerateServersA';
 function WTSEnumerateServersW; external wtsapi name 'WTSEnumerateServersW';
 function WTSEnumerateServers; external wtsapi name 'WTSEnumerateServers' + AWSuffix;
@@ -1314,6 +1693,7 @@ function WTSLogoffSession; external wtsapi name 'WTSLogoffSession';
 function WTSShutdownSystem; external wtsapi name 'WTSShutdownSystem';
 function WTSWaitSystemEvent; external wtsapi name 'WTSWaitSystemEvent';
 function WTSVirtualChannelOpen; external wtsapi name 'WTSVirtualChannelOpen';
+function WTSVirtualChannelOpenEx; external wtsapi name 'WTSVirtualChannelOpenEx';
 function WTSVirtualChannelClose; external wtsapi name 'WTSVirtualChannelClose';
 function WTSVirtualChannelRead; external wtsapi name 'WTSVirtualChannelRead';
 function WTSVirtualChannelWrite; external wtsapi name 'WTSVirtualChannelWrite';
@@ -1323,6 +1703,8 @@ function WTSVirtualChannelQuery; external wtsapi name 'WTSVirtualChannelQuery';
 procedure WTSFreeMemory; external wtsapi name 'WTSFreeMemory';
 function WTSRegisterSessionNotification; external wtsapi name 'WTSRegisterSessionNotification';
 function WTSUnRegisterSessionNotification; external wtsapi name 'WTSUnRegisterSessionNotification';
+function WTSRegisterSessionNotificationEx; external wtsapi name 'WTSRegisterSessionNotificationEx';
+function WTSUnRegisterSessionNotificationEx; external wtsapi name 'WTSUnRegisterSessionNotificationEx';
 function WTSQueryUserToken; external wtsapi name 'WTSQueryUserToken';
 
 {$ENDIF DYNAMIC_LINK}
