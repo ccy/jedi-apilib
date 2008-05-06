@@ -86,6 +86,10 @@ type
      property ApplicationName : String read fApplicationName write fApplicationName;
   end;
 
+procedure JEDI_WebFieldsRequestNotify(
+        EurekaExceptionRecord: TEurekaExceptionRecord;
+        WebFields: TStrings);
+
 implementation
 
 
@@ -108,6 +112,20 @@ begin
 end;
 
 procedure TJwEurekaLogNotify.WebFieldsRequestNotify(
+      EurekaExceptionRecord: TEurekaExceptionRecord;
+      WebFields: TStrings);
+begin
+  WebFieldsRequestNotify(EurekaExceptionRecord,WebFields);
+
+  if WebFields.IndexOf('ApplicationName') > 0 then
+  begin
+    if Length(WebFields.Values['ApplicationName']) = 0 then
+      WebFields.Values['ApplicationName'] := 'JEDI Application';
+  end;
+end;
+
+
+procedure JEDI_WebFieldsRequestNotify(
     EurekaExceptionRecord: TEurekaExceptionRecord;
     WebFields: TStrings);
 
@@ -126,7 +144,7 @@ var
   AppName,
   S : String;
 begin
-  AppName := fApplicationName;
+
   try
     F := TJclFileVersionInfo.Create(ParamStr(0));
     with F do
@@ -173,12 +191,11 @@ begin
       AddField('Info_ProductName',ProductName);
       AppName := ProductName;
       AddField('Info_ProductVersion',ProductVersion);
+      AddField('ApplicationName',AppName);      
       Free;
     end;
   except
   end;
-
-  AddField('ApplicationName',AppName);
 end;
 
 
