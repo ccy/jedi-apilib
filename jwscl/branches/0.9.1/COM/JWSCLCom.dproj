@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{45e7b809-b706-45f5-b318-3b7a29262e48}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
+    <DCC_DependencyCheckOutputName>JWSCLCom.dll</DCC_DependencyCheckOutputName>
+    <MainSource>JWSCLCom.dpr</MainSource>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Version>7.0</Version>
+    <DCC_DebugInformation>False</DCC_DebugInformation>
+    <DCC_LocalDebugSymbols>False</DCC_LocalDebugSymbols>
+    <DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
+    <DCC_Define>RELEASE</DCC_Define>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <Version>7.0</Version>
+    <DCC_Define>DEBUG;UNICODE</DCC_Define>
+    <DCC_Warnings>False</DCC_Warnings>
+    <DCC_Optimize>False</DCC_Optimize>
+    <DCC_UnitSearchPath>;$(BDS)\Source\DUnit\src</DCC_UnitSearchPath>
+    <DCC_ResourcePath>;$(BDS)\Source\DUnit\src</DCC_ResourcePath>
+    <DCC_ObjPath>;$(BDS)\Source\DUnit\src</DCC_ObjPath>
+    <DCC_IncludePath>;$(BDS)\Source\DUnit\src</DCC_IncludePath>
+    <DCC_RemoteDebug>True</DCC_RemoteDebug>
+  </PropertyGroup>
+  <ProjectExtensions>
+    <Borland.Personality>Delphi.Personality</Borland.Personality>
+    <Borland.ProjectType />
+    <BorlandProject>
+<BorlandProject><Delphi.Personality><Parameters><Parameters Name="UseLauncher">False</Parameters><Parameters Name="LoadAllSymbols">True</Parameters><Parameters Name="LoadUnspecifiedSymbols">False</Parameters><Parameters Name="HostApplication">P:\Eigene Dateien\Dezipaitor\Projekte\Delphi\7\jedi-api-lib\jwscl\trunk\COM\Test\Test1.exe</Parameters></Parameters><VersionInfo><VersionInfo Name="IncludeVerInfo">False</VersionInfo><VersionInfo Name="AutoIncBuild">False</VersionInfo><VersionInfo Name="MajorVer">1</VersionInfo><VersionInfo Name="MinorVer">0</VersionInfo><VersionInfo Name="Release">0</VersionInfo><VersionInfo Name="Build">0</VersionInfo><VersionInfo Name="Debug">False</VersionInfo><VersionInfo Name="PreRelease">False</VersionInfo><VersionInfo Name="Special">False</VersionInfo><VersionInfo Name="Private">False</VersionInfo><VersionInfo Name="DLL">False</VersionInfo><VersionInfo Name="Locale">1031</VersionInfo><VersionInfo Name="CodePage">1252</VersionInfo></VersionInfo><VersionInfoKeys><VersionInfoKeys Name="CompanyName"></VersionInfoKeys><VersionInfoKeys Name="FileDescription"></VersionInfoKeys><VersionInfoKeys Name="FileVersion">1.0.0.0</VersionInfoKeys><VersionInfoKeys Name="InternalName"></VersionInfoKeys><VersionInfoKeys Name="LegalCopyright"></VersionInfoKeys><VersionInfoKeys Name="LegalTrademarks"></VersionInfoKeys><VersionInfoKeys Name="OriginalFilename"></VersionInfoKeys><VersionInfoKeys Name="ProductName"></VersionInfoKeys><VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys><VersionInfoKeys Name="Comments"></VersionInfoKeys></VersionInfoKeys><Source><Source Name="MainSource">JWSCLCom.dpr</Source></Source><TypeLibOptions><TypeLibOptions Name="AutoRegisterTLB">False</TypeLibOptions><TypeLibOptions Name="AutoGenImportAssembly">False</TypeLibOptions></TypeLibOptions></Delphi.Personality></BorlandProject></BorlandProject>
+  </ProjectExtensions>
+  <Import Project="$(MSBuildBinPath)\Borland.Delphi.Targets" />
+  <ItemGroup>
+    <DelphiCompile Include="JWSCLCom.dpr">
+      <MainSource>MainSource</MainSource>
+    </DelphiCompile>
+    <DCCReference Include="Common\ComLib.pas" />
+    <DCCReference Include="JWSCLCoException.pas" />
+    <DCCReference Include="JwsclCoLogging.pas">
+      <CoClasses>JwsclCoLogging</CoClasses>
+      <DesignClass>C</DesignClass>
+      <Form>JwsclCoLogging</Form>
+    </DCCReference>
+    <DCCReference Include="JwsclCoMapping.pas" />
+    <DCCReference Include="JwsclCOMExports.pas" />
+    <DCCReference Include="JwsclComRegistration.pas" />
+    <DCCReference Include="JWSCLCom_TLB.pas" />
+    <DCCReference Include="JwsclCoSid.pas">
+      <CoClasses>JwCoSid</CoClasses>
+    </DCCReference>
+  </ItemGroup>
+</Project>
