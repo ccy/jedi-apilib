@@ -15,7 +15,7 @@ interface
 
 uses
   JWaWindows, JwsclToken, JwsclProcess,
-  Jwscl, JwsclKnownSid, JwsclLogging, uLogging,
+  JwsclTerminalServer, JwsclKnownSid, JwsclLogging, uLogging,
   Messages, SysUtils, Classes, Graphics, Controls, SvcMgr, Dialogs;
 
 type

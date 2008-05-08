@@ -12,7 +12,9 @@ Visit at http://blog.delphi-jedi.net/
 program RunAsSys;
 
 uses
+{$IFDEF EUREKALOG}
   ExceptionLog,
+{$ENDIF EUREKALOG}  
   SvcMgr,
   SysUtils,
   Dialogs,
