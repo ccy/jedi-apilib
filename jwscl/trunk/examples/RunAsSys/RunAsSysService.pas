@@ -1,10 +1,21 @@
+{
+The contents of this file is released under the terms of the
+GNU General Public License 3.0 (the  "GPL License").
+
+For more information about the GPL: http://www.gnu.org/licenses/gpl-3.0.txt
+
+Original author is: Christian Wimmer
+This application is part of the JEDI API Project.
+Visit at http://blog.delphi-jedi.net/
+
+}
 unit RunAsSysService;
 
 interface
 
 uses
   JWaWindows, JwsclToken, JwsclProcess,
-  JwsclTerminalServer, JwsclKnownSid, JwsclLogging, uLogging,
+  Jwscl, JwsclKnownSid, JwsclLogging, uLogging,
   Messages, SysUtils, Classes, Graphics, Controls, SvcMgr, Dialogs;
 
 type
