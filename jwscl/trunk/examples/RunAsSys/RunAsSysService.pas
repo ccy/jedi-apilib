@@ -156,7 +156,6 @@ begin
   end;
   Log.Log('Command line: '+CmdLine);
 
-  LogMessage(CmdLine,EVENTLOG_INFORMATION_TYPE	,000,000);
 
   if (_ParamCount < 2) or (
       ((_ParamCount > 0) and (StrToIntDef(_Param(1),-1) < 0))) then
@@ -171,7 +170,7 @@ begin
 
   if Data.SessionID = -1 then
   begin
-    LogMessage('Given parameter SessionID is invalid',EVENTLOG_ERROR_TYPE);
+    Log.Log(lsError, 'Given parameter SessionID is invalid');
     Win32ErrCode := ERROR_INVALID_PARAMETER;
     Log.Log(lsError, 'Invalid Parameter session');
     exit;
@@ -183,7 +182,8 @@ begin
   except
     on E : Exception do
     begin
-      LogMessage('Could not get token from user:'+E.Message,EVENTLOG_ERROR_TYPE);
+      Log.Exception(E);
+      Log.Log(lsError, 'Could not get token from user:'+E.Message);
       Win32ErrCode := ERROR_INVALID_DATA;
       exit;
     end;
@@ -214,6 +214,7 @@ begin
 
     ZeroMemory(@StartupInfo, sizeof(StartupInfo));
     StartupInfo.lpDesktop := ('winsta0\default');
+
     try
       Log.Log(lsMessage, 'Calling CreateProcessAsUser...');
       if not CreateProcessAsUserW(
@@ -222,7 +223,7 @@ begin
                 PWideCHAR('"'+Parameter+'"'+CmdLine),
                 nil,
                 nil,
-                true,
+                false,  //true may let fail the call on some constelation !
                 Flags,
                 P,
                 nil,
@@ -234,12 +235,12 @@ begin
      except
       on e: Exception do
       begin
-        Log.Exception(E);
-        LogMessage('Could not start process:'+E.Message,EVENTLOG_ERROR_TYPE);
+        Log.Log(lsError, 'Could not start process:'+E.Message);
+        Log.Exception(E);                                      
       end;
     end;
 
-    LogMessage('CreateProcess succeeded.');
+    Log.Log('CreateProcess succeeded.');
     if P <> nil then
       DestroyEnvironmentBlock(P);
     CloseHandle(ProcessInfo.hProcess);
