@@ -128,10 +128,8 @@ the one of the project.
 
   {$DEFINE JWA_INCLUDE_SHELLAPI}
 
-  {$DEFINE JWA_NEW_WINSTA}
+  {.$DEFINE JWA_NEW_WINSTA}
 {$ENDIF PACKAGE_CONDITIONS}
-
-{.$DEFINE JWA_NEW_WINSTA}
 
 {.$DEFINE UNICODE}
 
@@ -960,7 +958,6 @@ The list has no order!}
 {$ENDIF}
 
 {$I JwaStrSafe.pas}
-{$I JwaRpcWinsta.pas}
 
 
 {$IFDEF JWA_INCLUDE_SHELLAPI}
