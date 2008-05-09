@@ -115,7 +115,10 @@ begin
     Strings.Add('</logfile>');
     try
       if LogEnabled then
+      try
         Strings.SaveToFile(LogFileNameLocation);
+      except
+      end;
     finally
       Strings.Free;
     end;
