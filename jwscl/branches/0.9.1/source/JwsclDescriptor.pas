@@ -49,7 +49,7 @@ uses SysUtils, Contnrs, Classes,
   Windows, Dialogs,
   jwaWindows, JwaVista, JwsclResource, JwsclMapping,
   JwsclTypes, JwsclExceptions, JwsclSid, JwsclAcl,
-  JwsclVersion, JwsclConstants,  JwsclUtils,
+  JwsclVersion, JwsclConstants,  
   JwsclStrings; //JwsclStrings, must be at the end of uses list!!!
 
 {$ENDIF SL_OMIT_SECTIONS}
@@ -763,6 +763,7 @@ procedure JwFreeSecurityDescriptorArray(var List : TJwSecurityDescriptorArray);
 implementation
 
 uses Math,
+     JwsclUtils,
      JwsclEnumerations,
      JwsclPrivileges,
      JwsclSecureObjects,
@@ -1850,7 +1851,7 @@ begin
 
 
   if not IsValidSecurityDescriptor(pSD) then
-    raise EJwsclWinCallFailedException.CreateFmtEx(
+    raise EJwsclInvalidSecurityDescriptor.CreateFmtEx(
       RsSecurityDescriptorInvalid,
       'StringSid', ClassName, RsUNDescriptor, 0, True, []);
 

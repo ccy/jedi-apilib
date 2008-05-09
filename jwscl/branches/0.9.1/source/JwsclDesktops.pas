@@ -1,4 +1,4 @@
-{<B>Abstract</B>Contains desktop functions 
+{<B>Abstract</B>Contains desktop functions
 @author(Christian Wimmer)
 <B>Created:</B>03/23/2007 
 <B>Last modification:</B>09/10/2007 
@@ -50,7 +50,7 @@ interface
 
 uses SysUtils, Classes, Registry, Contnrs,
   jwaWindows, StdCtrls, ComCtrls, ActiveX,
-  JwsclUtils, JwsclResource,
+  JwsclResource,
   JwsclTypes, JwsclExceptions, JwsclSid, JwsclAcl, JwsclToken,
   JwsclMapping, JwsclKnownSid, JwsclSecureObjects,
   JwsclVersion, JwsclConstants, JwsclDescriptor,
@@ -121,7 +121,7 @@ type
        // Desktop-specific access flags 
        DESKTOP_READOBJECTS, DESKTOP_CREATEWINDOW, DESKTOP_CREATEMENU, DESKTOP_HOOKCONTROL, DESKTOP_JOURNALRECORD
        DESKTOP_JOURNALPLAYBACK, DESKTOP_ENUMERATE, DESKTOP_WRITEOBJECTS
-     You can look up the meanings in MSDN. 
+     You can look up the meanings in MSDN.
      @return OpenDesktop returns a handle to the desktop 
      raises
  OpenDesktop:  raises EJwsclOpenDesktopException with an error description if the desktop could not be opened
@@ -232,7 +232,7 @@ type
  EJwsclCreateDesktopException:  is raised if the desktop could not be created. 
      EJwsclOpenDesktopException: is raised if the desktop could not be opened. 
      EJwsclDesktopException: is raised if the desktop is already opened by this instance. 
-   
+
    }
     constructor Create(const aParent: TJwSecurityDesktops;
       const aFlag: TJwDesktopCreationFlag;
@@ -611,6 +611,7 @@ type
 
 {$IFNDEF SL_OMIT_SECTIONS}
 implementation
+uses JwsclUtils;
 
 
 {$ENDIF SL_OMIT_SECTIONS}
@@ -805,20 +806,26 @@ class function TJwSecurityDesktops.GetDesktopName(const desk: HDESK): TJwString;
 var
   Name: PWideChar;
   len:  Cardinal;
+  L : DWORD;
 begin
-  Result := '';
-  len := 0;
-  GetUserObjectInformationW(desk, UOI_NAME, nil, 0, len);
+  L := GetLastError; //preserve the last error value
+  try
+    Result := '';
+    len := 0;
+    GetUserObjectInformationW(desk, UOI_NAME, nil, 0, len);
 
-  if GetLastError = ERROR_INSUFFICIENT_BUFFER then
-  begin
-    GetMem(Name, len + 1);
-    FillChar(Name^, len + 1, 0);
-    if GetUserObjectInformationW(desk, UOI_NAME, Name, len, len) then
+    if GetLastError = ERROR_INSUFFICIENT_BUFFER then
     begin
-      Result := Name;
-      FreeMem(Name);
+      GetMem(Name, len + 1);
+      FillChar(Name^, len + 1, 0);
+      if GetUserObjectInformationW(desk, UOI_NAME, Name, len, len) then
+      begin
+        Result := Name;
+        FreeMem(Name);
+      end;
     end;
+  finally
+    SetLastError(L);
   end;
 end;
 
@@ -1039,6 +1046,7 @@ end;
 
 { TJwSecurityDesktop }
 
+
 procedure TJwSecurityDesktop.Close;
 begin
   if not Opened then
@@ -1210,7 +1218,7 @@ begin
     try
       Close;
     except
-      on E: EJwsclCloseDesktopException do ;
+      on E: EJwsclCloseDesktopException do ; //we do not care
     end;
 
   inherited;

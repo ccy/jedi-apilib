@@ -67,6 +67,7 @@ uses
   JwsclTypes,
   JwsclExceptions,
   JwsclResource,
+  //JwsclDescriptor, //do not set!
   JwsclStrings;
 
 
@@ -330,16 +331,16 @@ procedure JwRaiseOnNilMemoryBlock(const P : Pointer;
  is nil; otherwise nothing happens.
 This function is like Assert but it will not be removed in a release build.
 
-@param P defines a pointer to be validated 
+@param P defines a pointer to be validated
 @param ParameterName defines the name of the parameter which is validated and
- belongs to this pointer 
-@param MethodName defines the name of the method this parameter belongs to 
+ belongs to this pointer
+@param MethodName defines the name of the method this parameter belongs to
 @param ClassName defines the name of the class the method belongs to. Can be
-  empty if the method does not belong to a class 
-@param FileName defines the source file of the call to this procedure. 
+  empty if the method does not belong to a class
+@param FileName defines the source file of the call to this procedure.
 
 raises
- EJwsclNILParameterException:  will be raised if P is nil 
+ EJwsclNILParameterException:  will be raised if P is nil
 }
 procedure JwRaiseOnNilParameter(const P : Pointer;
   const ParameterName, MethodName, ClassName, FileName : TJwString);
@@ -369,7 +370,7 @@ procedure JwSetThreadName(const Name: AnsiString; const ThreadID : Cardinal = Ca
 function JwGetThreadName : WideString;
 
 {<B>IsHandleValid</B> returns true if Handle is neither zero (0) nor INVALID_HANDLE_VALUE; otherwise false.}
-function IsHandleValid(const Handle : THandle) : Boolean;
+function JwIsHandleValid(const Handle : THandle) : Boolean;
 
 {<B>JwCheckBitMask</B> Checks if Bitmask and Check = Check}
 function JwCheckBitMask(const Bitmask: Integer; const Check: Integer): Boolean; 
@@ -404,7 +405,7 @@ end;
 {$ENDIF JW_TYPEINFO}
 
 
-function IsHandleValid(const Handle : THandle) : Boolean;
+function JwIsHandleValid(const Handle : THandle) : Boolean;
 begin
   result := (Handle <> 0) and (Handle <> INVALID_HANDLE_VALUE);
 end;
@@ -600,7 +601,7 @@ begin
      on E : EJwsclOSError do
        raise EJwsclResourceInitFailed.CreateFmtEx(
                RsResourceInitFailed,
-               'LocalizeMapping', '', RsUNConstants, 0, true,
+               'LocalizeMapping', '', RsUNUtils, 0, true,
                 [StartStringID]);
   end;
 
@@ -610,7 +611,7 @@ begin
   if (LHi < ArrayHi+1) then
     raise EJwsclResourceUnequalCount.CreateFmtEx(
             RsResourceUnequalCount,
-            'LocalizeMapping', '', RsUNConstants, 0, false, [LHi,StartStringID,ArrayHi]);
+            'LocalizeMapping', '', RsUNUtils, 0, false, [LHi,StartStringID,ArrayHi]);
 
 
   for i := ArrayLo to ArrayHi do
@@ -655,7 +656,7 @@ begin
             else
               raise EJwsclResourceNotFound.CreateFmtEx(
                 RsResourceNotFound,
-                'LocalizeMapping', '', RsUNConstants, 0, true, [Id]);
+                'LocalizeMapping', '', RsUNUtils, 0, true, [Id]);
           end;
         end; //try except
       end;

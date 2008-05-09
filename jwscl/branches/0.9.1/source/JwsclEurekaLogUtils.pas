@@ -41,6 +41,7 @@ uses
   Classes,
   TypInfo,
   SysUtils,
+  JwaWindows,
   JclFileUtils,
   JwsclToken,
   JwsclExceptions,
@@ -174,7 +175,7 @@ begin
       begin
         S := S + ','+GetEnumName(TypeInfo(TFileFlag), integer(i1));
       end;
-      Delete(S,1,1);
+      System.Delete(S,1,1);
       AddField('Info_FileFlags',S);
 
       AddField('Info_FileOS',FileOS);
@@ -195,6 +196,8 @@ begin
       Free;
     end;
   except
+    on E : Exception do
+      OutputDebugStringA(PChar('Could not get version information: '+E.Message));
   end;
 end;
 
