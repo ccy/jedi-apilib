@@ -11,7 +11,8 @@ Original authors are
 This application is part of the JEDI API Project.
 Visit at http://blog.delphi-jedi.net/
 }
-program AskCredentials;
+{$I CredentialsPrompt.dpr}
+(*program AskCredentials;
 
 //{$APPTYPE CONSOLE}
 
@@ -21,6 +22,7 @@ uses
   ExceptionLog,
   JwaWindows,
   SysUtils,
+  SvcMgr,
   Dialogs,
   Forms,
   JwsclDesktops,
@@ -68,24 +70,30 @@ var
   ConsentThread : TConsentThread;
 
 begin
-  if HasParameter('/debug') then
-      MessageBox(0,'Debug breakpoint','',MB_ICONEXCLAMATION or MB_OK);
+ { if HasParameter('/debug') then
+      MessageBox(0,'Debug breakpoint','',MB_ICONEXCLAMATION or MB_OK);}
 
 
-  if not HasParameter('/cred') then
+{  if not HasParameter('/cred') then
     halt(1);
 
   if HasParameter('/switchdefault') then
   begin
     SwitchToDefault;
     exit;
-  end;
+  end;   }
 
-  try
-    DoneApplication;
+ { try
+    //DoneApplication;
+    Application.Free;
   except
   end;
   Application := nil;
+
+  Application := TApplication.Create(nil);   }
+  Application.Initialize;
+
+  exit;
 
 
   uLogging.ApplicationFileName := 'AskCredentials';
@@ -118,4 +126,4 @@ begin
     uLogging.DoneLog;
   end;
   Halt(Res);
-end.
+end.*)
