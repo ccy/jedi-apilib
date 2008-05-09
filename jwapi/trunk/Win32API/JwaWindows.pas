@@ -960,7 +960,6 @@ The list has no order!}
 {$ENDIF}
 
 {$I JwaStrSafe.pas}
-{$I JwaRpcWinsta.pas}
 
 
 {$IFDEF JWA_INCLUDE_SHELLAPI}
