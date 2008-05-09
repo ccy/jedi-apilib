@@ -72,10 +72,18 @@ end;
 
 procedure DoneLog;
 begin
-  LogServer.Done;
+  if not Assigned(Strings) then
+    exit;
+
+  if Assigned(LogServer) then
+    LogServer.Done;
+
   Strings.Add('</logfile>');
   try
-    Strings.SaveToFile(LogFileNameLocation);
+    try
+      Strings.SaveToFile(LogFileNameLocation);
+    except
+    end;
   finally
     FreeAndNil(Strings);
   end;

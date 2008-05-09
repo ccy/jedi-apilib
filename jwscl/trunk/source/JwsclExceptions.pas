@@ -348,6 +348,7 @@ type
   EJwsclInvalidIndex = class(EJwsclSecurityException);
 
   EJwsclInvalidHandle = class(EJwsclSecurityException);
+  EJwsclClassTypeMismatch = class(EJwsclSecurityException);
 
 
   JwGeneralExceptionClass = class of Exception;

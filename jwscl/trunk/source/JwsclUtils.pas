@@ -1,5 +1,5 @@
 {
-<B>Abstract</B>This unit hosts utilty functions. 
+<B>Abstract</B>This unit hosts utilty functions.
 @author(Christian Wimmer)
 <B>Created:</B>03/23/2007 
 <B>Last modification:</B>09/10/2007 
@@ -67,6 +67,7 @@ uses
   JwsclTypes,
   JwsclExceptions,
   JwsclResource,
+  //JwsclDescriptor, //do not set!
   JwsclStrings;
 
 
@@ -99,11 +100,15 @@ type
     constructor Create(const CreateSuspended: Boolean; const Name: AnsiString);
     destructor Destroy; override;
 
+    function WaitWithTimeOut(const TimeOut: DWORD) : LongWord;
+
     {<B>Name</B> sets or gets the threads name.
      The name is retrieved from internal variable. Changing the thread's name
      using foreign code does not affect this property.
     }
     property Name: AnsiString read FName write SetName;
+
+
   end;
 
   TJwIntTupleList = class
@@ -330,19 +335,37 @@ procedure JwRaiseOnNilMemoryBlock(const P : Pointer;
  is nil; otherwise nothing happens.
 This function is like Assert but it will not be removed in a release build.
 
-@param P defines a pointer to be validated 
+@param P defines a pointer to be validated
 @param ParameterName defines the name of the parameter which is validated and
- belongs to this pointer 
-@param MethodName defines the name of the method this parameter belongs to 
+ belongs to this pointer
+@param MethodName defines the name of the method this parameter belongs to
 @param ClassName defines the name of the class the method belongs to. Can be
-  empty if the method does not belong to a class 
-@param FileName defines the source file of the call to this procedure. 
+  empty if the method does not belong to a class
+@param FileName defines the source file of the call to this procedure.
 
 raises
- EJwsclNILParameterException:  will be raised if P is nil 
+ EJwsclNILParameterException:  will be raised if P is nil
 }
 procedure JwRaiseOnNilParameter(const P : Pointer;
   const ParameterName, MethodName, ClassName, FileName : TJwString);
+
+{<B>JwRaiseOnClassTypeMisMatch</B> raises an exception EJwsclClassTypeMismatch if parameter Instance
+ is not of type ExpectedClass.
+This function is like Assert but it will not be removed in a release build.
+
+@param Instance defines the class to be tested. If this parameter is nil, the procedure exists without harm.
+@param ExpectedClass defines the class type to be checked for.
+@param MethodName defines the name of the method this parameter belongs to
+@param ClassName defines the name of the class the method belongs to. Can be
+  empty if the method does not belong to a class
+@param FileName defines the source file of the call to this procedure.
+
+raises
+ EJwsclNILParameterException:  will be raised if P is nil
+}
+procedure JwRaiseOnClassTypeMisMatch(const Instance : TObject;
+  const ExpectedClass : TClass;
+  const MethodName, ClassName, FileName : TJwString);
 
 {$IFDEF JW_TYPEINFO}
 function GetUnitName(argObject: TObject): AnsiString;
@@ -369,7 +392,7 @@ procedure JwSetThreadName(const Name: AnsiString; const ThreadID : Cardinal = Ca
 function JwGetThreadName : WideString;
 
 {<B>IsHandleValid</B> returns true if Handle is neither zero (0) nor INVALID_HANDLE_VALUE; otherwise false.}
-function IsHandleValid(const Handle : THandle) : Boolean;
+function JwIsHandleValid(const Handle : THandle) : Boolean;
 
 {<B>JwCheckBitMask</B> Checks if Bitmask and Check = Check}
 function JwCheckBitMask(const Bitmask: Integer; const Check: Integer): Boolean; 
@@ -381,6 +404,53 @@ function JwMsgWaitForMultipleObjects(const Handles: array of THandle; bWaitAll: 
 
 function JwWaitForMultipleObjects(const Handles: array of THandle; bWaitAll: LongBool;
            dwMilliseconds: DWord): DWord;
+
+
+{<B>JwCreateWaitableTimer</B> creates a waitable time handle.
+
+@param TimeOut defines a signal interval in miliseconds (1sec = 1000msec)
+@param SecurityAttributes defines security attributes for the timer. The class type
+  must be TJwSecurityDescriptor or a derivation.
+@return Returns a handle to the new timer object. Must be closed by CloseHandle.
+
+raise
+  EJwsclClassTypeMismatch: If parameter SecurityAttributes is not nil and also
+    not of the type TJwSecurityDescriptor, an exception EJwsclClassTypeMismatch is raised.
+  EOSError: If any winapi calls fail, an exception EJwsclWinCallFailedException is raised.
+}
+function JwCreateWaitableTimer(
+      const TimeOut: DWORD;
+      const SecurityAttributes : TObject = nil) : THandle; overload;
+
+{<B>JwCreateWaitableTimer</B> creates a waitable time handle.
+
+For more information about the undocumented parameters, see MSDN
+  http://msdn.microsoft.com/en-us/library/ms686289(VS.85).aspx
+
+This function does not support absolute time like the original winapi function.
+It means that you cannot specify a point in time.
+
+@param TimeOut defines a signal interval in miliseconds (1sec = 1000msec)
+@param Name defines a name for the timer. If Name is empty, the timer will be unnamed.
+@param SecurityAttributes defines security attributes for the timer. The class type
+  must be TJwSecurityDescriptor or a derivation.
+
+@return Returns a handle to the new timer object. Must be closed by CloseHandle.
+
+raise
+  EJwsclClassTypeMismatch: If parameter SecurityAttributes is not nil and also
+    not of the type TJwSecurityDescriptor, an exception EJwsclClassTypeMismatch is raised.
+  EOSError: If any winapi calls fail, an exception EJwsclWinCallFailedException is raised.
+}
+function JwCreateWaitableTimer(
+      const TimeOut: DWORD;
+      const ManualReset : Boolean;
+      const Name : TJwString;
+      const Period : Integer = 0;
+      const CompletitionRoutine : PTIMERAPCROUTINE = nil;
+      const CompletitionRoutineArgs : Pointer = nil;
+      const SuspendResume : Boolean = false;
+      const SecurityAttributes : TObject = nil) : THandle; overload;
 
 implementation
 uses SysUtils, JwsclToken, JwsclKnownSid, JwsclDescriptor, JwsclAcl,
@@ -404,7 +474,7 @@ end;
 {$ENDIF JW_TYPEINFO}
 
 
-function IsHandleValid(const Handle : THandle) : Boolean;
+function JwIsHandleValid(const Handle : THandle) : Boolean;
 begin
   result := (Handle <> 0) and (Handle <> INVALID_HANDLE_VALUE);
 end;
@@ -496,6 +566,18 @@ begin
     raise EJwsclNilPointer.CreateFmtEx(
      RsNilPointer,
       MethodName, ClassName, FileName, 0, false, []);
+end;
+
+procedure JwRaiseOnClassTypeMisMatch(const Instance : TObject;
+  const ExpectedClass : TClass;
+  const MethodName, ClassName, FileName : TJwString);
+begin
+  if Assigned(Instance) and
+    not (Instance is TJwSecurityDescriptor) then
+      raise EJwsclClassTypeMismatch.CreateFmtEx(
+               RsInvalidClassType,
+               MethodName, ClassName, FileName, 0, false,
+                [Instance.ClassName, ExpectedClass.ClassName]);
 end;
 
 function JwCheckArray(const Objs : TJwObjectTypeArray; out Index : Integer) : Boolean;
@@ -600,7 +682,7 @@ begin
      on E : EJwsclOSError do
        raise EJwsclResourceInitFailed.CreateFmtEx(
                RsResourceInitFailed,
-               'LocalizeMapping', '', RsUNConstants, 0, true,
+               'LocalizeMapping', '', RsUNUtils, 0, true,
                 [StartStringID]);
   end;
 
@@ -610,7 +692,7 @@ begin
   if (LHi < ArrayHi+1) then
     raise EJwsclResourceUnequalCount.CreateFmtEx(
             RsResourceUnequalCount,
-            'LocalizeMapping', '', RsUNConstants, 0, false, [LHi,StartStringID,ArrayHi]);
+            'LocalizeMapping', '', RsUNUtils, 0, false, [LHi,StartStringID,ArrayHi]);
 
 
   for i := ArrayLo to ArrayHi do
@@ -655,7 +737,7 @@ begin
             else
               raise EJwsclResourceNotFound.CreateFmtEx(
                 RsResourceNotFound,
-                'LocalizeMapping', '', RsUNConstants, 0, true, [Id]);
+                'LocalizeMapping', '', RsUNUtils, 0, true, [Id]);
           end;
         end; //try except
       end;
@@ -953,6 +1035,111 @@ begin
   end;
 
   raise ERangeError.CreateFmt('Value %d not found',[Index]);
+end;
+
+function JwCreateWaitableTimer(
+      const TimeOut: DWORD;
+      const SecurityAttributes : TObject = nil) : THandle;
+begin
+  result := JwCreateWaitableTimer(TimeOut, false, '',0,nil,nil,false,SecurityAttributes);
+end;
+
+
+
+function JwCreateWaitableTimer(
+      const TimeOut: DWORD;
+      const ManualReset : Boolean;
+      const Name : TJwString;
+      const Period : Integer = 0;
+      const CompletitionRoutine : PTIMERAPCROUTINE = nil;
+      const CompletitionRoutineArgs : Pointer = nil;
+      const SuspendResume : Boolean = false;
+      const SecurityAttributes : TObject = nil) : THandle;
+var
+  TimeOutInt64 : LARGE_INTEGER;
+  SA : PSecurityAttributes;
+  pName : TJwPChar;
+begin
+  JwRaiseOnClassTypeMisMatch(SecurityAttributes, TJwSecurityDescriptor,
+    'JwCreateWaitableTimer','',RsUNUtils);
+  try
+    SA := nil;
+    if Assigned(SecurityAttributes) then
+      SA := TJwSecurityDescriptor(SecurityAttributes).Create_SA();
+
+    if Length(Name) > 0 then
+      pName := TJwPchar(Name)
+    else
+      pName := nil;
+
+    Result := {$IFDEF UNICODE}CreateWaitableTimerW{$ELSE}CreateWaitableTimerA{$ENDIF}
+      (LPSECURITY_ATTRIBUTES(SA), ManualReset, pName);
+    if (Result = 0) or (Result = INVALID_HANDLE_VALUE) then
+      raise EJwsclWinCallFailedException.CreateFmtEx(
+        RsWinCallFailed,
+         'JwCreateWaitableTimer', '', RsUNUtils, 0, True, ['CreateWaitableTimer']);
+  finally
+    if SA <> nil then
+      TJwSecurityDescriptor.Free_SA(SA);
+  end;
+
+  ZeroMemory(@TimeOutInt64,sizeof(TimeOutInt64));
+  TimeOutInt64.HighPart := -1;
+  TimeOutInt64.LowPart := (- Timeout * 10000) shr 32;
+
+
+  if not SetWaitableTimer(Result, TimeOutInt64, Period, CompletitionRoutine, CompletitionRoutineArgs, SuspendResume) then
+  begin
+    CloseHandle(Result);
+    raise EJwsclWinCallFailedException.CreateFmtEx(
+        RsWinCallFailed,
+         'JwCreateWaitableTimer', '', RsUNUtils, 0, True, ['SetWaitableTimer']);
+  end;
+end;
+
+
+function TJwThread.WaitWithTimeOut(const TimeOut: DWORD) : LongWord;
+var
+  WaitResult: Cardinal;
+  Msg: TMsg;
+  hTimer : THandle;
+begin
+  if (TimeOut = 0) or (TimeOut = INFINITE) then
+    result := WaitFor
+  else
+  if GetCurrentThreadID = MainThreadID then
+  begin
+    WaitResult := 0;
+
+    hTimer := JwCreateWaitableTimer(TimeOut, true, '');
+    try
+      repeat
+        { This prevents a potential deadlock if the background thread
+          does a SendMessage to the foreground thread }
+        if WaitResult = WAIT_OBJECT_0 + 2 then
+          PeekMessage(Msg, 0, 0, 0, PM_NOREMOVE);
+
+        ResetEvent(hTimer);
+        WaitResult := JwMsgWaitForMultipleObjects([Handle, SyncEvent, hTimer], False, 1000, QS_SENDMESSAGE);
+        CheckThreadError(WaitResult <> WAIT_FAILED);
+
+        if WaitResult = WAIT_OBJECT_0 + 1 then
+          CheckSynchronize;
+        if WaitResult = WAIT_OBJECT_0 + 2 then
+        begin
+          result := WAIT_TIMEOUT;
+          exit;
+        end;
+      until WaitResult = WAIT_OBJECT_0;
+    finally
+      if hTimer <> INVALID_HANDLE_VALUE then
+        CloseHandle(hTimer);
+    end;
+  end
+  else
+    WaitForSingleObject(Handle, TimeOut);
+
+  CheckThreadError(GetExitCodeThread(Handle, Result));
 end;
 
 initialization

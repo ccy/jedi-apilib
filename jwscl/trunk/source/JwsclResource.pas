@@ -432,6 +432,7 @@ const
 //Unit JwsclUtils.pas
   RsInvalidLocalPointer  = 'Given pointer was not created by JwLocalAllocMem.'; 
   RsInvalidGlobalPointer = 'Given pointer was not created by JwGlobalAllocMem.';
+  RsInvalidClassType = 'The given class type %0:s is invalid. Should be %1:s or derivates.';
 
 //Unit JwsclEncryption.pas
   RsCryptUnsupportedMemManager = 'The memorymanager Local or Global is not supported by this method.';

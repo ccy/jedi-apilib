@@ -44,7 +44,7 @@ type
     JvEdit_AppName: TJvEdit;
     EditPassword1: TJvEdit;
     EditPassword2: TJvEdit;
-    Button1: TButton;
+    Button_EndService: TButton;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure EditPassword1Change(Sender: TObject);
@@ -67,7 +67,7 @@ type
     procedure UsersComboBoxMouseEnter(Sender: TObject);
     procedure JvProgressBarMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
-    procedure Button1Click(Sender: TObject);
+    procedure Button_EndServiceClick(Sender: TObject);
   private
     { Private-Deklarationen }
     fSaveLogon : Boolean;
@@ -112,7 +112,9 @@ procedure TFormCredentials.FormClose(Sender: TObject;
   var Action: TCloseAction);
 begin
   EditPassword1.Text := GetFillPasswd;
+  EditPassword1.Text := '';
   EditPassword2.Text := GetFillPasswd;
+  EditPassword2.Text := '';
 
   Application.Terminate;
 end;
@@ -201,7 +203,9 @@ begin
         Flags := Flags or CLIENT_CACHECREDS; //save pass to cache if correct
 
       EditPassword2.Text := GetFillPasswd;
+      EditPassword2.Text := '';
       EditPassword1.Text := GetFillPasswd;
+      EditPassword1.Text := '';
     end;
   end;
 end;
@@ -266,7 +270,7 @@ begin
   internalMsg := false;
 end;
 
-procedure TFormCredentials.Button1Click(Sender: TObject);
+procedure TFormCredentials.Button_EndServiceClick(Sender: TObject);
 begin
   ModalResult := mrAbort;
   Close;
@@ -322,6 +326,7 @@ begin
 //  Image1.Picture.Bitmap := GetUserPicture;
 
   //RetrieveProfileImage(OnGetImage);
+  Button_EndService.Visible := Flags and SERVER_DEBUGTERMINATE = SERVER_DEBUGTERMINATE;
 end;
 
 procedure TFormCredentials.FormShow(Sender: TObject);

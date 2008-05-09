@@ -3356,14 +3356,15 @@ object FormCredentials: TFormCredentials
     OnExit = EditPassword1Exit
     OnMouseMove = JvBevel1MouseMove
   end
-  object Button1: TButton
+  object Button_EndService: TButton
     Left = 8
     Top = 361
     Width = 75
     Height = 25
     Caption = 'End Service'
     TabOrder = 11
-    OnClick = Button1Click
+    Visible = False
+    OnClick = Button_EndServiceClick
   end
   object JvComputerInfoEx1: TJvComputerInfoEx
     Left = 312

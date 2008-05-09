@@ -4607,7 +4607,7 @@ begin
   result := false;
   SetLastError(ERROR_INVALID_HANDLE);
 
-  if not IsHandleValid(ProfileInfo.Profile) then
+  if not JwIsHandleValid(ProfileInfo.Profile) then
     exit;
 
   result := JwaWindows.UnloadUserProfile(TokenHandle, ProfileInfo.Profile);

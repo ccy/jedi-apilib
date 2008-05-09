@@ -1,3 +1,16 @@
+{
+This project is released under the terms of the
+GNU General Public License 3.0 (the  "GPL License").
+
+For more information about the GPL: http://www.gnu.org/licenses/gpl-3.0.txt
+
+Original authors are
+ 	Philip Dittmann
+  Christian Wimmer
+
+This application is part of the JEDI API Project.
+Visit at http://blog.delphi-jedi.net/
+}
 program XPElevationService;
 
 uses
@@ -14,47 +27,24 @@ uses
   ElevationHandler in 'ElevationHandler.pas',
   ThreadedPasswords in 'ThreadedPasswords.pas',
   uLogging in 'uLogging.pas',
-  JwsclEurekaLogUtils in '..\..\..\trunk\source\JwsclEurekaLogUtils.pas';
+  JwsclEurekaLogUtils in '..\..\..\trunk\source\JwsclEurekaLogUtils.pas',
+  testform in '..\Ask Credentials Code\testform.pas' {Form1};
 
 {$R *.RES}
 
-
-procedure EExceptionNotify(S : Pointer;EurekaExceptionRecord: TEurekaExceptionRecord;
-    var Handled: Boolean);
+  
+procedure AttachedFilesRequestProc(EurekaExceptionRecord: TEurekaExceptionRecord;
+    AttachedFiles: TStrings);
 begin
-  //Handled := false;
+  AttachedFiles.Add(LogFileNameLocation);
 end;
 
-
-var
-  ELog : TEurekaLog;
-  fJwNotify : TJwEurekaLogNotify;
-  P : Pointer;
-  M : TMethod;
-
 begin
-  ELog := TEurekaLog.Create(nil);
-  fJwNotify := TJwEurekaLogNotify.Create(ELog,'XPElevationService');
+  ExceptionLog.CustomWebFieldsRequest := JEDI_WebFieldsRequestNotify;
+  ExceptionLog.AttachedFilesRequest := AttachedFilesRequestProc;
 
-  M.Code := @EExceptionNotify;
-  //Elog.OnExceptionNotify := TExceptionNotify(M);
-  Elog.OnCustomWebFieldsRequest := fJwNotify.WebFieldsRequestNotify;
-
-
- (*
-  try
-    //raise Exception.Create('Test Error');
-    GetMem(P,100);
-  finally
-   ELog.Free;
-  end;
-
- // GetMem(P,100);
-  exit;*)
 
   try
-    //raise Exception.Create('');
-
     JwInitWellknownSIDs;
     // Windows 2003 Server requires StartServiceCtrlDispatcher to be
     // called before CoRegisterClassObject, which can be called indirectly
@@ -84,13 +74,13 @@ begin
     try
       Application.Initialize;
       Application.CreateForm(TXPService, XPService);
-    XPService.ServiceExecute(nil);
+  Application.CreateForm(TForm1, Form1);
+  XPService.ServiceExecute(nil);
     //  Application.Run;
     finally
       DoneLog;
     end;
   finally
-    FreeAndNil(Elog);
   end;
 
 end.

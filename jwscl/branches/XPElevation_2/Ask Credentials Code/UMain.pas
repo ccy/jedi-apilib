@@ -28,6 +28,7 @@ var ScreenBitmap : TBitmap;
     Resolution : TRect;
     PipeSession : TClientSessionPipe;
     SessionInfo : TSessionInfo;
+    MaxRepetitionCount : Cardinal;
 
 var Haltresult : Integer = 0;
 
@@ -82,104 +83,127 @@ begin
   end;
 end;
 
+function SetUpDesktop : TJwSecurityDesktop;
+var Descr: TJwSecurityDescriptor;
+begin
+  try
+    Application.Free;
+  except
+  end;
+
+  //Descr := TJwSecurityDescriptor.CreateDefaultByToken;
+  Descr := nil;
+  try
+    result := TJwSecurityDesktop.CreateDesktop(nil, true, 'SecureElevation', [],
+       false, GENERIC_ALL,  Descr);
+{$IFDEF SECURE_DESKTOP}
+    result.SwitchDesktop;
+    result.SetThreadDesktop;
+
+
+{$ENDIF}
+  finally
+    Descr.Free;
+    Application := TApplication.Create(nil);
+    Application.Initialize;
+  end;
+end;
+
+procedure EndDesktop(var Desktop : TJwSecurityDesktop);
+begin
+  if Assigned(Desktop) then
+  begin
+    //FreeAndNil(Application);
+    try
+      Application.Free;
+      Application := TApplication.Create(nil);
+      Application.Free;
+    except
+    end;
+
+    try
+{$IFDEF SECURE_DESKTOP}
+      try
+        try
+          Desktop.SetLastThreadDesktop;
+        except
+        end;
+        Desktop.SwitchDesktopBack;
+      except
+      end;
+{$ENDIF SECURE_DESKTOP}
+    finally
+      FreeAndNil(Desktop);
+      Application := TApplication.Create(nil);
+    end;
+  end;
+end;
+
 function AskPassword(var SessionInfo : TSessionInfo): Short;
 
 var Prompt: TJwCredentialsPrompt; OldDesk: HDESK; OldWallpaperPath: PChar; DesktopWallpaperPath: string;
      Bmp: Graphics.TBitmap; DeskDC: HDC;
      Desktop: TJwSecurityDesktop;
-     Descr: TJwSecurityDescriptor;
+
 const
   sFALSE = 0;
   sTRUE = 1;
   sDI = -1;
 begin
-  try  //1.
-    Descr:=TJwSecurityDescriptor.CreateDefaultByToken;
 
-    try //2.
-      OldDesk:=GetThreadDesktop(GetCurrentThreadID);
-      Desktop:=TJwSecurityDesktop.CreateDesktop(nil, true, 'UACinXPAskCredentialsDesk', [],
-         false, GENERIC_ALL,  Descr);
-     // Desktop.SetThreadDesktop;
-      try
-     //   Desktop.SwitchDesktop;
-        try
-          FreeAndNil(Application);
-          Application := TApplication.Create(nil);
-          Application.Initialize;
 {$IFNDEF TEST}
-          {Application.CreateForm(TFormMain, FormMain);
+    {Application.CreateForm(TFormMain, FormMain);
 
-          FormMain.Image1.Picture.Bitmap.Assign(ScreenBitmap);
-          FormMain.Image1.Align  := alClient;
-           }
-          //FormMain.BoundsRect := Resolution;
-          //FormMain.Show;
-          //FormMain.Hide;
+    FormMain.Image1.Picture.Bitmap.Assign(ScreenBitmap);
+    FormMain.Image1.Align  := alClient;
+     }
+    //FormMain.BoundsRect := Resolution;
+    //FormMain.Show;
+    //FormMain.Hide;
 {$ENDIF TEST}
 
-          Application.CreateForm(TFormCredentials, FormCredentials);
-          FormCredentials.CenterInMonitor(0);
+    Application.CreateForm(TFormCredentials, FormCredentials);
+    FormCredentials.CenterInMonitor(0);
 
 {$IFNDEF TEST}
-          FormCredentials.AppName := SessionInfo.Application;
-          FormCredentials.AppCmdLine := SessionInfo.Commandline;
+    FormCredentials.AppName := SessionInfo.Application;
+    FormCredentials.AppCmdLine := SessionInfo.Commandline;
 
-          FormCredentials.UserName := SessionInfo.UserName;
-     //     FormCredentials.Password := SessionInfo.Password; //pass is not sent by server
-          FormCredentials.Flags := SessionInfo.Flags;
-          FormCredentials.TimeOut := SessionInfo.TimeOut;
+    FormCredentials.UserName := SessionInfo.UserName;
+//     FormCredentials.Password := SessionInfo.Password; //pass is not sent by server
+    FormCredentials.Flags := SessionInfo.Flags;
+    FormCredentials.TimeOut := SessionInfo.TimeOut;
 {$ELSE}
-          FormCredentials.AppName := 'C:\Windows\Explorer.exe';
-          FormCredentials.AppCmdLine := '/separate,/e,/idlist,:49333:2321,::{20DFFFE0-3AFA-10A9-A348-0DF23442309D}';
+    FormCredentials.AppName := 'C:\Windows\Explorer.exe';
+    FormCredentials.AppCmdLine := '/separate,/e,/idlist,:49333:2321,::{20DFFFE0-3AFA-10A9-A348-0DF23442309D}';
 
-          FormCredentials.UserName := 'Christian';
-          FormCredentials.Password := '';
-          FormCredentials.Flags := SERVER_CACHEAVAILABLE;
-          FormCredentials.TimeOut := 60*1000;
+    FormCredentials.UserName := 'Christian';
+    FormCredentials.Password := '';
+    FormCredentials.Flags := SERVER_CACHEAVAILABLE;
+    FormCredentials.TimeOut := 60*1000;
 {$ENDIF TEST}
 
-          FormCredentials.Show;
-          Application.Run;
-          case FormCredentials.ModalResult of
-            mrOk : result := sTRUE;
-            mrCancel : result := sFALSE;
-            mrAbort : result := sDI;
-          end;
-          if result = sTRUE then
-          begin
-            SessionInfo.UserName := FormCredentials.UserName;
-            SessionInfo.Password := FormCredentials.Password;
-            SessionInfo.Flags    := FormCredentials.Flags;
-          end
-          else
-          if result = sDI then
-          begin
-            //service terminates only if also canceled
-            SessionInfo.Flags    := CLIENT_CANCELED or CLIENT_DEBUGTERMINATE;
-          end
-          else
-            SessionInfo.Flags    := CLIENT_CANCELED;
-
-          Application.Free;
-
-        finally
-     //     Desktop.SwitchDesktopBack;
-        end;
-      finally
-     //   SetThreadDesktop(OldDesk);
-
-      end;
-    finally //2.
-      Descr.Free;
-      try
-        Desktop.Free;
-      except
-      end;
-      Application := TApplication.Create(nil);
+    FormCredentials.Show;
+    Application.Run;
+    case FormCredentials.ModalResult of
+      mrOk : result := sTRUE;
+      mrCancel : result := sFALSE;
+      mrAbort : result := sDI;
     end;
-  finally  //1
-  end;
+    if result = sTRUE then
+    begin
+      SessionInfo.UserName := FormCredentials.UserName;
+      SessionInfo.Password := FormCredentials.Password;
+      SessionInfo.Flags    := FormCredentials.Flags;
+    end
+    else
+    if result = sDI then
+    begin
+      //service terminates only if also canceled
+      SessionInfo.Flags    := CLIENT_CANCELED or CLIENT_DEBUGTERMINATE;
+    end
+    else
+      SessionInfo.Flags    := CLIENT_CANCELED;
 end;
 
 
@@ -249,7 +273,48 @@ end;
 var Password: String; Pipe: THandle;
 
 
-function AskCredential: LRESULT; stdcall;
+function AskCredential(): LRESULT; stdcall;
+
+procedure CheckResult(Value, LastError : Integer);
+var
+  ErrorResults : array[1..2] of String;
+  Win32Error,
+  ErrorMessage : String;
+  i : Integer;
+begin
+  ErrorResults[1] := 'Invalid data';
+  ErrorResults[2] := 'Process creation failed';
+  if (Value = ERROR_WIN32) and (LastError <> ERROR_SUCCESS) then
+  begin
+    SetLastError(LastError);
+    MessageDlg(ErrorResults[i]+#13#10+SysErrorMessage(LastError),mtError,[mbok],0);
+  end
+  else
+  if (Value <> ERROR_SUCCESS) and (Value <> ERROR_ABORTBYUSER) then
+  begin
+    case Value of
+      ERROR_CREATEPROCESSASUSER_FAILED : ErrorMessage := ''+#13#10+SysErrorMessage(LastError);
+      ERROR_INVALID_USER : ErrorMessage := 'ERROR_INVALID_USER';
+      ERROR_ABORTBYUSER : ErrorMessage := 'ERROR_ABORTBYUSER';
+      ERROR_LOGONUSERFAILED : ErrorMessage := 'ERROR_LOGONUSERFAILED';
+      ERROR_LOADUSERPROFILE : ErrorMessage := 'ERROR_LOADUSERPROFILE';
+
+      ERROR_TIMEOUT : ErrorMessage := 'ERROR_TIMEOUT';
+      ERROR_SHUTDOWN : ErrorMessage := 'ERROR_SHUTDOWN';
+      ERROR_WIN32 : ErrorMessage := 'ERROR_WIN32';
+      ERROR_GENERAL_EXCEPTION : ErrorMessage := 'A general exception was raised by the service. ';
+      ERROR_NO_SUCH_LOGONSESSION : ErrorMessage := 'ERROR_NO_SUCH_LOGONSESSION';
+      ERROR_TOO_MANY_LOGON_ATTEMPTS : ErrorMessage := 'The logon was aborted because too many attempt were used.';
+    else
+      ErrorMessage := 'Unknown: '+IntToStr(Value);
+    end;
+    if LastError <> 0 then
+      Win32Error := SysErrorMessage(LastError);
+    MessageDlg(ErrorMessage+#13#10+Win32Error,mtError,[mbok],0);
+  end;
+end;
+
+
 const StrLenCancelled: Cardinal=Cardinal(-1);
       Null: Cardinal=0;
 var
@@ -258,57 +323,44 @@ var
   LastError,
   Value : Cardinal;
 
-  ErrorResults : array[1..2] of String;
-  ErrorMessage : String;
-
+  CurrentAttempt : Integer;
+  SecureDesktop : TJwSecurityDesktop;
 begin
-  ErrorResults[1] := 'Invalid data';
-  ErrorResults[2] := 'Process creation failed';
-
+ // MessageBox(0, 'DEBUG','DEBUG',MB_ICONWARNING or MB_OK);
   result := 0;
   ScreenBitmap := GetScreenBitmap(Resolution);
   try
     SessionInfo.Password := GetFillPasswd;
     SessionInfo.Password := '';
-    AskPassword(SessionInfo);
 
-    Haltresult := 2;
-{$IFNDEF TEST}
-    PipeSession.SendClientData(SessionInfo);
+    SecureDesktop := SetUpDesktop;
+    try
+      CurrentAttempt := 0;
+      repeat
+        AskPassword(SessionInfo);
+        Haltresult := 2;
+        PipeSession.SendClientData(SessionInfo);
 
-    
-
-
-    for i := 1 to 2 do
-    begin
         PipeSession.ReadServerProcessResult(Value, LastError, 0);
-        if Value = ERROR_WIN32 then
-        begin
-          SetLastError(LastError);
-          MessageDlg(ErrorResults[i]+#13#10+SysErrorMessage(LastError),mtError,[mbok],0);
-        end
-        else
-        if (Value <> ERROR_SUCCESS) and (Value <> ERROR_ABORTBYUSER) then
-        begin
-          case Value of
-            ERROR_CREATEPROCESSASUSER_FAILED : ErrorMessage := ''+#13#10+SysErrorMessage(LastError);
-            ERROR_INVALID_USER : ErrorMessage := '';
-            ERROR_ABORTBYUSER : ErrorMessage := '';
-            ERROR_LOGONUSERFAILED : ErrorMessage := '';
-            ERROR_LOADUSERPROFILE : ErrorMessage := '';
 
-            ERROR_TIMEOUT : ErrorMessage := '';
-            ERROR_SHUTDOWN : ErrorMessage := '';
-            ERROR_WIN32 : ErrorMessage := '';
-            ERROR_GENERAL_EXCEPTION : ErrorMessage := '';
-            ERROR_NO_SUCH_LOGONSESSION : ErrorMessage := '';
-          else
-            ErrorMessage := '';
+        case Value of
+          ERROR_SUCCESS : break;
+          ERROR_LOGONUSERFAILED : CurrentAttempt := LastError;
+        else
+          begin
+            EndDesktop(SecureDesktop);
+            CheckResult(Value, LastError);
+            break;
           end;
-          MessageDlg(ErrorMessage+#13#10+SysErrorMessage(LastError),mtError,[mbok],0);
         end;
+      until CurrentAttempt > MaxRepetitionCount;
+    finally
+      EndDesktop(SecureDesktop);
     end;
-{$ENDIF}
+
+    PipeSession.ReadServerProcessResult(Value, LastError, 0);
+    CheckResult(Value, LastError);
+
   finally
     ScreenBitmap.Free;
   end;
@@ -319,10 +371,14 @@ end;
 function Main : Integer;
 var p : String;
     i : Integer;
+    SecureDesktop : TJwSecurityDesktop;
 begin
-  //if ParamStr(1) <> '/cred' then
-  //  halt(10);
-    
+ { if ParamStr(1) <> '/cred' then
+    halt(10);
+
+  if ParamStr(2) <> then
+     }
+
   {p := '';
   for i := 0 to ParamCount do
   begin
@@ -330,6 +386,16 @@ begin
   end;
   MessageBoxW(0, PWideChar(WideString(p)),'Information',MB_OK);
   }
+
+  SecureDesktop := SetUpDesktop;
+  try
+    MessageBox(0,'123','123',MB_OK);
+  finally
+    EndDesktop(SecureDesktop);
+  end;
+  exit;
+
+
   PipeSession := TClientSessionPipe.Create;
   try
 {$IFNDEF TEST}
@@ -338,6 +404,8 @@ begin
     Haltresult := 2;
     PipeSession.ReadServerData(SessionInfo);
 
+    MaxRepetitionCount := SessionInfo.MaxLogonAttempts;
+
     Haltresult := 2;
 {$ELSE}
     ZeroMemory(@SessionInfo, sizeof(SessionInfo));
@@ -345,7 +413,6 @@ begin
 {$ENDIF TEST}
     //FreeAndNil(Application);
     Application := Nil;
-
 
     Haltresult := AskCredential();
   except

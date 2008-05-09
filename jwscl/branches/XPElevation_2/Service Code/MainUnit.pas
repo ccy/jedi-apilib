@@ -252,6 +252,7 @@ var Pipe: THandle; OvLapped: OVERLAPPED;
     i: integer;
     Log : IJwLogClient;
     WaitResult : DWORD;
+    Msg : TMsg;
 
 begin
 
@@ -307,9 +308,21 @@ begin
             repeat
               if Assigned(ServiceThread) then
                 ServiceThread.ProcessRequests(False);
+
+              ResetEvent(OvLapped.hEvent);
+
+              SetLastError(0);
               WaitResult := JwMsgWaitForMultipleObjects([fServiceStopEvent, OvLapped.hEvent], false, INFINITE, QS_ALLINPUT);
+
+              if WaitResult = WAIT_OBJECT_0 + 2 then
+                PeekMessage(Msg, 0, 0, 0, PM_NOREMOVE);
+
+              if (WaitResult <> WAIT_OBJECT_0) and
+                 (WaitResult <> WAIT_OBJECT_0+1) then
+                OutputDebugString(PChar(IntToStr(GetLastError)));
+
             until WaitResult <> WAIT_OBJECT_0 + 2; //any event we declared
-            ResetEvent(OvLapped.hEvent);
+
 
             if WaitResult = WAIT_OBJECT_0 +1 then
             begin

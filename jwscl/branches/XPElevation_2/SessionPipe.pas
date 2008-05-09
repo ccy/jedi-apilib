@@ -23,6 +23,7 @@ const CLIENT_CANCELED = $1;
       SERVER_TIMEOUT = $1;         //
       SERVER_USECACHEDCREDS = $2;  //
       SERVER_CACHEAVAILABLE = $4;  //to client: Password is available through cache
+      SERVER_DEBUGTERMINATE = $1024; 
 
       FILL_PASSWORD : WideString = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
 
@@ -32,6 +33,7 @@ const CLIENT_CANCELED = $1;
       ERROR_LOGONUSERFAILED = 4;
       ERROR_LOADUSERPROFILE = 5;
 
+
       ERROR_TIMEOUT = 6;
       ERROR_SHUTDOWN = 7;
       ERROR_WIN32 = 8;
@@ -39,6 +41,8 @@ const CLIENT_CANCELED = $1;
       ERROR_GENERAL_EXCEPTION = 10;
 
       ERROR_NO_SUCH_LOGONSESSION = 11;
+
+      ERROR_TOO_MANY_LOGON_ATTEMPTS = 12;
 
 
 
@@ -50,6 +54,7 @@ type
     Commandline : array[0..MAX_PATH] of WideChar;
     UserName    : array[0..UNLEN] of WideChar;
     Domain      : array[0..MAX_DOMAIN_NAME_LEN] of WideChar;
+    MaxLogonAttempts,
     TimeOut   : DWORD;
     Flags     : DWORD;
   end;
@@ -61,6 +66,7 @@ type
     Domain,
     Password  : WideString;
     Flags  : DWORD;
+    MaxLogonAttempts,
     TimeOut : DWORD;
   end;
 
@@ -124,7 +130,7 @@ type
                     TimeOut : DWORD);
 
     function WaitForClientToConnect(const ProcessID, TimeOut: DWORD;
-      const StopEvent: HANDLE): DWORD;
+      const StopEvent, ProcessHandle: HANDLE): DWORD;
 
     function WaitForClientAnswer(const TimeOut: DWORD;
       const StopEvent: HANDLE): DWORD;
@@ -236,6 +242,8 @@ begin
 
   SessionInfo.Flags     := ServerBuffer.Flags;
   SessionInfo.TimeOut     := ServerBuffer.TimeOut;
+  SessionInfo.MaxLogonAttempts     := ServerBuffer.MaxLogonAttempts;
+
   fTimeOut := ServerBuffer.TimeOut;
 
   ZeroMemory(@ServerBuffer, sizeof(ServerBuffer));
@@ -313,8 +321,9 @@ begin
       PWideChar(SessionInfo.Password)));
     //lstrcpynW(@ClientBuffer.Password, PWideChar(SessionInfo.Password), sizeof(ClientBuffer.Password)-1);
 
-    
+
     ClientBuffer.Flags := SessionInfo.Flags;
+
 
     if not WriteFile(
       fPipe,//__in         HANDLE hFile,
@@ -537,7 +546,8 @@ begin
     OleCheck(StringCbCopyW(ServerBuffer.Domain, sizeof(ServerBuffer.Domain),
        PWideChar(WideString(SessionInfo.Domain))));
 
-    ServerBuffer.Flags := 0;
+    ServerBuffer.Flags := SessionInfo.Flags;
+    ServerBuffer.MaxLogonAttempts := SessionInfo.MaxLogonAttempts;
 
     if not WriteFile(
          fPipe,//hFile: HANDLE;
@@ -668,16 +678,18 @@ end;
 1 - client connects to pipe
 }
 function TServerSessionPipe.WaitForClientToConnect(const ProcessID,
-  TimeOut: DWORD; const StopEvent: HANDLE): DWORD;
+  TimeOut: DWORD; const StopEvent, ProcessHandle: HANDLE): DWORD;
 var NumBytesRead,
     NumBytesToBeRead,
 
+    WaitResult,
     Data : DWORD;
     TimeOutInt64 : LARGE_INTEGER;
     fTimer : THANDLE;
     Log : IJwLogClient;
 
     OvLapped : TOverlapped;
+    Msg : TMsg;
 begin
   Log := uLogging.LogServer.Connect(etMethod,ClassName,
           'WaitForClientToConnect','ElevationHandler.pas','');
@@ -692,12 +704,15 @@ begin
         LogAndRaiseLastOsError(Log, ClassName, 'WaitForClientToConnect','ElevationHandler.pas');
 
     repeat
-      result := JwWaitForMultipleObjects([StopEvent,OvLapped.hEvent], false, TimeOut);
+      if WaitResult = WAIT_OBJECT_0 + 2 then
+        PeekMessage(Msg, 0, 0, 0, PM_NOREMOVE);
+      result := JwWaitForMultipleObjects([StopEvent,OvLapped.hEvent, ProcessHandle], false, TimeOut);
+
       if result = WAIT_FAILED then
         LogAndRaiseLastOsError(Log, ClassName, 'WaitForClientToConnect','ElevationHandler.pas');
       if result = WAIT_TIMEOUT then
         break;
-    until result <> WAIT_OBJECT_0+2;
+    until result <> WAIT_OBJECT_0+3;
 
 end;
 
