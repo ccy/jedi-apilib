@@ -1,7 +1,7 @@
 unit SessionPipe;
 
 interface
-uses SysUtils, JwaWindows, ComObj, SvcMgr, ULogging, JwsclUtils, JwsclLogging,
+uses SysUtils, JwaWindows, ComObj, ULogging, JwsclUtils, JwsclLogging,
     JwsclExceptions, JwsclComUtils;
 
 type
@@ -14,16 +14,19 @@ type
     Flags     : DWORD;
   end;
 
-const CLIENT_CANCELED = $1;
-      CLIENT_USECACHECREDS = $2;   //to server: use cached passw  ord
-      CLIENT_CACHECREDS = $4;      //to server: save given password to cache
-      CLIENT_CLEARCACHE = $8;      //to server: clear user password from cache
-      CLIENT_DEBUGTERMINATE = $1024;
+const CLIENT_START = $200000;
 
-      SERVER_TIMEOUT = $1;         //
-      SERVER_USECACHEDCREDS = $2;  //
-      SERVER_CACHEAVAILABLE = $4;  //to client: Password is available through cache
-      SERVER_DEBUGTERMINATE = $1024; 
+      CLIENT_CANCELED       = CLIENT_START;
+      CLIENT_USECACHECREDS  = CLIENT_START shl 1;   //to server: use cached passw  ord
+      CLIENT_CACHECREDS     = CLIENT_START shl 2;      //to server: save given password to cache
+      CLIENT_CLEARCACHE     = CLIENT_START shl 3;      //to server: clear user password from cache
+      CLIENT_DEBUGTERMINATE = CLIENT_START shl 4;
+
+      SERVER_START = $1;
+      SERVER_TIMEOUT        = SERVER_START;         //
+      SERVER_USECACHEDCREDS = SERVER_START shl 1;  //
+      SERVER_CACHEAVAILABLE = SERVER_START shl 2;  //to client: Password is available through cache
+      SERVER_DEBUGTERMINATE = SERVER_START shl 3;
 
       FILL_PASSWORD : WideString = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
 
@@ -348,12 +351,13 @@ var NewMode : DWORD;
     Log : IJwLogClient;
 
 begin
-  Log := uLogging.LogServer.Connect(etMethod,ClassName,
-          'Connect','ElevationHandler.pas','');
+  if uLogging.LogServer <> nil then
+    Log := uLogging.LogServer.Connect(etMethod,ClassName,
+            'Connect','ElevationHandler.pas','');
 
   fPipe := CreateFileW(
     PWideChar(PipeName),//__in      LPCTSTR lpFileName,
-    GENERIC_READ or GENERIC_WRITE,//__in      DWORD dwDesiredAccess,
+    GENERIC_READ or GENERIC_WRITE or SYNCHRONIZE,//__in      DWORD dwDesiredAccess,
     0,//__in      DWORD dwShareMode,
     nil,//__in_opt  LPSECURITY_ATTRIBUTES lpSecurityAttributes,
     OPEN_EXISTING,//__in      DWORD dwCreationDisposition,
@@ -531,7 +535,7 @@ begin
         PChar('server')));
 
     ServerBuffer.Flags := 0;
-    ServerBuffer.TimeOut := fTimeOut;
+    ServerBuffer.TimeOut := SessionInfo.TimeOut;
 
     OleCheck(StringCbCopyW(ServerBuffer.Application, sizeof(ServerBuffer.Application),
        PWideChar(WideString(SessionInfo.Application))));

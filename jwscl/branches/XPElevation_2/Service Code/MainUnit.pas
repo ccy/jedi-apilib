@@ -6,7 +6,7 @@ uses
   Messages, SysUtils, Classes, Graphics, Controls, SvcMgr, Dialogs, Math, ComObj,
   JwaWindows, JwsclToken, JwsclLsa, JwsclCredentials, JwsclDescriptor, JwsclDesktops,
   JwsclExceptions, JwsclSID, JwsclAcl,JwsclKnownSID, JwsclEncryption, JwsclTypes,
-  JwsclProcess,
+  JwsclProcess, JwsclSecureObjects,
   JwsclLogging, uLogging,JwsclUtils,
   SessionPipe, ThreadedPasswords,
 
@@ -254,6 +254,8 @@ var Pipe: THandle; OvLapped: OVERLAPPED;
     WaitResult : DWORD;
     Msg : TMsg;
 
+    SH : TJwSecureGeneralObject;
+
 begin
 
   JwSetThreadName('XP Elevation Service Thread');
@@ -276,30 +278,55 @@ begin
         Descr:=TJwSecurityDescriptor.Create;
         try
           Log.Log('Create Pipe 1');
-          Descr.Owner := JwSecurityProcessUserSID;
+          JwEnablePrivilege(SE_RESTORE_NAME,pst_Enable);
+          JwEnablePrivilege(SE_SECURITY_NAME,pst_Enable);
+          JwEnablePrivilege(SE_BACKUP_NAME,pst_Enable);
+
+
+          Descr.Owner := JwAdministratorsSID;
           Descr.PrimaryGroup := JwAdministratorsSID;
 
 {$IFDEF DEBUG}
           Descr.DACL:=nil;
 {$ELSE}
+        //  Descr.DACL.Clear;
           Descr.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil,[],GENERIC_ALL,JwLocalSystemSID,false));
-          Descr.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil,[],GENERIC_ALL,JwAdministratorsSID,false));
-          //Descr.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil,[],GENERIC_ALL,JwWorldSID,false));
-{$ENDIF}
-          SecAttr:=Descr.Create_SA(false);
+          Descr.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil,[],GENERIC_ALL or WRITE_DAC or WRITE_OWNER,JwAdministratorsSID,false));
+//          Descr.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil,[],FILE_WRITE_DATA or FILE_READ_DATA or READ_CONTROL,JwUsersSID,false));
+//          Descr.DACL.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil,[],FILE_ALL_ACCESS,JwWorldSID,false));
+          Descr.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil,[],GENERIC_ALL,JwWorldSID,false));
 
-          Pipe := CreateNamedPipe('\\.\pipe\XPElevationPipe', PIPE_ACCESS_INBOUND or FILE_FLAG_OVERLAPPED, PIPE_WAIT, PIPE_UNLIMITED_INSTANCES, 0, 0, 0, LPSECURITY_ATTRIBUTES(SecAttr));
+          //Descr.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil,[],GENERIC_ALL,JwIntegrityLabelSID[iltMedium],false));
+
+        //  ShowMessage(Descr.DACL.Text);
+
+{$ENDIF}
+          SecAttr := Descr.Create_SA();
+
+
+          Pipe := CreateNamedPipe('\\.\pipe\XPElevationPipe', PIPE_ACCESS_INBOUND or FILE_FLAG_OVERLAPPED
+            or WRITE_DAC or WRITE_OWNER {or ACCESS_SYSTEM_SECURITY},
+            PIPE_WAIT, PIPE_UNLIMITED_INSTANCES, 0, 0, 0, LPSECURITY_ATTRIBUTES(SecAttr));
         finally
           Descr.Free;
         end;
+
         if Pipe = INVALID_HANDLE_VALUE then
         begin
           LogAndRaiseLastOsError(Log,ClassName, 'ServiceExecute::(winapi)CreateNamedPipe OUT', 'ElevationHandler.pas');
           abort;
         end;
 
+
+    {    JwEnablePrivilege(SE_RESTORE_NAME,pst_Enable);
+          Descr.Owner := JwAdministratorsSID;
+          TJwSecureGeneralObject.SetSecurityInfo(Pipe,SE_FILE_OBJECT,[siOwnerSecurityInformation, siDaclSecurityInformation], Descr);
+     }
+
+
         InitAllowedSIDs;
         try
+          //create job objects for all sessions
           fJobs := TJwJobObjectSessionList.Create(OnNewJobObject);
           
           repeat
@@ -309,22 +336,20 @@ begin
               if Assigned(ServiceThread) then
                 ServiceThread.ProcessRequests(False);
 
-              ResetEvent(OvLapped.hEvent);
-
               SetLastError(0);
               WaitResult := JwMsgWaitForMultipleObjects([fServiceStopEvent, OvLapped.hEvent], false, INFINITE, QS_ALLINPUT);
 
-              if WaitResult = WAIT_OBJECT_0 + 2 then
-                PeekMessage(Msg, 0, 0, 0, PM_NOREMOVE);
-
-              if (WaitResult <> WAIT_OBJECT_0) and
-                 (WaitResult <> WAIT_OBJECT_0+1) then
+              case WaitResult of
+                WAIT_OBJECT_0 + 1 :  ResetEvent(OvLapped.hEvent);
+                WAIT_OBJECT_0 + 2 :  PeekMessage(Msg, 0, 0, 0, PM_NOREMOVE); //tag message as read
+              else
                 OutputDebugString(PChar(IntToStr(GetLastError)));
+              end;
 
-            until WaitResult <> WAIT_OBJECT_0 + 2; //any event we declared
+            until WaitResult <> WAIT_OBJECT_0 + 2; //
 
 
-            if WaitResult = WAIT_OBJECT_0 +1 then
+            if WaitResult = WAIT_OBJECT_0 +1 then  //OvLapped.hEvent
             begin
               with THandleRequestThread.Create(
                 true, //Create suspended

@@ -94,6 +94,11 @@ begin
 
   P^.SessionIndex := Session;
 
+  {We add 2 bytes of extra size, so the string copy routines
+  can add a null wide char.
+  They will be removed after decryption.
+  }
+
   SizeUser := (2+Length(UserName))*sizeof(WideChar);
   GetMem(P^.EUserName, SizeUser);
   SizeDomain := (2+Length(Domain))*sizeof(WideChar);
@@ -364,10 +369,13 @@ begin
     begin
       GetMem(Data, SizeUser);
       try
+        ZeroMemory(Data, SizeUser);
         CopyMemory(Data, P^.EUserName, SizeUser);
         TJwEncryptMemory.DecryptMemory(Data, SizeUser, [pmSameProcess], mtGetMem);
         SetLength(UserName, SizeUser div sizeof(WideChar));
         OleCheck(StringCbCopyW(PWideChar(@UserName[1]), SizeUser, Data));
+        if SizeUser > 4  then
+          SetLength(UserName, Length(UserName)-2);
       finally
         ZeroMemory(Data, SizeUser);
         FreeMem(Data);
@@ -378,10 +386,13 @@ begin
     begin
       GetMem(Data, SizeDomain);
       try
+        ZeroMemory(Data, SizeDomain);
         CopyMemory(Data, P^.EDomain, SizeDomain);
         TJwEncryptMemory.DecryptMemory(Data, SizeDomain, [pmSameProcess], mtGetMem);
         SetLength(Domain, SizeDomain div sizeof(WideChar));
         OleCheck(StringCbCopyW(PWideChar(@Domain[1]), SizeDomain, Data));
+        if SizeDomain > 4  then
+          SetLength(Domain, Length(Domain)-2);
       finally
         ZeroMemory(Data, SizeDomain);
         FreeMem(Data);
@@ -392,10 +403,13 @@ begin
     begin
       GetMem(Data, SizePass);
       try
+        ZeroMemory(Data, SizePass);
         CopyMemory(Data, P^.EPassword, SizePass);
         TJwEncryptMemory.DecryptMemory(Data, SizePass, [pmSameProcess], mtGetMem);
         SetLength(Password, SizePass div sizeof(WideChar));
         OleCheck(StringCbCopyW(PWideChar(@Password[1]), SizePass, Data));
+        if SizePass > 4  then
+          SetLength(Password, Length(Password)-2);
       finally
         ZeroMemory(Data, SizePass);
         FreeMem(Data);

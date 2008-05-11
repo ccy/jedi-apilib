@@ -14,7 +14,9 @@ Visit at http://blog.delphi-jedi.net/
 program XPElevationService;
 
 uses
+{$IFDEF EUREKALOG}
   ExceptionLog,
+{$ENDIF EUREKALOG}
   SysUtils,
   SvcMgr,
   Classes,
@@ -27,8 +29,7 @@ uses
   ElevationHandler in 'ElevationHandler.pas',
   ThreadedPasswords in 'ThreadedPasswords.pas',
   uLogging in 'uLogging.pas',
-  JwsclEurekaLogUtils in '..\..\..\trunk\source\JwsclEurekaLogUtils.pas',
-  testform in '..\Ask Credentials Code\testform.pas' {Form1};
+  JwsclEurekaLogUtils in '..\..\..\trunk\source\JwsclEurekaLogUtils.pas';
 
 {$R *.RES}
 
@@ -61,7 +62,7 @@ begin
     // Application.DelayInitialize := True;
     //
    { if not Application.DelayInitialize or Application.Installing then  }
-    uLogging.ApplicationFileName := 'XPElevation';
+    uLogging.ApplicationFileName := 'JEDI XP Elevation';
     uLogging.InitFileLocation;
 
     uLogging.InitLog;
@@ -74,8 +75,7 @@ begin
     try
       Application.Initialize;
       Application.CreateForm(TXPService, XPService);
-  Application.CreateForm(TForm1, Form1);
-  XPService.ServiceExecute(nil);
+      XPService.ServiceExecute(nil);
     //  Application.Run;
     finally
       DoneLog;

@@ -56,7 +56,8 @@ begin
   except
     on E : Exception do
     begin
-      Log.Exception(E);
+      if Assigned(Log) then
+        Log.Exception(E);
       raise;
     end;
   end;

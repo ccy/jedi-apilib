@@ -3,18 +3,18 @@ unit CredentialsForm;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  JwaWindows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, Buttons, ExtCtrls, JwsclStrings, JvExControls,
   JvLookOut, JvExExtCtrls, JvBevel, JvButton, JvTransparentButton,
   JvComponent, JvExStdCtrls, JvHtControls, JvLinkLabel, JvExtComponent,
   JvLinkLabelTools, SessionPipe,
   JvPanel, jpeg, JvLabel, JvComponentBase, JvComputerInfoEx, JvImage, JvGradient,
   JvGradientHeaderPanel, JvEdit, JvWaitingGradient, JvWaitingProgress,
-  JvStaticText, ComCtrls, JvExComCtrls, JvProgressBar;
-
+  JvStaticText, ComCtrls, JvExComCtrls, JvProgressBar, JvThread, AppEvnts;
+                                          
 type
   TFormCredentials = class(TForm)
-    BitBtn1: TBitBtn;
+    BitBtnCancel: TBitBtn;
     BitBtn_Ok: TBitBtn;
     Image1: TImage;
     Label_DefaultUser: TLabel;
@@ -45,6 +45,8 @@ type
     EditPassword1: TJvEdit;
     EditPassword2: TJvEdit;
     Button_EndService: TButton;
+    Image_LogonError: TImage;
+    JvStaticText_LogonError: TJvStaticText;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure EditPassword1Change(Sender: TObject);
@@ -55,7 +57,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure CheckBoxSaveLogonClick(Sender: TObject);
     procedure BitBtn_OkClick(Sender: TObject);
-    procedure BitBtn1Click(Sender: TObject);
+    procedure BitBtnCancelClick(Sender: TObject);
     procedure JvBevel1MouseMove(Sender: TObject; Shift: TShiftState; X,
       Y: Integer);
     procedure JvLinkLabel1LinkClick(Sender: TObject; LinkNumber: Integer;
@@ -68,6 +70,7 @@ type
     procedure JvProgressBarMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure Button_EndServiceClick(Sender: TObject);
+    procedure ApplicationEvents1Idle(Sender: TObject; var Done: Boolean);
   private
     { Private-Deklarationen }
     fSaveLogon : Boolean;
@@ -78,10 +81,14 @@ type
     internalMsg : Boolean;
     fTimeout,
     fFlags : Cardinal;
+    fPipeSession : TClientSessionPipe;
+    fShowWebPage : Boolean;
 
     function GetUserPicture(): TBitmap;
     procedure OnGetImage;
-    function IsPasswordCacheAvailable : Boolean; 
+    function IsPasswordCacheAvailable : Boolean;
+
+    procedure ShowLogonError(const Visible : Boolean);
   public
     destructor Destroy; override;
 
@@ -96,6 +103,10 @@ type
     property Flags : Cardinal read fFlags write fFlags;
     property TimeOut : Cardinal read fTimeout write fTimeout;
 
+    property PipeSession : TClientSessionPipe read fPipeSession write fPipeSession;
+
+    property LogonError : Boolean write ShowLogonError;
+    property ShowWebPage : Boolean read fShowWebPage;
   end;
 
 var
@@ -125,7 +136,7 @@ var
   Size: DWord;
 begin
   Size := Pred(SizeOf(Buffer));
-  Windows.GetUserName(Buffer, Size);
+  JwaWindows.GetUserName(Buffer, Size);
   Result := StrPas(Buffer);
 end;
 
@@ -179,8 +190,6 @@ begin
 
     if CanClose then
     begin
-      Flags := 0;
-
       fSaveLogon := CheckBoxSaveLogon.Checked;
       fUserName := '';
       if ButtonUser.Down then
@@ -322,11 +331,11 @@ end;
 
 procedure TFormCredentials.FormCreate(Sender: TObject);
 begin
-  internalMsg := false;
 //  Image1.Picture.Bitmap := GetUserPicture;
 
   //RetrieveProfileImage(OnGetImage);
   Button_EndService.Visible := Flags and SERVER_DEBUGTERMINATE = SERVER_DEBUGTERMINATE;
+  fShowWebPage := false;
 end;
 
 procedure TFormCredentials.FormShow(Sender: TObject);
@@ -358,9 +367,9 @@ begin
   else
   begin
     Timer1.Enabled := true;
-    JvProgressBar.Max := Max(TimeOut div 100, 60);
-    if JvProgressBar.Max < 10 then
-      JvProgressBar.Max := 60;
+    JvProgressBar.Max := (TimeOut div 1000);//Max(TimeOut div 1000, 60);
+  {  if JvProgressBar.Max < 10 then
+      JvProgressBar.Max := 60;        }
   end;
 
 
@@ -379,6 +388,8 @@ begin
     EditPassword2.EmptyValue := '';
     //EditPassword1.ThemedPassword := true;
     EditPassword2.ProtectPassword := true;
+
+    EditPassword1.SetFocus;
   end
   else
   begin
@@ -405,7 +416,6 @@ begin
   else  }
   begin
     ButtonDefaultUser.Click;
-    EditPassword1.SetFocus;
   end;
 
   Signed := IsSigned(AppName ,Publisher);
@@ -420,12 +430,15 @@ begin
   JvLabel_UnsignedApp.Visible := not Signed;
 
   try
-
     BringToFront;
     SetFocus;
   except
 
   end;
+
+  Application.OnIdle := ApplicationEvents1Idle;
+
+
 end;
 
 procedure TFormCredentials.CenterInMonitor(const i : Integer);
@@ -464,6 +477,8 @@ end;
 
 destructor TFormCredentials.Destroy;
 begin
+  Application.OnIdle := nil;
+  
   fAppName := GetFillPasswd;
   fAppCmdLine := GetFillPasswd;
   fUserName := GetFillPasswd;
@@ -478,7 +493,51 @@ begin
   Close;
 end;
 
-procedure TFormCredentials.BitBtn1Click(Sender: TObject);
+procedure TFormCredentials.ApplicationEvents1Idle(Sender: TObject;
+  var Done: Boolean);
+var
+  R,
+  BytesRead : DWORD;
+  Data : Array[0..1] of DWORD;
+begin
+  if PeekNamedPipe(
+    PipeSession.Handle,//hNamedPipe: THandle;
+    @Data,//lpBuffer: Pointer;
+    sizeof(Data),//nBufferSize: DWORD;
+    @BytesRead,//lpBytesRead,
+    nil,//lpTotalBytesAvail,
+    nil//lpBytesLeftThisMessage: Pointer): BOOL; stdcall;
+   ) then
+  begin
+    if BytesRead = sizeof(Data) then
+    begin
+      if Data[0] = ERROR_TIMEOUT then
+      begin
+        Application.OnIdle := nil;
+        ModalResult := mrIgnore;
+        Close;
+      end;
+    end;
+  end
+  else
+  begin
+    OutputDebugStringA(PChar(IntToStr(GetLAstError)));
+    case GetLastError() of
+      ERROR_BROKEN_PIPE,
+      ERROR_BAD_PIPE,
+      ERROR_PIPE_NOT_CONNECTED,
+      ERROR_NO_DATA,
+      ERROR_PIPE_BUSY :
+        begin
+          Application.OnIdle := nil;
+
+          BitBtnCancel.Click;
+        end;
+    end;
+  end;
+end;
+
+procedure TFormCredentials.BitBtnCancelClick(Sender: TObject);
 begin
   ModalResult := mrCancel;
   Close;
@@ -519,13 +578,14 @@ procedure TFormCredentials.JvLinkLabel1LinkClick(Sender: TObject;
   LinkNumber: Integer; LinkText, LinkParam: String);
 begin
   //
-  TWebTools.OpenWebPage('http://blog.delphi-jedi.net');
+  fShowWebPage := true;
+
 end;
 
 procedure TFormCredentials.JvProgressBarMouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
-  JvProgressBar.Position := 0;
+ // JvProgressBar.Position := 0;
 end;
 
 procedure TFormCredentials.OnGetImage;
@@ -537,21 +597,36 @@ begin
   //Image1.Picture.LoadFromFile('E:\temp\bild-16.jpg');
 end;
 
+procedure TFormCredentials.ShowLogonError(const Visible: Boolean);
+begin
+  Image_LogonError.Visible := Visible;
+  JvStaticText_LogonError.Visible := Visible;
+end;
+
 procedure TFormCredentials.Timer1Timer(Sender: TObject);
 Var Element : TObject;
   P : TPoint;
 begin
-  P := Self.ScreenToClient(Mouse.CursorPos);
+  try
+    P := Self.ScreenToClient(Mouse.CursorPos);
 
-  Element := ControlAtPos(P,false,true, true);
+    Element := ControlAtPos(P,false,true, true);
 
-  if Assigned(Element) and (Element = JvProgressBar) then
-     JvBevel1MouseMove(Element,[],P.X, P.Y);
+    if Assigned(Element) and (Element = JvProgressBar) then
+       JvBevel1MouseMove(Element,[],P.X, P.Y);
+
+
+  except
+
+  end;
 
   JvProgressBar.Position := JvProgressBar.Position + 1;
   {JvStaticText_TimeOut.Caption :=
     Format('%d seconds left',
       [JvProgressBar.Max - JvProgressBar.Position]);}
+ { if Timer1.Enabled and (JvProgressBar.Position >= JvProgressBar.Max) then
+    BitBtn1.Click;      }
+
 end;
 
 function GetFillPasswd : String;

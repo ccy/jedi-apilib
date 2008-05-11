@@ -10,6 +10,11 @@ uses
   SessionPipe, JwsclLogging, uLogging, ThreadedPasswords,
   JwsclStrings;
 
+const
+  TIMEOUT = {$IFNDEF DEBUG}10 * 30 * 1000;{$ELSE}INFINITE;{$ENDIF}
+  USERTIMEOUT = {$IFNDEF DEBUG}10 * 60 * 1000;{$ELSE}INFINITE;{$ENDIF}
+  MAX_LOGON_ATTEMPTS = {$IFNDEF DEBUG} 3;{$ELSE}INFINITE;{$ENDIF}
+
 type
   PProcessJobData = ^TProcessJobData;
   TProcessJobData = record
@@ -17,7 +22,7 @@ type
     UserProfile : TJwProfileInfo;
   end;
 
-  
+
   TElevationHandler = class(TObject)
   private
 
@@ -43,6 +48,7 @@ type
 
     procedure StartApplication(const ApplicationPath: WideString);
     function AskCredentials(const ClientPipeUserToken: TJwSecurityToken;
+        const SIDIndex : Integer;
         out LastProcessID: TJwProcessId;
         var SessionInfo : TSessionInfo): Boolean;
 
@@ -58,6 +64,28 @@ const
 
 implementation
 uses Registry, MainUnit;
+
+procedure RandomizePasswdA(var S : AnsiString);
+var i,c : Integer;
+begin
+  for i := 1 to Length(S) do
+  begin
+    S[i] := Char(random(266));
+  end;
+  S := '';
+end;
+
+procedure RandomizePasswdW(var S : WideString);
+var i,c : Integer;
+begin
+  for i := 1 to Length(S) do
+  begin
+    S[i] := WideChar(random(266));
+  end;
+  S := '';
+end;
+
+
 
 function RegGetFullPath(PathKey: string): string;
 var Reg: TRegistry; Unresolved: string;
@@ -84,13 +112,41 @@ end;
 
 function TElevationHandler.AskCredentials(
   const ClientPipeUserToken: TJwSecurityToken;
+  const SIDIndex : Integer;
   out LastProcessID: TJwProcessId;
   var SessionInfo: TSessionInfo): boolean;
 
-function CheckLogonUser(const Domain, UserName, Password : TJwString) : Boolean;
-var Token : TJwSecurityToken;
+function CheckLogonUser(const SessionInfo : TSessionInfo) : Boolean;
+var
+  Token : TJwSecurityToken;
+  Domain,
+  UserName,
+  Password : WideString;
+  Log : IJwLogClient;
 begin
-  {LogonUser API mention that we
+  Log := uLogging.LogServer.Connect(etMethod,ClassName,'CheckLogonUser','ElevationHandler.pas','');
+  
+  if (SessionInfo.Flags and CLIENT_USECACHECREDS = CLIENT_USECACHECREDS) and
+     (SessionInfo.Password = '') then
+  begin
+      Log.Log('Credentials for user '+Username+' are retrieved from the cache');
+
+    try
+        Log.Log('Retrieving cached credentials');
+      fPasswords.GetBySession(SIDIndex, Domain, Username, Password);
+    except
+    on E : Exception do
+       Log.Exception(E);
+    end;
+  end
+  else
+  begin
+    UserName := SessionInfo.UserName;
+    Domain := SessionInfo.Domain;
+    Password := SessionInfo.Password;
+  end;
+
+  {LogonUser API mentions that we
     should use SSPI instead: http://support.microsoft.com/kb/180548
   But sample text tells us:
   Note LogonUser Win32 API does not require TCB privilege in Microsoft Windows Server 2003, however,
@@ -102,27 +158,34 @@ begin
 
   }
   try
-    Token := TJwSecurityToken.CreateLogonUser(UserName,Domain,Password,LOGON32_LOGON_NETWORK,LOGON32_PROVIDER_DEFAULT);
-  except
-    on E : EJwsclSecurityException do
-    begin
-      if (E.LastError = ERROR_INVALID_PASSWORD) or
-         (E.LastError = ERROR_LOGON_FAILURE) then
+    try
+      Token := TJwSecurityToken.CreateLogonUser(UserName,Domain,Password,LOGON32_LOGON_NETWORK,LOGON32_PROVIDER_DEFAULT);
+    except
+      on E : EJwsclSecurityException do
       begin
-        result := false;
-        exit;
+        Log.Exception(E);
+        if (E.LastError = ERROR_INVALID_PASSWORD) or
+           (E.LastError = ERROR_LOGON_FAILURE) then
+        begin
+          Log.Log(lsError,'Logon user check failed.');
+          result := false;
+          exit;
+        end
+        else
+          raise;
       end
       else
         raise;
-    end
-    else
-      raise;
+    end;
+  finally
+    RandomizePasswdW(Password);
   end;
   Token.Free;
   result := true;
 end;
 
-const TIMEOUT = {$IFNDEF DEBUG}3000;{$ELSE}INFINITE;{$ENDIF}
+
+
 var
   StartInfo: STARTUPINFOW;
   ProcInfo: PROCESS_INFORMATION;
@@ -130,6 +193,7 @@ var
   Desc: TJwSecurityDescriptor;
   SecAttr: LPSECURITY_ATTRIBUTES;
   CredApp: String;
+  CreationFlags,
   LastError : DWORD;
 
   AppliationCmdLine,
@@ -137,6 +201,8 @@ var
 
   hPipe : THandle;
   Log : IJwLogClient;
+
+  P : Pointer;
 
   MaxLoginRepetitionCount : Cardinal;
   LoginRepetitionCount : Integer;
@@ -158,8 +224,10 @@ begin
     Desc.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil, [], GENERIC_ALL, JwWorldSID));
 {$ELSE}
     Desc.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil, [], GENERIC_ALL, JwLocalSystemSID));
+    Desc.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil, [], FILE_ALL_ACCESS or SYNCHRONIZE,
     //Desc.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil, [], PIPE_ACCESS_DUPLEX or FILE_FLAG_OVERLAPPED or SYNCHRONIZE,
-    //    ClientPipeUserToken.TokenUser, false));
+        ClientPipeUserToken.TokenUser, false));
+    //Desc.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil, [], GENERIC_ALL, JwWorldSID));
 {$ENDIF}
 
     SecAttr := LPSECURITY_ATTRIBUTES(Desc.Create_SA());
@@ -211,7 +279,8 @@ begin
     AppliationCmdLine := Sysutils.WideFormat('"%s" /cred /pipe "%s"',
        [CredApp, PipeName]);
 {$IFDEF DEBUG}
-     AppliationCmdLine := AppliationCmdLine + ' /DEBUG'; 
+     AppliationCmdLine := AppliationCmdLine + ' /DEBUG';
+     Log.Log('Starting credentials prompt with DEBUG.');
 {$ENDIF DEBUG}
 
     ZeroMemory(@ProcInfo, Sizeof(ProcInfo));
@@ -219,23 +288,34 @@ begin
     StartInfo.cb:=Sizeof(StartInfo);
     StartInfo.lpDesktop:='WinSta0\Default';
 
-    if not CreateProcessAsUserW(
-       ClientPipeUserToken.TokenHandle,
-       PWideChar(Widestring(CredApp)),
-       PWideChar(Widestring(AppliationCmdLine)) ,
-      nil, nil, True, CREATE_NEW_CONSOLE, nil, nil, StartInfo, ProcInfo) then
-    begin
-      LogAndRaiseLastOsError(Log, ClassName, 'AskCredentials::(winapi)CreateProcessAsUserW', 'ElevationHandler.pas');
+
+    //necessary for shellexecute in new process
+    CreateEnvironmentBlock(@P, ClientPipeUserToken.TokenHandle,false);
+    if P <> nil then
+      CreationFlags := CREATE_UNICODE_ENVIRONMENT
+    else
+      CreationFlags := 0;
+    try
+      if not CreateProcessAsUserW(
+         ClientPipeUserToken.TokenHandle,
+         PWideChar(Widestring(CredApp)),
+         PWideChar(Widestring(AppliationCmdLine)) ,
+        nil, nil, True, CREATE_NEW_CONSOLE or CreationFlags, P, nil, StartInfo, ProcInfo) then
+      begin
+        LogAndRaiseLastOsError(Log, ClassName, 'AskCredentials::(winapi)CreateProcessAsUserW', 'ElevationHandler.pas');
+      end;
+    finally
+      DestroyEnvironmentBlock(P);
     end;
 
     LastProcessID := GetProcessId(ProcInfo.hProcess);
 
     try
 {$IFNDEF DEBUG}
-      WaitResult := ServerPipe.WaitForClientToConnect(0, 10 * 1000{secs}, fStopEvent, ProcInfo.hProcess);
+      WaitResult := ServerPipe.WaitForClientToConnect(0, TIMEOUT{secs}, fStopEvent, ProcInfo.hProcess);
 {$ELSE}
       //if ServerPipe.WaitForClientToConnect(0, INFINITE, fStopEvent) = 1{pipe event} then
-      WaitResult := ServerPipe.WaitForClientToConnect(0, 600 * 1000{secs}, fStopEvent, ProcInfo.hProcess);
+      WaitResult := ServerPipe.WaitForClientToConnect(0, TIMEOUT{secs}, fStopEvent, ProcInfo.hProcess);
 {$ENDIF}
       if WaitResult = 1{pipe event} then
       begin
@@ -252,13 +332,11 @@ begin
            Server    -> Client : Send service result for createprocess
         }
         try
-          SessionInfo.TimeOut := TIMEOUT;
+          SessionInfo.TimeOut := USERTIMEOUT;
           try
-{$IFNDEF DEBUG}
-            MaxLoginRepetitionCount := Cardinal(-1);
+            MaxLoginRepetitionCount := MAX_LOGON_ATTEMPTS;
+{$IFDEF DEBUG}
             SessionInfo.Flags := SessionInfo.Flags or SERVER_DEBUGTERMINATE;
-{$ELSE}
-            MaxLoginRepetitionCount := 3;
 {$ENDIF DEBUG}
             LoginRepetitionCount := 0;
 
@@ -269,7 +347,7 @@ begin
             try
               {LoginRepetitionCount = 0}
               repeat
-                ServerPipe.ReadClientData(SessionInfo,TIMEOUT, fStopEvent);
+                ServerPipe.ReadClientData(SessionInfo,SessionInfo.TimeOut, fStopEvent);
 
                 if Length(Trim(SessionInfo.UserName)) = 0 then
                   SessionInfo.UserName := ClientPipeUserToken.GetTokenUserName;
@@ -277,8 +355,7 @@ begin
                 {not LogonCorrect and (LoginRepetitionCount < MaxLoginRepetitionCount)}
 
                 if (SessionInfo.Flags and CLIENT_CANCELED <> CLIENT_CANCELED) and
-                  (not CheckLogonUser(SessionInfo.Domain,
-                  SessionInfo.UserName, SessionInfo.Password)) then
+                  (not CheckLogonUser(SessionInfo)) then
                 begin
                   Inc(LoginRepetitionCount);
 
@@ -295,7 +372,7 @@ begin
             except
               on E : EOSError do
               begin
-                Log.Log(lsWarning,Failsafe for desktop switchback initiated.');
+                Log.Log(lsWarning,'Failsafe for desktop switchback initiated.');
 
                 //failsafe to switch back desktop
                 CloseHandle(ProcInfo.hProcess);
@@ -315,7 +392,6 @@ begin
                 SessionInfo.Flags := CLIENT_CANCELED;
                 Log.Log('Failsafe for desktop switchback succeeded.');
 
-                raise;
               end;
 
 
@@ -326,15 +402,16 @@ begin
               ServerPipe.SendServerResult(ERROR_TOO_MANY_LOGON_ATTEMPTS,0);
               SessionInfo.Flags := CLIENT_CANCELED;
             end
-            else
-              ServerPipe.SendServerResult(ERROR_SUCCESS,0);
+           { else
+              ServerPipe.SendServerResult(ERROR_SUCCESS,0);      }
           except
             on E1a : ETimeOutException do
             begin
               ServerPipe.SendServerResult(ERROR_TIMEOUT, 0);
               Log.Exception(E1a);
               FreeAndNil(ServerPipe);
-              raise;
+              //raise;
+              exit;
             end;
 
 
@@ -343,7 +420,8 @@ begin
               ServerPipe.SendServerResult(ERROR_SHUTDOWN, 0);
               Log.Exception(E1b);
               FreeAndNil(ServerPipe);
-              raise;
+             // raise;
+             exit;
             end;
 
             on E1c : EOSError do //ReadFile failed
@@ -351,28 +429,32 @@ begin
               ServerPipe.SendServerResult(ERROR_WIN32, E1c.ErrorCode);
               Log.Exception(E1c);
               FreeAndNil(ServerPipe);
-              raise;
+             // raise;
+             exit;
             end;
             on E2 : EAbort do //recevied data error
             begin
               ServerPipe.SendServerResult(ERROR_ABORT, 0);
               Log.Exception(E2);
               FreeAndNil(ServerPipe);
-              raise;
+             // raise;
+             exit;
             end;
             on E3 : EOleError do //string copying failed
             begin
               ServerPipe.SendServerResult(ERROR_ABORT, 0);
               Log.Exception(E3);
               FreeAndNil(ServerPipe);
-              raise;
+              //raise;
+              exit;
             end;
             on E4 : Exception do //string copying failed
             begin
               ServerPipe.SendServerResult(ERROR_GENERAL_EXCEPTION, 0);
               Log.Exception(E4);
               FreeAndNil(ServerPipe);
-              raise;
+              //raise;
+              exit;
             end;
           end;
 
@@ -382,7 +464,7 @@ begin
             on E : Exception do //string copying failed
             begin
               Log.Exception(E);
-              raise;
+              //raise;
             end;
           end;
 
@@ -392,7 +474,7 @@ begin
           begin
             Log.Exception(E);
             FreeAndNil(ServerPipe);
-            raise;
+            //raise;
           end;
         end;
 
@@ -450,23 +532,12 @@ procedure TElevationHandler.StartApplication(
 var Password,
     Username,
     DefaultUserName,
-    Domain: Widestring; LSA: TJwSecurityLsa;
-
-    plogonData : PMSV1_0_INTERACTIVE_LOGON; Authlen: Cardinal;
-    Source: TTokenSource; ProfBuffer: PMSV1_0_INTERACTIVE_PROFILE; ProfBufferLen: Cardinal;
-    Token, NewToken: TJwSecurityToken; TokenLuid: TLUID; QuotaLimits: QUOTA_LIMITS; SubStatus: integer;
-
-    ProfInfo: PROFILEINFO; AddGroups: TJwSecurityIDList; 
-
-    EnvirBlock: Pointer;
-    StartInfo: STARTUPINFOW;
-    ProcInfo: PROCESS_INFORMATION;
-    Job: THandle; EncryptLength: Cardinal; SIDIndex: Integer;
-
-     Save: Boolean;
-
-
-
+    Domain: Widestring;
+    LSA: TJwSecurityLsa;
+    ProfBuffer: PMSV1_0_INTERACTIVE_PROFILE;
+    Token : TJwSecurityToken;
+    ProfInfo: PROFILEINFO;
+    SIDIndex: Integer;
     InVars : TJwCreateProcessInfo;
     OutVars : TJwCreateProcessOut;
 
@@ -500,7 +571,8 @@ begin
           Log.Log('Elevation of user '+SID.AccountName['']+' for application '+ApplicationPath+' not allowed.');
 
           abort;
-        end; 
+        end;
+
         Username := SID.AccountName[''];
         DefaultUserName := Username;
         try //4.
@@ -534,6 +606,8 @@ begin
               SessionInfo.Domain,
               SessionInfo.UserName,
               SessionInfo.Password);
+            RandomizePasswdW(SessionInfo.Password);
+            SessionInfo.Password := '';
             SessionInfo.Flags    := SERVER_CACHEAVAILABLE;
           except
             on E : Exception do
@@ -542,6 +616,7 @@ begin
 
               SessionInfo.UserName := Username;
               SessionInfo.Domain   := Domain;
+              RandomizePasswdW(SessionInfo.Password);
               SessionInfo.Password := '';
 
               SessionInfo.Flags    := 0;
@@ -552,7 +627,8 @@ begin
         begin
           SessionInfo.UserName := Username;
           SessionInfo.Domain   := Domain;
-          SessionInfo.Password := '';
+          RandomizePasswdW(SessionInfo.Password);
+
 
           SessionInfo.Flags    := 0;
         end;
@@ -560,13 +636,14 @@ begin
         //creates new process which asks user for credentials
         //ServerPipe is created here
         try //6.
-          if not AskCredentials(Token, ProcessID, SessionInfo) then
+          if not AskCredentials(Token, SIDIndex, ProcessID, SessionInfo) then
           begin
-            Log.Log('Credentials prompt for '+ApplicationPath+' aborted by user');
+            Log.Log('Credentials prompt for '+ApplicationPath+' was aborted ');
+            if Assigned(ServerPipe) then
             try
               ServerPipe.SendServerResult(ERROR_ABORTBYUSER, 0);
             except
-            end;
+            end;  
 {$IFDEF DEBUG}
              if (SessionInfo.Flags and CLIENT_DEBUGTERMINATE = CLIENT_DEBUGTERMINATE) then
              begin
@@ -599,13 +676,13 @@ begin
            are ignored
           }
           if (SessionInfo.Flags and CLIENT_USECACHECREDS = CLIENT_USECACHECREDS) and
-             (fPasswords.IsSessionValid(SessionID)) and (SessionInfo.Password = '') then
+             (fPasswords.IsSessionValid(SessionID)) {and (SessionInfo.Password = '') }then
           begin
             Log.Log('Credentials for user '+Username+' are retrieved from the cache');
 
             try
               Log.Log('Retrieving cached credentials');
-              fPasswords.GetBySession(SIDIndex, Domain, Username, Password);
+              fPasswords.GetBySession(SIDIndex, SessionInfo.Domain, SessionInfo.Username, SessionInfo.Password);
             except
             on E : Exception do
               Log.Exception(E);
@@ -633,7 +710,7 @@ begin
             Domain   := SessionInfo.Domain;
             Username := SessionInfo.UserName;
             Password := SessionInfo.Password;
-            SessionInfo.Password := FILL_PASSWORD;
+            RandomizePasswdW(SessionInfo.Password);
 
             ZeroMemory(@InVars.StartupInfo, sizeof(InVars.StartupInfo));
 
@@ -672,6 +749,7 @@ begin
                    );
 
                 //send success
+                if Assigned(ServerPipe) then
                 try
                   ServerPipe.SendServerResult(ERROR_SUCCESS,0);
                 except
@@ -704,7 +782,7 @@ begin
                 CloseHandle(OutVars.ProcessInfo.hThread);
               end;
             finally
-              Password := FILL_PASSWORD;
+              RandomizePasswdW(Password);
             end;
 
             
@@ -713,23 +791,27 @@ begin
             on E1 : EJwsclWinCallFailedException do
             begin
               Log.Exception(E1);
-              ServerPipe.SendServerResult(ERROR_WIN32,E1.LastError);
+              if Assigned(ServerPipe) then
+                ServerPipe.SendServerResult(ERROR_WIN32,E1.LastError);
             end;
             on E2 : EJwsclNoSuchLogonSession do
             begin
               Log.Exception(E2);
-              ServerPipe.SendServerResult(ERROR_NO_SUCH_LOGONSESSION,0);
+              if Assigned(ServerPipe) then
+                ServerPipe.SendServerResult(ERROR_NO_SUCH_LOGONSESSION,0);
             end;
             on E3 : EJwsclCreateProcessFailed do
             begin
               Log.Exception(E3);
-              ServerPipe.SendServerResult(ERROR_CREATEPROCESSASUSER_FAILED, E3.LastError);
+              if Assigned(ServerPipe) then
+                ServerPipe.SendServerResult(ERROR_CREATEPROCESSASUSER_FAILED, E3.LastError);
             end;
           
             on E : Exception do
             begin
               Log.Exception(E);
-              ServerPipe.SendServerResult(ERROR_GENERAL_EXCEPTION,0);
+              if Assigned(ServerPipe) then
+                ServerPipe.SendServerResult(ERROR_GENERAL_EXCEPTION,0);
             end;
 
           end;
@@ -747,5 +829,8 @@ begin
 
   end;
 end;
+
+initialization
+  randomize;
 
 end.
