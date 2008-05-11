@@ -1,0 +1,2 @@
+XPElevationService /install
+pause
