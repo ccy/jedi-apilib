@@ -15,6 +15,28 @@ const
   USERTIMEOUT = {$IFNDEF DEBUG}10 * 60 * 1000;{$ELSE}INFINITE;{$ENDIF}
   MAX_LOGON_ATTEMPTS = {$IFNDEF DEBUG} 3;{$ELSE}INFINITE;{$ENDIF}
 
+const
+  E_INVALID_USER = $83E70001;
+  E_ABORTED = $83E70002;
+  E_CREATEPROCESS_FAILED = $83E70003;
+  E_RESPONSE_TIME_OUT = $83E70004;
+  E_SERVICE_SHUTDOWN = $83E70005;
+  E_INVALID_RECORD_SIZE = $83E70006;
+
+
+type
+  TXPElevationStruct = record
+    Size : DWORD;
+
+    ApplicationName,
+    Parameters,
+    CurrentDirectory  : WideString;
+
+    Flags : DWORD;
+    StartupInfo : TStartupInfoW;
+  end;
+
+
 type
   PProcessJobData = ^TProcessJobData;
   TProcessJobData = record
@@ -46,7 +68,7 @@ type
       const StopState : PBoolean);
     destructor Destroy; override;
 
-    procedure StartApplication(const ApplicationPath: WideString);
+    function StartApplication(const ElevationStruct : TXPElevationStruct) : HRESULT;
     function AskCredentials(const ClientPipeUserToken: TJwSecurityToken;
         const SIDIndex : Integer;
         out LastProcessID: TJwProcessId;
@@ -526,8 +548,20 @@ begin
     result := fStopState^;
 end;
 
-procedure TElevationHandler.StartApplication(
-  const ApplicationPath: WideString);
+
+
+function TElevationHandler.StartApplication(const ElevationStruct : TXPElevationStruct) : HRESULT;
+
+function CopyStartupInfo(const Startup : TStartupInfoW) : TStartupInfoW;
+begin
+//  ZeroMemory(@result, sizeof(result));
+  CopyMemory(@result, @Startup, sizeof(result));
+
+  result.cb := sizeof(result);
+
+
+  result.lpReserved := nil;
+end;
 
 var Password,
     Username,
@@ -554,6 +588,9 @@ var SessionInfo : TSessionInfo;
 
 
 begin
+  result := SUCCESS;
+
+
   Log := uLogging.LogServer.Connect(etMethod,ClassName,
           'StartApplication','ElevationHandler.pas','');
 
@@ -568,9 +605,12 @@ begin
         If SIDIndex = -1 then
         begin
           ErrorResult := ERROR_INVALID_USER;
-          Log.Log('Elevation of user '+SID.AccountName['']+' for application '+ApplicationPath+' not allowed.');
+          Log.Log(JwFormatString('Elevation of user %s for application %s not allowed.',
+            [SID.AccountName[''], ElevationStruct.ApplicationName]));
 
-          abort;
+
+          result := E_INVALID_USER;
+          exit;
         end;
 
         Username := SID.AccountName[''];
@@ -593,7 +633,7 @@ begin
       try //5.
         Log.Log('Credentials for user '+Username+' are requested.');
 
-        SessionInfo.Application := ApplicationPath;
+        SessionInfo.Application := ElevationStruct.ApplicationName;
         SessionInfo.Commandline := '';
 
         SessionInfo.Flags := 0;
@@ -638,7 +678,7 @@ begin
         try //6.
           if not AskCredentials(Token, SIDIndex, ProcessID, SessionInfo) then
           begin
-            Log.Log('Credentials prompt for '+ApplicationPath+' was aborted ');
+            Log.Log('Credentials prompt for '+ElevationStruct.ApplicationName+' was aborted ');
             if Assigned(ServerPipe) then
             try
               ServerPipe.SendServerResult(ERROR_ABORTBYUSER, 0);
@@ -651,6 +691,7 @@ begin
                XPService.Stopped := true;
              end;
 {$ENDIF DEBUG}
+            result := E_ABORTED;
             exit;
           end;
         except //6.
@@ -662,7 +703,9 @@ begin
             except
             end;
             //credential process is already informed- FreeAndNil(ServerPipe) was called
-            Log.Log('Error: Credentials prompt for '+ApplicationPath+' canceled. '+E.Message);
+            Log.Log('Error: Credentials prompt for '+ElevationStruct.ApplicationName+' canceled. '+E.Message);
+
+            result := E_ABORTED;
             exit;
           end;
         end;
@@ -713,6 +756,7 @@ begin
             RandomizePasswdW(SessionInfo.Password);
 
             ZeroMemory(@InVars.StartupInfo, sizeof(InVars.StartupInfo));
+            InVars.StartupInfo := CopyStartupInfo(ElevationStruct.StartupInfo);
 
             //Add specific group
             Sid := TJwSecurityId.Create(JwFormatString('S-1-5-5-%d-%d',
@@ -731,12 +775,16 @@ begin
             InVars.LogonSID := nil;
 
             ZeroMemory(@InVars.Parameters, sizeof(InVars.Parameters));
-            InVars.Parameters.lpApplicationName := ApplicationPath;
-            InVars.Parameters.lpCommandLine := '';
-            InVars.Parameters.dwCreationFlags := CREATE_NEW_CONSOLE or 
+            InVars.Parameters.lpApplicationName := ElevationStruct.ApplicationName;
+            InVars.Parameters.lpCommandLine := ElevationStruct.Parameters;
+            InVars.Parameters.lpCurrentDirectory := ElevationStruct.CurrentDirectory;
+
+
+
+
+            InVars.Parameters.dwCreationFlags := CREATE_NEW_CONSOLE or
                 CREATE_SUSPENDED or CREATE_UNICODE_ENVIRONMENT or CREATE_BREAKAWAY_FROM_JOB;
-            InVars.Parameters.lpCurrentDirectory := ''; {TODO: }
-          
+
             try //7.
               try
                   JwCreateProcessAsAdminUser(
@@ -790,18 +838,26 @@ begin
           except //7.
             on E1 : EJwsclWinCallFailedException do
             begin
+              result := E_CREATEPROCESS_FAILED;
+
+
               Log.Exception(E1);
               if Assigned(ServerPipe) then
                 ServerPipe.SendServerResult(ERROR_WIN32,E1.LastError);
+
             end;
             on E2 : EJwsclNoSuchLogonSession do
             begin
+              result := E_CREATEPROCESS_FAILED;
+
               Log.Exception(E2);
               if Assigned(ServerPipe) then
                 ServerPipe.SendServerResult(ERROR_NO_SUCH_LOGONSESSION,0);
             end;
             on E3 : EJwsclCreateProcessFailed do
             begin
+              result := E_CREATEPROCESS_FAILED;
+              
               Log.Exception(E3);
               if Assigned(ServerPipe) then
                 ServerPipe.SendServerResult(ERROR_CREATEPROCESSASUSER_FAILED, E3.LastError);
@@ -809,6 +865,8 @@ begin
           
             on E : Exception do
             begin
+              result := E_CREATEPROCESS_FAILED;
+
               Log.Exception(E);
               if Assigned(ServerPipe) then
                 ServerPipe.SendServerResult(ERROR_GENERAL_EXCEPTION,0);

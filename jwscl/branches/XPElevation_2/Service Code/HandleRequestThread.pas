@@ -76,6 +76,8 @@ var AppName: string; PipeSize: Cardinal;
     OvLapped: OVERLAPPED;
     ElevationObj : TElevationHandler;
     Log : IJwLogClient;
+    hRes : HRESULT;
+    XPElevationStruct : TXPElevationStruct;
 begin
   Self.Name := 'HandleRequest: '+IntToStr(fPipeHandle);
 
@@ -102,46 +104,78 @@ begin
           WAIT_TIMEOUT:
           begin
             Log.Log('HandleRequestThread was timed out');
+            hres := E_RESPONSE_TIME_OUT;
+            WriteFile(fPipeHandle, @hres, sizeof(hres), nil, nil);
+
             exit;
           end;
           WAIT_OBJECT_0+1:
           begin
+            hres := E_SERVICE_SHUTDOWN;
+            WriteFile(fPipeHandle, @hres, sizeof(hres), nil, nil);
+
             Log.Log('Server shutdown registered.');
             exit;
           end;
         end;
 
-        if not PeekNamedPipe(fPipeHandle, nil, 0, nil, @PipeSize, nil) then
+        {if not PeekNamedPipe(fPipeHandle, nil, 0, nil, @PipeSize, nil) then
           LogAndRaiseLastOsError(Log,ClassName,'PeekNamedPipe@Execute','');
 
-        SetLength(AppName, PipeSize);
+        SetLength(AppName, PipeSize);}
 
-        if not ReadFile(fPipeHandle, @AppName[1], PipeSize, nil, @OvLapped) then
+        {if not ReadFile(fPipeHandle, @AppName[1], PipeSize, nil, @OvLapped) then
+          LogAndRaiseLastOsError(Log,ClassName,'ReadFile@Execute','');}
+        if not ReadFile(fPipeHandle, @XPElevationStruct, sizeof(XPElevationStruct), nil, @OvLapped) then
           LogAndRaiseLastOsError(Log,ClassName,'ReadFile@Execute','');
 
-        Log.Log('Waiting for path name to be received...');
-        //Wait for incoming application name to elevate
-        WaitForSingleObject(OvLapped.hEvent, INFINITE);
+        if XPElevationStruct.Size = sizeof(XPElevationStruct) then
+        begin
+          Log.Log('XPElevation data struct size is invalid');
 
-        TJwSecurityToken.ImpersonateNamedPipeClient(fPipeHandle);
-        //impersonated thread is used in elevation handler
+          hres := E_INVALID_RECORD_SIZE;
+          WriteFile(fPipeHandle, @hres, sizeof(hres), nil, nil);
+        end
+        else
+        begin
+          Log.Log('Waiting for path name to be received...');
 
-        ElevationObj := TElevationHandler.Create(
-           fAllowedSIDs,
-           fJobs,
-           fPasswords,
-           fServiceStopEvent,
-           fStopState);
-        try
-          ElevationObj.StartApplication(AppName);
-        finally
-          ElevationObj.Free;
+
+          if JwWaitForMultipleObjects([OvLapped.hEvent, XPService.ServiceStopEvent], false, 10 * 1000) = WAIT_OBJECT_0 then
+          begin
+            TJwSecurityToken.ImpersonateNamedPipeClient(fPipeHandle);
+            //impersonated thread is used in elevation handler
+
+            ElevationObj := TElevationHandler.Create(
+               fAllowedSIDs,
+               fJobs,
+               fPasswords,
+               fServiceStopEvent,
+               fStopState);
+            try
+              hRes := ElevationObj.StartApplication(XPElevationStruct);
+            except
+              on E : Exception do
+                Log.Exception(E);
+            end;
+
+            ElevationObj.Free;
+          end
+          else
+            hRes := E_RESPONSE_TIME_OUT;
+
+          if not WriteFile(fPipeHandle, @hres, sizeof(hres), nil, nil) then
+          begin
+            LogAndRaiseLastOsError(log,ClassName,'Execute','HandleRequestThread');
+          end;
         end;
+
 
       finally
         CloseHandle(OvLapped.hEvent);
-        DisconnectNamedPipe(fPipeHandle);
+
         CloseHandle(fPipeHandle);
+        DisconnectNamedPipe(fPipeHandle);
       end;
 
     finally

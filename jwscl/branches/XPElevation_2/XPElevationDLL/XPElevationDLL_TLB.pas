@@ -1,29 +1,29 @@
 unit XPElevationDLL_TLB;
 
 // ************************************************************************ //
-// WARNING                                                                    
+// WARNUNG                                                                    
 // -------                                                                    
-// The types declared in this file were generated from data read from a       
-// Type Library. If this type library is explicitly or indirectly (via        
-// another type library referring to this type library) re-imported, or the   
-// 'Refresh' command of the Type Library Editor activated while editing the   
-// Type Library, the contents of this file will be regenerated and all        
-// manual modifications will be lost.                                         
+// Die in dieser Datei deklarierten Typen wurden aus Daten einer Typbibliothek
+// generiert. Wenn diese Typbibliothek explizit oder indirekt (über eine     
+// andere Typbibliothek) reimportiert wird oder wenn die Anweisung            
+// 'Aktualisieren' im Typbibliotheks-Editor während des Bearbeitens der     
+// Typbibliothek aktiviert ist, wird der Inhalt dieser Datei neu generiert und 
+// alle manuell vorgenommenen Änderungen gehen verloren.                           
 // ************************************************************************ //
 
-// $Rev: 8291 $
-// File generated on 11.05.2008 19:20:08 from Type Library described below.
+// PASTLWTR : 1.2
+// Datei generiert am 11.05.2008 20:45:36 aus der unten beschriebenen Typbibliothek.
 
 // ************************************************************************  //
-// Type Lib: P:\Eigene Dateien\Dezipaitor\Projekte\Delphi\7\jedi-api-lib\jwscl\branches\XPElevation_2\XPElevationDLL\XPElevationDLL.tlb (1)
-// LIBID: {0F35684C-C35E-42EE-AFA3-315BFEFF48B1}
+// Typbib: P:\Eigene Dateien\Dezipaitor\Projekte\Delphi\7\jedi-api-lib\jwscl\branches\XPElevation_2\XPElevationDLL\XPElevationDLL.tlb (1)
+// LIBID: {9A8BCDB2-A46B-48B5-9466-2F7DE4B4B870}
 // LCID: 0
-// Helpfile: 
-// HelpString: XPElevationDLL Library
+// Hilfedatei: 
+// Hilfe-String: XPElevationDLL Bibliothek
 // DepndLst: 
 //   (1) v2.0 stdole, (C:\Windows\system32\stdole2.tlb)
 // ************************************************************************ //
-{$TYPEDADDRESS OFF} // Unit must be compiled without type-checked pointers. 
+{$TYPEDADDRESS OFF} // Unit muß ohne Typüberprüfung für Zeiger compiliert werden. 
 {$WARN SYMBOL_PLATFORM OFF}
 {$WRITEABLECONST ON}
 {$VARPROPSETTER ON}
@@ -33,56 +33,91 @@ uses Windows, ActiveX, Classes, Graphics, StdVCL, Variants;
   
 
 // *********************************************************************//
-// GUIDS declared in the TypeLibrary. Following prefixes are used:        
-//   Type Libraries     : LIBID_xxxx                                      
-//   CoClasses          : CLASS_xxxx                                      
-//   DISPInterfaces     : DIID_xxxx                                       
-//   Non-DISP interfaces: IID_xxxx                                        
+// In dieser Typbibliothek deklarierte GUIDS . Es werden folgende         
+// Präfixe verwendet:                                                     
+//   Typbibliotheken     : LIBID_xxxx                                     
+//   CoClasses           : CLASS_xxxx                                     
+//   DISPInterfaces      : DIID_xxxx                                      
+//   Nicht-DISP-Schnittstellen: IID_xxxx                                       
 // *********************************************************************//
 const
-  // TypeLibrary Major and minor versions
+  // Haupt- und Nebenversionen der Typbibliothek
   XPElevationDLLMajorVersion = 1;
   XPElevationDLLMinorVersion = 0;
 
-  LIBID_XPElevationDLL: TGUID = '{0F35684C-C35E-42EE-AFA3-315BFEFF48B1}';
+  LIBID_XPElevationDLL: TGUID = '{9A8BCDB2-A46B-48B5-9466-2F7DE4B4B870}';
 
-  IID_IXPElevation: TGUID = '{945A8D22-E912-4F09-8CB8-32667746DA6E}';
-  CLASS_XPElevation: TGUID = '{9EC823A7-F59F-4DA7-B895-7ACEF33A28AB}';
+  IID_IXPElevation: TGUID = '{F986436F-64E9-4292-84AC-F31D6776C619}';
+  CLASS_XPElevation: TGUID = '{DCF18AFA-3B25-417F-9E58-6E74D47F0D7C}';
+  IID_IXPElevationControl: TGUID = '{5D419256-FB83-4CE0-B316-808DD0035B99}';
+  CLASS_XPElevationControl: TGUID = '{3A0CF1B7-0E50-4B71-B296-36EC26891346}';
 type
 
 // *********************************************************************//
-// Forward declaration of types defined in TypeLibrary                    
+// Forward-Deklaration von in der Typbibliothek definierten Typen         
 // *********************************************************************//
   IXPElevation = interface;
+  IXPElevationControl = interface;
 
 // *********************************************************************//
-// Declaration of CoClasses defined in Type Library                       
-// (NOTE: Here we map each CoClass to its Default Interface)              
+// Deklaration von in der Typbibliothek definierten CoClasses             
+// (HINWEIS: Hier wird jede CoClass zu ihrer Standardschnittstelle        
+// zugewiesen)                                                            
 // *********************************************************************//
   XPElevation = IXPElevation;
+  XPElevationControl = IXPElevationControl;
+
+
+// *********************************************************************// 
+// Deklaration von  Strukturen, Unions und Aliasen.                        
+// *********************************************************************// 
+  PInteger1 = ^Integer; {*}
 
 
 // *********************************************************************//
-// Interface: IXPElevation
+// Schnittstelle: IXPElevation
 // Flags:     (256) OleAutomation
-// GUID:      {945A8D22-E912-4F09-8CB8-32667746DA6E}
+// GUID:      {F986436F-64E9-4292-84AC-F31D6776C619}
 // *********************************************************************//
   IXPElevation = interface(IUnknown)
-    ['{945A8D22-E912-4F09-8CB8-32667746DA6E}']
-    function CreateProcess(const Application: WideString; const Parameters: WideString; 
-                           StartInfo: Integer; out PID: Integer): HResult; stdcall;
+    ['{F986436F-64E9-4292-84AC-F31D6776C619}']
+    function ExecuteProcess(const ApplicationPath: WideString; const Parameters: WideString; 
+                            const CurrentDirectory: WideString; Flags: Integer; out PID: Integer): HResult; stdcall;
   end;
 
 // *********************************************************************//
-// The Class CoXPElevation provides a Create and CreateRemote method to          
-// create instances of the default interface IXPElevation exposed by              
-// the CoClass XPElevation. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// Schnittstelle: IXPElevationControl
+// Flags:     (256) OleAutomation
+// GUID:      {5D419256-FB83-4CE0-B316-808DD0035B99}
+// *********************************************************************//
+  IXPElevationControl = interface(IUnknown)
+    ['{5D419256-FB83-4CE0-B316-808DD0035B99}']
+    function Connect: HResult; stdcall;
+    function Shutdown: HResult; stdcall;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoXPElevation stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IXPElevation, dargestellt von
+// CoClass XPElevation, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
 // *********************************************************************//
   CoXPElevation = class
     class function Create: IXPElevation;
     class function CreateRemote(const MachineName: string): IXPElevation;
+  end;
+
+// *********************************************************************//
+// Die Klasse CoXPElevationControl stellt die Methoden Create und CreateRemote zur      
+// Verfügung, um Instanzen der Standardschnittstelle IXPElevationControl, dargestellt von
+// CoClass XPElevationControl, zu erzeugen. Diese Funktionen können                     
+// von einem Client verwendet werden, der die CoClasses automatisieren    
+// möchte, die von dieser Typbibliothek dargestellt werden.               
+// *********************************************************************//
+  CoXPElevationControl = class
+    class function Create: IXPElevationControl;
+    class function CreateRemote(const MachineName: string): IXPElevationControl;
   end;
 
 implementation
@@ -97,6 +132,16 @@ end;
 class function CoXPElevation.CreateRemote(const MachineName: string): IXPElevation;
 begin
   Result := CreateRemoteComObject(MachineName, CLASS_XPElevation) as IXPElevation;
+end;
+
+class function CoXPElevationControl.Create: IXPElevationControl;
+begin
+  Result := CreateComObject(CLASS_XPElevationControl) as IXPElevationControl;
+end;
+
+class function CoXPElevationControl.CreateRemote(const MachineName: string): IXPElevationControl;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_XPElevationControl) as IXPElevationControl;
 end;
 
 end.

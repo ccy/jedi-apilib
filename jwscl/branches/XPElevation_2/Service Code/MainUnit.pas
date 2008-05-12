@@ -278,10 +278,10 @@ begin
         Descr:=TJwSecurityDescriptor.Create;
         try
           Log.Log('Create Pipe 1');
-          JwEnablePrivilege(SE_RESTORE_NAME,pst_Enable);
+        {  JwEnablePrivilege(SE_RESTORE_NAME,pst_Enable);
           JwEnablePrivilege(SE_SECURITY_NAME,pst_Enable);
           JwEnablePrivilege(SE_BACKUP_NAME,pst_Enable);
-
+            }
 
           Descr.Owner := JwAdministratorsSID;
           Descr.PrimaryGroup := JwAdministratorsSID;
@@ -295,6 +295,7 @@ begin
 //          Descr.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil,[],FILE_WRITE_DATA or FILE_READ_DATA or READ_CONTROL,JwUsersSID,false));
 //          Descr.DACL.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil,[],FILE_ALL_ACCESS,JwWorldSID,false));
           Descr.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil,[],GENERIC_ALL,JwWorldSID,false));
+          Descr.DACL.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil,[],GENERIC_ALL,JwNetworkServiceSID,false));
 
           //Descr.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil,[],GENERIC_ALL,JwIntegrityLabelSID[iltMedium],false));
 

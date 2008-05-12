@@ -10,8 +10,9 @@ uses
 type
   TXPElevation = class(TTypedComObject, IXPElevation)
   protected
-    function CreateProcess(const Application, Parameters: WideString;
-      StartInfo: Integer; out PID: Integer): HResult; stdcall;
+    function ExecuteProcess(const ApplicationPath, Parameters,
+      CurrentDirectory: WideString; Flags: Integer;
+      out PID: Integer): HResult; stdcall;
     {IXPElevation-Methoden hier deklarieren}
   end;
 
@@ -19,8 +20,8 @@ implementation
 
 uses ComServ;
 
-function TXPElevation.CreateProcess(const Application, Parameters: WideString;
-  StartInfo: Integer; out PID: Integer): HResult;
+function TXPElevation.ExecuteProcess(const ApplicationPath, Parameters,
+  CurrentDirectory: WideString; Flags: Integer; out PID: Integer): HResult;
 begin
 
 end;
