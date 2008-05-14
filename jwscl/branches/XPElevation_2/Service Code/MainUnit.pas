@@ -6,7 +6,7 @@ uses
   Messages, SysUtils, Classes, Graphics, Controls, SvcMgr, Dialogs, Math, ComObj,
   JwaWindows, JwsclToken, JwsclLsa, JwsclCredentials, JwsclDescriptor, JwsclDesktops,
   JwsclExceptions, JwsclSID, JwsclAcl,JwsclKnownSID, JwsclEncryption, JwsclTypes,
-  JwsclProcess, JwsclSecureObjects,
+  JwsclProcess, JwsclSecureObjects, JwsclComUtils, JwsclVersion,
   JwsclLogging, uLogging,JwsclUtils,
   SessionPipe, ThreadedPasswords,
 
@@ -244,26 +244,76 @@ begin
 end;
 
 procedure TXPService.ServiceExecute(Sender: TService);
-var Pipe: THandle; OvLapped: OVERLAPPED;
+
+function CreateServicePipe(Log : IJwLogClient) : THandle;
+var
+  SD : TJwSecurityDescriptor;
+  pSA : JwaWindows.PSECURITY_ATTRIBUTES;
+begin
+  SD := TJwSecurityDescriptor.Create;
+  try
+    SD.Owner := JwAdministratorsSID;
+    SD.PrimaryGroup := JwAdministratorsSID;
+
+{$IFDEF DEBUG}
+    SD.DACL := nil;
+{$ELSE}
+    SD.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil,[],GENERIC_ALL,JwLocalSystemSID,false));
+    SD.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil,[],GENERIC_ALL or WRITE_DAC or WRITE_OWNER,JwAdministratorsSID,false));
+    SD.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil,[],GENERIC_ALL,JwWorldSID,false));
+    SD.DACL.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil,[],GENERIC_ALL,JwNetworkServiceSID,false));
+{$ENDIF}
+    pSA := SD.Create_SA();
+
+    try
+      result := CreateNamedPipe('\\.\pipe\XPElevationPipe',
+        PIPE_ACCESS_DUPLEX
+        or FILE_FLAG_OVERLAPPED
+        or WRITE_DAC or WRITE_OWNER {or ACCESS_SYSTEM_SECURITY},
+        PIPE_WAIT, PIPE_UNLIMITED_INSTANCES, 0, 0, 0, LPSECURITY_ATTRIBUTES(pSA));
+
+      if result = INVALID_HANDLE_VALUE then
+      begin
+        LogAndRaiseLastOsError(Log,ClassName, 'ServiceExecute::(winapi)CreateNamedPipe OUT', 'ElevationHandler.pas');
+        abort;
+      end;
+    finally
+      TJwSecurityDescriptor.Free_SA(pSA);
+    end;
+  finally
+    SD.Free;
+  end;
+end;
+
+
+
+
+var Pipe: THandle;
+
+    OvLapped,
+    OvLapped2: OVERLAPPED;
 
     
-    AppName: String; PipeSize: Cardinal; Descr: TJwSecurityDescriptor;
-    SecAttr: JwaWindows.PSECURITY_ATTRIBUTES;
+    AppName: String; PipeSize: Cardinal;
     i: integer;
     Log : IJwLogClient;
     WaitResult : DWORD;
     Msg : TMsg;
 
-    SH : TJwSecureGeneralObject;
+    UniquePipeID : DWORD;
 
+    PipeNameSize : DWORD;
+    PipeToken : TJwSecurityToken;
+    PipeName : WideString;
+    ProtocolVersion : DWORD;
 begin
 
   JwSetThreadName('XP Elevation Service Thread');
   Log := uLogging.LogServer.Connect(etMethod,ClassName,
           'ServiceExecute','MainUnit.pas','');
 
+  UniquePipeID := 10001;
 
-  
   try
     try
       fThreadsStoppedEvent   := CreateEvent(nil, true, false, nil);
@@ -271,71 +321,27 @@ begin
       Sleep(1000);
 
 
-      SecAttr := nil;
       ZeroMemory(@OvLapped, sizeof(OvLapped));
       OvLapped.hEvent := CreateEvent(nil, false, false, nil);
-      try
-        Descr:=TJwSecurityDescriptor.Create;
-        try
-          Log.Log('Create Pipe 1');
-        {  JwEnablePrivilege(SE_RESTORE_NAME,pst_Enable);
-          JwEnablePrivilege(SE_SECURITY_NAME,pst_Enable);
-          JwEnablePrivilege(SE_BACKUP_NAME,pst_Enable);
-            }
-
-          Descr.Owner := JwAdministratorsSID;
-          Descr.PrimaryGroup := JwAdministratorsSID;
-
-{$IFDEF DEBUG}
-          Descr.DACL:=nil;
-{$ELSE}
-        //  Descr.DACL.Clear;
-          Descr.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil,[],GENERIC_ALL,JwLocalSystemSID,false));
-          Descr.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil,[],GENERIC_ALL or WRITE_DAC or WRITE_OWNER,JwAdministratorsSID,false));
-//          Descr.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil,[],FILE_WRITE_DATA or FILE_READ_DATA or READ_CONTROL,JwUsersSID,false));
-//          Descr.DACL.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil,[],FILE_ALL_ACCESS,JwWorldSID,false));
-          Descr.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil,[],GENERIC_ALL,JwWorldSID,false));
-          Descr.DACL.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil,[],GENERIC_ALL,JwNetworkServiceSID,false));
-
-          //Descr.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil,[],GENERIC_ALL,JwIntegrityLabelSID[iltMedium],false));
-
-        //  ShowMessage(Descr.DACL.Text);
-
-{$ENDIF}
-          SecAttr := Descr.Create_SA();
-
-
-          Pipe := CreateNamedPipe('\\.\pipe\XPElevationPipe', PIPE_ACCESS_INBOUND or FILE_FLAG_OVERLAPPED
-            or WRITE_DAC or WRITE_OWNER {or ACCESS_SYSTEM_SECURITY},
-            PIPE_WAIT, PIPE_UNLIMITED_INSTANCES, 0, 0, 0, LPSECURITY_ATTRIBUTES(SecAttr));
-        finally
-          Descr.Free;
-        end;
-
-        if Pipe = INVALID_HANDLE_VALUE then
-        begin
-          LogAndRaiseLastOsError(Log,ClassName, 'ServiceExecute::(winapi)CreateNamedPipe OUT', 'ElevationHandler.pas');
-          abort;
-        end;
-
-
-    {    JwEnablePrivilege(SE_RESTORE_NAME,pst_Enable);
-          Descr.Owner := JwAdministratorsSID;
-          TJwSecureGeneralObject.SetSecurityInfo(Pipe,SE_FILE_OBJECT,[siOwnerSecurityInformation, siDaclSecurityInformation], Descr);
-     }
-
 
         InitAllowedSIDs;
         try
           //create job objects for all sessions
           fJobs := TJwJobObjectSessionList.Create(OnNewJobObject);
-          
+
+          Pipe := CreateServicePipe(Log);
           repeat
             ConnectNamedPipe(Pipe, @OvLapped);
 
             repeat
               if Assigned(ServiceThread) then
                 ServiceThread.ProcessRequests(False);
+
+
+              if (TJwWindowsVersion.IsWindowsXP(true) or
+                  TJwWindowsVersion.IsWindows2003(true)) and
+                    (GetSystemMetrics(SM_SHUTTINGDOWN) <> 0) then
+                  Stopped := true;
 
               SetLastError(0);
               WaitResult := JwMsgWaitForMultipleObjects([fServiceStopEvent, OvLapped.hEvent], false, INFINITE, QS_ALLINPUT);
@@ -352,29 +358,80 @@ begin
 
             if WaitResult = WAIT_OBJECT_0 +1 then  //OvLapped.hEvent
             begin
-              with THandleRequestThread.Create(
-                true, //Create suspended
-                fJobs,
-                fAllowedSIDs,//const AllowedSIDs:  TJwSecurityIdList;
-                fPasswords,//const Passwords   : TPasswordList;
-                fServiceStopEvent,//const StopEvent  : THandle;
-                fThreadsStoppedEvent,
-                nil,//ServiceThread.ProcessRequests,//const OnServiceProcessRequest : TOnServiceProcessRequest;
+              Inc(UniquePipeID);
 
-                @fStopped //const StopState : PBoolean
-                ) do
-              begin
-                FreeOnTerminate := True;
-                PipeHandle := Pipe;
-                Resume;
-              end;
+              ZeroMemory(@OvLapped2, sizeof(OvLapped2));
+              OvLapped2.hEvent := CreateEvent(nil,false,false,nil);
+              TJwAutoPointer.Wrap(OvLapped2.hEvent);
 
-              Pipe := CreateNamedPipe('\\.\pipe\XPElevationPipe', PIPE_ACCESS_INBOUND or FILE_FLAG_OVERLAPPED, PIPE_WAIT, PIPE_UNLIMITED_INSTANCES, 0, 0, 0, LPSECURITY_ATTRIBUTES(SecAttr));
-              if Pipe = INVALID_HANDLE_VALUE then
+              {We use this pipe only a very short time so it is very unlikely
+              that several clients are going to connect at the same time.
+              }
+              PipeName := THandleRequestThread.CreatePipeName(UniquePipeID);
+
+              //Sleep(2000);
+
+              ReadFile(Pipe, @ProtocolVersion, sizeof(ProtocolVersion) ,nil, @OvLapped2);
+
+              if JwWaitForMultipleObjects([fServiceStopEvent, OvLapped2.hEvent], false,
+                    {$IFNDEF DEBUG}1000{$ELSE}INFINITE{$ENDIF}) = WAIT_OBJECT_0 +1 then
               begin
-                LogAndRaiseLastOsError(Log,ClassName, 'ServiceExecute::(winapi)CreateNamedPipe IN', 'ElevationHandler.pas');
+                try //on E : Exception do
+                  //try to impersonate. May fail, so we don't do anything!
+                  //and this will lead to next on E : Exception
+                  TJwSecurityToken.ImpersonateNamedPipeClient(Pipe);
+
+                  //if sth happens here, we also fail to exception trap
+                  try
+                    PipeToken := TJwSecurityToken.CreateTokenByThread(0, MAXIMUM_ALLOWED, true);
+                  finally
+                    TJwSecurityToken.RevertToSelf;
+                  end;
+
+
+                  PipeNameSize := Length(PipeName);
+                  WriteFile(Pipe, @PipeNameSize, sizeof(PipeNameSize) ,nil, @OvLapped2);
+
+                  SetLastError(0);
+                  if CheckPipe(WriteFile(Pipe, @PipeName[1], Length(PipeName)*sizeof(WideChar),nil,@OvLapped2)) then
+                  begin
+
+                    with THandleRequestThread.Create(
+                      true, //Create suspended
+                      UniquePipeID,
+                      PipeToken,
+                      fJobs,
+                      fAllowedSIDs,//const AllowedSIDs:  TJwSecurityIdList;
+                      fPasswords,//const Passwords   : TPasswordList;
+                      fServiceStopEvent,//const StopEvent  : THandle;
+                      fThreadsStoppedEvent,
+                      nil,//ServiceThread.ProcessRequests,//const OnServiceProcessRequest : TOnServiceProcessRequest;
+
+                      @fStopped //const StopState : PBoolean
+                      ) do
+                    begin
+                      FreeOnTerminate := True;
+                      Resume;
+                    end;
+                  end
+                  else
+                    Log.Log('Could not send Pipename to client: '+SysErrorMessage(GetLastError));
+                except
+                  on E : Exception do
+                  begin
+                    Log.Exception(E);
+                    Log.Log(E.Message);
+                  end;
+                end;
               end;
-            end;
+            end
+            else
+              Log.Log('Read for protocl version failed.');
+
+
+            Sleep(5000);
+            DisconnectNamedPipe(Pipe);
+
           until Stopped;
 
         finally
@@ -382,7 +439,7 @@ begin
 
           //signal server shutdown
           Stopped := true;
-            
+
           {Wait for all threads to be stopped or timeout
           }
           WaitForSingleObject(ThreadsStopEvent, 60 * 1000);
@@ -392,19 +449,15 @@ begin
           FreeAndNil(fJobs);
         end;
       finally
-        if Assigned(SecAttr) then
-        begin
-          TJwSecurityDescriptor.Free_SA(SecAttr);
-        end;
         CloseHandle(OvLapped.hEvent);
       end;
     except
       on E : Exception do
         Log.Exception(E);
     end;
-  finally
+
     Log.Log(lsStop,'*** XP Elevation Service finished. ');
-  end;
+
 end;
 
 procedure TXPService.ServiceStop(Sender: TService; var Stopped: Boolean);

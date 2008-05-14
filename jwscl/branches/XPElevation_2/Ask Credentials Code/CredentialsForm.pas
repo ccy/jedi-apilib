@@ -7,12 +7,24 @@ uses
   Dialogs, StdCtrls, Buttons, ExtCtrls, JwsclStrings, JvExControls,
   JvLookOut, JvExExtCtrls, JvBevel, JvButton, JvTransparentButton,
   JvComponent, JvExStdCtrls, JvHtControls, JvLinkLabel, JvExtComponent,
-  JvLinkLabelTools, SessionPipe,
+  JvLinkLabelTools, SessionPipe, JwsclUtils,
   JvPanel, jpeg, JvLabel, JvComponentBase, JvComputerInfoEx, JvImage, JvGradient,
   JvGradientHeaderPanel, JvEdit, JvWaitingGradient, JvWaitingProgress,
   JvStaticText, ComCtrls, JvExComCtrls, JvProgressBar, JvThread, AppEvnts;
-                                          
+
+
+const
+ WM_SWITCH_DESKTOP = WM_USER + 1999;
+
 type
+  TJwDesktopSwitchThread = class(TJwThread)
+  public
+    procedure Execute; override;
+    procedure Terminate; reintroduce;
+
+    destructor Destroy; override;
+  end;
+
   TFormCredentials = class(TForm)
     BitBtnCancel: TBitBtn;
     BitBtn_Ok: TBitBtn;
@@ -71,6 +83,7 @@ type
       Shift: TShiftState; X, Y: Integer);
     procedure Button_EndServiceClick(Sender: TObject);
     procedure ApplicationEvents1Idle(Sender: TObject; var Done: Boolean);
+    procedure Image_ApplicationDblClick(Sender: TObject);
   private
     { Private-Deklarationen }
     fSaveLogon : Boolean;
@@ -83,6 +96,8 @@ type
     fFlags : Cardinal;
     fPipeSession : TClientSessionPipe;
     fShowWebPage : Boolean;
+    fDesktopSwitchThread : TJwDesktopSwitchThread;
+    fDesktopSwitchNotification : Boolean;
 
     function GetUserPicture(): TBitmap;
     procedure OnGetImage;
@@ -92,10 +107,14 @@ type
   public
     destructor Destroy; override;
 
+    procedure SWITCH_DESKTOP(var Message: TMsg); message WM_SWITCH_DESKTOP;
+
+   
     procedure CenterInMonitor(const i : Integer);
     { Public-Deklarationen }
     property AppName : TJwString read fAppName write fAppName;
     property AppCmdLine : TJwString read fAppCmdLine write fAppCmdLine;
+
 
     property SaveLogon : Boolean read fSaveLogon write fSaveLogon;
     property UserName : TJwString read fUserName write fUserName;
@@ -106,6 +125,7 @@ type
     property PipeSession : TClientSessionPipe read fPipeSession write fPipeSession;
 
     property LogonError : Boolean write ShowLogonError;
+
     property ShowWebPage : Boolean read fShowWebPage;
   end;
 
@@ -118,6 +138,54 @@ implementation
 uses Math;
 
 {$R *.dfm}
+
+
+
+
+procedure TJwDesktopSwitchThread.Terminate;
+begin
+  SetEvent(FTerminatedEvent);
+  inheriteD;
+end;
+
+destructor TJwDesktopSwitchThread.Destroy;
+begin
+  inherited;
+end;
+
+procedure TJwDesktopSwitchThread.Execute;
+var DE : THandle;
+begin
+  inherited;
+  
+  FreeOnTerminate := true;
+  FTerminatedEvent := CreateEvent(nil, true, false, nil);
+
+
+  Name := 'DesktopSwitchThread';
+
+  DE := OpenEvent(JwaWindows.SYNCHRONIZE, false, 'WinSta0_DesktopSwitch');
+
+  //wait for switch to another desktop
+  //we just assume it is the winlogon Lockstation call
+  //since this call returns to the last desktop that was in action
+  //if we just exit after the first switch
+  //the call will switchback to an empty desktop which is a dead end.
+  if JwWaitForMultipleObjects([DE, FTerminatedEvent], false, INFINITE) = WAIT_OBJECT_0 then
+  begin
+    SendMessage(FormCredentials.Handle, WM_SWITCH_DESKTOP, 123,1);
+    Sleep(10);
+    //wait for switchback
+    if JwWaitForMultipleObjects([DE, FTerminatedEvent], false, INFINITE) = WAIT_OBJECT_0 then
+    begin
+      try
+        SendMessage(FormCredentials.Handle, WM_SWITCH_DESKTOP, 789,2);
+      except
+      end;
+    end;
+  end;
+end;
+
 
 procedure TFormCredentials.FormClose(Sender: TObject;
   var Action: TCloseAction);
@@ -156,6 +224,11 @@ begin
   else ShowMessage(Format('%s'#13#10'"%s"', ['File not found:', CommonDataPath])); }
 end;
 
+
+procedure TFormCredentials.Image_ApplicationDblClick(Sender: TObject);
+begin
+  LockWorkStation;
+end;
 
 function TFormCredentials.IsPasswordCacheAvailable: Boolean;
 begin
@@ -334,7 +407,7 @@ begin
 //  Image1.Picture.Bitmap := GetUserPicture;
 
   //RetrieveProfileImage(OnGetImage);
-  Button_EndService.Visible := Flags and SERVER_DEBUGTERMINATE = SERVER_DEBUGTERMINATE;
+
   fShowWebPage := false;
 end;
 
@@ -354,7 +427,9 @@ end;
 var
   Publisher : String;
   Signed : Boolean;
+
 begin
+
   JvEdit_AppName.Text := AppName;
   JvEdit_CmdLine.Text := '"'+AppName + '" ' +AppCmdLine;
   Label_DefaultUser.Caption := 'Elevate me as Administrator';
@@ -438,7 +513,13 @@ begin
 
   Application.OnIdle := ApplicationEvents1Idle;
 
+  Button_EndService.Visible := Flags and SERVER_DEBUGTERMINATE = SERVER_DEBUGTERMINATE;
 
+  fDesktopSwitchNotification := False;
+
+  fDesktopSwitchThread := TJwDesktopSwitchThread.Create(true,'');
+  fDesktopSwitchThread.FreeOnTerminate := true;
+  fDesktopSwitchThread.Resume;
 end;
 
 procedure TFormCredentials.CenterInMonitor(const i : Integer);
@@ -478,11 +559,20 @@ end;
 destructor TFormCredentials.Destroy;
 begin
   Application.OnIdle := nil;
-  
+
   fAppName := GetFillPasswd;
   fAppCmdLine := GetFillPasswd;
   fUserName := GetFillPasswd;
   fPassword := GetFillPasswd;
+
+  if Assigned(fDesktopSwitchThread) then
+  begin
+    fDesktopSwitchThread.Terminate;
+    //fDesktopSwitchThread.WaitWithTimeOut(1000);
+    fDesktopSwitchThread := nil;
+  end;
+
+
 
   inherited;
 end;
@@ -500,39 +590,43 @@ var
   BytesRead : DWORD;
   Data : Array[0..1] of DWORD;
 begin
-  if PeekNamedPipe(
-    PipeSession.Handle,//hNamedPipe: THandle;
-    @Data,//lpBuffer: Pointer;
-    sizeof(Data),//nBufferSize: DWORD;
-    @BytesRead,//lpBytesRead,
-    nil,//lpTotalBytesAvail,
-    nil//lpBytesLeftThisMessage: Pointer): BOOL; stdcall;
-   ) then
+  //ignore timeout if desktop is not our secure desktop
+  if not fDesktopSwitchNotification then
   begin
-    if BytesRead = sizeof(Data) then
+    if PeekNamedPipe(
+      PipeSession.Handle,//hNamedPipe: THandle;
+      @Data,//lpBuffer: Pointer;
+      sizeof(Data),//nBufferSize: DWORD;
+      @BytesRead,//lpBytesRead,
+      nil,//lpTotalBytesAvail,
+      nil//lpBytesLeftThisMessage: Pointer): BOOL; stdcall;
+     ) then
     begin
-      if Data[0] = ERROR_TIMEOUT then
+      if BytesRead = sizeof(Data) then
       begin
-        Application.OnIdle := nil;
-        ModalResult := mrIgnore;
-        Close;
-      end;
-    end;
-  end
-  else
-  begin
-    OutputDebugStringA(PChar(IntToStr(GetLAstError)));
-    case GetLastError() of
-      ERROR_BROKEN_PIPE,
-      ERROR_BAD_PIPE,
-      ERROR_PIPE_NOT_CONNECTED,
-      ERROR_NO_DATA,
-      ERROR_PIPE_BUSY :
+        if Data[0] = ERROR_TIMEOUT then
         begin
           Application.OnIdle := nil;
-
-          BitBtnCancel.Click;
+          ModalResult := mrIgnore;
+          Close;
         end;
+      end;
+    end
+    else
+    begin
+      OutputDebugStringA(PChar(IntToStr(GetLAstError)));
+      case GetLastError() of
+        ERROR_BROKEN_PIPE,
+        ERROR_BAD_PIPE,
+        ERROR_PIPE_NOT_CONNECTED,
+        ERROR_NO_DATA,
+        ERROR_PIPE_BUSY :
+          begin
+            Application.OnIdle := nil;
+
+            BitBtnCancel.Click;
+          end;
+      end;
     end;
   end;
 end;
@@ -603,6 +697,21 @@ begin
   JvStaticText_LogonError.Visible := Visible;
 end;
 
+procedure TFormCredentials.SWITCH_DESKTOP(var Message: TMsg);
+begin
+  fDesktopSwitchNotification := true;
+
+  if Message.wParam = 2 then //2nd desktop switch
+  begin
+    //return with a result
+    //that states that all contacts to service must be ignored
+    //since the service lost patience with us
+    //so the pipe connection is broken
+    ModalResult := mrIgnore;
+    Close;
+  end;
+end;
+
 procedure TFormCredentials.Timer1Timer(Sender: TObject);
 Var Element : TObject;
   P : TPoint;
@@ -614,8 +723,6 @@ begin
 
     if Assigned(Element) and (Element = JvProgressBar) then
        JvBevel1MouseMove(Element,[],P.X, P.Y);
-
-
   except
 
   end;

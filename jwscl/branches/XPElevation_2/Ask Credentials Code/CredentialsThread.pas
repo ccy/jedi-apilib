@@ -11,6 +11,7 @@ uses
   JwsclCredentials,
   JwsclEurekaLogUtils,
   JwsclTypes,
+  JwsclAcl,
   JwsclLogging,
   JwsclKnownSid,
   ULogging,
@@ -23,6 +24,8 @@ uses
   Graphics,
   MainForm,
   CredentialsForm;
+
+
 
 type
 
@@ -53,6 +56,8 @@ type
     destructor Destroy; override;
 
     procedure Execute; override;
+
+
 
     class procedure ProcessLogonResult(const Value, LastError : Integer);
     property MaxRepetitionCount : DWORD read fMaxRepetitionCount;
@@ -110,8 +115,10 @@ begin
   end;
   Application := nil;
 
-  SD := TJwSecurityDescriptor.CreateDefaultByToken;
+  SD := TJwSecurityDescriptor.CreateDefaultByToken();
   try
+    //SD.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil, [], GENERIC_ALL, JwLocalSystemSID));
+
 {    if SD.DACL.FindSID(JwLocalSystemSID) >= 0 then
     begin
       SD.DACL.Delete(SD.DACL.FindSID(JwLocalSystemSID));
@@ -142,6 +149,8 @@ begin
     SD.Free;
   end;
 end;
+
+
 
 
 
@@ -226,11 +235,12 @@ begin
   if Assigned(ScreenBitmap) then
   begin
     FormMain.Image1.Picture.Bitmap.Assign(ScreenBitmap);
-    FormMain.Image1.Align  := alClient;
   end;
 
+  FormMain.Image1.Align  := alClient;
   FormMain.BoundsRect := Resolution;
-  FormMain.Visible := Assigned(ScreenBitmap);
+  FormMain.Visible := true;//Assigned(ScreenBitmap);
+
 
   Log.Log('Run Application...');
   Application.Run;
@@ -338,13 +348,24 @@ begin
   ScreenBitmap := nil;
   ActiveWindowHandle := GetForegroundWindow; //GetActiveWindow;
 
-  //create background image
-  try
-    ScreenBitmap := GetScreenBitmap(Resolution);
-    TJwAutoPointer.Wrap(ScreenBitmap);
-  except
+  //create background image if this is not a remote session
+  //we save data
+  {if GetSystemMetrics(SM_REMOTESESSION) = 0 then}
+  if true then  
+  begin
+    try
+      ScreenBitmap := GetScreenBitmap(Resolution);
+      TJwAutoPointer.Wrap(ScreenBitmap);
+    except
+      ScreenBitmap := nil;
+      Log.Log(lsWarning,'Screenbitmap failed to load.');
+    end;
+  end
+  else
+  begin
+    Resolution := GetMaxResolution;
+    Log.Log(lsWarning,'Screenbitmap is not loaded due to remote application.');
     ScreenBitmap := nil;
-    Log.Log(lsWarning,'Screenbitmap failed to load.');
   end;
 
 
@@ -377,34 +398,52 @@ begin
         Log.Log(lsMessage,'Call ShowCredentialsForm');
         PromptResult := ShowCredentialsForm(ScreenBitmap,Resolution,SessionInfo, PipeSession, CurrentAttempt > 0);
 
-        if PromptResult <> mrIgnore then //ignore timeout
+        //time out while we were on the winlogon desktop?
+        //ignore pipe if service timed out and we didn't respons immediately
+        if PromptResult = mrIgnore then
         begin
-          Log.Log(lsMessage,'Send client data...');
-          LastError := ERROR_PIPE_BUSY;
-          PipeSession.SendClientData(SessionInfo);
-        end;
-
-        Log.Log(lsMessage,'Get service results');
-        LastError := ERROR_PIPE_LISTENING;
-        PipeSession.ReadServerProcessResult(Value, LastError, 0);
-
-        case Value of
-          ERROR_SUCCESS : break;
-          ERROR_LOGONUSERFAILED :
-          begin
-            Log.Log(lsWarning,'Service says: invalid logon credentials');
-            CurrentAttempt := LastError;
-          end
+          Result := 0;
+          fIsServiceError := false;
+          fErrorValue := 0;
+          fLastError := 0;
+          //return values from service
+          //since we timed out on the logon desktop
+          //the service won't response anymore
+          Value := 0;
+          LastError := 0;
+          break;
+        end
         else
+        begin
+          if PromptResult <> mrIgnore then //ignore timeout
           begin
-            Log.Log(lsWarning,Format('Service returns error. Value:%d LastError:%d',[Value,LastError]));
-            EndDesktop(fDesktop);
+            Log.Log(lsMessage,'Send client data...');
+            LastError := ERROR_PIPE_BUSY;
+            PipeSession.SendClientData(SessionInfo);
+          end;
 
-            Result := 1;
-            fIsServiceError := true;
-            fErrorValue := Value;
-            fLastError := LastError;
-            exit;
+          Log.Log(lsMessage,'Get service results');
+          LastError := ERROR_PIPE_LISTENING;
+          PipeSession.ReadServerProcessResult(Value, LastError, 0);
+
+          case Value of
+            ERROR_SUCCESS : break;
+            ERROR_LOGONUSERFAILED :
+            begin
+              Log.Log(lsWarning,'Service says: invalid logon credentials');
+              CurrentAttempt := LastError;
+            end
+          else
+            begin
+              Log.Log(lsWarning,Format('Service returns error. Value:%d LastError:%d',[Value,LastError]));
+              EndDesktop(fDesktop);
+
+              Result := 1;
+              fIsServiceError := true;
+              fErrorValue := Value;
+              fLastError := LastError;
+              exit;
+            end;
           end;
         end;
 
@@ -412,8 +451,12 @@ begin
           break;
       until CurrentAttempt > MaxRepetitionCount;
 
-      LastError := ERROR_PIPE_LISTENING;
-      PipeSession.ReadServerProcessResult(Value, LastError, 0);
+      //ignore pipe if service timed out and we didn't respons immediately
+      if PromptResult <> mrIgnore then
+      begin
+        LastError := ERROR_PIPE_LISTENING;
+        PipeSession.ReadServerProcessResult(Value, LastError, 0);
+      end;
 
       Result := 0;
 

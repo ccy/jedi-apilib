@@ -99,6 +99,7 @@ type
 
     fProtectionDACLState,
     fProtectionSACLState  : TJwACLProtection;
+    fTag : Integer;
 
 
 
@@ -467,7 +468,7 @@ type
           process or thread token. 
 
      raises
- EJwsclNILParameterException:  will be raised if ModificationDescriptor is nil 
+ EJwsclNILParameterException:  will be raised if ModificationDescriptor is nil
       EJwsclInvalidParameterException: will be raisef if the type of parameter Token
       is not a TJwSecurityToken class 
       EJwsclSACLAccessDenied: will be raised if SecurityInformation contains siSaclSecurityInformation,
@@ -718,7 +719,7 @@ type
          #  SACL_SECURITY_INFORMATION
          #  LABEL_SECURITY_INFORMATION (only available in Vista; otherwise it is ignored)
          #  ALL_SECURITY_INFORMATION - combines all flags above
-         
+
         }
     property StringSD[SIFlags: TSecurityInformation]: TJwString
       Read GetSecurityDescriptorString;   *)
@@ -740,6 +741,8 @@ type
      into a SECURITY_ATTRIBUTES structure.
      }
     property InheritHandles : Boolean read fInheritHandles write fInheritHandles;
+
+    property Tag : Integer read fTag write fTag;
   end;
 
 const {<B>SD_MAGIC_HEADER</B> is the header string that initiates a security descriptor stream block used

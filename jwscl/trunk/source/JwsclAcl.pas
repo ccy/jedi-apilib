@@ -1,4 +1,4 @@
-{<B>Abstract</B>Contains access control classes that are used by the units of JWSCL 
+{<B>Abstract</B>Contains access control classes that are used by the units of JWSCL
 @author(Christian Wimmer)
 <B>Created:</B>03/23/2007 
 <B>Last modification:</B>09/10/2007 
@@ -362,17 +362,24 @@ type
      @param aObject contains the ACE to be removed 
      @return <B>Remove</B> returns the index of the ACE in the list before it was removed. If
                the ACE could not be found the return value is -1.  }
-    function Remove(AccessEntry: TJwSecurityAccessControlEntry): integer; overload;
+    function Remove(const AccessEntry: TJwSecurityAccessControlEntry): integer; overload;
 
     {<B>Remove</B> removes an object give by index from the list.
      The object will be freed automatically if OwnsObject is true.
 
     @return Index receives the zero based index of the object to be removed.
-             Valid values are 0 to Count -1 .   
+             Valid values are 0 to Count -1 .
     @return <B>Remove</B> returns the index of the ACE in the list before it was removed. If
-               the ACE could not be found the return value is -1. 
+               the ACE could not be found the return value is -1.
     }
-    function Remove(Index: integer): integer; overload;
+    function Remove(const Index: integer): integer; overload;
+
+    {<B>Delete</B> removes an object give by index from the list.
+     The object will be freed automatically if OwnsObject is true.
+     @return Index receives the zero based index of the object to be removed.
+             Valid values are 0 to Count -1 .
+     }
+    procedure Delete(const Index: integer); reintroduce; virtual; 
 
     property Items[Index: integer]: TJwSecurityAccessControlEntry Read GetItem;
       default;
@@ -2627,7 +2634,12 @@ begin
     Result := TJwSecurityAccessControlEntry(inherited Last);
 end;
 
-function TJwSecurityAccessControlList.Remove(Index: integer): integer;
+procedure TJwSecurityAccessControlList.Delete(const Index: integer);
+begin
+  Remove(Index);
+end;
+
+function TJwSecurityAccessControlList.Remove(const Index: integer): integer;
 var
   P: TJwSecurityAccessControlEntry;
 begin
@@ -2636,7 +2648,7 @@ begin
   Result := Remove(P);
 end;
 
-function TJwSecurityAccessControlList.Remove(AccessEntry:
+function TJwSecurityAccessControlList.Remove(const AccessEntry:
   TJwSecurityAccessControlEntry): integer;
 var
   idx: integer;

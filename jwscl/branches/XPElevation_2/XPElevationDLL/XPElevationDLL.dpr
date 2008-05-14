@@ -1,6 +1,9 @@
 library XPElevationDLL;
 
+{%File '..\Contextmenu\Kontextmenuhandler.dpr'}
+
 uses
+  ExceptionLog,
   ComServ,
   XPElevationDLL_TLB in 'XPElevationDLL_TLB.pas',
   XPElevationDLLImplementation in 'XPElevationDLLImplementation.pas' {XPElevation: CoClass},

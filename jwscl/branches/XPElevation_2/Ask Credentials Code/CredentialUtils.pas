@@ -4,9 +4,28 @@ interface
 uses JwaWindows, Forms, Graphics;
 
 function GetScreenBitmap(out Resolution : TRect) : TBitmap;
+function GetMaxResolution : TRect;
 
 implementation
 
+
+function GetMaxResolution : TRect;
+var i : Integer;
+begin
+  ZeroMemory(@result, sizeof(result));
+  for i := 0 to Screen.MonitorCount -1 do
+  begin
+    if Screen.Monitors[i].BoundsRect.Left < result.Left then
+      result.Left := Screen.Monitors[i].BoundsRect.Left;
+    if Screen.Monitors[i].BoundsRect.Top < result.Top then
+      result.Top := Screen.Monitors[i].BoundsRect.Top;
+
+    if Screen.Monitors[i].BoundsRect.Right > result.Right then
+      result.Right := Screen.Monitors[i].BoundsRect.Right;
+    if Screen.Monitors[i].BoundsRect.Bottom > result.Bottom then
+      result.Bottom := Screen.Monitors[i].BoundsRect.Bottom;
+  end;
+end;
 
 function GetScreenBitmap(out Resolution : TRect) : TBitmap;
 
@@ -21,23 +40,7 @@ function GetScreenBitmap(out Resolution : TRect) : TBitmap;
     Result:= jwaWindows.AlphaBlend(DestDC, DestX, DestY, nWidth, nHeight, SrcDC, SrcX, SrcY, NWidth, nHeight, BlendStruct);
   end;
 
-  function GetMaxResolution : TRect;
-  var i : Integer;
-  begin
-    ZeroMemory(@result, sizeof(result));
-    for i := 0 to Screen.MonitorCount -1 do
-    begin
-      if Screen.Monitors[i].BoundsRect.Left < result.Left then
-        result.Left := Screen.Monitors[i].BoundsRect.Left;
-      if Screen.Monitors[i].BoundsRect.Top < result.Top then
-        result.Top := Screen.Monitors[i].BoundsRect.Top;
 
-      if Screen.Monitors[i].BoundsRect.Right > result.Right then
-        result.Right := Screen.Monitors[i].BoundsRect.Right;
-      if Screen.Monitors[i].BoundsRect.Bottom > result.Bottom then
-        result.Bottom := Screen.Monitors[i].BoundsRect.Bottom;
-    end;
-  end;
 
 var i : Integer;
     SrcR,DestR,

@@ -1269,7 +1269,9 @@ end;
 
 
 function TJwSecurityDesktop.GetName: TJwString;
+var LastError : DWORD;
 begin
+  LastError := GetLastError; //Save last error value since we use this method everywhere
   if (Handle = 0) or not Opened then
     Result := fName
   else
@@ -1280,6 +1282,7 @@ begin
     except
       Result := fName;
     end;
+  SetLastError(LastError);
 end;
 
 function TJwSecurityDesktop.GetOpened: boolean;

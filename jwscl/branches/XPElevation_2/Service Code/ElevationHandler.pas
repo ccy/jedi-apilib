@@ -11,8 +11,8 @@ uses
   JwsclStrings;
 
 const
-  TIMEOUT = {$IFNDEF DEBUG}10 * 30 * 1000;{$ELSE}INFINITE;{$ENDIF}
-  USERTIMEOUT = {$IFNDEF DEBUG}10 * 60 * 1000;{$ELSE}INFINITE;{$ENDIF}
+  TIMEOUT = {$IFNDEF DEBUG}60 * 30 * 1000;{$ELSE}INFINITE;{$ENDIF}
+  USERTIMEOUT = {$IFNDEF DEBUG}60 * 30 * 1000;{$ELSE}INFINITE;{$ENDIF}
   MAX_LOGON_ATTEMPTS = {$IFNDEF DEBUG} 3;{$ELSE}INFINITE;{$ENDIF}
 
 const
@@ -22,18 +22,31 @@ const
   E_RESPONSE_TIME_OUT = $83E70004;
   E_SERVICE_SHUTDOWN = $83E70005;
   E_INVALID_RECORD_SIZE = $83E70006;
+  E_SERVICE_OUT_OF_ORDER = $83E70007;
+  E_SERVICE_CONTACT_FAILED = $83E70008;
+  E_INVALID_PARAMETER = $83E70009;
+  E_INVALID_APPLICATION_NAME = $83E70010;
+  E_SERVICE_TIME_OUT = $83E70011;
+  E_SERVICE_FAILED = $83E70012;
 
 
 type
   TXPElevationStruct = record
     Size : DWORD;
 
-    ApplicationName,
-    Parameters,
-    CurrentDirectory  : WideString;
+    ParentWindow : HWND;
+
+    ApplicationName  : array[0..MAX_PATH] of WideChar;
+    CurrentDirectory : array[0..MAX_PATH] of WideChar;
+    Parameters : WideString; {in public: Pointer. Must be nil}
 
     Flags : DWORD;
     StartupInfo : TStartupInfoW;
+
+    ParameterCharCount : DWORD;
+
+    Reserved1,
+    Reserved2 : DWORD;
   end;
 
 
@@ -68,7 +81,7 @@ type
       const StopState : PBoolean);
     destructor Destroy; override;
 
-    function StartApplication(const ElevationStruct : TXPElevationStruct) : HRESULT;
+    function StartApplication(const ElevationStruct : TXPElevationStruct; out PID : DWORD) : HRESULT;
     function AskCredentials(const ClientPipeUserToken: TJwSecurityToken;
         const SIDIndex : Integer;
         out LastProcessID: TJwProcessId;
@@ -207,6 +220,25 @@ begin
 end;
 
 
+function GetRestrictedSYSTEMToken(Token : TJwSecurityToken) : TJwSecurityToken;
+begin
+  if not Assigned(Token) then
+  begin
+    Token := TJwSecurityToken.CreateTokenEffective(MAXIMUM_ALLOWED);
+    TJwAutoPointer.Wrap(Token);
+  end;
+  
+  result := TJwSecurityToken.CreateRestrictedToken(
+    Token.TokenHandle, //PrevTokenHandle : TJwTokenHandle;
+    MAXIMUM_ALLOWED,//const TokenAccessMask: TJwTokenAccessMask;
+  DISABLE_MAX_PRIVILEGE,//const Flags: cardinal;
+  nil,//const SidsToDisable: TJwSecurityIdList;
+  nil,//const PrivilegesToDelete: TJwPrivilegeSet;
+  nil//const RestrictedSids: TJwSecurityIdList
+  );
+  result.ConvertToPrimaryToken(MAXIMUM_ALLOWED);
+end;
+
 
 var
   StartInfo: STARTUPINFOW;
@@ -217,6 +249,8 @@ var
   CredApp: String;
   CreationFlags,
   LastError : DWORD;
+
+  Token : TJwSecurityToken;
 
   AppliationCmdLine,
   PipeName : WideString;
@@ -248,7 +282,7 @@ begin
     Desc.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil, [], GENERIC_ALL, JwLocalSystemSID));
     Desc.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil, [], FILE_ALL_ACCESS or SYNCHRONIZE,
     //Desc.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil, [], PIPE_ACCESS_DUPLEX or FILE_FLAG_OVERLAPPED or SYNCHRONIZE,
-        ClientPipeUserToken.TokenUser, false));
+        ClientPipeUserToken.TokenUser, true));
     //Desc.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil, [], GENERIC_ALL, JwWorldSID));
 {$ENDIF}
 
@@ -318,13 +352,33 @@ begin
     else
       CreationFlags := 0;
     try
-      if not CreateProcessAsUserW(
-         ClientPipeUserToken.TokenHandle,
-         PWideChar(Widestring(CredApp)),
-         PWideChar(Widestring(AppliationCmdLine)) ,
-        nil, nil, True, CREATE_NEW_CONSOLE or CreationFlags, P, nil, StartInfo, ProcInfo) then
-      begin
-        LogAndRaiseLastOsError(Log, ClassName, 'AskCredentials::(winapi)CreateProcessAsUserW', 'ElevationHandler.pas');
+      Desc :=  TJwAutoPointer.Wrap(TJwSecurityDescriptor.Create).Instance as TJwSecurityDescriptor;
+
+      Desc.OwnOwner := False;
+      Desc.Owner := JwLocalSystemSID;
+
+      Desc.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil, [], PROCESS_ALL_ACCESS, JwLocalSystemSID));
+      Desc.DACL.Add(TJwDiscretionaryAccessControlEntryDENY.Create(nil, [], PROCESS_ALL_ACCESS,  ClientPipeUserToken.TokenUser, true));
+
+      SecAttr := LPSECURITY_ATTRIBUTES(Desc.Create_SA());
+      try
+        //create an restricted token from system
+        Token := GetRestrictedSYSTEMToken(nil);
+        TJwAutoPointer.Wrap(Token);
+
+        //set corresponding session id
+        Token.TokenSessionId := ClientPipeUserToken.TokenSessionId;
+
+        if not CreateProcessAsUserW(
+           Token.TokenHandle,//ClientPipeUserToken.TokenHandle,
+           PWideChar(Widestring(CredApp)),
+           PWideChar(Widestring(AppliationCmdLine)) ,
+          SecAttr, SecAttr, True, CREATE_NEW_CONSOLE or CreationFlags, P, nil, StartInfo, ProcInfo) then
+        begin
+          LogAndRaiseLastOsError(Log, ClassName, 'AskCredentials::(winapi)CreateProcessAsUserW', 'ElevationHandler.pas');
+        end;
+      finally
+        TJwSecurityDescriptor.Free_SA(PSecurityAttributes(SecAttr));
       end;
     finally
       DestroyEnvironmentBlock(P);
@@ -550,9 +604,10 @@ end;
 
 
 
-function TElevationHandler.StartApplication(const ElevationStruct : TXPElevationStruct) : HRESULT;
+function TElevationHandler.StartApplication(const ElevationStruct : TXPElevationStruct; out PID : DWORD) : HRESULT;
 
-function CopyStartupInfo(const Startup : TStartupInfoW) : TStartupInfoW;
+function CopyStartupInfo(const Startup : {$IFDEF UNICODE}TStartupInfoW{$ELSE}TStartupInfoA{$ENDIF})
+   : {$IFDEF UNICODE}TStartupInfoW{$ELSE}TStartupInfoA{$ENDIF};
 begin
 //  ZeroMemory(@result, sizeof(result));
   CopyMemory(@result, @Startup, sizeof(result));
@@ -673,6 +728,8 @@ begin
           SessionInfo.Flags    := 0;
         end;
 
+        SessionInfo.ParentWindow := ElevationStruct.ParentWindow;
+
         //creates new process which asks user for credentials
         //ServerPipe is created here
         try //6.
@@ -787,14 +844,16 @@ begin
 
             try //7.
               try
-                  JwCreateProcessAsAdminUser(
-                     UserName,//const UserName,
-                     Domain,//Domain,
-                     Password,//Password : TJwString;
-                     InVars,//const InVars : TJwCreateProcessInfo;
-                     OutVars,//out OutVars : TJwCreateProcessOut;
-                     uLogging.LogServer//LogServer : IJwLogServer
-                   );
+                JwCreateProcessAsAdminUser(
+                   UserName,//const UserName,
+                   Domain,//Domain,
+                   Password,//Password : TJwString;
+                   InVars,//const InVars : TJwCreateProcessInfo;
+                   OutVars,//out OutVars : TJwCreateProcessOut;
+                   uLogging.LogServer//LogServer : IJwLogServer
+                 );
+
+                PID := OutVars.ProcessInfo.dwProcessId;
 
                 //send success
                 if Assigned(ServerPipe) then

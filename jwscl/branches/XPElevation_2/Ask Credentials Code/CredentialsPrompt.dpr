@@ -31,7 +31,8 @@ uses
   CredentialUtils in 'CredentialUtils.pas',
   uLogging in '..\Service Code\uLogging.pas',
   SessionPipe in '..\SessionPipe.pas',
-  CredentialsForm in 'CredentialsForm.pas' {FormCredentials};
+  CredentialsForm in 'CredentialsForm.pas' {FormCredentials},
+  MainForm in 'MainForm.pas' {FormMain};
 
 procedure AttachedFilesRequestProc(EurekaExceptionRecord: TEurekaExceptionRecord;
     AttachedFiles: TStrings);
@@ -67,6 +68,9 @@ var
   LastError : DWORD;
   IsServiceError : Boolean;
 begin
+  if GetSystemMetrics(SM_SHUTTINGDOWN) <> 0 then
+    halt(1);
+
   ExceptionLog.CustomWebFieldsRequest := JEDI_WebFieldsRequestNotify;
   ExceptionLog.AttachedFilesRequest := AttachedFilesRequestProc;
 
@@ -79,7 +83,7 @@ begin
 
 
 
-  //if HasParameter('/debug') then
+ // if HasParameter('/debug') then
       MessageBox(0,'Debug breakpoint','',MB_ICONEXCLAMATION or MB_OK);
 
 

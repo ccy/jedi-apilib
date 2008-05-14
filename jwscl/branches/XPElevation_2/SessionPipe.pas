@@ -57,6 +57,7 @@ type
     Commandline : array[0..MAX_PATH] of WideChar;
     UserName    : array[0..UNLEN] of WideChar;
     Domain      : array[0..MAX_DOMAIN_NAME_LEN] of WideChar;
+    ParentWindow : HWND;
     MaxLogonAttempts,
     TimeOut   : DWORD;
     Flags     : DWORD;
@@ -68,6 +69,7 @@ type
     UserName,
     Domain,
     Password  : WideString;
+    ParentWindow : HWND;
     Flags  : DWORD;
     MaxLogonAttempts,
     TimeOut : DWORD;
@@ -172,6 +174,8 @@ function StringCchLengthHelperW(
 //function StringCchLengthHelper(
 //    {__in}const psz : STRSAFE_LPCTSTR;
 //    {__in}cchMax : size_t) : Size_t;
+
+function CheckPipe(const Value : Boolean) : Boolean;
 
 implementation
 
@@ -552,6 +556,9 @@ begin
 
     ServerBuffer.Flags := SessionInfo.Flags;
     ServerBuffer.MaxLogonAttempts := SessionInfo.MaxLogonAttempts;
+    ServerBuffer.ParentWindow := SessionInfo.ParentWindow;
+
+
 
     if not WriteFile(
          fPipe,//hFile: HANDLE;

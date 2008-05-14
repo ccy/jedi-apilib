@@ -1,4 +1,4 @@
-{<B>Abstract</B>This unit contains a log mechanisms 
+{<B>Abstract</B>This unit contains a log mechanisms
 @author(Christian Wimmer)
 <B>Created:</B>03/23/2007 
 <B>Last modification:</B>09/10/2007 
@@ -1017,9 +1017,16 @@ begin
 
     end
     else
+    if E is EOSError then
+    begin
+      AddToList(fWriter.WriteSingleTag(fInd,
+        JwXMLTagsString[xtGetLastError], IntToStr((E as EOSError).ErrorCode), Attributes));
+    end
+    else
     begin
 
     end;
+    OutputDebugStringW(PWideChar(WideString(E.Message)));
 
     AddToList(fWriter.WriteSingleTag(fInd,
         JwXMLTagsString[xtMessage], E.Message, Attributes));

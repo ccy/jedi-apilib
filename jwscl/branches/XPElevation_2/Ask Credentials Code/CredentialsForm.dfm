@@ -13,7 +13,6 @@ object FormCredentials: TFormCredentials
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
   Font.Style = []
-  FormStyle = fsStayOnTop
   OldCreateOrder = False
   Position = poDesigned
   OnClose = FormClose
@@ -2417,6 +2416,7 @@ object FormCredentials: TFormCredentials
       FF00}
     Stretch = True
     Transparent = True
+    OnDblClick = Image_ApplicationDblClick
     OnMouseMove = JvBevel1MouseMove
   end
   object Image_LogonError: TImage
@@ -3151,7 +3151,6 @@ object FormCredentials: TFormCredentials
     OnMouseMove = JvBevel1MouseMove
     Marquee = True
     SmoothReverse = True
-    ExplicitTop = 392
   end
   object BitBtnCancel: TBitBtn
     Left = 263

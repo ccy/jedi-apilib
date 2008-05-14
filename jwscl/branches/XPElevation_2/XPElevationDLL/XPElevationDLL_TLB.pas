@@ -12,7 +12,7 @@ unit XPElevationDLL_TLB;
 // ************************************************************************ //
 
 // PASTLWTR : 1.2
-// Datei generiert am 11.05.2008 20:45:36 aus der unten beschriebenen Typbibliothek.
+// Datei generiert am 12.05.2008 22:56:31 aus der unten beschriebenen Typbibliothek.
 
 // ************************************************************************  //
 // Typbib: P:\Eigene Dateien\Dezipaitor\Projekte\Delphi\7\jedi-api-lib\jwscl\branches\XPElevation_2\XPElevationDLL\XPElevationDLL.tlb (1)
@@ -51,6 +51,16 @@ const
   CLASS_XPElevation: TGUID = '{DCF18AFA-3B25-417F-9E58-6E74D47F0D7C}';
   IID_IXPElevationControl: TGUID = '{5D419256-FB83-4CE0-B316-808DD0035B99}';
   CLASS_XPElevationControl: TGUID = '{3A0CF1B7-0E50-4B71-B296-36EC26891346}';
+
+// *********************************************************************//
+// Deklaration von in der Typbibliothek definierten Enumerationen         
+// *********************************************************************//
+// Konstanten für enum XPElevationError
+type
+  XPElevationError = TOleEnum;
+const
+  E_INVALID_USER = $0D30B335;
+
 type
 
 // *********************************************************************//
@@ -68,12 +78,6 @@ type
   XPElevationControl = IXPElevationControl;
 
 
-// *********************************************************************// 
-// Deklaration von  Strukturen, Unions und Aliasen.                        
-// *********************************************************************// 
-  PInteger1 = ^Integer; {*}
-
-
 // *********************************************************************//
 // Schnittstelle: IXPElevation
 // Flags:     (256) OleAutomation
@@ -82,7 +86,8 @@ type
   IXPElevation = interface(IUnknown)
     ['{F986436F-64E9-4292-84AC-F31D6776C619}']
     function ExecuteProcess(const ApplicationPath: WideString; const Parameters: WideString; 
-                            const CurrentDirectory: WideString; Flags: Integer; out PID: Integer): HResult; stdcall;
+                            const CurrentDirectory: WideString; ParentWindow: LongWord; 
+                            Flags: LongWord; out PID: Integer): HResult; stdcall;
   end;
 
 // *********************************************************************//
