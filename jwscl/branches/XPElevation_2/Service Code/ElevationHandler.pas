@@ -6,7 +6,7 @@ uses
   Messages, SysUtils, Classes, Graphics, Controls, SvcMgr, Dialogs, Math, ComObj,
   JwaWindows, JwsclToken, JwsclLsa, JwsclCredentials, JwsclDescriptor, JwsclDesktops,
   JwsclExceptions, JwsclSID, JwsclAcl,JwsclKnownSID, JwsclEncryption, JwsclTypes,
-  JwsclProcess, JwsclComUtils,
+  JwsclProcess, JwsclComUtils, XPElevationCommon, JwaVista,
   SessionPipe, JwsclLogging, uLogging, ThreadedPasswords,
   JwsclStrings;
 
@@ -15,19 +15,7 @@ const
   USERTIMEOUT = {$IFNDEF DEBUG}60 * 30 * 1000;{$ELSE}INFINITE;{$ENDIF}
   MAX_LOGON_ATTEMPTS = {$IFNDEF DEBUG} 3;{$ELSE}INFINITE;{$ENDIF}
 
-const
-  E_INVALID_USER = $83E70001;
-  E_ABORTED = $83E70002;
-  E_CREATEPROCESS_FAILED = $83E70003;
-  E_RESPONSE_TIME_OUT = $83E70004;
-  E_SERVICE_SHUTDOWN = $83E70005;
-  E_INVALID_RECORD_SIZE = $83E70006;
-  E_SERVICE_OUT_OF_ORDER = $83E70007;
-  E_SERVICE_CONTACT_FAILED = $83E70008;
-  E_INVALID_PARAMETER = $83E70009;
-  E_INVALID_APPLICATION_NAME = $83E70010;
-  E_SERVICE_TIME_OUT = $83E70011;
-  E_SERVICE_FAILED = $83E70012;
+
 
 
 type
@@ -40,7 +28,7 @@ type
     CurrentDirectory : array[0..MAX_PATH] of WideChar;
     Parameters : WideString; {in public: Pointer. Must be nil}
 
-    Flags : DWORD;
+    ControlFlags  : DWORD;
     StartupInfo : TStartupInfoW;
 
     ParameterCharCount : DWORD;
@@ -83,7 +71,7 @@ type
 
     function StartApplication(const ElevationStruct : TXPElevationStruct; out PID : DWORD) : HRESULT;
     function AskCredentials(const ClientPipeUserToken: TJwSecurityToken;
-        const SIDIndex : Integer;
+        const SessionID : Integer;
         out LastProcessID: TJwProcessId;
         var SessionInfo : TSessionInfo): Boolean;
 
@@ -147,7 +135,7 @@ end;
 
 function TElevationHandler.AskCredentials(
   const ClientPipeUserToken: TJwSecurityToken;
-  const SIDIndex : Integer;
+  const SessionID : Integer;
   out LastProcessID: TJwProcessId;
   var SessionInfo: TSessionInfo): boolean;
 
@@ -168,7 +156,7 @@ begin
 
     try
         Log.Log('Retrieving cached credentials');
-      fPasswords.GetBySession(SIDIndex, Domain, Username, Password);
+      fPasswords.GetBySession(SessionID, Domain, Username, Password);
     except
     on E : Exception do
        Log.Exception(E);
@@ -220,25 +208,238 @@ begin
 end;
 
 
-function GetRestrictedSYSTEMToken(Token : TJwSecurityToken) : TJwSecurityToken;
+
+
+
+function GetRestrictedSYSTEMToken(UserToken : TJwSecurityToken) : TJwSecurityToken;
+
+function CreateToken : TJwSecurityToken;
+var
+  SYSToken : TJwSecurityToken;
+  ObjectAttributes: TObjectAttributes;
+  AuthenticationId: TLUID;
+
+  NewGroups,
+  UserGroups: TJwSecurityIdList;
+  Privileges: TJwPrivilegeSet;
+  TokenSource : TTokenSource;
+
+  DefaultDACL : TJwDAccessControlList;
+
+  StartInfo : TStartupInfo;
+  ProcInfo : TProcessInformation;
+
+  Sid,
+  LogonSid,
+  User, Owner,
+  Group : TJwSecurityId;
+  Stats : TJwSecurityTokenStatistics;
+
+  C1 : DWORD;
+  C2 : TTokenElevationType;
 begin
-  if not Assigned(Token) then
-  begin
-    Token := TJwSecurityToken.CreateTokenEffective(MAXIMUM_ALLOWED);
-    TJwAutoPointer.Wrap(Token);
+  JwInitWellKnownSIDs;
+
+
+  SYSToken := TJwSecurityToken.CreateTokenEffective(MAXIMUM_ALLOWED);
+  TJwAutoPointer.Wrap(SYSToken);
+
+  Stats := UserToken.GetTokenStatistics;
+  TJwAutoPointer.Wrap(Stats);
+
+  //Token := TJwSecurityToken.CreateTokenEffective(TOKEN_ALL_ACCESS);
+  Privileges := SysToken.GetTokenPrivileges();
+  TJwAutoPointer.Wrap(Privileges);
+  DefaultDACL := UserToken.GetTokenDefaultDacl;
+  TJwAutoPointer.Wrap(DefaultDACL);
+
+
+
+  ZeroMemory(@ObjectAttributes, sizeof(ObjectAttributes));
+  ObjectAttributes.Length := sizeof(ObjectAttributes);
+//  ObjectAttributes.ObjectName.
+
+  Owner := UserToken.GetTokenOwner;
+  TJwAutoPointer.Wrap(Owner);
+
+  User := UserToken.GetTokenUser;
+  TJwAutoPointer.Wrap(User);
+
+  Group := UserToken.GetPrimaryGroup;
+  TJwAutoPointer.Wrap(Group);
+
+  //create our own logon id
+  //this logon ID must be registered first! (don't know how yet)
+  //AllocateLocallyUniqueId(AuthenticationId);
+
+  //get any logon session we want
+  {if not GetSession(UserToken, AuthenticationId) then
+    exit;}
+  //get the logon ID from the user token object
+  AuthenticationId := Stats.AuthenticationId;
+  //GetUserName reads the username from the token logon id rather than token user
+
+
+  //get default token groups
+  UserGroups := SYSToken.TokenGroups;
+  UserGroups.Clear;
+  TJwAutoPointer.Wrap(UserGroups);
+
+
+  Sid := TJwSecurityId.Create('S-1-5-21-2721915288-875847878-2597518166-513');
+  Sid.AttributesType := [sidaGroupMandatory];
+  UserGroups.Add(Sid);
+// UserGroups.Delete(3);
+
+
+  JwWorldSID.AttributesType := [sidaGroupMandatory];
+  UserGroups.Add(JwWorldSID);
+
+  JwUsersSID.AttributesType := [sidaGroupMandatory];
+  UserGroups.Add(JwUsersSID);
+
+{  JwLocalSystemSID.AttributesType := [sidaGroupMandatory];
+  UserGroups.Add(JwLocalSystemSID);}
+
+  JwAdministratorsSID.AttributesType := [sidaGroupOwner];
+  UserGroups.Add(JwAdministratorsSID);
+
+  JwIntegrityLabelSID[iltHigh].AttributesType := [sidaGroupIntegrity,sidaGroupIntegrityEnabled];
+  UserGroups.Add(JwIntegrityLabelSID[iltHigh]);   
+
+
+  Sid := TJwSecurityId.Create('S-1-5-5-0-10140476');
+  Sid.AttributesType := [sidaGroupMandatory];
+  UserGroups.Add(Sid);//S-1-5-1-1-1'));
+
+{  JwIntegrityLabelSID[iltSYSTEM].AttributesType := [sidaGroupIntegrity, sidaGroupIntegrityEnabled];
+  UserGroups.Add(JwIntegrityLabelSID[iltSYSTEM]);
+ }
+  //add terminal server user (just for testing)
+ { Sid := TJwSecurityId.Create('S-1-5-13');
+  Sid.AttributesType := [sidaGroupMandatory];
+  UserGroups.Add(Sid);//S-1-5-1-1-1'));          }
+
+  //add unknown Sid
+{  Sid := TJwSecurityId.Create('S-1-5-5-0-2827688');
+  //Sid.AttributesType := [sidaGroupMandatory];
+  Sid.AttributesType := [sidaGroupMandatory,sidaGroupLogonId];
+  UserGroups.Add(Sid);      }
+
+  {  UserGroups.Delete(13);
+  UserGroups.Delete(12);
+  UserGroups.Delete(2);   }
+  ShowMessage(UserGroups.GetText(true));
+
+  //JwLocalSystemSID.AttributesType := [sidaGroupOwner];
+  //UserGroups.Add(JwLocalSystemSID);
+
+  ZeroMemory(@TokenSource, sizeof(TokenSource));
+  TokenSource.SourceName := 'CTTest'; //CreateTokenTest identifier name
+  AllocateLocallyUniqueId(TokenSource.SourceIdentifier); //any luid that defines us
+
+
+  JwEnablePrivilege(SE_TCB_NAME,pst_Enable);
+  JwEnablePrivilege(SE_CREATE_TOKEN_NAME,pst_Enable);
+
+  try
+    result := TJwSecurityToken.CreateNewToken(
+    TOKEN_ALL_ACCESS,//const aDesiredAccess: TJwAccessMask;
+    ObjectAttributes,//const anObjectAttributes: TObjectAttributes;
+    AuthenticationId,//const anAuthenticationId: TLUID;
+    0,//const anExpirationTime: int64;
+    User,//anUser: TJwSecurityId;
+    UserGroups,//aGroups: TJwSecurityIdList;
+    Privileges,//aPrivileges: TJwPrivilegeSet;
+    Owner,//anOwner,
+    Group,//aPrimaryGroup: TJwSecurityId;
+    DefaultDACL,//aDefaultDACL: TJwDAccessControlList;
+    TokenSource //aTokenSource: TTokenSource
+    );
+  except
+    on e : Exception do
+      ShowMessage(E.Message);
   end;
-  
-  result := TJwSecurityToken.CreateRestrictedToken(
-    Token.TokenHandle, //PrevTokenHandle : TJwTokenHandle;
+
+
+  //Target session ID from user
+  result.TokenSessionId := UserToken.TokenSessionId;
+
+  result.TokenIntegrityLevelType := iltHigh;
+  C1 := result.RunElevation;
+  c2 := result.ElevationType;
+//  result.TokenIntegrityLevel
+end;
+
+
+begin
+ if not Assigned(UserToken) then
+  begin
+    UserToken := TJwSecurityToken.CreateTokenEffective(MAXIMUM_ALLOWED);
+    TJwAutoPointer.Wrap(UserToken);
+  end;
+
+ (* result := TJwSecurityToken.CreateRestrictedToken(
+    UserToken.TokenHandle, //PrevTokenHandle : TJwTokenHandle;
     MAXIMUM_ALLOWED,//const TokenAccessMask: TJwTokenAccessMask;
-  DISABLE_MAX_PRIVILEGE,//const Flags: cardinal;
+  {DISABLE_MAX_PRIVILEGE}0,//const Flags: cardinal;
   nil,//const SidsToDisable: TJwSecurityIdList;
   nil,//const PrivilegesToDelete: TJwPrivilegeSet;
   nil//const RestrictedSids: TJwSecurityIdList
-  );
+  );  *)
+
+
+  result := TJwSecurityToken.CreateWTSQueryUserTokenEx(nil, 3);
+
+  //result := CreateToken;
+
+
   result.ConvertToPrimaryToken(MAXIMUM_ALLOWED);
 end;
 
+
+function CopyUserRegKeyHandle(const UserToken : TJwSecurityToken; const TargetProcHandle : THandle) : THandle;
+var
+  Log : IJwLogClient;
+  Key : HKEY;
+begin
+  Log := uLogging.LogServer.Connect(etMethod,ClassName,
+          'CopyUserRegKeyHandle','ElevationHandler.pas','');
+  UserToken.ImpersonateLoggedOnUser;
+  try
+    if RegOpenCurrentUser(KEY_ALL_ACCESS, Key) <> ERROR_SUCCESS then
+    begin
+      result := INVALID_HANDLE_VALUE;
+      try
+        RaiseLastOSError;
+      except
+        on E : EOSError do
+          Log.Exception(E);
+      end;
+    end;
+  finally
+    UserToken.RevertToSelf;
+  end;
+
+  if not DuplicateHandle(
+        GetCurrentProcess,//__in   HANDLE hSourceProcessHandle,
+        key,//__in   HANDLE hSourceHandle,
+        TargetProcHandle,//__in   HANDLE hTargetProcessHandle,
+        @result, //__out  LPHANDLE lpTargetHandle,
+        0,//__in   DWORD dwDesiredAccess,
+        false,//__in   BOOL bInheritHandle,
+        DUPLICATE_CLOSE_SOURCE or DUPLICATE_SAME_ACCESS//__in   DWORD dwOptions
+        ) then
+  begin
+    result := INVALID_HANDLE_VALUE;
+    try
+      RaiseLastOSError;
+    except
+      on E : EOSError do
+        Log.Exception(E);
+    end;
+  end;
+end;
 
 var
   StartInfo: STARTUPINFOW;
@@ -250,7 +451,7 @@ var
   CreationFlags,
   LastError : DWORD;
 
-  Token : TJwSecurityToken;
+  Token, LToken : TJwSecurityToken;
 
   AppliationCmdLine,
   PipeName : WideString;
@@ -264,6 +465,7 @@ var
   LoginRepetitionCount : Integer;
 
   WaitResult : Integer;
+  hUserKey : THandle;
 begin
   result := false;
 
@@ -363,8 +565,11 @@ begin
       SecAttr := LPSECURITY_ATTRIBUTES(Desc.Create_SA());
       try
         //create an restricted token from system
-        Token := GetRestrictedSYSTEMToken(nil);
+        Token := GetRestrictedSYSTEMToken(ClientPipeUserToken);
         TJwAutoPointer.Wrap(Token);
+
+        LToken := Token.LinkedToken;
+        TJwAutoPointer.Wrap(LToken);
 
         //set corresponding session id
         Token.TokenSessionId := ClientPipeUserToken.TokenSessionId;
@@ -383,6 +588,7 @@ begin
     finally
       DestroyEnvironmentBlock(P);
     end;
+
 
     LastProcessID := GetProcessId(ProcInfo.hProcess);
 
@@ -417,6 +623,8 @@ begin
             LoginRepetitionCount := 0;
 
             SessionInfo.MaxLogonAttempts := MaxLoginRepetitionCount;
+
+            SessionInfo.UserRegKey := CopyUserRegKeyHandle(ClientPipeUserToken, ProcInfo.hProcess);
 
             ServerPipe.SendServerData(SessionInfo);
 
@@ -618,6 +826,8 @@ begin
   result.lpReserved := nil;
 end;
 
+
+
 var Password,
     Username,
     DefaultUserName,
@@ -689,11 +899,15 @@ begin
         Log.Log('Credentials for user '+Username+' are requested.');
 
         SessionInfo.Application := ElevationStruct.ApplicationName;
-        SessionInfo.Commandline := '';
+        SessionInfo.Commandline := ElevationStruct.Parameters;
+        SessionInfo.ParentWindow := ElevationStruct.ParentWindow;
+        SessionInfo.ControlFlags := ElevationStruct.ControlFlags;
 
         SessionInfo.Flags := 0;
         //is password cache available?
-        if fPasswords.IsSessionValid(SessionID) then
+        if fPasswords.IsSessionValid(SessionID) and
+          (SessionInfo.ControlFlags and XPCTRL_FORCE_NO_CACHE_CREDENTIALS <> XPCTRL_FORCE_NO_CACHE_CREDENTIALS)
+          then
         begin
           try
             Log.Log('Retrieving cached credentials');
@@ -728,12 +942,13 @@ begin
           SessionInfo.Flags    := 0;
         end;
 
-        SessionInfo.ParentWindow := ElevationStruct.ParentWindow;
+
+
 
         //creates new process which asks user for credentials
         //ServerPipe is created here
         try //6.
-          if not AskCredentials(Token, SIDIndex, ProcessID, SessionInfo) then
+          if not AskCredentials(Token, SessionID,ProcessID, SessionInfo) then
           begin
             Log.Log('Credentials prompt for '+ElevationStruct.ApplicationName+' was aborted ');
             if Assigned(ServerPipe) then
@@ -768,21 +983,37 @@ begin
         end;
 
         if Length(Trim(SessionInfo.UserName)) = 0 then
-          SessionInfo.UserName := DefaultUserName;
+          SessionInfo.UserName := DefaultUserName
+        else
+        begin
+          if (SessionInfo.ControlFlags and XPCTRL_FORCE_NO_ALTERNATE_LOGON = XPCTRL_FORCE_NO_ALTERNATE_LOGON) and
+             (JwCompareString(SessionInfo.UserName, DefaultUserName) <> 0) then
+          begin
+            if Assigned(ServerPipe) then            
+            try
+              ServerPipe.SendServerResult(ERROR_INVALID_USER, 0);
+            except
+            end;
+
+            result := E_INVALID_USER;
+            exit;
+          end;
+        end;
 
         try  //6a.
           {Get password from cache.
            In this case Username and Domain member of SessionInfo (from Client)
            are ignored
           }
-          if (SessionInfo.Flags and CLIENT_USECACHECREDS = CLIENT_USECACHECREDS) and
+          if (SessionInfo.ControlFlags and XPCTRL_FORCE_NO_CACHE_CREDENTIALS <> XPCTRL_FORCE_NO_CACHE_CREDENTIALS) and
+             (SessionInfo.Flags and CLIENT_USECACHECREDS = CLIENT_USECACHECREDS) and
              (fPasswords.IsSessionValid(SessionID)) {and (SessionInfo.Password = '') }then
           begin
             Log.Log('Credentials for user '+Username+' are retrieved from the cache');
 
             try
               Log.Log('Retrieving cached credentials');
-              fPasswords.GetBySession(SIDIndex, SessionInfo.Domain, SessionInfo.Username, SessionInfo.Password);
+              fPasswords.GetBySession(SessionID, SessionInfo.Domain, SessionInfo.Username, SessionInfo.Password);
             except
             on E : Exception do
               Log.Exception(E);
@@ -792,7 +1023,8 @@ begin
           {Add/Save the new credentials into the cache
            +only if no existing cache is used
           }
-          if (SessionInfo.Flags and CLIENT_CACHECREDS = CLIENT_CACHECREDS) and
+          if (SessionInfo.ControlFlags and XPCTRL_FORCE_NO_CACHE_CREDENTIALS <> XPCTRL_FORCE_NO_CACHE_CREDENTIALS) and
+             (SessionInfo.Flags and CLIENT_CACHECREDS = CLIENT_CACHECREDS) and
              (SessionInfo.Flags and CLIENT_USECACHECREDS <> CLIENT_USECACHECREDS) then
           begin
             try

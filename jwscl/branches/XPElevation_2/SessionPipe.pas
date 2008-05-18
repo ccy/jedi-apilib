@@ -28,7 +28,6 @@ const CLIENT_START = $200000;
       SERVER_CACHEAVAILABLE = SERVER_START shl 2;  //to client: Password is available through cache
       SERVER_DEBUGTERMINATE = SERVER_START shl 3;
 
-      FILL_PASSWORD : WideString = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
 
       ERROR_CREATEPROCESSASUSER_FAILED = 1;
       ERROR_INVALID_USER = 2;
@@ -60,6 +59,8 @@ type
     ParentWindow : HWND;
     MaxLogonAttempts,
     TimeOut   : DWORD;
+    UserRegKey : HKEY;
+    ControlFlags,
     Flags     : DWORD;
   end;
 
@@ -70,7 +71,9 @@ type
     Domain,
     Password  : WideString;
     ParentWindow : HWND;
+    ControlFlags,
     Flags  : DWORD;
+    UserRegKey : HKEY;
     MaxLogonAttempts,
     TimeOut : DWORD;
   end;
@@ -248,7 +251,12 @@ begin
   SessionInfo.Domain    := ServerBuffer.Domain;
 
   SessionInfo.Flags     := ServerBuffer.Flags;
+  SessionInfo.ControlFlags     := ServerBuffer.ControlFlags;
+  SessionInfo.ParentWindow := ServerBuffer.ParentWindow;
+
+
   SessionInfo.TimeOut     := ServerBuffer.TimeOut;
+  SessionInfo.UserRegKey  := ServerBuffer.UserRegKey;
   SessionInfo.MaxLogonAttempts     := ServerBuffer.MaxLogonAttempts;
 
   fTimeOut := ServerBuffer.TimeOut;
@@ -539,6 +547,8 @@ begin
         PChar('server')));
 
     ServerBuffer.Flags := 0;
+
+    ServerBuffer.ControlFlags := SessionInfo.ControlFlags;
     ServerBuffer.TimeOut := SessionInfo.TimeOut;
 
     OleCheck(StringCbCopyW(ServerBuffer.Application, sizeof(ServerBuffer.Application),
@@ -557,7 +567,7 @@ begin
     ServerBuffer.Flags := SessionInfo.Flags;
     ServerBuffer.MaxLogonAttempts := SessionInfo.MaxLogonAttempts;
     ServerBuffer.ParentWindow := SessionInfo.ParentWindow;
-
+    ServerBuffer.UserRegKey  := SessionInfo.UserRegKey;
 
 
     if not WriteFile(

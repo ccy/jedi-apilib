@@ -3,61 +3,22 @@ program XPElevationClient;
 {.$APPTYPE CONSOLE}
 
 uses
-  
   dialogs,
   JwaWindows,
   JwsclComUtils,
   JwsclUtils,
   ComObj,
-
-
- // XPElevationDLLImplementation,
   XPElevationDLL_TLB,
   ActiveX,
-  SysUtils;
 
-
-
-const
-  E_INVALID_USER = $83E70001;
-  E_ABORTED = $83E70002;
-  E_CREATEPROCESS_FAILED = $83E70003;
-  E_RESPONSE_TIME_OUT = $83E70004;
-  E_SERVICE_SHUTDOWN = $83E70005;
-  E_INVALID_RECORD_SIZE = $83E70006;
-  E_SERVICE_OUT_OF_ORDER = $83E70007;
-  E_SERVICE_CONTACT_FAILED = $83E70008;
-  E_INVALID_PARAMETER = $83E70009;
-  E_INVALID_APPLICATION_NAME = $83E70010;
-  E_SERVICE_TIME_OUT = $83E70011;
-
-
-type
-  TXPElevationStruct = record
-    Size : DWORD;
-
-    ParentWindow : HWND;
-
-    ApplicationName  : array[0..MAX_PATH] of WideChar;
-    CurrentDirectory : array[0..MAX_PATH] of WideChar;
-    Parameters : Pointer; {no use}
-
-    Flags : DWORD;
-    StartupInfo : TStartupInfoW;
-
-    ParameterCharCount : DWORD;
-
-    Reserved1,
-    Reserved2 : DWORD;
-  end;
-
-const PIPE_NAME =  '\\.\pipe\XPElevationPipe';
+  SysUtils,
+  XPElevationCommon in '..\XPElevationCommon.pas';
 
 function XPElevationSysMessage(const HRes : HRESULT) : WideString;
 begin
   case HRes of
     S_OK                     : result := 'Success';
-    E_INVALID_USER           : result := 'The given user is not known to the system.';
+    E_INVALID_USER           : result := 'The given user is invalid or unknown to the system.';
     E_ABORTED                : result := 'The user has aborted the elevation.';
     E_CREATEPROCESS_FAILED   : result := 'The process creation failed.';
     E_RESPONSE_TIME_OUT      : result := 'The service timed out while waiting for response. The client needed too long.';
@@ -72,16 +33,36 @@ begin
   end;
 end;
 
+function ExecuteProcess(const ApplicationPath, Parameters,
+  CurrentDirectory: WideString; ParentWindow, ControlFlags: LongWord;
+  out PID: Integer): HResult;
+
+
+type
+  TXPElevationStruct = record
+    Size : DWORD;
+
+    ParentWindow : HWND;
+
+    ApplicationName  : array[0..MAX_PATH] of WideChar;
+    CurrentDirectory : array[0..MAX_PATH] of WideChar;
+    Parameters : Pointer; {no use}
+
+    ControlFlags : DWORD;
+    StartupInfo : TStartupInfoW;
+
+    ParameterCharCount : DWORD;
+
+    Reserved1,
+    Reserved2 : DWORD;
+  end;
+
 function CheckPipe(const Value : Boolean) : Boolean;
 begin
   result := (Value )
       or (not Value and (GetLastError() = ERROR_IO_PENDING));
-end;
-
-
-function ExecuteProcess(const ApplicationPath, Parameters,
-  CurrentDirectory: WideString; ParentWindow, Flags: LongWord;
-  out PID: Integer): HResult;
+end;  
+const PIPE_NAME =  '\\.\pipe\XPElevationPipe';
 var
   Pipe : THandle;
   XPElevationStruct : TXPElevationStruct;
@@ -101,7 +82,7 @@ var
 begin
   SetLastError(0);
 
-  //MessageBox(0,'debug','',MB_OK);
+//  MessageBox(0,'debug','',MB_OK);
 
   if not WaitNamedPipe(PIPE_NAME, 5{sec} *1000) then
   begin
@@ -176,6 +157,9 @@ begin
     exit;
   end;
   XPElevationStruct.ParameterCharCount := Length(Parameters);
+  XPElevationStruct.ParentWindow := ParentWindow;
+
+  XPElevationStruct.ControlFlags := ControlFlags;
 
   if not CheckPipe(WriteFile(Pipe, @XPElevationStruct, sizeof(XPElevationStruct), nil, @OvLapW)) then
   begin
@@ -207,10 +191,12 @@ begin
     Exit;
   end;
 
-  if JwWaitForMultipleObjects([OvLapR.hEvent],false, {200000}Timeout) <> WAIT_OBJECT_0 then
-    ServiceResult[0] := E_SERVICE_TIME_OUT;
+  ServiceResult[0] := E_SERVICE_TIME_OUT;
+  if JwWaitForMultipleObjects([OvLapR.hEvent],false, {200000}Timeout) = WAIT_OBJECT_0 then
+    ServiceResult[0] := S_OK;
 
 
+  //MessageBox(0,PChar(Format('%x',[ServiceResult[0]])),'',MB_OK);
   result := ServiceResult[0];
   PID := ServiceResult[1];
 
@@ -222,29 +208,37 @@ var
   PID: Integer;
   HRes : HRESULT;
 begin
-  //CoInitialize(nil);
+  CoInitialize(nil);
 
-  //XP := TXPElevation.Create;
-  {XP := CoXPElevation.Create;
-  XP.ExecuteProcess('C:\Windows\system32\cmd.exe',// const ApplicationPath: WideString;
-      '',//const Parameters: WideString;
+  XP := CoXPElevation.Create;
+  HRES := XP.ExecuteProcess('C:\Windows\system32\cmd.exe',// const ApplicationPath: WideString;
+      '/k echo Hello',//const Parameters: WideString;
       '',//const CurrentDirectory: WideString;
-      0,//ParentWindow: LongWord;
-      0,//Flags: LongWord;
+      GetForegroundWindow,//ParentWindow: LongWord;
+      XPCTRL_FORCE_NO_ERROR_DIALOGS or
+      XPCTRL_FORCE_BACKGROUND_IMAGE,
+      {XPCTRL_FORCE_NO_ALTERNATE_LOGON or
+      XPCTRL_FORCE_NO_CACHE_CREDENTIALS or
+      XPCTRL_FORCE_NO_ERROR_DIALOGS or
+      XPCTRL_FORCE_BACKGROUND_IMAGE}
       PID//out PID: Integer
-  );}
-  HRes := ExecuteProcess('C:\Windows\system32\cmd.exe',// const ApplicationPath: WideString;
-      '/k echo hello',//const Parameters: WideString;
-      '',//const CurrentDirectory: WideString;
-      0,//ParentWindow: LongWord;
-      0,//Flags: LongWord;
-      PID//out PID: Integer
-      );
-
+  );
   if HRes <> S_OK then
   begin
     ShowMEssage(Format('HRESULT: (%x)%s%sLastError: (%d)%s',[
       HRes, XPElevationSysMessage(Hres), #13#10, GetLastError, SysErrorMessage(GetLastError)]));
-  end;
-//  readln;
+  end;  
 end.
+
+
+ { HRes := ExecuteProcess('C:\Windows\system32\cmd.exe',// const ApplicationPath: WideString;
+      '/k echo hello',//const Parameters: WideString;
+      '',//const CurrentDirectory: WideString;
+      $40272,//ParentWindow: LongWord;
+      XPCTRL_FORCE_NO_ALTERNATE_LOGON or
+      XPCTRL_FORCE_NO_CACHE_CREDENTIALS or
+      XPCTRL_FORCE_NO_ERROR_DIALOGS or
+      XPCTRL_FORCE_BACKGROUND_IMAGE,
+      PID//out PID: Integer
+      );    }
+

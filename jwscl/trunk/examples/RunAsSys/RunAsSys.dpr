@@ -141,7 +141,7 @@ begin
        (JwSecurityProcessUserSID.EqualSid(JwLocalSystemSID)) then
     begin
       InitLog;
-      
+     
       Log.Log('Found service privileges. Starting service...');
       SvcMgr.Application.Initialize;
       SvcMgr.Application.CreateForm(TRunAsSysSvc3, RunAsSysSvc3);

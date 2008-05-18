@@ -1396,7 +1396,8 @@ var
   L: integer;
 begin
   SetLastError(0);
-    if JwIsHandleValid(fLastThreadDesktop) then
+  if JwIsHandleValid(fLastThreadDesktop) then
+  begin
     if not jwaWindows.SetThreadDesktop(fLastThreadDesktop) then
     begin
       L := GetLastError;
@@ -1408,7 +1409,8 @@ begin
     end;
 
     CloseHandle(fLastThreadDesktop);
-    fLastThreadDesktop := 0;
+  end;
+  fLastThreadDesktop := 0;
 end;
 
 
@@ -1429,13 +1431,13 @@ end;
 procedure TJwSecurityDesktop.SwitchDesktopBack;
 begin
   if JwIsHandleValid(fLastSwitchDesktop) then
+  begin
+    if not jwaWindows.SwitchDesktop(fLastSwitchDesktop) then
+     raise EJwsclDesktopException.CreateFmt(
+         RsDesktopFailedSwitchBack, [Name]);
 
-  if not jwaWindows.SwitchDesktop(fLastSwitchDesktop) then
-    raise EJwsclDesktopException.CreateFmt(
-      RsDesktopFailedSwitchBack,
-      [Name]);
-
-  CloseHandle(fLastSwitchDesktop);
+    CloseHandle(fLastSwitchDesktop);
+  end;
   fLastSwitchDesktop := 0;
 end;
 

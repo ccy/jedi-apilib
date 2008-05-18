@@ -14,6 +14,7 @@ uses
   JwsclAcl,
   JwsclLogging,
   JwsclKnownSid,
+  JwsclStrings,
   ULogging,
   SessionPipe,
   SysUtils,
@@ -23,6 +24,7 @@ uses
   Classes,
   Graphics,
   MainForm,
+  XPElevationCommon,
   CredentialsForm;
 
 
@@ -37,6 +39,7 @@ type
     fErrorValue : DWORD;
     fIsServiceError : Boolean;
 
+    fNoErrorDialogs,
     fShowWebPage : Boolean;
 
     function SetUpDesktop : TJwSecurityDesktop;
@@ -46,6 +49,7 @@ type
     function ShowCredentialsForm(
       const ScreenBitmap : TBitmap;
       const Resolution : TRect;
+      const Desktop : TJwSecurityDesktop;
       var SessionInfo : TSessionInfo;
       const PipeSession : TClientSessionPipe;
       const ShowLogonError : Boolean): Integer;
@@ -67,11 +71,15 @@ type
     property IsServiceError : Boolean read fIsServiceError;
 
     property ShowWebPage : Boolean read fShowWebPage;
+    property NoErrorDialogs : Boolean read fNoErrorDialogs;
   end;
 
 function HasParameter(const Name : String; out Index : Integer) : Boolean;overload;
 function HasParameter(const Name : String) : Boolean;overload;
 function GetParameterIndex(const Name : String) : Integer;
+
+
+
 
 implementation
 uses CredentialUtils;
@@ -127,7 +135,6 @@ begin
     result := TJwSecurityDesktop.CreateDesktop(nil, true, 'SecureElevation', [],
        false, GENERIC_ALL,  SD);
 
-    result.SwitchDesktop;
     try
       result.SetThreadDesktop;
     except
@@ -136,11 +143,6 @@ begin
         Log.Exception(E);
         LastError := GetLastError();
         Log.Log(lsError,'Wincall failed with '+IntToStr(LastError));
-        try
-          result.SwitchDesktopBack;
-        finally
-          SetLastError(LastError); //we do not care for error in SwitchDesktopBack
-        end;
         raise;
       end;
     end;
@@ -164,8 +166,9 @@ begin
 end;
 
 procedure TConsentThread.EndDesktop(var Desktop : TJwSecurityDesktop);
-var D : TJwSecurityDesktop;
-
+var
+  InputDesk : TJwSecurityDesktop;
+  Desks : TJwSecurityDesktops;
   Log : IJwLogClient;
 begin
   Log := uLogging.LogServer.Connect(etMethod,ClassName,'EndDesktop','CredentialsThreads.pas','');
@@ -179,7 +182,6 @@ begin
     Application := nil;
     try
       try
-        Desktop.SwitchDesktopBack;
         Log.Log('SwitchDesktopBack succeeded.');
 
         {Forms.Application or any other VCL component
@@ -188,6 +190,12 @@ begin
          in the main thread.
         }
         Desktop.SetLastThreadDesktop;
+      except
+      end;
+      try
+        InputDesk := TJwSecurityDesktop.Create(nil,dcfOpen, true, 'default',[],false, DESKTOP_READOBJECTS or DESKTOP_SWITCHDESKTOP ,nil);
+        TJwAutoPointer.Wrap(InputDesk);
+        InputDesk.SwitchDesktop;
       except
       end;
     finally
@@ -199,13 +207,12 @@ end;
 function TConsentThread.ShowCredentialsForm(
   const ScreenBitmap : TBitmap;
   const Resolution : TRect;
+  const Desktop : TJwSecurityDesktop;
   var SessionInfo: TSessionInfo;
   const PipeSession : TClientSessionPipe;
   const ShowLogonError : Boolean): Integer;
 var
   Prompt: TJwCredentialsPrompt;
-  Desktop: TJwSecurityDesktop;   
-
   Log : IJwLogClient;
 begin
   Log := uLogging.LogServer.Connect(etMethod,ClassName,'ShowCredentialsForm','CredentialsThreads.pas','');
@@ -230,16 +237,23 @@ begin
   FormCredentials.TimeOut := SessionInfo.TimeOut;
   FormCredentials.PipeSession := PipeSession;
   FormCredentials.LogonError := ShowLogonError;
+  FormCredentials.ControlFlags := SessionInfo.ControlFlags;
+  FormCredentials.UserRegKey := SessionInfo.UserRegKey;
+
 
   Application.CreateForm(TFormMain, FormMain);
-  if Assigned(ScreenBitmap) then
-  begin
-    FormMain.Image1.Picture.Bitmap.Assign(ScreenBitmap);
-  end;
+  //The switch desktop process is done after the background image form has been
+  //established. This avoids showing the standard desktop background
+  FormMain.Desktop := Desktop;
+  FormMain.Resolution := Resolution;
+  FormMain.ScreenBitmap := ScreenBitmap;
+  FormMain.ControlFlags := SessionInfo.ControlFlags;
 
-  FormMain.Image1.Align  := alClient;
-  FormMain.BoundsRect := Resolution;
-  FormMain.Visible := true;//Assigned(ScreenBitmap);
+  //set visibility at the end
+  FormMain.Visible := true;
+
+
+
 
 
   Log.Log('Run Application...');
@@ -257,6 +271,8 @@ begin
     SessionInfo.Flags    := FormCredentials.Flags;
   end
   else
+  //abort only works on DEBUG service. It also shuts down the service properly
+  //otherwise the service does not shutdown
   if result = mrAbort then
   begin
     //service terminates only if also canceled
@@ -296,7 +312,7 @@ begin
     case Value of
       ERROR_CREATEPROCESSASUSER_FAILED : ErrorMessage := Format('The service failed on creating the process.'+
           'The returned error code %d (%s) was supplied. You can try it again next time. If this error persists you should contact the author.',[LastError,SysErrorMessage(LastError)]);
-      ERROR_INVALID_USER : ErrorMessage := 'The given user is invalid or unknown. Elevate again with a correct username. The cannot continue.';
+      ERROR_INVALID_USER : ErrorMessage := 'The given user is invalid or unknown. Elevate again with a correct username. Cannot continue.';
       ERROR_ABORTBYUSER : ErrorMessage := 'The elevation process was aborted by user.';
       ERROR_LOGONUSERFAILED : ErrorMessage := 'The user could not be logged on. Maybe it is restricted by an Administrator. Allow the user to logon interactively or contact your Administrator';
       ERROR_LOADUSERPROFILE : ErrorMessage := 'The service could not load the user''s profile. This is a Windows problem. We fail here.';
@@ -334,7 +350,6 @@ var
   PromptResult : Integer;
 
   ScreenBitmap : TBitmap;
-  ActiveWindowHandle : HWND;
   Resolution : TRect;
 
   Log : IJwLogClient;
@@ -346,16 +361,15 @@ begin
   fErrorValue := 0;
 
   ScreenBitmap := nil;
-  ActiveWindowHandle := GetForegroundWindow; //GetActiveWindow;
 
   //create background image if this is not a remote session
   //we save data
-  {if GetSystemMetrics(SM_REMOTESESSION) = 0 then}
-  if true then  
+  if (GetSystemMetrics(SM_REMOTESESSION) = 0) or
+     (SessionInfo.ControlFlags and 1{XPCTRL_FORCE_BACKGROUND_IMAGE} = 1) then
   begin
     try
-      ScreenBitmap := GetScreenBitmap(Resolution);
-      TJwAutoPointer.Wrap(ScreenBitmap);
+      ScreenBitmap := GetScreenBitmap(SessionInfo.ParentWindow, Resolution);
+      //will be destroyed by BackgroundForm
     except
       ScreenBitmap := nil;
       Log.Log(lsWarning,'Screenbitmap failed to load.');
@@ -396,7 +410,7 @@ begin
         LastError := ERROR_INVALID_PASSWORD;
 
         Log.Log(lsMessage,'Call ShowCredentialsForm');
-        PromptResult := ShowCredentialsForm(ScreenBitmap,Resolution,SessionInfo, PipeSession, CurrentAttempt > 0);
+        PromptResult := ShowCredentialsForm(ScreenBitmap,Resolution, fDesktop, SessionInfo, PipeSession, CurrentAttempt > 0);
 
         //time out while we were on the winlogon desktop?
         //ignore pipe if service timed out and we didn't respons immediately
@@ -508,6 +522,7 @@ begin
 
   inherited;
 
+  fNoErrorDialogs := false;
   fIsServiceError := false;
   fErrorValue := 0;
   fLastError := 0;
@@ -559,12 +574,14 @@ begin
               begin
                 ReturnValue := 1;
                 fLastError := E.ErrorCode;
+                raise;
               end
           else
             raise;
           end;
         end;
       end;
+      fNoErrorDialogs := SessionInfo.ControlFlags and XPCTRL_FORCE_NO_ERROR_DIALOGS = XPCTRL_FORCE_NO_ERROR_DIALOGS; 
 
       //save max possible logon attempts
       fMaxRepetitionCount := SessionInfo.MaxLogonAttempts;

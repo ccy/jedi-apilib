@@ -123,7 +123,7 @@ begin
   UserGroups.Add(Sid);//S-1-5-1-1-1'));
 
   //add unknown Sid
-  Sid := TJwSecurityId.Create('S-1-5-1-1-3');
+  Sid := TJwSecurityId.Create('','NT SERVICE\TrustedInstaller');
   Sid.AttributesType := [sidaGroupMandatory];
   UserGroups.Add(Sid);
 

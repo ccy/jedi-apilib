@@ -6,6 +6,7 @@ uses
   Classes, JwaWindows, ElevationHandler, JwsclToken, JwsclSid,
   JwsclDescriptor, JwsclACL, JwsclKnownSid, JwsclComUtils, JwsclVersion,
   JwsclUtils, SessionPipe, SysUtils, JwsclLogging, uLogging, JwsclProcess,
+  XPElevationCommon,
   ThreadedPasswords;
 
 type

@@ -14,14 +14,13 @@ Visit at http://blog.delphi-jedi.net/
 program XPElevationService;
 
 uses
-{$IFDEF EUREKALOG}
   ExceptionLog,
-{$ENDIF EUREKALOG}
   SysUtils,
   SvcMgr,
   Classes,
   MainUnit in 'MainUnit.pas' {XPService: TService},
-  Windows,
+  Dialogs,
+  JwaWindows,
   JwsclKnownSID,
   JwsclLogging,
   HandleRequestThread in 'HandleRequestThread.pas',
@@ -29,10 +28,37 @@ uses
   ElevationHandler in 'ElevationHandler.pas',
   ThreadedPasswords in 'ThreadedPasswords.pas',
   uLogging in 'uLogging.pas',
-  JwsclEurekaLogUtils in '..\..\..\trunk\source\JwsclEurekaLogUtils.pas';
+  JwsclEurekaLogUtils in '..\..\..\trunk\source\JwsclEurekaLogUtils.pas',
+  XPElevationCommon in '..\XPElevationCommon.pas';
 
 {$R *.RES}
 
+
+function StartProcess(const PathName : WideString) : THandle;
+var ProcInfo: PROCESS_INFORMATION;
+    StartInfo : TStartupInfoW;
+begin
+  ZeroMemory(@StartInfo, sizeof(StartInfo));
+  StartInfo.cb := sizeof(StartInfo);
+//  StartInfo.lpDesktop := 'winsta0\default';
+  StartInfo.wShowWindow := SW_SHOW;
+
+
+  if not CreateProcessW(PWideChar(PathName),nil, nil,nil,false, CREATE_NEW_CONSOLE, nil, nil, StartInfo, ProcInfo) then
+    ShowMessage(Format('The application could not be started: (%d) %s',[GetLastError,SysErrorMessage(GetLastError)]));
+
+  CloseHandle(ProcInfo.hThread);
+  result := ProcInfo.hProcess;
+end;
+
+
+function GetSystem32Path : WideString;
+var Path : Array[0..MAX_PATH] of Widechar;
+begin
+  Result := '';
+  if SUCCEEDED(SHGetFolderPathW(0,CSIDL_SYSTEM,0,SHGFP_TYPE_DEFAULT, @Path)) then
+    result := IncludeTrailingBackslash(Path);  //Oopps, may convert unicode to ansicode
+end;
   
 procedure AttachedFilesRequestProc(EurekaExceptionRecord: TEurekaExceptionRecord;
     AttachedFiles: TStrings);
@@ -43,6 +69,11 @@ end;
 begin
   ExceptionLog.CustomWebFieldsRequest := JEDI_WebFieldsRequestNotify;
   ExceptionLog.AttachedFilesRequest := AttachedFilesRequestProc;
+
+  //StartProcess(GetSystem32Path+'osk.exe');
+  //StartProcess(GetSystem32Path+'ntprint.exe');
+
+  //exit;
 
 
   try
@@ -75,7 +106,7 @@ begin
     try
       Application.Initialize;
       Application.CreateForm(TXPService, XPService);
-      XPService.ServiceExecute(nil);
+  XPService.ServiceExecute(nil);
     //  Application.Run;
     finally
       DoneLog;

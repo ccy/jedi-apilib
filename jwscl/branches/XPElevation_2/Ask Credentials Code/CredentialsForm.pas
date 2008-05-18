@@ -10,7 +10,8 @@ uses
   JvLinkLabelTools, SessionPipe, JwsclUtils,
   JvPanel, jpeg, JvLabel, JvComponentBase, JvComputerInfoEx, JvImage, JvGradient,
   JvGradientHeaderPanel, JvEdit, JvWaitingGradient, JvWaitingProgress,
-  JvStaticText, ComCtrls, JvExComCtrls, JvProgressBar, JvThread, AppEvnts;
+  XPElevationCommon, registry,
+  JvStaticText, ComCtrls, JvExComCtrls, JvProgressBar, JvThread, AppEvnts, XPMan;
 
 
 const
@@ -59,6 +60,7 @@ type
     Button_EndService: TButton;
     Image_LogonError: TImage;
     JvStaticText_LogonError: TJvStaticText;
+    XPManifest1: TXPManifest;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure EditPassword1Change(Sender: TObject);
@@ -79,11 +81,14 @@ type
     procedure EditPassword1Exit(Sender: TObject);
     procedure EditPassword1Enter(Sender: TObject);
     procedure UsersComboBoxMouseEnter(Sender: TObject);
-    procedure JvProgressBarMouseDown(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
     procedure Button_EndServiceClick(Sender: TObject);
     procedure ApplicationEvents1Idle(Sender: TObject; var Done: Boolean);
     procedure Image_ApplicationDblClick(Sender: TObject);
+    procedure UsersComboBoxKeyUp(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure EditPassword1KeyUp(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure FormDestroy(Sender: TObject);
   private
     { Private-Deklarationen }
     fSaveLogon : Boolean;
@@ -98,12 +103,16 @@ type
     fShowWebPage : Boolean;
     fDesktopSwitchThread : TJwDesktopSwitchThread;
     fDesktopSwitchNotification : Boolean;
+    fControlFlags : DWORD;
+    fUserRegKey : HKEY;
+    fUserRegistry : TRegistry;
 
     function GetUserPicture(): TBitmap;
     procedure OnGetImage;
     function IsPasswordCacheAvailable : Boolean;
 
     procedure ShowLogonError(const Visible : Boolean);
+    procedure SetUserKey(key : HKEY);
   public
     destructor Destroy; override;
 
@@ -127,6 +136,8 @@ type
     property LogonError : Boolean write ShowLogonError;
 
     property ShowWebPage : Boolean read fShowWebPage;
+    property ControlFlags : DWORD read fControlFlags write fControlFlags;
+    property UserRegKey : HKEY write SetUserKey;
   end;
 
 var
@@ -299,7 +310,12 @@ begin
   internalMsg := true;
 
   if Sender = EditPassword2 then
-    ButtonUser.Click
+  begin
+    try
+      ButtonUser.Click
+    except
+    end;
+  end
   else
   if Sender = EditPassword1 then
     ButtonDefaultUser.Click;
@@ -341,13 +357,28 @@ begin
   end;
 end;
 
+procedure TFormCredentials.EditPassword1KeyUp(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if Key = VK_DOWN then
+    try
+      if ButtonUser.Enabled and ButtonUser.Visible then
+        ButtonUser.Click
+    except
+    end;
+
+end;
+
 procedure TFormCredentials.EditPassword2Change(Sender: TObject);
 begin
   if internalMsg then
     exit;
   internalMsg := true;
   begin
-    ButtonUser.Click;
+    try
+      ButtonUser.Click
+    except
+    end;
   end;
   internalMsg := false;
 end;
@@ -367,7 +398,10 @@ begin
     if EditPassword1.Tag = 1 then //password cached
       BitBtn_Ok.SetFocus
     else
-      EditPassword1.SetFocus;
+      try
+        EditPassword1.SetFocus;
+      except
+      end;
   end;
   internalMsg := false;
 end;
@@ -380,7 +414,12 @@ begin
   internalMsg := true;
   begin
     if Length(Trim(UsersComboBox.Text)) = 0 then
-      UsersComboBox.SetFocus
+    begin
+      try
+        UsersComboBox.SetFocus
+      except
+      end;
+    end
     else
       if EditPassword2.Tag = 1 then //password cached
         BitBtn_Ok.SetFocus
@@ -397,9 +436,25 @@ begin
     exit;
   internalMsg := true;
   begin
-    ButtonUser.Click;
+    try
+      ButtonUser.Click
+    except
+    end;
   end;
   internalMsg := false;
+end;
+
+procedure TFormCredentials.UsersComboBoxKeyUp(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if Key = VK_UP then
+    if ButtonDefaultUser.Enabled and ButtonDefaultUser.Visible then
+    try
+      ButtonDefaultUser.Click;
+    except
+
+    end;
+  
 end;
 
 procedure TFormCredentials.FormCreate(Sender: TObject);
@@ -409,6 +464,12 @@ begin
   //RetrieveProfileImage(OnGetImage);
 
   fShowWebPage := false;
+end;
+
+procedure TFormCredentials.FormDestroy(Sender: TObject);
+begin
+  FreeAndNil(fUserRegistry);
+  RegCloseKey(fUserRegKey);
 end;
 
 procedure TFormCredentials.FormShow(Sender: TObject);
@@ -424,11 +485,80 @@ begin
   result := 'Binary Publisher';
 end;
 
+const
+  UserKeyPath = 'Software\JEDI-API\XPElevation';
+
+function IsAlternativeLogon : Boolean;
+begin
+  result := true;
+  if fUserRegistry.OpenKey(UserKeyPath, true) then
+  begin
+    try
+      result := fUserRegistry.ReadBool('LastAlternativeLogon');
+    except
+    end;
+    fUserRegistry.CloseKey;
+  end;
+end;
+
+function GetAlternativeLogonUserName : WideString;
+begin
+  result := '';
+  if fUserRegistry.OpenKey(UserKeyPath, true) then
+  begin
+    try
+      result := fUserRegistry.ReadString('LastAlternativeLogonName');
+    except
+    end;
+    fUserRegistry.CloseKey;
+  end;
+end;
+
+procedure FillUserList;
+begin
+
+end;
+
 var
   Publisher : String;
   Signed : Boolean;
 
 begin
+
+  //turn off saving credentials?
+  CheckBoxSaveLogon.Enabled := ControlFlags and XPCTRL_FORCE_NO_CACHE_CREDENTIALS <> XPCTRL_FORCE_NO_CACHE_CREDENTIALS;
+  if not CheckBoxSaveLogon.Enabled and CheckBoxSaveLogon.Checked then
+    CheckBoxSaveLogon.Checked := False;
+
+  UsersComboBox.Clear;
+  //get last logon name if available from registry
+  UsersComboBox.Text := GetAlternativeLogonUserName;
+  //if not alternate name available...
+  if (Length(UsersComboBox.Text) = 0) then
+  begin
+    //set the name from service
+    UsersComboBox.Text := UserName
+  end
+  else //otherwise set name and add it 
+  begin
+    UsersComboBox.Items.Add(UsersComboBox.Text);
+    UsersComboBox.Text := UsersComboBox.Text;
+  end;
+
+  //add service from username
+  UsersComboBox.Items.Add(UserName);
+  FillUserList;
+
+  try
+    //turn off alternate logon?
+    if ControlFlags and XPCTRL_FORCE_NO_ALTERNATE_LOGON = XPCTRL_FORCE_NO_ALTERNATE_LOGON then
+    begin
+      ButtonUser.Enabled := false;
+      UsersComboBox.Enabled := false;
+      EditPassword2.Enabled := false;
+    end;
+  except
+  end;
 
   JvEdit_AppName.Text := AppName;
   JvEdit_CmdLine.Text := '"'+AppName + '" ' +AppCmdLine;
@@ -448,9 +578,9 @@ begin
   end;
 
 
-
-
-  if not IsPasswordCacheAvailable then
+  if not IsPasswordCacheAvailable or
+    //secondary logon mechanism (name + pass) is disabled
+    (not EditPassword2.Enabled) then
   begin
     EditPassword1.Tag := 0;
     EditPassword1.Text := '';
@@ -464,7 +594,11 @@ begin
     //EditPassword1.ThemedPassword := true;
     EditPassword2.ProtectPassword := true;
 
-    EditPassword1.SetFocus;
+    try
+      EditPassword1.SetFocus;
+    except
+
+    end;
   end
   else
   begin
@@ -483,17 +617,17 @@ begin
     EditPassword2.Text := '';
   end;
 
-  UsersComboBox.Text := UserName;
- { if Length(UserName) > 0 then
+
+  if IsAlternativeLogon and ButtonUser.Enabled then
   begin
     ButtonUser.Click;
   end
-  else  }
+  else
   begin
     ButtonDefaultUser.Click;
   end;
 
-  Signed := IsSigned(AppName ,Publisher);
+  Signed := not IsSigned(AppName ,Publisher);
   if Signed then
     JvStaticText_AppPublisher.Caption := Publisher
   else
@@ -520,6 +654,10 @@ begin
   fDesktopSwitchThread := TJwDesktopSwitchThread.Create(true,'');
   fDesktopSwitchThread.FreeOnTerminate := true;
   fDesktopSwitchThread.Resume;
+
+
+
+  Self.BringToFront;
 end;
 
 procedure TFormCredentials.CenterInMonitor(const i : Integer);
@@ -568,11 +706,8 @@ begin
   if Assigned(fDesktopSwitchThread) then
   begin
     fDesktopSwitchThread.Terminate;
-    //fDesktopSwitchThread.WaitWithTimeOut(1000);
     fDesktopSwitchThread := nil;
   end;
-
-
 
   inherited;
 end;
@@ -590,6 +725,9 @@ var
   BytesRead : DWORD;
   Data : Array[0..1] of DWORD;
 begin
+{$IFDEF FORMONLY}
+  exit;
+{$ENDIF FORMONLY}
   //ignore timeout if desktop is not our secure desktop
   if not fDesktopSwitchNotification then
   begin
@@ -642,14 +780,18 @@ procedure TFormCredentials.JvBevel1MouseMove(Sender: TObject;
 var S : String;
 begin
   try
-    S := TControl(Sender).Name + #13#10+
-        TControl(Sender).Hint;
+{$IFDEF DEBUG}
+    S := Format('%s%s(%s)',
+        [TControl(Sender).Hint, #13#10, TControl(Sender).Name]);
+{$ELSE}
+   S := TControl(Sender).Hint;
+{$ENDIF DEBUG}
   except
     S := '';
   end;
   if Sender = JvProgressBar then
   begin
-    S := Format('%d seconds left until this dialog will be canceled and the eleveation is aborted. Click on it to restart the timer.',[JvProgressBar.Max - JvProgressBar.Position]);
+    S := Format('%d seconds left until this dialog will be canceled and the eleveation is aborted.',[JvProgressBar.Max - JvProgressBar.Position]);
   end;
 
   try
@@ -662,8 +804,12 @@ end;
 procedure TFormCredentials.UsersComboBoxMouseEnter(Sender: TObject);
 begin
   try
-     JvLinkLabel2.Caption := TControl(Sender).Name + #13#10+
-       TControl(Sender).Hint;
+{$IFDEF DEBUG}
+    JvLinkLabel2.Caption := Format('%s%s(%s)',
+        [TControl(Sender).Hint, #13#10, TControl(Sender).Name]);
+{$ELSE}
+    JvLinkLabel2.Caption := TControl(Sender).Hint;
+{$ENDIF DEBUG}
   except
   end;
 end;
@@ -676,12 +822,6 @@ begin
 
 end;
 
-procedure TFormCredentials.JvProgressBarMouseDown(Sender: TObject;
-  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-begin
- // JvProgressBar.Position := 0;
-end;
-
 procedure TFormCredentials.OnGetImage;
 begin
   //
@@ -689,6 +829,16 @@ begin
   //JvImage1.LoadFromStream(ImageStream);
   //FreeAndNil(ImageStream);
   //Image1.Picture.LoadFromFile('E:\temp\bild-16.jpg');
+end;
+
+
+
+procedure TFormCredentials.SetUserKey(key: HKEY);
+begin
+  fUserRegKey := key;
+  fUserRegistry := TRegistry.Create;
+  fUserRegistry.RootKey := Key;
+  fUserRegistry.Access := KEY_ALL_ACCESS;
 end;
 
 procedure TFormCredentials.ShowLogonError(const Visible: Boolean);
@@ -719,7 +869,7 @@ begin
   try
     P := Self.ScreenToClient(Mouse.CursorPos);
 
-    Element := ControlAtPos(P,false,true, true);
+    Element := ControlAtPos(P,false,true{, true});
 
     if Assigned(Element) and (Element = JvProgressBar) then
        JvBevel1MouseMove(Element,[],P.X, P.Y);
@@ -727,7 +877,11 @@ begin
 
   end;
 
-  JvProgressBar.Position := JvProgressBar.Position + 1;
+  JvProgressBar.StepIt;
+
+
+  if GetLastError <> 0 then
+    OutputDebugStringA(PAnsiChar(SysErrorMessage(GetLastError)));
   {JvStaticText_TimeOut.Caption :=
     Format('%d seconds left',
       [JvProgressBar.Max - JvProgressBar.Position]);}
@@ -748,6 +902,9 @@ begin
   for i := 1 to c  do
     result[i] := Char(random(255));
 end;
+
+
+{ TXPRegistry }
 
 
 begin

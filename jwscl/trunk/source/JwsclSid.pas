@@ -1135,7 +1135,9 @@ begin
     //Copy the SID
     Create(tempSID);
 
-    fCachedSystemName := pDomainName;
+    //not necessary here since the user supplied the name -
+    //we ignore pDomainName since it may be a pseudo domain like "NT SERVICE"
+    //fCachedSystemName := pDomainName;
 
     //free the SID
     LocalFree(HLOCAL(tempSID));
@@ -1148,7 +1150,7 @@ begin
       'Create(const SystemName, AccountName : TJwString);', ClassName,
       RsUNSid, 0, True, []);
 
-  UpdateDbgData;
+ // UpdateDbgData;
 end;
 
 destructor TJwSecurityId.Destroy;

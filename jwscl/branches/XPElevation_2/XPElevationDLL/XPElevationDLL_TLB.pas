@@ -12,7 +12,7 @@ unit XPElevationDLL_TLB;
 // ************************************************************************ //
 
 // PASTLWTR : 1.2
-// Datei generiert am 12.05.2008 22:56:31 aus der unten beschriebenen Typbibliothek.
+// Datei generiert am 15.05.2008 23:23:10 aus der unten beschriebenen Typbibliothek.
 
 // ************************************************************************  //
 // Typbib: P:\Eigene Dateien\Dezipaitor\Projekte\Delphi\7\jedi-api-lib\jwscl\branches\XPElevation_2\XPElevationDLL\XPElevationDLL.tlb (1)
@@ -87,7 +87,7 @@ type
     ['{F986436F-64E9-4292-84AC-F31D6776C619}']
     function ExecuteProcess(const ApplicationPath: WideString; const Parameters: WideString; 
                             const CurrentDirectory: WideString; ParentWindow: LongWord; 
-                            Flags: LongWord; out PID: Integer): HResult; stdcall;
+                            ControlFlags: LongWord; out PID: Integer): HResult; stdcall;
   end;
 
 // *********************************************************************//
