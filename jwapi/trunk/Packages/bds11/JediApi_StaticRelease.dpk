@@ -30,6 +30,7 @@ package JediApi_StaticRelease;
 {$DEFINE JWA_INCLUDE_JWAADSTLB}
 {$DEFINE RELEASE}
 {$DEFINE JWA_WINDOWS}
+{$DEFINE JWA_INCLUDE_SHELLAPI}
 
 requires
   rtl,

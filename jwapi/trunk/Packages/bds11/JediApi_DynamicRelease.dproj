@@ -35,7 +35,7 @@
     <DCC_ResourcePath>.;..\;..\..\common;..\..\Win32Api</DCC_ResourcePath>
     <DCC_ObjPath>.;..\;..\..\common;..\..\Win32Api</DCC_ObjPath>
     <DCC_IncludePath>.;..\;..\..\common;..\..\Win32Api</DCC_IncludePath>
-    <DCC_Define>PACKAGE_CONDITIONS;JWA_INCLUDE_SETUP_API;JWA_INCLUDE_JWAADSTLB;RELEASE;DYNAMIC_LINK;JWA_WINDOWS</DCC_Define>
+    <DCC_Define>PACKAGE_CONDITIONS;JWA_INCLUDE_SETUP_API;JWA_INCLUDE_JWAADSTLB;RELEASE;DYNAMIC_LINK;JWA_WINDOWS;JWA_INCLUDE_SHELLAPI</DCC_Define>
     <DCC_AssertionsAtRuntime>False</DCC_AssertionsAtRuntime>
     <DCC_DebugInformation>False</DCC_DebugInformation>
     <DCC_LocalDebugSymbols>False</DCC_LocalDebugSymbols>
@@ -65,9 +65,8 @@
     <DelphiCompile Include="JediApi_DynamicRelease.dpk">
       <MainSource>MainSource</MainSource>
     </DelphiCompile>
-    <DCCReference Include="$(SystemRoot)\system32\rtl.dcp" />
-    <DCCReference Include="$(SystemRoot)\system32\vcl.dcp" />
     <DCCReference Include="..\..\Win32API\JwaVista.pas" />
     <DCCReference Include="..\..\Win32API\JwaWindows.pas" />
   </ItemGroup>
 </Project>
+
