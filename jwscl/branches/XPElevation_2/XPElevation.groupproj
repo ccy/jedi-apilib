@@ -1,0 +1,54 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{d004bee4-2ba0-41f5-bec3-ca1e8a2ef631}</ProjectGuid>
+  </PropertyGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Projects Include="Ask Credentials Code\CredentialsPrompt.dproj" />
+    <Projects Include="Service Code\XPElevationService.dproj" />
+    <Projects Include="XPElevationDLL\XPElevationDLL.dproj" />
+  </ItemGroup>
+  <ProjectExtensions>
+    <Borland.Personality>Default.Personality</Borland.Personality>
+    <Borland.ProjectType />
+    <BorlandProject>
+<BorlandProject xmlns=""><Default.Personality></Default.Personality></BorlandProject></BorlandProject>
+  </ProjectExtensions>
+  <Target Name="XPElevationService">
+    <MSBuild Projects="Service Code\XPElevationService.dproj" Targets="" />
+  </Target>
+  <Target Name="XPElevationService:Clean">
+    <MSBuild Projects="Service Code\XPElevationService.dproj" Targets="Clean" />
+  </Target>
+  <Target Name="XPElevationService:Make">
+    <MSBuild Projects="Service Code\XPElevationService.dproj" Targets="Make" />
+  </Target>
+  <Target Name="CredentialsPrompt">
+    <MSBuild Projects="Ask Credentials Code\CredentialsPrompt.dproj" Targets="" />
+  </Target>
+  <Target Name="CredentialsPrompt:Clean">
+    <MSBuild Projects="Ask Credentials Code\CredentialsPrompt.dproj" Targets="Clean" />
+  </Target>
+  <Target Name="CredentialsPrompt:Make">
+    <MSBuild Projects="Ask Credentials Code\CredentialsPrompt.dproj" Targets="Make" />
+  </Target>
+  <Target Name="XPElevationDLL">
+    <MSBuild Projects="XPElevationDLL\XPElevationDLL.dproj" Targets="" />
+  </Target>
+  <Target Name="XPElevationDLL:Clean">
+    <MSBuild Projects="XPElevationDLL\XPElevationDLL.dproj" Targets="Clean" />
+  </Target>
+  <Target Name="XPElevationDLL:Make">
+    <MSBuild Projects="XPElevationDLL\XPElevationDLL.dproj" Targets="Make" />
+  </Target>
+  <Target Name="Build">
+    <CallTarget Targets="XPElevationService;CredentialsPrompt;XPElevationDLL" />
+  </Target>
+  <Target Name="Clean">
+    <CallTarget Targets="XPElevationService:Clean;CredentialsPrompt:Clean;XPElevationDLL:Clean" />
+  </Target>
+  <Target Name="Make">
+    <CallTarget Targets="XPElevationService:Make;CredentialsPrompt:Make;XPElevationDLL:Make" />
+  </Target>
+  <Import Condition="Exists('$(MSBuildBinPath)\Borland.Group.Targets')" Project="$(MSBuildBinPath)\Borland.Group.Targets" />
+</Project>
