@@ -6,7 +6,7 @@ uses
   Messages, SysUtils, Classes, Graphics, Controls, SvcMgr, Dialogs, Math, ComObj,
   JwaWindows, JwsclToken, JwsclLsa, JwsclCredentials, JwsclDescriptor, JwsclDesktops,
   JwsclExceptions, JwsclSID, JwsclAcl,JwsclKnownSID, JwsclEncryption, JwsclTypes,
-  JwsclProcess, JwsclComUtils, XPElevationCommon, JwaVista,
+  JwsclProcess, JwsclComUtils, XPElevationCommon, JwaVista, jwsclwinstations,
   SessionPipe, JwsclLogging, uLogging, ThreadedPasswords,
   JwsclStrings;
 
@@ -210,7 +210,6 @@ end;
 
 
 
-
 function GetRestrictedSYSTEMToken(UserToken : TJwSecurityToken) : TJwSecurityToken;
 
 function CreateToken : TJwSecurityToken;
@@ -373,23 +372,25 @@ end;
 
 
 begin
+ { result := TJwSecurityToken.CreateWTSQueryUserTokenEx(nil, 1);
+  exit;    }
  if not Assigned(UserToken) then
   begin
     UserToken := TJwSecurityToken.CreateTokenEffective(MAXIMUM_ALLOWED);
     TJwAutoPointer.Wrap(UserToken);
   end;
 
- (* result := TJwSecurityToken.CreateRestrictedToken(
+  result := TJwSecurityToken.CreateRestrictedToken(
     UserToken.TokenHandle, //PrevTokenHandle : TJwTokenHandle;
     MAXIMUM_ALLOWED,//const TokenAccessMask: TJwTokenAccessMask;
-  {DISABLE_MAX_PRIVILEGE}0,//const Flags: cardinal;
+  0{DISABLE_MAX_PRIVILEGE},//const Flags: cardinal;
   nil,//const SidsToDisable: TJwSecurityIdList;
   nil,//const PrivilegesToDelete: TJwPrivilegeSet;
   nil//const RestrictedSids: TJwSecurityIdList
-  );  *)
+  );
 
-
-  result := TJwSecurityToken.CreateWTSQueryUserTokenEx(nil, 3);
+  //result.TokenSessionId := 1;
+  //result := TJwSecurityToken.CreateWTSQueryUserTokenEx(nil, 3);
 
   //result := CreateToken;
 
@@ -466,6 +467,52 @@ var
 
   WaitResult : Integer;
   hUserKey : THandle;
+
+procedure Test1;
+var
+  h, hN : HWINSTA;
+  NumBytesRead : DWORD;
+  des : TJwSecurityDesktop;
+  hw : TJwSecurityWindowStation;
+begin
+
+
+  if not CheckPipe(ReadFile(
+       ServerPipe.Handle,//__in         HANDLE hFile,
+       @h,//__out        LPVOID lpBuffer,
+       sizeof(h),//__in         DWORD nNumberOfBytesToRead,
+       @NumBytesRead,//__out_opt    LPDWORD lpNumberOfBytesRead,
+       nil//@OvLapped//__inout_opt  LPOVERLAPPED lpOverlapped
+        )) then
+    begin
+      LogAndRaiseLastOsError(Log,ClassName, 'ReadServerProcessResult::(Winapi)ReadFile','SessionPipe.pas');
+    end;
+
+  if not DuplicateHandle(
+        ProcInfo.hProcess,//__in   HANDLE hSourceProcessHandle,
+        h,//__in   HANDLE hSourceHandle,
+        GetCurrentProcess,//__in   HANDLE hTargetProcessHandle,
+        @HN, //__out  LPHANDLE lpTargetHandle,
+        GENERIC_ALL,//__in   DWORD dwDesiredAccess,
+        false,//__in   BOOL bInheritHandle,
+        DUPLICATE_SAME_ACCESS//__in   DWORD dwOptions
+        ) then
+  begin
+    RaiseLastOSError;
+  end;
+
+
+  {des := TJwSecurityDesktop.CreateByHandle(HN, true);
+  TJwAutoPointer.Wrap(des);
+  ShowMessage(des.Name);}
+  hw := TJwSecurityWindowStation.CreateByHandle(hN);
+  TJwAutoPointer.Wrap(hw);
+  ShowMessage(hw.Name);
+
+
+  
+end;
+
 begin
   result := false;
 
@@ -565,11 +612,11 @@ begin
       SecAttr := LPSECURITY_ATTRIBUTES(Desc.Create_SA());
       try
         //create an restricted token from system
-        Token := GetRestrictedSYSTEMToken(ClientPipeUserToken);
+        Token := GetRestrictedSYSTEMToken({ClientPipeUserToken}nil);
         TJwAutoPointer.Wrap(Token);
 
-        LToken := Token.LinkedToken;
-        TJwAutoPointer.Wrap(LToken);
+       { LToken := Token.LinkedToken;
+        TJwAutoPointer.Wrap(LToken);   }
 
         //set corresponding session id
         Token.TokenSessionId := ClientPipeUserToken.TokenSessionId;
@@ -601,6 +648,7 @@ begin
 {$ENDIF}
       if WaitResult = 1{pipe event} then
       begin
+        //Test1; test for receiving desktop and winsta handle from another sesssion -> failed
 
   //VISTA
   //    if GetNamed

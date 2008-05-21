@@ -31,6 +31,7 @@ uses
   JwsclToken,
   JwsclTypes,
   JwsclKnownSid,
+  JwsclStrings,
   JwaVista,
   Graphics,
   CredentialsThread in 'CredentialsThread.pas',
@@ -114,6 +115,19 @@ begin
     result := IncludeTrailingBackslash(Path);  //Oopps, may convert unicode to ansicode
 end;
 
+function IsDefaultDesktop : Boolean;
+var Desk : TJwSecurityDesktop;
+begin
+  Desk := TJwSecurityDesktop.CreateAndGetInputDesktop([], false, DESKTOP_READOBJECTS);
+  try
+    result := JwCompareString(Desk.Name,'default', true) = 0;
+  finally
+    Desk.Free;
+  end;
+  MessageBox(0,'The desktop has been restored','',MB_ICONINFORMATION or MB_OK);
+
+end;
+
 var
   ShRes,
   Res : Integer;
@@ -128,7 +142,7 @@ var
   Resolution : Trect;
   ScreenBitmap : TBitmap;
 begin
-//  MessageBox(0,'Debug breakpoint','',MB_ICONEXCLAMATION or MB_OK);
+
   //StartProcess(GetSystem32Path+'osk.exe');
 
   //exit;
@@ -156,6 +170,10 @@ begin
   if GetSystemMetrics(SM_SHUTTINGDOWN) <> 0 then
     halt(1);
 
+  {if not IsDefaultDesktop then
+    halt(1);
+  }
+
   ExceptionLog.CustomWebFieldsRequest := JEDI_WebFieldsRequestNotify;
   ExceptionLog.AttachedFilesRequest := AttachedFilesRequestProc;
 
@@ -165,8 +183,6 @@ begin
     SwitchToDefault;
     exit;
   end;
-
-
 
  // if HasParameter('/debug') then
       MessageBox(0,'Debug breakpoint','',MB_ICONEXCLAMATION or MB_OK);

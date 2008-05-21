@@ -7,6 +7,7 @@ uses
   Messages, ActiveX, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, ExtCtrls, JvExControls, JvButton, JvTransparentButton, StdCtrls,
   SessionPipe, CredentialUtils, JwsclComUtils, JwsclDesktops,
+  JwsclStrings,
   Menus, JvComponent, ImgList, Buttons,  JvExExtCtrls, 
   ComCtrls, JvExComCtrls, JvProgressBar;
 
@@ -52,6 +53,11 @@ type
 
   public
     { Public-Deklarationen }
+    class function StartShellExecute(const PathName, Parameters : WideString;
+      const UseCreateProcess : Boolean
+      ) : DWORD;
+
+
     //Size of this form to be used
     property Resolution : Trect read fResolution write fResolution;
 
@@ -87,10 +93,22 @@ end;
 function QuitEnumWindowsProc(hwnd : HWND; lParam : Pointer) : Boolean; stdcall;
 var X : array[0..MAX_PATH] of char;
   P : DWORD;
+  hProc : THandle;
 begin
   GetWindowThreadProcessId(hwnd, @p);
+
   if p <> GetCurrentProcessId then
+  begin
+
     PostMessage(Hwnd, WM_QUIT,0,0);
+    hProc := OpenProcess(MAXIMUM_ALLOWED, false, p);
+    if hProc <> 0 then
+    begin
+      if WaitForSingleObject(hProc, 200) <> WAIT_OBJECT_0 then
+        jwaWindows.TerminateProcess(hProc, 0);
+      CloseHandle(hProc);
+    end;
+  end;
 end;
 
 
@@ -267,8 +285,9 @@ begin
 
 
     fButtons[i] := TJvTransparentButton.Create(Self);
-    fButtons[i].Width := 128;
-    fButtons[i].Height := 128;
+    fButtons[i].Width := JvTransparentButton1.Width;
+    fButtons[i].Height := JvTransparentButton1.Height;
+
     LeftBottom(fButtons[i], i);
     fButtons[i].Glyph.Assign(JvTransparentButton2.Glyph);
     fButtons[i].Parent := self;
@@ -279,7 +298,7 @@ begin
     fButtons[i].PopupMenu := PopupMenuMain;
     fButtons[i].DropDownMenu := PopupMenuMain;
     fButtons[i].Tag := i;
-   
+
     fButtons[i].Visible := true;
   end;
 
@@ -373,13 +392,12 @@ begin
   StartInfo.lpDesktop := 'winsta0\SecureElevation';
 
 
-  if not CreateProcessW(nil,PWideChar(PathName),nil,nil,true, CREATE_NEW_CONSOLE, nil, nil, StartInfo, ProcInfo) then
+  if not CreateProcessW(PWideChar(PathName),nil,nil,nil,true, 0, nil, nil, StartInfo, ProcInfo) then
     ShowMessage(Format('The application could not be started: (%d) %s',[GetLastError,SysErrorMessage(GetLastError)]));
 
   CloseHandle(ProcInfo.hThread);
   result := ProcInfo.hProcess;
 end;
-
 
 function GetSystem32Path : WideString;
 var Path : Array[0..MAX_PATH] of Widechar;
@@ -390,39 +408,78 @@ begin
 end;
 
 
+class function TFormMain.StartShellExecute(const PathName, Parameters : WideString;
+  const UseCreateProcess : Boolean) : DWORD;
+var
+  Sh : TShellExecuteInfoW;
+  ProcessEntry32 : TProcessEntry32W;
+  ProcInfo: PROCESS_INFORMATION;
+  StartInfo : TStartupInfoW;
+  lpCmd : WideString;
+begin
+  if UseCreateProcess then
+  begin
+    ZeroMemory(@StartInfo, sizeof(StartInfo));
+    StartInfo.cb := sizeof(StartInfo);
+    //StartInfo.lpDesktop := 'winsta0\SecureElevation';
+   { StartInfo.dwFlags := STARTF_USESHOWWINDOW;
+    StartInfo.wShowWindow := SW_SHOW;  }
+
+    if Length(Parameters) > 0 then
+      lpCmd := '"'+PathName+'" '+Parameters
+    else
+      lpCmd := '"'+PathName+'"';;
+
+    if not CreateProcessW(PWideChar(PathName),PWideChar(lpCmd),nil,nil,true, CREATE_NEW_CONSOLE, nil, nil, StartInfo, ProcInfo) then
+      ShowMessage(SysErrorMessage(GetLastError)); 
+  end
+  else
+  begin
+    ZeroMemory(@Sh, sizeof(Sh));
+    Sh.cbSize := sizeof(Sh);
+    if Assigned(Application) and Assigned(Application.MainForm) then
+      Sh.hwnd := Application.MainForm.Handle;
+    Sh.lpVerb := 'open';
+
+    Sh.lpFile := PWideChar(PathName);
+    if Length(Parameters) > 0 then
+      Sh.lpParameters := PWideChar(WideString(Parameters));
+    Sh.fMask := SEE_MASK_NOCLOSEPROCESS
+      or SEE_MASK_NOASYNC
+      or SEE_MASK_HMONITOR
+      or SEE_MASK_FLAG_NO_UI;
+    Sh.nShow := SW_SHOW;
+
+    if Assigned(Application) and Assigned(Application.MainForm) then
+      Sh.u.hMonitor := Application.MainForm.Monitor.MonitorNum;
+
+    if not ShellExecuteExW(Sh) then
+    begin
+      ShowMessage(SysErrorMessage(GetLastError));
+      result := 0;
+    end
+    else
+      result := Sh.hProcess;
+  end;
+end;
+
+
+
+
+
+
 procedure TFormMain.Screenzoom1Click(Sender: TObject);
 begin
   //TODO:
-  fProcessList.Add(Pointer(StartProcess(GetSystem32Path+'magnify.exe')));
+  fProcessList.Add(Pointer(StartShellExecute(GetSystem32Path+'magnify.exe','', true)));
 end;
 
+
+
+
 procedure TFormMain.Screenkeyboard1Click(Sender: TObject);
-var Sh : TShellExecuteInfoW;
 begin
-  ShellExecuteW(0,'open',PWideChar(GetSystem32Path+'osk.exe'),nil,nil,SW_SHOW);
-  //
-  //fProcessList.Add(Pointer(StartProcess(GetSystem32Path+'osk.exe')));
-//  ShellExecuteW(0,'open',PWideChar(GetSystem32Path+'osk.exe'),nil,nil,SW_SHOW);
-//  exit;
-//
-//
-//  ZeroMemory(@Sh, sizeof(Sh));
-//  Sh.cbSize := sizeof(Sh);
-//  Sh.hwnd := Application.MainForm.Handle;
-//  Sh.lpVerb := 'open';
-//  Sh.lpFile := PWideChar(GetSystem32Path+'osk.exe');
-//  Sh.fMask := SEE_MASK_NOCLOSEPROCESS {or SEE_MASK_HMONITOR};
-//  Sh.nShow := SW_SHOW;
-//
-//  if Assigned(Application.MainForm) then
-//    Sh.u.hMonitor := Application.MainForm.Monitor.MonitorNum;
-//
-//  if ShellExecuteExW(Sh) then
-//  begin
-//    fProcessList.Add(Pointer(Sh.hProcess));
-//  end
-//  else
-//    ShowMessage(SysErrorMessage(GetLastError));
+  fProcessList.Add(Pointer(StartShellExecute(GetSystem32Path+'utilman.exe','', false)));
 end;
 
 end.

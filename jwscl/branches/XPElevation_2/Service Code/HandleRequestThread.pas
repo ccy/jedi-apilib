@@ -103,7 +103,6 @@ begin
   if XPElevationStruct.Size <> sizeof(XPElevationStruct) then
   begin
     Log.Log('XPElevation data struct size is invalid');
-
     HRes := E_INVALID_RECORD_SIZE;
   end
   else

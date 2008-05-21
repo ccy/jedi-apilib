@@ -9,12 +9,14 @@ uses
   JwsclComUtils,
   JwsclDesktops,
   JwsclCredentials,
+  JwsclExceptions,
   JwsclEurekaLogUtils,
   JwsclTypes,
   JwsclAcl,
   JwsclLogging,
   JwsclKnownSid,
   JwsclStrings,
+  JwsclSid,
   ULogging,
   SessionPipe,
   SysUtils,
@@ -30,6 +32,12 @@ uses
 
 
 type
+  PEaseAccessProcess = ^TEaseAccessProcess;
+  TEaseAccessProcess = record
+    PID : DWORD;
+    Path : WideString;
+    UseCreateProcess : Boolean;
+  end;
 
   TConsentThread = class(TJwThread)
   protected
@@ -54,9 +62,17 @@ type
       const PipeSession : TClientSessionPipe;
       const ShowLogonError : Boolean): Integer;
   protected
+    fSwitchedSecureDesktopEvent : HEVENT;
+    EaseAccessProcesses: TList;
+    fUseSecureDesktop : Boolean;
 
+    procedure RememberAndCloseEaseAccessApps;
+    procedure RestartEaseAccessAppsOnNewDesktop(const RestoreDesktop : TJwSecurityDesktop);
+    procedure CloseEaseAccessApps;
+    procedure FreeEaseAccessAppsList;
   public
     class function CreateNewThread(Suspended : Boolean) : TConsentThread;
+
     destructor Destroy; override;
 
     procedure Execute; override;
@@ -124,6 +140,7 @@ begin
   Application := nil;
 
   SD := TJwSecurityDescriptor.CreateDefaultByToken();
+  TJwAutoPointer.Wrap(SD);
   try
     //SD.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil, [], GENERIC_ALL, JwLocalSystemSID));
 
@@ -131,24 +148,25 @@ begin
     begin
       SD.DACL.Delete(SD.DACL.FindSID(JwLocalSystemSID));
     end;}
-
-    result := TJwSecurityDesktop.CreateDesktop(nil, true, 'SecureElevation', [],
+   try
+     result := TJwSecurityDesktop.CreateDesktop(nil, true, 'SecureElevation', [],
        false, GENERIC_ALL,  SD);
 
-    try
+{      result := TJwSecurityDesktop.OpenDesktop(nil, false, 'winlogon', [],
+       false, GENERIC_ALL);
+ }
+
       result.SetThreadDesktop;
     except
-      on E : Exception do
+      on E : EJwsclWinCallFailedException do
       begin
         Log.Exception(E);
-        LastError := GetLastError();
-        Log.Log(lsError,'Wincall failed with '+IntToStr(LastError));
+        Log.Log(lsError,'Wincall failed with '+IntToStr(E.LastError));
         raise;
       end;
     end;
 
   finally
-    SD.Free;
   end;
 end;
 
@@ -158,6 +176,9 @@ end;
 
 destructor TConsentThread.Destroy;
 begin
+  FreeEaseAccessAppsList;
+
+  CloseHandle(fSwitchedSecureDesktopEvent);
   try
      FreeAndNil(fDesktop);
   except
@@ -166,6 +187,8 @@ begin
 end;
 
 procedure TConsentThread.EndDesktop(var Desktop : TJwSecurityDesktop);
+
+
 var
   InputDesk : TJwSecurityDesktop;
   Desks : TJwSecurityDesktops;
@@ -181,24 +204,29 @@ begin
     end;
     Application := nil;
     try
-      try
-        Log.Log('SwitchDesktopBack succeeded.');
+      {Forms.Application or any other VCL component
+       seems to leave a hook behind, so this will going to fail.
+       Since we are in a thread, we have to show message boxes
+       in the main thread.
+      }
+      Desktop.SetLastThreadDesktop;
+    except
 
-        {Forms.Application or any other VCL component
-         seems to leave a hook behind, so this will going to fail.
-         Since we are in a thread, we have to show message boxes
-         in the main thread.
-        }
-        Desktop.SetLastThreadDesktop;
-      except
-      end;
+    end;
+
+    //don't change from winlogon - locked workstation 
+    if not TJwSecurityDesktops.IsStationLocked then    
+    try
+      Desktop.SwitchDesktopBack;
+      Log.Log('SwitchDesktopBack succeeded.');
+    except
       try
+        //failsafe
         InputDesk := TJwSecurityDesktop.Create(nil,dcfOpen, true, 'default',[],false, DESKTOP_READOBJECTS or DESKTOP_SWITCHDESKTOP ,nil);
         TJwAutoPointer.Wrap(InputDesk);
         InputDesk.SwitchDesktop;
       except
       end;
-    finally
     end;
   end;
 end;
@@ -336,6 +364,213 @@ begin
   end;
 end;
 
+procedure TConsentThread.RememberAndCloseEaseAccessApps;
+
+function FindProcess(const Name, ExpectedPath : WideString; out ProcessEntry32 : TProcessEntry32W) : boolean;
+var
+  hSnap : THandle;
+  ProcEntry : TProcessEntry32W;
+  len,
+  currentID : DWORD;
+  Continue : Boolean;
+  Path : WideString;
+  hProc : THandle;
+begin
+  hSnap := CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+  result := false;
+
+  ZeroMemory(@ProcessEntry32, sizeof(ProcessEntry32));
+
+  try
+    ProcEntry.dwSize := sizeof(ProcEntry);
+    Continue := Process32FirstW(hSnap, ProcEntry);
+
+    while (continue) do
+    begin
+      if (JwCompareString(WideString(ProcEntry.szExeFile), Name, true) = 0) then
+      begin
+        hProc := OpenProcess(PROCESS_QUERY_INFORMATION or PROCESS_VM_READ,
+          false, ProcEntry.th32ProcessID);
+
+        if hProc > 0 then
+        begin
+          SetLength(Path,MAX_PATH);
+
+          //path to exe must be correct
+          len :=  GetModuleFileNameExW(hProc, 0, @Path[1], MAX_PATH);
+          if Len > 0 then
+          begin
+            SetLength(Path, Len);
+
+            if JwCompareString(Path, ExpectedPath+Name, true) = 0 then
+            begin
+              result := true;
+              ProcessEntry32 := ProcEntry;
+              break;
+            end;
+          end;
+          CloseHandle(hProc);
+        end;
+      end;
+
+      continue := Process32NextW(hSnap,ProcEntry);
+    end;
+  finally
+    CloseHandle(hSnap);
+  end;
+end;
+
+procedure AddAndCloseApp(const EaseAccessProcesses : TList;
+  ProcessEntry32 : TProcessEntry32W; UseCreateProcess : Boolean);
+var
+  hProc : THandle;
+  hID : PEaseAccessProcess;
+  len : DWORD;
+begin
+  hProc := OpenProcess(PROCESS_QUERY_INFORMATION or PROCESS_VM_READ or PROCESS_TERMINATE, false, ProcessEntry32.th32ProcessID);
+  if hProc <> 0 then
+  begin
+    New(hID);
+    hID.PID := 0;
+
+    SetLength(hID.Path,MAX_PATH);
+    len :=  GetModuleFileNameExW(hProc, 0, @hID.Path[1], MAX_PATH);
+    if Len > 0 then
+    begin
+      SetLength(hID.Path, len);
+      hID.UseCreateProcess := UseCreateProcess;
+      EaseAccessProcesses.Add(Pointer(hID));
+
+      TerminateProcess(hProc, 0);
+    end
+    else
+    begin
+      Dispose(hId);
+    end;
+
+    CloseHandle(hProc);
+  end;
+end;
+
+function GetPath(ID : Integer) : WideString;
+var Path : Array[0..MAX_PATH] of Widechar;
+begin
+  Result := '';
+  if SUCCEEDED(SHGetFolderPathW(0,ID,0,SHGFP_TYPE_DEFAULT, @Path)) then
+    result := IncludeTrailingBackslash(Path);  //Oopps, may convert unicode to ansicode
+end;
+
+var
+  ProcessEntry32 : TProcessEntry32W;
+begin
+  EaseAccessProcesses := TList.Create;
+
+{  if FindProcess('osk.exe',GetPath(CSIDL_SYSTEM), ProcessEntry32) then
+  begin
+    AddAndCloseApp(EaseAccessProcesses, ProcessEntry32, false);
+  end;   }
+  if FindProcess('magnify.exe',GetPath(CSIDL_SYSTEM), ProcessEntry32) then
+  begin
+    AddAndCloseApp(EaseAccessProcesses, ProcessEntry32, true);
+  end;
+end;
+
+type
+  TConsentThreadEaseAppThread = class(TJwThread)
+  public
+    EaseAccessProcesses : TList;
+    RestoreDesktop      : TJwSecurityDesktop;
+
+    procedure Execute; override;
+  end;
+
+procedure TConsentThreadEaseAppThread.Execute;
+var
+  i : Integer;
+  Log : IJwLogClient;
+begin
+  Log := ULogging.LogServer.Connect(etMethod,ClassName,'Logon','ConsentThreadEaseAppThread','');
+
+  Sleep(50);
+
+  try
+    if Assigned(EaseAccessProcesses) then
+    with EaseAccessProcesses do
+    begin
+      if Assigned(RestoreDesktop) then
+        RestoreDesktop.SetLastThreadDesktop;
+
+      for i := 0 to EaseAccessProcesses.Count - 1 do
+      begin
+        PEaseAccessProcess(EaseAccessProcesses[i]).PID :=
+          TFormMain.StartShellExecute(PEaseAccessProcess(EaseAccessProcesses[i]).Path,'',
+            PEaseAccessProcess(EaseAccessProcesses[i]).UseCreateProcess);
+      end;
+    end;
+  except
+    on E : Exception do
+      Log.Exception(E);
+
+
+  end;
+end;
+
+procedure TConsentThread.RestartEaseAccessAppsOnNewDesktop(const RestoreDesktop : TJwSecurityDesktop);
+var ConsentThreadEaseAppThread : TConsentThreadEaseAppThread;
+begin
+  ConsentThreadEaseAppThread := TConsentThreadEaseAppThread.Create(true, 'ConsentThreadEaseAppThread');
+  try
+    ConsentThreadEaseAppThread.EaseAccessProcesses := EaseAccessProcesses;
+    ConsentThreadEaseAppThread.RestoreDesktop := RestoreDesktop;
+
+    if Assigned(RestoreDesktop) then
+    begin
+      ConsentThreadEaseAppThread.FreeOnTerminate := False;
+      ConsentThreadEaseAppThread.Resume;
+      ConsentThreadEaseAppThread.WaitFor;
+    end
+    else
+      ConsentThreadEaseAppThread.Execute;
+  finally
+    ConsentThreadEaseAppThread.Free;
+  end;
+end;
+
+procedure TConsentThread.CloseEaseAccessApps;
+var
+  i : Integer;
+  PID : DWORD;
+
+  hProc : THandle;
+  hID : PEaseAccessProcess;
+  len : DWORD;
+
+begin
+  //first we try to terminate the known apps
+  for i := 0 to EaseAccessProcesses.Count - 1 do
+  begin
+    PID := PEaseAccessProcess(EaseAccessProcesses[i]).PID;
+
+    hProc := OpenProcess(PROCESS_TERMINATE, false, PID);
+    if hProc <> 0 then
+    begin
+      TerminateProcess(hProc,0);
+      CloseHandle(hProc);
+    end;
+  end;
+end;
+
+procedure TConsentThread.FreeEaseAccessAppsList;
+var i : Integer;
+begin
+  for i := 0 to EaseAccessProcesses.Count - 1 do
+  begin
+    Dispose(EaseAccessProcesses[i]);
+  end;
+  FreeAndNil(EaseAccessProcesses);
+end;
+
+
 function TConsentThread.Logon(
   const PipeSession : TClientSessionPipe;
   SessionInfo : TSessionInfo): Integer;
@@ -364,8 +599,9 @@ begin
 
   //create background image if this is not a remote session
   //we save data
-  if (GetSystemMetrics(SM_REMOTESESSION) = 0) or
-     (SessionInfo.ControlFlags and 1{XPCTRL_FORCE_BACKGROUND_IMAGE} = 1) then
+  if fUseSecureDesktop and
+     ((GetSystemMetrics(SM_REMOTESESSION) = 0) or
+     (SessionInfo.ControlFlags and 1{XPCTRL_FORCE_BACKGROUND_IMAGE} = 1)) then
   begin
     try
       ScreenBitmap := GetScreenBitmap(SessionInfo.ParentWindow, Resolution);
@@ -378,34 +614,48 @@ begin
   else
   begin
     Resolution := GetMaxResolution;
-    Log.Log(lsWarning,'Screenbitmap is not loaded due to remote application.');
+    Log.Log(lsWarning,'Screenbitmap is not loadedl.');
     ScreenBitmap := nil;
   end;
 
+  if fUseSecureDesktop then
+  begin
+    RememberAndCloseEaseAccessApps;
+    try
+      //create new and switch desktop
+      fDesktop := SetUpDesktop;
+    except
+      on E : Exception do
+      begin
+        Log.Log(lsError,'The secure desktop could not be established. '#13#10+SysErrorMessage(GetLastError));
+        Log.Exception(E);
+        FreeAndNil(ScreenBitmap);
 
-  try
-    //create new and switch desktop
-    fDesktop := SetUpDesktop;
-  except
-    on E : Exception do
-    begin
-      Log.Log(lsError,'The secure desktop could not be established. '#13#10+SysErrorMessage(GetLastError));
-      Log.Exception(E);
-
-      Result := 1;
-      fIsServiceError := false;
-      fErrorValue := 0;
-      fLastError := ERROR_BAD_ENVIRONMENT;
-      exit;
+        Result := 1;
+        fIsServiceError := false;
+        fErrorValue := 0;
+        fLastError := ERROR_BAD_ENVIRONMENT;
+        exit;
+      end;
     end;
-  end;
-                           
+
+    RestartEaseAccessAppsOnNewDesktop(nil);
+  end
+  else
+    fDesktop := nil;
+
+
+
   try
     try
       SessionInfo.Password := GetFillPasswd;
       SessionInfo.Password := '';
 
       CurrentAttempt := 0;
+
+      if fUseSecureDesktop then
+        SetEvent(fSwitchedSecureDesktopEvent);
+
       repeat
         LastError := ERROR_INVALID_PASSWORD;
 
@@ -450,7 +700,6 @@ begin
           else
             begin
               Log.Log(lsWarning,Format('Service returns error. Value:%d LastError:%d',[Value,LastError]));
-              EndDesktop(fDesktop);
 
               Result := 1;
               fIsServiceError := true;
@@ -487,8 +736,16 @@ begin
       end;
 
     finally
-      EndDesktop(fDesktop);
+      if fUseSecureDesktop then
+      begin
+        CloseEaseAccessApps;
+        EndDesktop(fDesktop);
 
+        //then restart them
+        RestartEaseAccessAppsOnNewDesktop(fDesktop);
+
+        SetEvent(fSwitchedSecureDesktopEvent);
+      end;
     end;
   except
     on E : Exception do
@@ -517,10 +774,71 @@ var
   SessionInfo : TSessionInfo;
   Idx : Integer;
 
+
+procedure Test1;
+var h: HDESK;
+  h2 : DWORD;
+begin
+   MessageBox(0,'Debug breakpoint','',MB_ICONEXCLAMATION or MB_OK);
+
+  h := GetProcessWindowStation; //OpenDesktopW('default',0, true, GENERIC_ALL);
+  //h := CreateEvent(nil, false, false, nil);
+
+  if not WriteFile(
+      PipeSession.Handle,//__in         HANDLE hFile,
+      @h,//__out        LPVOID lpBuffer,
+      sizeof(h),//__in         DWORD nNumberOfBytesToRead,
+      @h2,//
+      nil//@OvLapped//
+    ) then
+    begin
+      LogAndRaiseLastOsError(Log,ClassName, 'Connect::(Winapi)WriteFile','SessionPipe.pas');
+    end;
+
+  sleep(1000);
+  //halt;
+  //CloseHandle(h);
+
+end;
+
+procedure CreateSwitchEvent;
+var
+  SD : TJwSecurityDescriptor;
+  pSA : JwaWindows.PSECURITY_ATTRIBUTES;
+  SID : TJwSecurityId;
+begin
+  SD := TJwSecurityDescriptor.Create;
+  try
+    SD.Owner := JwAdministratorsSID;
+    SD.PrimaryGroup := JwAdministratorsSID;
+
+{$IFDEF DEBUG}
+    SD.DACL := nil;
+{$ELSE}
+    SD.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil,[],GENERIC_ALL,JwLocalSystemSID,false));
+    SD.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil,[],GENERIC_ALL,JwAdministratorsSID,false));
+    SD.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil,[],SYNCHRONIZE,JwWorldSID,true));
+{$ENDIF}
+    pSA := SD.Create_SA();
+
+    try
+      fSwitchedSecureDesktopEvent := CreateEventW(LPSECURITY_ATTRIBUTES(pSA), false, false, 'XPElevation Switched Desktop');
+    finally
+      TJwSecurityDescriptor.Free_SA(pSA);
+    end;
+  finally
+    SD.Free;
+  end;
+end;
+
 begin
   Log := ULogging.LogServer.Connect(etMethod,ClassName,'Execute','CredentialsThread','');
 
   inherited;
+
+  CreateSwitchEvent;
+
+  fUseSecureDesktop := true;
 
   fNoErrorDialogs := false;
   fIsServiceError := false;
@@ -556,6 +874,8 @@ begin
 
       Log.Log('Connect to service');
       PipeSession.Connect(ParamStr(Idx+1));
+
+      //Test1; //test for sending desktop or winsta handle
 
       //read service information
       ReturnValue := 1;
@@ -619,6 +939,7 @@ begin
 
 
 end;
+
 
 class function TConsentThread.CreateNewThread(
   Suspended: Boolean): TConsentThread;

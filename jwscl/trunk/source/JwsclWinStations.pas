@@ -1,4 +1,4 @@
-{<B>Abstract</B>This unit provides access to winstation api functions 
+{<B>Abstract</B>This unit provides access to winstation api functions
 @author(Christian Wimmer)
 <B>Created:</B>03/23/2007 
 <B>Last modification:</B>09/10/2007 
@@ -111,6 +111,11 @@ type
     constructor Create(const sName: TJwString; bInherit: boolean;
       cDesiredAccess: TJwAccessMask; bCreateOnly: boolean;
       SecurityDescriptor: TJwSecurityDescriptor); overload;
+
+    {<B>CreateByHandle</B> creates a new instance and assigns an existing handle to it.
+     By default the handle is not destroyed on freeing.
+     Set property DestroyWinSta manually to true.}
+    constructor CreateByHandle(const Handle  :THandle);
 
     destructor Destroy; override;
 
@@ -343,7 +348,7 @@ constructor TJwSecurityWindowStations.Create;
 begin
   inherited Create;
   fSessionID := 0;
-
+  fDestroyWinSta := false;
 end;
 
 
@@ -447,6 +452,12 @@ begin
   DestroyWinSta := True;
 end;
 
+
+constructor TJwSecurityWindowStation.CreateByHandle(const Handle: THandle);
+begin
+  Self.Create;
+  fHandle := HAndle;
+end;
 
 destructor TJwSecurityWindowStation.Destroy;
 begin
