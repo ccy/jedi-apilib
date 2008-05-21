@@ -73,7 +73,7 @@ interface
 
 {$IFNDEF JWA_OMIT_SECTIONS}
 implementation
-//uses ...
+uses JwaWinDllNames;
 {$ENDIF JWA_OMIT_SECTIONS}
 
 
