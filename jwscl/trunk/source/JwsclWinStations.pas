@@ -113,8 +113,8 @@ type
       SecurityDescriptor: TJwSecurityDescriptor); overload;
 
     {<B>CreateByHandle</B> creates a new instance and assigns an existing handle to it.
-     By default the handle is not destroyed on freeing.
-     Set property DestroyWinSta manually to true.}
+     By default the handle is destroyed on freeing.
+     Set property DestroyWinSta manually to false.}
     constructor CreateByHandle(const Handle  :THandle);
 
     destructor Destroy; override;
@@ -348,7 +348,7 @@ constructor TJwSecurityWindowStations.Create;
 begin
   inherited Create;
   fSessionID := 0;
-  fDestroyWinSta := false;
+
 end;
 
 
