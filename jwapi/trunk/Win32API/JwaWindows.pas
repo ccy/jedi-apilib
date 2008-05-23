@@ -128,6 +128,10 @@ the one of the project.
 
   {$DEFINE JWA_INCLUDE_SHELLAPI}
 
+  {Opens up Windows Vista (and above) declarations.
+   See jediapilib.inc for more declarations}
+  {$DEFINE WINVISTA}
+
   {.$DEFINE JWA_NEW_WINSTA}
 {$ENDIF PACKAGE_CONDITIONS}
 
