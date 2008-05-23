@@ -613,6 +613,11 @@ The list has no order!}
 {$I JwaBCrypt.pas}
 {$I JwaNCrypt.pas}
 
+{$I JwaEventDefs.pas}
+{$I JwaEventTracing.pas}
+{$I JwaEvntProv.pas}
+{$I JwaEvntCons.pas}
+
 
 
 
@@ -974,6 +979,11 @@ The list has no order!}
 
 {$I JwaBCrypt.pas}
 {$I JwaNCrypt.pas}
+
+{$I JwaEventDefs.pas}
+{$I JwaEventTracing.pas}
+{$I JwaEvntProv.pas}
+{$I JwaEvntCons.pas}
 
 
 {$I JwaModuleLoader.pas}

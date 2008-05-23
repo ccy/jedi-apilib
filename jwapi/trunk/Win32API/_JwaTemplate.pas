@@ -41,7 +41,7 @@ This unit is a template! Adapt it for new JEDI API units. Don't override it.
 {$IFNDEF JWA_OMIT_SECTIONS}
 unit Jwa<UnitName>; 
 
-{$WEAKPACKAGEUNIT}
+
 {$ENDIF JWA_OMIT_SECTIONS}
 
 {$HPPEMIT ''}
@@ -118,8 +118,6 @@ function <ConvertedFunction>; external <LIBConstantName>_LIB name '<API Function
 
 {$ENDIF JWA_INTERFACESECTION}
 
-
-{$ENDIF JWA_INTERFACESECTION}
 
 
 {$IFNDEF JWA_OMIT_SECTIONS}

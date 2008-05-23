@@ -22,7 +22,7 @@
     <DCC_ResourcePath>.;..\;..\..\common;..\..\Win32Api</DCC_ResourcePath>
     <DCC_ObjPath>.;..\;..\..\common;..\..\Win32Api</DCC_ObjPath>
     <DCC_IncludePath>.;..\;..\..\common;..\..\Win32Api</DCC_IncludePath>
-    <DCC_Define>PACKAGE_CONDITIONS;JWA_INCLUDE_SETUP_API;JWA_INCLUDE_JWAADSTLB;DEBUG;DYNAMIC_LINK;RELEASE</DCC_Define>
+    <DCC_Define>WINVISTA_UP;PACKAGE_CONDITIONS;JWA_INCLUDE_SETUP_API;JWA_INCLUDE_JWAADSTLB;DEBUG;DYNAMIC_LINK;RELEASE</DCC_Define>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <Version>7.0</Version>
@@ -36,6 +36,7 @@
     <DCC_ObjPath>.;..\;..\..\common;..\..\Win32Api</DCC_ObjPath>
     <DCC_IncludePath>.;..\;..\..\common;..\..\Win32Api</DCC_IncludePath>
     <DCC_Define>PACKAGE_CONDITIONS;JWA_INCLUDE_SETUP_API;JWA_INCLUDE_JWAADSTLB;DEBUG;DYNAMIC_LINK;JWA_WINDOWS;JWA_INCLUDE_SHELLAPI</DCC_Define>
+    <DCC_MapFile>3</DCC_MapFile>
   </PropertyGroup>
   <ProjectExtensions>
     <Borland.Personality>Delphi.Personality</Borland.Personality>
@@ -52,3 +53,4 @@
     <DCCReference Include="..\..\Win32API\JwaWindows.pas" />
   </ItemGroup>
 </Project>
+
