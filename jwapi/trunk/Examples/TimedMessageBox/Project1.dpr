@@ -1,6 +1,7 @@
 program Project1;
 
 uses
+  ExceptionLog,
   Forms,
   Unit1 in 'Unit1.pas' {Form1};
 

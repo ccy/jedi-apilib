@@ -1,10 +1,17 @@
 unit Unit1;
 
+//JwaWindows or only JwaShlwAPI ?
+{.$DEFINE JWAWINDOWS}
 interface
 
 uses
   Messages, Variants, Classes, Controls, Forms,
-  Dialogs, StdCtrls, Windows, JwaShLWAPI;
+  Dialogs, StdCtrls, Windows,
+{$IFDEF JWAWINDOWS}
+  JwaWindows; 
+{$ELSE}
+  JwaWinUser, JwaShLWAPI;
+{$ENDIF}
 
 type
   TForm1 = class(TForm)
