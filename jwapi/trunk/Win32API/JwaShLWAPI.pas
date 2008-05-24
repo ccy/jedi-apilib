@@ -1937,6 +1937,28 @@ type
 {$EXTERNALSYM IsInternetESCEnabled}
 function IsInternetESCEnabled: BOOL stdcall;
 
+{$IFDEF WINXP_UP}
+
+//stOrM!------------------------------------------------------------------------------------------------------------------------------------------------
+
+const
+  MB_TIMEDOUT = 32000; 
+
+function MessageBoxTimeOut(
+      hWnd: HWND; lpText: PChar; lpCaption: PChar;
+      uType: UINT; wLanguageId: WORD; dwMilliseconds: DWORD): Integer; stdcall;
+
+function MessageBoxTimeOutA(
+      hWnd: HWND; lpText: PChar; lpCaption: PChar;
+      uType: UINT; wLanguageId: WORD; dwMilliseconds: DWORD): Integer; stdcall;
+
+function MessageBoxTimeOutW(
+      hWnd: HWND; lpText: PWideChar; lpCaption: PWideChar;
+      uType: UINT; wLanguageId: WORD; dwMilliseconds: DWORD): Integer; stdcall;
+
+//-------------------------------------------------------------------------------------------------------------------------------------------stOrM!
+{$ENDIF WINXP_UP}
+
 {$ENDIF JWA_IMPLEMENTATIONSECTION}
 
 {$IFNDEF JWA_OMIT_SECTIONS}
@@ -2069,7 +2091,6 @@ end;
 function wnsprintfA; external shlwapidll name 'wnsprintfA';
 function wnsprintfW; external shlwapidll name 'wnsprintfW';
 function wnsprintf; external shlwapidll name 'wnsprintf'+AWSuffix;
-
 
 {$IFNDEF DYNAMIC_LINK}
 
@@ -2530,6 +2551,15 @@ function SHUnlockShared; external shlwapidll name 'SHUnlockShared';
 function SHCreateThreadRef; external shlwapidll name 'SHCreateThreadRef';
 function IsInternetESCEnabled; external shlwapidll name 'IsInternetESCEnabled';
 
+{$IFDEF WINXP_UP}
+//stOrM!------------------------------------------------------------------------------------------------------------------------------------------
+
+function MessageBoxTimeOut;  external user32 name 'MessageBoxTimeout'+AWSuffix;
+function MessageBoxTimeOutA; external user32 name 'MessageBoxTimeoutA';
+function MessageBoxTimeOutW; external user32 name 'MessageBoxTimeoutW';
+
+//------------------------------------------------------------------------------------------------------------------------------------------stOrM!
+{$ENDIF WINXP_UP}
 {$ELSE}
 var
   _StrChrA: Pointer;
@@ -8369,6 +8399,52 @@ begin
         JMP     [_IsInternetESCEnabled]
   end;
 end;
+
+{$IFDEF WINXP_UP}
+//stOrM!------------------------------------------------------------------------------------------------------------------------------------------
+
+var
+  _MessageBoxTimeOutA: Pointer;
+
+function MessageBoxTimeOutA;
+begin
+  GetProcedureAddress(_MessageBoxTimeOutA, user32, 'MessageBoxTimeOutA');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_MessageBoxTimeOutA]
+  end;
+end;
+
+var
+  _MessageBoxTimeOutW: Pointer;
+
+function MessageBoxTimeOutW;
+begin
+  GetProcedureAddress(_MessageBoxTimeOutW, user32, 'MessageBoxTimeOutW');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_MessageBoxTimeOutW]
+  end;
+end;
+
+var
+  _MessageBoxTimeOut: Pointer;
+
+function MessageBoxTimeOut;
+begin
+  GetProcedureAddress(_MessageBoxTimeOut, user32, 'MessageBoxTimeOut' + AWSuffix);
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_MessageBoxTimeOut]
+  end;
+end;
+
+
+//------------------------------------------------------------------------------------------------------------------------------------------stOrM!
+{$ENDIF WINXP_UP}
 
 {$ENDIF DYNAMIC_LINK}
 
