@@ -4,7 +4,7 @@ interface
 
 uses
   Messages, Variants, Classes, Controls, Forms,
-  Dialogs, StdCtrls, JwaWindows, JwaShLWAPI;
+  Dialogs, StdCtrls, Windows, JwaShLWAPI;
 
 type
   TForm1 = class(TForm)
