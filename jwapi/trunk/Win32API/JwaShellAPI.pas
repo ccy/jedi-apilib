@@ -43,6 +43,7 @@
 {******************************************************************************}
 {$IFNDEF JWA_OMIT_SECTIONS}
 unit JwaShellAPI;
+{$I jediapilib.inc}
 
 interface
 
