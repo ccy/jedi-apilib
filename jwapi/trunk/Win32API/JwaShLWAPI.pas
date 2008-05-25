@@ -1949,7 +1949,7 @@ const
   MB_TIMEDOUT = 32000; 
 
 function MessageBoxTimeOut(
-      hWnd: HWND; lpText: PChar; lpCaption: PChar;
+      hWnd: HWND; lpText: PTSTR; lpCaption: PTSTR;
       uType: UINT; wLanguageId: WORD; dwMilliseconds: DWORD): Integer; stdcall;
 
 function MessageBoxTimeOutA(
@@ -1968,8 +1968,8 @@ function MessageBoxTimeOutW(
 {$IFDEF WIN2000_UP}
 
 function MessageBoxCheck(
-      hWnd: HWND; lpText: PChar; lpCaption: PChar;
-      uType: UINT;  Default: Integer; RegVal: PChar) : Integer; stdcall;
+      hWnd: HWND; lpText: PTSTR; lpCaption: PTSTR;
+      uType: UINT;  Default: Integer; RegVal: PTSTR) : Integer; stdcall;
 
 function MessageBoxCheckA(
       hWnd: HWND; lpText: PChar; lpCaption: PChar;
@@ -2113,11 +2113,11 @@ begin
 end;
 
 
+//only available as static
 function wnsprintfA; external shlwapidll name 'wnsprintfA';
 function wnsprintfW; external shlwapidll name 'wnsprintfW';
 function wnsprintf; external shlwapidll name 'wnsprintf'+AWSuffix;
 
-{$ENDIF JWA_INTERFACESECTION}
 {$IFNDEF DYNAMIC_LINK}
 
 function StrChrA; external shlwapidll name 'StrChrA';
@@ -2593,9 +2593,9 @@ function MessageBoxTimeOutW; external user32 name 'MessageBoxTimeoutW';
 
 //function MessageBoxCheck, function MessageBoxCheckA, function MessageBoxCheckW
 
-function MessageBoxCheck; external shlwapidll Index 185;
-function MessageBoxCheckA; external shlwapidll Index 185;
-function MessageBoxCheckW; external shlwapidll Index 191;
+function MessageBoxCheck; external shlwapidll Index {$IFDEF UNICODE}191{$ELSE}185{$ENDIF UNICODE};
+function MessageBoxCheckA; external shlwapidll Index 185; //'SHMessageBoxCheckA'
+function MessageBoxCheckW; external shlwapidll Index 191; //'SHMessageBoxCheckW'
 
 {$ENDIF WIN2000_UP}
 
@@ -8493,11 +8493,11 @@ var
 
 function MessageBoxCheckA;
 begin
-  GetProcedureAddress(_MessageBoxCheckA, shlwapidll,  PChar(185));
+  GetProcedureAddress(_MessageBoxCheckA, shlwapidll,  PAnsiChar(185));  //'SHMessageBoxCheckA'
   asm
         MOV     ESP, EBP
         POP     EBP
-        JMP     [__MessageBoxCheckA]
+        JMP     [_MessageBoxCheckA]
   end;
 end;
 
@@ -8506,7 +8506,7 @@ var
 
 function MessageBoxCheckW;
 begin
-  GetProcedureAddress(_MessageBoxCheckW, shlwapidll, PChar(191));
+  GetProcedureAddress(_MessageBoxCheckW, shlwapidll, PAnsiChar(191)); //'SHMessageBoxCheckW'
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -8519,7 +8519,7 @@ var
 
 function MessageBoxCheck;
 begin
-  GetProcedureAddress(_MessageBoxCheck, shlwapidll, PAnsiChar({$IFDEF UNICODE}185{$ELSE} PChar(185));
+  GetProcedureAddress(_MessageBoxCheck, shlwapidll, PAnsiChar({$IFDEF UNICODE}191{$ELSE}185{$ENDIF UNICODE}));
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -8532,7 +8532,7 @@ end;
 //------------------------------------------------------------------------------------------------------------------------------------------stOrM!
 
 {$ENDIF DYNAMIC_LINK}
-
+                
 {$ENDIF JWA_INTERFACESECTION}
 
 {$IFNDEF JWA_OMIT_SECTIONS}
