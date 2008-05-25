@@ -1963,6 +1963,27 @@ function MessageBoxTimeOutW(
 //-------------------------------------------------------------------------------------------------------------------------------------------stOrM!
 {$ENDIF WINXP_UP}
 
+//stOrM!------------------------------------------------------------------------------------------------------------------------------------------
+
+{$IFDEF WIN2000_UP}
+
+function MessageBoxCheck(
+      hWnd: HWND; lpText: PChar; lpCaption: PChar;
+      uType: UINT;  Default: Integer; RegVal: PChar) : Integer; stdcall;
+
+function MessageBoxCheckA(
+      hWnd: HWND; lpText: PChar; lpCaption: PChar;
+      uType: UINT;  Default: Integer; RegVal: PChar) : Integer; stdcall;
+
+
+function MessageBoxCheckW(
+      hWnd: HWND; lpText: PWideChar; lpCaption: PWideChar;
+      uType: UINT;  Default: Integer; RegVal: PWideChar) : Integer; stdcall;
+
+{$ENDIF WIN2000_UP}
+
+//------------------------------------------------------------------------------------------------------------------------------------------stOrM!
+
 {$ENDIF JWA_IMPLEMENTATIONSECTION}
 
 {$IFNDEF JWA_OMIT_SECTIONS}
@@ -2096,6 +2117,7 @@ function wnsprintfA; external shlwapidll name 'wnsprintfA';
 function wnsprintfW; external shlwapidll name 'wnsprintfW';
 function wnsprintf; external shlwapidll name 'wnsprintf'+AWSuffix;
 
+{$ENDIF JWA_INTERFACESECTION}
 {$IFNDEF DYNAMIC_LINK}
 
 function StrChrA; external shlwapidll name 'StrChrA';
@@ -2564,6 +2586,20 @@ function MessageBoxTimeOutW; external user32 name 'MessageBoxTimeoutW';
 
 //------------------------------------------------------------------------------------------------------------------------------------------stOrM!
 {$ENDIF WINXP_UP}
+
+//stOrM!------------------------------------------------------------------------------------------------------------------------------------------
+
+{$IFDEF WIN2000_UP}
+
+//function MessageBoxCheck, function MessageBoxCheckA, function MessageBoxCheckW
+
+function MessageBoxCheck; external shlwapidll Index 185;
+function MessageBoxCheckA; external shlwapidll Index 185;
+function MessageBoxCheckW; external shlwapidll Index 191;
+
+{$ENDIF WIN2000_UP}
+
+//------------------------------------------------------------------------------------------------------------------------------------------stOrM!
 {$ELSE}
 var
   _StrChrA: Pointer;
@@ -8449,6 +8485,51 @@ end;
 
 //------------------------------------------------------------------------------------------------------------------------------------------stOrM!
 {$ENDIF WINXP_UP}
+
+{$IFDEF WIN2000_UP}
+
+var
+  _MessageBoxCheckA: Pointer;
+
+function MessageBoxCheckA;
+begin
+  GetProcedureAddress(_MessageBoxCheckA, shlwapidll,  PChar(185));
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [__MessageBoxCheckA]
+  end;
+end;
+
+var
+  _MessageBoxCheckW: Pointer;
+
+function MessageBoxCheckW;
+begin
+  GetProcedureAddress(_MessageBoxCheckW, shlwapidll, PChar(191));
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_MessageBoxCheckW]
+  end;
+end;
+
+var
+  _MessageBoxCheck: Pointer;
+
+function MessageBoxCheck;
+begin
+  GetProcedureAddress(_MessageBoxCheck, shlwapidll, PAnsiChar({$IFDEF UNICODE}185{$ELSE} PChar(185));
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_MessageBoxCheck]
+  end;
+end;
+
+{$ENDIF WIN2000_UP}
+
+//------------------------------------------------------------------------------------------------------------------------------------------stOrM!
 
 {$ENDIF DYNAMIC_LINK}
 
