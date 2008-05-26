@@ -7,7 +7,8 @@ uses
   JwaWindows, JwsclToken, JwsclLsa, JwsclCredentials, JwsclDescriptor, JwsclDesktops,
   JwsclExceptions, JwsclSID, JwsclAcl,JwsclKnownSID, JwsclEncryption, JwsclTypes,
   JwsclProcess, JwsclComUtils, XPElevationCommon, JwaVista, jwsclwinstations,
-  SessionPipe, JwsclLogging, uLogging, ThreadedPasswords,
+  SessionPipe, JwsclLogging, uLogging, ThreadedPasswords, JwsclCryptProvider,
+  MappedStreams,
   JwsclStrings;
 
 const
@@ -82,7 +83,7 @@ type
 const
    EMPTYPASSWORD = Pointer(-1);
 
-   CredApplicationKey='CredentialsApplication';
+
 
 
 implementation
@@ -110,25 +111,7 @@ end;
 
 
 
-function RegGetFullPath(PathKey: string): string;
-var Reg: TRegistry; Unresolved: string;
-begin
-  Reg:=TRegistry.Create(KEY_QUERY_VALUE);
-  try
-    Reg.RootKey:=HKEY_LOCAL_MACHINE;
-    if Reg.OpenKey('Software\XPElevation\Paths\', false) then
-    try
-      Unresolved:=Reg.ReadString(PathKey);
-      SetLength(Result, MAX_PATH+1);
-      ExpandEnvironmentStrings(PChar(Unresolved), @Result[1], MAX_PATH+1);
-      SetLength(Result, StrLen(PChar(Result)));
-    finally
-      Reg.CloseKey;
-    end;
-  finally
-    Reg.Free;
-  end;
-end;
+
 
 
 { TElevationHandler }
@@ -249,133 +232,136 @@ begin
 
 
   Privileges := TJwPrivilegeSet.Create();
-  TJwAutoPointer.Wrap(Privileges);
-
-  Privileges.AddPrivilege(SE_CHANGE_NOTIFY_NAME);
-
-  DefaultDACL := UserToken.GetTokenDefaultDacl;
-  TJwAutoPointer.Wrap(DefaultDACL);
-
-
-  ZeroMemory(@ObjectAttributes, sizeof(ObjectAttributes));
-  ObjectAttributes.Length := sizeof(ObjectAttributes);
-
-  Owner := SYSToken.GetTokenOwner;
-  //TJwAutoPointer.Wrap(Owner);
-
-  User := {JwLocalServiceSID; //}SYSToken.GetTokenUser;
-  //TJwAutoPointer.Wrap(User);
-
-  Group := SYSToken.GetPrimaryGroup;
-  //Group := JwNullSID;
-  TJwAutoPointer.Wrap(Group);
-
-  //create our own logon id
-  //this logon ID must be registered first! (don't know how yet)
-  //AllocateLocallyUniqueId(AuthenticationId);
-
-  Stats := {UserToken.}SYSToken.GetTokenStatistics;
-  TJwAutoPointer.Wrap(Stats);
-
-  //get any logon session we want
-  {if not GetSession(UserToken, AuthenticationId) then
-    exit;}
-  //get the logon ID from the user token object
-  AuthenticationId := Stats.AuthenticationId;
-  //GetUserName reads the username from the token logon id rather than token user
-
-
-
-  //get default token groups
-  //UserGroups := SYSToken.TokenGroups;
-  UserGroups := TJwSecurityIdList.Create(true);
-  TJwAutoPointer.Wrap(UserGroups);
-
-
-  AllocateLocallyUniqueId(aLuid);
-  Sid := TJwSecurityId.Create(JwFormatString('S-1-5-5-%d-%d',[aLuid.HighPart, aLuid.LowPart]));
-  Sid.AttributesType := [sidaGroupMandatory];
-  UserGroups.Add(Sid);
-
- { Sid := TJwSecurityId.Create('S-1-5-21-2721915288-875847878-2597518166-513');
-  Sid.AttributesType := [sidaGroupMandatory];
-  UserGroups.Add(Sid);   }
-// UserGroups.Delete(3);
-
-
- { JwLocalServiceSID.AttributesType := [sidaGroupOwner];
-  UserGroups.Add(JwLocalServiceSID);}
-
-{  JwUsersSID.AttributesType := [sidaGroupMandatory];
-  UserGroups.Add(JwUsersSID);  }
-
-{  JwLocalSystemSID.AttributesType := [sidaGroupMandatory];
-  UserGroups.Add(JwLocalSystemSID);}
-
-  JwAdministratorsSID.AttributesType := [sidaGroupOwner];
-  UserGroups.Add(JwAdministratorsSID);
-
-  JwWorldSID.AttributesType := [sidaGroupMandatory];
-  UserGroups.Add(JwWorldSID);
-
-  JwIntegrityLabelSID[iltHigh].AttributesType := [sidaGroupIntegrity,sidaGroupIntegrityEnabled];
-  UserGroups.Add(JwIntegrityLabelSID[iltHigh]);
-
-{
-  Sid := TJwSecurityId.Create('S-1-5-5-0-10140476');
-  Sid.AttributesType := [sidaGroupMandatory];
-  UserGroups.Add(Sid);//S-1-5-1-1-1'));      }
-
-{  JwIntegrityLabelSID[iltSYSTEM].AttributesType := [sidaGroupIntegrity, sidaGroupIntegrityEnabled];
-  UserGroups.Add(JwIntegrityLabelSID[iltSYSTEM]);
- }
-  //add terminal server user (just for testing)
- { Sid := TJwSecurityId.Create('S-1-5-13');
-  Sid.AttributesType := [sidaGroupMandatory];
-  UserGroups.Add(Sid);//S-1-5-1-1-1'));          }
-
-  //add unknown Sid
-{  Sid := TJwSecurityId.Create('S-1-5-5-0-2827688');
-  //Sid.AttributesType := [sidaGroupMandatory];
-  Sid.AttributesType := [sidaGroupMandatory,sidaGroupLogonId];
-  UserGroups.Add(Sid);      }
-
-  {  UserGroups.Delete(13);
-  UserGroups.Delete(12);
-  UserGroups.Delete(2);   }
-  //ShowMessage(UserGroups.GetText(true));
-
-  //JwLocalSystemSID.AttributesType := [sidaGroupOwner];
-  //UserGroups.Add(JwLocalSystemSID);
-
-  ZeroMemory(@TokenSource, sizeof(TokenSource));
-  TokenSource.SourceName := 'CTTest'; //CreateTokenTest identifier name
-  AllocateLocallyUniqueId(TokenSource.SourceIdentifier); //any luid that defines us
-
-
-  JwEnablePrivilege(SE_TCB_NAME,pst_Enable);
-  JwEnablePrivilege(SE_CREATE_TOKEN_NAME,pst_Enable);
+  //TJwAutoPointer.Wrap(Privileges);
 
   try
-    result := TJwSecurityToken.CreateNewToken(
-    TOKEN_ALL_ACCESS,//const aDesiredAccess: TJwAccessMask;
-    ObjectAttributes,//const anObjectAttributes: TObjectAttributes;
-    AuthenticationId,//const anAuthenticationId: TLUID;
-    0,//const anExpirationTime: int64;
-    User,//anUser: TJwSecurityId;
-    UserGroups,//aGroups: TJwSecurityIdList;
-    Privileges,//aPrivileges: TJwPrivilegeSet;
-    Owner,//anOwner,
-    Group,//aPrimaryGroup: TJwSecurityId;
-    DefaultDACL,//aDefaultDACL: TJwDAccessControlList;
-    TokenSource //aTokenSource: TTokenSource
-    );
-  except
-    on e : Exception do
-    begin
-      ShowMessage(E.Message);
-      raise;
+    Privileges.AddPrivilege(SE_CHANGE_NOTIFY_NAME);
+
+    DefaultDACL := UserToken.GetTokenDefaultDacl;
+    TJwAutoPointer.Wrap(DefaultDACL);
+
+
+    ZeroMemory(@ObjectAttributes, sizeof(ObjectAttributes));
+    ObjectAttributes.Length := sizeof(ObjectAttributes);
+
+    Owner := SYSToken.GetTokenOwner;
+    TJwAutoPointer.Wrap(Owner);
+
+    User := SYSToken.GetTokenUser;
+    TJwAutoPointer.Wrap(User);
+
+    Group := SYSToken.GetPrimaryGroup;
+    TJwAutoPointer.Wrap(Group);
+
+    //create our own logon id
+    //this logon ID must be registered first! (don't know how yet)
+    //AllocateLocallyUniqueId(AuthenticationId);
+
+    Stats := SYSToken.GetTokenStatistics;
+    TJwAutoPointer.Wrap(Stats);
+
+    //get any logon session we want
+    {if not GetSession(UserToken, AuthenticationId) then
+      exit;}
+    //get the logon ID from the user token object
+    AuthenticationId := Stats.AuthenticationId;
+    //GetUserName reads the username from the token logon id rather than token user
+
+
+
+    //get default token groups
+    //UserGroups := SYSToken.TokenGroups;
+    UserGroups := TJwSecurityIdList.Create(true);
+    TJwAutoPointer.Wrap(UserGroups);
+
+
+    AllocateLocallyUniqueId(aLuid);
+    Sid := TJwSecurityId.Create(JwFormatString('S-1-5-5-%d-%d',[aLuid.HighPart, aLuid.LowPart]));
+    Sid.AttributesType := [sidaGroupMandatory];
+    UserGroups.Add(Sid);
+
+   { Sid := TJwSecurityId.Create('S-1-5-21-2721915288-875847878-2597518166-513');
+    Sid.AttributesType := [sidaGroupMandatory];
+    UserGroups.Add(Sid);   }
+  // UserGroups.Delete(3);
+
+
+   { JwLocalServiceSID.AttributesType := [sidaGroupOwner];
+    UserGroups.Add(JwLocalServiceSID);}
+
+  {  JwUsersSID.AttributesType := [sidaGroupMandatory];
+    UserGroups.Add(JwUsersSID);  }
+
+  {  JwLocalSystemSID.AttributesType := [sidaGroupMandatory];
+    UserGroups.Add(JwLocalSystemSID);}
+
+    JwAdministratorsSID.AttributesType := [sidaGroupOwner];
+    UserGroups.Add(JwAdministratorsSID);
+
+    JwWorldSID.AttributesType := [sidaGroupMandatory];
+    UserGroups.Add(JwWorldSID);
+
+    JwIntegrityLabelSID[iltHigh].AttributesType := [sidaGroupIntegrity,sidaGroupIntegrityEnabled];
+    UserGroups.Add(JwIntegrityLabelSID[iltHigh]);
+
+  {
+    Sid := TJwSecurityId.Create('S-1-5-5-0-10140476');
+    Sid.AttributesType := [sidaGroupMandatory];
+    UserGroups.Add(Sid);//S-1-5-1-1-1'));      }
+
+  {  JwIntegrityLabelSID[iltSYSTEM].AttributesType := [sidaGroupIntegrity, sidaGroupIntegrityEnabled];
+    UserGroups.Add(JwIntegrityLabelSID[iltSYSTEM]);
+   }
+    //add terminal server user (just for testing)
+   { Sid := TJwSecurityId.Create('S-1-5-13');
+    Sid.AttributesType := [sidaGroupMandatory];
+    UserGroups.Add(Sid);//S-1-5-1-1-1'));          }
+
+    //add unknown Sid
+  {  Sid := TJwSecurityId.Create('S-1-5-5-0-2827688');
+    //Sid.AttributesType := [sidaGroupMandatory];
+    Sid.AttributesType := [sidaGroupMandatory,sidaGroupLogonId];
+    UserGroups.Add(Sid);      }
+
+    {  UserGroups.Delete(13);
+    UserGroups.Delete(12);
+    UserGroups.Delete(2);   }
+    //ShowMessage(UserGroups.GetText(true));
+
+    //JwLocalSystemSID.AttributesType := [sidaGroupOwner];
+    //UserGroups.Add(JwLocalSystemSID);
+
+    ZeroMemory(@TokenSource, sizeof(TokenSource));
+    TokenSource.SourceName := 'CTTest'; //CreateTokenTest identifier name
+    AllocateLocallyUniqueId(TokenSource.SourceIdentifier); //any luid that defines us
+
+
+    JwEnablePrivilege(SE_TCB_NAME,pst_Enable);
+    JwEnablePrivilege(SE_CREATE_TOKEN_NAME,pst_Enable);
+
+    try
+      result := TJwSecurityToken.CreateNewToken(
+      TOKEN_ALL_ACCESS,//const aDesiredAccess: TJwAccessMask;
+      ObjectAttributes,//const anObjectAttributes: TObjectAttributes;
+      AuthenticationId,//const anAuthenticationId: TLUID;
+      0,//const anExpirationTime: int64;
+      User,//anUser: TJwSecurityId;
+      UserGroups,//aGroups: TJwSecurityIdList;
+      Privileges,//aPrivileges: TJwPrivilegeSet;
+      Owner,//anOwner,
+      Group,//aPrimaryGroup: TJwSecurityId;
+      DefaultDACL,//aDefaultDACL: TJwDAccessControlList;
+      TokenSource //aTokenSource: TTokenSource
+      );
+    except
+      on e : Exception do
+      begin
+        ShowMessage(E.Message);
+        raise;
+      end;
     end;
+  finally
+    Privileges.Free;
   end;
 
 
@@ -470,7 +456,7 @@ var
     
   Desc: TJwSecurityDescriptor;
   SecAttr: LPSECURITY_ATTRIBUTES;
-  CredApp: String;
+
   CreationFlags,
   LastError : DWORD;
 
@@ -531,8 +517,42 @@ begin
   TJwAutoPointer.Wrap(hw);
   ShowMessage(hw.Name);
 
+end;
 
-  
+function CheckCredentialsBinaryHash : Boolean;
+var
+  Stream : TFileStreamEx;
+  M : TMemoryStream;
+  Size : Cardinal;
+  fCredentialsAppHash : TJwHash;
+  NewHash : TCredentialsHash;
+begin
+  Stream := TFileStreamEx.Create(CredentialsAppPath, fmOpenRead);
+  try
+    if Stream.Size > high(Size) then
+      Size := high(Size)-1  //big file huh?
+    else
+      Size := Stream.Size;
+
+    fCredentialsAppHash := TJwHash.Create(haSHA);
+    try
+      fCredentialsAppHash.HashData(Stream.Memory,Size);
+
+      NewHash.Hash := fCredentialsAppHash.RetrieveHash(NewHash.Size);
+
+      try
+        result := (CredentialsHash.Size = NewHash.Size) and
+           (NewHash.Hash <> nil) and (CredentialsHash.Hash <> nil) and
+           (CompareMem(CredentialsHash.Hash,NewHash.Hash, CredentialsHash.Size));
+      finally
+        TJwHash.FreeBuffer(NewHash.Hash);
+      end;
+    finally
+      fCredentialsAppHash.Free;
+    end;
+  finally
+    Stream.Free;
+  end;
 end;
 
 begin
@@ -600,11 +620,8 @@ begin
   end;
 
   try
-    CredApp := RegGetFullPath(CredApplicationKey);
-
-
     AppliationCmdLine := Sysutils.WideFormat('"%s" /cred /pipe "%s"',
-       [CredApp, PipeName]);
+       [CredentialsAppPath, PipeName]);
 {$IFDEF DEBUG}
      AppliationCmdLine := AppliationCmdLine + ' /DEBUG';
      Log.Log('Starting credentials prompt with DEBUG.');
@@ -633,20 +650,27 @@ begin
 
       SecAttr := LPSECURITY_ATTRIBUTES(Desc.Create_SA());
       try
+        try
+          if not CheckCredentialsBinaryHash then
+          begin
+            Log.Log(lsError, 'Hash of credentials application changed! Elevation is aborted.');
+{$IFNDEF DEBUG}
+            //raise error
+            exit;
+{$ENDIF DEBUG}  
+          end;
+        except
+          on e : Exception do
+            Log.Exception(E);
+        end;
+
         //create an restricted token from system
         Token := GetRestrictedSYSTEMToken(ClientPipeUserToken);
         TJwAutoPointer.Wrap(Token);
-        //Token := ClientPipeUserToken;
-
-       { LToken := Token.LinkedToken;
-        TJwAutoPointer.Wrap(LToken);   }
-
-        //set corresponding session id
-        //Token.TokenSessionId := ClientPipeUserToken.TokenSessionId;
 
         if not CreateProcessAsUserW(
            Token.TokenHandle,//ClientPipeUserToken.TokenHandle,
-           PWideChar(Widestring(CredApp)),
+           PWideChar(Widestring(CredentialsAppPath)),
            PWideChar(Widestring(AppliationCmdLine)) ,
           SecAttr, SecAttr, True, CREATE_NEW_CONSOLE or CreationFlags, P, nil, StartInfo, ProcInfo) then
         begin
@@ -733,10 +757,10 @@ begin
                 CloseHandle(ProcInfo.hProcess);
                 CloseHandle(ProcInfo.hThread);
 
-                AppliationCmdLine := Sysutils.WideFormat('"%s" /cred /switchdefault', [CredApp]);
+                AppliationCmdLine := Sysutils.WideFormat('"%s" /cred /switchdefault', [CredentialsAppPath]);
                 if not CreateProcessAsUserW(
                    ClientPipeUserToken.TokenHandle,
-                   PWideChar(Widestring(CredApp)),
+                   PWideChar(Widestring(CredentialsAppPath)),
                    PWideChar(Widestring(AppliationCmdLine)) ,
                   nil, nil, True, CREATE_NEW_CONSOLE, nil, nil, StartInfo, ProcInfo) then
                 begin
@@ -950,16 +974,18 @@ begin
         elevated as Administrator even if they are not in the Administrators group.
         }
         SIDIndex := Groups.FindSid(XPElevationSID);
+{$IFNDEF DEBUG}
         If SIDIndex = -1 then
         begin
           ErrorResult := ERROR_INVALID_USER;
-          Log.Log(JwFormatString('Elevation of user %s for application %s not allowed.',
+          Log.Log(JwFormatString('Elevation of user %s is not allowed. (%s)',
             [SID.AccountName[''], ElevationStruct.ApplicationName]));
 
 
           result := E_INVALID_USER;
           exit;
         end;
+{$ENDIF DEBUG}
 
         Username := SID.AccountName[''];
         DefaultUserName := Username;

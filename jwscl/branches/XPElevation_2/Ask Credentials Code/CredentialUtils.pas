@@ -11,7 +11,7 @@ function GetMaxResolution : TRect;
 function AlphaBlendImage(const Image, Mask, Background : TBitmap; const BX,BY : Integer) : TBitmap;
 
 implementation
-uses JwsclVersion;
+uses JwsclVersion, JwsclComUtils;
 
 function GetMaxResolution : TRect;
 var i : Integer;
@@ -58,42 +58,41 @@ begin
   Resolution := GetMaxResolution;
 
   Wnd := HilightWindow;
-  if Wnd <> 0 then
-  begin
-    //GetClientRect(Wnd, SrcR);
-    GetWindowRect(Wnd,SrcR);
-  {  BringWindowToTop(Wnd);
-    SetForegroundWindow(Wnd);
-    Sleep(100);     }
-  end;
 
   C := TCanvas.Create;
   C.Handle := GetDC(0);
 
   try
-    if Wnd <> 0 then
+    //check for incorrect handles
+    if (Wnd <> 0) and (GetWindowLongW(Wnd,GWL_ID) <> 0) then
     begin
-      WndBit := Graphics.TBitmap.Create;
-
-      SetRect(DestR,0,0,
-        abs(SrcR.Right-SrcR.Left),abs(SrcR.Bottom - SrcR.Top));
-                                                          
-      WndBit.Width := DestR.Right;
-      WndBit.Height := DestR.Bottom;
-
-      //WndBit.Canvas.CopyRect(DestR,C,SrcR);
-      //print the windows content into the bitmap
       try
+        GetWindowRect(Wnd,SrcR);
+
+        WndBit := Graphics.TBitmap.Create;
+        TJwAutoPointer.Wrap(WndBit);
+
+        SetRect(DestR,0,0,
+          abs(SrcR.Right-SrcR.Left),abs(SrcR.Bottom - SrcR.Top));
+
+        WndBit.Width := DestR.Right;
+        WndBit.Height := DestR.Bottom;
+
+        //WndBit.Canvas.CopyRect(DestR,C,SrcR);
+        //print the windows content into the bitmap
+
         if not PrintWindow(Wnd, WndBit.Canvas.Handle, 0) then
         begin
           //we ignore the window on errors
           Wnd := 0;
-          Wndbit.Free;
         end;
       except
+        Wnd := 0;
       end;
       // WndBit.SaveToFile('E:\Temp\_Bmp2.bmp');
-    end;
+    end
+    else
+      Wnd := 0;
 
     result := Graphics.TBitmap.Create;
     result.Width := abs(Resolution.Left) + abs(Resolution.Right);
@@ -113,7 +112,7 @@ begin
       //WndBitB.SaveToFile('E:\Temp\_Bmp3.bmp');
 
       result.Canvas.CopyRect(SrcR, WndBitB.Canvas, DestR);
-      WndBit.Free;
+
       WndBitB.Free;
     end;
   finally

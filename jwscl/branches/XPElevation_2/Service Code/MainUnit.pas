@@ -7,14 +7,25 @@ uses
   JwaWindows, JwsclToken, JwsclLsa, JwsclCredentials, JwsclDescriptor, JwsclDesktops,
   JwsclExceptions, JwsclSID, JwsclAcl,JwsclKnownSID, JwsclEncryption, JwsclTypes,
   JwsclProcess, JwsclSecureObjects, JwsclComUtils, JwsclVersion,
-  JwsclLogging, uLogging,JwsclUtils,
+  JwsclLogging, uLogging,JwsclUtils, JwsclCryptProvider,
   SessionPipe, ThreadedPasswords,
+
+  MappedStreams,
 
 
   JwsclStrings, ExceptionLog;
 
 type
-  TLogType=(ltInfo, ltError);
+    TCredentialsHash = record
+      Hash : Pointer;
+      Size : Cardinal;
+    end;
+const
+    CredApplicationKey='CredentialsApplication';
+var
+    CredentialsAppPath : WideString = '';
+    CredentialsHash : TCredentialsHash;
+
 
 type
   TXPService = class(TService)
@@ -39,7 +50,6 @@ type
     //fLogFile:             Textfile;
     fStopped:             boolean;
     fTimer    : HANDLE;
-//    fDesktop:             TJwSecurityDesktop;
 
     fPasswords:           TCredentialsList;
 
@@ -63,7 +73,6 @@ type
 
 
     function GetServiceController: TServiceController; override;
-    procedure StartApp(AppToStart: String);
     { Public declarations }
     property ThreadsStopEvent: THandle read fThreadsStoppedEvent;
     property ServiceStopEvent: THandle read fServiceStopEvent;
@@ -73,7 +82,7 @@ type
 
 const MessageboxCaption= 'XP Elevation';
 
-      
+
 
 var
     XPService: TXPService;
@@ -245,7 +254,56 @@ begin
 end;
 
 
+function RegGetFullPath(PathKey: string): string;
+var Reg: TRegistry; Unresolved: string;
+begin
+  Reg:=TRegistry.Create(KEY_QUERY_VALUE);
+  try
+    Reg.RootKey:=HKEY_LOCAL_MACHINE;
+    if Reg.OpenKey('Software\XPElevation\Paths\', false) then
+    try
+      Unresolved:=Reg.ReadString(PathKey);
+      SetLength(Result, MAX_PATH+1);
+      ExpandEnvironmentStrings(PChar(Unresolved), @Result[1], MAX_PATH+1);
+      SetLength(Result, StrLen(PChar(Result)));
+    finally
+      Reg.CloseKey;
+    end;
+  finally
+    Reg.Free;
+  end;
+end;
 
+procedure CreateCredentialsBinaryHash;
+var
+  Stream : TFileStreamEx;
+  M : TMemoryStream;
+  Size : Cardinal;
+  fCredentialsAppHash : TJwHash;
+  Log : IJwLogClient;
+begin
+  Log := uLogging.LogServer.Connect(etMethod,ClassName,
+          'CreateCredentialsBinaryHash','MainUnit.pas','');
+
+  Stream := TFileStreamEx.Create(CredentialsAppPath, fmOpenRead);
+  try
+    if Stream.Size > high(Size) then
+      Size := high(Size)-1  //big file huh?
+    else
+      Size := Stream.Size;
+
+    fCredentialsAppHash := TJwHash.Create(haSHA);
+    try
+      fCredentialsAppHash.HashData(Stream.Memory,Size);
+
+      CredentialsHash.Hash := fCredentialsAppHash.RetrieveHash(CredentialsHash.Size);
+    finally
+      fCredentialsAppHash.Free;
+    end;
+  finally
+    Stream.Free;
+  end;
+end;
 
 var Pipe: THandle;
 
@@ -265,13 +323,42 @@ var Pipe: THandle;
     PipeToken : TJwSecurityToken;
     PipeName : WideString;
     ProtocolVersion : DWORD;
-begin
 
+
+begin
   JwSetThreadName('XP Elevation Service Thread');
   Log := uLogging.LogServer.Connect(etMethod,ClassName,
           'ServiceExecute','MainUnit.pas','');
 
   UniquePipeID := 10001;
+
+  CredentialsAppPath := RegGetFullPath(CredApplicationKey);
+
+  if not FileExists(CredentialsAppPath) then
+  begin
+    Log.Log(lsError,'Credentials app not found: '+CredentialsAppPath);
+    exit;
+  end;
+
+  //uses CredentialsAppPath
+  try
+    CreateCredentialsBinaryHash;
+  except
+    on e : Exception do
+    begin
+      Log.Exception(E);
+      exit;
+    end;
+  end;
+
+  if (CredentialsHash.Hash = nil) or (CredentialsHash.Size = 0) then
+  begin
+    Log.Log(lsError,'Could not get hash from credentials prompt file');
+{$IFNDEF DEBUG}
+    exit;
+{$ENDIF DEBUG}
+  end;
+
 
   try
     try
@@ -411,6 +498,8 @@ begin
         end;
       finally
         CloseHandle(OvLapped.hEvent);
+        TJwHash.FreeBuffer(CredentialsHash.Hash);
+        ZeroMemory(@CredentialsHash, sizeof(CredentialsHash));
       end;
     except
       on E : Exception do

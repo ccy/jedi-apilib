@@ -848,6 +848,7 @@ end;
 begin
   Log := ULogging.LogServer.Connect(etMethod,ClassName,'Execute','CredentialsThread','');
 
+
   inherited;
 
   CreateSwitchEvent;

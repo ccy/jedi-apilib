@@ -210,7 +210,7 @@ begin
 
   uLogging.InitFileLocation;
   uLogging.InitLog;
-  uLogging.SwitchLog(true);
+//  uLogging.SwitchLog(true);
 
   ErrorValue := 0;
   LastError := 0;

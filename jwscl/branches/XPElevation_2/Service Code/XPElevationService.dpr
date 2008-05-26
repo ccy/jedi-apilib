@@ -29,7 +29,8 @@ uses
   ThreadedPasswords in 'ThreadedPasswords.pas',
   uLogging in 'uLogging.pas',
   JwsclEurekaLogUtils in '..\..\..\trunk\source\JwsclEurekaLogUtils.pas',
-  XPElevationCommon in '..\XPElevationCommon.pas';
+  XPElevationCommon in '..\XPElevationCommon.pas',
+  MappedStreams in 'MappedStreams.pas';
 
 {$R *.RES}
 
