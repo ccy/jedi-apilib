@@ -542,7 +542,9 @@ constructor TJwCryptProvider.Create(const KeyContainerName, CSPName: TJwString;
   CSPType: TJwCSPType; Flags: TJwCSPCreationFlagSet);
 begin
   inherited Create;
-  if not CryptAcquireContext(fCSPHandle, TJwPChar(KeyContainerName), TJwPChar(CSPName), TJwEnumMap.ConvertCSPType(CSPType), TJwEnumMap.ConvertCSPCreationFlags(Flags)) then
+  if not {$IFDEF UNICODE}CryptAcquireContextW{$ELSE}CryptAcquireContextA{$ENDIF UNICODE}(fCSPHandle, TJwPChar(KeyContainerName),
+    TJwPChar(CSPName), TJwEnumMap.ConvertCSPType(CSPType),
+    TJwEnumMap.ConvertCSPCreationFlags(Flags)) then
     RaiseApiError('Create', 'CryptAcquireContext');
 end;
 
@@ -564,7 +566,8 @@ end;
 class procedure TJwCryptProvider.DeleteKeyset(const KeysetName: TJwString);
 var DummyHandle: Cardinal;
 begin
-  if not CryptAcquireContext(DummyHandle, TJwPChar(KeysetName), nil, PROV_RSA_FULL, CRYPT_DELETEKEYSET) then
+  if not {$IFDEF UNICODE}CryptAcquireContextW{$ELSE}CryptAcquireContextA{$ENDIF UNICODE}(DummyHandle,
+    TJwPChar(KeysetName), nil, PROV_RSA_FULL, CRYPT_DELETEKEYSET) then
     RaiseApiError('DeleteKeyset', 'CryptAcquireContext');
 end;
 
@@ -599,7 +602,7 @@ begin
   if not CryptGetDefaultProvider(TJwEnumMap.ConvertCSPType(ProviderType), nil, Flag, nil, Len) then
     RaiseApiError('GetDefaultProvider', 'CryptGetDefaultProvider');
   SetLength(Result, Len);
-  if not CryptGetDefaultProvider(TJwEnumMap.ConvertCSPType(ProviderType), nil, Flag, TJwPChar(Result), Len) then
+  if not {$IFDEF UNICODE}CryptGetDefaultProviderW{$ELSE}CryptGetDefaultProviderA{$ENDIF UNICODE}(TJwEnumMap.ConvertCSPType(ProviderType), nil, Flag, TJwPChar(Result), Len) then
   begin
     Result := '';
     RaiseApiError('GetDefaultProvider', 'CryptGetDefaultProvider');
