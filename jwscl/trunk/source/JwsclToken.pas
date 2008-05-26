@@ -1179,7 +1179,7 @@ type
          }
     property VirtualizationAllowed: boolean Read GetVirtualizationAllowed;
 
-        {<B>VirtualizationEnabled</B> returns the status of status of virtualization is whether on or off of the process on a Windows Vista system.
+        {<B>VirtualizationEnabled</B> returns the status of status of virtualization. It is either on or off and only works on a Windows Vista system.
          If the system is not a supported the exception EJwsclUnsupportedWindowsVersionException will be raised
          Actually only windows vista is supported.
          }
@@ -1641,6 +1641,7 @@ type
        }
     function AddPrivilege(PrivName: TJwString): integer; overload; virtual;
 
+    procedure Clear;
 
 
   public
@@ -2360,6 +2361,21 @@ begin
   else
   begin
     fList.Delete(Index);
+  end;
+end;
+
+procedure TJwPrivilegeSet.Clear;
+var
+  i: integer;
+begin
+  if Assigned(Owner) then
+    raise EJwsclNotImplementedException.CreateFmtEx(
+      RsTokenPrivilegeAssignDenied, 'AddPrivilege', ClassName,
+      RsUNToken, 0, False, []);
+
+  for i := Count - 1 downto 0 do
+  begin
+    Self.DeletePrivilege(i);
   end;
 end;
 
@@ -5061,104 +5077,117 @@ var
   ttTokenDefaultDACL: TTokenDefaultDacl;
 
   res: cardinal;
-  actualToken: TJwSecurityToken;
+  CurrentToken: TJwSecurityToken;
 begin
   fShared := False;
+  fPrivelegesList      := nil;
+  fStackPrivilegesList := nil;
 
   //create token privilege must be active in Vista
-  //in Vista even SYSTEM does not have this privilege 
+  //in Vista even SYSTEM does not have this privilege
   JwEnablePrivilege(SE_CREATE_TOKEN_NAME, pst_Enable);
 
-  actualToken := TJwSecurityToken.CreateTokenEffective(TOKEN_QUERY or
-    TOKEN_READ);
-
-  if not Assigned(anOwner) then
-    anOwner := actualToken.GetTokenOwner;
-  ttTokenOwner.Owner := anOwner.CreateCopyOfSID;
-
-  if not Assigned(aPrimaryGroup) then
-    aPrimaryGroup := actualToken.GetPrimaryGroup;
-  ttTokenPrimaryGroup.PrimaryGroup := aPrimaryGroup.CreateCopyOfSID;
-
-
-  FillChar(ttTokenUser.User, sizeof(ttTokenUser.User), 0);
-  if not Assigned(anUser) then
-    anUser := actualToken.GetTokenUser;
-  ttTokenUser.User.Sid := anUser.CreateCopyOfSID;
-
-  if not Assigned(aGroups) then
-  begin
-    pGroups := nil;
-    aGroups := actualToken.GetTokenGroups;
-    if Assigned(aGroups) then
-    begin
-      pGroups := aGroups.Create_PTOKEN_GROUPS;
-      aGroups.Free;
-    end;
-  end
-  else
-    pGroups := aGroups.Create_PTOKEN_GROUPS;
-
-  if not Assigned(aPrivileges) then
-  begin
-    pPrivileges := nil;
-    aPrivileges := actualToken.GetTokenPrivileges;
-    if Assigned(aPrivileges) then
-    begin
-      pPrivileges := aPrivileges.Create_PTOKEN_PRIVILEGES;
-      aPrivileges.Free;
-    end;
-  end
-  else
-    pPrivileges := aPrivileges.Create_PTOKEN_PRIVILEGES;
-
-  if not Assigned(aDefaultDACL) then
-  begin
-    ttTokenDefaultDACL.DefaultDacl := nil;
-    aDefaultDACL := actualToken.GetTokenDefaultDacl;
-    if Assigned(aDefaultDACL) then
-    begin
-      ttTokenDefaultDACL.DefaultDacl := aDefaultDACL.Create_PACL;
-      aDefaultDACL.Free;
-    end;
-  end
-  else
-    ttTokenDefaultDACL.DefaultDacl := aDefaultDACL.Create_PACL;
-
-
+  CurrentToken := TJwSecurityToken.CreateTokenEffective(TOKEN_QUERY or TOKEN_READ);
   try
-    res := ZwCreateToken(@fTokenHandle,//TokenHandle: PHANDLE;
-      aDesiredAccess,//DesiredAccess: ACCESS_MASK;
-      @anObjectAttributes,//ObjectAttributes: POBJECT_ATTRIBUTES;
-      TokenPrimary, //Type_: TOKEN_TYPE;
-      @anAuthenticationId,//AuthenticationId: PLUID;
-      @anExpirationTime,//ExpirationTime: PLARGE_INTEGER;
-      @ttTokenUser, //User: PTOKEN_USER;
-      pGroups,      //Groups: PTOKEN_GROUPS;
-      pPrivileges,  //Privileges: PTOKEN_PRIVILEGES;
-      @ttTokenOwner,//Owner: PTOKEN_OWNER;
-      @ttTokenPrimaryGroup,//PrimaryGroup: PTOKEN_PRIMARY_GROUP;
-      @ttTokenDefaultDACL,//DefaultDacl: PTOKEN_DEFAULT_DACL;
-      @aTokenSource //Source: PTOKEN_SOURCE):
-      );
+    if not Assigned(anOwner) then
+      anOwner := CurrentToken.GetTokenOwner;
+    ttTokenOwner.Owner := anOwner.CreateCopyOfSID;
 
-    res := RtlNtStatusToDosError(Res);
-    SetLastError(res);
+    if not Assigned(aPrimaryGroup) then
+      aPrimaryGroup := CurrentToken.GetPrimaryGroup;
+    ttTokenPrimaryGroup.PrimaryGroup := aPrimaryGroup.CreateCopyOfSID;
 
-    if res <> 0 then
-      raise EJwsclWinCallFailedException.CreateFmtEx(
-        RsWinCallFailed, 'CreateNewToken', ClassName, RsUNToken,
-        0, True, ['ZwCreateToken']);
+
+    FillChar(ttTokenUser.User, sizeof(ttTokenUser.User), 0);
+    if not Assigned(anUser) then
+      anUser := CurrentToken.GetTokenUser;
+    ttTokenUser.User.Sid := anUser.CreateCopyOfSID;
+
+    if not Assigned(aGroups) then
+    begin
+      pGroups := nil;
+      aGroups := CurrentToken.GetTokenGroups;
+      if Assigned(aGroups) then
+      begin
+        pGroups := aGroups.Create_PTOKEN_GROUPS;
+        aGroups.Free;
+      end;
+    end
+    else
+      pGroups := aGroups.Create_PTOKEN_GROUPS;
+
+    if not Assigned(aPrivileges) then
+    begin
+      pPrivileges := nil;
+      aPrivileges := CurrentToken.GetTokenPrivileges;
+      if Assigned(aPrivileges) then
+      begin
+        pPrivileges := aPrivileges.Create_PTOKEN_PRIVILEGES;
+        aPrivileges.Free;
+      end;
+    end
+    else
+      pPrivileges := aPrivileges.Create_PTOKEN_PRIVILEGES;
+
+    if not Assigned(aDefaultDACL) then
+    begin
+      ttTokenDefaultDACL.DefaultDacl := nil;
+      aDefaultDACL := CurrentToken.GetTokenDefaultDacl;
+      if Assigned(aDefaultDACL) then
+      begin
+        ttTokenDefaultDACL.DefaultDacl := aDefaultDACL.Create_PACL;
+        aDefaultDACL.Free;
+      end;
+    end
+    else
+      ttTokenDefaultDACL.DefaultDacl := aDefaultDACL.Create_PACL;
+
+
+    try
+      res := ZwCreateToken(@fTokenHandle,//TokenHandle: PHANDLE;
+        aDesiredAccess,//DesiredAccess: ACCESS_MASK;
+        @anObjectAttributes,//ObjectAttributes: POBJECT_ATTRIBUTES;
+        TokenPrimary, //Type_: TOKEN_TYPE;
+        @anAuthenticationId,//AuthenticationId: PLUID;
+        @anExpirationTime,//ExpirationTime: PLARGE_INTEGER;
+        @ttTokenUser, //User: PTOKEN_USER;
+        pGroups,      //Groups: PTOKEN_GROUPS;
+        pPrivileges,  //Privileges: PTOKEN_PRIVILEGES;
+        @ttTokenOwner,//Owner: PTOKEN_OWNER;
+        @ttTokenPrimaryGroup,//PrimaryGroup: PTOKEN_PRIMARY_GROUP;
+        @ttTokenDefaultDACL,//DefaultDacl: PTOKEN_DEFAULT_DACL;
+        @aTokenSource //Source: PTOKEN_SOURCE):
+        );
+
+      res := RtlNtStatusToDosError(Res);
+      SetLastError(res);
+
+      if res <> 0 then
+        raise EJwsclWinCallFailedException.CreateFmtEx(
+          RsWinCallFailed, 'CreateNewToken', ClassName, RsUNToken,
+          0, True, ['ZwCreateToken']);
+    finally
+      TJwSecurityId.FreeSID(ttTokenOwner.Owner);
+      TJwSecurityId.FreeSID(ttTokenPrimaryGroup.PrimaryGroup);
+      TJwSecurityId.FreeSID(ttTokenUser.User.Sid);
+      TJwSecurityIdList.Free_PTOKEN_GROUPS(pGroups);
+      try
+        aPrivileges.Free_PTOKEN_PRIVILEGES(pPrivileges);
+      except
+      end;
+      TJwDAccessControlList.Free_PACL(ttTokenDefaultDACL.DefaultDacl);
+
+       JwEnablePrivilege(SE_CREATE_TOKEN_NAME, pst_Disable);
+
+    end;
+
+    fAccessMask := GetMaximumAllowed;
+
+    fPrivelegesList      := TObjectList.Create(False);
+    fStackPrivilegesList := TObjectList.Create(True);
   finally
-    TJwSecurityId.FreeSID(ttTokenOwner.Owner);
-    TJwSecurityId.FreeSID(ttTokenPrimaryGroup.PrimaryGroup);
-    TJwSecurityId.FreeSID(ttTokenUser.User.Sid);
-    aGroups.Free_PTOKEN_GROUPS(pGroups);
-    aPrivileges.Free_PTOKEN_PRIVILEGES(pPrivileges);
-    aDefaultDACL.Free_PACL(ttTokenDefaultDACL.DefaultDacl);
+    CurrentToken.Free;
   end;
-
-  fAccessMask := GetMaximumAllowed;
 end;
 
 

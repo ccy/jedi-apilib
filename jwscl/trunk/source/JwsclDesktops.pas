@@ -1186,12 +1186,14 @@ function TJwSecurityDesktop.CreateDesktop(const aName: TJwString;
   const aSecurityDescriptor: TJwSecurityDescriptor): HDESK;
 var
   pSec: PSECURITYATTRIBUTES;
+   aSecurityInfo: TJwSecurityInformationFlagSet;
 begin
   pSec := nil;
 
   if Assigned(aSecurityDescriptor) then
   begin
-    pSec := aSecurityDescriptor.Create_SA(True);
+  //  MessageBoxW(0,PWideChar(aSecurityDescriptor.Text),'', MB_OK);
+  //  pSec := aSecurityDescriptor.Create_SA(True);
   end;
 
   {$IFDEF UNICODE}
@@ -1205,9 +1207,34 @@ begin
     LPSECURITY_ATTRIBUTES(pSec));
   {$ENDIF}
 
-  if Assigned(aSecurityDescriptor) then
-    aSecurityDescriptor.Free_SA(pSec);
+  //if Assigned(aSecurityDescriptor) then
+  //  aSecurityDescriptor.Free_SA(pSec);
 
+  //the lpsec descriptor does not work - it always used default DACL!!!
+  //so we set it here
+  if Assigned(aSecurityDescriptor) then
+  begin
+    aSecurityInfo := [];
+    if Assigned(aSecurityDescriptor.Owner) then
+      Include(aSecurityInfo,siOwnerSecurityInformation);
+    if Assigned(aSecurityDescriptor.PrimaryGroup) then
+      Include(aSecurityInfo,siGroupSecurityInformation);
+    if Assigned(aSecurityDescriptor.DACL) or (sdcDaclPresent in aSecurityDescriptor.Control) then
+      Include(aSecurityInfo,siDaclSecurityInformation);
+    if Assigned(aSecurityDescriptor.SACL) or (sdcSaclPresent in aSecurityDescriptor.Control) then
+      Include(aSecurityInfo,siSaclSecurityInformation);
+
+    try
+      TJwSecureGeneralObject.SetSecurityInfo(Result,SE_KERNEL_OBJECT,
+        aSecurityInfo, aSecurityDescriptor);
+    except
+      on E : Exception do
+      begin
+        CloseDesktop(Result);
+        raise;
+      end;
+    end;
+  end;
 
   if Result = 0 then
   begin

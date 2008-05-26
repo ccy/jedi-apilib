@@ -40,13 +40,12 @@ type
     fStopped:             boolean;
     fTimer    : HANDLE;
 //    fDesktop:             TJwSecurityDesktop;
-    fAllowedSIDs:         TJwSecurityIdList;
-    fPasswords:           TPasswordList;
+
+    fPasswords:           TCredentialsList;
 
 
     procedure InitAllowedSIDs;
     procedure SetStopped(const Value: boolean);
-    function MayUserBeElevated(User: TJwSecurityID): boolean;
 
     procedure OnJobNotification(Sender : TJwJobObject; ProcessId : TJwProcessId; JobLimits : TJwJobMessages; Data : Pointer);
     procedure OnNoActiveProcesses(Sender : TJwJobObject);
@@ -125,50 +124,13 @@ end;
 
 
 
-function TXPService.MayUserBeElevated(User: TJwSecurityID): boolean;
-begin
-  try
-    result := fAllowedSIDs.FindSid(User)<>-1;
-  except
-    result := false;
-  end;
-end;
 
 const EmptyPass = Pointer(-1);
 
-procedure TXPService.StartApp(AppToStart: string);
-begin
-end;
 
 procedure TXPService.InitAllowedSIDs;
 var Reg: TRegistry; SIDStrings: TStringlist; i: integer;
 begin
-  fAllowedSIDs:=TJwSecurityIDList.Create(True);
-  Reg:=TRegistry.Create(KEY_QUERY_VALUE);
-  try
-    Reg.RootKey:=HKEY_LOCAL_MACHINE;
-    if Reg.OpenKey('Software\XPElevation\AllowedUsers\', false) then
-    try
-      SIDStrings:=TStringlist.Create;
-      try
-        Reg.GetValueNames(SIDStrings);
-        for i:=0 to SIDStrings.Count-1 do
-        try
-          fAllowedSIDs.Add(TJwSecurityId.Create(SIDStrings[i]));
-        except
-        end;
-      finally
-        SIDStrings.Free;
-      end;
-    finally
-      Reg.CloseKey;
-    end;
-  finally
-    Reg.Free;
-  end;
-  fPasswords := TPasswordList.Create;
-  fPasswords.LockList.Count := fAllowedSIDs.Count;
-  fPasswords.UnlockList;
 end;
 
 procedure TXPService.OnJobNotification(Sender: TJwJobObject;
@@ -232,15 +194,12 @@ end;
 constructor TXPService.Create(AOwner: TComponent);
 begin
   inherited;
-  
-
 end;
 
 procedure TXPService.ServiceCreate(Sender: TObject);
 
 begin
   fStopCriticalSection := TMultiReadExclusiveWriteSynchronizer.Create;
-
 end;
 
 procedure TXPService.ServiceExecute(Sender: TService);
@@ -324,7 +283,10 @@ begin
       ZeroMemory(@OvLapped, sizeof(OvLapped));
       OvLapped.hEvent := CreateEvent(nil, false, false, nil);
 
-        InitAllowedSIDs;
+        fPasswords := TCredentialsList.Create;
+        {fPasswords.LockList.Count := fAllowedSIDs.Count;
+        fPasswords.UnlockList;}
+
         try
           //create job objects for all sessions
           fJobs := TJwJobObjectSessionList.Create(OnNewJobObject);
@@ -401,7 +363,7 @@ begin
                       UniquePipeID,
                       PipeToken,
                       fJobs,
-                      fAllowedSIDs,//const AllowedSIDs:  TJwSecurityIdList;
+                      nil,//const AllowedSIDs:  TJwSecurityIdList;
                       fPasswords,//const Passwords   : TPasswordList;
                       fServiceStopEvent,//const StopEvent  : THandle;
                       fThreadsStoppedEvent,
@@ -442,9 +404,8 @@ begin
 
           {Wait for all threads to be stopped or timeout
           }
-          WaitForSingleObject(ThreadsStopEvent, 60 * 1000);
-          fAllowedSIDs.Free;
-
+          WaitForSingleObject(ThreadsStopEvent, 30 * 1000);
+          
           fPasswords.Free;
           FreeAndNil(fJobs);
         end;

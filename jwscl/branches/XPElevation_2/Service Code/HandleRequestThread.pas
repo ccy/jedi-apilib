@@ -15,7 +15,7 @@ type
     { Private declarations }
     fAllowedSIDs:  TJwSecurityIdList;
     fJobs : TJwJobObjectSessionList;
-    fPasswords   : TPasswordList;
+    fPasswords   : TCredentialsList;
     fThreadsStoppedEvent,
     fServiceStopEvent  : THandle;
     fOnServiceProcessRequest : TOnServiceProcessRequest;
@@ -32,7 +32,7 @@ type
         const PipeToken : TJwSecurityToken;
         const Jobs : TJwJobObjectSessionList;
         const AllowedSIDs:  TJwSecurityIdList;
-        const Passwords   : TPasswordList;
+        const Passwords   : TCredentialsList;
         const ServiceStopEvent : THandle;
         const ThreadsStoppedEvent : THandle;
 
@@ -55,7 +55,7 @@ constructor THandleRequestThread.Create(
   const PipeToken : TJwSecurityToken;
   const Jobs : TJwJobObjectSessionList;
   const AllowedSIDs: TJwSecurityIdList;
-  const Passwords: TPasswordList;
+  const Passwords: TCredentialsList;
   const ServiceStopEvent: THandle;
   const ThreadsStoppedEvent : THandle;
   const OnServiceProcessRequest: TOnServiceProcessRequest;
@@ -312,8 +312,8 @@ begin
           end;
         end;
 
-        Sleep(10*1000);
-        //FlushFileBuffers(hPipe);
+        //Sleep(10*1000);
+        FlushFileBuffers(hPipe);
 
       finally
 

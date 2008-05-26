@@ -18,9 +18,13 @@ type
     SizeData : Cardinal;  
   end;
 
+  {<B>TCredentialsList</B> is a thread safe logon list.
+  It saves for every Windows Session (not logon ID)
+  a data struct containing Domain, Username, Password and a custom data block.
+  All data is encrypted.
+  }
 
-
-  TPasswordList = class(TThreadList)
+  TCredentialsList = class(TThreadList)
   protected
     procedure FreeIndex(Index : Integer);
   public
@@ -65,7 +69,7 @@ implementation
 
 { TPasswordList }
 
-function TPasswordList.Add(const Session : DWORD; const Domain, UserName,
+function TCredentialsList.Add(const Session : DWORD; const Domain, UserName,
   Password: WideString): Integer;
 begin
   if IsSessionValid(Session) then
@@ -78,12 +82,12 @@ begin
   end;
 end;
 
-constructor TPasswordList.Create;
+constructor TCredentialsList.Create;
 begin
   inherited;
 end;
 
-class function TPasswordList.CreatePassEntry(const Session : DWORD;
+class function TCredentialsList.CreatePassEntry(const Session : DWORD;
   const Domain, UserName, Password: WideString): PPassEntry;
 var P : PPassEntry;
     SizeUser,
@@ -125,7 +129,7 @@ begin
   result := P;
 end;
 
-procedure TPasswordList.DeleteByIndex(Index: Integer);
+procedure TCredentialsList.DeleteByIndex(Index: Integer);
 var P : PPassEntry;
     L : TList;
 begin
@@ -143,12 +147,12 @@ begin
   end;
 end;
 
-procedure TPasswordList.DeleteBySession(Session : Integer);
+procedure TCredentialsList.DeleteBySession(Session : Integer);
 begin
   DeleteByIndex(SessionToIndex(Session));
 end;
 
-destructor TPasswordList.Destroy;
+destructor TCredentialsList.Destroy;
 var L : TList;
     i : Integer;
 begin
@@ -166,7 +170,7 @@ begin
   inherited;
 end;
 
-procedure TPasswordList.FreeIndex(Index: Integer);
+procedure TCredentialsList.FreeIndex(Index: Integer);
 var L : TList;
     P: PPassEntry;
 begin
@@ -180,7 +184,7 @@ begin
   end;
 end;
 
-class procedure TPasswordList.FreePassEntry(var P: PPassEntry);
+class procedure TCredentialsList.FreePassEntry(var P: PPassEntry);
 begin
   if P <> nil then
   begin
@@ -196,7 +200,7 @@ begin
   P := nil;
 end;
 
-function TPasswordList.IndexToSession(const Index: Integer): DWORD;
+function TCredentialsList.IndexToSession(const Index: Integer): DWORD;
 var
   L : TList;
   i : Integer;
@@ -220,7 +224,7 @@ begin
   end;
 end;
 
-function TPasswordList.IsIndexValid(const Index : Integer) : Boolean;
+function TCredentialsList.IsIndexValid(const Index : Integer) : Boolean;
 var L : TList;
 begin
   L := LockList;
@@ -231,7 +235,7 @@ begin
   end;
 end;
 
-function TPasswordList.IsSessionValid(const Session: Integer): Boolean;
+function TCredentialsList.IsSessionValid(const Session: Integer): Boolean;
 var
   L : TList;
   i : Integer;
@@ -258,7 +262,7 @@ begin
   end;
 end;
 
-function TPasswordList.SessionToIndex(const Session: DWORD): Integer;
+function TCredentialsList.SessionToIndex(const Session: DWORD): Integer;
 var
   L : TList;
   i : Integer;
@@ -282,7 +286,7 @@ begin
   end;
 end;
 
-procedure TPasswordList.SetByIndex(Index: Integer; const Session : DWORD; const Domain, UserName,
+procedure TCredentialsList.SetByIndex(Index: Integer; const Session : DWORD; const Domain, UserName,
   Password: WideString);
 var L : TList;
 begin
@@ -297,7 +301,7 @@ begin
   end;
 end;
 
-procedure TPasswordList.SetBySession(const Session: DWORD; const Domain,
+procedure TCredentialsList.SetBySession(const Session: DWORD; const Domain,
   UserName, Password: WideString);
 var
   L : TList;
@@ -311,7 +315,7 @@ begin
     Add(Session, Domain, UserName,Password);
 end;
 
-procedure TPasswordList.SetDataByIndex(Index: Integer; const Data: Pointer;
+procedure TCredentialsList.SetDataByIndex(Index: Integer; const Data: Pointer;
   const Size: Cardinal);
 var P : PPassEntry;
     L : TList;
@@ -341,13 +345,13 @@ begin
   end;
 end;
 
-procedure TPasswordList.SetDataBySession(Session: Integer; const Data: Pointer;
+procedure TCredentialsList.SetDataBySession(Session: Integer; const Data: Pointer;
   const Size: Cardinal);
 begin
   SetDataByIndex(SessionToIndex(Session), Data, Size);
 end;
 
-procedure TPasswordList.GetByIndex(Index: Integer; out Domain, UserName,
+procedure TCredentialsList.GetByIndex(Index: Integer; out Domain, UserName,
   Password: WideString);
 var P : PPassEntry;
     L : TList;
@@ -422,7 +426,7 @@ begin
   end;
 end;
 
-procedure TPasswordList.GetBySession(const Session: DWORD; out Domain, UserName,
+procedure TCredentialsList.GetBySession(const Session: DWORD; out Domain, UserName,
   Password: WideString);
 var
   L : TList;

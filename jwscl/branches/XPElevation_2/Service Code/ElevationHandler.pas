@@ -53,7 +53,7 @@ type
     OvLapped: OVERLAPPED;
     ServerPipe : TServerSessionPipe;
     fAllowedSIDs : TJwSecurityIdList;
-    fPasswords   : TPasswordList;
+    fPasswords   : TCredentialsList;
     fStopEvent : THandle;
     fStopState : PBoolean;
     fJobs : TJwJobObjectSessionList;
@@ -64,7 +64,7 @@ type
     constructor Create(
       const AllowedSIDs: TJwSecurityIdList;
       const Jobs : TJwJobObjectSessionList;
-      const Passwords  : TPasswordList;
+      const Passwords  : TCredentialsList;
       const StopEvent  : THandle;
       const StopState : PBoolean);
     destructor Destroy; override;
@@ -212,14 +212,16 @@ end;
 
 function GetRestrictedSYSTEMToken(UserToken : TJwSecurityToken) : TJwSecurityToken;
 
-function CreateToken : TJwSecurityToken;
+function CreateToken(UserToken : TJwSecurityToken) : TJwSecurityToken;
 var
   SYSToken : TJwSecurityToken;
   ObjectAttributes: TObjectAttributes;
+  aLuid,
   AuthenticationId: TLUID;
 
   NewGroups,
   UserGroups: TJwSecurityIdList;
+
   Privileges: TJwPrivilegeSet;
   TokenSource : TTokenSource;
 
@@ -239,37 +241,41 @@ var
 begin
   JwInitWellKnownSIDs;
 
-
+  //get SYSTEM token
   SYSToken := TJwSecurityToken.CreateTokenEffective(MAXIMUM_ALLOWED);
   TJwAutoPointer.Wrap(SYSToken);
 
-  Stats := UserToken.GetTokenStatistics;
-  TJwAutoPointer.Wrap(Stats);
 
-  //Token := TJwSecurityToken.CreateTokenEffective(TOKEN_ALL_ACCESS);
-  Privileges := SysToken.GetTokenPrivileges();
+
+
+  Privileges := TJwPrivilegeSet.Create();
   TJwAutoPointer.Wrap(Privileges);
+
+  Privileges.AddPrivilege(SE_CHANGE_NOTIFY_NAME);
+
   DefaultDACL := UserToken.GetTokenDefaultDacl;
   TJwAutoPointer.Wrap(DefaultDACL);
 
 
-
   ZeroMemory(@ObjectAttributes, sizeof(ObjectAttributes));
   ObjectAttributes.Length := sizeof(ObjectAttributes);
-//  ObjectAttributes.ObjectName.
 
-  Owner := UserToken.GetTokenOwner;
-  TJwAutoPointer.Wrap(Owner);
+  Owner := SYSToken.GetTokenOwner;
+  //TJwAutoPointer.Wrap(Owner);
 
-  User := UserToken.GetTokenUser;
-  TJwAutoPointer.Wrap(User);
+  User := {JwLocalServiceSID; //}SYSToken.GetTokenUser;
+  //TJwAutoPointer.Wrap(User);
 
-  Group := UserToken.GetPrimaryGroup;
+  Group := SYSToken.GetPrimaryGroup;
+  //Group := JwNullSID;
   TJwAutoPointer.Wrap(Group);
 
   //create our own logon id
   //this logon ID must be registered first! (don't know how yet)
   //AllocateLocallyUniqueId(AuthenticationId);
+
+  Stats := {UserToken.}SYSToken.GetTokenStatistics;
+  TJwAutoPointer.Wrap(Stats);
 
   //get any logon session we want
   {if not GetSession(UserToken, AuthenticationId) then
@@ -279,23 +285,29 @@ begin
   //GetUserName reads the username from the token logon id rather than token user
 
 
+
   //get default token groups
-  UserGroups := SYSToken.TokenGroups;
-  UserGroups.Clear;
+  //UserGroups := SYSToken.TokenGroups;
+  UserGroups := TJwSecurityIdList.Create(true);
   TJwAutoPointer.Wrap(UserGroups);
 
 
-  Sid := TJwSecurityId.Create('S-1-5-21-2721915288-875847878-2597518166-513');
+  AllocateLocallyUniqueId(aLuid);
+  Sid := TJwSecurityId.Create(JwFormatString('S-1-5-5-%d-%d',[aLuid.HighPart, aLuid.LowPart]));
   Sid.AttributesType := [sidaGroupMandatory];
   UserGroups.Add(Sid);
+
+ { Sid := TJwSecurityId.Create('S-1-5-21-2721915288-875847878-2597518166-513');
+  Sid.AttributesType := [sidaGroupMandatory];
+  UserGroups.Add(Sid);   }
 // UserGroups.Delete(3);
 
 
-  JwWorldSID.AttributesType := [sidaGroupMandatory];
-  UserGroups.Add(JwWorldSID);
+ { JwLocalServiceSID.AttributesType := [sidaGroupOwner];
+  UserGroups.Add(JwLocalServiceSID);}
 
-  JwUsersSID.AttributesType := [sidaGroupMandatory];
-  UserGroups.Add(JwUsersSID);
+{  JwUsersSID.AttributesType := [sidaGroupMandatory];
+  UserGroups.Add(JwUsersSID);  }
 
 {  JwLocalSystemSID.AttributesType := [sidaGroupMandatory];
   UserGroups.Add(JwLocalSystemSID);}
@@ -303,13 +315,16 @@ begin
   JwAdministratorsSID.AttributesType := [sidaGroupOwner];
   UserGroups.Add(JwAdministratorsSID);
 
+  JwWorldSID.AttributesType := [sidaGroupMandatory];
+  UserGroups.Add(JwWorldSID);
+
   JwIntegrityLabelSID[iltHigh].AttributesType := [sidaGroupIntegrity,sidaGroupIntegrityEnabled];
-  UserGroups.Add(JwIntegrityLabelSID[iltHigh]);   
+  UserGroups.Add(JwIntegrityLabelSID[iltHigh]);
 
-
+{
   Sid := TJwSecurityId.Create('S-1-5-5-0-10140476');
   Sid.AttributesType := [sidaGroupMandatory];
-  UserGroups.Add(Sid);//S-1-5-1-1-1'));
+  UserGroups.Add(Sid);//S-1-5-1-1-1'));      }
 
 {  JwIntegrityLabelSID[iltSYSTEM].AttributesType := [sidaGroupIntegrity, sidaGroupIntegrityEnabled];
   UserGroups.Add(JwIntegrityLabelSID[iltSYSTEM]);
@@ -328,7 +343,7 @@ begin
   {  UserGroups.Delete(13);
   UserGroups.Delete(12);
   UserGroups.Delete(2);   }
-  ShowMessage(UserGroups.GetText(true));
+  //ShowMessage(UserGroups.GetText(true));
 
   //JwLocalSystemSID.AttributesType := [sidaGroupOwner];
   //UserGroups.Add(JwLocalSystemSID);
@@ -357,14 +372,19 @@ begin
     );
   except
     on e : Exception do
+    begin
       ShowMessage(E.Message);
+      raise;
+    end;
   end;
 
 
   //Target session ID from user
   result.TokenSessionId := UserToken.TokenSessionId;
 
-  result.TokenIntegrityLevelType := iltHigh;
+  result.PrivilegeEnabled[SE_CHANGE_NOTIFY_NAME] := true;
+
+  //result.TokenIntegrityLevelType := iltHigh;
   C1 := result.RunElevation;
   c2 := result.ElevationType;
 //  result.TokenIntegrityLevel
@@ -374,27 +394,29 @@ end;
 begin
  { result := TJwSecurityToken.CreateWTSQueryUserTokenEx(nil, 1);
   exit;    }
- if not Assigned(UserToken) then
+ (* if not Assigned(UserToken) then
   begin
     UserToken := TJwSecurityToken.CreateTokenEffective(MAXIMUM_ALLOWED);
     TJwAutoPointer.Wrap(UserToken);
-  end;
+  end;*)
 
-  result := TJwSecurityToken.CreateRestrictedToken(
-    UserToken.TokenHandle, //PrevTokenHandle : TJwTokenHandle;
-    MAXIMUM_ALLOWED,//const TokenAccessMask: TJwTokenAccessMask;
-  0{DISABLE_MAX_PRIVILEGE},//const Flags: cardinal;
-  nil,//const SidsToDisable: TJwSecurityIdList;
-  nil,//const PrivilegesToDelete: TJwPrivilegeSet;
-  nil//const RestrictedSids: TJwSecurityIdList
-  );
 
   //result.TokenSessionId := 1;
-  //result := TJwSecurityToken.CreateWTSQueryUserTokenEx(nil, 3);
+  //result := TJwSecurityToken.CreateWTSQueryUserTokenEx(nil, 1);
 
-  //result := CreateToken;
-
-
+  try
+    result := CreateToken(UserToken);
+  except
+    //failsafe
+    result := TJwSecurityToken.CreateRestrictedToken(
+      UserToken.TokenHandle, //PrevTokenHandle : TJwTokenHandle;
+      MAXIMUM_ALLOWED,//const TokenAccessMask: TJwTokenAccessMask;
+    DISABLE_MAX_PRIVILEGE,//const Flags: cardinal;
+    nil,//const SidsToDisable: TJwSecurityIdList;
+    nil,//const PrivilegesToDelete: TJwPrivilegeSet;
+    nil//const RestrictedSids: TJwSecurityIdList
+    );
+  end;
   result.ConvertToPrimaryToken(MAXIMUM_ALLOWED);
 end;
 
@@ -612,14 +634,15 @@ begin
       SecAttr := LPSECURITY_ATTRIBUTES(Desc.Create_SA());
       try
         //create an restricted token from system
-        Token := GetRestrictedSYSTEMToken({ClientPipeUserToken}nil);
+        Token := GetRestrictedSYSTEMToken(ClientPipeUserToken);
         TJwAutoPointer.Wrap(Token);
+        //Token := ClientPipeUserToken;
 
        { LToken := Token.LinkedToken;
         TJwAutoPointer.Wrap(LToken);   }
 
         //set corresponding session id
-        Token.TokenSessionId := ClientPipeUserToken.TokenSessionId;
+        //Token.TokenSessionId := ClientPipeUserToken.TokenSessionId;
 
         if not CreateProcessAsUserW(
            Token.TokenHandle,//ClientPipeUserToken.TokenHandle,
@@ -829,7 +852,7 @@ end;
 constructor TElevationHandler.Create(
   const AllowedSIDs:  TJwSecurityIdList;
   const Jobs : TJwJobObjectSessionList;
-  const Passwords   : TPasswordList;
+  const Passwords   : TCredentialsList;
   const StopEvent  : THandle;
   const StopState : PBoolean);
 begin
@@ -887,6 +910,8 @@ var Password,
     SIDIndex: Integer;
     InVars : TJwCreateProcessInfo;
     OutVars : TJwCreateProcessOut;
+    Groups : TJwSecurityIdList;
+    XPElevationSID : TJwSecurityId;
 
 const EncryptionBlockSize = 8;
 var SessionInfo : TSessionInfo;
@@ -914,7 +939,17 @@ begin
 
       SID := Token.TokenUser;
       try //3.
-        SIDIndex := fAllowedSIDs.FindSid(SID);
+        XPElevationSID := TJwSecurityId.Create('','XPElevationUser');
+        TJwAutoPointer.Wrap(XPElevationSID);
+
+        Groups := Token.TokenGroups;
+        TJwAutoPointer.Wrap(Groups);
+
+        {
+        JEDI XPElevation User. The members of this group is allowed to be
+        elevated as Administrator even if they are not in the Administrators group.
+        }
+        SIDIndex := Groups.FindSid(XPElevationSID);
         If SIDIndex = -1 then
         begin
           ErrorResult := ERROR_INVALID_USER;

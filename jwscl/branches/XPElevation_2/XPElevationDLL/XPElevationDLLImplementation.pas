@@ -193,16 +193,16 @@ begin
     end;
   end;
 
+  ServiceResult[0] := E_SERVICE_TIME_OUT;
   if not CheckPipe(ReadFile(Pipe, @ServiceResult, sizeof(ServiceResult), nil, @OvLapR)) then
   begin
     result := E_SERVICE_CONTACT_FAILED;
     Exit;
   end;
 
-  ServiceResult[0] := E_SERVICE_TIME_OUT;
-  if JwWaitForMultipleObjects([OvLapR.hEvent],false, {200000}Timeout) = WAIT_OBJECT_0 then
-    ServiceResult[0] := S_OK;
 
+  JwWaitForMultipleObjects([OvLapR.hEvent],false, {200000}Timeout);
+  
   //MessageBox(0,PChar(Format('%x',[ServiceResult[0]])),'',MB_OK);
   result := ServiceResult[0];
   PID := ServiceResult[1];

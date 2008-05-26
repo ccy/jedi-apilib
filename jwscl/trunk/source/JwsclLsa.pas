@@ -59,6 +59,9 @@ type
     fLsaHandle: THandle;
   public
     constructor Create(const LogonProcessName: AnsiString);
+	
+	
+	constructor CreateUntrusted;
 
     destructor Destroy; override;
 
@@ -268,7 +271,21 @@ begin
 end;
 
 
-
+constructor TJwSecurityLsa.CreateUntrusted;
+var res: Cardinal;
+begin
+  res := LsaConnectUntrusted(fLsaHandle);
+  if res <> STATUS_SUCCESS then
+  begin
+    res := LsaNtStatusToWinError(res);
+    SetLastError(res);
+    raise EJwsclWinCallFailedException.CreateFmtWinCall(
+      RsWinCallFailed,
+      'CreateUntrusted', ClassName, 'JwsclLsa.pas',
+      0, True, 'LsaConnectUntrusted',
+      ['LsaRegisterLogonProcess']);
+  end;
+end;
 
 constructor TJwSecurityLsa.Create(const LogonProcessName: AnsiString);
 var

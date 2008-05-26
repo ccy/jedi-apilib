@@ -16,6 +16,7 @@ uses
   JwsclLogging,
   JwsclKnownSid,
   JwsclStrings,
+  JwsclSecureObjects,
   JwsclSid,
   ULogging,
   SessionPipe,
@@ -130,8 +131,11 @@ var
   SD: TJwSecurityDescriptor;
   LastError : DWORD;
   Log : IJwLogClient;
+  L : TJwSecureGeneralObject;
 begin
   Log := uLogging.LogServer.Connect(etMethod,ClassName,'SetupDesktop','CredentialsThreads.pas','');
+
+  JwInitWellKnownSIDs;
 
   try
     Application.Free;
@@ -139,7 +143,13 @@ begin
   end;
   Application := nil;
 
-  SD := TJwSecurityDescriptor.CreateDefaultByToken();
+  //SD := TJwSecurityDescriptor.CreateDefaultByToken();
+  SD := TJwSecurityDescriptor.Create;
+  SD.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil, [], GENERIC_ALL, JwLocalSystemSID));
+  SD.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil, [], GENERIC_ALL, JwAdministratorsSID));
+
+  //MessageBoxW(0,PWideChar(SD.Text),'', MB_OK);
+
   TJwAutoPointer.Wrap(SD);
   try
     //SD.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil, [], GENERIC_ALL, JwLocalSystemSID));
@@ -152,9 +162,13 @@ begin
      result := TJwSecurityDesktop.CreateDesktop(nil, true, 'SecureElevation', [],
        false, GENERIC_ALL,  SD);
 
+    // TJwSecureGeneralObject.SetSecurityInfo(result.Handle,SE_KERNEL_OBJECT,[siDaclSecurityInformation], SD);
 {      result := TJwSecurityDesktop.OpenDesktop(nil, false, 'winlogon', [],
        false, GENERIC_ALL);
  }
+
+      //SD := TJwSecureGeneralObject.GetSecurityInfo(result.Handle,SE_KERNEL_OBJECT,[siOwnerSecurityInformation, siGroupSecurityInformation, siDaclSecurityInformation]);
+      //MessageBoxW(0,PWideChar(SD.Text),'', MB_OK);
 
       result.SetThreadDesktop;
     except

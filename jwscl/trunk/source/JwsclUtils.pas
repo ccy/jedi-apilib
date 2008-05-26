@@ -126,6 +126,8 @@ type
     procedure Add(Index : DWORD; Value : Pointer);
     procedure DeleteIndex(Index : DWORD);
 
+    procedure Clear;
+
     property Items[Index : DWORD] : Pointer read GetItem write SetItem; default;
     property Count : Cardinal read GetCount;
   end;
@@ -979,6 +981,14 @@ begin
   raise ERangeError.CreateFmt('Index value %d not found',[Index]);
 end;
 
+procedure TJwIntTupleList.Clear;
+var i : Integer;
+begin
+  for I := Count - 1 downto 0 do
+  begin
+    Dispose(PIntTuple(fList[i]));
+  end;
+end;
 
 procedure TJwIntTupleList.DeleteIndex(Index: DWORD);
 var i : Integer;
@@ -998,6 +1008,7 @@ end;
 
 destructor TJwIntTupleList.Destroy;
 begin
+  Clear;
   FreeAndNil(fList);
   inherited;
 end;

@@ -366,6 +366,7 @@ object FormMain: TFormMain
     Images.HotIndex = 0
   end
   object PopupMenuMain: TPopupMenu
+    OnPopup = PopupMenuMainPopup
     Left = 128
     Top = 336
     object Center1: TMenuItem
@@ -382,6 +383,11 @@ object FormMain: TFormMain
     object Screenkeyboard1: TMenuItem
       Caption = 'Screen keyboard'
       OnClick = Screenkeyboard1Click
+    end
+    object MenuCmd: TMenuItem
+      Caption = 'Cmd'
+      Visible = False
+      OnClick = MenuCmdClick
     end
     object N2: TMenuItem
       Caption = '-'

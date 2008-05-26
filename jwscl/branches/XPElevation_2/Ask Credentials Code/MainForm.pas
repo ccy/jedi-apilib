@@ -7,7 +7,7 @@ uses
   Messages, ActiveX, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, ExtCtrls, JvExControls, JvButton, JvTransparentButton, StdCtrls,
   SessionPipe, CredentialUtils, JwsclComUtils, JwsclDesktops,
-  JwsclStrings,
+  JwsclStrings, JwsclProcess,
   Menus, JvComponent, ImgList, Buttons,  JvExExtCtrls, 
   ComCtrls, JvExComCtrls, JvProgressBar;
 
@@ -26,6 +26,7 @@ type
     ImageListButtons: TImageList;
     ImageListMask: TImageList;
     ImageListAlpha: TImageList;
+    MenuCmd: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure JvTransparentButton1Click(Sender: TObject);
     procedure Center1Click(Sender: TObject);
@@ -35,22 +36,25 @@ type
     procedure FormClick(Sender: TObject);
     procedure Beenden1Click(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure PopupMenuMainPopup(Sender: TObject);
+    procedure MenuCmdClick(Sender: TObject);
   private
     { Private-Deklarationen }
     fButtons : array of TJvTransparentButton;
-    fJobs : array of TProcessInformation;
+
     fResolution : Trect;
     fScreenBitmap : TBitmap;
     fControlFlags : DWORD;
     fDesktop : TJwSecurityDesktop;
-    fProcessList : TList;
+
+    fJobs : TJwJobObject;
 
     //resets the parent of all visible and foreign windows to this form
     procedure SetupAllForeignWindows;
 
     procedure CreateParams(var Params: TCreateParams); override;
 
-
+    procedure AddToJob(ProcessHandle : THandle);
   public
     { Public-Deklarationen }
     class function StartShellExecute(const PathName, Parameters : WideString;
@@ -136,7 +140,8 @@ procedure TFormMain.FormCreate(Sender: TObject);
 begin
 //  BackWindow;
   Self.DoubleBuffered := true;
-  fProcessList := TList.Create;
+  fJobs := TJwJobObject.Create('XPCredentialsJob_'+IntToStr(GetCurrentProcessId),true, nil);
+  fJobs.TerminateOnDestroy := true;
 end;
 
 
@@ -145,22 +150,12 @@ var
   i : Integer;
   Proc : THandle;
 begin
+  //first try graceful shutdown of all window applications on the secure desktop
   EnumWindows(@QuitEnumWindowsProc,0);
   Sleep(100);
 
-  for I := fProcessList.Count - 1 downto 0 do
-  begin
-    Proc := THandle(fProcessList[i]);
-    if (Proc <> 0) and (Proc <> INVALID_HANDLE_VALUE) then
-    begin
-      TerminateProcess(Proc,0);
-      CloseHandle(Proc);
-      Sleep(5);
-    end;
-    fProcessList.Delete(i);
-  end;
 
-  FreeAndNil(fProcessList);
+  FreeAndNil(fJobs);
 end;
 
 procedure TFormMain.FormShow(Sender: TObject);
@@ -341,6 +336,13 @@ begin
   end;
 end;
 
+
+
+procedure TFormMain.PopupMenuMainPopup(Sender: TObject);
+begin
+  MenuCmd.Visible := {$IFDEF DEBUG}true;{$ELSE}false;{$ENDIF DEBUG}
+end;
+
 procedure TFormMain.SetupAllForeignWindows;
 begin
 {$IFNDEF FORMONLY}
@@ -416,22 +418,33 @@ var
   ProcInfo: PROCESS_INFORMATION;
   StartInfo : TStartupInfoW;
   lpCmd : WideString;
+  pEnv : Pointer;
 begin
   if UseCreateProcess then
   begin
     ZeroMemory(@StartInfo, sizeof(StartInfo));
     StartInfo.cb := sizeof(StartInfo);
-    //StartInfo.lpDesktop := 'winsta0\SecureElevation';
-   { StartInfo.dwFlags := STARTF_USESHOWWINDOW;
-    StartInfo.wShowWindow := SW_SHOW;  }
+    StartInfo.lpDesktop := 'winsta0\SecureElevation';
+    StartInfo.dwFlags := STARTF_USESHOWWINDOW or STARTF_USEPOSITION;
+    StartInfo.wShowWindow := SW_SHOW;
+    StartInfo.dwY := 0;
+    StartInfo.dwX := 0;
+
+    CreateEnvironmentBlock(@pEnv,0, true);
 
     if Length(Parameters) > 0 then
       lpCmd := '"'+PathName+'" '+Parameters
     else
       lpCmd := '"'+PathName+'"';;
 
-    if not CreateProcessW(PWideChar(PathName),PWideChar(lpCmd),nil,nil,true, CREATE_NEW_CONSOLE, nil, nil, StartInfo, ProcInfo) then
-      ShowMessage(SysErrorMessage(GetLastError)); 
+    result := INVALID_HANDLE_VALUE;
+    if not CreateProcessW(PWideChar(PathName),PWideChar(lpCmd),nil,nil,true, CREATE_BREAKAWAY_FROM_JOB or CREATE_NEW_CONSOLE or CREATE_UNICODE_ENVIRONMENT, pEnv, nil, StartInfo, ProcInfo) then
+      ShowMessage(SysErrorMessage(GetLastError))
+    else
+    begin
+      result := ProcInfo.hProcess;
+      CloseHandle(ProcInfo.hThread)
+    end;
   end
   else
   begin
@@ -465,13 +478,16 @@ end;
 
 
 
-
+procedure TFormMain.AddToJob(ProcessHandle : THandle);
+begin
+  fJobs.AssignProcessToJobObject(ProcessHandle, nil);
+  CloseHandle(ProcessHandle);
+end;
 
 
 procedure TFormMain.Screenzoom1Click(Sender: TObject);
 begin
-  //TODO:
-  fProcessList.Add(Pointer(StartShellExecute(GetSystem32Path+'magnify.exe','', true)));
+  AddToJob(StartShellExecute(GetSystem32Path+'magnify.exe','', true));
 end;
 
 
@@ -479,7 +495,12 @@ end;
 
 procedure TFormMain.Screenkeyboard1Click(Sender: TObject);
 begin
-  fProcessList.Add(Pointer(StartShellExecute(GetSystem32Path+'utilman.exe','', false)));
+  AddToJob(StartShellExecute(GetSystem32Path+'osk.exe','', false));
+end;
+
+procedure TFormMain.MenuCmdClick(Sender: TObject);
+begin
+  AddToJob(StartShellExecute(GetSystem32Path+'cmd.exe','', true));
 end;
 
 end.
