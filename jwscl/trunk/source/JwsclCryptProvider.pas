@@ -119,7 +119,7 @@ type
      @param ProviderType The type of CSP for which the specified provider
             should be the default 
      @param MachineDefault If true, the machine default provider is set.
-            Otherwise, the user default is set. 
+            Otherwise, the user default is set.
      raises
  EJwsclCSPApiException:  will be raised if the underlying Windows call fails. }
     class procedure SetDefaultProvider(ProviderType: TJwCSPType;
@@ -237,14 +237,22 @@ type
     destructor Destroy; override;
 
     {Adds data to the hash object
-     @param Data Pointer to the data to be added 
-     @param Size Specifies the size of the data 
+     @param Data Pointer to the data to be added
+     @param Size Specifies the size of the data
      raises
  EJwsclHashApiException:  will be raised if the
              underlying Windows call fails due to a
-             previous call to RetrieveHash  or
-             Sign  or for other reasons.}
+             previous call to RetrieveHash or
+             Sign or for other reasons.}
     procedure HashData(Data: Pointer; Size: Cardinal);
+
+    {Adds data to the hash object
+     @param Stream Stream containing the data to be hashed
+ EJwsclHashApiException:  will be raised if the
+             underlying Windows call fails due to a
+             previous call to RetrieveHash or
+             Sign or for other reasons.}
+    procedure HashStream(Stream: TStream);
 
     {<B>GetHashLength</B> returns the size of the hash value in bytes.
      This value is constant for each algorithm.
@@ -836,6 +844,18 @@ procedure TJwHash.HashData(Data: Pointer; Size: Cardinal);
 begin
   if not CryptHashData(fHashHandle, Data, Size, 0) then
     RaiseApiError('HashData', 'CryptHashData');
+end;
+
+procedure TJwHash.HashStream(Stream: TStream);
+var MemStream: TMemoryStream;
+begin
+  MemStream := TMemoryStream.Create;
+  try
+    MemStream.CopyFrom(Stream, 0);
+    HashData(MemStream.Memory, MemStream.Size);
+  finally
+    MemStream.Free;
+  end;
 end;
 
 function TJwHash.GetHashLength: Cardinal;
