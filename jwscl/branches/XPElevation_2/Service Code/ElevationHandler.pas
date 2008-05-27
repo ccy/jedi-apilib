@@ -20,6 +20,8 @@ const
 
 
 type
+  EHashMismatch = class(Exception);
+
   TXPElevationStruct = record
     Size : DWORD;
 
@@ -476,48 +478,8 @@ var
   WaitResult : Integer;
   hUserKey : THandle;
 
-procedure Test1;
-var
-  h, hN : HWINSTA;
-  NumBytesRead : DWORD;
-  des : TJwSecurityDesktop;
-  hw : TJwSecurityWindowStation;
-begin
+  ChecksumError : Boolean;
 
-
-  if not CheckPipe(ReadFile(
-       ServerPipe.Handle,//__in         HANDLE hFile,
-       @h,//__out        LPVOID lpBuffer,
-       sizeof(h),//__in         DWORD nNumberOfBytesToRead,
-       @NumBytesRead,//__out_opt    LPDWORD lpNumberOfBytesRead,
-       nil//@OvLapped//__inout_opt  LPOVERLAPPED lpOverlapped
-        )) then
-    begin
-      LogAndRaiseLastOsError(Log,ClassName, 'ReadServerProcessResult::(Winapi)ReadFile','SessionPipe.pas');
-    end;
-
-  if not DuplicateHandle(
-        ProcInfo.hProcess,//__in   HANDLE hSourceProcessHandle,
-        h,//__in   HANDLE hSourceHandle,
-        GetCurrentProcess,//__in   HANDLE hTargetProcessHandle,
-        @HN, //__out  LPHANDLE lpTargetHandle,
-        GENERIC_ALL,//__in   DWORD dwDesiredAccess,
-        false,//__in   BOOL bInheritHandle,
-        DUPLICATE_SAME_ACCESS//__in   DWORD dwOptions
-        ) then
-  begin
-    RaiseLastOSError;
-  end;
-
-
-  {des := TJwSecurityDesktop.CreateByHandle(HN, true);
-  TJwAutoPointer.Wrap(des);
-  ShowMessage(des.Name);}
-  hw := TJwSecurityWindowStation.CreateByHandle(hN);
-  TJwAutoPointer.Wrap(hw);
-  ShowMessage(hw.Name);
-
-end;
 
 function CheckCredentialsBinaryHash : Boolean;
 var
@@ -651,17 +613,19 @@ begin
       SecAttr := LPSECURITY_ATTRIBUTES(Desc.Create_SA());
       try
         try
-          if not CheckCredentialsBinaryHash then
-          begin
-            Log.Log(lsError, 'Hash of credentials application changed! Elevation is aborted.');
-{$IFNDEF DEBUG}
-            //raise error
-            exit;
-{$ENDIF DEBUG}  
-          end;
+          ChecksumError := not CheckCredentialsBinaryHash;
         except
           on e : Exception do
             Log.Exception(E);
+        end;
+
+        if ChecksumError then
+        begin
+          Log.Log(lsError, 'Hash of credentials application changed! Elevation is aborted.');
+{.$IFNDEF DEBUG}
+          raise EHashMismatch.Create('Hash of credentials application changed! Elevation is aborted.');
+          exit;
+{.$ENDIF DEBUG}
         end;
 
         //create an restricted token from system
@@ -1076,9 +1040,16 @@ begin
             exit;
           end;
         except //6.
+          on E : EHashMismatch do
+          begin
+            Log.Log('Error: '+E.Message);
+
+            result := E_INVALID_CRED_APP;
+            exit;
+          end;
           on E : Exception do
           begin
-            if Assigned(ServerPipe) then            
+            if Assigned(ServerPipe) then
             try
               ServerPipe.SendServerResult(ERROR_GENERAL_EXCEPTION, 0);
             except
@@ -1098,7 +1069,7 @@ begin
           if (SessionInfo.ControlFlags and XPCTRL_FORCE_NO_ALTERNATE_LOGON = XPCTRL_FORCE_NO_ALTERNATE_LOGON) and
              (JwCompareString(SessionInfo.UserName, DefaultUserName) <> 0) then
           begin
-            if Assigned(ServerPipe) then            
+            if Assigned(ServerPipe) then
             try
               ServerPipe.SendServerResult(ERROR_INVALID_USER, 0);
             except

@@ -21,10 +21,11 @@ type
       Size : Cardinal;
     end;
 const
-    CredApplicationKey='CredentialsApplication';
+  CredApplicationKey='CredentialsApplication';
+  XPElevationRegKey = 'Software\XPElevation';
 var
-    CredentialsAppPath : WideString = '';
-    CredentialsHash : TCredentialsHash;
+  CredentialsAppPath : WideString = '';
+  CredentialsHash : TCredentialsHash;
 
 
 type
@@ -281,9 +282,47 @@ var
   Size : Cardinal;
   fCredentialsAppHash : TJwHash;
   Log : IJwLogClient;
+  Reg: TRegistry;
+
+  Hash : Pointer;
+  HashSize : Cardinal;
+  HashCheck : boolean;
+
+const
+  KEY_CREDENTIALS_HASH_SIZE = 'CredentialsHashSize';
+  KEY_CREDENTIALS_HASH_ = 'CredentialsHash';
+
+
 begin
   Log := uLogging.LogServer.Connect(etMethod,ClassName,
           'CreateCredentialsBinaryHash','MainUnit.pas','');
+
+  Hash := nil;
+  try
+    Reg := TRegistry.Create(KEY_ALL_ACCESS);// KEY_QUERY_VALUE or KEY_READ);
+    try
+      Reg.RootKey := HKEY_LOCAL_MACHINE;
+      if Reg.OpenKey(XPElevationRegKey, false)
+        and Reg.ValueExists(KEY_CREDENTIALS_HASH_SIZE)
+        and Reg.ValueExists(KEY_CREDENTIALS_HASH_)
+        then
+      try
+        HashSize := Reg.ReadInteger(KEY_CREDENTIALS_HASH_SIZE);
+        if (HashSize > 0) and (HashSize < 1024) then
+        begin
+          GetMem(Hash, HashSize+2);
+          ZeroMemory(Hash, HashSize+2);
+          HashSize := Reg.ReadBinaryData(KEY_CREDENTIALS_HASH_,Hash^,HashSize);
+        end;    
+      finally
+        Reg.CloseKey;
+      end;
+    finally
+      Reg.Free;
+    end;
+  except
+  end;
+
 
   Stream := TFileStreamEx.Create(CredentialsAppPath, fmOpenRead);
   try
@@ -302,6 +341,43 @@ begin
     end;
   finally
     Stream.Free;
+  end;
+
+  if (Hash <> nil) and (HashSize > 0) then
+  begin
+    try
+      HashCheck := (CredentialsHash.Size = HashSize) and
+         (Hash <> nil) and (CredentialsHash.Hash <> nil) and
+         (CompareMem(CredentialsHash.Hash,Hash, CredentialsHash.Size));
+    finally
+      FreeMem(Hash);
+    end;
+  end
+  else
+  begin
+    HashCheck := true;
+
+    try
+      Reg:=TRegistry.Create(KEY_SET_VALUE or KEY_CREATE_SUB_KEY);
+      try
+        Reg.RootKey:=HKEY_LOCAL_MACHINE;
+        if Reg.OpenKey(XPElevationRegKey, true) then
+        try
+          Reg.WriteInteger(KEY_CREDENTIALS_HASH_SIZE, CredentialsHash.Size);
+          Reg.WriteBinaryData(KEY_CREDENTIALS_HASH_,CredentialsHash.Hash^,CredentialsHash.Size);
+        finally
+          Reg.CloseKey;
+        end;
+      finally
+        Reg.Free;
+      end;
+    except
+    end;
+  end;
+
+  if not HashCheck then
+  begin
+    raise EHashMismatch.Create('The hash of the credentials application is not the same as the one stored. Exiting..');
   end;
 end;
 
@@ -330,183 +406,190 @@ begin
   Log := uLogging.LogServer.Connect(etMethod,ClassName,
           'ServiceExecute','MainUnit.pas','');
 
-  UniquePipeID := 10001;
-
-  CredentialsAppPath := RegGetFullPath(CredApplicationKey);
-
-  if not FileExists(CredentialsAppPath) then
-  begin
-    Log.Log(lsError,'Credentials app not found: '+CredentialsAppPath);
-    exit;
-  end;
-
-  //uses CredentialsAppPath
+  CredentialsHash.Hash := nil;
   try
-    CreateCredentialsBinaryHash;
-  except
-    on e : Exception do
+    UniquePipeID := 10001;
+
+    CredentialsAppPath := RegGetFullPath(CredApplicationKey);
+
+    if not FileExists(CredentialsAppPath) then
     begin
-      Log.Exception(E);
+      Log.Log(lsError,'Credentials app not found: '+CredentialsAppPath);
       exit;
     end;
-  end;
 
-  if (CredentialsHash.Hash = nil) or (CredentialsHash.Size = 0) then
-  begin
-    Log.Log(lsError,'Could not get hash from credentials prompt file');
-{$IFNDEF DEBUG}
-    exit;
-{$ENDIF DEBUG}
-  end;
-
-
-  try
+    //uses CredentialsAppPath
     try
-      fThreadsStoppedEvent   := CreateEvent(nil, true, false, nil);
-      fServiceStopEvent   := CreateEvent(nil, true, false, nil);
-      Sleep(1000);
-
-
-      ZeroMemory(@OvLapped, sizeof(OvLapped));
-      OvLapped.hEvent := CreateEvent(nil, false, false, nil);
-
-        fPasswords := TCredentialsList.Create;
-        {fPasswords.LockList.Count := fAllowedSIDs.Count;
-        fPasswords.UnlockList;}
-
-        try
-          //create job objects for all sessions
-          fJobs := TJwJobObjectSessionList.Create(OnNewJobObject);
-
-          Pipe := CreateServicePipe(Log);
-          repeat
-            ConnectNamedPipe(Pipe, @OvLapped);
-
-            repeat
-              if Assigned(ServiceThread) then
-                ServiceThread.ProcessRequests(False);
-
-
-              if (TJwWindowsVersion.IsWindowsXP(true) or
-                  TJwWindowsVersion.IsWindows2003(true)) and
-                    (GetSystemMetrics(SM_SHUTTINGDOWN) <> 0) then
-                  Stopped := true;
-
-              SetLastError(0);
-              WaitResult := JwMsgWaitForMultipleObjects([fServiceStopEvent, OvLapped.hEvent], false, INFINITE, QS_ALLINPUT);
-
-              case WaitResult of
-                WAIT_OBJECT_0 + 1 :  ResetEvent(OvLapped.hEvent);
-                WAIT_OBJECT_0 + 2 :  PeekMessage(Msg, 0, 0, 0, PM_NOREMOVE); //tag message as read
-              else
-                OutputDebugString(PChar(IntToStr(GetLastError)));
-              end;
-
-            until WaitResult <> WAIT_OBJECT_0 + 2; //
-
-
-            if WaitResult = WAIT_OBJECT_0 +1 then  //OvLapped.hEvent
-            begin
-              Inc(UniquePipeID);
-
-              ZeroMemory(@OvLapped2, sizeof(OvLapped2));
-              OvLapped2.hEvent := CreateEvent(nil,false,false,nil);
-              TJwAutoPointer.Wrap(OvLapped2.hEvent);
-
-              {We use this pipe only a very short time so it is very unlikely
-              that several clients are going to connect at the same time.
-              }
-              PipeName := THandleRequestThread.CreatePipeName(UniquePipeID);
-
-              //Sleep(2000);
-
-              ReadFile(Pipe, @ProtocolVersion, sizeof(ProtocolVersion) ,nil, @OvLapped2);
-
-              if JwWaitForMultipleObjects([fServiceStopEvent, OvLapped2.hEvent], false,
-                    {$IFNDEF DEBUG}1000{$ELSE}INFINITE{$ENDIF}) = WAIT_OBJECT_0 +1 then
-              begin
-                try //on E : Exception do
-                  //try to impersonate. May fail, so we don't do anything!
-                  //and this will lead to next on E : Exception
-                  TJwSecurityToken.ImpersonateNamedPipeClient(Pipe);
-
-                  //if sth happens here, we also fail to exception trap
-                  try
-                    PipeToken := TJwSecurityToken.CreateTokenByThread(0, MAXIMUM_ALLOWED, true);
-                  finally
-                    TJwSecurityToken.RevertToSelf;
-                  end;
-
-
-                  PipeNameSize := Length(PipeName);
-                  WriteFile(Pipe, @PipeNameSize, sizeof(PipeNameSize) ,nil, @OvLapped2);
-
-                  SetLastError(0);
-                  if CheckPipe(WriteFile(Pipe, @PipeName[1], Length(PipeName)*sizeof(WideChar),nil,@OvLapped2)) then
-                  begin
-
-                    with THandleRequestThread.Create(
-                      true, //Create suspended
-                      UniquePipeID,
-                      PipeToken,
-                      fJobs,
-                      nil,//const AllowedSIDs:  TJwSecurityIdList;
-                      fPasswords,//const Passwords   : TPasswordList;
-                      fServiceStopEvent,//const StopEvent  : THandle;
-                      fThreadsStoppedEvent,
-                      nil,//ServiceThread.ProcessRequests,//const OnServiceProcessRequest : TOnServiceProcessRequest;
-
-                      @fStopped //const StopState : PBoolean
-                      ) do
-                    begin
-                      FreeOnTerminate := True;
-                      Resume;
-                    end;
-                  end
-                  else
-                    Log.Log('Could not send Pipename to client: '+SysErrorMessage(GetLastError));
-                except
-                  on E : Exception do
-                  begin
-                    Log.Exception(E);
-                    Log.Log(E.Message);
-                  end;
-                end;
-              end;
-            end
-            else
-              Log.Log('Read for protocl version failed.');
-
-
-            Sleep(5000);
-            DisconnectNamedPipe(Pipe);
-
-          until Stopped;
-
-        finally
-          CloseHandle(Pipe);
-
-          //signal server shutdown
-          Stopped := true;
-
-          {Wait for all threads to be stopped or timeout
-          }
-          WaitForSingleObject(ThreadsStopEvent, 30 * 1000);
-          
-          fPasswords.Free;
-          FreeAndNil(fJobs);
-        end;
-      finally
-        CloseHandle(OvLapped.hEvent);
-        TJwHash.FreeBuffer(CredentialsHash.Hash);
-        ZeroMemory(@CredentialsHash, sizeof(CredentialsHash));
-      end;
+      //loads the stored hash of last time and compares
+      //it to the newly generated hash
+      //if not equal it raises EHashMismatch
+      CreateCredentialsBinaryHash;
     except
-      on E : Exception do
+      on e : Exception do
+      begin
         Log.Exception(E);
+        exit;
+      end;
     end;
 
-    Log.Log(lsStop,'*** XP Elevation Service finished. ');
+
+    if (CredentialsHash.Hash = nil) or (CredentialsHash.Size = 0) then
+    begin
+      Log.Log(lsError,'Could not get hash from credentials prompt file');
+  {$IFNDEF DEBUG}
+      exit;
+  {$ENDIF DEBUG}
+    end;
+
+    try //except
+      try
+        fThreadsStoppedEvent   := CreateEvent(nil, true, false, nil);
+        fServiceStopEvent   := CreateEvent(nil, true, false, nil);
+        Sleep(1000);
+
+
+        ZeroMemory(@OvLapped, sizeof(OvLapped));
+        OvLapped.hEvent := CreateEvent(nil, false, false, nil);
+
+          fPasswords := TCredentialsList.Create;
+          {fPasswords.LockList.Count := fAllowedSIDs.Count;
+          fPasswords.UnlockList;}
+
+          try
+            //create job objects for all sessions
+            fJobs := TJwJobObjectSessionList.Create(OnNewJobObject);
+
+            Pipe := CreateServicePipe(Log);
+            repeat
+              ConnectNamedPipe(Pipe, @OvLapped);
+
+              repeat
+                if Assigned(ServiceThread) then
+                  ServiceThread.ProcessRequests(False);
+
+
+                if (TJwWindowsVersion.IsWindowsXP(true) or
+                    TJwWindowsVersion.IsWindows2003(true)) and
+                      (GetSystemMetrics(SM_SHUTTINGDOWN) <> 0) then
+                    Stopped := true;
+
+                SetLastError(0);
+                WaitResult := JwMsgWaitForMultipleObjects([fServiceStopEvent, OvLapped.hEvent], false, INFINITE, QS_ALLINPUT);
+
+                case WaitResult of
+                  WAIT_OBJECT_0 + 1 :  ResetEvent(OvLapped.hEvent);
+                  WAIT_OBJECT_0 + 2 :  PeekMessage(Msg, 0, 0, 0, PM_NOREMOVE); //tag message as read
+                else
+                  OutputDebugString(PChar(IntToStr(GetLastError)));
+                end;
+
+              until WaitResult <> WAIT_OBJECT_0 + 2; //
+
+
+              if WaitResult = WAIT_OBJECT_0 +1 then  //OvLapped.hEvent
+              begin
+                Inc(UniquePipeID);
+
+                ZeroMemory(@OvLapped2, sizeof(OvLapped2));
+                OvLapped2.hEvent := CreateEvent(nil,false,false,nil);
+                TJwAutoPointer.Wrap(OvLapped2.hEvent);
+
+                {We use this pipe only a very short time so it is very unlikely
+                that several clients are going to connect at the same time.
+                }
+                PipeName := THandleRequestThread.CreatePipeName(UniquePipeID);
+
+                //Sleep(2000);
+
+                ReadFile(Pipe, @ProtocolVersion, sizeof(ProtocolVersion) ,nil, @OvLapped2);
+
+                if JwWaitForMultipleObjects([fServiceStopEvent, OvLapped2.hEvent], false,
+                      {$IFNDEF DEBUG}1000{$ELSE}INFINITE{$ENDIF}) = WAIT_OBJECT_0 +1 then
+                begin
+                  try //on E : Exception do
+                    //try to impersonate. May fail, so we don't do anything!
+                    //and this will lead to next on E : Exception
+                    TJwSecurityToken.ImpersonateNamedPipeClient(Pipe);
+
+                    //if sth happens here, we also fail to exception trap
+                    try
+                      PipeToken := TJwSecurityToken.CreateTokenByThread(0, MAXIMUM_ALLOWED, true);
+                    finally
+                      TJwSecurityToken.RevertToSelf;
+                    end;
+
+
+                    PipeNameSize := Length(PipeName);
+                    WriteFile(Pipe, @PipeNameSize, sizeof(PipeNameSize) ,nil, @OvLapped2);
+
+                    SetLastError(0);
+                    if CheckPipe(WriteFile(Pipe, @PipeName[1], Length(PipeName)*sizeof(WideChar),nil,@OvLapped2)) then
+                    begin
+
+                      with THandleRequestThread.Create(
+                        true, //Create suspended
+                        UniquePipeID,
+                        PipeToken,
+                        fJobs,
+                        nil,//const AllowedSIDs:  TJwSecurityIdList;
+                        fPasswords,//const Passwords   : TPasswordList;
+                        fServiceStopEvent,//const StopEvent  : THandle;
+                        fThreadsStoppedEvent,
+                        nil,//ServiceThread.ProcessRequests,//const OnServiceProcessRequest : TOnServiceProcessRequest;
+
+                        @fStopped //const StopState : PBoolean
+                        ) do
+                      begin
+                        FreeOnTerminate := True;
+                        Resume;
+                      end;
+                    end
+                    else
+                      Log.Log('Could not send Pipename to client: '+SysErrorMessage(GetLastError));
+                  except
+                    on E : Exception do
+                    begin
+                      Log.Exception(E);
+                      Log.Log(E.Message);
+                    end;
+                  end;
+                end;
+              end
+              else
+                Log.Log('Read for protocl version failed.');
+
+
+              Sleep(5000);
+              DisconnectNamedPipe(Pipe);
+
+            until Stopped;
+
+          finally
+            CloseHandle(Pipe);
+
+            //signal server shutdown
+            Stopped := true;
+
+            {Wait for all threads to be stopped or timeout
+            }
+            WaitForSingleObject(ThreadsStopEvent, 30 * 1000);
+          
+            fPasswords.Free;
+            FreeAndNil(fJobs);
+          end;
+        finally
+          CloseHandle(OvLapped.hEvent);
+        end;
+      except
+        on E : Exception do
+          Log.Exception(E);
+      end;
+
+      Log.Log(lsStop,'*** XP Elevation Service finished. ');
+  finally
+    TJwHash.FreeBuffer(CredentialsHash.Hash);
+    ZeroMemory(@CredentialsHash, sizeof(CredentialsHash));
+  end;
 
 end;
 
@@ -526,7 +609,7 @@ begin
   fStopCriticalSection.BeginWrite;
   try
     FStopped := Value;
-    
+
     if not Value then
     begin
       Log.Log('Stopevent resetted....');

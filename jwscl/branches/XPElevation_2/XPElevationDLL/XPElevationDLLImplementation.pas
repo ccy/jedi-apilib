@@ -57,6 +57,7 @@ begin
     E_SERVICE_CONTACT_FAILED : result := 'The service could be contacted at first but failed to respond later time.';
     E_INVALID_PARAMETER      : result := 'One or more supplied parameters to the service are invalid.';
     E_SERVICE_TIME_OUT       : result := 'A timeout occurred while waiting for service response. ';
+    E_INVALID_CRED_APP       : result := 'The checksum for credentials application is invalid.';
   else
     result := Format('The given error code %x is unknown ',[Hres]);
   end;

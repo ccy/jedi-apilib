@@ -46,7 +46,9 @@ const LogFileKey = 'Log';
 implementation
 uses Registry, JwaWindows;
 
-var Strings : TStringList;
+var
+  F : TextFile;
+  FileClosed : Boolean = true;
 
 procedure LogAndRaiseLastOsError(Log : IJwLogClient;
     const ClassName, MethodName, FileName : TJwString);
@@ -63,31 +65,51 @@ begin
   end;
 end;
 
-procedure InitLog;
+procedure OnXMLWrite(Sender : TObject; IJwWriterClass : IJwWriterClass;
+        var Result : TJwString);
 begin
-  Strings := TStringList.Create;
-  Strings.Add('<?xml version="1.0"?>');
-  Strings.Add('<logfile version="1.0" name="XPElevation">');
-  LogServer := CreateLogServer(Strings, LogEventTypes);
+  if not FileClosed then
+    Writeln(F, Result);
+end;
+
+procedure InitLog;
+var
+  M : TMethod;
+  E : Integer;
+begin
+{$I-}
+  AssignFile(F, LogFileNameLocation);
+  ReWrite(F);
+{$I+}
+  E := IOResult;
+  FileClosed := E <> 0;
+
+  LogServer := nil;
+  if not FileClosed then
+  begin
+    Writeln(F,'<?xml version="1.0"?>');
+    Writeln(F,'<logfile version="1.0" name="XPElevation">');
+
+    M.Code := @OnXMLWrite;
+    M.Data := nil;
+    LogServer := CreateLogServer(nil, LogEventTypes, TJwOnXMLWrite(M));
+
+  end;
 end;
 
 procedure DoneLog;
 begin
-  if not Assigned(Strings) then
+  if FileClosed then
     exit;
 
   if Assigned(LogServer) then
     LogServer.Done;
 
-  Strings.Add('</logfile>');
-  try
-    try
-      Strings.SaveToFile(LogFileNameLocation);
-    except
-    end;
-  finally
-    FreeAndNil(Strings);
-  end;
+
+  Writeln(F,'</logfile>');
+
+  CloseFile(F);
+  FileClosed := true;
 end;
 
 procedure SwitchLog(const Enabled : Boolean);
@@ -144,8 +166,8 @@ begin
     LogFileNameLocation := ExtractFilePath(ParamStr(0));
   LogFileNameLocation := IncludeTrailingBackslash(LogFileNameLocation);
 
-  LogFileNameLocation := Format('%s%s_%s_%s.log',
-      [LogFileNameLocation, ApplicationFileName, FileName, FormatDateTime('dd_mm_yyyy__hh_nn_ss', now)]);
+  LogFileNameLocation := Format('%s%s_%s.log',
+      [LogFileNameLocation, ApplicationFileName, FileName{, FormatDateTime('dd_mm_yyyy__hh_nn_ss', now)}]);
 end;
 
 
