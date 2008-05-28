@@ -40,7 +40,6 @@
 library xLogonNotify;
 
 uses
-  ExceptionLog,
   SysUtils,
   Classes,
   Windows,
