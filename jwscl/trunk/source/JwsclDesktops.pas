@@ -1186,7 +1186,8 @@ function TJwSecurityDesktop.CreateDesktop(const aName: TJwString;
   const aSecurityDescriptor: TJwSecurityDescriptor): HDESK;
 var
   pSec: PSECURITYATTRIBUTES;
-   aSecurityInfo: TJwSecurityInformationFlagSet;
+  aSecurityInfo: TJwSecurityInformationFlagSet;
+  Access : DWORD;
 begin
   pSec := nil;
 
@@ -1196,23 +1197,46 @@ begin
   //  pSec := aSecurityDescriptor.Create_SA(True);
   end;
 
+  Access := 0;
+  if Assigned(aSecurityDescriptor) then
+  begin
+    aSecurityInfo := [];
+    if Assigned(aSecurityDescriptor.Owner) or Assigned(aSecurityDescriptor.PrimaryGroup) then
+       Access := Access or WRITE_OWNER;
+    if Assigned(aSecurityDescriptor.DACL) or (sdcDaclPresent in aSecurityDescriptor.Control) then
+      Access := Access or WRITE_DAC;
+    if Assigned(aSecurityDescriptor.SACL) and (sdcSaclPresent in aSecurityDescriptor.Control) then
+      Access := Access or ACCESS_SYSTEM_SECURITY;
+  end;
+
   {$IFDEF UNICODE}
   result := jwaWindows.CreateDesktopW(PWideChar(aName),nil,nil,
                         DesktopFlagsToInt(DesktopFlags),
-                        aDesiredAccess, LPSECURITY_ATTRIBUTES(pSec));
+                        aDesiredAccess or Access, LPSECURITY_ATTRIBUTES(pSec));
   {$ELSE}
   Result := jwaWindows.CreateDesktopA(PAnsiChar(aName), nil, nil,
     DesktopFlagsToInt(DesktopFlags),
-    Cardinal(aDesiredAccess),
+    aDesiredAccess or Access,
     LPSECURITY_ATTRIBUTES(pSec));
   {$ENDIF}
 
   //if Assigned(aSecurityDescriptor) then
   //  aSecurityDescriptor.Free_SA(pSec);
 
+  if Result = 0 then
+  begin
+    raise EJwsclCreateDesktopException.CreateFmtWinCall(RsDesktopCreateFailed,
+       'CreateDesktop', ClassName, 'JWsclDesktops.pas',0,
+       true, 'CreateDesktop', [Name]);
+    {raise EJwsclCreateDesktopException.CreateFmt(
+      RsDesktopCreateFailed,
+      [Name]);}
+    exit;
+  end;
+
   //the lpsec descriptor does not work - it always used default DACL!!!
   //so we set it here
-  if Assigned(aSecurityDescriptor) then
+  if Assigned(aSecurityDescriptor) and (Result <> 0) then
   begin
     aSecurityInfo := [];
     if Assigned(aSecurityDescriptor.Owner) then
@@ -1221,7 +1245,7 @@ begin
       Include(aSecurityInfo,siGroupSecurityInformation);
     if Assigned(aSecurityDescriptor.DACL) or (sdcDaclPresent in aSecurityDescriptor.Control) then
       Include(aSecurityInfo,siDaclSecurityInformation);
-    if Assigned(aSecurityDescriptor.SACL) or (sdcSaclPresent in aSecurityDescriptor.Control) then
+    if Assigned(aSecurityDescriptor.SACL) and (sdcSaclPresent in aSecurityDescriptor.Control) then
       Include(aSecurityInfo,siSaclSecurityInformation);
 
     try
@@ -1236,16 +1260,6 @@ begin
     end;
   end;
 
-  if Result = 0 then
-  begin
-    raise EJwsclCreateDesktopException.CreateFmtWinCall(RsDesktopCreateFailed,
-       'CreateDesktop', ClassName, 'JWsclDesktops.pas',0,
-       true, 'CreateDesktop', [Name]);
-    {raise EJwsclCreateDesktopException.CreateFmt(
-      RsDesktopCreateFailed,
-      [Name]);}
-    exit;
-  end;
 
   fOpened  := Result > 0;
   fHandle  := Result;

@@ -1,4 +1,4 @@
-{<B>Abstract</B>Provides access to security token objects 
+{<B>Abstract</B>Provides access to security token objects
 @author(Christian Wimmer)
 <B>Created:</B>03/23/2007 
 <B>Last modification:</B>09/10/2007 
@@ -2047,7 +2047,10 @@ destructor TJwPrivilegeSet.Destroy;
     for i := fPPrivilegesList.Count - 1 downto 0 do
     begin
       p := PLUID_AND_ATTRIBUTES(fPPrivilegesList.Items[i]);
-      Free_PLUID_AND_ATTRIBUTES(p);
+      try
+        Free_PLUID_AND_ATTRIBUTES(p); //BUBBUG here sometimes
+      except
+      end;
     end;
 
     FreeAndNil(fPPrivilegesList);
@@ -2061,7 +2064,10 @@ destructor TJwPrivilegeSet.Destroy;
     for i := fPPrivilegesSetList.Count - 1 downto 0 do
     begin
       p := PPRIVILEGE_SET(fPPrivilegesSetList.Items[i]);
-      Free_PPRIVILEGE_SET(p);
+      try
+        Free_PPRIVILEGE_SET(p);
+      except
+      end;
     end;
 
     FreeAndNil(fPPrivilegesSetList);
@@ -2330,9 +2336,9 @@ begin
   if Privileges = nil then
     exit;
 
-  fPPrivilegesSetList.Remove(Privileges);
 
   HeapFree(JwProcessHeap, 0, Pointer(Privileges));
+  fPPrivilegesSetList.Remove(Privileges);
 
   Privileges := nil;
 end;
