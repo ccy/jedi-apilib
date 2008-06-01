@@ -1,0 +1,2176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectdatabase version="6">
+  <linkdatabase>
+    <link topicid="!!CLASSES" displaystring="Classes">
+      <target id="html">../output/!!CLASSES.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!CLASSES.html</target>
+    </link>
+    <link topicid="!!CONSTANTS" displaystring="Constants">
+      <target id="html">../output/!!CONSTANTS.html</target>
+    </link>
+    <link topicid="!!FILES" displaystring="Files">
+      <target id="html">../output/!!FILES.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!FILES.html</target>
+    </link>
+    <link topicid="!!FUNCTIONS" displaystring="Functions">
+      <target id="html">../output/!!FUNCTIONS.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!FUNCTIONS.html</target>
+    </link>
+    <link topicid="!!INTERFACES" displaystring="Interfaces">
+      <target id="html">../output/!!INTERFACES.html</target>
+    </link>
+    <link topicid="!!MEMBEROVERVIEW_IJwAutoLock" displaystring="IJwAutoLock Members">
+      <target id="html">../output/!!MEMBEROVERVIEW_IJwAutoLock.html</target>
+    </link>
+    <link topicid="!!MEMBEROVERVIEW_IJwAutoPointer" displaystring="IJwAutoPointer Members">
+      <target id="html">../output/!!MEMBEROVERVIEW_IJwAutoPointer.html</target>
+    </link>
+    <link topicid="!!MEMBEROVERVIEW_TJwAuditAccessControlEntry" displaystring="TJwAuditAccessControlEntry Members">
+      <target id="html">../output/!!MEMBEROVERVIEW_TJwAuditAccessControlEntry.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!MEMBEROVERVIEW_TJwAuditAccessControlEntry.html</target>
+    </link>
+    <link topicid="!!MEMBEROVERVIEW_TJwAuthContext" displaystring="TJwAuthContext Members">
+      <target id="html">../output/!!MEMBEROVERVIEW_TJwAuthContext.html</target>
+    </link>
+    <link topicid="!!MEMBEROVERVIEW_TJwAuthResourceManager" displaystring="TJwAuthResourceManager Members">
+      <target id="html">../output/!!MEMBEROVERVIEW_TJwAuthResourceManager.html</target>
+    </link>
+    <link topicid="!!MEMBEROVERVIEW_TJwAuthZAccessReply" displaystring="TJwAuthZAccessReply Members">
+      <target id="html">../output/!!MEMBEROVERVIEW_TJwAuthZAccessReply.html</target>
+    </link>
+    <link topicid="!!MEMBEROVERVIEW_TJwAuthZAccessRequest" displaystring="TJwAuthZAccessRequest Members">
+      <target id="html">../output/!!MEMBEROVERVIEW_TJwAuthZAccessRequest.html</target>
+    </link>
+    <link topicid="!!MEMBEROVERVIEW_TJwAutoLock" displaystring="TJwAutoLock Members">
+      <target id="html">../output/!!MEMBEROVERVIEW_TJwAutoLock.html</target>
+    </link>
+    <link topicid="!!MEMBEROVERVIEW_TJwAutoPointer" displaystring="TJwAutoPointer Members">
+      <target id="html">../output/!!MEMBEROVERVIEW_TJwAutoPointer.html</target>
+    </link>
+    <link topicid="!!MEMBEROVERVIEW_TJwAutoPointerImpl" displaystring="TJwAutoPointerImpl Members">
+      <target id="html">../output/!!MEMBEROVERVIEW_TJwAutoPointerImpl.html</target>
+    </link>
+    <link topicid="!!MEMBEROVERVIEW_TJwDAccessControlList" displaystring="TJwDAccessControlList Members">
+      <target id="html">../output/!!MEMBEROVERVIEW_TJwDAccessControlList.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!MEMBEROVERVIEW_TJwDAccessControlList.html</target>
+    </link>
+    <link topicid="!!MEMBEROVERVIEW_TJwDiscretionaryAccessControlEntryAllow" displaystring="TJwDiscretionaryAccessControlEntryAllow Members">
+      <target id="html">../output/!!MEMBEROVERVIEW_TJwDiscretionaryAccessControlEntryAllow.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!MEMBEROVERVIEW_TJwDiscretionaryAccessControlEntryAllow.html</target>
+    </link>
+    <link topicid="!!MEMBEROVERVIEW_TJwDiscretionaryAccessControlEntryDeny" displaystring="TJwDiscretionaryAccessControlEntryDeny Members">
+      <target id="html">../output/!!MEMBEROVERVIEW_TJwDiscretionaryAccessControlEntryDeny.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!MEMBEROVERVIEW_TJwDiscretionaryAccessControlEntryDeny.html</target>
+    </link>
+    <link topicid="!!MEMBEROVERVIEW_TJwEurekaLogNotify" displaystring="TJwEurekaLogNotify Members">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!MEMBEROVERVIEW_TJwEurekaLogNotify.html</target>
+    </link>
+    <link topicid="!!MEMBEROVERVIEW_TJwSAccessControlList" displaystring="TJwSAccessControlList Members">
+      <target id="html">../output/!!MEMBEROVERVIEW_TJwSAccessControlList.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!MEMBEROVERVIEW_TJwSAccessControlList.html</target>
+    </link>
+    <link topicid="!!MEMBEROVERVIEW_TJwSecurityAccessControlEntry" displaystring="TJwSecurityAccessControlEntry Members">
+      <target id="html">../output/!!MEMBEROVERVIEW_TJwSecurityAccessControlEntry.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!MEMBEROVERVIEW_TJwSecurityAccessControlEntry.html</target>
+    </link>
+    <link topicid="!!MEMBEROVERVIEW_TJwSecurityAccessControlList" displaystring="TJwSecurityAccessControlList Members">
+      <target id="html">../output/!!MEMBEROVERVIEW_TJwSecurityAccessControlList.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!MEMBEROVERVIEW_TJwSecurityAccessControlList.html</target>
+    </link>
+    <link topicid="!!MEMBEROVERVIEW_TJwSystemMandatoryAccessControlEntry" displaystring="TJwSystemMandatoryAccessControlEntry Members">
+      <target id="html">../output/!!MEMBEROVERVIEW_TJwSystemMandatoryAccessControlEntry.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!MEMBEROVERVIEW_TJwSystemMandatoryAccessControlEntry.html</target>
+    </link>
+    <link topicid="!!MEMBERTYPE_Events_TJwAuthResourceManager" displaystring="TJwAuthResourceManager Events">
+      <target id="html">../output/!!MEMBERTYPE_Events_TJwAuthResourceManager.html</target>
+    </link>
+    <link topicid="!!MEMBERTYPE_Fields_TJwAuditAccessControlEntry" displaystring="TJwAuditAccessControlEntry Fields">
+      <target id="html">../output/!!MEMBERTYPE_Fields_TJwAuditAccessControlEntry.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!MEMBERTYPE_Fields_TJwAuditAccessControlEntry.html</target>
+    </link>
+    <link topicid="!!MEMBERTYPE_Fields_TJwAuthContext" displaystring="TJwAuthContext Fields">
+      <target id="html">../output/!!MEMBERTYPE_Fields_TJwAuthContext.html</target>
+    </link>
+    <link topicid="!!MEMBERTYPE_Fields_TJwAuthZAccessReply" displaystring="TJwAuthZAccessReply Fields">
+      <target id="html">../output/!!MEMBERTYPE_Fields_TJwAuthZAccessReply.html</target>
+    </link>
+    <link topicid="!!MEMBERTYPE_Fields_TJwAuthZAccessRequest" displaystring="TJwAuthZAccessRequest Fields">
+      <target id="html">../output/!!MEMBERTYPE_Fields_TJwAuthZAccessRequest.html</target>
+    </link>
+    <link topicid="!!MEMBERTYPE_Fields_TJwAutoLock" displaystring="TJwAutoLock Fields">
+      <target id="html">../output/!!MEMBERTYPE_Fields_TJwAutoLock.html</target>
+    </link>
+    <link topicid="!!MEMBERTYPE_Fields_TJwAutoPointerImpl" displaystring="TJwAutoPointerImpl Fields">
+      <target id="html">../output/!!MEMBERTYPE_Fields_TJwAutoPointerImpl.html</target>
+    </link>
+    <link topicid="!!MEMBERTYPE_Fields_TJwEurekaLogNotify" displaystring="TJwEurekaLogNotify Fields">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!MEMBERTYPE_Fields_TJwEurekaLogNotify.html</target>
+    </link>
+    <link topicid="!!MEMBERTYPE_Fields_TJwSecurityAccessControlEntry" displaystring="TJwSecurityAccessControlEntry Fields">
+      <target id="html">../output/!!MEMBERTYPE_Fields_TJwSecurityAccessControlEntry.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!MEMBERTYPE_Fields_TJwSecurityAccessControlEntry.html</target>
+    </link>
+    <link topicid="!!MEMBERTYPE_Fields_TJwSecurityAccessControlList" displaystring="TJwSecurityAccessControlList Fields">
+      <target id="html">../output/!!MEMBERTYPE_Fields_TJwSecurityAccessControlList.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!MEMBERTYPE_Fields_TJwSecurityAccessControlList.html</target>
+    </link>
+    <link topicid="!!MEMBERTYPE_Methods_IJwAutoLock" displaystring="IJwAutoLock Methods">
+      <target id="html">../output/!!MEMBERTYPE_Methods_IJwAutoLock.html</target>
+    </link>
+    <link topicid="!!MEMBERTYPE_Methods_IJwAutoPointer" displaystring="IJwAutoPointer Methods">
+      <target id="html">../output/!!MEMBERTYPE_Methods_IJwAutoPointer.html</target>
+    </link>
+    <link topicid="!!MEMBERTYPE_Methods_TJwAuditAccessControlEntry" displaystring="TJwAuditAccessControlEntry Methods">
+      <target id="html">../output/!!MEMBERTYPE_Methods_TJwAuditAccessControlEntry.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!MEMBERTYPE_Methods_TJwAuditAccessControlEntry.html</target>
+    </link>
+    <link topicid="!!MEMBERTYPE_Methods_TJwAuthContext" displaystring="TJwAuthContext Methods">
+      <target id="html">../output/!!MEMBERTYPE_Methods_TJwAuthContext.html</target>
+    </link>
+    <link topicid="!!MEMBERTYPE_Methods_TJwAuthResourceManager" displaystring="TJwAuthResourceManager Methods">
+      <target id="html">../output/!!MEMBERTYPE_Methods_TJwAuthResourceManager.html</target>
+    </link>
+    <link topicid="!!MEMBERTYPE_Methods_TJwAutoLock" displaystring="TJwAutoLock Methods">
+      <target id="html">../output/!!MEMBERTYPE_Methods_TJwAutoLock.html</target>
+    </link>
+    <link topicid="!!MEMBERTYPE_Methods_TJwAutoPointer" displaystring="TJwAutoPointer Methods">
+      <target id="html">../output/!!MEMBERTYPE_Methods_TJwAutoPointer.html</target>
+    </link>
+    <link topicid="!!MEMBERTYPE_Methods_TJwAutoPointerImpl" displaystring="TJwAutoPointerImpl Methods">
+      <target id="html">../output/!!MEMBERTYPE_Methods_TJwAutoPointerImpl.html</target>
+    </link>
+    <link topicid="!!MEMBERTYPE_Methods_TJwDAccessControlList" displaystring="TJwDAccessControlList Methods">
+      <target id="html">../output/!!MEMBERTYPE_Methods_TJwDAccessControlList.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!MEMBERTYPE_Methods_TJwDAccessControlList.html</target>
+    </link>
+    <link topicid="!!MEMBERTYPE_Methods_TJwDiscretionaryAccessControlEntryAllow" displaystring="TJwDiscretionaryAccessControlEntryAllow Methods">
+      <target id="html">../output/!!MEMBERTYPE_Methods_TJwDiscretionaryAccessControlEntryAllow.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!MEMBERTYPE_Methods_TJwDiscretionaryAccessControlEntryAllow.html</target>
+    </link>
+    <link topicid="!!MEMBERTYPE_Methods_TJwDiscretionaryAccessControlEntryDeny" displaystring="TJwDiscretionaryAccessControlEntryDeny Methods">
+      <target id="html">../output/!!MEMBERTYPE_Methods_TJwDiscretionaryAccessControlEntryDeny.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!MEMBERTYPE_Methods_TJwDiscretionaryAccessControlEntryDeny.html</target>
+    </link>
+    <link topicid="!!MEMBERTYPE_Methods_TJwEurekaLogNotify" displaystring="TJwEurekaLogNotify Methods">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!MEMBERTYPE_Methods_TJwEurekaLogNotify.html</target>
+    </link>
+    <link topicid="!!MEMBERTYPE_Methods_TJwSAccessControlList" displaystring="TJwSAccessControlList Methods">
+      <target id="html">../output/!!MEMBERTYPE_Methods_TJwSAccessControlList.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!MEMBERTYPE_Methods_TJwSAccessControlList.html</target>
+    </link>
+    <link topicid="!!MEMBERTYPE_Methods_TJwSecurityAccessControlEntry" displaystring="TJwSecurityAccessControlEntry Methods">
+      <target id="html">../output/!!MEMBERTYPE_Methods_TJwSecurityAccessControlEntry.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!MEMBERTYPE_Methods_TJwSecurityAccessControlEntry.html</target>
+    </link>
+    <link topicid="!!MEMBERTYPE_Methods_TJwSecurityAccessControlList" displaystring="TJwSecurityAccessControlList Methods">
+      <target id="html">../output/!!MEMBERTYPE_Methods_TJwSecurityAccessControlList.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!MEMBERTYPE_Methods_TJwSecurityAccessControlList.html</target>
+    </link>
+    <link topicid="!!MEMBERTYPE_Methods_TJwSystemMandatoryAccessControlEntry" displaystring="TJwSystemMandatoryAccessControlEntry Methods">
+      <target id="html">../output/!!MEMBERTYPE_Methods_TJwSystemMandatoryAccessControlEntry.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!MEMBERTYPE_Methods_TJwSystemMandatoryAccessControlEntry.html</target>
+    </link>
+    <link topicid="!!MEMBERTYPE_Properties_IJwAutoLock" displaystring="IJwAutoLock Properties">
+      <target id="html">../output/!!MEMBERTYPE_Properties_IJwAutoLock.html</target>
+    </link>
+    <link topicid="!!MEMBERTYPE_Properties_IJwAutoPointer" displaystring="IJwAutoPointer Properties">
+      <target id="html">../output/!!MEMBERTYPE_Properties_IJwAutoPointer.html</target>
+    </link>
+    <link topicid="!!MEMBERTYPE_Properties_TJwAuditAccessControlEntry" displaystring="TJwAuditAccessControlEntry Properties">
+      <target id="html">../output/!!MEMBERTYPE_Properties_TJwAuditAccessControlEntry.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!MEMBERTYPE_Properties_TJwAuditAccessControlEntry.html</target>
+    </link>
+    <link topicid="!!MEMBERTYPE_Properties_TJwAuthContext" displaystring="TJwAuthContext Properties">
+      <target id="html">../output/!!MEMBERTYPE_Properties_TJwAuthContext.html</target>
+    </link>
+    <link topicid="!!MEMBERTYPE_Properties_TJwAuthResourceManager" displaystring="TJwAuthResourceManager Properties">
+      <target id="html">../output/!!MEMBERTYPE_Properties_TJwAuthResourceManager.html</target>
+    </link>
+    <link topicid="!!MEMBERTYPE_Properties_TJwAuthZAccessReply" displaystring="TJwAuthZAccessReply Properties">
+      <target id="html">../output/!!MEMBERTYPE_Properties_TJwAuthZAccessReply.html</target>
+    </link>
+    <link topicid="!!MEMBERTYPE_Properties_TJwAuthZAccessRequest" displaystring="TJwAuthZAccessRequest Properties">
+      <target id="html">../output/!!MEMBERTYPE_Properties_TJwAuthZAccessRequest.html</target>
+    </link>
+    <link topicid="!!MEMBERTYPE_Properties_TJwEurekaLogNotify" displaystring="TJwEurekaLogNotify Properties">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!MEMBERTYPE_Properties_TJwEurekaLogNotify.html</target>
+    </link>
+    <link topicid="!!MEMBERTYPE_Properties_TJwSAccessControlList" displaystring="TJwSAccessControlList Properties">
+      <target id="html">../output/!!MEMBERTYPE_Properties_TJwSAccessControlList.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!MEMBERTYPE_Properties_TJwSAccessControlList.html</target>
+    </link>
+    <link topicid="!!MEMBERTYPE_Properties_TJwSecurityAccessControlEntry" displaystring="TJwSecurityAccessControlEntry Properties">
+      <target id="html">../output/!!MEMBERTYPE_Properties_TJwSecurityAccessControlEntry.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!MEMBERTYPE_Properties_TJwSecurityAccessControlEntry.html</target>
+    </link>
+    <link topicid="!!MEMBERTYPE_Properties_TJwSecurityAccessControlList" displaystring="TJwSecurityAccessControlList Properties">
+      <target id="html">../output/!!MEMBERTYPE_Properties_TJwSecurityAccessControlList.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!MEMBERTYPE_Properties_TJwSecurityAccessControlList.html</target>
+    </link>
+    <link topicid="!!MEMBERTYPE_Properties_TJwSystemMandatoryAccessControlEntry" displaystring="TJwSystemMandatoryAccessControlEntry Properties">
+      <target id="html">../output/!!MEMBERTYPE_Properties_TJwSystemMandatoryAccessControlEntry.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!MEMBERTYPE_Properties_TJwSystemMandatoryAccessControlEntry.html</target>
+    </link>
+    <link topicid="!!OVERLOADED_Create_TJwAuditAccessControlEntry" displaystring="Create Constructor">
+      <target id="html">../output/!!OVERLOADED_Create_TJwAuditAccessControlEntry.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!OVERLOADED_Create_TJwAuditAccessControlEntry.html</target>
+    </link>
+    <link topicid="!!OVERLOADED_Create_TJwAutoPointerImpl" displaystring="Create Constructor">
+      <target id="html">../output/!!OVERLOADED_Create_TJwAutoPointerImpl.html</target>
+    </link>
+    <link topicid="!!OVERLOADED_Create_TJwDAccessControlList" displaystring="Create Constructor">
+      <target id="html">../output/!!OVERLOADED_Create_TJwDAccessControlList.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!OVERLOADED_Create_TJwDAccessControlList.html</target>
+    </link>
+    <link topicid="!!OVERLOADED_Create_TJwDiscretionaryAccessControlEntryAllow" displaystring="Create Constructor">
+      <target id="html">../output/!!OVERLOADED_Create_TJwDiscretionaryAccessControlEntryAllow.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!OVERLOADED_Create_TJwDiscretionaryAccessControlEntryAllow.html</target>
+    </link>
+    <link topicid="!!OVERLOADED_Create_TJwDiscretionaryAccessControlEntryDeny" displaystring="Create Constructor">
+      <target id="html">../output/!!OVERLOADED_Create_TJwDiscretionaryAccessControlEntryDeny.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!OVERLOADED_Create_TJwDiscretionaryAccessControlEntryDeny.html</target>
+    </link>
+    <link topicid="!!OVERLOADED_Create_TJwSAccessControlList" displaystring="Create Constructor">
+      <target id="html">../output/!!OVERLOADED_Create_TJwSAccessControlList.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!OVERLOADED_Create_TJwSAccessControlList.html</target>
+    </link>
+    <link topicid="!!OVERLOADED_Create_TJwSecurityAccessControlEntry" displaystring="Create Constructor">
+      <target id="html">../output/!!OVERLOADED_Create_TJwSecurityAccessControlEntry.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!OVERLOADED_Create_TJwSecurityAccessControlEntry.html</target>
+    </link>
+    <link topicid="!!OVERLOADED_Create_TJwSecurityAccessControlList" displaystring="Create Constructor">
+      <target id="html">../output/!!OVERLOADED_Create_TJwSecurityAccessControlList.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!OVERLOADED_Create_TJwSecurityAccessControlList.html</target>
+    </link>
+    <link topicid="!!OVERLOADED_Create_TJwSystemMandatoryAccessControlEntry" displaystring="Create Constructor">
+      <target id="html">../output/!!OVERLOADED_Create_TJwSystemMandatoryAccessControlEntry.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!OVERLOADED_Create_TJwSystemMandatoryAccessControlEntry.html</target>
+    </link>
+    <link topicid="!!OVERLOADED_CreateACE_TJwSecurityAccessControlEntry" displaystring="CreateACE Method">
+      <target id="html">../output/!!OVERLOADED_CreateACE_TJwSecurityAccessControlEntry.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!OVERLOADED_CreateACE_TJwSecurityAccessControlEntry.html</target>
+    </link>
+    <link topicid="!!OVERLOADED_CreateInstance_TJwAutoPointer" displaystring="CreateInstance Method">
+      <target id="html">../output/!!OVERLOADED_CreateInstance_TJwAutoPointer.html</target>
+    </link>
+    <link topicid="!!OVERLOADED_Free_PACE_TJwSecurityAccessControlEntry" displaystring="Free_PACE Method">
+      <target id="html">../output/!!OVERLOADED_Free_PACE_TJwSecurityAccessControlEntry.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!OVERLOADED_Free_PACE_TJwSecurityAccessControlEntry.html</target>
+    </link>
+    <link topicid="!!OVERLOADED_GetEffectiveRights_TJwSecurityAccessControlList" displaystring="GetEffectiveRights Method">
+      <target id="html">../output/!!OVERLOADED_GetEffectiveRights_TJwSecurityAccessControlList.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!OVERLOADED_GetEffectiveRights_TJwSecurityAccessControlList.html</target>
+    </link>
+    <link topicid="!!OVERLOADED_Remove_TJwSecurityAccessControlList" displaystring="Remove Method">
+      <target id="html">../output/!!OVERLOADED_Remove_TJwSecurityAccessControlList.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!OVERLOADED_Remove_TJwSecurityAccessControlList.html</target>
+    </link>
+    <link topicid="!!OVERLOADED_Wrap_TJwAutoPointer" displaystring="Wrap Method">
+      <target id="html">../output/!!OVERLOADED_Wrap_TJwAutoPointer.html</target>
+    </link>
+    <link topicid="!!RECORDS" displaystring="Structs, Records, Enums">
+      <target id="html">../output/!!RECORDS.html</target>
+    </link>
+    <link topicid="!!TYPES" displaystring="Types">
+      <target id="html">../output/!!TYPES.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!TYPES.html</target>
+    </link>
+    <link topicid="!!VARIABLES" displaystring="Variables">
+      <target id="html">../output/!!VARIABLES.html</target>
+    </link>
+    <link topicid="ALL_SECURITY_INFORMATION" displaystring="ALL_SECURITY_INFORMATION Constant">
+      <target id="html">../output/ALL_SECURITY_INFORMATION.html</target>
+    </link>
+    <link topicid="Compilers.inc" displaystring="Compilers.inc">
+      <target id="html">../output/Compilers_inc.html</target>
+    </link>
+    <link topicid="cOS2003" displaystring="cOS2003 Constant">
+      <target id="html">../output/cOS2003.html</target>
+    </link>
+    <link topicid="cOS2003R2" displaystring="cOS2003R2 Constant">
+      <target id="html">../output/cOS2003R2.html</target>
+    </link>
+    <link topicid="cOsUnknown" displaystring="cOsUnknown Constant">
+      <target id="html">../output/cOsUnknown.html</target>
+    </link>
+    <link topicid="cOsVista" displaystring="cOsVista Constant">
+      <target id="html">../output/cOsVista.html</target>
+    </link>
+    <link topicid="cOsWin2000" displaystring="cOsWin2000 Constant">
+      <target id="html">../output/cOsWin2000.html</target>
+    </link>
+    <link topicid="cOsWin2008" displaystring="cOsWin2008 Constant">
+      <target id="html">../output/cOsWin2008.html</target>
+    </link>
+    <link topicid="cOsWin95" displaystring="cOsWin95 Constant">
+      <target id="html">../output/cOsWin95.html</target>
+    </link>
+    <link topicid="cOsWin98" displaystring="cOsWin98 Constant">
+      <target id="html">../output/cOsWin98.html</target>
+    </link>
+    <link topicid="cOsWin98SE" displaystring="cOsWin98SE Constant">
+      <target id="html">../output/cOsWin98SE.html</target>
+    </link>
+    <link topicid="cOsWinME" displaystring="cOsWinME Constant">
+      <target id="html">../output/cOsWinME.html</target>
+    </link>
+    <link topicid="cOsWinNT" displaystring="cOsWinNT Constant">
+      <target id="html">../output/cOsWinNT.html</target>
+    </link>
+    <link topicid="cOsXP" displaystring="cOsXP Constant">
+      <target id="html">../output/cOsXP.html</target>
+    </link>
+    <link topicid="cOSXP64" displaystring="cOSXP64 Constant">
+      <target id="html">../output/cOSXP64.html</target>
+    </link>
+    <link topicid="CRYPTPROTECTMEMORY_CROSS_PROCESS" displaystring="CRYPTPROTECTMEMORY_CROSS_PROCESS Constant">
+      <target id="html">../output/CRYPTPROTECTMEMORY_CROSS_PROCESS.html</target>
+    </link>
+    <link topicid="CRYPTPROTECTMEMORY_SAME_LOGON" displaystring="CRYPTPROTECTMEMORY_SAME_LOGON Constant">
+      <target id="html">../output/CRYPTPROTECTMEMORY_SAME_LOGON.html</target>
+    </link>
+    <link topicid="CRYPTPROTECTMEMORY_SAME_PROCESS" displaystring="CRYPTPROTECTMEMORY_SAME_PROCESS Constant">
+      <target id="html">../output/CRYPTPROTECTMEMORY_SAME_PROCESS.html</target>
+    </link>
+    <link topicid="DesktopGenericMapping" displaystring="DesktopGenericMapping Variable">
+      <target id="html">../output/DesktopGenericMapping.html</target>
+    </link>
+    <link topicid="DesktopMapping" displaystring="DesktopMapping Variable">
+      <target id="html">../output/DesktopMapping.html</target>
+    </link>
+    <link topicid="DesktopMappingStartIndex" displaystring="DesktopMappingStartIndex Constant">
+      <target id="html">../output/DesktopMappingStartIndex.html</target>
+    </link>
+    <link topicid="ERROR_ILL_FORMED_PASSWORD" displaystring="ERROR_ILL_FORMED_PASSWORD Constant">
+      <target id="html">../output/ERROR_ILL_FORMED_PASSWORD.html</target>
+    </link>
+    <link topicid="EventGenericMapping" displaystring="EventGenericMapping Variable">
+      <target id="html">../output/EventGenericMapping.html</target>
+    </link>
+    <link topicid="EventMapping" displaystring="EventMapping Variable">
+      <target id="html">../output/EventMapping.html</target>
+    </link>
+    <link topicid="EventMappingStartIndex" displaystring="EventMappingStartIndex Constant">
+      <target id="html">../output/EventMappingStartIndex.html</target>
+    </link>
+    <link topicid="FILE_DELETE" displaystring="FILE_DELETE Constant">
+      <target id="html">../output/FILE_DELETE.html</target>
+    </link>
+    <link topicid="FileFolderGenericMapping" displaystring="FileFolderGenericMapping Variable">
+      <target id="html">../output/FileFolderGenericMapping.html</target>
+    </link>
+    <link topicid="FileFolderMapping" displaystring="FileFolderMapping Variable">
+      <target id="html">../output/FileFolderMapping.html</target>
+    </link>
+    <link topicid="FileFolderMappingStartIndex" displaystring="FileFolderMappingStartIndex Constant">
+      <target id="html">../output/FileFolderMappingStartIndex.html</target>
+    </link>
+    <link topicid="FileGenericMapping" displaystring="FileGenericMapping Variable">
+      <target id="html">../output/FileGenericMapping.html</target>
+    </link>
+    <link topicid="FileMapGenericMapping" displaystring="FileMapGenericMapping Variable">
+      <target id="html">../output/FileMapGenericMapping.html</target>
+    </link>
+    <link topicid="FileMapMapping" displaystring="FileMapMapping Variable">
+      <target id="html">../output/FileMapMapping.html</target>
+    </link>
+    <link topicid="FileMapMappingStartIndex" displaystring="FileMapMappingStartIndex Constant">
+      <target id="html">../output/FileMapMappingStartIndex.html</target>
+    </link>
+    <link topicid="FileMapping" displaystring="FileMapping Variable">
+      <target id="html">../output/FileMapping.html</target>
+    </link>
+    <link topicid="FileMappingStartIndex" displaystring="FileMappingStartIndex Constant">
+      <target id="html">../output/FileMappingStartIndex.html</target>
+    </link>
+    <link topicid="FolderGenericMapping" displaystring="FolderGenericMapping Variable">
+      <target id="html">../output/FolderGenericMapping.html</target>
+    </link>
+    <link topicid="FolderMapping" displaystring="FolderMapping Variable">
+      <target id="html">../output/FolderMapping.html</target>
+    </link>
+    <link topicid="FolderMappingStartIndex" displaystring="FolderMappingStartIndex Constant">
+      <target id="html">../output/FolderMappingStartIndex.html</target>
+    </link>
+    <link topicid="HEADERMAGIC" displaystring="HEADERMAGIC Constant">
+      <target id="html">../output/HEADERMAGIC.html</target>
+    </link>
+    <link topicid="IDAPPLY" displaystring="IDAPPLY Constant">
+      <target id="html">../output/IDAPPLY.html</target>
+    </link>
+    <link topicid="IgnoreEJwsclResourceNotFound" displaystring="IgnoreEJwsclResourceNotFound Constant">
+      <target id="html">../output/IgnoreEJwsclResourceNotFound.html</target>
+    </link>
+    <link topicid="IIDIJwAutoLock" displaystring="IIDIJwAutoLock Constant">
+      <target id="html">../output/IIDIJwAutoLock.html</target>
+    </link>
+    <link topicid="IIDIJwAutoPointer" displaystring="IIDIJwAutoPointer Constant">
+      <target id="html">../output/IIDIJwAutoPointer.html</target>
+    </link>
+    <link topicid="IJwAutoLock" displaystring="IJwAutoLock Interface">
+      <target id="html">../output/IJwAutoLock.html</target>
+    </link>
+    <link topicid="IJwAutoLock.GetAutoPointer" displaystring="IJwAutoLock.GetAutoPointer Method">
+      <target id="html">../output/IJwAutoLock_GetAutoPointer.html</target>
+    </link>
+    <link topicid="IJwAutoLock.GetHandle" displaystring="IJwAutoLock.GetHandle Method">
+      <target id="html">../output/IJwAutoLock_GetHandle.html</target>
+    </link>
+    <link topicid="IJwAutoLock.GetInstance" displaystring="IJwAutoLock.GetInstance Method">
+      <target id="html">../output/IJwAutoLock_GetInstance.html</target>
+    </link>
+    <link topicid="IJwAutoLock.GetPointer" displaystring="IJwAutoLock.GetPointer Method">
+      <target id="html">../output/IJwAutoLock_GetPointer.html</target>
+    </link>
+    <link topicid="IJwAutoLock.GetPointerType" displaystring="IJwAutoLock.GetPointerType Method">
+      <target id="html">../output/IJwAutoLock_GetPointerType.html</target>
+    </link>
+    <link topicid="IJwAutoLock.Instance" displaystring="IJwAutoLock.Instance Property">
+      <target id="html">../output/IJwAutoLock_Instance.html</target>
+    </link>
+    <link topicid="IJwAutoLock.Pointer" displaystring="IJwAutoLock.Pointer Property">
+      <target id="html">../output/IJwAutoLock_Pointer.html</target>
+    </link>
+    <link topicid="IJwAutoLock.PointerType" displaystring="IJwAutoLock.PointerType Property">
+      <target id="html">../output/IJwAutoLock_PointerType.html</target>
+    </link>
+    <link topicid="IJwAutoLock.UnLock" displaystring="IJwAutoLock.UnLock Method">
+      <target id="html">../output/IJwAutoLock_UnLock.html</target>
+    </link>
+    <link topicid="IJwAutoPointer" displaystring="IJwAutoPointer Interface">
+      <target id="html">../output/IJwAutoPointer.html</target>
+    </link>
+    <link topicid="IJwAutoPointer.GetHandle" displaystring="IJwAutoPointer.GetHandle Method">
+      <target id="html">../output/IJwAutoPointer_GetHandle.html</target>
+    </link>
+    <link topicid="IJwAutoPointer.GetInstance" displaystring="IJwAutoPointer.GetInstance Method">
+      <target id="html">../output/IJwAutoPointer_GetInstance.html</target>
+    </link>
+    <link topicid="IJwAutoPointer.GetPointer" displaystring="IJwAutoPointer.GetPointer Method">
+      <target id="html">../output/IJwAutoPointer_GetPointer.html</target>
+    </link>
+    <link topicid="IJwAutoPointer.GetPointerType" displaystring="IJwAutoPointer.GetPointerType Method">
+      <target id="html">../output/IJwAutoPointer_GetPointerType.html</target>
+    </link>
+    <link topicid="IJwAutoPointer.Instance" displaystring="IJwAutoPointer.Instance Property">
+      <target id="html">../output/IJwAutoPointer_Instance.html</target>
+    </link>
+    <link topicid="IJwAutoPointer.Lock" displaystring="IJwAutoPointer.Lock Method">
+      <target id="html">../output/IJwAutoPointer_Lock.html</target>
+    </link>
+    <link topicid="IJwAutoPointer.Pointer" displaystring="IJwAutoPointer.Pointer Property">
+      <target id="html">../output/IJwAutoPointer_Pointer.html</target>
+    </link>
+    <link topicid="IJwAutoPointer.PointerType" displaystring="IJwAutoPointer.PointerType Property">
+      <target id="html">../output/IJwAutoPointer_PointerType.html</target>
+    </link>
+    <link topicid="IsGenericRight@Cardinal" displaystring="IsGenericRight Function">
+      <target id="html">../output/IsGenericRight@Cardinal.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/IsGenericRight@Cardinal.html</target>
+    </link>
+    <link topicid="IsMaximumRight@Cardinal" displaystring="IsMaximumRight Function">
+      <target id="html">../output/IsMaximumRight@Cardinal.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/IsMaximumRight@Cardinal.html</target>
+    </link>
+    <link topicid="IsReservedRight@Cardinal" displaystring="IsReservedRight Function">
+      <target id="html">../output/IsReservedRight@Cardinal.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/IsReservedRight@Cardinal.html</target>
+    </link>
+    <link topicid="IsSACLRight@Cardinal" displaystring="IsSACLRight Function">
+      <target id="html">../output/IsSACLRight@Cardinal.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/IsSACLRight@Cardinal.html</target>
+    </link>
+    <link topicid="IsSpecificRight@Cardinal" displaystring="IsSpecificRight Function">
+      <target id="html">../output/IsSpecificRight@Cardinal.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/IsSpecificRight@Cardinal.html</target>
+    </link>
+    <link topicid="IsStandardRight@Cardinal" displaystring="IsStandardRight Function">
+      <target id="html">../output/IsStandardRight@Cardinal.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/IsStandardRight@Cardinal.html</target>
+    </link>
+    <link topicid="jedi.inc" displaystring="jedi.inc">
+      <target id="html">../output/jedi_inc.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/jedi_inc.html</target>
+    </link>
+    <link topicid="JOB_ACCESS_ADMINISTER" displaystring="JOB_ACCESS_ADMINISTER Constant">
+      <target id="html">../output/JOB_ACCESS_ADMINISTER.html</target>
+    </link>
+    <link topicid="JOB_ACCESS_READ" displaystring="JOB_ACCESS_READ Constant">
+      <target id="html">../output/JOB_ACCESS_READ.html</target>
+    </link>
+    <link topicid="JobGenericMapping" displaystring="JobGenericMapping Variable">
+      <target id="html">../output/JobGenericMapping.html</target>
+    </link>
+    <link topicid="JobMapping" displaystring="JobMapping Variable">
+      <target id="html">../output/JobMapping.html</target>
+    </link>
+    <link topicid="JobMappingStartIndex" displaystring="JobMappingStartIndex Constant">
+      <target id="html">../output/JobMappingStartIndex.html</target>
+    </link>
+    <link topicid="JwAllSecurityAccess" displaystring="JwAllSecurityAccess Constant">
+      <target id="html">../output/JwAllSecurityAccess.html</target>
+    </link>
+    <link topicid="JwFormatAccessRights@Cardinal@Array of TJwRightsMapping" displaystring="JwFormatAccessRights Function">
+      <target id="html">../output/JwFormatAccessRights@Cardinal@Array_of_TJwRightsMapping.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/JwFormatAccessRights@Cardinal@Array_of_TJwRightsMapping.html</target>
+    </link>
+    <link topicid="JwFormatAccessRights@TJwAccessMaskArray@TJwCardinalArray@Array of TJwRightsMapping" displaystring="JwFormatAccessRights Function">
+      <target id="html">../output/JwFormatAccessRights@TJwAccessMaskArray@TJwCardinalArray@Array_of_TJwRightsMapping.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/JwFormatAccessRights@TJwAccessMaskArray@TJwCardinalArray@Array_of_TJwRightsMapping.html</target>
+    </link>
+    <link topicid="JwHasAccountPassword@TJwString@TJwString" displaystring="JwHasAccountPassword Function">
+      <target id="html">../output/JwHasAccountPassword@TJwString@TJwString.html</target>
+    </link>
+    <link topicid="JwInitLocalizedMappings@Word@Word@HINST" displaystring="JwInitLocalizedMappings Function">
+      <target id="html">../output/JwInitLocalizedMappings@Word@Word@HINST.html</target>
+    </link>
+    <link topicid="JwNullSecurityAttributes" displaystring="JwNullSecurityAttributes Variable">
+      <target id="html">../output/JwNullSecurityAttributes.html</target>
+    </link>
+    <link topicid="JwRightType@Cardinal" displaystring="JwRightType Function">
+      <target id="html">../output/JwRightType@Cardinal.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/JwRightType@Cardinal.html</target>
+    </link>
+    <link topicid="Jwscl.inc" displaystring="Jwscl.inc">
+      <target id="html">../output/Jwscl_inc.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/Jwscl_inc.html</target>
+    </link>
+    <link topicid="JwsclAccounts.pas" displaystring="JwsclAccounts.pas">
+      <target id="html">../output/JwsclAccounts_pas.html</target>
+    </link>
+    <link topicid="JwsclAcl, unit" displaystring="JwsclAcl, About">
+      <target id="html">../output/JwsclAcl,_unit.html</target>
+    </link>
+    <link topicid="JwsclAcl.pas" displaystring="JwsclAcl.pas">
+      <target id="html">../output/JwsclAcl_pas.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/JwsclAcl_pas.html</target>
+    </link>
+    <link topicid="JwsclAuthCtx, unit" displaystring="JwsclAuthCtx, About">
+      <target id="html">../output/JwsclAuthCtx,_unit.html</target>
+    </link>
+    <link topicid="JwsclAuthCtx.pas" displaystring="JwsclAuthCtx.pas">
+      <target id="html">../output/JwsclAuthCtx_pas.html</target>
+    </link>
+    <link topicid="JwsclComUtils, unit" displaystring="JwsclComUtils, About">
+      <target id="html">../output/JwsclComUtils,_unit.html</target>
+    </link>
+    <link topicid="JwsclComUtils.pas" displaystring="JwsclComUtils.pas">
+      <target id="html">../output/JwsclComUtils_pas.html</target>
+    </link>
+    <link topicid="JwsclConstants, unit" displaystring="JwsclConstants, About">
+      <target id="html">../output/JwsclConstants,_unit.html</target>
+    </link>
+    <link topicid="JwsclConstants.pas" displaystring="JwsclConstants.pas">
+      <target id="html">../output/JwsclConstants_pas.html</target>
+    </link>
+    <link topicid="JwsclEurekaLogUtils" displaystring="JwsclEurekaLogUtils">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/JwsclEurekaLogUtils.html</target>
+      <target id="winhelp">id_1@documentation.hlp</target>
+    </link>
+    <link topicid="JwsclEurekaLogUtils.pas" displaystring="JwsclEurekaLogUtils.pas">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/JwsclEurekaLogUtils_pas.html</target>
+      <target id="winhelp">id_6@documentation.hlp</target>
+    </link>
+    <link topicid="JwsclEurekaLogUtils.TJwEurekaLogNotify" displaystring="TJwEurekaLogNotify Class">
+      <target id="winhelp">id_5@documentation.hlp</target>
+    </link>
+    <link topicid="JwsclEurekaLogUtils.TJwEurekaLogNotify.ApplicationName" displaystring="TJwEurekaLogNotify.ApplicationName Property">
+      <target id="winhelp">id_15@documentation.hlp</target>
+    </link>
+    <link topicid="JwsclEurekaLogUtils.TJwEurekaLogNotify.Create@TComponent@String" displaystring="TJwEurekaLogNotify.Create Constructor">
+      <target id="winhelp">id_14@documentation.hlp</target>
+    </link>
+    <link topicid="JwsclEurekaLogUtils.TJwEurekaLogNotify.Destroy" displaystring="TJwEurekaLogNotify.Destroy Destructor">
+      <target id="winhelp">id_16@documentation.hlp</target>
+    </link>
+    <link topicid="JwsclEurekaLogUtils.TJwEurekaLogNotify.fApplicationName" displaystring="TJwEurekaLogNotify.fApplicationName Field">
+      <target id="winhelp">id_18@documentation.hlp</target>
+    </link>
+    <link topicid="JwsclEurekaLogUtils.TJwEurekaLogNotify.WebFieldsRequestNotify@TEurekaExceptionRecord@TStrings" displaystring="TJwEurekaLogNotify.WebFieldsRequestNotify Method">
+      <target id="winhelp">id_20@documentation.hlp</target>
+    </link>
+    <link topicid="JwSecurityInformationACLFlagsDS" displaystring="JwSecurityInformationACLFlagsDS Constant">
+      <target id="html">../output/JwSecurityInformationACLFlagsDS.html</target>
+    </link>
+    <link topicid="JwSecurityInformationACLFlagsOD" displaystring="JwSecurityInformationACLFlagsOD Constant">
+      <target id="html">../output/JwSecurityInformationACLFlagsOD.html</target>
+    </link>
+    <link topicid="JwSecurityInformationACLFlagsODS" displaystring="JwSecurityInformationACLFlagsODS Constant">
+      <target id="html">../output/JwSecurityInformationACLFlagsODS.html</target>
+    </link>
+    <link topicid="JwSecurityInformationACLFlagsOG" displaystring="JwSecurityInformationACLFlagsOG Constant">
+      <target id="html">../output/JwSecurityInformationACLFlagsOG.html</target>
+    </link>
+    <link topicid="JwSecurityInformationAllFlags" displaystring="JwSecurityInformationAllFlags Constant">
+      <target id="html">../output/JwSecurityInformationAllFlags.html</target>
+    </link>
+    <link topicid="JwSecurityInformationAllFlagsOGDS" displaystring="JwSecurityInformationAllFlagsOGDS Constant">
+      <target id="html">../output/JwSecurityInformationAllFlagsOGDS.html</target>
+    </link>
+    <link topicid="JwSecurityInformationProtectedACLFlags" displaystring="JwSecurityInformationProtectedACLFlags Constant">
+      <target id="html">../output/JwSecurityInformationProtectedACLFlags.html</target>
+    </link>
+    <link topicid="JwSecurityInformationUnprotectedACLFlags" displaystring="JwSecurityInformationUnprotectedACLFlags Constant">
+      <target id="html">../output/JwSecurityInformationUnprotectedACLFlags.html</target>
+    </link>
+    <link topicid="JwSidAttributeHumanStrings" displaystring="JwSidAttributeHumanStrings Constant">
+      <target id="html">../output/JwSidAttributeHumanStrings.html</target>
+    </link>
+    <link topicid="JwSidAttributeStrings" displaystring="JwSidAttributeStrings Constant">
+      <target id="html">../output/JwSidAttributeStrings.html</target>
+    </link>
+    <link topicid="LUID_A_INVALID" displaystring="LUID_A_INVALID Constant">
+      <target id="html">../output/LUID_A_INVALID.html</target>
+    </link>
+    <link topicid="LUID_A_NULL" displaystring="LUID_A_NULL Constant">
+      <target id="html">../output/LUID_A_NULL.html</target>
+    </link>
+    <link topicid="LUID_INVALID" displaystring="LUID_INVALID Constant">
+      <target id="html">../output/LUID_INVALID.html</target>
+    </link>
+    <link topicid="LUID_NULL" displaystring="LUID_NULL Constant">
+      <target id="html">../output/LUID_NULL.html</target>
+    </link>
+    <link topicid="MaxResourceStringLength" displaystring="MaxResourceStringLength Constant">
+      <target id="html">../output/MaxResourceStringLength.html</target>
+    </link>
+    <link topicid="MutexGenericMapping" displaystring="MutexGenericMapping Variable">
+      <target id="html">../output/MutexGenericMapping.html</target>
+    </link>
+    <link topicid="MutexMapping" displaystring="MutexMapping Variable">
+      <target id="html">../output/MutexMapping.html</target>
+    </link>
+    <link topicid="MutexMappingStartIndex" displaystring="MutexMappingStartIndex Constant">
+      <target id="html">../output/MutexMappingStartIndex.html</target>
+    </link>
+    <link topicid="NullGenericMapping" displaystring="NullGenericMapping Variable">
+      <target id="html">../output/NullGenericMapping.html</target>
+    </link>
+    <link topicid="PipeGenericMapping" displaystring="PipeGenericMapping Variable">
+      <target id="html">../output/PipeGenericMapping.html</target>
+    </link>
+    <link topicid="PipeMapping" displaystring="PipeMapping Variable">
+      <target id="html">../output/PipeMapping.html</target>
+    </link>
+    <link topicid="PipeMappingStartIndex" displaystring="PipeMappingStartIndex Constant">
+      <target id="html">../output/PipeMappingStartIndex.html</target>
+    </link>
+    <link topicid="PJwCallbackData" displaystring="PJwCallbackData Type">
+      <target id="html">../output/PJwCallbackData.html</target>
+    </link>
+    <link topicid="PRINTER_ACCESS_ADMINISTER" displaystring="PRINTER_ACCESS_ADMINISTER Constant">
+      <target id="html">../output/PRINTER_ACCESS_ADMINISTER.html</target>
+    </link>
+    <link topicid="PRINTER_ACCESS_USE" displaystring="PRINTER_ACCESS_USE Constant">
+      <target id="html">../output/PRINTER_ACCESS_USE.html</target>
+    </link>
+    <link topicid="PRINTER_ALL_ACCESS" displaystring="PRINTER_ALL_ACCESS Constant">
+      <target id="html">../output/PRINTER_ALL_ACCESS.html</target>
+    </link>
+    <link topicid="PRINTER_EXECUTE" displaystring="PRINTER_EXECUTE Constant">
+      <target id="html">../output/PRINTER_EXECUTE.html</target>
+    </link>
+    <link topicid="PRINTER_READ" displaystring="PRINTER_READ Constant">
+      <target id="html">../output/PRINTER_READ.html</target>
+    </link>
+    <link topicid="PRINTER_WRITE" displaystring="PRINTER_WRITE Constant">
+      <target id="html">../output/PRINTER_WRITE.html</target>
+    </link>
+    <link topicid="PrinterGenericMapping" displaystring="PrinterGenericMapping Variable">
+      <target id="html">../output/PrinterGenericMapping.html</target>
+    </link>
+    <link topicid="PrinterMapping" displaystring="PrinterMapping Variable">
+      <target id="html">../output/PrinterMapping.html</target>
+    </link>
+    <link topicid="PrinterMappingStartIndex" displaystring="PrinterMappingStartIndex Constant">
+      <target id="html">../output/PrinterMappingStartIndex.html</target>
+    </link>
+    <link topicid="ProcessGenericMapping" displaystring="ProcessGenericMapping Variable">
+      <target id="html">../output/ProcessGenericMapping.html</target>
+    </link>
+    <link topicid="ProcessMapping" displaystring="ProcessMapping Variable">
+      <target id="html">../output/ProcessMapping.html</target>
+    </link>
+    <link topicid="ProcessMappingStartIndex" displaystring="ProcessMappingStartIndex Constant">
+      <target id="html">../output/ProcessMappingStartIndex.html</target>
+    </link>
+    <link topicid="RegistryGenericMapping" displaystring="RegistryGenericMapping Variable">
+      <target id="html">../output/RegistryGenericMapping.html</target>
+    </link>
+    <link topicid="RegistryMapping" displaystring="RegistryMapping Variable">
+      <target id="html">../output/RegistryMapping.html</target>
+    </link>
+    <link topicid="RegistryMappingStartIndex" displaystring="RegistryMappingStartIndex Constant">
+      <target id="html">../output/RegistryMappingStartIndex.html</target>
+    </link>
+    <link topicid="SCManagerGenericMapping" displaystring="SCManagerGenericMapping Variable">
+      <target id="html">../output/SCManagerGenericMapping.html</target>
+    </link>
+    <link topicid="SCManagerMapping" displaystring="SCManagerMapping Variable">
+      <target id="html">../output/SCManagerMapping.html</target>
+    </link>
+    <link topicid="SCManagerMappingStartIndex" displaystring="SCManagerMappingStartIndex Constant">
+      <target id="html">../output/SCManagerMappingStartIndex.html</target>
+    </link>
+    <link topicid="SemaphoreGenericMapping" displaystring="SemaphoreGenericMapping Variable">
+      <target id="html">../output/SemaphoreGenericMapping.html</target>
+    </link>
+    <link topicid="SemaphoreMapping" displaystring="SemaphoreMapping Variable">
+      <target id="html">../output/SemaphoreMapping.html</target>
+    </link>
+    <link topicid="SemaphoreMappingStartIndex" displaystring="SemaphoreMappingStartIndex Constant">
+      <target id="html">../output/SemaphoreMappingStartIndex.html</target>
+    </link>
+    <link topicid="SERVER_ACCESS_ADMINISTER" displaystring="SERVER_ACCESS_ADMINISTER Constant">
+      <target id="html">../output/SERVER_ACCESS_ADMINISTER.html</target>
+    </link>
+    <link topicid="SERVER_ACCESS_ENUMERATE" displaystring="SERVER_ACCESS_ENUMERATE Constant">
+      <target id="html">../output/SERVER_ACCESS_ENUMERATE.html</target>
+    </link>
+    <link topicid="SERVER_ALL_ACCESS" displaystring="SERVER_ALL_ACCESS Constant">
+      <target id="html">../output/SERVER_ALL_ACCESS.html</target>
+    </link>
+    <link topicid="SERVER_EXECUTE" displaystring="SERVER_EXECUTE Constant">
+      <target id="html">../output/SERVER_EXECUTE.html</target>
+    </link>
+    <link topicid="SERVER_READ" displaystring="SERVER_READ Constant">
+      <target id="html">../output/SERVER_READ.html</target>
+    </link>
+    <link topicid="SERVER_WRITE" displaystring="SERVER_WRITE Constant">
+      <target id="html">../output/SERVER_WRITE.html</target>
+    </link>
+    <link topicid="ServiceGenericMapping" displaystring="ServiceGenericMapping Variable">
+      <target id="html">../output/ServiceGenericMapping.html</target>
+    </link>
+    <link topicid="ServiceMapping" displaystring="ServiceMapping Variable">
+      <target id="html">../output/ServiceMapping.html</target>
+    </link>
+    <link topicid="ServiceMappingStartIndex" displaystring="ServiceMappingStartIndex Constant">
+      <target id="html">../output/ServiceMappingStartIndex.html</target>
+    </link>
+    <link topicid="ShareGenericMapping" displaystring="ShareGenericMapping Variable">
+      <target id="html">../output/ShareGenericMapping.html</target>
+    </link>
+    <link topicid="ShareMapping" displaystring="ShareMapping Variable">
+      <target id="html">../output/ShareMapping.html</target>
+    </link>
+    <link topicid="ShareMappingStartIndex" displaystring="ShareMappingStartIndex Constant">
+      <target id="html">../output/ShareMappingStartIndex.html</target>
+    </link>
+    <link topicid="SM_SERVERR2" displaystring="SM_SERVERR2 Constant">
+      <target id="html">../output/SM_SERVERR2.html</target>
+    </link>
+    <link topicid="sOSVerString" displaystring="sOSVerString Constant">
+      <target id="html">../output/sOSVerString.html</target>
+    </link>
+    <link topicid="TAceTypeString" displaystring="TAceTypeString Constant">
+      <target id="html">../output/TAceTypeString.html</target>
+    </link>
+    <link topicid="ThreadGenericMapping" displaystring="ThreadGenericMapping Variable">
+      <target id="html">../output/ThreadGenericMapping.html</target>
+    </link>
+    <link topicid="ThreadMapping" displaystring="ThreadMapping Variable">
+      <target id="html">../output/ThreadMapping.html</target>
+    </link>
+    <link topicid="ThreadMappingStartIndex" displaystring="ThreadMappingStartIndex Constant">
+      <target id="html">../output/ThreadMappingStartIndex.html</target>
+    </link>
+    <link topicid="TimerGenericMapping" displaystring="TimerGenericMapping Variable">
+      <target id="html">../output/TimerGenericMapping.html</target>
+    </link>
+    <link topicid="TimerMapping" displaystring="TimerMapping Variable">
+      <target id="html">../output/TimerMapping.html</target>
+    </link>
+    <link topicid="TimerMappingStartIndex" displaystring="TimerMappingStartIndex Constant">
+      <target id="html">../output/TimerMappingStartIndex.html</target>
+    </link>
+    <link topicid="TJwAuditAccessControlEntry" displaystring="TJwAuditAccessControlEntry Class">
+      <target id="html">../output/TJwAuditAccessControlEntry.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwAuditAccessControlEntry.html</target>
+    </link>
+    <link topicid="TJwAuditAccessControlEntry.Assign@TJwAuditAccessControlEntry" displaystring="TJwAuditAccessControlEntry.Assign Method">
+      <target id="html">../output/TJwAuditAccessControlEntry_Assign@TJwAuditAccessControlEntry.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwAuditAccessControlEntry_Assign@TJwAuditAccessControlEntry.html</target>
+    </link>
+    <link topicid="TJwAuditAccessControlEntry.AuditFailure" displaystring="TJwAuditAccessControlEntry.AuditFailure Property">
+      <target id="html">../output/TJwAuditAccessControlEntry_AuditFailure.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwAuditAccessControlEntry_AuditFailure.html</target>
+    </link>
+    <link topicid="TJwAuditAccessControlEntry.AuditSuccess" displaystring="TJwAuditAccessControlEntry.AuditSuccess Property">
+      <target id="html">../output/TJwAuditAccessControlEntry_AuditSuccess.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwAuditAccessControlEntry_AuditSuccess.html</target>
+    </link>
+    <link topicid="TJwAuditAccessControlEntry.Create" displaystring="TJwAuditAccessControlEntry.Create Constructor ()">
+      <target id="html">../output/TJwAuditAccessControlEntry_Create.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwAuditAccessControlEntry_Create.html</target>
+    </link>
+    <link topicid="TJwAuditAccessControlEntry.Create@PSystemAuditAce" displaystring="TJwAuditAccessControlEntry.Create Constructor (PSystemAuditAce)">
+      <target id="html">../output/TJwAuditAccessControlEntry_Create@PSystemAuditAce.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwAuditAccessControlEntry_Create@PSystemAuditAce.html</target>
+    </link>
+    <link topicid="TJwAuditAccessControlEntry.Create@TJwAuditAccessControlEntry" displaystring="TJwAuditAccessControlEntry.Create Constructor (TJwAuditAccessControlEntry)">
+      <target id="html">../output/TJwAuditAccessControlEntry_Create@TJwAuditAccessControlEntry.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwAuditAccessControlEntry_Create@TJwAuditAccessControlEntry.html</target>
+    </link>
+    <link topicid="TJwAuditAccessControlEntry.Create@TJwSecurityAccessControlList@boolean@boolean@TJwAccessMask@TJwSecurityId@boolean" displaystring="TJwAuditAccessControlEntry.Create Constructor (TJwSecurityAccessControlList, boolean, boolean, TJwAccessMask, TJwSecurityId, boolean)">
+      <target id="html">../output/TJwAuditAccessControlEntry_Create@TJwSecurityAccessControlList@boolean@boolean@TJwAccessMask@TJwSecurityId@boolean.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwAuditAccessControlEntry_Create@TJwSecurityAccessControlList@boolean@boolean@TJwAccessMask@TJwSecurityId@boolean.html</target>
+    </link>
+    <link topicid="TJwAuditAccessControlEntry.Create@TJwSecurityAccessControlList@TJwAceFlags@TJwAccessMask@TJwSecurityId@boolean" displaystring="TJwAuditAccessControlEntry.Create Constructor (TJwSecurityAccessControlList, TJwAceFlags, TJwAccessMask, TJwSecurityId, boolean)">
+      <target id="html">../output/TJwAuditAccessControlEntry_Create@TJwSecurityAccessControlList@TJwAceFlags@TJwAccessMask@TJwSecurityId@boolean.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwAuditAccessControlEntry_Create@TJwSecurityAccessControlList@TJwAceFlags@TJwAccessMask@TJwSecurityId@boolean.html</target>
+    </link>
+    <link topicid="TJwAuditAccessControlEntry.Create_AuditACE" displaystring="TJwAuditAccessControlEntry.Create_AuditACE Method">
+      <target id="html">../output/TJwAuditAccessControlEntry_Create_AuditACE.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwAuditAccessControlEntry_Create_AuditACE.html</target>
+    </link>
+    <link topicid="TJwAuditAccessControlEntry.fAuditFailure" displaystring="TJwAuditAccessControlEntry.fAuditFailure Field">
+      <target id="html">../output/TJwAuditAccessControlEntry_fAuditFailure.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwAuditAccessControlEntry_fAuditFailure.html</target>
+    </link>
+    <link topicid="TJwAuditAccessControlEntry.fAuditSuccess" displaystring="TJwAuditAccessControlEntry.fAuditSuccess Field">
+      <target id="html">../output/TJwAuditAccessControlEntry_fAuditSuccess.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwAuditAccessControlEntry_fAuditSuccess.html</target>
+    </link>
+    <link topicid="TJwAuditAccessControlEntry.fFlagsIgnored" displaystring="TJwAuditAccessControlEntry.fFlagsIgnored Field">
+      <target id="html">../output/TJwAuditAccessControlEntry_fFlagsIgnored.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwAuditAccessControlEntry_fFlagsIgnored.html</target>
+    </link>
+    <link topicid="TJwAuditAccessControlEntry.Free_PACE@PSystemAuditAce" displaystring="TJwAuditAccessControlEntry.Free_PACE Method">
+      <target id="html">../output/TJwAuditAccessControlEntry_Free_PACE@PSystemAuditAce.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwAuditAccessControlEntry_Free_PACE@PSystemAuditAce.html</target>
+    </link>
+    <link topicid="TJwAuditAccessControlEntry.GetAccessMask" displaystring="TJwAuditAccessControlEntry.GetAccessMask Method">
+      <target id="html">../output/TJwAuditAccessControlEntry_GetAccessMask.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwAuditAccessControlEntry_GetAccessMask.html</target>
+    </link>
+    <link topicid="TJwAuditAccessControlEntry.GetAuditFailure" displaystring="TJwAuditAccessControlEntry.GetAuditFailure Method">
+      <target id="html">../output/TJwAuditAccessControlEntry_GetAuditFailure.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwAuditAccessControlEntry_GetAuditFailure.html</target>
+    </link>
+    <link topicid="TJwAuditAccessControlEntry.GetAuditSuccess" displaystring="TJwAuditAccessControlEntry.GetAuditSuccess Method">
+      <target id="html">../output/TJwAuditAccessControlEntry_GetAuditSuccess.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwAuditAccessControlEntry_GetAuditSuccess.html</target>
+    </link>
+    <link topicid="TJwAuditAccessControlEntry.SetAuditFailure@boolean" displaystring="TJwAuditAccessControlEntry.SetAuditFailure Method">
+      <target id="html">../output/TJwAuditAccessControlEntry_SetAuditFailure@boolean.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwAuditAccessControlEntry_SetAuditFailure@boolean.html</target>
+    </link>
+    <link topicid="TJwAuditAccessControlEntry.SetAuditSuccess@boolean" displaystring="TJwAuditAccessControlEntry.SetAuditSuccess Method">
+      <target id="html">../output/TJwAuditAccessControlEntry_SetAuditSuccess@boolean.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwAuditAccessControlEntry_SetAuditSuccess@boolean.html</target>
+    </link>
+    <link topicid="TJwAuditAccessControlEntryCallback" displaystring="TJwAuditAccessControlEntryCallback Class">
+      <target id="html">../output/TJwAuditAccessControlEntryCallback.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwAuditAccessControlEntryCallback.html</target>
+    </link>
+    <link topicid="TJwAuditAccessControlEntryCallbackObject" displaystring="TJwAuditAccessControlEntryCallbackObject Class">
+      <target id="html">../output/TJwAuditAccessControlEntryCallbackObject.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwAuditAccessControlEntryCallbackObject.html</target>
+    </link>
+    <link topicid="TJwAuditAccessControlEntryObject" displaystring="TJwAuditAccessControlEntryObject Class">
+      <target id="html">../output/TJwAuditAccessControlEntryObject.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwAuditAccessControlEntryObject.html</target>
+    </link>
+    <link topicid="TJwAuthContext" displaystring="TJwAuthContext Class">
+      <target id="html">../output/TJwAuthContext.html</target>
+    </link>
+    <link topicid="TJwAuthContext.AccessCheck@Cardinal@TJwAuthZAccessRequest@TAuthZAuditInfoHandle@TJwSecurityDescriptor@TJwSecurityDescriptorArray@TJwSecurityGenericMappingClass@TJwAuthZAccessReply@TAuthZAccessCheckResultHandle" displaystring="TJwAuthContext.AccessCheck Method">
+      <target id="html">../output/TJwAuthContext_AccessCheck@Cardinal@TJwAuthZAccessRequest@TAuthZAuditInfoHandle@TJwSecurityDescriptor@TJwSecurityDescriptorArray@TJwSecurityGenericMappingClass@TJwAuthZAccessReply@TAuthZAccessCheckResu.html</target>
+    </link>
+    <link topicid="TJwAuthContext.AccessCheckCached@TAuthZAccessCheckResultHandle@Cardinal@TJwAuthZAccessRequest@TAuthZAuditInfoHandle@TJwAuthZAccessReply" displaystring="TJwAuthContext.AccessCheckCached Method">
+      <target id="html">../output/TJwAuthContext_AccessCheckCached@TAuthZAccessCheckResultHandle@Cardinal@TJwAuthZAccessRequest@TAuthZAuditInfoHandle@TJwAuthZAccessReply.html</target>
+    </link>
+    <link topicid="TJwAuthContext.AuthResourceManager" displaystring="TJwAuthContext.AuthResourceManager Property">
+      <target id="html">../output/TJwAuthContext_AuthResourceManager.html</target>
+    </link>
+    <link topicid="TJwAuthContext.ContextInfoAll" displaystring="TJwAuthContext.ContextInfoAll Property">
+      <target id="html">../output/TJwAuthContext_ContextInfoAll.html</target>
+    </link>
+    <link topicid="TJwAuthContext.ContextInfoAuthenticationId" displaystring="TJwAuthContext.ContextInfoAuthenticationId Property">
+      <target id="html">../output/TJwAuthContext_ContextInfoAuthenticationId.html</target>
+    </link>
+    <link topicid="TJwAuthContext.ContextInfoIdentifier" displaystring="TJwAuthContext.ContextInfoIdentifier Property">
+      <target id="html">../output/TJwAuthContext_ContextInfoIdentifier.html</target>
+    </link>
+    <link topicid="TJwAuthContext.ContextInfoSource" displaystring="TJwAuthContext.ContextInfoSource Property">
+      <target id="html">../output/TJwAuthContext_ContextInfoSource.html</target>
+    </link>
+    <link topicid="TJwAuthContext.Create" displaystring="TJwAuthContext.Create Constructor">
+      <target id="html">../output/TJwAuthContext_Create.html</target>
+    </link>
+    <link topicid="TJwAuthContext.CreateAndAddSids@TJwAuthContext@TJwSecurityIdList@TJwSecurityIdList" displaystring="TJwAuthContext.CreateAndAddSids Constructor">
+      <target id="html">../output/TJwAuthContext_CreateAndAddSids@TJwAuthContext@TJwSecurityIdList@TJwSecurityIdList.html</target>
+    </link>
+    <link topicid="TJwAuthContext.CreateByContext@TJwAuthContext@TAuthZSidContextFlags@Int64@Pointer" displaystring="TJwAuthContext.CreateByContext Constructor">
+      <target id="html">../output/TJwAuthContext_CreateByContext@TJwAuthContext@TAuthZSidContextFlags@Int64@Pointer.html</target>
+    </link>
+    <link topicid="TJwAuthContext.CreateBySid@TJwAuthResourceManager@TAuthZSidContextFlags@TJwSecurityId@Int64@Pointer" displaystring="TJwAuthContext.CreateBySid Constructor">
+      <target id="html">../output/TJwAuthContext_CreateBySid@TJwAuthResourceManager@TAuthZSidContextFlags@TJwSecurityId@Int64@Pointer.html</target>
+    </link>
+    <link topicid="TJwAuthContext.CreateByToken@TJwAuthResourceManager@TAuthZSidContextFlags@TJwSecurityToken@Int64@Pointer" displaystring="TJwAuthContext.CreateByToken Constructor">
+      <target id="html">../output/TJwAuthContext_CreateByToken@TJwAuthResourceManager@TAuthZSidContextFlags@TJwSecurityToken@Int64@Pointer.html</target>
+    </link>
+    <link topicid="TJwAuthContext.Destroy" displaystring="TJwAuthContext.Destroy Destructor">
+      <target id="html">../output/TJwAuthContext_Destroy.html</target>
+    </link>
+    <link topicid="TJwAuthContext.ExpirationTime" displaystring="TJwAuthContext.ExpirationTime Property">
+      <target id="html">../output/TJwAuthContext_ExpirationTime.html</target>
+    </link>
+    <link topicid="TJwAuthContext.fAuthResourceManager" displaystring="TJwAuthContext.fAuthResourceManager Field">
+      <target id="html">../output/TJwAuthContext_fAuthResourceManager.html</target>
+    </link>
+    <link topicid="TJwAuthContext.fCallbackData" displaystring="TJwAuthContext.fCallbackData Field">
+      <target id="html">../output/TJwAuthContext_fCallbackData.html</target>
+    </link>
+    <link topicid="TJwAuthContext.fContextInfoAll" displaystring="TJwAuthContext.fContextInfoAll Field">
+      <target id="html">../output/TJwAuthContext_fContextInfoAll.html</target>
+    </link>
+    <link topicid="TJwAuthContext.fContextInfoAuthenticationId" displaystring="TJwAuthContext.fContextInfoAuthenticationId Field">
+      <target id="html">../output/TJwAuthContext_fContextInfoAuthenticationId.html</target>
+    </link>
+    <link topicid="TJwAuthContext.fContextInfoIdentifier" displaystring="TJwAuthContext.fContextInfoIdentifier Field">
+      <target id="html">../output/TJwAuthContext_fContextInfoIdentifier.html</target>
+    </link>
+    <link topicid="TJwAuthContext.fContextInfoSource" displaystring="TJwAuthContext.fContextInfoSource Field">
+      <target id="html">../output/TJwAuthContext_fContextInfoSource.html</target>
+    </link>
+    <link topicid="TJwAuthContext.fDynamicGroupArgs" displaystring="TJwAuthContext.fDynamicGroupArgs Field">
+      <target id="html">../output/TJwAuthContext_fDynamicGroupArgs.html</target>
+    </link>
+    <link topicid="TJwAuthContext.fExpirationTime" displaystring="TJwAuthContext.fExpirationTime Field">
+      <target id="html">../output/TJwAuthContext_fExpirationTime.html</target>
+    </link>
+    <link topicid="TJwAuthContext.fGroupSids" displaystring="TJwAuthContext.fGroupSids Field">
+      <target id="html">../output/TJwAuthContext_fGroupSids.html</target>
+    </link>
+    <link topicid="TJwAuthContext.fHandle" displaystring="TJwAuthContext.fHandle Field">
+      <target id="html">../output/TJwAuthContext_fHandle.html</target>
+    </link>
+    <link topicid="TJwAuthContext.fInfoPrivileges" displaystring="TJwAuthContext.fInfoPrivileges Field">
+      <target id="html">../output/TJwAuthContext_fInfoPrivileges.html</target>
+    </link>
+    <link topicid="TJwAuthContext.fRestrictedSids" displaystring="TJwAuthContext.fRestrictedSids Field">
+      <target id="html">../output/TJwAuthContext_fRestrictedSids.html</target>
+    </link>
+    <link topicid="TJwAuthContext.fUserSid" displaystring="TJwAuthContext.fUserSid Field">
+      <target id="html">../output/TJwAuthContext_fUserSid.html</target>
+    </link>
+    <link topicid="TJwAuthContext.GetInformationFromContext@AUTHZ_CONTEXT_INFORMATION_CLASS" displaystring="TJwAuthContext.GetInformationFromContext Method">
+      <target id="html">../output/TJwAuthContext_GetInformationFromContext@AUTHZ_CONTEXT_INFORMATION_CLASS.html</target>
+    </link>
+    <link topicid="TJwAuthContext.GroupSids" displaystring="TJwAuthContext.GroupSids Property">
+      <target id="html">../output/TJwAuthContext_GroupSids.html</target>
+    </link>
+    <link topicid="TJwAuthContext.Handle" displaystring="TJwAuthContext.Handle Property">
+      <target id="html">../output/TJwAuthContext_Handle.html</target>
+    </link>
+    <link topicid="TJwAuthContext.InfoPrivileges" displaystring="TJwAuthContext.InfoPrivileges Property">
+      <target id="html">../output/TJwAuthContext_InfoPrivileges.html</target>
+    </link>
+    <link topicid="TJwAuthContext.InitProperties" displaystring="TJwAuthContext.InitProperties Method">
+      <target id="html">../output/TJwAuthContext_InitProperties.html</target>
+    </link>
+    <link topicid="TJwAuthContext.RestrictedSids" displaystring="TJwAuthContext.RestrictedSids Property">
+      <target id="html">../output/TJwAuthContext_RestrictedSids.html</target>
+    </link>
+    <link topicid="TJwAuthContext.UserSid" displaystring="TJwAuthContext.UserSid Property">
+      <target id="html">../output/TJwAuthContext_UserSid.html</target>
+    </link>
+    <link topicid="TJwAuthResourceManager" displaystring="TJwAuthResourceManager Class">
+      <target id="html">../output/TJwAuthResourceManager.html</target>
+    </link>
+    <link topicid="TJwAuthResourceManager.Create@WideString@TJwAuthZResourceManagerFlags@TJwOnAuthzComputeGroupsCallback@TJwOnAuthzAccessCheckCallback" displaystring="TJwAuthResourceManager.Create Constructor">
+      <target id="html">../output/TJwAuthResourceManager_Create@WideString@TJwAuthZResourceManagerFlags@TJwOnAuthzComputeGroupsCallback@TJwOnAuthzAccessCheckCallback.html</target>
+    </link>
+    <link topicid="TJwAuthResourceManager.Destroy" displaystring="TJwAuthResourceManager.Destroy Destructor">
+      <target id="html">../output/TJwAuthResourceManager_Destroy.html</target>
+    </link>
+    <link topicid="TJwAuthResourceManager.Handle" displaystring="TJwAuthResourceManager.Handle Property">
+      <target id="html">../output/TJwAuthResourceManager_Handle.html</target>
+    </link>
+    <link topicid="TJwAuthResourceManager.OnAuthzAccessCheckCallback" displaystring="TJwAuthResourceManager.OnAuthzAccessCheckCallback Event">
+      <target id="html">../output/TJwAuthResourceManager_OnAuthzAccessCheckCallback.html</target>
+    </link>
+    <link topicid="TJwAuthResourceManager.OnAuthzComputeGroupsCallback" displaystring="TJwAuthResourceManager.OnAuthzComputeGroupsCallback Event">
+      <target id="html">../output/TJwAuthResourceManager_OnAuthzComputeGroupsCallback.html</target>
+    </link>
+    <link topicid="TJwAuthResourceManager.OnInternalAuthzAccessCheckCallback@AUTHZ_CLIENT_CONTEXT_HANDLE@TJwSecurityAccessControlEntry@Pointer@Boolean" displaystring="TJwAuthResourceManager.OnInternalAuthzAccessCheckCallback Method">
+      <target id="html">../output/TJwAuthResourceManager_OnInternalAuthzAccessCheckCallback@AUTHZ_CLIENT_CONTEXT_HANDLE@TJwSecurityAccessControlEntry@Pointer@Boolean.html</target>
+    </link>
+    <link topicid="TJwAuthResourceManager.OnInternalAuthzComputeGroupsCallback@AUTHZ_CLIENT_CONTEXT_HANDLE@Pointer@TJwSecurityIdList@TJwSecurityIdList" displaystring="TJwAuthResourceManager.OnInternalAuthzComputeGroupsCallback Method">
+      <target id="html">../output/TJwAuthResourceManager_OnInternalAuthzComputeGroupsCallback@AUTHZ_CLIENT_CONTEXT_HANDLE@Pointer@TJwSecurityIdList@TJwSecurityIdList.html</target>
+    </link>
+    <link topicid="TJwAuthZAccessReply" displaystring="TJwAuthZAccessReply Class">
+      <target id="html">../output/TJwAuthZAccessReply.html</target>
+    </link>
+    <link topicid="TJwAuthZAccessReply.Create@TAuthzAccessReply" displaystring="TJwAuthZAccessReply.Create Constructor">
+      <target id="html">../output/TJwAuthZAccessReply_Create@TAuthzAccessReply.html</target>
+    </link>
+    <link topicid="TJwAuthZAccessReply.Error" displaystring="TJwAuthZAccessReply.Error Property">
+      <target id="html">../output/TJwAuthZAccessReply_Error.html</target>
+    </link>
+    <link topicid="TJwAuthZAccessReply.ErrorByType" displaystring="TJwAuthZAccessReply.ErrorByType Property">
+      <target id="html">../output/TJwAuthZAccessReply_ErrorByType.html</target>
+    </link>
+    <link topicid="TJwAuthZAccessReply.fError" displaystring="TJwAuthZAccessReply.fError Field">
+      <target id="html">../output/TJwAuthZAccessReply_fError.html</target>
+    </link>
+    <link topicid="TJwAuthZAccessReply.fErrorByType" displaystring="TJwAuthZAccessReply.fErrorByType Field">
+      <target id="html">../output/TJwAuthZAccessReply_fErrorByType.html</target>
+    </link>
+    <link topicid="TJwAuthZAccessReply.fGrantedAccessMask" displaystring="TJwAuthZAccessReply.fGrantedAccessMask Field">
+      <target id="html">../output/TJwAuthZAccessReply_fGrantedAccessMask.html</target>
+    </link>
+    <link topicid="TJwAuthZAccessReply.fSaclEvaluationResults" displaystring="TJwAuthZAccessReply.fSaclEvaluationResults Field">
+      <target id="html">../output/TJwAuthZAccessReply_fSaclEvaluationResults.html</target>
+    </link>
+    <link topicid="TJwAuthZAccessReply.GrantedAccessMask" displaystring="TJwAuthZAccessReply.GrantedAccessMask Property">
+      <target id="html">../output/TJwAuthZAccessReply_GrantedAccessMask.html</target>
+    </link>
+    <link topicid="TJwAuthZAccessReply.SaclEvaluationResults" displaystring="TJwAuthZAccessReply.SaclEvaluationResults Property">
+      <target id="html">../output/TJwAuthZAccessReply_SaclEvaluationResults.html</target>
+    </link>
+    <link topicid="TJwAuthZAccessRequest" displaystring="TJwAuthZAccessRequest Class">
+      <target id="html">../output/TJwAuthZAccessRequest.html</target>
+    </link>
+    <link topicid="TJwAuthZAccessRequest.Create@TJwAccessMask@TJwSecurityID@TJwObjectTypeArray@Pointer@TJwSharedHandle" displaystring="TJwAuthZAccessRequest.Create Constructor">
+      <target id="html">../output/TJwAuthZAccessRequest_Create@TJwAccessMask@TJwSecurityID@TJwObjectTypeArray@Pointer@TJwSharedHandle.html</target>
+    </link>
+    <link topicid="TJwAuthZAccessRequest.Data" displaystring="TJwAuthZAccessRequest.Data Property">
+      <target id="html">../output/TJwAuthZAccessRequest_Data.html</target>
+    </link>
+    <link topicid="TJwAuthZAccessRequest.DesiredAccess" displaystring="TJwAuthZAccessRequest.DesiredAccess Property">
+      <target id="html">../output/TJwAuthZAccessRequest_DesiredAccess.html</target>
+    </link>
+    <link topicid="TJwAuthZAccessRequest.Destroy" displaystring="TJwAuthZAccessRequest.Destroy Destructor">
+      <target id="html">../output/TJwAuthZAccessRequest_Destroy.html</target>
+    </link>
+    <link topicid="TJwAuthZAccessRequest.fData" displaystring="TJwAuthZAccessRequest.fData Field">
+      <target id="html">../output/TJwAuthZAccessRequest_fData.html</target>
+    </link>
+    <link topicid="TJwAuthZAccessRequest.fDesiredAccess" displaystring="TJwAuthZAccessRequest.fDesiredAccess Field">
+      <target id="html">../output/TJwAuthZAccessRequest_fDesiredAccess.html</target>
+    </link>
+    <link topicid="TJwAuthZAccessRequest.fObjectTypeArray" displaystring="TJwAuthZAccessRequest.fObjectTypeArray Field">
+      <target id="html">../output/TJwAuthZAccessRequest_fObjectTypeArray.html</target>
+    </link>
+    <link topicid="TJwAuthZAccessRequest.fPrincipalSelfSid" displaystring="TJwAuthZAccessRequest.fPrincipalSelfSid Field">
+      <target id="html">../output/TJwAuthZAccessRequest_fPrincipalSelfSid.html</target>
+    </link>
+    <link topicid="TJwAuthZAccessRequest.fShared" displaystring="TJwAuthZAccessRequest.fShared Field">
+      <target id="html">../output/TJwAuthZAccessRequest_fShared.html</target>
+    </link>
+    <link topicid="TJwAuthZAccessRequest.ObjectTypeArray" displaystring="TJwAuthZAccessRequest.ObjectTypeArray Property">
+      <target id="html">../output/TJwAuthZAccessRequest_ObjectTypeArray.html</target>
+    </link>
+    <link topicid="TJwAuthZAccessRequest.PrincipalSelfSid" displaystring="TJwAuthZAccessRequest.PrincipalSelfSid Property">
+      <target id="html">../output/TJwAuthZAccessRequest_PrincipalSelfSid.html</target>
+    </link>
+    <link topicid="TJwAutoLock" displaystring="TJwAutoLock Class">
+      <target id="html">../output/TJwAutoLock.html</target>
+    </link>
+    <link topicid="TJwAutoLock.BeforeDestruction" displaystring="TJwAutoLock.BeforeDestruction Method">
+      <target id="html">../output/TJwAutoLock_BeforeDestruction.html</target>
+    </link>
+    <link topicid="TJwAutoLock.Create@TJwAutoPointerImpl" displaystring="TJwAutoLock.Create Constructor">
+      <target id="html">../output/TJwAutoLock_Create@TJwAutoPointerImpl.html</target>
+    </link>
+    <link topicid="TJwAutoLock.fAutoPointer" displaystring="TJwAutoLock.fAutoPointer Field">
+      <target id="html">../output/TJwAutoLock_fAutoPointer.html</target>
+    </link>
+    <link topicid="TJwAutoLock.fLeaveFlag" displaystring="TJwAutoLock.fLeaveFlag Field">
+      <target id="html">../output/TJwAutoLock_fLeaveFlag.html</target>
+    </link>
+    <link topicid="TJwAutoLock.GetAutoPointer" displaystring="TJwAutoLock.GetAutoPointer Method">
+      <target id="html">../output/TJwAutoLock_GetAutoPointer.html</target>
+    </link>
+    <link topicid="TJwAutoLock.GetHandle" displaystring="TJwAutoLock.GetHandle Method">
+      <target id="html">../output/TJwAutoLock_GetHandle.html</target>
+    </link>
+    <link topicid="TJwAutoLock.GetInstance" displaystring="TJwAutoLock.GetInstance Method">
+      <target id="html">../output/TJwAutoLock_GetInstance.html</target>
+    </link>
+    <link topicid="TJwAutoLock.GetPointer" displaystring="TJwAutoLock.GetPointer Method">
+      <target id="html">../output/TJwAutoLock_GetPointer.html</target>
+    </link>
+    <link topicid="TJwAutoLock.GetPointerType" displaystring="TJwAutoLock.GetPointerType Method">
+      <target id="html">../output/TJwAutoLock_GetPointerType.html</target>
+    </link>
+    <link topicid="TJwAutoLock.UnLock" displaystring="TJwAutoLock.UnLock Method">
+      <target id="html">../output/TJwAutoLock_UnLock.html</target>
+    </link>
+    <link topicid="TJwAutoPointer" displaystring="TJwAutoPointer Class">
+      <target id="html">../output/TJwAutoPointer.html</target>
+    </link>
+    <link topicid="TJwAutoPointer.CreateInstance@TClass" displaystring="TJwAutoPointer.CreateInstance Method (TClass)">
+      <target id="html">../output/TJwAutoPointer_CreateInstance@TClass.html</target>
+    </link>
+    <link topicid="TJwAutoPointer.CreateInstance@TComponentClass@TComponent" displaystring="TJwAutoPointer.CreateInstance Method (TComponentClass, TComponent)">
+      <target id="html">../output/TJwAutoPointer_CreateInstance@TComponentClass@TComponent.html</target>
+    </link>
+    <link topicid="TJwAutoPointer.CreateNewPointer@Pointer@Cardinal@TJwPointerType" displaystring="TJwAutoPointer.CreateNewPointer Method">
+      <target id="html">../output/TJwAutoPointer_CreateNewPointer@Pointer@Cardinal@TJwPointerType.html</target>
+    </link>
+    <link topicid="TJwAutoPointer.Wrap@Pointer@Cardinal@TJwPointerType" displaystring="TJwAutoPointer.Wrap Method (Pointer, Cardinal, TJwPointerType)">
+      <target id="html">../output/TJwAutoPointer_Wrap@Pointer@Cardinal@TJwPointerType.html</target>
+    </link>
+    <link topicid="TJwAutoPointer.Wrap@THandle@Boolean" displaystring="TJwAutoPointer.Wrap Method (THandle, Boolean)">
+      <target id="html">../output/TJwAutoPointer_Wrap@THandle@Boolean.html</target>
+    </link>
+    <link topicid="TJwAutoPointer.Wrap@TObject" displaystring="TJwAutoPointer.Wrap Method (TObject)">
+      <target id="html">../output/TJwAutoPointer_Wrap@TObject.html</target>
+    </link>
+    <link topicid="TJwAutoPointerImpl" displaystring="TJwAutoPointerImpl Class">
+      <target id="html">../output/TJwAutoPointerImpl.html</target>
+    </link>
+    <link topicid="TJwAutoPointerImpl.BeforeDestruction" displaystring="TJwAutoPointerImpl.BeforeDestruction Method">
+      <target id="html">../output/TJwAutoPointerImpl_BeforeDestruction.html</target>
+    </link>
+    <link topicid="TJwAutoPointerImpl.Create@Pointer@Cardinal@TJwPointerType" displaystring="TJwAutoPointerImpl.Create Constructor (Pointer, Cardinal, TJwPointerType)">
+      <target id="html">../output/TJwAutoPointerImpl_Create@Pointer@Cardinal@TJwPointerType.html</target>
+    </link>
+    <link topicid="TJwAutoPointerImpl.Create@TObject" displaystring="TJwAutoPointerImpl.Create Constructor (TObject)">
+      <target id="html">../output/TJwAutoPointerImpl_Create@TObject.html</target>
+    </link>
+    <link topicid="TJwAutoPointerImpl.fHandle" displaystring="TJwAutoPointerImpl.fHandle Field">
+      <target id="html">../output/TJwAutoPointerImpl_fHandle.html</target>
+    </link>
+    <link topicid="TJwAutoPointerImpl.fInstance" displaystring="TJwAutoPointerImpl.fInstance Field">
+      <target id="html">../output/TJwAutoPointerImpl_fInstance.html</target>
+    </link>
+    <link topicid="TJwAutoPointerImpl.fPointer" displaystring="TJwAutoPointerImpl.fPointer Field">
+      <target id="html">../output/TJwAutoPointerImpl_fPointer.html</target>
+    </link>
+    <link topicid="TJwAutoPointerImpl.fPointerType" displaystring="TJwAutoPointerImpl.fPointerType Field">
+      <target id="html">../output/TJwAutoPointerImpl_fPointerType.html</target>
+    </link>
+    <link topicid="TJwAutoPointerImpl.fSection" displaystring="TJwAutoPointerImpl.fSection Field">
+      <target id="html">../output/TJwAutoPointerImpl_fSection.html</target>
+    </link>
+    <link topicid="TJwAutoPointerImpl.fSize" displaystring="TJwAutoPointerImpl.fSize Field">
+      <target id="html">../output/TJwAutoPointerImpl_fSize.html</target>
+    </link>
+    <link topicid="TJwAutoPointerImpl.GetHandle" displaystring="TJwAutoPointerImpl.GetHandle Method">
+      <target id="html">../output/TJwAutoPointerImpl_GetHandle.html</target>
+    </link>
+    <link topicid="TJwAutoPointerImpl.GetInstance" displaystring="TJwAutoPointerImpl.GetInstance Method">
+      <target id="html">../output/TJwAutoPointerImpl_GetInstance.html</target>
+    </link>
+    <link topicid="TJwAutoPointerImpl.GetPointer" displaystring="TJwAutoPointerImpl.GetPointer Method">
+      <target id="html">../output/TJwAutoPointerImpl_GetPointer.html</target>
+    </link>
+    <link topicid="TJwAutoPointerImpl.GetPointerType" displaystring="TJwAutoPointerImpl.GetPointerType Method">
+      <target id="html">../output/TJwAutoPointerImpl_GetPointerType.html</target>
+    </link>
+    <link topicid="TJwAutoPointerImpl.Lock" displaystring="TJwAutoPointerImpl.Lock Method">
+      <target id="html">../output/TJwAutoPointerImpl_Lock.html</target>
+    </link>
+    <link topicid="TJwCallbackData" displaystring="TJwCallbackData Record">
+      <target id="html">../output/TJwCallbackData.html</target>
+    </link>
+    <link topicid="TJwDAccessControlList" displaystring="TJwDAccessControlList Class">
+      <target id="html">../output/TJwDAccessControlList.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwDAccessControlList.html</target>
+    </link>
+    <link topicid="TJwDAccessControlList.Create" displaystring="TJwDAccessControlList.Create Constructor ()">
+      <target id="html">../output/TJwDAccessControlList_Create.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwDAccessControlList_Create.html</target>
+    </link>
+    <link topicid="TJwDAccessControlList.Create@boolean" displaystring="TJwDAccessControlList.Create Constructor (boolean)">
+      <target id="html">../output/TJwDAccessControlList_Create@boolean.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwDAccessControlList_Create@boolean.html</target>
+    </link>
+    <link topicid="TJwDAccessControlList.Create@PACL" displaystring="TJwDAccessControlList.Create Constructor (PACL)">
+      <target id="html">../output/TJwDAccessControlList_Create@PACL.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwDAccessControlList_Create@PACL.html</target>
+    </link>
+    <link topicid="TJwDAccessControlList.Create@TJwExplicitAccessArray" displaystring="TJwDAccessControlList.Create Constructor (TJwExplicitAccessArray)">
+      <target id="html">../output/TJwDAccessControlList_Create@TJwExplicitAccessArray.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwDAccessControlList_Create@TJwExplicitAccessArray.html</target>
+    </link>
+    <link topicid="TJwDAccessControlList.GetExplicit" displaystring="TJwDAccessControlList.GetExplicit Method">
+      <target id="html">../output/TJwDAccessControlList_GetExplicit.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwDAccessControlList_GetExplicit.html</target>
+    </link>
+    <link topicid="TJwDAccessControlList.GetInheritance" displaystring="TJwDAccessControlList.GetInheritance Method">
+      <target id="html">../output/TJwDAccessControlList_GetInheritance.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwDAccessControlList_GetInheritance.html</target>
+    </link>
+    <link topicid="TJwDAccessControlList.MakeCanonical" displaystring="TJwDAccessControlList.MakeCanonical Method">
+      <target id="html">../output/TJwDAccessControlList_MakeCanonical.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwDAccessControlList_MakeCanonical.html</target>
+    </link>
+    <link topicid="TJwDiscretionaryAccessControlEntry" displaystring="TJwDiscretionaryAccessControlEntry Class">
+      <target id="html">../output/TJwDiscretionaryAccessControlEntry.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwDiscretionaryAccessControlEntry.html</target>
+    </link>
+    <link topicid="TJwDiscretionaryAccessControlEntryAllow" displaystring="TJwDiscretionaryAccessControlEntryAllow Class">
+      <target id="html">../output/TJwDiscretionaryAccessControlEntryAllow.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwDiscretionaryAccessControlEntryAllow.html</target>
+    </link>
+    <link topicid="TJwDiscretionaryAccessControlEntryAllow.Create@PAccessAllowedAce" displaystring="TJwDiscretionaryAccessControlEntryAllow.Create Constructor (PAccessAllowedAce)">
+      <target id="html">../output/TJwDiscretionaryAccessControlEntryAllow_Create@PAccessAllowedAce.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwDiscretionaryAccessControlEntryAllow_Create@PAccessAllowedAce.html</target>
+    </link>
+    <link topicid="TJwDiscretionaryAccessControlEntryAllow.Create@TJwDiscretionaryAccessControlEntryAllow" displaystring="TJwDiscretionaryAccessControlEntryAllow.Create Constructor (TJwDiscretionaryAccessControlEntryAllow)">
+      <target id="html">../output/TJwDiscretionaryAccessControlEntryAllow_Create@TJwDiscretionaryAccessControlEntryAllow.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwDiscretionaryAccessControlEntryAllow_Create@TJwDiscretionaryAccessControlEntryAllow.html</target>
+    </link>
+    <link topicid="TJwDiscretionaryAccessControlEntryAllow.Create@TJwSecurityAccessControlList@TJwAceFlags@TJwAccessMask@TJwSecurityId@boolean" displaystring="TJwDiscretionaryAccessControlEntryAllow.Create Constructor (TJwSecurityAccessControlList, TJwAceFlags, TJwAccessMask, TJwSecurityId, boolean)">
+      <target id="html">../output/TJwDiscretionaryAccessControlEntryAllow_Create@TJwSecurityAccessControlList@TJwAceFlags@TJwAccessMask@TJwSecurityId@boolean.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwDiscretionaryAccessControlEntryAllow_Create@TJwSecurityAccessControlList@TJwAceFlags@TJwAccessMask@TJwSecurityId@boolean.html</target>
+    </link>
+    <link topicid="TJwDiscretionaryAccessControlEntryAllow.Create@TJwSecurityAccessControlList@TJwAceFlags@TJwAccessMask@TJwSecurityId@Cardinal@boolean" displaystring="TJwDiscretionaryAccessControlEntryAllow.Create Constructor (TJwSecurityAccessControlList, TJwAceFlags, TJwAccessMask, TJwSecurityId, Cardinal, boolean)">
+      <target id="html">../output/TJwDiscretionaryAccessControlEntryAllow_Create@TJwSecurityAccessControlList@TJwAceFlags@TJwAccessMask@TJwSecurityId@Cardinal@boolean.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwDiscretionaryAccessControlEntryAllow_Create@TJwSecurityAccessControlList@TJwAceFlags@TJwAccessMask@TJwSecurityId@Cardinal@boolean.html</target>
+    </link>
+    <link topicid="TJwDiscretionaryAccessControlEntryAllow.Create_AllowACE" displaystring="TJwDiscretionaryAccessControlEntryAllow.Create_AllowACE Method">
+      <target id="html">../output/TJwDiscretionaryAccessControlEntryAllow_Create_AllowACE.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwDiscretionaryAccessControlEntryAllow_Create_AllowACE.html</target>
+    </link>
+    <link topicid="TJwDiscretionaryAccessControlEntryAllow.Free_PACE@PAccessAllowedAce" displaystring="TJwDiscretionaryAccessControlEntryAllow.Free_PACE Method">
+      <target id="html">../output/TJwDiscretionaryAccessControlEntryAllow_Free_PACE@PAccessAllowedAce.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwDiscretionaryAccessControlEntryAllow_Free_PACE@PAccessAllowedAce.html</target>
+    </link>
+    <link topicid="TJwDiscretionaryAccessControlEntryCallbackAllow" displaystring="TJwDiscretionaryAccessControlEntryCallbackAllow Class">
+      <target id="html">../output/TJwDiscretionaryAccessControlEntryCallbackAllow.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwDiscretionaryAccessControlEntryCallbackAllow.html</target>
+    </link>
+    <link topicid="TJwDiscretionaryAccessControlEntryCallbackDeny" displaystring="TJwDiscretionaryAccessControlEntryCallbackDeny Class">
+      <target id="html">../output/TJwDiscretionaryAccessControlEntryCallbackDeny.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwDiscretionaryAccessControlEntryCallbackDeny.html</target>
+    </link>
+    <link topicid="TJwDiscretionaryAccessControlEntryCallbackObjectAllow" displaystring="TJwDiscretionaryAccessControlEntryCallbackObjectAllow Class">
+      <target id="html">../output/TJwDiscretionaryAccessControlEntryCallbackObjectAllow.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwDiscretionaryAccessControlEntryCallbackObjectAllow.html</target>
+    </link>
+    <link topicid="TJwDiscretionaryAccessControlEntryCallbackObjectDeny" displaystring="TJwDiscretionaryAccessControlEntryCallbackObjectDeny Class">
+      <target id="html">../output/TJwDiscretionaryAccessControlEntryCallbackObjectDeny.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwDiscretionaryAccessControlEntryCallbackObjectDeny.html</target>
+    </link>
+    <link topicid="TJwDiscretionaryAccessControlEntryDeny" displaystring="TJwDiscretionaryAccessControlEntryDeny Class">
+      <target id="html">../output/TJwDiscretionaryAccessControlEntryDeny.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwDiscretionaryAccessControlEntryDeny.html</target>
+    </link>
+    <link topicid="TJwDiscretionaryAccessControlEntryDeny.Create@PAccessDeniedAce" displaystring="TJwDiscretionaryAccessControlEntryDeny.Create Constructor (PAccessDeniedAce)">
+      <target id="html">../output/TJwDiscretionaryAccessControlEntryDeny_Create@PAccessDeniedAce.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwDiscretionaryAccessControlEntryDeny_Create@PAccessDeniedAce.html</target>
+    </link>
+    <link topicid="TJwDiscretionaryAccessControlEntryDeny.Create@TJwDiscretionaryAccessControlEntryDeny" displaystring="TJwDiscretionaryAccessControlEntryDeny.Create Constructor (TJwDiscretionaryAccessControlEntryDeny)">
+      <target id="html">../output/TJwDiscretionaryAccessControlEntryDeny_Create@TJwDiscretionaryAccessControlEntryDeny.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwDiscretionaryAccessControlEntryDeny_Create@TJwDiscretionaryAccessControlEntryDeny.html</target>
+    </link>
+    <link topicid="TJwDiscretionaryAccessControlEntryDeny.Create@TJwSecurityAccessControlList@TJwAceFlags@TJwAccessMask@TJwSecurityId@boolean" displaystring="TJwDiscretionaryAccessControlEntryDeny.Create Constructor (TJwSecurityAccessControlList, TJwAceFlags, TJwAccessMask, TJwSecurityId, boolean)">
+      <target id="html">../output/TJwDiscretionaryAccessControlEntryDeny_Create@TJwSecurityAccessControlList@TJwAceFlags@TJwAccessMask@TJwSecurityId@boolean.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwDiscretionaryAccessControlEntryDeny_Create@TJwSecurityAccessControlList@TJwAceFlags@TJwAccessMask@TJwSecurityId@boolean.html</target>
+    </link>
+    <link topicid="TJwDiscretionaryAccessControlEntryDeny.Create@TJwSecurityAccessControlList@TJwAceFlags@TJwAccessMask@TJwSecurityId@Cardinal@boolean" displaystring="TJwDiscretionaryAccessControlEntryDeny.Create Constructor (TJwSecurityAccessControlList, TJwAceFlags, TJwAccessMask, TJwSecurityId, Cardinal, boolean)">
+      <target id="html">../output/TJwDiscretionaryAccessControlEntryDeny_Create@TJwSecurityAccessControlList@TJwAceFlags@TJwAccessMask@TJwSecurityId@Cardinal@boolean.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwDiscretionaryAccessControlEntryDeny_Create@TJwSecurityAccessControlList@TJwAceFlags@TJwAccessMask@TJwSecurityId@Cardinal@boolean.html</target>
+    </link>
+    <link topicid="TJwDiscretionaryAccessControlEntryDeny.Create_DenyACE" displaystring="TJwDiscretionaryAccessControlEntryDeny.Create_DenyACE Method">
+      <target id="html">../output/TJwDiscretionaryAccessControlEntryDeny_Create_DenyACE.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwDiscretionaryAccessControlEntryDeny_Create_DenyACE.html</target>
+    </link>
+    <link topicid="TJwDiscretionaryAccessControlEntryDeny.Free_PACE@PAccessDeniedAce" displaystring="TJwDiscretionaryAccessControlEntryDeny.Free_PACE Method">
+      <target id="html">../output/TJwDiscretionaryAccessControlEntryDeny_Free_PACE@PAccessDeniedAce.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwDiscretionaryAccessControlEntryDeny_Free_PACE@PAccessDeniedAce.html</target>
+    </link>
+    <link topicid="TJwDiscretionaryAccessControlEntryObjectAllow" displaystring="TJwDiscretionaryAccessControlEntryObjectAllow Class">
+      <target id="html">../output/TJwDiscretionaryAccessControlEntryObjectAllow.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwDiscretionaryAccessControlEntryObjectAllow.html</target>
+    </link>
+    <link topicid="TJwDiscretionaryAccessControlEntryObjectDeny" displaystring="TJwDiscretionaryAccessControlEntryObjectDeny Class">
+      <target id="html">../output/TJwDiscretionaryAccessControlEntryObjectDeny.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwDiscretionaryAccessControlEntryObjectDeny.html</target>
+    </link>
+    <link topicid="TJwEurekaLogNotify" displaystring="TJwEurekaLogNotify Class">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwEurekaLogNotify.html</target>
+    </link>
+    <link topicid="TJwEurekaLogNotify.ApplicationName" displaystring="TJwEurekaLogNotify.ApplicationName Property">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwEurekaLogNotify_ApplicationName.html</target>
+    </link>
+    <link topicid="TJwEurekaLogNotify.Create@TComponent@String" displaystring="TJwEurekaLogNotify.Create Constructor">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwEurekaLogNotify_Create@TComponent@String.html</target>
+    </link>
+    <link topicid="TJwEurekaLogNotify.Destroy" displaystring="TJwEurekaLogNotify.Destroy Destructor">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwEurekaLogNotify_Destroy.html</target>
+    </link>
+    <link topicid="TJwEurekaLogNotify.fApplicationName" displaystring="TJwEurekaLogNotify.fApplicationName Field">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwEurekaLogNotify_fApplicationName.html</target>
+    </link>
+    <link topicid="TJwEurekaLogNotify.WebFieldsRequestNotify@TEurekaExceptionRecord@TStrings" displaystring="TJwEurekaLogNotify.WebFieldsRequestNotify Method">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwEurekaLogNotify_WebFieldsRequestNotify@TEurekaExceptionRecord@TStrings.html</target>
+    </link>
+    <link topicid="TJwGroupAccount" displaystring="TJwGroupAccount Class">
+      <target id="html">../output/TJwGroupAccount.html</target>
+    </link>
+    <link topicid="TJwGroupAccounts" displaystring="TJwGroupAccounts Class">
+      <target id="html">../output/TJwGroupAccounts.html</target>
+    </link>
+    <link topicid="TJwOnAuthzAccessCheckCallback" displaystring="TJwOnAuthzAccessCheckCallback Type">
+      <target id="html">../output/TJwOnAuthzAccessCheckCallback.html</target>
+    </link>
+    <link topicid="TJwOnAuthzComputeGroupsCallback" displaystring="TJwOnAuthzComputeGroupsCallback Type">
+      <target id="html">../output/TJwOnAuthzComputeGroupsCallback.html</target>
+    </link>
+    <link topicid="TJwSAccessControlList" displaystring="TJwSAccessControlList Class">
+      <target id="html">../output/TJwSAccessControlList.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSAccessControlList.html</target>
+    </link>
+    <link topicid="TJwSAccessControlList.Create" displaystring="TJwSAccessControlList.Create Constructor ()">
+      <target id="html">../output/TJwSAccessControlList_Create.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSAccessControlList_Create.html</target>
+    </link>
+    <link topicid="TJwSAccessControlList.Create@boolean" displaystring="TJwSAccessControlList.Create Constructor (boolean)">
+      <target id="html">../output/TJwSAccessControlList_Create@boolean.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSAccessControlList_Create@boolean.html</target>
+    </link>
+    <link topicid="TJwSAccessControlList.Create@PACL" displaystring="TJwSAccessControlList.Create Constructor (PACL)">
+      <target id="html">../output/TJwSAccessControlList_Create@PACL.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSAccessControlList_Create@PACL.html</target>
+    </link>
+    <link topicid="TJwSAccessControlList.GetExplicitAccessArray" displaystring="TJwSAccessControlList.GetExplicitAccessArray Method">
+      <target id="html">../output/TJwSAccessControlList_GetExplicitAccessArray.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSAccessControlList_GetExplicitAccessArray.html</target>
+    </link>
+    <link topicid="TJwSAccessControlList.GetItem@integer" displaystring="TJwSAccessControlList.GetItem Method">
+      <target id="html">../output/TJwSAccessControlList_GetItem@integer.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSAccessControlList_GetItem@integer.html</target>
+    </link>
+    <link topicid="TJwSAccessControlList.GetMandatoryLabel" displaystring="TJwSAccessControlList.GetMandatoryLabel Method">
+      <target id="html">../output/TJwSAccessControlList_GetMandatoryLabel.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSAccessControlList_GetMandatoryLabel.html</target>
+    </link>
+    <link topicid="TJwSAccessControlList.HasMandatoryLabel" displaystring="TJwSAccessControlList.HasMandatoryLabel Method">
+      <target id="html">../output/TJwSAccessControlList_HasMandatoryLabel.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSAccessControlList_HasMandatoryLabel.html</target>
+    </link>
+    <link topicid="TJwSAccessControlList.Items" displaystring="TJwSAccessControlList.Items Property">
+      <target id="html">../output/TJwSAccessControlList_Items.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSAccessControlList_Items.html</target>
+    </link>
+    <link topicid="TJwSAccessControlList.MandatoryLabel" displaystring="TJwSAccessControlList.MandatoryLabel Property">
+      <target id="html">../output/TJwSAccessControlList_MandatoryLabel.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSAccessControlList_MandatoryLabel.html</target>
+    </link>
+    <link topicid="TJwSAccessControlList.SetMandatoryLabel@TJwSystemMandatoryAccessControlEntry@TJwCopyFlag" displaystring="TJwSAccessControlList.SetMandatoryLabel Method">
+      <target id="html">../output/TJwSAccessControlList_SetMandatoryLabel@TJwSystemMandatoryAccessControlEntry@TJwCopyFlag.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSAccessControlList_SetMandatoryLabel@TJwSystemMandatoryAccessControlEntry@TJwCopyFlag.html</target>
+    </link>
+    <link topicid="TJwSAccessControlList.SetMandatoryLabelEx@TJwSystemMandatoryAccessControlEntry" displaystring="TJwSAccessControlList.SetMandatoryLabelEx Method">
+      <target id="html">../output/TJwSAccessControlList_SetMandatoryLabelEx@TJwSystemMandatoryAccessControlEntry.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSAccessControlList_SetMandatoryLabelEx@TJwSystemMandatoryAccessControlEntry.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlEntry" displaystring="TJwSecurityAccessControlEntry Class">
+      <target id="html">../output/TJwSecurityAccessControlEntry.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlEntry.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlEntry.AccessMask" displaystring="TJwSecurityAccessControlEntry.AccessMask Property">
+      <target id="html">../output/TJwSecurityAccessControlEntry_AccessMask.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlEntry_AccessMask.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlEntry.AceType" displaystring="TJwSecurityAccessControlEntry.AceType Property">
+      <target id="html">../output/TJwSecurityAccessControlEntry_AceType.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlEntry_AceType.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlEntry.Assign@TJwSecurityAccessControlEntry" displaystring="TJwSecurityAccessControlEntry.Assign Method">
+      <target id="html">../output/TJwSecurityAccessControlEntry_Assign@TJwSecurityAccessControlEntry.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlEntry_Assign@TJwSecurityAccessControlEntry.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlEntry.CheckReadOnly" displaystring="TJwSecurityAccessControlEntry.CheckReadOnly Method">
+      <target id="html">../output/TJwSecurityAccessControlEntry_CheckReadOnly.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlEntry_CheckReadOnly.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlEntry.Create" displaystring="TJwSecurityAccessControlEntry.Create Constructor ()">
+      <target id="html">../output/TJwSecurityAccessControlEntry_Create.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlEntry_Create.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlEntry.Create@PAccessAllowedAce" displaystring="TJwSecurityAccessControlEntry.Create Constructor (PAccessAllowedAce)">
+      <target id="html">../output/TJwSecurityAccessControlEntry_Create@PAccessAllowedAce.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlEntry_Create@PAccessAllowedAce.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlEntry.Create@PAccessDeniedAce" displaystring="TJwSecurityAccessControlEntry.Create Constructor (PAccessDeniedAce)">
+      <target id="html">../output/TJwSecurityAccessControlEntry_Create@PAccessDeniedAce.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlEntry_Create@PAccessDeniedAce.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlEntry.Create@TJwSecurityAccessControlEntry" displaystring="TJwSecurityAccessControlEntry.Create Constructor (TJwSecurityAccessControlEntry)">
+      <target id="html">../output/TJwSecurityAccessControlEntry_Create@TJwSecurityAccessControlEntry.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlEntry_Create@TJwSecurityAccessControlEntry.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlEntry.Create@TJwSecurityAccessControlList@TJwAceFlags@TJwAccessMask@TJwSecurityId@boolean" displaystring="TJwSecurityAccessControlEntry.Create Constructor (TJwSecurityAccessControlList, TJwAceFlags, TJwAccessMask, TJwSecurityId, boolean)">
+      <target id="html">../output/TJwSecurityAccessControlEntry_Create@TJwSecurityAccessControlList@TJwAceFlags@TJwAccessMask@TJwSecurityId@boolean.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlEntry_Create@TJwSecurityAccessControlList@TJwAceFlags@TJwAccessMask@TJwSecurityId@boolean.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlEntry.Create@TJwSecurityAccessControlList@TJwAceFlags@TJwAccessMask@TJwSecurityId@Cardinal@boolean" displaystring="TJwSecurityAccessControlEntry.Create Constructor (TJwSecurityAccessControlList, TJwAceFlags, TJwAccessMask, TJwSecurityId, Cardinal, boolean)">
+      <target id="html">../output/TJwSecurityAccessControlEntry_Create@TJwSecurityAccessControlList@TJwAceFlags@TJwAccessMask@TJwSecurityId@Cardinal@boolean.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlEntry_Create@TJwSecurityAccessControlList@TJwAceFlags@TJwAccessMask@TJwSecurityId@Cardinal@boolean.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlEntry.Create_AllowACE" displaystring="TJwSecurityAccessControlEntry.Create_AllowACE Method">
+      <target id="html">../output/TJwSecurityAccessControlEntry_Create_AllowACE.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlEntry_Create_AllowACE.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlEntry.Create_DenyACE" displaystring="TJwSecurityAccessControlEntry.Create_DenyACE Method">
+      <target id="html">../output/TJwSecurityAccessControlEntry_Create_DenyACE.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlEntry_Create_DenyACE.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlEntry.CreateACE@PAccessAllowedAce" displaystring="TJwSecurityAccessControlEntry.CreateACE Method (PAccessAllowedAce)">
+      <target id="html">../output/TJwSecurityAccessControlEntry_CreateACE@PAccessAllowedAce.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlEntry_CreateACE@PAccessAllowedAce.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlEntry.CreateACE@PAccessDeniedAce" displaystring="TJwSecurityAccessControlEntry.CreateACE Method (PAccessDeniedAce)">
+      <target id="html">../output/TJwSecurityAccessControlEntry_CreateACE@PAccessDeniedAce.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlEntry_CreateACE@PAccessDeniedAce.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlEntry.CreateACE@TJwAceType" displaystring="TJwSecurityAccessControlEntry.CreateACE Method (TJwAceType)">
+      <target id="html">../output/TJwSecurityAccessControlEntry_CreateACE@TJwAceType.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlEntry_CreateACE@TJwAceType.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlEntry.CreateDynamicACE@Cardinal" displaystring="TJwSecurityAccessControlEntry.CreateDynamicACE Method">
+      <target id="html">../output/TJwSecurityAccessControlEntry_CreateDynamicACE@Cardinal.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlEntry_CreateDynamicACE@Cardinal.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlEntry.Destroy" displaystring="TJwSecurityAccessControlEntry.Destroy Destructor">
+      <target id="html">../output/TJwSecurityAccessControlEntry_Destroy.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlEntry_Destroy.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlEntry.fAccessMask" displaystring="TJwSecurityAccessControlEntry.fAccessMask Field">
+      <target id="html">../output/TJwSecurityAccessControlEntry_fAccessMask.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlEntry_fAccessMask.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlEntry.fFlags" displaystring="TJwSecurityAccessControlEntry.fFlags Field">
+      <target id="html">../output/TJwSecurityAccessControlEntry_fFlags.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlEntry_fFlags.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlEntry.fHeader" displaystring="TJwSecurityAccessControlEntry.fHeader Field">
+      <target id="html">../output/TJwSecurityAccessControlEntry_fHeader.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlEntry_fHeader.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlEntry.fIgnore" displaystring="TJwSecurityAccessControlEntry.fIgnore Field">
+      <target id="html">../output/TJwSecurityAccessControlEntry_fIgnore.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlEntry_fIgnore.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlEntry.fInheritedObjectType" displaystring="TJwSecurityAccessControlEntry.fInheritedObjectType Field">
+      <target id="html">../output/TJwSecurityAccessControlEntry_fInheritedObjectType.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlEntry_fInheritedObjectType.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlEntry.Flags" displaystring="TJwSecurityAccessControlEntry.Flags Property">
+      <target id="html">../output/TJwSecurityAccessControlEntry_Flags.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlEntry_Flags.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlEntry.fListOwner" displaystring="TJwSecurityAccessControlEntry.fListOwner Field">
+      <target id="html">../output/TJwSecurityAccessControlEntry_fListOwner.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlEntry_fListOwner.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlEntry.fObjectType" displaystring="TJwSecurityAccessControlEntry.fObjectType Field">
+      <target id="html">../output/TJwSecurityAccessControlEntry_fObjectType.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlEntry_fObjectType.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlEntry.fownSID" displaystring="TJwSecurityAccessControlEntry.fownSID Field">
+      <target id="html">../output/TJwSecurityAccessControlEntry_fownSID.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlEntry_fownSID.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlEntry.Free" displaystring="TJwSecurityAccessControlEntry.Free Method">
+      <target id="html">../output/TJwSecurityAccessControlEntry_Free.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlEntry_Free.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlEntry.Free_PACE@PAccessAllowedAce" displaystring="TJwSecurityAccessControlEntry.Free_PACE Method (PAccessAllowedAce)">
+      <target id="html">../output/TJwSecurityAccessControlEntry_Free_PACE@PAccessAllowedAce.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlEntry_Free_PACE@PAccessAllowedAce.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlEntry.Free_PACE@PAccessDeniedAce" displaystring="TJwSecurityAccessControlEntry.Free_PACE Method (PAccessDeniedAce)">
+      <target id="html">../output/TJwSecurityAccessControlEntry_Free_PACE@PAccessDeniedAce.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlEntry_Free_PACE@PAccessDeniedAce.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlEntry.fRevision" displaystring="TJwSecurityAccessControlEntry.fRevision Field">
+      <target id="html">../output/TJwSecurityAccessControlEntry_fRevision.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlEntry_fRevision.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlEntry.fSID" displaystring="TJwSecurityAccessControlEntry.fSID Field">
+      <target id="html">../output/TJwSecurityAccessControlEntry_fSID.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlEntry_fSID.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlEntry.fUserData" displaystring="TJwSecurityAccessControlEntry.fUserData Field">
+      <target id="html">../output/TJwSecurityAccessControlEntry_fUserData.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlEntry_fUserData.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlEntry.GetAccessMask" displaystring="TJwSecurityAccessControlEntry.GetAccessMask Method">
+      <target id="html">../output/TJwSecurityAccessControlEntry_GetAccessMask.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlEntry_GetAccessMask.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlEntry.GetAceType" displaystring="TJwSecurityAccessControlEntry.GetAceType Method">
+      <target id="html">../output/TJwSecurityAccessControlEntry_GetAceType.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlEntry_GetAceType.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlEntry.GetClassAceType@TJwAceType" displaystring="TJwSecurityAccessControlEntry.GetClassAceType Method">
+      <target id="html">../output/TJwSecurityAccessControlEntry_GetClassAceType@TJwAceType.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlEntry_GetClassAceType@TJwAceType.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlEntry.GetDynamicTypeSize" displaystring="TJwSecurityAccessControlEntry.GetDynamicTypeSize Method">
+      <target id="html">../output/TJwSecurityAccessControlEntry_GetDynamicTypeSize.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlEntry_GetDynamicTypeSize.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlEntry.GetExplicitAccess" displaystring="TJwSecurityAccessControlEntry.GetExplicitAccess Method">
+      <target id="html">../output/TJwSecurityAccessControlEntry_GetExplicitAccess.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlEntry_GetExplicitAccess.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlEntry.GetObjectFlags" displaystring="TJwSecurityAccessControlEntry.GetObjectFlags Method">
+      <target id="html">../output/TJwSecurityAccessControlEntry_GetObjectFlags.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlEntry_GetObjectFlags.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlEntry.GetOwnSid" displaystring="TJwSecurityAccessControlEntry.GetOwnSid Method">
+      <target id="html">../output/TJwSecurityAccessControlEntry_GetOwnSid.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlEntry_GetOwnSid.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlEntry.GetText" displaystring="TJwSecurityAccessControlEntry.GetText Method">
+      <target id="html">../output/TJwSecurityAccessControlEntry_GetText.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlEntry_GetText.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlEntry.GetTextMap@TJwSecurityGenericMappingClass" displaystring="TJwSecurityAccessControlEntry.GetTextMap Method">
+      <target id="html">../output/TJwSecurityAccessControlEntry_GetTextMap@TJwSecurityGenericMappingClass.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlEntry_GetTextMap@TJwSecurityGenericMappingClass.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlEntry.Header" displaystring="TJwSecurityAccessControlEntry.Header Property">
+      <target id="html">../output/TJwSecurityAccessControlEntry_Header.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlEntry_Header.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlEntry.Ignore" displaystring="TJwSecurityAccessControlEntry.Ignore Property">
+      <target id="html">../output/TJwSecurityAccessControlEntry_Ignore.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlEntry_Ignore.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlEntry.InheritedObjectType" displaystring="TJwSecurityAccessControlEntry.InheritedObjectType Property">
+      <target id="html">../output/TJwSecurityAccessControlEntry_InheritedObjectType.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlEntry_InheritedObjectType.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlEntry.ListOwner" displaystring="TJwSecurityAccessControlEntry.ListOwner Property">
+      <target id="html">../output/TJwSecurityAccessControlEntry_ListOwner.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlEntry_ListOwner.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlEntry.ObjectFlags" displaystring="TJwSecurityAccessControlEntry.ObjectFlags Property">
+      <target id="html">../output/TJwSecurityAccessControlEntry_ObjectFlags.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlEntry_ObjectFlags.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlEntry.ObjectType" displaystring="TJwSecurityAccessControlEntry.ObjectType Property">
+      <target id="html">../output/TJwSecurityAccessControlEntry_ObjectType.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlEntry_ObjectType.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlEntry.OwnSID" displaystring="TJwSecurityAccessControlEntry.OwnSID Property">
+      <target id="html">../output/TJwSecurityAccessControlEntry_OwnSID.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlEntry_OwnSID.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlEntry.Revision" displaystring="TJwSecurityAccessControlEntry.Revision Property">
+      <target id="html">../output/TJwSecurityAccessControlEntry_Revision.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlEntry_Revision.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlEntry.SetAccessMask@TJwAccessMask" displaystring="TJwSecurityAccessControlEntry.SetAccessMask Method">
+      <target id="html">../output/TJwSecurityAccessControlEntry_SetAccessMask@TJwAccessMask.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlEntry_SetAccessMask@TJwAccessMask.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlEntry.SetFlags@TJwAceFlags" displaystring="TJwSecurityAccessControlEntry.SetFlags Method">
+      <target id="html">../output/TJwSecurityAccessControlEntry_SetFlags@TJwAceFlags.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlEntry_SetFlags@TJwAceFlags.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlEntry.SetListOwner@TJwSecurityAccessControlList" displaystring="TJwSecurityAccessControlEntry.SetListOwner Method">
+      <target id="html">../output/TJwSecurityAccessControlEntry_SetListOwner@TJwSecurityAccessControlList.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlEntry_SetListOwner@TJwSecurityAccessControlList.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlEntry.SetOwnSid@Boolean" displaystring="TJwSecurityAccessControlEntry.SetOwnSid Method">
+      <target id="html">../output/TJwSecurityAccessControlEntry_SetOwnSid@Boolean.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlEntry_SetOwnSid@Boolean.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlEntry.SetSID@TJwSecurityId" displaystring="TJwSecurityAccessControlEntry.SetSID Method">
+      <target id="html">../output/TJwSecurityAccessControlEntry_SetSID@TJwSecurityId.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlEntry_SetSID@TJwSecurityId.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlEntry.SID" displaystring="TJwSecurityAccessControlEntry.SID Property">
+      <target id="html">../output/TJwSecurityAccessControlEntry_SID.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlEntry_SID.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlEntry.UserData" displaystring="TJwSecurityAccessControlEntry.UserData Property">
+      <target id="html">../output/TJwSecurityAccessControlEntry_UserData.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlEntry_UserData.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlEntryClass" displaystring="TJwSecurityAccessControlEntryClass Type">
+      <target id="html">../output/TJwSecurityAccessControlEntryClass.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlEntryClass.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlList" displaystring="TJwSecurityAccessControlList Class">
+      <target id="html">../output/TJwSecurityAccessControlList.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlList.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlList.Add@TJwSecurityAccessControlEntry" displaystring="TJwSecurityAccessControlList.Add Method">
+      <target id="html">../output/TJwSecurityAccessControlList_Add@TJwSecurityAccessControlEntry.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlList_Add@TJwSecurityAccessControlEntry.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlList.AddACEs@TJwSecurityAccessControlList@Boolean" displaystring="TJwSecurityAccessControlList.AddACEs Method">
+      <target id="html">../output/TJwSecurityAccessControlList_AddACEs@TJwSecurityAccessControlList@Boolean.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlList_AddACEs@TJwSecurityAccessControlList@Boolean.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlList.Assign@TJwSecurityAccessControlList" displaystring="TJwSecurityAccessControlList.Assign Method">
+      <target id="html">../output/TJwSecurityAccessControlList_Assign@TJwSecurityAccessControlList.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlList_Assign@TJwSecurityAccessControlList.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlList.Clear" displaystring="TJwSecurityAccessControlList.Clear Method">
+      <target id="html">../output/TJwSecurityAccessControlList_Clear.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlList_Clear.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlList.ConvertInheritedToExplicit" displaystring="TJwSecurityAccessControlList.ConvertInheritedToExplicit Method">
+      <target id="html">../output/TJwSecurityAccessControlList_ConvertInheritedToExplicit.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlList_ConvertInheritedToExplicit.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlList.Create" displaystring="TJwSecurityAccessControlList.Create Constructor ()">
+      <target id="html">../output/TJwSecurityAccessControlList_Create.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlList_Create.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlList.Create@boolean" displaystring="TJwSecurityAccessControlList.Create Constructor (boolean)">
+      <target id="html">../output/TJwSecurityAccessControlList_Create@boolean.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlList_Create@boolean.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlList.Create@PACL" displaystring="TJwSecurityAccessControlList.Create Constructor (PACL)">
+      <target id="html">../output/TJwSecurityAccessControlList_Create@PACL.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlList_Create@PACL.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlList.Create@TJwExplicitAccessArray" displaystring="TJwSecurityAccessControlList.Create Constructor (TJwExplicitAccessArray)">
+      <target id="html">../output/TJwSecurityAccessControlList_Create@TJwExplicitAccessArray.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlList_Create@TJwExplicitAccessArray.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlList.Create_PACL" displaystring="TJwSecurityAccessControlList.Create_PACL Method">
+      <target id="html">../output/TJwSecurityAccessControlList_Create_PACL.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlList_Create_PACL.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlList.Delete@integer" displaystring="TJwSecurityAccessControlList.Delete Method">
+      <target id="html">../output/TJwSecurityAccessControlList_Delete@integer.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlList.Destroy" displaystring="TJwSecurityAccessControlList.Destroy Destructor">
+      <target id="html">../output/TJwSecurityAccessControlList_Destroy.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlList_Destroy.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlList.FindEqualACE@TJwSecurityAccessControlEntry@TJwEqualAceTypeSet@integer" displaystring="TJwSecurityAccessControlList.FindEqualACE Method">
+      <target id="html">../output/TJwSecurityAccessControlList_FindEqualACE@TJwSecurityAccessControlEntry@TJwEqualAceTypeSet@integer.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlList_FindEqualACE@TJwSecurityAccessControlEntry@TJwEqualAceTypeSet@integer.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlList.FindSID@TJwSecurityId@integer" displaystring="TJwSecurityAccessControlList.FindSID Method">
+      <target id="html">../output/TJwSecurityAccessControlList_FindSID@TJwSecurityId@integer.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlList_FindSID@TJwSecurityId@integer.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlList.First" displaystring="TJwSecurityAccessControlList.First Method">
+      <target id="html">../output/TJwSecurityAccessControlList_First.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlList_First.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlList.Free_PACL@PACL" displaystring="TJwSecurityAccessControlList.Free_PACL Method">
+      <target id="html">../output/TJwSecurityAccessControlList_Free_PACL@PACL.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlList_Free_PACL@PACL.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlList.fRevision" displaystring="TJwSecurityAccessControlList.fRevision Field">
+      <target id="html">../output/TJwSecurityAccessControlList_fRevision.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlList_fRevision.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlList.GetEffectiveRights@TJwSecurityId" displaystring="TJwSecurityAccessControlList.GetEffectiveRights Method (TJwSecurityId)">
+      <target id="html">../output/TJwSecurityAccessControlList_GetEffectiveRights@TJwSecurityId.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlList_GetEffectiveRights@TJwSecurityId.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlList.GetEffectiveRights@TTrusteeW TTrusteeA" displaystring="TJwSecurityAccessControlList.GetEffectiveRights Method (TTrusteeW TTrusteeA)">
+      <target id="html">../output/TJwSecurityAccessControlList_GetEffectiveRights@TTrusteeW_TTrusteeA.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlList_GetEffectiveRights@TTrusteeW_TTrusteeA.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlList.GetExplicitAccessArray" displaystring="TJwSecurityAccessControlList.GetExplicitAccessArray Method">
+      <target id="html">../output/TJwSecurityAccessControlList_GetExplicitAccessArray.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlList_GetExplicitAccessArray.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlList.GetItem@integer" displaystring="TJwSecurityAccessControlList.GetItem Method">
+      <target id="html">../output/TJwSecurityAccessControlList_GetItem@integer.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlList_GetItem@integer.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlList.GetText" displaystring="TJwSecurityAccessControlList.GetText Method">
+      <target id="html">../output/TJwSecurityAccessControlList_GetText.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlList_GetText.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlList.GetTextMap@TJwSecurityGenericMappingClass" displaystring="TJwSecurityAccessControlList.GetTextMap Method">
+      <target id="html">../output/TJwSecurityAccessControlList_GetTextMap@TJwSecurityGenericMappingClass.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlList_GetTextMap@TJwSecurityGenericMappingClass.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlList.IndexOf@TJwSecurityAccessControlEntry" displaystring="TJwSecurityAccessControlList.IndexOf Method">
+      <target id="html">../output/TJwSecurityAccessControlList_IndexOf@TJwSecurityAccessControlEntry.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlList_IndexOf@TJwSecurityAccessControlEntry.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlList.Insert@integer@TJwSecurityAccessControlEntry" displaystring="TJwSecurityAccessControlList.Insert Method">
+      <target id="html">../output/TJwSecurityAccessControlList_Insert@integer@TJwSecurityAccessControlEntry.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlList_Insert@integer@TJwSecurityAccessControlEntry.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlList.IsCanonical" displaystring="TJwSecurityAccessControlList.IsCanonical Method">
+      <target id="html">../output/TJwSecurityAccessControlList_IsCanonical.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlList_IsCanonical.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlList.IsEqual@TJwSecurityAccessControlList@TJwEqualAceTypeSet" displaystring="TJwSecurityAccessControlList.IsEqual Method">
+      <target id="html">../output/TJwSecurityAccessControlList_IsEqual@TJwSecurityAccessControlList@TJwEqualAceTypeSet.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlList_IsEqual@TJwSecurityAccessControlList@TJwEqualAceTypeSet.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlList.Items" displaystring="TJwSecurityAccessControlList.Items Property">
+      <target id="html">../output/TJwSecurityAccessControlList_Items.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlList_Items.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlList.Last" displaystring="TJwSecurityAccessControlList.Last Method">
+      <target id="html">../output/TJwSecurityAccessControlList_Last.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlList_Last.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlList.mDoNoRaiseException" displaystring="TJwSecurityAccessControlList.mDoNoRaiseException Field">
+      <target id="html">../output/TJwSecurityAccessControlList_mDoNoRaiseException.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlList_mDoNoRaiseException.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlList.Remove@integer" displaystring="TJwSecurityAccessControlList.Remove Method (integer)">
+      <target id="html">../output/TJwSecurityAccessControlList_Remove@integer.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlList_Remove@integer.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlList.Remove@TJwSecurityAccessControlEntry" displaystring="TJwSecurityAccessControlList.Remove Method (TJwSecurityAccessControlEntry)">
+      <target id="html">../output/TJwSecurityAccessControlList_Remove@TJwSecurityAccessControlEntry.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlList_Remove@TJwSecurityAccessControlEntry.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlList.RemoveExplicits" displaystring="TJwSecurityAccessControlList.RemoveExplicits Method">
+      <target id="html">../output/TJwSecurityAccessControlList_RemoveExplicits.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlList_RemoveExplicits.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlList.RemoveInherited" displaystring="TJwSecurityAccessControlList.RemoveInherited Method">
+      <target id="html">../output/TJwSecurityAccessControlList_RemoveInherited.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlList_RemoveInherited.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlList.RemoveOwners" displaystring="TJwSecurityAccessControlList.RemoveOwners Method">
+      <target id="html">../output/TJwSecurityAccessControlList_RemoveOwners.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlList_RemoveOwners.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlList.Revision" displaystring="TJwSecurityAccessControlList.Revision Property">
+      <target id="html">../output/TJwSecurityAccessControlList_Revision.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlList_Revision.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlList.SetRevision@Cardinal" displaystring="TJwSecurityAccessControlList.SetRevision Method">
+      <target id="html">../output/TJwSecurityAccessControlList_SetRevision@Cardinal.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlList_SetRevision@Cardinal.html</target>
+    </link>
+    <link topicid="TJwSecurityAccessControlList.Text" displaystring="TJwSecurityAccessControlList.Text Property">
+      <target id="html">../output/TJwSecurityAccessControlList_Text.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlList_Text.html</target>
+    </link>
+    <link topicid="TJwSystemMandatoryAccessControlEntry" displaystring="TJwSystemMandatoryAccessControlEntry Class">
+      <target id="html">../output/TJwSystemMandatoryAccessControlEntry.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSystemMandatoryAccessControlEntry.html</target>
+    </link>
+    <link topicid="TJwSystemMandatoryAccessControlEntry.Compare@TJwSystemMandatoryAccessControlEntry" displaystring="TJwSystemMandatoryAccessControlEntry.Compare Method">
+      <target id="html">../output/TJwSystemMandatoryAccessControlEntry_Compare@TJwSystemMandatoryAccessControlEntry.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSystemMandatoryAccessControlEntry_Compare@TJwSystemMandatoryAccessControlEntry.html</target>
+    </link>
+    <link topicid="TJwSystemMandatoryAccessControlEntry.Create@PSystemMandatoryLabelAce" displaystring="TJwSystemMandatoryAccessControlEntry.Create Constructor (PSystemMandatoryLabelAce)">
+      <target id="html">../output/TJwSystemMandatoryAccessControlEntry_Create@PSystemMandatoryLabelAce.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSystemMandatoryAccessControlEntry_Create@PSystemMandatoryLabelAce.html</target>
+    </link>
+    <link topicid="TJwSystemMandatoryAccessControlEntry.Create@TJwSystemMandatoryAccessControlEntry" displaystring="TJwSystemMandatoryAccessControlEntry.Create Constructor (TJwSystemMandatoryAccessControlEntry)">
+      <target id="html">../output/TJwSystemMandatoryAccessControlEntry_Create@TJwSystemMandatoryAccessControlEntry.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSystemMandatoryAccessControlEntry_Create@TJwSystemMandatoryAccessControlEntry.html</target>
+    </link>
+    <link topicid="TJwSystemMandatoryAccessControlEntry.Create@TMandatoryLevel@TJwSAccessControlList" displaystring="TJwSystemMandatoryAccessControlEntry.Create Constructor (TMandatoryLevel, TJwSAccessControlList)">
+      <target id="html">../output/TJwSystemMandatoryAccessControlEntry_Create@TMandatoryLevel@TJwSAccessControlList.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSystemMandatoryAccessControlEntry_Create@TMandatoryLevel@TJwSAccessControlList.html</target>
+    </link>
+    <link topicid="TJwSystemMandatoryAccessControlEntry.GetMandatoryLevelType" displaystring="TJwSystemMandatoryAccessControlEntry.GetMandatoryLevelType Method">
+      <target id="html">../output/TJwSystemMandatoryAccessControlEntry_GetMandatoryLevelType.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSystemMandatoryAccessControlEntry_GetMandatoryLevelType.html</target>
+    </link>
+    <link topicid="TJwSystemMandatoryAccessControlEntry.GetMandatoryPolicy" displaystring="TJwSystemMandatoryAccessControlEntry.GetMandatoryPolicy Method">
+      <target id="html">../output/TJwSystemMandatoryAccessControlEntry_GetMandatoryPolicy.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSystemMandatoryAccessControlEntry_GetMandatoryPolicy.html</target>
+    </link>
+    <link topicid="TJwSystemMandatoryAccessControlEntry.MandatoryPolicy" displaystring="TJwSystemMandatoryAccessControlEntry.MandatoryPolicy Property">
+      <target id="html">../output/TJwSystemMandatoryAccessControlEntry_MandatoryPolicy.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSystemMandatoryAccessControlEntry_MandatoryPolicy.html</target>
+    </link>
+    <link topicid="TJwSystemMandatoryAccessControlEntry.SetMandatoryPolicy@TJwMandatoryPolicyFlagSet" displaystring="TJwSystemMandatoryAccessControlEntry.SetMandatoryPolicy Method">
+      <target id="html">../output/TJwSystemMandatoryAccessControlEntry_SetMandatoryPolicy@TJwMandatoryPolicyFlagSet.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSystemMandatoryAccessControlEntry_SetMandatoryPolicy@TJwMandatoryPolicyFlagSet.html</target>
+    </link>
+    <link topicid="TJwUserAccount" displaystring="TJwUserAccount Class">
+      <target id="html">../output/TJwUserAccount.html</target>
+    </link>
+    <link topicid="TJwUserAccounts" displaystring="TJwUserAccounts Class">
+      <target id="html">../output/TJwUserAccounts.html</target>
+    </link>
+    <link topicid="TokenGenericMapping" displaystring="TokenGenericMapping Variable">
+      <target id="html">../output/TokenGenericMapping.html</target>
+    </link>
+    <link topicid="TokenMapping" displaystring="TokenMapping Variable">
+      <target id="html">../output/TokenMapping.html</target>
+    </link>
+    <link topicid="TokenMappingStartIndex" displaystring="TokenMappingStartIndex Constant">
+      <target id="html">../output/TokenMappingStartIndex.html</target>
+    </link>
+    <link topicid="Topic1" displaystring="JwsclAccounts, About">
+      <target id="html">../output/Topic1.html</target>
+    </link>
+    <link topicid="WinStationGenericMapping" displaystring="WinStationGenericMapping Variable">
+      <target id="html">../output/WinStationGenericMapping.html</target>
+    </link>
+    <link topicid="WinStationMapping" displaystring="WinStationMapping Variable">
+      <target id="html">../output/WinStationMapping.html</target>
+    </link>
+    <link topicid="WinStationMappingStartIndex" displaystring="WinStationMappingStartIndex Constant">
+      <target id="html">../output/WinStationMappingStartIndex.html</target>
+    </link>
+  </linkdatabase>
+  <classinformation>
+    <class name="IJwAutoLock" language="0" type="1" using="Classes,Jwsclexceptions,JwsclResource,JwsclTypes">
+      <property name="Instance" info="TObject"></property>
+      <property name="Pointer" info="Pointer"></property>
+      <property name="PointerType" info="TJwPointerType"></property>
+      <method name="GetAutoPointer"></method>
+      <method name="GetHandle"></method>
+      <method name="GetInstance"></method>
+      <method name="GetPointer"></method>
+      <method name="GetPointerType"></method>
+      <method name="UnLock"></method>
+    </class>
+    <class name="IJwAutoPointer" language="0" type="1" using="Classes,Jwsclexceptions,JwsclResource,JwsclTypes">
+      <property name="Instance" info="TObject"></property>
+      <property name="Pointer" info="Pointer"></property>
+      <property name="PointerType" info="TJwPointerType"></property>
+      <method name="GetHandle"></method>
+      <method name="GetInstance"></method>
+      <method name="GetPointer"></method>
+      <method name="GetPointerType"></method>
+      <method name="Lock"></method>
+    </class>
+    <class name="TJwAuditAccessControlEntry" language="0" type="0" using="Classes,Contnrs,Dialogs,JwaVista,jwaWindows,JwsclConstants,JwsclExceptions,JwsclMapping,JwsclResource,JwsclSid,JwsclStrings,JwsclTypes,JwsclUtils,JwsclVersion,SysUtils">
+      <ancestor name="TJwSecurityAccessControlEntry"></ancestor>
+      <field name="fAuditFailure"></field>
+      <field name="fAuditSuccess"></field>
+      <field name="fFlagsIgnored"></field>
+      <property name="AuditFailure" info="boolean"></property>
+      <property name="AuditSuccess" info="boolean"></property>
+      <method name="Assign"></method>
+      <method name="Create"></method>
+      <method name="Create"></method>
+      <method name="Create"></method>
+      <method name="Create"></method>
+      <method name="Create"></method>
+      <method name="Create_AuditACE"></method>
+      <method name="Free_PACE"></method>
+      <method name="GetAccessMask"></method>
+      <method name="GetAuditFailure"></method>
+      <method name="GetAuditSuccess"></method>
+      <method name="SetAuditFailure"></method>
+      <method name="SetAuditSuccess"></method>
+    </class>
+    <class name="TJwAuditAccessControlEntryCallback" language="0" type="0" using="Classes,Contnrs,Dialogs,JwaVista,jwaWindows,JwsclConstants,JwsclExceptions,JwsclMapping,JwsclResource,JwsclSid,JwsclStrings,JwsclTypes,JwsclUtils,JwsclVersion,SysUtils">
+      <ancestor name="TJwAuditAccessControlEntry"></ancestor>
+    </class>
+    <class name="TJwAuditAccessControlEntryCallbackObject" language="0" type="0" using="Classes,Contnrs,Dialogs,JwaVista,jwaWindows,JwsclConstants,JwsclExceptions,JwsclMapping,JwsclResource,JwsclSid,JwsclStrings,JwsclTypes,JwsclUtils,JwsclVersion,SysUtils">
+      <ancestor name="TJwAuditAccessControlEntry"></ancestor>
+    </class>
+    <class name="TJwAuditAccessControlEntryObject" language="0" type="0" using="Classes,Contnrs,Dialogs,JwaVista,jwaWindows,JwsclConstants,JwsclExceptions,JwsclMapping,JwsclResource,JwsclSid,JwsclStrings,JwsclTypes,JwsclUtils,JwsclVersion,SysUtils">
+      <ancestor name="TJwAuditAccessControlEntry"></ancestor>
+    </class>
+    <class name="TJwAuthContext" language="0" type="0" using="Classes,Contnrs,JwaVista,jwaWindows,JwsclACL,JwsclConstants,JwsclDescriptor,JwsclEnumerations,JwsclExceptions,JwsclMapping,JwsclResource,JwsclSid,JwsclStrings,JwsclToken,JwsclTypes,JwsclUtils,JwsclVersion,SysUtils">
+      <field name="fAuthResourceManager"></field>
+      <field name="fCallbackData"></field>
+      <field name="fContextInfoAll"></field>
+      <field name="fContextInfoAuthenticationId"></field>
+      <field name="fContextInfoIdentifier"></field>
+      <field name="fContextInfoSource"></field>
+      <field name="fDynamicGroupArgs"></field>
+      <field name="fExpirationTime"></field>
+      <field name="fGroupSids"></field>
+      <field name="fHandle"></field>
+      <field name="fInfoPrivileges"></field>
+      <field name="fRestrictedSids"></field>
+      <field name="fUserSid"></field>
+      <property name="AuthResourceManager" info="TJwAuthResourceManager"></property>
+      <property name="ContextInfoAll" info="Pointer"></property>
+      <property name="ContextInfoAuthenticationId" info="Pointer"></property>
+      <property name="ContextInfoIdentifier" info="TLuid"></property>
+      <property name="ContextInfoSource" info="Pointer"></property>
+      <property name="ExpirationTime" info="Int64"></property>
+      <property name="GroupSids" info="TJwSecurityIdList"></property>
+      <property name="Handle" info="TAuthZClientContextHandle"></property>
+      <property name="InfoPrivileges" info="TJwPrivilegeSet"></property>
+      <property name="RestrictedSids" info="TJwSecurityIdList"></property>
+      <property name="UserSid" info="TJwSecurityID"></property>
+      <method name="AccessCheck"></method>
+      <method name="AccessCheckCached"></method>
+      <method name="Create"></method>
+      <method name="CreateAndAddSids"></method>
+      <method name="CreateByContext"></method>
+      <method name="CreateBySid"></method>
+      <method name="CreateByToken"></method>
+      <method name="Destroy"></method>
+      <method name="GetInformationFromContext"></method>
+      <method name="InitProperties"></method>
+    </class>
+    <class name="TJwAuthResourceManager" language="0" type="0" using="Classes,Contnrs,JwaVista,jwaWindows,JwsclACL,JwsclConstants,JwsclDescriptor,JwsclEnumerations,JwsclExceptions,JwsclMapping,JwsclResource,JwsclSid,JwsclStrings,JwsclToken,JwsclTypes,JwsclUtils,JwsclVersion,SysUtils">
+      <field name="fHandle"></field>
+      <field name="fOnAuthzAccessCheckCallback"></field>
+      <field name="fOnAuthzAccessCheckCallbackDebug"></field>
+      <field name="fOnAuthzComputeGroupsCallback"></field>
+      <field name="fOnAuthzComputeGroupsCallbackDebug"></field>
+      <property name="Handle" info="TAuthZResourceManagerHandle"></property>
+      <property name="OnAuthzAccessCheckCallback" info="TJwOnAuthzAccessCheckCallback"></property>
+      <property name="OnAuthzComputeGroupsCallback" info="TJwOnAuthzComputeGroupsCallback"></property>
+      <method name="Create"></method>
+      <method name="Destroy"></method>
+      <method name="OnInternalAuthzAccessCheckCallback"></method>
+      <method name="OnInternalAuthzComputeGroupsCallback"></method>
+    </class>
+    <class name="TJwAuthZAccessReply" language="0" type="0" using="Classes,Contnrs,JwaVista,jwaWindows,JwsclACL,JwsclConstants,JwsclDescriptor,JwsclEnumerations,JwsclExceptions,JwsclMapping,JwsclResource,JwsclSid,JwsclStrings,JwsclToken,JwsclTypes,JwsclUtils,JwsclVersion,SysUtils">
+      <field name="fError"></field>
+      <field name="fErrorByType"></field>
+      <field name="fGrantedAccessMask"></field>
+      <field name="fSaclEvaluationResults"></field>
+      <property name="Error" info="TJwCardinalArray"></property>
+      <property name="ErrorByType" info="TJwReplyErrorEnumArray"></property>
+      <property name="GrantedAccessMask" info="TJwAccessMaskArray"></property>
+      <property name="SaclEvaluationResults" info="TJwCardinalArray"></property>
+      <method name="Create"></method>
+    </class>
+    <class name="TJwAuthZAccessRequest" language="0" type="0" using="Classes,Contnrs,JwaVista,jwaWindows,JwsclACL,JwsclConstants,JwsclDescriptor,JwsclEnumerations,JwsclExceptions,JwsclMapping,JwsclResource,JwsclSid,JwsclStrings,JwsclToken,JwsclTypes,JwsclUtils,JwsclVersion,SysUtils">
+      <field name="fData"></field>
+      <field name="fDesiredAccess"></field>
+      <field name="fObjectTypeArray"></field>
+      <field name="fPrincipalSelfSid"></field>
+      <field name="fShared"></field>
+      <property name="Data" info="Pointer"></property>
+      <property name="DesiredAccess" info="TJwAccessMask"></property>
+      <property name="ObjectTypeArray" info="TJwObjectTypeArray"></property>
+      <property name="PrincipalSelfSid" info="TJwSecurityID"></property>
+      <method name="Create"></method>
+      <method name="Destroy"></method>
+    </class>
+    <class name="TJwAutoLock" language="0" type="0" using="Classes,Jwsclexceptions,JwsclResource,JwsclTypes">
+      <ancestor name="TInterfacedObject"></ancestor>
+      <ancestor name="IJwAutoLock"></ancestor>
+      <field name="fAutoPointer"></field>
+      <field name="fLeaveFlag"></field>
+      <method name="BeforeDestruction"></method>
+      <method name="Create"></method>
+      <method name="GetAutoPointer"></method>
+      <method name="GetHandle"></method>
+      <method name="GetInstance"></method>
+      <method name="GetPointer"></method>
+      <method name="GetPointerType"></method>
+      <method name="UnLock"></method>
+    </class>
+    <class name="TJwAutoPointer" language="0" type="0" using="Classes,Jwsclexceptions,JwsclResource,JwsclTypes">
+      <method name="CreateInstance"></method>
+      <method name="CreateInstance"></method>
+      <method name="CreateNewPointer"></method>
+      <method name="Wrap"></method>
+      <method name="Wrap"></method>
+      <method name="Wrap"></method>
+    </class>
+    <class name="TJwAutoPointerImpl" language="0" type="0" using="Classes,Jwsclexceptions,JwsclResource,JwsclTypes">
+      <ancestor name="TInterfacedObject"></ancestor>
+      <ancestor name="IJwAutoPointer"></ancestor>
+      <field name="fHandle"></field>
+      <field name="fInstance"></field>
+      <field name="fPointer"></field>
+      <field name="fPointerType"></field>
+      <field name="fSection"></field>
+      <field name="fSize"></field>
+      <method name="BeforeDestruction"></method>
+      <method name="Create"></method>
+      <method name="Create"></method>
+      <method name="GetHandle"></method>
+      <method name="GetInstance"></method>
+      <method name="GetPointer"></method>
+      <method name="GetPointerType"></method>
+      <method name="Lock"></method>
+    </class>
+    <class name="TJwCallbackData" language="0" type="5" using="Classes,Contnrs,JwaVista,jwaWindows,JwsclACL,JwsclConstants,JwsclDescriptor,JwsclEnumerations,JwsclExceptions,JwsclMapping,JwsclResource,JwsclSid,JwsclStrings,JwsclToken,JwsclTypes,JwsclUtils,JwsclVersion,SysUtils">
+      <field name="Context"></field>
+      <field name="Hd"></field>
+      <field name="RM"></field>
+      <field name="UserData"></field>
+    </class>
+    <class name="TJwDAccessControlList" language="0" type="0" using="Classes,Contnrs,Dialogs,JwaVista,jwaWindows,JwsclConstants,JwsclExceptions,JwsclMapping,JwsclResource,JwsclSid,JwsclStrings,JwsclTypes,JwsclUtils,JwsclVersion,SysUtils">
+      <ancestor name="TJwSecurityAccessControlList"></ancestor>
+      <method name="Create"></method>
+      <method name="Create"></method>
+      <method name="Create"></method>
+      <method name="Create"></method>
+      <method name="GetExplicit"></method>
+      <method name="GetInheritance"></method>
+      <method name="MakeCanonical"></method>
+    </class>
+    <class name="TJwDiscretionaryAccessControlEntry" language="0" type="0" using="Classes,Contnrs,Dialogs,JwaVista,jwaWindows,JwsclConstants,JwsclExceptions,JwsclMapping,JwsclResource,JwsclSid,JwsclStrings,JwsclTypes,JwsclUtils,JwsclVersion,SysUtils">
+      <ancestor name="TJwSecurityAccessControlEntry"></ancestor>
+    </class>
+    <class name="TJwDiscretionaryAccessControlEntryAllow" language="0" type="0" using="Classes,Contnrs,Dialogs,JwaVista,jwaWindows,JwsclConstants,JwsclExceptions,JwsclMapping,JwsclResource,JwsclSid,JwsclStrings,JwsclTypes,JwsclUtils,JwsclVersion,SysUtils">
+      <ancestor name="TJwDiscretionaryAccessControlEntry"></ancestor>
+      <method name="Create"></method>
+      <method name="Create"></method>
+      <method name="Create"></method>
+      <method name="Create"></method>
+      <method name="Create_AllowACE"></method>
+      <method name="Free_PACE"></method>
+    </class>
+    <class name="TJwDiscretionaryAccessControlEntryCallbackAllow" language="0" type="0" using="Classes,Contnrs,Dialogs,JwaVista,jwaWindows,JwsclConstants,JwsclExceptions,JwsclMapping,JwsclResource,JwsclSid,JwsclStrings,JwsclTypes,JwsclUtils,JwsclVersion,SysUtils">
+      <ancestor name="TJwDiscretionaryAccessControlEntryAllow"></ancestor>
+    </class>
+    <class name="TJwDiscretionaryAccessControlEntryCallbackDeny" language="0" type="0" using="Classes,Contnrs,Dialogs,JwaVista,jwaWindows,JwsclConstants,JwsclExceptions,JwsclMapping,JwsclResource,JwsclSid,JwsclStrings,JwsclTypes,JwsclUtils,JwsclVersion,SysUtils">
+      <ancestor name="TJwDiscretionaryAccessControlEntryDeny"></ancestor>
+    </class>
+    <class name="TJwDiscretionaryAccessControlEntryCallbackObjectAllow" language="0" type="0" using="Classes,Contnrs,Dialogs,JwaVista,jwaWindows,JwsclConstants,JwsclExceptions,JwsclMapping,JwsclResource,JwsclSid,JwsclStrings,JwsclTypes,JwsclUtils,JwsclVersion,SysUtils">
+      <ancestor name="TJwDiscretionaryAccessControlEntryAllow"></ancestor>
+    </class>
+    <class name="TJwDiscretionaryAccessControlEntryCallbackObjectDeny" language="0" type="0" using="Classes,Contnrs,Dialogs,JwaVista,jwaWindows,JwsclConstants,JwsclExceptions,JwsclMapping,JwsclResource,JwsclSid,JwsclStrings,JwsclTypes,JwsclUtils,JwsclVersion,SysUtils">
+      <ancestor name="TJwDiscretionaryAccessControlEntryDeny"></ancestor>
+    </class>
+    <class name="TJwDiscretionaryAccessControlEntryDeny" language="0" type="0" using="Classes,Contnrs,Dialogs,JwaVista,jwaWindows,JwsclConstants,JwsclExceptions,JwsclMapping,JwsclResource,JwsclSid,JwsclStrings,JwsclTypes,JwsclUtils,JwsclVersion,SysUtils">
+      <ancestor name="TJwDiscretionaryAccessControlEntry"></ancestor>
+      <method name="Create"></method>
+      <method name="Create"></method>
+      <method name="Create"></method>
+      <method name="Create"></method>
+      <method name="Create_DenyACE"></method>
+      <method name="Free_PACE"></method>
+    </class>
+    <class name="TJwDiscretionaryAccessControlEntryObjectAllow" language="0" type="0" using="Classes,Contnrs,Dialogs,JwaVista,jwaWindows,JwsclConstants,JwsclExceptions,JwsclMapping,JwsclResource,JwsclSid,JwsclStrings,JwsclTypes,JwsclUtils,JwsclVersion,SysUtils">
+      <ancestor name="TJwDiscretionaryAccessControlEntryAllow"></ancestor>
+    </class>
+    <class name="TJwDiscretionaryAccessControlEntryObjectDeny" language="0" type="0" using="Classes,Contnrs,Dialogs,JwaVista,jwaWindows,JwsclConstants,JwsclExceptions,JwsclMapping,JwsclResource,JwsclSid,JwsclStrings,JwsclTypes,JwsclUtils,JwsclVersion,SysUtils">
+      <ancestor name="TJwDiscretionaryAccessControlEntryDeny"></ancestor>
+    </class>
+    <class name="TJwGroupAccount" language="0" type="0" using="Classes,Contnrs,jwaWindows,JwsclAcl,JwsclConstants,JwsclExceptions,JwsclStrings,JwsclTypes,JwsclVersion,SysUtils">
+      <ancestor name="TObject"></ancestor>
+    </class>
+    <class name="TJwGroupAccounts" language="0" type="0" using="Classes,Contnrs,jwaWindows,JwsclAcl,JwsclConstants,JwsclExceptions,JwsclStrings,JwsclTypes,JwsclVersion,SysUtils">
+      <ancestor name="TObjectList"></ancestor>
+    </class>
+    <class name="TJwSAccessControlList" language="0" type="0" using="Classes,Contnrs,Dialogs,JwaVista,jwaWindows,JwsclConstants,JwsclExceptions,JwsclMapping,JwsclResource,JwsclSid,JwsclStrings,JwsclTypes,JwsclUtils,JwsclVersion,SysUtils">
+      <ancestor name="TJwSecurityAccessControlList"></ancestor>
+      <property name="Items" info="TJwAuditAccessControlEntry"></property>
+      <property name="MandatoryLabel" info="TJwSystemMandatoryAccessControlEntry"></property>
+      <method name="Create"></method>
+      <method name="Create"></method>
+      <method name="Create"></method>
+      <method name="GetExplicitAccessArray"></method>
+      <method name="GetItem"></method>
+      <method name="GetMandatoryLabel"></method>
+      <method name="HasMandatoryLabel"></method>
+      <method name="SetMandatoryLabel"></method>
+      <method name="SetMandatoryLabelEx"></method>
+    </class>
+    <class name="TJwSecurityAccessControlEntry" language="0" type="0" using="Classes,Contnrs,Dialogs,JwaVista,jwaWindows,JwsclConstants,JwsclExceptions,JwsclMapping,JwsclResource,JwsclSid,JwsclStrings,JwsclTypes,JwsclUtils,JwsclVersion,SysUtils">
+      <ancestor name="TObject"></ancestor>
+      <field name="fAccessMask"></field>
+      <field name="fFlags"></field>
+      <field name="fHeader"></field>
+      <field name="fIgnore"></field>
+      <field name="fInheritedObjectType"></field>
+      <field name="fListOwner"></field>
+      <field name="fObjectType"></field>
+      <field name="fownSID"></field>
+      <field name="fRevision"></field>
+      <field name="fSID"></field>
+      <field name="fUserData"></field>
+      <property name="AccessMask" info="TJwAccessMask"></property>
+      <property name="AceType" info="TJwAceType"></property>
+      <property name="Flags" info="TJwAceFlags"></property>
+      <property name="Header" info="TAceHeader"></property>
+      <property name="Ignore" info="boolean"></property>
+      <property name="InheritedObjectType" info="TGuid"></property>
+      <property name="ListOwner" info="TJwSecurityAccessControlList"></property>
+      <property name="ObjectFlags" info="Cardinal"></property>
+      <property name="ObjectType" info="TGuid"></property>
+      <property name="OwnSID" info="boolean"></property>
+      <property name="Revision" info="Cardinal"></property>
+      <property name="SID" info="TJwSecurityId"></property>
+      <property name="UserData" info="Pointer"></property>
+      <method name="Assign"></method>
+      <method name="CheckReadOnly"></method>
+      <method name="Create"></method>
+      <method name="Create"></method>
+      <method name="Create"></method>
+      <method name="Create"></method>
+      <method name="Create"></method>
+      <method name="Create"></method>
+      <method name="Create_AllowACE"></method>
+      <method name="Create_DenyACE"></method>
+      <method name="CreateACE"></method>
+      <method name="CreateACE"></method>
+      <method name="CreateACE"></method>
+      <method name="CreateDynamicACE"></method>
+      <method name="Destroy"></method>
+      <method name="Free"></method>
+      <method name="Free_PACE"></method>
+      <method name="Free_PACE"></method>
+      <method name="GetAccessMask"></method>
+      <method name="GetAceType"></method>
+      <method name="GetClassAceType"></method>
+      <method name="GetDynamicTypeSize"></method>
+      <method name="GetExplicitAccess"></method>
+      <method name="GetObjectFlags"></method>
+      <method name="GetOwnSid"></method>
+      <method name="GetText"></method>
+      <method name="GetTextMap"></method>
+      <method name="SetAccessMask"></method>
+      <method name="SetFlags"></method>
+      <method name="SetListOwner"></method>
+      <method name="SetOwnSid"></method>
+      <method name="SetSID"></method>
+    </class>
+    <class name="TJwSecurityAccessControlList" language="0" type="0" using="Classes,Contnrs,Dialogs,JwaVista,jwaWindows,JwsclConstants,JwsclExceptions,JwsclMapping,JwsclResource,JwsclSid,JwsclStrings,JwsclTypes,JwsclUtils,JwsclVersion,SysUtils">
+      <ancestor name="TObjectList"></ancestor>
+      <field name="fRevision"></field>
+      <field name="mDoNoRaiseException"></field>
+      <property name="Items" info="TJwSecurityAccessControlEntry"></property>
+      <property name="Revision" info="Cardinal"></property>
+      <property name="Text" info="TJwString"></property>
+      <method name="Add"></method>
+      <method name="AddACEs"></method>
+      <method name="Assign"></method>
+      <method name="Clear"></method>
+      <method name="ConvertInheritedToExplicit"></method>
+      <method name="Create"></method>
+      <method name="Create"></method>
+      <method name="Create"></method>
+      <method name="Create"></method>
+      <method name="Create_PACL"></method>
+      <method name="Delete"></method>
+      <method name="Destroy"></method>
+      <method name="FindEqualACE"></method>
+      <method name="FindSID"></method>
+      <method name="First"></method>
+      <method name="Free_PACL"></method>
+      <method name="GetEffectiveRights"></method>
+      <method name="GetEffectiveRights"></method>
+      <method name="GetExplicitAccessArray"></method>
+      <method name="GetItem"></method>
+      <method name="GetText"></method>
+      <method name="GetTextMap"></method>
+      <method name="IndexOf"></method>
+      <method name="Insert"></method>
+      <method name="IsCanonical"></method>
+      <method name="IsEqual"></method>
+      <method name="Last"></method>
+      <method name="Remove"></method>
+      <method name="Remove"></method>
+      <method name="RemoveExplicits"></method>
+      <method name="RemoveInherited"></method>
+      <method name="RemoveOwners"></method>
+      <method name="SetRevision"></method>
+    </class>
+    <class name="TJwSystemMandatoryAccessControlEntry" language="0" type="0" using="Classes,Contnrs,Dialogs,JwaVista,jwaWindows,JwsclConstants,JwsclExceptions,JwsclMapping,JwsclResource,JwsclSid,JwsclStrings,JwsclTypes,JwsclUtils,JwsclVersion,SysUtils">
+      <ancestor name="TJwSecurityAccessControlEntry"></ancestor>
+      <property name="MandatoryPolicy" info="TJwMandatoryPolicyFlagSet"></property>
+      <method name="Compare"></method>
+      <method name="Create"></method>
+      <method name="Create"></method>
+      <method name="Create"></method>
+      <method name="GetMandatoryLevelType"></method>
+      <method name="GetMandatoryPolicy"></method>
+      <method name="SetMandatoryPolicy"></method>
+    </class>
+    <class name="TJwUserAccount" language="0" type="0" using="Classes,Contnrs,jwaWindows,JwsclAcl,JwsclConstants,JwsclExceptions,JwsclStrings,JwsclTypes,JwsclVersion,SysUtils">
+      <ancestor name="TObject"></ancestor>
+    </class>
+    <class name="TJwUserAccounts" language="0" type="0" using="Classes,Contnrs,jwaWindows,JwsclAcl,JwsclConstants,JwsclExceptions,JwsclStrings,JwsclTypes,JwsclVersion,SysUtils">
+      <ancestor name="TObjectList"></ancestor>
+    </class>
+  </classinformation>
+</projectdatabase>
