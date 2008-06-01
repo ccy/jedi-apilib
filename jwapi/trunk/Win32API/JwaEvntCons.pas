@@ -110,7 +110,7 @@ type
   PEVENT_EXTENDED_ITEM_TS_ID = ^EVENT_EXTENDED_ITEM_TS_ID;
 
   TEventExtendedItemTSID = EVENT_EXTENDED_ITEM_TS_ID;
-  PEventExtendedItemTSID = ^PEventExtendedItemTSID; 
+  PEventExtendedItemTSID = ^TEventExtendedItemTSID; 
 
 const
   EVENT_HEADER_PROPERTY_XML               = $0001;
