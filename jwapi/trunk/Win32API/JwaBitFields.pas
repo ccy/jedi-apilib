@@ -47,8 +47,7 @@ unit JwaBitFields;
 interface
 
 {$IFDEF JWA_WINDOWS}
-  uses JwaWindows,
-  SysUtils // SysUtils is needed for raising Exception in ValueFromBitSet;
+  uses SysUtils // SysUtils is needed for raising Exception in ValueFromBitSet;
 {$ELSE}
   uses SysUtils;
 {$ENDIF JWA_WINDOWS}

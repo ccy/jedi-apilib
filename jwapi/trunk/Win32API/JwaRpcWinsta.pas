@@ -50,25 +50,12 @@ uses
 {$IFDEF JWA_WINDOWS}
   JwaWindows;
 {$ELSE}
-  JwaWinType, JwaWinNT;
+  JwaWinType, JwaBitFields, JwaWinNT;
 {$ENDIF JWA_WINDOWS}
 
 {$ENDIF JWA_OMIT_SECTIONS}
 
 {$IFNDEF JWA_IMPLEMENTATIONSECTION}
-
-
-// Constants used for aligning bitsets
-const
-  al32Bit = 31;
-  al64bit = 63;
-  al96bit = 95;
-  al128bit = 127;
-  al160bit = 159;
-  al192bit = 191;
-  al224bit = 221;
-  al256bit = 255;
-
 
 {/// [MS-TSTS] specific defines }
 const
@@ -78,9 +65,14 @@ const
   DIRECTORY_LENGTH = 256;
   INITIALPROGRAM_LENGTH = 256;
 {$IFNDEF JWA_INCLUDEMODE}
+  AF_INET      = 2; // internetwork: UDP, TCP, etc.
+  {$EXTERNALSYM AF_INET}
+  AF_INET6     = 23; // Internetwork Version 6
+  {$EXTERNALSYM AF_INET6}
+
   USERNAME_LENGTH = 20;
   DOMAIN_LENGTH = 17;
-{$ENDIF JWA_INCLUDEMODE}  
+{$ENDIF JWA_INCLUDEMODE}
   PASSWORD_LENGTH = 14;
   NASISPECIFICNAME_LENGTH = 14;
   NASIUSERNAME_LENGTH = 47;
@@ -116,7 +108,7 @@ type
     SdNetwork  );
   SDCLASS = _SDCLASS;
   TSDClass = _SDCLASS;
-  
+
 type
   _FLOWCONTROLCLASS = (
     FlowControl_None, 
@@ -269,11 +261,9 @@ type
   PPDNAMEA = PAnsiChar;
 
 {$IFDEF UNICODE}
-type
   PDNAME = PDNAMEW;
   PPDNAME = PPDNAMEW;
 {$ELSE}
-type
   PDNAME = PDNAMEA;
   PPDNAME = PPDNAMEA;
 {$ENDIF UNICODE}
@@ -286,11 +276,9 @@ type
   WDNAMEA = Array[0..WDNAME_LENGTH] of CHAR;
   PWDNAMEA = PAnsiChar;
 {$IFDEF UNICODE}
-type
   WDNAME = WDNAMEW;
   PWDNAME = PWDNAMEW;
 {$ELSE}
-type
   WDNAME = WDNAMEA;
   PWDNAME = PWDNAMEA;
 {$ENDIF /* UNICODE*/}
@@ -303,11 +291,9 @@ type
   CDNAMEA = Array[0..CDNAME_LENGTH] of CHAR;
   PCDNAMEA = PAnsiChar;
 {$IFDEF UNICODE}
-type
   CDNAME = CDNAMEW;
   PCDNAME = PCDNAMEW;
 {$ELSE}
-type
   CDNAME = CDNAMEA;
   PCDNAME = PCDNAMEA;
 {$ENDIF /* UNICODE*/}
@@ -320,11 +306,9 @@ type
   DEVICENAMEA = Array[0..DEVICENAME_LENGTH] of CHAR;
   PDEVICENAMEA = PAnsiChar;
 {$IFDEF UNICODE}
-type
   DEVICENAME = DEVICENAMEW;
   PDEVICENAME = PDEVICENAMEW;
 {$ELSE}
-type
   DEVICENAME = DEVICENAMEA;
   PDEVICENAME = PDEVICENAMEA;
 {$ENDIF /* UNICODE*/}
@@ -341,7 +325,6 @@ type
   MODEMNAME = MODEMNAMEW;
   PMODEMNAME = PMODEMNAMEW;
 {$ELSE}
-type
   MODEMNAME = MODEMNAMEA;
   PMODEMNAME = PMODEMNAMEA;
 {$ENDIF /* UNICODE*/}
@@ -354,11 +337,9 @@ type
   DLLNAMEA = Array[0..DLLNAME_LENGTH] of CHAR;
   PDLLNAMEA = PAnsiChar;
 {$IFDEF UNICODE}
-type
   DLLNAME = DLLNAMEW;
   PDLLNAME = PDLLNAMEW;
 {$ELSE}
-type
   DLLNAME = DLLNAMEA;
   PDLLNAME = PDLLNAMEA;
 {$ENDIF /* UNICODE*/}
@@ -372,11 +353,9 @@ type
   PWDPREFIXA = PAnsiChar;
 
 {$IFDEF UNICODE}
-type
   WDPREFIX = WDPREFIXW;
   PWDPREFIX = PWDPREFIXW;
 {$ELSE}
-type
   WDPREFIX = WDPREFIXA;
   PWDPREFIX = PWDPREFIXA;
 {$ENDIF /* UNICODE*/}
@@ -406,9 +385,7 @@ type
 
 const
   EXTENDED_USERNAME_LEN = 255;
-const
   EXTENDED_PASSWORD_LEN = 255;
-const
   EXTENDED_DOMAIN_LEN = 255;
 
 type
@@ -430,11 +407,9 @@ type
   APPLICATIONNAMEA = Array[0..MAX_BR_NAME] of CHAR;
   PAPPLICATIONNAMEA = PAnsiChar;
 {$IFDEF UNICODE}
-type
   APPLICATIONNAME = APPLICATIONNAMEW;
   PAPPLICATIONNAME = PAPPLICATIONNAMEW;
 {$ELSE}
-type
   APPLICATIONNAME = APPLICATIONNAMEA;
   PAPPLICATIONNAME = PAPPLICATIONNAMEA;
 {$ENDIF /* UNICODE*/}
@@ -657,6 +632,7 @@ type
     WFProfilePath: Array[0..DIRECTORY_LENGTH] of WCHAR;
     WFHomeDir: Array[0..DIRECTORY_LENGTH] of WCHAR;
     WFHomeDirDrive: Array[0..3] of WCHAR;
+    _Align: DWORD;
   end {_USERCONFIGW};
   USERCONFIGW = _USERCONFIGW;
   PUSERCONFIGW = ^_USERCONFIGW;
@@ -1214,21 +1190,21 @@ type
     WinStationBeep,
     WinStationEncryptionOff,
     WinStationEncryptionPerm,
-    WinStationNtSecurity,
+    WinStationNtSecurity, // vista returns Incorrect function
     WinStationUserToken,
     WinStationUnused1,
-    WinStationVideoData,
+    WinStationVideoData, // vista returns Incorrect function
     WinStationInitialProgram,
     WinStationCd,
     WinStationSystemTrace,
     WinStationVirtualData,
     WinStationClientData,
-    WinStationSecureDesktopEnter,
-    WinStationSecureDesktopExit,
+    WinStationSecureDesktopEnter, // not supported on RDP (ica?)
+    WinStationSecureDesktopExit, // not supported on RDP (ica?)
     WinStationLoadBalanceSessionTarget,
     WinStationLoadIndicator,
     WinStationShadowInfo,
-    WinStationDigProductId,
+    WinStationDigProductId, // vista returns Incorrect function
     WinStationLockedState,
     WinStationRemoteAddress,
     WinStationIdleTime,
@@ -1673,21 +1649,34 @@ type
   WINSTATIONPRODID = WINSTATIONPRODIDA;
   PWINSTATIONPRODID = PWINSTATIONPRODIDA;
 {$ENDIF /* UNICODE*/}
+  _WINSTATION_REMOTE_ADDRESS = record
+    AddressFamily: DWORD;
+    Port: WORD;
+    Address: array [0..19] of BYTE;
+    Reserved: array[0..5] of BYTE;
+  end;
 
-type
-  ipv4 = record
+  type
+  Tipv4 = record
     sin_family: Word;
-            sin_port: USHORT;
+    sin_port: USHORT;
     in_addr: ULONG;
-    sin_zero: Array[0..8-1] of UCHAR;
+    sin_zero: Array[0..7] of UCHAR;
   end {ipv4};
 type
-  ipv6 = record
+  Tipv6 = record
     sin6_port: USHORT;
     sin6_flowinfo: ULONG;
-    sin6_addr: Array[0..8-1] of USHORT;
+    sin6_addr: Array[0..7] of USHORT;
     sin6_scope_id: ULONG;
   end {ipv6};
+
+  type _WINSTATIONREMOTEADDRESS = record
+    case sin_family: USHORT of
+      AF_INET:  (ipv4: TIPv4);
+      AF_INET6: (ipv6: TIPv6);
+  end;
+
 
 {+//------------------------------------------------*/ }
 {+// }
@@ -1696,7 +1685,6 @@ type
 
 const
   LCPOLICYINFOTYPE_V1 = (1);
-const
   LCPOLICYINFOTYPE_CURRENT = LCPOLICYINFOTYPE_V1;
 
 type

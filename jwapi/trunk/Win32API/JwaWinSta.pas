@@ -514,6 +514,9 @@ function WinStationQueryLogonCredentialsW(
 function WinstationQueryUserToken(hServer: HANDLE; SessionId: DWORD;
   var hToken: HANDLE): Boolean;
 
+function WinStationRegisterConsoleNotification(hServer: HANDLE; hwnd: HWND;
+  dwFlags: Cardinal): Boolean; stdcall;
+
 // WinStationRename needs Admin rights and always returns true
 // need to check GetLastError
 // Duplicate names are not allowed
@@ -562,6 +565,9 @@ function WinStationShutDownSystem(hSERVER: HANDLE;
 
 function WinStationTerminateProcess(hServer: Handle; dwPID: DWORD;
   dwExitCode: DWORD): Boolean; stdcall;
+
+function WinStationUnRegisterConsoleNotification(hServer: HANDLE;
+  hwnd: THANDLE): Boolean; stdcall;
 
 {$ENDIF JWA_IMPLEMENTATIONSECTION}
 
@@ -612,6 +618,7 @@ function WinStationGetTermSrvCountersValue; external winstadll name 'WinStationG
 function WinStationNameFromLogonIdA; external winstadll name 'WinStationNameFromLogonIdA';
 function WinStationNameFromLogonIdW; external winstadll name 'WinStationNameFromLogonIdW';
 function WinStationQueryLogonCredentialsW; external winstadll name 'WinStationQueryLogonCredentialsW';
+function WinStationRegisterConsoleNotification; external winstadll name 'WinStationRegisterConsoleNotification';
 function WinStationRenameA; external winstadll name 'WinStationRenameA';
 function WinStationRenameW; external winstadll name 'WinStationRenameW';
 function WinStationSendMessageA; external winstadll name 'WinStationSendMessageA';
@@ -624,6 +631,7 @@ function WinStationShadowStop; external winstadll name 'WinStationShadowStop';
 function WinStationShutDownSystem; external winstadll name 'WinStationShutDownSystem';
 function WinStationQueryInformationW; external winstadll name 'WinStationQueryInformationW';
 function WinStationTerminateProcess; external winstadll name 'WinStationTerminateProcess';
+function WinStationUnRegisterConsoleNotification; external winstadll name 'WinStationUnRegisterConsoleNotification';
 {$ELSE}
 
 var
@@ -1034,6 +1042,19 @@ begin
 end;
 
 var
+  __WinStationRegisterConsoleNotification: Pointer;
+
+function WinStationRegisterConsoleNotification;
+begin
+  GetProcedureAddress(__WinStationRegisterConsoleNotification, winstadll, 'WinStationRegisterConsoleNotification');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [__WinStationRegisterConsoleNotification]
+  end;
+end;
+
+var
   __WinStationSendMessageA: Pointer;
 
 function WinStationSendMessageA;
@@ -1149,6 +1170,19 @@ begin
         MOV     ESP, EBP
         POP     EBP
         JMP     [__WinStationTerminateProcess]
+  end;
+end;
+
+var
+  __WinStationUnRegisterConsoleNotification: Pointer;
+
+function WinStationUnRegisterConsoleNotification;
+begin
+  GetProcedureAddress(__WinStationUnRegisterConsoleNotification, winstadll, 'WinStationUnRegisterConsoleNotification');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [__WinStationUnRegisterConsoleNotification]
   end;
 end;
 {$ENDIF DYNAMIC_LINK}

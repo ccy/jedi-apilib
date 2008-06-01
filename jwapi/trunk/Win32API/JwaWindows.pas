@@ -111,7 +111,7 @@ the one of the project.
 
   {-$DEFINE NOVCL}
 
-  {The following directive includes the file jwaAdsTlb.pas
+  {The following directive includes the file JwaAdsTlb.pas
    This unit needs the units OleServer, OleCtrls which do install
    a windows handle in newer delphi versions.
    This handle prevents SetThreadDesktop to work on the main thread. It
@@ -291,6 +291,7 @@ These files are included a second time in the implementation section!
 
 {$I JwaWinDLLNames.pas}
 {$I JwaWinType.pas}
+{$I JwaBitFields.pas}
 {$I JwaNtStatus.pas}
 {$I JwaWinNT.pas}
 {$I JwaWinBase.pas}
@@ -657,6 +658,7 @@ These files must be in a correct order!
 
 {$I JwaWinDLLNames.pas}
 {$I JwaWinType.pas}
+{$I JwaBitFields}
 {$I JwaNtStatus.pas}
 {$I JwaWinNT.pas}
 {$I JwaWinBase.pas}
