@@ -1,71 +1,65 @@
-{
-Description
-Project JEDI Windows Security Code Library (JWSCL)
-
-This unit provides access to Terminal Server api functions through it's
- key object TJwTerminalServer
-
-Author
-Remko Weijnen
-
-License
-The contents of this file are subject to the Mozilla Public License Version 1.1 (the "License");
-you may not use this file except in compliance with the License. You may obtain a copy of the
-License at http://www.mozilla.org/MPL/
-
-Software distributed under the License is distributed on an "AS IS" basis, WITHOUT WARRANTY OF
-ANY KIND, either express or implied. See the License for the specific language governing rights
-and limitations under the License.
-
-Alternatively, the contents of this file may be used under the terms of the
-GNU Lesser General Public License (the  "LGPL License"), in which case the   
-provisions of the LGPL License are applicable instead of those above.
-If you wish to allow use of your version of this file only under the terms   
-of the LGPL License and not to allow others to use your version of this file
-under the MPL, indicate your decision by deleting  the provisions above and
-replace  them with the notice and other provisions required by the LGPL
-License.  If you do not delete the provisions above, a recipient may use
-your version of this file under either the MPL or the LGPL License.
-
-For more information about the LGPL: http://www.gnu.org/copyleft/lesser.html
-
-Note
-The Original Code is JwsclTerminalServer.pas.
-
-The Initial Developer of the Original Code is Remko Weijnen.
-Portions created by Remko Weijnen are Copyright (C) Remko Weijnen. All rights reserved.
-
-The central object of the JwsclTerminalServer unit is the TJwTerminalServer
-object. It represents a Terminal Server, the connection to this server and
-holds the session- and processlist.
-
-Some Key functions of TJwTerminalServer are:
-
-  * TJwTerminalServer.EnumerateSessions enumerates all Terminal Server
+{ Description
+  Project JEDI Windows Security Code Library (JWSCL)
+  
+  This unit provides access to Terminal Server api functions through it's key
+  object TJwTerminalServer
+  Author
+  Remko Weijnen
+  License
+  The contents of this file are subject to the Mozilla Public License Version 1.1
+  (the "License"); you may not use this file except in compliance with the
+  \License. You may obtain a copy of the License at http://www.mozilla.org/MPL/
+  
+  Software distributed under the License is distributed on an "AS IS" basis,
+  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for the
+  specific language governing rights and limitations under the License.
+  
+  Alternatively, the contents of this file may be used under the terms of the GNU
+  Lesser General Public License (the "LGPL License"), in which case the provisions
+  of the LGPL License are applicable instead of those above. If you wish to allow
+  use of your version of this file only under the terms of the LGPL License and
+  not to allow others to use your version of this file under the MPL, indicate
+  your decision by deleting the provisions above and replace them with the notice
+  and other provisions required by the LGPL License. If you do not delete the
+  provisions above, a recipient may use your version of this file under either the
+  MPL or the LGPL License.
+  
+  For more information about the LGPL: http://www.gnu.org/copyleft/lesser.html
+  Note
+  The Original Code is JwsclTerminalServer.pas.
+  
+  The Initial Developer of the Original Code is Remko Weijnen. Portions created by
+  Remko Weijnen are Copyright (C) Remko Weijnen. All rights reserved.
+  
+  The central object of the JwsclTerminalServer unit is the TJwTerminalServer
+  object. It represents a Terminal Server, the connection to this server and holds
+  the session- and processlist.
+  
+  Some Key functions of TJwTerminalServer are:
+  
+    * TJwTerminalServer.EnumerateSessions enumerates all Terminal Server
   sessions into a TJwSessionList which can be accessed by the Sessions property.
-  * TJwTerminalServer.EnumerateProcesses enumerates all Terminal Server
+    * TJwTerminalServer.EnumerateProcesses enumerates all Terminal Server
   processes into a TJwProcessList which can be accessed by the Processes property.
-  * TJwTerminalServer.EnumerateServers enumerates all Terminal Servers in a
+    * TJwTerminalServer.EnumerateServers enumerates all Terminal Servers in a
   domain.
-  * TJwTerminalServer.Shutdown Shuts down and optionally restarts the specified
-  Terminal Server. 
-
-
-TJwTerminalServer also offers Events to monitor Terminal Server activity such as
-OnSessionConnect, OnSessionCreate, OnSessionLogon and OnSessionLogoff.
-
-A unique feature of TJwTerminalServer is that it's able to return detailled
-information about Terminal Server, Sessions and Processes that is not available
-using the normal Terminal Server API's or Microsoft Tools!
-This includes detailled process memory usage information and extended session
-information such as ShadowMode, ShadowState and Remote Address.
-
-The schema belows shows the relations between TJwTerminalServer,
-the TJwWTSSessionList with TJwWTSSessions and the TJwWTSProcessList with
-TjwWTSSessions.
-
-<image .\..\documentation\TJwTerminalServer-Hierarchy.png>
-}
+    * TJwTerminalServer.Shutdown Shuts down and optionally restarts the specified
+  Terminal Server.
+  
+  TJwTerminalServer also offers Events to monitor Terminal Server activity such as
+  OnSessionConnect, OnSessionCreate, OnSessionLogon and OnSessionLogoff.
+  
+  A unique feature of TJwTerminalServer is that it's able to return detailled
+  information about Terminal Server, Sessions and Processes that is not available
+  using the normal Terminal Server API's or Microsoft Tools! This includes
+  detailled process memory usage information and extended session information such
+  as ShadowMode, ShadowState and Remote Address.
+  
+  The schema belows shows the relations between TJwTerminalServer, the
+  TJwWTSSessionList with TJwWTSSessions and the TJwWTSProcessList with
+  TjwWTSSessions.
+  
+  <image TJwTerminalServer-Hierarchy>                                              }
 
 {$IFNDEF SL_OMIT_SECTIONS}
 unit JwsclTerminalServer;
@@ -110,29 +104,29 @@ type
 
   {<B>PJwTerminalServer</B> is a pointer to a TJwTerminalServer instance}
   PJwTerminalServer = ^TJwTerminalServer;
-  {<B>Abstract</B><B>TJwTerminalServer</B> is the central object of JwsclTerminalServer and holds the session- and processlist. 
-
-   <B>TJwTerminalServer</B> offers connection to a Terminal Server which you can specify with the
-   Server property. Key functions of <B>TJwTerminalServer</B> are:
-   
-   # EnumerateSessions enumerates all Terminal Server sessions into a
-   TJwSessionList which can be accessed by the Sessions property. 
-   # EnumerateProcesses enumerates all Terminal Server processes into a
-   TJwProcessList which can be accessed by the Processes property. 
-   # EnumerateServers enumerates all Terminal Servers in a domain. 
-   # Shutdown Shuts down and optionally restarts the specified
-   Terminal Server. 
-   
-   
-   <B>TJwTerminalServer</B> also offers Events to monitor Terminal Server activity such as
-   OnSessionConnect, OnSessionCreate, OnSessionLogon and OnSessionLogoff.
-   
-   The schema belows shows the relations between TJwTerminalServer,
-   the TJwWTSSessionList with TJwWTSSessions and the TJwWTSProcessList with
-   TjwWTSSessions.
-   
-   <image .\..\documentation\TJwTerminalServer-Hierarchy.png>
-  }
+  { <b>AbstractTJwTerminalServer</b> is the central object of JwsclTerminalServer
+    and holds the session- and processlist.
+    
+    <b>TJwTerminalServer</b> offers connection to a Terminal Server which you can
+    specify with the Server property. Key functions of <b>TJwTerminalServer</b> are:
+    
+      * EnumerateSessions enumerates all Terminal Server sessions into a
+    TJwSessionList which can be accessed by the Sessions property.
+      * EnumerateProcesses enumerates all Terminal Server processes into a
+    TJwProcessList which can be accessed by the Processes property.
+      * EnumerateServers enumerates all Terminal Servers in a domain.
+      * Shutdown Shuts down and optionally restarts the specified
+    Terminal Server.
+    
+    <b>TJwTerminalServer</b> also offers Events to monitor Terminal Server activity
+    such as OnSessionConnect, OnSessionCreate, OnSessionLogon and OnSessionLogoff.
+    
+    The schema below shows the relations between TJwTerminalServer, the
+    TJwWTSSessionList with TJwWTSSessions and the TJwWTSProcessList with
+    TjwWTSSessions.
+    
+    <image TJwTerminalServer-Hierarchy>
+                                                                                     }
   TJwTerminalServer = class(TObject)
   protected
     {@exclude}
@@ -214,7 +208,8 @@ type
  EJwsclWinCallFailedException:  will be raised if the connection
      attempt was unsuccessfull 
      
-     <B>Remarks:</B>  EnumerateSessions and EnumerateProcesses will automatically
+     Remarks
+  EnumerateSessions and EnumerateProcesses will automatically
      connect to the Terminal Server when needed.
      
      Example:
@@ -283,7 +278,8 @@ type
     {<B>Disconnect</B> will disconnect an existing connection to the Terminal Server.
      The Connected property can be used to check if we're already connected.
      
-     <B>Remarks:</B>  If you disconnect you will not receive Session Events!
+     Remarks
+  If you disconnect you will not receive Session Events!
      
      Example:
      <code lang="Delphi">
@@ -436,7 +432,8 @@ type
      specified the current domain is queried 
      @returns If the function fails you can use GetLastError to get extended
      error information 
-     <B>Remarks:</B>  This functions enumerates all Terminal Servers that
+     Remarks
+  This functions enumerates all Terminal Servers that
      advertise themselves on the network. By default only Terminal Servers in
      Application Mode advertise themselves. You can override this behaviour by
      modifying the following registry key:
@@ -521,7 +518,8 @@ type
      @param FileTime TFileTime in GMT 
      @returns TDateTime in local time 
      
-     <B>Remarks:</B>  A TFileTime can be casted to Int64 (number 100-nanosecond
+     Remarks
+  A TFileTime can be casted to Int64 (number 100-nanosecond
      intervals since January 1, 1601) and vice versa.
      }
     class function FileTime2DateTime(FileTime: TFileTime): TDateTime;
@@ -565,7 +563,7 @@ type
      session related, like statechange, logon/logoff, disconnect and (re)connect.
      
      The table below shows which Terminal Server event triggers which event:
-     <image .\..\documentation\TJwWTSEvents-Table.png>
+     <image TJwWTSEvents-Table>
     }
     property OnSessionEvent: TNotifyEvent read FOnSessionEvent write FOnSessionEvent;
 
@@ -622,14 +620,16 @@ type
      and their properties such as Process Name, Process Id, Username, Memory
      Usage and so on.
      
-     <B>Remarks:</B>  The Processlist is filled by calling the EnumerateProcesses
+     Remarks
+  The Processlist is filled by calling the EnumerateProcesses
      function.
     }
     property Processes: TJwWTSProcessList read FProcesses write FProcesses;
 
     {<B>Server</B> the netbios name of the Terminal Server.
      
-     <B>Remarks:</B>  If you want to connect to a Terminal Server locally
+     Remarks
+  If you want to connect to a Terminal Server locally
      you should not specify the server name. Please note that in the case of a
      local connection this property <B>will return the computername</B> )
      
@@ -661,25 +661,41 @@ type
      and their properties such as Username, Connection State, Idle Time and so
      on.
      
-     <B>Remarks:</B>  The Sessionlist is filled by calling the EnumerateSessions
+     Remarks
+  The Sessionlist is filled by calling the EnumerateSessions
      function.
     }
     property Sessions: TJwWTSSessionList read FSessions write FSessions;
 
-    {<B>Shutdown</B> shuts down (and optionally restarts) the specified terminal server.
-     @Param AShutdownFlag can be one of the following values:
-      <table>
-       Value                         Meaning
-       ----------------------------  ----------------------------------------------
-       WTS_WSD_LOGOFF                Forces all client sessions to log off (except the session calling WTSShutdownSystem) and disables any subsequent remote logons. This can be used as a preliminary step before shutting down. Logons will be re-enabled when the terminal services service is restarted. Use this value only on the Terminal Services console.
-       WTS_WSD_POWEROFF              Shuts down the system on the terminal server and, on computers that support software control of AC power, turns off the power. This is equivalent to calling ExitWindowsEx with EWX_SHUTDOWN and EWX_POWEROFF. The calling process must have the SE_SHUTDOWN_NAME privilege enabled.
-       WTS_WSD_REBOOT                Shuts down and then restarts the system on the terminal server. This is equivalent to calling ExitWindowsEx with EWX_REBOOT. The calling process must have the SE_SHUTDOWN_NAME privilege enabled.
-       WTS_WSD_SHUTDOWN              Shuts down the system on the terminal server. This is equivalent to calling the ExitWindowsEx function with EWX_SHUTDOWN. The calling process must have the SE_SHUTDOWN_NAME privilege enabled.
-       WTS_WSD_FASTREBOOT            This value is not supported currently.
-      </table>
-     raises
- EJwsclWinCallFailedException:  will be raised if the call fails. 
-    }
+    { <b>Shutdown</b> shuts down (and optionally restarts) the specified terminal
+      server.
+      Parameters
+      AShutdownFlag :  A value defined in the Remarks section.
+      Exceptions
+      EJwsclWinCallFailedException :  will be raised if the call fails.
+      Remarks
+      The following values can be used with the aShutdownFlag parameter.
+      <table 30c%>
+      Value                Meaning
+      -------------------  -------------------------------------------------------------------
+      WTS_WSD_LOGOFF       Forces all client sessions to log off (except the session calling
+                            WTSShutdownSystem) and disables any subsequent remote logons. This
+                            can be used as a preliminary step before shutting down. Logons
+                            will be re-enabled when the terminal services service is
+                            restarted. Use this value only on the Terminal Services console.
+      WTS_WSD_POWEROFF     Shuts down the system on the terminal server and, on computers
+                            that support software control of AC power, turns off the power.
+                            This is equivalent to calling ExitWindowsEx with EWX_SHUTDOWN and
+                            EWX_POWEROFF. The calling process must have the SE_SHUTDOWN_NAME
+                            privilege enabled.
+      WTS_WSD_REBOOT       Shuts down and then restarts the system on the terminal server.
+                            This is equivalent to calling ExitWindowsEx with EWX_REBOOT. The
+                            calling process must have the SE_SHUTDOWN_NAME privilege enabled.
+      WTS_WSD_SHUTDOWN     Shuts down the system on the terminal server. This is equivalent
+                            to calling the ExitWindowsEx function with EWX_SHUTDOWN. The
+                            calling process must have the SE_SHUTDOWN_NAME privilege enabled.
+      WTS_WSD_FASTREBOOT   This value is not supported currently.
+      </table>                                                                                 }
     procedure Shutdown(AShutdownFlag: DWORD);
 
     {<B>SystemUserName</B> returns the (localised) name of the system user}
@@ -783,7 +799,8 @@ type
     
     <B>TJwWTSEventThread</B> is Owned by a TJwTerminalServer instance
     
-    <B>Remarks:</B>  <B>TJwWTSEventThread</B> uses the WTSWaitSystemEvent API Call which can hang
+    Remarks
+  <B>TJwWTSEventThread</B> uses the WTSWaitSystemEvent API Call which can hang
     on Windows Vista after sending a WTS_FLUSH event. The bug was first
     corrected in winsta.dll version 6.0.6000.20664.
     
@@ -992,7 +1009,8 @@ type
      @Param WinStationName The Session Name 
      @Param ConnectState The current connection state of the session 
      
-     <B>Remarks:</B>  It's not necessary to manually create a session instance.
+     Remarks
+  It's not necessary to manually create a session instance.
      Enumerating sessions with the EnumerateSessions function will create a
      SessionList filled with Sessions.
      @seealso(TJwTerminalServer.EnumerateSessions)
@@ -1003,7 +1021,8 @@ type
 
     {The <B>Destroy</B> destructor disposes the Session object.
      
-     <B>Remarks:</B>  Since a session is Owned by a SessionList by default
+     Remarks
+  Since a session is Owned by a SessionList by default
      <B>you should not destroy/free a session manually</B> . The only scenario
      where a sessions would need to be freed is when you manually create a
      sessionlist and specify False for the OwnsObject parameter.
@@ -1014,74 +1033,88 @@ type
      Terminal Server client. If no startup application was specified
      an empty string is returned.
      
-     <B>Remarks:</B>  Console sessions always returns empty value.
+     Remarks
+  Console sessions always returns empty value.
      }
     property ApplicationName: TJwString read FApplicationName;
 
     {<B>ClientAddress</B> returns the Client IP Address as string. This is the local IP
      address of a client as reported by the Terminal Server Client
      
-     <B>Remarks:</B>  Console sessions always returns empty value.
+     Remarks
+  Console sessions always returns empty value.
      }
     property ClientAddress: TJwString read FClientAddress;
 
     {<B>ClientBuildNumber</B> returns the version number of the Terminal Server Client
      
-     <B>Remarks:</B>  Console sessions always returns empty value.
-     @seealso(RemoteAddress)
-     @seealso(RemotePort)
+     Remarks
+  Console sessions always returns empty value.
+     See Also
+     * RemoteAddress
+     * RemotePort
      }
      property ClientBuildNumber: DWORD read FClientBuildNumber;
 
     {<B>ClientDirectory</B> returns the version number of the Terminal Server Client
      
-     <B>Remarks:</B>  Console sessions always returns empty value.
+     Remarks
+  Console sessions always returns empty value.
      }
     property ClientDirectory: TJwString read FClientDirectory;
 
     {<B>ClientHardwareId</B> returns a client-specific hardware identifier
      
-     <B>Remarks:</B>  Console sessions always returns empty value.
+     Remarks
+  Console sessions always returns empty value.
      }
     property ClientHardwareId: DWORD read FClientHardwareId;
 
     {<B>ClientName</B> returns the local computer name of the client
      
-     <B>Remarks:</B>  Console sessions always returns empty value.
+     Remarks
+  Console sessions always returns empty value.
      }
     property ClientName: TJwString read FClientName;
 
     {<B>ClientProductId</B> returns a client-specific product identifier.
      
-     <B>Remarks:</B>  Console sessions always returns empty value.
+     Remarks
+  Console sessions always returns empty value.
      }
     property ClientProductId: WORD read FClientProductId;
 
-    {<B>ClientProtocolType</B> returns a value that indicates the protocol type
-     This is one of the following values:
-     @table(
-     @rowHead(  @cell(ClientProtocolType) @cell(Meaning))
-      @row(     @cell(WTS_PROTOCOL_TYPE_CONSOLE) @cell(The Console session))
-      @row(     @cell(WTS_PROTOCOL_TYPE_ICA) @cell(The ICA protocol))
-      @row(     @cell(WTS_PROTOCOL_TYPE_RDP) @cell(The RDP protocol))
-      )
-     @seealso(ClientProtocolStr)
-     @seealso(RemoteAddress)
-     @seealso(RemotePort)
-      }
+    { <b>ClientProtocolType</b> returns a value that indicates the protocol type This
+      is one of the following values:
+      <table 33c%>
+      ClientProtocolType          Meaning
+      --------------------------  --------------------
+      WTS_PROTOCOL_TYPE_CONSOLE   The Console session
+      WTS_PROTOCOL_TYPE_ICA       The ICA protocol
+      WTS_PROTOCOL_TYPE_RDP       The RDP protocol
+      </table>
+      
+      See Also
+      * ClientProtocolStr
+      * RemoteAddress
+      * RemotePort	
+      \ \                                                                             }
     property ClientProtocolType: WORD read FClientProtocolType;
 
     {<B>ClientProtocolStr</B> returns a string  that indicates the protocol type
      This is one of the following values:
-     @table(
-     @rowHead(  @cell(ClientProtocolType) @cell(Value))
-      @row(     @cell(WTS_PROTOCOL_TYPE_CONSOLE) @cell(Console))
-      @row(     @cell(WTS_PROTOCOL_TYPE_ICA) @cell(ICA))
-      @row(     @cell(WTS_PROTOCOL_TYPE_RDP) @cell(RDP))
-      )
-     @seealso(ClientProtocolType)
-     @seealso(RemoteAddress)
-     @seealso(RemotePort)
+     <table 33c%>
+      ClientProtocolType         Value
+      ----------------------     -----------------
+      WTS_PROTOCOL_TYPE_CONSOLE  Console
+      WTS_PROTOCOL_TYPE_ICA      ICA
+      WTS_PROTOCOL_TYPE_RDP      RDP
+     </table> 
+     
+    See Also
+    * ClientProtocolType
+    * RemoteAddress
+    * RemotePort
       }
     property ClientProtocolStr: TJwString read FClientProtocolStr;
 
@@ -1091,13 +1124,15 @@ type
      Compression Ratio equals OutgoingCompressBytes / OutgoingBytescompressed
      Console sessions always returns empty value.
      
-     @seealso(IncomingBytes)
-     @seealso(OutgoingBytes)
+     See Also
+     * IncomingBytes
+     * OutgoingBytes
     }
     property CompressionRatio: TJwString read FCompressionRatio;
 
     {The <B>Connect</B> function allows you to connect to another Terminal Server session.
-     <B>Remarks:</B>  You can always connect to a session in which you are logged
+     Remarks
+  You can always connect to a session in which you are logged
      on with the same user account. To connect to another user's session, you
      must have either Full Control or User Access permission.
      
@@ -1116,19 +1151,21 @@ type
     function Connect(const Password: WideString): Boolean;
     {<B>ConnectState</B> returns the connection state of the session. Which can be one of the
      following values:
-     @table(
-     @rowHead(  @cell(Session State) @cell(Description))
-      @row(     @cell(WTSActive) @cell(The session is connected, and a user is logged on to the server.))
-      @row(     @cell(WTSConnected) @cell(The session is connected, but there is no user logged on to the server.))
-      @row(     @cell(WTSConnectQuery) @cell(The session is in the process of connecting. If this state continues, it indicates a problem with the connection.))
-      @row(     @cell(WTSShadow) @cell(The session is in the process of remotely controlling another session.))
-      @row(     @cell(WTSDisconnected) @cell(The user is disconnected from the session, but the session is still attached to the server and can be reconnected at any time.))
-      @row(     @cell(WTSIdle) @cell(The session is initialized and ready to accept a connection. To optimize the performance of a server, two default (idle) sessions are initialized before any client connections are made.))
-      @row(     @cell(WTSReset) @cell(The session failed to initialize correctly or could not be terminated, and is not available. If this state continues, it indicates a problem with the connection of the session.))
-      @row(     @cell(WTSInit) @cell(The session is in the process of initializing.))
-      )
+     <table 33c%>
+      Session State       Description
+      ------------------  ------------------------------
+      WTSActive           The session is connected, and a user is logged on to the server.
+      WTSConnected        The session is connected, but there is no user logged on to the server.
+      WTSConnectQuery     The session is in the process of connecting. If this state continues, it indicates a problem with the connection.
+      WTSShadow           The session is in the process of remotely controlling another session.
+      WTSDisconnected     The user is disconnected from the session, but the session is still attached to the server and can be reconnected at any time.
+      WTSIdle             The session is initialized and ready to accept a connection. To optimize the performance of a server, two default (idle) sessions are initialized before any client connections are made.
+      WTSReset            The session failed to initialize correctly or could not be terminated, and is not available. If this state continues, it indicates a problem with the connection of the session.
+      WTSInit             The session is in the process of initializing.
+     </table> 
      
-     <B>Remarks:</B>  On Windows XP, however, the state for session 0 can be
+     Remarks
+  On Windows XP, however, the state for session 0 can be
      misleading because it will be WTSDisconnected even if there is no user
      logged on. To accurately determine if a user has logged on to session 0,
      you can use the Username property
@@ -1186,42 +1223,50 @@ type
      the session expressed in the number of 100-nanosecond intervals since
      January 1, 1601 (TFileTime).
      
-     <B>Remarks:</B>  Please note the following remarks about Idle Time:
+     Remarks
+  Please note the following remarks about Idle Time:
      A disconnected session is Idle since DisconnectTime. A session without a
      user is never idle, usually these are special sessions like Listener,
      Services or console session.
      IdleTimeStr returns a convenient formatted idle time string
      which can be used for displaying. This value is more convenient however for
      calculations such as sorting or comparing idle times.
-     @seealso(IdleTimeStr)
+     See Also 
+     * IdleTimeStr
     }
     property IdleTime: Int64 read FIdleTime;
 
     {<B>IdleTimeStr</B> the elapsed time (relative to CurrentTime) since last user input in
      the session as formatted string. The string is formatted according to the
      table below:
-     @table(
-     @rowHead(  @cell(days) @cell(hours) @cell(minutes) @cell(value))
-      @row(     @cell(> 0)  @cell(any)   @cell(any)     @cell(+d+hh:mm))
-      @row(     @cell(0)    @cell(>0)    @cell(any)     @cell(hh:mm))
-      @row(     @cell(0)    @cell(0)     @cell(any)     @cell(mm))
-      @row(     @cell(0)    @cell(0)     @cell(0)       @cell(.))
-      )
+     <table 30c%>
+     days   hours   minutes    value
+     -----  ------  ---------  ---------
+     \> 0    any     any        +d+hh:mm
+     0      \> 0     any        hh:mm
+     0      0       any        mm
+     0      0       0          .
+     </table> 
      
-     <B>Remarks:</B>  Please note the following remarks about Idle Time:
+     Remarks
+  Please note the following remarks about Idle Time:
      A disconnected session is Idle since DisconnectTime. A session without a
      user is never idle, usually these are special sessions like Listener,
      Services or console session.
-     @seealso(IdleTimeStr)
-     @seealso(CurrentTime)
+     See Also
+     * IdleTimeStr
+     * CurrentTime
     }
     property IdleTimeStr: TJwString read FIdleTimeStr;
 
     {<B>IncomingBytes</B> uncompressed Remote Desktop Protocol (RDP) data from the client
      to the server.
-     <B>Remarks:</B>  This value is not returned for console sessions.
-     @seealso(OutgoingBytes)
-     @seealso(CompressionRatio)
+     Remarks
+  This value is not returned for console sessions.
+     
+     See Also
+     * OutgoingBytes
+     * CompressionRatio
     }
     property IncomingBytes: DWORD read FIncomingBytes;
 
@@ -1260,7 +1305,8 @@ type
     property Owner: TJwWTSSessionList read FOwner write FOwner;
     {<B>OutgoingBytes</B> uncompressed RDP data from the server to the client.
      
-     <B>Remarks:</B>  This value is not returned for console sessions.
+     Remarks
+  This value is not returned for console sessions.
      @seealso(IncomingBytes)
      @seealso(CompressionRatio)
     }
@@ -1276,8 +1322,10 @@ type
      @returns If the function fails you can use GetLastError to get extended
      error information 
      
-     <B>Remarks:</B>  PostMessage does not wait for the user to respond.
-     @seealso(SendMessage)
+     Remarks
+  PostMessage does not wait for the user to respond.
+     See Also
+      * SendMessage
     }
     function PostMessage(const AMessage: TJwString; const ACaption: TJwString;
       const uType: DWORD): DWORD;
@@ -1287,7 +1335,8 @@ type
 
     {<B>RemoteAddress</B> returns the real IP Address that is connected to the Terminal Server.
      
-     <B>Remarks:</B>  <B>RemoteAddress</B> returns the IP address that is actually connected
+     Remarks
+  <B>RemoteAddress</B> returns the IP address that is actually connected
      to the Terminal Server (as opposed to ClientAddress which returns the
      address as reported by the client which is usually just it's local ip
      address).
@@ -1335,31 +1384,34 @@ type
      for the user to respond. 
      @return <B>SendMessage</B> returns the user's response, which can be one of the
      following values:
-     @table(
-     @rowHead(  @cell(Value) @cell(Meaning))
-      @row(     @cell(IDABORT) @cell(Abort button was selected.))
-      @row(     @cell(IDCANCEL) @cell(Cancel button was selected.))
-      @row(     @cell(IDIGNORE) @cell(Ignore button was selected.))
-      @row(     @cell(IDNO) @cell(No button was selected.))
-      @row(     @cell(IDRETRY) @cell(Retry button was selected.))
-      @row(     @cell(IDYES) @cell(Yes button was selected.))
-      @row(     @cell(IDASYNC) @cell(The bWait parameter was FALSE, so the function returned without waiting for a response.))
-      @row(     @cell(IDTIMEOUT) @cell(The bWait parameter was TRUE and the time-out interval elapsed.))
-      ) 
+     <table 33c%>
+      Value        Meaning
+      -----------  ------------------------------------------
+      IDABORT      Abort button was selected.
+      IDCANCEL     Cancel button was selected.
+      IDIGNORE)    Ignore button was selected.
+      IDNO         No button was selected.
+      IDRETRY      Retry button was selected.
+      IDYES        Yes button was selected.
+      IDASYNC      The bWait parameter was FALSE, so the function returned without waiting for a response.
+      IDTIMEOUT    The bWait parameter was TRUE and the time-out interval elapsed.
+     </table>
      
      @returns If the function fails you can use GetLastError to get extended
      error information 
      
-     <B>Remarks:</B>  If you don't need to wait for the user's response you can
+     Remarks  If you don't need to wait for the user's response you can
      use the PostMessage function
-     @seealso(PostMessage)
+     See Also
+     * PostMessage
     }
     function SendMessage(const AMessage: TJwString; const ACaption: TJwString;
       const uType: DWORD; const ATimeOut: DWORD): DWORD;
 
     {<B>Server</B> the netbios name of the Terminal Server.
      
-     <B>Remarks:</B>  If you want to connect to a Terminal Server locally
+     Remarks
+  If you want to connect to a Terminal Server locally
      you should not specify the server name. Please note that in the case of a
      local connection this property <B>will return the computername</B> )
     }
@@ -1370,14 +1422,16 @@ type
      There are some reserved SessionId's that serve a special purpose. The
      following table lists the reserved SessionId's:
      
-     @table(
-     @rowHead(  @cell(Value) @cell(Meaning))
-      @row(     @cell(0) @cell(Console or Services session, see remarks))
-      @row(     @cell(65536) @cell(RDP Listener))
-      @row(     @cell(65537) @cell(ICA Listener))
-      )
+     <table 33c%>
+      Value     Meaning
+      --------  -----------------
+      0         Console or Services session, see remarks
+      65536     RDP Listener
+      65537     ICA Listener
+     </table> 
       
-      <B>Remarks:</B> 
+      Remarks
+ 
       <B>Console Sessions</B> 
       The system console session is usually identified as session 0 in the
       Session list when you connect to a terminal server. A console session is
@@ -1428,16 +1482,18 @@ type
      @Param HKModifier The virtual modifier that represents the key to
      press to stop remote control of the session. The virtual modifier is used
      with the Hotkey parameter. The value can be:
-     @table(
-     @rowHead(  @cell(Value) @cell(Meaning))
-      @row(     @cell(MOD_SHIFT) @cell(The SHIFT key))
-      @row(     @cell(MOD_CONTROL) @cell(The CTRL key))
-      @row(     @cell(MOD_ALT) @cell(The ALT key))
-     ) 
+     <table 33c%>
+      Value  		   Meaning
+      ------------  ----------------
+      MOD_SHIFT     The SHIFT key
+      MOD_CONTROL   The CTRL key
+      MOD_ALT       The ALT key
+     </table>
      @Return If the function fails, the return value is zero. To get extended
      error information, call GetLastError 
      
-     <B>Remarks:</B>  By default the console session cannot be shadowed. You can
+     Remarks
+     By default the console session cannot be shadowed. You can
      change this by modifying the following registry keys:
      <code lang="Delphi">
      HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\Console
@@ -1445,9 +1501,10 @@ type
      "Shadow" = REG_DWORD:1
      </code>
      Where Shadow can be one of the TJwShadowMode values.
-     @seealso(ShadowInformation)
-     @seealso(TJwShadowMode)
-     @seealso(TJwShadowState)
+     See Also
+      * ShadowInformation
+      * TJwShadowMode
+      * TJwShadowState
     }
     function Shadow(const Hotkey: DWORD = VK_MULTIPLY;
       const HKModifier: DWORD = MOD_CONTROL): Boolean;
@@ -1459,9 +1516,10 @@ type
     shadowed by another session.
     
     Shadow Mode queries the shadow permissions for this session.
-    @seealso(Shadow)
-    @seealso(TJwShadowMode)
-    @seealso(TJwShadowState)
+    See Also
+    * Shadow
+    * TJwShadowMode
+    * TJwShadowState
     }
     property ShadowInformation: TJwWTSSessionShadow read FShadow;
 
@@ -1486,7 +1544,8 @@ type
      passed directly to CreateProcessAsUser in order to launch a process in
      the user's Session.
      
-     <B>Remarks:</B>  The returned value is cached and must not be freed!
+     Remarks
+  The returned value is cached and must not be freed!
      If the value cannot be obtained the return value is @nil.
     }
     property UserSid : TJwSecurityID read GetUserSid;
@@ -1496,30 +1555,33 @@ type
     {WinStationDriver Flag (<B>WdFlag</B>) returns a value indicating the protocol and
      connection type. It's usefull for easy determination of console session.
      Possible values:
-     @table(
-     @rowHead(  @cell(Value) @cell(Meaning))
-      @row(     @cell(WD_FLAG_CONSOLE_XP) @cell(XP Console sessions))
-      @row(     @cell(WD_FLAG_CONSOLE) @cell(2003/2008 Console Session))
-      @row(     @cell(WD_FLAG_RDP) @cell(RDP Session))
-      @row(     @cell(WD_FLAG_ICA) @cell(ICA Session))
-      ))
+     <table 33c%>
+     Value               Meaning
+     ---------------     ------------------------
+     WD_FLAG_CONSOLE_XP  XP Console sessions
+     WD_FLAG_CONSOLE     2003/2008 Console Session
+     WD_FLAG_RDP         RDP Session
+     WD_FLAG_ICA         ICA Session
+     </table>
     }
     property WdFlag: DWORD read FWdFlag;
 
     {WinStationDriver Name (<B>WinStationDriverName</B>) returns a value indicating the protocol and
      protocol type.
      Known Microsoft values:
-     @table(
-     @rowHead(  @cell(Operating System) @cell(Value))
-      @row(     @cell(Windows 2000) @cell(Microsoft RDP 5.0))
-      @row(     @cell(Windows XP) @cell(Microsoft RDP 5.1))
-      @row(     @cell(Windows 2003) @cell(Microsoft RDP 5.2))
-      @row(     @cell(Windows 2008/Vista) @cell(Microsoft RDP 6.0))
-      )
+     <table 33c%>
+     Operating System     Value
+     -------------------  ----------------------
+     Windows 2000         Microsoft RDP 5.0
+     Windows XP           Microsoft RDP 5.1
+     Windows 2003         Microsoft RDP 5.2
+     Windows 2008/Vista   Microsoft RDP 6.0
+     </table> 
      Known Citrix values:
-     @table(
-     @rowHead(  @cell(Version) @cell(Value))
-      @row(     @cell(Citrix Presentation Server 4) @cell(Citrix ICA 3.0))
+     <table 40c%>
+     Version  								   Value
+     --------------------------------------  -------------------
+     Citrix Presentation Server 4            Citrix ICA 3.0
       )
 
     }
@@ -1527,7 +1589,8 @@ type
 
     {<B>WinStationName</B> returns the session name.
      
-     <B>Remarks:</B>  Despite its name, specifying this property does not return
+     Remarks
+  Despite its name, specifying this property does not return
      the window station name. Rather, it returns the name of the Terminal
      Services session.
      For RDP this will be something like RDP-Tcp#023
@@ -1602,7 +1665,8 @@ type
      freed when the TJwTerminalServer instance that owns the @Classname
      (Owner property) is freed.
      
-     <B>Remarks:</B>  If you free a @Classname be sure to also set it to nil to
+     Remarks
+  If you free a @Classname be sure to also set it to nil to
      prevent the Owner to free it as well (which would produce an Access
      Violation).
     }
@@ -1618,7 +1682,8 @@ type
      @Param SessionId The Session Identifier 
      @Returns TJwWTSSession 
      
-     <B>Remarks:</B>  If the SessionId was not found return value will be @nil.
+     Remarks
+  If the SessionId was not found return value will be @nil.
     }
     function FindBySessionId(const SessionId: DWORD): TJwWTSSession;
 
@@ -1627,7 +1692,8 @@ type
      @Param Username The windows username 
      @Returns TJwWTSSession 
      
-     <B>Remarks:</B>  If the Username was not found return value will be @nil.
+     Remarks
+  If the Username was not found return value will be @nil.
     }
     function FindByUsername(const Username: TJwString): TJwWTSSession;
 
@@ -1818,27 +1884,33 @@ type
     property SessionId: TJwSessionId read FSessionId;
     {<B>ProcessAge</B> the elapsed time since the process was created in
      100-nanosecond intervals since January 1, 1601 (TFileTime).
-     @seealso(ProcessAgeStr)
+    See Also
+    * ProcessAgeStr
     }
     property ProcessAge: Int64 read FProcessAge;
     {<B>ProcessAgeStr</B> the elapsed time since the process was created as formatted
      string. The string is formatted according to the table below:
-     @table(
-     @rowHead(  @cell(days) @cell(hours) @cell(minutes) @cell(value))
-      @row(     @cell(> 0)  @cell(any)   @cell(any)     @cell(+d+hh:mm))
-      @row(     @cell(0)    @cell(>0)    @cell(any)     @cell(hh:mm))
-      @row(     @cell(0)    @cell(0)     @cell(any)     @cell(mm))
-      @row(     @cell(0)    @cell(0)     @cell(0)       @cell(.))
+     <table>
+     days   hours  minutes  value
+     -----  -----  -------  ----------
+     \> 0   any    any      +d+hh:mm
+     0      \>0    any      hh:mm
+     0      0      any      mm
+     0      0      0        .
       )
-     @seealso(ProcessAge)
+     
+     See Also
+     * ProcessAge
     }
     property ProcessAgeStr: TJwString read FProcessAgeStr;
 
     {<B>ProcessCPUTime</B> the total CPU Time (Usertime + Kerneltime) for the given process
      in 100-nanosecond intervals since January 1, 1601 (TFileTime).
      
-     <B>Remarks:</B>  This value matches the CPU Time column in Task Manager.
-     @seealso(ProcessCPUTimeStr)
+     Remarks
+  This value matches the CPU Time column in Task Manager.
+     See Also
+     * ProcessCPUTimeStr
     }
     property ProcessCPUTime: Int64 read FProcessCPUTime;
 
@@ -1846,8 +1918,10 @@ type
      as formatted string. (On Delphi 7 and higher this is a localised string
      for older version it is fixed at hh:mm)
      
-     <B>Remarks:</B>  This value matches the CPU Time column in Task Manager.
-     @seealso(ProcessCPUTime)
+     Remarks
+     This value matches the CPU Time column in Task Manager.
+     See Also
+     * ProcessCPUTime
     }
     property ProcessCPUTimeStr: TJwString read FProcessCPUTimeStr;
 
@@ -1861,7 +1935,8 @@ type
 
     {<B>ProcessName</B> the Process Name
      
-     <B>Remarks:</B>  Windows XP (at least SP2) has the following bug:
+     Remarks
+     Windows XP (at least SP2) has the following bug:
      The Process Name is cut off at 18 characters for process on the local
      machine and at 15 characters for remote servers (even if the remote server
      is Windows Server 2003 which does not suffer from this bug).
@@ -1871,19 +1946,22 @@ type
 
     {<B>ProcessMemUsage</B> the Amount of memory in Bytes used by the process
      
-     <B>Remarks:</B>  This value matches the Mem Usage column in Task Manager.
+     Remarks
+     This value matches the Mem Usage column in Task Manager.
     }
     property ProcessMemUsage: DWORD read FProcessMemUsage;
 
     {<B>ProcessVMSize</B> the Amount of Virtual memory in Bytes used by the process
      
-     <B>Remarks:</B>  This value matches the VM Size column in Task Manager.
+     Remarks
+  This value matches the VM Size column in Task Manager.
     }
     property ProcessVMSize: DWORD read FProcessVMSize;
 
     {<B>Server</B> the netbios name of the Terminal Server.
      
-     <B>Remarks:</B>  If you want to connect to a Terminal Server locally
+     Remarks
+  If you want to connect to a Terminal Server locally
      you should not specify the server name. Please note that in the case of a
      local connection this property <B>will return the computername</B> )
     }
@@ -1893,7 +1971,8 @@ type
      The returned value is cached and must not be freed!
      If the value cannot be obtained the return value is nil.
      
-     <B>Remarks:</B>  In order to obtain the Token the SE_DEBUG_NAME privilege
+     Remarks
+  In order to obtain the Token the SE_DEBUG_NAME privilege
      is enabled, if this fails EJwsclPrivilegeException will be raised.
     }
     property Token : TJwSecurityToken read GetToken;
@@ -1901,7 +1980,8 @@ type
     {<B>UserSid</B> returns a JwsclSid.TJwSecurityID instance pointing to the SID of the
      user that is associated with the process.
      
-     <B>Remarks:</B>  The returned value is cached and must not be freed!
+     Remarks
+  The returned value is cached and must not be freed!
      If the value cannot be obtained the return value is nil.
     }
     property UserSid : TJwSecurityID read GetUserSid;
@@ -1912,7 +1992,8 @@ type
 
     {<B>WinStationName</B> returns the session name.
      
-     <B>Remarks:</B>  Despite its name, specifying this property does not return
+     Remarks
+  Despite its name, specifying this property does not return
      the window station name. Rather, it returns the name of the Terminal
      Services session.
      For RDP this will be something like RDP-Tcp#023
@@ -2120,7 +2201,8 @@ type
   {<B>Abstract</B><B>TJwWTSSessionShadow</B> class gives access to the ShadowState and Shadowmode of a
    session. 
 
-   <B>Remarks:</B>  Please note that changing the shadow mode with the SetShadow
+   Remarks
+  Please note that changing the shadow mode with the SetShadow
    function does not take affect until the sessions has been disconnected
    and reconnected.
    @seealso(TJwShadowMode)

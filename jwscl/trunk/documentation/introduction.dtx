@@ -1,0 +1,69 @@
+﻿
+@@introduction.txt
+<title Introduction>
+
+<image jwscllogotxtnew01-small>
+
+<b>JEDI Windows Security Library BETA</b> This is the preliminary version of
+JWSCL.
+
+The suite is a bunch of classes that encapsulated MS Windows security functions
+in object oriented way.
+
+The goal of this project is to make security programming easier to delphi
+programmers. This includes that the programmer must not allocate Windows API
+memory and also free it. Also she can use simple Delphi String (Ansi- and
+WideString) in all function that needs string manipulation. The memory
+allocation and deallocation for these things is done internally with a content
+check. Of course it is possible to retrieve winapi structures easily to use in
+other winapi calls (e.g. <link TJwSecurityDescriptor>.<link TJwSecurityDescriptor.Create_SD@Cardinal@boolean, Create_SD>).
+The caller also has to free it using a counter part function (e.g. <link TJwSecurityDescriptor>.<link TJwSecurityDescriptor.Free_SD@PSecurityDescriptor, Free_SD>).
+
+Also api functions are wrapped together in classes to diminish initialization
+that consumes a great amount of time which (s)he could use for better things.
+All the programmer has to do is to free the class instance after she has used
+it.
+
+<b>However it is not the goal to teach Delphi programmers how to program in
+windows security or create secure windows applications</b>. The programmer has
+to understand the security of windows by herself. To use these classes she must
+know what tokens, principals, secure objects, sessions and so on are.
+
+On the other hand if you want to test the software by creating good test
+scenarios (module, function, class, integration testing) you are welcome. With
+good tests I mean tests that are reproducable, have a high function cover and
+uses DUnit.
+
+bold(This library has beta status and is surely not bug free. )
+
+For information about <b>license facts</b> see <link conclusion.txt, Conclusion>.
+
+Do not forget to send bugs, comments or greets to the
+
+Christian Wimmer – DelphiSecurityLibrary@teamchris.info
+
+Stuttgart, Germany 5th October 2007
+
+
+
+Contributors (in alphabetical order)
+
+Philip Dittmann
+
+Danila
+
+GalimovBinh Ly (ComLib.pas)
+
+Remko Weijnen
+
+and
+
+in Memory Of Robert Marquardt)
+
+
+
+Updated 3 June 2008
+
+Visit Source Forge Project
+  * <extlink http://sourceforge.net/projects/jedi-apilib>Sourceforge</extlink>
+  * <extlink http://blog.delphi-jedi.net>Webblog</extlink>

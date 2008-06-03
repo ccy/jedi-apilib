@@ -35,7 +35,7 @@ The Original Code is JwsclComUtils.pas.
 The Initial Developer of the Original Code is Robert Giesecke.
 
 Example
-To use this code simply to the follwoing:
+To use this code simply do the following:
 <code lang="Delphi">
 var myClass : TMyClass;
 begin

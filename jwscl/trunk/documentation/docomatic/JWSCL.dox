@@ -401,7 +401,7 @@ CValue_9=7872391
 
 [Configurations]
 Count=6
-Current=0
+Current=2
 Name0=Configuration 1
 Name1=Configuration 2
 Name2=Configuration 3
@@ -9848,7 +9848,7 @@ HTMLFilenaming=0
 HTMLFileTemplate=
 InsertCustomHEADCode=0
 OutputDir=$(USRDOCSOUTPUT)
-OutputOptions=7
+OutputOptions=14
 OutputTOCLevels=0
 PrintFlagsInIndex=0
 PrintFlagsInTOC=1
@@ -9919,8 +9919,8 @@ ContentTableColCount=3
 [Configurations\Configuration 1\{D3A588E0-9472-11D3-BDD1-0080C8BA053D}\Layout\Footer]
 FeedbackCode=%FBDESCRIPTION%\n<a href="#" onclick="sendFeedback('%AUTHOREMAIL%', '%FBSUBJECT%', 'Project: %PROJECTTITLE%%0ATopic ID: %TOPICID%%0ATitle: %TOPICTITLE%');">\n%FBLINKTEXT%\n</a>
 FeedbackShow=1
-InfoCode=%COPYRIGHT%
-InfoHTML=
+InfoCode=%COPYRIGHT%<br/> This help is created by Doc-O-Matic which is sponsored by <a href="http://toolsfactory.com/">toolsfactory software inc.</a>
+InfoHTML=test
 InfoImage=dmlogo.png
 Kind=0
 LayoutOption=1
@@ -12424,11 +12424,15 @@ BodySourceUseAutolinking=0
 BodySourceUseSyntaxHighlight=0
 
 [Configurations\Configuration 1\Disabled Topics]
-Count=0
+Count=3
+ID0=Compilers.inc
+ID1=jedi.inc
+ID2=Jwscl.inc
 
 [Configurations\Configuration 1\Enabled Topics]
-Count=1
+Count=2
 ID0=!!FILES
+ID1=!!SYMREF
 
 [Configurations\Configuration 1\Export Symbols]
 Classes=1
@@ -12440,21 +12444,21 @@ Functions=1
 Macros=1
 Member-0-0=1
 Member-0-1=0
-Member-0-2=1
+Member-0-2=0
 Member-0-3=1
 Member-0-4=1
 Member-0-5=1
 Member-0-6=1
 Member-1-0=1
 Member-1-1=0
-Member-1-2=1
+Member-1-2=0
 Member-1-3=1
 Member-1-4=1
 Member-1-5=1
-Member-1-6=1
+Member-1-6=0
 Member-2-0=1
 Member-2-1=0
-Member-2-2=1
+Member-2-2=0
 Member-2-3=1
 Member-2-4=1
 Member-2-5=1
@@ -12468,7 +12472,7 @@ Member-3-5=1
 Member-3-6=1
 Member-4-0=1
 Member-4-1=0
-Member-4-2=1
+Member-4-2=0
 Member-4-3=1
 Member-4-4=1
 Member-4-5=1
@@ -12497,11 +12501,11 @@ Member-7-6=1
 Namespaces=1
 NestedClasses-0=1
 NestedClasses-1=0
-NestedClasses-2=1
+NestedClasses-2=0
 NestedClasses-3=1
 NestedClasses-4=1
-NestedClasses-5=1
-NestedClasses-6=1
+NestedClasses-5=0
+NestedClasses-6=0
 Records=1
 Types=1
 UseTopicVersionInfo=0
@@ -12533,9 +12537,10 @@ Use=1
 WriteMissingFlagsAsText=1
 
 [Configurations\Configuration 1\Image Paths]
-Count=2
+Count=3
 Path0=$(DOM)\graphics
 Path1=$(DOM)\graphics\en
+Path2=..\..\documentation
 
 [Configurations\Configuration 1\Link Database]
 LinkPrecedence=0
@@ -12877,7 +12882,9 @@ OffsetX=4
 OffsetY=4
 
 [Configurations\Configuration 1\Non TOC Topics]
-Count=0
+Count=2
+ID0=Compilers.inc
+ID1=jedi.inc
 
 [Configurations\Configuration 1\Output Options]
 AdditionalInformationFormatStr=%NAME% %NUMBER%
@@ -12914,7 +12921,7 @@ LocalClassHierarchyAsGraphics=1
 MultiLanguage_OriginalLanguage=1
 NavigationPageFileLineNumber=' (%LINENUMBER%)'
 NavigationPageFileRelativePath=
-NavigationPageOptions=10503
+NavigationPageOptions=2311
 OutputSettings0=1
 OutputSettings1=1
 OutputSettings2=1
@@ -23031,7 +23038,7 @@ ContentTableColCount=3
 [Configurations\Configuration 2\{D3A588E0-9472-11D3-BDD1-0080C8BA053D}\Layout\Footer]
 FeedbackCode=%FBDESCRIPTION%\n<a href="#" onclick="sendFeedback('%AUTHOREMAIL%', '%FBSUBJECT%', 'Project: %PROJECTTITLE%%0ATopic ID: %TOPICID%%0ATitle: %TOPICTITLE%');">\n%FBLINKTEXT%\n</a>
 FeedbackShow=1
-InfoCode=%COPYRIGHT%
+InfoCode=%COPYRIGHT%<br/> This help is created by Doc-O-Matic which is sponsored by <a href="http://toolsfactory.com/">toolsfactory software inc.</a>
 InfoHTML=
 InfoImage=dmlogo.png
 Kind=0
@@ -25536,11 +25543,15 @@ BodySourceUseAutolinking=0
 BodySourceUseSyntaxHighlight=0
 
 [Configurations\Configuration 2\Disabled Topics]
-Count=0
+Count=3
+ID0=Compilers.inc
+ID1=jedi.inc
+ID2=Jwscl.inc
 
 [Configurations\Configuration 2\Enabled Topics]
-Count=1
+Count=2
 ID0=!!FILES
+ID1=!!SYMREF
 
 [Configurations\Configuration 2\Export Symbols]
 Classes=1
@@ -25645,9 +25656,10 @@ Use=1
 WriteMissingFlagsAsText=1
 
 [Configurations\Configuration 2\Image Paths]
-Count=2
+Count=3
 Path0=$(DOM)\graphics
 Path1=$(DOM)\graphics\en
+Path2=..\..\documentation
 
 [Configurations\Configuration 2\Link Database]
 LinkPrecedence=0
@@ -25989,7 +26001,9 @@ OffsetX=4
 OffsetY=4
 
 [Configurations\Configuration 2\Non TOC Topics]
-Count=0
+Count=2
+ID0=Compilers.inc
+ID1=jedi.inc
 
 [Configurations\Configuration 2\Output Options]
 AdditionalInformationFormatStr=%NAME% %NUMBER%
@@ -36143,7 +36157,7 @@ ContentTableColCount=3
 [Configurations\Configuration 3\{D3A588E0-9472-11D3-BDD1-0080C8BA053D}\Layout\Footer]
 FeedbackCode=%FBDESCRIPTION%\n<a href="#" onclick="sendFeedback('%AUTHOREMAIL%', '%FBSUBJECT%', 'Project: %PROJECTTITLE%%0ATopic ID: %TOPICID%%0ATitle: %TOPICTITLE%');">\n%FBLINKTEXT%\n</a>
 FeedbackShow=1
-InfoCode=%COPYRIGHT%
+InfoCode=%COPYRIGHT%<br/> This help is created by Doc-O-Matic which is sponsored by <a href="http://toolsfactory.com/">toolsfactory software inc.</a>
 InfoHTML=
 InfoImage=dmlogo.png
 Kind=0
@@ -36213,7 +36227,7 @@ Visible_3=1
 LinkDatabasePrefix=
 
 [Configurations\Configuration 3\{D3A588E0-9472-11D3-BDD1-0080C8BA053D}\OutputNavigation]
-NavigationLegendOptions4=0
+NavigationLegendOptions4=1
 
 [Configurations\Configuration 3\{D3A588E0-9472-11D3-BDD1-0080C8BA053D}\OutputNavigation\Main]
 Count=127
@@ -38648,11 +38662,15 @@ BodySourceUseAutolinking=0
 BodySourceUseSyntaxHighlight=0
 
 [Configurations\Configuration 3\Disabled Topics]
-Count=0
+Count=3
+ID0=Compilers.inc
+ID1=jedi.inc
+ID2=Jwscl.inc
 
 [Configurations\Configuration 3\Enabled Topics]
-Count=1
+Count=2
 ID0=!!FILES
+ID1=!!SYMREF
 
 [Configurations\Configuration 3\Export Symbols]
 Classes=1
@@ -38757,9 +38775,10 @@ Use=1
 WriteMissingFlagsAsText=1
 
 [Configurations\Configuration 3\Image Paths]
-Count=2
+Count=3
 Path0=$(DOM)\graphics
 Path1=$(DOM)\graphics\en
+Path2=..\..\documentation
 
 [Configurations\Configuration 3\Link Database]
 LinkPrecedence=0
@@ -39101,7 +39120,9 @@ OffsetX=4
 OffsetY=4
 
 [Configurations\Configuration 3\Non TOC Topics]
-Count=0
+Count=2
+ID0=Compilers.inc
+ID1=jedi.inc
 
 [Configurations\Configuration 3\Output Options]
 AdditionalInformationFormatStr=%NAME% %NUMBER%
@@ -39752,10 +39773,10 @@ ChapterDelim=.
 Compress=1
 FirstPageNumber=0
 FooterString1=
-FooterString2=
+FooterString2=%COPYRIGHT%
 FooterString3=%P%
 FooterString4=
-FooterString5=
+FooterString5=This help is created by Doc-O-Matic which is sponsored by toolsfactory software inc.
 FooterString6=
 FooterStringColumnCount=3
 FooterStringRowCount=2
@@ -45819,7 +45840,7 @@ ShowDocumentation=1
 
 [Configurations\Configuration 4\{51AFC76F-1628-478C-88DB-FA76DB55F3BE}\Layouts]
 ChapterTabWidth=0.2952755925
-DoubleSidedDoc=0
+DoubleSidedDoc=1
 FooterHeight=0.551181106
 HeaderHeight=0.2244094503
 LayoutCount=6
@@ -48682,11 +48703,15 @@ BodySourceUseAutolinking=0
 BodySourceUseSyntaxHighlight=0
 
 [Configurations\Configuration 4\Disabled Topics]
-Count=0
+Count=3
+ID0=Compilers.inc
+ID1=jedi.inc
+ID2=Jwscl.inc
 
 [Configurations\Configuration 4\Enabled Topics]
-Count=1
+Count=2
 ID0=!!FILES
+ID1=!!SYMREF
 
 [Configurations\Configuration 4\Export Symbols]
 Classes=1
@@ -48791,9 +48816,10 @@ Use=1
 WriteMissingFlagsAsText=1
 
 [Configurations\Configuration 4\Image Paths]
-Count=2
+Count=3
 Path0=$(DOM)\graphics
 Path1=$(DOM)\graphics\en
+Path2=..\..\documentation
 
 [Configurations\Configuration 4\Link Database]
 LinkPrecedence=0
@@ -49135,13 +49161,15 @@ OffsetX=4
 OffsetY=4
 
 [Configurations\Configuration 4\Non TOC Topics]
-Count=0
+Count=2
+ID0=Compilers.inc
+ID1=jedi.inc
 
 [Configurations\Configuration 4\Output Options]
 AdditionalInformationFormatStr=%NAME% %NUMBER%
 AddVisibilitySpecifierForCppPascal=0
-Author=
-AuthorEmail=
+Author=JEDI WSCL Authors
+AuthorEmail=mail@delphi-jedi.net
 AutoDocText0=The following tables list the members exposed by %NAME%.
 AutoDocText1=The %CATEGORYL% of the %NAME% class are listed here.
 AutoDocText2=The %CATEGORYL% members of the %NAME% class are listed here.
@@ -49161,7 +49189,7 @@ CustomBuildStepApp=
 CustomBuildStepAppIgnoreExitCode=1
 FunctionDeclarationOption=0
 GenerateGlobalClassHierarchies=1
-GenericSyntaxHighlightLanguage=0
+GenericSyntaxHighlightLanguage=2
 HidePropertyDetails=1
 IndexOptions4=1907
 IndexTitleAdditionalClassEntry=about %TITLE%
@@ -49191,7 +49219,7 @@ TableWidthLegend=20
 TableWidthNavigation=100
 TableWidthParameters=100
 TableWidthReports=100
-Title=
+Title=JEDI Windows Security Code Library Help
 UseInheritedPropertyDetails=1
 
 [Configurations\Configuration 4\Output Options\Indicator Images]
@@ -53517,7 +53545,7 @@ Style_8=0
 Style_9=0
 
 [Configurations\Configuration 5\{C81B476F-5DE3-416C-A73A-9674B8ECC110}\Special Options]
-EmitBorlandAKey=0
+EmitBorlandAKey=1
 
 [Configurations\Configuration 5\AutoDocTitles]
 Saved=1
@@ -53596,11 +53624,15 @@ BodySourceUseAutolinking=0
 BodySourceUseSyntaxHighlight=0
 
 [Configurations\Configuration 5\Disabled Topics]
-Count=0
+Count=3
+ID0=Compilers.inc
+ID1=jedi.inc
+ID2=Jwscl.inc
 
 [Configurations\Configuration 5\Enabled Topics]
-Count=1
+Count=2
 ID0=!!FILES
+ID1=!!SYMREF
 
 [Configurations\Configuration 5\Export Symbols]
 Classes=1
@@ -53705,9 +53737,10 @@ Use=1
 WriteMissingFlagsAsText=1
 
 [Configurations\Configuration 5\Image Paths]
-Count=2
+Count=3
 Path0=$(DOM)\graphics
 Path1=$(DOM)\graphics\en
+Path2=..\..\documentation
 
 [Configurations\Configuration 5\Link Database]
 LinkPrecedence=0
@@ -54049,7 +54082,9 @@ OffsetX=4
 OffsetY=4
 
 [Configurations\Configuration 5\Non TOC Topics]
-Count=0
+Count=2
+ID0=Compilers.inc
+ID1=jedi.inc
 
 [Configurations\Configuration 5\Output Options]
 AdditionalInformationFormatStr=%NAME% %NUMBER%
@@ -54779,11 +54814,15 @@ BodySourceUseAutolinking=0
 BodySourceUseSyntaxHighlight=0
 
 [Configurations\Configuration 6\Disabled Topics]
-Count=0
+Count=3
+ID0=Compilers.inc
+ID1=jedi.inc
+ID2=Jwscl.inc
 
 [Configurations\Configuration 6\Enabled Topics]
-Count=1
+Count=2
 ID0=!!FILES
+ID1=!!SYMREF
 
 [Configurations\Configuration 6\Export Symbols]
 Classes=1
@@ -54888,9 +54927,10 @@ Use=1
 WriteMissingFlagsAsText=1
 
 [Configurations\Configuration 6\Image Paths]
-Count=2
+Count=3
 Path0=$(DOM)\graphics
 Path1=$(DOM)\graphics\en
+Path2=..\..\documentation
 
 [Configurations\Configuration 6\Link Database]
 LinkPrecedence=0
@@ -55232,7 +55272,9 @@ OffsetX=4
 OffsetY=4
 
 [Configurations\Configuration 6\Non TOC Topics]
-Count=0
+Count=2
+ID0=Compilers.inc
+ID1=jedi.inc
 
 [Configurations\Configuration 6\Output Options]
 AdditionalInformationFormatStr=%NAME% %NUMBER%
@@ -55907,7 +55949,7 @@ ExtraSectionIndent=
 InsertTrimLinesBeforeSectionHeadlines=0
 InsertValueDelimiterSpace=1
 ListIndent=2
-MaxLineLength=60
+MaxLineLength=79
 MinLinesForWall=0
 MinTableColWidth=10
 UseJavaDocBackslashTags=0
@@ -55929,24 +55971,142 @@ UseInheritedTopics=1
 UseInheritedUseUsing=0
 
 [External Topic Properties]
-Count=13
-ID0=Compilers.inc
-ID1=jedi.inc
-ID10=JwsclConstants, unit
-ID11=JwsclConstants.pas
-ID12=Topic1
-ID2=Jwscl.inc
-ID3=JwsclAccounts.pas
-ID4=JwsclAcl, unit
-ID5=JwsclAcl.pas
-ID6=JwsclAuthCtx, unit
-ID7=JwsclAuthCtx.pas
-ID8=JwsclComUtils, unit
-ID9=JwsclComUtils.pas
+Count=114
+ID0=!!SYMREF
+ID1=Compilers.inc
+ID10=JwsclAuthCtx.pas
+ID100=TJwTempResetEnum
+ID101=TJwTokenMandatoryPolicy
+ID102=TJwTreeSetType
+ID103=TJwUserDataCopy
+ID104=TJwWaitState
+ID105=TJwXMLAttribute
+ID106=TJwXMLAttrTag
+ID107=TJwXMLEventType
+ID108=TJwXMLLogTag
+ID109=TJwXMLTag
+ID11=JwsclComUtils, unit
+ID110=Topic1
+ID111=TThreadData
+ID112=TThreadMapRec
+ID113=TThreadNameInfo
+ID12=JwsclComUtils.pas
+ID13=JwsclConstants, unit
+ID14=JwsclConstants.pas
+ID15=TAce
+ID16=TAuthZSidContextFlag
+ID17=TFileVersionInfo
+ID18=TFNProgressRecord
+ID19=TInternalProcessData
+ID2=conclusion.txt
+ID20=TIntTuple
+ID21=TJwAccessControlListType
+ID22=TJwAceFlag
+ID23=TJwAceType
+ID24=TJwACLProtection
+ID25=TJwACLProtectionState
+ID26=TJwAuthZResourceManagerFlag
+ID27=TJwCallbackData
+ID28=TJwCopyFlag
+ID29=TJwCreateProcessInfo
+ID3=introduction.txt
+ID30=TJwCreateProcessOut
+ID31=TJwCreateProcessParameters
+ID32=TJwCredentialFlag
+ID33=TJwCryptProtectFlag
+ID34=TJwCryptProtectOnPromptFlag
+ID35=TJwCSPCreationFlag
+ID36=TJwCSPType
+ID37=TJwDesktopCreationFlag
+ID38=TJwEncryptionAlgorithm
+ID39=TJwEnterType
+ID4=jedi.inc
+ID40=TJwEnumAlgorithmsEntry
+ID41=TJwEnumProviderEntry
+ID42=TJwEqualAceType
+ID43=TJwEventType
+ID44=TJwExceptionMapping
+ID45=TJwGetAccessCheckType
+ID46=TJwGetInheritFlagsType
+ID47=TJwGetMemBlob
+ID48=TJwHashAlgorithm
+ID49=TJwInheritedFromRecord
+ID5=Jwscl.inc
+ID50=TJwInheritFlag
+ID51=TJwIntegrityLabelType
+ID52=TJwJobLimit
+ID53=TJwJobMessage
+ID54=TJwJobTermination
+ID55=TJwJobUiLimit
+ID56=TJwKeyExportKind
+ID57=TJwKeyFlag
+ID58=TJwKeyPairType
+ID59=TJwLogType
+ID6=JwsclAccounts.pas
+ID60=TJwMandatoryPolicy
+ID61=TJwMemoryType
+ID62=TJwMemoryType.mtAlloc
+ID63=TJwMemoryType.mtDeAlloc
+ID64=TJwMsgRec
+ID65=TJwPointerType
+ID66=TJwPrivCheck
+ID67=TJwPrivilegeQueryType
+ID68=TJwPrivilegeSetType
+ID69=TJwProcessOutputInformation
+ID7=JwsclAcl, unit
+ID70=TJwProcessParameterType
+ID71=TJwProfileInfo
+ID72=TJwProfileMember
+ID73=TJwProgInvokeSetting
+ID74=TJwProtectMemoryFlag
+ID75=TJwReplyErrorEnum
+ID76=TJwRequestedTokenType
+ID77=TJwRightsMapping
+ID78=TJwRightType
+ID79=TJwRootKeyEnum
+ID8=JwsclAcl.pas
+ID80=TJwRootRegKey
+ID81=TJwRootTuple
+ID82=TJwSecureObjectType
+ID83=TJwSecurityDescriptorControl
+ID84=TJwSecurityDesktopFlag
+ID85=TJwSecurityDialogFlag
+ID86=TJwSecurityInformationFlag
+ID87=TJwSecurityObjectInformation
+ID88=TJwSecurityObjectInformationFlag
+ID89=TJwSecurityPageType
+ID9=JwsclAuthCtx, unit
+ID90=TJwSecurityResetType
+ID91=TJwShadowMode
+ID92=TJwShadowState
+ID93=TJwSharedHandle
+ID94=TJwShellExecuteFlag
+ID95=TJwSidAttribute
+ID96=TJwSidClassName
+ID97=TJwSidInfoRecord
+ID98=TJwSidMap
+ID99=TJwSignalType
+
+[External Topic Properties\!!SYMREF]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=2
 
 [External Topic Properties\Compilers.inc]
 Count=1
 ETPCommand0=2
+ETPTopicOrder0=0
+
+[External Topic Properties\conclusion.txt]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=1
+
+[External Topic Properties\introduction.txt]
+Count=2
+ETPCommand0=2
+ETPCommand1=3
+ETPGroup1=' !'
 ETPTopicOrder0=0
 
 [External Topic Properties\jedi.inc]
@@ -56014,12 +56174,506 @@ Count=1
 ETPCommand0=2
 ETPTopicOrder0=10
 
+[External Topic Properties\TAce]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=0
+
+[External Topic Properties\TAuthZSidContextFlag]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=1
+
+[External Topic Properties\TFileVersionInfo]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=2
+
+[External Topic Properties\TFNProgressRecord]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=3
+
+[External Topic Properties\TInternalProcessData]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=4
+
+[External Topic Properties\TIntTuple]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=5
+
+[External Topic Properties\TJwAccessControlListType]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=6
+
+[External Topic Properties\TJwAceFlag]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=7
+
+[External Topic Properties\TJwAceType]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=8
+
+[External Topic Properties\TJwACLProtection]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=9
+
+[External Topic Properties\TJwACLProtectionState]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=10
+
+[External Topic Properties\TJwAuthZResourceManagerFlag]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=11
+
+[External Topic Properties\TJwCallbackData]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=12
+
+[External Topic Properties\TJwCopyFlag]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=13
+
+[External Topic Properties\TJwCreateProcessInfo]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=14
+
+[External Topic Properties\TJwCreateProcessOut]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=15
+
+[External Topic Properties\TJwCreateProcessParameters]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=16
+
+[External Topic Properties\TJwCredentialFlag]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=17
+
+[External Topic Properties\TJwCryptProtectFlag]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=18
+
+[External Topic Properties\TJwCryptProtectOnPromptFlag]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=19
+
+[External Topic Properties\TJwCSPCreationFlag]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=20
+
+[External Topic Properties\TJwCSPType]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=21
+
+[External Topic Properties\TJwDesktopCreationFlag]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=22
+
+[External Topic Properties\TJwEncryptionAlgorithm]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=23
+
+[External Topic Properties\TJwEnterType]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=24
+
+[External Topic Properties\TJwEnumAlgorithmsEntry]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=25
+
+[External Topic Properties\TJwEnumProviderEntry]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=26
+
+[External Topic Properties\TJwEqualAceType]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=27
+
+[External Topic Properties\TJwEventType]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=28
+
+[External Topic Properties\TJwExceptionMapping]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=29
+
+[External Topic Properties\TJwGetAccessCheckType]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=30
+
+[External Topic Properties\TJwGetInheritFlagsType]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=31
+
+[External Topic Properties\TJwGetMemBlob]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=32
+
+[External Topic Properties\TJwHashAlgorithm]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=33
+
+[External Topic Properties\TJwInheritedFromRecord]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=34
+
+[External Topic Properties\TJwInheritFlag]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=35
+
+[External Topic Properties\TJwIntegrityLabelType]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=36
+
+[External Topic Properties\TJwJobLimit]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=37
+
+[External Topic Properties\TJwJobMessage]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=38
+
+[External Topic Properties\TJwJobTermination]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=39
+
+[External Topic Properties\TJwJobUiLimit]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=40
+
+[External Topic Properties\TJwKeyExportKind]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=41
+
+[External Topic Properties\TJwKeyFlag]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=42
+
+[External Topic Properties\TJwKeyPairType]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=43
+
+[External Topic Properties\TJwLogType]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=44
+
+[External Topic Properties\TJwMandatoryPolicy]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=45
+
+[External Topic Properties\TJwMemoryType]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=46
+
+[External Topic Properties\TJwMemoryType.mtAlloc]
+Count=2
+ETPCommand0=2
+ETPCommand1=3
+ETPGroup1=!!RECORDS
+ETPTopicOrder0=96
+
+[External Topic Properties\TJwMemoryType.mtDeAlloc]
+Count=2
+ETPCommand0=2
+ETPCommand1=3
+ETPGroup1=!!RECORDS
+ETPTopicOrder0=97
+
+[External Topic Properties\TJwMsgRec]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=47
+
+[External Topic Properties\TJwPointerType]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=48
+
+[External Topic Properties\TJwPrivCheck]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=49
+
+[External Topic Properties\TJwPrivilegeQueryType]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=50
+
+[External Topic Properties\TJwPrivilegeSetType]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=51
+
+[External Topic Properties\TJwProcessOutputInformation]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=52
+
+[External Topic Properties\TJwProcessParameterType]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=53
+
+[External Topic Properties\TJwProfileInfo]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=54
+
+[External Topic Properties\TJwProfileMember]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=55
+
+[External Topic Properties\TJwProgInvokeSetting]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=56
+
+[External Topic Properties\TJwProtectMemoryFlag]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=57
+
+[External Topic Properties\TJwReplyErrorEnum]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=58
+
+[External Topic Properties\TJwRequestedTokenType]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=59
+
+[External Topic Properties\TJwRightsMapping]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=60
+
+[External Topic Properties\TJwRightType]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=61
+
+[External Topic Properties\TJwRootKeyEnum]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=62
+
+[External Topic Properties\TJwRootRegKey]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=63
+
+[External Topic Properties\TJwRootTuple]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=64
+
+[External Topic Properties\TJwSecureObjectType]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=65
+
+[External Topic Properties\TJwSecurityDescriptorControl]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=66
+
+[External Topic Properties\TJwSecurityDesktopFlag]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=67
+
+[External Topic Properties\TJwSecurityDialogFlag]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=68
+
+[External Topic Properties\TJwSecurityInformationFlag]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=69
+
+[External Topic Properties\TJwSecurityObjectInformation]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=70
+
+[External Topic Properties\TJwSecurityObjectInformationFlag]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=71
+
+[External Topic Properties\TJwSecurityPageType]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=72
+
+[External Topic Properties\TJwSecurityResetType]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=73
+
+[External Topic Properties\TJwShadowMode]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=74
+
+[External Topic Properties\TJwShadowState]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=75
+
+[External Topic Properties\TJwSharedHandle]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=76
+
+[External Topic Properties\TJwShellExecuteFlag]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=77
+
+[External Topic Properties\TJwSidAttribute]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=78
+
+[External Topic Properties\TJwSidClassName]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=79
+
+[External Topic Properties\TJwSidInfoRecord]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=80
+
+[External Topic Properties\TJwSidMap]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=81
+
+[External Topic Properties\TJwSignalType]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=82
+
+[External Topic Properties\TJwTempResetEnum]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=83
+
+[External Topic Properties\TJwTokenMandatoryPolicy]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=84
+
+[External Topic Properties\TJwTreeSetType]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=85
+
+[External Topic Properties\TJwUserDataCopy]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=86
+
+[External Topic Properties\TJwWaitState]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=87
+
+[External Topic Properties\TJwXMLAttribute]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=88
+
+[External Topic Properties\TJwXMLAttrTag]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=89
+
+[External Topic Properties\TJwXMLEventType]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=90
+
+[External Topic Properties\TJwXMLLogTag]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=91
+
+[External Topic Properties\TJwXMLTag]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=92
+
 [External Topic Properties\Topic1]
 Count=2
 ETPCommand0=2
 ETPCommand1=3
 ETPGroup1=!!FILES
 ETPTopicOrder0=3
+
+[External Topic Properties\TThreadData]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=93
+
+[External Topic Properties\TThreadMapRec]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=94
+
+[External Topic Properties\TThreadNameInfo]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=95
 
 [File Extensions]
 ID1=.cs
@@ -56134,8 +56788,9 @@ UseParameterListInlineComments=1
 WallCharacters="#$%&'*+-/=@[\]^_`{|}~
 
 [Parsing\ConditionalDefines]
-Count=0
-HandleConditionalDefines=0
+Count=1
+Define_0=UNICODE
+HandleConditionalDefines=1
 
 [Parsing\Excluded Source Files]
 Count=0
@@ -56764,43 +57419,72 @@ ID9=9
 SavedValues=1
 
 [Source Files]
-Count=36
-File0=..\..\source\JwsclAccounts.dtx
-File1=..\..\source\JwsclAccounts.pas
-File10=..\..\source\JwsclCredentials.dtx
-File11=..\..\source\JwsclCryptProvider.dtx
-File12=..\..\source\JwsclDescriptor.dtx
-File13=..\..\source\JwsclDesktops.dtx
-File14=..\..\source\JwsclEurekaLogUtils.dtx
-File15=..\..\source\JwsclExceptions.dtx
-File16=..\..\source\JwsclImpersonation.dtx
-File17=..\..\source\JwsclKnownSid.dtx
-File18=..\..\source\JwsclLogging.dtx
-File19=..\..\source\JwsclLsa.dtx
-File2=..\..\source\JwsclAcl.dtx
-File20=..\..\source\JwsclMapping.dtx
-File21=..\..\source\JwsclPrivileges.dtx
-File22=..\..\source\JwsclProcess.dtx
-File23=..\..\source\JwsclResource.dtx
-File24=..\..\source\JwsclSecureObjects.dtx
-File25=..\..\source\JwsclSecurePrivateObjects.dtx
-File26=..\..\source\JwsclSecureUserObjects.dtx
-File27=..\..\source\JwsclSecurityDialogs.dtx
-File28=..\..\source\JwsclSid.dtx
-File29=..\..\source\JwsclStrings.dtx
-File3=..\..\source\JwsclAcl.pas
-File30=..\..\source\JwsclTerminalServer.dtx
-File31=..\..\source\JwsclToken.dtx
-File32=..\..\source\JwsclTypes.dtx
-File33=..\..\source\JwsclUtils.dtx
-File34=..\..\source\JwsclVersion.dtx
-File35=..\..\source\JwsclWinStations.dtx
-File4=..\..\source\JwsclAuthCtx.dtx
-File5=..\..\source\JwsclAuthCtx.pas
-File6=..\..\source\JwsclComUtils.dtx
-File7=..\..\source\JwsclComUtils.pas
-File8=..\..\source\JwsclConstants.dtx
-File9=..\..\source\JwsclConstants.pas
+Count=65
+File0=..\conclusion.dtx
+File1=..\introduction.dtx
+File10=..\..\source\JwsclConstants.dtx
+File11=..\..\source\JwsclConstants.pas
+File12=..\..\source\JwsclCredentials.dtx
+File13=..\..\source\JwsclCredentials.pas
+File14=..\..\source\JwsclCryptProvider.dtx
+File15=..\..\source\JwsclCryptProvider.pas
+File16=..\..\source\JwsclDescriptor.dtx
+File17=..\..\source\JwsclDescriptor.pas
+File18=..\..\source\JwsclDesktops.dtx
+File19=..\..\source\JwsclDesktops.pas
+File2=..\..\source\JwsclAccounts.dtx
+File20=..\..\source\JwsclElevation.pas
+File21=..\..\source\JwsclEncryption.pas
+File22=..\..\source\JwsclEnumerations.pas
+File23=..\..\source\JwsclEurekaLogUtils.dtx
+File24=..\..\source\JwsclEurekaLogUtils.pas
+File25=..\..\source\JwsclExceptions.dtx
+File26=..\..\source\JwsclExceptions.pas
+File27=..\..\source\JwsclImpersonation.dtx
+File28=..\..\source\JwsclImpersonation.pas
+File29=..\..\source\JwsclKnownSid.dtx
+File3=..\..\source\JwsclAccounts.pas
+File30=..\..\source\JwsclKnownSid.pas
+File31=..\..\source\JwsclLogging.dtx
+File32=..\..\source\JwsclLogging.pas
+File33=..\..\source\JwsclLsa.dtx
+File34=..\..\source\JwsclLsa.pas
+File35=..\..\source\JwsclMapping.dtx
+File36=..\..\source\JwsclMapping.pas
+File37=..\..\source\JwsclPrivileges.dtx
+File38=..\..\source\JwsclPrivileges.PAS
+File39=..\..\source\JwsclProcess.dtx
+File4=..\..\source\JwsclAcl.dtx
+File40=..\..\source\JwsclProcess.pas
+File41=..\..\source\JwsclResource.dtx
+File42=..\..\source\JwsclResource.pas
+File43=..\..\source\JwsclSecureObjects.dtx
+File44=..\..\source\JwsclSecureObjects.pas
+File45=..\..\source\JwsclSecurePrivateObjects.dtx
+File46=..\..\source\JwsclSecureUserObjects.dtx
+File47=..\..\source\JwsclSecurityDialogs.dtx
+File48=..\..\source\JwsclSecurityDialogs.pas
+File49=..\..\source\JwsclSid.dtx
+File5=..\..\source\JwsclAcl.pas
+File50=..\..\source\JwsclSid.pas
+File51=..\..\source\JwsclStrings.dtx
+File52=..\..\source\JwsclStrings.pas
+File53=..\..\source\JwsclTerminalServer.dtx
+File54=..\..\source\JwsclTerminalServer.pas
+File55=..\..\source\JwsclToken.dtx
+File56=..\..\source\JwsclToken.pas
+File57=..\..\source\JwsclTypes.dtx
+File58=..\..\source\JwsclTypes.pas
+File59=..\..\source\JwsclUtils.dtx
+File6=..\..\source\JwsclAuthCtx.dtx
+File60=..\..\source\JwsclUtils.pas
+File61=..\..\source\JwsclVersion.dtx
+File62=..\..\source\JwsclVersion.pas
+File63=..\..\source\JwsclWinStations.dtx
+File64=..\..\source\JwsclWinStations.pas
+File7=..\..\source\JwsclAuthCtx.pas
+File8=..\..\source\JwsclComUtils.dtx
+File9=..\..\source\JwsclComUtils.pas
 
 [Source Include Directories]
 Count=0

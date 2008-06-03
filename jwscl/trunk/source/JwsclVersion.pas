@@ -159,7 +159,8 @@ type
      
      <B>IsTerminalServer</B> returns <B>true</B> if the system is a Terminal Server in application mode
      ; otherwise <B>false</B>.
-     @seealso(TJwTerminalServer.EnumerateServers)
+     See Also
+     * TJwTerminalServer.EnumerateServers
     }
     property IsTerminalServer: Boolean read FIsTerminalServer;
 

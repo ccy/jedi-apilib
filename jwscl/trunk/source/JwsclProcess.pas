@@ -726,8 +726,8 @@ in the user database.
 In Vista the linked token will be retrieved which has the administrator group enabled.
 The user does not have to be an administrator at all!
 
-<B>Remarks:</B> 
-This procedure needs JwInitWellKnownSIDs to be called.
+Remarks
+ This procedure needs JwInitWellKnownSIDs to be called.
 <B>JwCreateProcessAsAdminUser</B> can only run within a SYSTEM account and with TCB privilege available.
 
 <B>BETA: This function has not been tested thoroughly!</B>  
