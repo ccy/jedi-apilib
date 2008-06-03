@@ -1,10 +1,13 @@
-{<B>Abstract</B>Provides access to secure windows objects (files, registry and other handles)  
-@author(Christian Wimmer)
-<B>Created:</B>03/23/2007 
-<B>Last modification:</B>09/10/2007 
-
+{
+Description
 Project JEDI Windows Security Code Library (JWSCL)
 
+Provides access to secure windows objects (files, registry and other handles)
+
+Author
+Christian Wimmer
+
+License
 The contents of this file are subject to the Mozilla Public License Version 1.1 (the "License");
 you may not use this file except in compliance with the License. You may obtain a copy of the
 License at http://www.mozilla.org/MPL/
@@ -13,24 +16,23 @@ Software distributed under the License is distributed on an "AS IS" basis, WITHO
 ANY KIND, either express or implied. See the License for the specific language governing rights
 and limitations under the License.
 
-Alternatively, the contents of this file may be used under the terms of the  
-GNU Lesser General Public License (the  "LGPL License"), in which case the   
-provisions of the LGPL License are applicable instead of those above.        
-If you wish to allow use of your version of this file only under the terms   
-of the LGPL License and not to allow others to use your version of this file 
-under the MPL, indicate your decision by deleting  the provisions above and  
-replace  them with the notice and other provisions required by the LGPL      
-License.  If you do not delete the provisions above, a recipient may use     
-your version of this file under either the MPL or the LGPL License.          
-                                                                             
-For more information about the LGPL: http://www.gnu.org/copyleft/lesser.html 
+Alternatively, the contents of this file may be used under the terms of the
+GNU Lesser General Public License (the  "LGPL License"), in which case the
+provisions of the LGPL License are applicable instead of those above.
+If you wish to allow use of your version of this file only under the terms
+of the LGPL License and not to allow others to use your version of this file
+under the MPL, indicate your decision by deleting  the provisions above and
+replace  them with the notice and other provisions required by the LGPL
+License.  If you do not delete the provisions above, a recipient may use
+your version of this file under either the MPL or the LGPL License.
 
+For more information about the LGPL: http://www.gnu.org/copyleft/lesser.html
+
+Note
 The Original Code is JwsclSecureObjects.pas.
 
 The Initial Developer of the Original Code is Christian Wimmer.
 Portions created by Christian Wimmer are Copyright (C) Christian Wimmer. All rights reserved.
-
-Description:
 
 }
 {$IFNDEF SL_OMIT_SECTIONS}
@@ -1705,7 +1707,7 @@ type
                  
                   # GenerationGap Levels between the object and the ancestor 
                   # AncestorName Name of the ancestor from which the ACE was inherited 
-                  # SID The SID that is inherited. The string has the type <SID account name>@<S-X-X...> 
+                  # SID The SID that is inherited. The string has the type <pre><SID account name>@<S-X-X...> </pre>
                  
        raises
  EJwsclInvalidPathException:  will be raised if the instance is created with a handle instead of a file or folder name.
@@ -1728,7 +1730,7 @@ type
                  
                   # GenerationGap Levels between the object and the ancestor 
                   # AncestorName Name of the ancestor from which the ACE was inherited 
-                  # SID The SID that is inherited. The string has the type <SID account name>@<S-X-X...> 
+                  # SID The SID that is inherited. The string has the type <pre><SID account name>@<S-X-X...> </pre>
                  
        raises
  EJwsclInvalidPathException:  will be raised if the instance is created with a handle instead of a file or folder name.
@@ -1829,10 +1831,10 @@ type
        @param RootPathName contains a drive path or UNC path.
          A drive must consist at least of a char followed by ":".
          The function parses the drive letter automatically from a full path name.
-          e.g. C:\Windows\win.com -> C:\
+          e.g. <pre>C:\\Windows\\win.com -> C:\\</pre>
          A UNC path contains at least of a servername and a UNC folder.
          Fully qualified UNC path are also stripped :
-           \\<server>\folder\subfolder -> \\<server>\folder\
+           <pre>\\\\server\\folder\\subfolder -> \\\\server\\folder\\</pre>
 
          RootPathName can also be an relative path (without a drive). It will be expanded to an absolute path automatically.
 
@@ -2454,7 +2456,7 @@ type
        This method simulates GetInheritanceSource, so that it can be used in all windows versions with ACL support.
 
        <B>GetKeyInheritanceSource</B> supports connection to a remote registry. To use a remote connection set RootKey to rrkString and use
-       a fully quallified key path (like '\\computer\USERS', '\\computer\USERS\S-1-5-18\Control Panel\Current').
+       a fully quallified key path (like '\\\\computer\\USERS', '\\\\computer\\USERS\\S-1-5-18\\Control Panel\\Current').
        A remote connection with another constant like rrkString is not supported.
         <B>GetKeyInheritanceSource</B> uses internally RegConnectRegistry. See http://msdn2.microsoft.com/en-us/library/ms724840.aspx for more information.
 
@@ -2476,7 +2478,7 @@ type
                  
                   # GenerationGap Levels between the object and the ancestor 
                   # AncestorName Name of the ancestor from which the ACE was inherited 
-                  # SID The SID that is inherited. The string has the type <SID account name>@<S-X-X...> 
+                  # SID The SID that is inherited. The string has the type <pre><SID account name>@<S-X-X...></pre> 
                  
        raises
  EJwsclInvalidPathException:  will be raised if the instance is created with a handle instead of a file or key name.
@@ -2498,7 +2500,7 @@ type
                  
                   # GenerationGap Levels between the object and the ancestor 
                   # AncestorName Name of the ancestor from which the ACE was inherited 
-                  # SID The SID that is inherited. The string has the type <SID account name>@<S-X-X...> 
+                  # SID The SID that is inherited. The string has the type <pre><SID account name>@<S-X-X...> </pre>
                  
        raises
  EJwsclInvalidPathException:  will be raised if the instance is created with a handle instead of a file or folder name.

@@ -1,10 +1,13 @@
-{<B>Abstract</B>Contains exceptions that are used by the units of the JWSCL 
-@author(Christian Wimmer)
-<B>Created:</B>03/23/2007 
-<B>Last modification:</B>11/19/2007 
-
+{
+Description
 Project JEDI Windows Security Code Library (JWSCL)
 
+Contains exceptions that are used by the units of the JWSCL
+
+Author
+Christian Wimmer
+
+License
 The contents of this file are subject to the Mozilla Public License Version 1.1 (the "License");
 you may not use this file except in compliance with the License. You may obtain a copy of the
 License at http://www.mozilla.org/MPL/
@@ -30,11 +33,9 @@ The Original Code is JwsclExceptions.pas.
 The Initial Developer of the Original Code is Christian Wimmer.
 Portions created by Christian Wimmer are Copyright (C) Christian Wimmer. All rights reserved.
 
-Description:
 
-
-Hint: Install JCL and compile this unit with compiler directive SM_JCLDEBUG
-   and TD32 Debug Info.
+Remarks
+Install JCL and compile this unit with compiler directive SM_JCLDEBUG and TD32 Debug Info.
 
 
 }

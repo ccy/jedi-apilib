@@ -1,10 +1,16 @@
-{<B>Abstract</B>This unit is not implemented yet 
-@author(Christian Wimmer)
-<B>Created:</B>03/23/2007 
-<B>Last modification:</B>09/10/2007 
-
+{
+Description
 Project JEDI Windows Security Code Library (JWSCL)
 
+This unit is not implemented yet
+Warning, this source code is under development and is not even in beta state!
+Do not use it!
+
+
+Author
+Christian Wimmer
+
+License
 The contents of this file are subject to the Mozilla Public License Version 1.1 (the "License");
 you may not use this file except in compliance with the License. You may obtain a copy of the
 License at http://www.mozilla.org/MPL/
@@ -24,17 +30,12 @@ License.  If you do not delete the provisions above, a recipient may use
 your version of this file under either the MPL or the LGPL License.          
                                                                              
 For more information about the LGPL: http://www.gnu.org/copyleft/lesser.html 
+Note
 
 The Original Code is JwsclSecurePrivateObjects.pas.
 
 The Initial Developer of the Original Code is Christian Wimmer.
 Portions created by Christian Wimmer are Copyright (C) Christian Wimmer. All rights reserved.
-
-
-Description:
-Warning, this source code is under development and is not even in beta state!
-Do not use it!
-
 
 }
 {$IFNDEF SL_OMIT_SECTIONS}

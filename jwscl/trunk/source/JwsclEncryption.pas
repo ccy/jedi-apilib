@@ -1,11 +1,13 @@
-{<B>Abstract</B>This unit provides access to MS Crypt API.
-Actually the Windows Vista Crypt API is not supported by this unit. The direct memory encryption is simulated. 
-@author(Christian Wimmer)
-<B>Created:</B>03/23/2007 
-<B>Last modification:</B>11/18/2007 
-
+{
 Project JEDI Windows Security Code Library (JWSCL)
 
+Actually the Windows Vista Crypt API is not supported by this unit. The direct memory encryption is simulated.
+
+Author
+Christian Wimmer
+Philip Dittmann
+
+License
 The contents of this file are subject to the Mozilla Public License Version 1.1 (the "License");
 you may not use this file except in compliance with the License. You may obtain a copy of the
 License at http://www.mozilla.org/MPL/
@@ -26,15 +28,12 @@ your version of this file under either the MPL or the LGPL License.
                                                                              
 For more information about the LGPL: http://www.gnu.org/copyleft/lesser.html 
 
+Note
 The Original Code is JwsclEncryption.pas.
 
 The Initial Developer of the Original Code is Christian Wimmer.
 Portions created by Christian Wimmer are Copyright (C) Christian Wimmer. All rights reserved.
 Portions created by Philip Dittmann are Copyright (C) Philip Dittmann. All rights reserved.
-
-
-Description:
-This unit provides access to MS Crypt API
 
 
 }
@@ -97,7 +96,7 @@ type
      @param Flags Defines who can decrypt the new data.
         
           # pmSameProcess - defines that only the process which created
-            the encrypted data can decrypt it 
+            the encrypted data can decrypt it
           # pmCrossProcess - defines that other processes on the same
             computer can decrypt the data 
           # pmSameLogon - defines only the same use can decrypt the data 
@@ -159,7 +158,7 @@ type
      @param Data [out]. This parameter receives the encrypted data.
        The data can be freed using FreeMem on its Data member .
      raises
- EjwsclCryptApiException:  if an underlying API function failed. 
+ EjwsclCryptApiException:  if an underlying API function failed.
 
      }
     class procedure EncryptPointerWithPrompt(

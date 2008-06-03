@@ -1,10 +1,13 @@
-{<B>Abstract</B>Contains access control classes that are used by the units of JWSCL
-@author(Christian Wimmer)
-<B>Created:</B>03/23/2007 
-<B>Last modification:</B>09/10/2007 
-
+{
+Description
 Project JEDI Windows Security Code Library (JWSCL)
 
+Contains access control classes that are used by the units of JWSCL
+
+Author
+Christian Wimmer
+
+License
 The contents of this file are subject to the Mozilla Public License Version 1.1 (the "License");
 you may not use this file except in compliance with the License. You may obtain a copy of the
 License at http://www.mozilla.org/MPL/
@@ -25,20 +28,18 @@ your version of this file under either the MPL or the LGPL License.
 
 For more information about the LGPL: http://www.gnu.org/copyleft/lesser.html 
 
+Note
+
 The Original Code is JwsclAcl.pas.
 
 The Initial Developer of the Original Code is Christian Wimmer.
 Portions created by Christian Wimmer are Copyright (C) Christian Wimmer. All rights reserved.
 
-
-
-Description:
-
 Unsupported structures :
- SYSTEM_ALARM_ACE
- SYSTEM_ALARM_CALLBACK_ACE
- SYSTEM_ALARM_CALLBACK_OBJECT_ACE
- SYSTEM_ALARM_OBJECT_ACE
+* SYSTEM_ALARM_ACE
+* SYSTEM_ALARM_CALLBACK_ACE
+* SYSTEM_ALARM_CALLBACK_OBJECT_ACE
+* SYSTEM_ALARM_OBJECT_ACE
 
 
 
@@ -1507,53 +1508,58 @@ type
       write SetMandatoryPolicy;
   end;
 
-  {<B>JwFormatAccessRights</B> creates a formatted string that splits up an access mask
-  into its rights constants. The constants can be named if parameter
-  RightsMapping is used.
-
-  Each line contains a checkbox that defines whether the access mask
-   contains this specifc right or not. Furthermore it contains the name of the
-   right.
-  A line may look like this:
-    [X] <right> [<right type>]
-
-  @param GrantedAccess defines an array of access masks. Each
-    array element will get its own column (zero based). 
-  @param RightsMapping defines a map structure that maps between constants
-   and strings (e.g. JwsclConstants.FileMapping )
-  @return Returns the access mask with its rights states. Each line is
-   separated by a line break (#13#10) 
-
-  }
+  { <b>JwFormatAccessRights</b> creates a formatted string that
+    splits up an access mask into its rights constants. The
+    constants can be named if parameter RightsMapping is used.
+    
+    Each line contains a checkbox that defines whether the access
+    mask contains this specifc right or not. Furthermore it
+    contains the name of the right. A line may look like this:
+    <code>
+    [X] []
+    </code>
+    
+    Parameters
+    GrantedAccess :  defines an array of access masks. Each array
+                     element will get its own column (zero based).
+    RightsMapping :  defines a map structure that maps between
+                     constants and strings (e.g.
+                     JwsclConstants.FileMapping ) 
+    Returns
+    \Returns the access mask with its rights states. Each line is
+    separated by a line break (#13#10)                             }
   function JwFormatAccessRights(const Access : Cardinal;
      RightsMapping : Array of TJwRightsMapping) : TJwString; overload;
 
-  {<B>JwFormatAccessRights</B> creates a formatted string that splits up several access massk
-  into its rights constants. The constants can be named if parameter
-  RightsMapping is used.
-
-  Each line contains one or more checkboxes that define whether the access masks
-   contain a specifc right or not. Furthermore it contains the name of the
-   right.
-  A line may look like this:
-    [X] [ ] [X] <right> [<right type>]
-    [X] [ ] [2] <right> [<right type>]
-
-  @param GrantedAccess defines an array of access masks. Each
-    array element will get its own column (zero based). 
-  @param AccessStatus defines an array of the error status of the
-    right. If status is neither zero nor 5 (access denied) instead of
-    an emtyp or checked checkbox ([ ] or [X]),
-    the status will be shown in the checkbox (e.g. [2]).
-    The array index of GrantedAccess will be used to get the error status
-    index from AccessStatus. Thus the length of array AccessStatus and
-    GrantedStatus must be the same. 
-  @param RightsMapping defines a map structure that maps between constants
-   and strings (e.g. JwsclConstants.FileMapping ) 
-  @return Returns the access mask with its rights states. Each line is
-   separated by a line break (#13#10) 
-
-  }
+  { <b>JwFormatAccessRights</b> creates a formatted string that
+    splits up several access massk into its rights constants. The
+    constants can be named if parameter RightsMapping is used.
+    
+    Each line contains one or more checkboxes that define whether
+    the access masks contain a specifc right or not. Furthermore
+    it contains the name of the right. A line may look like this:
+    <code>
+    [X] [ ] [X] [] [X] [ ] [2] []
+    </code>
+    
+    Parameters
+    GrantedAccess :  defines an array of access masks. Each array
+                     element will get its own column (zero based).
+    AccessStatus :   defines an array of the error status of the
+                     right. If status is neither zero nor 5
+                     (access denied) instead of an emtyp or
+                     checked checkbox ([ ] or [X]), the status
+                     will be shown in the checkbox (e.g. [2]). The
+                     array index of GrantedAccess will be used to
+                     get the error status index from AccessStatus.
+                     Thus the length of array AccessStatus and
+                     GrantedStatus must be the same. 
+    RightsMapping :  defines a map structure that maps between
+                     constants and strings (e.g.
+                     JwsclConstants.FileMapping ) 
+    Returns
+    \Returns the access mask with its rights states. Each line is
+    separated by a line break (#13#10)                             }
   function JwFormatAccessRights(
     const GrantedAccess : TJwAccessMaskArray;
     const AccessStatus : TJwCardinalArray;

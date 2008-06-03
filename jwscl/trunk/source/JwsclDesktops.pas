@@ -1,10 +1,13 @@
-{<B>Abstract</B>Contains desktop functions
-@author(Christian Wimmer)
-<B>Created:</B>03/23/2007 
-<B>Last modification:</B>09/10/2007 
-
+{
+Description
 Project JEDI Windows Security Code Library (JWSCL)
 
+Contains desktop functions
+
+Author
+Christian Wimmer
+
+License
 The contents of this file are subject to the Mozilla Public License Version 1.1 (the "License");
 you may not use this file except in compliance with the License. You may obtain a copy of the
 License at http://www.mozilla.org/MPL/
@@ -31,12 +34,11 @@ The Initial Developer of the Original Code is Christian Wimmer.
 Portions created by Christian Wimmer are Copyright (C) Christian Wimmer. All rights reserved.
 
 
-Warning:
+
 This unit is about to be changed.
 
-Description:
 
-Links:
+Link List
 Secure object types:
   http://msdn2.microsoft.com/en-us/library/aa379593.aspx
 

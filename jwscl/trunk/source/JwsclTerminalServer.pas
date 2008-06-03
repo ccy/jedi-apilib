@@ -1,11 +1,14 @@
-{<B>Abstract</B>This unit provides access to Terminal Server api functions through it's
- key object TJwTerminalServer 
-@author(Remko Weijnen)
-<B>Created:</B>10/26/2007 
-<B>Last modification:</B>10/26/2007 
-
+{
+Description
 Project JEDI Windows Security Code Library (JWSCL)
 
+This unit provides access to Terminal Server api functions through it's
+ key object TJwTerminalServer
+
+Author
+Remko Weijnen
+
+License
 The contents of this file are subject to the Mozilla Public License Version 1.1 (the "License");
 you may not use this file except in compliance with the License. You may obtain a copy of the
 License at http://www.mozilla.org/MPL/
@@ -18,34 +21,33 @@ Alternatively, the contents of this file may be used under the terms of the
 GNU Lesser General Public License (the  "LGPL License"), in which case the   
 provisions of the LGPL License are applicable instead of those above.
 If you wish to allow use of your version of this file only under the terms   
-of the LGPL License and not to allow others to use your version of this file 
-under the MPL, indicate your decision by deleting  the provisions above and  
+of the LGPL License and not to allow others to use your version of this file
+under the MPL, indicate your decision by deleting  the provisions above and
 replace  them with the notice and other provisions required by the LGPL
 License.  If you do not delete the provisions above, a recipient may use
-your version of this file under either the MPL or the LGPL License.          
+your version of this file under either the MPL or the LGPL License.
 
-For more information about the LGPL: http://www.gnu.org/copyleft/lesser.html 
+For more information about the LGPL: http://www.gnu.org/copyleft/lesser.html
 
+Note
 The Original Code is JwsclTerminalServer.pas.
 
 The Initial Developer of the Original Code is Remko Weijnen.
 Portions created by Remko Weijnen are Copyright (C) Remko Weijnen. All rights reserved.
 
-br
 The central object of the JwsclTerminalServer unit is the TJwTerminalServer
 object. It represents a Terminal Server, the connection to this server and
 holds the session- and processlist.
 
 Some Key functions of TJwTerminalServer are:
 
-
-  # TJwTerminalServer.EnumerateSessions enumerates all Terminal Server
-  sessions into a TJwSessionList which can be accessed by the Sessions property. 
-  # TJwTerminalServer.EnumerateProcesses enumerates all Terminal Server
-  processes into a TJwProcessList which can be accessed by the Processes property. 
-  # TJwTerminalServer.EnumerateServers enumerates all Terminal Servers in a
-  domain. 
-  # TJwTerminalServer.Shutdown Shuts down and optionally restarts the specified
+  * TJwTerminalServer.EnumerateSessions enumerates all Terminal Server
+  sessions into a TJwSessionList which can be accessed by the Sessions property.
+  * TJwTerminalServer.EnumerateProcesses enumerates all Terminal Server
+  processes into a TJwProcessList which can be accessed by the Processes property.
+  * TJwTerminalServer.EnumerateServers enumerates all Terminal Servers in a
+  domain.
+  * TJwTerminalServer.Shutdown Shuts down and optionally restarts the specified
   Terminal Server. 
 
 
@@ -62,7 +64,7 @@ The schema belows shows the relations between TJwTerminalServer,
 the TJwWTSSessionList with TJwWTSSessions and the TJwWTSProcessList with
 TjwWTSSessions.
 
-@image(.\..\documentation\TJwTerminalServer-Hierarchy.png)
+<image .\..\documentation\TJwTerminalServer-Hierarchy.png>
 }
 
 {$IFNDEF SL_OMIT_SECTIONS}
@@ -129,7 +131,7 @@ type
    the TJwWTSSessionList with TJwWTSSessions and the TJwWTSProcessList with
    TjwWTSSessions.
    
-   @image(.\..\documentation\TJwTerminalServer-Hierarchy.png)
+   <image .\..\documentation\TJwTerminalServer-Hierarchy.png>
   }
   TJwTerminalServer = class(TObject)
   protected
@@ -563,7 +565,7 @@ type
      session related, like statechange, logon/logoff, disconnect and (re)connect.
      
      The table below shows which Terminal Server event triggers which event:
-     @image(.\..\documentation\TJwWTSEvents-Table.png)
+     <image .\..\documentation\TJwWTSEvents-Table.png>
     }
     property OnSessionEvent: TNotifyEvent read FOnSessionEvent write FOnSessionEvent;
 
@@ -666,14 +668,15 @@ type
 
     {<B>Shutdown</B> shuts down (and optionally restarts) the specified terminal server.
      @Param AShutdownFlag can be one of the following values:
-     @table(
-     @rowHead(  @cell(Value) @cell(Meaning))
-      @row(     @cell(WTS_WSD_LOGOFF) @cell(Forces all client sessions to log off (except the session calling WTSShutdownSystem) and disables any subsequent remote logons. This can be used as a preliminary step before shutting down. Logons will be re-enabled when the terminal services service is restarted. Use this value only on the Terminal Services console.))
-      @row(     @cell(WTS_WSD_POWEROFF) @cell(Shuts down the system on the terminal server and, on computers that support software control of AC power, turns off the power. This is equivalent to calling ExitWindowsEx with EWX_SHUTDOWN and EWX_POWEROFF. The calling process must have the SE_SHUTDOWN_NAME privilege enabled.))
-      @row(     @cell(WTS_WSD_REBOOT) @cell(Shuts down and then restarts the system on the terminal server. This is equivalent to calling ExitWindowsEx with EWX_REBOOT. The calling process must have the SE_SHUTDOWN_NAME privilege enabled.))
-      @row(     @cell(WTS_WSD_SHUTDOWN) @cell(Shuts down the system on the terminal server. This is equivalent to calling the ExitWindowsEx function with EWX_SHUTDOWN. The calling process must have the SE_SHUTDOWN_NAME privilege enabled.))
-      @row(     @cell(WTS_WSD_FASTREBOOT) @cell(This value is not supported currently.))
-      )
+      <table>
+       Value                         Meaning
+       ----------------------------  ----------------------------------------------
+       WTS_WSD_LOGOFF                Forces all client sessions to log off (except the session calling WTSShutdownSystem) and disables any subsequent remote logons. This can be used as a preliminary step before shutting down. Logons will be re-enabled when the terminal services service is restarted. Use this value only on the Terminal Services console.
+       WTS_WSD_POWEROFF              Shuts down the system on the terminal server and, on computers that support software control of AC power, turns off the power. This is equivalent to calling ExitWindowsEx with EWX_SHUTDOWN and EWX_POWEROFF. The calling process must have the SE_SHUTDOWN_NAME privilege enabled.
+       WTS_WSD_REBOOT                Shuts down and then restarts the system on the terminal server. This is equivalent to calling ExitWindowsEx with EWX_REBOOT. The calling process must have the SE_SHUTDOWN_NAME privilege enabled.
+       WTS_WSD_SHUTDOWN              Shuts down the system on the terminal server. This is equivalent to calling the ExitWindowsEx function with EWX_SHUTDOWN. The calling process must have the SE_SHUTDOWN_NAME privilege enabled.
+       WTS_WSD_FASTREBOOT            This value is not supported currently.
+      </table>
      raises
  EJwsclWinCallFailedException:  will be raised if the call fails. 
     }

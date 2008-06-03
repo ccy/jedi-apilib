@@ -1,10 +1,13 @@
-{<B>Abstract</B>Contains resource strings used by JSWCL 
-@author(Christian Wimmer)
-<B>Created:</B>03/23/2007 
-<B>Last modification:</B>11/19/2007 
-
+{
+Description
 Project JEDI Windows Security Code Library (JWSCL)
 
+Contains resource strings used by JSWCL
+
+Author
+Christian Wimmer
+
+License
 The contents of this file are subject to the Mozilla Public License Version 1.1 (the "License");
 you may not use this file except in compliance with the License. You may obtain a copy of the
 License at http://www.mozilla.org/MPL/
@@ -24,13 +27,12 @@ License.  If you do not delete the provisions above, a recipient may use
 your version of this file under either the MPL or the LGPL License.          
                                                                              
 For more information about the LGPL: http://www.gnu.org/copyleft/lesser.html 
+Note
 
 The Original Code is JwsclResource.pas.
 
 The Initial Developer of the Original Code is Christian Wimmer.
 Portions created by Christian Wimmer are Copyright (C) Christian Wimmer. All rights reserved.
-
-Description:
 
 }
 unit JwsclResource;
@@ -526,7 +528,7 @@ const
   RsUNCryptProvider = 'JwsclCryptProvider.pas';
 
 {<B>GetResourceStringIdentifier</B> converts a delphi resourcestring into a resource identifier.
-Use @<ResourcestringName> as parameter rs.
+Use ResourcestringName as parameter rs.
 
 The function cannot fail for correct delphi resourcestring identifiers.
 }

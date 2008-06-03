@@ -1,11 +1,13 @@
 {
-<B>Abstract</B>Contains types that are used by the units of JWSCL 
-@author(Christian Wimmer)
-<B>Created:</B>03/23/2007 
-<B>Last modification:</B>11/27/2007 
-
+Description
 Project JEDI Windows Security Code Library (JWSCL)
 
+Contains types that are used by the units of JWSCL
+
+Author
+Christian Wimmer
+
+License
 The contents of this file are subject to the Mozilla Public License Version 1.1 (the "License");
 you may not use this file except in compliance with the License. You may obtain a copy of the
 License at http://www.mozilla.org/MPL/
@@ -19,13 +21,14 @@ GNU Lesser General Public License (the  "LGPL License"), in which case the
 provisions of the LGPL License are applicable instead of those above.        
 If you wish to allow use of your version of this file only under the terms   
 of the LGPL License and not to allow others to use your version of this file 
-under the MPL, indicate your decision by deleting  the provisions above and  
-replace  them with the notice and other provisions required by the LGPL      
-License.  If you do not delete the provisions above, a recipient may use     
-your version of this file under either the MPL or the LGPL License.          
-                                                                             
-For more information about the LGPL: http://www.gnu.org/copyleft/lesser.html 
+under the MPL, indicate your decision by deleting  the provisions above and
+replace  them with the notice and other provisions required by the LGPL
+License.  If you do not delete the provisions above, a recipient may use
+your version of this file under either the MPL or the LGPL License.
 
+For more information about the LGPL: http://www.gnu.org/copyleft/lesser.html
+
+Note
 The Original Code is JwsclTypes.pas.
 
 The Initial Developer of the Original Code is Christian Wimmer.
@@ -325,7 +328,7 @@ type
      See TJwInheritedFromArrayEx )}
     AncestorName:  WideString;
     {<B>SID</B> defines the name of the Sid which this record is dealing with.
-     It looks like <SID account name>@<S-X-X...> }
+     It looks like <pre><SID account name>@<S-X-X...></pre> }
     SID:           WideString;
   end;
 

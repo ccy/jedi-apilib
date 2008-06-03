@@ -1,10 +1,15 @@
-{<B>Abstract</B>This units provides classes to use the MS AuthZ Technology API. 
-@author(Christian Wimmer)
-<B>Created:</B>01/01/2008 
-<B>Last modification:</B>01/09/2008 
+{
+Description
 
+This unit provides access to the MS AuthZ technology API.
+The main reason is to do AccessCheck without needing a token.
+           
 Project JEDI Windows Security Code Library (JWSCL)
 
+Author
+Christian Wimmer
+
+License
 The contents of this file are subject to the Mozilla Public License Version 1.1 (the "License");
 you may not use this file except in compliance with the License. You may obtain a copy of the
 License at http://www.mozilla.org/MPL/
@@ -25,28 +30,23 @@ your version of this file under either the MPL or the LGPL License.
                                                                              
 For more information about the LGPL: http://www.gnu.org/copyleft/lesser.html 
 
+Note
+
 The Original Code is JwsclAuthCtx.pas.
 
 The Initial Developer of the Original Code is Christian Wimmer.
 Portions created by Christian Wimmer are Copyright (C) Christian Wimmer. All rights reserved.
 
-
-
-Description:
-This unit provides access to the MS AuthZ technology API.
-The main reason is to do AccessCheck without needing a token.
-
 Unsupported features :
-
-AuthzEnumerateSecurityEventSources
-AuthzFreeAuditEvent
-AuthzInstallSecurityEventSource
-AuthzOpenObjectAudit
-AuthzRegisterSecurityEventSource
-AuthzReportSecurityEvent
-AuthzReportSecurityEventFromParams
-AuthzUninstallSecurityEventSource
-AuthzUnregisterSecurityEventSource
+* AuthzEnumerateSecurityEventSources
+* AuthzFreeAuditEvent
+* AuthzInstallSecurityEventSource
+* AuthzOpenObjectAudit
+* AuthzRegisterSecurityEventSource
+* AuthzReportSecurityEvent
+* AuthzReportSecurityEventFromParams
+* AuthzUninstallSecurityEventSource
+* AuthzUnregisterSecurityEventSource
 
 
 }

@@ -1,10 +1,13 @@
-{<B>Abstract</B>Provides access to security token objects
-@author(Christian Wimmer)
-<B>Created:</B>03/23/2007 
-<B>Last modification:</B>09/10/2007 
-
+{
+Description
 Project JEDI Windows Security Code Library (JWSCL)
 
+Provides access to security token objects
+
+Author
+Christian Wimmer
+
+License
 The contents of this file are subject to the Mozilla Public License Version 1.1 (the "License");
 you may not use this file except in compliance with the License. You may obtain a copy of the
 License at http://www.mozilla.org/MPL/
@@ -23,28 +26,15 @@ replace  them with the notice and other provisions required by the LGPL
 License.  If you do not delete the provisions above, a recipient may use     
 your version of this file under either the MPL or the LGPL License.          
                                                                              
-For more information about the LGPL: http://www.gnu.org/copyleft/lesser.html 
+For more information about the LGPL: http://www.gnu.org/copyleft/lesser.html
 
+Note
 The Original Code is JwsclToken.pas.
 
 The Initial Developer of the Original Code is Christian Wimmer.
 Portions created by Christian Wimmer are Copyright (C) Christian Wimmer. All rights reserved.
 
-Description:
-This unit contains ansi- and unicode string types that are used by the units of JWSCL.
-You can define UNICODE to use unicode strings. Otherwise ansicode will be used.
-
 See Jwscl.inc for Vista related stuff!
-
-TODO:
-use
-<code lang="Delphi">
-heckTokenHandle('SetfTokenDefaultDacl');
-CheckTokenAccessType(TOKEN_ADJUST_DEFAULT, 'TOKEN_ADJUST_DEFAULT',
-    'SetfTokenDefaultDacl');
-</code>
-for all token methods.
-
 
 }
 {$IFNDEF SL_OMIT_SECTIONS}
@@ -1312,8 +1302,8 @@ type
       virtual;
 
        {<B>LUIDtoText</B> converts a LUID (locally unique ID) into a string.
-        Output format: 
-        'hi: 0x<hipart>, lo: 0x<lopart> (0x<(hipart shl 4) or (lopart)>)';
+        Output format:
+        <pre>'hi: 0x<hipart>, lo: 0x<lopart> (0x<(hipart shl 4) or (lopart)>)';</pre>
 
         @param aLUID receives the LUID of the privilege 
        }
@@ -1353,10 +1343,12 @@ type
 
        {<B>GetText</B> creates a string that contains a privilege in a human
         readable form :
+		 <pre>	
          LUID       : <luid> #13#10
          Name       : <name> #13#10
          DisplayName : <descr> #13#10
          Attributes : <attributes> #13#10#13#10
+        </pre>
         }
     function GetText: TJwString; virtual;
 
@@ -1374,9 +1366,9 @@ type
        {Attributes contains the status of the privilege.
         It is a bit combination of these values :
 
-        SE_PRIVILEGE_ENABLED_BY_DEFAULT
-        SE_PRIVILEGE_ENABLED
-        SE_PRIVILEGE_USED_FOR_ACCESS
+        * SE_PRIVILEGE_ENABLED_BY_DEFAULT
+        * SE_PRIVILEGE_ENABLED
+        * SE_PRIVILEGE_USED_FOR_ACCESS
        }
     property Attributes: cardinal Read fAttributes;
 
@@ -1475,10 +1467,12 @@ type
 
        {<B>GetText</B> creates a string that contains all privileges in a human
         readable form :
+        <pre> 
          LUID       : <luid> #13#10
          Name       : <name> #13#10
          DisplayName : <descr> #13#10
          Attributes : <attributes> #13#10#13#10
+        </pre>
         }
     function GetText: TJwString;
 
