@@ -235,7 +235,7 @@ begin
     DataSize := 1;
   if not Readonly then
   {$IFDEF UNICODE}
-    FMapHandle := CreateFileMappingW(FFileHandle,nil,PAGE_READWRITE,0,DataSize,Name);
+    FMapHandle := CreateFileMappingW(FFileHandle,nil,PAGE_READWRITE,0,DataSize,Name)
   {$ELSE}
     FMapHandle := CreateFileMappingA(FFileHandle,nil,PAGE_READWRITE,0,DataSize,Name)
   {$ENDIF}
@@ -479,7 +479,7 @@ function TJwIPCStream.OpenMapView(Name: TJwPChar): Int64;
 var inf: TMemoryBasicInformation;
 begin
   if not ReadOnly then
-  {$IFDEF UNICODE}
+  {$IFDEF UNICODE}     
     FMapHandle := OpenFileMappingW(FILE_MAP_READ or FILE_MAP_WRITE,false,Name)
   {$ELSE}
     FMapHandle := OpenFileMappingA(FILE_MAP_READ or FILE_MAP_WRITE,false,Name)
