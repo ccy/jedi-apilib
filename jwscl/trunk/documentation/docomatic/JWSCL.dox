@@ -401,7 +401,7 @@ CValue_9=7872391
 
 [Configurations]
 Count=6
-Current=2
+Current=1
 Name0=Configuration 1
 Name1=Configuration 2
 Name2=Configuration 3
@@ -9838,7 +9838,7 @@ DHTMLFixedHeader=1
 FrameOption=0
 
 [Configurations\Configuration 1\{D3A588E0-9472-11D3-BDD1-0080C8BA053D}\General]
-ClearDirectoryBeforeExport=0
+ClearDirectoryBeforeExport=1
 CustomHEADCode=
 ExpandTOCLevels=1
 GenerateHEADContent=1
@@ -9847,7 +9847,7 @@ HTMLFileExtension=.html
 HTMLFilenaming=0
 HTMLFileTemplate=
 InsertCustomHEADCode=0
-OutputDir=$(USRDOCSOUTPUT)
+OutputDir=bin\html
 OutputOptions=14
 OutputTOCLevels=0
 PrintFlagsInIndex=0
@@ -22957,7 +22957,7 @@ DHTMLFixedHeader=1
 FrameOption=0
 
 [Configurations\Configuration 2\{D3A588E0-9472-11D3-BDD1-0080C8BA053D}\General]
-ClearDirectoryBeforeExport=0
+ClearDirectoryBeforeExport=1
 CustomHEADCode=
 ExpandTOCLevels=1
 GenerateHEADContent=1
@@ -22966,7 +22966,7 @@ HTMLFileExtension=.html
 HTMLFilenaming=0
 HTMLFileTemplate=
 InsertCustomHEADCode=0
-OutputDir=$(USRDOCSOUTPUT)
+OutputDir=bin\chm
 OutputOptions=7
 OutputTOCLevels=0
 PrintFlagsInIndex=0
