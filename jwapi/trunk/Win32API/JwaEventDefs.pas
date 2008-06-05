@@ -131,7 +131,7 @@ type
     ExtType : USHORT;                        // Extended info type
     //Bitfield member. Use utility functions from JwaBitFields.pas
     //Use GetEventHeaderExtendedDataItemLinkage to get linkage flag
-    ExtTypeValue: Set Of(Linkage, Reserved=al16bit); //contains Linkage and Reserverd2 !
+    ExtTypeValue: Set Of(Linkage, Reserved2, _AlignExtTypeValue=al16bit); //contains Linkage and Reserverd2 !
     {
     Linkage is really a bit field
     struct {
