@@ -351,6 +351,7 @@ type
   EJwsclInvalidHandle = class(EJwsclSecurityException);
   EJwsclClassTypeMismatch = class(EJwsclSecurityException);
 
+  EJwsclEndOfStream = class(EJwsclSecurityException);
 
   JwGeneralExceptionClass = class of Exception;
 
