@@ -56,7 +56,7 @@ interface
 {$IFDEF JWA_WINDOWS}
   uses JwaWindows;
 {$ELSE}
-  uses JwaWinBase, JwaWinNT, JwaWinType, JwaWmiStr;
+  uses JwaWinBase, JwaWinNT, JwaWinType, JwaWmiStr, JwaBitFields;
 {$ENDIF JWA_WINDOWS}
 
 
@@ -129,7 +129,9 @@ type
   _EVENT_HEADER_EXTENDED_DATA_ITEM  = record
     Reserved1 : USHORT;                      // Reserved for internal use
     ExtType : USHORT;                        // Extended info type
-    Linkage : USHORT; //contains Linkage and Reserverd2 !
+    //Bitfield member. Use utility functions from JwaBitFields.pas
+    //Use GetEventHeaderExtendedDataItemLinkage to get linkage flag
+    ExtTypeValue: Set Of(Linkage, Reserved=al16bit); //contains Linkage and Reserverd2 !
     {
     Linkage is really a bit field
     struct {
@@ -181,6 +183,11 @@ type
   TEventFilterDescriptor = EVENT_FILTER_DESCRIPTOR;
   PEventFilterDescriptor = ^TEventFilterDescriptor;
 
+{GetEventHeaderExtendedDataItemLinkage returns the linkage flag from
+ structure TEventHeaderExtendedDataItem.
+}
+function GetEventHeaderExtendedDataItemLinkage(const
+  DataItem : TEventHeaderExtendedDataItem) : Boolean;
 {$ENDIF JWA_IMPLEMENTATIONSECTION}
 
 
@@ -193,6 +200,14 @@ implementation
 
 {$IFNDEF JWA_INTERFACESECTION}
 //add here implementation stuff
+
+
+function GetEventHeaderExtendedDataItemLinkage(const
+  DataItem : TEventHeaderExtendedDataItem) : Boolean;
+begin
+  //  result := Boolean(ValueFromBitSet(DataItem.ExtTypeValue, Byte(Linkage), 1);
+  result := Linkage in DataItem.ExtTypeValue;
+end;
 
 
 {$ENDIF JWA_INTERFACESECTION}
