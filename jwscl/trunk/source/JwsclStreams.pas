@@ -234,10 +234,18 @@ begin
   if DataSize = 0 then
     DataSize := 1;
   if not Readonly then
-    FMapHandle := CreateFileMapping(FFileHandle,nil,PAGE_READWRITE,0,DataSize,Name)
+  {$IFDEF UNICODE}
+    FMapHandle := CreateFileMappingW(FFileHandle,nil,PAGE_READWRITE,0,DataSize,Name);
+  {$ELSE}
+    FMapHandle := CreateFileMappingA(FFileHandle,nil,PAGE_READWRITE,0,DataSize,Name)
+  {$ENDIF}
   else
-    FMapHandle := CreateFileMapping(FFileHandle,nil,PAGE_READONLY,0,DataSize,Name);
-
+  {$IFDEF UNICODE}
+    FMapHandle := CreateFileMappingW(FFileHandle,nil,PAGE_READONLY,0,DataSize,Name);
+  {$ELSE}
+    FMapHandle := CreateFileMappingA(FFileHandle,nil,PAGE_READONLY,0,DataSize,Name);
+  {$ENDIF}
+  
   if FMapHandle = 0 then
     raise EJwsclWinCallFailedException.CreateFmtWinCall(RsWinCallFailed,'CreateMapView',Classname,RsUNStreams,0,true,'CreateFileMapping',['CreateFileMapping']);
 
@@ -396,8 +404,13 @@ begin
   else
     FileFlag := FILE_FLAG_DELETE_ON_CLOSE;
 
-  FFileHandle := CreateFile(TJwPChar(FFilename),AccessMode[Access],ShareMode,nil,
-                            CreateFlag[Access],FileFlag,0);
+  {$IFDEF UNICODE}
+    FFileHandle := CreateFileW(TJwPChar(FFilename),AccessMode[Access],ShareMode,nil,
+                               CreateFlag[Access],FileFlag,0);
+  {$ELSE}
+    FFileHandle := CreateFileA(TJwPChar(FFilename),AccessMode[Access],ShareMode,nil,
+                               CreateFlag[Access],FileFlag,0);
+  {$ENDIF}
 
   if (FFileHandle <> INVALID_HANDLE_VALUE) and (FFileHandle <> 0) then
     FSize := CreateMapView(GetFileSize(FFileHandle,nil))
@@ -466,9 +479,17 @@ function TJwIPCStream.OpenMapView(Name: TJwPChar): Int64;
 var inf: TMemoryBasicInformation;
 begin
   if not ReadOnly then
-    FMapHandle := OpenFileMapping(FILE_MAP_READ or FILE_MAP_WRITE,false,Name)
+  {$IFDEF UNICODE}
+    FMapHandle := OpenFileMappingW(FILE_MAP_READ or FILE_MAP_WRITE,false,Name)
+  {$ELSE}
+    FMapHandle := OpenFileMappingA(FILE_MAP_READ or FILE_MAP_WRITE,false,Name)
+  {$ENDIF}
   else
-    FMapHandle := OpenFileMapping(FILE_MAP_READ,false,Name);
+  {$IFDEF UNICODE}
+    FMapHandle := OpenFileMappingW(FILE_MAP_READ,false,Name);
+  {$ELSE}
+    FMapHandle := OpenFileMappingA(FILE_MAP_READ,false,Name);
+  {$ENDIF}
 
   if FMapHandle = 0 then
     raise EJwsclWinCallFailedException.CreateFmtWinCall(RsWinCallFailed,'OpenMapView',Classname,RsUNStreams,0,true,'OpenFileMapping',['OpenFileMapping']);
