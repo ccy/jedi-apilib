@@ -71,11 +71,6 @@ const
   EVENT_HEADER_EXT_TYPE_TS_ID                = $0003;
   EVENT_HEADER_EXT_TYPE_INSTANCE_INFO        = $0004;
 
-  //EVENT_HEADER_EXTENDED_DATA_ITEM is defined in JwaEventDefs.pas
-
-  function GetEventHeaderExtendedDataItemLinkageBit(const DataItem : EVENT_HEADER_EXTENDED_DATA_ITEM) : Boolean;
-  function GetEventHeaderExtendedDataItemReservedBits(const DataItem : EVENT_HEADER_EXTENDED_DATA_ITEM) : USHORT;
-
 
   //
   // Structures for extended items.
@@ -201,16 +196,6 @@ const
   AWSuffix = 'A';
   {$ENDIF UNICODE}
 {$ENDIF JWA_INCLUDEMODE}
-
-function GetEventHeaderExtendedDataItemLinkageBit(const DataItem : EVENT_HEADER_EXTENDED_DATA_ITEM) : Boolean;
-begin
-  result := DataItem.Linkage and 1 = 1; //
-end;
-
-function GetEventHeaderExtendedDataItemReservedBits(const DataItem : EVENT_HEADER_EXTENDED_DATA_ITEM) : USHORT;
-begin
-  result := DataItem.Linkage shr 1;
-end;
 
 {$IFNDEF DYNAMIC_LINK}
 {$IFDEF WINVISTA_UP}
