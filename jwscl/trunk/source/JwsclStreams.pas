@@ -72,7 +72,7 @@ type
     procedure CloseMapView;
     procedure EOSHandler(var Count: LongInt); virtual; abstract;
   public
-    {<B>Read</B> Reads [I]Count[/I] Bytes into the [I]Buffer[/I]
+    {<B>Read</B> Reads [i]Count[/i] Bytes into the [i]Buffer[/i]
        @param Buffer Specifies the buffer where the stream data is to be read.
        @param Count The number of bytes which will be written into the buffer.
 
@@ -83,9 +83,9 @@ type
     }
     function Read(var Buffer; Count: Longint): Longint; override;
     
-    {<B>Write</B> Writes [I]Count[/I] Bytes from the [I]Buffer[/I] into the stream
+    {<B>Write</B> Writes [i]Count[/i] Bytes from the [i]Buffer[/i] into the stream
        @param Buffer The buffer which will be written into the stream
-       @param Count The size of the [I]Buffer[/I]
+       @param Count The size of the [i]Buffer[/i]
 
        raises
          EJwsclNilPointer: is raised if the memory is a nil pointer.
@@ -95,7 +95,7 @@ type
     function Write(const Buffer; Count: Longint): Longint; override;
 
     {<B>Seek</B> Sets the position of the data pointer of the stream
-       @param Offset The new relative position of the stream. (Depending on the [I]Origin[/I]-parameter)
+       @param Offset The new relative position of the stream. (Depending on the [i]Origin[/i]-parameter)
        @param Origin Can be one of the following enumeration values
 
                 *soFromBeginning: The new offset equals to the Offset-paramter
@@ -155,8 +155,8 @@ type
     {<B>Create</B> Creates an instance of the TJwFileStreamEx class
 
       @param FileHandle A handle to file which has been opened with CreateFile(Ex)
-      @param DuplicateHandle Specifies whether the file handle is duplicated or not
-                             If this parameter is true you have to close the file handle by yourself
+      @param DuplicateFileHandle Specifies whether the file handle is duplicated or not
+                                 If this parameter is true you have to close the file handle by yourself
 
       raises
         EJwsclInvalidHandle: This exception is thrown if LoadLibray failed
@@ -185,8 +185,8 @@ type
       @param ReadonlyAccess Specifies whether the user wants readonly access to the MMF or not
       @param FileSize Default = -1. Specifies the size of the MMF. Must be a multiple of 4096
                       otherwise Create rounds to the next multiple of 4096.
-                      If <I>FileSize</I> is less than zero, the MMF is not created but the stream connects
-                      to the in <I>Name</I> specified MMF.
+                      If <i>FileSize</i> is less than zero, the MMF is not created but the stream connects
+                      to the in <i>Name</i> specified MMF.
       raises
         EJwsclFileMappingException: This exception is thrown if an error has occured in TJwCustomMappedStream.CreateMapView
     }
@@ -209,7 +209,7 @@ type
     {<B>Create</B> Creates an instance of the TJwVirtualStream class
 
       @param P Pointer to the data which the stream should handle
-      @param DataSize Size of the data stored at <I>P</I>
+      @param DataSize Size of the data stored at <i>P</i>
       @param ReadonlyAccess Default = true. Specifies whether the user has readonly access or not
     }
     constructor Create(P: Pointer; DataSize: Int64; ReadonlyAccess: Boolean = true);
