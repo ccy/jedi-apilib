@@ -72,7 +72,7 @@ type
     procedure CloseMapView;
     procedure EOSHandler(var Count: LongInt); virtual; abstract;
   public
-    {<B>Read</B> Reads [i]Count[/i] Bytes into the [i]Buffer[/i]
+    {<B>Read</B> Reads <i>Count</i> Bytes into the <i>Buffer</i>
        @param Buffer Specifies the buffer where the stream data is to be read.
        @param Count The number of bytes which will be written into the buffer.
 
@@ -83,9 +83,9 @@ type
     }
     function Read(var Buffer; Count: Longint): Longint; override;
     
-    {<B>Write</B> Writes [i]Count[/i] Bytes from the [i]Buffer[/i] into the stream
+    {<B>Write</B> Writes <i>Count</i> Bytes from the <i>Buffer</i> into the stream
        @param Buffer The buffer which will be written into the stream
-       @param Count The size of the [i]Buffer[/i]
+       @param Count The size of the <i>Buffer</i>
 
        raises
          EJwsclNilPointer: is raised if the memory is a nil pointer.
@@ -95,7 +95,7 @@ type
     function Write(const Buffer; Count: Longint): Longint; override;
 
     {<B>Seek</B> Sets the position of the data pointer of the stream
-       @param Offset The new relative position of the stream. (Depending on the [i]Origin[/i]-parameter)
+       @param Offset The new relative position of the stream. (Depending on the <i>Origin</i>-parameter)
        @param Origin Can be one of the following enumeration values
 
                 *soFromBeginning: The new offset equals to the Offset-paramter
