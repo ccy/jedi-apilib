@@ -54,8 +54,12 @@ const
   FILE_WRITE_DATA      = 2;
 
 type
-  {<B>Abstract</B>Base class of every mapped stream. Inherits from Classes.TStream
-   <B>Important</B>DO NOT CREATE OBJECT INSTANCES OF THIS CLASS! Use one of the other stream classes instead.}
+  { Base class of every mapped stream. Inherits from Classes.TStream
+    
+    <b>Important</b>
+    
+    DO NOT CREATE OBJECT INSTANCES OF THIS CLASS! Use one of the other stream
+    classes instead.                                                          }
   TJwCustomMappedStream = class(TStream)
   private
     FFileHandle: hFile;
@@ -114,7 +118,7 @@ type
     property Readonly: Boolean read FReadOnly;
   end;
 
-  {<B>Abstract</B> This is a FileStream based on Memory Mapped Files}
+  { This is a FileStream based on Memory Mapped Files}
   TJwFileStreamEx = class(TJwCustomMappedStream)
   private
     FFilename: TJwString;
@@ -168,7 +172,7 @@ type
     procedure Clear;
   end;
 
-  {<B>Abstract</B> This is a stream class for simple IPC via Mapped-Memory-Streams}
+  { This is a stream class for simple IPC via Mapped-Memory-Streams}
   TJwIPCStream = class(TJwCustomMappedStream)
   private
     function OpenMapView(Name: TJwPChar): Int64;
@@ -192,7 +196,7 @@ type
     destructor Destroy; override;
   end;
 
-  {<B>Abstract</B> This is a stream class for general data handling}
+  { This is a stream class for general data handling}
   TJwVirtualStream = class(TJwCustomMappedStream)
   private
     function GetMemory: Pointer;

@@ -92,7 +92,7 @@ type
 
       <B>TJwSecurityToken</B> does not support some of the values defined in the MSDN http://msdn2.microsoft.com/en-us/library/aa379626.aspx
 
-      <B>Abstract</B><B>TJwSecurityToken</B> administers a token (impersonated or not) 
+      <B>TJwSecurityToken</B> administers a token (impersonated or not) 
       }
 
   TJwSecurityToken = class(TObject)//,ISecurityMemoryClass)

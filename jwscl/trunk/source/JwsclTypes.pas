@@ -53,7 +53,7 @@ uses
 {$IFNDEF SL_IMPLEMENTATION_SECTION}
 type
 {$IFNDEF DELPHI6_UP}
-  {<B>PCardinal</B> is defined for Delphi 5 because it does not know this types}
+  { <b>PCardinal</b> is defined for Delphi 5 because it does not know this type. }
   PCardinal = ^Cardinal;
 {$ENDIF DELPHI6_UP}
 

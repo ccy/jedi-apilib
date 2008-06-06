@@ -711,7 +711,7 @@ type
 
   {<B>PJwTerminalServerList</B> is a pointer to a TJwTerminalServerList}
   PJwTerminalServerList = ^TJwTerminalServerList;
-  {<B>Abstract</B><B>TJwTerminalServerList</B> is a List of TJwTerminalServer Objects. 
+  {<B>TJwTerminalServerList</B> is a List of TJwTerminalServer Objects. 
 
    Each item in the list points to a TJwTerminalServer object that can be queried
    and manipulated.
@@ -790,7 +790,7 @@ type
     function Remove(ATerminalServer: TJwTerminalServer): Integer;
   end;
 
-   {<B>Abstract</B>The <B>TJwWTSEventThread</B> Thread waits for Terminal Server Events and notifies the
+   {The <B>TJwWTSEventThread</B> Thread waits for Terminal Server Events and notifies the
     caller by firing Events. 
 
     It's not necessary to manually create an <B>TJwWTSEventThread</B> Thread because
@@ -831,7 +831,7 @@ type
     procedure Execute; override;
   end;
 
-  {<B>Abstract</B><B>TJwWTSEnumServersThread</B> is a Thread that enumerates all Terminal Server in the
+  {<B>TJwWTSEnumServersThread</B> is a Thread that enumerates all Terminal Server in the
    specified domain. 
 
    The Enumeration is done from a thread because it can take some time to
@@ -880,7 +880,7 @@ type
   {<B>PJwWTSSession</B> is a pointer to a TJwWTSSession}
   PJwWTSSession = ^TJwWTSSession;
 
-  {<B>Abstract</B><B>TJwWTSSession</B> is a Class that encapsulates a Terminal Server session and
+  {<B>TJwWTSSession</B> is a Class that encapsulates a Terminal Server session and
    it's properties 
 
    A session is uniquely identified with a SessionID, this is a number
@@ -1605,7 +1605,7 @@ type
 
   {<B>PJwWTSSessionList</B> is a pointer to a TJwWTSSessionList}
   PJwWTSSessionList = ^TJwWTSSessionList;
-  {<B>Abstract</B><B>TJwWTSSessionList</B> is a List of all Sessions running on the Terminal Server
+  {<B>TJwWTSSessionList</B> is a List of all Sessions running on the Terminal Server
    and their properties 
 
    Each item in the list points to a TJwWTSSession object that can be queried
@@ -1806,7 +1806,7 @@ type
     function Remove(ASession: TJwWTSSession): Integer;
   end;
 
-  {<B>Abstract</B><B>TJwWTSProcess</B> is the class that encapsulates a process that is running on
+  {<B>TJwWTSProcess</B> is the class that encapsulates a process that is running on
    a Terminal Server. 
 
    A process is uniquely identified by the Process Id (PID) in combination with
@@ -2005,7 +2005,7 @@ type
   {<B>PJwWTSProcessList</B> is a pointer to a TJwWTSProcessList}
   PJwWTSProcessList = ^TJwWTSProcessList;
 
-  {<B>Abstract</B><B>TJwWTSProcessList</B> is a List of all Processes running on the Terminal Server
+  {<B>TJwWTSProcessList</B> is a List of all Processes running on the Terminal Server
    and their properties 
 
    Each item in the list points to a TJwWTSProcess object that can be queried
@@ -2198,7 +2198,7 @@ type
     smViewOnlyWithoutPermission
   );
 
-  {<B>Abstract</B><B>TJwWTSSessionShadow</B> class gives access to the ShadowState and Shadowmode of a
+  {<B>TJwWTSSessionShadow</B> class gives access to the ShadowState and Shadowmode of a
    session. 
 
    Remarks

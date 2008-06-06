@@ -55,7 +55,7 @@ uses
 {$IFNDEF SL_IMPLEMENTATION_SECTION}
 
 type
-  {<B>Abstract</B>Provides access to cryptographic service providers }
+  {Provides access to cryptographic service providers }
   TJwCryptProvider = class
   protected
     //@exclude
@@ -197,7 +197,7 @@ type
 
   TJwCryptKey = class;
 
-  {<B>Abstract</B><B>TJwHash</B> is a class to compute hashes. 
+  {<B>TJwHash</B> is a class to compute hashes. 
    Both keyless and keyed algorithms are supported.
    Hashes can also be used to sign data.
    }
@@ -357,7 +357,7 @@ type
     property HashHandle: TJwHashHandle read fHashHandle;
   end;
 
-  {<B>Abstract</B><B>TJwCryptKey</B> encapsulates CAPI keys. 
+  {<B>TJwCryptKey</B> encapsulates CAPI keys. 
    Keys for symmetric and asymmetric algorithms are supported.
    They can be used for hash computing. Keys can be created
    by retrieving the user keys of a CSP, randomly generating
