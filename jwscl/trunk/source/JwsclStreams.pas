@@ -68,7 +68,7 @@ type
     procedure CloseMapView;
     procedure EOSHandler(var Count: LongInt); virtual; abstract;
   public
-    {<B>Read</B>
+    {<B>Read</B> Reads [I]Count[/I] Bytes into the [I]Buffer[/I]
        @param Buffer Specifies the buffer where the stream data is to be read.
        @param Count The number of bytes which will be written into the buffer.
 
@@ -79,9 +79,9 @@ type
     }
     function Read(var Buffer; Count: Longint): Longint; override;
     
-    {<B>Write</B>
+    {<B>Write</B> Writes [I]Count[/I] Bytes from the [I]Buffer[/I] into the stream
        @param Buffer The buffer which will be written into the stream
-       @param Count The size of the buffer
+       @param Count The size of the [I]Buffer[/I]
 
        raises
          EJwsclNilPointer: is raised if the memory is a nil pointer.
@@ -90,8 +90,8 @@ type
     }
     function Write(const Buffer; Count: Longint): Longint; override;
 
-    {<B>Seek</B>
-       @param Offset The new relative position of the stream. (Depending on the Origin-parameter)
+    {<B>Seek</B> Sets the position of the data pointer of the stream
+       @param Offset The new relative position of the stream. (Depending on the [I]Origin[/I]-parameter)
        @param Origin Can be one of the following enumeration values
 
                 *soFromBeginning: The new offset equals to the Offset-paramter
@@ -181,8 +181,8 @@ type
       @param ReadonlyAccess Specifies whether the user wants readonly access to the MMF or not
       @param FileSize Default = -1. Specifies the size of the MMF. Must be a multiple of 4096
                       otherwise Create rounds to the next multiple of 4096.
-                      If <B>FileSize<B> is less than zero, the MMF is not created but the stream connects
-                      to the in <B>Name<B> specified MMF.
+                      If <I>FileSize</I> is less than zero, the MMF is not created but the stream connects
+                      to the in <I>Name</I> specified MMF.
       raises
         EJwsclFileMappingException: This exception is thrown if an error has occured in TJwCustomMappedStream.CreateMapView
     }
@@ -205,7 +205,7 @@ type
     {<B>Create</B> Creates an instance of the TJwVirtualStream class
 
       @param P Pointer to the data which the stream should handle
-      @param DataSize Size of the data stored at <B>P</B>
+      @param DataSize Size of the data stored at <I>P</I>
       @param ReadonlyAccess Default = true. Specifies whether the user has readonly access or not
     }
     constructor Create(P: Pointer; DataSize: Int64; ReadonlyAccess: Boolean = true);
