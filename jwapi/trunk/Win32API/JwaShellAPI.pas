@@ -243,12 +243,15 @@ function DoEnvironmentSubst(szString: PTSTR; cchString: UINT): DWORD; stdcall;
 {$EXTERNALSYM EIRESID}
 function EIRESID(x: Integer): Integer;
 
+type
+  PHICON = ^HICON;
+
 {$EXTERNALSYM ExtractIconExA}
-function ExtractIconExA(lpszFile: PAnsiChar; nIconIndex: Integer; var phiconLarge, phiconSmall: HICON; nIcons: UINT): UINT; stdcall;
+function ExtractIconExA(lpszFile: PAnsiChar; nIconIndex: Integer; phiconLarge, phiconSmall: PHICON; nIcons: UINT): UINT; stdcall;
 {$EXTERNALSYM ExtractIconExW}
-function ExtractIconExW(lpszFile: PWideChar; nIconIndex: Integer; var phiconLarge, phiconSmall: HICON; nIcons: UINT): UINT; stdcall;
+function ExtractIconExW(lpszFile: PWideChar; nIconIndex: Integer; phiconLarge, phiconSmall: PHICON; nIcons: UINT): UINT; stdcall;
 {$EXTERNALSYM ExtractIconEx}
-function ExtractIconEx(lpszFile: PTSTR; nIconIndex: Integer; var phiconLarge, phiconSmall: HICON; nIcons: UINT): UINT; stdcall;
+function ExtractIconEx(lpszFile: PTSTR; nIconIndex: Integer; phiconLarge, phiconSmall: PHICON; nIcons: UINT): UINT; stdcall;
 
 
 ////

@@ -623,6 +623,16 @@ The list has no order!}
 {$I JwaEvntProv.pas}
 {$I JwaEvntCons.pas}
 
+{$I JwaWabDefs.pas}
+{$I JwaWabCode.pas}
+{$I JwaWabIab.pas}
+{$I JwaWabApi.pas}
+{$I JwaWabMem.pas}
+{$I JwaWabUtil.pas}
+{$I JwaWabTags.pas}
+{$I JwaWabNot.pas}
+
+
 
 
 
@@ -990,6 +1000,15 @@ The list has no order!}
 {$I JwaEventTracing.pas}
 {$I JwaEvntProv.pas}
 {$I JwaEvntCons.pas}
+
+{$I JwaWabDefs.pas}
+{$I JwaWabCode.pas}
+{$I JwaWabIab.pas}
+{$I JwaWabApi.pas}
+{$I JwaWabMem.pas}
+{$I JwaWabUtil.pas}
+{$I JwaWabTags.pas}
+{$I JwaWabNot.pas}
 
 
 {$I JwaModuleLoader.pas}

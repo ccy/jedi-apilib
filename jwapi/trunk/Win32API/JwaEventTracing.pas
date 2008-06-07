@@ -1375,7 +1375,6 @@ function TraceMessage(
 var
   pdw1, pdw2: PDWORD;
   i: integer;
-  pc: PCHAR;
 begin
   pdw1 := nil;
 
