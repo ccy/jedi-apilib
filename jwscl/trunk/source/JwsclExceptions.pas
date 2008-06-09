@@ -245,6 +245,10 @@ type
 
   EJwsclStreamHashException = class(EJwsclStreamException);
 
+  //EHashMismatch is raised in case of unequal hash data
+  EJwsclHashMismatch = class(EJwsclSecurityException);
+
+
   EJwsclSecurityObjectException = class(EJwsclSecurityException);
   EJwsclInvalidObjectException = class(EJwsclSecurityException);
 

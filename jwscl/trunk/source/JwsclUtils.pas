@@ -102,14 +102,16 @@ type
     constructor Create(const CreateSuspended: Boolean; const Name: AnsiString);
     destructor Destroy; override;
 
-    function WaitWithTimeOut(const TimeOut: DWORD) : LongWord;
+    function GetReturnValue : Integer;
+
+    function WaitWithTimeOut(const TimeOut: DWORD;
+      const MsgLoop : Boolean = true) : LongWord;
 
     {<B>Name</B> sets or gets the threads name.
      The name is retrieved from internal variable. Changing the thread's name
      using foreign code does not affect this property.
     }
     property Name: AnsiString read FName write SetName;
-
 
   end;
 
@@ -426,6 +428,11 @@ function JwCreateWaitableTimer(
       const TimeOut: DWORD;
       const SecurityAttributes : TObject = nil) : THandle; overload;
 
+function JwCreateWaitableTimerAbs(
+      const DateTime : TDateTime;
+      const SecurityAttributes : TObject = nil) : THandle; overload;
+
+
 {<B>JwCreateWaitableTimer</B> creates a waitable time handle.
 
 For more information about the undocumented parameters, see MSDN
@@ -456,13 +463,163 @@ function JwCreateWaitableTimer(
       const SuspendResume : Boolean = false;
       const SecurityAttributes : TObject = nil) : THandle; overload;
 
+function JwCreateWaitableTimerAbs(
+      const DateTime : TDateTime;
+      const ManualReset : Boolean;
+      const Name : TJwString;
+      const Period : Integer = 0;
+      const CompletitionRoutine : PTIMERAPCROUTINE = nil;
+      const CompletitionRoutineArgs : Pointer = nil;
+      const SuspendResume : Boolean = false;
+      const SecurityAttributes : TObject = nil) : THandle; overload;
+
+
+function JwCompareFileHash(const FilePath : WideString;
+  const OriginalHash : TJwFileHashData) : Boolean;
+function JwCreateFileHash(const FilePath : WideString) : TJwFileHashData;
+
+procedure JwSaveHashToRegistry(const Hive: Cardinal;
+   const Key, HashName, SizeName : String;
+   const FileHashData : TJwFileHashData);
+function JwLoadHashFromRegistry(const Hive: Cardinal;
+   const Key, HashName, SizeName : String) : TJwFileHashData;
+
 implementation
-uses SysUtils, JwsclToken, JwsclKnownSid, JwsclDescriptor, JwsclAcl,
-     JwsclSecureObjects, JwsclMapping
+uses SysUtils, Registry, JwsclToken, JwsclKnownSid, JwsclDescriptor, JwsclAcl,
+     JwsclSecureObjects, JwsclMapping, JwsclStreams, JwsclCryptProvider
 {$IFDEF JW_TYPEINFO}
      ,TypInfo
 {$ENDIF JW_TYPEINFO}
-     ;
+      ;
+
+
+
+{Compares the internal hash of the credentials app
+with the new one.
+Returns false if the hash is not equal.
+}
+//CredentialsHash
+//CredentialsAppPath
+function JwCompareFileHash(
+  const FilePath : WideString;
+  const OriginalHash : TJwFileHashData) : Boolean;
+var
+  Stream : TJwFileStreamEx;
+  M : TMemoryStream;
+  Size : Cardinal;
+  fAppHash : TJwHash;
+  NewHash : TJwFileHashData;
+begin
+  Stream := TJwFileStreamEx.Create(FilePath, fmOpenRead);
+  try
+    if Stream.Size > high(Size) then
+      Size := high(Size)-1  //big file huh?
+    else
+      Size := Stream.Size;
+
+    fAppHash := TJwHash.Create(haSHA);
+    try
+      fAppHash.HashData(Stream.Memory,Size);
+
+      NewHash.Hash := fAppHash.RetrieveHash(NewHash.Size);
+
+      try
+        result := (OriginalHash.Size = NewHash.Size) and
+           (NewHash.Hash <> nil) and (OriginalHash.Hash <> nil) and
+           (CompareMem(OriginalHash.Hash,NewHash.Hash, OriginalHash.Size));
+      finally
+        TJwHash.FreeBuffer(NewHash.Hash);
+      end;
+    finally
+      fAppHash.Free;
+    end;
+  finally
+    Stream.Free;
+  end;
+end;
+
+function JwCreateFileHash(const FilePath : WideString) : TJwFileHashData;
+var
+  Stream : TJwFileStreamEx;
+  Hash : TJwHash;
+  Size : Cardinal;
+begin
+  Stream := TJwFileStreamEx.Create(FilePath, fmOpenRead);
+  try
+    if Stream.Size > high(Size) then
+      Size := high(Size)-1  //big file huh?
+    else
+      Size := Stream.Size;
+
+    Hash := TJwHash.Create(haSHA);
+    try
+      Hash.HashData(Stream.Memory,Size);
+
+      result.Hash := Hash.RetrieveHash(result.Size);
+    finally
+      Hash.Free;
+    end;
+  finally
+    Stream.Free;
+  end;
+end;
+
+
+function JwLoadHashFromRegistry(const Hive: Cardinal;
+   const Key, HashName, SizeName : String) : TJwFileHashData;
+var
+  Reg: TRegistry;
+begin
+  try
+    Reg := TRegistry.Create(KEY_ALL_ACCESS);// KEY_QUERY_VALUE or KEY_READ);
+    try
+      Reg.RootKey := Hive;
+      if Reg.OpenKey(Key, false)
+        and Reg.ValueExists(SizeName)
+        and Reg.ValueExists(HashName)
+        then
+      try
+        result.Size := Reg.ReadInteger(SizeName);
+        if (result.Size > 0) and (result.Size < 1024) then
+        begin
+          GetMem(result.Hash, result.Size+2);
+          ZeroMemory(result.Hash, result.Size+2);
+          try
+            result.Size := Reg.ReadBinaryData(HashName,result.Hash^,result.Size);
+          except
+            FreeMem(Result.Hash);
+          end;
+        end;
+      finally
+        Reg.CloseKey;
+      end;
+    finally
+      Reg.Free;
+    end;
+  except
+  end;
+end;
+
+procedure JwSaveHashToRegistry(const Hive: Cardinal;
+   const Key, HashName, SizeName : String;
+   const FileHashData : TJwFileHashData);
+var
+  Reg: TRegistry;
+begin
+  Reg:=TRegistry.Create(KEY_SET_VALUE or KEY_CREATE_SUB_KEY);
+  try
+    Reg.RootKey := Hive;
+    if Reg.OpenKey(Key, true) then
+    try
+      Reg.WriteInteger(SizeName, FileHashData.Size);
+      Reg.WriteBinaryData(HashName,FileHashData.Hash^,FileHashData.Size);
+    finally
+      Reg.CloseKey;
+    end;
+  finally
+    Reg.Free;
+  end;
+end;
 
 {$IFDEF JW_TYPEINFO}
 function GetUnitName(argObject: TObject): AnsiString;
@@ -522,6 +679,11 @@ end;
 procedure TJwThread.Execute;
 begin
   SetName(Name);
+end;
+
+function TJwThread.GetReturnValue: Integer;
+begin
+  result := ReturnValue;
 end;
 
 threadvar InternalThreadName : WideString;
@@ -1057,6 +1219,15 @@ begin
   result := JwCreateWaitableTimer(TimeOut, false, '',0,nil,nil,false,SecurityAttributes);
 end;
 
+function JwCreateWaitableTimerAbs(
+      const DateTime : TDateTime;
+      const SecurityAttributes : TObject = nil) : THandle; overload;
+begin
+  result := JwCreateWaitableTimerAbs(DateTime, false, '',0,nil,nil,false,SecurityAttributes);
+end;
+
+
+
 
 
 function JwCreateWaitableTimer(
@@ -1098,7 +1269,7 @@ begin
 
   ZeroMemory(@TimeOutInt64,sizeof(TimeOutInt64));
   TimeOutInt64.HighPart := -1;
-  TimeOutInt64.LowPart := (- Timeout * 10000) shr 32;
+  TimeOutInt64.LowPart := - TimeOut * 10000;
 
 
   if not SetWaitableTimer(Result, TimeOutInt64, Period, CompletitionRoutine, CompletitionRoutineArgs, SuspendResume) then
@@ -1110,8 +1281,56 @@ begin
   end;
 end;
 
+function JwCreateWaitableTimerAbs(
+      const DateTime : TDateTime;
+      const ManualReset : Boolean;
+      const Name : TJwString;
+      const Period : Integer = 0;
+      const CompletitionRoutine : PTIMERAPCROUTINE = nil;
+      const CompletitionRoutineArgs : Pointer = nil;
+      const SuspendResume : Boolean = false;
+      const SecurityAttributes : TObject = nil) : THandle; overload;
+begin
+  raise EJwsclUnimplemented.Create('JwCreateWaitableTimer is not implemented.');
+  (*
+  // Declare our local variables.
+HANDLE hTimer;
+SYSTEMTIME st;
+FILETIME ftLocal, ftUTC;
+LARGE_INTEGER liUTC;
 
-function TJwThread.WaitWithTimeOut(const TimeOut: DWORD) : LongWord;
+// Create an auto-reset timer.
+hTimer = CreateWaitableTimer(NULL, FALSE, NULL);
+
+// First signaling is at January 1, 2002, at 1:00 P.M. (local time).
+st.wYear         = 2002; // Year
+st.wMonth        = 1;    // January
+st.wDayOfWeek    = 0;    // Ignored
+st.wDay          = 1;    // The first of the month
+st.wHour         = 13;   // 1PM
+st.wMinute       = 0;    // 0 minutes into the hour
+st.wSecond       = 0;    // 0 seconds into the minute
+st.wMilliseconds = 0;    // 0 milliseconds into the second
+
+SystemTimeToFileTime(&st, &ftLocal);
+
+// Convert local time to UTC time.
+LocalFileTimeToFileTime(&ftLocal, &ftUTC);
+// Convert FILETIME to LARGE_INTEGER because of different alignment.
+liUTC.LowPart  = ftUTC.dwLowDateTime;
+liUTC.HighPart = ftUTC.dwHighDateTime;
+
+// Set the timer.
+SetWaitableTimer(hTimer, &liUTC, 6 * 60 * 60 * 1000,
+   NULL, NULL, FALSE);
+
+  *)
+end;
+
+
+
+function TJwThread.WaitWithTimeOut(const TimeOut: DWORD;
+  const MsgLoop : Boolean = true) : LongWord;
 var
   WaitResult: Cardinal;
   Msg: TMsg;
@@ -1129,11 +1348,19 @@ begin
       repeat
         { This prevents a potential deadlock if the background thread
           does a SendMessage to the foreground thread }
-        if WaitResult = WAIT_OBJECT_0 + 2 then
+        if (MsgLoop) and (WaitResult = WAIT_OBJECT_0 + 2) then
           PeekMessage(Msg, 0, 0, 0, PM_NOREMOVE);
 
         ResetEvent(hTimer);
-        WaitResult := JwMsgWaitForMultipleObjects([Handle, SyncEvent, hTimer], False, 1000, QS_SENDMESSAGE);
+
+        {Okay, we could just have used the builtin timeout support.
+        But that's too easy
+        }
+        if MsgLoop then
+          WaitResult := JwMsgWaitForMultipleObjects([Handle, SyncEvent, hTimer], False, INFINITE, QS_SENDMESSAGE)
+        else
+          WaitResult := JwWaitForMultipleObjects([Handle, SyncEvent, hTimer], False, INFINITE);
+          
         CheckThreadError(WaitResult <> WAIT_FAILED);
 
         if WaitResult = WAIT_OBJECT_0 + 1 then
@@ -1142,7 +1369,7 @@ begin
         begin
           result := WAIT_TIMEOUT;
           exit;
-        end;
+        end;         
       until WaitResult = WAIT_OBJECT_0;
     finally
       if hTimer <> INVALID_HANDLE_VALUE then

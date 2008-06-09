@@ -1152,6 +1152,14 @@ type
     //use given memory
     ucUseMemory);
 
+  {TCredentialsHash defines a hash value containing
+  a pointer to a memory with the hash
+  and its size
+  }
+  TJwFileHashData = record
+    Hash : Pointer;
+    Size : Cardinal;
+  end;
 
 {$ENDIF SL_IMPLEMENTATION_SECTION}
 
