@@ -16,7 +16,9 @@ program CredentialsPrompt;
 {$R *.res}
 
 uses
+{$IFDEF EUREKALOG}
   ExceptionLog,
+{$ENDIF EUREKALOG}
   Controls,
   JwaWindows,
   JwsclEurekaLogUtils,
@@ -31,6 +33,7 @@ uses
   JwsclToken,
   JwsclTypes,
   JwsclKnownSid,
+  JwsclComUtils,
   JwsclStrings,
   JwaVista,
   Graphics,
@@ -41,9 +44,8 @@ uses
   CredentialsForm in 'CredentialsForm.pas' {FormCredentials},
   MainForm in 'MainForm.pas' {FormMain},
   XPElevationCommon in '..\XPElevationCommon.pas',
-  XPRemoteRegistry in '..\XPRemoteRegistry.pas';
-
-
+  XPRemoteRegistry in '..\XPRemoteRegistry.pas',
+  TempWindow in 'TempWindow.pas';
 
 procedure AttachedFilesRequestProc(EurekaExceptionRecord: TEurekaExceptionRecord;
     AttachedFiles: TStrings);
@@ -53,7 +55,7 @@ end;
 
 
 procedure SwitchToDefault;
-var Desk : TJwSecurityDesktop;
+var Desk : TJwSecurityDesktop;   
 begin
   if TJwSecurityDesktops.IsStationLocked then
     exit;
@@ -125,8 +127,9 @@ begin
     Desk.Free;
   end;
   MessageBox(0,'The desktop has been restored','',MB_ICONINFORMATION or MB_OK);
-
 end;
+
+
 
 var
   ShRes,
@@ -141,135 +144,137 @@ var
 
   Resolution : Trect;
   ScreenBitmap : TBitmap;
+  dbg : TDebugEvent;
+
 begin
 
-  //StartProcess(GetSystem32Path+'osk.exe');
-
-  //exit;
-
-
+  Res := 0;
+  try
 {$IFDEF FORMONLY}
  // ExceptionLog.SetEurekaLogState(false);
 
 
   ScreenBitmap := GetScreenBitmap(0, Resolution);
-  FreeAndNil(ScreenBitmap);
+
 
   Application.Initialize;
 
-//  Application.CreateForm(TFormCredentials, FormCredentials);
+  //Application.CreateForm(TFormCredentials, FormCredentials);
   Application.CreateForm(TFormMain, FormMain);
+
+
   FormMain.ScreenBitmap := ScreenBitmap;
   FormMain.Resolution := Resolution;
 
-
   Application.Run;
+
+
   exit;
 {$ENDIF FORMONLY}
 
-  if GetSystemMetrics(SM_SHUTTINGDOWN) <> 0 then
-    halt(1);
+    if GetSystemMetrics(SM_SHUTTINGDOWN) <> 0 then
+      halt(1);
 
-  {if not IsDefaultDesktop then
-    halt(1);
-  }
-
-  ExceptionLog.CustomWebFieldsRequest := JEDI_WebFieldsRequestNotify;
-  ExceptionLog.AttachedFilesRequest := AttachedFilesRequestProc;
-
-
-  if HasParameter('/cred') and HasParameter('/switchdefault') then
-  begin
-    SwitchToDefault;
-    exit;
-  end;
-
- // if HasParameter('/debug') then
-      MessageBox(0,'Debug breakpoint','',MB_ICONEXCLAMATION or MB_OK);
-
-
- if not HasParameter('/cred') then
-    halt(1);
-
-
-
-  try
-    {If SvcMgr unit is included we have
-    to free them before freeing Forms.Application
+    {if not IsDefaultDesktop then
+      halt(1);
     }
-    //SvcMgr.Application.Free;
-    //SvcMgr.Application := nil;
+{$IFDEF EUREKALOG}
+    ExceptionLog.CustomWebFieldsRequest := JEDI_WebFieldsRequestNotify;
+    ExceptionLog.AttachedFilesRequest := AttachedFilesRequestProc;
+{$ENDIF EUREKALOG}
 
-    Forms.Application.Free;
-  except
-  end;
-  Forms.Application := nil;
+    if HasParameter('/cred') and HasParameter('/switchdefault') then
+    begin
+      SwitchToDefault;
+      exit;
+    end;
+   // if HasParameter('/debug') then
+        MessageBox(0,'Debug breakpoint','',MB_ICONEXCLAMATION or MB_OK);
+
+   if not HasParameter('/cred') then
+      halt(1);
 
 
-  uLogging.ApplicationFileName := 'JEDI XP CredentialsPrompt';
 
-  uLogging.InitFileLocation;
-  uLogging.InitLog;
-//  uLogging.SwitchLog(true);
-
-  ErrorValue := 0;
-  LastError := 0;
-  IsServiceError := false;
-  try
-    ConsentThread := TConsentThread.CreateNewThread(false);
     try
-      Res := ConsentThread.WaitFor;
-      if (Res <> 0) and (not ConsentThread.NoErrorDialogs) then
-      begin
-        ErrorValue := ConsentThread.ErrorValue;
-        LastError  := ConsentThread.LastError;
-        IsServiceError := ConsentThread.IsServiceError;
-      end
-      else
-        Res := 0;
+      {If SvcMgr unit is included we have
+      to free them before freeing Forms.Application
+      }
+      //SvcMgr.Application.Free;
+      //SvcMgr.Application := nil;
 
-      if ConsentThread.ShowWebPage then
+      Forms.Application.Free;
+    except
+    end;
+    Forms.Application := nil;
+
+
+    uLogging.ApplicationFileName := 'JEDI XP CredentialsPrompt';
+
+    uLogging.InitFileLocation;
+    uLogging.InitLog;
+  //  uLogging.SwitchLog(true);
+
+    ErrorValue := 0;
+    LastError := 0;
+    IsServiceError := false;
+    try
+      ConsentThread := TConsentThread.CreateNewThread(false);
+      try
+        Res := ConsentThread.WaitFor;
+        if (Res <> 0) and (not ConsentThread.NoErrorDialogs) then
+        begin
+          ErrorValue := ConsentThread.ErrorValue;
+          LastError  := ConsentThread.LastError;
+          IsServiceError := ConsentThread.IsServiceError;
+        end
+        else
+          Res := 0;
+
+        if ConsentThread.ShowWebPage then
+        begin
+          ShRes := ShellExecute(0, 'open', PChar('http://blog.delphi-jedi.net/'), nil, nil, SW_SHOWNORMAL);
+        end;
+      finally
+        ConsentThread.Free;
+      end;
+
+      Forms.Application := TApplication.Create(nil);
+      Forms.Application.Initialize;
+
+      if Res <> 0 then
       begin
-        ShRes := ShellExecute(0, 'open', PChar('http://blog.delphi-jedi.net/'), nil, nil, SW_SHOWNORMAL);
+        if (ErrorValue = 0) and (LastError <> 0) then
+        begin
+          case LastError of
+            ERROR_INVALID_HANDLE : S :='The given pipe handle is invalid.';
+            ERROR_PIPE_NOT_CONNECTED : S:= 'Pipe connection could not be established';
+            //ERROR_INVALID_DATA: S:= 'data from service is invalid';
+            ERROR_BAD_FORMAT : S:= 'data from service is invalid';
+            ERROR_INVALID_SIGNATURE : S:= 'data from service has invalid signature';
+            ERROR_BAD_ENVIRONMENT: S:= 'secure desktop could not be established';
+            ERROR_INVALID_PASSWORD: S:= 'credentials form failed';
+            ERROR_PIPE_BUSY: S:= 'The service could not more be contacted. The reason is a broken '+
+                'connection to the service. The service maybe disconnected from this application or was shutdown.'+
+                'Try to restart the service.';
+            ERROR_PIPE_LISTENING: S:= 'The communication to the service is broken. The service maybe disconnected from this application or was shutdown.'+
+                'Try to restart the service.';
+          else
+            s := '';
+          end;
+          if Length(S) > 0  then
+              MessageBox(0,PAnsiChar(S),'Error',MB_ICONERROR or MB_OK);
+        end
+        else
+        if (ErrorValue <> 0) and (IsServiceError) then
+        begin
+          TConsentThread.ProcessLogonResult(ErrorValue, LastError);
+        end;
       end;
     finally
-      ConsentThread.Free;
-    end;
-
-    Forms.Application := TApplication.Create(nil);
-    Forms.Application.Initialize;
-
-    if Res <> 0 then
-    begin
-      if (ErrorValue = 0) and (LastError <> 0) then
-      begin
-        case LastError of
-          ERROR_INVALID_HANDLE : S :='The given pipe handle is invalid.';
-          ERROR_PIPE_NOT_CONNECTED : S:= 'Pipe connection could not be established';
-          //ERROR_INVALID_DATA: S:= 'data from service is invalid';
-          ERROR_BAD_FORMAT : S:= 'data from service is invalid';
-          ERROR_INVALID_SIGNATURE : S:= 'data from service has invalid signature';
-          ERROR_BAD_ENVIRONMENT: S:= 'secure desktop could not be established';
-          ERROR_INVALID_PASSWORD: S:= 'credentials form failed';
-          ERROR_PIPE_BUSY: S:= 'The service could not more be contacted. The reason is a broken '+
-              'connection to the service. The service maybe disconnected from this application or was shutdown.'+
-              'Try to restart the service.';
-          ERROR_PIPE_LISTENING: S:= 'The communication to the service is broken. The service maybe disconnected from this application or was shutdown.'+
-              'Try to restart the service.';
-        else
-          s := '';
-        end;
-        if Length(S) > 0  then
-            MessageBox(0,PAnsiChar(S),'Error',MB_ICONERROR or MB_OK);
-      end
-      else
-      if (ErrorValue <> 0) and (IsServiceError) then
-      begin
-        TConsentThread.ProcessLogonResult(ErrorValue, LastError);
-      end;
+      uLogging.DoneLog;
     end;
   finally
-    uLogging.DoneLog;
+    Halt(Res);
   end;
-  Halt(Res);
 end.

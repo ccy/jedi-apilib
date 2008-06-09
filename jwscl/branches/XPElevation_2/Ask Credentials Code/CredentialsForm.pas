@@ -3,21 +3,39 @@ unit CredentialsForm;
 interface
 
 uses
-  JwaWindows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, Buttons, ExtCtrls, JwsclStrings, JvExControls,
-  JvLookOut, JvExExtCtrls, JvBevel, JvButton, JvTransparentButton,
-  JvComponent, JvExStdCtrls, JvHtControls, JvLinkLabel, JvExtComponent,
-  JvLinkLabelTools, SessionPipe, JwsclUtils,
+  JwaWindows,
+  Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, StdCtrls, Buttons, ExtCtrls, Registry, ComCtrls, AppEvnts,
+  JvExControls, JvLookOut, JvExExtCtrls, JvBevel,
+  JvButton, JvTransparentButton, JvComponent, JvExStdCtrls, JvHtControls,
+  JvLinkLabel, JvExtComponent, JvLinkLabelTools, SessionPipe, JwsclUtils,
   JvPanel, jpeg, JvLabel, JvComponentBase, JvComputerInfoEx, JvImage, JvGradient,
   JvGradientHeaderPanel, JvEdit, JvWaitingGradient, JvWaitingProgress,
-  XPElevationCommon, registry,
-  JvStaticText, ComCtrls, JvExComCtrls, JvProgressBar, JvThread, AppEvnts, XPMan;
-
+  JvStaticText, JvExComCtrls, JvProgressBar, JvThread,
+  XPMan,
+  UserProfileImage, 
+  XPElevationCommon,
+  JwsclStrings;
+                                     
 
 const
- WM_SWITCH_DESKTOP = WM_USER + 1999;
+   {This event is send if a desktop switch event occured.
+    On the first desktop switch lParam is 1, on the second switch
+    it is 2.
+   }
+   WM_SWITCH_DESKTOP         = WM_USER + 1999;
+   WM_GET_USER_PROFILE_IMAGE = WM_USER + 2000;
 
 type
+  {TJwDesktopSwitchThread creates a thread that waits
+  for the winlogon desktop switch event.
+  It then sends the message WM_SWITCH_DESKTOPto the credential forms.
+
+  we just assume it is the winlogon Lockstation call
+  since this call returns to the last desktop that was in action
+  if we just exit after the first switch
+  the call will switchback to an empty desktop which is a dead end.
+  }
   TJwDesktopSwitchThread = class(TJwThread)
   public
     procedure Execute; override;
@@ -26,6 +44,8 @@ type
     destructor Destroy; override;
   end;
 
+  {TFormCredentials implements the credentials form
+  }
   TFormCredentials = class(TForm)
     BitBtnCancel: TBitBtn;
     BitBtn_Ok: TBitBtn;
@@ -53,7 +73,7 @@ type
     JvStaticText_AppPublisher: TJvStaticText;
     JvEdit_CmdLine: TJvEdit;
     JvProgressBar: TJvProgressBar;
-    Timer1: TTimer;
+    Timer_ElevationTimeOut: TTimer;
     JvEdit_AppName: TJvEdit;
     EditPassword1: TJvEdit;
     EditPassword2: TJvEdit;
@@ -76,7 +96,7 @@ type
       Y: Integer);
     procedure JvLinkLabel1LinkClick(Sender: TObject; LinkNumber: Integer;
       LinkText, LinkParam: String);
-    procedure Timer1Timer(Sender: TObject);
+    procedure Timer_ElevationTimeOutTimer(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure EditPassword1Exit(Sender: TObject);
     procedure EditPassword1Enter(Sender: TObject);
@@ -106,9 +126,10 @@ type
     fControlFlags : DWORD;
     fUserRegKey : HKEY;
     fUserRegistry : TRegistry;
+    fUserImage : TMemoryStream;
+    fUserImageType : WideString;
+    fSecureDesktop : Boolean;
 
-    function GetUserPicture(): TBitmap;
-    procedure OnGetImage;
     function IsPasswordCacheAvailable : Boolean;
 
     procedure ShowLogonError(const Visible : Boolean);
@@ -118,7 +139,7 @@ type
 
     procedure SWITCH_DESKTOP(var Message: TMsg); message WM_SWITCH_DESKTOP;
 
-   
+
     procedure CenterInMonitor(const i : Integer);
     { Public-Deklarationen }
     property AppName : TJwString read fAppName write fAppName;
@@ -138,11 +159,17 @@ type
     property ShowWebPage : Boolean read fShowWebPage;
     property ControlFlags : DWORD read fControlFlags write fControlFlags;
     property UserRegKey : HKEY write SetUserKey;
+
+    property UserImage : TMemoryStream read fUserImage write fUserImage;
+    property UserImageType : WideString read fUserImageType write fUserImageType;
+
+    property SecureDesktop : Boolean read fSecureDesktop write fSecureDesktop;
   end;
 
 var
   FormCredentials: TFormCredentials;
 
+//creates random data with at least 40 chars
 function GetFillPasswd : String;
 
 implementation
@@ -209,31 +236,8 @@ begin
   Application.Terminate;
 end;
 
-function GetUserName(): string;
-var
-  Buffer: array [0..MAX_COMPUTERNAME_LENGTH + 1] of Char;
-  Size: DWord;
-begin
-  Size := Pred(SizeOf(Buffer));
-  JwaWindows.GetUserName(Buffer, Size);
-  Result := StrPas(Buffer);
-end;
 
-function TFormCredentials.GetUserPicture(): TBitmap;
-var
-  CommonDataPath, UserName: string;
-begin
- { Result := TBitmap.Create;
 
-  UserName := GetUserName;
-  CommonDataPath := JvComputerInfoEx1.Folders.CommonAppData + '\Microsoft\User Account Pictures\' + UserName + '.bmp';
-
-  if FileExists(CommonDataPath) then
-  begin
-    Result.Handle := LoadImage(0, PChar(CommonDataPath), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-  end
-  else ShowMessage(Format('%s'#13#10'"%s"', ['File not found:', CommonDataPath])); }
-end;
 
 
 procedure TFormCredentials.Image_ApplicationDblClick(Sender: TObject);
@@ -454,15 +458,12 @@ begin
     except
 
     end;
-  
 end;
+
+
 
 procedure TFormCredentials.FormCreate(Sender: TObject);
 begin
-//  Image1.Picture.Bitmap := GetUserPicture;
-
-  //RetrieveProfileImage(OnGetImage);
-
   fShowWebPage := false;
 end;
 
@@ -491,7 +492,7 @@ const
 function IsAlternativeLogon : Boolean;
 begin
   result := true;
-  if fUserRegistry.OpenKey(UserKeyPath, true) then
+  if Assigned(fUserRegistry) and fUserRegistry.OpenKey(UserKeyPath, true) then
   begin
     try
       result := fUserRegistry.ReadBool('LastAlternativeLogon');
@@ -504,7 +505,7 @@ end;
 function GetAlternativeLogonUserName : WideString;
 begin
   result := '';
-  if fUserRegistry.OpenKey(UserKeyPath, true) then
+  if Assigned(fUserRegistry) and fUserRegistry.OpenKey(UserKeyPath, true) then
   begin
     try
       result := fUserRegistry.ReadString('LastAlternativeLogonName');
@@ -567,11 +568,11 @@ begin
   if TimeOut = INFINITE then
   begin
     JvProgressBar.Max := 0;
-    Timer1.Enabled := false;
+    Timer_ElevationTimeOut.Enabled := false;
   end
   else
   begin
-    Timer1.Enabled := true;
+    Timer_ElevationTimeOut.Enabled := true;
     JvProgressBar.Max := (TimeOut div 1000);//Max(TimeOut div 1000, 60);
   {  if JvProgressBar.Max < 10 then
       JvProgressBar.Max := 60;        }
@@ -638,12 +639,7 @@ begin
   JvLabel_SignedApp.Visible := Signed;
   JvLabel_UnsignedApp.Visible := not Signed;
 
-  try
-    BringToFront;
-    SetFocus;
-  except
 
-  end;
 
   Application.OnIdle := ApplicationEvents1Idle;
 
@@ -651,13 +647,30 @@ begin
 
   fDesktopSwitchNotification := False;
 
-  fDesktopSwitchThread := TJwDesktopSwitchThread.Create(true,'');
-  fDesktopSwitchThread.FreeOnTerminate := true;
-  fDesktopSwitchThread.Resume;
+  if SecureDesktop then
+  begin
+    fDesktopSwitchThread := TJwDesktopSwitchThread.Create(true,'');
+    fDesktopSwitchThread.FreeOnTerminate := true;
+    fDesktopSwitchThread.Resume;
+  end
+  else
+  begin
+    
+  end;
 
+  if Assigned(UserImage) then
+    try
+      JvImage1.Picture.Graphic.LoadFromStream(UserImage);
+    except
+      JvImage1.Picture.Assign(nil);
 
+    end;
+  try
+    BringToFront;
+    SetFocus;
 
-  Self.BringToFront;
+  except
+  end;
 end;
 
 procedure TFormCredentials.CenterInMonitor(const i : Integer);
@@ -822,15 +835,6 @@ begin
 
 end;
 
-procedure TFormCredentials.OnGetImage;
-begin
-  //
- // ImageStream.SaveToFile('E:\Temp\_test.jpg');
-  //JvImage1.LoadFromStream(ImageStream);
-  //FreeAndNil(ImageStream);
-  //Image1.Picture.LoadFromFile('E:\temp\bild-16.jpg');
-end;
-
 
 
 procedure TFormCredentials.SetUserKey(key: HKEY);
@@ -862,32 +866,27 @@ begin
   end;
 end;
 
-procedure TFormCredentials.Timer1Timer(Sender: TObject);
+procedure TFormCredentials.Timer_ElevationTimeOutTimer(Sender: TObject);
 Var Element : TObject;
   P : TPoint;
 begin
+  //sometime these commands may fail if the desktop is the
+  //winlogon desktop, so we catch it
   try
     P := Self.ScreenToClient(Mouse.CursorPos);
 
     Element := ControlAtPos(P,false,true{, true});
 
+    //update the hint window with new text and time progress
     if Assigned(Element) and (Element = JvProgressBar) then
        JvBevel1MouseMove(Element,[],P.X, P.Y);
   except
-
   end;
 
   JvProgressBar.StepIt;
 
-
   if GetLastError <> 0 then
     OutputDebugStringA(PAnsiChar(SysErrorMessage(GetLastError)));
-  {JvStaticText_TimeOut.Caption :=
-    Format('%d seconds left',
-      [JvProgressBar.Max - JvProgressBar.Position]);}
- { if Timer1.Enabled and (JvProgressBar.Position >= JvProgressBar.Max) then
-    BitBtn1.Click;      }
-
 end;
 
 function GetFillPasswd : String;

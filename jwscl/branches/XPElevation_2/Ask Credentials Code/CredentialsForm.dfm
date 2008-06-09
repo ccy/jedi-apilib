@@ -16381,9 +16381,9 @@ object FormCredentials: TFormCredentials
     Left = 408
     Top = 81
   end
-  object Timer1: TTimer
+  object Timer_ElevationTimeOut: TTimer
     Enabled = False
-    OnTimer = Timer1Timer
+    OnTimer = Timer_ElevationTimeOutTimer
     Left = 448
     Top = 80
   end

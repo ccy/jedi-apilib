@@ -150,11 +150,13 @@ var
   i : Integer;
   Proc : THandle;
 begin
-  //first try graceful shutdown of all window applications on the secure desktop
-  EnumWindows(@QuitEnumWindowsProc,0);
-  Sleep(100);
-
-
+  if Assigned(fDesktop) then
+  begin
+    //first try graceful shutdown of all window applications on the secure desktop
+    EnumWindows(@QuitEnumWindowsProc,0);
+    Sleep(100);
+  end;
+  
   FreeAndNil(fJobs);
 end;
 
@@ -317,6 +319,21 @@ begin
         end;
       end;
     end;
+  end
+  else
+  begin
+    if Assigned(FormCredentials) then
+    begin
+     //in delphi debug mode this prevents the Delphi IDE from responding
+     //so we omit the stayontop flag
+{$IFNDEF DEBUG}
+     {The order of stay on top activation is important.
+      First stay on top the background windows up to the front window
+     }
+     FormStyle := fsStayOnTop;
+     FormCredentials.FormStyle := fsStayOnTop;
+{$ENDIF DEBUG}
+    end;
   end;
 end;
 
@@ -345,6 +362,8 @@ end;
 
 procedure TFormMain.SetupAllForeignWindows;
 begin
+  if not Assigned(fDesktop) then
+    exit;
 {$IFNDEF FORMONLY}
   EnumWindows(@EnumWindowsProc,Handle);
 {$ENDIF FORMONLY}

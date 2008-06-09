@@ -18,6 +18,7 @@ uses
   JwsclStrings,
   JwsclSecureObjects,
   JwsclSid,
+  TempWindow,
   ULogging,
   SessionPipe,
   SysUtils,
@@ -33,6 +34,7 @@ uses
 
 
 type
+  {}
   PEaseAccessProcess = ^TEaseAccessProcess;
   TEaseAccessProcess = record
     PID : DWORD;
@@ -48,6 +50,7 @@ type
     fErrorValue : DWORD;
     fIsServiceError : Boolean;
 
+    fSecureDesktop,
     fNoErrorDialogs,
     fShowWebPage : Boolean;
 
@@ -65,7 +68,6 @@ type
   protected
     fSwitchedSecureDesktopEvent : HEVENT;
     EaseAccessProcesses: TList;
-    fUseSecureDesktop : Boolean;
 
     procedure RememberAndCloseEaseAccessApps;
     procedure RestartEaseAccessAppsOnNewDesktop(const RestoreDesktop : TJwSecurityDesktop);
@@ -89,6 +91,8 @@ type
 
     property ShowWebPage : Boolean read fShowWebPage;
     property NoErrorDialogs : Boolean read fNoErrorDialogs;
+
+    property SecureDesktop : Boolean read fSecureDesktop;
   end;
 
 function HasParameter(const Name : String; out Index : Integer) : Boolean;overload;
@@ -132,8 +136,17 @@ var
   LastError : DWORD;
   Log : IJwLogClient;
   L : TJwSecureGeneralObject;
+var LogServer : IJwLogServer;
 begin
+  if not Assigned(ULogging.LogServer) then
+    LogServer := CreateLogServer(nil, LogEventTypes, nil);
+
   Log := uLogging.LogServer.Connect(etMethod,ClassName,'SetupDesktop','CredentialsThreads.pas','');
+
+  result := nil;
+  if not SecureDesktop then
+    exit;
+
 
   JwInitWellKnownSIDs;
 
@@ -170,7 +183,9 @@ begin
       //SD := TJwSecureGeneralObject.GetSecurityInfo(result.Handle,SE_KERNEL_OBJECT,[siOwnerSecurityInformation, siGroupSecurityInformation, siDaclSecurityInformation]);
       //MessageBoxW(0,PWideChar(SD.Text),'', MB_OK);
 
+{$IFNDEF FORMONLY}
       result.SetThreadDesktop;
+{$ENDIF FORMONLY}
     except
       on E : EJwsclWinCallFailedException do
       begin
@@ -207,7 +222,11 @@ var
   InputDesk : TJwSecurityDesktop;
   Desks : TJwSecurityDesktops;
   Log : IJwLogClient;
+  LogServer : IJwLogServer;
 begin
+  if not Assigned(ULogging.LogServer) then
+    LogServer := CreateLogServer(nil, LogEventTypes, nil);
+
   Log := uLogging.LogServer.Connect(etMethod,ClassName,'EndDesktop','CredentialsThreads.pas','');
 
   if Assigned(Desktop) then
@@ -256,7 +275,11 @@ function TConsentThread.ShowCredentialsForm(
 var
   Prompt: TJwCredentialsPrompt;
   Log : IJwLogClient;
+var LogServer : IJwLogServer;
 begin
+  if not Assigned(ULogging.LogServer) then
+    LogServer := CreateLogServer(nil, LogEventTypes, nil);
+
   Log := uLogging.LogServer.Connect(etMethod,ClassName,'ShowCredentialsForm','CredentialsThreads.pas','');
 
   try
@@ -281,6 +304,14 @@ begin
   FormCredentials.LogonError := ShowLogonError;
   FormCredentials.ControlFlags := SessionInfo.ControlFlags;
   FormCredentials.UserRegKey := SessionInfo.UserRegKey;
+  FormCredentials.UserImage := SessionInfo.UserProfileImage;
+
+  FormCredentials.UserImageType := SessionInfo.UserProfileImageType;
+  FormCredentials.SecureDesktop := SecureDesktop;
+
+
+  {if Assigned(SessionInfo.UserProfileImage) then
+    SessionInfo.UserProfileImage.SaveToFile('E:\Temp\_test2.jpg');}
 
 
   Application.CreateForm(TFormMain, FormMain);
@@ -296,38 +327,40 @@ begin
 
 
 
-
-
   Log.Log('Run Application...');
   Application.Run;
 
-  result := FormCredentials.ModalResult;
-  Log.Log('ModalResult returned : '+IntToStr(Result));
-  Log.Log('SessionInfo.Flags : '+IntToStr(SessionInfo.Flags));
-
-  fShowWebPage := FormCredentials.ShowWebPage;
-  if result = mrOK then
-  begin
-    SessionInfo.UserName := FormCredentials.UserName;
-    SessionInfo.Password := FormCredentials.Password;
-    SessionInfo.Flags    := FormCredentials.Flags;
-  end
-  else
-  //abort only works on DEBUG service. It also shuts down the service properly
-  //otherwise the service does not shutdown
-  if result = mrAbort then
-  begin
-    //service terminates only if also canceled
-    SessionInfo.Flags    := CLIENT_CANCELED or CLIENT_DEBUGTERMINATE;
-  end
-  else
-    SessionInfo.Flags    := CLIENT_CANCELED;
-
+  SessionInfo.Flags    := CLIENT_CANCELED;
   try
-    Application.Free;
-  except
+    result := FormCredentials.ModalResult;
+
+    Log.Log('ModalResult returned : '+IntToStr(Result));
+    Log.Log('SessionInfo.Flags : '+IntToStr(SessionInfo.Flags));
+
+    fShowWebPage := FormCredentials.ShowWebPage;
+    if result = mrOK then
+    begin
+      SessionInfo.UserName := FormCredentials.UserName;
+      SessionInfo.Password := FormCredentials.Password;
+      SessionInfo.Flags    := FormCredentials.Flags;
+    end
+    else
+    //abort only works on DEBUG service. It also shuts down the service properly
+    //otherwise the service does not shutdown
+    if result = mrAbort then
+    begin
+      //service terminates only if also canceled
+      SessionInfo.Flags    := CLIENT_CANCELED or CLIENT_DEBUGTERMINATE;
+    end
+    else
+      SessionInfo.Flags    := CLIENT_CANCELED;
+  finally
+    try
+      Application.Free;
+    except
+    end;
+    Application := nil;
   end;
-  Application := nil;
 end;
 
 class procedure TConsentThread.ProcessLogonResult(const Value, LastError : Integer);
@@ -337,7 +370,11 @@ var
   i : Integer;
 
   Log : IJwLogClient;
+  LogServer : IJwLogServer;
 begin
+  if not Assigned(ULogging.LogServer) then
+    LogServer := CreateLogServer(nil, LogEventTypes, nil);
+
   Log := uLogging.LogServer.Connect(etMethod,ClassName,'ProcessLogonResult','CredentialsThreads.pas','');
 
   if (Value = ERROR_WIN32) and (LastError <> ERROR_SUCCESS) then
@@ -502,10 +539,15 @@ procedure TConsentThreadEaseAppThread.Execute;
 var
   i : Integer;
   Log : IJwLogClient;
+  LogServer : IJwLogServer;
 begin
+  if not Assigned(ULogging.LogServer) then
+    LogServer := CreateLogServer(nil, LogEventTypes, nil);
+
   Log := ULogging.LogServer.Connect(etMethod,ClassName,'Logon','ConsentThreadEaseAppThread','');
 
   Sleep(50);
+
 
   try
     if Assigned(EaseAccessProcesses) then
@@ -560,6 +602,7 @@ var
   len : DWORD;
 
 begin
+
   //first we try to terminate the known apps
   for i := 0 to EaseAccessProcesses.Count - 1 do
   begin
@@ -577,10 +620,11 @@ end;
 procedure TConsentThread.FreeEaseAccessAppsList;
 var i : Integer;
 begin
-  for i := 0 to EaseAccessProcesses.Count - 1 do
-  begin
-    Dispose(EaseAccessProcesses[i]);
-  end;
+  if Assigned(EaseAccessProcesses) then
+    for i := 0 to EaseAccessProcesses.Count - 1 do
+    begin
+      Dispose(EaseAccessProcesses[i]);
+    end;
   FreeAndNil(EaseAccessProcesses);
 end;
 
@@ -602,7 +646,11 @@ var
   Resolution : TRect;
 
   Log : IJwLogClient;
+  LogServer : IJwLogServer;
 begin
+  if not Assigned(ULogging.LogServer) then
+    LogServer := CreateLogServer(nil, LogEventTypes, nil);
+
   Log := ULogging.LogServer.Connect(etMethod,ClassName,'Logon','CredentialsThread','');
 
   result := 0;
@@ -613,8 +661,7 @@ begin
 
   //create background image if this is not a remote session
   //we save data
-  if fUseSecureDesktop and
-     ((GetSystemMetrics(SM_REMOTESESSION) = 0) or
+  if ((GetSystemMetrics(SM_REMOTESESSION) = 0) or
      (SessionInfo.ControlFlags and 1{XPCTRL_FORCE_BACKGROUND_IMAGE} = 1)) then
   begin
     try
@@ -632,7 +679,7 @@ begin
     ScreenBitmap := nil;
   end;
 
-  if fUseSecureDesktop then
+  if SecureDesktop then
   begin
     RememberAndCloseEaseAccessApps;
     try
@@ -667,8 +714,12 @@ begin
 
       CurrentAttempt := 0;
 
-      if fUseSecureDesktop then
+      if SecureDesktop then
+      begin
         SetEvent(fSwitchedSecureDesktopEvent);
+        Sleep(50);
+        ResetEvent(fSwitchedSecureDesktopEvent);
+      end;
 
       repeat
         LastError := ERROR_INVALID_PASSWORD;
@@ -750,7 +801,7 @@ begin
       end;
 
     finally
-      if fUseSecureDesktop then
+      if SecureDesktop then
       begin
         CloseEaseAccessApps;
         EndDesktop(fDesktop);
@@ -759,6 +810,8 @@ begin
         RestartEaseAccessAppsOnNewDesktop(fDesktop);
 
         SetEvent(fSwitchedSecureDesktopEvent);
+        Sleep(50);
+        ResetEvent(fSwitchedSecureDesktopEvent);
       end;
     end;
   except
@@ -781,12 +834,31 @@ begin
 end;
 
 
+function ExistsCredApp(out MutexHandle : IJwAutoPointer) : Boolean;
+var hMut : THandle;
+begin
+  result := false;
+
+  hMut := CreateMutexW(nil, true, 'MutexCredAppRunning');
+
+  if hMut = 0 then
+    exit
+  else
+  if GetLastError() = ERROR_ALREADY_EXISTS then
+  begin
+    result := true;
+  end;
+end;
+
 procedure TConsentThread.Execute;
 var
   Log : IJwLogClient;
   PipeSession : TClientSessionPipe;
   SessionInfo : TSessionInfo;
   Idx : Integer;
+  RunningMutexHandle : IJwAutoPointer;
+  dwData : DWORD;
+  TempWindow : TTempElevationWindowThread;
 
 
 procedure Test1;
@@ -836,7 +908,8 @@ begin
     pSA := SD.Create_SA();
 
     try
-      fSwitchedSecureDesktopEvent := CreateEventW(LPSECURITY_ATTRIBUTES(pSA), false, false, 'XPElevation Switched Desktop');
+      //manual reset, so several threads can be wakened
+      fSwitchedSecureDesktopEvent := CreateEventW(LPSECURITY_ATTRIBUTES(pSA), true, false, 'XPElevation Switched Desktop');
     finally
       TJwSecurityDescriptor.Free_SA(pSA);
     end;
@@ -845,15 +918,23 @@ begin
   end;
 end;
 
+var LogServer : IJwLogServer;
 begin
+  if not Assigned(ULogging.LogServer) then
+    LogServer := CreateLogServer(nil, LogEventTypes, nil);
+
+  //das stimmt hier garnet
+
   Log := ULogging.LogServer.Connect(etMethod,ClassName,'Execute','CredentialsThread','');
+
+
 
 
   inherited;
 
-  CreateSwitchEvent;
+  fSecureDesktop := False;
 
-  fUseSecureDesktop := true;
+  CreateSwitchEvent;
 
   fNoErrorDialogs := false;
   fIsServiceError := false;
@@ -882,7 +963,7 @@ begin
       //create auto pointer Pipe
       PipeSession := TClientSessionPipe.Create;
       TJwAutoPointer.Wrap(PipeSession);
-    
+
       //connect to pipe name if possible
       ReturnValue := 1;
       fLastError := ERROR_PIPE_NOT_CONNECTED;
@@ -899,6 +980,8 @@ begin
       try
         Log.Log('Get service data');
         PipeSession.ReadServerData(SessionInfo);
+
+        TJwAutoPointer.Wrap(SessionInfo.UserProfileImage);
       except
         on E : EOSError do
         begin
@@ -916,6 +999,30 @@ begin
           end;
         end;
       end;
+
+      dwData := GetWindowLongW(SessionInfo.ParentWindow,GWL_ID);
+      if not ExistsCredApp(RunningMutexHandle) or //cred app
+         (SessionInfo.ParentWindow = 0) or
+         (dwData = 0)
+         then
+      begin
+        TempWindow := CreateTempElevationThread('Elevation', '', 0);
+        try
+          TempWindow.Resume;
+
+          ReturnValue := 1001;
+          if (TempWindow.WaitWithTimeOut(120*1000,false) = WAIT_TIMEOUT) then
+            exit;
+
+          ReturnValue := 1002;
+          if TempWindow.GetReturnValue <> 0 then
+            exit;
+        finally
+          TempWindow.Free;
+        end;
+      end;
+
+
       fNoErrorDialogs := SessionInfo.ControlFlags and XPCTRL_FORCE_NO_ERROR_DIALOGS = XPCTRL_FORCE_NO_ERROR_DIALOGS; 
 
       //save max possible logon attempts
