@@ -26,6 +26,12 @@ const
   E_SERVICE_FAILED = $83E70012;
   E_INVALID_CRED_APP = $83E70013;
 
+
+
 implementation
+uses JwsclStreams;
+
+
+
 
 end.

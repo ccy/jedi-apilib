@@ -93,8 +93,9 @@ begin
     M.Code := @OnXMLWrite;
     M.Data := nil;
     LogServer := CreateLogServer(nil, LogEventTypes, TJwOnXMLWrite(M));
-
-  end;
+  end
+  else
+    LogServer := CreateLogServer(nil, LogEventTypes, nil);
 end;
 
 procedure DoneLog;

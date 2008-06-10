@@ -1,7 +1,8 @@
 unit SessionPipe;
 
 interface
-uses SysUtils, JwaWindows, ComObj, ULogging, JwsclUtils, JwsclLogging,
+uses SysUtils, JwaWindows, ComObj, ULogging, JwsclUtils, JwsclLogging, Classes,
+    JwsclTypes,
     JwsclExceptions, JwsclComUtils;
 
 type
@@ -52,6 +53,9 @@ const CLIENT_START = $200000;
 type
   PServerBuffer = ^TServerBuffer;
   TServerBuffer = record
+    Version : DWORD;
+    Size : DWORD;
+
     Signature   : array[0..15] of Char;
     Application,
     Commandline : array[0..MAX_PATH] of WideChar;
@@ -63,6 +67,10 @@ type
     UserRegKey : HKEY;
     ControlFlags,
     Flags     : DWORD;
+
+    UserProfileImageType : array[0..31] of WideChar;
+    UserProfileImageSize  : DWORD;
+    UserProfileImageStart : DWORD;
   end;
 
   TSessionInfo = record
@@ -77,6 +85,8 @@ type
     UserRegKey : HKEY;
     MaxLogonAttempts,
     TimeOut : DWORD;
+    UserProfileImage : TMemoryStream;
+    UserProfileImageType : WideString;
   end;
 
   ETimeOutException = class(Exception);
@@ -207,29 +217,50 @@ begin
 end;
 
 procedure TClientSessionPipe.ReadServerData(out SessionInfo: TSessionInfo);
-var ServerBuffer : TServerBuffer;
+var ServerBuffer : PServerBuffer;
     lpNumberOfBytesRead,
     nNumberOfBytesToRead : DWORD;
 
     Log : IJwLogClient;
+    Size : DWORD;
+    P : Pointer;
    { OvLapped : TOverlapped;}
+   AA : Array[0..1000] of char absolute P;
+   LogServer : IJwLogServer;
 begin
+  if not Assigned(ULogging.LogServer) then
+    LogServer := CreateLogServer(nil, LogEventTypes, nil);
+
   Log := uLogging.LogServer.Connect(etMethod,ClassName,
           'ReadServerData','ElevationHandler.pas','');
+
+  //get record size        
+  if not CheckPipe(ReadFile(
+    fPipe,//__in         HANDLE hFile,
+    @Size,//__out        LPVOID lpBuffer,
+    sizeof(Size),//__in         DWORD nNumberOfBytesToRead,
+    @lpNumberOfBytesRead,//__out_opt    LPDWORD lpNumberOfBytesRead,
+    nil//@OvLapped//__inout_opt  LPOVERLAPPED lpOverlapped
+  )) then
+    LogAndRaiseLastOsError(Log,ClassName, 'ReadServerData::(Winapi)ReadFile','SessionPipe.pas');
+
+  GetMem(ServerBuffer, Size);
+  TJwAutoPointer.Wrap(ServerBuffer, Size, ptGetMem);
 
   {ZeroMemory(@OvLapped, sizeof(OvLapped));
   OvLapped.hEvent := TJwAutoPointer.Wrap(CreateEvent(nil, false, false, nil)).GetHandle;
   }
   if not CheckPipe(ReadFile(
     fPipe,//__in         HANDLE hFile,
-    @ServerBuffer,//__out        LPVOID lpBuffer,
-    sizeof(ServerBuffer),//__in         DWORD nNumberOfBytesToRead,
+    ServerBuffer,//__out        LPVOID lpBuffer,
+    Size,//__in         DWORD nNumberOfBytesToRead,
     @lpNumberOfBytesRead,//__out_opt    LPDWORD lpNumberOfBytesRead,
     nil//@OvLapped//__inout_opt  LPOVERLAPPED lpOverlapped
   )) then
     LogAndRaiseLastOsError(Log,ClassName, 'ReadServerData::(Winapi)ReadFile','SessionPipe.pas');
 
-  if lpNumberOfBytesRead < sizeof(TServerBuffer) then
+  if (lpNumberOfBytesRead < sizeof(TServerBuffer)) or
+     (ServerBuffer.Size <> Size) then
   begin
     SetLastError(ERROR_BAD_FORMAT);
     Log.Log(lsError, 'ReadFile returned invalid buffer size.');
@@ -260,6 +291,27 @@ begin
   SessionInfo.UserRegKey  := ServerBuffer.UserRegKey;
   SessionInfo.MaxLogonAttempts     := ServerBuffer.MaxLogonAttempts;
 
+  if (ServerBuffer.UserProfileImageSize > 0) then
+  begin
+    SessionInfo.UserProfileImageType := ServerBuffer.UserProfileImageType;
+
+    P := ServerBuffer;
+
+    Inc(Integer(P), ServerBuffer.UserProfileImageStart);
+    SessionInfo.UserProfileImage := TMemoryStream.Create;
+    //SessionInfo.UserProfileImage.SetSize(ServerBuffer.UserProfileImageSize);
+    SessionInfo.UserProfileImage.Write(P^, ServerBuffer.UserProfileImageSize);
+    SessionInfo.UserProfileImage.Position := 0;
+
+    if SessionInfo.UserProfileImage.Size <> ServerBuffer.UserProfileImageSize then
+      FreeAndNil(SessionInfo.UserProfileImage);
+
+
+    //Assert(SessionInfo.UserProfileImage.Size = ServerBuffer.UserProfileImageSize);
+  end;
+
+
+
   fTimeOut := ServerBuffer.TimeOut;
 
   ZeroMemory(@ServerBuffer, sizeof(ServerBuffer));
@@ -267,12 +319,17 @@ end;
 
 procedure TClientSessionPipe.ReadServerProcessResult(out Value,
   LastError: DWORD; const StopEvent: HANDLE);
-var ClientBuffer : TClientBuffer;
-    NumBytesRead : DWORD;
-    Log : IJwLogClient;
+var 
+  ClientBuffer : TClientBuffer;
+  NumBytesRead : DWORD;
+  Log : IJwLogClient;
 
-    Data, P : Pointer;
+  Data, P : Pointer;
+  LogServer : IJwLogServer;
 begin
+  if not Assigned(ULogging.LogServer) then
+    LogServer := CreateLogServer(nil, LogEventTypes, nil);
+
   Log := uLogging.LogServer.Connect(etMethod,ClassName,
           'ReadServerProcessResult','ElevationHandler.pas','');
   ZeroMemory(@ClientBuffer, sizeof(ClientBuffer));
@@ -313,11 +370,16 @@ begin
 end;
 
 procedure TClientSessionPipe.SendClientData(const SessionInfo: TSessionInfo);
-var ClientBuffer : TClientBuffer;
-    nNumberOfBytesToWritten : DWORD;
-    Log : IJwLogClient;
+var 
+  ClientBuffer : TClientBuffer;
+  nNumberOfBytesToWritten : DWORD;
+  Log : IJwLogClient;
 
+  LogServer : IJwLogServer;
 begin
+  if not Assigned(ULogging.LogServer) then
+    LogServer := CreateLogServer(nil, LogEventTypes, nil);
+
   Log := uLogging.LogServer.Connect(etMethod,ClassName,
           'SendClientData','ElevationHandler.pas','');
 
@@ -449,12 +511,17 @@ end;
 
 procedure TServerSessionPipe.ReadClientData(
   out SessionInfo: TSessionInfo;const TimeOut: DWORD; const StopEvent: HANDLE);
-var ClientBuffer : TClientBuffer;
-    NumBytesRead : DWORD;
-    Log : IJwLogClient;
-    res : DWORD;
-    OvLapped : TOverlapped;
+var 
+  ClientBuffer : TClientBuffer;
+  NumBytesRead : DWORD;
+  Log : IJwLogClient;
+  res : DWORD;
+  OvLapped : TOverlapped;
+  LogServer : IJwLogServer;
 begin
+  if not Assigned(ULogging.LogServer) then
+    LogServer := CreateLogServer(nil, LogEventTypes, nil);
+
   Log := uLogging.LogServer.Connect(etMethod,ClassName,
           'ReadClientData','ElevationHandler.pas','');
   ZeroMemory(@ClientBuffer, sizeof(ClientBuffer));
@@ -509,10 +576,15 @@ begin
 end;
 
 procedure TServerSessionPipe.SendServerResult(const Value, LastError : DWORD);
-var NumBytesWritten: DWORD;
-    Log : IJwLogClient;
-    A : Array[0..1] of DWORD;
+var 
+  NumBytesWritten: DWORD;
+  Log : IJwLogClient;
+  A : Array[0..1] of DWORD;
+  LogServer : IJwLogServer;
 begin
+  if not Assigned(ULogging.LogServer) then
+    LogServer := CreateLogServer(nil, LogEventTypes, nil);
+
   Log := uLogging.LogServer.Connect(etMethod,ClassName,
           'SendServerResult','ElevationHandler.pas','');
 
@@ -534,18 +606,36 @@ begin
 end;
 
 procedure TServerSessionPipe.SendServerData(const SessionInfo: TSessionInfo);
-var ServerBuffer : TServerBuffer;
-    NumBytesWritten: DWORD;
-    Log : IJwLogClient;
+var 
+  ServerBuffer : PServerBuffer;
+  Size : DWORD;
+  NumBytesWritten: DWORD;
+  Log : IJwLogClient;
+  P : Pointer;
 
+//    AA : Array[0..1000] of char absolute P;
+  LogServer : IJwLogServer;
 begin
+  if not Assigned(ULogging.LogServer) then
+    LogServer := CreateLogServer(nil, LogEventTypes, nil);
+
   Log := uLogging.LogServer.Connect(etMethod,ClassName,
           'SendServerData','ElevationHandler.pas','');
 
-  ZeroMemory(@ServerBuffer, sizeof(ServerBuffer));
+  Size := sizeof(TServerBuffer)+4;
+  if Assigned(SessionInfo.UserProfileImage) then
+    Inc(Size, SessionInfo.UserProfileImage.Size);
+
+  GetMem(ServerBuffer, Size);
+  TJwAutoPointer.Wrap(ServerBuffer, Size,ptGetMem);
+
+  ZeroMemory(ServerBuffer, Size);
   try
     OleCheck(StringCbCopyA(ServerBuffer.Signature, sizeof(ServerBuffer.Signature),
         PChar('server')));
+
+    ServerBuffer.Version := 1;
+    ServerBuffer.Size := Size;
 
     ServerBuffer.Flags := 0;
 
@@ -570,11 +660,37 @@ begin
     ServerBuffer.ParentWindow := SessionInfo.ParentWindow;
     ServerBuffer.UserRegKey  := SessionInfo.UserRegKey;
 
+    if Assigned(SessionInfo.UserProfileImage) then
+    begin
+      OleCheck(StringCbCopyW(ServerBuffer.UserProfileImageType, sizeof(ServerBuffer.UserProfileImageType),
+         PWideChar(WideString(SessionInfo.UserProfileImageType))));
+
+      ServerBuffer.UserProfileImageSize  := SessionInfo.UserProfileImage.Size;
+      ServerBuffer.UserProfileImageStart := sizeof(TServerBuffer)+2;
+
+      P := ServerBuffer;
+      Inc(Integer(P), ServerBuffer.UserProfileImageStart);
+
+      //CopyMemory(P, SessionInfo.UserProfileImage.Memory,SessionInfo.UserProfileImage.Size);
+      SessionInfo.UserProfileImage.Position := 0;
+      SessionInfo.UserProfileImage.Read(P^, SessionInfo.UserProfileImage.Size);
+    end;
 
     if not WriteFile(
          fPipe,//hFile: HANDLE;
-         Pointer(@ServerBuffer),//lpBuffer: LPCVOID;
-         sizeof(TServerBuffer),//nNumberOfBytesToWrite: DWORD;
+         @Size,//lpBuffer: LPCVOID;
+         sizeof(Size),//nNumberOfBytesToWrite: DWORD;
+         @NumBytesWritten,//lpNumberOfBytesWritten: LPDWORD;
+         nil//@OvLapped//lpOverlapped: LPOVERLAPPED
+         ) then
+    begin
+      LogAndRaiseLastOsError(Log,ClassName, 'SendServerData::(Winapi)WriteFile','SessionPipe.pas');
+    end;
+
+    if not WriteFile(
+         fPipe,//hFile: HANDLE;
+         Pointer(ServerBuffer),//lpBuffer: LPCVOID;
+         Size,//nNumberOfBytesToWrite: DWORD;
          @NumBytesWritten,//lpNumberOfBytesWritten: LPDWORD;
          nil//@OvLapped//lpOverlapped: LPOVERLAPPED
          ) then
@@ -589,11 +705,16 @@ end;
 
 
 {procedure TServerSessionPipe.SendServerProcessResult(const Value, LastError: DWORD);
-var ServerBuffer : TServerBuffer;
-    NumBytesWritten: DWORD;
-    Log : IJwLogClient;
-    Data, P : Pointer;
+var
+  ServerBuffer : TServerBuffer;
+  NumBytesWritten: DWORD;
+  Log : IJwLogClient;
+  Data, P : Pointer;
+  LogServer : IJwLogServer;
 begin
+  if not Assigned(ULogging.LogServer) then
+    LogServer := CreateLogServer(nil, LogEventTypes, nil);
+
   Log := uLogging.LogServer.Connect(etMethod,ClassName,
           'SendServerProcessResult','ElevationHandler.pas','');
 
@@ -639,7 +760,11 @@ var NumBytesRead,
     Ar: Array[0..2] of THandle;
     Log : IJwLogClient;
 
+  LogServer : IJwLogServer;
 begin
+  if not Assigned(ULogging.LogServer) then
+    LogServer := CreateLogServer(nil, LogEventTypes, nil);
+
   Log := uLogging.LogServer.Connect(etMethod,ClassName,
           'WaitForClientAnswer','ElevationHandler.pas','');
 
@@ -712,7 +837,12 @@ var NumBytesRead,
 
     OvLapped : TOverlapped;
     Msg : TMsg;
+
+  LogServer : IJwLogServer;
 begin
+  if not Assigned(ULogging.LogServer) then
+    LogServer := CreateLogServer(nil, LogEventTypes, nil);
+
   Log := uLogging.LogServer.Connect(etMethod,ClassName,
           'WaitForClientToConnect','ElevationHandler.pas','');
 
