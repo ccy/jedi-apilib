@@ -8,7 +8,6 @@ uses
   JwaWindows,
   comobj,
   graphics,
-  JvComputerInfoEx,
   JwsclToken,
   JwsclExceptions,
   JwsclUtils,
@@ -44,17 +43,23 @@ function CreateUserProfileImage(const UserToken : TJwSecurityToken;
     Result := StrPas(Buffer);
   end;
 
+  function ShGetPath(ID : Integer) : WideString;
+  var Path : Array[0..MAX_PATH] of Widechar;
+  begin
+    Result := '';
+    if SUCCEEDED(SHGetFolderPathW(0,ID,0,SHGFP_TYPE_DEFAULT, @Path)) then
+      result := IncludeTrailingBackslash(Path);  //Oopps, may convert unicode to ansicode
+  end;
+
+
   function GetUserPicture(): TMemoryStream;
   var
     CommonDataPath, UserName: string;
-    JvComputerInfoEx : TJvComputerInfoEx;
     Bit : TBitmap;
   begin
-    JvComputerInfoEx := TJvComputerInfoEx.Create(nil);
-    TJwAutoPointer.Wrap(JvComputerInfoEx);
-
     UserName := GetUserName;
-    CommonDataPath := JvComputerInfoEx.Folders.CommonAppData +
+
+    CommonDataPath := ShGetPath(CSIDL_COMMON_APPDATA) +
        '\Microsoft\User Account Pictures\' + UserName + '.bmp';
 
     if FileExists(CommonDataPath) then
