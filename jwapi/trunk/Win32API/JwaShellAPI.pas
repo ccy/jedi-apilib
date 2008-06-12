@@ -95,8 +95,7 @@ function FindExecutableW(lpFile, lpDirectory, lpResult: PWideChar): THandle; std
 {$EXTERNALSYM FindExecutable}
 function FindExecutable(lpFile, lpDirectory, lpResult: PTSTR): THandle; stdcall;
 {$EXTERNALSYM CommandLineToArgvW}
-function CommandLineToArgvW(lpCmdLine: PWideChar; var pNumArgs: Integer): PPWideChar;
-
+function CommandLineToArgvW(lpCmdLine: PWideChar; var pNumArgs: Integer): PPWideChar; stdcall;
 {$EXTERNALSYM ShellAboutA}
 function ShellAboutA(hWnd: HWND; szApp, szOtherStuff: PAnsiChar; hIcon: HICON): Integer; stdcall;
 {$EXTERNALSYM ShellAboutW}
