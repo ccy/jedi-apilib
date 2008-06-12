@@ -8,7 +8,7 @@ uses
   Dialogs, ExtCtrls, JvExControls, JvButton, JvTransparentButton, StdCtrls,
   SessionPipe, CredentialUtils, JwsclComUtils, JwsclDesktops,
   JwsclStrings, JwsclProcess,
-  Menus, JvComponent, ImgList, Buttons,  JvExExtCtrls, 
+  Menus, JvComponent, ImgList, Buttons,  JvExExtCtrls, EaseAccessMan,
   ComCtrls, JvExComCtrls, JvProgressBar;
 
 type
@@ -48,6 +48,7 @@ type
     fDesktop : TJwSecurityDesktop;
 
     fJobs : TJwJobObject;
+    fEaseAppList : TEaseAppList;
 
     //resets the parent of all visible and foreign windows to this form
     procedure SetupAllForeignWindows;
@@ -58,7 +59,8 @@ type
   public
     { Public-Deklarationen }
     class function StartShellExecute(const PathName, Parameters : WideString;
-      const UseCreateProcess : Boolean
+      const UseCreateProcess : Boolean;
+      const Desktop : WideString
       ) : DWORD;
 
 
@@ -71,6 +73,8 @@ type
     property ControlFlags : DWORD read fControlFlags write fControlFlags;
 
     property Desktop : TJwSecurityDesktop write fDesktop;
+
+    property EaseAppList : TEaseAppList write fEaseAppList;
   end;
 
 var
@@ -80,7 +84,7 @@ var
 
 implementation
 
-uses Types, CredentialsForm;
+uses Types, CredentialsForm, CredentialsThread;
 
 {$R *.dfm}
 
@@ -150,13 +154,16 @@ var
   i : Integer;
   Proc : THandle;
 begin
+  fEaseAppList.AddManagedApp('osk.exe',ShGetPath(CSIDL_SYSTEM), false, false);
+  fEaseAppList.AddManagedApp('magnify.exe',ShGetPath(CSIDL_SYSTEM), false, true);
+
   if Assigned(fDesktop) then
   begin
     //first try graceful shutdown of all window applications on the secure desktop
     EnumWindows(@QuitEnumWindowsProc,0);
     Sleep(100);
   end;
-  
+
   FreeAndNil(fJobs);
 end;
 
@@ -388,20 +395,6 @@ procedure TFormMain.Center1Click(Sender: TObject);
 var ProcInfo: PROCESS_INFORMATION;
     StartInfo : TStartupInfo;
 begin
-
-  exit; //doesnt work
-  ZeroMemory(@StartInfo, sizeof(StartInfo));
-  StartInfo.cb := sizeof(StartInfo);  StartInfo.lpDesktop := 'winsta0\SecureElevation';
-  //StartInfo.dwFlags := STARTF_USESHOWWINDOW;
-//  StartInfo.wShowWindow := SW_
-
-
-  if not CreateProcess(nil,'C:\Windows\system32\control.exe /name Microsoft.EaseOfAccessCenter',nil,nil,true, CREATE_NEW_CONSOLE, nil, nil, StartInfo, ProcInfo) then
-    ShowMessage(SysErrorMessage(GetLastError));
-
-  //ShellExecute(0,'open','control.exe','/name Microsoft.EaseOfAccessCenter',nil,SW_SHOWNORMAL);
- //ShellExecute(0,'open','C:\Windows\Explorer.exe','/separate,/idlist,:49223:6916,::{26EE0668-A00A-44D7-9371-BEB064C98683}\7\::{D555645E-D4F8-4C29-A827-D93C859C4F2A}',nil,SW_SHOWNORMAL);
-
 end;
 
 function StartProcess(const PathName : WideString) : THandle;
@@ -410,7 +403,7 @@ var ProcInfo: PROCESS_INFORMATION;
 begin
   ZeroMemory(@StartInfo, sizeof(StartInfo));
   StartInfo.cb := sizeof(StartInfo);
-  StartInfo.lpDesktop := 'winsta0\SecureElevation';
+  StartInfo.lpDesktop := PWideChar('winsta0\'+SecureDesktopName);
 
 
   if not CreateProcessW(PWideChar(PathName),nil,nil,nil,true, 0, nil, nil, StartInfo, ProcInfo) then
@@ -430,7 +423,8 @@ end;
 
 
 class function TFormMain.StartShellExecute(const PathName, Parameters : WideString;
-  const UseCreateProcess : Boolean) : DWORD;
+  const UseCreateProcess : Boolean;
+  const Desktop : WideString) : DWORD;
 var
   Sh : TShellExecuteInfoW;
   ProcessEntry32 : TProcessEntry32W;
@@ -443,11 +437,12 @@ begin
   begin
     ZeroMemory(@StartInfo, sizeof(StartInfo));
     StartInfo.cb := sizeof(StartInfo);
-    StartInfo.lpDesktop := 'winsta0\SecureElevation';
-    StartInfo.dwFlags := STARTF_USESHOWWINDOW or STARTF_USEPOSITION;
+
+    StartInfo.lpDesktop := PWidechar(Desktop);
+   { StartInfo.dwFlags := STARTF_USESHOWWINDOW or STARTF_USEPOSITION;
     StartInfo.wShowWindow := SW_SHOW;
     StartInfo.dwY := 0;
-    StartInfo.dwX := 0;
+    StartInfo.dwX := 0;      }
 
     CreateEnvironmentBlock(@pEnv,0, true);
 
@@ -457,7 +452,8 @@ begin
       lpCmd := '"'+PathName+'"';;
 
     result := INVALID_HANDLE_VALUE;
-    if not CreateProcessW(PWideChar(PathName),PWideChar(lpCmd),nil,nil,true, CREATE_BREAKAWAY_FROM_JOB or CREATE_NEW_CONSOLE or CREATE_UNICODE_ENVIRONMENT, pEnv, nil, StartInfo, ProcInfo) then
+    if not CreateProcessW(PWideChar(PathName),PWideChar(lpCmd),nil,nil,false,
+        CREATE_BREAKAWAY_FROM_JOB or CREATE_NEW_CONSOLE or CREATE_UNICODE_ENVIRONMENT, pEnv, nil, StartInfo, ProcInfo) then
       ShowMessage(SysErrorMessage(GetLastError))
     else
     begin
@@ -506,20 +502,17 @@ end;
 
 procedure TFormMain.Screenzoom1Click(Sender: TObject);
 begin
-  AddToJob(StartShellExecute(GetSystem32Path+'magnify.exe','', true));
+  AddToJob(StartShellExecute(GetSystem32Path+'magnify.exe','', true,'winsta0\'+SecureDesktopName));
 end;
-
-
-
 
 procedure TFormMain.Screenkeyboard1Click(Sender: TObject);
 begin
-  AddToJob(StartShellExecute(GetSystem32Path+'osk.exe','', false));
+  AddToJob(StartShellExecute(GetSystem32Path+'osk.exe','', false,'winsta0\'+SecureDesktopName));
 end;
 
 procedure TFormMain.MenuCmdClick(Sender: TObject);
 begin
-  AddToJob(StartShellExecute(GetSystem32Path+'cmd.exe','', true));
+  AddToJob(StartShellExecute(GetSystem32Path+'cmd.exe','', true,'winsta0\'+SecureDesktopName));
 end;
 
 end.

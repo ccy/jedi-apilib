@@ -29,21 +29,17 @@ uses
   Graphics,
   MainForm,
   XPElevationCommon,
+  EaseAccessMan,
   CredentialsForm;
 
 
 
 type
-  {}
-  PEaseAccessProcess = ^TEaseAccessProcess;
-  TEaseAccessProcess = record
-    PID : DWORD;
-    Path : WideString;
-    UseCreateProcess : Boolean;
-  end;
+
 
   TConsentThread = class(TJwThread)
   protected
+    fDefaultDesktop,
     fDesktop : TJwSecurityDesktop;
     fMaxRepetitionCount : DWORD;
     fLastError,
@@ -67,12 +63,7 @@ type
       const ShowLogonError : Boolean): Integer;
   protected
     fSwitchedSecureDesktopEvent : HEVENT;
-    EaseAccessProcesses: TList;
-
-    procedure RememberAndCloseEaseAccessApps;
-    procedure RestartEaseAccessAppsOnNewDesktop(const RestoreDesktop : TJwSecurityDesktop);
-    procedure CloseEaseAccessApps;
-    procedure FreeEaseAccessAppsList;
+    fEaseAppList : TEaseAppList;
   public
     class function CreateNewThread(Suspended : Boolean) : TConsentThread;
 
@@ -130,7 +121,7 @@ begin
   Index := -1;
 end;
 
-function TConsentThread.SetUpDesktop : TJwSecurityDesktop;
+function TConsentThread.SetUpDesktop() : TJwSecurityDesktop;
 var
   SD: TJwSecurityDescriptor;
   LastError : DWORD;
@@ -159,20 +150,19 @@ begin
   //SD := TJwSecurityDescriptor.CreateDefaultByToken();
   SD := TJwSecurityDescriptor.Create;
   SD.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil, [], GENERIC_ALL, JwLocalSystemSID));
+  {
+  Do not deny SWITCH_DESKTOP to System because if the winlogon desktop is shown by
+  a call to LockWorkStation the desktop is locked and cannot be unlocked again. 
+  }
+{$IFDEF DEBUG}
   SD.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil, [], GENERIC_ALL, JwAdministratorsSID));
-
-  //MessageBoxW(0,PWideChar(SD.Text),'', MB_OK);
+{$ENDIF DEBUG}
 
   TJwAutoPointer.Wrap(SD);
   try
-    //SD.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil, [], GENERIC_ALL, JwLocalSystemSID));
-
-{    if SD.DACL.FindSID(JwLocalSystemSID) >= 0 then
-    begin
-      SD.DACL.Delete(SD.DACL.FindSID(JwLocalSystemSID));
-    end;}
    try
-     result := TJwSecurityDesktop.CreateDesktop(nil, true, 'SecureElevation', [],
+     SecureDesktopName := 'SecureElevation_'+IntToStr(GetCurrentProcessId);
+     result := TJwSecurityDesktop.CreateDesktop(nil, true, SecureDesktopName, [],
        false, GENERIC_ALL,  SD);
 
     // TJwSecureGeneralObject.SetSecurityInfo(result.Handle,SE_KERNEL_OBJECT,[siDaclSecurityInformation], SD);
@@ -205,7 +195,7 @@ end;
 
 destructor TConsentThread.Destroy;
 begin
-  FreeEaseAccessAppsList;
+  //FreeEaseAccessAppsList;
 
   CloseHandle(fSwitchedSecureDesktopEvent);
   try
@@ -308,6 +298,7 @@ begin
 
   FormCredentials.UserImageType := SessionInfo.UserProfileImageType;
   FormCredentials.SecureDesktop := SecureDesktop;
+  FormCredentials.Desktop := Desktop;
 
 
   {if Assigned(SessionInfo.UserProfileImage) then
@@ -321,6 +312,7 @@ begin
   FormMain.Resolution := Resolution;
   FormMain.ScreenBitmap := ScreenBitmap;
   FormMain.ControlFlags := SessionInfo.ControlFlags;
+  FormMain.EaseAppList := fEaseAppList;
 
   //set visibility at the end
   FormMain.Visible := true;
@@ -415,230 +407,19 @@ begin
   end;
 end;
 
-procedure TConsentThread.RememberAndCloseEaseAccessApps;
-
-function FindProcess(const Name, ExpectedPath : WideString; out ProcessEntry32 : TProcessEntry32W) : boolean;
-var
-  hSnap : THandle;
-  ProcEntry : TProcessEntry32W;
-  len,
-  currentID : DWORD;
-  Continue : Boolean;
-  Path : WideString;
-  hProc : THandle;
-begin
-  hSnap := CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
-  result := false;
-
-  ZeroMemory(@ProcessEntry32, sizeof(ProcessEntry32));
-
-  try
-    ProcEntry.dwSize := sizeof(ProcEntry);
-    Continue := Process32FirstW(hSnap, ProcEntry);
-
-    while (continue) do
-    begin
-      if (JwCompareString(WideString(ProcEntry.szExeFile), Name, true) = 0) then
-      begin
-        hProc := OpenProcess(PROCESS_QUERY_INFORMATION or PROCESS_VM_READ,
-          false, ProcEntry.th32ProcessID);
-
-        if hProc > 0 then
-        begin
-          SetLength(Path,MAX_PATH);
-
-          //path to exe must be correct
-          len :=  GetModuleFileNameExW(hProc, 0, @Path[1], MAX_PATH);
-          if Len > 0 then
-          begin
-            SetLength(Path, Len);
-
-            if JwCompareString(Path, ExpectedPath+Name, true) = 0 then
-            begin
-              result := true;
-              ProcessEntry32 := ProcEntry;
-              break;
-            end;
-          end;
-          CloseHandle(hProc);
-        end;
-      end;
-
-      continue := Process32NextW(hSnap,ProcEntry);
-    end;
-  finally
-    CloseHandle(hSnap);
-  end;
-end;
-
-procedure AddAndCloseApp(const EaseAccessProcesses : TList;
-  ProcessEntry32 : TProcessEntry32W; UseCreateProcess : Boolean);
-var
-  hProc : THandle;
-  hID : PEaseAccessProcess;
-  len : DWORD;
-begin
-  hProc := OpenProcess(PROCESS_QUERY_INFORMATION or PROCESS_VM_READ or PROCESS_TERMINATE, false, ProcessEntry32.th32ProcessID);
-  if hProc <> 0 then
-  begin
-    New(hID);
-    hID.PID := 0;
-
-    SetLength(hID.Path,MAX_PATH);
-    len :=  GetModuleFileNameExW(hProc, 0, @hID.Path[1], MAX_PATH);
-    if Len > 0 then
-    begin
-      SetLength(hID.Path, len);
-      hID.UseCreateProcess := UseCreateProcess;
-      EaseAccessProcesses.Add(Pointer(hID));
-
-      TerminateProcess(hProc, 0);
-    end
-    else
-    begin
-      Dispose(hId);
-    end;
-
-    CloseHandle(hProc);
-  end;
-end;
-
-function GetPath(ID : Integer) : WideString;
-var Path : Array[0..MAX_PATH] of Widechar;
-begin
-  Result := '';
-  if SUCCEEDED(SHGetFolderPathW(0,ID,0,SHGFP_TYPE_DEFAULT, @Path)) then
-    result := IncludeTrailingBackslash(Path);  //Oopps, may convert unicode to ansicode
-end;
-
-var
-  ProcessEntry32 : TProcessEntry32W;
-begin
-  EaseAccessProcesses := TList.Create;
-
-{  if FindProcess('osk.exe',GetPath(CSIDL_SYSTEM), ProcessEntry32) then
-  begin
-    AddAndCloseApp(EaseAccessProcesses, ProcessEntry32, false);
-  end;   }
-  if FindProcess('magnify.exe',GetPath(CSIDL_SYSTEM), ProcessEntry32) then
-  begin
-    AddAndCloseApp(EaseAccessProcesses, ProcessEntry32, true);
-  end;
-end;
-
-type
-  TConsentThreadEaseAppThread = class(TJwThread)
-  public
-    EaseAccessProcesses : TList;
-    RestoreDesktop      : TJwSecurityDesktop;
-
-    procedure Execute; override;
-  end;
-
-procedure TConsentThreadEaseAppThread.Execute;
-var
-  i : Integer;
-  Log : IJwLogClient;
-  LogServer : IJwLogServer;
-begin
-  if not Assigned(ULogging.LogServer) then
-    LogServer := CreateLogServer(nil, LogEventTypes, nil);
-
-  Log := ULogging.LogServer.Connect(etMethod,ClassName,'Logon','ConsentThreadEaseAppThread','');
-
-  Sleep(50);
-
-
-  try
-    if Assigned(EaseAccessProcesses) then
-    with EaseAccessProcesses do
-    begin
-      if Assigned(RestoreDesktop) then
-        RestoreDesktop.SetLastThreadDesktop;
-
-      for i := 0 to EaseAccessProcesses.Count - 1 do
-      begin
-        PEaseAccessProcess(EaseAccessProcesses[i]).PID :=
-          TFormMain.StartShellExecute(PEaseAccessProcess(EaseAccessProcesses[i]).Path,'',
-            PEaseAccessProcess(EaseAccessProcesses[i]).UseCreateProcess);
-      end;
-    end;
-  except
-    on E : Exception do
-      Log.Exception(E);
-
-
-  end;
-end;
-
-procedure TConsentThread.RestartEaseAccessAppsOnNewDesktop(const RestoreDesktop : TJwSecurityDesktop);
-var ConsentThreadEaseAppThread : TConsentThreadEaseAppThread;
-begin
-  ConsentThreadEaseAppThread := TConsentThreadEaseAppThread.Create(true, 'ConsentThreadEaseAppThread');
-  try
-    ConsentThreadEaseAppThread.EaseAccessProcesses := EaseAccessProcesses;
-    ConsentThreadEaseAppThread.RestoreDesktop := RestoreDesktop;
-
-    if Assigned(RestoreDesktop) then
-    begin
-      ConsentThreadEaseAppThread.FreeOnTerminate := False;
-      ConsentThreadEaseAppThread.Resume;
-      ConsentThreadEaseAppThread.WaitFor;
-    end
-    else
-      ConsentThreadEaseAppThread.Execute;
-  finally
-    ConsentThreadEaseAppThread.Free;
-  end;
-end;
-
-procedure TConsentThread.CloseEaseAccessApps;
-var
-  i : Integer;
-  PID : DWORD;
-
-  hProc : THandle;
-  hID : PEaseAccessProcess;
-  len : DWORD;
-
-begin
-
-  //first we try to terminate the known apps
-  for i := 0 to EaseAccessProcesses.Count - 1 do
-  begin
-    PID := PEaseAccessProcess(EaseAccessProcesses[i]).PID;
-
-    hProc := OpenProcess(PROCESS_TERMINATE, false, PID);
-    if hProc <> 0 then
-    begin
-      TerminateProcess(hProc,0);
-      CloseHandle(hProc);
-    end;
-  end;
-end;
-
-procedure TConsentThread.FreeEaseAccessAppsList;
-var i : Integer;
-begin
-  if Assigned(EaseAccessProcesses) then
-    for i := 0 to EaseAccessProcesses.Count - 1 do
-    begin
-      Dispose(EaseAccessProcesses[i]);
-    end;
-  FreeAndNil(EaseAccessProcesses);
-end;
 
 
 function TConsentThread.Logon(
   const PipeSession : TClientSessionPipe;
   SessionInfo : TSessionInfo): Integer;
 
+
 var
   LastError,
   Value : Cardinal;
 
   CurrentAttempt : Integer;
-  
+
 
   PromptResult : Integer;
 
@@ -679,12 +460,18 @@ begin
     ScreenBitmap := nil;
   end;
 
+  fDefaultDesktop := TJwSecurityDesktop.CreateAndGetInputDesktop([], false, GENERIC_ALL);
+  TJwAutoPointer.Wrap(fDefaultDesktop);
+
   if SecureDesktop then
   begin
-    RememberAndCloseEaseAccessApps;
+    fEaseAppList.AddManagedApp('osk.exe',ShGetPath(CSIDL_SYSTEM), true, false);
+    fEaseAppList.AddManagedApp('magnify.exe',ShGetPath(CSIDL_SYSTEM), true, true);
+    //fEaseAppList.CloseAll(false);
+
     try
       //create new and switch desktop
-      fDesktop := SetUpDesktop;
+      fDesktop := SetUpDesktop();
     except
       on E : Exception do
       begin
@@ -700,12 +487,10 @@ begin
       end;
     end;
 
-    RestartEaseAccessAppsOnNewDesktop(nil);
+    //RestartEaseAccessAppsOnNewDesktop(nil);
   end
   else
     fDesktop := nil;
-
-
 
   try
     try
@@ -803,11 +588,14 @@ begin
     finally
       if SecureDesktop then
       begin
-        CloseEaseAccessApps;
+        //CloseEaseAccessApps;
+        //RememberAndCloseEaseAccessApps;
+
         EndDesktop(fDesktop);
 
         //then restart them
-        RestartEaseAccessAppsOnNewDesktop(fDesktop);
+        //RestartEaseAccessAppsOnNewDesktop(fDesktop);
+        fEaseAppList.RestartEaseAccessAppsOnNewDesktop(fDefaultDesktop);
 
         SetEvent(fSwitchedSecureDesktopEvent);
         Sleep(50);
@@ -932,7 +720,10 @@ begin
 
   inherited;
 
-  fSecureDesktop := False;
+  fSecureDesktop := true;
+
+  fEaseAppList := TEaseAppList.Create;
+  TJwAutoPointer.Wrap(fEaseAppList);
 
   CreateSwitchEvent;
 

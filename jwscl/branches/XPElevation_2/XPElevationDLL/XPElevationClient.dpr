@@ -228,9 +228,9 @@ begin
   );   *)
 
   HRes := ExecuteProcess('C:\Windows\system32\cmd.exe',// const ApplicationPath: WideString;
-      '/k echo hello',//const Parameters: WideString;
+      '',//const Parameters: WideString;
       '',//const CurrentDirectory: WideString;
-      $40272,//ParentWindow: LongWord;
+      $0,//ParentWindow: LongWord;
       XPCTRL_FORCE_NO_ALTERNATE_LOGON or
       XPCTRL_FORCE_NO_CACHE_CREDENTIALS or
       XPCTRL_FORCE_NO_ERROR_DIALOGS or

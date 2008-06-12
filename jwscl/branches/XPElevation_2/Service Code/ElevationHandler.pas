@@ -7,58 +7,81 @@ uses
   JwaWindows, JwsclToken, JwsclLsa, JwsclCredentials, JwsclDescriptor, JwsclDesktops,
   JwsclExceptions, JwsclSID, JwsclAcl,JwsclKnownSID, JwsclEncryption, JwsclTypes,
   JwsclProcess, JwsclComUtils, XPElevationCommon, JwaVista, jwsclwinstations,
+  JwsclUtils,
   SessionPipe, JwsclLogging, uLogging, ThreadedPasswords, JwsclCryptProvider,
-  MappedStreams,
+  //MappedStreams,
+  JwsclStreams,
+  UserProfileImage,
   JwsclStrings;
 
 const
+  //response timeout with credential app
   TIMEOUT = {$IFNDEF DEBUG}60 * 30 * 1000;{$ELSE}INFINITE;{$ENDIF}
+  //timeout of user response in cred app
   USERTIMEOUT = {$IFNDEF DEBUG}60 * 30 * 1000;{$ELSE}INFINITE;{$ENDIF}
+
+  //maximum of logon attempts until connection is closed
   MAX_LOGON_ATTEMPTS = {$IFNDEF DEBUG} 3;{$ELSE}INFINITE;{$ENDIF}
 
 
 
 
 type
-  EHashMismatch = class(Exception);
 
+  {TXPElevationStruct is a record that is sent by
+   the Client COM.
+   Most of this data is sen
+  }
   TXPElevationStruct = record
-    Size : DWORD;
+    Size : DWORD; //size of this structure to compare
 
-    ParentWindow : HWND;
+    ParentWindow : HWND; //window that should be highlited.
 
-    ApplicationName  : array[0..MAX_PATH] of WideChar;
-    CurrentDirectory : array[0..MAX_PATH] of WideChar;
-    Parameters : WideString; {in public: Pointer. Must be nil}
+    ApplicationName  : array[0..MAX_PATH] of WideChar; //app absolute path
+    CurrentDirectory : array[0..MAX_PATH] of WideChar; //
 
-    ControlFlags  : DWORD;
-    StartupInfo : TStartupInfoW;
+    {Parameters.
+     Between Service and COM Client this is always just a nil pointer.
+     Its filled with the parameters by the service automatically.
+    }
+    Parameters : WideString;
 
-    ParameterCharCount : DWORD;
+    ControlFlags  : DWORD; //Flags that controls the elevation prompt  XPCTRL_XXX in XPElevation.pas
+    StartupInfo : TStartupInfoW; //Startup info for CreateProcess
 
-    Reserved1,
-    Reserved2 : DWORD;
+    ParameterCharCount : DWORD; //Count of chars of parameter length
+
+    Reserved1,   //not used
+    Reserved2 : DWORD; //not used
   end;
 
 
 type
   PProcessJobData = ^TProcessJobData;
+  {TProcessJobData contains information about a process in a job.
+  It defines the process token and the loaded profile
+  }
   TProcessJobData = record
-    UserToken : TJwSecurityToken;
-    UserProfile : TJwProfileInfo;
+    UserToken : TJwSecurityToken; //process token
+    UserProfile : TJwProfileInfo; //user's profile. Must be unloaded.
   end;
 
-
+  {TElevationHandler starts the credentials app and after thet
+   the elevates the app} 
   TElevationHandler = class(TObject)
   private
-
   protected
-    OvLapped: OVERLAPPED;
+    //pipe to credentials app
     ServerPipe : TServerSessionPipe;
-    fAllowedSIDs : TJwSecurityIdList;
+
+    //credential list - same as the one from TXPService
     fPasswords   : TCredentialsList;
+    //service shuts down
     fStopEvent : THandle;
+    //service stopped? - pointer to XPService.Stopped
     fStopState : PBoolean;
+
+    //job list - same as XPService.Jobs
     fJobs : TJwJobObjectSessionList;
 
 
@@ -72,20 +95,17 @@ type
       const StopState : PBoolean);
     destructor Destroy; override;
 
+    {Runs the appropriate application elevated.}
     function StartApplication(const ElevationStruct : TXPElevationStruct; out PID : DWORD) : HRESULT;
+
+    {Runs credential app and returns true on success.}
     function AskCredentials(const ClientPipeUserToken: TJwSecurityToken;
         const SessionID : Integer;
         out LastProcessID: TJwProcessId;
         var SessionInfo : TSessionInfo): Boolean;
 
-//    property StopEvent: THandle read fStopEvent;
     property StopState : Boolean read GetStopState;
   end;
-
-const
-   EMPTYPASSWORD = Pointer(-1);
-
-
 
 
 implementation
@@ -124,6 +144,7 @@ function TElevationHandler.AskCredentials(
   out LastProcessID: TJwProcessId;
   var SessionInfo: TSessionInfo): boolean;
 
+{Checks whether the given logon is possible}  
 function CheckLogonUser(const SessionInfo : TSessionInfo) : Boolean;
 var
   Token : TJwSecurityToken;
@@ -131,6 +152,7 @@ var
   UserName,
   Password : WideString;
   Log : IJwLogClient;
+  i : Integer;
 begin
   Log := uLogging.LogServer.Connect(etMethod,ClassName,'CheckLogonUser','ElevationHandler.pas','');
   
@@ -165,36 +187,44 @@ begin
   on Windows XP, is to call the LogonUser API.
 
   }
-  try
+
+  for i := 1 to 2 do
+  begin
     try
-      Token := TJwSecurityToken.CreateLogonUser(UserName,Domain,Password,LOGON32_LOGON_NETWORK,LOGON32_PROVIDER_DEFAULT);
-    except
-      on E : EJwsclSecurityException do
-      begin
-        Log.Exception(E);
-        if (E.LastError = ERROR_INVALID_PASSWORD) or
-           (E.LastError = ERROR_LOGON_FAILURE) then
+      try
+        Token := TJwSecurityToken.CreateLogonUser(UserName,Domain,Password,LOGON32_LOGON_NETWORK,LOGON32_PROVIDER_DEFAULT);
+      except
+        on E : EJwsclSecurityException do
         begin
-          Log.Log(lsError,'Logon user check failed.');
-          result := false;
-          exit;
+          Log.Exception(E);
+          if (i = 2) then
+            if (E.LastError = ERROR_INVALID_PASSWORD) or
+               (E.LastError = ERROR_LOGON_FAILURE) then
+            begin
+              Log.Log(lsError,'Logon user check failed.');
+              result := false;
+              exit;
+            end
+            else
+              raise;
         end
-        else
+        else //except
           raise;
-      end
-      else
-        raise;
+      end;
+    finally
+      RandomizePasswdW(Password);
     end;
-  finally
-    RandomizePasswdW(Password);
+    break;
   end;
+
   Token.Free;
   result := true;
 end;
 
-
-
-
+{Creates a token the has SYSTEM power but less privileges.
+First it tries to create its own token then it uses
+CreateRestrictedToken
+}
 function GetRestrictedSYSTEMToken(UserToken : TJwSecurityToken) : TJwSecurityToken;
 
 function CreateToken(UserToken : TJwSecurityToken) : TJwSecurityToken;
@@ -238,6 +268,7 @@ begin
 
   try
     Privileges.AddPrivilege(SE_CHANGE_NOTIFY_NAME);
+    Privileges.AddPrivilege(SE_ASSIGNPRIMARYTOKEN_NAME);
 
     DefaultDACL := UserToken.GetTokenDefaultDacl;
     TJwAutoPointer.Wrap(DefaultDACL);
@@ -343,18 +374,18 @@ begin
 
     try
       result := TJwSecurityToken.CreateNewToken(
-      TOKEN_ALL_ACCESS,//const aDesiredAccess: TJwAccessMask;
-      ObjectAttributes,//const anObjectAttributes: TObjectAttributes;
-      AuthenticationId,//const anAuthenticationId: TLUID;
-      0,//const anExpirationTime: int64;
-      User,//anUser: TJwSecurityId;
-      UserGroups,//aGroups: TJwSecurityIdList;
-      Privileges,//aPrivileges: TJwPrivilegeSet;
-      Owner,//anOwner,
-      Group,//aPrimaryGroup: TJwSecurityId;
-      DefaultDACL,//aDefaultDACL: TJwDAccessControlList;
-      TokenSource //aTokenSource: TTokenSource
-      );
+          TOKEN_ALL_ACCESS,//const aDesiredAccess: TJwAccessMask;
+          ObjectAttributes,//const anObjectAttributes: TObjectAttributes;
+          AuthenticationId,//const anAuthenticationId: TLUID;
+          0,//const anExpirationTime: int64;
+          User,//anUser: TJwSecurityId;
+          UserGroups,//aGroups: TJwSecurityIdList;
+          Privileges,//aPrivileges: TJwPrivilegeSet;
+          Owner,//anOwner,
+          Group,//aPrimaryGroup: TJwSecurityId;
+          DefaultDACL,//aDefaultDACL: TJwDAccessControlList;
+          TokenSource //aTokenSource: TTokenSource
+          );
     except
       on e : Exception do
       begin
@@ -373,43 +404,32 @@ begin
   result.PrivilegeEnabled[SE_CHANGE_NOTIFY_NAME] := true;
 
   //result.TokenIntegrityLevelType := iltHigh;
-  C1 := result.RunElevation;
-  c2 := result.ElevationType;
+ { C1 := result.RunElevation;
+  c2 := result.ElevationType;}
 //  result.TokenIntegrityLevel
 end;
 
 
 begin
- { result := TJwSecurityToken.CreateWTSQueryUserTokenEx(nil, 1);
-  exit;    }
- (* if not Assigned(UserToken) then
-  begin
-    UserToken := TJwSecurityToken.CreateTokenEffective(MAXIMUM_ALLOWED);
-    TJwAutoPointer.Wrap(UserToken);
-  end;*)
-
-
-  //result.TokenSessionId := 1;
-  //result := TJwSecurityToken.CreateWTSQueryUserTokenEx(nil, 1);
-
   try
     result := CreateToken(UserToken);
   except
     //failsafe
     result := TJwSecurityToken.CreateRestrictedToken(
-      UserToken.TokenHandle, //PrevTokenHandle : TJwTokenHandle;
-      MAXIMUM_ALLOWED,//const TokenAccessMask: TJwTokenAccessMask;
-    DISABLE_MAX_PRIVILEGE,//const Flags: cardinal;
-    nil,//const SidsToDisable: TJwSecurityIdList;
-    nil,//const PrivilegesToDelete: TJwPrivilegeSet;
-    nil//const RestrictedSids: TJwSecurityIdList
-    );
+                UserToken.TokenHandle, //PrevTokenHandle : TJwTokenHandle;
+                MAXIMUM_ALLOWED,//const TokenAccessMask: TJwTokenAccessMask;
+              {DISABLE_MAX_PRIVILEGE}0,//const Flags: cardinal;
+              nil,//const SidsToDisable: TJwSecurityIdList;
+              nil,//const PrivilegesToDelete: TJwPrivilegeSet;
+              nil//const RestrictedSids: TJwSecurityIdList
+              );
   end;
   result.ConvertToPrimaryToken(MAXIMUM_ALLOWED);
 end;
 
-
-function CopyUserRegKeyHandle(const UserToken : TJwSecurityToken; const TargetProcHandle : THandle) : THandle;
+{Creates a copy of the user's current user reg key and returns it.}
+function CopyUserRegKeyHandle(const UserToken : TJwSecurityToken;
+  const TargetProcHandle : THandle) : THandle;
 var
   Log : IJwLogClient;
   Key : HKEY;
@@ -481,42 +501,6 @@ var
   ChecksumError : Boolean;
 
 
-function CheckCredentialsBinaryHash : Boolean;
-var
-  Stream : TFileStreamEx;
-  M : TMemoryStream;
-  Size : Cardinal;
-  fCredentialsAppHash : TJwHash;
-  NewHash : TCredentialsHash;
-begin
-  Stream := TFileStreamEx.Create(CredentialsAppPath, fmOpenRead);
-  try
-    if Stream.Size > high(Size) then
-      Size := high(Size)-1  //big file huh?
-    else
-      Size := Stream.Size;
-
-    fCredentialsAppHash := TJwHash.Create(haSHA);
-    try
-      fCredentialsAppHash.HashData(Stream.Memory,Size);
-
-      NewHash.Hash := fCredentialsAppHash.RetrieveHash(NewHash.Size);
-
-      try
-        result := (CredentialsHash.Size = NewHash.Size) and
-           (NewHash.Hash <> nil) and (CredentialsHash.Hash <> nil) and
-           (CompareMem(CredentialsHash.Hash,NewHash.Hash, CredentialsHash.Size));
-      finally
-        TJwHash.FreeBuffer(NewHash.Hash);
-      end;
-    finally
-      fCredentialsAppHash.Free;
-    end;
-  finally
-    Stream.Free;
-  end;
-end;
-
 begin
   result := false;
 
@@ -526,7 +510,7 @@ begin
     exit;}
 
 
-
+  //secure the pipe to the credential app
   Desc :=  TJwAutoPointer.Wrap(TJwSecurityDescriptor.Create).Instance as TJwSecurityDescriptor;
   try
 {$IFDEF DEBUG}
@@ -545,6 +529,7 @@ begin
         PipeName := '\\.\pipe\XPCredentials'+IntToStr(GetCurrentThreadId);
 
         SetLastError(0);
+        //create the pipe
         hPipe := CreateNamedPipeW(
             PWideChar(PipeName),//lpName: LPCWSTR;
             PIPE_ACCESS_DUPLEX or FILE_FLAG_OVERLAPPED,//dwOpenMode,
@@ -608,12 +593,17 @@ begin
       Desc.Owner := JwLocalSystemSID;
 
       Desc.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil, [], PROCESS_ALL_ACCESS, JwLocalSystemSID));
+      {
+      Don't try to add allow entries here for other users.
+      The new process runs with SYSTEM account and thus no other user can debug it if it does not have
+      SE_DEBUG_NAME privilege.
+      }
       Desc.DACL.Add(TJwDiscretionaryAccessControlEntryDENY.Create(nil, [], PROCESS_ALL_ACCESS,  ClientPipeUserToken.TokenUser, true));
 
       SecAttr := LPSECURITY_ATTRIBUTES(Desc.Create_SA());
       try
         try
-          ChecksumError := not CheckCredentialsBinaryHash;
+          ChecksumError := not JwCompareFileHash(CredentialsAppPath, CredentialsHash);
         except
           on e : Exception do
             Log.Exception(E);
@@ -622,10 +612,10 @@ begin
         if ChecksumError then
         begin
           Log.Log(lsError, 'Hash of credentials application changed! Elevation is aborted.');
-{.$IFNDEF DEBUG}
+{$IFNDEF DEBUG}
           raise EHashMismatch.Create('Hash of credentials application changed! Elevation is aborted.');
           exit;
-{.$ENDIF DEBUG}
+{$ENDIF DEBUG}
         end;
 
         //create an restricted token from system
@@ -659,11 +649,6 @@ begin
 {$ENDIF}
       if WaitResult = 1{pipe event} then
       begin
-        //Test1; test for receiving desktop and winsta handle from another sesssion -> failed
-
-  //VISTA
-  //    if GetNamed
-  //    ProcInfo.dwProcessId
         {protocol:
            Server    ->  Client : Send default username, domain, and password caching flag (possible or not)
            Wait for client to response
@@ -683,8 +668,13 @@ begin
 
             SessionInfo.MaxLogonAttempts := MaxLoginRepetitionCount;
 
+            //get the user's reg key
             SessionInfo.UserRegKey := CopyUserRegKeyHandle(ClientPipeUserToken, ProcInfo.hProcess);
+            //get the user's profile image (if any)
+            SessionInfo.UserProfileImage := CreateUserProfileImage(ClientPipeUserToken,SessionInfo.UserProfileImageType);
+            TJwAutoPointer.Wrap(SessionInfo.UserProfileImage);
 
+            //send init data to cred app
             ServerPipe.SendServerData(SessionInfo);
 
             try
@@ -723,10 +713,10 @@ begin
 
                 AppliationCmdLine := Sysutils.WideFormat('"%s" /cred /switchdefault', [CredentialsAppPath]);
                 if not CreateProcessAsUserW(
-                   ClientPipeUserToken.TokenHandle,
+                   Token.TokenHandle,//can't be ClientPipeUserToken because we need some more rights
                    PWideChar(Widestring(CredentialsAppPath)),
                    PWideChar(Widestring(AppliationCmdLine)) ,
-                  nil, nil, True, CREATE_NEW_CONSOLE, nil, nil, StartInfo, ProcInfo) then
+                  nil, nil, false, CREATE_NEW_CONSOLE, nil, nil, StartInfo, ProcInfo) then
                 begin
                    Log.Log('Failsafe for desktop switchback failed.');
                   LogAndRaiseLastOsError(Log, ClassName, 'AskCredentials::(winapi)CreateProcessAsUserW#2', 'ElevationHandler.pas');
@@ -740,13 +730,13 @@ begin
 
             end;
 
+            //too many logon attempts - we shut down the connection
             if LoginRepetitionCount = MaxLoginRepetitionCount then
             begin
               ServerPipe.SendServerResult(ERROR_TOO_MANY_LOGON_ATTEMPTS,0);
               SessionInfo.Flags := CLIENT_CANCELED;
-            end
-           { else
-              ServerPipe.SendServerResult(ERROR_SUCCESS,0);      }
+            end;
+
           except
             on E1a : ETimeOutException do
             begin
@@ -844,15 +834,13 @@ constructor TElevationHandler.Create(
   const StopEvent  : THandle;
   const StopState : PBoolean);
 begin
-  fAllowedSIDs := AllowedSIDs;
+
   fPasswords   := Passwords;
   fStopEvent   := StopEvent;
   fStopState   := StopState;
   fJobs        := Jobs;
 
   ServerPipe := TServerSessionPipe.Create;
-  ZeroMemory(@OvLapped, sizeof(OvLapped));
-  OvLapped.hEvent := StopEvent;
 end;
 
 destructor TElevationHandler.Destroy;
@@ -925,6 +913,7 @@ begin
     Token := TJwSecurityToken.CreateTokenEffective(TOKEN_ALL_ACCESS);
     try //2.
 
+      Log.Log('Checking Token...');
       SID := Token.TokenUser;
       try //3.
         XPElevationSID := TJwSecurityId.Create('','XPElevationUser');
@@ -951,6 +940,8 @@ begin
         end;
 {$ENDIF DEBUG}
 
+
+        Log.Log('Getting accountname');
         Username := SID.AccountName[''];
         DefaultUserName := Username;
         try //4.
@@ -958,7 +949,7 @@ begin
         except //4.
           Domain := 'local';
         end;
-
+        Log.Log('Done');
       finally //3.
         SID.Free;
       end;
@@ -1040,7 +1031,7 @@ begin
             exit;
           end;
         except //6.
-          on E : EHashMismatch do
+          on E : EJwsclHashMismatch do
           begin
             Log.Log('Error: '+E.Message);
 
@@ -1127,12 +1118,16 @@ begin
             ZeroMemory(@InVars.StartupInfo, sizeof(InVars.StartupInfo));
             InVars.StartupInfo := CopyStartupInfo(ElevationStruct.StartupInfo);
 
-            //Add specific group
-            Sid := TJwSecurityId.Create(JwFormatString('S-1-5-5-%d-%d',
-              [10000+Token.TokenSessionId, ProcessID]));
-            Invars.AdditionalGroups := TJwSecurityIdList.Create;
-            Sid.AttributesType := [sidaGroupMandatory,sidaGroupEnabled];
-            Invars.AdditionalGroups.Add(Sid);    
+            try
+              //Add specific group
+              Sid := TJwSecurityId.Create(JwFormatString('S-1-5-5-%d-%d',
+                [10000+Token.TokenSessionId, ProcessID]));
+              Invars.AdditionalGroups := TJwSecurityIdList.Create;
+              Sid.AttributesType := [sidaGroupMandatory,sidaGroupEnabled];
+              Invars.AdditionalGroups.Add(Sid);
+            except
+            end;
+
 
           
             InVars.SourceName := 'XPElevation';
@@ -1149,7 +1144,7 @@ begin
             InVars.Parameters.lpCurrentDirectory := ElevationStruct.CurrentDirectory;
 
 
-
+            TJwSecurityToken.RevertToSelf;
 
             InVars.Parameters.dwCreationFlags := CREATE_NEW_CONSOLE or
                 CREATE_SUSPENDED or CREATE_UNICODE_ENVIRONMENT or CREATE_BREAKAWAY_FROM_JOB;

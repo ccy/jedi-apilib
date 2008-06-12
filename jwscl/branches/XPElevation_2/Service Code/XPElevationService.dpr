@@ -14,7 +14,9 @@ Visit at http://blog.delphi-jedi.net/
 program XPElevationService;
 
 uses
+{$IFDEF EUREKALOG}
   ExceptionLog,
+{$ENDIF EUREKALOG}
   SysUtils,
   SvcMgr,
   Classes,
@@ -30,51 +32,28 @@ uses
   uLogging in 'uLogging.pas',
   JwsclEurekaLogUtils in '..\..\..\trunk\source\JwsclEurekaLogUtils.pas',
   XPElevationCommon in '..\XPElevationCommon.pas',
-  MappedStreams in 'MappedStreams.pas';
+  UserProfileImage in '..\Ask Credentials Code\UserProfileImage.pas';
 
 {$R *.RES}
 
 
-function StartProcess(const PathName : WideString) : THandle;
-var ProcInfo: PROCESS_INFORMATION;
-    StartInfo : TStartupInfoW;
-begin
-  ZeroMemory(@StartInfo, sizeof(StartInfo));
-  StartInfo.cb := sizeof(StartInfo);
-//  StartInfo.lpDesktop := 'winsta0\default';
-  StartInfo.wShowWindow := SW_SHOW;
 
-
-  if not CreateProcessW(PWideChar(PathName),nil, nil,nil,false, CREATE_NEW_CONSOLE, nil, nil, StartInfo, ProcInfo) then
-    ShowMessage(Format('The application could not be started: (%d) %s',[GetLastError,SysErrorMessage(GetLastError)]));
-
-  CloseHandle(ProcInfo.hThread);
-  result := ProcInfo.hProcess;
-end;
-
-
-function GetSystem32Path : WideString;
-var Path : Array[0..MAX_PATH] of Widechar;
-begin
-  Result := '';
-  if SUCCEEDED(SHGetFolderPathW(0,CSIDL_SYSTEM,0,SHGFP_TYPE_DEFAULT, @Path)) then
-    result := IncludeTrailingBackslash(Path);  //Oopps, may convert unicode to ansicode
-end;
-  
+{$IFDEF EUREKALOG}
 procedure AttachedFilesRequestProc(EurekaExceptionRecord: TEurekaExceptionRecord;
     AttachedFiles: TStrings);
 begin
   AttachedFiles.Add(LogFileNameLocation);
 end;
+{$ENDIF EUREKALOG}
+
+
 
 begin
+
+{$IFDEF EUREKALOG}
   ExceptionLog.CustomWebFieldsRequest := JEDI_WebFieldsRequestNotify;
   ExceptionLog.AttachedFilesRequest := AttachedFilesRequestProc;
-
-  //StartProcess(GetSystem32Path+'osk.exe');
-  //StartProcess(GetSystem32Path+'ntprint.exe');
-
-  //exit;
+{$ENDIF EUREKALOG}  
 
 
   try
@@ -94,6 +73,8 @@ begin
     // Application.DelayInitialize := True;
     //
    { if not Application.DelayInitialize or Application.Installing then  }
+
+    //logging app name
     uLogging.ApplicationFileName := 'JEDI XP Elevation';
     uLogging.InitFileLocation;
 
@@ -107,7 +88,8 @@ begin
     try
       Application.Initialize;
       Application.CreateForm(TXPService, XPService);
-  XPService.ServiceExecute(nil);
+
+      XPService.ServiceExecute(nil);
     //  Application.Run;
     finally
       DoneLog;

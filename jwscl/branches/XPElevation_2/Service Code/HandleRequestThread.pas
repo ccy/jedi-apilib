@@ -135,7 +135,10 @@ begin
     SD.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil,[],GENERIC_ALL,JwLocalSystemSID,false));
     SD.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil,[],GENERIC_ALL or WRITE_DAC or WRITE_OWNER,JwAdministratorsSID,false));
     SD.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil,[],GENERIC_ALL,SID,true));
-    SD.DACL.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil,[],GENERIC_ALL,JwNetworkServiceSID,false));
+    try
+      SD.DACL.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil,[],GENERIC_ALL,JwNetworkServiceSID,false));
+    except
+    end;
 {$ENDIF}
     pSA := SD.Create_SA();
 

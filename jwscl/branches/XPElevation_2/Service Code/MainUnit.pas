@@ -1,31 +1,49 @@
+{
+This project is released under the terms of the
+GNU General Public License 3.0 (the  "GPL License").
+
+For more information about the GPL: http://www.gnu.org/licenses/gpl-3.0.txt
+
+Original authors are
+ 	Philip Dittmann
+  Christian Wimmer
+
+This application is part of the JEDI API Project.
+Visit at http://blog.delphi-jedi.net/
+}
 unit MainUnit;
 
 interface
 
 uses
+{$IFDEF EUREKALOG}
+  ExceptionLog,
+{$ENDIF EUREKALOG}
   Messages, SysUtils, Classes, Graphics, Controls, SvcMgr, Dialogs, Math, ComObj,
+  Registry, 
+
   JwaWindows, JwsclToken, JwsclLsa, JwsclCredentials, JwsclDescriptor, JwsclDesktops,
   JwsclExceptions, JwsclSID, JwsclAcl,JwsclKnownSID, JwsclEncryption, JwsclTypes,
   JwsclProcess, JwsclSecureObjects, JwsclComUtils, JwsclVersion,
-  JwsclLogging, uLogging,JwsclUtils, JwsclCryptProvider,
-  SessionPipe, ThreadedPasswords,
+  JwsclLogging, JwsclUtils, JwsclCryptProvider, JwsclStreams,
+  uLogging, //Logging utils unit
+  SessionPipe, //Pipe classes
+  ThreadedPasswords, //Credentials stored threadsafe in a list
+  JwsclStrings;
 
-  MappedStreams,
 
 
-  JwsclStrings, ExceptionLog;
-
-type
-    TCredentialsHash = record
-      Hash : Pointer;
-      Size : Cardinal;
-    end;
 const
+  //RegKeyName of credentials app path
   CredApplicationKey='CredentialsApplication';
+  //RegKey Path
   XPElevationRegKey = 'Software\XPElevation';
+  
 var
+  //Credentials App Path read from Reg
   CredentialsAppPath : WideString = '';
-  CredentialsHash : TCredentialsHash;
+  //Hash of CredApp app when the service started
+  CredentialsHash : TJwFileHashData;
 
 
 type
@@ -36,26 +54,38 @@ type
     procedure ServiceStart(Sender: TService; var Started: Boolean);
     procedure ServiceShutdown(Sender: TService);
     procedure ServiceCreate(Sender: TObject);
+{$IFDEF EUREKALOG}
     procedure EurekaLog1ExceptionActionNotify(
       EurekaExceptionRecord: TEurekaExceptionRecord;
       EurekaAction: TEurekaActionType; var Execute: Boolean);
-    procedure EurekaLog1HandledExceptionNotify(
-      EurekaExceptionRecord: TEurekaExceptionRecord; var Handled: Boolean);
+{$ENDIF EUREKALOG}
   private
     { Private declarations }
+    {fServiceStopEvent is signaled when this service must shut down.}
     fServiceStopEvent,
+    {fThreadsStoppedEvent is signaled when all elevent threads exited.}
     fThreadsStoppedEvent:           THandle;
+    {fJobs defines a list. It contains one job per Session (The Windows Session).
+    All process in a job can only belong to the same session.
+    }
     fJobs : TJwJobObjectSessionList;
 
+    {fStopCriticalSection saves the variable fServiceStopEvent}
     fStopCriticalSection :  TMultiReadExclusiveWriteSynchronizer;
     //fLogFile:             Textfile;
-    fStopped:             boolean;
-    fTimer    : HANDLE;
 
+    //fStopped is set to true if the service shuts down
+    fStopped:             boolean;
+
+    {fPasswords defines a credentials list (domain, username, password)
+     per session. That means that a user in a session can save its credentials only
+     in one list item. The user is identifed by the session, not by the logon name.
+     The list is thread safe.
+    }
     fPasswords:           TCredentialsList;
 
 
-    procedure InitAllowedSIDs;
+
     procedure SetStopped(const Value: boolean);
 
     procedure OnJobNotification(Sender : TJwJobObject; ProcessId : TJwProcessId; JobLimits : TJwJobMessages; Data : Pointer);
@@ -67,7 +97,10 @@ type
 
 
   public
+    {Reference count for fThreadsStoppedEvent.
+    If 0 the fThreadsStoppedEvent Event eill be signaled.}
     fHReqThreadCount:     Integer;
+  public
 
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -75,14 +108,16 @@ type
 
     function GetServiceController: TServiceController; override;
     { Public declarations }
+
+    {ThreadsStoppedEvent is signaled when all elevent threads exited.}
     property ThreadsStopEvent: THandle read fThreadsStoppedEvent;
+
+    {ServiceStopEvent is signaled when this service must shut down.}
     property ServiceStopEvent: THandle read fServiceStopEvent;
 
+    //If set to true it shuts down the server
     property Stopped: boolean read fStopped write SetStopped;
   end;
-
-const MessageboxCaption= 'XP Elevation';
-
 
 
 var
@@ -90,7 +125,9 @@ var
 
 
 implementation
-uses HandleRequestThread, Registry, ElevationHandler;
+uses
+  HandleRequestThread, //elevetion Thread unit
+  ElevationHandler; //
 {$R *.DFM}
 
 
@@ -105,6 +142,7 @@ begin
   inherited;
 end;
 
+{$IFDEF EUREKALOG}
 procedure TXPService.EurekaLog1ExceptionActionNotify(
   EurekaExceptionRecord: TEurekaExceptionRecord;
   EurekaAction: TEurekaActionType; var Execute: Boolean);
@@ -117,15 +155,8 @@ begin
     Execute := false;
 {$ENDIF DEBUG}
   end;
-
-  
 end;
-
-procedure TXPService.EurekaLog1HandledExceptionNotify(
-  EurekaExceptionRecord: TEurekaExceptionRecord; var Handled: Boolean);
-begin
-  //
-end;
+{$ENDIF EUREKALOG}
 
 function TXPService.GetServiceController: TServiceController;
 begin
@@ -135,13 +166,7 @@ end;
 
 
 
-const EmptyPass = Pointer(-1);
 
-
-procedure TXPService.InitAllowedSIDs;
-var Reg: TRegistry; SIDStrings: TStringlist; i: integer;
-begin
-end;
 
 procedure TXPService.OnJobNotification(Sender: TJwJobObject;
   ProcessId: TJwProcessId; JobLimits: TJwJobMessages; Data : Pointer);
@@ -275,29 +300,47 @@ begin
   end;
 end;
 
+
+{
+ HKEY_LOCAL_MACHINE;
+ KEY_CREDENTIALS_HASH_SIZE)
+        and Reg.ValueExists(KEY_CREDENTIALS_HASH_
+
+}
+
+
+
+
+
 procedure CreateCredentialsBinaryHash;
 var
-  Stream : TFileStreamEx;
+  Stream : TJwFileStreamEx;
   M : TMemoryStream;
   Size : Cardinal;
   fCredentialsAppHash : TJwHash;
   Log : IJwLogClient;
   Reg: TRegistry;
 
-  Hash : Pointer;
-  HashSize : Cardinal;
+  StoredHash : TJwFileHashData;
   HashCheck : boolean;
 
 const
   KEY_CREDENTIALS_HASH_SIZE = 'CredentialsHashSize';
   KEY_CREDENTIALS_HASH_ = 'CredentialsHash';
 
+  KEY_OSK_HASH_SIZE = 'OskHashSize';
+  KEY_OSK_HASH_ = 'OskHash';
+
+  KEY_MAGNIFY_HASH_SIZE = 'MagnifyHashSize';
+  KEY_MAGNIFY_HASH_ = 'MagnifyHash';
+
+
 
 begin
   Log := uLogging.LogServer.Connect(etMethod,ClassName,
           'CreateCredentialsBinaryHash','MainUnit.pas','');
 
-  Hash := nil;
+  {Hash := nil;
   try
     Reg := TRegistry.Create(KEY_ALL_ACCESS);// KEY_QUERY_VALUE or KEY_READ);
     try
@@ -321,44 +364,33 @@ begin
       Reg.Free;
     end;
   except
-  end;
-
-
-  Stream := TFileStreamEx.Create(CredentialsAppPath, fmOpenRead);
+  end;    }
   try
-    if Stream.Size > high(Size) then
-      Size := high(Size)-1  //big file huh?
-    else
-      Size := Stream.Size;
-
-    fCredentialsAppHash := TJwHash.Create(haSHA);
-    try
-      fCredentialsAppHash.HashData(Stream.Memory,Size);
-
-      CredentialsHash.Hash := fCredentialsAppHash.RetrieveHash(CredentialsHash.Size);
-    finally
-      fCredentialsAppHash.Free;
-    end;
-  finally
-    Stream.Free;
+    StoredHash := JwLoadHashFromRegistry(HKEY_LOCAL_MACHINE,
+      XPElevationRegKey, KEY_CREDENTIALS_HASH_, KEY_CREDENTIALS_HASH_SIZE);
+    TJwAutoPointer.Wrap(StoredHash.Hash, StoredHash.Size, ptGetMem);
+  except
+    ZeroMemory(@StoredHash, sizeof(StoredHash));
   end;
 
-  if (Hash <> nil) and (HashSize > 0) then
+  CredentialsHash := JwCreateFileHash(CredentialsAppPath);
+
+  if (StoredHash.Hash <> nil) and (StoredHash.Size > 0) then
   begin
-    try
-      HashCheck := (CredentialsHash.Size = HashSize) and
-         (Hash <> nil) and (CredentialsHash.Hash <> nil) and
-         (CompareMem(CredentialsHash.Hash,Hash, CredentialsHash.Size));
-    finally
-      FreeMem(Hash);
-    end;
+    HashCheck := (CredentialsHash.Size = StoredHash.Size) and
+        (StoredHash.Hash <> nil) and (CredentialsHash.Hash <> nil) and
+        (CompareMem(CredentialsHash.Hash,StoredHash.Hash, CredentialsHash.Size));
   end
   else
   begin
     HashCheck := true;
 
     try
-      Reg:=TRegistry.Create(KEY_SET_VALUE or KEY_CREATE_SUB_KEY);
+      JwSaveHashToRegistry(HKEY_LOCAL_MACHINE,
+         XPElevationRegKey, KEY_CREDENTIALS_HASH_, KEY_CREDENTIALS_HASH_SIZE,
+         StoredHash);
+
+     { Reg:=TRegistry.Create(KEY_SET_VALUE or KEY_CREATE_SUB_KEY);
       try
         Reg.RootKey:=HKEY_LOCAL_MACHINE;
         if Reg.OpenKey(XPElevationRegKey, true) then
@@ -370,15 +402,46 @@ begin
         end;
       finally
         Reg.Free;
-      end;
+      end;  }
     except
     end;
   end;
 
+{$IFNDEF DEBUG}
   if not HashCheck then
   begin
     raise EHashMismatch.Create('The hash of the credentials application is not the same as the one stored. Exiting..');
   end;
+{$ENDIF DEBUG}
+end;
+
+procedure AddXPElevationGroup;
+var
+  Log : IJwLogClient;
+  p : TLocalGroupInfo1;
+  res, err : DWORD;
+  Sid : TJwSecurityId;
+begin
+  Log := uLogging.LogServer.Connect(etMethod,ClassName,
+          'AddXPElevationGroup','MainUnit.pas','');
+
+  try
+    Sid := TJwSecurityId.Create('','XPElevationUser');
+    Sid.Free;
+  except
+    p.lgrpi1_name := 'XPElevationUser';
+    p.lgrpi1_comment := 'JEDI XPElevation User. The members of this group is '+
+      'allowed to be elevated as Administrator even '+
+      'if they are not in the Administrators group.';
+
+    res := NetLocalGroupAdd(
+        nil,//__in   LPCWSTR servername,
+        1,//__in   DWORD level,
+        @p,//__in   LPBYTE buf,
+        @err//__out  LPDWORD parm_err
+        );
+  end;
+
 end;
 
 var Pipe: THandle;
@@ -405,6 +468,8 @@ begin
   JwSetThreadName('XP Elevation Service Thread');
   Log := uLogging.LogServer.Connect(etMethod,ClassName,
           'ServiceExecute','MainUnit.pas','');
+
+  AddXPElevationGroup;
 
   CredentialsHash.Hash := nil;
   try

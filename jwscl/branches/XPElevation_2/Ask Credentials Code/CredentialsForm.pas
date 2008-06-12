@@ -12,8 +12,17 @@ uses
   JvPanel, jpeg, JvLabel, JvComponentBase, JvComputerInfoEx, JvImage, JvGradient,
   JvGradientHeaderPanel, JvEdit, JvWaitingGradient, JvWaitingProgress,
   JvStaticText, JvExComCtrls, JvProgressBar, JvThread,
+  JwsclDesktops,
+  JwsclExceptions,
+  JwsclSecureObjects,
+  JwsclTypes,
+  JwsclDescriptor,
+  JwsclToken,
+  JwsclComUtils,
+  JwsclAcl,
+  JwsclPrivileges,
   XPMan,
-  UserProfileImage, 
+  UserProfileImage,
   XPElevationCommon,
   JwsclStrings;
                                      
@@ -25,6 +34,9 @@ const
    }
    WM_SWITCH_DESKTOP         = WM_USER + 1999;
    WM_GET_USER_PROFILE_IMAGE = WM_USER + 2000;
+
+var
+   SecureDesktopName : WideString = '';
 
 type
   {TJwDesktopSwitchThread creates a thread that waits
@@ -129,6 +141,7 @@ type
     fUserImage : TMemoryStream;
     fUserImageType : WideString;
     fSecureDesktop : Boolean;
+    fDesktop : TJwSecurityDesktop;
 
     function IsPasswordCacheAvailable : Boolean;
 
@@ -164,6 +177,8 @@ type
     property UserImageType : WideString read fUserImageType write fUserImageType;
 
     property SecureDesktop : Boolean read fSecureDesktop write fSecureDesktop;
+
+    property Desktop : TJwSecurityDesktop write fDesktop;
   end;
 
 var
@@ -192,10 +207,13 @@ begin
 end;
 
 procedure TJwDesktopSwitchThread.Execute;
-var DE : THandle;
+var
+  DE : THandle;
+  WR : DWORD;
+  Counter : Integer;
 begin
   inherited;
-  
+
   FreeOnTerminate := true;
   FTerminatedEvent := CreateEvent(nil, true, false, nil);
 
@@ -209,19 +227,16 @@ begin
   //since this call returns to the last desktop that was in action
   //if we just exit after the first switch
   //the call will switchback to an empty desktop which is a dead end.
-  if JwWaitForMultipleObjects([DE, FTerminatedEvent], false, INFINITE) = WAIT_OBJECT_0 then
-  begin
-    SendMessage(FormCredentials.Handle, WM_SWITCH_DESKTOP, 123,1);
-    Sleep(10);
-    //wait for switchback
-    if JwWaitForMultipleObjects([DE, FTerminatedEvent], false, INFINITE) = WAIT_OBJECT_0 then
+
+  Counter := 1;
+  repeat
+    WR := JwWaitForMultipleObjects([DE, FTerminatedEvent], false, INFINITE);
+    if WR = WAIT_OBJECT_0 then
     begin
-      try
-        SendMessage(FormCredentials.Handle, WM_SWITCH_DESKTOP, 789,2);
-      except
-      end;
+      SendMessage(FormCredentials.Handle, WM_SWITCH_DESKTOP, 0, Counter);
+      Inc(Counter);
     end;
-  end;
+  until WR = WAIT_OBJECT_0 +1;
 end;
 
 
@@ -852,17 +867,90 @@ begin
 end;
 
 procedure TFormCredentials.SWITCH_DESKTOP(var Message: TMsg);
-begin
-  fDesktopSwitchNotification := true;
 
-  if Message.wParam = 2 then //2nd desktop switch
+  function CreateAndGetInputDesktop: TJwSecurityDesktop;
+  var
+    SD: TJwSecurityDescriptor;
+    Token : TJwSecurityToken;
+    DACL : TJwDAccessControlList;
+    i : Integer;
   begin
-    //return with a result
-    //that states that all contacts to service must be ignored
-    //since the service lost patience with us
-    //so the pipe connection is broken
-    ModalResult := mrIgnore;
-    Close;
+    for i := 1 to 2 do
+    try
+      result := TJwSecurityDesktop.CreateAndGetInputDesktop([],false, DESKTOP_READOBJECTS or DESKTOP_SWITCHDESKTOP);
+      break;
+    except
+      on E : EJwsclOpenDesktopException do
+        {if we cannot access the object we have to force it
+        }
+        if E.LastError = 5 then
+        begin
+          //these privileges allows to change the owner
+          TJwPrivilegeScope.Create([SE_TAKE_OWNERSHIP_NAME, SE_RESTORE_NAME],pst_EnableIfAvail);
+
+          //get handle to set owner
+          result := TJwSecurityDesktop.CreateAndGetInputDesktop([],false, WRITE_OWNER);
+          try
+            TJwSecureGeneralObject.TakeOwnerShip(result.Handle, SE_WINDOW_OBJECT);
+          finally
+            result.Free;
+          end;
+
+          //get handle to write DACL
+          result := TJwSecurityDesktop.CreateAndGetInputDesktop([],false, WRITE_DAC);
+          try
+            Token := TJwSecurityToken.CreateTokenEffective(MAXIMUM_ALLOWED);
+            TJwAutoPointer.Wrap(Token);
+            DACL := Token.TokenDefaultDacl;
+            TJwAutoPointer.Wrap(DACL);
+
+            //we use the default dacl that allows us full access
+            TJwSecureGeneralObject.SetSecurityInfo(result.Handle, SE_WINDOW_OBJECT,
+              [siDaclSecurityInformation],nil,nil,DACL,nil);
+          finally
+            Result.Free;
+          end;
+
+        end;
+    end;
+  end;
+
+var
+  Desk : TJwSecurityDesktop;
+  LastDesk : HDESK;
+
+begin
+  try
+    fDesktopSwitchNotification := true;
+
+    Desk := CreateAndGetInputDesktop;
+
+    try
+      {
+      If the desktop is switched to a desktop unequal to the winlogon desktop
+      we switch back immediately.
+      Winlogon is not changed.
+      }
+      if (JwCompareString(Desk.Name,'winlogon', true) <> 0) then
+      begin
+        try
+          if Assigned(fDesktop) then
+          begin
+            LastDesk := fDesktop.LastSwitchDesktop;
+            try
+              fDesktop.SwitchDesktop;
+            finally
+             fDesktop.LastSwitchDesktop := LastDesk;
+            end;
+          end;
+        finally
+          fDesktopSwitchNotification := false;
+        end;
+      end;
+    finally
+      Desk.Free;
+    end;
+  except
   end;
 end;
 

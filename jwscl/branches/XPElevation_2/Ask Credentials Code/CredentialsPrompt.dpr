@@ -16,9 +16,7 @@ program CredentialsPrompt;
 {$R *.res}
 
 uses
-{$IFDEF EUREKALOG}
   ExceptionLog,
-{$ENDIF EUREKALOG}
   Controls,
   JwaWindows,
   JwsclEurekaLogUtils,
@@ -45,7 +43,8 @@ uses
   MainForm in 'MainForm.pas' {FormMain},
   XPElevationCommon in '..\XPElevationCommon.pas',
   XPRemoteRegistry in '..\XPRemoteRegistry.pas',
-  TempWindow in 'TempWindow.pas';
+  TempWindow in 'TempWindow.pas',
+  EaseAccessMan in 'EaseAccessMan.pas';
 
 procedure AttachedFilesRequestProc(EurekaExceptionRecord: TEurekaExceptionRecord;
     AttachedFiles: TStrings);
@@ -189,7 +188,7 @@ begin
       exit;
     end;
    // if HasParameter('/debug') then
-        MessageBox(0,'Debug breakpoint','',MB_ICONEXCLAMATION or MB_OK);
+   //     MessageBox(0,'Debug breakpoint','',MB_ICONEXCLAMATION or MB_OK);
 
    if not HasParameter('/cred') then
       halt(1);
