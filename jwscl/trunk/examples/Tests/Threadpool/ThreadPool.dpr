@@ -1,7 +1,6 @@
 program ThreadPool;
 
 uses
-  ExceptionLog,
   Forms,
   ThreadPoolForm in 'ThreadPoolForm.pas' {Form1},
   ProcessList in 'ProcessList.pas';
