@@ -1249,11 +1249,9 @@ begin
     //some OS does not support functions
     //which this function is calls
    // InterlockedIncrement64(fID);
-   InterlockedIncrement(I);
-   fID := I;
+   InterlockedIncrement(fID);
   except
-    InterlockedIncrement(I);
-    fID := I;
+    InterlockedIncrement(fID);
   end;
   result := fID;
 end;
