@@ -1235,16 +1235,14 @@ end;
 function TJwLogServerImpl.GetID : Int64;
 var I : Integer;
 begin
-  try
+//  try
     //some OS does not support functions
     //which this function is calls
    // InterlockedIncrement64(fID);
-   InterlockedIncrement(I);
-   fID := I;
-  except
-    InterlockedIncrement(I);
-    fID := I;
-  end;
+   InterlockedIncrement(fID);
+{  except
+    InterlockedIncrement(fID);
+  end;}
   result := fID;
 end;
 
