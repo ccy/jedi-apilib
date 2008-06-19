@@ -10,13 +10,17 @@ type
     ID,
     Session,
     Error : DWORD;
+    Duplicated,
     Checked : Boolean;
   end;
 
   TProcessEntries = array of TProcessEntry;
+  TProcessEntriesArray = array of TProcessEntries;
+  TProcessList = class;
 
-  TOnCloseAppsPrePrep = procedure(const SessionID : DWORD; out ProcessHandle : THandle) of object;
-  TOnCloseAppsPostPrep = procedure(const SessionID : DWORD; const Processes : TProcessEntries) of object;
+  TOnCloseAppsPrePrep = procedure(Sender : TProcessList; const SessionID : DWORD; out ProcessHandle : THandle) of object;
+  TOnCloseAppsPostPrep = procedure(Sender : TProcessList; const SessionID : DWORD; const Processes : TProcessEntries) of object;
+  TOnCloseApps = procedure(Sender : TProcessList; const Processes : TProcessEntriesArray) of object;
 
 
 
@@ -25,6 +29,8 @@ type
     fCloseAll : Boolean;
     fOnCloseAppsPrePrep  : TOnCloseAppsPrePrep;
     fOnCloseAppsPostPrep : TOnCloseAppsPostPrep;
+    fOnCloseApps : TOnCloseApps;
+
     fWaitHandles,
     fContext,
     fList : TList;
@@ -38,7 +44,7 @@ type
     constructor Create;
     destructor Destroy;
 
-    function Add(const Handle : THandle; const Duplicate : Boolean = false) : Integer;
+    function Add(Handle : THandle; const Duplicate : Boolean = false) : Integer;
     procedure Remove(const Index : Integer; const Close : Boolean = true);
 
     procedure CloseAll;
@@ -52,12 +58,31 @@ type
 
     property OnCloseAppsPrePrep  : TOnCloseAppsPrePrep read fOnCloseAppsPrePrep write fOnCloseAppsPrePrep;
     property OnCloseAppsPostPrep : TOnCloseAppsPostPrep read fOnCloseAppsPostPrep write fOnCloseAppsPostPrep;
+    property OnCloseApps : TOnCloseApps read fOnCloseApps write fOnCloseApps;
+  end;
+
+  TProcessListMemory = class
+  protected
+    fWriteEvent,
+    fHandle : THandle;
+  public
+    constructor Create(const Name : WideString);
+    constructor CreateOpen(const Name : WideString);
+    destructor Destory;
+
+    procedure Write(const Processes : TProcessEntries);
+    procedure Read(out Processes : TProcessEntries);
+
+    procedure FireWriteEvent;
+    property WritEvent : THandle read fWriteEvent;
   end;
 
 implementation
-uses JwsclToken, JwsclComUtils;
+uses math, JwsclToken, JwsclExceptions, JwsclComUtils, JwsclCryptProvider, JwsclTypes;
 
 { TProcessList }
+
+const MAP_SIZE = 1024 * 1024;
 
 
 
@@ -102,7 +127,7 @@ begin
   end;
 end;
 
-function TProcessList.Add(const Handle: THandle;
+function TProcessList.Add(Handle: THandle;
   const Duplicate: Boolean): Integer;
 var
   T : TJwSecurityToken;
@@ -110,6 +135,21 @@ var
 
   CallbackContext : PCallbackContext;
 begin
+  if Duplicate then
+  begin
+    if not DuplicateHandle(
+      GetCurrentProcess,//hSourceProcessHandle: HANDLE;
+      Handle,//hSourceHandle: HANDLE;
+      GetCurrentProcess,//hTargetProcessHandle: HANDLE;
+      @Handle,//lpTargetHandle: LPHANDLE;
+      0,//dwDesiredAccess: DWORD;
+      false,//bInheritHandle: BOOL;
+      DUPLICATE_SAME_ACCESS//dwOptions: DWORD): BOOL;
+    ) then
+      RaiseLastOSError;
+  end;
+
+
   T := TJwSecurityToken.CreateTokenByProcess(Handle, TOKEN_READ or TOKEN_QUERY);
   TJwAutoPointer.Wrap(T);
 
@@ -126,7 +166,7 @@ begin
        @WaitOrTimerCallback,//__in      WAITORTIMERCALLBACK Callback,
        CallbackContext,//_in_opt  PVOID Context,
        INFINITE,//__in      ULONG dwMilliseconds,
-       WT_EXECUTEDEFAULT//__in      ULONG dwFlags
+       WT_EXECUTEDEFAULT or WT_EXECUTEONLYONCE//__in      ULONG dwFlags
       ) then
     begin
       Dispose(CallbackContext);
@@ -147,7 +187,7 @@ procedure TProcessList.CloseAll;
 var
   i,i2 : Integer;
   P : PProcessEntry;
-  Sessions : array of TProcessEntries;
+  Sessions : TProcessEntriesArray;
   ProcessHandle : THandle;
 begin
   fCritSec.BeginWrite;
@@ -171,12 +211,14 @@ begin
       P.Checked := not P.Checked;
     end;
 
+
+
     for i := 0 to Length(Sessions) - 1 do
     begin
       if Length(Sessions[i]) > 0 then
       begin
         //let process handles be created into the target session
-        OnCloseAppsPrePrep(i, ProcessHandle);
+        OnCloseAppsPrePrep(Self,i, ProcessHandle);
 
         for i2 := 0 to Length(Sessions[i]) - 1 do
         begin
@@ -193,8 +235,10 @@ begin
         end;
 
         //send new process handles 
-        OnCloseAppsPostPrep(i, Sessions[i]);
+        OnCloseAppsPostPrep(Self,i, Sessions[i]);
       end;
+
+      OnCloseApps(Self,Sessions);
     end;
   finally
     fCritSec.EndWrite;
@@ -214,7 +258,18 @@ destructor TProcessList.Destroy;
  var i : Integer;
  begin
    for i := 0 to fContext.Count - 1 do
-    Dispose(fContext[i]);
+     Dispose(fContext[i]);
+ end;
+
+ procedure ClearList;
+ var i : Integer;
+ begin
+   for i := 0 to fList.Count - 1 do
+   begin
+     if PProcessEntry(fList[i])^.Duplicated then
+       CloseHandle(PProcessEntry(fList[i])^.Handle);
+     Dispose(fList[i]);
+   end;
  end;
 
 var i : Integer;
@@ -225,6 +280,7 @@ begin
   fCritSec.BeginWrite;
   try
     ClearContext;
+    ClearList;
 
     FreeAndNil(fContext);
     FreeAndNil(fList);
@@ -262,6 +318,8 @@ begin
   try
     if fList[Index] <> nil then
     begin
+      if PProcessEntry(fList[Index]).Duplicated then
+        CloseHandle(PProcessEntry(fList[Index]).Handle);
       Dispose(PProcessEntry(fList[Index]));
       fList.Delete(Index);
     end;
@@ -273,6 +331,170 @@ end;
 class procedure TProcessList.SendEndSessionMessage(const Wnd: HWND);
 begin
 
+end;
+
+{ TProcessListMemory }
+
+constructor TProcessListMemory.Create(const Name: WideString);
+begin
+  fHandle := CreateFileMappingW(
+      INVALID_HANDLE_VALUE,//__in      HANDLE hFile,
+      nil,//__in_opt  LPSECURITY_ATTRIBUTES lpAttributes,
+      PAGE_READWRITE,//__in      DWORD flProtect,
+      0,//__in      DWORD dwMaximumSizeHigh,
+      MAP_SIZE,//__in      DWORD dwMaximumSizeLow,
+      PWideChar(Name) //__in_opt  LPCTSTR lpName
+      );
+  if fHandle = 0 then
+    RaiseLastOSError;
+
+  fWriteEvent := CreateEventW(nil, true, false, PWideChar(Name+'_WriteEvent'));
+end;
+
+constructor TProcessListMemory.CreateOpen(const Name: WideString);
+begin
+  fHandle := CreateFileMappingW(
+      INVALID_HANDLE_VALUE,//__in      HANDLE hFile,
+      nil,//__in_opt  LPSECURITY_ATTRIBUTES lpAttributes,
+      PAGE_READONLY,//__in      DWORD flProtect,
+      0,//__in      DWORD dwMaximumSizeHigh,
+      MAP_SIZE,//in      DWORD dwMaximumSizeLow,
+      PWideChar(Name) //__in_opt  LPCTSTR lpName
+      );
+  if fHandle = 0 then
+    RaiseLastOSError;
+  fWriteEvent := 0;
+end;
+
+destructor TProcessListMemory.Destory;
+begin
+  CloseHandle(fHandle);
+  CloseHandle(fWriteEvent);
+end;
+
+procedure TProcessListMemory.FireWriteEvent;
+begin
+  SetEvent(fWriteEvent);
+end;
+
+procedure TProcessListMemory.Read(out Processes: TProcessEntries);
+var
+  Point,
+  ReadHashData,
+  HashData,
+  Data : Pointer;
+  i,
+  ReadHashLen,
+  HashLen,
+  Len,
+  Size : DWORD;
+  Hash : TJwHash;
+begin
+  Size := 0;
+  Data := MapViewOfFile(fHandle,   // handle to map object
+                        FILE_MAP_READ, // read/write permission
+                        0,
+                        0,
+                        MAP_SIZE);
+  Point := Data;
+  try
+    CopyMemory(@ReadHashLen, Point, sizeof(ReadHashLen));
+    Inc(DWORD(Point), sizeof(ReadHashLen));
+
+    ReadHashData := Point;
+
+    Inc(DWORD(Point), ReadHashLen);
+    HashData := Point;
+    CopyMemory(@Size, Point, sizeof(Size));
+    Inc(DWORD(Point), sizeof(Size));
+
+    Hash := TJwHash.Create(haMD5);
+    Hash.HashData(HashData, Size);
+
+    HashData := Hash.RetrieveHash(HashLen);
+
+    try
+      if not CompareMem(ReadHashData, HashData, min(HashLen,ReadHashLen)) then
+        raise EJwsclHashMismatch.Create('');
+    finally
+      Hash.FreeBuffer(HashData);
+    end;
+
+
+
+    CopyMemory(@Len, Point, sizeof(Point));
+    Inc(DWORD(Point), sizeof(Point));
+
+    SetLength(Processes, Len);
+    for i := 0 to Len - 1 do
+    begin
+      CopyMemory(@Processes[i], Point, sizeof(Processes[i]));
+      Inc(DWORD(Point), sizeof(Processes[i]));
+    end;
+  finally
+    UnmapViewOfFile(Data);
+  end;
+end;
+
+procedure TProcessListMemory.Write(const Processes: TProcessEntries);
+var
+  Point,
+  Data,
+  HashData,
+  ProcData,
+  PtProcData : Pointer;
+  i, Len,
+  HashLen,
+  ProcDataSize,
+  Size : DWORD;
+  Hash : TJwHash;
+begin
+  Size := Length(Processes) * sizeof(TProcessEntry);
+
+  Data := MapViewOfFile(fHandle,   // handle to map object
+                        FILE_MAP_ALL_ACCESS, // read/write permission
+                        0,
+                        0,
+                        MAP_SIZE);
+  ProcDataSize := Size+sizeof(Size)+sizeof(Len);
+  GetMem(ProcData,ProcDataSize);
+  try
+    Point := ProcData;
+    CopyMemory(Point, @ProcDataSize, sizeof(ProcDataSize));
+    Inc(DWORD(Point), sizeof(ProcDataSize));
+
+    Len := Length(Processes);
+    CopyMemory(Point, @Len, sizeof(Len));
+    Inc(DWORD(Point), sizeof(Len));
+
+    for i := 0 to Length(Processes) - 1 do
+    begin
+      CopyMemory(Point, @Processes[i], sizeof(Processes[i]));
+      Inc(DWORD(Point), sizeof(Processes[i]));
+    end;
+
+    Hash := TJwHash.Create(haMD5);
+    Hash.HashData(ProcData, ProcDataSize);
+    HashData := Hash.RetrieveHash(HashLen);
+
+    try
+      Point := Data;
+
+      CopyMemory(Point, @HashLen, sizeof(HashLen));
+      Inc(DWORD(Point), sizeof(HashLen));
+
+      CopyMemory(Point, HashData, HashLen);
+      Inc(DWORD(Point), HashLen);
+
+      CopyMemory(Point,ProcData, ProcDataSize);
+    finally
+      Hash.FreeBuffer(HashData);
+      Hash.Free;
+
+    end;
+  finally
+    UnmapViewOfFile(Data);
+  end;
 end;
 
 end.
