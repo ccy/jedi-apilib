@@ -333,6 +333,18 @@ begin
 
 end;
 
+
+type
+  TPointMemoryStream = class(TMemoryStream)
+  public
+    procedure SetPointer(Ptr: Pointer; Size: Longint);
+  end;
+
+procedure TPointMemoryStream.SetPointer(Ptr: Pointer; Size: Longint);
+begin
+  inherited;
+end;
+
 { TProcessListMemory }
 
 constructor TProcessListMemory.Create(const Name: WideString);
@@ -379,9 +391,6 @@ end;
 
 procedure TProcessListMemory.Read(out Processes: TProcessEntries);
 var
-  Point,
-  ReadHashData,
-  HashData,
   Data : Pointer;
   i,
   ReadHashLen,
@@ -389,6 +398,11 @@ var
   Len,
   Size : DWORD;
   Hash : TJwHash;
+
+  Stream : TPointMemoryStream;
+
+  HashData : Pointer;
+  ReadHash : Array of Byte;
 begin
   Size := 0;
   Data := MapViewOfFile(fHandle,   // handle to map object
@@ -396,42 +410,51 @@ begin
                         0,
                         0,
                         MAP_SIZE);
-  Point := Data;
+
+
   try
-    CopyMemory(@ReadHashLen, Point, sizeof(ReadHashLen));
-    Inc(DWORD(Point), sizeof(ReadHashLen));
+    //we use a custom stream implementation to act on the memory
+    Stream := TPointMemoryStream.Create;
+    Stream.SetPointer(Data, MAP_SIZE);
 
-    ReadHashData := Point;
+    //get len of hash written to stream 
+    Stream.Read(ReadHashLen, sizeof(ReadHashLen));
 
-    Inc(DWORD(Point), ReadHashLen);
-    HashData := Point;
-    CopyMemory(@Size, Point, sizeof(Size));
-    Inc(DWORD(Point), sizeof(Size));
+    //get the actual hash
+    SetLength(ReadHash, ReadHashLen);
+    Stream.Read(ReadHash[0], ReadHashLen);
 
+    //Point to the actual data of this stream to be hashed and compared 
+    HashData := Data;
+    Inc(PAnsiChar(HashData), Stream.Position);
+
+    //get actual size of data
+    Stream.Read(Size, sizeof(ReadHashLen));
+
+    //hash data
     Hash := TJwHash.Create(haMD5);
     Hash.HashData(HashData, Size);
 
     HashData := Hash.RetrieveHash(HashLen);
 
     try
-      if not CompareMem(ReadHashData, HashData, min(HashLen,ReadHashLen)) then
+      if not CompareMem(@ReadHash[0], HashData, min(HashLen,ReadHashLen)) then
         raise EJwsclHashMismatch.Create('');
     finally
       Hash.FreeBuffer(HashData);
     end;
 
-
-
-    CopyMemory(@Len, Point, sizeof(Point));
-    Inc(DWORD(Point), sizeof(Point));
+    //get count of process entries
+    Stream.Read(Len, sizeof(Len));
 
     SetLength(Processes, Len);
     for i := 0 to Len - 1 do
     begin
-      CopyMemory(@Processes[i], Point, sizeof(Processes[i]));
-      Inc(DWORD(Point), sizeof(Processes[i]));
+      Stream.Read(Processes[i], sizeof(Processes[i]));
     end;
   finally
+    Stream.SetPointer(nil, 0);
+    Stream.Free;
     UnmapViewOfFile(Data);
   end;
 end;
@@ -440,14 +463,15 @@ procedure TProcessListMemory.Write(const Processes: TProcessEntries);
 var
   Point,
   Data,
-  HashData,
-  ProcData,
-  PtProcData : Pointer;
-  i, Len,
+  HashData : Pointer;
+  i,
+  Len,
   HashLen,
   ProcDataSize,
   Size : DWORD;
   Hash : TJwHash;
+
+  Stream : TMemoryStream;
 begin
   Size := Length(Processes) * sizeof(TProcessEntry);
 
@@ -456,25 +480,24 @@ begin
                         0,
                         0,
                         MAP_SIZE);
+
   ProcDataSize := Size+sizeof(Size)+sizeof(Len);
-  GetMem(ProcData,ProcDataSize);
+
+  //we use a custom stream implementation to act on the memory
+  Stream := TMemoryStream.Create;
   try
-    Point := ProcData;
-    CopyMemory(Point, @ProcDataSize, sizeof(ProcDataSize));
-    Inc(DWORD(Point), sizeof(ProcDataSize));
+    Stream.Write(ProcDataSize, sizeof(ProcDataSize));
 
     Len := Length(Processes);
-    CopyMemory(Point, @Len, sizeof(Len));
-    Inc(DWORD(Point), sizeof(Len));
+    Stream.Write(Len, sizeof(Len));
 
     for i := 0 to Length(Processes) - 1 do
     begin
-      CopyMemory(Point, @Processes[i], sizeof(Processes[i]));
-      Inc(DWORD(Point), sizeof(Processes[i]));
+      Stream.Write(Processes[i], sizeof(Processes[i]));
     end;
 
     Hash := TJwHash.Create(haMD5);
-    Hash.HashData(ProcData, ProcDataSize);
+    Hash.HashData(Stream.Memory,  Stream.Size);
     HashData := Hash.RetrieveHash(HashLen);
 
     try
@@ -486,13 +509,14 @@ begin
       CopyMemory(Point, HashData, HashLen);
       Inc(DWORD(Point), HashLen);
 
-      CopyMemory(Point,ProcData, ProcDataSize);
+      CopyMemory(Point, Stream.Memory, Stream.Size);
     finally
       Hash.FreeBuffer(HashData);
       Hash.Free;
 
     end;
   finally
+    Stream.Free;
     UnmapViewOfFile(Data);
   end;
 end;
