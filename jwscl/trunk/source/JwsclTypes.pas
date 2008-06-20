@@ -92,16 +92,17 @@ type
   TJwProcessId = DWORD;
 
 
-  TJwAceFlag  = (//e.g. inherit ACE to this folder and its sub files
+  TJwAceFlag  = (
+     //e.g. inherit ACE to this folder and its sub files
     afObjectInheritAce,
 
     //e.g. inherit ACE to this folder sub folders
     afContainerInheritAce,
 
-                {If enabled for an inheritable ACE, it says that when the ACE is
-                copied to any children the child's copy should have all inheritance flags
-                turned off, which prevents the ACE from flowing to grandchildren.
-                by Keith GuideBook}
+    {If enabled for an inheritable ACE, it says that when the ACE is
+    copied to any children the child's copy should have all inheritance flags
+    turned off, which prevents the ACE from flowing to grandchildren.
+    by Keith GuideBook}
     afNoPropagateInheritAce,
 
     //e.g. inherit ACE not to this folder

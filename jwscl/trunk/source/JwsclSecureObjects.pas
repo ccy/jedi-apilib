@@ -2106,7 +2106,7 @@ type
 
       {<B>AutoResetACL</B> defines whether a call to SetDACL (implicit set property DACL) and to SetSACL (implicit set property SACL)
         removes the old ACL by setting it to nil (true) or leaves it alone (false).
-       Set to true if you want to remove all ACEs before restructure new ones. 
+       Set to true if you want to remove all ACEs before restructure new ones.
       }
     property AutoResetACL;
 
@@ -8603,7 +8603,7 @@ begin
       try
         pSD  := nil;
         SecD := 0;
-        //get needed buffer size 
+        //get needed buffer size
         if (RegGetKeySecurity(hSubKey,
           TJwEnumMap.ConvertSecurityInformation(aSecurityInfo), pSD, SecD) <>
           ERROR_INSUFFICIENT_BUFFER) or (SecD = 0) then
@@ -8667,7 +8667,7 @@ class function TJwSecureRegistryKey.GetKeyInheritanceSource(
 
 
   function GetParent(PathName: TJwString; bStop: boolean = False): TJwString;
-  var //[Hint] l,l2,
+  var
     i, i2: integer;
     s: TJwString;
   begin
@@ -8697,9 +8697,9 @@ class function TJwSecureRegistryKey.GetKeyInheritanceSource(
 
 
   procedure UpdateObjectInheritedDACL(PathName: TJwString;
-  const PreviousInhACL: TJwDAccessControlList;
-  const bUseConfigRoot: boolean;
-  var pInhArray: TJwInheritedFromArray; Level: integer);
+    const PreviousInhACL: TJwDAccessControlList;
+    const bUseConfigRoot: boolean;
+    var pInhArray: TJwInheritedFromArray; Level: integer);
 
   var
     i, ps: integer;
@@ -8714,9 +8714,8 @@ class function TJwSecureRegistryKey.GetKeyInheritanceSource(
       SD := GetSecurityDescriptorEx(PathName, aSecurityInfo, bUseWOW64);
     except
       on E: Exception do
-        bError := True; //file or folder not found
+        bError := True; //file or folder not found: set array invalid
     end;
-
 
     if not bError then
       bError := not Assigned(SD) or (Assigned(SD) and not Assigned(SD.DACL));
@@ -8735,21 +8734,17 @@ class function TJwSecureRegistryKey.GetKeyInheritanceSource(
       exit;
     end;
 
+
+
     // try
     for i := 0 to PreviousInhACL.Count - 1 do
     begin
-       {SID := PreviousInhACL[i].SID.AccountName[''];
-       if Sid = '' then;}
+      //get first equal ACE
       ps := SD.DACL.FindEqualACE(PreviousInhACL[i], [eactSameSid,
         eactSameAccessMask, eactSameType]);
 
       if (ps >= 0) then
       begin
-         {Flags1 := PreviousInhACL[i].Flags;
-         Flags2 := SD.DACL[ps].Flags;
-         Exclude(Flags1, afInheritedAce);
-         Exclude(Flags2, afInheritedAce);
-                                                 }
 
         if //(Flags1 = Flags2) and
         (afInheritedAce in PreviousInhACL[i].Flags) and
@@ -8759,12 +8754,21 @@ class function TJwSecureRegistryKey.GetKeyInheritanceSource(
           not (PreviousInhACL[i].Ignore) then
           //root ACE was not already considered
         begin
+
+          SID := '';
+
+          if Assigned(SD) then
           try
             SID := SD.DACL[ps].SID.AccountName[''] + '@' +
               SD.DACL[ps].SID.StringSID;
           except
-            SID := SD.DACL[ps].SID.AccountName[''];
+            try
+              SID := SD.DACL[ps].SID.AccountName[''];
+            except
+              SID := SD.DACL[ps].SID.StringSID;
+            end;
           end;
+
           pInhArray[i].GenerationGap := Level;
           pInhArray[i].AncestorName := PathName;
           pInhArray[i].SID := SID;
@@ -8860,6 +8864,7 @@ begin
       SetLength(Result, SD.DACL.Count);
       try
         sKeyName := GetParent(sKeyName);
+
         UpdateObjectInheritedDACL(sKeyName, SD.DACL,
           bUseConfigRoot, Result, 1);
       finally
@@ -8880,7 +8885,7 @@ end;
 
 var
   _RegQueryReflectionKey: procedure(hBase: HKEY;
-  var bIsReflectionDisabled: boolean); stdcall;
+        var bIsReflectionDisabled: boolean); stdcall;
 
 function RegQueryReflectionKey(hBase: HKEY): shortint;
 begin
@@ -8940,40 +8945,40 @@ end;
 
 {TJwSecureRegistryKey}
 procedure IterateKey(const Path: TJwString;
-  aSecurityInfo:
-  TJwSecurityInformationFlagSet; //  SECURITY_INFORMATION SecurityInfo,
-  const Action:
-  TJwProgInvokeSetting;
-  const SetType: TJwTreeSetType;
-  const bKeepExplicit: boolean;
-  const Owner: TJwSecurityId;
-  const Group: TJwSecurityId;
-  const DACL:
-  TJwDAccessControlList;
-  const SACL:
-  TJwSAccessControlList;
-  const FNProgressMethod:
-  TJwFnProgressMethod;
-  const FNProgressProcedure: TJwFnProgressProcedure;
-  const ProgressUserData
-  : Pointer;
-  bIsRoot: boolean;
-  const Disable64Redirection:
-  boolean; out bAbort: boolean);
+    aSecurityInfo:
+    TJwSecurityInformationFlagSet; //  SECURITY_INFORMATION SecurityInfo,
+    const Action:
+    TJwProgInvokeSetting;
+    const SetType: TJwTreeSetType;
+    const bKeepExplicit: boolean;
+    const Owner: TJwSecurityId;
+    const Group: TJwSecurityId;
+    const DACL:
+    TJwDAccessControlList;
+    const SACL:
+    TJwSAccessControlList;
+    const FNProgressMethod:
+    TJwFnProgressMethod;
+    const FNProgressProcedure: TJwFnProgressProcedure;
+    const ProgressUserData
+    : Pointer;
+    bIsRoot: boolean;
+    const Disable64Redirection:
+    boolean; out bAbort: boolean);
 
 
 
 
   procedure FNProgress(const pObjectName: TJwString;
-    // Name of object just processed
-  const cStatus: Cardinal;
-    // Status of operation on object
-  var pInvokeSetting: TJwProgInvokeSetting; // When to set
-  const E: EJwsclSecurityException;
-  const Args: Pointer;
-    // Caller specific data
-  const bSecuritySet:
-    boolean                 // Whether security was set
+      // Name of object just processed
+    const cStatus: Cardinal;
+      // Status of operation on object
+    var pInvokeSetting: TJwProgInvokeSetting; // When to set
+    const E: EJwsclSecurityException;
+    const Args: Pointer;
+      // Caller specific data
+    const bSecuritySet:
+      boolean                 // Whether security was set
     );
   begin
     if Assigned(FNProgressMethod) then
@@ -9014,7 +9019,7 @@ procedure IterateKey(const Path: TJwString;
     if (Server <> '') then
     begin
 {$IFDEF UNICODE}
-        res := RegConnectRegistryW(TJwPChar(Server), aRootTuple.Key, hRemoteKey);
+      res := RegConnectRegistryW(TJwPChar(Server), aRootTuple.Key, hRemoteKey);
 {$ELSE}
       res := RegConnectRegistryA(TJwPChar(Server), aRootTuple.Key,
         hRemoteKey);
@@ -9026,7 +9031,7 @@ procedure IterateKey(const Path: TJwString;
       hRemoteKey := aRootTuple.Key;
 
 {$IFDEF UNICODE}
-      res := RegOpenKeyExW(hRemoteKey, TJwPChar(SubKey), 0, KEY_READ, aKey);
+    res := RegOpenKeyExW(hRemoteKey, TJwPChar(SubKey), 0, KEY_READ, aKey);
 {$ELSE}
     res := RegOpenKeyExA(hRemoteKey, TJwPChar(SubKey), 0, KEY_READ, aKey);
 {$ENDIF}
@@ -9061,7 +9066,6 @@ type
 
   TFindData = record
     SubKey: TJwString;
-    //Root : TJwRootTuple;
   end;
 
 type
@@ -9085,32 +9089,6 @@ var
      @param bRoot defines, if the folder is the first one specified the the user
     }
   procedure SetSecurity(ActualKeyName: TJwString; bRoot: boolean);
-
-  {not necessary}
-    procedure CopyWithoutInheritance(
-    const SourceACL, DestACL: TJwSecurityAccessControlList);
-    var
-      i: integer;
-      //[Hint] c : Integer;
-      s: TJwSecurityAccessControlEntry;
-    begin
-      for i := SourceACL.Count - 1 downto 0 do
-      begin
-        if not ((afObjectInheritAce in
-          SourceACL.Items[i].Flags) and
-          (afContainerInheritAce in SourceACL.Items[i].Flags) and
-          (afNoPropagateInheritAce in SourceACL.Items[i].Flags) and
-          (afInheritOnlyAce in
-          SourceACL.Items[i].Flags)) and
-          ([] <> SourceACL.Items[i].Flags) then
-        begin
-          s := TJwSecurityAccessControlEntry.CreateACE(SourceACL[i].AceType);
-          s.Assign(SourceACL[i]);
-          DestACL.Add(s);
-        end;
-      end;
-    end;
-
   var
     oldDACL: TJwDAccessControlList;
     oldSACL: TJwSAccessControlList;
@@ -9118,14 +9096,12 @@ var
     SD: TJwSecurityDescriptor;
 
   begin
-    //[Hint] oldUser  := nil;
-    //[Hint] oldGroup := nil;
     oldDACL := nil;
     oldSACL := nil;
 
-      {the Set type simply adds the given DACL/SACL to the file security.
-       The Reset type does the same, but the inheritance protection is removed after the root object was changed
-       }
+    {the Set type simply adds the given DACL/SACL to the file security.
+     The Reset type does the same, but the inheritance protection is removed after the root object was changed
+    }
     if bKeepExplicit or (SetType = tstSet) then
     begin
       SD := TJwSecureRegistryKey.GetSecurityDescriptorEx(
@@ -9135,17 +9111,11 @@ var
         oldDACL := SD.DACL;
         oldSACL := SD.SACL;
 
-
+        //set old DACL
         if Assigned(oldDACL) then
         begin
           if bRoot and Assigned(DACL) then
-            oldDACL.AddAces(DACL)
-          //copy all ACEs of the given ACL to the file/folder ACL
-          ;
-            (*else
-            {not necessary }
-              CopyWithoutInheritance(DACL,oldDACL);
-              *)
+            oldDACL.AddAces(DACL);
           oldDACL.RemoveInherited;
           //remove inherited ACEs, because these are set automatically by the system
         end;
@@ -9154,8 +9124,6 @@ var
         begin
           if bRoot and Assigned(SACL) then
             oldSACL.AddAces(SACL);
-          //else
-          //  CopyWithoutInheritance(SACL,oldSACL);
 
           oldSACL.RemoveInherited;
           //remove inherited ACEs, because these are set automatically by the system
@@ -9176,8 +9144,6 @@ var
 
         if bRoot and Assigned(DACL) then
           oldDACL.Assign(DACL);
-        //else
-        //  CopyWithoutInheritance(DACL,oldDACL);
 
         oldDACL.RemoveInherited;
         //remove inherited ACEs, because these are set automatically by the system
@@ -9188,8 +9154,6 @@ var
 
         if bRoot and Assigned(SACL) then
           oldSACL.Assign(SACL);
-        //else
-        //  CopyWithoutInheritance(SACL,oldSACL);
 
         oldSACL.RemoveInherited;
         //remove inherited ACEs, because these are set automatically by the system
@@ -9211,7 +9175,7 @@ var
     end;
   end;
 
-    {<B>ProcessKey</B> processes the actual find file data.
+    {<B>ProcessKey</B> processes the key security.
      Sets the security, catches a possible exception and calls the callback function.
 
      @param FindDataFile the file or folder name (but not path) returned by the FindFirst/FindNext function
@@ -9394,6 +9358,7 @@ var
   begin
     SetLastError(0);
     Result := nil;
+    //split Key into its parts
     TJwSecureRegistryKey.ParseUNC(sKey, Server, SubKey, aRootTuple);
 
     if (aRootTuple.RootName = '') then
@@ -9446,22 +9411,31 @@ begin
   if (Length(ActualPath) > 0) and (ActualPath[Length(ActualPath)] <> '\') then
     ActualPath := ActualPath + '\';
 
+  {Create a stack on heap for saving
+   key recursion
+  }
   stack := TQueue.Create;
 
+  //first folder iteration
   bFirst := True;
 
+  //user abortion
   bAbort := False;
 
 
-  //set security to
+  //set security
   bAbort := ProcessKey(ActualPath, bIsRoot{isRootObject});
-  //[Hint] bIsRoot := false;
+
 
   if Assigned(DACL) then
     DACL.RemoveInherited;
   if Assigned(SACL) then
     SACL.RemoveInherited;
 
+  {
+  The sub keys are not protected. They get inherited ACEs from
+  the parent key. However we have to reset all keys and folder DACL first.
+  }
   Exclude(aSecurityInfo, siProtectedDaclSecurityInformation);
   Exclude(aSecurityInfo, siProtectedSaclSecurityInformation);
 
@@ -9480,28 +9454,39 @@ begin
     bFirst := False;
 
     Count := stack.Count;
+    {
+    Get next recursion folder to be processed
+    }
     if Count > 0 then
     begin
       ptrFindData := PFindData(stack.Pop);
       ActualPath  := ptrFindData.SubKey;
       FreeMem(ptrFindData);
 
+      //set security
       bAbort := ProcessKey(ActualPath, bFirst);
     end;
 
     if not bAbort then
     begin
       SetLastError(0);
+
+      //get sub keys
       subKeys := EnumKeys(ActualPath);
 
+      //call user if error occured
       if GetLastError() <> 0 then
       begin
+        //ignore, cancel and retry loop
         repeat
-
+          //default
           pInvokeSetting := pis_ProgressInvokeOnError;
+
           if (Action = pis_ProgressInvokeOnError) or
             (Action = pis_ProgressInvokeEveryObject) then
           begin
+            //call user function for
+            //next step
             FNProgress(ActualPath,
               //const pObjectName : TJwString;              // Name of object just processed
               GetLastError(),
@@ -9517,9 +9502,11 @@ begin
           end;
 
           SetLastError(0);
+          //retry
           if (pInvokeSetting = pis_ProgressRetryOperation) then
             subKeys := EnumKeys(ActualPath)
           else
+          //abort
           if bAbort or (pInvokeSetting = pis_ProgressCancelOperation) then
           begin
             bAbort := True;
@@ -9528,6 +9515,7 @@ begin
         until (GetLastError() = 0) or bAbort;
       end;
 
+      //add sub keys to our stack
       if Assigned(subKeys) and not bAbort then
         for i := low(subKeys) to high(subKeys) do
         begin
@@ -9539,7 +9527,7 @@ begin
     end;
   end;
 
-
+  //free rest of stack members
   while (stack.Count > 0) do
   begin
     ptrFindData := PFindData(stack.Pop);
@@ -9560,10 +9548,6 @@ class function TJwSecureRegistryKey.TreeRegKeySetNamedSecurityInfo_Execute(
 var
   p: TJwProgInvokeSetting;
   b, bAbort: boolean;
-  //[Hint] DACL : TJwDAccessControlList;
-  //[Hint] SACL : TJwSAccessControlList;
-  //[Hint] i : Integer;
-  //[Hint] hThread : THandle;
   Data: PThreadData absolute pData;
 begin
   Result := 1;
@@ -9573,20 +9557,8 @@ begin
   if Data^.Disable64Redirection then
     Wow64FsRedirection(True);
 
-
-  //[Hint] hThread := 0;
-
-  {DACL := Data^.DACL;
-  SACL := Data^.SACL;
-
-  if Assigned(DACL) then;
-  if Assigned(SACL) then;
-                              }
   try
     b := Data^.bKeepExplicit;
-    if b then;
-
-
 
     IterateKey(Data^.pObjectName,
       Data^.aSecurityInfo,
@@ -9639,8 +9611,6 @@ begin
 
   SetLastError(0);
 
-
-
   Result := 0;
 end;
 
@@ -9682,11 +9652,6 @@ begin
   begin
     GetMem(Data, sizeof(TThreadData));
     FillChar(Data^, sizeof(TThreadData), 0);
-
-    if Data = nil then
-      raise EJwsclNILParameterException.CreateFmtEx(
-        RsSecureObjectsNotEnoughMemoryForThreadData, 'TreeKeySetNamedSecurityInfo',
-        ClassName, RsUNSecureObjects, 0, False, []);
 
     if Data <> nil then
     begin
@@ -9732,12 +9697,13 @@ begin
   end
   else
   begin
+    FillChar(aData, sizeof(aData), 0);
+
     try
       //create copies for thread
-
-      FillChar(aData, sizeof(aData), 0);
       if Assigned(Owner) then
         aData.Owner := TJwSecurityId(Owner);
+
 
       if Assigned(Group) then
         aData.Group := TJwSecurityId(Group);
@@ -9754,45 +9720,45 @@ begin
         aData.SACL.Assign(SACL);
       end;
 
-      IterateKey(pKeyName,
-        aSecurityInfo,
-        //const aSecurityInfo : TJwSecurityInformationFlagSet; //  SECURITY_INFORMATION SecurityInfo,
-        Action,//const Action : TJwProgInvokeSetting;
-        SetType,
-        bKeepExplicit,
-        aData.Owner,//const Owner : TJwSecurityId;
-        aData.Group,//const Group : TJwSecurityId;
-        aData.DACL, //const DACL : TJwDAccessControlList;
-        aData.SACL, //const SACL : TJwSAccessControlList;
-        FNProgressMethod,//const FNProgressMethod : TJwFnProgressMethod;
-        FNProgressProcedure,//const FNProgressProcedure : TJwFnProgressProcedure;
-        ProgressUserData,//const ProgressUserData : Pointer;
-        True, //first call of this function = true
-        Disable64Redirection,
-        bAbort
-        );
+      try
+        IterateKey(pKeyName,
+          aSecurityInfo,
+          //const aSecurityInfo : TJwSecurityInformationFlagSet; //  SECURITY_INFORMATION SecurityInfo,
+          Action,//const Action : TJwProgInvokeSetting;
+          SetType,
+          bKeepExplicit,
+          aData.Owner,//const Owner : TJwSecurityId;
+          aData.Group,//const Group : TJwSecurityId;
+          aData.DACL, //const DACL : TJwDAccessControlList;
+          aData.SACL, //const SACL : TJwSAccessControlList;
+          FNProgressMethod,//const FNProgressMethod : TJwFnProgressMethod;
+          FNProgressProcedure,//const FNProgressProcedure : TJwFnProgressProcedure;
+          ProgressUserData,//const ProgressUserData : Pointer;
+          True, //first call of this function = true
+          Disable64Redirection,
+          bAbort
+          );
+      finally
+        if Assigned(FNProgressMethod) then
+          try
+            p := pis_ProgressFinished;
+            FNProgressMethod(pKeyName, 0, p, nil, ProgressUserData, False);
+          except
+          end;
 
-      if Assigned(FNProgressMethod) then
-        try
-          p := pis_ProgressFinished;
-          FNProgressMethod(pKeyName, 0, p, nil, ProgressUserData, False);
-        except
-        end;
-
-      if Assigned(FNProgressProcedure) then
-        try
-          p := pis_ProgressFinished;
-          FNProgressProcedure(pKeyName, 0, p, nil,
-            ProgressUserData, False);
-        except
-        end;
-
+        if Assigned(FNProgressProcedure) then
+          try
+            p := pis_ProgressFinished;
+            FNProgressProcedure(pKeyName, 0, p, nil,
+              ProgressUserData, False);
+          except
+          end;
+      end;
+    finally
       aData.Owner.Free;
       aData.Group.Free;
       aData.DACL.Free;
       aData.SACL.Free;
-
-    finally
     end;
 
   end;
@@ -9804,24 +9770,25 @@ var
   token: TJwSecurityToken;
   groups: TJwSecurityIdList;
   i: integer;
-begin
-
+begin                              
   token := TJwSecurityToken.CreateTokenEffective(TOKEN_READ);
-
-  Result := TJwSecurityIdList.Create(True);
-  groups := token.GetTokenGroups;
-
-  Result.add(token.GetTokenOwner);
-
   try
-    for i := 0 to groups.Count - 1 do
-    begin
-      if groups[i].Attributes and SE_GROUP_OWNER = SE_GROUP_OWNER then
-        Result.Add(TJwSecurityId.Create(groups[i]));
+    Result := TJwSecurityIdList.Create(True);
+
+    groups := token.GetTokenGroups;
+    try                            
+      Result.add(token.GetTokenOwner);
+
+      for i := 0 to groups.Count - 1 do
+      begin
+        if groups[i].Attributes and SE_GROUP_OWNER = SE_GROUP_OWNER then
+          Result.Add(TJwSecurityId.Create(groups[i]));
+      end;
+    finally           
+      FreeAndNil(groups);
     end;
   finally
     FreeAndNil(Token);
-    FreeAndNil(groups);
   end;
 
 end;

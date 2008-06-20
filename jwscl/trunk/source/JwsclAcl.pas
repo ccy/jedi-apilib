@@ -206,6 +206,7 @@ type
         ACLList.Add(TJwAuditAccessControlEntry.Create(nil,[afObjectInheritAce],GENERIC_READ,aSID,False));
       If the Add method raises an Exception, the TJwAuditAccessControlEntry instance is not freed.
       Instead use a pointer
+      <code lang="Delphi">
         try
           anACE := TJwAuditAccessControlEntry.Create(nil,[afObjectInheritAce],GENERIC_READ,aSID,False)
           try
@@ -216,18 +217,18 @@ type
         except
 
         end;
+     </code>
 
-    @return <B>Add</B> returns the index in the list where the ACE was added 
+    @return <B>Add</B> returns the index in the list where the ACE was added
     raises
- EJwsclNILParameterException:  will be raised if aObject is nil 
+     EJwsclNILParameterException:  will be raised if aObject is nil
      EJwsclInvalidACEException: will be raised if
-              
+
                #  TJwDiscretionaryAccessControlEntry was given but the list is not an instance of TJwDAccessControlList
                #  TJwAuditAccessControlEntry was given but the list is not an instance of TJwSAccessControlList
-               
-            
-     EJwsclDuplicateListEntryException: will be raised if the given ACE is already in list 
-     EJwsclInvalidSecurityListException: 
+
+     EJwsclDuplicateListEntryException: will be raised if the given ACE is already in list
+
     }
     function Add(AccessEntry: TJwSecurityAccessControlEntry): integer;
 
@@ -342,8 +343,11 @@ type
     }
     function IsCanonical: boolean;
 
-
-
+    {<B>MergeElements</B> merges duplicate ACE elements.
+     The ACE must have same SID, same type and same flags to be merged.
+     The duplicates are removed from list.
+    }
+    procedure MergeElements;
     {<B>IsEqual</B> compares two ACL and returns true if they are equal.
      This method uses FindEqualACE to compare two access control entries.
 
@@ -1215,14 +1219,44 @@ type
     procedure Free_PACE(var AccessEntryPointer: PAccessAllowedAce); overload;
   end;
 
+  {@Name defines a callback allow access control element.
+   Every time a function that scans an ACL with a callback element generates
+   a callback event which decides whether this ACE can be used in the
+   process.
+   Callback elements are used in unit JwsclAuthCtx method TJwAuthContext.AccessCheck.
+  }
   TJwDiscretionaryAccessControlEntryCallbackAllow =
     class(TJwDiscretionaryAccessControlEntryAllow)
   end;
 
+  {@Name defines a allow access control element with object properties.
+   Object ACEs uses the following properties
+   @unorderedlist(
+    @item(ObjectFlags)
+    @item(ObjectType)
+    @item(InheritedObjectType)
+   )
+  }
   TJwDiscretionaryAccessControlEntryObjectAllow =
     class(TJwDiscretionaryAccessControlEntryAllow)
   end;
 
+  {@Name defines a callback allow access control element with object properties.
+   Every time a function that scans an ACL with a callback element generates
+   a callback event which decides whether this ACE can be used in the
+   process.
+   Callback elements are used in unit JwsclAuthCtx method TJwAuthContext.AccessCheck.
+
+   Object ACEs uses the following properties
+   @unorderedlist(
+    @item(ObjectFlags)
+    @item(ObjectType)
+    @item(InheritedObjectType)
+   )
+
+   For some Windows internal reasons this type of ACE is ignored in
+   TJwAuthContext.AccessCheck .
+  }
   TJwDiscretionaryAccessControlEntryCallbackObjectAllow =
     class(TJwDiscretionaryAccessControlEntryAllow)
   end;
@@ -1309,15 +1343,45 @@ type
   end;
 
 
+  {@Name defines a callback deny access control element.
+   Every time a function that scans an ACL with a callback element generates
+   a callback event which decides whether this ACE can be used in the
+   process.
+   Callback elements are used in unit JwsclAuthCtx method TJwAuthContext.AccessCheck.
+  }
   TJwDiscretionaryAccessControlEntryCallbackDeny =
     class(TJwDiscretionaryAccessControlEntryDeny)
   end;
 
+  {@Name defines a deny access control element with object properties.
+   Object ACEs uses the following properties
+   @unorderedlist(
+    @item(ObjectFlags)
+    @item(ObjectType)
+    @item(InheritedObjectType)
+   )
+  }
   TJwDiscretionaryAccessControlEntryObjectDeny =
     class(TJwDiscretionaryAccessControlEntryDeny)
   end;
 
 
+  {@Name defines a callback deny access control element with object properties.
+   Every time a function that scans an ACL with a callback element generates
+   a callback event which decides whether this ACE can be used in the
+   process.
+   Callback elements are used in unit JwsclAuthCtx method TJwAuthContext.AccessCheck.
+
+   Object ACEs uses the following properties
+   @unorderedlist(
+    @item(ObjectFlags)
+    @item(ObjectType)
+    @item(InheritedObjectType)
+   )
+
+   For some Windows internal reasons this type of ACE is ignored in
+   TJwAuthContext.AccessCheck .
+  }
   TJwDiscretionaryAccessControlEntryCallbackObjectDeny =
     class(TJwDiscretionaryAccessControlEntryDeny)
   end;
@@ -1434,15 +1498,46 @@ type
     //  property Flags: TJwAceFlags read fFlagsIgnored;
   end;
 
+  {@Name defines a callback audit access control element.
+   Every time a function that scans an ACL with a callback element generates
+   a callback event which decides whether this ACE can be used in the
+   process.
+   Callback elements are used in unit JwsclAuthCtx method TJwAuthContext.AccessCheck.
+  }
   TJwAuditAccessControlEntryCallback =
     class(TJwAuditAccessControlEntry)
   end;
 
 
+
+  {@Name defines a audit access control element with object properties.
+   Object ACEs uses the following properties
+   @unorderedlist(
+    @item(ObjectFlags)
+    @item(ObjectType)
+    @item(InheritedObjectType)
+   )
+  }
   TJwAuditAccessControlEntryObject =
     class(TJwAuditAccessControlEntry)
   end;
 
+  {@Name defines a callback audit access control element with object properties.
+   Every time a function that scans an ACL with a callback element generates
+   a callback event which decides whether this ACE can be used in the
+   process.
+   Callback elements are used in unit JwsclAuthCtx method TJwAuthContext.AccessCheck.
+
+   Object ACEs uses the following properties
+   @unorderedlist(
+    @item(ObjectFlags)
+    @item(ObjectType)
+    @item(InheritedObjectType)
+   )
+
+   For some Windows internal reasons this type of ACE is ignored in
+   TJwAuthContext.AccessCheck .
+  }
   TJwAuditAccessControlEntryCallbackObject =
     class(TJwAuditAccessControlEntry)
   end;
@@ -1514,9 +1609,10 @@ type
     
     Each line contains a checkbox that defines whether the access
     mask contains this specifc right or not. Furthermore it
-    contains the name of the right. A line may look like this:
+    contains the name of the right. Lines may look like this:
     <code>
-    [X] []
+    '[X] <Name of access rights>'#13#10  for a access right that is set
+    '[ ] <Name of access rights>'#13#10  for a access right that is not set
     </code>
     
     Parameters
@@ -1531,6 +1627,7 @@ type
   function JwFormatAccessRights(const Access : Cardinal;
      RightsMapping : Array of TJwRightsMapping) : TJwString; overload;
 
+
   { <b>JwFormatAccessRights</b> creates a formatted string that
     splits up several access massk into its rights constants. The
     constants can be named if parameter RightsMapping is used.
@@ -1539,7 +1636,8 @@ type
     the access masks contain a specifc right or not. Furthermore
     it contains the name of the right. A line may look like this:
     <code>
-    [X] [ ] [X] [] [X] [ ] [2] []
+     [X] .. [ ] <Name of access rights>  for a access right that is set
+     [ ] .. [ ] <Name of access rights>  for a access right that is not set
     </code>
     
     Parameters
@@ -1560,6 +1658,7 @@ type
     Returns
     \Returns the access mask with its rights states. Each line is
     separated by a line break (#13#10)                             }
+
   function JwFormatAccessRights(
     const GrantedAccess : TJwAccessMaskArray;
     const AccessStatus : TJwCardinalArray;
@@ -1715,7 +1814,11 @@ function JwFormatAccessRights(
     RightsMapping : Array of TJwRightsMapping) : TJwString;
 var i,i2 : Integer;
 begin
-  result := '- generic'#13#10;
+  JwRaiseOnInvalidParameter(Length(GrantedAccess) <> Length(AccessStatus),
+     'GrantedAccess or AccessStatus', 'JwFormatAccessRights', '', RsUNAcl);
+
+  //result := '- generic'#13#10;
+  result := '';
   for i := low(RightsMapping) to high(RightsMapping) do
   begin
     for i2 := 0 to High(GrantedAccess) do
@@ -1788,14 +1891,12 @@ end;
 
 constructor TJwSecurityAccessControlList.Create(OwnAceEntries: boolean);
 begin
-  //  raise EJwsclInvalidSecurityListException.CreateFmtEx('Do not call TJwSecurityAccessControlList.Create .', 'Create()',ClassName,'JwsclAcl.pas', 0,False,[]);
   inherited Create(OwnAceEntries);
   fRevision := ACL_REVISION;
 end;
 
 constructor TJwSecurityAccessControlList.Create;
 begin
-  //  raise EJwsclInvalidSecurityListException.CreateFmtEx('Do not call TJwSecurityAccessControlList.Create .', 'Create()',ClassName,'JwsclAcl.pas', 0,False,[]);
   inherited;
   fRevision := ACL_REVISION;
 end;
@@ -3726,6 +3827,41 @@ begin
      ]);
 end;
 
+procedure TJwSecurityAccessControlList.MergeElements;
+
+var ACE, ACE2 : TJwSecurityAccessControlEntry;
+    i, i2 : Integer;
+    EqualAceTypeSet: TJwEqualAceTypeSet;
+begin
+  {if Self is TJwDAccessControlList then
+    EqualAceTypeSet := [eactSameSid, eactSameType,eactSameFlags]
+  else
+  if Self is TJwSAccessControlList then
+    EqualAceTypeSet := [eactSameSid, eactSameType, eactSameFlags]
+  else }
+    EqualAceTypeSet := [eactSameSid, eactSameType, eactSameFlags];
+
+
+  i := 0;
+  while i < Count do
+  begin
+    ACE := GetItem(i);
+
+    repeat
+      i2 := FindEqualACE(ACE, EqualAceTypeSet, i);
+
+      if (i2 >= 0) then
+      begin
+        ACE.AccessMask := ACE.AccessMask or GetItem(i2).AccessMask;
+
+        Remove(i2);
+        i := 0;
+      end;
+    until i2 = -1;
+    Inc(i);
+  end;
+end;
+
 function TJwSecurityAccessControlList.IsEqual(
   const AccessControlListInstance: TJwSecurityAccessControlList;
   const EqualAceTypeSet: TJwEqualAceTypeSet = JwAllEqualAceTypes): boolean;
@@ -3738,29 +3874,45 @@ begin
   if not Assigned(AccessControlListInstance) then
     Exit;
 
-  if Count <> AccessControlListInstance.Count then
-    Exit;
+  if Self.ClassType <> AccessControlListInstance.ClassType then
+    exit;
 
-  tempACL1 := TJwSecurityAccessControlList.Create;
+  tempACL1 := TJwSecurityAccessControlList(Self.ClassType.Create);
   tempACL1.Assign(Self);
+  tempACL1.MergeElements;
 
   if tempACL1 is TJwDAccessControlList then
    (tempACL1 as TJwDAccessControlList).MakeCanonical;
 
-  tempACL2 := TJwSecurityAccessControlList.Create;
+  tempACL2 :=  TJwSecurityAccessControlList(Self.ClassType.Create);
   tempACL2.Assign(AccessControlListInstance);
+  tempACL2.MergeElements;
 
   if tempACL1 is TJwDAccessControlList then
     (tempACL2 as TJwDAccessControlList).MakeCanonical;
+
+  if tempACL1.Count <> tempACL2.Count then
+  begin
+    tempACL1.Free;
+    tempACL2.Free;
+    Exit;
+  end;
 
   for i := 0 to tempACL1.Count - 1 do
   begin
     iPos := tempACL1.FindEqualACE(tempACL2.Items[i], EqualAceTypeSet, i - 1);
     if iPos <> i then
+    begin
+      tempACL1.Free;
+      tempACL2.Free;
       Exit;
+    end;
   end;
 
   Result := True;
+
+  tempACL1.Free;
+  tempACL2.Free;
 end;
 
 function TJwSecurityAccessControlList.IsCanonical: boolean;
