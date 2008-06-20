@@ -646,7 +646,7 @@ type TJwLogServerImpl = class;
 
        fCritical : SyncObjs.TCriticalSection;
        //ID connects enter and leave tag unambiguously
-       fID : Int64;
+       fID : {Int64}Integer;
 
        fIdx : Integer;
        fOnXMLWrite : TJwOnXMLWrite;

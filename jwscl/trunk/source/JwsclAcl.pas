@@ -1814,8 +1814,9 @@ function JwFormatAccessRights(
     RightsMapping : Array of TJwRightsMapping) : TJwString;
 var i,i2 : Integer;
 begin
-  JwRaiseOnInvalidParameter(Length(GrantedAccess) <> Length(AccessStatus),
-     'GrantedAccess or AccessStatus', 'JwFormatAccessRights', '', RsUNAcl);
+  //still undefined
+  //JwRaiseOnInvalidParameter(Length(GrantedAccess) <> Length(AccessStatus),
+  //   'GrantedAccess or AccessStatus', 'JwFormatAccessRights', '', RsUNAcl);
 
   //result := '- generic'#13#10;
   result := '';
