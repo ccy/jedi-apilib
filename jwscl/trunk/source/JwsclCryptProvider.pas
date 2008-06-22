@@ -252,11 +252,14 @@ type
 
     {Adds data to the hash object
      @param Stream Stream containing the data to be hashed
+     @param Size defines how much data is hashed from the current stream position.
+       If set to zero (0) the method sets the stream position to beginning
+       and hashes the whole stream.
  EJwsclHashApiException:  will be raised if the
              underlying Windows call fails due to a
              previous call to RetrieveHash or
              Sign or for other reasons.}
-    procedure HashStream(Stream: TStream);
+    procedure HashStream(Stream: TStream; const Size : Int64 = 0);
 
     {<B>GetHashLength</B> returns the size of the hash value in bytes.
      This value is constant for each algorithm.
@@ -279,6 +282,8 @@ type
              underlying Windows call fails because the specified
              buffer is to small or for other reasons.}
     procedure RetrieveHash(Hash: Pointer; var Len: Cardinal); overload;
+
+//    procedure RetrieveHashArray(out Hash); overload;
 
     {<B>RetrieveHash</B> computes the hash of the data previously added to
      the hash using HashData . After a successful call
@@ -850,12 +855,12 @@ begin
     RaiseApiError('HashData', 'CryptHashData');
 end;
 
-procedure TJwHash.HashStream(Stream: TStream);
+procedure TJwHash.HashStream(Stream: TStream; const Size : Int64 = 0);
 var MemStream: TMemoryStream;
 begin
   MemStream := TMemoryStream.Create;
   try
-    MemStream.CopyFrom(Stream, 0);
+    MemStream.CopyFrom(Stream, Size);
     HashData(MemStream.Memory, MemStream.Size);
   finally
     MemStream.Free;
