@@ -607,7 +607,7 @@ type TJwLogServerImpl = class;
        fWriter : IJwWriterClass;
 
        //ID connects enter and leave tag unambiguously
-       fID : Int64;
+       fID : {Int64}Integer; //int64 with InterlockedIncrement64 is only supported in newer os
        fEventTypes : TJwEventTypes;
 
      public
@@ -646,7 +646,7 @@ type TJwLogServerImpl = class;
 
        fCritical : SyncObjs.TCriticalSection;
        //ID connects enter and leave tag unambiguously
-       fID : {Int64}Integer;
+       fID : {Int64}Integer; //int64 with InterlockedIncrement64 is only supported in newer os
 
        fIdx : Integer;
        fOnXMLWrite : TJwOnXMLWrite;
@@ -1245,14 +1245,14 @@ end;
 function TJwLogServerImpl.GetID : Int64;
 var I : Integer;
 begin
-  try
+//  try
     //some OS does not support functions
     //which this function is calls
    // InterlockedIncrement64(fID);
    InterlockedIncrement(fID);
-  except
+{  except
     InterlockedIncrement(fID);
-  end;
+  end;}
   result := fID;
 end;
 
