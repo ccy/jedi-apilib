@@ -1,7 +1,7 @@
 unit ProcessList;
 
 interface
-uses JwaWindows, Classes, SysUtils;
+uses JwaWindows, Classes, SyncObjs, SysUtils;
 
 type
   PProcessEntry = ^TProcessEntry;
@@ -22,6 +22,21 @@ type
   TOnCloseAppsPostPrep = procedure(Sender : TProcessList; const SessionID : DWORD; const Processes : TProcessEntries) of object;
   TOnCloseApps = procedure(Sender : TProcessList; const Processes : TProcessEntriesArray) of object;
 
+  TMutexEx = class(TMutex)
+  protected
+    fEvent : SyncObjs.TEvent;
+  public
+    procedure Acquire; overload; override;
+    procedure Release; override;
+
+    function Acquire(const TimeOut : DWORD) : Boolean; overload; virtual;
+    function TryAcquire : boolean; virtual;
+
+    function WaitFor(Timeout: LongWord): TWaitResult; override;
+
+    property StopEvent : SyncObjs.TEvent read fEvent write fEvent;
+  end;
+
 
 
   TProcessList = class
@@ -38,8 +53,6 @@ type
 
     function GetProcessHandle(Index : Integer) : THandle;
     function GetProcessID(Index : Integer) : DWORD;
-
-
   public
     constructor Create;
     destructor Destroy;
@@ -47,8 +60,11 @@ type
     function Add(Handle : THandle; const Duplicate : Boolean = false) : Integer;
     procedure Remove(const Index : Integer; const Close : Boolean = true);
 
+    function GetProcesses : TProcessEntries;
+
     procedure CloseAll;
 
+    class procedure SendEndSessionToAllWindows(const Processes : TProcessEntries);
     class procedure SendEndSessionMessage(const Wnd : HWND);
 
   public
@@ -63,26 +79,34 @@ type
 
   TProcessListMemory = class
   protected
-    fWriteEvent,
+    fMutex : TMutexEx;
+
     fHandle : THandle;
+
+  public
+    function LoadFromStream(const Stream : TStream) : TProcessEntries;
+    procedure SaveToStream(const Stream : TStream; const Processes : TProcessEntries);
   public
     constructor Create(const Name : WideString);
     constructor CreateOpen(const Name : WideString);
-    destructor Destory;
+    destructor Destroy;
+
 
     procedure Write(const Processes : TProcessEntries);
     procedure Read(out Processes : TProcessEntries);
 
     procedure FireWriteEvent;
-    property WritEvent : THandle read fWriteEvent;
+    property Mutex : TMutexEx read fMutex;
   end;
 
 implementation
-uses math, JwsclToken, JwsclExceptions, JwsclComUtils, JwsclCryptProvider, JwsclTypes;
+uses math, JwsclToken, JwsclExceptions, JwsclUtils, JwsclComUtils,
+   JwsclVersion,
+   JwsclCryptProvider, JwsclTypes;
 
 { TProcessList }
 
-const MAP_SIZE = 1024 * 1024;
+const MAP_SIZE = 1024*1024;
 
 
 
@@ -94,7 +118,6 @@ begin
   result.Session := Session;
   result.Error   := 0;
   result.Checked := false;
-
 end;
 
 type
@@ -292,11 +315,21 @@ begin
   FreeAndNil(fCritSec);
 end;
 
+function TProcessList.GetProcesses: TProcessEntries;
+var i : Integer;
+begin
+  SetLength(result, fList.Count);
+  for I := 0 to fList.Count - 1 do
+  begin
+    result[i] := PProcessEntry(fList)^;
+  end;
+end;
+
 function TProcessList.GetProcessHandle(Index: Integer): THandle;
 begin
   fCritSec.BeginRead;
   try
-
+    result := PProcessEntry(fList[Index])^.Handle;
   finally
     fCritSec.EndRead;
   end;
@@ -306,7 +339,7 @@ function TProcessList.GetProcessID(Index: Integer): DWORD;
 begin
   fCritSec.BeginRead;
   try
-
+    result := PProcessEntry(fList[Index])^.ID;
   finally
     fCritSec.EndRead;
   end;
@@ -329,10 +362,59 @@ begin
 end;
 
 class procedure TProcessList.SendEndSessionMessage(const Wnd: HWND);
+var
+  Res,
+  MsgRes : DWORD;
+  TimedOut : Boolean;
 begin
+  Res := SendMessageTimeoutW(Wnd, WM_QUERYENDSESSION, 0, ENDSESSION_LOGOFF,
+    SMTO_ABORTIFHUNG or SMTO_ABORTIFHUNG or SMTO_BLOCK,
+     30 * 1000, MsgRes);
 
+  if Res = 0 then
+  begin
+
+    if TJwWindowsVersion.IsWindows2000(false) or
+      (TJwWindowsVersion.IsWindows2000(false) and  TJwWindowsVersion.IsServer)
+    then
+    begin
+      TimedOut := GetLastError = 0;
+    end
+    else
+    begin
+      TimedOut := GetLastError = ERROR_TIMEOUT;
+    end;
+  end;
+
+  if not TimedOut then
+  begin
+    Res := SendMessageTimeoutW(Wnd, WM_ENDSESSION, 1, ENDSESSION_LOGOFF,
+       SMTO_ABORTIFHUNG or SMTO_ABORTIFHUNG or SMTO_BLOCK,
+         30 * 1000, MsgRes);
+  end;
 end;
 
+
+function EndSessionEnumWindowsProc(wnd : HWND; _lParam : LPARAM) : Boolean; stdcall;
+var ID : DWORD;
+begin
+  GetWindowThreadProcessId(wnd, @ID);
+  if (_lParam <> 0) and (TProcessEntry(Pointer(_lParam)^).ID = ID) then
+  begin
+    TProcessList.SendEndSessionMessage(wnd);
+  end;
+  result := true;
+end;
+
+
+class procedure TProcessList.SendEndSessionToAllWindows(const Processes : TProcessEntries);
+var i : Integer;
+begin
+  for I := 0 to Length(Processes) - 1 do
+  begin
+    EnumWindows(@EndSessionEnumWindowsProc, LPARAM(@Processes[i]));
+  end;
+end;
 
 type
   TPointMemoryStream = class(TMemoryStream)
@@ -360,38 +442,45 @@ begin
   if fHandle = 0 then
     RaiseLastOSError;
 
-  fWriteEvent := CreateEventW(nil, true, false, PWideChar(Name+'_WriteEvent'));
+  fMutex := TMutexEx.Create(nil, true, PWideChar(Name+'_WriteEvent'));
 end;
 
 constructor TProcessListMemory.CreateOpen(const Name: WideString);
 begin
-  fHandle := CreateFileMappingW(
+  fHandle := OpenFileMappingW(
+      FILE_MAP_READ,//__in  DWORD dwDesiredAccess,
+      false, //__in  BOOL bInheritHandle,
+      PWideChar(Name)//__in  LPCTSTR lpName
+    );
+(*  fHandle := CreateFileMappingW(
       INVALID_HANDLE_VALUE,//__in      HANDLE hFile,
       nil,//__in_opt  LPSECURITY_ATTRIBUTES lpAttributes,
-      PAGE_READONLY,//__in      DWORD flProtect,
+      PAGE_READONLY, //PAGE_READONLY,//__in      DWORD flProtect,
       0,//__in      DWORD dwMaximumSizeHigh,
       MAP_SIZE,//in      DWORD dwMaximumSizeLow,
       PWideChar(Name) //__in_opt  LPCTSTR lpName
-      );
+      );*)
   if fHandle = 0 then
     RaiseLastOSError;
-  fWriteEvent := 0;
+
+
+  fMutex := TMutexEx.Create(MUTEX_MODIFY_STATE or SYNCHRONIZE, false, PWideChar(Name+'_WriteEvent'));
 end;
 
-destructor TProcessListMemory.Destory;
+destructor TProcessListMemory.Destroy;
 begin
   CloseHandle(fHandle);
-  CloseHandle(fWriteEvent);
+
+  fMutex.Free;
+  inherited;
 end;
 
 procedure TProcessListMemory.FireWriteEvent;
 begin
-  SetEvent(fWriteEvent);
 end;
 
-procedure TProcessListMemory.Read(out Processes: TProcessEntries);
+function TProcessListMemory.LoadFromStream(const Stream : TStream) : TProcessEntries;
 var
-  Data : Pointer;
   i,
   ReadHashLen,
   HashLen,
@@ -399,70 +488,109 @@ var
   Size : DWORD;
   Hash : TJwHash;
 
-  Stream : TPointMemoryStream;
+  Pos : Int64;
 
-  HashData : Pointer;
-  ReadHash : Array of Byte;
+  HashData,
+  ReadHash : Pointer;
+
+  HH : Array[0..16] of byte;
+  RH : Array[0..100] of byte;
+
 begin
-  Size := 0;
-  Data := MapViewOfFile(fHandle,   // handle to map object
-                        FILE_MAP_READ, // read/write permission
-                        0,
-                        0,
-                        MAP_SIZE);
+  TMemoryStream(Stream).SaveToFile('E:\Temp\_DataLoad.dat');
 
+  //get actual size of data
+  Stream.Read(Size, sizeof(ReadHashLen));
 
+  //jump to hash data
+  Stream.Seek(Size, soFromBeginning);
+
+  //get len of hash written to stream
+  Stream.Read(ReadHashLen, sizeof(ReadHashLen));
+
+  //get the actual hash
+
+  GetMem(ReadHash, ReadHashLen);
+  Stream.Read(ReadHash^, ReadHashLen);
+  //CopyMemory(@RH, @ReadHash, ReadHashLen);
+
+  //save stream position of the end
+  Pos := Stream.Position;
+
+  //hash data
+  Hash := TJwHash.Create(haMD5);
   try
-    //we use a custom stream implementation to act on the memory
-    Stream := TPointMemoryStream.Create;
-    Stream.SetPointer(Data, MAP_SIZE);
-
-    //get len of hash written to stream 
-    Stream.Read(ReadHashLen, sizeof(ReadHashLen));
-
-    //get the actual hash
-    SetLength(ReadHash, ReadHashLen);
-    Stream.Read(ReadHash[0], ReadHashLen);
-
-    //Point to the actual data of this stream to be hashed and compared 
-    HashData := Data;
-    Inc(PAnsiChar(HashData), Stream.Position);
-
-    //get actual size of data
-    Stream.Read(Size, sizeof(ReadHashLen));
-
-    //hash data
-    Hash := TJwHash.Create(haMD5);
-    Hash.HashData(HashData, Size);
+    Stream.Seek(0, soFromBeginning);
+    Hash.HashStream(Stream, Size);
 
     HashData := Hash.RetrieveHash(HashLen);
-
+    //CopyMemory(@HH[0], HashData, HashLen);
     try
-      if not CompareMem(@ReadHash[0], HashData, min(HashLen,ReadHashLen)) then
+      if not CompareMem(ReadHash, HashData, min(HashLen,ReadHashLen)) then
         raise EJwsclHashMismatch.Create('');
     finally
       Hash.FreeBuffer(HashData);
     end;
+  finally
+    Hash.Free;
 
-    //get count of process entries
-    Stream.Read(Len, sizeof(Len));
+  end;
+  FreeMem(ReadHash);
 
-    SetLength(Processes, Len);
-    for i := 0 to Len - 1 do
-    begin
-      Stream.Read(Processes[i], sizeof(Processes[i]));
+  Stream.Seek(0, soFromBeginning);
+
+  //get actual size of data
+  Stream.Read(Size, sizeof(ReadHashLen));
+
+  //get count of process entries
+  Stream.Read(Len, sizeof(Len));
+
+  SetLength(result, Len);
+  for i := 0 to Len - 1 do
+  begin
+    Stream.Read(result[i], sizeof(result[i]));
+  end;
+
+  Stream.Position := Pos;
+end;
+
+procedure TProcessListMemory.Read(out Processes: TProcessEntries);
+var
+  Data : Pointer;
+  Stream : TPointMemoryStream;
+
+begin
+  Mutex.Acquire;
+  try
+    Data := MapViewOfFile(fHandle,   // handle to map object
+                          FILE_MAP_READ, // read/write permission
+                          0,
+                          0,
+                          MAP_SIZE);
+
+
+    if Data = nil then
+      RaiseLastOSError;
+
+
+    Stream := TPointMemoryStream.Create;
+    try
+      //we use a custom stream implementation to act on the memory
+      Stream.SetPointer(Data, MAP_SIZE);
+
+      Processes := LoadFromStream(Stream);
+    finally
+      Stream.SetPointer(nil, 0);
+      Stream.Free;
+      UnmapViewOfFile(Data);
     end;
   finally
-    Stream.SetPointer(nil, 0);
-    Stream.Free;
-    UnmapViewOfFile(Data);
+    Mutex.Release;
   end;
 end;
 
-procedure TProcessListMemory.Write(const Processes: TProcessEntries);
+procedure TProcessListMemory.SaveToStream(const Stream : TStream; const Processes : TProcessEntries);
 var
-  Point,
-  Data,
   HashData : Pointer;
   i,
   Len,
@@ -471,54 +599,131 @@ var
   Size : DWORD;
   Hash : TJwHash;
 
-  Stream : TMemoryStream;
-begin
-  Size := Length(Processes) * sizeof(TProcessEntry);
+  HH : Array[0..16] of byte;
 
-  Data := MapViewOfFile(fHandle,   // handle to map object
-                        FILE_MAP_ALL_ACCESS, // read/write permission
-                        0,
-                        0,
-                        MAP_SIZE);
+begin
+
+  Size := Length(Processes) * sizeof(TProcessEntry);
 
   ProcDataSize := Size+sizeof(Size)+sizeof(Len);
 
-  //we use a custom stream implementation to act on the memory
-  Stream := TMemoryStream.Create;
+  Stream.Write(ProcDataSize, sizeof(ProcDataSize));
+
+  Len := Length(Processes);
+  Stream.Write(Len, sizeof(Len));
+
+  for i := 0 to Length(Processes) - 1 do
+  begin
+    Stream.Write(Processes[i], sizeof(Processes[i]));
+  end;
+
+  Hash := TJwHash.Create(haMD5);
+
+  Stream.Seek(0, soFromBeginning);
+  Hash.HashStream(Stream, ProcDataSize);
+  HashData := Hash.RetrieveHash(HashLen);
+  //CopyMemory(@HH, HashData, HashLen);
+
+  Stream.Seek(ProcDataSize, soFromBeginning);
   try
-    Stream.Write(ProcDataSize, sizeof(ProcDataSize));
+    Stream.Write(HashLen,sizeof(HashLen));
+    Stream.Write(HashData^, HashLen);
+  finally
+    Hash.FreeBuffer(HashData);
+    Hash.Free;
+  end;
 
-    Len := Length(Processes);
-    Stream.Write(Len, sizeof(Len));
+  Stream.Seek(0, soFromBeginning);
+  TMemoryStream(Stream).SaveToFile('E:\Temp\_DataSave.dat');
 
-    for i := 0 to Length(Processes) - 1 do
-    begin
-      Stream.Write(Processes[i], sizeof(Processes[i]));
-    end;
+end;
 
-    Hash := TJwHash.Create(haMD5);
-    Hash.HashData(Stream.Memory,  Stream.Size);
-    HashData := Hash.RetrieveHash(HashLen);
+procedure TProcessListMemory.Write(const Processes: TProcessEntries);
+var
+  Data: Pointer;
+  Stream : TPointMemoryStream;
+begin
+  Mutex.Acquire;
+  try
+    Data := MapViewOfFile(fHandle,   // handle to map object
+                          FILE_MAP_ALL_ACCESS, // read/write permission
+                          0,
+                          0,
+                          MAP_SIZE);      
 
+    //we use a custom stream implementation to act on the memory
+    Stream := TPointMemoryStream.Create;
     try
-      Point := Data;
+      Stream.SetPointer(Data, MAP_SIZE);
 
-      CopyMemory(Point, @HashLen, sizeof(HashLen));
-      Inc(DWORD(Point), sizeof(HashLen));
-
-      CopyMemory(Point, HashData, HashLen);
-      Inc(DWORD(Point), HashLen);
-
-      CopyMemory(Point, Stream.Memory, Stream.Size);
+      SaveToStream(Stream, Processes);
     finally
-      Hash.FreeBuffer(HashData);
-      Hash.Free;
-
+      Stream.SetPointer(nil, 0);
+      Stream.Free;
+      UnmapViewOfFile(Data);
     end;
   finally
-    Stream.Free;
-    UnmapViewOfFile(Data);
+    Mutex.Release;
   end;
+end;
+
+{ TMutexEx }
+
+procedure TMutexEx.Acquire;
+begin
+  inherited;
+
+end;
+
+function TMutexEx.Acquire(const TimeOut : DWORD) : Boolean;
+var WR : TWaitResult;
+begin
+  WR := WaitFor(TimeOut);
+  case WR of
+    wrError : RaiseLastOSError;
+    wrAbandoned,
+    wrSignaled : result := true;
+  else
+    //wrTimeout
+    result := false;
+  end;
+end;
+
+function TMutexEx.WaitFor(Timeout: LongWord): TWaitResult;
+var
+  Index: DWORD;
+begin
+  if FUseCOMWait or
+   not Assigned(fEvent) then
+  begin
+    result := inherited WaitFor(Timeout);
+  end else
+  begin
+    case JwWaitForMultipleObjects([FHandle, fEvent.Handle], false, Timeout) of
+      WAIT_ABANDONED: Result := wrAbandoned;
+      WAIT_OBJECT_0: Result := wrSignaled;
+      WAIT_OBJECT_0+1,
+      WAIT_TIMEOUT: Result := wrTimeout;
+      WAIT_FAILED:
+        begin
+          Result := wrError;
+          FLastError := GetLastError;
+        end;
+    else
+      Result := wrError;
+    end;
+  end;
+end;
+
+procedure TMutexEx.Release;
+begin
+  inherited;
+
+end;
+
+function TMutexEx.TryAcquire: boolean;
+begin
+  result := Acquire(0);
 end;
 
 end.

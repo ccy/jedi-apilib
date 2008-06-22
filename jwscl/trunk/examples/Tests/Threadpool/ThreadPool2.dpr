@@ -6,6 +6,7 @@ uses
   JwaWindows,
   Forms,
   classes,
+  syncobjs,
   sysutils,
   ThreadPoolForm in 'ThreadPoolForm.pas' {Form1},
   ProcessList in 'ProcessList.pas';
@@ -16,12 +17,19 @@ var
   Processes2: TProcessEntries;
   MEm : TFileStream;
 begin
+  try
   M2 := TProcessListMemory.CreateOpen('test');
-  M2.Read(Processes2);
+  //WaitForSingleObject(M2.Mutex, INFINITE);
 
 
-  M2 := TProcessListMemory.CreateOpen('test');
-  WaitForSingleObject(M2.Mutex, INFINITE);
+  if M2.Mutex.Acquire(2000) then
+  begin
   M2.Read(Processes2);
-  ReleaseMutex(M2.Mutex)
+  M2.Mutex.Release;
+  end;
+  except
+    on e : Exception do
+      MessageBox(0,PChar(e.MessagE),'',MB_OK);
+
+  end;
 end.

@@ -33,9 +33,10 @@ begin
 
   exit;
  }
-  WaitForSingleObject(M1.Mutex, INFINITE);
+  M1.Mutex.Acquire;
   M1.Write(Processes);
-  ReleaseMutex(M1.Mutex);
+  M1.Mutex.Release;
+ // ReleaseMutex(M1.Mutex);
 
   readln;
  {M2 := TProcessListMemory.CreateOpen('test');
