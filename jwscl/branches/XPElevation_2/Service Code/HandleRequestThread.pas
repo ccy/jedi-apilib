@@ -14,7 +14,6 @@ type
   private
     { Private declarations }
     fAllowedSIDs:  TJwSecurityIdList;
-    fJobs : TJwJobObjectSessionList;
     fPasswords   : TCredentialsList;
     fThreadsStoppedEvent,
     fServiceStopEvent  : THandle;
@@ -30,7 +29,6 @@ type
         CreateSuspended: Boolean;
         const PipeID : DWORD;
         const PipeToken : TJwSecurityToken;
-        const Jobs : TJwJobObjectSessionList;
         const AllowedSIDs:  TJwSecurityIdList;
         const Passwords   : TCredentialsList;
         const ServiceStopEvent : THandle;
@@ -53,7 +51,6 @@ constructor THandleRequestThread.Create(
   CreateSuspended: Boolean;
   const PipeID : DWORD;
   const PipeToken : TJwSecurityToken;
-  const Jobs : TJwJobObjectSessionList;
   const AllowedSIDs: TJwSecurityIdList;
   const Passwords: TCredentialsList;
   const ServiceStopEvent: THandle;
@@ -62,7 +59,6 @@ constructor THandleRequestThread.Create(
   const StopState: PBoolean);
 begin
 
-  fJobs := Jobs;
   fAllowedSIDs := AllowedSIDs;
   fPasswords := Passwords;
   fServiceStopEvent := ServiceStopEvent;
@@ -285,7 +281,6 @@ begin
                   
                   ElevationObj := TElevationHandler.Create(
                      fAllowedSIDs,
-                     fJobs,
                      fPasswords,
                      fServiceStopEvent,
                      fStopState);

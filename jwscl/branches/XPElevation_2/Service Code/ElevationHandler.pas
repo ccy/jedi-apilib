@@ -81,15 +81,11 @@ type
     //service stopped? - pointer to XPService.Stopped
     fStopState : PBoolean;
 
-    //job list - same as XPService.Jobs
-    fJobs : TJwJobObjectSessionList;
-
-
+    
     function GetStopState : Boolean;
   public
     constructor Create(
       const AllowedSIDs: TJwSecurityIdList;
-      const Jobs : TJwJobObjectSessionList;
       const Passwords  : TCredentialsList;
       const StopEvent  : THandle;
       const StopState : PBoolean);
@@ -626,7 +622,8 @@ begin
            Token.TokenHandle,//ClientPipeUserToken.TokenHandle,
            PWideChar(Widestring(CredentialsAppPath)),
            PWideChar(Widestring(AppliationCmdLine)) ,
-          SecAttr, SecAttr, True, CREATE_NEW_CONSOLE or CreationFlags, P, nil, StartInfo, ProcInfo) then
+          SecAttr, SecAttr, false {mandatory between different sessions on XP},
+          CREATE_NEW_CONSOLE or CreationFlags, P, nil, StartInfo, ProcInfo) then
         begin
           LogAndRaiseLastOsError(Log, ClassName, 'AskCredentials::(winapi)CreateProcessAsUserW', 'ElevationHandler.pas');
         end;
@@ -829,7 +826,6 @@ end;
 
 constructor TElevationHandler.Create(
   const AllowedSIDs:  TJwSecurityIdList;
-  const Jobs : TJwJobObjectSessionList;
   const Passwords   : TCredentialsList;
   const StopEvent  : THandle;
   const StopState : PBoolean);
@@ -838,7 +834,6 @@ begin
   fPasswords   := Passwords;
   fStopEvent   := StopEvent;
   fStopState   := StopState;
-  fJobs        := Jobs;
 
   ServerPipe := TServerSessionPipe.Create;
 end;
@@ -1173,12 +1168,12 @@ begin
                 New(UserData);
                 UserData.UserToken   := OutVars.UserToken;
                 UserData.UserProfile := OutVars.ProfInfo;
-                try
+                (*try
                   fJobs.AssignProcessToJob(OutVars.ProcessInfo.hProcess,
                     Pointer(UserData));
                 except
                   //TODO: oops job assignment failed
-                end;
+                end;*)
                 ResumeThread(OutVars.ProcessInfo.hThread);
               finally
 

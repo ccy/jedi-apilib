@@ -65,10 +65,6 @@ type
     fServiceStopEvent,
     {fThreadsStoppedEvent is signaled when all elevent threads exited.}
     fThreadsStoppedEvent:           THandle;
-    {fJobs defines a list. It contains one job per Session (The Windows Session).
-    All process in a job can only belong to the same session.
-    }
-    fJobs : TJwJobObjectSessionList;
 
     {fStopCriticalSection saves the variable fServiceStopEvent}
     fStopCriticalSection :  TMultiReadExclusiveWriteSynchronizer;
@@ -88,12 +84,12 @@ type
 
     procedure SetStopped(const Value: boolean);
 
-    procedure OnJobNotification(Sender : TJwJobObject; ProcessId : TJwProcessId; JobLimits : TJwJobMessages; Data : Pointer);
+{    procedure OnJobNotification(Sender : TJwJobObject; ProcessId : TJwProcessId; JobLimits : TJwJobMessages; Data : Pointer);
     procedure OnNoActiveProcesses(Sender : TJwJobObject);
     procedure OnNewJobObject(Sender : TJwJobObjectSessionList;    ProcessHandle : TJwProcessHandle;
       ProcessSessionID,
       CurrentSessionID : Cardinal;
-      var NewJobObject : TJwJobObject);
+      var NewJobObject : TJwJobObject);   }
 
 
   public
@@ -167,7 +163,7 @@ end;
 
 
 
-
+(*
 procedure TXPService.OnJobNotification(Sender: TJwJobObject;
   ProcessId: TJwProcessId; JobLimits: TJwJobMessages; Data : Pointer);
 
@@ -223,8 +219,8 @@ end;
 
 procedure TXPService.OnNoActiveProcesses(Sender: TJwJobObject);
 begin
-
 end;
+*)
 
 constructor TXPService.Create(AOwner: TComponent);
 begin
@@ -521,8 +517,6 @@ begin
           fPasswords.UnlockList;}
 
           try
-            //create job objects for all sessions
-            fJobs := TJwJobObjectSessionList.Create(OnNewJobObject);
 
             Pipe := CreateServicePipe(Log);
             repeat
@@ -595,7 +589,6 @@ begin
                         true, //Create suspended
                         UniquePipeID,
                         PipeToken,
-                        fJobs,
                         nil,//const AllowedSIDs:  TJwSecurityIdList;
                         fPasswords,//const Passwords   : TPasswordList;
                         fServiceStopEvent,//const StopEvent  : THandle;
@@ -640,7 +633,6 @@ begin
             WaitForSingleObject(ThreadsStopEvent, 30 * 1000);
           
             fPasswords.Free;
-            FreeAndNil(fJobs);
           end;
         finally
           CloseHandle(OvLapped.hEvent);

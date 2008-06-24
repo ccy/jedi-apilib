@@ -11,6 +11,7 @@ uses
   JwsclToken,
   JwsclExceptions,
   JwsclUtils,
+  JwsclVersion,
   JwsclComUtils;
 
 
@@ -110,6 +111,13 @@ var
 
   imp : TWabImportParam;
 begin
+  if not TJwWindowsVersion.IsWindowsVista(true) and
+     not TJwWindowsVersion.IsWindows2008(true) then
+  begin
+    result := GetUserPicture;
+    exit;
+  end;
+
   try
     CoInitialize(nil);
 
