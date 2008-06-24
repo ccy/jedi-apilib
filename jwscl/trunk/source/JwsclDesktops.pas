@@ -426,6 +426,9 @@ type
      }
     property SecurityDescriptor[Info: TJwSecurityInformationFlagSet]
       : TJwSecurityDescriptor Read GetSD Write PutSD;
+
+    property LastThreadDesktop : HDESK  read fLastThreadDesktop write fLastThreadDesktop;
+    property LastSwitchDesktop : HDESK read fLastSwitchDesktop write fLastSwitchDesktop;
   end;
 
 

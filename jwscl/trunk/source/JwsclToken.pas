@@ -2331,8 +2331,11 @@ begin
     exit;
 
 
-  HeapFree(JwProcessHeap, 0, Pointer(Privileges));
+ {HeapFree(JwProcessHeap, 0, Pointer(Privileges));
+  fPPrivilegesSetList.Remove(Privileges);}
+  
   fPPrivilegesSetList.Remove(Privileges);
+  HeapFree(JwProcessHeap, 0, Pointer(Privileges));
 
   Privileges := nil;
 end;
@@ -2946,7 +2949,7 @@ begin
    P := JwGetPrivilegeScope([SE_DEBUG_NAME],pst_EnableIfAvail);
 
   try
-    hProc := OpenProcess(PROCESS_QUERY_INFORMATION or PROCESS_VM_READ,
+    hProc := OpenProcess(PROCESS_QUERY_INFORMATION,
                 False, ProcessID);
 
     if hProc = 0 then

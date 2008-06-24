@@ -24,7 +24,7 @@ begin
 
   if M2.Mutex.Acquire(2000) then
   begin
-  M2.Read(Processes2);
+  M2.Read(1000, Processes2);
   M2.Mutex.Release;
   end;
   except

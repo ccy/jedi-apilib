@@ -1,7 +1,7 @@
 unit ProcessList;
 
 interface
-uses JwaWindows, Classes, SyncObjs, SysUtils;
+uses JwaWindows, Classes, SyncObjs, SyncObjsEx, SysUtils;
 
 type
   PProcessEntry = ^TProcessEntry;
@@ -22,23 +22,8 @@ type
   TOnCloseAppsPostPrep = procedure(Sender : TProcessList; const SessionID : DWORD; const Processes : TProcessEntries) of object;
   TOnCloseApps = procedure(Sender : TProcessList; const Processes : TProcessEntriesArray) of object;
 
-  TMutexEx = class(TMutex)
-  protected
-    fEvent : SyncObjs.TEvent;
-  public
-    procedure Acquire; overload; override;
-    procedure Release; override;
 
-    function Acquire(const TimeOut : DWORD) : Boolean; overload; virtual;
-    function TryAcquire : boolean; virtual;
-
-    function WaitFor(Timeout: LongWord): TWaitResult; override;
-
-    property StopEvent : SyncObjs.TEvent read fEvent write fEvent;
-  end;
-
-
-
+  {TProcessList maintains a list of processes across all sessions.}
   TProcessList = class
   protected
     fCloseAll : Boolean;
@@ -55,28 +40,70 @@ type
     function GetProcessID(Index : Integer) : DWORD;
   public
     constructor Create;
+
+    {}
     destructor Destroy;
 
+    {Adds a process handlet to the list. This process can be closed.
+     @param Handle defines the process handle to be used. This handle is automatically
+       closed. If you don't want it this way set Duplicate to true.
+     @param Duplicate defines whether the handle is to be duplicated.
+    }
     function Add(Handle : THandle; const Duplicate : Boolean = false) : Integer;
+
+    {Remove removes the given process from the list. It does not close
+     the process though.
+
+     @param Index defines the index of the process to be removed from list.
+     @param Close Not used.
+    }
     procedure Remove(const Index : Integer; const Close : Boolean = true);
 
+    {GetProcesses returns a copy of the internal process list.}
     function GetProcesses : TProcessEntries;
 
+    {Prepares the closing of all processes. It creates one process list per
+     session and calls OnCloseAppsPrePrep, OnCloseAppsPostPrep and OnCloseApps
+     in this order.
+     The method does not actually close the processes. This task is done in a
+     separate process in the appropriate session.
+
+    }
     procedure CloseAll;
 
+    {SendEndSessionToAllWindows sends end message to all given processes.}
     class procedure SendEndSessionToAllWindows(const Processes : TProcessEntries);
     class procedure SendEndSessionMessage(const Wnd : HWND);
 
   public
+    {If CloseAllOnDestroy is true the CloseAll method will be called when the
+     instance is freed.}
     property CloseAllOnDestroy : Boolean read fCloseAll write fCloseAll;
+
+    {Process returns the stored process handle at index.}
     property Process[Index : Integer] : THandle read GetProcessHandle; default;
+    {ProcessID returns the stored process ID at index}
     property ProcessID[Index : Integer] : DWORD read GetProcessID;
 
+    {OnCloseAppsPrePrep is called before a process has to be started into the
+    target session. The method parameter receives the created process handle
+    for duplicating the process handles list.
+    }
     property OnCloseAppsPrePrep  : TOnCloseAppsPrePrep read fOnCloseAppsPrePrep write fOnCloseAppsPrePrep;
+
+    {OnCloseAppsPostPrep is called after the whole process list handles were
+     duplicated into the target session.
+    }
     property OnCloseAppsPostPrep : TOnCloseAppsPostPrep read fOnCloseAppsPostPrep write fOnCloseAppsPostPrep;
+
+
+    {OnCloseApps is called after the last OnCloseAppsPostPrep event was fired.
+     There will be no more processes to be closed.
+    }
     property OnCloseApps : TOnCloseApps read fOnCloseApps write fOnCloseApps;
   end;
 
+  {TProcessListMemory maintains a shared memory section for a process list.}
   TProcessListMemory = class
   protected
     fMutex : TMutexEx;
@@ -93,7 +120,7 @@ type
 
 
     procedure Write(const Processes : TProcessEntries);
-    procedure Read(out Processes : TProcessEntries);
+    procedure Read(const TimeOut : DWORD; out Processes : TProcessEntries);
 
     procedure FireWriteEvent;
     property Mutex : TMutexEx read fMutex;
@@ -133,20 +160,24 @@ var
   i : Integer;
 begin
   Data := PCallbackContext(lpParameter);
-  Data.Self.fCritSec.BeginWrite;
+
 
   if Assigned(Data.Self.fList) then
-  try
-    for I := 0 to Data.Self.fList.Count - 1 do
-    begin
-      if Data.Self.ProcessID[i] = Data.ID then
+  begin
+    Data.Self.fCritSec.BeginWrite;
+
+    try
+      for I := 0 to Data.Self.fList.Count - 1 do
       begin
-        Data.Self.Remove(i, false);
-        break;
+        if Data.Self.ProcessID[i] = Data.ID then
+        begin
+          Data.Self.Remove(i, false);
+          break;
+        end;
       end;
+    finally
+      Data.Self.fCritSec.EndWrite;
     end;
-  finally
-    Data.Self.fCritSec.EndWrite;
   end;
 end;
 
@@ -260,9 +291,9 @@ begin
         //send new process handles 
         OnCloseAppsPostPrep(Self,i, Sessions[i]);
       end;
-
-      OnCloseApps(Self,Sessions);
     end;
+
+    OnCloseApps(Self,Sessions);
   finally
     fCritSec.EndWrite;
   end;
@@ -351,7 +382,7 @@ begin
   try
     if fList[Index] <> nil then
     begin
-      if PProcessEntry(fList[Index]).Duplicated then
+      //if PProcessEntry(fList[Index]).Duplicated then
         CloseHandle(PProcessEntry(fList[Index]).Handle);
       Dispose(PProcessEntry(fList[Index]));
       fList.Delete(Index);
@@ -554,13 +585,14 @@ begin
   Stream.Position := Pos;
 end;
 
-procedure TProcessListMemory.Read(out Processes: TProcessEntries);
+procedure TProcessListMemory.Read(const TimeOut : DWORD; out Processes: TProcessEntries);
 var
   Data : Pointer;
   Stream : TPointMemoryStream;
 
 begin
-  Mutex.Acquire;
+  if not Mutex.Acquire(TimeOut) then
+    raise EAbort.Create('Read of process list from shared memory aborted due to timeout');
   try
     Data := MapViewOfFile(fHandle,   // handle to map object
                           FILE_MAP_READ, // read/write permission
@@ -667,63 +699,5 @@ begin
   end;
 end;
 
-{ TMutexEx }
-
-procedure TMutexEx.Acquire;
-begin
-  inherited;
-
-end;
-
-function TMutexEx.Acquire(const TimeOut : DWORD) : Boolean;
-var WR : TWaitResult;
-begin
-  WR := WaitFor(TimeOut);
-  case WR of
-    wrError : RaiseLastOSError;
-    wrAbandoned,
-    wrSignaled : result := true;
-  else
-    //wrTimeout
-    result := false;
-  end;
-end;
-
-function TMutexEx.WaitFor(Timeout: LongWord): TWaitResult;
-var
-  Index: DWORD;
-begin
-  if FUseCOMWait or
-   not Assigned(fEvent) then
-  begin
-    result := inherited WaitFor(Timeout);
-  end else
-  begin
-    case JwWaitForMultipleObjects([FHandle, fEvent.Handle], false, Timeout) of
-      WAIT_ABANDONED: Result := wrAbandoned;
-      WAIT_OBJECT_0: Result := wrSignaled;
-      WAIT_OBJECT_0+1,
-      WAIT_TIMEOUT: Result := wrTimeout;
-      WAIT_FAILED:
-        begin
-          Result := wrError;
-          FLastError := GetLastError;
-        end;
-    else
-      Result := wrError;
-    end;
-  end;
-end;
-
-procedure TMutexEx.Release;
-begin
-  inherited;
-
-end;
-
-function TMutexEx.TryAcquire: boolean;
-begin
-  result := Acquire(0);
-end;
 
 end.

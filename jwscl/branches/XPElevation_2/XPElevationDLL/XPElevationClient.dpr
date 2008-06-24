@@ -3,6 +3,7 @@ program XPElevationClient;
 {.$APPTYPE CONSOLE}
 
 uses
+  ExceptionLog,
   dialogs,
   JwaWindows,
   JwsclComUtils,

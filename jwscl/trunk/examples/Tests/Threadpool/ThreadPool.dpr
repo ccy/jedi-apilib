@@ -6,7 +6,8 @@ uses
   classes,
   sysutils,
   ThreadPoolForm in 'ThreadPoolForm.pas' {Form1},
-  ProcessList in 'ProcessList.pas';
+  ProcessList in 'ProcessList.pas',
+  SyncObjsEx in 'SyncObjsEx.pas';
 
 {$R *.res}
 
