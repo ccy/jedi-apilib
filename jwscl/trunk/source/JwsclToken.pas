@@ -1750,11 +1750,15 @@ tokens, which are quite common since Windows XP and especially Vista.
 }
 function JwCheckAdministratorAccess: boolean;
 
-{<B>JwGetProcessLogonSession</B> returns the logon session ID of the current process.
-@return A integer value that defines the current session ID }
-function JwGetProcessLogonSession : Cardinal;
+{<B>JwGetProcessLogonSession</B> returns the logon session ID of the given process.
+By default the current process is used
+@param ProcessID defines the process ID to be used to retrieve the session ID.
+   By default (value: -1) the current process is used.
+@return A integer value that defines the process session ID }
+function JwGetProcessLogonSession(ProcessID : TJwProcessId = Cardinal(-1)) : Cardinal;
 
-
+{<B>JwIsSystem</B> returns true if the current process is running in the system context.
+It does not matter whether the process is in fact a service or not.}
 function JwIsSystem : Boolean;
 
 {$ENDIF SL_IMPLEMENTATION_SECTION}
@@ -1772,16 +1776,24 @@ uses JwsclKnownSid, JwsclMapping, JwsclSecureObjects, JwsclProcess,
 
 {$IFNDEF SL_INTERFACE_SECTION}
 
-function JwGetProcessLogonSession : Cardinal;
+function JwGetProcessLogonSession(ProcessID : TJwProcessId = Cardinal(-1)) : Cardinal;
 var T : TJwSecurityToken;
 begin
-  T := TJwSecurityToken.CreateTokenByProcess(0, TOKEN_READ or TOKEN_QUERY);
-  try
-    result := T.TokenSessionId;
-  finally
-    T.Free;
+  if ProcessID = Cardinal(-1) then
+    ProcessID := GetCurrentProcessId;
+
+  if not ProcessIdToSessionId(ProcessID, result) then
+  begin
+    T := TJwSecurityToken.CreateTokenByProcessId(ProcessID, TOKEN_READ or TOKEN_QUERY);
+    try
+      result := T.TokenSessionId;
+    finally
+      T.Free;
+    end;
   end;
 end;
+
+
 
 function JwIsSystem : Boolean;
 var T : TJwSecurityToken;
