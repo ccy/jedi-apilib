@@ -604,7 +604,7 @@ type TJwLogServerImpl = class;
        fWriter : IJwWriterClass;
 
        //ID connects enter and leave tag unambiguously
-       fID : Int64;
+       fID : {Int64}Integer; //int64 with InterlockedIncrement64 is only supported in newer os
        fEventTypes : TJwEventTypes;
 
      public
@@ -643,7 +643,7 @@ type TJwLogServerImpl = class;
 
        fCritical : SyncObjs.TCriticalSection;
        //ID connects enter and leave tag unambiguously
-       fID : Int64;
+       fID : {Int64}Integer; //int64 with InterlockedIncrement64 is only supported in newer os
 
        fIdx : Integer;
        fOnXMLWrite : TJwOnXMLWrite;
@@ -1015,6 +1015,12 @@ begin
         AddToList(fWriter.WriteSingleTag(fInd,
           JwXMLTagsString[xtSourceProc], JE.SourceProc , Attributes));
 
+    end
+    else
+    if E is EOSError then
+    begin
+      AddToList(fWriter.WriteSingleTag(fInd,
+        JwXMLTagsString[xtGetLastError], IntToStr((E as EOSError).ErrorCode), Attributes));
     end
     else
     begin
