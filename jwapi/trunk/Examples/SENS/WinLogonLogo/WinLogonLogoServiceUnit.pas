@@ -6,7 +6,7 @@ uses
   JwaWindows, Messages, SysUtils, ActiveX, Classes, Graphics, Controls, SvcMgr, Dialogs,
   ComObj, ComServ, WinlogonLogoServiceProxy, WinLogonLogoService_TLB, SyncObjs,
   EventSystemLib_TLB, JwsclUtils, JwsclToken, JwsclTypes, JwsclProcess, JwsclComUtils,
-  JwsclTerminalServer,
+  JwsclTerminalServer, JwsclVersion,
   SensEvents_TLB, StdVcl, JwsclStrings, ExtCtrls;
 
 type
@@ -96,10 +96,12 @@ procedure TSENSTestService.Logoff(const bstrUserName: WideString;
 begin
   LogMessage(Format('Benutzer: %s hat sich in Session %d ausgeloggt.',[bstrUserName, dwSessionId]));
 
+
+{ Prozess beenden?
   try
     fJob.JobObject[dwSessionId].TerminateJobObject(0);
   except
-  end;
+  end;}
 end;
 
 procedure TSENSTestService.Logon(const bstrUserName: WideString;
@@ -211,7 +213,11 @@ var
   iErrorIndex : Integer;
 begin
   try
-    RunAppIntoSession(1);
+    if TJwWindowsVersion.IsWindowsVista(true) or
+      TJwWindowsVersion.IsWindows2008(true) then
+      RunAppIntoSession(1)
+    else
+      RunAppIntoSession(0);
 
     LogonSub := CoSENSLogonProxy.Create;
 
