@@ -332,7 +332,7 @@ begin
   Started := false;
   if GetSystemMetrics(SM_CLEANBOOT) <> 0 then
   begin
-    LogMessage('Winlogon Logo Service is not started in safe mode.');
+    LogMessage('Winlogon Logo Service cannot be started in safe mode.');
     exit;
   end;
   Started := true;
@@ -340,7 +340,7 @@ begin
   CoInitialize(nil);
 
   fIsStopping := false;
-  fStopEvent := TEvent.Create;
+  fStopEvent := TEvent.Create(nil, false, false, '');
   fJob := TJwJobObjectSessionList.Create(OnNewJobObject);
 
   //don't show any dialog box about remaining
