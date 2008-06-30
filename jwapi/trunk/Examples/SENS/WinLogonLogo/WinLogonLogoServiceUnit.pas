@@ -202,6 +202,40 @@ end;
 
 procedure TSENSTestService.ServiceExecute(Sender: TService);
 
+procedure RunDefaultAppsISessions;
+var
+   ATerminalServer: TJwTerminalServer;
+   Start, i: Integer;
+begin
+  // Create Terminal Server instance and allocate memory for it
+  ATerminalServer := TjwTerminalServer.Create;
+  try
+    // Remember that EnumerateSessions will automatically connect to the
+    // Terminal Server for you. The connect function raises an Exception
+    // if the connection attempt was unsuccessfull, so better use try..except
+   if ATerminalServer.EnumerateSessions then
+   begin
+     if TJwWindowsVersion.IsWindowsVista(true) or
+       TJwWindowsVersion.IsWindows2008(true) then
+       Start := 1 //in vista and newer, session 1 is the first console session
+     else
+       Start := 0;
+
+     // Now loop through the list
+     for i := Start to ATerminalServer.Sessions.Count - 1 do
+     begin
+       RunAppIntoSession(i);
+     end;
+   end;
+
+    // Free Memory
+    ATerminalServer.Free;
+  except
+    //ignore everything
+  end;
+end;
+
+
 const SubscriptionID = '{C40B2659-B57F-4DD3-A223-D777B4A8F4CC}';
 var
   Subscription : IEventSubscription;
@@ -212,12 +246,15 @@ var
   bIsRunning : Boolean;
   iErrorIndex : Integer;
 begin
+  if Assigned(fStopEvent) then
   try
-    if TJwWindowsVersion.IsWindowsVista(true) or
-      TJwWindowsVersion.IsWindows2008(true) then
-      RunAppIntoSession(1)
-    else
-      RunAppIntoSession(0);
+{$IFNDEF LIVE_DEBUG}
+    {
+    By default start our app on every console session it finds.
+    So the logo is even shown if the service restarts in every users logon desktop. 
+    }
+    RunDefaultAppsISessions;
+{$ENDIF LIVE_DEBUG}
 
     LogonSub := CoSENSLogonProxy.Create;
 
@@ -231,7 +268,6 @@ begin
       ProgIdToClassId('EventSystem.EventSystem'), nil, CLSCTX_SERVER,
       IID_IEventSystem, EventSystem);
     EventSystem.Store('EventSystem.EventSubscription',Subscription);
-
 
     try
       bIsRunning := true;
@@ -256,6 +292,9 @@ begin
         end;
       end;
     finally
+      Subscription := nil;
+      EventSystem := nil;
+
       CoCreateInstance(
         ProgIdToClassId('EventSystem.EventSystem'), nil,
         CLSCTX_SERVER, IID_IEventSystem, EventSystem);
@@ -265,16 +304,16 @@ begin
       if Error <> 0 then
         LogMessage(Format('Unsubscribe returned %d.',[iErrorIndex]));
 
+      EventSystem := nil;
+
       fJob.Clear(jtAll);
+
+      CoDisconnectObject(Self.ComObject,0);
     end;
   except
     on E : Exception do
       LogMessage('WinLogonLogoService raised an exception: '+E.Message);
-
   end;
-
-
-
 end;
 
 procedure TSENSTestService.ServicePause(Sender: TService; var Paused: Boolean);
@@ -290,11 +329,23 @@ end;
 
 procedure TSENSTestService.ServiceStart(Sender: TService; var Started: Boolean);
 begin
+  Started := false;
+  if GetSystemMetrics(SM_CLEANBOOT) <> 0 then
+  begin
+    LogMessage('Winlogon Logo Service is not started in safe mode.');
+    exit;
+  end;
+  Started := true;
+
   CoInitialize(nil);
 
   fIsStopping := false;
   fStopEvent := TEvent.Create;
   fJob := TJwJobObjectSessionList.Create(OnNewJobObject);
+
+  //don't show any dialog box about remaining
+  //com client connections.
+  ComServer.UIInteractive := false;
 end;
 
 procedure TSENSTestService.ServiceStop(Sender: TService; var Stopped: Boolean);

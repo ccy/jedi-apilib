@@ -12,7 +12,7 @@ unit WinLogonLogoService_TLB;
 // ************************************************************************ //
 
 // $Rev: 8291 $
-// File generated on 28.06.2008 22:35:57 from Type Library described below.
+// File generated on 30.06.2008 02:28:18 from Type Library described below.
 
 // ************************************************************************  //
 // Type Lib: P:\Eigene Dateien\Dezipaitor\Projekte\Delphi\7\jedi-api-lib\jwapi\trunk\Examples\SENS\WinLogonLogo\WinLogonLogoService.tlb (1)
@@ -47,7 +47,7 @@ const
 
   LIBID_WinLogonLogoService: TGUID = '{6C10DA55-47AC-49CA-8793-E0982A7F97D0}';
 
-  CLASS_SENSLogonProxy: TGUID = '{40AD3A04-F3F0-47C0-8688-9C3F12E2C69F}';
+  CLASS_SENSLogonProxy: TGUID = '{F83127E9-CA8B-452D-AF8C-5647ADCF7DD0}';
 type
 
 // *********************************************************************//

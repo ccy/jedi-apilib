@@ -9,7 +9,7 @@ uses
 {$R *.TLB}
 
 {$R *.RES}
-
+var B: Boolean;
 begin
   // Für Windows 2003 Server muss StartServiceCtrlDispatcher
   // CoRegisterClassObject aufgerufen werden, das von Application.Initialize
@@ -30,9 +30,14 @@ begin
   Application.CreateForm(TSENSTestService, SENSTestService);
 {$IFDEF LIVE_DEBUG}
   SENSTestService.ServiceCreate(nil);
-  SENSTestService.ServiceExecute(nil);
-  SENSTestService.ServiceShutdown(nil);
-  SENSTestService.ServiceDestroy(nil);
+  B := true;
+  SENSTestService.ServiceStart(nil, B);
+  if B then
+  begin
+    SENSTestService.ServiceExecute(nil);
+    SENSTestService.ServiceShutdown(nil);
+    SENSTestService.ServiceDestroy(nil);
+  end;  
 {$ELSE}
   Application.Run;
 {$ENDIF LIVE_DEBUG}  
