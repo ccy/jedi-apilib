@@ -1,9 +1,9 @@
 object CheckoutForm: TCheckoutForm
   Left = 0
   Top = 0
+  Width = 735
+  Height = 520
   Caption = 'CheckoutForm'
-  ClientHeight = 484
-  ClientWidth = 702
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -13,6 +13,7 @@ object CheckoutForm: TCheckoutForm
   OldCreateOrder = False
   OnActivate = FormActivate
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   PixelsPerInch = 96
   TextHeight = 13
   object Label1: TLabel
@@ -226,8 +227,8 @@ object CheckoutForm: TCheckoutForm
     ConsoleOptions = [coOwnerData, coRedirect]
     OnTerminate = JvCPReleaseJwaTerminate
     OnRead = JvCPReleaseJWARead
-    Left = 408
-    Top = 48
+    Left = 312
+    Top = 56
   end
   object JvCreateProcessJWSCL: TJvCreateProcess
     ApplicationName = 'svn.exe'
@@ -237,8 +238,8 @@ object CheckoutForm: TCheckoutForm
     ConsoleOptions = [coOwnerData, coRedirect]
     OnTerminate = JvCPReleaseJwsclTerminate
     OnRead = JvCPReleaseJwsclRead
-    Left = 408
-    Top = 264
+    Left = 328
+    Top = 288
   end
   object ActionList1: TActionList
     Left = 472
@@ -276,7 +277,7 @@ object CheckoutForm: TCheckoutForm
     ConsoleOptions = [coOwnerData, coRedirect]
     OnTerminate = JvCPRevisionJWATerminate
     OnRead = JvCPRevisionJWARead
-    Left = 408
+    Left = 312
     Top = 144
   end
   object JvCreateProcessRevisionJwscl: TJvCreateProcess
@@ -287,8 +288,8 @@ object CheckoutForm: TCheckoutForm
     ConsoleOptions = [coOwnerData, coRedirect]
     OnTerminate = JvCPRevisionJwsclTerminate
     OnRead = JvCPRevisionJwsclRead
-    Left = 408
-    Top = 376
+    Left = 328
+    Top = 368
   end
   object JvCreateProcessHistoryJWA: TJvCreateProcess
     ApplicationName = 'svn.exe'
@@ -298,8 +299,8 @@ object CheckoutForm: TCheckoutForm
     ConsoleOptions = [coOwnerData, coRedirect]
     OnTerminate = JvCPHistoryJWATerminate
     OnRead = JvCPHistoryJWARead
-    Left = 456
-    Top = 120
+    Left = 312
+    Top = 104
   end
   object JvCreateProcessHistoryJwscl: TJvCreateProcess
     ApplicationName = 'svn.exe'
@@ -309,7 +310,7 @@ object CheckoutForm: TCheckoutForm
     ConsoleOptions = [coOwnerData, coRedirect]
     OnTerminate = JvCPHistoryJwsclTerminate
     OnRead = JvCPHistoryJwsclRead
-    Left = 456
-    Top = 336
+    Left = 328
+    Top = 328
   end
 end

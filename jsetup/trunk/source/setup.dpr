@@ -1,6 +1,8 @@
+{$I jedi.inc}
 program setup;
 
 uses
+  ExceptionLog,
   Forms,
   UWelcomeForm in 'UWelcomeForm.pas' {WelcomeForm},
   USetupTypeForm in 'USetupTypeForm.pas' {SetupTypeForm},
@@ -18,7 +20,9 @@ uses
 
 begin
   Application.Initialize;
+{$IFDEF DELPHI11_UP}
   Application.MainFormOnTaskbar := True;
+{$ENDIF DELPHI11_UP}  
   Application.CreateForm(TMainForm, MainForm);
   Application.CreateForm(TDataModule1, DataModule1);
   Application.Run;

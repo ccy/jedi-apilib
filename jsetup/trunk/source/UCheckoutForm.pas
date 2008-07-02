@@ -1,11 +1,20 @@
+{$I jedi.inc}
 unit UCheckoutForm;
 
 interface
 
+
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, UPage, UProcessThread, JvComponentBase, JvCreateProcess,
-  SyncObjs, UDataModule, ActnList;
+  SyncObjsEx, UDataModule, ActnList
+{$IFDEF DELPHI7}
+  //you need an adapted version of Delphi2007 SyncObjs.pas to run in Delphi7
+  ,SyncObjs11
+{$ELSE}
+  ,SyncObjs
+{$ENDIF DELPH7}
+  ;
 
 type
   TSVNState = (ssList, ssLog);
@@ -84,6 +93,7 @@ type
     procedure ReleaseJwsclReadHistoryActionExecute(Sender: TObject);
     procedure ReleaseJwsclReadHistoryActionUpdate(Sender: TObject);
     procedure RevisionJwsclReadHistoryActionUpdate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
 
   private
     fSVNState : TSVNState;
@@ -238,8 +248,14 @@ end;
 
 procedure TCheckoutForm.UpdateActionUpdate(Sender: TObject);
 begin
-  (Sender as TAction).Enabled := ((JvCreateProcessJwa.State = psReady) and
-    (JvCreateProcessJwscl.State = psReady));
+  (Sender as TAction).Enabled :=
+   ((JvCreateProcessJwa.State = psReady) and
+    (JvCreateProcessJwscl.State = psReady) and
+    (JvCreateProcessRevisionJWA.State = psReady) and
+    (JvCreateProcessRevisionJwscl.State = psReady) and
+    (JvCreateProcessHistoryJWA.State = psReady) and
+    (JvCreateProcessHistoryJwscl.State = psReady)
+    );
 end;
 
 procedure TCheckoutForm.UpdateButtonClick(Sender: TObject);
@@ -308,7 +324,8 @@ begin
     except
     end;
 
-    FreeAndNil(fWaitMessage);
+    //FreeAndNil(fWaitMessage); //don't do this!!
+    fWaitMessage.Hide;
     Enabled := true;
   finally
     fWaitMessageCS.Leave;
@@ -361,6 +378,8 @@ begin
 
   OutputMemo.Parent := fOutputWindow;
   OutputMemo.Align := alClient;
+
+  fWaitMessageCS := TCriticalSection.Create;
 end;
 
 function TCheckoutForm.GetNextPageIndex: Integer;
@@ -370,48 +389,56 @@ begin
 end;
 
 procedure TCheckoutForm.GetVersions;
-var B : TButton;
+var
+  Button : TButton;
+
+  Entered : Boolean;
 begin
-  if (Assigned(fWaitMessageCS) and not fWaitMessageCS.TryEnter)
-    or (JvCreateProcessJwa.State <> psReady) or
+  if (JvCreateProcessJwa.State <> psReady) or
     (JvCreateProcessJwscl.State <> psReady) then
     exit;
 
-  fOutputWindow.Show;
+  try
+    fOutputWindow.Show;
 
-  fCancelStatus := False;
+    fCancelStatus := False;
 
-  fWaitMessage.Free;
-  fWaitMessageCS.Free;
+    fWaitMessage.Free;
+    
 
-  OutputMemo.Clear;
+    OutputMemo.Clear;
 
-  fWaitMessage := CreateMessageDialog('The current version information is downloaded. Please be patient...',mtInformation, [mbCancel]);
-  fWaitMessage.Parent := Self;
-  B := fWaitMessage.FindChildControl('Cancel') as TButton;
-  B.OnClick := CancelButtonClick;
+    fWaitMessage := CreateMessageDialog('The current version information is downloaded. Please be patient...',mtInformation, [mbCancel]);
+    fWaitMessage.Parent := Self;
+    Button := fWaitMessage.FindChildControl('Cancel') as TButton;
+    Button.OnClick := CancelButtonClick;
 
-  fWaitMessageCS := TCriticalSection.Create;
+    
 
-  ReleaseComboBoxJwa.Items.Clear;
-  RevisionComboBoxJWA.Items.Clear;
-  ReleaseComboBoxJwscl.Items.Clear;
-  RevisionComboBoxJwscl.Items.Clear;
+    ReleaseComboBoxJwa.Items.Clear;
+    RevisionComboBoxJWA.Items.Clear;
+    ReleaseComboBoxJwscl.Items.Clear;
+    RevisionComboBoxJwscl.Items.Clear;
 
-  JvCreateProcessJWA.CommandLine := 'svn.exe list '+JWA_BRANCHES;
-  AddOutput(JvCreateProcessJWA.CommandLine,true);
-  JvCreateProcessJWA.Run;
+    JvCreateProcessJWA.CommandLine := 'svn.exe list '+JWA_BRANCHES;
+    AddOutput(JvCreateProcessJWA.CommandLine,true);
+    JvCreateProcessJWA.Run;
 
-  JvCreateProcessJwscl.ApplicationName := 'svn.exe';
-  JvCreateProcessJwscl.CommandLine := 'svn.exe list '+JWSCL_BRANCHES;
-  AddOutput(JvCreateProcessJwscl.CommandLine,true);
+    if fCancelStatus then
+      exit;
 
-  JvCreateProcessJwscl.Run;
-  //wartet nicht, da wir hier in der VCL nicht warten dürfen!
+    JvCreateProcessJwscl.ApplicationName := 'svn.exe';
+    JvCreateProcessJwscl.CommandLine := 'svn.exe list '+JWSCL_BRANCHES;
+    AddOutput(JvCreateProcessJwscl.CommandLine,true);
+
+    JvCreateProcessJwscl.Run;
+    //wartet nicht, da wir hier in der VCL nicht warten dürfen!
 
 
-  Enabled := false;
-  fWaitMessage.Show;
+    Enabled := false;
+    fWaitMessage.Show;
+  except
+  end;
 end;
 
 procedure TCheckoutForm.JvCPReleaseJWARead(Sender: TObject; const S: string;
@@ -599,6 +626,12 @@ procedure TCheckoutForm.JvCPHistoryJWATerminate(Sender: TObject;
 begin
   //
   ShowMessage(fReadHistoryString);
+end;
+
+procedure TCheckoutForm.FormDestroy(Sender: TObject);
+begin
+  FreeAndNil(fWaitMessageCS);
+  FreeAndNil(fWaitMessage);
 end;
 
 end.
