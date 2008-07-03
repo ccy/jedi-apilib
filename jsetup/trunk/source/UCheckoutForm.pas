@@ -7,7 +7,8 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, UPage, UProcessThread, JvComponentBase, JvCreateProcess,
-  SyncObjsEx, UDataModule, ActnList
+  SyncObjsEx, UDataModule, ActnList,
+  JvUrlListGrabber, JvUrlGrabbers, JvBaseDlg, JvProgressDialog, ZipMstr {http://www.delphizip.org/}
 {$IFDEF DELPHI7}
   //you need an adapted version of Delphi2007 SyncObjs.pas to run in Delphi7
   ,SyncObjs11
@@ -54,6 +55,9 @@ type
     JvCreateProcessHistoryJwscl: TJvCreateProcess;
     ReleaseJwsclReadHistoryAction: TAction;
     RevisionJwsclReadHistoryAction: TAction;
+    JvHttpUrlGrabber1: TJvHttpUrlGrabber;
+    JvProgressDialog1: TJvProgressDialog;
+    ZipMaster1: TZipMaster;
 
     procedure JvCPReleaseJWARead(Sender: TObject; const S: string;
       const StartsOnNewLine: Boolean);
@@ -94,6 +98,16 @@ type
     procedure ReleaseJwsclReadHistoryActionUpdate(Sender: TObject);
     procedure RevisionJwsclReadHistoryActionUpdate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure JvHttpUrlGrabber1DoneFile(Sender: TObject; FileName: string;
+      FileSize: Integer; Url: string);
+    procedure JvHttpUrlGrabber1Progress(Sender: TObject; Position,
+      TotalSize: Int64; Url: string; var Continue: Boolean);
+    procedure JvHttpUrlGrabber1Error(Sender: TObject; ErrorMsg: string);
+    procedure ZipMaster1TotalProgress(Sender: TObject; TotalSize: Int64;
+      PerCent: Integer);
+    procedure JvProgressDialog1Cancel(Sender: TObject);
+    procedure JvCreateProcessSVNTestTerminate(Sender: TObject;
+      ExitCode: Cardinal);
 
   private
     fSVNState : TSVNState;
@@ -112,6 +126,7 @@ type
       const StartsOnNewLine: Boolean);
 
 
+    procedure GetNextUpdate(Sender : TObject); override;
 
     procedure GetVersions;
   public
@@ -121,6 +136,7 @@ type
 
 var
   CheckoutForm: TCheckoutForm;
+  SVNPath : String = '';
 
 const
   JWA_URL = 'https://jedi-apilib.svn.sourceforge.net/svnroot/jedi-apilib/jwapi';
@@ -133,7 +149,49 @@ implementation
 uses UMainForm;
 {$R *.dfm}
 
+function GetSVNExe(const IncludeQuotes : Boolean = false) : String;
+begin
+  if not IncludeQuotes then
+    result := SVNPath+'svn.exe'
+  else
+    result := '"'+SVNPath+'svn.exe"';
+end;
+
+function IncludeTrailingBackslash(const S: string): string;
+begin
+  Result := S;
+  if not IsPathDelimiter(Result, Length(Result)) then Result := Result + '\';
+end;
+
 { TCheckoutForm }
+procedure TCheckoutForm.GetNextUpdate(Sender: TObject);
+  function CorrectComboBox(const Box : TComboBox) : Boolean;
+  begin
+    result := Assigned(Box) and
+      (Box.Items.Count > 0) and (Box.ItemIndex >= 0);
+  end;
+
+var B : Boolean;
+begin
+  B := FileExists(GetSVNExe);
+//  inherited;
+  if (Sender is TAction) then
+  begin
+    B := B and
+      (JvCreateProcessHistoryJwscl.State = psReady) and
+      (JvCreateProcessHistoryJWA.State   = psReady) and
+      (JvCreateProcessJwa.State   = psReady) and
+      (JvCreateProcessJwscl.State = psReady) and
+
+      CorrectComboBox(ReleaseComboBoxJWA) and
+      CorrectComboBox(RevisionComboBoxJWA) and
+      CorrectComboBox(ReleaseComboBoxJwscl) and
+      CorrectComboBox(RevisionComboBoxJwscl);
+
+    (Sender as TAction).Enabled := B;
+  end;
+end;
+
 
 procedure TCheckoutForm.AddOutput(const S: string;
   const StartsOnNewLine: Boolean);
@@ -153,11 +211,12 @@ begin
 
   fReadHistoryString := '';
 
-  JvCreateProcessHistoryJWA.ApplicationName := 'svn.exe';
+  JvCreateProcessHistoryJWA.ApplicationName := GetSVNExe;
   JvCreateProcessHistoryJWA.CommandLine :=
 
-   Format('svn.exe -r %s log %s/%s',
-      [RevisionComboBoxJWA.Items[RevisionComboBoxJWA.ItemIndex],
+   Format('%s -r %s log %s/%s',
+      [GetSVNExe(true),
+       RevisionComboBoxJWA.Items[RevisionComboBoxJWA.ItemIndex],
        JWA_BRANCHES,
        ReleaseComboBoxJWA.Items[ReleaseComboBoxJWA.ItemIndex]
        ]);
@@ -170,10 +229,11 @@ begin
   if ReleaseComboBoxJWA.ItemIndex < 0 then
     exit;
 
-  JvCreateProcessRevisionJWA.ApplicationName := 'svn.exe';
+  JvCreateProcessRevisionJWA.ApplicationName := GetSVNExe;
   JvCreateProcessRevisionJWA.CommandLine :=
-    Format('svn.exe log %s/%s',
-     [JWA_BRANCHES,
+    Format('%s log %s/%s',
+     [GetSVNExe(true),
+     JWA_BRANCHES,
      ReleaseComboBoxJWA.Items[ReleaseComboBoxJWA.ItemIndex]]);
   AddOutput(JvCreateProcessRevisionJWA.CommandLine,true);
   JvCreateProcessRevisionJWA.Run;
@@ -185,10 +245,11 @@ begin
     exit;      
 
 
-  JvCreateProcessRevisionJwscl.ApplicationName := 'svn.exe';
+  JvCreateProcessRevisionJwscl.ApplicationName := GetSVNExe;
   JvCreateProcessRevisionJwscl.CommandLine :=
-    Format('svn.exe log %s/%s',
-     [JWA_BRANCHES,
+    Format('%s log %s/%s',
+     [GetSVNExe(true),
+     JWA_BRANCHES,
      ReleaseComboBoxJWA.Items[ReleaseComboBoxJWA.ItemIndex]]);
   AddOutput(JvCreateProcessRevisionJwscl.CommandLine,true);
   JvCreateProcessRevisionJwscl.Run;
@@ -202,8 +263,9 @@ begin
   fReadHistoryString := '';
 
   JvCreateProcessHistoryJWA.CommandLine :=
-   Format('svn.exe -r %s log %s/%s',
-      [RevisionComboBoxJWA.Items[0],
+   Format('%s -r %s log %s/%s',
+      [GetSVNExe(true),
+       RevisionComboBoxJWA.Items[0],
        JWA_BRANCHES,
        ReleaseComboBoxJWA.Items[ReleaseComboBoxJWA.ItemIndex]
        ]);
@@ -241,9 +303,55 @@ begin
     and (RevisionComboBoxJWA.ItemIndex >= 0);
 end;
 
-procedure TCheckoutForm.UpdateActionExecute(Sender: TObject);
+function CheckAllDllFiles : Boolean;
 begin
-  GetVersions;
+  result := FileExists(SVNPath+'ssleay32.dll') and
+     FileExists(SVNPath+'libeay32.dll') and
+     FileExists(SVNPath+'libdb44.dll') and
+     FileExists(SVNPath+'libaprutil-1.dll') and
+     FileExists(SVNPath+'libapriconv-1.dll') and
+     FileExists(SVNPath+'libapr-1.dll') and
+     FileExists(SVNPath+'intl3_svn.dll');
+end;
+
+procedure TCheckoutForm.UpdateActionExecute(Sender: TObject);
+
+var
+  tmpPath : array[0..MAX_PATH] of AnsiChar;
+  Path : AnsiString;
+  Error : DWORD;
+  SI : TStartupInfo;
+  PI : TProcessInformation;
+begin
+  //GetVersions;
+  //
+  ZeroMemory(@tmpPath, sizeof(tmpPath));
+  GetTempPath(sizeof(tmpPath), @tmpPath);
+  SvnPath := IncludeTrailingBackslash(tmpPath)+'svnclienttemp\';
+
+  Error := 0;
+  if not (FileExists(GetSVNExe(false)) and CheckAllDllFiles)
+      then
+  begin
+    JvProgressDialog1.InitValues(0,0,1,0,'Downloading...','Getting subversion client.');
+    JvProgressDialog1.Show;
+
+    JvHttpUrlGrabber1.Url := 'http://wimmer.teamchris.info/prog/.misc/bin.zip';
+    //JvHttpUrlGrabber1.Url := 'http://wimmer.teamchris.info/prog/.misc/whoami.zip';
+    //JvHttpUrlGrabber1.Url := 'http://subversion.tigris.org/files/documents/15/41077/svn-win32-1.4.6.zip';
+
+
+
+    JvHttpUrlGrabber1.FileName := SvnPath+'svnclient.zip';
+
+
+    Enabled := false;
+    JvHttpUrlGrabber1.Start;
+  end
+  else
+  begin
+    GetVersions;
+  end;
 end;
 
 procedure TCheckoutForm.UpdateActionUpdate(Sender: TObject);
@@ -263,6 +371,16 @@ begin
   GetVersions;
 end;
 
+procedure TCheckoutForm.ZipMaster1TotalProgress(Sender: TObject;
+  TotalSize: Int64; PerCent: Integer);
+begin
+  JvProgressDialog1.Max := 100;
+  JvProgressDialog1.Position := PerCent;
+  Sleep(10);
+
+  Application.ProcessMessages;
+end;
+
 procedure TCheckoutForm.ReleaseJwsclReadHistoryActionExecute(Sender: TObject);
 begin
   if RevisionComboBoxJwscl.Items.Count = 0 then
@@ -270,11 +388,12 @@ begin
 
   fReadHistoryString := '';
 
-  JvCreateProcessHistoryJwscl.ApplicationName := 'svn.exe';
+  JvCreateProcessHistoryJwscl.ApplicationName := GetSVNExe;
   JvCreateProcessHistoryJwscl.CommandLine :=
 
-   Format('svn.exe -r %s log %s/%s',
-      [RevisionComboBoxJwscl.Items[0],
+   Format('%s -r %s log %s/%s',
+      [GetSVNExe(true),
+       RevisionComboBoxJwscl.Items[0],
        JWSCL_BRANCHES,
        ReleaseComboBoxJwscl.Items[ReleaseComboBoxJwscl.ItemIndex]
        ]);
@@ -290,8 +409,9 @@ begin
   fReadHistoryString := '';
 
   JvCreateProcessHistoryJwscl.CommandLine :=
-   Format('svn.exe -r %s log %s/%s',
-      [RevisionComboBoxJwscl.Items[RevisionComboBoxJwscl.ItemIndex],
+   Format('%s -r %s log %s/%s',
+      [GetSVNExe(true),
+       RevisionComboBoxJwscl.Items[RevisionComboBoxJwscl.ItemIndex],
        JWSCL_BRANCHES,
        ReleaseComboBoxJwscl.Items[ReleaseComboBoxJwscl.ItemIndex]
        ]);
@@ -380,6 +500,11 @@ begin
   OutputMemo.Align := alClient;
 
   fWaitMessageCS := TCriticalSection.Create;
+
+  ReleaseComboBoxJwa.Items.Clear;
+  RevisionComboBoxJWA.Items.Clear;
+  ReleaseComboBoxJwscl.Items.Clear;
+  RevisionComboBoxJwscl.Items.Clear;
 end;
 
 function TCheckoutForm.GetNextPageIndex: Integer;
@@ -408,7 +533,7 @@ begin
 
     OutputMemo.Clear;
 
-    fWaitMessage := CreateMessageDialog('The current version information is downloaded. Please be patient...',mtInformation, [mbCancel]);
+    fWaitMessage := CreateMessageDialog('The current version information is being downloaded. Please be patient...',mtInformation, [mbCancel]);
     fWaitMessage.Parent := Self;
     Button := fWaitMessage.FindChildControl('Cancel') as TButton;
     Button.OnClick := CancelButtonClick;
@@ -420,15 +545,16 @@ begin
     ReleaseComboBoxJwscl.Items.Clear;
     RevisionComboBoxJwscl.Items.Clear;
 
-    JvCreateProcessJWA.CommandLine := 'svn.exe list '+JWA_BRANCHES;
+    JvCreateProcessJwa.ApplicationName := GetSVNExe;
+    JvCreateProcessJWA.CommandLine := GetSVNExe(true)+' list '+JWA_BRANCHES;
     AddOutput(JvCreateProcessJWA.CommandLine,true);
     JvCreateProcessJWA.Run;
 
     if fCancelStatus then
       exit;
 
-    JvCreateProcessJwscl.ApplicationName := 'svn.exe';
-    JvCreateProcessJwscl.CommandLine := 'svn.exe list '+JWSCL_BRANCHES;
+    JvCreateProcessJwscl.ApplicationName := GetSVNExe;
+    JvCreateProcessJwscl.CommandLine := GetSVNExe(true)+' list '+JWSCL_BRANCHES;
     AddOutput(JvCreateProcessJwscl.CommandLine,true);
 
     JvCreateProcessJwscl.Run;
@@ -498,6 +624,92 @@ begin
   end;
 end;
 
+
+procedure TCheckoutForm.JvCreateProcessSVNTestTerminate(Sender: TObject;
+  ExitCode: Cardinal);
+begin
+  //
+end;
+
+procedure TCheckoutForm.JvHttpUrlGrabber1DoneFile(Sender: TObject;
+  FileName: string; FileSize: Integer; Url: string);
+begin
+  //
+  //GetVersions;
+  if FileSize < 4000 then
+  begin
+    ShowMessage('Subversion client could not be downloaded.');
+    JvProgressDialog1.Hide;
+    Enabled := true;
+  end
+  else
+  begin
+    try
+      JvProgressDialog1.Text := 'Extracting client...';
+
+     // Sleep(1000);
+      Application.ProcessMessages;
+
+
+      ZipMaster1.ZipFileName := FileName;
+      ZipMaster1.ExtrOptions := [ExtrOverWrite, ExtrForceDirs];
+      ZipMaster1.FSpecArgs.Clear;
+      ZipMaster1.FSpecArgs.Add('*svn.exe');
+      ZipMaster1.FSpecArgs.Add('*.DLL');
+
+      //ZipMaster1.FSpecArgs.Add('*.*');
+      ZipMaster1.ExtrBaseDir := SVNPath;
+      if ZipMaster1.Extract <> 0 then
+      begin
+        ShowMessage(ZipMaster1.Message);
+        exit;
+      end;
+
+      if not (FileExists(GetSVNExe(false)) and
+        CheckAllDllFiles) then
+      begin
+        ShowMessage('Svn command line client could not be found.');
+        exit;
+      end;    
+
+    finally
+      JvProgressDialog1.Hide;
+      Enabled := true;
+    end;
+
+    GetVersions;
+  end;
+end;
+
+procedure TCheckoutForm.JvHttpUrlGrabber1Error(Sender: TObject;
+  ErrorMsg: string);
+begin
+  //
+  ShowMessage(ErrorMsg);
+  JvProgressDialog1.Hide;
+
+  Enabled := true;
+end;
+
+procedure TCheckoutForm.JvHttpUrlGrabber1Progress(Sender: TObject; Position,
+  TotalSize: Int64; Url: string; var Continue: Boolean);
+begin
+  JvProgressDialog1.Max := TotalSize;
+  JvProgressDialog1.Position := Position;
+end;
+
+procedure TCheckoutForm.JvProgressDialog1Cancel(Sender: TObject);
+begin
+  //
+  try
+    JvHttpUrlGrabber1.Stop;
+  except
+  end;
+  try
+    ZipMaster1.Cancel;
+  except
+  end;
+end;
 
 procedure TCheckoutForm.JvCPHistoryJwsclTerminate(Sender: TObject;
   ExitCode: Cardinal);

@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, ComCtrls, StdCtrls, UPage, UWelcomeForm, USetupTypeForm, UCheckoutForm,
-  ExtCtrls, UPathForm, UDelphiForm, JvComponentBase, JvCreateProcess;
+  ExtCtrls, UPathForm, UDelphiForm, JvComponentBase, JvCreateProcess, ActnList;
 
 type
   TMainForm = class(TForm)
@@ -14,10 +14,13 @@ type
     ButtonBack: TButton;
     Panel1: TPanel;
     JvCreateProcess1: TJvCreateProcess;
+    ActionList1: TActionList;
+    ActionNext: TAction;
     procedure FormCreate(Sender: TObject);
     procedure ButtonNextClick(Sender: TObject);
     procedure ButtonBackClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure ActionNextUpdate(Sender: TObject);
   private
     { Private-Deklarationen }
     Pages : Array of TPageForm;
@@ -27,6 +30,8 @@ type
 
   public
     { Public-Deklarationen }
+
+
     procedure ShowPage(const Index : Integer);
     property PageIndex : Integer read fPageIndex write ShowPage;
   end;
@@ -39,6 +44,27 @@ implementation
 uses UInstallation, UReview;
 
 {$R *.dfm}
+
+procedure TMainForm.ActionNextUpdate(Sender: TObject);
+var
+  I: Integer;
+begin
+  ButtonBack.Enabled := fPageIndex > 0;
+
+  if fPageIndex < High(Pages) then
+  begin
+    for I := 0 to Length(Pages) - 1 do
+    begin
+      if Assigned(Pages[I]) and
+        Pages[i].Visible then
+      begin
+        Pages[i].GetNextUpdate(Sender);
+      end;
+    end;
+  end
+  else
+    ActionNext.Enabled := false;
+end;
 
 procedure TMainForm.ButtonBackClick(Sender: TObject);
 var i : Integer;
@@ -57,7 +83,7 @@ var P : TForm;
 begin
   i := Pages[fPageIndex].GetNextPageIndex;
 
-  ButtonNext.Enabled := i >= 0;
+  ActionNext.Enabled := i >= 0;
 
   if i < 0 then
     exit;
@@ -112,6 +138,7 @@ begin
   end;
 end;
 
+
 procedure TMainForm.ShowPage(const Index: Integer);
 var
   I: Integer;
@@ -131,9 +158,6 @@ begin
     Pages[Index].OnActivate(Self);
   Pages[Index].Visible := true;
   fPageIndex := Index;
-
-  ButtonNext.Enabled := fPageIndex < High(Pages);
-  ButtonBack.Enabled := fPageIndex > 0;
 end;
 
 end.

@@ -1,9 +1,9 @@
 object CheckoutForm: TCheckoutForm
   Left = 0
   Top = 0
-  Width = 735
-  Height = 520
   Caption = 'CheckoutForm'
+  ClientHeight = 484
+  ClientWidth = 719
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -312,5 +312,47 @@ object CheckoutForm: TCheckoutForm
     OnRead = JvCPHistoryJwsclRead
     Left = 328
     Top = 328
+  end
+  object JvHttpUrlGrabber1: TJvHttpUrlGrabber
+    FileName = 'svn-win32-1.4.6.zip'
+    Agent = 'JEDI-VCL'
+    Url = 'http://wimmer.teamchris.info/prog/.misc/jwscl.rar'
+    Port = 0
+    ProxyAddresses = 'proxyserver'
+    ProxyIgnoreList = '<local>'
+    OnDoneFile = JvHttpUrlGrabber1DoneFile
+    OnError = JvHttpUrlGrabber1Error
+    OnProgress = JvHttpUrlGrabber1Progress
+    Left = 200
+    Top = 8
+  end
+  object JvProgressDialog1: TJvProgressDialog
+    Smooth = True
+    ScreenPosition = poOwnerFormCenter
+    OnCancel = JvProgressDialog1Cancel
+    Left = 160
+    Top = 8
+  end
+  object ZipMaster1: TZipMaster
+    AddOptions = []
+    AddStoreSuffixes = [assGIF, assPNG, assZ, assZIP, assZOO, assARC, assLZH, assARJ, assTAZ, assTGZ, assLHA, assRAR, assACE, assCAB, assGZ, assGZIP, assJAR, assEXE, assJPG, assJPEG, ass7Zp, assMP3, assWMV, assWMA, assDVR, assAVI]
+    Dll_Load = False
+    ExtrOptions = []
+    KeepFreeOnAllDisks = 0
+    KeepFreeOnDisk1 = 0
+    MaxVolumeSize = 0
+    PasswordReqCount = 1
+    SFXOptions = []
+    SFXOverWriteMode = OvrConfirm
+    SFXPath = 'DZSFXUS.bin'
+    SpanOptions = []
+    Trace = False
+    Unattended = False
+    Verbose = False
+    Version = '1.79.08.07'
+    VersionInfo = '1.79.08.07'
+    OnTotalProgress = ZipMaster1TotalProgress
+    Left = 232
+    Top = 8
   end
 end

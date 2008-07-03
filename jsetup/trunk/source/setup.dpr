@@ -2,7 +2,6 @@
 program setup;
 
 uses
-  ExceptionLog,
   Forms,
   UWelcomeForm in 'UWelcomeForm.pas' {WelcomeForm},
   USetupTypeForm in 'USetupTypeForm.pas' {SetupTypeForm},

@@ -30,9 +30,8 @@ object MainForm: TMainForm
     Top = 527
     Width = 100
     Height = 25
-    Caption = 'Next'
+    Action = ActionNext
     TabOrder = 1
-    OnClick = ButtonNextClick
   end
   object ButtonBack: TButton
     Left = 452
@@ -54,5 +53,14 @@ object MainForm: TMainForm
   object JvCreateProcess1: TJvCreateProcess
     Left = 64
     Top = 32
+  end
+  object ActionList1: TActionList
+    Left = 112
+    Top = 24
+    object ActionNext: TAction
+      Caption = 'Next'
+      OnExecute = ButtonNextClick
+      OnUpdate = ActionNextUpdate
+    end
   end
 end
