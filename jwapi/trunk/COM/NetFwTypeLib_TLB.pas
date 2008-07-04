@@ -12,15 +12,15 @@ unit NetFwTypeLib_TLB;
 // ************************************************************************ //
 
 // $Rev: 8291 $
-// File generated on 04.07.2008 14:25:42 from Type Library described below.
+// File generated on 04.07.2008 19:32:40 from Type Library described below.
 
 // ************************************************************************  //
-// Type Lib: C:\Windows\system32\FirewallAPI.dll (1)
-// LIBID: {58FBCF7C-E7A9-467C-80B3-FC65E8FCCA08}
+// Type Lib: netfw.tlb (1)
+// LIBID: {DB4F3345-3EF8-45ED-B976-25A6D3B81B71}
 // LCID: 0
 // Helpfile: 
 // HelpString: 
-// DepndLst: 
+// DepndLst:
 //   (1) v2.0 stdole, (C:\Windows\system32\stdole2.tlb)
 // Errors:
 //   Hint: Symbol 'Type' renamed to 'type_'
@@ -28,6 +28,11 @@ unit NetFwTypeLib_TLB;
 //   Hint: Symbol 'Type' renamed to 'type_'
 //   Hint: Parameter 'Type' of INetFwProfile.Type changed to 'Type_'
 //   Hint: Parameter 'Type' of INetFwMgr.IsIcmpTypeAllowed changed to 'Type_'
+//   Error creating palette bitmap of (TNetFwRule) : Server C:\Windows\system32\FirewallAPI.dll contains no icons
+//   Error creating palette bitmap of (TNetFwOpenPort) : Server C:\Windows\system32\FirewallAPI.dll contains no icons
+//   Error creating palette bitmap of (TNetFwAuthorizedApplication) : Server C:\Windows\system32\FirewallAPI.dll contains no icons
+//   Error creating palette bitmap of (TNetFwPolicy2) : Server C:\Windows\system32\FirewallAPI.dll contains no icons
+//   Error creating palette bitmap of (TNetFwMgr) : Server C:\Windows\system32\FirewallAPI.dll contains no icons
 // ************************************************************************ //
 // *************************************************************************//
 // NOTE:                                                                      
@@ -45,7 +50,7 @@ unit NetFwTypeLib_TLB;
 {$VARPROPSETTER ON}
 interface
 
-uses Windows, ActiveX, Classes, Graphics, StdVCL, Variants;
+uses Windows, ActiveX, Classes, Graphics, OleServer, StdVCL, Variants;
   
 
 // *********************************************************************//
@@ -57,10 +62,10 @@ uses Windows, ActiveX, Classes, Graphics, StdVCL, Variants;
 // *********************************************************************//
 const
   // TypeLibrary Major and minor versions
-  NetFwTypeLibMajorVersion = 1;
-  NetFwTypeLibMinorVersion = 0;
+  NetFwPublicTypeLibMajorVersion = 1;
+  NetFwPublicTypeLibMinorVersion = 0;
 
-  LIBID_NetFwTypeLib: TGUID = '{58FBCF7C-E7A9-467C-80B3-FC65E8FCCA08}';
+  LIBID_NetFwPublicTypeLib: TGUID = '{DB4F3345-3EF8-45ED-B976-25A6D3B81B71}';
 
   IID_INetFwRemoteAdminSettings: TGUID = '{D4BECDDF-6F73-4A83-B832-9C66874CD20E}';
   IID_INetFwIcmpSettings: TGUID = '{A6207B2E-7CDD-426A-951E-5E1CBC5AFEAD}';
@@ -77,6 +82,11 @@ const
   IID_INetFwPolicy: TGUID = '{D46D2478-9AC9-4008-9DC7-5563CE5536CC}';
   IID_INetFwPolicy2: TGUID = '{98325047-C671-4174-8D81-DEFCD3F03186}';
   IID_INetFwMgr: TGUID = '{F7898AF5-CAC4-4632-A2EC-DA06E5111AF2}';
+  CLASS_NetFwRule: TGUID = '{2C5BC43E-3369-4C33-AB0C-BE9469677AF4}';
+  CLASS_NetFwOpenPort: TGUID = '{0CA545C6-37AD-4A6C-BF92-9F7610067EF5}';
+  CLASS_NetFwAuthorizedApplication: TGUID = '{EC9846B3-2762-4A6B-A214-6ACB603462D2}';
+  CLASS_NetFwPolicy2: TGUID = '{E2B3C97F-6AE1-41AC-817A-F6F92166D7DD}';
+  CLASS_NetFwMgr: TGUID = '{304CE942-6E39-40D8-943A-B913C40C9CD4}';
 
 // *********************************************************************//
 // Declaration of Enumerations defined in Type Library                    
@@ -194,6 +204,17 @@ type
   INetFwPolicy2Disp = dispinterface;
   INetFwMgr = interface;
   INetFwMgrDisp = dispinterface;
+
+// *********************************************************************//
+// Declaration of CoClasses defined in Type Library                       
+// (NOTE: Here we map each CoClass to its Default Interface)              
+// *********************************************************************//
+  NetFwRule = INetFwRule;
+  NetFwOpenPort = INetFwOpenPort;
+  NetFwAuthorizedApplication = INetFwAuthorizedApplication;
+  NetFwPolicy2 = INetFwPolicy2;
+  NetFwMgr = INetFwMgr;
+
 
 // *********************************************************************//
 // Interface: INetFwRemoteAdminSettings
@@ -840,8 +861,2172 @@ type
                                 Type_: Byte; out allowed: OleVariant; out restricted: OleVariant); dispid 5;
   end;
 
+// *********************************************************************//
+// The Class CoNetFwRule provides a Create and CreateRemote method to          
+// create instances of the default interface INetFwRule exposed by              
+// the CoClass NetFwRule. The functions are intended to be used by             
+// clients wishing to automate the CoClass objects exposed by the         
+// server of this typelibrary.                                            
+// *********************************************************************//
+  CoNetFwRule = class
+    class function Create: INetFwRule;
+    class function CreateRemote(const MachineName: string): INetFwRule;
+  end;
+
+
+// *********************************************************************//
+// OLE Server Proxy class declaration
+// Server Object    : TNetFwRule
+// Help String      : 
+// Default Interface: INetFwRule
+// Def. Intf. DISP? : No
+// Event   Interface: 
+// TypeFlags        : (2) CanCreate
+// *********************************************************************//
+{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
+  TNetFwRuleProperties= class;
+{$ENDIF}
+  TNetFwRule = class(TOleServer)
+  private
+    FIntf: INetFwRule;
+{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
+    FProps: TNetFwRuleProperties;
+    function GetServerProperties: TNetFwRuleProperties;
+{$ENDIF}
+    function GetDefaultInterface: INetFwRule;
+  protected
+    procedure InitServerData; override;
+    function Get_Name: WideString;
+    procedure Set_Name(const Name: WideString);
+    function Get_Description: WideString;
+    procedure Set_Description(const desc: WideString);
+    function Get_ApplicationName: WideString;
+    procedure Set_ApplicationName(const imageFileName: WideString);
+    function Get_serviceName: WideString;
+    procedure Set_serviceName(const serviceName: WideString);
+    function Get_Protocol: Integer;
+    procedure Set_Protocol(Protocol: Integer);
+    function Get_LocalPorts: WideString;
+    procedure Set_LocalPorts(const portNumbers: WideString);
+    function Get_RemotePorts: WideString;
+    procedure Set_RemotePorts(const portNumbers: WideString);
+    function Get_LocalAddresses: WideString;
+    procedure Set_LocalAddresses(const localAddrs: WideString);
+    function Get_RemoteAddresses: WideString;
+    procedure Set_RemoteAddresses(const remoteAddrs: WideString);
+    function Get_IcmpTypesAndCodes: WideString;
+    procedure Set_IcmpTypesAndCodes(const IcmpTypesAndCodes: WideString);
+    function Get_Direction: NET_FW_RULE_DIRECTION_;
+    procedure Set_Direction(dir: NET_FW_RULE_DIRECTION_);
+    function Get_Interfaces: OleVariant;
+    procedure Set_Interfaces(Interfaces: OleVariant);
+    function Get_InterfaceTypes: WideString;
+    procedure Set_InterfaceTypes(const InterfaceTypes: WideString);
+    function Get_Enabled: WordBool;
+    procedure Set_Enabled(Enabled: WordBool);
+    function Get_Grouping: WideString;
+    procedure Set_Grouping(const context: WideString);
+    function Get_Profiles: Integer;
+    procedure Set_Profiles(profileTypesBitmask: Integer);
+    function Get_EdgeTraversal: WordBool;
+    procedure Set_EdgeTraversal(Enabled: WordBool);
+    function Get_Action: NET_FW_ACTION_;
+    procedure Set_Action(Action: NET_FW_ACTION_);
+  public
+    constructor Create(AOwner: TComponent); override;
+    destructor  Destroy; override;
+    procedure Connect; override;
+    procedure ConnectTo(svrIntf: INetFwRule);
+    procedure Disconnect; override;
+    property DefaultInterface: INetFwRule read GetDefaultInterface;
+    property Interfaces: OleVariant read Get_Interfaces write Set_Interfaces;
+    property Name: WideString read Get_Name write Set_Name;
+    property Description: WideString read Get_Description write Set_Description;
+    property ApplicationName: WideString read Get_ApplicationName write Set_ApplicationName;
+    property serviceName: WideString read Get_serviceName write Set_serviceName;
+    property Protocol: Integer read Get_Protocol write Set_Protocol;
+    property LocalPorts: WideString read Get_LocalPorts write Set_LocalPorts;
+    property RemotePorts: WideString read Get_RemotePorts write Set_RemotePorts;
+    property LocalAddresses: WideString read Get_LocalAddresses write Set_LocalAddresses;
+    property RemoteAddresses: WideString read Get_RemoteAddresses write Set_RemoteAddresses;
+    property IcmpTypesAndCodes: WideString read Get_IcmpTypesAndCodes write Set_IcmpTypesAndCodes;
+    property Direction: NET_FW_RULE_DIRECTION_ read Get_Direction write Set_Direction;
+    property InterfaceTypes: WideString read Get_InterfaceTypes write Set_InterfaceTypes;
+    property Enabled: WordBool read Get_Enabled write Set_Enabled;
+    property Grouping: WideString read Get_Grouping write Set_Grouping;
+    property Profiles: Integer read Get_Profiles write Set_Profiles;
+    property EdgeTraversal: WordBool read Get_EdgeTraversal write Set_EdgeTraversal;
+    property Action: NET_FW_ACTION_ read Get_Action write Set_Action;
+  published
+{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
+    property Server: TNetFwRuleProperties read GetServerProperties;
+{$ENDIF}
+  end;
+
+{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
+// *********************************************************************//
+// OLE Server Properties Proxy Class
+// Server Object    : TNetFwRule
+// (This object is used by the IDE's Property Inspector to allow editing
+//  of the properties of this server)
+// *********************************************************************//
+ TNetFwRuleProperties = class(TPersistent)
+  private
+    FServer:    TNetFwRule;
+    function    GetDefaultInterface: INetFwRule;
+    constructor Create(AServer: TNetFwRule);
+  protected
+    function Get_Name: WideString;
+    procedure Set_Name(const Name: WideString);
+    function Get_Description: WideString;
+    procedure Set_Description(const desc: WideString);
+    function Get_ApplicationName: WideString;
+    procedure Set_ApplicationName(const imageFileName: WideString);
+    function Get_serviceName: WideString;
+    procedure Set_serviceName(const serviceName: WideString);
+    function Get_Protocol: Integer;
+    procedure Set_Protocol(Protocol: Integer);
+    function Get_LocalPorts: WideString;
+    procedure Set_LocalPorts(const portNumbers: WideString);
+    function Get_RemotePorts: WideString;
+    procedure Set_RemotePorts(const portNumbers: WideString);
+    function Get_LocalAddresses: WideString;
+    procedure Set_LocalAddresses(const localAddrs: WideString);
+    function Get_RemoteAddresses: WideString;
+    procedure Set_RemoteAddresses(const remoteAddrs: WideString);
+    function Get_IcmpTypesAndCodes: WideString;
+    procedure Set_IcmpTypesAndCodes(const IcmpTypesAndCodes: WideString);
+    function Get_Direction: NET_FW_RULE_DIRECTION_;
+    procedure Set_Direction(dir: NET_FW_RULE_DIRECTION_);
+    function Get_Interfaces: OleVariant;
+    procedure Set_Interfaces(Interfaces: OleVariant);
+    function Get_InterfaceTypes: WideString;
+    procedure Set_InterfaceTypes(const InterfaceTypes: WideString);
+    function Get_Enabled: WordBool;
+    procedure Set_Enabled(Enabled: WordBool);
+    function Get_Grouping: WideString;
+    procedure Set_Grouping(const context: WideString);
+    function Get_Profiles: Integer;
+    procedure Set_Profiles(profileTypesBitmask: Integer);
+    function Get_EdgeTraversal: WordBool;
+    procedure Set_EdgeTraversal(Enabled: WordBool);
+    function Get_Action: NET_FW_ACTION_;
+    procedure Set_Action(Action: NET_FW_ACTION_);
+  public
+    property DefaultInterface: INetFwRule read GetDefaultInterface;
+  published
+    property Name: WideString read Get_Name write Set_Name;
+    property Description: WideString read Get_Description write Set_Description;
+    property ApplicationName: WideString read Get_ApplicationName write Set_ApplicationName;
+    property serviceName: WideString read Get_serviceName write Set_serviceName;
+    property Protocol: Integer read Get_Protocol write Set_Protocol;
+    property LocalPorts: WideString read Get_LocalPorts write Set_LocalPorts;
+    property RemotePorts: WideString read Get_RemotePorts write Set_RemotePorts;
+    property LocalAddresses: WideString read Get_LocalAddresses write Set_LocalAddresses;
+    property RemoteAddresses: WideString read Get_RemoteAddresses write Set_RemoteAddresses;
+    property IcmpTypesAndCodes: WideString read Get_IcmpTypesAndCodes write Set_IcmpTypesAndCodes;
+    property Direction: NET_FW_RULE_DIRECTION_ read Get_Direction write Set_Direction;
+    property InterfaceTypes: WideString read Get_InterfaceTypes write Set_InterfaceTypes;
+    property Enabled: WordBool read Get_Enabled write Set_Enabled;
+    property Grouping: WideString read Get_Grouping write Set_Grouping;
+    property Profiles: Integer read Get_Profiles write Set_Profiles;
+    property EdgeTraversal: WordBool read Get_EdgeTraversal write Set_EdgeTraversal;
+    property Action: NET_FW_ACTION_ read Get_Action write Set_Action;
+  end;
+{$ENDIF}
+
+
+// *********************************************************************//
+// The Class CoNetFwOpenPort provides a Create and CreateRemote method to          
+// create instances of the default interface INetFwOpenPort exposed by              
+// the CoClass NetFwOpenPort. The functions are intended to be used by             
+// clients wishing to automate the CoClass objects exposed by the         
+// server of this typelibrary.                                            
+// *********************************************************************//
+  CoNetFwOpenPort = class
+    class function Create: INetFwOpenPort;
+    class function CreateRemote(const MachineName: string): INetFwOpenPort;
+  end;
+
+
+// *********************************************************************//
+// OLE Server Proxy class declaration
+// Server Object    : TNetFwOpenPort
+// Help String      : 
+// Default Interface: INetFwOpenPort
+// Def. Intf. DISP? : No
+// Event   Interface: 
+// TypeFlags        : (2) CanCreate
+// *********************************************************************//
+{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
+  TNetFwOpenPortProperties= class;
+{$ENDIF}
+  TNetFwOpenPort = class(TOleServer)
+  private
+    FIntf: INetFwOpenPort;
+{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
+    FProps: TNetFwOpenPortProperties;
+    function GetServerProperties: TNetFwOpenPortProperties;
+{$ENDIF}
+    function GetDefaultInterface: INetFwOpenPort;
+  protected
+    procedure InitServerData; override;
+    function Get_Name: WideString;
+    procedure Set_Name(const Name: WideString);
+    function Get_IpVersion: NET_FW_IP_VERSION_;
+    procedure Set_IpVersion(IpVersion: NET_FW_IP_VERSION_);
+    function Get_Protocol: NET_FW_IP_PROTOCOL_;
+    procedure Set_Protocol(ipProtocol: NET_FW_IP_PROTOCOL_);
+    function Get_Port: Integer;
+    procedure Set_Port(portNumber: Integer);
+    function Get_Scope: NET_FW_SCOPE_;
+    procedure Set_Scope(Scope: NET_FW_SCOPE_);
+    function Get_RemoteAddresses: WideString;
+    procedure Set_RemoteAddresses(const remoteAddrs: WideString);
+    function Get_Enabled: WordBool;
+    procedure Set_Enabled(Enabled: WordBool);
+    function Get_BuiltIn: WordBool;
+  public
+    constructor Create(AOwner: TComponent); override;
+    destructor  Destroy; override;
+    procedure Connect; override;
+    procedure ConnectTo(svrIntf: INetFwOpenPort);
+    procedure Disconnect; override;
+    property DefaultInterface: INetFwOpenPort read GetDefaultInterface;
+    property BuiltIn: WordBool read Get_BuiltIn;
+    property Name: WideString read Get_Name write Set_Name;
+    property IpVersion: NET_FW_IP_VERSION_ read Get_IpVersion write Set_IpVersion;
+    property Protocol: NET_FW_IP_PROTOCOL_ read Get_Protocol write Set_Protocol;
+    property Port: Integer read Get_Port write Set_Port;
+    property Scope: NET_FW_SCOPE_ read Get_Scope write Set_Scope;
+    property RemoteAddresses: WideString read Get_RemoteAddresses write Set_RemoteAddresses;
+    property Enabled: WordBool read Get_Enabled write Set_Enabled;
+  published
+{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
+    property Server: TNetFwOpenPortProperties read GetServerProperties;
+{$ENDIF}
+  end;
+
+{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
+// *********************************************************************//
+// OLE Server Properties Proxy Class
+// Server Object    : TNetFwOpenPort
+// (This object is used by the IDE's Property Inspector to allow editing
+//  of the properties of this server)
+// *********************************************************************//
+ TNetFwOpenPortProperties = class(TPersistent)
+  private
+    FServer:    TNetFwOpenPort;
+    function    GetDefaultInterface: INetFwOpenPort;
+    constructor Create(AServer: TNetFwOpenPort);
+  protected
+    function Get_Name: WideString;
+    procedure Set_Name(const Name: WideString);
+    function Get_IpVersion: NET_FW_IP_VERSION_;
+    procedure Set_IpVersion(IpVersion: NET_FW_IP_VERSION_);
+    function Get_Protocol: NET_FW_IP_PROTOCOL_;
+    procedure Set_Protocol(ipProtocol: NET_FW_IP_PROTOCOL_);
+    function Get_Port: Integer;
+    procedure Set_Port(portNumber: Integer);
+    function Get_Scope: NET_FW_SCOPE_;
+    procedure Set_Scope(Scope: NET_FW_SCOPE_);
+    function Get_RemoteAddresses: WideString;
+    procedure Set_RemoteAddresses(const remoteAddrs: WideString);
+    function Get_Enabled: WordBool;
+    procedure Set_Enabled(Enabled: WordBool);
+    function Get_BuiltIn: WordBool;
+  public
+    property DefaultInterface: INetFwOpenPort read GetDefaultInterface;
+  published
+    property Name: WideString read Get_Name write Set_Name;
+    property IpVersion: NET_FW_IP_VERSION_ read Get_IpVersion write Set_IpVersion;
+    property Protocol: NET_FW_IP_PROTOCOL_ read Get_Protocol write Set_Protocol;
+    property Port: Integer read Get_Port write Set_Port;
+    property Scope: NET_FW_SCOPE_ read Get_Scope write Set_Scope;
+    property RemoteAddresses: WideString read Get_RemoteAddresses write Set_RemoteAddresses;
+    property Enabled: WordBool read Get_Enabled write Set_Enabled;
+  end;
+{$ENDIF}
+
+
+// *********************************************************************//
+// The Class CoNetFwAuthorizedApplication provides a Create and CreateRemote method to          
+// create instances of the default interface INetFwAuthorizedApplication exposed by              
+// the CoClass NetFwAuthorizedApplication. The functions are intended to be used by             
+// clients wishing to automate the CoClass objects exposed by the         
+// server of this typelibrary.                                            
+// *********************************************************************//
+  CoNetFwAuthorizedApplication = class
+    class function Create: INetFwAuthorizedApplication;
+    class function CreateRemote(const MachineName: string): INetFwAuthorizedApplication;
+  end;
+
+
+// *********************************************************************//
+// OLE Server Proxy class declaration
+// Server Object    : TNetFwAuthorizedApplication
+// Help String      : 
+// Default Interface: INetFwAuthorizedApplication
+// Def. Intf. DISP? : No
+// Event   Interface: 
+// TypeFlags        : (2) CanCreate
+// *********************************************************************//
+{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
+  TNetFwAuthorizedApplicationProperties= class;
+{$ENDIF}
+  TNetFwAuthorizedApplication = class(TOleServer)
+  private
+    FIntf: INetFwAuthorizedApplication;
+{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
+    FProps: TNetFwAuthorizedApplicationProperties;
+    function GetServerProperties: TNetFwAuthorizedApplicationProperties;
+{$ENDIF}
+    function GetDefaultInterface: INetFwAuthorizedApplication;
+  protected
+    procedure InitServerData; override;
+    function Get_Name: WideString;
+    procedure Set_Name(const Name: WideString);
+    function Get_ProcessImageFileName: WideString;
+    procedure Set_ProcessImageFileName(const imageFileName: WideString);
+    function Get_IpVersion: NET_FW_IP_VERSION_;
+    procedure Set_IpVersion(IpVersion: NET_FW_IP_VERSION_);
+    function Get_Scope: NET_FW_SCOPE_;
+    procedure Set_Scope(Scope: NET_FW_SCOPE_);
+    function Get_RemoteAddresses: WideString;
+    procedure Set_RemoteAddresses(const remoteAddrs: WideString);
+    function Get_Enabled: WordBool;
+    procedure Set_Enabled(Enabled: WordBool);
+  public
+    constructor Create(AOwner: TComponent); override;
+    destructor  Destroy; override;
+    procedure Connect; override;
+    procedure ConnectTo(svrIntf: INetFwAuthorizedApplication);
+    procedure Disconnect; override;
+    property DefaultInterface: INetFwAuthorizedApplication read GetDefaultInterface;
+    property Name: WideString read Get_Name write Set_Name;
+    property ProcessImageFileName: WideString read Get_ProcessImageFileName write Set_ProcessImageFileName;
+    property IpVersion: NET_FW_IP_VERSION_ read Get_IpVersion write Set_IpVersion;
+    property Scope: NET_FW_SCOPE_ read Get_Scope write Set_Scope;
+    property RemoteAddresses: WideString read Get_RemoteAddresses write Set_RemoteAddresses;
+    property Enabled: WordBool read Get_Enabled write Set_Enabled;
+  published
+{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
+    property Server: TNetFwAuthorizedApplicationProperties read GetServerProperties;
+{$ENDIF}
+  end;
+
+{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
+// *********************************************************************//
+// OLE Server Properties Proxy Class
+// Server Object    : TNetFwAuthorizedApplication
+// (This object is used by the IDE's Property Inspector to allow editing
+//  of the properties of this server)
+// *********************************************************************//
+ TNetFwAuthorizedApplicationProperties = class(TPersistent)
+  private
+    FServer:    TNetFwAuthorizedApplication;
+    function    GetDefaultInterface: INetFwAuthorizedApplication;
+    constructor Create(AServer: TNetFwAuthorizedApplication);
+  protected
+    function Get_Name: WideString;
+    procedure Set_Name(const Name: WideString);
+    function Get_ProcessImageFileName: WideString;
+    procedure Set_ProcessImageFileName(const imageFileName: WideString);
+    function Get_IpVersion: NET_FW_IP_VERSION_;
+    procedure Set_IpVersion(IpVersion: NET_FW_IP_VERSION_);
+    function Get_Scope: NET_FW_SCOPE_;
+    procedure Set_Scope(Scope: NET_FW_SCOPE_);
+    function Get_RemoteAddresses: WideString;
+    procedure Set_RemoteAddresses(const remoteAddrs: WideString);
+    function Get_Enabled: WordBool;
+    procedure Set_Enabled(Enabled: WordBool);
+  public
+    property DefaultInterface: INetFwAuthorizedApplication read GetDefaultInterface;
+  published
+    property Name: WideString read Get_Name write Set_Name;
+    property ProcessImageFileName: WideString read Get_ProcessImageFileName write Set_ProcessImageFileName;
+    property IpVersion: NET_FW_IP_VERSION_ read Get_IpVersion write Set_IpVersion;
+    property Scope: NET_FW_SCOPE_ read Get_Scope write Set_Scope;
+    property RemoteAddresses: WideString read Get_RemoteAddresses write Set_RemoteAddresses;
+    property Enabled: WordBool read Get_Enabled write Set_Enabled;
+  end;
+{$ENDIF}
+
+
+// *********************************************************************//
+// The Class CoNetFwPolicy2 provides a Create and CreateRemote method to          
+// create instances of the default interface INetFwPolicy2 exposed by              
+// the CoClass NetFwPolicy2. The functions are intended to be used by             
+// clients wishing to automate the CoClass objects exposed by the         
+// server of this typelibrary.                                            
+// *********************************************************************//
+  CoNetFwPolicy2 = class
+    class function Create: INetFwPolicy2;
+    class function CreateRemote(const MachineName: string): INetFwPolicy2;
+  end;
+
+
+// *********************************************************************//
+// OLE Server Proxy class declaration
+// Server Object    : TNetFwPolicy2
+// Help String      : 
+// Default Interface: INetFwPolicy2
+// Def. Intf. DISP? : No
+// Event   Interface: 
+// TypeFlags        : (2) CanCreate
+// *********************************************************************//
+{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
+  TNetFwPolicy2Properties= class;
+{$ENDIF}
+  TNetFwPolicy2 = class(TOleServer)
+  private
+    FIntf: INetFwPolicy2;
+{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
+    FProps: TNetFwPolicy2Properties;
+    function GetServerProperties: TNetFwPolicy2Properties;
+{$ENDIF}
+    function GetDefaultInterface: INetFwPolicy2;
+  protected
+    procedure InitServerData; override;
+    function Get_CurrentProfileTypes: Integer;
+    function Get_FirewallEnabled(profileType: NET_FW_PROFILE_TYPE2_): WordBool;
+    procedure Set_FirewallEnabled(profileType: NET_FW_PROFILE_TYPE2_; Enabled: WordBool);
+    function Get_ExcludedInterfaces(profileType: NET_FW_PROFILE_TYPE2_): OleVariant;
+    procedure Set_ExcludedInterfaces(profileType: NET_FW_PROFILE_TYPE2_; Interfaces: OleVariant);
+    function Get_BlockAllInboundTraffic(profileType: NET_FW_PROFILE_TYPE2_): WordBool;
+    procedure Set_BlockAllInboundTraffic(profileType: NET_FW_PROFILE_TYPE2_; Block: WordBool);
+    function Get_NotificationsDisabled(profileType: NET_FW_PROFILE_TYPE2_): WordBool;
+    procedure Set_NotificationsDisabled(profileType: NET_FW_PROFILE_TYPE2_; disabled: WordBool);
+    function Get_UnicastResponsesToMulticastBroadcastDisabled(profileType: NET_FW_PROFILE_TYPE2_): WordBool;
+    procedure Set_UnicastResponsesToMulticastBroadcastDisabled(profileType: NET_FW_PROFILE_TYPE2_; 
+                                                               disabled: WordBool);
+    function Get_Rules: INetFwRules;
+    function Get_ServiceRestriction: INetFwServiceRestriction;
+    function Get_DefaultInboundAction(profileType: NET_FW_PROFILE_TYPE2_): NET_FW_ACTION_;
+    procedure Set_DefaultInboundAction(profileType: NET_FW_PROFILE_TYPE2_; Action: NET_FW_ACTION_);
+    function Get_DefaultOutboundAction(profileType: NET_FW_PROFILE_TYPE2_): NET_FW_ACTION_;
+    procedure Set_DefaultOutboundAction(profileType: NET_FW_PROFILE_TYPE2_; Action: NET_FW_ACTION_);
+    function Get_IsRuleGroupCurrentlyEnabled(const group: WideString): WordBool;
+    function Get_LocalPolicyModifyState: NET_FW_MODIFY_STATE_;
+  public
+    constructor Create(AOwner: TComponent); override;
+    destructor  Destroy; override;
+    procedure Connect; override;
+    procedure ConnectTo(svrIntf: INetFwPolicy2);
+    procedure Disconnect; override;
+    procedure EnableRuleGroup(profileTypesBitmask: Integer; const group: WideString; 
+                              enable: WordBool);
+    function IsRuleGroupEnabled(profileTypesBitmask: Integer; const group: WideString): WordBool;
+    procedure RestoreLocalFirewallDefaults;
+    property DefaultInterface: INetFwPolicy2 read GetDefaultInterface;
+    property CurrentProfileTypes: Integer read Get_CurrentProfileTypes;
+    property FirewallEnabled[profileType: NET_FW_PROFILE_TYPE2_]: WordBool read Get_FirewallEnabled write Set_FirewallEnabled;
+    property ExcludedInterfaces[profileType: NET_FW_PROFILE_TYPE2_]: OleVariant read Get_ExcludedInterfaces write Set_ExcludedInterfaces;
+    property BlockAllInboundTraffic[profileType: NET_FW_PROFILE_TYPE2_]: WordBool read Get_BlockAllInboundTraffic write Set_BlockAllInboundTraffic;
+    property NotificationsDisabled[profileType: NET_FW_PROFILE_TYPE2_]: WordBool read Get_NotificationsDisabled write Set_NotificationsDisabled;
+    property UnicastResponsesToMulticastBroadcastDisabled[profileType: NET_FW_PROFILE_TYPE2_]: WordBool read Get_UnicastResponsesToMulticastBroadcastDisabled write Set_UnicastResponsesToMulticastBroadcastDisabled;
+    property Rules: INetFwRules read Get_Rules;
+    property ServiceRestriction: INetFwServiceRestriction read Get_ServiceRestriction;
+    property DefaultInboundAction[profileType: NET_FW_PROFILE_TYPE2_]: NET_FW_ACTION_ read Get_DefaultInboundAction write Set_DefaultInboundAction;
+    property DefaultOutboundAction[profileType: NET_FW_PROFILE_TYPE2_]: NET_FW_ACTION_ read Get_DefaultOutboundAction write Set_DefaultOutboundAction;
+    property IsRuleGroupCurrentlyEnabled[const group: WideString]: WordBool read Get_IsRuleGroupCurrentlyEnabled;
+    property LocalPolicyModifyState: NET_FW_MODIFY_STATE_ read Get_LocalPolicyModifyState;
+  published
+{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
+    property Server: TNetFwPolicy2Properties read GetServerProperties;
+{$ENDIF}
+  end;
+
+{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
+// *********************************************************************//
+// OLE Server Properties Proxy Class
+// Server Object    : TNetFwPolicy2
+// (This object is used by the IDE's Property Inspector to allow editing
+//  of the properties of this server)
+// *********************************************************************//
+ TNetFwPolicy2Properties = class(TPersistent)
+  private
+    FServer:    TNetFwPolicy2;
+    function    GetDefaultInterface: INetFwPolicy2;
+    constructor Create(AServer: TNetFwPolicy2);
+  protected
+    function Get_CurrentProfileTypes: Integer;
+    function Get_FirewallEnabled(profileType: NET_FW_PROFILE_TYPE2_): WordBool;
+    procedure Set_FirewallEnabled(profileType: NET_FW_PROFILE_TYPE2_; Enabled: WordBool);
+    function Get_ExcludedInterfaces(profileType: NET_FW_PROFILE_TYPE2_): OleVariant;
+    procedure Set_ExcludedInterfaces(profileType: NET_FW_PROFILE_TYPE2_; Interfaces: OleVariant);
+    function Get_BlockAllInboundTraffic(profileType: NET_FW_PROFILE_TYPE2_): WordBool;
+    procedure Set_BlockAllInboundTraffic(profileType: NET_FW_PROFILE_TYPE2_; Block: WordBool);
+    function Get_NotificationsDisabled(profileType: NET_FW_PROFILE_TYPE2_): WordBool;
+    procedure Set_NotificationsDisabled(profileType: NET_FW_PROFILE_TYPE2_; disabled: WordBool);
+    function Get_UnicastResponsesToMulticastBroadcastDisabled(profileType: NET_FW_PROFILE_TYPE2_): WordBool;
+    procedure Set_UnicastResponsesToMulticastBroadcastDisabled(profileType: NET_FW_PROFILE_TYPE2_; 
+                                                               disabled: WordBool);
+    function Get_Rules: INetFwRules;
+    function Get_ServiceRestriction: INetFwServiceRestriction;
+    function Get_DefaultInboundAction(profileType: NET_FW_PROFILE_TYPE2_): NET_FW_ACTION_;
+    procedure Set_DefaultInboundAction(profileType: NET_FW_PROFILE_TYPE2_; Action: NET_FW_ACTION_);
+    function Get_DefaultOutboundAction(profileType: NET_FW_PROFILE_TYPE2_): NET_FW_ACTION_;
+    procedure Set_DefaultOutboundAction(profileType: NET_FW_PROFILE_TYPE2_; Action: NET_FW_ACTION_);
+    function Get_IsRuleGroupCurrentlyEnabled(const group: WideString): WordBool;
+    function Get_LocalPolicyModifyState: NET_FW_MODIFY_STATE_;
+  public
+    property DefaultInterface: INetFwPolicy2 read GetDefaultInterface;
+  published
+  end;
+{$ENDIF}
+
+
+// *********************************************************************//
+// The Class CoNetFwMgr provides a Create and CreateRemote method to          
+// create instances of the default interface INetFwMgr exposed by              
+// the CoClass NetFwMgr. The functions are intended to be used by             
+// clients wishing to automate the CoClass objects exposed by the         
+// server of this typelibrary.                                            
+// *********************************************************************//
+  CoNetFwMgr = class
+    class function Create: INetFwMgr;
+    class function CreateRemote(const MachineName: string): INetFwMgr;
+  end;
+
+
+// *********************************************************************//
+// OLE Server Proxy class declaration
+// Server Object    : TNetFwMgr
+// Help String      : 
+// Default Interface: INetFwMgr
+// Def. Intf. DISP? : No
+// Event   Interface: 
+// TypeFlags        : (2) CanCreate
+// *********************************************************************//
+{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
+  TNetFwMgrProperties= class;
+{$ENDIF}
+  TNetFwMgr = class(TOleServer)
+  private
+    FIntf: INetFwMgr;
+{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
+    FProps: TNetFwMgrProperties;
+    function GetServerProperties: TNetFwMgrProperties;
+{$ENDIF}
+    function GetDefaultInterface: INetFwMgr;
+  protected
+    procedure InitServerData; override;
+    function Get_LocalPolicy: INetFwPolicy;
+    function Get_CurrentProfileType: NET_FW_PROFILE_TYPE_;
+  public
+    constructor Create(AOwner: TComponent); override;
+    destructor  Destroy; override;
+    procedure Connect; override;
+    procedure ConnectTo(svrIntf: INetFwMgr);
+    procedure Disconnect; override;
+    procedure RestoreDefaults;
+    procedure IsPortAllowed(const imageFileName: WideString; IpVersion: NET_FW_IP_VERSION_; 
+                            portNumber: Integer; const localAddress: WideString; 
+                            ipProtocol: NET_FW_IP_PROTOCOL_; out allowed: OleVariant; 
+                            out restricted: OleVariant);
+    procedure IsIcmpTypeAllowed(IpVersion: NET_FW_IP_VERSION_; const localAddress: WideString; 
+                                Type_: Byte; out allowed: OleVariant; out restricted: OleVariant);
+    property DefaultInterface: INetFwMgr read GetDefaultInterface;
+    property LocalPolicy: INetFwPolicy read Get_LocalPolicy;
+    property CurrentProfileType: NET_FW_PROFILE_TYPE_ read Get_CurrentProfileType;
+  published
+{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
+    property Server: TNetFwMgrProperties read GetServerProperties;
+{$ENDIF}
+  end;
+
+{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
+// *********************************************************************//
+// OLE Server Properties Proxy Class
+// Server Object    : TNetFwMgr
+// (This object is used by the IDE's Property Inspector to allow editing
+//  of the properties of this server)
+// *********************************************************************//
+ TNetFwMgrProperties = class(TPersistent)
+  private
+    FServer:    TNetFwMgr;
+    function    GetDefaultInterface: INetFwMgr;
+    constructor Create(AServer: TNetFwMgr);
+  protected
+    function Get_LocalPolicy: INetFwPolicy;
+    function Get_CurrentProfileType: NET_FW_PROFILE_TYPE_;
+  public
+    property DefaultInterface: INetFwMgr read GetDefaultInterface;
+  published
+  end;
+{$ENDIF}
+
+
+procedure Register;
+
+resourcestring
+  dtlServerPage = '(none)';
+
+  dtlOcxPage = '(none)';
+
 implementation
 
 uses ComObj;
+
+class function CoNetFwRule.Create: INetFwRule;
+begin
+  Result := CreateComObject(CLASS_NetFwRule) as INetFwRule;
+end;
+
+class function CoNetFwRule.CreateRemote(const MachineName: string): INetFwRule;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_NetFwRule) as INetFwRule;
+end;
+
+procedure TNetFwRule.InitServerData;
+const
+  CServerData: TServerData = (
+    ClassID:   '{2C5BC43E-3369-4C33-AB0C-BE9469677AF4}';
+    IntfIID:   '{AF230D27-BABA-4E42-ACED-F524F22CFCE2}';
+    EventIID:  '';
+    LicenseKey: nil;
+    Version: 500);
+begin
+  ServerData := @CServerData;
+end;
+
+procedure TNetFwRule.Connect;
+var
+  punk: IUnknown;
+begin
+  if FIntf = nil then
+  begin
+    punk := GetServer;
+    Fintf:= punk as INetFwRule;
+  end;
+end;
+
+procedure TNetFwRule.ConnectTo(svrIntf: INetFwRule);
+begin
+  Disconnect;
+  FIntf := svrIntf;
+end;
+
+procedure TNetFwRule.DisConnect;
+begin
+  if Fintf <> nil then
+  begin
+    FIntf := nil;
+  end;
+end;
+
+function TNetFwRule.GetDefaultInterface: INetFwRule;
+begin
+  if FIntf = nil then
+    Connect;
+  Assert(FIntf <> nil, 'DefaultInterface is NULL. Component is not connected to Server. You must call "Connect" or "ConnectTo" before this operation');
+  Result := FIntf;
+end;
+
+constructor TNetFwRule.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
+  FProps := TNetFwRuleProperties.Create(Self);
+{$ENDIF}
+end;
+
+destructor TNetFwRule.Destroy;
+begin
+{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
+  FProps.Free;
+{$ENDIF}
+  inherited Destroy;
+end;
+
+{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
+function TNetFwRule.GetServerProperties: TNetFwRuleProperties;
+begin
+  Result := FProps;
+end;
+{$ENDIF}
+
+function TNetFwRule.Get_Name: WideString;
+begin
+    Result := DefaultInterface.Name;
+end;
+
+procedure TNetFwRule.Set_Name(const Name: WideString);
+  { Warning: The property Name has a setter and a getter whose
+    types do not match. Delphi was unable to generate a property of
+    this sort and so is using a Variant as a passthrough. }
+var
+  InterfaceVariant: OleVariant;
+begin
+  InterfaceVariant := DefaultInterface;
+  InterfaceVariant.Name := Name;
+end;
+
+function TNetFwRule.Get_Description: WideString;
+begin
+    Result := DefaultInterface.Description;
+end;
+
+procedure TNetFwRule.Set_Description(const desc: WideString);
+  { Warning: The property Description has a setter and a getter whose
+    types do not match. Delphi was unable to generate a property of
+    this sort and so is using a Variant as a passthrough. }
+var
+  InterfaceVariant: OleVariant;
+begin
+  InterfaceVariant := DefaultInterface;
+  InterfaceVariant.Description := desc;
+end;
+
+function TNetFwRule.Get_ApplicationName: WideString;
+begin
+    Result := DefaultInterface.ApplicationName;
+end;
+
+procedure TNetFwRule.Set_ApplicationName(const imageFileName: WideString);
+  { Warning: The property ApplicationName has a setter and a getter whose
+    types do not match. Delphi was unable to generate a property of
+    this sort and so is using a Variant as a passthrough. }
+var
+  InterfaceVariant: OleVariant;
+begin
+  InterfaceVariant := DefaultInterface;
+  InterfaceVariant.ApplicationName := imageFileName;
+end;
+
+function TNetFwRule.Get_serviceName: WideString;
+begin
+    Result := DefaultInterface.serviceName;
+end;
+
+procedure TNetFwRule.Set_serviceName(const serviceName: WideString);
+  { Warning: The property serviceName has a setter and a getter whose
+    types do not match. Delphi was unable to generate a property of
+    this sort and so is using a Variant as a passthrough. }
+var
+  InterfaceVariant: OleVariant;
+begin
+  InterfaceVariant := DefaultInterface;
+  InterfaceVariant.serviceName := serviceName;
+end;
+
+function TNetFwRule.Get_Protocol: Integer;
+begin
+    Result := DefaultInterface.Protocol;
+end;
+
+procedure TNetFwRule.Set_Protocol(Protocol: Integer);
+begin
+  DefaultInterface.Set_Protocol(Protocol);
+end;
+
+function TNetFwRule.Get_LocalPorts: WideString;
+begin
+    Result := DefaultInterface.LocalPorts;
+end;
+
+procedure TNetFwRule.Set_LocalPorts(const portNumbers: WideString);
+  { Warning: The property LocalPorts has a setter and a getter whose
+    types do not match. Delphi was unable to generate a property of
+    this sort and so is using a Variant as a passthrough. }
+var
+  InterfaceVariant: OleVariant;
+begin
+  InterfaceVariant := DefaultInterface;
+  InterfaceVariant.LocalPorts := portNumbers;
+end;
+
+function TNetFwRule.Get_RemotePorts: WideString;
+begin
+    Result := DefaultInterface.RemotePorts;
+end;
+
+procedure TNetFwRule.Set_RemotePorts(const portNumbers: WideString);
+  { Warning: The property RemotePorts has a setter and a getter whose
+    types do not match. Delphi was unable to generate a property of
+    this sort and so is using a Variant as a passthrough. }
+var
+  InterfaceVariant: OleVariant;
+begin
+  InterfaceVariant := DefaultInterface;
+  InterfaceVariant.RemotePorts := portNumbers;
+end;
+
+function TNetFwRule.Get_LocalAddresses: WideString;
+begin
+    Result := DefaultInterface.LocalAddresses;
+end;
+
+procedure TNetFwRule.Set_LocalAddresses(const localAddrs: WideString);
+  { Warning: The property LocalAddresses has a setter and a getter whose
+    types do not match. Delphi was unable to generate a property of
+    this sort and so is using a Variant as a passthrough. }
+var
+  InterfaceVariant: OleVariant;
+begin
+  InterfaceVariant := DefaultInterface;
+  InterfaceVariant.LocalAddresses := localAddrs;
+end;
+
+function TNetFwRule.Get_RemoteAddresses: WideString;
+begin
+    Result := DefaultInterface.RemoteAddresses;
+end;
+
+procedure TNetFwRule.Set_RemoteAddresses(const remoteAddrs: WideString);
+  { Warning: The property RemoteAddresses has a setter and a getter whose
+    types do not match. Delphi was unable to generate a property of
+    this sort and so is using a Variant as a passthrough. }
+var
+  InterfaceVariant: OleVariant;
+begin
+  InterfaceVariant := DefaultInterface;
+  InterfaceVariant.RemoteAddresses := remoteAddrs;
+end;
+
+function TNetFwRule.Get_IcmpTypesAndCodes: WideString;
+begin
+    Result := DefaultInterface.IcmpTypesAndCodes;
+end;
+
+procedure TNetFwRule.Set_IcmpTypesAndCodes(const IcmpTypesAndCodes: WideString);
+  { Warning: The property IcmpTypesAndCodes has a setter and a getter whose
+    types do not match. Delphi was unable to generate a property of
+    this sort and so is using a Variant as a passthrough. }
+var
+  InterfaceVariant: OleVariant;
+begin
+  InterfaceVariant := DefaultInterface;
+  InterfaceVariant.IcmpTypesAndCodes := IcmpTypesAndCodes;
+end;
+
+function TNetFwRule.Get_Direction: NET_FW_RULE_DIRECTION_;
+begin
+    Result := DefaultInterface.Direction;
+end;
+
+procedure TNetFwRule.Set_Direction(dir: NET_FW_RULE_DIRECTION_);
+begin
+  DefaultInterface.Set_Direction(dir);
+end;
+
+function TNetFwRule.Get_Interfaces: OleVariant;
+var
+  InterfaceVariant : OleVariant;
+begin
+  InterfaceVariant := DefaultInterface;
+  Result := InterfaceVariant.Interfaces;
+end;
+
+procedure TNetFwRule.Set_Interfaces(Interfaces: OleVariant);
+begin
+  DefaultInterface.Set_Interfaces(Interfaces);
+end;
+
+function TNetFwRule.Get_InterfaceTypes: WideString;
+begin
+    Result := DefaultInterface.InterfaceTypes;
+end;
+
+procedure TNetFwRule.Set_InterfaceTypes(const InterfaceTypes: WideString);
+  { Warning: The property InterfaceTypes has a setter and a getter whose
+    types do not match. Delphi was unable to generate a property of
+    this sort and so is using a Variant as a passthrough. }
+var
+  InterfaceVariant: OleVariant;
+begin
+  InterfaceVariant := DefaultInterface;
+  InterfaceVariant.InterfaceTypes := InterfaceTypes;
+end;
+
+function TNetFwRule.Get_Enabled: WordBool;
+begin
+    Result := DefaultInterface.Enabled;
+end;
+
+procedure TNetFwRule.Set_Enabled(Enabled: WordBool);
+begin
+  DefaultInterface.Set_Enabled(Enabled);
+end;
+
+function TNetFwRule.Get_Grouping: WideString;
+begin
+    Result := DefaultInterface.Grouping;
+end;
+
+procedure TNetFwRule.Set_Grouping(const context: WideString);
+  { Warning: The property Grouping has a setter and a getter whose
+    types do not match. Delphi was unable to generate a property of
+    this sort and so is using a Variant as a passthrough. }
+var
+  InterfaceVariant: OleVariant;
+begin
+  InterfaceVariant := DefaultInterface;
+  InterfaceVariant.Grouping := context;
+end;
+
+function TNetFwRule.Get_Profiles: Integer;
+begin
+    Result := DefaultInterface.Profiles;
+end;
+
+procedure TNetFwRule.Set_Profiles(profileTypesBitmask: Integer);
+begin
+  DefaultInterface.Set_Profiles(profileTypesBitmask);
+end;
+
+function TNetFwRule.Get_EdgeTraversal: WordBool;
+begin
+    Result := DefaultInterface.EdgeTraversal;
+end;
+
+procedure TNetFwRule.Set_EdgeTraversal(Enabled: WordBool);
+begin
+  DefaultInterface.Set_EdgeTraversal(Enabled);
+end;
+
+function TNetFwRule.Get_Action: NET_FW_ACTION_;
+begin
+    Result := DefaultInterface.Action;
+end;
+
+procedure TNetFwRule.Set_Action(Action: NET_FW_ACTION_);
+begin
+  DefaultInterface.Set_Action(Action);
+end;
+
+{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
+constructor TNetFwRuleProperties.Create(AServer: TNetFwRule);
+begin
+  inherited Create;
+  FServer := AServer;
+end;
+
+function TNetFwRuleProperties.GetDefaultInterface: INetFwRule;
+begin
+  Result := FServer.DefaultInterface;
+end;
+
+function TNetFwRuleProperties.Get_Name: WideString;
+begin
+    Result := DefaultInterface.Name;
+end;
+
+procedure TNetFwRuleProperties.Set_Name(const Name: WideString);
+  { Warning: The property Name has a setter and a getter whose
+    types do not match. Delphi was unable to generate a property of
+    this sort and so is using a Variant as a passthrough. }
+var
+  InterfaceVariant: OleVariant;
+begin
+  InterfaceVariant := DefaultInterface;
+  InterfaceVariant.Name := Name;
+end;
+
+function TNetFwRuleProperties.Get_Description: WideString;
+begin
+    Result := DefaultInterface.Description;
+end;
+
+procedure TNetFwRuleProperties.Set_Description(const desc: WideString);
+  { Warning: The property Description has a setter and a getter whose
+    types do not match. Delphi was unable to generate a property of
+    this sort and so is using a Variant as a passthrough. }
+var
+  InterfaceVariant: OleVariant;
+begin
+  InterfaceVariant := DefaultInterface;
+  InterfaceVariant.Description := desc;
+end;
+
+function TNetFwRuleProperties.Get_ApplicationName: WideString;
+begin
+    Result := DefaultInterface.ApplicationName;
+end;
+
+procedure TNetFwRuleProperties.Set_ApplicationName(const imageFileName: WideString);
+  { Warning: The property ApplicationName has a setter and a getter whose
+    types do not match. Delphi was unable to generate a property of
+    this sort and so is using a Variant as a passthrough. }
+var
+  InterfaceVariant: OleVariant;
+begin
+  InterfaceVariant := DefaultInterface;
+  InterfaceVariant.ApplicationName := imageFileName;
+end;
+
+function TNetFwRuleProperties.Get_serviceName: WideString;
+begin
+    Result := DefaultInterface.serviceName;
+end;
+
+procedure TNetFwRuleProperties.Set_serviceName(const serviceName: WideString);
+  { Warning: The property serviceName has a setter and a getter whose
+    types do not match. Delphi was unable to generate a property of
+    this sort and so is using a Variant as a passthrough. }
+var
+  InterfaceVariant: OleVariant;
+begin
+  InterfaceVariant := DefaultInterface;
+  InterfaceVariant.serviceName := serviceName;
+end;
+
+function TNetFwRuleProperties.Get_Protocol: Integer;
+begin
+    Result := DefaultInterface.Protocol;
+end;
+
+procedure TNetFwRuleProperties.Set_Protocol(Protocol: Integer);
+begin
+  DefaultInterface.Set_Protocol(Protocol);
+end;
+
+function TNetFwRuleProperties.Get_LocalPorts: WideString;
+begin
+    Result := DefaultInterface.LocalPorts;
+end;
+
+procedure TNetFwRuleProperties.Set_LocalPorts(const portNumbers: WideString);
+  { Warning: The property LocalPorts has a setter and a getter whose
+    types do not match. Delphi was unable to generate a property of
+    this sort and so is using a Variant as a passthrough. }
+var
+  InterfaceVariant: OleVariant;
+begin
+  InterfaceVariant := DefaultInterface;
+  InterfaceVariant.LocalPorts := portNumbers;
+end;
+
+function TNetFwRuleProperties.Get_RemotePorts: WideString;
+begin
+    Result := DefaultInterface.RemotePorts;
+end;
+
+procedure TNetFwRuleProperties.Set_RemotePorts(const portNumbers: WideString);
+  { Warning: The property RemotePorts has a setter and a getter whose
+    types do not match. Delphi was unable to generate a property of
+    this sort and so is using a Variant as a passthrough. }
+var
+  InterfaceVariant: OleVariant;
+begin
+  InterfaceVariant := DefaultInterface;
+  InterfaceVariant.RemotePorts := portNumbers;
+end;
+
+function TNetFwRuleProperties.Get_LocalAddresses: WideString;
+begin
+    Result := DefaultInterface.LocalAddresses;
+end;
+
+procedure TNetFwRuleProperties.Set_LocalAddresses(const localAddrs: WideString);
+  { Warning: The property LocalAddresses has a setter and a getter whose
+    types do not match. Delphi was unable to generate a property of
+    this sort and so is using a Variant as a passthrough. }
+var
+  InterfaceVariant: OleVariant;
+begin
+  InterfaceVariant := DefaultInterface;
+  InterfaceVariant.LocalAddresses := localAddrs;
+end;
+
+function TNetFwRuleProperties.Get_RemoteAddresses: WideString;
+begin
+    Result := DefaultInterface.RemoteAddresses;
+end;
+
+procedure TNetFwRuleProperties.Set_RemoteAddresses(const remoteAddrs: WideString);
+  { Warning: The property RemoteAddresses has a setter and a getter whose
+    types do not match. Delphi was unable to generate a property of
+    this sort and so is using a Variant as a passthrough. }
+var
+  InterfaceVariant: OleVariant;
+begin
+  InterfaceVariant := DefaultInterface;
+  InterfaceVariant.RemoteAddresses := remoteAddrs;
+end;
+
+function TNetFwRuleProperties.Get_IcmpTypesAndCodes: WideString;
+begin
+    Result := DefaultInterface.IcmpTypesAndCodes;
+end;
+
+procedure TNetFwRuleProperties.Set_IcmpTypesAndCodes(const IcmpTypesAndCodes: WideString);
+  { Warning: The property IcmpTypesAndCodes has a setter and a getter whose
+    types do not match. Delphi was unable to generate a property of
+    this sort and so is using a Variant as a passthrough. }
+var
+  InterfaceVariant: OleVariant;
+begin
+  InterfaceVariant := DefaultInterface;
+  InterfaceVariant.IcmpTypesAndCodes := IcmpTypesAndCodes;
+end;
+
+function TNetFwRuleProperties.Get_Direction: NET_FW_RULE_DIRECTION_;
+begin
+    Result := DefaultInterface.Direction;
+end;
+
+procedure TNetFwRuleProperties.Set_Direction(dir: NET_FW_RULE_DIRECTION_);
+begin
+  DefaultInterface.Set_Direction(dir);
+end;
+
+function TNetFwRuleProperties.Get_Interfaces: OleVariant;
+var
+  InterfaceVariant : OleVariant;
+begin
+  InterfaceVariant := DefaultInterface;
+  Result := InterfaceVariant.Interfaces;
+end;
+
+procedure TNetFwRuleProperties.Set_Interfaces(Interfaces: OleVariant);
+begin
+  DefaultInterface.Set_Interfaces(Interfaces);
+end;
+
+function TNetFwRuleProperties.Get_InterfaceTypes: WideString;
+begin
+    Result := DefaultInterface.InterfaceTypes;
+end;
+
+procedure TNetFwRuleProperties.Set_InterfaceTypes(const InterfaceTypes: WideString);
+  { Warning: The property InterfaceTypes has a setter and a getter whose
+    types do not match. Delphi was unable to generate a property of
+    this sort and so is using a Variant as a passthrough. }
+var
+  InterfaceVariant: OleVariant;
+begin
+  InterfaceVariant := DefaultInterface;
+  InterfaceVariant.InterfaceTypes := InterfaceTypes;
+end;
+
+function TNetFwRuleProperties.Get_Enabled: WordBool;
+begin
+    Result := DefaultInterface.Enabled;
+end;
+
+procedure TNetFwRuleProperties.Set_Enabled(Enabled: WordBool);
+begin
+  DefaultInterface.Set_Enabled(Enabled);
+end;
+
+function TNetFwRuleProperties.Get_Grouping: WideString;
+begin
+    Result := DefaultInterface.Grouping;
+end;
+
+procedure TNetFwRuleProperties.Set_Grouping(const context: WideString);
+  { Warning: The property Grouping has a setter and a getter whose
+    types do not match. Delphi was unable to generate a property of
+    this sort and so is using a Variant as a passthrough. }
+var
+  InterfaceVariant: OleVariant;
+begin
+  InterfaceVariant := DefaultInterface;
+  InterfaceVariant.Grouping := context;
+end;
+
+function TNetFwRuleProperties.Get_Profiles: Integer;
+begin
+    Result := DefaultInterface.Profiles;
+end;
+
+procedure TNetFwRuleProperties.Set_Profiles(profileTypesBitmask: Integer);
+begin
+  DefaultInterface.Set_Profiles(profileTypesBitmask);
+end;
+
+function TNetFwRuleProperties.Get_EdgeTraversal: WordBool;
+begin
+    Result := DefaultInterface.EdgeTraversal;
+end;
+
+procedure TNetFwRuleProperties.Set_EdgeTraversal(Enabled: WordBool);
+begin
+  DefaultInterface.Set_EdgeTraversal(Enabled);
+end;
+
+function TNetFwRuleProperties.Get_Action: NET_FW_ACTION_;
+begin
+    Result := DefaultInterface.Action;
+end;
+
+procedure TNetFwRuleProperties.Set_Action(Action: NET_FW_ACTION_);
+begin
+  DefaultInterface.Set_Action(Action);
+end;
+
+{$ENDIF}
+
+class function CoNetFwOpenPort.Create: INetFwOpenPort;
+begin
+  Result := CreateComObject(CLASS_NetFwOpenPort) as INetFwOpenPort;
+end;
+
+class function CoNetFwOpenPort.CreateRemote(const MachineName: string): INetFwOpenPort;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_NetFwOpenPort) as INetFwOpenPort;
+end;
+
+procedure TNetFwOpenPort.InitServerData;
+const
+  CServerData: TServerData = (
+    ClassID:   '{0CA545C6-37AD-4A6C-BF92-9F7610067EF5}';
+    IntfIID:   '{E0483BA0-47FF-4D9C-A6D6-7741D0B195F7}';
+    EventIID:  '';
+    LicenseKey: nil;
+    Version: 500);
+begin
+  ServerData := @CServerData;
+end;
+
+procedure TNetFwOpenPort.Connect;
+var
+  punk: IUnknown;
+begin
+  if FIntf = nil then
+  begin
+    punk := GetServer;
+    Fintf:= punk as INetFwOpenPort;
+  end;
+end;
+
+procedure TNetFwOpenPort.ConnectTo(svrIntf: INetFwOpenPort);
+begin
+  Disconnect;
+  FIntf := svrIntf;
+end;
+
+procedure TNetFwOpenPort.DisConnect;
+begin
+  if Fintf <> nil then
+  begin
+    FIntf := nil;
+  end;
+end;
+
+function TNetFwOpenPort.GetDefaultInterface: INetFwOpenPort;
+begin
+  if FIntf = nil then
+    Connect;
+  Assert(FIntf <> nil, 'DefaultInterface is NULL. Component is not connected to Server. You must call "Connect" or "ConnectTo" before this operation');
+  Result := FIntf;
+end;
+
+constructor TNetFwOpenPort.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
+  FProps := TNetFwOpenPortProperties.Create(Self);
+{$ENDIF}
+end;
+
+destructor TNetFwOpenPort.Destroy;
+begin
+{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
+  FProps.Free;
+{$ENDIF}
+  inherited Destroy;
+end;
+
+{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
+function TNetFwOpenPort.GetServerProperties: TNetFwOpenPortProperties;
+begin
+  Result := FProps;
+end;
+{$ENDIF}
+
+function TNetFwOpenPort.Get_Name: WideString;
+begin
+    Result := DefaultInterface.Name;
+end;
+
+procedure TNetFwOpenPort.Set_Name(const Name: WideString);
+  { Warning: The property Name has a setter and a getter whose
+    types do not match. Delphi was unable to generate a property of
+    this sort and so is using a Variant as a passthrough. }
+var
+  InterfaceVariant: OleVariant;
+begin
+  InterfaceVariant := DefaultInterface;
+  InterfaceVariant.Name := Name;
+end;
+
+function TNetFwOpenPort.Get_IpVersion: NET_FW_IP_VERSION_;
+begin
+    Result := DefaultInterface.IpVersion;
+end;
+
+procedure TNetFwOpenPort.Set_IpVersion(IpVersion: NET_FW_IP_VERSION_);
+begin
+  DefaultInterface.Set_IpVersion(IpVersion);
+end;
+
+function TNetFwOpenPort.Get_Protocol: NET_FW_IP_PROTOCOL_;
+begin
+    Result := DefaultInterface.Protocol;
+end;
+
+procedure TNetFwOpenPort.Set_Protocol(ipProtocol: NET_FW_IP_PROTOCOL_);
+begin
+  DefaultInterface.Set_Protocol(ipProtocol);
+end;
+
+function TNetFwOpenPort.Get_Port: Integer;
+begin
+    Result := DefaultInterface.Port;
+end;
+
+procedure TNetFwOpenPort.Set_Port(portNumber: Integer);
+begin
+  DefaultInterface.Set_Port(portNumber);
+end;
+
+function TNetFwOpenPort.Get_Scope: NET_FW_SCOPE_;
+begin
+    Result := DefaultInterface.Scope;
+end;
+
+procedure TNetFwOpenPort.Set_Scope(Scope: NET_FW_SCOPE_);
+begin
+  DefaultInterface.Set_Scope(Scope);
+end;
+
+function TNetFwOpenPort.Get_RemoteAddresses: WideString;
+begin
+    Result := DefaultInterface.RemoteAddresses;
+end;
+
+procedure TNetFwOpenPort.Set_RemoteAddresses(const remoteAddrs: WideString);
+  { Warning: The property RemoteAddresses has a setter and a getter whose
+    types do not match. Delphi was unable to generate a property of
+    this sort and so is using a Variant as a passthrough. }
+var
+  InterfaceVariant: OleVariant;
+begin
+  InterfaceVariant := DefaultInterface;
+  InterfaceVariant.RemoteAddresses := remoteAddrs;
+end;
+
+function TNetFwOpenPort.Get_Enabled: WordBool;
+begin
+    Result := DefaultInterface.Enabled;
+end;
+
+procedure TNetFwOpenPort.Set_Enabled(Enabled: WordBool);
+begin
+  DefaultInterface.Set_Enabled(Enabled);
+end;
+
+function TNetFwOpenPort.Get_BuiltIn: WordBool;
+begin
+    Result := DefaultInterface.BuiltIn;
+end;
+
+{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
+constructor TNetFwOpenPortProperties.Create(AServer: TNetFwOpenPort);
+begin
+  inherited Create;
+  FServer := AServer;
+end;
+
+function TNetFwOpenPortProperties.GetDefaultInterface: INetFwOpenPort;
+begin
+  Result := FServer.DefaultInterface;
+end;
+
+function TNetFwOpenPortProperties.Get_Name: WideString;
+begin
+    Result := DefaultInterface.Name;
+end;
+
+procedure TNetFwOpenPortProperties.Set_Name(const Name: WideString);
+  { Warning: The property Name has a setter and a getter whose
+    types do not match. Delphi was unable to generate a property of
+    this sort and so is using a Variant as a passthrough. }
+var
+  InterfaceVariant: OleVariant;
+begin
+  InterfaceVariant := DefaultInterface;
+  InterfaceVariant.Name := Name;
+end;
+
+function TNetFwOpenPortProperties.Get_IpVersion: NET_FW_IP_VERSION_;
+begin
+    Result := DefaultInterface.IpVersion;
+end;
+
+procedure TNetFwOpenPortProperties.Set_IpVersion(IpVersion: NET_FW_IP_VERSION_);
+begin
+  DefaultInterface.Set_IpVersion(IpVersion);
+end;
+
+function TNetFwOpenPortProperties.Get_Protocol: NET_FW_IP_PROTOCOL_;
+begin
+    Result := DefaultInterface.Protocol;
+end;
+
+procedure TNetFwOpenPortProperties.Set_Protocol(ipProtocol: NET_FW_IP_PROTOCOL_);
+begin
+  DefaultInterface.Set_Protocol(ipProtocol);
+end;
+
+function TNetFwOpenPortProperties.Get_Port: Integer;
+begin
+    Result := DefaultInterface.Port;
+end;
+
+procedure TNetFwOpenPortProperties.Set_Port(portNumber: Integer);
+begin
+  DefaultInterface.Set_Port(portNumber);
+end;
+
+function TNetFwOpenPortProperties.Get_Scope: NET_FW_SCOPE_;
+begin
+    Result := DefaultInterface.Scope;
+end;
+
+procedure TNetFwOpenPortProperties.Set_Scope(Scope: NET_FW_SCOPE_);
+begin
+  DefaultInterface.Set_Scope(Scope);
+end;
+
+function TNetFwOpenPortProperties.Get_RemoteAddresses: WideString;
+begin
+    Result := DefaultInterface.RemoteAddresses;
+end;
+
+procedure TNetFwOpenPortProperties.Set_RemoteAddresses(const remoteAddrs: WideString);
+  { Warning: The property RemoteAddresses has a setter and a getter whose
+    types do not match. Delphi was unable to generate a property of
+    this sort and so is using a Variant as a passthrough. }
+var
+  InterfaceVariant: OleVariant;
+begin
+  InterfaceVariant := DefaultInterface;
+  InterfaceVariant.RemoteAddresses := remoteAddrs;
+end;
+
+function TNetFwOpenPortProperties.Get_Enabled: WordBool;
+begin
+    Result := DefaultInterface.Enabled;
+end;
+
+procedure TNetFwOpenPortProperties.Set_Enabled(Enabled: WordBool);
+begin
+  DefaultInterface.Set_Enabled(Enabled);
+end;
+
+function TNetFwOpenPortProperties.Get_BuiltIn: WordBool;
+begin
+    Result := DefaultInterface.BuiltIn;
+end;
+
+{$ENDIF}
+
+class function CoNetFwAuthorizedApplication.Create: INetFwAuthorizedApplication;
+begin
+  Result := CreateComObject(CLASS_NetFwAuthorizedApplication) as INetFwAuthorizedApplication;
+end;
+
+class function CoNetFwAuthorizedApplication.CreateRemote(const MachineName: string): INetFwAuthorizedApplication;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_NetFwAuthorizedApplication) as INetFwAuthorizedApplication;
+end;
+
+procedure TNetFwAuthorizedApplication.InitServerData;
+const
+  CServerData: TServerData = (
+    ClassID:   '{EC9846B3-2762-4A6B-A214-6ACB603462D2}';
+    IntfIID:   '{B5E64FFA-C2C5-444E-A301-FB5E00018050}';
+    EventIID:  '';
+    LicenseKey: nil;
+    Version: 500);
+begin
+  ServerData := @CServerData;
+end;
+
+procedure TNetFwAuthorizedApplication.Connect;
+var
+  punk: IUnknown;
+begin
+  if FIntf = nil then
+  begin
+    punk := GetServer;
+    Fintf:= punk as INetFwAuthorizedApplication;
+  end;
+end;
+
+procedure TNetFwAuthorizedApplication.ConnectTo(svrIntf: INetFwAuthorizedApplication);
+begin
+  Disconnect;
+  FIntf := svrIntf;
+end;
+
+procedure TNetFwAuthorizedApplication.DisConnect;
+begin
+  if Fintf <> nil then
+  begin
+    FIntf := nil;
+  end;
+end;
+
+function TNetFwAuthorizedApplication.GetDefaultInterface: INetFwAuthorizedApplication;
+begin
+  if FIntf = nil then
+    Connect;
+  Assert(FIntf <> nil, 'DefaultInterface is NULL. Component is not connected to Server. You must call "Connect" or "ConnectTo" before this operation');
+  Result := FIntf;
+end;
+
+constructor TNetFwAuthorizedApplication.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
+  FProps := TNetFwAuthorizedApplicationProperties.Create(Self);
+{$ENDIF}
+end;
+
+destructor TNetFwAuthorizedApplication.Destroy;
+begin
+{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
+  FProps.Free;
+{$ENDIF}
+  inherited Destroy;
+end;
+
+{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
+function TNetFwAuthorizedApplication.GetServerProperties: TNetFwAuthorizedApplicationProperties;
+begin
+  Result := FProps;
+end;
+{$ENDIF}
+
+function TNetFwAuthorizedApplication.Get_Name: WideString;
+begin
+    Result := DefaultInterface.Name;
+end;
+
+procedure TNetFwAuthorizedApplication.Set_Name(const Name: WideString);
+  { Warning: The property Name has a setter and a getter whose
+    types do not match. Delphi was unable to generate a property of
+    this sort and so is using a Variant as a passthrough. }
+var
+  InterfaceVariant: OleVariant;
+begin
+  InterfaceVariant := DefaultInterface;
+  InterfaceVariant.Name := Name;
+end;
+
+function TNetFwAuthorizedApplication.Get_ProcessImageFileName: WideString;
+begin
+    Result := DefaultInterface.ProcessImageFileName;
+end;
+
+procedure TNetFwAuthorizedApplication.Set_ProcessImageFileName(const imageFileName: WideString);
+  { Warning: The property ProcessImageFileName has a setter and a getter whose
+    types do not match. Delphi was unable to generate a property of
+    this sort and so is using a Variant as a passthrough. }
+var
+  InterfaceVariant: OleVariant;
+begin
+  InterfaceVariant := DefaultInterface;
+  InterfaceVariant.ProcessImageFileName := imageFileName;
+end;
+
+function TNetFwAuthorizedApplication.Get_IpVersion: NET_FW_IP_VERSION_;
+begin
+    Result := DefaultInterface.IpVersion;
+end;
+
+procedure TNetFwAuthorizedApplication.Set_IpVersion(IpVersion: NET_FW_IP_VERSION_);
+begin
+  DefaultInterface.Set_IpVersion(IpVersion);
+end;
+
+function TNetFwAuthorizedApplication.Get_Scope: NET_FW_SCOPE_;
+begin
+    Result := DefaultInterface.Scope;
+end;
+
+procedure TNetFwAuthorizedApplication.Set_Scope(Scope: NET_FW_SCOPE_);
+begin
+  DefaultInterface.Set_Scope(Scope);
+end;
+
+function TNetFwAuthorizedApplication.Get_RemoteAddresses: WideString;
+begin
+    Result := DefaultInterface.RemoteAddresses;
+end;
+
+procedure TNetFwAuthorizedApplication.Set_RemoteAddresses(const remoteAddrs: WideString);
+  { Warning: The property RemoteAddresses has a setter and a getter whose
+    types do not match. Delphi was unable to generate a property of
+    this sort and so is using a Variant as a passthrough. }
+var
+  InterfaceVariant: OleVariant;
+begin
+  InterfaceVariant := DefaultInterface;
+  InterfaceVariant.RemoteAddresses := remoteAddrs;
+end;
+
+function TNetFwAuthorizedApplication.Get_Enabled: WordBool;
+begin
+    Result := DefaultInterface.Enabled;
+end;
+
+procedure TNetFwAuthorizedApplication.Set_Enabled(Enabled: WordBool);
+begin
+  DefaultInterface.Set_Enabled(Enabled);
+end;
+
+{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
+constructor TNetFwAuthorizedApplicationProperties.Create(AServer: TNetFwAuthorizedApplication);
+begin
+  inherited Create;
+  FServer := AServer;
+end;
+
+function TNetFwAuthorizedApplicationProperties.GetDefaultInterface: INetFwAuthorizedApplication;
+begin
+  Result := FServer.DefaultInterface;
+end;
+
+function TNetFwAuthorizedApplicationProperties.Get_Name: WideString;
+begin
+    Result := DefaultInterface.Name;
+end;
+
+procedure TNetFwAuthorizedApplicationProperties.Set_Name(const Name: WideString);
+  { Warning: The property Name has a setter and a getter whose
+    types do not match. Delphi was unable to generate a property of
+    this sort and so is using a Variant as a passthrough. }
+var
+  InterfaceVariant: OleVariant;
+begin
+  InterfaceVariant := DefaultInterface;
+  InterfaceVariant.Name := Name;
+end;
+
+function TNetFwAuthorizedApplicationProperties.Get_ProcessImageFileName: WideString;
+begin
+    Result := DefaultInterface.ProcessImageFileName;
+end;
+
+procedure TNetFwAuthorizedApplicationProperties.Set_ProcessImageFileName(const imageFileName: WideString);
+  { Warning: The property ProcessImageFileName has a setter and a getter whose
+    types do not match. Delphi was unable to generate a property of
+    this sort and so is using a Variant as a passthrough. }
+var
+  InterfaceVariant: OleVariant;
+begin
+  InterfaceVariant := DefaultInterface;
+  InterfaceVariant.ProcessImageFileName := imageFileName;
+end;
+
+function TNetFwAuthorizedApplicationProperties.Get_IpVersion: NET_FW_IP_VERSION_;
+begin
+    Result := DefaultInterface.IpVersion;
+end;
+
+procedure TNetFwAuthorizedApplicationProperties.Set_IpVersion(IpVersion: NET_FW_IP_VERSION_);
+begin
+  DefaultInterface.Set_IpVersion(IpVersion);
+end;
+
+function TNetFwAuthorizedApplicationProperties.Get_Scope: NET_FW_SCOPE_;
+begin
+    Result := DefaultInterface.Scope;
+end;
+
+procedure TNetFwAuthorizedApplicationProperties.Set_Scope(Scope: NET_FW_SCOPE_);
+begin
+  DefaultInterface.Set_Scope(Scope);
+end;
+
+function TNetFwAuthorizedApplicationProperties.Get_RemoteAddresses: WideString;
+begin
+    Result := DefaultInterface.RemoteAddresses;
+end;
+
+procedure TNetFwAuthorizedApplicationProperties.Set_RemoteAddresses(const remoteAddrs: WideString);
+  { Warning: The property RemoteAddresses has a setter and a getter whose
+    types do not match. Delphi was unable to generate a property of
+    this sort and so is using a Variant as a passthrough. }
+var
+  InterfaceVariant: OleVariant;
+begin
+  InterfaceVariant := DefaultInterface;
+  InterfaceVariant.RemoteAddresses := remoteAddrs;
+end;
+
+function TNetFwAuthorizedApplicationProperties.Get_Enabled: WordBool;
+begin
+    Result := DefaultInterface.Enabled;
+end;
+
+procedure TNetFwAuthorizedApplicationProperties.Set_Enabled(Enabled: WordBool);
+begin
+  DefaultInterface.Set_Enabled(Enabled);
+end;
+
+{$ENDIF}
+
+class function CoNetFwPolicy2.Create: INetFwPolicy2;
+begin
+  Result := CreateComObject(CLASS_NetFwPolicy2) as INetFwPolicy2;
+end;
+
+class function CoNetFwPolicy2.CreateRemote(const MachineName: string): INetFwPolicy2;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_NetFwPolicy2) as INetFwPolicy2;
+end;
+
+procedure TNetFwPolicy2.InitServerData;
+const
+  CServerData: TServerData = (
+    ClassID:   '{E2B3C97F-6AE1-41AC-817A-F6F92166D7DD}';
+    IntfIID:   '{98325047-C671-4174-8D81-DEFCD3F03186}';
+    EventIID:  '';
+    LicenseKey: nil;
+    Version: 500);
+begin
+  ServerData := @CServerData;
+end;
+
+procedure TNetFwPolicy2.Connect;
+var
+  punk: IUnknown;
+begin
+  if FIntf = nil then
+  begin
+    punk := GetServer;
+    Fintf:= punk as INetFwPolicy2;
+  end;
+end;
+
+procedure TNetFwPolicy2.ConnectTo(svrIntf: INetFwPolicy2);
+begin
+  Disconnect;
+  FIntf := svrIntf;
+end;
+
+procedure TNetFwPolicy2.DisConnect;
+begin
+  if Fintf <> nil then
+  begin
+    FIntf := nil;
+  end;
+end;
+
+function TNetFwPolicy2.GetDefaultInterface: INetFwPolicy2;
+begin
+  if FIntf = nil then
+    Connect;
+  Assert(FIntf <> nil, 'DefaultInterface is NULL. Component is not connected to Server. You must call "Connect" or "ConnectTo" before this operation');
+  Result := FIntf;
+end;
+
+constructor TNetFwPolicy2.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
+  FProps := TNetFwPolicy2Properties.Create(Self);
+{$ENDIF}
+end;
+
+destructor TNetFwPolicy2.Destroy;
+begin
+{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
+  FProps.Free;
+{$ENDIF}
+  inherited Destroy;
+end;
+
+{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
+function TNetFwPolicy2.GetServerProperties: TNetFwPolicy2Properties;
+begin
+  Result := FProps;
+end;
+{$ENDIF}
+
+function TNetFwPolicy2.Get_CurrentProfileTypes: Integer;
+begin
+    Result := DefaultInterface.CurrentProfileTypes;
+end;
+
+function TNetFwPolicy2.Get_FirewallEnabled(profileType: NET_FW_PROFILE_TYPE2_): WordBool;
+begin
+    Result := DefaultInterface.FirewallEnabled[profileType];
+end;
+
+procedure TNetFwPolicy2.Set_FirewallEnabled(profileType: NET_FW_PROFILE_TYPE2_; Enabled: WordBool);
+begin
+  DefaultInterface.FirewallEnabled[profileType] := Enabled;
+end;
+
+function TNetFwPolicy2.Get_ExcludedInterfaces(profileType: NET_FW_PROFILE_TYPE2_): OleVariant;
+var
+  InterfaceVariant : OleVariant;
+begin
+  InterfaceVariant := DefaultInterface;
+  Result := InterfaceVariant.ExcludedInterfaces[profileType];
+end;
+
+procedure TNetFwPolicy2.Set_ExcludedInterfaces(profileType: NET_FW_PROFILE_TYPE2_; 
+                                               Interfaces: OleVariant);
+begin
+  DefaultInterface.ExcludedInterfaces[profileType] := Interfaces;
+end;
+
+function TNetFwPolicy2.Get_BlockAllInboundTraffic(profileType: NET_FW_PROFILE_TYPE2_): WordBool;
+begin
+    Result := DefaultInterface.BlockAllInboundTraffic[profileType];
+end;
+
+procedure TNetFwPolicy2.Set_BlockAllInboundTraffic(profileType: NET_FW_PROFILE_TYPE2_; 
+                                                   Block: WordBool);
+begin
+  DefaultInterface.BlockAllInboundTraffic[profileType] := Block;
+end;
+
+function TNetFwPolicy2.Get_NotificationsDisabled(profileType: NET_FW_PROFILE_TYPE2_): WordBool;
+begin
+    Result := DefaultInterface.NotificationsDisabled[profileType];
+end;
+
+procedure TNetFwPolicy2.Set_NotificationsDisabled(profileType: NET_FW_PROFILE_TYPE2_; 
+                                                  disabled: WordBool);
+begin
+  DefaultInterface.NotificationsDisabled[profileType] := disabled;
+end;
+
+function TNetFwPolicy2.Get_UnicastResponsesToMulticastBroadcastDisabled(profileType: NET_FW_PROFILE_TYPE2_): WordBool;
+begin
+    Result := DefaultInterface.UnicastResponsesToMulticastBroadcastDisabled[profileType];
+end;
+
+procedure TNetFwPolicy2.Set_UnicastResponsesToMulticastBroadcastDisabled(profileType: NET_FW_PROFILE_TYPE2_; 
+                                                                         disabled: WordBool);
+begin
+  DefaultInterface.UnicastResponsesToMulticastBroadcastDisabled[profileType] := disabled;
+end;
+
+function TNetFwPolicy2.Get_Rules: INetFwRules;
+begin
+    Result := DefaultInterface.Rules;
+end;
+
+function TNetFwPolicy2.Get_ServiceRestriction: INetFwServiceRestriction;
+begin
+    Result := DefaultInterface.ServiceRestriction;
+end;
+
+function TNetFwPolicy2.Get_DefaultInboundAction(profileType: NET_FW_PROFILE_TYPE2_): NET_FW_ACTION_;
+begin
+    Result := DefaultInterface.DefaultInboundAction[profileType];
+end;
+
+procedure TNetFwPolicy2.Set_DefaultInboundAction(profileType: NET_FW_PROFILE_TYPE2_; 
+                                                 Action: NET_FW_ACTION_);
+begin
+  DefaultInterface.DefaultInboundAction[profileType] := Action;
+end;
+
+function TNetFwPolicy2.Get_DefaultOutboundAction(profileType: NET_FW_PROFILE_TYPE2_): NET_FW_ACTION_;
+begin
+    Result := DefaultInterface.DefaultOutboundAction[profileType];
+end;
+
+procedure TNetFwPolicy2.Set_DefaultOutboundAction(profileType: NET_FW_PROFILE_TYPE2_; 
+                                                  Action: NET_FW_ACTION_);
+begin
+  DefaultInterface.DefaultOutboundAction[profileType] := Action;
+end;
+
+function TNetFwPolicy2.Get_IsRuleGroupCurrentlyEnabled(const group: WideString): WordBool;
+begin
+    Result := DefaultInterface.IsRuleGroupCurrentlyEnabled[group];
+end;
+
+function TNetFwPolicy2.Get_LocalPolicyModifyState: NET_FW_MODIFY_STATE_;
+begin
+    Result := DefaultInterface.LocalPolicyModifyState;
+end;
+
+procedure TNetFwPolicy2.EnableRuleGroup(profileTypesBitmask: Integer; const group: WideString; 
+                                        enable: WordBool);
+begin
+  DefaultInterface.EnableRuleGroup(profileTypesBitmask, group, enable);
+end;
+
+function TNetFwPolicy2.IsRuleGroupEnabled(profileTypesBitmask: Integer; const group: WideString): WordBool;
+begin
+  Result := DefaultInterface.IsRuleGroupEnabled(profileTypesBitmask, group);
+end;
+
+procedure TNetFwPolicy2.RestoreLocalFirewallDefaults;
+begin
+  DefaultInterface.RestoreLocalFirewallDefaults;
+end;
+
+{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
+constructor TNetFwPolicy2Properties.Create(AServer: TNetFwPolicy2);
+begin
+  inherited Create;
+  FServer := AServer;
+end;
+
+function TNetFwPolicy2Properties.GetDefaultInterface: INetFwPolicy2;
+begin
+  Result := FServer.DefaultInterface;
+end;
+
+function TNetFwPolicy2Properties.Get_CurrentProfileTypes: Integer;
+begin
+    Result := DefaultInterface.CurrentProfileTypes;
+end;
+
+function TNetFwPolicy2Properties.Get_FirewallEnabled(profileType: NET_FW_PROFILE_TYPE2_): WordBool;
+begin
+    Result := DefaultInterface.FirewallEnabled[profileType];
+end;
+
+procedure TNetFwPolicy2Properties.Set_FirewallEnabled(profileType: NET_FW_PROFILE_TYPE2_; 
+                                                      Enabled: WordBool);
+begin
+  DefaultInterface.FirewallEnabled[profileType] := Enabled;
+end;
+
+function TNetFwPolicy2Properties.Get_ExcludedInterfaces(profileType: NET_FW_PROFILE_TYPE2_): OleVariant;
+var
+  InterfaceVariant : OleVariant;
+begin
+  InterfaceVariant := DefaultInterface;
+  Result := InterfaceVariant.ExcludedInterfaces[profileType];
+end;
+
+procedure TNetFwPolicy2Properties.Set_ExcludedInterfaces(profileType: NET_FW_PROFILE_TYPE2_; 
+                                                         Interfaces: OleVariant);
+begin
+  DefaultInterface.ExcludedInterfaces[profileType] := Interfaces;
+end;
+
+function TNetFwPolicy2Properties.Get_BlockAllInboundTraffic(profileType: NET_FW_PROFILE_TYPE2_): WordBool;
+begin
+    Result := DefaultInterface.BlockAllInboundTraffic[profileType];
+end;
+
+procedure TNetFwPolicy2Properties.Set_BlockAllInboundTraffic(profileType: NET_FW_PROFILE_TYPE2_; 
+                                                             Block: WordBool);
+begin
+  DefaultInterface.BlockAllInboundTraffic[profileType] := Block;
+end;
+
+function TNetFwPolicy2Properties.Get_NotificationsDisabled(profileType: NET_FW_PROFILE_TYPE2_): WordBool;
+begin
+    Result := DefaultInterface.NotificationsDisabled[profileType];
+end;
+
+procedure TNetFwPolicy2Properties.Set_NotificationsDisabled(profileType: NET_FW_PROFILE_TYPE2_; 
+                                                            disabled: WordBool);
+begin
+  DefaultInterface.NotificationsDisabled[profileType] := disabled;
+end;
+
+function TNetFwPolicy2Properties.Get_UnicastResponsesToMulticastBroadcastDisabled(profileType: NET_FW_PROFILE_TYPE2_): WordBool;
+begin
+    Result := DefaultInterface.UnicastResponsesToMulticastBroadcastDisabled[profileType];
+end;
+
+procedure TNetFwPolicy2Properties.Set_UnicastResponsesToMulticastBroadcastDisabled(profileType: NET_FW_PROFILE_TYPE2_; 
+                                                                                   disabled: WordBool);
+begin
+  DefaultInterface.UnicastResponsesToMulticastBroadcastDisabled[profileType] := disabled;
+end;
+
+function TNetFwPolicy2Properties.Get_Rules: INetFwRules;
+begin
+    Result := DefaultInterface.Rules;
+end;
+
+function TNetFwPolicy2Properties.Get_ServiceRestriction: INetFwServiceRestriction;
+begin
+    Result := DefaultInterface.ServiceRestriction;
+end;
+
+function TNetFwPolicy2Properties.Get_DefaultInboundAction(profileType: NET_FW_PROFILE_TYPE2_): NET_FW_ACTION_;
+begin
+    Result := DefaultInterface.DefaultInboundAction[profileType];
+end;
+
+procedure TNetFwPolicy2Properties.Set_DefaultInboundAction(profileType: NET_FW_PROFILE_TYPE2_; 
+                                                           Action: NET_FW_ACTION_);
+begin
+  DefaultInterface.DefaultInboundAction[profileType] := Action;
+end;
+
+function TNetFwPolicy2Properties.Get_DefaultOutboundAction(profileType: NET_FW_PROFILE_TYPE2_): NET_FW_ACTION_;
+begin
+    Result := DefaultInterface.DefaultOutboundAction[profileType];
+end;
+
+procedure TNetFwPolicy2Properties.Set_DefaultOutboundAction(profileType: NET_FW_PROFILE_TYPE2_; 
+                                                            Action: NET_FW_ACTION_);
+begin
+  DefaultInterface.DefaultOutboundAction[profileType] := Action;
+end;
+
+function TNetFwPolicy2Properties.Get_IsRuleGroupCurrentlyEnabled(const group: WideString): WordBool;
+begin
+    Result := DefaultInterface.IsRuleGroupCurrentlyEnabled[group];
+end;
+
+function TNetFwPolicy2Properties.Get_LocalPolicyModifyState: NET_FW_MODIFY_STATE_;
+begin
+    Result := DefaultInterface.LocalPolicyModifyState;
+end;
+
+{$ENDIF}
+
+class function CoNetFwMgr.Create: INetFwMgr;
+begin
+  Result := CreateComObject(CLASS_NetFwMgr) as INetFwMgr;
+end;
+
+class function CoNetFwMgr.CreateRemote(const MachineName: string): INetFwMgr;
+begin
+  Result := CreateRemoteComObject(MachineName, CLASS_NetFwMgr) as INetFwMgr;
+end;
+
+procedure TNetFwMgr.InitServerData;
+const
+  CServerData: TServerData = (
+    ClassID:   '{304CE942-6E39-40D8-943A-B913C40C9CD4}';
+    IntfIID:   '{F7898AF5-CAC4-4632-A2EC-DA06E5111AF2}';
+    EventIID:  '';
+    LicenseKey: nil;
+    Version: 500);
+begin
+  ServerData := @CServerData;
+end;
+
+procedure TNetFwMgr.Connect;
+var
+  punk: IUnknown;
+begin
+  if FIntf = nil then
+  begin
+    punk := GetServer;
+    Fintf:= punk as INetFwMgr;
+  end;
+end;
+
+procedure TNetFwMgr.ConnectTo(svrIntf: INetFwMgr);
+begin
+  Disconnect;
+  FIntf := svrIntf;
+end;
+
+procedure TNetFwMgr.DisConnect;
+begin
+  if Fintf <> nil then
+  begin
+    FIntf := nil;
+  end;
+end;
+
+function TNetFwMgr.GetDefaultInterface: INetFwMgr;
+begin
+  if FIntf = nil then
+    Connect;
+  Assert(FIntf <> nil, 'DefaultInterface is NULL. Component is not connected to Server. You must call "Connect" or "ConnectTo" before this operation');
+  Result := FIntf;
+end;
+
+constructor TNetFwMgr.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
+  FProps := TNetFwMgrProperties.Create(Self);
+{$ENDIF}
+end;
+
+destructor TNetFwMgr.Destroy;
+begin
+{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
+  FProps.Free;
+{$ENDIF}
+  inherited Destroy;
+end;
+
+{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
+function TNetFwMgr.GetServerProperties: TNetFwMgrProperties;
+begin
+  Result := FProps;
+end;
+{$ENDIF}
+
+function TNetFwMgr.Get_LocalPolicy: INetFwPolicy;
+begin
+    Result := DefaultInterface.LocalPolicy;
+end;
+
+function TNetFwMgr.Get_CurrentProfileType: NET_FW_PROFILE_TYPE_;
+begin
+    Result := DefaultInterface.CurrentProfileType;
+end;
+
+procedure TNetFwMgr.RestoreDefaults;
+begin
+  DefaultInterface.RestoreDefaults;
+end;
+
+procedure TNetFwMgr.IsPortAllowed(const imageFileName: WideString; IpVersion: NET_FW_IP_VERSION_; 
+                                  portNumber: Integer; const localAddress: WideString; 
+                                  ipProtocol: NET_FW_IP_PROTOCOL_; out allowed: OleVariant; 
+                                  out restricted: OleVariant);
+begin
+  DefaultInterface.IsPortAllowed(imageFileName, IpVersion, portNumber, localAddress, ipProtocol, 
+                                 allowed, restricted);
+end;
+
+procedure TNetFwMgr.IsIcmpTypeAllowed(IpVersion: NET_FW_IP_VERSION_; 
+                                      const localAddress: WideString; Type_: Byte; 
+                                      out allowed: OleVariant; out restricted: OleVariant);
+begin
+  DefaultInterface.IsIcmpTypeAllowed(IpVersion, localAddress, Type_, allowed, restricted);
+end;
+
+{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
+constructor TNetFwMgrProperties.Create(AServer: TNetFwMgr);
+begin
+  inherited Create;
+  FServer := AServer;
+end;
+
+function TNetFwMgrProperties.GetDefaultInterface: INetFwMgr;
+begin
+  Result := FServer.DefaultInterface;
+end;
+
+function TNetFwMgrProperties.Get_LocalPolicy: INetFwPolicy;
+begin
+    Result := DefaultInterface.LocalPolicy;
+end;
+
+function TNetFwMgrProperties.Get_CurrentProfileType: NET_FW_PROFILE_TYPE_;
+begin
+    Result := DefaultInterface.CurrentProfileType;
+end;
+
+{$ENDIF}
+
+procedure Register;
+begin
+  RegisterComponents(dtlServerPage, [TNetFwRule, TNetFwOpenPort, TNetFwAuthorizedApplication, TNetFwPolicy2, 
+    TNetFwMgr]);
+end;
 
 end.
