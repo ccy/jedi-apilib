@@ -4,7 +4,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% HEADER
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\documentclass[a4paper,twoside,10pt]{report}
+\documentclass[a4paper,oneside,10pt]{article}
 % Alternative Options:
 %	Paper Size: a4paper / a5paper / b5paper / letterpaper / legalpaper / executivepaper
 % Duplex: oneside / twoside
@@ -155,7 +155,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% ==> Some hints are following:
 
-\chapter{About the implementation}
+%\chapter{About the implementation}
 
 \section{Who should read this?}
 This documentation is for all people who want or are writing code for the JEDI Windows Security API project. It is intended to help them to improve the source code, the readability and the documentation .Try to stick as much as possible and ask your tutor or JEDI Administrators if there are problems, additions and more.
@@ -163,6 +163,23 @@ This documentation is for all people who want or are writing code for the JEDI W
 \section{General}
 
 Before you start to write your JEDI code read this documentation completely. It avoids additional work to be done in your code. You should also read the JEDI style guide conventions located in the documentation file "`JEDI StyleGuid.pdf"' located in the subversion folder jwscl/trunk/documentation\footnote{It can be downloaded from http://jedi-apilib.svn.sourceforge.net/viewvc/*checkout*/jedi-apilib/jwscl/trunk/documentation/JEDI StyleGuide.pdf?revision=4} on your harddisk. Try to stick to the styleguide as best as possible.
+
+\section{Contact}
+
+You can contact us at mail@delphi-jedi.net.
+
+As a JEDI API\&WSCL member you can contact us using the instant messanger protocol Jabber.\\
+The JEDI Jabber Accounts of the current Administrators (July 2008) are:
+\begin{itemize}
+	\item \textbf{Christian Wimmer} christianwimmer@delphi-jedi.net
+	\item \textbf{Remko Weijne}n rweijnen@delphi-jedi.net
+\end{itemize}
+
+The JEDI Jabber Server cannot be contacted through other Jabber Servers. You need an account on the server. The account can only be received by an invitation!
+Logon credentials are:\\
+Server: delphi-jedi.net\\
+Port: 30000\\
+Activate SSL!\\
 
 \section{Target Delphi Versions}
 \begin{itemize}
@@ -235,6 +252,11 @@ Committing source code can sometimes be problematic or even dangerous. You shoul
 	\begin{lstlisting}
 	TJwYourClass = class
 	\end{lstlisting} 
+	\item Start every word of a name with a capital letter 
+	\begin{lstlisting}
+	 ThisCanBeAName
+	\end{lstlisting}
+	\item Constant names are to be written in capital letters
 \end{itemize}
 
 \section{Using Strings}
