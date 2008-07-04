@@ -107,6 +107,7 @@ type
     function WaitWithTimeOut(const TimeOut: DWORD;
       const MsgLoop : Boolean = true) : LongWord;
 
+
     {<B>Name</B> sets or gets the threads name.
      The name is retrieved from internal variable. Changing the thread's name
      using foreign code does not affect this property.
@@ -1381,6 +1382,7 @@ begin
 
   CheckThreadError(GetExitCodeThread(Handle, Result));
 end;
+
 
 initialization
 

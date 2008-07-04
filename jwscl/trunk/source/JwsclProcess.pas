@@ -99,7 +99,7 @@ BOOL WINAPI TerminateJobObject(HANDLE hJob, UINT uExitCode);
 
 
   TJwOnJobNotification = procedure (Sender : TJwJobObject; ProcessId : TJwProcessId;
-    JobLimits : TJwJobMessages; Data : Pointer) of object;
+    JobMessages : TJwJobMessages; Data : Pointer) of object;
 
   TJwOnNoActiveProcesses = procedure (Sender : TJwJobObject) of object;
 
@@ -211,7 +211,8 @@ BOOL WINAPI TerminateJobObject(HANDLE hJob, UINT uExitCode);
 
     {<B>IsProcessInJob</B> returns whether a process is assigned to the job.
     @param hProcess defines any handle to the process that is tested for membership. 
-    @param Returns tre if the process is a member of the job; otherwise false. 
+    @param Returns tre if the process is a member of the job; otherwise false.
+    @return Returns true if the given process is assigned to the current job instance; otherwise false. 
     raises
  EJwsclWinCallFailedException:  can be raised if the call to an winapi function failed. 
 
