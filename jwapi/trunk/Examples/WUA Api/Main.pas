@@ -655,12 +655,15 @@ end;
 function TDownloadCompletedCallback.Invoke(const downloadJob: IDownloadJob;
   const callbackArgs: IDownloadCompletedCallbackArgs): HResult;
 begin
+  if wuaMain.UpdDownloader <> nil then
+    wuaMain.UpdDownloader.EndDownload(DownloadJob);
   result := S_OK;
 end;
 
 procedure TwuaMain.btnStopClick(Sender: TObject);
 begin
-  aSearchJob.RequestAbort;
+  if aSearchJob <> nil then
+    aSearchJob.RequestAbort;
 end;
 
 { otherwise you run into a memory leak, because if you use widestrings the tree will not free nodes automatically! }
@@ -681,13 +684,16 @@ procedure TwuaMain.btnDownloadClick(Sender: TObject);
   var
     I : Integer;
 begin
+  if updSession <> nil then
+    exit;
+    
   UpdDownloader := updSession.CreateUpdateDownloader;
   UpdDownloader.ClientApplicationID := '{49F4962F-C39E-4B1D-A43B-B66743D42348}';
   UpdDownloader.IsForced := false;
   UpdDownloader.Priority := 2;
 
 
-  For I := 0 To SrcResult.Updates.Count -1 do
+  For I := 0 To {SrcResult.Updates.Count -1}0 do
   begin
     upd := SrcResult.Updates.Item[I];
     updIsApplicable := True;
@@ -721,14 +727,14 @@ begin
 
 
   UpdDownloadJob := UpdDownloader.BeginDownload(aDownloadProgressChangedCallback, aDownloadCompletedCallback, Variant(Integer(Self)));
-  UpdDownloadJob.AsyncState; // don't forget this otherwise you run into an ole exception !
+ // UpdDownloadJob.AsyncState; // don't forget this otherwise you run into an ole exception !
 
 { update gui elements }
-  while not UpdDownloadJob.IsCompleted do
+{  while not UpdDownloadJob.IsCompleted do
     Application.ProcessMessages;
     UpdDownloadJob.CleanUp;
-
-  wuaMain.UpdDownResult := wuaMain.UpdDownloader.EndDownload(UpdDownloadJob);
+ }
+//  wuaMain.UpdDownResult := wuaMain.UpdDownloader.EndDownload(UpdDownloadJob);
 end;
 
 { COM initialization / uninitialization }
