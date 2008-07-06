@@ -1,10 +1,10 @@
 object wuaMain: TwuaMain
   Left = 263
   Top = 139
-  Width = 624
-  Height = 507
   Anchors = [akLeft, akTop, akBottom]
   Caption = 'wuaMain'
+  ClientHeight = 471
+  ClientWidth = 608
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -15,8 +15,8 @@ object wuaMain: TwuaMain
   Position = poScreenCenter
   OnCreate = FormCreate
   DesignSize = (
-    616
-    473)
+    608
+    471)
   PixelsPerInch = 96
   TextHeight = 13
   object lbSummary: TLabel
@@ -2483,10 +2483,12 @@ object wuaMain: TwuaMain
     Visible = False
   end
   object pbCurrent: TProgressBar
-    Left = 175
-    Top = 128
+    Left = 179
+    Top = 127
     Width = 193
     Height = 17
+    ParentShowHint = False
+    ShowHint = True
     TabOrder = 1
   end
   object pbOverall: TProgressBar
@@ -2494,6 +2496,8 @@ object wuaMain: TwuaMain
     Top = 128
     Width = 193
     Height = 17
+    ParentShowHint = False
+    ShowHint = True
     TabOrder = 2
   end
   object PageControl1: TPageControl

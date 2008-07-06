@@ -626,11 +626,27 @@ var ID : IDownloadProgress;
     wuaMain : TwuaMain;
 begin
   wuaMain := TwuaMain(Pointer(Integer(Variant(downloadJob.AsyncState))));
-  wuaMain.UpdDownResult := wuaMain.UpdDownloader.EndDownload(downloadJob);
+{  wuaMain.UpdDownResult := wuaMain.UpdDownloader.EndDownload(downloadJob);
   ID := downloadJob.GetProgress;
   wuaMain.pbOverall.Max := ID.TotalBytesToDownload.Lo64;
-  wuaMain.pbCurrent.Position := ID.TotalBytesDownloaded.Lo64;
+  wuaMain.pbCurrent.Position := ID.TotalBytesDownloaded.Lo64;}
+  wuaMain.pbOverall.Max := downloadJob.GetProgress.TotalBytesToDownload.Lo64;
+  wuaMain.pbOverall.Position := downloadJob.GetProgress.TotalBytesDownloaded.Lo64;
+  wuaMain.pbOverall.Hint := Format('%d of %d kib downloaded : %0.0f ',
+    [wuaMain.pbOverall.Position div 1024, wuaMain.pbOverall.Max div 1024,
+     wuaMain.pbOverall.Position / wuaMain.pbOverall.Max * 100
+    ]);
 
+
+  wuaMain.pbCurrent.Max := downloadJob.GetProgress.CurrentUpdateBytesToDownload.Lo64;
+  wuaMain.pbCurrent.Position := downloadJob.GetProgress.CurrentUpdateBytesDownloaded.Lo64;
+  wuaMain.pbCurrent.Hint := Format('%d of %d kib downloaded : %0.0f ',
+    [wuaMain.pbOverall.Position div 1024, wuaMain.pbOverall.Max div 1024,
+     wuaMain.pbOverall.Position / wuaMain.pbOverall.Max * 100
+    ]);
+
+  //if Abbrechen? then
+  //  downloadJob.RequestAbort;
   result := S_OK;
 end;
 
@@ -665,13 +681,11 @@ procedure TwuaMain.btnDownloadClick(Sender: TObject);
   var
     I : Integer;
 begin
-  UpdDownloadJob := UpdDownloader.BeginDownload(aDownloadProgressChangedCallback, aDownloadCompletedCallback, Variant(Integer(Self)));
-  UpdDownloadJob.AsyncState; // don't forget this otherwise you run into an ole exception !
+  UpdDownloader := updSession.CreateUpdateDownloader;
+  UpdDownloader.ClientApplicationID := '{49F4962F-C39E-4B1D-A43B-B66743D42348}';
+  UpdDownloader.IsForced := false;
+  UpdDownloader.Priority := 2;
 
-{ update gui elements }
-  while not UpdDownloadJob.IsCompleted do
-    Application.ProcessMessages;
-    UpdDownloadJob.CleanUp;
 
   For I := 0 To SrcResult.Updates.Count -1 do
   begin
@@ -679,11 +693,11 @@ begin
     updIsApplicable := True;
     updToInstall.Add(upd);
     Memo1.Lines.Add('Downloads: ' + IntToStr(I));
-    UpdDownloader := updSession.CreateUpdateDownloader; }
+
     try
-      UpdDownloader.Updates := updToInstall;
+
       // downloads will be located in this folder --> C:\WINDOWS\SoftwareDistribution\Download
-      UpdDownResult := UpdDownloader.Download();
+     // UpdDownResult := UpdDownloader.Download();
 
 {      Case UpdDownResult.ResultCode of
         0 : Memo1.Lines.Add('Download not started...' + UpdDownloader.Updates.Item[I].Title);
@@ -696,10 +710,25 @@ begin
         except
           on E : EOleSysError do
           begin
-            Memo1.Lines.Add('download discovered the following problem: ' + IntToStr(UpdDownResult.ResultCode));
+           // Memo1.Lines.Add('download discovered the following problem: ' + IntToStr(UpdDownResult.ResultCode));
        end;
   end;
-end;
+  end;
+
+  UpdDownloader.Updates := updToInstall;
+
+  i := UpdDownloader.Updates.Count;
+
+
+  UpdDownloadJob := UpdDownloader.BeginDownload(aDownloadProgressChangedCallback, aDownloadCompletedCallback, Variant(Integer(Self)));
+  UpdDownloadJob.AsyncState; // don't forget this otherwise you run into an ole exception !
+
+{ update gui elements }
+  while not UpdDownloadJob.IsCompleted do
+    Application.ProcessMessages;
+    UpdDownloadJob.CleanUp;
+
+  wuaMain.UpdDownResult := wuaMain.UpdDownloader.EndDownload(UpdDownloadJob);
 end;
 
 { COM initialization / uninitialization }
