@@ -1,9 +1,9 @@
 object CheckoutForm: TCheckoutForm
-  Left = 0
-  Top = 0
+  Left = 1884
+  Top = 234
   Caption = 'CheckoutForm'
-  ClientHeight = 484
-  ClientWidth = 719
+  ClientHeight = 448
+  ClientWidth = 736
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -27,7 +27,7 @@ object CheckoutForm: TCheckoutForm
     Left = 16
     Top = 32
     Width = 445
-    Height = 209
+    Height = 185
     Caption = 'JWA'
     TabOrder = 0
     object Label2: TLabel
@@ -109,9 +109,9 @@ object CheckoutForm: TCheckoutForm
   end
   object GroupBox2: TGroupBox
     Left = 16
-    Top = 247
+    Top = 223
     Width = 445
-    Height = 209
+    Height = 186
     Caption = 'JWSCL'
     TabOrder = 1
     object Label6: TLabel
@@ -213,7 +213,7 @@ object CheckoutForm: TCheckoutForm
   end
   object HTTPSCertCheckBox: TCheckBox
     Left = 16
-    Top = 462
+    Top = 415
     Width = 337
     Height = 17
     Caption = 'Accept JEDI API sourceforge SVN certificate permanently.'
@@ -323,6 +323,8 @@ object CheckoutForm: TCheckoutForm
     OnDoneFile = JvHttpUrlGrabber1DoneFile
     OnError = JvHttpUrlGrabber1Error
     OnProgress = JvHttpUrlGrabber1Progress
+    OnConnectedToServer = JvHttpUrlGrabber1ConnectedToServer
+    OnClosingConnection = JvHttpUrlGrabber1ClosingConnection
     Left = 200
     Top = 8
   end

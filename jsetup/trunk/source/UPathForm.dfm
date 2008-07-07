@@ -1,6 +1,6 @@
 object PathForm: TPathForm
-  Left = 0
-  Top = 0
+  Left = 608
+  Top = 190
   Caption = 'PathForm'
   ClientHeight = 312
   ClientWidth = 564
@@ -21,8 +21,8 @@ object PathForm: TPathForm
     Caption = 'Path to JEDI API (JWA)'
   end
   object Label2: TLabel
-    Left = 16
-    Top = 120
+    Left = 17
+    Top = 154
     Width = 256
     Height = 13
     Caption = 'Path to JEDI Windows Security Code Library (JWSCL)'
@@ -34,36 +34,26 @@ object PathForm: TPathForm
     Height = 13
     Caption = 'Select the path where to download the sources'
   end
-  object Edit1: TEdit
-    Left = 16
-    Top = 82
-    Width = 353
+  object JvDirectoryJwa: TJvDirectoryEdit
+    Left = 17
+    Top = 77
+    Width = 352
     Height = 21
+    DialogKind = dkWin32
+    AutoCompleteOptions = [acoAutoSuggest, acoSearch]
+    DialogOptions = [sdAllowCreate, sdPrompt]
     TabOrder = 0
-    Text = 'Edit1'
+    Text = 'JvDirectoryJwa'
   end
-  object Button1: TButton
-    Left = 375
-    Top = 80
-    Width = 75
-    Height = 25
-    Caption = 'Button1'
-    TabOrder = 1
-  end
-  object Edit2: TEdit
-    Left = 16
-    Top = 154
-    Width = 353
+  object JvDirectoryJwscl: TJvDirectoryEdit
+    Left = 17
+    Top = 173
+    Width = 352
     Height = 21
-    TabOrder = 2
-    Text = 'Edit1'
-  end
-  object Button2: TButton
-    Left = 375
-    Top = 152
-    Width = 75
-    Height = 25
-    Caption = 'Button1'
-    TabOrder = 3
+    DialogKind = dkWin32
+    AutoCompleteOptions = [acoAutoSuggest, acoSearch]
+    DialogOptions = [sdAllowCreate, sdPrompt]
+    TabOrder = 1
+    Text = 'JvDirectoryEdit1'
   end
 end

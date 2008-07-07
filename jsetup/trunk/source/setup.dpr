@@ -12,8 +12,7 @@ uses
   UDelphiForm in 'UDelphiForm.pas' {DelphiForm},
   UInstallation in 'UInstallation.pas' {InstallationForm},
   UReview in 'UReview.pas' {ReviewForm},
-  UDataModule in 'UDataModule.pas' {DataModule1: TDataModule},
-  UProcessThread in 'UProcessThread.pas';
+  UDataModule in 'UDataModule.pas' {DataModule1: TDataModule};
 
 {$R *.res}
 
@@ -21,7 +20,7 @@ begin
   Application.Initialize;
 {$IFDEF DELPHI11_UP}
   Application.MainFormOnTaskbar := True;
-{$ENDIF DELPHI11_UP}  
+{$ENDIF DELPHI11_UP}
   Application.CreateForm(TMainForm, MainForm);
   Application.CreateForm(TDataModule1, DataModule1);
   Application.Run;

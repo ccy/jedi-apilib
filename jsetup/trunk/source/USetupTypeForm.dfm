@@ -17,34 +17,34 @@ object SetupTypeForm: TSetupTypeForm
   object Label1: TLabel
     Left = 48
     Top = 112
-    Width = 321
-    Height = 41
+    Width = 31
+    Height = 13
     Caption = 'Label1'
   end
   object Label2: TLabel
     Left = 48
-    Top = 191
-    Width = 321
-    Height = 42
+    Top = 175
+    Width = 31
+    Height = 13
     Caption = 'Label1'
   end
   object Label3: TLabel
     Left = 24
     Top = 16
-    Width = 377
-    Height = 41
+    Width = 31
+    Height = 13
     Caption = 'Label1'
   end
   object Label4: TLabel
     Left = 48
-    Top = 262
-    Width = 321
-    Height = 43
+    Top = 246
+    Width = 31
+    Height = 13
     Caption = 'Label1'
   end
   object RadioButton1: TRadioButton
     Left = 24
-    Top = 168
+    Top = 152
     Width = 345
     Height = 17
     Caption = 'Update JEDI project to newer revision or newer release'
@@ -60,7 +60,7 @@ object SetupTypeForm: TSetupTypeForm
   end
   object RadioButton3: TRadioButton
     Left = 24
-    Top = 239
+    Top = 223
     Width = 113
     Height = 17
     Caption = 'Remove JEDI project'

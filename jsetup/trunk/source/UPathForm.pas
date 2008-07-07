@@ -4,22 +4,21 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, UPage;
+  Dialogs, StdCtrls, UPage, Mask, JvExMask, JvToolEdit, ActnList;
 
 type
   TPathForm = class(TPageForm)
-    Edit1: TEdit;
     Label1: TLabel;
-    Button1: TButton;
-    Edit2: TEdit;
     Label2: TLabel;
-    Button2: TButton;
     Label3: TLabel;
+    JvDirectoryJwa: TJvDirectoryEdit;
+    JvDirectoryJwscl: TJvDirectoryEdit;
   private
     { Private-Deklarationen }
   public
     { Public-Deklarationen }
     function GetNextPageIndex : Integer;override;
+    procedure GetNextUpdate(Sender : TObject); override;
   end;
 
 var
@@ -34,6 +33,19 @@ implementation
 function TPathForm.GetNextPageIndex: Integer;
 begin
   result := 5;
+end;
+
+procedure TPathForm.GetNextUpdate(Sender: TObject);
+begin
+  inherited;
+  if (Sender is TAction) then
+  begin
+    (Sender as TAction).Enabled :=
+      (Length(Trim(JvDirectoryJwa.Text)) > 0) and
+      (Length(Trim(JvDirectoryJwscl.Text)) > 0) and
+      DirectoryExists(JvDirectoryJwa.Text) and
+      DirectoryExists(JvDirectoryJwscl.Text);
+  end;
 end;
 
 end.
