@@ -157,7 +157,7 @@
 
 %\chapter{About the implementation}
 
-\section{Who should read this?}
+\section{Who Should Read This Document?}
 This documentation is for all people who want or are writing code for the JEDI Windows Security API project. It is intended to help them to improve the source code, the readability and the documentation .Try to stick as much as possible and ask your tutor or JEDI Administrators if there are problems, additions and more.
 
 \section{General}
@@ -178,13 +178,11 @@ The JEDI Jabber Accounts of the current Administrators (July 2008) are:
 The JEDI Jabber Server cannot be contacted through other Jabber Servers. You need an account on the server. The account can only be received by an invitation!\\
 The logon credentials are: \\
 
-\begin{tabular}[ll]
+\begin{tabular}{ll}
 Server 	 & delphi-jedi.net\\			
 Port	   & 30000\\
-Activate & SSL!\\
+Activate SSL!\\
 \end{tabular}
-
-
 
 
 \section{Target Delphi Versions}
@@ -199,7 +197,7 @@ Activate & SSL!\\
 {$...} //don't use new compiler directives outside!
 \end{lstlisting}  
 \item If you want to use a new Delphi construct you must make sure that a programmer with an old Delphi version has also the possibility to use the feature in another way.
-\item New Delphi versions (since Delphi 2005 to be exact) implements code region. This region can be used to show or to hide code areas in the Delphi IDE. It has no other purpose. This feature is problematic in JWSCL units since it makes it impossible to compile the project. Of course it is possible to use this feature in examples or projects that includes JWSCL. However in this way the example/project is limited to the new Delphi versions.
+\item New Delphi versions (since Delphi 2005 to be exact) implements code regions. These regions can be used to show or hide code areas in the Delphi IDE. They have no other purpose. However this feature is problematic for the JWSCL units since it creates errors in old Delphi versions. Of course it is possible to use the feature in examples or projects that includes JWSCL units. In this way just the example/project is limited to new Delphi versions.
 
 \begin{lstlisting}
 {$REGION 'name'}
@@ -214,27 +212,27 @@ folded code
 It is possible to use a source formatter. However don't use a source formatter that uses a format that differs too much from the existing source format. An appropriate formatter has the JEDI Code Format Project\footnote{The JEDI Code formatter can be found at http://jedicodeformat.sourceforge.net}.
 
 \section{Configuration Managment (with Subversion)}
-The JEDI WSCL Project and its sister project the JEDI API is maintained with Subversion hosted on Sourceforge.net.
+The JEDI WSCL Project and its sister project the JEDI API are maintained with Subversion hosted on Sourceforge.net.
 It can be downloaded using a Subversion Client\footnote{Version 1.4.6 command line client: http://subversion.tigris.org/files/documents/15/41687/svn-1.4.6-setup.exe\\Windows Client: http://tortoisesvn.tigris.org}
 
 \subsection{Layout}
 The Subversion repository is structured into \textit{tags}, \textit{branches} and a \textit{trunk} folder.
 \begin{itemize}
-	\item \textbf{Trunk} The trunk folder is the main developer folder. It includes code that has alpha state and should used with care. The following sub folders are available:
+	\item \textbf{Trunk} The trunk folder is the main developer folder. It includes code that has alpha status and should be used with care. The following sub folders are available:
 	  
 		\begin{itemize}
-			\item \textbf{COM} This folder contains sources that implements (nearly) all JWSCL classes as COM interfaces. In this way it will be possible to access the JWSCL through C++, Basic, script languages and many more. However this endeavour isn't finished yet and thus the code is not usable yet.
+			\item \textbf{COM} This folder contains sources that implements (nearly) all JWSCL classes as COM interfaces. In this way it will be possible to access the JWSCL with C++, Basic, script languages and others. However this endeavour isn't finished yet and thus the code is not usable yet.
 			\item \textbf{documentation} This folder contains documentation about the JWSCL. It also contains the JEDI StyleGuide.
 			\item \textbf{examples} This folder contains examples which show how to use the library. 
 			\item \textbf{packages} This folder will contain packages that are used to compile all JWSCL unit. In this way it is possible to automatically do syntax checking.
 			\item \textbf{source} This folder contains the main source code files of JWSCL. Each delphi file is accompanied by a dtx file which contains external documentation for Doc-O-Matic. It will be created and maintained only by the document managment.
-			\item \textbf{unittests} This folder contains tests for (nearly) all classes of JWSCL. Of course many classes cannot be tested because of their nature. So it is hardly possible to test a multi thread environment or windows API calls that depend on the environment - in this way.
+			\item \textbf{unittests} This folder contains tests for (nearly) all classes of JWSCL. Of course many classes cannot be tested because of their nature. Therefore it is hardly possible to test a multi-threaded environment or windows API calls that depend on an environment.
 		\end{itemize}
-	\item \textbf{Branches} This folder contains a copy of the Trunk folder at a specific version. In this way it is possible to create a parallel development to do specific changes or releases. A release has a version number identifier (like 0.9.1). A release is not used to add additional features but just bug fixes. 
-	\item \textbf{Tags} This folder contains a static copy of the Trunk or Branch version of the code at a specific revision\footnote{A revision is a code version created at a commit.}. In contrary to the Branches folder, a tagged version cannot be changed\footnote{Infact the Subversion server does not deny write access to the Tag folder. However it is against the rules to change the Tags.}. 
+	\item \textbf{Branches} This folder contains a copy of the Trunk folder at a specific version. In this way it is possible to create a parallel development to do specific changes or releases. A release has a version number identifier (like 0.9.1). A release is not used to add additional features but just fixes bugs.
+	\item \textbf{Tags} This folder contains a static copy of the Trunk or Branch version of the code at a specific revision\footnote{A revision is a code version created on a SVN commit.}. In contrary to the Branches folder, a tagged version cannot be changed\footnote{In fact the Subversion server doesn't deny write access to the \textit{Tag} folder. However it is against the rules to change the Tags.}. 
 \end{itemize}
 
-\subsection{A new release}
+\subsection{A New Release}
 When a new release it about to be published and all features of a trunk are ready to use, a new branch is created with the version identifier (e.g. 0.9.2) and a pre-release tag "`b"' (which stands for beta like 0.9.2b). In this way the release can be tested and finally be released without the beta tag. The upcoming release is feature-complete and thus will only receive fixed bugs.
 
 \subsection{Commit}
@@ -243,16 +241,17 @@ Always make sure that your code can be compiled properly without errors and to c
 \subsection{Risk}
 Committing source code can sometimes be problematic or even dangerous. You should always make sure that you don't include sensible information (like passwords) into the source code and upload it to the server. Everybody can download the source code and thus get your credential data. If it is too late the only choice you have is to change your login data.
 
-\section{What belongs where?}\label{Whatbelongswhere}
+\section{What Belongs Where?}\label{Whatbelongswhere}
 \begin{itemize}
 	\item Add your exceptions to \textit{JwsclExceptions.pas}.
   \item Add your simple types to \textit{JwsclTypes.pas}.
   \item Add your constants to \textit{JwsclConstants.pas}.
   \item Add utility functions to \textit{JwsclUtils.pas}.
   \item Add COM utilities to \textit{JwsclComUtils.pas}.
+  \item Add strings and exception descriptions to \textit{JwsclResource.pas}.
 \end{itemize}
 
-\section{Naming conventions}
+\section{Naming Conventions}
 \begin{itemize}
 	\item Name your classes with the JEDI Windows lettes \textbf{Jw} 
 	\begin{lstlisting}
@@ -267,8 +266,8 @@ Committing source code can sometimes be problematic or even dangerous. You shoul
 
 \section{Using Strings}
 \begin{itemize}
-	\item Use \textit{TJwString} and \textit{TJwPChar} if you support Ansi- and Unicode. Otherwise use \textit{AnsiString}, \textit{WideString} and \textit{PAnsiChar} and \textit{PWideChar} instead of simple \textit{String} and \textit{PChar}. The last two simple types may become incompatible with newer Delphi versions\footnote{It is directly addressed to the upcoming Delphi which implements Unicode by default. So String will automatically become WideString. This may break existing JWSCL code.}.
-	\item If you need to call a WinAPI function that is Ansi- and Unicode aware you must implement them both instead of calling the generic function \footnote{The JEDI Windows API implements automatic creation of Ansi- or Unicode functions. Most times a Windows API function is implemented three times. E.g. CreateProcessA (Ansicode), \textit{CreateProcessW} (Unicode) and \textit{CreateProcess} that points to \textit{CreateProcessA} or \textit{CreateProcessW} depending on the compiler directive \textbf{UNICODE}. If it is set \textit{CreateProcessW} is used; otherwise \textit{CreateProcessA}. However JWSCL does only rely on its on \textbf{UNICODE} directive.}.  
+	\item Use \textit{TJwString} and \textit{TJwPChar} if you support Ansi- and Unicode. Otherwise use \textit{AnsiString}, \textit{WideString} and their c parts \textit{PAnsiChar} and \textit{PWideChar} instead of simple \textit{String} and \textit{PChar}. The last two simple types may become incompatible with newer Delphi versions\footnote{It is directly addressed to the upcoming Delphi which implements Unicode by default. So String will automatically become WideString. This may break existing JWSCL code.}.
+	\item If you need to call a WinAPI function that is Ansi- and Unicode aware you must implement them both instead of calling the generic function \footnote{The JEDI Windows API implements automatic creation of Ansi- or Unicode functions. Most times a Windows API function is implemented three times. E.g. \textit{CreateProcessA} (Ansicode), \textit{CreateProcessW} (Unicode) and \textit{CreateProcess} that points to \textit{CreateProcessA} or \textit{CreateProcessW} depending on the compiler directive \textbf{UNICODE}. If it is set \textit{CreateProcessW} is used; otherwise \textit{CreateProcessA}. However JWSCL does only rely on its on \textbf{UNICODE} directive.}.  
   \begin{lstlisting}
     If {$IFDEF UNICODE}CreateProcessW{$ELSE}CreateProcessA{$ENDIF UNICODE}(TJwPChar(Name),...) then ...
   \end{lstlisting} 
@@ -279,7 +278,7 @@ Committing source code can sometimes be problematic or even dangerous. You shoul
 \section{Exceptions}
 
 \begin{itemize}
-	\item Use the whole power of the exception constructors. An example for a failed windows api function call can look like
+	\item Use the whole power of the JWSCL exception constructors. An example for a failed windows api function call can look like the following listing:
 \begin{lstlisting}
 raise EJwsclWinCallFailedException.CreateFmtWinCall(
  //Message as a resource string
@@ -330,10 +329,10 @@ exceptions like \textit{Exception} and \textit{EJwsclSecurityException}.
 
 \end{itemize}
 
-\section{Create your own JWSCL unit}
+\section{Create Your Own JWSCL Unit}
 If you are going to create your own JEDI Windows Security Code Library Unit you should read the following sections. There is a template unit "\_JwsclTemplate.pas" that you can use for your first steps. Make a copy of the file, rename it, adapt the unit name in the source code and start coding. Read on with the following sections.
 
-\subsection{Header documentation}
+\subsection{Header Documentation}
 The template unit contains some place holders that you should replace with the corresponding values
 \begin{enumerate}
 	\item \textbf{<Description here>} Add the description of the provided features of this unit.
@@ -348,25 +347,24 @@ You also should add additional information about the unit if necessary. It may c
 \end{itemize}
 
 \subsection{Names}
-Make sure that you name your identifiers are unique in all JWSCL units. Thus you should add resource strings, constants and simple types to special units as described in ~\ref{Whatbelongswhere}.
+Make sure that you name your identifiers are unique in all JWSCL units. Thus you should add resource strings, constants and simple types to special units as described in chapter ~\pageref{Whatbelongswhere} on page ~\ref{Whatbelongswhere}.
 
 \section{Documentation}
-Documentation is a main part of the JWSCL. There are two types of documentation:
+Documentation is a main part of the JWSCL and the language is simple english. There are two types of documentation:
 \begin{enumerate}
-	\item \textbf{internal comments} Internal comments are used to describe difficult or problematic source code parts. 
-The used language is simple english.
-	\item \textbf{declaration comments} Declaration comments are comments that describes a class, a method, a function, a constant or a simple type. This type of comment uses a particular syntax, called \textbf{JavaDoc}\footnote{http://java.sun.com/j2se/javadoc/writingdoccomments/index.html} and \textbf{XMLDoc}\footnote{http://msdn.microsoft.com/de-de/magazine/cc302121(en-us).aspx}.
+	\item \textbf{Internal Comments} Internal comments are used to describe difficult or problematic source code parts. 
+
+	\item \textbf{Declaration C} Declaration comments are comments that describes a class, a method, a function, a constant or a simple type. This type of comment uses a particular syntax, called \textbf{JavaDoc}\footnote{http://java.sun.com/j2se/javadoc/writingdoccomments/index.html} and \textbf{XMLDoc}\footnote{http://msdn.microsoft.com/de-de/magazine/cc302121(en-us).aspx}.
 \end{enumerate}
 
-\subsection{Documentation rules}
+\subsection{Documentation Rules}
 \begin{itemize}
 	\item Document your code if it is problematic to understand
-	\item Use only "\verb#{#" and "\verb#}#" to document your code. It is also possible to use "//" to comment out only one or a few lines. In this way "(*" and "*)" can be used to comment out parts with different comments temporarily.
+	\item Use only "\verb#{#" and "\verb#}#" to document your code. It is also possible to use "//" to comment out only one or a few lines. In this way "(*" and "*)" can be used to comment out parts with nested comments temporarily.
 	\item Document all constants, functions, procedures, types, classes, protected, public and published methods and properties. It is not necessary to document private parts that are only helper methods or variables for properties (which are already documented).
-	\item Use XMLDoc and/or JavaDoc documentation style. The help creator \textit{Doc-O-Matic} is used to grab all documentation and to create a documentation file.
-Example\\ 
+	\item Use \textit{XMLDoc} and/or \textit{JavaDoc} documentation style. The help creator \textit{Doc-O-Matic} is used to grab all documentation and to create a documentation file.\\
 More examples can be found at the \href{http://www.doc-o-matic.com/examplesourcecode.html}{Doc-O-Matic homepage}.
-Be aware that the JWSCL doc headers may differ from the shown examples because they were translated from another (incompatible) comment style.
+Be aware that the JWSCL doc headers may differ from the given examples because they were translated from another (incompatible) comment style.
 \begin{lstlisting}  
 {
 <B>IsProcessInJob</B> returns whether a process is assigned to the job or not.
@@ -379,15 +377,15 @@ raises
 function IsProcessInJob(hProcess : TJwProcessHandle) : Boolean;
 \end{lstlisting}
 
-\item Add all exceptions that can be raised into the documentation even if they may be raised in used methods. In the last case you can list all used methods instead so the user can see which exception may be raised additionally.
+\item Add all exceptions that can be raised into the documentation even if they are raised in used methods. In the last case you should list all used methods instead, so the user can get information which exception are raised in addition.
 
 \end{itemize}
 
 \section{Implementation}
 
 \begin{itemize}
-	\item Don't use private declarations if there isn't a very good reason. First ask your tutor or Administrator. The reason is that derived classes should be allowed to acces the internal variables. It is the programmers choice to decide how to protect internal variables.
-	\item Stick to this class example 
+	\item Don't use private declarations if there isn't a very good reason. First ask your tutor or Administrator. The reason is that derived classes should be allowed to acces the internal variables.
+	\item Try to stick to this class example :
 \begin{lstlisting}	
 type
   {to be documented}
@@ -409,7 +407,7 @@ type
   end;	
 \end{lstlisting}
  
-\item Always use try finally to free allocated memory. The following listing shows the allocation of an untyped pointer and a class instance. Be aware of the use of two try/finally statements. This is necessary because the status of the second allocation is undefined at first and thus must not be freed.
+\item Always use \textbf{try/finally} to make sure that allocated memory is freed. The following listing shows the allocation of an untyped pointer and a class instance. Be aware of that there are two \textbf{try/finally} statements. This is necessary because the status of the second allocation is undefined at first and thus must not be freed.
 
 \begin{lstlisting}
 var 
@@ -432,9 +430,9 @@ begin
 end;
 \end{lstlisting}
 
-\item It is not necessary to set both variables (in the last listing) to nil because these variables are never used again. However if you are going to implement these variables globally, you should use instead the procedure \textbf{FreeAndNil} or set to \textbf{nil}.
+\item It is not necessary to set both variables (in the last listing) to nil because these variables are never used again. However if you are going to implement these variables globally, you should use instead the procedure \textbf{FreeAndNil} or set it to \textbf{nil} manually.
 
-\item Instead you can also use \textit{TJwAutoPointer.Wrap} method which returns an \textit{IJwAutoPointer} interface. Such a "wrapped" pointer, handle or instance is automatically destroyed as soon it goes out of scope\footnote{A scope is an area where a variable can be access. If a wrapped variable is created on stack it will be removed as soon as the last "end;" statement of a method is reached. Furthermore a wrapped variable in a class is freed as soon as the instance is destroyed. And at last a globally defined wrapped variable is freed when the application exists.} and even if an exception forces it out of scope.
+\item Instead you can also use the \textit{TJwAutoPointer.Wrap} method which returns an \textit{IJwAutoPointer} interface. Such a "wrapped" pointer, handle or instance is automatically destroyed as soon it goes out of scope\footnote{A scope is an area where a variable can be access. If a wrapped variable is created on stack it will be removed as soon as the last "end;" statement of a method is reached. Furthermore a wrapped variable in a class is freed as soon as the instance is destroyed. And at last a globally defined wrapped variable is freed when the application exists.} and even if an exception forces it out of scope.
 
 The previous listing can be rearranged using TJwAutoPointer.
 \begin{lstlisting}
@@ -454,7 +452,7 @@ end;
 \end{lstlisting}
 Both pointers are automatically destroyed if the instruction pointer reaches the \textbf{end;} statement. It even happens if an exception is raised.
 If you want wrap data which should live longer as the ones in the above example you have to store the interface returned by the method \textit{Wrap}.
-It is even possible to access the data through the interface. Thus there is no need to use a second variable. However the interface only contains an untyped pointer, TObject and handle.
+It is possible to access the data through the interface. Thus there is no need to use a second variable. However the interface only contains an untyped pointer, TObject and handle.
 
 \begin{lstlisting}
 type
@@ -492,7 +490,7 @@ end;
 \end{lstlisting}
 Of course you must be aware that typed pointers should not be converted to untyped pointers since it is hard to understand and difficult to find errors.
 
-\item Use the parameter directive \textbf{const} as often as possible. It makes possible to improve speed and comprehensibility of parameters. A constant parameter cannot be changed within the function and thus the compiler can create a call by reference instead of a call by value (which copies the the data). Of course it does not apply to the internal members of the parameter if the parameter is a class for instance. A user of the function can use the original data with the fear of changing it.
+\item Use the parameter directive \textbf{const} as often as possible. The directive improves speed and comprehensibility of parameters. The value of a constant parameter cannot be changed within the function and thus the compiler can create a call by reference instead of a call by value (which copies the the data). Of course it does not apply to the internal members of the parameter if the parameter is a class for instance. A user of the function can use the original data \textbf{without} the fear of changing it.
 \end{itemize}
 
 
