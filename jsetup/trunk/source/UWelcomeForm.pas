@@ -13,7 +13,7 @@ type
     { Private-Deklarationen }
   public
     { Public-Deklarationen }
-    function GetNextPageIndex : Integer; override;
+    function GetNextPageIndex(const showGui : Boolean) : Integer; override;
   end;
 
 var
@@ -25,7 +25,7 @@ implementation
 
 { TWelcomeForm }
 
-function TWelcomeForm.GetNextPageIndex: Integer;
+function TWelcomeForm.GetNextPageIndex(const showGui : Boolean): Integer;
 begin
   result := 1;
 end;

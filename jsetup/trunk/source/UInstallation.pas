@@ -15,7 +15,7 @@ type
     { Private-Deklarationen }
   public
     { Public-Deklarationen }
-    function GetNextPageIndex : Integer; override; 
+    function GetNextPageIndex(const showGui : Boolean) : Integer; override;
   end;
 
 var
@@ -27,9 +27,9 @@ implementation
 
 { TInstallationForm }
 
-function TInstallationForm.GetNextPageIndex: Integer;
+function TInstallationForm.GetNextPageIndex(const showGui : Boolean): Integer;
 begin
-  GetNextPageIndex := -1;
+  GetNextPageIndex := 7;
 end;
 
 end.

@@ -24,6 +24,7 @@ object MainForm: TMainForm
     Height = 25
     Caption = 'Cancel'
     TabOrder = 0
+    OnClick = Button3Click
   end
   object ButtonNext: TButton
     Left = 558

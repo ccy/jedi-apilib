@@ -21,6 +21,7 @@ type
     procedure ButtonBackClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure ActionNextUpdate(Sender: TObject);
+    procedure Button3Click(Sender: TObject);
   private
     { Private-Deklarationen }
     Pages : Array of TPageForm;
@@ -41,7 +42,7 @@ var
 
 implementation
 
-uses UInstallation, UReview;
+uses UInstallation, UReview, UFinishedForm;
 
 {$R *.dfm}
 
@@ -61,9 +62,22 @@ begin
         Pages[i].GetNextUpdate(Sender);
       end;
     end;
-  end
+  end;
+
+  if Pages[fPageIndex].IsFinished then
+    ActionNext.Caption := '&Finished'
   else
-    ActionNext.Enabled := false;
+    ActionNext.Caption := '&Next';
+ { else
+    ActionNext.Enabled := false;   }
+ ActionNext.Enabled := true;
+
+
+end;
+
+procedure TMainForm.Button3Click(Sender: TObject);
+begin
+  Close;
 end;
 
 procedure TMainForm.ButtonBackClick(Sender: TObject);
@@ -71,6 +85,9 @@ var i : Integer;
 begin
   if Length(PageHistory) <= 0 then
    exit;
+
+  Pages[fPageIndex].OnBack(Self);
+
   i := PageHistory[high(PageHistory)];
   SetLength(PageHistory, Length(PageHistory)-1);
 
@@ -80,19 +97,36 @@ end;
 procedure TMainForm.ButtonNextClick(Sender: TObject);
 var P : TForm;
   idx, i: Integer;
+  CanClose : boolean;
 begin
-  i := Pages[fPageIndex].GetNextPageIndex;
+  i := Pages[fPageIndex].GetNextPageIndex(true);
 
   ActionNext.Enabled := i >= 0;
 
-  if i < 0 then
+  if i = -1 then
     exit;
 
-  idx := fPageIndex;
-  ShowPage(i);
+  case i of
+    -2 : begin
+           Close;
+           exit;
+         end;
+  else
+    exit;
+  end;
 
-  SetLength(PageHistory, Length(PageHistory)+1);
-  PageHistory[high(PageHistory)] := idx;
+
+  CanClose := true;
+  Pages[fPageIndex].OnCloseQuery(nil, CanClose);
+  if CanClose then
+  begin
+    idx := fPageIndex;
+    ShowPage(i);
+
+    SetLength(PageHistory, Length(PageHistory)+1);
+    PageHistory[high(PageHistory)] := idx;
+  end;
+
 end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
@@ -124,16 +158,14 @@ begin
   AddPage(TPathForm, PathForm); //4
   AddPage(TReviewForm, ReviewForm); //5
   AddPage(TInstallationForm, InstallationForm); //6
-
-
-
+  AddPage(TFinishedForm, FinishedForm); //7    
 end;
 
 procedure TMainForm.FormShow(Sender: TObject);
 begin
   if fFirstShow then
   begin
-    ShowPage(2);
+    ShowPage(7);
     fFirstShow := not fFirstShow;
   end;
 end;

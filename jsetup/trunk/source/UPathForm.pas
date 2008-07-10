@@ -4,20 +4,22 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, UPage, Mask, JvExMask, JvToolEdit, ActnList;
+  Dialogs, StdCtrls, UPage, Mask, JvExMask, JvToolEdit, ActnList, ComCtrls;
 
 type
   TPathForm = class(TPageForm)
     Label1: TLabel;
-    Label2: TLabel;
     Label3: TLabel;
     JvDirectoryJwa: TJvDirectoryEdit;
-    JvDirectoryJwscl: TJvDirectoryEdit;
+    StaticText1: TStaticText;
+    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
   private
     { Private-Deklarationen }
+    function CheckForPathAccess : Integer;
+
   public
     { Public-Deklarationen }
-    function GetNextPageIndex : Integer;override;
+    function GetNextPageIndex(const showGui : Boolean) : Integer;override;
     procedure GetNextUpdate(Sender : TObject); override;
   end;
 
@@ -30,9 +32,45 @@ implementation
 
 { TForm1 }
 
-function TPathForm.GetNextPageIndex: Integer;
+function TPathForm.CheckForPathAccess: Integer;
 begin
-  result := 5;
+  result := mrOK;
+  if (Length(Trim(JvDirectoryJwa.Text)) > 0) and not DirectoryExists(JvDirectoryJwa.Text) then
+  begin
+    result := MessageDlg(Format('"%s" does not exist. Create?',[JvDirectoryJwa.Text]), mtConfirmation, [mbYes, mbNo], 0);
+    case result of
+      mrYes : if not ForceDirectories(JvDirectoryJwa.Text) then
+       begin
+         MessageDlg('Could not create "%s". Make sure you have write access or select another path. Setup cannot continue.', mtError, [mbOK], 0);
+       end;
+      mrCancel,
+      mrNo : ;
+    end;
+  end;
+end;
+
+procedure TPathForm.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+begin
+  //
+  if not Assigned(Sender) then
+  begin
+    CanClose := (Length(Trim(JvDirectoryJwa.Text)) > 0) and
+      DirectoryExists(JvDirectoryJwa.Text);
+  end;
+end;
+
+function TPathForm.GetNextPageIndex(const showGui : Boolean): Integer;
+begin
+  if not DirectoryExists(JvDirectoryJwa.Text) then
+  begin
+    case CheckForPathAccess of
+      mrOK : result := GetNextPageIndex(showGUI);
+    else
+      result := -1;
+    end;
+  end
+  else
+    result := 5;
 end;
 
 procedure TPathForm.GetNextUpdate(Sender: TObject);
@@ -41,10 +79,8 @@ begin
   if (Sender is TAction) then
   begin
     (Sender as TAction).Enabled :=
-      (Length(Trim(JvDirectoryJwa.Text)) > 0) and
-      (Length(Trim(JvDirectoryJwscl.Text)) > 0) and
-      DirectoryExists(JvDirectoryJwa.Text) and
-      DirectoryExists(JvDirectoryJwscl.Text);
+      (Length(Trim(JvDirectoryJwa.Text)) > 0){ and
+      DirectoryExists(JvDirectoryJwa.Text)};
   end;
 end;
 

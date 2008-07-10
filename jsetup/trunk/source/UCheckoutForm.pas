@@ -13,7 +13,7 @@ uses
   //you need an adapted version of Delphi2007 SyncObjs.pas to run in Delphi7
   ,SyncObjs11
 {$ELSE}
-  ,SyncObjs
+  ,SyncObjs, ComCtrls
 {$ENDIF DELPH7}
   ;
 
@@ -21,8 +21,25 @@ type
   TSVNState = (ssList, ssLog);
 
   TCheckoutForm = class(TPageForm)
-    Label1: TLabel;
     JvCreateProcessJWA: TJvCreateProcess;
+    JvCreateProcessJWSCL: TJvCreateProcess;
+    OutputMemo: TMemo;
+    ActionList1: TActionList;
+    RevisionJwaReadHistoryAction: TAction;
+    ReleaseJwaReadHistoryAction: TAction;
+    UpdateAction: TAction;
+    JvCreateProcessRevisionJWA: TJvCreateProcess;
+    JvCreateProcessRevisionJwscl: TJvCreateProcess;
+    JvCreateProcessHistoryJWA: TJvCreateProcess;
+    JvCreateProcessHistoryJwscl: TJvCreateProcess;
+    ReleaseJwsclReadHistoryAction: TAction;
+    RevisionJwsclReadHistoryAction: TAction;
+    JvHttpUrlGrabber1: TJvHttpUrlGrabber;
+    JvProgressDialog1: TJvProgressDialog;
+    ZipMaster1: TZipMaster;
+    PageControl1: TPageControl;
+    TabSheet1: TTabSheet;
+    TabSheet2: TTabSheet;
     GroupBox1: TGroupBox;
     Label2: TLabel;
     Label3: TLabel;
@@ -41,23 +58,19 @@ type
     RevisionComboBoxJwscl: TComboBox;
     Button1: TButton;
     Button2: TButton;
-    JvCreateProcessJWSCL: TJvCreateProcess;
-    OutputMemo: TMemo;
-    ActionList1: TActionList;
-    RevisionJwaReadHistoryAction: TAction;
-    ReleaseJwaReadHistoryAction: TAction;
-    UpdateButton: TButton;
-    UpdateAction: TAction;
+    Label1: TLabel;
+    TabSheet3: TTabSheet;
     HTTPSCertCheckBox: TCheckBox;
-    JvCreateProcessRevisionJWA: TJvCreateProcess;
-    JvCreateProcessRevisionJwscl: TJvCreateProcess;
-    JvCreateProcessHistoryJWA: TJvCreateProcess;
-    JvCreateProcessHistoryJwscl: TJvCreateProcess;
-    ReleaseJwsclReadHistoryAction: TAction;
-    RevisionJwsclReadHistoryAction: TAction;
-    JvHttpUrlGrabber1: TJvHttpUrlGrabber;
-    JvProgressDialog1: TJvProgressDialog;
-    ZipMaster1: TZipMaster;
+    UpdateButton: TButton;
+    StaticText1: TStaticText;
+    StaticText2: TStaticText;
+    StaticText3: TStaticText;
+    StaticText4: TStaticText;
+    StaticText5: TStaticText;
+    JWAInfoListView: TListView;
+    JwsclInfoListView: TListView;
+    StaticText6: TStaticText;
+    StaticText7: TStaticText;
 
     procedure JvCPReleaseJWARead(Sender: TObject; const S: string;
       const StartsOnNewLine: Boolean);
@@ -110,6 +123,7 @@ type
       ExitCode: Cardinal);
     procedure JvHttpUrlGrabber1ClosingConnection(Sender: TObject);
     procedure JvHttpUrlGrabber1ConnectedToServer(Sender: TObject);
+    procedure TabSheet3Enter(Sender: TObject);
 
   private
     fSVNState : TSVNState;
@@ -126,13 +140,14 @@ type
     procedure AddOutput(const S: string;
       const StartsOnNewLine: Boolean);
 
+    procedure UpdateVersionListViews;
 
     procedure GetNextUpdate(Sender : TObject); override;
 
     procedure GetVersions;
   public
     { Public-Deklarationen }
-     function GetNextPageIndex : Integer; override;
+     function GetNextPageIndex(const showGui : Boolean) : Integer; override;
   end;
 
 var
@@ -405,6 +420,29 @@ begin
   GetVersions;
 end;
 
+procedure TCheckoutForm.UpdateVersionListViews;
+begin
+  if ReleaseComboBoxJWA.ItemIndex >= 0 then
+    JWAInfoListView.Items[0].SubItems[0] := ReleaseComboBoxJWA.Items[ReleaseComboBoxJWA.ItemIndex]
+  else
+    JWAInfoListView.Items[0].SubItems[0] := '';
+
+  if RevisionComboBoxJWA.ItemIndex >= 0 then
+    JWAInfoListView.Items[1].SubItems[0] := RevisionComboBoxJWA.Items[RevisionComboBoxJWA.ItemIndex]
+  else
+    JWAInfoListView.Items[1].SubItems[0] := '';
+
+  if ReleaseComboBoxJwscl.ItemIndex >= 0 then
+    JwsclInfoListView.Items[0].SubItems[0] := ReleaseComboBoxJwscl.Items[ReleaseComboBoxJwscl.ItemIndex]
+  else
+    JwsclInfoListView.Items[0].SubItems[0] := '';
+
+  if RevisionComboBoxJwscl.ItemIndex >= 0 then
+    JwsclInfoListView.Items[1].SubItems[0] := RevisionComboBoxJwscl.Items[RevisionComboBoxJwscl.ItemIndex]
+  else
+    JwsclInfoListView.Items[1].SubItems[0] := '';
+end;
+
 procedure TCheckoutForm.ZipMaster1TotalProgress(Sender: TObject;
   TotalSize: Int64; PerCent: Integer);
 begin
@@ -462,6 +500,11 @@ begin
     (JvCreateProcessJwscl.State = psReady) and
     (RevisionComboBoxJwscl.Items.Count > 0)
     and (RevisionComboBoxJwscl.ItemIndex >= 0);
+end;
+
+procedure TCheckoutForm.TabSheet3Enter(Sender: TObject);
+begin
+  UpdateVersionListViews;
 end;
 
 procedure TCheckoutForm.CancelButtonClick(Sender: TObject);
@@ -542,7 +585,7 @@ begin
   RevisionComboBoxJwscl.Items.Clear;
 end;
 
-function TCheckoutForm.GetNextPageIndex: Integer;
+function TCheckoutForm.GetNextPageIndex(const showGui : Boolean): Integer;
 begin
   result := 3;
   //result := -1;
@@ -658,6 +701,8 @@ begin
   finally
     fWaitMessageCS.Leave;
   end;
+
+  UpdateVersionListViews;
 end;
 
 
@@ -864,6 +909,8 @@ begin
   finally
     fWaitMessageCS.Leave;
   end;
+
+  UpdateVersionListViews;
 end;
 
 procedure TCheckoutForm.JvCPHistoryJWARead(Sender: TObject; const S: string;
