@@ -490,7 +490,6 @@ type
   protected
     procedure Dummy; virtual; abstract;
   public
-
       {<B>SetSecurityInfo</B> sets security information of a named object
        <B>SetSecurityInfo</B> cannot change inheritance protection flow. Instead use SetSecurityInfo
           using TJwSecurityDescriptor.
@@ -759,10 +758,10 @@ type
        @param DesiredAccess defines which access rights are to be checked. If set to High(Cardinal)
           the access rights given in the constructor are used.
       }
-    function AccessCheck(DesiredAccess: TJwAccessMask = Cardinal(-1);
+(*    function AccessCheck(DesiredAccess: TJwAccessMask = Cardinal(-1);
       const ClientToken: TJwSecurityToken = nil)
       : boolean;
-      overload; override;
+      overload; override;*)
 
       {<B>AccessCheck</B> checks the access to a security descriptor of a secure object. See AccessCheck in MSDN for more information
        @param SecurityDescriptor contains the security descriptor that is used to check for access. 
@@ -775,7 +774,7 @@ type
 
                 Token.ConvertToImpersonatedToken(jwaWindows.TSecurityImpersonationLevel(SecurityImpersonation), TOKEN_ALL_ACCESS);
                 Token.ImpersonateLoggedOnUser;
-              
+
        @param DesiredAccess define the desired access to the object.
               New:
                 Although the MSDN AccessCheck forbids generic rights (like GENERIC_ALL) in this Parameter.
@@ -960,7 +959,7 @@ type
             sequence start: a_0 = 0
             </code>
             See also http://msdn2.microsoft.com/en-us/library/aa374917(VS.85).aspx
-        
+
        @param GenericMapping Receives a class type of the class TJwSecurityGenericMapping or one of her derived classes.
                 If the generic class TJwSecurityGenericMapping is used, all generic access rights are mapped to
                 standard access rights (STANDARD_RIGHTS_READ...STANDARD_RIGHTS_ALL).
@@ -1055,7 +1054,7 @@ type
             sequence start: a_0 = 0
             </code>
             See also http://msdn2.microsoft.com/en-us/library/aa374917(VS.85).aspx
-        
+
        @param GenericMapping Receives a class type of the class TJwSecurityGenericMapping or one of her derived classes.
                 If the generic class TJwSecurityGenericMapping is used, all generic access rights are mapped to
                 standard access rights (STANDARD_RIGHTS_READ...STANDARD_RIGHTS_ALL).
@@ -1071,7 +1070,7 @@ type
                   in the ACL or DesiredAccess parameter.
                 
        @param PrivilegeSet receives the privileges that are used for access check. If none are used, this output will be nil.
-                The caller is responsible for destroying the object! 
+                The caller is responsible for destroying the object!
        @param GrantedAccess receives an array of access mask that indicates which rights were granted.
             The count of elements is the same as length of ObjectTypeArray. 
        @param AccessStatus receives an array of return codes which defines why a check failed.
@@ -1153,9 +1152,9 @@ type
  EJwsclSecurityException:  An exception can be raised if a call to one of the following items failed:
                 
                  # CreateTokenEffective 
-                 # GetTokenGroups 
+                 # GetTokenGroups
                  # GetTokenOwner 
-                 # TJwSecurityId.Create 
+                 # TJwSecurityId.Create
                  
       }
 
@@ -1184,6 +1183,8 @@ type
 
 
     property AccessMask: TJwAccessMask Read fAccessMask Write fAccessMask;
+
+    {<B>Handle</B> is not used in this class.}
     property Handle: THandle Read fHandle;
 
   end;
@@ -4472,6 +4473,17 @@ end;
 {************ TJwSecureGeneralObject *****************}
 
 
+
+
+class function TJwSecureGeneralObject.AccessCheck(
+  const SecurityDescriptor: TJwSecurityDescriptor;
+  const ClientToken: TJwSecurityToken; const DesiredAccess: TJwAccessMask;
+  const GenericMapping: TJwSecurityGenericMappingClass): Boolean;
+begin
+  result := inherited AccessCheck(SecurityDescriptor, ClientToken,
+    DesiredAccess, GenericMapping);
+end;
+
 class procedure TJwSecureGeneralObject.SetSecurityInfo(
   const aHandle: THandle;
   const aObjectType: TSeObjectType;
@@ -4607,6 +4619,8 @@ begin
   inherited;
 end;
 
+(*
+no none-static methods in TJwSecureGeneralObject!!
 function TJwSecureGeneralObject.AccessCheck(
   DesiredAccess: TJwAccessMask = Cardinal(-1);
   const ClientToken: TJwSecurityToken = nil): boolean;
@@ -4632,7 +4646,7 @@ begin
     privSet.Free;
     SD.Free;
   end;
-end;
+end;        *)
 
 class procedure TJwSecureGeneralObject.AccessCheckAndAuditAlarm(
   const SubsystemName: TJwString;
@@ -9796,14 +9810,6 @@ end;
 
 
 
-class function TJwSecureGeneralObject.AccessCheck(
-  const SecurityDescriptor: TJwSecurityDescriptor;
-  const ClientToken: TJwSecurityToken; const DesiredAccess: TJwAccessMask;
-  const GenericMapping: TJwSecurityGenericMappingClass): Boolean;
-begin
-  result := inherited AccessCheck(SecurityDescriptor, ClientToken,
-    DesiredAccess, GenericMapping);
-end;
 
 class function TJwSecureBaseClass.ConvertMaximumAllowed(
   const SecurityDescriptor: TJwSecurityDescriptor;
