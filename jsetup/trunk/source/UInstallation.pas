@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ComCtrls, Upage;
+  Dialogs, StdCtrls, ComCtrls, UDataModule, Upage;
 
 type
   TInstallationForm = class(TPageForm)
@@ -29,7 +29,7 @@ implementation
 
 function TInstallationForm.GetNextPageIndex(const showGui : Boolean): Integer;
 begin
-  GetNextPageIndex := 7;
+  GetNextPageIndex := NextArray[INSTALLATION_FORM];
 end;
 
 end.

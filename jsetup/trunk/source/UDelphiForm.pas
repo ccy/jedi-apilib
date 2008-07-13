@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, UPage, CheckScrollBox,DelphiVersionTool;
+  Dialogs, StdCtrls, UPage, CheckScrollBox,DelphiVersionTool, UDataModule;
 
 type
   TDelphiForm = class(TPageForm)
@@ -30,6 +30,9 @@ type
     { Public-Deklarationen }
     function GetNextPageIndex(const showGui : Boolean) : Integer; override;
     procedure GetNextUpdate(Sender : TObject); override;
+
+    procedure OnGetData(const DataModul : TSetupDataModule); override;
+    procedure OnSetData(const DataModul : TSetupDataModule); override;
   end;
 
 var
@@ -127,7 +130,7 @@ end;
 
 function TDelphiForm.GetNextPageIndex(const showGui : Boolean): Integer;
 begin
-  result := 4;
+  result := NextArray[DELPHI_FORM];
 end;
 
 procedure TDelphiForm.GetNextUpdate(Sender: TObject);
@@ -165,7 +168,6 @@ procedure TDelphiForm.GetNextUpdate(Sender: TObject);
         
       if not result then
       begin
-        JwaCheckScrollBox.Labels[i].FocusControl.SetFocus;
         exit;
       end;
      // else
@@ -186,6 +188,33 @@ begin
     B := IsAtLeastOnChecked and IsJwaAndJwsclSelected;
     (Sender as TAction).Enabled := B;
     ErrorStaticText.Visible := not B;
+  end;
+end;
+
+procedure TDelphiForm.OnGetData(const DataModul: TSetupDataModule);
+begin
+
+
+end;
+
+procedure TDelphiForm.OnSetData(const DataModul: TSetupDataModule);
+var
+  I: Integer;
+begin
+  DataModul.TargetDelphiJwa.Free;
+  DataModul.TargetDelphiJwa   := TList.Create;
+  for I := 0 to JwaCheckScrollBox.Count - 1 do
+  begin
+    if JwaCheckScrollBox.Checked[i] then
+      DataModul.TargetDelphiJwa.Add(Pointer(JwaCheckScrollBox.Objects[i]));
+  end;
+
+  DataModul.TargetDelphiJwscl.Free;
+  DataModul.TargetDelphiJwscl := TList.Create;
+  for I := 0 to JwsclCheckScrollBox.Count - 1 do
+  begin
+    if JwsclCheckScrollBox.Checked[i] then
+      DataModul.TargetDelphiJwscl.Add(Pointer(JwsclCheckScrollBox.Objects[i]));
   end;
 end;
 

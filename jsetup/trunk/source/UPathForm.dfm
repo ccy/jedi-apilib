@@ -29,7 +29,7 @@ object PathForm: TPathForm
     Caption = 'Select an existing path where to download the sources'
   end
   object JvDirectoryJwa: TJvDirectoryEdit
-    Left = 25
+    Left = 24
     Top = 83
     Width = 352
     Height = 24

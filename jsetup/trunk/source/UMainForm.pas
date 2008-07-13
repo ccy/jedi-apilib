@@ -5,6 +5,8 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, ComCtrls, StdCtrls, UPage, UWelcomeForm, USetupTypeForm, UCheckoutForm,
+  UJwaTypeForm,
+  UDataModule,
   ExtCtrls, UPathForm, UDelphiForm, JvComponentBase, JvCreateProcess, ActnList;
 
 type
@@ -70,7 +72,7 @@ begin
     ActionNext.Caption := '&Next';
  { else
     ActionNext.Enabled := false;   }
- ActionNext.Enabled := true;
+ //ActionNext.Enabled := true;
 
 
 end;
@@ -111,13 +113,12 @@ begin
            Close;
            exit;
          end;
-  else
-    exit;
   end;
 
-
   CanClose := true;
-  Pages[fPageIndex].OnCloseQuery(nil, CanClose);
+  if Assigned(Pages[fPageIndex].OnCloseQuery) then
+    Pages[fPageIndex].OnCloseQuery(nil, CanClose);
+
   if CanClose then
   begin
     idx := fPageIndex;
@@ -148,6 +149,9 @@ begin
   TComponent(Reference) := Comp;
 end;
 
+
+
+
 begin
   fFirstShow := true;
   
@@ -155,6 +159,7 @@ begin
   AddPage(TSetupTypeForm, SetupTypeForm); //1
   AddPage(TCheckoutForm, CheckoutForm); //2
   AddPage(TDelphiForm, DelphiForm); //3
+  AddPage(TJwaTypeForm, JwaTypeForm); //3
   AddPage(TPathForm, PathForm); //4
   AddPage(TReviewForm, ReviewForm); //5
   AddPage(TInstallationForm, InstallationForm); //6
@@ -165,7 +170,8 @@ procedure TMainForm.FormShow(Sender: TObject);
 begin
   if fFirstShow then
   begin
-    ShowPage(7);
+    //ShowPage(WELCOME_FORM);
+    ShowPage(JWA_TYPE_FORM);
     fFirstShow := not fFirstShow;
   end;
 end;
@@ -177,17 +183,23 @@ var
 begin
   for I := 0 to Length(Pages) - 1 do
   begin
-    if Assigned(Pages[I]) and
-      Assigned(Pages[i].OnDeactivate) and
+    if Assigned(Pages[I])  and
       Pages[i].Visible then
     begin
-      Pages[i].OnDeactivate(Self);
+      if Assigned(Pages[i].OnDeactivate)  then
+        Pages[i].OnDeactivate(Self);
+
+      Pages[fPageIndex].OnSetData(SetupDataModule);
     end;
     if Assigned(Pages[I]) then
       Pages[i].Visible := False;
   end;
+                     
   if Assigned(Pages[Index].OnActivate) then
     Pages[Index].OnActivate(Self);
+
+  Pages[fPageIndex].OnGetData(SetupDataModule);
+
   Pages[Index].Visible := true;
   fPageIndex := Index;
 end;

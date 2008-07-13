@@ -4,7 +4,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, UPage, Mask, JvExMask, JvToolEdit, ActnList, ComCtrls;
+  Dialogs, StdCtrls, UPage, Mask, JvExMask, JvToolEdit, ActnList, ComCtrls, 
+  UDataModule;
 
 type
   TPathForm = class(TPageForm)
@@ -21,6 +22,9 @@ type
     { Public-Deklarationen }
     function GetNextPageIndex(const showGui : Boolean) : Integer;override;
     procedure GetNextUpdate(Sender : TObject); override;
+
+    procedure OnGetData(const DataModul : TSetupDataModule); override;
+    procedure OnSetData(const DataModul : TSetupDataModule); override;
   end;
 
 var
@@ -70,7 +74,7 @@ begin
     end;
   end
   else
-    result := 5;
+    result := NextArray[PATH_FORM];;
 end;
 
 procedure TPathForm.GetNextUpdate(Sender: TObject);
@@ -82,6 +86,17 @@ begin
       (Length(Trim(JvDirectoryJwa.Text)) > 0){ and
       DirectoryExists(JvDirectoryJwa.Text)};
   end;
+end;
+
+procedure TPathForm.OnGetData(const DataModul: TSetupDataModule);
+begin
+  inherited;
+
+end;
+
+procedure TPathForm.OnSetData(const DataModul: TSetupDataModule);
+begin
+  DataModul.TargetPath := JvDirectoryJwa.Text;
 end;
 
 end.

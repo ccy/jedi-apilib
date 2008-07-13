@@ -1,7 +1,7 @@
 unit UPage;
 
 interface
-uses Forms, Classes;
+uses Forms, Classes, UDataModule;
 
 type
   TPageForm = class(TForm)
@@ -12,6 +12,9 @@ type
     function IsFinished : Boolean; virtual;
 
     procedure OnBack(Sender : TObject); virtual;
+
+    procedure OnGetData(const DataModul : TSetupDataModule); virtual;
+    procedure OnSetData(const DataModul : TSetupDataModule); virtual;
   end;
 
 implementation
@@ -29,6 +32,16 @@ begin
 end;
 
 procedure TPageForm.OnBack(Sender: TObject);
+begin
+
+end;
+
+procedure TPageForm.OnGetData(const DataModul: TSetupDataModule);
+begin
+
+end;
+
+procedure TPageForm.OnSetData(const DataModul: TSetupDataModule);
 begin
 
 end;

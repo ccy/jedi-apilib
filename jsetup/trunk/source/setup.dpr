@@ -13,9 +13,9 @@ uses
   UDelphiForm in 'UDelphiForm.pas' {DelphiForm},
   UInstallation in 'UInstallation.pas' {InstallationForm},
   UReview in 'UReview.pas' {CompilationForm},
-  UDataModule in 'UDataModule.pas' {DataModule1: TDataModule},
+  UDataModule in 'UDataModule.pas' {SetupDataModule: TDataModule},
   UFinishedForm in 'UFinishedForm.pas' {FinishedForm},
-  USetupModule in 'USetupModule.pas' {DataModule3: TDataModule};
+  UJwaTypeForm in 'UJwaTypeForm.pas' {JwaTypeForm};
 
 {$R *.res}
 
@@ -25,7 +25,6 @@ begin
   Application.MainFormOnTaskbar := True;
 {$ENDIF DELPHI11_UP}
   Application.CreateForm(TMainForm, MainForm);
-  Application.CreateForm(TDataModule1, DataModule1);
-  Application.CreateForm(TDataModule3, DataModule3);
+  Application.CreateForm(TSetupDataModule, SetupDataModule);
   Application.Run;
 end.

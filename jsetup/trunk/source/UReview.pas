@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, Upage, StdCtrls;
+  Dialogs, Upage, UDataModule, StdCtrls;
 
 type
   TReviewForm = class(TPageForm)
@@ -27,7 +27,7 @@ implementation
 
 function TReviewForm.GetNextPageIndex(const showGui : Boolean): Integer;
 begin
-  result := 6;
+  result := NextArray[REVIEW_FORM];
 end;
 
 end.

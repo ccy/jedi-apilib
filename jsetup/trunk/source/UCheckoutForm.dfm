@@ -35,7 +35,7 @@ object CheckoutForm: TCheckoutForm
     TabOrder = 0
     WordWrap = False
   end
-  object PageControl1: TPageControl
+  object MainPageControl: TPageControl
     Left = 0
     Top = 48
     Width = 862
@@ -44,6 +44,7 @@ object CheckoutForm: TCheckoutForm
     Align = alBottom
     Anchors = [akLeft, akTop, akRight, akBottom]
     TabOrder = 1
+    OnChange = MainPageControlChange
     object TabSheet3: TTabSheet
       Caption = 'General'
       ImageIndex = 2
@@ -129,10 +130,6 @@ object CheckoutForm: TCheckoutForm
             Width = 60
           end>
         GridLines = True
-        Items.ItemData = {
-          01500000000200000000000000FFFFFFFFFFFFFFFF0100000000000000075200
-          65006C0065006100730065000000000000FFFFFFFFFFFFFFFF01000000000000
-          00085200650076006900730069006F006E0000FFFFFFFF}
         ReadOnly = True
         RowSelect = True
         TabOrder = 7
@@ -153,10 +150,6 @@ object CheckoutForm: TCheckoutForm
             Width = 60
           end>
         GridLines = True
-        Items.ItemData = {
-          01500000000200000000000000FFFFFFFFFFFFFFFF0100000000000000075200
-          65006C0065006100730065000000000000FFFFFFFFFFFFFFFF01000000000000
-          00085200650076006900730069006F006E0000FFFFFFFF}
         ReadOnly = True
         RowSelect = True
         TabOrder = 8
@@ -181,10 +174,6 @@ object CheckoutForm: TCheckoutForm
     end
     object TabSheet1: TTabSheet
       Caption = 'JEDI API'
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object GroupBox1: TGroupBox
         Left = 4
         Top = 3
@@ -226,7 +215,7 @@ object CheckoutForm: TCheckoutForm
           Width = 417
           Height = 21
           Style = csDropDownList
-          ItemHeight = 0
+          ItemHeight = 13
           ItemIndex = 0
           TabOrder = 0
           Text = 'Latest Release 1.01'
@@ -243,7 +232,7 @@ object CheckoutForm: TCheckoutForm
           Width = 417
           Height = 21
           Style = csDropDownList
-          ItemHeight = 0
+          ItemHeight = 13
           ItemIndex = 0
           TabOrder = 1
           Text = 'Latest Revision 544'

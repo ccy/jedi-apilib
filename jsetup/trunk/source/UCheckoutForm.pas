@@ -37,7 +37,7 @@ type
     JvHttpUrlGrabber1: TJvHttpUrlGrabber;
     JvProgressDialog1: TJvProgressDialog;
     ZipMaster1: TZipMaster;
-    PageControl1: TPageControl;
+    MainPageControl: TPageControl;
     TabSheet1: TTabSheet;
     TabSheet2: TTabSheet;
     GroupBox1: TGroupBox;
@@ -124,6 +124,7 @@ type
     procedure JvHttpUrlGrabber1ClosingConnection(Sender: TObject);
     procedure JvHttpUrlGrabber1ConnectedToServer(Sender: TObject);
     procedure TabSheet3Enter(Sender: TObject);
+    procedure MainPageControlChange(Sender: TObject);
 
   private
     fSVNState : TSVNState;
@@ -148,6 +149,9 @@ type
   public
     { Public-Deklarationen }
      function GetNextPageIndex(const showGui : Boolean) : Integer; override;
+
+    procedure OnGetData(const DataModul : TSetupDataModule); override;
+    procedure OnSetData(const DataModul : TSetupDataModule); override;
   end;
 
 var
@@ -191,7 +195,7 @@ function GetSvnUrl(const ComboBox : TComboBox; const Jwa : Boolean) : String;
       result := JWSCL_BRANCHES+'/'+ComboBox.Items[ComboBox.ItemIndex];
   end;
 begin
-  if Integer(ComboBox.Items.Objects[ComboBox.ItemIndex]) = 1 then
+  if Integer(ComboBox.Items.Objects[ComboBox.ItemIndex]) = 0 then
     result := GetTrunk
   else
     result := GetBranch;
@@ -214,7 +218,7 @@ procedure TCheckoutForm.GetNextUpdate(Sender: TObject);
 var B : Boolean;
 begin
   B := FileExists(GetSVNExe);
-//  inherited;
+
   if (Sender is TAction) then
   begin
     B := B and
@@ -281,7 +285,7 @@ end;
 procedure TCheckoutForm.ReleaseComboBoxJwsclChange(Sender: TObject);
 begin
   if ReleaseComboBoxJwscl.ItemIndex < 0 then
-    exit;      
+    exit;
 
 
   JvCreateProcessRevisionJwscl.ApplicationName := GetSVNExe;
@@ -422,25 +426,34 @@ end;
 
 procedure TCheckoutForm.UpdateVersionListViews;
 begin
-  if ReleaseComboBoxJWA.ItemIndex >= 0 then
-    JWAInfoListView.Items[0].SubItems[0] := ReleaseComboBoxJWA.Items[ReleaseComboBoxJWA.ItemIndex]
-  else
-    JWAInfoListView.Items[0].SubItems[0] := '';
+  JWAInfoListView.Clear;
+  JWAInfoListView.Items.Add.SubItems.Add('');
+  JwsclInfoListView.Clear;
+  JwsclInfoListView.Items.Add.SubItems.Add('');
 
-  if RevisionComboBoxJWA.ItemIndex >= 0 then
-    JWAInfoListView.Items[1].SubItems[0] := RevisionComboBoxJWA.Items[RevisionComboBoxJWA.ItemIndex]
-  else
-    JWAInfoListView.Items[1].SubItems[0] := '';
+  try
+    if ReleaseComboBoxJWA.ItemIndex >= 0 then
+      JWAInfoListView.Items[0].Caption := ReleaseComboBoxJWA.Items[ReleaseComboBoxJWA.ItemIndex]
+    else
+      JWAInfoListView.Items[0].Caption := '';
 
-  if ReleaseComboBoxJwscl.ItemIndex >= 0 then
-    JwsclInfoListView.Items[0].SubItems[0] := ReleaseComboBoxJwscl.Items[ReleaseComboBoxJwscl.ItemIndex]
-  else
-    JwsclInfoListView.Items[0].SubItems[0] := '';
+    if RevisionComboBoxJWA.ItemIndex >= 0 then
+      JWAInfoListView.Items[0].SubItems[0] := RevisionComboBoxJWA.Items[RevisionComboBoxJWA.ItemIndex]
+    else
+      JWAInfoListView.Items[0].SubItems[0] := '';
 
-  if RevisionComboBoxJwscl.ItemIndex >= 0 then
-    JwsclInfoListView.Items[1].SubItems[0] := RevisionComboBoxJwscl.Items[RevisionComboBoxJwscl.ItemIndex]
-  else
-    JwsclInfoListView.Items[1].SubItems[0] := '';
+    if ReleaseComboBoxJwscl.ItemIndex >= 0 then
+      JwsclInfoListView.Items[0].Caption := ReleaseComboBoxJwscl.Items[ReleaseComboBoxJwscl.ItemIndex]
+    else
+      JwsclInfoListView.Items[0].Caption := '';
+
+    if RevisionComboBoxJwscl.ItemIndex >= 0 then
+      JwsclInfoListView.Items[0].SubItems[0] := RevisionComboBoxJwscl.Items[RevisionComboBoxJwscl.ItemIndex]
+    else
+      JwsclInfoListView.Items[0].SubItems[0] := '';
+  except
+
+  end;
 end;
 
 procedure TCheckoutForm.ZipMaster1TotalProgress(Sender: TObject;
@@ -563,7 +576,7 @@ begin
   begin
 
    // GetVersions;
-
+    MainPageControl.ActivePageIndex := 0;
   end;
 end;
 
@@ -587,7 +600,7 @@ end;
 
 function TCheckoutForm.GetNextPageIndex(const showGui : Boolean): Integer;
 begin
-  result := 3;
+  result := NextArray[CHECKOUT_FORM];
   //result := -1;
 end;
 
@@ -614,15 +627,14 @@ begin
     Button := fWaitMessage.FindChildControl('Cancel') as TButton;
     Button.OnClick := CancelButtonClick;
 
-    
 
     ReleaseComboBoxJwa.Items.Clear;
     RevisionComboBoxJWA.Items.Clear;
     ReleaseComboBoxJwscl.Items.Clear;
     RevisionComboBoxJwscl.Items.Clear;
 
-    ReleaseComboBoxJwa.Items.AddObject('developer version',Pointer(1));
-    ReleaseComboBoxJwscl.Items.AddObject('developer version',Pointer(1));
+    ReleaseComboBoxJwa.Items.AddObject('developer version',Pointer(0));
+    ReleaseComboBoxJwscl.Items.AddObject('developer version',Pointer(0));
 
     JvCreateProcessJwa.ApplicationName := GetSVNExe;
     JvCreateProcessJWA.CommandLine := GetSVNExe(true)+' list '+JWA_BRANCHES;
@@ -649,6 +661,7 @@ end;
 procedure TCheckoutForm.JvCPReleaseJWARead(Sender: TObject; const S: string;
   const StartsOnNewLine: Boolean);
 var S2 : String;
+  i : Integer;
 begin
   S2 := S;
   if not CheckCert(Sender, S2, StartsOnNewLine) then
@@ -659,7 +672,7 @@ begin
 
   if (StrToIntDef(S2[1],-1) <> -1) then
   begin
-    ReleaseComboBoxJwa.Items.Add(S2);
+    ReleaseComboBoxJwa.Items.AddObject(S2, Pointer(1));
   end;
 end;
 
@@ -675,6 +688,7 @@ end;
 procedure TCheckoutForm.JvCPReleaseJwsclRead(Sender: TObject; const S: string;
   const StartsOnNewLine: Boolean);
 var S2 : String;
+  i : Integer;
 begin
   S2 := S;
   if not CheckCert(Sender, S2, StartsOnNewLine) then
@@ -682,7 +696,9 @@ begin
 
   if (Length(S2) > 0)
    and (StrToIntDef(S2[1],-1) <> -1) then
-    ReleaseComboBoxJwscl.Items.Add(S2);
+  begin
+    ReleaseComboBoxJwscl.Items.AddObject(S2, Pointer(1));
+  end;
 end;
 
 procedure TCheckoutForm.JvCPRevisionJwsclTerminate(Sender: TObject;
@@ -803,6 +819,26 @@ begin
     ZipMaster1.Cancel;
   except
   end;
+end;
+
+procedure TCheckoutForm.OnGetData(const DataModul: TSetupDataModule);
+begin
+
+end;
+
+procedure TCheckoutForm.OnSetData(const DataModul: TSetupDataModule);
+var S : String;
+begin
+  DataModul.JwaReleaseSvnPath := GetSvnUrl(ReleaseComboBoxJWA, true);
+  DataModul.JwaRevision := StrToInt(Trim(RevisionComboBoxJWA.Text));
+
+  DataModul.JwsclReleaseSvnPath := GetSvnUrl(ReleaseComboBoxJwscl, false);
+  DataModul.JwsclRevision := StrToInt(Trim(RevisionComboBoxJwscl.Text));
+end;
+
+procedure TCheckoutForm.MainPageControlChange(Sender: TObject);
+begin
+  UpdateVersionListViews;
 end;
 
 procedure TCheckoutForm.JvCPHistoryJwsclTerminate(Sender: TObject;

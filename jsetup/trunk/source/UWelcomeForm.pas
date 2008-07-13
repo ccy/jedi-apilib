@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, UPage;
+  Dialogs, StdCtrls, UDataModule, UPage;
 
 type
   TWelcomeForm = class(TPageForm)
@@ -27,7 +27,7 @@ implementation
 
 function TWelcomeForm.GetNextPageIndex(const showGui : Boolean): Integer;
 begin
-  result := 1;
+  result := NextArray[WELCOME_FORM];
 end;
 
 end.
