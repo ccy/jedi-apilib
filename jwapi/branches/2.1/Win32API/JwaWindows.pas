@@ -111,7 +111,7 @@ the one of the project.
 
   {-$DEFINE NOVCL}
 
-  {The following directive includes the file jwaAdsTlb.pas
+  {The following directive includes the file JwaAdsTlb.pas
    This unit needs the units OleServer, OleCtrls which do install
    a windows handle in newer delphi versions.
    This handle prevents SetThreadDesktop to work on the main thread. It
@@ -127,6 +127,10 @@ the one of the project.
   {$ENDIF FPC}
 
   {$DEFINE JWA_INCLUDE_SHELLAPI}
+
+  {Opens up Windows Vista (and above) declarations.
+   See jediapilib.inc for more declarations}
+  {$DEFINE WINVISTA}
 
   {.$DEFINE JWA_NEW_WINSTA}
 {$ENDIF PACKAGE_CONDITIONS}

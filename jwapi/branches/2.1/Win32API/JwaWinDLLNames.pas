@@ -83,6 +83,7 @@ const
   LDAPLib = 'wldap32.dll';
   loadperflib = 'loadperf.dll';
   lpmlib = 'msidlpm.dll';
+  mapi32 = 'mapi32.dll';
   mprlib = 'mpr.dll';
   msgina = 'msgina.dll';
   msilib = 'msi.dll';

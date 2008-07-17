@@ -43,8 +43,12 @@
 {******************************************************************************}
 {$IFNDEF JWA_OMIT_SECTIONS}
 unit JwaShLWAPI;
+{$I jediapilib.inc}
+
 
 interface
+
+
 
 {$HPPEMIT '#include <shlwapi.h>'}
 {$HPPEMIT ''}
@@ -2066,10 +2070,10 @@ begin
 end;
 
 
+//only available as static
 function wnsprintfA; external shlwapidll name 'wnsprintfA';
 function wnsprintfW; external shlwapidll name 'wnsprintfW';
 function wnsprintf; external shlwapidll name 'wnsprintf'+AWSuffix;
-
 
 {$IFNDEF DYNAMIC_LINK}
 

@@ -35,11 +35,10 @@
     <DCC_ResourcePath>.;..\;..\..\common;..\..\Win32Api</DCC_ResourcePath>
     <DCC_ObjPath>.;..\;..\..\common;..\..\Win32Api</DCC_ObjPath>
     <DCC_IncludePath>.;..\;..\..\common;..\..\Win32Api</DCC_IncludePath>
-    <DCC_Define>WINVISTA_UP;PACKAGE_CONDITIONS;JWA_INCLUDE_SETUP_API;JWA_INCLUDE_JWAADSTLB;RELEASE;DYNAMIC_LINK;JWA_WINDOWS;JWA_INCLUDE_SHELLAPI</DCC_Define>
+    <DCC_Define>PACKAGE_CONDITIONS;JWA_INCLUDE_SETUP_API;JWA_INCLUDE_JWAADSTLB;RELEASE;DYNAMIC_LINK;JWA_WINDOWS;JWA_INCLUDE_SHELLAPI</DCC_Define>
     <DCC_AssertionsAtRuntime>False</DCC_AssertionsAtRuntime>
     <DCC_LocalDebugSymbols>False</DCC_LocalDebugSymbols>
     <DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
-    <DCC_MapFile>3</DCC_MapFile>
   </PropertyGroup>
   <ProjectExtensions>
     <Borland.Personality>Delphi.Personality</Borland.Personality>

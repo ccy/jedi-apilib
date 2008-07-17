@@ -23,6 +23,8 @@ package JediApi_SingleUnits;
 {$MINENUMSIZE 1}
 {$IMAGEBASE $400000}
 {$IMPLICITBUILD OFF}
+{$DEFINE WINVISTA}
+{$DEFINE DYNAMIC_LINK}
 
 requires
   rtl,

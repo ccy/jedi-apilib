@@ -47,6 +47,7 @@
 {******************************************************************************}
 {$IFNDEF JWA_OMIT_SECTIONS}
 unit JwaShAppMgr;
+{$I jediapilib.inc}
 
 
 interface

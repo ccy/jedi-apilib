@@ -43,6 +43,7 @@
 {******************************************************************************}
 {$IFNDEF JWA_OMIT_SECTIONS}
 unit JwaShellAPI;
+{$I jediapilib.inc}
 
 interface
 
@@ -242,12 +243,15 @@ function DoEnvironmentSubst(szString: PTSTR; cchString: UINT): DWORD; stdcall;
 {$EXTERNALSYM EIRESID}
 function EIRESID(x: Integer): Integer;
 
+type
+  PHICON = ^HICON;
+
 {$EXTERNALSYM ExtractIconExA}
-function ExtractIconExA(lpszFile: PAnsiChar; nIconIndex: Integer; var phiconLarge, phiconSmall: HICON; nIcons: UINT): UINT; stdcall;
+function ExtractIconExA(lpszFile: PAnsiChar; nIconIndex: Integer; phiconLarge, phiconSmall: PHICON; nIcons: UINT): UINT; stdcall;
 {$EXTERNALSYM ExtractIconExW}
-function ExtractIconExW(lpszFile: PWideChar; nIconIndex: Integer; var phiconLarge, phiconSmall: HICON; nIcons: UINT): UINT; stdcall;
+function ExtractIconExW(lpszFile: PWideChar; nIconIndex: Integer; phiconLarge, phiconSmall: PHICON; nIcons: UINT): UINT; stdcall;
 {$EXTERNALSYM ExtractIconEx}
-function ExtractIconEx(lpszFile: PTSTR; nIconIndex: Integer; var phiconLarge, phiconSmall: HICON; nIcons: UINT): UINT; stdcall;
+function ExtractIconEx(lpszFile: PTSTR; nIconIndex: Integer; phiconLarge, phiconSmall: PHICON; nIcons: UINT): UINT; stdcall;
 
 
 ////
@@ -461,8 +465,10 @@ const
   SEE_MASK_NOCLOSEPROCESS    = $00000040;
   {$EXTERNALSYM SEE_MASK_CONNECTNETDRV}
   SEE_MASK_CONNECTNETDRV     = $00000080;
+  {$EXTERNALSYM SEE_MASK_NOASYNC}
+  SEE_MASK_NOASYNC           = $00000100;
   {$EXTERNALSYM SEE_MASK_FLAG_DDEWAIT}
-  SEE_MASK_FLAG_DDEWAIT      = $00000100;
+  SEE_MASK_FLAG_DDEWAIT      = SEE_MASK_NOASYNC;
   {$EXTERNALSYM SEE_MASK_DOENVSUBST}
   SEE_MASK_DOENVSUBST        = $00000200;
   {$EXTERNALSYM SEE_MASK_FLAG_NO_UI}

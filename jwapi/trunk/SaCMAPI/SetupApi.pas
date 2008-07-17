@@ -44,9 +44,15 @@ unit SetupApi;
 interface
 
 {$WEAKPACKAGEUNIT ON}
-
-
 {$ENDIF JWA_OMIT_SECTIONS}
+
+
+{$IFDEF JWA_INCLUDEMODE}
+ {$IFNDEF JWA_INCLUDE_SHELLAPI}
+   Error: You need to add JWA_INCLUDE_SHELLAPI to your compiler conditions
+   (in project options) to make this unit work. 
+ {$ENDIF JWA_INCLUDE_SHELLAPI}
+{$ENDIF JWA_INCLUDEMODE}
 
 // (rom) this is the switch to change between static and dynamic linking.
 // (rom) it is enabled by default here.
@@ -75,6 +81,9 @@ const
   ANYSIZE_ARRAY = 1;
   {$EXTERNALSYM ANYSIZE_ARRAY}
 {$ENDIF JWA_INCLUDEMODE}
+
+
+
 //
 // Define maximum string length constants as specified by
 // Windows 95.

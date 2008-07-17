@@ -43,6 +43,7 @@
 {******************************************************************************}
 {$IFNDEF JWA_OMIT_SECTIONS}
 unit JwaShlDisp;
+{$I jediapilib.inc}
 
 interface
 

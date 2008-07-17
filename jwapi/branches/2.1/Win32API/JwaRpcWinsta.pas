@@ -269,11 +269,9 @@ type
   PPDNAMEA = PAnsiChar;
 
 {$IFDEF UNICODE}
-type
   PDNAME = PDNAMEW;
   PPDNAME = PPDNAMEW;
 {$ELSE}
-type
   PDNAME = PDNAMEA;
   PPDNAME = PPDNAMEA;
 {$ENDIF UNICODE}
@@ -286,11 +284,9 @@ type
   WDNAMEA = Array[0..WDNAME_LENGTH] of CHAR;
   PWDNAMEA = PAnsiChar;
 {$IFDEF UNICODE}
-type
   WDNAME = WDNAMEW;
   PWDNAME = PWDNAMEW;
 {$ELSE}
-type
   WDNAME = WDNAMEA;
   PWDNAME = PWDNAMEA;
 {$ENDIF /* UNICODE*/}
@@ -303,11 +299,9 @@ type
   CDNAMEA = Array[0..CDNAME_LENGTH] of CHAR;
   PCDNAMEA = PAnsiChar;
 {$IFDEF UNICODE}
-type
   CDNAME = CDNAMEW;
   PCDNAME = PCDNAMEW;
 {$ELSE}
-type
   CDNAME = CDNAMEA;
   PCDNAME = PCDNAMEA;
 {$ENDIF /* UNICODE*/}
@@ -320,11 +314,9 @@ type
   DEVICENAMEA = Array[0..DEVICENAME_LENGTH] of CHAR;
   PDEVICENAMEA = PAnsiChar;
 {$IFDEF UNICODE}
-type
   DEVICENAME = DEVICENAMEW;
   PDEVICENAME = PDEVICENAMEW;
 {$ELSE}
-type
   DEVICENAME = DEVICENAMEA;
   PDEVICENAME = PDEVICENAMEA;
 {$ENDIF /* UNICODE*/}
@@ -341,7 +333,6 @@ type
   MODEMNAME = MODEMNAMEW;
   PMODEMNAME = PMODEMNAMEW;
 {$ELSE}
-type
   MODEMNAME = MODEMNAMEA;
   PMODEMNAME = PMODEMNAMEA;
 {$ENDIF /* UNICODE*/}
@@ -354,11 +345,9 @@ type
   DLLNAMEA = Array[0..DLLNAME_LENGTH] of CHAR;
   PDLLNAMEA = PAnsiChar;
 {$IFDEF UNICODE}
-type
   DLLNAME = DLLNAMEW;
   PDLLNAME = PDLLNAMEW;
 {$ELSE}
-type
   DLLNAME = DLLNAMEA;
   PDLLNAME = PDLLNAMEA;
 {$ENDIF /* UNICODE*/}
@@ -372,11 +361,9 @@ type
   PWDPREFIXA = PAnsiChar;
 
 {$IFDEF UNICODE}
-type
   WDPREFIX = WDPREFIXW;
   PWDPREFIX = PWDPREFIXW;
 {$ELSE}
-type
   WDPREFIX = WDPREFIXA;
   PWDPREFIX = PWDPREFIXA;
 {$ENDIF /* UNICODE*/}
@@ -406,9 +393,7 @@ type
 
 const
   EXTENDED_USERNAME_LEN = 255;
-const
   EXTENDED_PASSWORD_LEN = 255;
-const
   EXTENDED_DOMAIN_LEN = 255;
 
 type
@@ -430,11 +415,9 @@ type
   APPLICATIONNAMEA = Array[0..MAX_BR_NAME] of CHAR;
   PAPPLICATIONNAMEA = PAnsiChar;
 {$IFDEF UNICODE}
-type
   APPLICATIONNAME = APPLICATIONNAMEW;
   PAPPLICATIONNAME = PAPPLICATIONNAMEW;
 {$ELSE}
-type
   APPLICATIONNAME = APPLICATIONNAMEA;
   PAPPLICATIONNAME = PAPPLICATIONNAMEA;
 {$ENDIF /* UNICODE*/}
@@ -657,6 +640,7 @@ type
     WFProfilePath: Array[0..DIRECTORY_LENGTH] of WCHAR;
     WFHomeDir: Array[0..DIRECTORY_LENGTH] of WCHAR;
     WFHomeDirDrive: Array[0..3] of WCHAR;
+    _Align: DWORD;
   end {_USERCONFIGW};
   USERCONFIGW = _USERCONFIGW;
   PUSERCONFIGW = ^_USERCONFIGW;
@@ -1214,21 +1198,21 @@ type
     WinStationBeep,
     WinStationEncryptionOff,
     WinStationEncryptionPerm,
-    WinStationNtSecurity,
+    WinStationNtSecurity, // vista returns Incorrect function
     WinStationUserToken,
     WinStationUnused1,
-    WinStationVideoData,
+    WinStationVideoData, // vista returns Incorrect function
     WinStationInitialProgram,
     WinStationCd,
     WinStationSystemTrace,
     WinStationVirtualData,
     WinStationClientData,
-    WinStationSecureDesktopEnter,
-    WinStationSecureDesktopExit,
+    WinStationSecureDesktopEnter, // not supported on RDP (ica?)
+    WinStationSecureDesktopExit, // not supported on RDP (ica?)
     WinStationLoadBalanceSessionTarget,
     WinStationLoadIndicator,
     WinStationShadowInfo,
-    WinStationDigProductId,
+    WinStationDigProductId, // vista returns Incorrect function
     WinStationLockedState,
     WinStationRemoteAddress,
     WinStationIdleTime,
@@ -1665,27 +1649,24 @@ type
   PWINSTATIONPRODIDA = ^_WINSTATIONPRODIDA;
 
 {$IFDEF UNICODE}
-type
   WINSTATIONPRODID = WINSTATIONPRODIDW;
   PWINSTATIONPRODID = PWINSTATIONPRODIDW;
 {$ELSE}
-type
   WINSTATIONPRODID = WINSTATIONPRODIDA;
   PWINSTATIONPRODID = PWINSTATIONPRODIDA;
 {$ENDIF /* UNICODE*/}
 
-type
-  ipv4 = record
+  Tipv4 = record
     sin_family: Word;
-            sin_port: USHORT;
+    sin_port: USHORT;
     in_addr: ULONG;
-    sin_zero: Array[0..8-1] of UCHAR;
+    sin_zero: Array[0..7] of UCHAR;
   end {ipv4};
-type
-  ipv6 = record
+
+  Tipv6 = record
     sin6_port: USHORT;
     sin6_flowinfo: ULONG;
-    sin6_addr: Array[0..8-1] of USHORT;
+    sin6_addr: Array[0..7] of USHORT;
     sin6_scope_id: ULONG;
   end {ipv6};
 
@@ -1696,7 +1677,6 @@ type
 
 const
   LCPOLICYINFOTYPE_V1 = (1);
-const
   LCPOLICYINFOTYPE_CURRENT = LCPOLICYINFOTYPE_V1;
 
 type
