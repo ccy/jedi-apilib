@@ -358,6 +358,7 @@ type
   EJwsclEndOfStream = class(EJwsclSecurityException);
 
   EJwsclFirewallInitException = class(EJwsclSecurityException);
+  EJwsclFirewallProfileInitException = class(EJwsclSecurityException);  
 
   EJwsclSetFWStateException = class(EJwsclSecurityException);
   EJwsclGetFWStateException = class(EJwsclSecurityException);

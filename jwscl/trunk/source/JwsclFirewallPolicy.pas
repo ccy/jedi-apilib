@@ -65,28 +65,54 @@ type
     constructor Create();
     destructor Destroy(); override;
 
+     {<B>AddToWinFirewall</B> Creates a firewallrule for specified program.
+     @param ApplicationFilename defines the executable of the program
+     @param NameOnExeptionlist defines the string that should be used in the firewall's
+      rules list
+     @param EnableRule defines if the new rule should be active or not
+     }
     function AddToWinFirewall(ApplicationFilename, NameOnExeptionlist: AnsiString;
       EnableRule: Boolean): Boolean;
+
+    {<B>DeleteFromWinFirewall</B> Removes a program's firewall rule.
+     @param ApplicationFilename defines the executable of the program
+    }
     function DeleteFromWinFirewall(ApplicationFilename: AnsiString): Boolean;
 
+    {<B>AddTcpPortToFirewall</B> Adds a rule for a single tcp port to the firewall.
+     @param ProtocollName defines the name of the protocol
+     @param ProtocollPort defines the port of the protocol
+     @param SubnetOnly defines if the rule affects only the pc's subnet or not
+    }
     procedure AddTcpPortToFirewall(ProtocollName: AnsiString;
       ProtocollPort: Integer; const SubnetOnly: Boolean = False;
       const PortRemoteAddresses: AnsiString = '*');
+
+    {<B>AddUpdPortToFirewall</B> Adds a rule for a single udp port to the firewall.
+     @param ProtocollName defines the name of the protocol
+     @param ProtocollPort defines the port of the protocol
+     @param SubnetOnly defines if the rule affects only the pc's subnet or not
+    }
     procedure AddUpdPortToFirewall(ProtocollName: AnsiString;
       ProtocollPort: Integer; const SubnetOnly: Boolean = False;
       const PortRemoteAddresses: AnsiString = '*');
 
+    {<B>Active</B> Sets or gets if the windows firewall is active or not}
     property Active: Boolean read GetFirewallState write SetFirewallState;
 
+    {<B>ExceptionsAllowed</B> Sets or gets if the windows firewall allows exceptions}
     property ExceptionsAllowed: Boolean read GetExceptionsAllowed
       write SetExceptionsAllowed;
 
+    {<B>IncommingPingAllowed</B> Sets or gets if the windows firewall allows incomming pings}
     property IncommingPingAllowed: Boolean read GetIncommingPingAllowed
       write SetIncommingPingAllowed;
 
+    {<B>RemoteAdminAllowed</B> Sets or gets if the windows firewall allows remote administration}
     property RemoteAdminAllowed: Boolean read GetRemoteAdminAllowed
       write SetRemoteAdminAllowed;
 
+    {<B>ExceptionsAllowed</B> Sets or gets the adress(es) which are allowed for remote administration}
     property RemoteAdminAdress: AnsiString read GetRemoteAdminAdress
       write SetRemoteAdminAdress;
   end;
@@ -99,21 +125,32 @@ var
 begin
   inherited;
 
-  FwMgrDisp := CreateOleObject(FW_MGR_CLASS_NAME);
-  FFWMgr := INetFwMgr(FwMgrDisp);
+  try
+    try
+      FwMgrDisp := CreateOleObject(FW_MGR_CLASS_NAME);
+      FFWMgr := INetFwMgr(FwMgrDisp);
+    except
+      on e: EOleSysError do
+      begin
+        raise EJwsclFirewallProfileInitException.CreateFmtEx(e.Message,
+          'Create', 'EOleSysError', 'JwsclFirewallPolicy',
+          130, True, []);
+      end;
+    end;
 
-  if Assigned(@FFWMgr) then
     try
       FProfile := FFWMgr.LocalPolicy.CurrentProfile;
     except
       on e: EOleSysError do
       begin
-        raise EJwsclFirewallInitException.CreateFmtEx(e.Message,
+        raise EJwsclFirewallProfileInitException.CreateFmtEx(e.Message,
           'Create', 'EOleSysError', 'JwsclFirewallPolicy',
-          104, True, []);
+          142, True, []);
       end;
     end;
-  FwMgrDisp := unassigned;
+  finally
+    FwMgrDisp := unassigned;
+  end;
 end;
 
 destructor TJwFirewallPolicy.Destroy();
@@ -139,7 +176,7 @@ begin
     begin
       raise EJwsclSetFWStateException.CreateFmtEx(e.Message,
         'SetFirewallState', 'EOleSysError', 'JwsclFirewallPolicy',
-        132, True, []);
+        173, True, []);
     end;
   end;
 end;
@@ -160,7 +197,7 @@ begin
     begin
       raise EJwsclGetFWStateException.CreateFmtEx(e.Message,
         'GetFirewallState', 'EOleSysError', 'JwsclFirewallPolicy',
-        153, True, []);
+        194, True, []);
     end;
   end;
 end;
@@ -181,7 +218,7 @@ begin
     begin
       raise EJwsclGetFWExceptionsAllowedException.CreateFmtEx(e.Message,
         'GetExceptionsAllowed', 'EOleSysError', 'JwsclFirewallPolicy',
-        174, True, []);
+        215, True, []);
     end;
   end;
 end;
@@ -202,7 +239,7 @@ begin
     begin
       raise EJwsclSetFWExceptionsAllowedException.CreateFmtEx(e.Message,
         'SetExceptionsAllowed', 'EOleSysError', 'JwsclFirewallPolicy',
-        195, True, []);
+        236, True, []);
     end;
   end;
 end;
@@ -223,7 +260,7 @@ begin
     begin
       raise EJwsclGetIncommingPingAllowedException.CreateFmtEx(e.Message,
         'GetIncommingPingAllowed', 'EOleSysError', 'JwsclFirewallPolicy',
-        216, True, []);
+        257, True, []);
     end;
   end;
 end;
@@ -244,7 +281,7 @@ begin
     begin
       raise EJwsclSetIncommingPingAllowedException.CreateFmtEx(e.Message,
         'SetIncommingPingAllowed', 'EOleSysError', 'JwsclFirewallPolicy',
-        237, True, []);
+        278, True, []);
     end;
   end;
 end;
@@ -260,18 +297,15 @@ function TJwFirewallPolicy.GetRemoteAdminAllowed(): Boolean;
 var
   RASettings: INetFwRemoteAdminSettings;
 begin
+  RASettings := FProfile.RemoteAdminSettings;
   try
-    RASettings := FProfile.RemoteAdminSettings;
-    if Assigned(@RASettings) then
-    begin
-      Result := RASettings.Enabled;
-    end;
+    Result := RASettings.Enabled;
   except
     on e: EOleSysError do
     begin
       raise EJwsclGetRemoteAdminAllowedException.CreateFmtEx(e.Message,
         'GetRemoteAdminAllowed', 'EOleSysError', 'JwsclFirewallPolicy',
-        260, True, []);
+        302, True, []);
     end;
   end;
 end;
@@ -287,18 +321,15 @@ procedure TJwFirewallPolicy.SetRemoteAdminAllowed(Value: Boolean);
 var
   RASettings: INetFwRemoteAdminSettings;
 begin
+  RASettings := FProfile.RemoteAdminSettings;
   try
-    RASettings := FProfile.RemoteAdminSettings;
-    if Assigned(@RASettings) then
-    begin
-      RASettings.Enabled := Value;
-    end;
+    RASettings.Enabled := Value;
   except
     on e: EOleSysError do
     begin
       raise EJwsclGetRemoteAdminAllowedException.CreateFmtEx(e.Message,
         'SetRemoteAdminAllowed', 'EOleSysError', 'JwsclFirewallPolicy',
-        288, True, []);
+        326, True, []);
     end;
   end;
 end;
@@ -314,18 +345,15 @@ function TJwFirewallPolicy.GetRemoteAdminAdress(): AnsiString;
 var
   RASettings: INetFwRemoteAdminSettings;
 begin
+  RASettings := FProfile.RemoteAdminSettings;
   try
-    RASettings := FProfile.RemoteAdminSettings;
-    if Assigned(@RASettings) then
-    begin
-      Result := RASettings.RemoteAddresses;
-    end;
+    Result := RASettings.RemoteAddresses;
   except
     on e: EOleSysError do
     begin
       raise EJwsclGetRemoteAdminAdressException.CreateFmtEx(e.Message,
         'GetRemoteAdminAdress', 'EOleSysError', 'JwsclFirewallPolicy',
-        316, True, []);
+        350, True, []);
     end;
   end;
 end;
@@ -341,18 +369,15 @@ procedure TJwFirewallPolicy.SetRemoteAdminAdress(Value: AnsiString);
 var
   RASettings: INetFwRemoteAdminSettings;
 begin
+  RASettings := FProfile.RemoteAdminSettings;
   try
-    RASettings := FProfile.RemoteAdminSettings;
-    if Assigned(@RASettings) then
-    begin
-      RASettings.RemoteAddresses := Value;
-    end;
+    RASettings.RemoteAddresses := Value;
   except
     on e: EOleSysError do
     begin
       raise EJwsclSetRemoteAdminAdressException.CreateFmtEx(e.Message,
         'SetRemoteAdminAdress', 'EOleSysError', 'JwsclFirewallPolicy',
-        344, True, []);
+        374, True, []);
     end;
   end;
 end;
@@ -375,35 +400,37 @@ begin
   if Active
     and ExceptionsAllowed then
   begin
-    AppDisp := CreateOleObject(FW_AUTHORIZEDAPPLICATION_CLASS_NAME);
-    App := INetFwAuthorizedApplication(AppDisp);
+    try
+      AppDisp := CreateOleObject(FW_AUTHORIZEDAPPLICATION_CLASS_NAME);
+      App := INetFwAuthorizedApplication(AppDisp);
 
-    if Assigned(@App) then
-    begin
-      with App do
+      if Assigned(@App) then
       begin
-        ProcessImageFileName := ApplicationFilename;
-        Name := NameOnExeptionlist;
-        Scope := NET_FW_SCOPE_ALL;
-        IpVersion := NET_FW_IP_VERSION_ANY;
-        Enabled := EnableRule;
-      end;
-
-      try
-        FProfile.AuthorizedApplications.Add(App);
-        Result := True;
-      except
-        on e: EOleSysError do
+        with App do
         begin
-          raise EJwsclFirewallAddRuleException.CreateFmtEx(e.Message,
-            'AddToWinFirewall', 'EOleSysError', 'JwsclFirewallPolicy',
-            387, True, []);
+          ProcessImageFileName := ApplicationFilename;
+          Name := NameOnExeptionlist;
+          Scope := NET_FW_SCOPE_ALL;
+          IpVersion := NET_FW_IP_VERSION_ANY;
+          Enabled := EnableRule;
+        end;
+
+        try
+          FProfile.AuthorizedApplications.Add(App);
+          Result := True;
+        except
+          on e: EOleSysError do
+          begin
+            raise EJwsclFirewallAddRuleException.CreateFmtEx(e.Message,
+              'AddToWinFirewall', 'EOleSysError', 'JwsclFirewallPolicy',
+              419, True, []);
+          end;
         end;
       end;
-
+    finally
+      AppDisp := Unassigned;
+      App := nil;
     end;
-    AppDisp := Unassigned;
-    App := nil;
   end;
 end;
 
@@ -418,10 +445,13 @@ procedure TJwFirewallPolicy.AddTcpPortToFirewall(ProtocollName: AnsiString;
   ProtocollPort: Integer; const SubnetOnly: Boolean = False;
   const PortRemoteAddresses: AnsiString = '*');
 var
+  PortDisp: IDispatch;
   Port: INetFwOpenPort;
 begin
-  if Assigned(@Port) then
-  begin
+  try
+    PortDisp := CreateOleObject(FW_OPENPORT_CLASS);
+    Port := INetFwOpenPort(PortDisp);
+
     with Port do
     begin
       Name := ProtocollName;
@@ -442,11 +472,13 @@ begin
       begin
         raise EJwsclAddTcpPortToFirewallException.CreateFmtEx(e.Message,
           'AddTcpPortToFirewall', 'EOleSysError', 'JwsclFirewallPolicy',
-          431, True, []);
+          469, True, []);
       end;
     end;
+  finally
+    PortDisp := Unassigned;
+    Port := nil;
   end;
-  Port := nil;  
 end;
 
 {-------------------------------------------------------------------------------
@@ -460,11 +492,13 @@ procedure TJwFirewallPolicy.AddUpdPortToFirewall(ProtocollName: AnsiString;
   ProtocollPort: Integer; const SubnetOnly: Boolean = False;
   const PortRemoteAddresses: AnsiString = '*');
 var
+  PortDisp: IDispatch;
   Port: INetFwOpenPort;
 begin
+  try
+    PortDisp := CreateOleObject(FW_OPENPORT_CLASS);
+    Port := INetFwOpenPort(PortDisp);
 
-  if Assigned(@Port) then
-  begin
     with Port do
     begin
       Name := ProtocollName;
@@ -485,11 +519,13 @@ begin
       begin
         raise EJwsclAddTcpPortToFirewallException.CreateFmtEx(e.Message,
           'AddUpdPortToFirewall', 'EOleSysError', 'JwsclFirewallPolicy',
-          474, True, []);
+          516, True, []);
       end;
     end;
+  finally
+    PortDisp := Unassigned;
+    Port := nil;
   end;
-  Port := nil;  
 end;
 
 {-------------------------------------------------------------------------------
@@ -514,7 +550,7 @@ begin
       begin
         raise EJwsclFirewallDelRuleException.CreateFmtEx(e.Message,
           'DeleteFromWinFirewall', 'EOleSysError', 'JwsclFirewallPolicy',
-          503, True, []);
+          546, True, []);
       end;
     end;
 end;
