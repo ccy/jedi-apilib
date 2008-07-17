@@ -96,7 +96,7 @@ PackageDLLOutputDir=bin
 PackageDCPOutputDir=
 SearchPath=..\..\common;..\..
 Packages=
-Conditionals=
+Conditionals=WINVISTA;DYNAMIC_LINK
 DebugSourceDirs=
 UsePackages=0
 [Parameters]
