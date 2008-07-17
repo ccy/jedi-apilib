@@ -1456,6 +1456,8 @@ const
   FW_MGR_CLASS_NAME = 'HNetCfg.FwMgr';
   FW_AUTHORIZEDAPPLICATION_CLASS_NAME = 'HNetCfg.FwAuthorizedApplication';
   FW_OPENPORT_CLASS = 'HNetCfg.FWOpenPort';
+  FW_INACTIVE = 'Windows Firewall is inactive';
+  FW_NOEXCEPTIONSALLOWED = 'Windows Firewall does not allow exceptions';
 
 
 {<B>JwInitLocalizedMappings</B> translate all the rights mapping arrays using the resource.

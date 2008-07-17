@@ -380,6 +380,9 @@ type
   EJwsclAddUdpPortToFirewallException = class(EJwsclSecurityException);
   EJwsclFirewallDelRuleException = class(EJwsclSecurityException);
 
+  EJwsclFirewallInactiveException = class(EJwsclSecurityException);
+  EJwsclFirewallNoExceptionsException = class(EJwsclSecurityException);  
+
   JwGeneralExceptionClass = class of Exception;
 
 
