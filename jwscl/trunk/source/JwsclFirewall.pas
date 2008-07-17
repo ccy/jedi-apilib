@@ -396,8 +396,8 @@ var
   App: INetFwAuthorizedApplication;
 begin
 
-  if Active
-    and ExceptionsAllowed then
+  if GetFirewallState
+    and GetExceptionsAllowed then
   begin
     try
       AppDisp := CreateOleObject(FW_AUTHORIZEDAPPLICATION_CLASS_NAME);
@@ -447,7 +447,7 @@ var
   Port: INetFwOpenPort;
 begin
   if not GetFirewallState then
-    raise EJwsclFirewallInactiveException.CreateFmtEx(FW_INACTIVEORNOEXCEPTIONS,
+    raise EJwsclFirewallInactiveException.CreateFmtEx(FW_INACTIVE,
           'AddTcpPortToFirewall', 'EException', 'JwsclFirewall',
           449, True, []);
 
@@ -504,7 +504,7 @@ var
   Port: INetFwOpenPort;
 begin
   if not GetFirewallState then
-    raise EJwsclFirewallInactiveException.CreateFmtEx(FW_INACTIVEORNOEXCEPTIONS,
+    raise EJwsclFirewallInactiveException.CreateFmtEx(FW_INACTIVE,
           'AddUpdPortToFirewall', 'EException', 'JwsclFirewall',
           506, True, []);
 
@@ -556,8 +556,8 @@ end;
 procedure TJwsclFirewall.DeleteFromWinFirewall(ApplicationFilename: AnsiString);
 begin
   
-  if Active
-    and ExceptionsAllowed then
+  if GetFirewallState
+    and GetExceptionsAllowed then
     try
       FProfile.AuthorizedApplications.Remove(ApplicationFilename);
     except
