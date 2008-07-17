@@ -4633,7 +4633,7 @@ begin
 end;
 
 function TJwSecurityToken.UnLoadUserProfile(var ProfileInfo : TJwProfileInfo) : Boolean;
-var IntProfileInfo : {$IFDEF UNICODE}TProfileInfoW;{$ELSE}TProfileInfoA;{$ENDIF}
+//var IntProfileInfo : {$IFDEF UNICODE}TProfileInfoW;{$ELSE}TProfileInfoA;{$ENDIF}
 begin
   result := false;
   SetLastError(ERROR_INVALID_HANDLE);

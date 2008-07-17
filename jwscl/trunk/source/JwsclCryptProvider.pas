@@ -1011,7 +1011,7 @@ end;
 
 function TJwCryptKey.GetExportKeyLength(ExpKey: TJwCryptKey;
   BlobType: TJwKeyExportKind; Flags: TJwKeyFlagSet): Cardinal;
-var Key: Cardinal;
+//var Key: Cardinal;
 begin
   Result := 0;
   ExportKey(ExpKey, BlobType, Flags, nil, Result);

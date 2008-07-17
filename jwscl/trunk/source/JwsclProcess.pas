@@ -1275,7 +1275,7 @@ var TSrv : TJwTerminalServer;
     i : Integer;
     ProcessID : DWORD;
     Succ : Boolean;
-    Sid : TJwSecurityId;
+    //Sid : TJwSecurityId;
     Cancel : Boolean;
     Process : TJwWTSProcess;
     Log : IJwLogClient;
@@ -1401,9 +1401,9 @@ procedure JwCreateProcessInSession(
   function CreateTokenByProcessAndSession(
     const SessionID : DWORD) : TJwSecurityToken;
   var TSrv : TJwTerminalServer;
-      i : Integer;
-      Succ : Boolean;
-      Sid : TJwSecurityId;
+      //i : Integer;
+      //Succ : Boolean;
+      //Sid : TJwSecurityId;
       Meth : TMethod;
       Data : TInternalProcessData;
       Log : IJwLogClient;
@@ -1869,9 +1869,11 @@ end;
 function TJwJobObject.GetProcesses : TJwProcessList;
 var Data : Pointer;
     List : PJobObjectBasicProcessIdList;
+  //len, i,
+  //rlen,
+  //res : DWORD;
   len, i,
-  rlen,
-  res : DWORD;
+  rlen : DWORD;
 begin
   rlen := 0;
   len := 0;
@@ -1911,8 +1913,8 @@ begin
 end;
 
 function TJwJobObject.GetProcessesCount : Cardinal;
-var Data : Pointer;
-    List : PJobObjectBasicProcessIdList;
+//var Data : Pointer;
+//    List : PJobObjectBasicProcessIdList;
 begin
   try
     result := GetBasicAndIOInformation.BasicInfo.ActiveProcesses;
@@ -2176,9 +2178,11 @@ end;
 function TJwJobObject.GetJobObjectInformationLength(
    const JobObjectInfoClass : JOBOBJECTINFOCLASS) : Cardinal;
 var
+  //len,
+  //rlen,
+  //res : DWORD;
   len,
-  rlen,
-  res : DWORD;
+  rlen : DWORD;
   Data : Pointer;
 begin
   rlen := 0;
@@ -2233,9 +2237,11 @@ procedure TJwJobObject.GetJobObjectInformation(
    const JobObjectInfoClass : JOBOBJECTINFOCLASS;
    out Data : Pointer);
 var
+  //len,
+  //rlen,
+  //res : DWORD;
   len,
-  rlen,
-  res : DWORD;
+  rlen : DWORD;
 
 begin
   rlen := 0;
@@ -2432,7 +2438,7 @@ end;
 procedure TJwInternalJobObjectIOCompletitionThread.Execute;
 
   function GetUserData(ProcessID : DWORD) : Pointer;
-  var i : Integer;
+  //var i : Integer;
   begin
     result := nil;
     fJwJobObject.fLock.BeginRead;
@@ -2452,7 +2458,7 @@ var
   lpCompletionKey : Cardinal;
   Res : Boolean;
   L : DWORD;
-  ID : DWORD;
+  //ID : DWORD;
   Data : Pointer;
   
 const ERROR_ABANDONED_WAIT_0 = 735;
@@ -2633,7 +2639,8 @@ end;
 
 procedure TJwJobObjectSessionList.AssignProcessToJob(Process : TJwProcessHandle; Data : Pointer; out JobObjectIndex : Cardinal);
 var
-  i, ID : Cardinal;
+  //i, ID : Cardinal;
+  ID : Cardinal;
   NewObject : TJwJobObject;
 begin
   if not Assigned(OnNewJobObject) then

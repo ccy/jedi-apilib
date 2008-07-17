@@ -1966,7 +1966,7 @@ end;
 procedure TJwSAccessControlList.SetMandatoryLabelEx(
   const NewLabel : TJwSystemMandatoryAccessControlEntry);
 var i : Integer;
-    p : TJwSystemMandatoryAccessControlEntry;
+    //p : TJwSystemMandatoryAccessControlEntry;
 begin
   for i := 0 to Count-1 do
   begin
@@ -2199,10 +2199,10 @@ function TJwSecurityAccessControlList.Create_PACL: PACL;
 var
   i: integer;
 
-  s : AnsiString;
+  //s : AnsiString;
 
-  aAudit:  TJwAuditAccessControlEntry;
-  Mandatory : TJwSystemMandatoryAccessControlEntry;
+  //aAudit:  TJwAuditAccessControlEntry;
+  //Mandatory : TJwSystemMandatoryAccessControlEntry;
   bResult: boolean;
 
   iSize: Cardinal;
@@ -2298,7 +2298,7 @@ end;
 function TJwSecurityAccessControlList.GetEffectiveRights(const User :
        {$IFDEF UNICODE}TTrusteeW{$ELSE}TTrusteeA{$ENDIF}) : TJwAccessMask;
 var ACL : PACL;
-    i : Integer;
+    //i : Integer;
 begin
   result := 0;
 
@@ -2323,7 +2323,7 @@ end;
 function TJwSecurityAccessControlList.GetEffectiveRights
   (const User : TJwSecurityId) : TJwAccessMask;
 var Trust : {$IFDEF UNICODE}TTrusteeW{$ELSE}TTrusteeA{$ENDIF};
-    Sid : PSID;
+    //Sid : PSID;
 begin
   ZeroMemory(@Trust, sizeof(Trust));
 
@@ -3218,9 +3218,9 @@ function TJwSecurityAccessControlEntry.CreateDynamicACE(out Size : Cardinal) : P
 
 
 var p1 : PACCESS_ALLOWED_CALLBACK_ACE;
-    p2 : PSYSTEM_MANDATORY_LABEL_ACE;
+    //p2 : PSYSTEM_MANDATORY_LABEL_ACE;
     p3 : PACCESS_DENIED_OBJECT_ACE;
-    p4 : PACCESS_ALLOWED_CALLBACK_OBJECT_ACE;
+    //p4 : PACCESS_ALLOWED_CALLBACK_OBJECT_ACE;
 
     AceType : TJwAceType;
 {$IFDEF DEBUG}
@@ -3298,7 +3298,7 @@ end;
 
 function TJwSecurityAccessControlEntry.Create_AllowACE: PAccessAllowedAce;
 var
-  aPSID: PSID;
+  //aPSID: PSID;
   Size : Cardinal;
 begin
   if not Assigned(SID) then
@@ -3830,7 +3830,8 @@ end;
 
 procedure TJwSecurityAccessControlList.MergeElements;
 
-var ACE, ACE2 : TJwSecurityAccessControlEntry;
+var //ACE, ACE2 : TJwSecurityAccessControlEntry;
+    ACE : TJwSecurityAccessControlEntry;
     i, i2 : Integer;
     EqualAceTypeSet: TJwEqualAceTypeSet;
 begin
@@ -3991,7 +3992,7 @@ var
   i: integer;
 
   ACE : TJwSecurityAccessControlEntry;
-  OldList : TJwSecurityAccessControlList;
+  //OldList : TJwSecurityAccessControlList;
   OldOwns : Boolean;
 begin
   ACL := TJwDAccessControlList.Create;

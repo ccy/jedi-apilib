@@ -540,7 +540,7 @@ end;
 
 function JwSidMap(const Name : TJwString) : TJwSecurityID;
 var i : Integer;
-    Map : PJwSidMap;
+    //Map : PJwSidMap;
 begin
   JwRaiseOnNilParameter(SidMaps, 'JwInitMapping must be called.', 'JwAddMapSid','', RsUNKnownSid);
 
@@ -561,7 +561,7 @@ end;
 
 
 function JwGetMachineSid(const ComputerOrDNS : WideString = '') : TJwSecurityId;
-var Token : TJwSecurityToken;
+var //Token : TJwSecurityToken;
     Sid{,Sid2} : TJwSecurityId;
     Arr : TJwSubAuthorityArray;
     Ident : TSidIdentifierAuthority;
@@ -570,10 +570,13 @@ var Token : TJwSecurityToken;
     UserInfo : PUSER_INFO_0;
     //UserInfo2 : PUSER_MODALS_INFO_2;
 
+    //res,
+    //entriesread,
+    //totalentries,
+    //resume_handle : DWORD;
     res,
     entriesread,
-    totalentries,
-    resume_handle : DWORD;
+    totalentries : DWORD;
 begin
   Data := nil;
 

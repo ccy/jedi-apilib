@@ -671,8 +671,8 @@ procedure TJwLsaPolicy.AddAccountRights(const Sid: TJwSecurityId;
 var
   ntsResult : NTSTATUS;
 
-  Privs : PLSA_UNICODE_STRING;
-  PrivCount : Cardinal;
+  //Privs : PLSA_UNICODE_STRING;
+  //PrivCount : Cardinal;
 
   Arr : Array of LSA_UNICODE_STRING;
   i : Integer;
@@ -736,8 +736,8 @@ procedure TJwLsaPolicy.RemoveAccountRights(const Sid: TJwSecurityId;
 var
   ntsResult : NTSTATUS;
 
-  Privs : PLSA_UNICODE_STRING;
-  PrivCount : Cardinal;
+  //Privs : PLSA_UNICODE_STRING;
+  //PrivCount : Cardinal;
 
   Arr : Array of LSA_UNICODE_STRING;
   i : Integer;

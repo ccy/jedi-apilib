@@ -3751,7 +3751,7 @@ var
   tempDesiredAccess : Cardinal;
 
   mapping: TGenericMapping;
-  lbAccessStatus: Bool;
+  //lbAccessStatus: Bool;
   Token: TJwSecurityToken;
   IsThreadToken: boolean;
 
@@ -4867,7 +4867,7 @@ procedure TJwSecureFileObject.AccessCheck(
   const ClientToken: TJwSecurityToken = nil);
 var
   SD: TJwSecurityDescriptor;
-  GA: Cardinal;
+  //GA: Cardinal;
   privSet: TJwPrivilegeSet;
 begin
   SD := GetSecurityDescriptor([siOwnerSecurityInformation,

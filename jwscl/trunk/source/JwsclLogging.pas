@@ -1108,7 +1108,7 @@ procedure TJwLogServerImpl.Done;
 var
   Attributes : TJwXMLAttributes;
   AnsiStr : AnsiString;
-  WideStr : WideString;
+  //WideStr : WideString;
   S : TJwString;
 
   Value : TJwString;
@@ -1243,7 +1243,7 @@ end;
 
 
 function TJwLogServerImpl.GetID : Int64;
-var I : Integer;
+//var I : Integer;
 begin
 //  try
     //some OS does not support functions
@@ -1323,7 +1323,8 @@ end;
 class function TJwLogWriter.CheckLogEventType(const LogTag: TJwXMLLogTag;
   const LogTypeValue: Integer; const AllowedTypes: TJwEventTypes): Boolean;
 
-var i,i2 : Integer;
+//var i,i2 : Integer;
+var i : Integer;
 begin
   if Length(AllowedTypes) = 0 then
   begin

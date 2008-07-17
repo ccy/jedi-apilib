@@ -506,7 +506,7 @@ function JwCompareFileHash(
   const OriginalHash : TJwFileHashData) : Boolean;
 var
   Stream : TJwFileStreamEx;
-  M : TMemoryStream;
+  //M : TMemoryStream;
   Size : Cardinal;
   fAppHash : TJwHash;
   NewHash : TJwFileHashData;
