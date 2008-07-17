@@ -357,6 +357,28 @@ type
 
   EJwsclEndOfStream = class(EJwsclSecurityException);
 
+  EJwsclFirewallInitException = class(EJwsclSecurityException);
+
+  EJwsclSetFWStateException = class(EJwsclSecurityException);
+  EJwsclGetFWStateException = class(EJwsclSecurityException);
+
+  EJwsclGetFWExceptionsAllowedException = class(EJwsclSecurityException);
+  EJwsclSetFWExceptionsAllowedException = class(EJwsclSecurityException);
+
+  EJwsclGetIncommingPingAllowedException = class(EJwsclSecurityException);
+  EJwsclSetIncommingPingAllowedException = class(EJwsclSecurityException);
+
+  EJwsclGetRemoteAdminAllowedException = class(EJwsclSecurityException);
+  EJwsclSetRemoteAdminAllowedException = class(EJwsclSecurityException);
+
+  EJwsclGetRemoteAdminAdressException = class(EJwsclSecurityException);
+  EJwsclSetRemoteAdminAdressException = class(EJwsclSecurityException);
+
+  EJwsclFirewallAddRuleException = class(EJwsclSecurityException);
+  EJwsclAddTcpPortToFirewallException = class(EJwsclSecurityException);
+  EJwsclAddUdpPortToFirewallException = class(EJwsclSecurityException);
+  EJwsclFirewallDelRuleException = class(EJwsclSecurityException);
+
   JwGeneralExceptionClass = class of Exception;
 
 

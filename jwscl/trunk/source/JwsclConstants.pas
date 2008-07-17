@@ -1445,6 +1445,17 @@ const
   //LogonUser undefined constant values (may be moved to JWA)
   ERROR_ILL_FORMED_PASSWORD = 1327;
 
+const
+  NET_FW_SCOPE_ALL = 0;
+  NET_FW_SCOPE_LOCAL_SUBNET = 1;
+
+  NET_FW_IP_VERSION_ANY = 2;
+  NET_FW_IP_PROTOCOL_TCP = 6;
+  NET_FW_IP_PROTOCOL_UDP = 17;
+
+  FW_MGR_CLASS_NAME = 'HNetCfg.FwMgr';
+  FW_AUTHORIZEDAPPLICATION_CLASS_NAME = 'HNetCfg.FwAuthorizedApplication';
+  FW_OPENPORT_CLASS = 'HNetCfg.FWOpenPort';
 
 
 {<B>JwInitLocalizedMappings</B> translate all the rights mapping arrays using the resource.
