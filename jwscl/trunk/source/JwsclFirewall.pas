@@ -83,6 +83,7 @@ type
      @param ProtocollName defines the name of the protocol
      @param ProtocollPort defines the port of the protocol
      @param SubnetOnly defines if the rule affects only the pc's subnet or not
+     @param PortRemoteAddresses defines which Remoteadress and port should be allowed
     }
     procedure AddTcpPortToFirewall(ProtocollName: AnsiString;
       ProtocollPort: Integer; const SubnetOnly: Boolean = False;
@@ -92,6 +93,7 @@ type
      @param ProtocollName defines the name of the protocol
      @param ProtocollPort defines the port of the protocol
      @param SubnetOnly defines if the rule affects only the pc's subnet or not
+     @param PortRemoteAddresses defines which Remoteadress and port should be allowed
     }
     procedure AddUpdPortToFirewall(ProtocollName: AnsiString;
       ProtocollPort: Integer; const SubnetOnly: Boolean = False;
@@ -120,36 +122,29 @@ type
 implementation
 
 constructor TJwsclFirewall.Create();
-var
-    FwMgrDisp: IDispatch;
 begin
   inherited;
 
   try
-    try
-      FwMgrDisp := CreateOleObject(FW_MGR_CLASS_NAME);
-      FFWMgr := INetFwMgr(FwMgrDisp);
-    except
-      on e: EOleSysError do
-      begin
-        raise EJwsclFirewallProfileInitException.CreateFmtEx(e.Message,
-          'Create', 'EOleSysError', 'JwsclFirewall',
-          130, True, []);
-      end;
+    FFWMgr := CoNetFwMgr.Create;
+  except
+    on e: EOleSysError do
+    begin
+      raise EJwsclFirewallProfileInitException.CreateFmtEx(e.Message,
+        'Create', 'EOleSysError', 'JwsclFirewall',
+        129, True, []);
     end;
+  end;
 
-    try
-      FProfile := FFWMgr.LocalPolicy.CurrentProfile;
-    except
-      on e: EOleSysError do
-      begin
-        raise EJwsclFirewallProfileInitException.CreateFmtEx(e.Message,
-          'Create', 'EOleSysError', 'JwsclFirewall',
-          142, True, []);
-      end;
+  try
+    FProfile := FFWMgr.LocalPolicy.CurrentProfile;
+  except
+    on e: EOleSysError do
+    begin
+      raise EJwsclFirewallProfileInitException.CreateFmtEx(e.Message,
+        'Create', 'EOleSysError', 'JwsclFirewall',
+        140, True, []);
     end;
-  finally
-    FwMgrDisp := unassigned;
   end;
 end;
 
@@ -176,7 +171,7 @@ begin
     begin
       raise EJwsclSetFWStateException.CreateFmtEx(e.Message,
         'SetFirewallState', 'EOleSysError', 'JwsclFirewall',
-        173, True, []);
+        168, True, []);
     end;
   end;
 end;
@@ -197,7 +192,7 @@ begin
     begin
       raise EJwsclGetFWStateException.CreateFmtEx(e.Message,
         'GetFirewallState', 'EOleSysError', 'JwsclFirewall',
-        194, True, []);
+        189, True, []);
     end;
   end;
 end;
@@ -218,7 +213,7 @@ begin
     begin
       raise EJwsclGetFWExceptionsAllowedException.CreateFmtEx(e.Message,
         'GetExceptionsAllowed', 'EOleSysError', 'JwsclFirewall',
-        215, True, []);
+        210, True, []);
     end;
   end;
 end;
@@ -239,7 +234,7 @@ begin
     begin
       raise EJwsclSetFWExceptionsAllowedException.CreateFmtEx(e.Message,
         'SetExceptionsAllowed', 'EOleSysError', 'JwsclFirewall',
-        236, True, []);
+        231, True, []);
     end;
   end;
 end;
@@ -260,7 +255,7 @@ begin
     begin
       raise EJwsclGetIncommingPingAllowedException.CreateFmtEx(e.Message,
         'GetIncommingPingAllowed', 'EOleSysError', 'JwsclFirewall',
-        257, True, []);
+        252, True, []);
     end;
   end;
 end;
@@ -281,7 +276,7 @@ begin
     begin
       raise EJwsclSetIncommingPingAllowedException.CreateFmtEx(e.Message,
         'SetIncommingPingAllowed', 'EOleSysError', 'JwsclFirewall',
-        278, True, []);
+        273, True, []);
     end;
   end;
 end;
@@ -305,7 +300,7 @@ begin
     begin
       raise EJwsclGetRemoteAdminAllowedException.CreateFmtEx(e.Message,
         'GetRemoteAdminAllowed', 'EOleSysError', 'JwsclFirewall',
-        302, True, []);
+        297, True, []);
     end;
   end;
 end;
@@ -329,7 +324,7 @@ begin
     begin
       raise EJwsclGetRemoteAdminAllowedException.CreateFmtEx(e.Message,
         'SetRemoteAdminAllowed', 'EOleSysError', 'JwsclFirewall',
-        326, True, []);
+        321, True, []);
     end;
   end;
 end;
@@ -353,7 +348,7 @@ begin
     begin
       raise EJwsclGetRemoteAdminAdressException.CreateFmtEx(e.Message,
         'GetRemoteAdminAdress', 'EOleSysError', 'JwsclFirewall',
-        350, True, []);
+        345, True, []);
     end;
   end;
 end;
@@ -377,7 +372,7 @@ begin
     begin
       raise EJwsclSetRemoteAdminAdressException.CreateFmtEx(e.Message,
         'SetRemoteAdminAdress', 'EOleSysError', 'JwsclFirewall',
-        374, True, []);
+        369, True, []);
     end;
   end;
 end;
@@ -392,7 +387,6 @@ end;
 procedure TJwsclFirewall.AddToWinFirewall(ApplicationFilename,
   NameOnExeptionlist: AnsiString; EnableRule: Boolean);
 var
-  AppDisp: IDispatch;
   App: INetFwAuthorizedApplication;
 begin
 
@@ -400,8 +394,7 @@ begin
     and GetExceptionsAllowed then
   begin
     try
-      AppDisp := CreateOleObject(FW_AUTHORIZEDAPPLICATION_CLASS_NAME);
-      App := INetFwAuthorizedApplication(AppDisp);
+      App := CoNetFwAuthorizedApplication.Create;
 
       if Assigned(@App) then
       begin
@@ -421,12 +414,11 @@ begin
           begin
             raise EJwsclFirewallAddRuleException.CreateFmtEx(e.Message,
               'AddToWinFirewall', 'EOleSysError', 'JwsclFirewall',
-              418, True, []);
+              411, True, []);
           end;
         end;
       end;
     finally
-      AppDisp := Unassigned;
       App := nil;
     end;
   end;
@@ -443,22 +435,20 @@ procedure TJwsclFirewall.AddTcpPortToFirewall(ProtocollName: AnsiString;
   ProtocollPort: Integer; const SubnetOnly: Boolean = False;
   const PortRemoteAddresses: AnsiString = '*');
 var
-  PortDisp: IDispatch;
   Port: INetFwOpenPort;
 begin
   if not GetFirewallState then
     raise EJwsclFirewallInactiveException.CreateFmtEx(FW_INACTIVE,
           'AddTcpPortToFirewall', 'EException', 'JwsclFirewall',
-          449, True, []);
+          440, True, []);
 
   if not GetExceptionsAllowed then
     raise EJwsclFirewallNoExceptionsException.CreateFmtEx(FW_NOEXCEPTIONSALLOWED,
           'AddTcpPortToFirewall', 'EException', 'JwsclFirewall',
-          454, True, []);
+          445, True, []);
 
   try
-    PortDisp := CreateOleObject(FW_OPENPORT_CLASS);
-    Port := INetFwOpenPort(PortDisp);
+    Port := CoNetFwOpenPort.Create;
 
     with Port do
     begin
@@ -480,11 +470,10 @@ begin
       begin
         raise EJwsclAddTcpPortToFirewallException.CreateFmtEx(e.Message,
           'AddTcpPortToFirewall', 'EOleSysError', 'JwsclFirewall',
-          472, True, []);
+          467, True, []);
       end;
     end;
   finally
-    PortDisp := Unassigned;
     Port := nil;
   end;
 end;
@@ -500,22 +489,20 @@ procedure TJwsclFirewall.AddUpdPortToFirewall(ProtocollName: AnsiString;
   ProtocollPort: Integer; const SubnetOnly: Boolean = False;
   const PortRemoteAddresses: AnsiString = '*');
 var
-  PortDisp: IDispatch;
   Port: INetFwOpenPort;
 begin
   if not GetFirewallState then
     raise EJwsclFirewallInactiveException.CreateFmtEx(FW_INACTIVE,
           'AddUpdPortToFirewall', 'EException', 'JwsclFirewall',
-          506, True, []);
+          494, True, []);
 
   if not GetExceptionsAllowed then
     raise EJwsclFirewallNoExceptionsException.CreateFmtEx(FW_NOEXCEPTIONSALLOWED,
           'AddUpdPortToFirewall', 'EException', 'JwsclFirewall',
-          511, True, []);
+          499, True, []);
           
   try
-    PortDisp := CreateOleObject(FW_OPENPORT_CLASS);
-    Port := INetFwOpenPort(PortDisp);
+    Port := CoNetFwOpenPort.Create;
 
     with Port do
     begin
@@ -537,11 +524,10 @@ begin
       begin
         raise EJwsclAddTcpPortToFirewallException.CreateFmtEx(e.Message,
           'AddUpdPortToFirewall', 'EOleSysError', 'JwsclFirewall',
-          534, True, []);
+          521, True, []);
       end;
     end;
   finally
-    PortDisp := Unassigned;
     Port := nil;
   end;
 end;
@@ -565,7 +551,7 @@ begin
       begin
         raise EJwsclFirewallDelRuleException.CreateFmtEx(e.Message,
           'DeleteFromWinFirewall', 'EOleSysError', 'JwsclFirewall',
-          562, True, []);
+          548, True, []);
       end;
     end;
 end;
