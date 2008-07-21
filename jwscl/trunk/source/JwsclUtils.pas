@@ -501,6 +501,7 @@ function JwCreateFileHash(const FilePath : WideString) : TJwFileHashData;
 procedure JwSaveHashToRegistry(const Hive: Cardinal;
    const Key, HashName, SizeName : String;
    const FileHashData : TJwFileHashData);
+
 function JwLoadHashFromRegistry(const Hive: Cardinal;
    const Key, HashName, SizeName : String) : TJwFileHashData;
 

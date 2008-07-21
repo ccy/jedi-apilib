@@ -2053,19 +2053,19 @@ type
 
     {<B>Token</B> returns the token of the session.
      The returned value is cached and must not be freed!
+
+     You may need to enable the DEBUG privilege if necessary
+     to obtain a process handle internally.
+
      If the value cannot be obtained the return value is nil.
-     
-     Remarks
-  In order to obtain the Token the SE_DEBUG_NAME privilege
-     is enabled, if this fails EJwsclPrivilegeException will be raised.
     }
     property Token : TJwSecurityToken read GetToken;
 
     {<B>UserSid</B> returns a JwsclSid.TJwSecurityID instance pointing to the SID of the
      user that is associated with the process.
-     
+
      Remarks
-  The returned value is cached and must not be freed!
+    The returned value is cached and must not be freed!
      If the value cannot be obtained the return value is nil.
     }
     property UserSid : TJwSecurityID read GetUserSid;
@@ -3683,7 +3683,7 @@ begin
   try
     FToken := TJwSecurityToken.CreateWTSQueryUserTokenEx(Owner.Owner, FSessionId);
   except
-    on E : EJwsclOpenProcessTokenException do
+    on E : EJwsclSecurityException do
       FToken := nil;
   end;
 
@@ -3814,23 +3814,16 @@ begin
     exit;
 
   result := nil;
-  //enable privilege is available
-  JwEnablePrivilege(SE_DEBUG_NAME, pst_EnableIfAvail);
-
-  SetLastError(0);
-  hProc := OpenProcess(PROCESS_QUERY_INFORMATION, false, ProcessID);
-
-  if hProc = 0 then
-    exit;
 
   try
-    FToken := TJwSecurityToken.CreateTokenByProcess(hProc, MAXIMUM_ALLOWED);
+    //try to get a token in by all means
+    //even if we don't get that much power over it.
+    FToken := TJwSecurityToken.CreateTokenByProcessId(ProcessID, MAXIMUM_ALLOWED);
   except
-    on E : EJwsclOpenProcessTokenException do
+    //any exception returns a nil pointer
+    on E : EJwsclSecurityException do
       FToken := nil;
   end;
-
-  CloseHandle(hProc);
 
   result := FToken;
 end;

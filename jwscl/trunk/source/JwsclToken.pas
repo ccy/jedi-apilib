@@ -311,6 +311,14 @@ type
         {
         CreateTokenByProcess creates a new instances and opens a process token.
 
+        To open a token of another session rather than the current session
+        the current process token must be the SYSTEM token. Only the access right
+        TOKEN_READ can be used with an admin token.
+
+        If parameter aDesiredAccess is MAXIMUM_ALLOWED and the right READ_CONTROL
+        is not granted the value of the property AccessMask is zero. Otherwise
+        it contains all granted rights for the token.
+
         @param aProcessHandle Receives a process handle which is used to get the process token. The handle can be zero (0) to use the actual process handle of the caller 
         @param aDesiredAccess Receives the desired access for this token. The access types can be get from the following list. Access flags must be concatenated with or operator.
               Can be MAXIMUM_ALLOWED to get maximum access. 
@@ -2964,11 +2972,19 @@ begin
       RsUNToken, 0, True, ['OpenProcessToken']);
   end;
 
-  if aDesiredAccess = MAXIMUM_ALLOWED then
-    fAccessMask := GetMaximumAllowed
-  else
-    fAccessMask := aDesiredAccess;
-  
+  try
+    if aDesiredAccess = MAXIMUM_ALLOWED then
+      fAccessMask := GetMaximumAllowed
+    else
+      fAccessMask := aDesiredAccess;
+  except
+    //if GetMaximumAllowed does not have the READ_CONTROL flag
+    //we may fail here, so just set access mask to zero
+    //many people don't even read it.
+    fAccessMask := 0;
+  end;
+
+
   Shared := False;
 end;
 
@@ -3031,10 +3047,17 @@ begin
     end;
   end;
 
-  if aDesiredAccess = MAXIMUM_ALLOWED then
-    fAccessMask := GetMaximumAllowed
-  else
-    fAccessMask := aDesiredAccess;
+  try
+    if aDesiredAccess = MAXIMUM_ALLOWED then
+      fAccessMask := GetMaximumAllowed
+    else
+      fAccessMask := aDesiredAccess;
+  except
+    //if GetMaximumAllowed does not have the READ_CONTROL flag
+    //we may fail here, so just set access mask to zero
+    //many people don't even read it.
+    fAccessMask := 0;
+  end;
 
   Shared := False;
 end;
@@ -3069,10 +3092,17 @@ begin
     //open process token
     CreateTokenByProcess(0, aDesiredAccess);
 
-  if aDesiredAccess = MAXIMUM_ALLOWED then
-    fAccessMask := GetMaximumAllowed
-  else
-    fAccessMask := aDesiredAccess;
+  try
+    if aDesiredAccess = MAXIMUM_ALLOWED then
+      fAccessMask := GetMaximumAllowed
+    else
+      fAccessMask := aDesiredAccess;
+  except
+    //if GetMaximumAllowed does not have the READ_CONTROL flag
+    //we may fail here, so just set access mask to zero
+    //many people don't even read it.
+    fAccessMask := 0;
+  end;
 end;
 
 constructor TJwSecurityToken.Create(const aTokenHandle: TJwTokenHandle;
@@ -3086,10 +3116,17 @@ begin
   fShared := ShareTokenHandle = shShared;
 
 
-  if aDesiredAccess = MAXIMUM_ALLOWED then
-    fAccessMask := GetMaximumAllowed
-  else
-    fAccessMask := aDesiredAccess;
+  try
+    if aDesiredAccess = MAXIMUM_ALLOWED then
+      fAccessMask := GetMaximumAllowed
+    else
+      fAccessMask := aDesiredAccess;
+  except
+    //if GetMaximumAllowed does not have the READ_CONTROL flag
+    //we may fail here, so just set access mask to zero
+    //many people don't even read it.
+    fAccessMask := 0;
+  end;
 end;
 
 
@@ -3214,7 +3251,15 @@ begin
         ClassName, RsUNToken, 0, True, [SessionID]);
   end;
 
-  fAccessMask := GetMaximumAllowed;
+  
+  try
+    fAccessMask := GetMaximumAllowed;
+  except
+    //if GetMaximumAllowed does not have the READ_CONTROL flag
+    //we may fail here, so just set access mask to zero
+    //many people don't even read it.
+    fAccessMask := 0;
+  end;  
 end;
 
 constructor TJwSecurityToken.CreateWTSQueryUserToken(SessionID:
@@ -3255,7 +3300,14 @@ begin
   end;
 
   //should be TOKEN_ALL_ACCESS
-  fAccessMask := GetMaximumAllowed;
+  try
+    fAccessMask := GetMaximumAllowed
+  except
+    //if GetMaximumAllowed does not have the READ_CONTROL flag
+    //we may fail here, so just set access mask to zero
+    //many people don't even read it.
+    fAccessMask := 0;
+  end;
   //TODO: Warning: in XP may not TOKEN_ALL_ACCESS
   //fAccessMask := TOKEN_ALL_ACCESS;
 end;
@@ -3361,10 +3413,17 @@ begin
       RestrictedSids.Free_PSID_Array(PSidAndAttributesArray(pResSids));
   end;
 
-  if TokenAccessMask = MAXIMUM_ALLOWED then
-    fAccessMask := GetMaximumAllowed
-  else
-    fAccessMask := TokenAccessMask;
+  try
+    if TokenAccessMask = MAXIMUM_ALLOWED then
+      fAccessMask := GetMaximumAllowed
+    else
+      fAccessMask := TokenAccessMask;
+  except
+    //if GetMaximumAllowed does not have the READ_CONTROL flag
+    //we may fail here, so just set access mask to zero
+    //many people don't even read it.
+    fAccessMask := 0;
+  end;    
 
   if Assigned(aToken) then
     aToken.Free;
@@ -3407,10 +3466,19 @@ begin
     if not fShared then
       CloseHandle(fTokenHandle);
     fTokenHandle := hNewTokenHandle;
-    if aDesiredAccess = MAXIMUM_ALLOWED then
-      fAccessMask := GetMaximumAllowed
-    else
-      fAccessMask := aDesiredAccess;
+    
+      
+	try
+      if aDesiredAccess = MAXIMUM_ALLOWED then
+	    fAccessMask := GetMaximumAllowed
+	  else
+	    fAccessMask := aDesiredAccess;
+	except
+	//if GetMaximumAllowed does not have the READ_CONTROL flag
+	//we may fail here, so just set access mask to zero
+	//many people don't even read it.
+	fAccessMask := 0;
+	end;      
   end
   else
     raise EJwsclTokenImpersonationException.CreateFmtEx(
@@ -3448,10 +3516,17 @@ begin
       CloseHandle(fTokenHandle);
     fTokenHandle := hNewTokenHandle;
 
-    if aDesiredAccess = MAXIMUM_ALLOWED then
-      fAccessMask := GetMaximumAllowed
-    else
-      fAccessMask := aDesiredAccess;
+    try
+	  if aDesiredAccess = MAXIMUM_ALLOWED then
+	    fAccessMask := GetMaximumAllowed
+	  else
+	    fAccessMask := aDesiredAccess;
+	except
+	  //if GetMaximumAllowed does not have the READ_CONTROL flag
+	  //we may fail here, so just set access mask to zero
+	  //many people don't even read it.
+	  fAccessMask := 0;
+	end;            
   end
   else
     raise EJwsclTokenPrimaryException.CreateFmtEx(
@@ -4344,10 +4419,17 @@ begin
   Result.fShared      := False;
   Result.fTokenHandle := newTokenHandle;
 
-  if AccessMask = MAXIMUM_ALLOWED then
-    fAccessMask := GetMaximumAllowed
-  else
-    fAccessMask := AccessMask;
+  try
+    if AccessMask = MAXIMUM_ALLOWED then
+      fAccessMask := GetMaximumAllowed
+    else
+      fAccessMask := AccessMask;
+  except
+	//if GetMaximumAllowed does not have the READ_CONTROL flag
+	//we may fail here, so just set access mask to zero
+	//many people don't even read it.
+    fAccessMask := 0;
+  end;          
 end;
 
 
@@ -5250,11 +5332,21 @@ begin
       end;
       TJwDAccessControlList.Free_PACL(ttTokenDefaultDACL.DefaultDacl);
 
-       JwEnablePrivilege(SE_CREATE_TOKEN_NAME, pst_Disable);
+      JwEnablePrivilege(SE_CREATE_TOKEN_NAME, pst_Disable);
 
     end;
 
-    fAccessMask := GetMaximumAllowed;
+    
+    try
+      fAccessMask := GetMaximumAllowed;
+    except
+      //if GetMaximumAllowed does not have the READ_CONTROL flag
+      //we may fail here, so just set access mask to zero
+      //many people don't even read it.
+      fAccessMask := 0;
+    end;
+    
+    
 
     fPrivelegesList      := TObjectList.Create(False);
     fStackPrivilegesList := TObjectList.Create(True);

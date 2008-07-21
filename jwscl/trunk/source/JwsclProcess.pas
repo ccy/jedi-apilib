@@ -562,6 +562,11 @@ BOOL WINAPI TerminateJobObject(HANDLE hJob, UINT uExitCode);
 achieve success.
 This procedure needs JwInitWellKnownSIDs to be called.
 
+To run a process in another session the process needs SYSTEM rights. It means that
+the current process token must have the TOKEN_ASSIGN_PRIMARY right for the target
+token. Otherwise the CreateProcessAsUser function fails with bad error explanation
+(like "A call to an OS function failed").
+However the procedure won't stop you from doing this!
 
 @param ApplicationName defines the application to be run in the session 
 @param CommandLine defines the parameters for the application 
@@ -1307,21 +1312,29 @@ procedure OnProcessFoundInSameSession(const Sender1, Sender2 : TJwTerminalServer
       var Cancel : Boolean; Data : Pointer);
 var ProcessData : PInternalProcessData absolute Data;
 begin
-  Cancel :=
-      {
-        same session
-      }
-      (Process.SessionId = ProcessData.SessionID)
+  try
+    Cancel := Assigned(Process) and
+        {
+          same session
+        }
+        (Process.SessionId = ProcessData.SessionID)
 
-      {
-        no idle process
-      }
-      and (Process.ProcessId > 0)
-      {
-        We have to check for system processes in that session.
-        So we ignore them otherwise the user gets a system elevated process.
-      }
-      and (Assigned(Process.UserSid) and not Process.UserSid.EqualSid(JwLocalSystemSID));
+        {
+          no idle process
+        }
+        and (Process.ProcessId > 0)
+        {
+          We have to check for system processes in that session.
+          So we ignore them otherwise the user gets a system elevated process.
+        }
+        and (Assigned(Process.UserSid) and not Process.UserSid.EqualSid(JwLocalSystemSID));
+  except
+    on E : Exception do
+    begin
+      //don't bother about the problem
+      Cancel := false;
+    end;
+  end;      
 end;
 
 
@@ -1445,13 +1458,20 @@ begin
 
           try
             Succ := true;
+            
+            Log.Log(lsMessage,'call CreateDuplicateExistingToken');
             {
               Get token by process handle and duplicate it
-            }
-            Log.Log(lsMessage,'call CreateDuplicateExistingToken');
+              
+              TSrv.Processes[i].Token may be nil if the token could not be retrieved.
+              That may happen for processes in other session or constrained tokens (adapted DACL).
+              We skip it into the except branch!
+            }            
             result := TJwSecurityToken.CreateDuplicateExistingToken(TSrv.Processes[i].Token.TokenHandle,
-                MAXIMUM_ALLOWED);
-            {DEBUG: raise Exception.Create('');}
+                TOKEN_ASSIGN_PRIMARY or
+                TOKEN_QUERY or TOKEN_IMPERSONATE or TOKEN_DUPLICATE or TOKEN_READ);
+
+            
           except
             On E : Exception do
             begin

@@ -39,28 +39,30 @@ unit JwsclFirewall;
 
 interface
 
-uses ComObj, Variants, NetFwTypeLib_TLB, JwsclConstants, JwsclExceptions;
+uses ComObj, Variants,
+    NetFwTypeLib_TLB, //can be found at \jwapi\trunk\COM
+    JwsclConstants, JwsclExceptions;
 
 type
   TJwsclFirewall = class(TObject)
-  strict private
+  protected
     FFWMgr: INetFwMgr;
     FProfile: INetFwProfile;
 
-    function GetFirewallState: Boolean;
-    function GetExceptionsAllowed: Boolean;
+    function GetFirewallState: Boolean; virtual;
+    function GetExceptionsAllowed: Boolean; virtual;
 
-    procedure SetFirewallState(Value: Boolean);
-    procedure SetExceptionsAllowed(Value: Boolean);
+    procedure SetFirewallState(Value: Boolean); virtual;
+    procedure SetExceptionsAllowed(Value: Boolean); virtual;
 
-    function GetIncommingPingAllowed: Boolean;
-    procedure SetIncommingPingAllowed(Value: Boolean);
+    function GetIncommingPingAllowed: Boolean; virtual;
+    procedure SetIncommingPingAllowed(Value: Boolean); virtual;
 
-    function GetRemoteAdminAllowed(): Boolean;
-    procedure SetRemoteAdminAllowed(Value: Boolean);
+    function GetRemoteAdminAllowed(): Boolean; virtual;
+    procedure SetRemoteAdminAllowed(Value: Boolean); virtual;
 
-    function GetRemoteAdminAdress(): AnsiString;
-    procedure SetRemoteAdminAdress(Value: AnsiString);
+    function GetRemoteAdminAdress(): AnsiString; virtual;
+    procedure SetRemoteAdminAdress(Value: AnsiString); virtual;
   public
     constructor Create();
     destructor Destroy(); override;
@@ -72,12 +74,12 @@ type
      @param EnableRule defines if the new rule should be active or not
      }
     procedure AddToWinFirewall(ApplicationFilename, NameOnExeptionlist: AnsiString;
-      EnableRule: Boolean);
+      EnableRule: Boolean); virtual;
 
     {<B>DeleteFromWinFirewall</B> Removes a program's firewall rule.
      @param ApplicationFilename defines the executable of the program
     }
-    procedure DeleteFromWinFirewall(ApplicationFilename: AnsiString);
+    procedure DeleteFromWinFirewall(ApplicationFilename: AnsiString); virtual;
 
     {<B>AddTcpPortToFirewall</B> Adds a rule for a single tcp port to the firewall.
      @param ProtocollName defines the name of the protocol
@@ -87,7 +89,7 @@ type
     }
     procedure AddTcpPortToFirewall(ProtocollName: AnsiString;
       ProtocollPort: Integer; const SubnetOnly: Boolean = False;
-      const PortRemoteAddresses: AnsiString = '*');
+      const PortRemoteAddresses: AnsiString = '*'); virtual;
 
     {<B>AddUpdPortToFirewall</B> Adds a rule for a single udp port to the firewall.
      @param ProtocollName defines the name of the protocol
@@ -97,7 +99,7 @@ type
     }
     procedure AddUpdPortToFirewall(ProtocollName: AnsiString;
       ProtocollPort: Integer; const SubnetOnly: Boolean = False;
-      const PortRemoteAddresses: AnsiString = '*');
+      const PortRemoteAddresses: AnsiString = '*'); virtual;
 
     {<B>Active</B> Sets or gets if the windows firewall is active or not}
     property Active: Boolean read GetFirewallState write SetFirewallState;

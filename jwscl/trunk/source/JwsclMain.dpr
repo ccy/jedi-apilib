@@ -1,7 +1,7 @@
 {This project is for analyze purposes only!}
 Program JwsclMain;
 uses
-	JwsclAccounts,
+    JwsclAccounts,
 	JwsclAcl,
 	JwsclAuthCtx,
 	JwsclComUtils,
@@ -15,6 +15,7 @@ uses
 	JwsclEnumerations,
 	JwsclEurekaLogUtils,
 	JwsclExceptions,
+    JwsclFirewall,
 	JwsclImpersonation,
 	JwsclKnownSid,
 	JwsclLogging,
