@@ -90,20 +90,36 @@ BOOL WINAPI TerminateJobObject(HANDLE hJob, UINT uExitCode);
  }
   TJwProcessList = array of TJwProcessId;
 
-  TJwWaitState = (wsNonSignaled, wsSignaled, wsTimeOut);
+
+  {<B>TJwWaitState</B> defines return values for the method
+   WaitForAllotedCPUTimeSignal.
+   For more information see this method.}
+  TJwWaitState = (
+    wsNonSignaled,
+    wsSignaled,
+    wsTimeOut);
 
 
 
   TJwJobObject = class;
   TJwJobObjectSessionList = class;
 
-
+  {<B>TJwOnJobNotification</B> is called when a job notification occurs.
+    @param Sender Contains the JobObject that received the job message.
+    @param ProcessID Contains the ID of the process that generated the message.
+    @param JobMessages Contains the type of job message.
+    @param Data Contains the given custom data set by AssignProcessToJobObject.
+  }
   TJwOnJobNotification = procedure (Sender : TJwJobObject; ProcessId : TJwProcessId;
     JobMessages : TJwJobMessages; Data : Pointer) of object;
 
+  {<B>TJwOnNoActiveProcesses</B> will be called when the job object ran out
+  of processes.
+  @param Sender Contains the JobObject that received the job message.
+  }
   TJwOnNoActiveProcesses = procedure (Sender : TJwJobObject) of object;
 
-
+  {<B>TJwInternalJobObjectIOCompletitionThread</B> is for internal use only.}
   TJwInternalJobObjectIOCompletitionThread = Class(TJwThread)
   protected
     fJwJobObject : TJwJobObject;
@@ -118,6 +134,13 @@ BOOL WINAPI TerminateJobObject(HANDLE hJob, UINT uExitCode);
     property IOHandle : THandle read fIOHandle;
   end;
 
+  {<B>TJwJobObject</B> is the main job class. It encapsulates a
+  job object and provides methods and properties to maintain it.
+  There are also events that are fired on special job messages.
+
+  All processes of a session must have the same token session id,
+  otherwise the assignment fails.
+  }
   TJwJobObject = class
   protected
     fHandle : THandle;
@@ -197,7 +220,7 @@ BOOL WINAPI TerminateJobObject(HANDLE hJob, UINT uExitCode);
     @param Name defines the name of the existing job object 
     @param DesiredAccess defines the desired access to open the job object 
     @param InheritHandles defines whether processes created by this process
-        will inherit the handle. Otherwise, the processes do not inherit this handle. 
+        will inherit the handle. Otherwise, the processes do not inherit this handle.
     @param CompletionKey defines an existing completion key to be assigned or
      used by the opened object. It is used for notifications. 
     @param CompletionPort defines an existing completion handle to be assigned or
@@ -214,7 +237,7 @@ BOOL WINAPI TerminateJobObject(HANDLE hJob, UINT uExitCode);
     @param Returns tre if the process is a member of the job; otherwise false.
     @return Returns true if the given process is assigned to the current job instance; otherwise false. 
     raises
- EJwsclWinCallFailedException:  can be raised if the call to an winapi function failed. 
+ EJwsclWinCallFailedException:  can be raised if the call to an winapi function failed.
 
     }
     function IsProcessInJob(hProcess : TJwProcessHandle) : Boolean;
@@ -247,9 +270,14 @@ BOOL WINAPI TerminateJobObject(HANDLE hJob, UINT uExitCode);
     }
     procedure ResetIOThread(const Force : Boolean);
 
-    {
+    {Waits on the job object with a possible timeout and returns the
+     result of the waiting.
+
+     @param Timeout Takes a timeout in mili seconds or INFINITE if no timeout.
+     @return Returns wsSignaled if the job object was signled or wsTimeOut if
+       the given timeout occured. Any other state results in a wsNonSignaled return value.
     raises
- EJwsclWinCallFailedException:  can be raised if the call to an winapi function failed. 
+       EJwsclWinCallFailedException:  can be raised if the call to an winapi function failed.
     }
     function WaitForAllotedCPUTimeSignal(const TimeOut : DWORD) : TJwWaitState;
 
@@ -335,7 +363,24 @@ BOOL WINAPI TerminateJobObject(HANDLE hJob, UINT uExitCode);
     {<B>Session</B> defines the session of the containg projects}
     property Session : TJwSessionId read fSession write fSession;
 
+    {<B>Lock</B> returns the internal thread syncronisation object.
+    It can be used to avoid problems with several threads.
+    It should be used for property JobObject because calls to this property
+     may become invalid during processing.
+    <code lang="Delphi">
+        Job.Lock.BeginWrite;
+        try
+          do sth with Job.JobObject[x]
+        finally
+          Job.Lock.EndWrite;
+        end;
+    </code>
+    }
     property Lock : TMultiReadExclusiveWriteSynchronizer read fLock;
+
+    {<B>DataList</B> contains all process handles and their associated data
+    (if any) assigned by the method AssignProcessToJobObject.
+    }
     property DataList : TJwIntTupleList read fDataList;
   end;
 
@@ -456,6 +501,11 @@ BOOL WINAPI TerminateJobObject(HANDLE hJob, UINT uExitCode);
     {<B>ProcessIndex</B> returns a process handle of a specific job object.
 
     The assignment is threadsafe to avoid complication with other methods.
+
+     The exception EJwsclInvalidIndex will be raised if parameter SessionIndex
+     is out of range.
+     The exception ERangeError will be raised if parameter ProcessIndex is
+     out of range.
     }
     property ProcessHandle[SessionIndex, ProcessIndex : Cardinal] : THandle read GetProcessHandle;
 
@@ -522,7 +572,10 @@ This procedure needs JwInitWellKnownSIDs to be called.
 @param Desktop defines the target windowstation and desktop name. If empty
 the default target is "winsta0\default" 
 @param StartupInfo defines startup info delivered to to CreateProcess parameter with
- same name 
+ same name. Don't forget to initialize the structure first before calling this procedure.
+<code lang="delphi>
+ZeroMemory(@StartupInfo, sizeof(StartupInfo));
+</code>
 @param WaitForProcess defines whether the procedure should wait for the process to end
 and clean up all allocated resources or just return to the caller. In last case
 the caller is responsible to free the returned token, the environment block and
@@ -577,7 +630,7 @@ function JwGetTokenFromProcess (const OnProcessFound : TJwOnProcessFound;
 
 {<B>GetProcessSessionID</B> returns the session ID of a process given by handle or ID.
 @param ProcessIDorHandle defines the process ID or handle. Which one is
-  used, is defined by parameter ParameterType. 
+  used, is defined by parameter ParameterType.
 @param ParameterType defines whether parameter ProcessIDorHandle is a process
   or a handle 
 @return Returns the session ID (zero based).
@@ -590,7 +643,7 @@ raises
      # TJwSecurityToken.TokenSessionId 
     
 }
-function GetProcessSessionID(const ProcessIDorHandle : Cardinal;
+function JwGetProcessSessionID(const ProcessIDorHandle : Cardinal;
   const ParameterType : TJwProcessParameterType) : Cardinal;
 
 
@@ -765,19 +818,24 @@ uses Dialogs, Math, JwsclExceptions,
 {$IFNDEF SL_INTERFACE_SECTION}
 
 
-function GetProcessSessionID(const ProcessIDorHandle : Cardinal;
+function JwGetProcessSessionID(const ProcessIDorHandle : Cardinal;
   const ParameterType : TJwProcessParameterType) : Cardinal;
 var Token : TJwSecurityToken;
 begin
+  Token := nil;
+  result := WTS_CURRENT_SESSION;
+  
   case ParameterType of
     pptHandle : Token := TJwSecurityToken.CreateTokenByProcess(ProcessIDorHandle, TOKEN_READ or TOKEN_QUERY);
     pptID : Token := TJwSecurityToken.CreateTokenByProcessId(ProcessIDorHandle, TOKEN_READ or TOKEN_QUERY);
   end;
-  try
-    result := Token.TokenSessionId;
-  finally
-    Token.Free;
-  end;
+
+  if Assigned(Token) then
+    try
+      result := Token.TokenSessionId;
+    finally
+      Token.Free;
+    end;
 end;
 
 
@@ -820,8 +878,6 @@ var pLogonData : PMSV1_0_INTERACTIVE_LOGON;
     StartupInfo : {$IFDEF UNICODE}TStartupInfoW{$ELSE}TStartupInfoA{$ENDIF};
     LastError : DWORD;
 //
-    fTokenHandle : Cardinal;
-
     CurrentDirectory,
     AppName, CmdLine : TJwPchar;
 
@@ -1208,7 +1264,7 @@ begin
 
     except //2.
       LocalFree(Cardinal(pLogonData));
-      pLogonData := nil;
+      //pLogonData := nil;
 
       LsaFreeReturnBuffer(OutVars.ProfBuffer);
       OutVars.ProfBuffer := nil;
@@ -1271,6 +1327,64 @@ end;
 
 
 function JwGetTokenFromProcess (const OnProcessFound : TJwOnProcessFound; LogServer : IJwLogServer; Data : Pointer) : TJwSecurityToken;
+
+
+  function InternalEnumerate(const Srv : TJwTerminalServer) : DWORD;
+  var
+    hSnap : THandle;
+    ProcEntry : TProcessEntry32W;
+    Continue : Boolean;
+
+    SrvProcess : TJwWTSProcess;
+
+    ProcToken : TJwSecurityToken;
+
+  begin
+    hSnap := CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+    result := 0;
+
+    try
+      ZeroMemory(@ProcEntry, sizeof(ProcEntry));
+      ProcEntry.dwSize := sizeof(ProcEntry);
+      Continue := Process32FirstW(hSnap, ProcEntry);
+
+      while (continue) do
+      begin
+        try
+          SrvProcess := nil;
+
+          //ignore the system process with id 0
+          if ProcEntry.th32ProcessID > 0 then
+          begin
+            ProcToken := TJwSecurityToken.CreateTokenByProcessId(ProcEntry.th32ProcessID, TOKEN_READ or TOKEN_QUERY);
+            try
+              SrvProcess := TJwWTSProcess.Create(Srv.Processes, ProcToken.TokenSessionId,
+                ProcEntry.th32ProcessID, TJwString(ProcEntry.szExeFile), ProcToken.UserName);
+            finally
+              ProcToken.Free;
+            end;
+          end;
+        except
+          SrvProcess := nil;
+        end;
+
+        if not Assigned(SrvProcess) then
+          SrvProcess := TJwWTSProcess.Create(Srv.Processes, WTS_CURRENT_SESSION,
+            ProcEntry.th32ProcessID, TJwString(ProcEntry.szExeFile), '');
+                          
+        Inc(result);
+        Srv.Processes.Add(SrvProcess);
+
+        continue := Process32NextW(hSnap,ProcEntry);
+      end;
+    finally
+      CloseHandle(hSnap);
+    end;
+  end;
+
+
+
+
 var TSrv : TJwTerminalServer;
     i : Integer;
     ProcessID : DWORD;
@@ -1301,7 +1415,18 @@ begin
     TSrv.Connect;
 
     ProcessID := 0;
-    if TSrv.EnumerateProcesses then
+
+    {If the following function fails,
+     we will use a compatible version to enumerate
+     processes.
+    }
+    if not TSrv.EnumerateProcesses then
+    begin
+      Log.Log(lsWarning, 'TJwTerminalServer.EnumerateProcesses failed. Falling back into compatible mode.');
+      InternalEnumerate(TSrv);
+    end;
+
+    if TSrv.Processes.Count > 0 then
     begin
       Log.Log(lsMessage, 'Proc count: ' + IntToStr(TSrv.Processes.Count));
       for i := 0 to TSrv.Processes.Count-1 do
@@ -1362,7 +1487,18 @@ begin
       end
     end
     else
+    begin
+      raise EJwsclEnumerateProcessFailed.CreateFmtWinCall(
+        RsEnumerateProcessesFailed,
+        'JwGetTokenFromProcess',                                //sSourceProc
+        '',                                //sSourceClass
+        RsUNProcess,                          //sSourceFile
+        0,                                           //iSourceLine
+        True,                                  //bShowLastError
+        'TJwTerminalServer.EnumerateProcesses',                   //sWinCall
+        []);                                  //const Args: array of const
       Log.Log(lsMessage,'EnumerateProcesses failed.');
+    end;
 
     if ProcessID = 0 then
       Log.Log(lsMessage,'Could not find any process ID.');         
@@ -1409,7 +1545,6 @@ procedure JwCreateProcessInSession(
       Log : IJwLogClient;
   begin
     Log := LogServer.Connect(etFunction, '', 'CreateTokenByProcessAndSession', 'JwsclProcess.pas','');
-    result := nil;
 
     //try to enable debug privs if available - otherwise nothing
     JwEnablePrivilege(SE_DEBUG_NAME,pst_EnableIfAvail);
@@ -1435,6 +1570,15 @@ procedure JwCreateProcessInSession(
     end;
   end;
 
+  procedure CheckStartupInfo;
+  begin
+    if (StartupInfo.cb <> sizeof(StartupInfo)) and
+       (StartupInfo.cb <> 0) then
+       raise EJwsclInvalidStartupInfo.CreateFmtEx(
+      RsInvalidStartupInfo,
+      'JwCreateProcessInSession', '', RsUNProcess, 0, false, []);
+  end;
+
 
 var
     lpApplicationName  : TJwPChar;
@@ -1443,7 +1587,10 @@ var
 
     Log : IJwLogClient;
 begin
-  JwRaiseOnNilMemoryBlock(JwLocalSystemSID,'JwCreateProcessInSession','','JwsclProcess.pas');
+  JwCheckInitKnownSid([JwLocalSystemSID], ['JwLocalSystemSID'],
+    'JwCreateProcessInSession','',RsUNProcess);
+
+  CheckStartupInfo;
 
 
   //log to /dev/null
@@ -1779,7 +1926,7 @@ begin
       ['OpenJobObject']);                                  //const Args: array of const
   end;
 
-  fIOUniqueID := INVALID_HANDLE_VALUE;
+  fIOUniqueID := Integer(INVALID_HANDLE_VALUE);
   fThread := nil;
 
 
@@ -2576,18 +2723,22 @@ end;
 function TJwJobObjectSessionList.GetProcessHandle(SessionIndex, ProcessIndex : Cardinal) : THandle;
 var Processes : TJwProcessList;
 begin
+  result := INVALID_HANDLE_VALUE;
+  Processes := Nil;
+
   fLock.BeginRead;
   try
-    Processes := TJwJobObject(fList[SessionIndex]).Processes;
-    if (ProcessIndex < Low(Processes)) and
-       (ProcessIndex > High(Processes)) then
-       raise ERangeError.CreateFmt(RsInvalidParameterIndex, [ProcessIndex,'ProcessIndex']);
+    if (SessionIndex >= Cardinal(fList.Count)) then
+      raise EJwsclInvalidIndex.CreateFmt(RsInvalidParameterIndex, [SessionIndex,'SessionIndex']);
 
-    try
+    Processes := TJwJobObject(fList[SessionIndex]).Processes;
+
+    if (ProcessIndex > Cardinal(High(Processes))) then
+      raise ERangeError.CreateFmt(RsInvalidParameterIndex, [ProcessIndex,'ProcessIndex']);
+
+    if Processes <> nil then
       result := Processes[ProcessIndex];
-    finally
-      Processes := Nil;
-    end;
+
   finally
     fLock.EndRead;
   end;
@@ -2649,7 +2800,7 @@ begin
 
   fLock.BeginWrite;
   try
-    ID := GetProcessSessionID(Process, pptHandle);
+    ID := JwGetProcessSessionID(Process, pptHandle);
     JobObjectIndex := ID;
     NewObject := nil;
 

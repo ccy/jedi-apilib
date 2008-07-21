@@ -217,7 +217,7 @@ type
     function GetPointerType : TJwPointerType;
     function GetHandle : THandle;
 
-    procedure BeforeDestruction;
+    procedure BeforeDestruction; override;
 
     procedure UnLock;
   end;

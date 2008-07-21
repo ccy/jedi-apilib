@@ -478,22 +478,30 @@ const
   RsProcessIdNotFound = 'The process "%0:s" (Id: 0x%1:x) could not be found.';
   RsOpenProcessFailed = 'The process "%0:s" (Id: 0x%1:x) could not opened.';
 
-  RsInvalidResultValue = 'The value result of a method is invalid: %d ';
+  RsInvalidResultValue = 'The value result of a method is invalid: %0:d ';
 
   RsAccessDenied = 'Access denied!';
 
   RsInvalidFlags = 'Invalid flags!';
 
   RsInitWellKnownNotCalled = 'This method needs JwInitWellKnownSIDs from unit JwsclKnownSid to be called.';
+  RsInitWellKnownNotCalled2 = 'One or more SIDs from unit JwsclKnownSid are not initialized. '+
+    'The method called needs them. Following variables are needed: %0:s\r\n'+RsInitWellKnownNotCalled;
 
   RsNilPointer = 'A given pointer was unexpectedly NIL.';
 
   RsInvalidComputer = 'The given computer name is invalid.';
 
+  RsInvalidIndex = 'The given index %0:d is invalid for this call.';
+
+
+
 // jwsclProcess.pas
   RsInvalidParameterIndex = 'The given index "%0:d" in parameter "%1:s" is out of range.';
   RsMissingEvent = 'The event "%0:s" needs to be assigned. It must not be nil.';
   RsInvalidJobObject = 'The returned job object is invalid and cannot be used to assign a job to.';
+  RsEnumerateProcessesFailed = 'The enumeration of processes failed. ';
+  RsInvalidStartupInfo = 'The given Startupinfo must be initialized!';
 
 const
 // Unit names - do not localize

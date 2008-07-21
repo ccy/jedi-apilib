@@ -1966,14 +1966,12 @@ end;
 procedure TJwSAccessControlList.SetMandatoryLabelEx(
   const NewLabel : TJwSystemMandatoryAccessControlEntry);
 var i : Integer;
-    //p : TJwSystemMandatoryAccessControlEntry;
 begin
   for i := 0 to Count-1 do
   begin
     if (Items[i].AceType = actMandatory) and
        (TJwSecurityAccessControlEntry(Items[i]) is TJwSystemMandatoryAccessControlEntry) then
     begin
-      //p := Items[i];
       Remove(Items[i]);
       break;
     end;
@@ -2198,13 +2196,7 @@ function TJwSecurityAccessControlList.Create_PACL: PACL;
 
 var
   i: integer;
-
-  //s : AnsiString;
-
-  //aAudit:  TJwAuditAccessControlEntry;
-  //Mandatory : TJwSystemMandatoryAccessControlEntry;
   bResult: boolean;
-
   iSize: Cardinal;
 begin
   RaiseOnInvalidRevision(fRevision, 'Create_PACL', ClassName);
@@ -2298,7 +2290,6 @@ end;
 function TJwSecurityAccessControlList.GetEffectiveRights(const User :
        {$IFDEF UNICODE}TTrusteeW{$ELSE}TTrusteeA{$ENDIF}) : TJwAccessMask;
 var ACL : PACL;
-    //i : Integer;
 begin
   result := 0;
 
@@ -2323,7 +2314,6 @@ end;
 function TJwSecurityAccessControlList.GetEffectiveRights
   (const User : TJwSecurityId) : TJwAccessMask;
 var Trust : {$IFDEF UNICODE}TTrusteeW{$ELSE}TTrusteeA{$ENDIF};
-    //Sid : PSID;
 begin
   ZeroMemory(@Trust, sizeof(Trust));
 
@@ -2992,7 +2982,7 @@ end;
 class function TJwSecurityAccessControlEntry.CreateACE(anAceType: TJwAceType):
 TJwSecurityAccessControlEntry;
 begin
-  Result := nil;
+  //Result := nil;
   case anACEType of
     actAllow         : Result := TJwDiscretionaryAccessControlEntryAllow.Create;
     actAllowCallback :

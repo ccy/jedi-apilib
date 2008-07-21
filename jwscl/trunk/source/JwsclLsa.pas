@@ -63,9 +63,8 @@ type
     fLsaHandle: THandle;
   public
     constructor Create(const LogonProcessName: AnsiString);
-	
-	
-	constructor CreateUntrusted;
+	               	
+  	constructor CreateUntrusted;
 
     destructor Destroy; override;
 
@@ -486,6 +485,7 @@ var p : PSecurityLogonSessionData;
     res : NTSTATUS;
 begin
   p := nil;
+
   res := LsaGetLogonSessionData(@LogonId,p);
 
   if res <> STATUS_SUCCESS then

@@ -357,31 +357,42 @@ type
 
   EJwsclEndOfStream = class(EJwsclSecurityException);
 
-  EJwsclFirewallInitException = class(EJwsclSecurityException);
-  EJwsclFirewallProfileInitException = class(EJwsclSecurityException);  
 
-  EJwsclSetFWStateException = class(EJwsclSecurityException);
-  EJwsclGetFWStateException = class(EJwsclSecurityException);
+  {}
+  EJwsclEnumerateProcessFailed = class(EJwsclSecurityException);
 
-  EJwsclGetFWExceptionsAllowedException = class(EJwsclSecurityException);
-  EJwsclSetFWExceptionsAllowedException = class(EJwsclSecurityException);
+  EJwsclGenericFirewallException = class(EJwsclSecurityException);
 
-  EJwsclGetIncommingPingAllowedException = class(EJwsclSecurityException);
-  EJwsclSetIncommingPingAllowedException = class(EJwsclSecurityException);
+	  EJwsclFirewallInitException = class(EJwsclGenericFirewallException);
+	  EJwsclFirewallProfileInitException = class(EJwsclGenericFirewallException);  
 
-  EJwsclGetRemoteAdminAllowedException = class(EJwsclSecurityException);
-  EJwsclSetRemoteAdminAllowedException = class(EJwsclSecurityException);
+	  EJwsclSetFWStateException = class(EJwsclGenericFirewallException);
+	  EJwsclGetFWStateException = class(EJwsclGenericFirewallException);
 
-  EJwsclGetRemoteAdminAdressException = class(EJwsclSecurityException);
-  EJwsclSetRemoteAdminAdressException = class(EJwsclSecurityException);
+	  EJwsclGetFWExceptionsAllowedException = class(EJwsclGenericFirewallException);
+	  EJwsclSetFWExceptionsAllowedException = class(EJwsclGenericFirewallException);
 
-  EJwsclFirewallAddRuleException = class(EJwsclSecurityException);
-  EJwsclAddTcpPortToFirewallException = class(EJwsclSecurityException);
-  EJwsclAddUdpPortToFirewallException = class(EJwsclSecurityException);
-  EJwsclFirewallDelRuleException = class(EJwsclSecurityException);
+	  EJwsclGetIncommingPingAllowedException = class(EJwsclGenericFirewallException);
+	  EJwsclSetIncommingPingAllowedException = class(EJwsclGenericFirewallException);
 
-  EJwsclFirewallInactiveException = class(EJwsclSecurityException);
-  EJwsclFirewallNoExceptionsException = class(EJwsclSecurityException);  
+	  EJwsclGetRemoteAdminAllowedException = class(EJwsclGenericFirewallException);
+	  EJwsclSetRemoteAdminAllowedException = class(EJwsclGenericFirewallException);
+
+	  EJwsclGetRemoteAdminAdressException = class(EJwsclGenericFirewallException);
+	  EJwsclSetRemoteAdminAdressException = class(EJwsclGenericFirewallException);
+
+	  EJwsclFirewallAddRuleException = class(EJwsclGenericFirewallException);
+	  EJwsclAddTcpPortToFirewallException = class(EJwsclGenericFirewallException);
+	  EJwsclAddUdpPortToFirewallException = class(EJwsclGenericFirewallException);
+	  EJwsclFirewallDelRuleException = class(EJwsclGenericFirewallException);
+
+	  EJwsclFirewallInactiveException = class(EJwsclGenericFirewallException);
+	  EJwsclFirewallNoExceptionsException = class(EJwsclGenericFirewallException); 
+
+
+
+  EJwsclInvalidStartupInfo = class(EJwsclSecurityException);
+  
 
   JwGeneralExceptionClass = class of Exception;
 

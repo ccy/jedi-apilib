@@ -377,7 +377,11 @@ type
      Processes property with a TJwProcessList. This list contains all processes
      and their properties such as Process Name, Process Id, Username, Memory
      Usage and so on.
-     
+
+      This method can only be used on Windows XP or newer. Windows 2000 Server (with Terminal Server)
+    is also supported but not Windows 2000 Workstation.
+
+
      Example:
      <code lang="Delphi">
      var
@@ -416,13 +420,93 @@ type
      end;
     </code>
 	
-    <B>Check for a nil property value Processes</B> 
+    <B>Check for a nil property value Processes</B>
 
     }
     function EnumerateProcesses: Boolean; overload;
 
+     {<B>EnumerateProcessesEx</B> behaves like EnumerateProcessesEx() but
+    calls an event every time a process was found.
+    This method can only be used on Windows XP or newer. Windows 2000 Server (with Terminal Server)
+    is also supported but not Windows 2000 Workstation.
+
+    @param OnProcessFound defines the callback method. Can be nil
+    @param Data defines user defined data to be delivered to the callback method
+
+    @raise EJwsclEnumerateProcessFailed will be raised if an call to the terminal service failed.
+
+    }
     function EnumerateProcesses(const OnProcessFound : TJwOnProcessFound;
         Data : Pointer) : Boolean; overload;
+
+    {<B>EnumerateProcesses</B> enumerates all processes on the Terminal Server and fills the
+     Processes property with a TJwProcessList. This list contains all processes
+     and their properties such as Process Name, Process Id, Username, Memory
+     Usage and so on.
+
+      This method can only be used on Windows XP or newer. Windows 2000 Server (with Terminal Server)
+    is also supported but not Windows 2000 Workstation.
+
+
+     Example:
+     <code lang="Delphi">
+     var
+       ATerminalServer: TJwTerminalServer;
+       i: Integer;
+     begin
+       // Create Terminal Server instance and allocate memory for it
+       ATerminalServer := TjwTerminalServer.Create;
+
+       // Set servername (only in case of remote server)
+       ATerminalServer.Server := 'TS001';
+
+       // Remember that EnumerateProcesses will automatically connect to the
+       // Terminal Server for you. The connect function raises an Exception
+       // if the connection attempt was unsuccessfull, so better use try..except
+       try
+         ATerminalServer.EnumerateProcesses;
+
+         // Now loop through the list
+         for i := 0 to ATerminalServer.Processes.Count - 1 do
+         begin
+           Memo1.Lines.Add(ATerminalServer.Processes[i].ProcessName);
+         end;
+
+       except
+         on E : EJwsclEnumerateProcessFailed do
+         begin
+         end;
+
+         on E: EJwsclWinCallFailedException do
+         begin
+           // Handle Exception here
+         end;
+       end;
+
+       // Free Memory
+       ATerminalServer.Free;
+     end;
+    </code>
+	
+    <B>Check for a nil property value Processes</B>
+
+    @raise EJwsclEnumerateProcessFailed will be raised if an call to the terminal service failed.
+    }
+    procedure EnumerateProcessesEx;overload;
+
+    {<B>EnumerateProcessesEx</B> behaves like EnumerateProcessesEx() but
+    calls an event every time a process was found.
+    This method can only be used on Windows XP or newer. Windows 2000 Server (with Terminal Server)
+    is also supported but not Windows 2000 Workstation.
+
+    @param OnProcessFound defines the callback method. Can be nil
+    @param Data defines user defined data to be delivered to the callback method
+    @raise EJwsclEnumerateProcessFailed will be raised if an call to the terminal service failed.
+
+    }
+    procedure EnumerateProcessesEx(const OnProcessFound : TJwOnProcessFound;
+       Data : Pointer); overload;
+
 
     {<B>EnumerateServers</B> enumerates all Terminal Servers in the specified domain.
 	 The result will be stored in <B>readonly</B>  property Servers.
@@ -2564,11 +2648,27 @@ begin
   Sender.FProcesses.Add(Process);
 end;
 
+
+procedure TJwTerminalServer.EnumerateProcessesEx;
+begin
+  FProcesses.Clear;
+
+  EnumerateProcessesEx(OnInternalProcessFound, nil);
+end;
+
 function TJwTerminalServer.EnumerateProcesses: Boolean;
 begin
   FProcesses.Clear;
 
   result := EnumerateProcesses(OnInternalProcessFound, nil);
+end;
+
+procedure TJwTerminalServer.EnumerateProcessesEx(const OnProcessFound : TJwOnProcessFound; Data : Pointer);
+begin
+  if not EnumerateProcesses(OnProcessFound, Data) then
+    raise EJwsclEnumerateProcessFailed.CreateFmtWinCall(RsWinCallFailed,
+          'EnumerateProcessesEx', ClassName, RsUNTerminalServer, 0, True,
+          'WinStationGetAllProcesses', ['WinStationGetAllProcesses', FServer]);
 end;
 
 function TJwTerminalServer.EnumerateProcesses(const OnProcessFound : TJwOnProcessFound;
@@ -2599,6 +2699,8 @@ begin
   ProcessInfoPtr := nil;
 
   Result := WinStationGetAllProcesses(FServerHandle, 0, Count, ProcessInfoPtr);
+
+
 
   try
     if Result then

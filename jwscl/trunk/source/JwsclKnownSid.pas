@@ -340,6 +340,31 @@ JwKnownSid for additional known SIDs. It calls JwInitWellKnownSIDs automatically
 procedure JwInitWellKnownSIDsEx(const Sids : TWellKnownSidTypeSet);
 procedure JwInitWellKnownSIDsExAll();
 
+{<B>JwCheckInitKnownSid</B> checks whether one or more well known
+sid variables from unit JwsclKnownSid are initialized (not nil).
+If a given variable was not created the procedure raises EJwsclInitWellKnownException;
+otherwise it does nothing.
+
+This procedure is like JwsclUtils.JwCheckInitKnownSid but does a thorough check
+for the variables.
+
+@param Sids defines an array of SID variables to be checked for.
+@param SidNames defines an array of the SID variable names in parameter Sids.
+ On exception the SID's name is printed.
+@param MethodName defines the name of the method this parameter belongs to
+@param ClassName defines the name of the class the method belongs to. Can be
+  empty if the method does not belong to a class
+@param FileName defines the source file of the call to this procedure.
+raises
+ EJwsclInitWellKnownException This exception will be raised if JwInitWellKnownSIDs
+  was not called.
+}
+procedure JwCheckInitKnownSid(
+  const Sids : array of TJwSecurityKnownSID;
+  const SidNames : array of AnsiString;
+  const MethodName, ClassName, FileName : TJwString);
+
+
 
 type
   PJwSidMap = ^TJwSidMap;
@@ -433,6 +458,15 @@ var {<B>JwSidMapDef</B> defines a list of mapped known Sids which are used
      in JwSidMapDef could not be resolved.
     }
     JwSidMapDefErrors : TList;
+
+var
+  {<B>JwInitWellKnownSidStatus</B> shows the status of the
+   well known sid variables. It is set to true if
+   JwInitWellKnownSIDs was called.
+
+   Only read this value. Never set it!
+  }
+  JwInitWellKnownSidStatus : Boolean = false;
 
 {$ENDIF SL_IMPLEMENTATION_SECTION}
 
@@ -957,12 +991,15 @@ begin
     JwIntegrityLabelSID[iltSystem]    := TJwSecurityKnownSID.Create(JwSystemIL);
   if not Assigned(JwIntegrityLabelSID[iltProtected]) then
     JwIntegrityLabelSID[iltProtected] := TJwSecurityKnownSID.Create(JwProtectedProcessIL);
+
+  JwInitWellKnownSidStatus := true;
 end;
 
 procedure DoneWellKnownSIDs;
 var ilts : TJwIntegrityLabelType;
     i : TWellKnownSidType;
 begin
+  JwInitWellKnownSidStatus := false;
 
   FreeAndNil(JwAdministratorsSID);
   FreeAndNil(JwUsersSID);
@@ -1001,6 +1038,33 @@ begin
   begin
     JwKnownSid[i] := nil;
   end;
+end;
+
+procedure JwCheckInitKnownSid(
+  const Sids : array of TJwSecurityKnownSID;
+  const SidNames : array of AnsiString;
+  const MethodName, ClassName, FileName : TJwString);
+var
+  i,count : Integer;
+  Errors : String;
+begin
+  Errors := '';
+  count := 0;
+
+  for i := low(Sids) to high(Sids) do
+  begin
+    if not Assigned(Sids[i]) then
+    begin
+      Errors := ', ' +SidNames[i];
+      Inc(count);
+    end;
+  end;
+  System.Delete(Errors,1,1);
+
+  if count > 0 then
+   raise EJwsclInitWellKnownException.CreateFmtEx(
+      RsInitWellKnownNotCalled2,
+      MethodName, ClassName, FileName, 0, false, [Errors]);
 end;
 
 {$ENDIF SL_INTERFACE_SECTION}

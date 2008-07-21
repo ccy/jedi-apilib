@@ -181,6 +181,8 @@ type
 
 
     function GetTokenUser: TJwSecurityId; virtual;
+    function GetUserName : TJwString; virtual;
+
     procedure GetTokenSource(out SourceName: ShortString;
       out SourceLUID: TLuid);
       overload; virtual;
@@ -314,8 +316,8 @@ type
               Can be MAXIMUM_ALLOWED to get maximum access. 
         @param Duplicate Defines whether the token of the Processhandle should be spawned into this process.
             If this parameter is true the token handle is opened and duplicated. The new handle may have more
-            rights for the actual process. This is especially useful if another process is defined in aProcessHandle because
-            the handle to this process token may be restricted. 
+            rights for the current process. This is especially useful if another process is defined in aProcessHandle because
+            the handle to this process token may be restricted.
 
         If you want to use DuplicateToken or creating an impersonated token (by ConvertToImpersonatedToken) you must specific TOKEN_DUPLICATE.
 
@@ -366,6 +368,11 @@ type
     {<B>CreateTokenByProcessId</B> retrieves the token by using a ProcessID.
      The token of the given process will be duplicated into the current process
      so maximum access is granted.
+
+     If the right TOKEN_DUPLICATE is set in parameter DesiredAccess, the token
+     is duplicated. With this option, in special situations, the new current
+     process can have more access rights on the token than the process specified
+     by ProcessID.
 
      <B>CreateTokenByProcessId</B> tries to use debug privilege to open any process.
 
@@ -1017,6 +1024,18 @@ type
         {<B>TokenUser</B> contains the user that holds the token.
          A read call creates a new TJwSecurityId that must be destroyed!}
     property TokenUser: TJwSecurityId Read GetTokenUser;
+
+
+
+    {<B>TokenUserName</B> returns the username stored in the token.
+    This value may differ from the API function GetCurrentUserName}
+    property TokenUserName : TJwString read GetTokenUserName;
+
+    {<B>UserName</B> returns the logged on user name of the current logon session.
+     The return value may differ from TokenUserName because it gets the
+     username from the logon session and not from the username stored in the token.
+    }
+    property UserName : TJwString read GetUserName;
 
     {<B>TokenGroups</B> contains the groups which the token belongs to.
      The caller is responsible to free the returned security id list.
@@ -1767,7 +1786,7 @@ function JwIsSystem : Boolean;
 implementation
 
 uses JwsclKnownSid, JwsclMapping, JwsclSecureObjects, JwsclProcess,
-     JwsclTerminalServer,
+     JwsclTerminalServer, JwsclLsa,
       JwsclPrivileges, Math;
 
 
@@ -2960,17 +2979,16 @@ var P : IJwPrivilegeScope;
 begin
    P := JwGetPrivilegeScope([SE_DEBUG_NAME],pst_EnableIfAvail);
 
-  try
-    hProc := OpenProcess(PROCESS_QUERY_INFORMATION,
+  hProc := OpenProcess(PROCESS_QUERY_INFORMATION,
                 False, ProcessID);
+  if hProc = 0 then
+      raise EJwsclWinCallFailedException.CreateFmtEx(
+        RsWinCallFailed, 'CreateTokenByProcessId',
+        ClassName, RsUNToken, 0, True, ['OpenProcess']);
 
-    if hProc = 0 then
-    raise EJwsclWinCallFailedException.CreateFmtEx(
-      RsWinCallFailed, 'CreateTokenByProcessId',
-      ClassName, RsUNToken, 0, True, ['OpenProcess']);
-
-    CreateTokenByProcess(hProc, DesiredAccess, true);
-
+  try
+    //only duplicate the token if the necessary access right is given
+    CreateTokenByProcess(hProc, DesiredAccess, (DesiredAccess and TOKEN_DUPLICATE = TOKEN_DUPLICATE));
 
   //  ShowMessage(GetTokenUserName);
   finally
@@ -4619,6 +4637,46 @@ begin
   Result := TJwSecurityTokenStatistics.Create(stat^);
 
   HeapFree(GetProcessHeap, 0, stat);
+end;
+
+//function LsaGetUserName(const UserName, DomainName : PUNICODE_STRING) : NTSTATUS; stdcall; external 'advapi32';
+
+function TJwSecurityToken.GetUserName : TJwString;
+var
+  Data : TJwLsaLogonSessionData;
+  //UserName : PUNICODE_STRING;
+
+
+  Buffer : PWideChar;
+  Size : DWORD;
+begin
+  Buffer := nil;
+
+
+ // UserName := JwCreateUnicodeString('');
+ // if NT_ERROR(LsaGetUserName(@UserName, nil)) then
+ //   RaiseLastOSError;
+   Size := 0;
+   GetUserNameW(Buffer, Size);
+
+   GetMem(Buffer, (Size+2) * sizeof(WideChar));
+   GetUserNameW(Buffer, Size);
+   try
+     result := TJwString(Buffer);
+   finally
+     FreeMem(Buffer);
+   end;
+
+
+  {
+  does only work with admin privs
+
+  Data := TJwLsaLogonSession.GetSessionData(TokenOrigin);
+  try
+    result := Data.UserName;
+  finally
+    Data.Free;
+  end;}
 end;
 
 function TJwSecurityToken.GetTokenUserName : TJwString;

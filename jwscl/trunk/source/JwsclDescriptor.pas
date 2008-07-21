@@ -2330,7 +2330,6 @@ end;
 
 function TJwSecurityDescriptor.GetProtectedState(Index: Integer): TJwACLProtection;
 begin
-
   case Index of
     0 {DACL}:
       begin
@@ -2344,6 +2343,11 @@ begin
         if sdcSaclProtected in Control then
           result := aclpProtected;
       end;
+    else
+      raise EJwsclInvalidIndex.CreateFmtEx(
+            RsInvalidIndex,
+            'GetProtectedState',
+            ClassName, RsUNDescriptor, 0, False, [Index]);
   end;
 end;
 

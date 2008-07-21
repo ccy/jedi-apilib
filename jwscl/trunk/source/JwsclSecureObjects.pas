@@ -4321,6 +4321,7 @@ begin
 
   Count := ACL.Count;
 
+  pFromArray := nil;
   aPACL := ACL.Create_PACL();
   try
 (*
@@ -4391,7 +4392,8 @@ begin
 
 
   finally
-    FreeInheritedFromArray(PINHERITED_FROMW(pFromArray), ACL.Count, nil);
+    if pFromArray <> nil then
+      FreeInheritedFromArray(PINHERITED_FROMW(pFromArray), ACL.Count, nil);
     //    LocalFree(Cardinal(pFromArray));
 
     ACL.Free_PACL(aPACL);
@@ -9421,6 +9423,8 @@ var
   i: integer;
 
 begin
+  subKeys := nil;
+
   ActualPath := Path;
   if (Length(ActualPath) > 0) and (ActualPath[Length(ActualPath)] <> '\') then
     ActualPath := ActualPath + '\';
