@@ -1,6 +1,7 @@
 program ThreadPool;
 
 uses
+  ExceptionLog,
   Forms,
   JwaWindows,
   classes,
@@ -36,6 +37,7 @@ begin
  }
   M1.Mutex.Acquire;
   M1.Write(Processes);
+ // M1.Mutex.Release;
   M1.Mutex.Release;
  // ReleaseMutex(M1.Mutex);
 

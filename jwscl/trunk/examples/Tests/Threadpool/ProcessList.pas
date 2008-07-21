@@ -1,7 +1,7 @@
 unit ProcessList;
 
 interface
-uses JwaWindows, Classes, SyncObjs, SyncObjsEx, SysUtils;
+uses JwaWindows, Classes, SyncObjs, SyncObjsEx, SysUtils, JwsclTypes;
 
 type
   PProcessEntry = ^TProcessEntry;
@@ -22,6 +22,9 @@ type
   TOnCloseAppsPostPrep = procedure(Sender : TProcessList; const SessionID : DWORD; const Processes : TProcessEntries) of object;
   TOnCloseApps = procedure(Sender : TProcessList; const Processes : TProcessEntriesArray) of object;
 
+  TListChangeType = (lctAdd,lctRemove);
+
+  TOnListChange = procedure(Sender : TProcessList; Index : Integer; ProcessEntry : TProcessEntry; ChangeType : TListChangeType) of object;
 
   {TProcessList maintains a list of processes across all sessions.}
   TProcessList = class
@@ -35,6 +38,8 @@ type
     fContext,
     fList : TList;
     fCritSec : TMultiReadExclusiveWriteSynchronizer;
+
+    fOnListChange : TOnListChange;
 
     function GetProcessHandle(Index : Integer) : THandle;
     function GetProcessID(Index : Integer) : DWORD;
@@ -77,7 +82,9 @@ type
 
   public
     {If CloseAllOnDestroy is true the CloseAll method will be called when the
-     instance is freed.}
+     instance is freed.
+     Not used yet.
+     }
     property CloseAllOnDestroy : Boolean read fCloseAll write fCloseAll;
 
     {Process returns the stored process handle at index.}
@@ -101,6 +108,8 @@ type
      There will be no more processes to be closed.
     }
     property OnCloseApps : TOnCloseApps read fOnCloseApps write fOnCloseApps;
+
+    property OnListChange : TOnListChange read fOnListChange write fOnListChange;
   end;
 
   {TProcessListMemory maintains a shared memory section for a process list.}
@@ -129,7 +138,7 @@ type
 implementation
 uses math, JwsclToken, JwsclExceptions, JwsclUtils, JwsclComUtils,
    JwsclVersion,
-   JwsclCryptProvider, JwsclTypes;
+   JwsclCryptProvider;
 
 { TProcessList }
 
@@ -209,7 +218,7 @@ begin
 
   New(CallbackContext);
   CallbackContext.Self := Self;
-  CallbackContext.ID := GetProcessId(Handle);
+  CallbackContext.ID := JwaWindows.GetProcessId(Handle);
 
   fCritSec.BeginWrite;
   try
@@ -232,9 +241,15 @@ begin
 
     if fWaitHandles.IndexOf(Pointer(WaitHandle)) < 0 then
       fWaitHandles.Add(Pointer(WaitHandle));
+
+    if Assigned(OnListChange) then
+      OnListChange(Self, result, PProcessEntry(fList[result])^, lctAdd);
+
   finally
     fCritSec.EndWrite;
   end;
+
+
 end;
 
 procedure TProcessList.CloseAll;
@@ -382,6 +397,9 @@ begin
   try
     if fList[Index] <> nil then
     begin
+      if Assigned(OnListChange) then
+        OnListChange(Self, Index, PProcessEntry(fList[Index])^ , lctRemove);
+
       //if PProcessEntry(fList[Index]).Duplicated then
         CloseHandle(PProcessEntry(fList[Index]).Handle);
       Dispose(PProcessEntry(fList[Index]));
@@ -404,10 +422,7 @@ begin
 
   if Res = 0 then
   begin
-
-    if TJwWindowsVersion.IsWindows2000(false) or
-      (TJwWindowsVersion.IsWindows2000(false) and  TJwWindowsVersion.IsServer)
-    then
+    if TJwWindowsVersion.IsWindows2000(false) then
     begin
       TimedOut := GetLastError = 0;
     end
@@ -473,6 +488,7 @@ begin
   if fHandle = 0 then
     RaiseLastOSError;
 
+  //true means, the mutex is set to unsignled  
   fMutex := TMutexEx.Create(nil, true, PWideChar(Name+'_WriteEvent'));
 end;
 
@@ -698,6 +714,7 @@ begin
     Mutex.Release;
   end;
 end;
+
 
 
 end.

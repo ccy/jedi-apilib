@@ -7,20 +7,24 @@ type
   {TMutexEx extends the standard VCL class TMutex with additional functions
    * Aquire mutex with timeout
    * Try 	acquirement of mutex}
-  TMutexEx = class(TMutex)
+  TMutexEx = class
   protected
     fEvent : SyncObjs.TEvent;
+    fHandle: THandle;
   public
+    constructor Create(MutexAttributes: PSecurityAttributes; InitialOwner: Boolean; const Name: string; UseCOMWait: Boolean = False); overload;
+    constructor Create(DesiredAccess: LongWord; InheritHandle: Boolean; const Name: string; UseCOMWait: Boolean = False); overload;
+
     {Standard call with infinite timeout. Blocks until the mutex
     is freed.
     raises
       EAbort This exception will be raised if the StopEven is fired. The exception
        prevents code to be executed after the return of the method.
     }
-    procedure Acquire; overload; override;
+    procedure Acquire; overload;
 
     {Releases the mutex}
-    procedure Release; override;
+    procedure Release;
 
     {Like the method Acquire it waits until the mutex is free.
      If the specified timeout is reached the method also returns.
@@ -37,7 +41,7 @@ type
     {WaitFor is an extended version that supports a stop event that can let
      return any Acquire method early.
     }
-    function WaitFor(Timeout: LongWord): TWaitResult; override;
+    function WaitFor(Timeout: LongWord): TWaitResult;
 
     {The stop event makes it possible to return from a waiting state early.
     All Acquire methods blocks until the mutex is free, a timeout has occured
@@ -48,13 +52,44 @@ type
     Closing an event while it is used can have unpredictable results.
     }
     property StopEvent : SyncObjs.TEvent read fEvent write fEvent;
+
+    property Handle: THandle read FHandle;
   end;
 
 
 implementation
 uses SysUtils;
 
-{ TMutexEx }
+constructor TMutexEx.Create(MutexAttributes: PSecurityAttributes;
+  InitialOwner: Boolean; const Name: string; UseCOMWait: Boolean);
+var
+  lpName: PChar;
+begin
+  inherited Create;
+  if Name <> '' then
+    lpName := PChar(Name)
+  else
+    lpName := nil;
+  FHandle := CreateMutex(MutexAttributes, InitialOwner, lpName);
+  if FHandle = 0 then
+    RaiseLastOSError;
+end;
+
+constructor TMutexEx.Create(DesiredAccess: LongWord; InheritHandle: Boolean;
+  const Name: string; UseCOMWait: Boolean);
+var
+  lpName: PChar;
+begin
+  inherited Create;
+
+  if Name <> '' then
+    lpName := PChar(Name)
+  else
+    lpName := nil;
+  FHandle := OpenMutex(DesiredAccess, InheritHandle, lpName);
+  if FHandle = 0 then
+    RaiseLastOSError;
+end;
 
 procedure TMutexEx.Acquire;
 var WR : TWaitResult;
@@ -83,14 +118,18 @@ end;
 function TMutexEx.WaitFor(Timeout: LongWord): TWaitResult;
 var
   Index: DWORD;
+  Handles: array of THandle;
 begin
-  if FUseCOMWait or
-   not Assigned(fEvent) then
+  SetLength(Handles, 1);
+  Handles[0] := FHandle;
+
+  if Assigned(fEvent) then
   begin
-    result := inherited WaitFor(Timeout);
-  end else
-  begin
-    case JwWaitForMultipleObjects([FHandle, fEvent.Handle], false, Timeout) of
+    SetLength(Handles, high(Handles)+1);
+    Handles[high(Handles)] := fEvent.Handle;
+  end;
+
+    case JwWaitForMultipleObjects(Handles, false, Timeout) of
       WAIT_ABANDONED: Result := wrAbandoned;
       WAIT_OBJECT_0: Result := wrSignaled;
       WAIT_OBJECT_0+1,
@@ -98,18 +137,16 @@ begin
       WAIT_FAILED:
         begin
           Result := wrError;
-          FLastError := GetLastError;
         end;
     else
       Result := wrError;
     end;
-  end;
 end;
 
 procedure TMutexEx.Release;
 begin
-  inherited;
-
+  if not ReleaseMutex(fHandle) then
+    RaiseLastOSError;
 end;
 
 function TMutexEx.TryAcquire: boolean;

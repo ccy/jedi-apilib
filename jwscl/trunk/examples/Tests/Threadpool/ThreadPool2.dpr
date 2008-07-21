@@ -3,6 +3,7 @@ program ThreadPool2;
 {$APPTYPE CONSOLE}
 
 uses
+  ExceptionLog,
   JwaWindows,
   Forms,
   classes,
@@ -22,7 +23,7 @@ begin
   //WaitForSingleObject(M2.Mutex, INFINITE);
 
 
-  if M2.Mutex.Acquire(2000) then
+  if M2.Mutex.Acquire(20000) then
   begin
   M2.Read(1000, Processes2);
   M2.Mutex.Release;
