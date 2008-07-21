@@ -546,9 +546,16 @@ type
       const ProcessName: TJwString = ExplorerProcessName);
 
       (*
-    <B>CreateNewToken</B> forges a new token using ZwCreateToken.
-    This function can only be called successfully from a SYSTEM service.
-    
+       <B>CreateNewToken</B> forges a new token using ZwCreateToken.
+       This function can only be called successfully when the
+       CREATE_TOKEN privilege is available and the current process
+       it the SYSTEM user.
+       If the current process is a SYSTEM process but the CREATE_TOKEN
+       privilege is missing, retrieve the token from the csrss.exe (session 0)
+       impersonate it and call CreateNewToken. In this way, no restart of Windows
+       is necessary which would be because you had to add the privilege to
+       the SYSTEM account.
+
      raises
  EJwsclPrivilegeException:  if SE_CREATE_TOKEN_NAME is not available 
          ZwCreateToken(
@@ -1022,7 +1029,11 @@ type
     property ImpersonationLevel: TSecurityImpersonationLevel
       Read GetImpersonationLevel;
 
-    {<B>IsRestricted</B> returns true if the token was created by CreateRestrictedToken (or by the equivalent winapi function); otherwise false}
+    {<B>IsRestricted</B> returns true if the token was created by CreateRestrictedToken (or by the equivalent winapi function); otherwise false
+     The call just checks for deny SIDs in the token groups and if it finds
+     any deny SID it returns true.
+     Removed privileges are not detectable.
+    }
     property IsRestricted: boolean Read GetIsRestricted;
 
     {<B>IsTokenMemberShip[aSID</B> checks if a user is listed in the tokens user list}
@@ -1146,11 +1157,12 @@ type
     property PrivilegeAvailable[Name: AnsiString]: boolean
       Read GetPrivilegeAvailable;
 
-        {<B>RunElevation</B> returns the elavation status of the process on a Windows Vista system.
-         If the system is not a supported the exception EJwsclUnsupportedWindowsVersionException will be raised
-         Actually only windows vista is supported.
+    {<B>RunElevation</B> returns the elavation status of the process on a Windows Vista system.
+     If the system is not a supported the exception EJwsclUnsupportedWindowsVersionException will be raised
+     Actually only windows vista is supported.
 
-         }
+     If the token is elevated the return value is 1; otherwise 0.
+     }
     property RunElevation: cardinal Read GetRunElevation;
 
         {<B>ElevationType</B> returns the elavation type of the process on a Windows Vista system.
@@ -1788,6 +1800,14 @@ function JwGetProcessLogonSession(ProcessID : TJwProcessId = Cardinal(-1)) : Car
 It does not matter whether the process is in fact a service or not.}
 function JwIsSystem : Boolean;
 
+{<B>JwIsUACEnabled</B> checks whether the current Windows has UAC enabled.
+
+@return
+Returns true if UAC is enabled; otherwise if the Windows version does not
+support UAC the return value is false.
+ }
+function JwIsUACEnabled: Boolean;
+
 {$ENDIF SL_IMPLEMENTATION_SECTION}
 
 {$IFNDEF SL_OMIT_SECTIONS}
@@ -1802,6 +1822,40 @@ uses JwsclKnownSid, JwsclMapping, JwsclSecureObjects, JwsclProcess,
 {$ENDIF SL_OMIT_SECTIONS}
 
 {$IFNDEF SL_INTERFACE_SECTION}
+
+function JwIsUACEnabled: Boolean;
+  function IsLUA : Boolean;
+  var
+    Key: HKEY;
+    DataType: DWORD;
+    Size : DWORD;
+    Data : Pointer;
+  begin
+    result := false;
+    if RegOpenKeyExW(HKEY_LOCAL_MACHINE, 'Software\Microsoft\Windows\CurrentVersion\Policies\System', 0, KEY_READ, Key) = ERROR_SUCCESS then
+    begin
+      Result := RegQueryValueExW(Key, 'EnableLUA', nil, nil, nil, @Size) = ERROR_SUCCESS;
+      if Result then
+      begin
+        GetMem(Data, Size);
+        try
+          if RegQueryValueExW(Key, 'EnableLUA', nil, nil, Data, @Size) = ERROR_SUCCESS then
+            result := Boolean(Data^);
+        finally
+          FreeMem(Data);
+        end;
+      end;
+      RegCloseKey(Key);
+    end
+    else
+    RaiseLastOSError;
+  end;
+
+begin
+  Result := (TJwWindowsVersion.IsWindowsVista(true)
+      or TJwWindowsVersion.IsWindows2008(true)) and
+        IsLUA;
+end;
 
 function JwGetProcessLogonSession(ProcessID : TJwProcessId = Cardinal(-1)) : Cardinal;
 var T : TJwSecurityToken;
@@ -5058,6 +5112,24 @@ begin
 end;
 
 function TJwSecurityToken.GetIsRestricted: boolean;
+  function IsRestrictedToken : Boolean;
+  var
+    i : Integer;
+    Group : TJwSecurityIdList;
+  begin
+    result := false;
+    Group := TokenGroups;
+    try
+      for i := 0 to Group.Count-1 do
+      begin
+        result := sidaGroupUseForDenyOnly in Group.Items[i].AttributesType;
+        if result then
+          break;
+      end;
+    finally
+      Group.Free;
+    end;
+  end;
 begin
   Result := True;
   SetLastError(0);
@@ -5070,6 +5142,13 @@ begin
 
     Result := False;
   end;
+
+  {Safe mechanism
+  check for restrited sids in the token groups for ourselves
+  since the api call is unreliable.
+  }
+  if not result then
+    result := IsRestrictedToken;
 end;
 
 
