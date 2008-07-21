@@ -58,7 +58,11 @@ begin
     try
       SetLength(args, ParamCount+1);
 
-      args[0] := PChar(IntToStr(JwGetProcessLogonSession));
+      try
+        args[0] := PChar(IntToStr(JwGetProcessLogonSession));
+      except
+        args[0] := '0'#0; 
+      end;
       for i := 1 to ParamCount do
       begin
         Log.Log('Adding Parameter: '+ParamStr(i));

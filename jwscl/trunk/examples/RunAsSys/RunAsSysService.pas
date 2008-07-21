@@ -147,10 +147,10 @@ var
 begin
   Log := uLogging.LogServer.Connect(etThread, '','Service Execute','RunAsSysService.pas','Entering service main thread');
 
-  //Sleep(10000);
-
+  Sleep(5000);
+                             
   CmdLine := '';
-  for iP := 0 to _ParamCount  do
+  for iP := 0 to _ParamCount-1  do
   begin
     CmdLine := CmdLine + #13#10 + _Param(iP);
   end;
