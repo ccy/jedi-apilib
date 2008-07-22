@@ -1827,7 +1827,7 @@ function JwIsUACEnabled: Boolean;
   function IsLUA : Boolean;
   var
     Key: HKEY;
-    DataType: DWORD;
+    //DataType: DWORD;
     Size : DWORD;
     Data : Pointer;
   begin
@@ -4779,7 +4779,7 @@ end;
 
 function TJwSecurityToken.GetUserName : TJwString;
 var
-  Data : TJwLsaLogonSessionData;
+  //Data : TJwLsaLogonSessionData;
   //UserName : PUNICODE_STRING;
 
 
