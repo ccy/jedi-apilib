@@ -101,6 +101,11 @@ type
       ProtocollPort: Integer; const SubnetOnly: Boolean = False;
       const PortRemoteAddresses: AnsiString = '*'); virtual;
 
+    {<B>IsAppRulePresent</B> Checks if a firewall rule for the specified application is already present
+     @param ApplicationFilename defines the executable of the program
+    }
+    function IsAppRulePresent(ApplicationFilename: AnsiString): Boolean;
+
     {<B>Active</B> Sets or gets if the windows firewall is active or not}
     property Active: Boolean read GetFirewallState write SetFirewallState;
 
@@ -134,7 +139,7 @@ begin
     begin
       raise EJwsclFirewallProfileInitException.CreateFmtEx(e.Message,
         'Create', 'EOleSysError', 'JwsclFirewall',
-        129, True, []);
+        134, True, []);
     end;
   end;
 
@@ -145,7 +150,7 @@ begin
     begin
       raise EJwsclFirewallProfileInitException.CreateFmtEx(e.Message,
         'Create', 'EOleSysError', 'JwsclFirewall',
-        140, True, []);
+        154, True, []);
     end;
   end;
 end;
@@ -173,7 +178,7 @@ begin
     begin
       raise EJwsclSetFWStateException.CreateFmtEx(e.Message,
         'SetFirewallState', 'EOleSysError', 'JwsclFirewall',
-        168, True, []);
+        173, True, []);
     end;
   end;
 end;
@@ -194,7 +199,7 @@ begin
     begin
       raise EJwsclGetFWStateException.CreateFmtEx(e.Message,
         'GetFirewallState', 'EOleSysError', 'JwsclFirewall',
-        189, True, []);
+        194, True, []);
     end;
   end;
 end;
@@ -215,7 +220,7 @@ begin
     begin
       raise EJwsclGetFWExceptionsAllowedException.CreateFmtEx(e.Message,
         'GetExceptionsAllowed', 'EOleSysError', 'JwsclFirewall',
-        210, True, []);
+        215, True, []);
     end;
   end;
 end;
@@ -236,7 +241,7 @@ begin
     begin
       raise EJwsclSetFWExceptionsAllowedException.CreateFmtEx(e.Message,
         'SetExceptionsAllowed', 'EOleSysError', 'JwsclFirewall',
-        231, True, []);
+        236, True, []);
     end;
   end;
 end;
@@ -257,7 +262,7 @@ begin
     begin
       raise EJwsclGetIncommingPingAllowedException.CreateFmtEx(e.Message,
         'GetIncommingPingAllowed', 'EOleSysError', 'JwsclFirewall',
-        252, True, []);
+        257, True, []);
     end;
   end;
 end;
@@ -278,7 +283,7 @@ begin
     begin
       raise EJwsclSetIncommingPingAllowedException.CreateFmtEx(e.Message,
         'SetIncommingPingAllowed', 'EOleSysError', 'JwsclFirewall',
-        273, True, []);
+        278, True, []);
     end;
   end;
 end;
@@ -302,7 +307,7 @@ begin
     begin
       raise EJwsclGetRemoteAdminAllowedException.CreateFmtEx(e.Message,
         'GetRemoteAdminAllowed', 'EOleSysError', 'JwsclFirewall',
-        297, True, []);
+        302, True, []);
     end;
   end;
 end;
@@ -326,7 +331,7 @@ begin
     begin
       raise EJwsclGetRemoteAdminAllowedException.CreateFmtEx(e.Message,
         'SetRemoteAdminAllowed', 'EOleSysError', 'JwsclFirewall',
-        321, True, []);
+        326, True, []);
     end;
   end;
 end;
@@ -350,7 +355,7 @@ begin
     begin
       raise EJwsclGetRemoteAdminAdressException.CreateFmtEx(e.Message,
         'GetRemoteAdminAdress', 'EOleSysError', 'JwsclFirewall',
-        345, True, []);
+        350, True, []);
     end;
   end;
 end;
@@ -374,7 +379,7 @@ begin
     begin
       raise EJwsclSetRemoteAdminAdressException.CreateFmtEx(e.Message,
         'SetRemoteAdminAdress', 'EOleSysError', 'JwsclFirewall',
-        369, True, []);
+        374, True, []);
     end;
   end;
 end;
@@ -416,7 +421,7 @@ begin
           begin
             raise EJwsclFirewallAddRuleException.CreateFmtEx(e.Message,
               'AddToWinFirewall', 'EOleSysError', 'JwsclFirewall',
-              411, True, []);
+              416, True, []);
           end;
         end;
       end;
@@ -442,12 +447,12 @@ begin
   if not GetFirewallState then
     raise EJwsclFirewallInactiveException.CreateFmtEx(FW_INACTIVE,
           'AddTcpPortToFirewall', 'EException', 'JwsclFirewall',
-          440, True, []);
+          445, True, []);
 
   if not GetExceptionsAllowed then
     raise EJwsclFirewallNoExceptionsException.CreateFmtEx(FW_NOEXCEPTIONSALLOWED,
           'AddTcpPortToFirewall', 'EException', 'JwsclFirewall',
-          445, True, []);
+          450, True, []);
 
   try
     Port := CoNetFwOpenPort.Create;
@@ -472,7 +477,7 @@ begin
       begin
         raise EJwsclAddTcpPortToFirewallException.CreateFmtEx(e.Message,
           'AddTcpPortToFirewall', 'EOleSysError', 'JwsclFirewall',
-          467, True, []);
+          472, True, []);
       end;
     end;
   finally
@@ -496,12 +501,12 @@ begin
   if not GetFirewallState then
     raise EJwsclFirewallInactiveException.CreateFmtEx(FW_INACTIVE,
           'AddUpdPortToFirewall', 'EException', 'JwsclFirewall',
-          494, True, []);
+          499, True, []);
 
   if not GetExceptionsAllowed then
     raise EJwsclFirewallNoExceptionsException.CreateFmtEx(FW_NOEXCEPTIONSALLOWED,
           'AddUpdPortToFirewall', 'EException', 'JwsclFirewall',
-          499, True, []);
+          504, True, []);
           
   try
     Port := CoNetFwOpenPort.Create;
@@ -526,7 +531,7 @@ begin
       begin
         raise EJwsclAddTcpPortToFirewallException.CreateFmtEx(e.Message,
           'AddUpdPortToFirewall', 'EOleSysError', 'JwsclFirewall',
-          521, True, []);
+          526, True, []);
       end;
     end;
   finally
@@ -543,7 +548,7 @@ end;
 -------------------------------------------------------------------------------}
 procedure TJwsclFirewall.DeleteFromWinFirewall(ApplicationFilename: AnsiString);
 begin
-  
+
   if GetFirewallState
     and GetExceptionsAllowed then
     try
@@ -553,9 +558,32 @@ begin
       begin
         raise EJwsclFirewallDelRuleException.CreateFmtEx(e.Message,
           'DeleteFromWinFirewall', 'EOleSysError', 'JwsclFirewall',
-          548, True, []);
+          553, True, []);
       end;
     end;
+end;
+
+{-------------------------------------------------------------------------------
+  Procedure: TJwsclFirewall.IsAppRulePresent
+  Author:    heiko.adams
+  DateTime:  2008.07.22
+  Arguments: ApplicationFilename: AnsiString
+  Result:    Boolean
+-------------------------------------------------------------------------------}
+function TJwsclFirewall.IsAppRulePresent(ApplicationFilename: AnsiString): Boolean;
+var
+  App: INetFwAuthorizedApplication;
+begin
+  try
+    try
+      App := FProfile.AuthorizedApplications.Item(ApplicationFilename);
+      Result := (App <> nil)
+    except
+      Result := False;
+    end;
+  finally
+    App := nil;
+  end;
 end;
 
 end.
