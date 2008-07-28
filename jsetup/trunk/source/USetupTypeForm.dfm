@@ -56,7 +56,9 @@ object SetupTypeForm: TSetupTypeForm
     Width = 345
     Height = 17
     Caption = 'Checkout the JEDI project the first time'
+    Checked = True
     TabOrder = 1
+    TabStop = True
   end
   object RemoveRadioButton: TRadioButton
     Left = 24

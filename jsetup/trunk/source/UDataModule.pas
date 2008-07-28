@@ -9,18 +9,40 @@ uses
 type
   TSetupType = (stCheckout, stUpdate, stRemove);
   TProjectType = (ptJWA, ptJWSCL);
+  TJwaType = (wtSingle, wtDcu);
+
   TProjectTypes = set of TProjectType;
+
+  PJwaTypeRecord = ^TJwaTypeRecord;
+  TJwaTypeRecord = record
+    DelphiIndex : Integer;
+    IsSingle : Boolean;
+  end;
+
+  TJwaTypesList = class(TList)
+  protected
+    function GetSingleJwa(DelphiIndex: Integer) : Boolean;
+    procedure SetSingleJwa(DelphiIndex: Integer; IsSingleJwa :  Boolean); 
+  public
+    procedure Clear; override;
+    procedure Delete(Index: Integer); reintroduce;
+
+    {DelphiIndex = Delphi version}
+    property IsSingleJwa[DelphiIndex : Integer] : Boolean read GetSingleJwa write SetSingleJwa;
+  end;
 
   TSetupDataModule = class(TDataModule)
     procedure DataModuleDestroy(Sender: TObject);
+    procedure DataModuleCreate(Sender: TObject);
   private
     { Private-Deklarationen }
     fSetupType : TSetupType;
     fProjectTypes : TProjectTypes;
 
     fTargetPath : String;
+    fJwaTypes : TJwaTypesList;
     fTargetDelphiJwa,
-    fTargetDelphiJwscl : TList; //array of index to KnownDelphiVersions for selected delphi
+    fTargetDelphiJwscl : TList; //contains delphi version as found in KnownDelphiVersions
 
     fJwaRevision,
     fJwsclRevision : Integer;
@@ -29,6 +51,8 @@ type
     fJwsclReleaseSvnPath : String;
   public
     function GetVersions(const ProjectType : TProjectType) : TStringList;
+
+    function TargetDelphiVerToKnownDelphiIndex(const DelphiVer : Integer) : Integer;
 
     { Public-Deklarationen }
     property SetupType : TSetupType read fSetupType write fSetupType;
@@ -41,8 +65,12 @@ type
     property JwaReleaseSvnPath   : String read fJwaReleaseSvnPath write fJwaReleaseSvnPath;
     property JwsclReleaseSvnPath : String read fJwsclReleaseSvnPath write fJwsclReleaseSvnPath;
 
+    {Contains a list of integers with the Delphi version.}
     property TargetDelphiJwa   : TList read fTargetDelphiJwa write fTargetDelphiJwa;
     property TargetDelphiJwscl : TList read fTargetDelphiJwscl write fTargetDelphiJwscl;
+
+    property JwaTypes : TJwaTypesList read fJwaTypes write fJwaTypes;
+
   end;
 
 var
@@ -77,10 +105,18 @@ implementation
 
 { TSetupDataModule }
 
+procedure TSetupDataModule.DataModuleCreate(Sender: TObject);
+begin
+  fJwaTypes := TJwaTypesList.Create;
+end;
+
 procedure TSetupDataModule.DataModuleDestroy(Sender: TObject);
 begin
   FreeAndNil(fTargetDelphiJwa);
   FreeAndNil(fTargetDelphiJwscl);
+
+  fJwaTypes.Clear;
+  FreeAndNil(fJwaTypes);
 end;
 
 function TSetupDataModule.GetVersions(
@@ -88,5 +124,76 @@ function TSetupDataModule.GetVersions(
 begin
 
 end;
+
+function TSetupDataModule.TargetDelphiVerToKnownDelphiIndex(
+  const DelphiVer: Integer): Integer;
+var i : Integer;
+begin
+  result := -1;
+  for i := low(KnownDelphiVersions) to High(KnownDelphiVersions) do
+    if KnownDelphiVersions[i].Ver = DelphiVer then
+    begin
+      result := i;
+      exit;
+    end;
+end;
+
+
+{ TJwaTypesList }
+
+procedure TJwaTypesList.Clear;
+var i : Integer;
+begin
+  for i := Count - 1 downto 0 do
+    Delete(i);
+  inherited Clear;
+end;
+
+procedure TJwaTypesList.Delete(Index: Integer);
+var p : PJwaTypeRecord;
+begin
+  p := PJwaTypeRecord(Items[Index]);
+  Dispose(p);
+  Items[Index] := nil;
+  inherited Delete(Index);
+end;
+
+function TJwaTypesList.GetSingleJwa(DelphiIndex: Integer): Boolean;
+var
+  I: Integer;
+
+begin
+  result := false;
+  for I := 0 to Count - 1 do
+  begin
+    if PJwaTypeRecord(Items[i])^.DelphiIndex = DelphiIndex then
+    begin
+      result := PJwaTypeRecord(Items[i])^.IsSingle;
+      exit;
+    end;
+  end;
+end;
+
+procedure TJwaTypesList.SetSingleJwa(DelphiIndex: Integer;
+  IsSingleJwa: Boolean);
+var
+  I: Integer;
+  p : PJwaTypeRecord;
+begin
+  for I := 0 to Count - 1 do
+  begin
+    if PJwaTypeRecord(Items[i])^.DelphiIndex = DelphiIndex then
+    begin
+      PJwaTypeRecord(Items[i])^.IsSingle := IsSingleJwa;
+      exit;
+    end;
+  end;
+
+  New(P);
+  P^.DelphiIndex := DelphiIndex;
+  P^.IsSingle := IsSingleJwa;
+  Add(P);
+end;
+
 
 end.

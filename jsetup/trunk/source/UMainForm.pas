@@ -92,6 +92,7 @@ begin
 
   i := PageHistory[high(PageHistory)];
   SetLength(PageHistory, Length(PageHistory)-1);
+  ActionNext.Enabled := true;
 
   ShowPage(i);
 end;
@@ -171,7 +172,8 @@ begin
   if fFirstShow then
   begin
     //ShowPage(WELCOME_FORM);
-    ShowPage(JWA_TYPE_FORM);
+    //ShowPage(JWA_TYPE_FORM);
+    ShowPage(DELPHI_FORM);
     fFirstShow := not fFirstShow;
   end;
 end;

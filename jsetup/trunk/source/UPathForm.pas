@@ -74,7 +74,7 @@ begin
     end;
   end
   else
-    result := NextArray[PATH_FORM];;
+    result := NextArray[PATH_FORM];
 end;
 
 procedure TPathForm.GetNextUpdate(Sender: TObject);
@@ -92,6 +92,7 @@ procedure TPathForm.OnGetData(const DataModul: TSetupDataModule);
 begin
   inherited;
 
+  JvDirectoryJwa.Text := DataModul.TargetPath;
 end;
 
 procedure TPathForm.OnSetData(const DataModul: TSetupDataModule);

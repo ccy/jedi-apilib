@@ -52,9 +52,11 @@ object CheckoutForm: TCheckoutForm
       object HTTPSCertCheckBox: TCheckBox
         Left = 36
         Top = 119
-        Width = 337
+        Width = 373
         Height = 17
-        Caption = 'Accept JEDI API sourceforge SVN certificate permanently.'
+        Caption = 
+          'Accept JEDI API sourceforge SVN certificate permanently (optiona' +
+          'l).'
         TabOrder = 0
       end
       object UpdateButton: TButton
@@ -105,14 +107,15 @@ object CheckoutForm: TCheckoutForm
       end
       object StaticText5: TStaticText
         Left = 20
-        Top = 233
+        Top = 223
         Width = 445
-        Height = 32
+        Height = 41
         AutoSize = False
         Caption = 
           '4. You can skip to the next step or adapt the default options in' +
-          ' the JEDI API and JEDI WSCL tab. Currently the newest release wi' +
-          'th latest source will be used for the installation.'
+          ' the JEDI API and JEDI WSCL tab to your needs. Currently the new' +
+          'est release with latest source will be used for the installation' +
+          '.'
         TabOrder = 6
       end
       object JWAInfoListView: TListView
@@ -262,10 +265,6 @@ object CheckoutForm: TCheckoutForm
     object TabSheet2: TTabSheet
       Caption = 'JEDI WSCL'
       ImageIndex = 1
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object GroupBox2: TGroupBox
         Left = 4
         Top = 3
@@ -307,7 +306,7 @@ object CheckoutForm: TCheckoutForm
           Width = 417
           Height = 21
           Style = csDropDownList
-          ItemHeight = 0
+          ItemHeight = 13
           ItemIndex = 0
           TabOrder = 0
           Text = 'Latest Release 1.01'
@@ -324,7 +323,7 @@ object CheckoutForm: TCheckoutForm
           Width = 417
           Height = 21
           Style = csDropDownList
-          ItemHeight = 0
+          ItemHeight = 13
           ItemIndex = 0
           TabOrder = 1
           Text = 'Latest Revision 544'

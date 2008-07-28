@@ -14,8 +14,8 @@ object ReviewForm: TReviewForm
   PixelsPerInch = 96
   TextHeight = 13
   object Label1: TLabel
-    Left = 32
-    Top = 32
+    Left = 24
+    Top = 16
     Width = 167
     Height = 13
     Caption = 'Collection setup data is completed.'
