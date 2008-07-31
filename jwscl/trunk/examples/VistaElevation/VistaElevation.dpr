@@ -12,19 +12,28 @@ program VistaElevation;
 
 uses
   SysUtils, Activex, ComObj, VistaElevationDLL_TLB,
-  JwaWindows,
+  JwaWindows, Dialogs,
   JwsclElevation;
 
 var  ElevatedObject: IElevationDemoObject;
 begin
   CoInitialize(0);
 
-  OleCheck(
-    JwCoCreateInstanceAsAdmin(
-      GetForegroundWindow,
-      CLASS_ElevationDemoObject,
-      IID_IElevationDemoObject,
-      ElevatedObject));
+  try
+    OleCheck(
+      JwCoCreateInstanceAsAdmin(
+        GetForegroundWindow,
+        CLASS_ElevationDemoObject,
+        IID_IElevationDemoObject,
+        ElevatedObject));
+  except
+    on E : EOleSysError do
+    begin
+      MessageDlg(Format('The elevation demo could not be launched properly. Maybe you did not '+
+        'install/register the VistaElevationDLL.dll correctly? Message: (0x%x) %s',[E.ErrorCode,E.Message]), mtError, [mbOK], 0);
+      halt(1);
+    end;
+  end;
 
   ElevatedObject.DoSomething('Hello from JWSCL Vista Elevation Demo');
 end.
