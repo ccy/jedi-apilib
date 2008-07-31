@@ -2,7 +2,6 @@ unit DelphiVersionTool;
 
 (******************************************************************************
   Some useful functions for Delphi-Version-Handling
-  (immer diese englische Doku tststs)
   written by Michael Groß (July 6th 2008)
 *******************************************************************************)
 
@@ -36,7 +35,21 @@ interface
     AddPathToDelphiPath('Browsing Path','$(DELPHI)\Brause'); //Suchpfad
 
 *******************************************************************************)
-  procedure AddPathToDelphiPath(aPathName:String;AdditionalPath:String); //Adds a Path
+  procedure AddPathToDelphiPath(aPathName:String;AdditionalPath:String); //Deletes a Path
+
+  (*******************************************************************************
+  DeletePathFromDelphiPath
+  --------------------------
+  deletes a path from the Regkey specified in parameter "aPathName". Possible
+  Values for aPathname: "Search Path"    (in german: Bibliothekspfad)
+                        "Browsing Path"  (in german: Suchpfad)
+
+  Examples:
+    DeletePathfromDelphiPath('Search Path','c:\MyFolder');        //Bilbiothekspfad
+    DeletePathFromDelphiPath('Browsing Path','$(DELPHI)\Brause'); //Suchpfad
+
+*******************************************************************************)
+  procedure DeletePathFromDelphiPath(aPathName:String;AdditionalPath:String); //Deletes a Path
 
   const
     MAXKnownDelphiVersions=7;
@@ -119,7 +132,7 @@ implementation
       sl.Clear;
       InitInstalledDelphiVersions;
       for i:= 0 to MAXKnownDelphiVersions-1 do begin
-        if KnownDelphiVersions[i].Installed then sl.AddObject(KnownDelphiVersions[i].VersionName, Pointer(KnownDelphiVersions[i].Ver)); 
+        if KnownDelphiVersions[i].Installed then sl.AddObject(KnownDelphiVersions[i].VersionName, Pointer(KnownDelphiVersions[i].Ver));
       end;
     end;
 
@@ -163,5 +176,52 @@ implementation
       end;
       sl.Free;
     end;
+
+  procedure DeletePathFromDelphiPath(aPathName:String;AdditionalPath:String); //Deletes a Path
+    var
+      r:tRegistry;
+      sl:tStringlist;
+      i:Integer;
+      st:String;
+
+    procedure DeletePath(var st:String;aPath:String);
+      var
+        p:Integer;
+        c:Integer;
+      begin
+        c:=length(aPath);
+        p:=pos(aPath,st);
+        if p=0 then exit;
+        delete(st,p,c);
+
+        p:=pos(';;',st);
+        if p>0 then delete(st,p,1);
+      end;
+
+    begin
+      sl:=tStringlist.Create;
+      GetInstalledDelphiRegKeys(sl);
+
+      for i:= 0 to sl.Count-1 do begin
+        r:=tRegistry.Create;
+        r.RootKey:=HKEY_CURRENT_USER;
+        if r.OpenKey(sl[i]+'\Library',false) then begin
+          try
+            st:=r.ReadString(aPathName);
+            DeletePath(st,AdditionalPath);
+            try
+              r.WriteString(aPathname,st);
+            except
+              on e:Exception do raise exception.Create('DeletePathFromDelphiPath: Cannot WRITE "'+aPathname+'" in Reg-Path "'+sl[i]+#13#10+#13#10+e.Message+#13#10+#13#10+st);
+            end;
+          except
+            on e:Exception do raise exception.Create('DeletePathFromDelphiPath: Cannot READ "'+aPathname+'" not found in Reg-Path "'+sl[i]+#13#10+#13#10+e.Message);
+          end;
+        end;
+        r.Free;
+      end;
+      sl.Free;
+    end;
+
 
 end.
