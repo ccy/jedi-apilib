@@ -1,8 +1,14 @@
 object Frame2: TFrame2
   Left = 0
   Top = 0
-  Width = 704
-  Height = 366
+  Width = 700
+  Height = 372
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  ParentFont = False
   TabOrder = 0
   object jvlbLabel: TJvLabel
     Left = 8
