@@ -9,7 +9,7 @@ uses
   JvToolEdit, JvExControls, JvLabel;
 
 type
-  TFrame2 = class(TFrame)
+  TFrame2 = class(TInstallPage)
     jvlbLabel: TJvLabel;
     edtTargetPath: TJvDirectoryEdit;
     chkForAllDelphi: TCheckBox;

@@ -3,8 +3,8 @@ program setup;
 uses
   Forms,
   UMainForm in 'UMainForm.pas' {Form1},
-  UTestFrame in 'UTestFrame.pas' {Frame2: TFrame},
-  UInstallPage in 'UInstallPage.pas';
+  UInstallPage in 'UInstallPage.pas',
+  UTestFrame in 'UTestFrame.pas' {Frame2};
 
 {$R *.res}
 

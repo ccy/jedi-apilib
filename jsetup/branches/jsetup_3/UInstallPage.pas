@@ -17,6 +17,12 @@ type
   TInstallPage = class(TFrame, IInstallPage)
   protected
    // fDataModule : TDelphiInstallation;
+   fOldCreateOrder : Boolean;
+   fPixelsPerInch : Integer;
+   fClientHeight,
+   fClientWidth,
+   fTextHeight : Integer;
+
   public
     {This method is called every time the next button is updated.
     }
@@ -59,6 +65,16 @@ type
     procedure InitPage(OnNext : Boolean);virtual;
 
    // property DataModule : TDelphiInstallation read fDataModule write fDataModule;
+
+
+   published //these properties makes Delphi satisfied
+
+     property OldCreateOrder : Boolean read fOldCreateOrder write fOldCreateOrder;
+     property PixelsPerInch : Integer read fPixelsPerInch write fPixelsPerInch;
+     property TextHeight : Integer read fTextHeight write fTextHeight;
+
+     property ClientHeight : Integer read fClientHeight write fClientHeight;
+     property ClientWidth : Integer read fClientWidth write fClientWidth;
   end;
 
 implementation
