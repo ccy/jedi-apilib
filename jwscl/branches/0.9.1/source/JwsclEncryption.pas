@@ -97,7 +97,7 @@ type
      @param Flags Defines who can decrypt the new data.
         
           # pmSameProcess - defines that only the process which created
-            the encrypted data can decrypt it 
+            the encrypted data can decrypt it
           # pmCrossProcess - defines that other processes on the same
             computer can decrypt the data 
           # pmSameLogon - defines only the same use can decrypt the data 
@@ -159,7 +159,7 @@ type
      @param Data [out]. This parameter receives the encrypted data.
        The data can be freed using FreeMem on its Data member .
      raises
- EjwsclCryptApiException:  if an underlying API function failed. 
+ EjwsclCryptApiException:  if an underlying API function failed.
 
      }
     class procedure EncryptPointerWithPrompt(

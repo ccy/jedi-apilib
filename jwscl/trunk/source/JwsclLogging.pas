@@ -1107,7 +1107,7 @@ end;
 procedure TJwLogServerImpl.Done;
 var
   Attributes : TJwXMLAttributes;
-  AnsiStr : AnsiString;
+  Str : String;
   //WideStr : WideString;
   S : TJwString;
 
@@ -1118,10 +1118,11 @@ begin
   if not Assigned(fCritical) then
     exit;
 
-  DateTimeToString(AnsiStr, String(JwTimeOutputString), Now);
+  DateTimeToString(Str, String(JwTimeOutputString), Now);
 {$IFDEF UNICODE}
-  S := WideString(AnsiStr);
+  S := WideString(Str);
 {$ELSE}
+  {WARNING: may lose information in Unicode Delphi}
   S := AnsiStr;
 {$ENDIF}
 

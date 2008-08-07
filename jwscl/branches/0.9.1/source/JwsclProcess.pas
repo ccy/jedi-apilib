@@ -367,6 +367,8 @@ BOOL WINAPI TerminateJobObject(HANDLE hJob, UINT uExitCode);
   Since every process in a job must be in the same session,
    the list manages one job object per session.
 
+  <b>This solution is only available in Windows Vista and later.</b>
+
   }
   TJwJobObjectSessionList = class
   private
@@ -1499,7 +1501,11 @@ begin
       // Load user's profile
       // We do not apply any in parameters, let the method do it automatically
       // may fail with an exception
-      Output.UserToken.LoadUserProfile(Output.ProfileInfo, []);
+      try
+       Output.UserToken.LoadUserProfile(Output.ProfileInfo, []);
+      except
+        Output.ProfileInfo.Profile := 0;
+      end;
 
       with StartupInfo do
       begin
@@ -2644,6 +2650,11 @@ begin
         raise EJwsclInvalidParameterException.CreateFmtEx(RsInvalidJobObject,
           'AssignProcessToJob',ClassName, RsUNProcess, 0, 0, ['OnNewJobObject']);
 
+      fList.Add(NewObject);
+    end;
+    if fList.Count = 0 then
+    begin
+      OnNewJobObject(Self, Process, 0, 0 ,NewObject);
       fList.Add(NewObject);
     end;
 

@@ -126,7 +126,7 @@ type
     }
     procedure SetOwner(const SID : TJwSecurityId); overload;
 
-    {<B>Create</B> creates a new TJwSimpleDescriptor instance and initialises
+    {<B>Create</B> creates a new TJwSimpleDescriptor instance and initializes
     an empty security descriptor. It contains:
      * an empty DACL which denies all access
      * an empty owner - property Owner is nil.

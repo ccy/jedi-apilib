@@ -900,7 +900,9 @@ begin
 
   Log := LogServer.Connect(etFunction, '', 'JwCreateProcessAsAdminUser', 'JwsclProcess.pas','');
 
-
+  {Safety first.
+   We clear the output buffer to avoid freeing stuff
+   that was never initialised.}
   ZeroMemory(@OutVars, sizeof(OutVars));
 
   try //1.
@@ -1194,7 +1196,8 @@ begin
 
         //
         // Copy variables to memory for CreateProcessAsUserX 
-        //
+        //  CreateProcessAsUser behaves different for
+        //    nil and empty strings. 
 
         if Length(InVars.Parameters.lpApplicationName) > 0 then
           AppName := TJwPChar(InVars.Parameters.lpApplicationName);

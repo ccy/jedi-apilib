@@ -1,10 +1,13 @@
-{<B>Abstract</B>Contains desktop functions
-@author(Christian Wimmer)
-<B>Created:</B>03/23/2007 
-<B>Last modification:</B>09/10/2007 
-
+{
+Description
 Project JEDI Windows Security Code Library (JWSCL)
 
+Contains desktop functions
+
+Author
+Christian Wimmer
+
+License
 The contents of this file are subject to the Mozilla Public License Version 1.1 (the "License");
 you may not use this file except in compliance with the License. You may obtain a copy of the
 License at http://www.mozilla.org/MPL/
@@ -31,12 +34,11 @@ The Initial Developer of the Original Code is Christian Wimmer.
 Portions created by Christian Wimmer are Copyright (C) Christian Wimmer. All rights reserved.
 
 
-Warning:
+
 This unit is about to be changed.
 
-Description:
 
-Links:
+Link List
 Secure object types:
   http://msdn2.microsoft.com/en-us/library/aa379593.aspx
 
@@ -102,7 +104,8 @@ type
     fCloseOnDestroy: boolean;
     fOpened:         boolean;
 
-    fLastThreadDesktop: HDESK;
+    fLastThreadDesktop,
+    fLastSwitchDesktop: HDESK;
     fUserSID:           TJwSecurityId;
 
   protected
@@ -265,7 +268,16 @@ type
       const doInherit: boolean;
       const aDesiredAccess: ACCESS_MASK); overload;
 
+    {<B>CreateByHandle</B> creates an instance using an existing handle.
+     The handle can be automatically destroyed on freeing.}
+    constructor CreateByHandle(const Handle : HDESK; const CloseOnDestroy: boolean);
 
+    {<B>CreateAndGetInputDesktop</B> creates an instance using the current input desktop.
+    The input desktop is the one which can receive user inputs.
+    }
+    constructor CreateAndGetInputDesktop(const DesktopFlags: TJwSecurityDesktopFlags;
+          const InheritHandles: boolean;
+          const DesiredAccess: ACCESS_MASK);
 
      {CreateUnInitialized creates a desktop instance without creating or opening a desktop.
     This function is used for internal purposes and should not be used.
@@ -304,7 +316,7 @@ type
         HDESK(List.Item[i])
      @return Returns a list of desktop handles. The return value can never be nil and therfore
          must be freed by the caller.  }
-    function GeTSecurityDesktopWindowHandles: TList; virtual;
+    function GetSecurityDesktopWindowHandles: TList; virtual;
 
      {<B>OpenInputDesktop</B> opens the desktop that currently holds the input.
     This function does check for an already opened desktop in this instance and raises an EOpenDesktop Error
@@ -333,12 +345,19 @@ type
     raises
  EJwsclDesktopException:  can be raised if an error occured }
     procedure SetThreadDesktop;
+    {<B>SetLastThreadDesktop</B> tries to return to the thread desktop that
+     was used before a call to SetThreadDesktop. !
+     raises
+     EJwsclDesktopException:  can be raised if an error occured
+     }
+    procedure SetLastThreadDesktop;
 
    {<B>SwitchDesktop</B> switches input to the desktop of this instance.
     If no desktop is opened this function does nothing.
     
    <B>SwitchDesktop</B> does save a handle to the desktop that was active before it is called so
-    it can be changed back in SwitchDesktopBack 
+    it can be changed back in SwitchDesktopBack.
+      
      raises
  EJwsclDesktopException:  can be raised if an error occured while switching desktop }
     procedure SwitchDesktop;
@@ -407,6 +426,9 @@ type
      }
     property SecurityDescriptor[Info: TJwSecurityInformationFlagSet]
       : TJwSecurityDescriptor Read GetSD Write PutSD;
+
+    property LastThreadDesktop : HDESK  read fLastThreadDesktop write fLastThreadDesktop;
+    property LastSwitchDesktop : HDESK read fLastSwitchDesktop write fLastSwitchDesktop;
   end;
 
 
@@ -1080,7 +1102,9 @@ begin
   fOnDestroyDesktop := nil;
   fCloseOnDestroy := aCloseOnDestroy;
   fIsInputDesktop := False;
+  fLastSwitchDesktop := jwaWindows.OpenInputDesktop(0, false, DESKTOP_SWITCHDESKTOP);
   fLastThreadDesktop := jwaWindows.GetThreadDesktop(GetCurrentThreadId);
+
   fUserSID := nil;
 
 
@@ -1092,6 +1116,33 @@ begin
     dcfOpen: fHandle :=
         HDESK(Self.OpenDesktop(aName, DesktopFlags, doInherit, aDesiredAccess));
   end;
+
+end;
+
+constructor TJwSecurityDesktop.CreateAndGetInputDesktop(
+  const DesktopFlags: TJwSecurityDesktopFlags; const InheritHandles: boolean;
+  const DesiredAccess: ACCESS_MASK);
+begin
+  self.Create;
+  fHandle := OpenInputDesktop(DesktopFlags, InheritHandles, DesiredAccess)
+end;
+
+constructor TJwSecurityDesktop.CreateByHandle(const Handle: HDESK;
+  const CloseOnDestroy: boolean);
+begin
+  fParent := nil;
+  fSD := nil;
+  fName := '';
+  fDesiredAccess := 0;
+  fOpened := true;
+  fHandle := Handle;
+  fOnDestroyDesktop := nil;
+  fCloseOnDestroy := CloseOnDestroy;
+  fIsInputDesktop := False;
+  fLastSwitchDesktop := jwaWindows.OpenInputDesktop(0, false, DESKTOP_SWITCHDESKTOP);
+  fLastThreadDesktop := jwaWindows.GetThreadDesktop(GetCurrentThreadId);
+
+  fUserSID := nil;
 
 end;
 
@@ -1140,28 +1191,42 @@ function TJwSecurityDesktop.CreateDesktop(const aName: TJwString;
   const aSecurityDescriptor: TJwSecurityDescriptor): HDESK;
 var
   pSec: PSECURITYATTRIBUTES;
+  aSecurityInfo: TJwSecurityInformationFlagSet;
+  Access : DWORD;
 begin
   pSec := nil;
 
   if Assigned(aSecurityDescriptor) then
   begin
-    pSec := aSecurityDescriptor.Create_SA(True);
+  //  MessageBoxW(0,PWideChar(aSecurityDescriptor.Text),'', MB_OK);
+  //  pSec := aSecurityDescriptor.Create_SA(True);
+  end;
+
+  Access := 0;
+  if Assigned(aSecurityDescriptor) then
+  begin
+    aSecurityInfo := [];
+    if Assigned(aSecurityDescriptor.Owner) or Assigned(aSecurityDescriptor.PrimaryGroup) then
+       Access := Access or WRITE_OWNER;
+    if Assigned(aSecurityDescriptor.DACL) or (sdcDaclPresent in aSecurityDescriptor.Control) then
+      Access := Access or WRITE_DAC;
+    if Assigned(aSecurityDescriptor.SACL) and (sdcSaclPresent in aSecurityDescriptor.Control) then
+      Access := Access or ACCESS_SYSTEM_SECURITY;
   end;
 
   {$IFDEF UNICODE}
   result := jwaWindows.CreateDesktopW(PWideChar(aName),nil,nil,
                         DesktopFlagsToInt(DesktopFlags),
-                        aDesiredAccess, LPSECURITY_ATTRIBUTES(pSec));
+                        aDesiredAccess or Access, LPSECURITY_ATTRIBUTES(pSec));
   {$ELSE}
   Result := jwaWindows.CreateDesktopA(PAnsiChar(aName), nil, nil,
     DesktopFlagsToInt(DesktopFlags),
-    Cardinal(aDesiredAccess),
+    aDesiredAccess or Access,
     LPSECURITY_ATTRIBUTES(pSec));
   {$ENDIF}
 
-  if Assigned(aSecurityDescriptor) then
-    aSecurityDescriptor.Free_SA(pSec);
-
+  //if Assigned(aSecurityDescriptor) then
+  //  aSecurityDescriptor.Free_SA(pSec);
 
   if Result = 0 then
   begin
@@ -1173,6 +1238,33 @@ begin
       [Name]);}
     exit;
   end;
+
+  //the lpsec descriptor does not work - it always used default DACL!!!
+  //so we set it here
+  if Assigned(aSecurityDescriptor) and (Result <> 0) then
+  begin
+    aSecurityInfo := [];
+    if Assigned(aSecurityDescriptor.Owner) then
+      Include(aSecurityInfo,siOwnerSecurityInformation);
+    if Assigned(aSecurityDescriptor.PrimaryGroup) then
+      Include(aSecurityInfo,siGroupSecurityInformation);
+    if Assigned(aSecurityDescriptor.DACL) or (sdcDaclPresent in aSecurityDescriptor.Control) then
+      Include(aSecurityInfo,siDaclSecurityInformation);
+    if Assigned(aSecurityDescriptor.SACL) and (sdcSaclPresent in aSecurityDescriptor.Control) then
+      Include(aSecurityInfo,siSaclSecurityInformation);
+
+    try
+      TJwSecureGeneralObject.SetSecurityInfo(Result,SE_KERNEL_OBJECT,
+        aSecurityInfo, aSecurityDescriptor);
+    except
+      on E : Exception do
+      begin
+        CloseDesktop(Result);
+        raise;
+      end;
+    end;
+  end;
+
 
   fOpened  := Result > 0;
   fHandle  := Result;
@@ -1191,7 +1283,12 @@ begin
   fCloseOnDestroy := False;
   fIsInputDesktop := False;
   fOpened := False;
-  fLastThreadDesktop := jwaWindows.GetThreadDesktop(GetCurrentThreadId);
+  //fLastSwitchDesktop := jwaWindows.OpenInputDesktop(0, false, DESKTOP_SWITCHDESKTOP);
+  //fLastThreadDesktop := jwaWindows.GetThreadDesktop(GetCurrentThreadId);
+  fLastThreadDesktop := 0;
+  fLastSwitchDesktop := 0;
+
+
   fSD := nil;
   fUserSID := nil;
 
@@ -1220,6 +1317,9 @@ begin
     except
       on E: EJwsclCloseDesktopException do ; //we do not care
     end;
+
+  CloseDesktop(fLastSwitchDesktop);
+  CloseDesktop(fLastThreadDesktop);
 
   inherited;
 end;
@@ -1253,7 +1353,9 @@ end;
 
 
 function TJwSecurityDesktop.GetName: TJwString;
+var LastError : DWORD;
 begin
+  LastError := GetLastError; //Save last error value since we use this method everywhere
   if (Handle = 0) or not Opened then
     Result := fName
   else
@@ -1264,6 +1366,7 @@ begin
     except
       Result := fName;
     end;
+  SetLastError(LastError);
 end;
 
 function TJwSecurityDesktop.GetOpened: boolean;
@@ -1298,9 +1401,12 @@ begin
 
 
   if Result = 0 then
-    raise EJwsclOpenDesktopException.CreateFmt(
+    {raise EJwsclOpenDesktopException.CreateFmt(
       RsDesktopOpenFailed,
-      [Name]);
+      [Name]);}
+    raise EJwsclDesktopException.CreateFmtWinCall(RsDesktopOpenFailed,
+       'OpenDesktop', ClassName, 'JwsclDesktops.pas',0,
+       true, 'OpenDesktop', [Name]);
 
   fOpened := Result > 0;
   fHandle := Result;
@@ -1352,7 +1458,10 @@ end;
 procedure TJwSecurityDesktop.SetThreadDesktop;
 var
   L: integer;
+  tempLastDesktop : DWORD;
 begin
+  tempLastDesktop := jwaWindows.GetThreadDesktop(GetCurrentThreadId);
+
   SetLastError(0);
   if Handle > 0 then
     if not jwaWindows.SetThreadDesktop(Handle) then
@@ -1365,26 +1474,53 @@ begin
         raise EJwsclDesktopException.CreateFmtWinCall(RsDesktopFailedSetThreadDesktop,
        'SetThreadDesktop', ClassName, 'JWsclDesktops.pas',0,
        true, 'SetThreadDesktop', [Name]);
-
     end;
+  fLastThreadDesktop := tempLastDesktop;
 end;
 
-procedure TJwSecurityDesktop.SwitchDesktop;
+procedure TJwSecurityDesktop.SetLastThreadDesktop;
+var
+  L: integer;
 begin
+  SetLastError(0);
+  if JwIsHandleValid(fLastThreadDesktop) then
+  begin
+    if not jwaWindows.SetThreadDesktop(fLastThreadDesktop) then
+    begin
+      L := GetLastError;
+      if L <> 0 then
+        raise EJwsclDesktopException.CreateFmtWinCall(RsDesktopFailedSetThreadDesktop,
+       'SetLastThreadDesktop', ClassName, 'JWsclDesktops.pas',0,
+       true, 'SetLastThreadDesktop', [Name]);
+
+    end;
+  end;
+end;
+
+
+procedure TJwSecurityDesktop.SwitchDesktop;
+var tempLastDesktop : DWORD;
+begin
+  tempLastDesktop := jwaWindows.OpenInputDesktop(0, false, DESKTOP_SWITCHDESKTOP);
   if Handle > 0 then
     if not jwaWindows.SwitchDesktop(Handle) then
       raise EJwsclDesktopException.CreateFmt(
         RsDesktopSwitchFailed,
         [Name]);
+
+  fLastSwitchDesktop := tempLastDesktop;
 end;
 
 
 procedure TJwSecurityDesktop.SwitchDesktopBack;
 begin
-  if not jwaWindows.SwitchDesktop(fLastThreadDesktop) then
-    raise EJwsclDesktopException.CreateFmt(
-      RsDesktopFailedSwitchBack,
-      [Name]);
+  if JwIsHandleValid(fLastSwitchDesktop) then
+  begin
+    if not jwaWindows.SwitchDesktop(fLastSwitchDesktop) then
+     raise EJwsclDesktopException.CreateFmt(
+         RsDesktopFailedSwitchBack, [Name]);
+
+  end;
 end;
 
 function TJwSecurityDesktop.OpenInputDesktop(
