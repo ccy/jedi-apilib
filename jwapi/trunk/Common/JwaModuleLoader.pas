@@ -141,15 +141,18 @@ type
 {$IFNDEF JWA_OMIT_SECTIONS}
 implementation
 //uses ...
-{$ENDIF JWA_OMIT_SECTIONS}
-   (*
+
 type
 {$IFDEF UNICODE}
   PTChar = PWideChar;
 {$ELSE}
   PTChar = PAnsiChar;
 {$ENDIF}
-    *)
+
+
+{$ENDIF JWA_OMIT_SECTIONS}
+
+
 
 {$IFNDEF JWA_INTERFACESECTION}
 

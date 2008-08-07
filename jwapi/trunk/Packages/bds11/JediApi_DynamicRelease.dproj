@@ -22,7 +22,7 @@
     <DCC_ResourcePath>.;..\;..\..\common;..\..\Win32Api</DCC_ResourcePath>
     <DCC_ObjPath>.;..\;..\..\common;..\..\Win32Api</DCC_ObjPath>
     <DCC_IncludePath>.;..\;..\..\common;..\..\Win32Api</DCC_IncludePath>
-    <DCC_Define>PACKAGE_CONDITIONS;JWA_INCLUDE_SETUP_API;JWA_INCLUDE_JWAADSTLB;RELEASE;DYNAMIC_LINK;RELEASE</DCC_Define>
+    <DCC_Define>PACKAGE_CONDITIONS;JWA_INCLUDE_SETUP_API;JWA_INCLUDE_JWAADSTLB;DYNAMIC_LINK;RELEASE</DCC_Define>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <Version>7.0</Version>

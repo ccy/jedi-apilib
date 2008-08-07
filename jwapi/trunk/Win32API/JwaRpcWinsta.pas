@@ -1641,11 +1641,9 @@ type
   PWINSTATIONPRODIDA = ^_WINSTATIONPRODIDA;
 
 {$IFDEF UNICODE}
-type
   WINSTATIONPRODID = WINSTATIONPRODIDW;
   PWINSTATIONPRODID = PWINSTATIONPRODIDW;
 {$ELSE}
-type
   WINSTATIONPRODID = WINSTATIONPRODIDA;
   PWINSTATIONPRODID = PWINSTATIONPRODIDA;
 {$ENDIF /* UNICODE*/}
@@ -1656,14 +1654,13 @@ type
     Reserved: array[0..5] of BYTE;
   end;
 
-  type
   Tipv4 = record
     sin_family: Word;
     sin_port: USHORT;
     in_addr: ULONG;
     sin_zero: Array[0..7] of UCHAR;
   end {ipv4};
-type
+
   Tipv6 = record
     sin6_port: USHORT;
     sin6_flowinfo: ULONG;
