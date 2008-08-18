@@ -319,6 +319,11 @@ type
         is not granted the value of the property AccessMask is zero. Otherwise
         it contains all granted rights for the token.
 
+        If you do not specify TOKEN_DUPLICATE, you will get direct access to
+        the target process' token. Therefore you can change the behaviour of
+        the process by changing enabled privileges. This does not affect
+        an impersonation of the token because for this action is has to be duplicated.
+
         @param aProcessHandle Receives a process handle which is used to get the process token. The handle can be zero (0) to use the actual process handle of the caller 
         @param aDesiredAccess Receives the desired access for this token. The access types can be get from the following list. Access flags must be concatenated with or operator.
               Can be MAXIMUM_ALLOWED to get maximum access. 
@@ -381,6 +386,10 @@ type
      is duplicated. With this option, in special situations, the new current
      process can have more access rights on the token than the process specified
      by ProcessID.
+     If you do not specify TOKEN_DUPLICATE, you will get direct access to
+     the target process' token. Therefore you can change the behaviour of
+     the process by changing enabled privileges. This does not affect
+        an impersonation of the token because for this action is has to be duplicated.
 
      <B>CreateTokenByProcessId</B> tries to use debug privilege to open any process.
 
@@ -830,6 +839,11 @@ type
     class procedure RemoveThreadToken(const Thread: TJwThreadHandle);
 
         {The <B>ImpersonateLoggedOnUser</B> function lets the calling thread impersonate the security context of a logged-on user. The user is represented by a token handle.
+         If the current instance is already a thread token (=impersonated token), the method is just impersonating it. Otherwise if the current instance
+         is a primary token, the method is converting it to a thread token and then impersonating it. However the second
+         case is worth mentioning because the new thread token is not related to the current token instance. That means any operations on the current instance
+         (e.g. set privileges) don't have an effect on the token of the thread. Create a new instance by calling TJwSecurityToken.CreateTokenByThread to get the new thread token or
+         call ConvertToImpersonatedToken to get an thread token directly without creating a new instance.
         raises
  EJwsclAccessTypeException:  will be raised if the token is an impersonation token and does not have access type TOKEN_QUERY and TOKEN_IMPERSONATE 
          EJwsclAccessTypeException: will be raised if the token is a primary token and does not have access type TOKEN_QUERY and TOKEN_DUPLICATE 
@@ -5317,8 +5331,10 @@ begin
   fPrivelegesList      := nil;
   fStackPrivilegesList := nil;
 
-  //create token privilege must be active in Vista
-  //in Vista even SYSTEM does not have this privilege
+  // create token privilege must be active in Vista
+  // in Vista even SYSTEM does not have this privilege
+  // but we could impersonate any other process (like csrss.exe)
+  // that has this privilege
   JwEnablePrivilege(SE_CREATE_TOKEN_NAME, pst_Enable);
 
   CurrentToken := TJwSecurityToken.CreateTokenEffective(TOKEN_QUERY or TOKEN_READ);

@@ -1123,7 +1123,7 @@ begin
   S := WideString(Str);
 {$ELSE}
   {WARNING: may lose information in Unicode Delphi}
-  S := AnsiStr;
+  S := Str;
 {$ENDIF}
 
   //Send end process time 
