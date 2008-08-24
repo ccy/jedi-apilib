@@ -818,6 +818,10 @@ end;
 
 class procedure TJwHash.FreeBuffer(Buffer: Pointer);
 begin
+  {Type of memory manager.
+  Be aware that we use GetMem in JwLoadHashFromRegistry to create
+  a TJwFileHashData record. So change it also there if memory manager is changed.
+  }
   FreeMem(Buffer);
 end;
 

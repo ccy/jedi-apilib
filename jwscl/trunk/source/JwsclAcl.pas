@@ -1124,20 +1124,32 @@ type
   TJwDiscretionaryAccessControlEntryAllow =
     class(TJwDiscretionaryAccessControlEntry)
   public
-    {<B>Create</B> creates a new positive ACE.
-
-    @param aListOwner retrieves the list owner  (including nil). If it is set to a list (not nil) the ACE is added to the list automatically. 
-    @param aFlags retrieves the ACE flags as a set 
-    @param anAccessMask retrieves the access mask like GENERIC_ALL.
-           If you want to set file or folder security use FILE_ALL_ACCESS or similar instead of GENERIC_XXX.
-           Some flags are discarded when written to disk and would differ after read from disk.
-               
-    @param aSID retrieves the SID to be allowed or denied. It can be nil 
-    @param ownSID defines whether the SID given in parameter aSID should be freed automatically.
-            If this SID is a well known SID from unit JwsclKnownSid this parameter is ignored 
-
-
-    }
+    { <b>Create</b> creates a new positive ACE.
+      
+      
+      Parameters
+      aListOwner :    retrieves the list owner (including nil). If it is set to a list
+                      (not nil) the ACE is added to the list automatically. 
+      aFlags :        retrieves the ACE flags as a set 
+      anAccessMask :  retrieves the access mask like GENERIC_ALL. If you want to set
+                      \file or folder security use FILE_ALL_ACCESS or similar instead
+                      of GENERIC_XXX. Some flags are discarded when written to disk and
+                      would differ after read from disk.<p />
+      aSID :          retrieves the SID to be allowed or denied. It can be nil 
+      ownSID :        defines whether the SID given in parameter aSID should be freed
+                      automatically. If this SID is a well known SID from unit
+                      JwsclKnownSid this parameter is ignored
+      
+      Remarks
+      The given SID in parameter aSID<b> must not</b> be already assigned to another
+      access control instance if both - this and the other instance - have the boolean
+      parameter ownSID (or its property OwnSid) set to true. In this case the first
+      ACE instance may destroy the used SID instance and which has an effect on the
+      second ACE instance that runs with an invalid SID instance.
+      
+      If you want to copy (even with changed values) an instance, use the copy
+      constructor instead. If you also want to set the aListOwner parameter, simply
+      add the new instance to the target list.                                          }
 
     constructor Create(const aListOwner: TJwSecurityAccessControlList;
       const aFlags: TJwAceFlags;
@@ -1145,22 +1157,32 @@ type
       const aSID: TJwSecurityId;
       ownSID: boolean = True); overload;
 
-    {<B>Create</B> creates a new positive ACE and applies an ACE revision level.
-
-    @param aListOwner retrieves the list owner  (including nil). If it is set to a list (not nil) the ACE is added to the list automatically. 
-    @param aFlags retrieves the ACE flags as a set 
-    @param anAccessMask retrieves the access mask like GENERIC_ALL.
-           If you want to set file or folder security use FILE_ALL_ACCESS or similar instead of GENERIC_XXX.
-           Some flags are discarded when written to disk and would differ after read from disk.
-               
-    @param Revision Defines the revision level of the ACE. Can be one of the revision levels.
-          ACL_REVISION, ACL_REVISION1, ACL_REVISION2, ACL_REVISION3, ACL_REVISION4 or ACL_REVISION_DS 
-    @param aSID retrieves the SID to be allowed or denied. It can be nil 
-    @param ownSID defines whether the SID given in parameter aSID should be freed automatically.
-            If this SID is a well known SID from unit JwsclKnownSid this parameter is ignored 
-
-
-    }
+    { <b>Create</b> creates a new positive ACE and applies an ACE revision level.
+      Parameters
+      aListOwner :    retrieves the list owner (including nil). If it is set to a list
+                      (not nil) the ACE is added to the list automatically.
+      aFlags :        retrieves the ACE flags as a set
+      anAccessMask :  retrieves the access mask like GENERIC_ALL. If you want to set
+                      \file or folder security use FILE_ALL_ACCESS or similar instead
+                      of GENERIC_XXX. Some flags are discarded when written to disk and
+                      would differ after read from disk.<p />
+      Revision :      Defines the revision level of the ACE. Can be one of the revision
+                      levels. ACL_REVISION, ACL_REVISION1, ACL_REVISION2,
+                      ACL_REVISION3, ACL_REVISION4 or ACL_REVISION_DS
+      aSID :          retrieves the SID to be allowed or denied. It can be nil
+      ownSID :        defines whether the SID given in parameter aSID should be freed
+                      automatically. If this SID is a well known SID from unit
+                      JwsclKnownSid this parameter is ignored
+      Remarks
+      The given SID in parameter aSID<b> must not</b> be already assigned to another
+      access control instance if both - this and the other instance - have the boolean
+      parameter ownSID (or its property OwnSid) set to true. In this case the first
+      ACE instance may destroy the used SID instance and which has an effect on the
+      second ACE instance that runs with an invalid SID instance.
+      
+      If you want to copy (even with changed values) an instance, use the copy
+      constructor instead. If you also want to set the aListOwner parameter, simply
+      add the new instance to the target list.                                          }
     constructor Create(
       const ListOwner: TJwSecurityAccessControlList;
       const Flags: TJwAceFlags;
@@ -1219,7 +1241,7 @@ type
     procedure Free_PACE(var AccessEntryPointer: PAccessAllowedAce); overload;
   end;
 
-  {@Name defines a callback allow access control element.
+  {<B>TJwDiscretionaryAccessControlEntryCallbackAllow</B> defines a callback allow access control element.
    Every time a function that scans an ACL with a callback element generates
    a callback event which decides whether this ACE can be used in the
    process.
@@ -1229,34 +1251,35 @@ type
     class(TJwDiscretionaryAccessControlEntryAllow)
   end;
 
-  {@Name defines a allow access control element with object properties.
+  {<B>TJwDiscretionaryAccessControlEntryObjectAllow</B> defines a allow access control element with object properties.
    Object ACEs uses the following properties
-   @unorderedlist(
-    @item(ObjectFlags)
-    @item(ObjectType)
-    @item(InheritedObjectType)
-   )
+
+    * ObjectFlags
+    * ObjectType
+    * InheritedObjectType
+
   }
   TJwDiscretionaryAccessControlEntryObjectAllow =
     class(TJwDiscretionaryAccessControlEntryAllow)
   end;
 
-  {@Name defines a callback allow access control element with object properties.
-   Every time a function that scans an ACL with a callback element generates
-   a callback event which decides whether this ACE can be used in the
-   process.
-   Callback elements are used in unit JwsclAuthCtx method TJwAuthContext.AccessCheck.
-
-   Object ACEs uses the following properties
-   @unorderedlist(
-    @item(ObjectFlags)
-    @item(ObjectType)
-    @item(InheritedObjectType)
-   )
-
-   For some Windows internal reasons this type of ACE is ignored in
-   TJwAuthContext.AccessCheck .
-  }
+  { <b>TJwDiscretionaryAccessControlEntryCallbackObjectAllow</b> defines a callback
+    allow access control element with object properties. Every time a function that
+    scans an ACL with a callback element generates a callback event which decides
+    whether this ACE can be used in the process. Callback elements are used in unit JwsclAuthCtx.pas
+    method TJwAuthContext.AccessCheck.
+    
+    Object ACEs uses the following properties
+    
+      * ObjectFlags
+      * ObjectType
+      * InheritedObjectType
+    
+    For some Windows internal reasons this type of ACE is ignored in
+    TJwAuthContext.AccessCheck .
+    
+    
+                                                                                                     }
   TJwDiscretionaryAccessControlEntryCallbackObjectAllow =
     class(TJwDiscretionaryAccessControlEntryAllow)
   end;
@@ -1275,7 +1298,16 @@ type
     @param ownSID defines whether the SID given in parameter aSID should be freed automatically.
             If this SID is a well known SID from unit JwsclKnownSid this parameter is ignored 
 
-
+    Remarks
+      The given SID in parameter aSID<b> must not</b> be already assigned to another
+      access control instance if both - this and the other instance - have the boolean
+      parameter ownSID (or its property OwnSid) set to true. In this case the first
+      ACE instance may destroy the used SID instance and which has an effect on the
+      second ACE instance that runs with an invalid SID instance.
+      
+      If you want to copy (even with changed values) an instance, use the copy
+      constructor instead. If you also want to set the aListOwner parameter, simply
+      add the new instance to the target list.                                    
     }
 
     constructor Create(const aListOwner: TJwSecurityAccessControlList;
@@ -1298,6 +1330,16 @@ type
     @param ownSID defines whether the SID given in parameter aSID should be freed automatically.
             If this SID is a well known SID from unit JwsclKnownSid this parameter is ignored 
 
+    Remarks
+      The given SID in parameter aSID<b> must not</b> be already assigned to another
+      access control instance if both - this and the other instance - have the boolean
+      parameter ownSID (or its property OwnSid) set to true. In this case the first
+      ACE instance may destroy the used SID instance and which has an effect on the
+      second ACE instance that runs with an invalid SID instance.
+      
+      If you want to copy (even with changed values) an instance, use the copy
+      constructor instead. If you also want to set the aListOwner parameter, simply
+      add the new instance to the target list.                                    
 
     }
     constructor Create(
@@ -1316,7 +1358,7 @@ type
 
     @param aACE retrieves an existing positive ACE. It cannot be nil 
     raises
- EJwsclNILParameterException:  if aACE is nil 
+     EJwsclNILParameterException:  if aACE is nil
     }
     constructor Create(AccessEntry: TJwDiscretionaryAccessControlEntryDeny); overload;
 
@@ -1343,7 +1385,7 @@ type
   end;
 
 
-  {@Name defines a callback deny access control element.
+  {<B>TJwDiscretionaryAccessControlEntryCallbackDeny</B> defines a callback deny access control element.
    Every time a function that scans an ACL with a callback element generates
    a callback event which decides whether this ACE can be used in the
    process.
@@ -1353,12 +1395,12 @@ type
     class(TJwDiscretionaryAccessControlEntryDeny)
   end;
 
-  {@Name defines a deny access control element with object properties.
+  {<B>TJwDiscretionaryAccessControlEntryObjectDeny</B> defines a deny access control element with object properties.
    Object ACEs uses the following properties
-   @unorderedlist(
-    @item(ObjectFlags)
-    @item(ObjectType)
-    @item(InheritedObjectType)
+
+    * ObjectFlags
+    * ObjectType
+    * InheritedObjectType
    )
   }
   TJwDiscretionaryAccessControlEntryObjectDeny =
@@ -1366,17 +1408,17 @@ type
   end;
 
 
-  {@Name defines a callback deny access control element with object properties.
+  {<B>TJwDiscretionaryAccessControlEntryCallbackObjectDeny</B> defines a callback deny access control element with object properties.
    Every time a function that scans an ACL with a callback element generates
    a callback event which decides whether this ACE can be used in the
    process.
    Callback elements are used in unit JwsclAuthCtx method TJwAuthContext.AccessCheck.
 
    Object ACEs uses the following properties
-   @unorderedlist(
-    @item(ObjectFlags)
-    @item(ObjectType)
-    @item(InheritedObjectType)
+
+    * ObjectFlags
+    * ObjectType
+    * InheritedObjectType
    )
 
    For some Windows internal reasons this type of ACE is ignored in
@@ -1498,7 +1540,7 @@ type
     //  property Flags: TJwAceFlags read fFlagsIgnored;
   end;
 
-  {@Name defines a callback audit access control element.
+  {<B>TJwAuditAccessControlEntryCallback</B> defines a callback audit access control element.
    Every time a function that scans an ACL with a callback element generates
    a callback event which decides whether this ACE can be used in the
    process.
@@ -1510,30 +1552,28 @@ type
 
 
 
-  {@Name defines a audit access control element with object properties.
+  {<B>TJwAuditAccessControlEntryObject</B> defines a audit access control element with object properties.
    Object ACEs uses the following properties
-   @unorderedlist(
-    @item(ObjectFlags)
-    @item(ObjectType)
-    @item(InheritedObjectType)
+
+    * ObjectFlags
+    * ObjectType
+    * InheritedObjectType
    )
   }
   TJwAuditAccessControlEntryObject =
     class(TJwAuditAccessControlEntry)
   end;
 
-  {@Name defines a callback audit access control element with object properties.
+  {<B>TJwAuditAccessControlEntryCallbackObject</B> defines a callback audit access control element with object properties.
    Every time a function that scans an ACL with a callback element generates
    a callback event which decides whether this ACE can be used in the
    process.
    Callback elements are used in unit JwsclAuthCtx method TJwAuthContext.AccessCheck.
 
    Object ACEs uses the following properties
-   @unorderedlist(
-    @item(ObjectFlags)
-    @item(ObjectType)
-    @item(InheritedObjectType)
-   )
+    * ObjectFlags
+    * ObjectType
+    * InheritedObjectType
 
    For some Windows internal reasons this type of ACE is ignored in
    TJwAuthContext.AccessCheck .

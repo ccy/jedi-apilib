@@ -104,6 +104,18 @@ type
 
     function GetReturnValue : Integer;
 
+    {<B>WaitWithTimeOut</B> waits for the thread to finish or
+     until a timeout occurs.
+    @param TimeOut Define a timeout. If the value is 0 or INFINITE
+      the function behaves like WaitFor.
+    @param MsgLoop Defines whether the method supports window messages
+      to avoid a GUI dead lock.
+    @return Returns WAIT_TIMEOUT if a timeout occured or zero (0) if the thread finished.
+
+    Remarks
+      The method does not support waiting with message loop support in the case
+       when parameter MsgLoop is true and the current thread is not the main thread.
+     }
     function WaitWithTimeOut(const TimeOut: DWORD;
       const MsgLoop : Boolean = true) : LongWord;
 
@@ -116,6 +128,14 @@ type
 
   end;
 
+  {<B>TJwIntTupleList</B> defines an integer tuple list.
+  Despite its name the list manages index with pointers (integer,pointer).
+
+  todo
+    make this bijective
+      index <-> pointer
+
+  } 
   TJwIntTupleList = class
   private
     procedure Delete(Index: DWORD);
@@ -394,6 +414,8 @@ procedure JwRaiseOnClassTypeMisMatch(const Instance : TObject;
   const MethodName, ClassName, FileName : TJwString);
 
 {$IFDEF JW_TYPEINFO}
+{<B>GetUnitName</B> returns the name of unit where the given objects was defined in source code.
+}
 function GetUnitName(argObject: TObject): AnsiString;
 {$ENDIF JW_TYPEINFO}
 
@@ -420,19 +442,43 @@ function JwGetThreadName : WideString;
 {<B>IsHandleValid</B> returns true if Handle is neither zero (0) nor INVALID_HANDLE_VALUE; otherwise false.}
 function JwIsHandleValid(const Handle : THandle) : Boolean;
 
-{<B>JwCheckBitMask</B> Checks if Bitmask and Check = Check}
+{<B>JwCheckBitMask</B> Checks if (Bitmask and Check) = Check}
 function JwCheckBitMask(const Bitmask: Integer; const Check: Integer): Boolean; 
 
 {<B>JwMsgWaitForMultipleObjects</B> encapsulates MsgWaitForMultipleObjects using an open array
-parameter.}
+parameter. The function should be used to make sure that window messages are processed. In this way
+windows are responsible. This function returns if such a message is received.
+
+@param Handles This parameter receives an array of Handles. You can be either create an array type of THandle
+  or use set operators "[" and "]" containing a comma separated list of handle variables.
+@param bWaitAll Set to true to let the function wait for all given handles until it returns; otherwise it returns
+  as soon as at least one handle state is signaled.
+@param dwMilliseconds Defines a timeout interval that exits the function when elapsed. Set to constant INFINITE (-1) 
+  to ignore timeouts.
+@param dwWakeMask See MsgWaitForMultipleObjects (http://msdn.microsoft.com/en-us/library/ms684242.aspx) in MSDN for more information.
+
+@return Returns a status code. See MsgWaitForMultipleObjects (http://msdn.microsoft.com/en-us/library/ms684242.aspx) in MSDN for more information.
+}
 function JwMsgWaitForMultipleObjects(const Handles: array of THandle; bWaitAll: LongBool;
            dwMilliseconds: DWord; dwWakeMask: DWord): DWord;
 
+{<B>JwWaitForMultipleObjects</B> encapsulates WaitForMultipleObjects using an open array
+parameter.
+
+@param Handles This parameter receives an array of Handles. You can be either create an array type of THandle
+  or use set operators "[" and "]" containing a comma separated list of handle variables.
+@param bWaitAll Set to true to let the function wait for all given handles until it returns; otherwise it returns
+  as soon as at least one handle state is signaled.
+@param dwMilliseconds Defines a timeout interval that exits the function when elapsed. Set to constant INFINITE (-1) 
+  to ignore timeouts.
+
+@return Returns a status code. See WaitForMultipleObjects (http://msdn.microsoft.com/en-us/library/aa931008.aspx) in MSDN for more information.
+}
 function JwWaitForMultipleObjects(const Handles: array of THandle; bWaitAll: LongBool;
            dwMilliseconds: DWord): DWord;
 
 
-{<B>JwCreateWaitableTimer</B> creates a waitable time handle.
+{<B>JwCreateWaitableTimer</B> creates a waitable timer handle.
 
 @param TimeOut defines a signal interval in miliseconds (1sec = 1000msec)
 @param SecurityAttributes defines security attributes for the timer. The class type
@@ -448,12 +494,13 @@ function JwCreateWaitableTimer(
       const TimeOut: DWORD;
       const SecurityAttributes : TObject = nil) : THandle; overload;
 
+{<B>JwCreateWaitableTimerAbs</B> is not implemented yet.}
 function JwCreateWaitableTimerAbs(
       const DateTime : TDateTime;
       const SecurityAttributes : TObject = nil) : THandle; overload;
 
 
-{<B>JwCreateWaitableTimer</B> creates a waitable time handle.
+{<B>JwCreateWaitableTimer</B> creates a waitable timer handle.
 
 For more information about the undocumented parameters, see MSDN
   http://msdn.microsoft.com/en-us/library/ms686289(VS.85).aspx
@@ -483,6 +530,9 @@ function JwCreateWaitableTimer(
       const SuspendResume : Boolean = false;
       const SecurityAttributes : TObject = nil) : THandle; overload;
 
+{<B>JwCreateWaitableTimerAbs</B> is not implemented yet.
+It is intended to support absolute time.
+}
 function JwCreateWaitableTimerAbs(
       const DateTime : TDateTime;
       const ManualReset : Boolean;
@@ -494,14 +544,81 @@ function JwCreateWaitableTimerAbs(
       const SecurityAttributes : TObject = nil) : THandle; overload;
 
 
+{<B>JwCompareFileHash</B> creates a hash from a given file and compares it to
+an already calculated hash.
+
+@param FilePath Defines a path to a file that is used to calculate a hash.
+@param OriginalHash Defines a hash that is compared to the hash of the file.
+@return Returns true if the hash of file and the given one is identical; otherwise false. If
+  the parameter OriginalHash has a nil pointer the return value is also false.
+
+raise
+  EJwsclFileMappingException see TJwFileStreamEx.Create for more information.
+  EJwsclSecurityException There can be other exceptions raised by TJwHash.Create, TJwHash.HashData
+    and TJwHash.RetrieveHash.
+  
+remarks
+  * This function uses TJwFileStreamEx for getting hash in the fastest way possible.
+  * This function uses SHA hashing.
+  
+}
 function JwCompareFileHash(const FilePath : WideString;
   const OriginalHash : TJwFileHashData) : Boolean;
+  
+{<B>JwCreateFileHash</B> creates a hash from a given file and returns 
+the hash. 
+
+@param FilePath Defines a path to a file that is used to calculate a hash.
+@return The return value is a record that holds the hash data. The returned pointer member "hash" in
+TJwFileHashData must be freed by TJwHash.FreeBuffer (unit JwsclCryptProvider.pas).
+
+raise
+  EJwsclFileMappingException see TJwFileStreamEx.Create for more information.
+  EJwsclSecurityException There can be other exceptions raised by TJwHash.Create, TJwHash.HashData
+    and TJwHash.RetrieveHash.
+	
+remarks
+  * This function uses TJwFileStreamEx for getting hash in the fastest way possible.
+  * This function uses SHA hashing.
+
+}
 function JwCreateFileHash(const FilePath : WideString) : TJwFileHashData;
 
+{<B>JwSaveHashToRegistry</B> saves a hash record (TJwFileHashData) to registry.
+
+@param Hive Defines a registry hive like HKEY_LOCAL_MACHINE.
+@param Key Defines a registry path to a key like "Software\JEDI".
+@param HashName Defines the registry value name that receives the hash data.
+@param SizeName Defines the registry value name that receives the size of hash data.
+@param FileHashData receives the hashdata.
+
+raise
+  Exception This procedure may raise exception coming from TRegistry methods.
+
+}
 procedure JwSaveHashToRegistry(const Hive: Cardinal;
    const Key, HashName, SizeName : String;
    const FileHashData : TJwFileHashData);
 
+{<B>JwLoadHashFromRegistry</B> loads a hash record (TJwFileHashData) to registry
+previously saved by JwSaveHashToRegistry.
+
+@param Hive Defines a registry hive like HKEY_LOCAL_MACHINE.
+@param Key Defines a registry path to a key like "Software\JEDI".
+@param HashName Defines the registry value name that receives the hash data.
+@param SizeName Defines the registry value name that receives the size of hash data.
+@return The return value is a record that holds the hash data. The returned pointer member "hash" in
+TJwFileHashData must be freed by TJwHash.FreeBuffer (unit JwsclCryptProvider.pas).
+
+raise
+  Exception This procedure may raise exception coming from TRegistry methods.
+  
+remarks
+  The procedure has some characteristics :
+  * It does not check for a correct hash value. However the key type of "HashName" must be binary though.
+  * It only returns a valid structure if the value from key "SizeName" is between 1 than 1023 bytes (1 <= SizeName <= 1023)
+
+}
 function JwLoadHashFromRegistry(const Hive: Cardinal;
    const Key, HashName, SizeName : String) : TJwFileHashData;
 
@@ -515,12 +632,6 @@ uses SysUtils, Registry, JwsclToken, JwsclKnownSid, JwsclDescriptor, JwsclAcl,
 
 
 
-{Compares the internal hash of the credentials app
-with the new one.
-Returns false if the hash is not equal.
-}
-//CredentialsHash
-//CredentialsAppPath
 function JwCompareFileHash(
   const FilePath : WideString;
   const OriginalHash : TJwFileHashData) : Boolean;
@@ -591,20 +702,28 @@ function JwLoadHashFromRegistry(const Hive: Cardinal;
 var
   Reg: TRegistry;
 begin
+  result.Size := 0;
+  result.Hash := nil;
+  
   try
-    Reg := TRegistry.Create(KEY_ALL_ACCESS);// KEY_QUERY_VALUE or KEY_READ);
+    Reg := TRegistry.Create(KEY_QUERY_VALUE or KEY_READ);
     try
       Reg.RootKey := Hive;
       if Reg.OpenKey(Key, false)
-        and Reg.ValueExists(SizeName)
-        and Reg.ValueExists(HashName)
+	   //don't check for these value since we need an exception to notify the caller 
+       { and Reg.ValueExists(SizeName)
+        and Reg.ValueExists(HashName)}
         then
       try
         result.Size := Reg.ReadInteger(SizeName);
         if (result.Size > 0) and (result.Size < 1024) then
         begin
-          GetMem(result.Hash, result.Size+2);
-          ZeroMemory(result.Hash, result.Size+2);
+		  // TJwHash uses GetMem; the returned record 
+		  // TJwFileHashData is freed by TJwHash.FreeBuffer
+		  // Change this memory manager when TJwHash is changed.
+          GetMem(result.Hash, result.Size);
+		  
+          ZeroMemory(result.Hash, result.Size);
           try
             result.Size := Reg.ReadBinaryData(HashName,result.Hash^,result.Size);
           except

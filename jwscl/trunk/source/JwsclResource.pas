@@ -83,9 +83,9 @@ const
   RsACLClassNewAclNotEnoughMemory = 'Not enough memory to allocate memory for a new acl.';
   RsACLClassAddXAccessAceFailed = 'Call to AddXXXXXAccessAce failed in Item Index: %0:d';
   RsACLClassUnknownAccessAce = 'An unknown and unsupported item class %0:s was found for item index: %0:d';
-  RsACLClassAceAlreadyInList = 'AccessControlEntry already in a list';
-  RsACLClassInvalidAceInDacl = 'An discretionary access control list can onl' +
-    'y list discretionary access control entries. (found %s)';
+  RsACLClassAceAlreadyInList = 'AccessControlEntry is already in the list. You cannot add the same instance twice to the list. Make a copy first using copy constructor.';
+  RsACLClassInvalidAceInDacl = 'A discretionary access control list can onl' +
+    'y list discretionary access control entries. (but found %0:s)';
   RsACLRevisionMisMatch = 'An ACE with an higher revision number (%0:d) was tried to add to an ACL with a lower version (%0:d).';
   RsACLClassInvaldAceInSacl = 'An system access control list can only list a' +
     'uditing access control entries.';

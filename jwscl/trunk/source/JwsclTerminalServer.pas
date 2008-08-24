@@ -433,7 +433,9 @@ type
     @param OnProcessFound defines the callback method. Can be nil
     @param Data defines user defined data to be delivered to the callback method
 
-    @raise EJwsclEnumerateProcessFailed will be raised if an call to the terminal service failed.
+
+    raises
+     EJwsclEnumerateProcessFailed will be raised if an call to the terminal service failed.
 
     }
     function EnumerateProcesses(const OnProcessFound : TJwOnProcessFound;
@@ -490,7 +492,8 @@ type
 	
     <B>Check for a nil property value Processes</B>
 
-    @raise EJwsclEnumerateProcessFailed will be raised if an call to the terminal service failed.
+    raises
+      EJwsclEnumerateProcessFailed will be raised if an call to the terminal service failed.
     }
     procedure EnumerateProcessesEx;overload;
 
@@ -501,7 +504,9 @@ type
 
     @param OnProcessFound defines the callback method. Can be nil
     @param Data defines user defined data to be delivered to the callback method
-    @raise EJwsclEnumerateProcessFailed will be raised if an call to the terminal service failed.
+
+    raises
+      EJwsclEnumerateProcessFailed will be raised if an call to the terminal service failed.
 
     }
     procedure EnumerateProcessesEx(const OnProcessFound : TJwOnProcessFound;

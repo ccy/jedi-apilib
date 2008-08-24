@@ -82,7 +82,7 @@ type
     procedure DeleteFromWinFirewall(ApplicationFilename: AnsiString); virtual;
 
     {<B>AddTcpPortToFirewall</B> Adds a rule for a single tcp port to the firewall.
-     @param ProtocollName defines the name of the protocol
+     @param ProtocollName gives a description of the opened port (e.g. "FTP-Server") 
      @param ProtocollPort defines the port of the protocol
      @param SubnetOnly defines if the rule affects only the pc's subnet or not
      @param PortRemoteAddresses defines which Remoteadress and port should be allowed
@@ -92,7 +92,7 @@ type
       const PortRemoteAddresses: AnsiString = '*'); virtual;
 
     {<B>AddUpdPortToFirewall</B> Adds a rule for a single udp port to the firewall.
-     @param ProtocollName defines the name of the protocol
+     @param ProtocollName gives a description of the opened port (e.g. "FTP-Server")
      @param ProtocollPort defines the port of the protocol
      @param SubnetOnly defines if the rule affects only the pc's subnet or not
      @param PortRemoteAddresses defines which Remoteadress and port should be allowed
@@ -162,13 +162,6 @@ begin
   FProfile := nil;
 end;
 
-{-------------------------------------------------------------------------------
-  Procedure: TJwsclFirewall.SetFirewallState
-  Author:    heiko.adams
-  DateTime:  2008.07.04
-  Arguments: Value: Boolean
-  Result:    None
--------------------------------------------------------------------------------}
 procedure TJwsclFirewall.SetFirewallState(Value: Boolean);
 begin
   try
@@ -183,13 +176,7 @@ begin
   end;
 end;
 
-{-------------------------------------------------------------------------------
-  Function:  TJwsclFirewall.GetFirewallState
-  Author:    heiko.adams
-  DateTime:  2008.07.04
-  Arguments:
-  Result:    Boolean
--------------------------------------------------------------------------------}
+
 function TJwsclFirewall.GetFirewallState(): Boolean;
 begin
   try
@@ -204,13 +191,7 @@ begin
   end;
 end;
 
-{-------------------------------------------------------------------------------
-  Function:  TJwsclFirewall.GetExceptionsAllowed
-  Author:    heiko.adams
-  DateTime:  2008.07.04
-  Arguments:
-  Result:    Boolean
--------------------------------------------------------------------------------}
+
 function TJwsclFirewall.GetExceptionsAllowed(): Boolean;
 begin
   try
@@ -225,13 +206,7 @@ begin
   end;
 end;
 
-{-------------------------------------------------------------------------------
-  Procedure: TJwsclFirewall.SetExceptionsAllowed
-  Author:    heiko.adams
-  DateTime:  2008.07.04
-  Arguments: Value: Boolean
-  Result:    None
--------------------------------------------------------------------------------}
+
 procedure TJwsclFirewall.SetExceptionsAllowed(Value: Boolean);
 begin
   try
@@ -246,13 +221,7 @@ begin
   end;
 end;
 
-{-------------------------------------------------------------------------------
-  Function:  TJwsclFirewall.GetIncommingPingAllowed
-  Author:    heiko.adams
-  DateTime:  2008.07.04
-  Arguments: None
-  Result:    Boolean
--------------------------------------------------------------------------------}
+
 function TJwsclFirewall.GetIncommingPingAllowed: Boolean;
 begin
   try
@@ -267,13 +236,7 @@ begin
   end;
 end;
 
-{-------------------------------------------------------------------------------
-  Procedure: TJwsclFirewall.SetIncommingPingAllowed
-  Author:    heiko.adams
-  DateTime:  2008.07.04
-  Arguments: Value: Boolean
-  Result:    None
--------------------------------------------------------------------------------}
+
 procedure TJwsclFirewall.SetIncommingPingAllowed(Value: Boolean);
 begin
   try
@@ -288,13 +251,7 @@ begin
   end;
 end;
 
-{-------------------------------------------------------------------------------
-  Function:  TJwsclFirewall.GetRemoteAdminAllowed
-  Author:    heiko.adams
-  DateTime:  2008.07.04
-  Arguments:
-  Result:    Boolean
--------------------------------------------------------------------------------}
+
 function TJwsclFirewall.GetRemoteAdminAllowed(): Boolean;
 var
   RASettings: INetFwRemoteAdminSettings;
@@ -312,13 +269,7 @@ begin
   end;
 end;
 
-{-------------------------------------------------------------------------------
-  Procedure: TJwsclFirewall.SetRemoteAdminAllowed
-  Author:    heiko.adams
-  DateTime:  2008.07.04
-  Arguments: Value: Boolean
-  Result:    None
--------------------------------------------------------------------------------}
+
 procedure TJwsclFirewall.SetRemoteAdminAllowed(Value: Boolean);
 var
   RASettings: INetFwRemoteAdminSettings;
@@ -336,13 +287,7 @@ begin
   end;
 end;
 
-{-------------------------------------------------------------------------------
-  Function:  TJwsclFirewall.GetRemoteAdminAdress
-  Author:    heiko.adams
-  DateTime:  2008.07.04
-  Arguments:
-  Result:    AnsiString
--------------------------------------------------------------------------------}
+
 function TJwsclFirewall.GetRemoteAdminAdress(): AnsiString;
 var
   RASettings: INetFwRemoteAdminSettings;
@@ -360,13 +305,7 @@ begin
   end;
 end;
 
-{-------------------------------------------------------------------------------
-  Procedure: TJwsclFirewall.SetRemoteAdminAdress
-  Author:    heiko.adams
-  DateTime:  2008.07.04
-  Arguments: Value: AnsiString
-  Result:    None
--------------------------------------------------------------------------------}
+
 procedure TJwsclFirewall.SetRemoteAdminAdress(Value: AnsiString);
 var
   RASettings: INetFwRemoteAdminSettings;
@@ -384,13 +323,7 @@ begin
   end;
 end;
 
-{-------------------------------------------------------------------------------
-  Procedure: TJwsclFirewall.AddToWinFirewall
-  Author:    heiko.adams
-  DateTime:  2008.07.17
-  Arguments: ApplicationFilename, NameOnExeptionlist: AnsiString; Enabled: Boolean
-  Result:    None
--------------------------------------------------------------------------------}
+
 procedure TJwsclFirewall.AddToWinFirewall(ApplicationFilename,
   NameOnExeptionlist: AnsiString; EnableRule: Boolean);
 var
@@ -431,13 +364,7 @@ begin
   end;
 end;
 
-{-------------------------------------------------------------------------------
-  Procedure: TJwsclFirewall.AddTcpPortToFirewall
-  Author:    heiko.adams
-  DateTime:  2008.07.04
-  Arguments: ProtocollName: AnsiString; ProtocollPort: Integer; const SubnetOnly: Boolean = False; const PortRemoteAddresses: AnsiString = '*'
-  Result:    None
--------------------------------------------------------------------------------}
+
 procedure TJwsclFirewall.AddTcpPortToFirewall(ProtocollName: AnsiString;
   ProtocollPort: Integer; const SubnetOnly: Boolean = False;
   const PortRemoteAddresses: AnsiString = '*');
@@ -485,13 +412,7 @@ begin
   end;
 end;
 
-{-------------------------------------------------------------------------------
-  Procedure: TJwsclFirewall.AddUpdPortToFirewall
-  Author:    heiko.adams
-  DateTime:  2008.07.04
-  Arguments: ProtocollName: AnsiString; ProtocollPort: Integer; const SubnetOnly: Boolean = False; const PortRemoteAddresses: AnsiString = '*'
-  Result:    None
--------------------------------------------------------------------------------}
+
 procedure TJwsclFirewall.AddUpdPortToFirewall(ProtocollName: AnsiString;
   ProtocollPort: Integer; const SubnetOnly: Boolean = False;
   const PortRemoteAddresses: AnsiString = '*');
@@ -539,13 +460,7 @@ begin
   end;
 end;
 
-{-------------------------------------------------------------------------------
-  Procedure: TJwsclFirewall.DeleteFromWinFirewall
-  Author:    heiko.adams
-  DateTime:  2008.07.17
-  Arguments: ApplicationFilename: AnsiString
-  Result:    None
--------------------------------------------------------------------------------}
+
 procedure TJwsclFirewall.DeleteFromWinFirewall(ApplicationFilename: AnsiString);
 begin
 
@@ -563,13 +478,7 @@ begin
     end;
 end;
 
-{-------------------------------------------------------------------------------
-  Procedure: TJwsclFirewall.IsAppRulePresent
-  Author:    heiko.adams
-  DateTime:  2008.07.22
-  Arguments: ApplicationFilename: AnsiString
-  Result:    Boolean
--------------------------------------------------------------------------------}
+
 function TJwsclFirewall.IsAppRulePresent(ApplicationFilename: AnsiString): Boolean;
 var
   App: INetFwAuthorizedApplication;

@@ -1786,20 +1786,32 @@ function JwGetPrivilegesText(
   const DisplayPrivileges: array of AnsiString): TJwString;
   overload;
 
-{<B>JwIsMemberOfAdministratorsGroup</B> returns true if the user is a member of the administrator group.
-This does not mean that she has administrator rights (on Vista).
-@return Returns true if the user is a member of the administrators group; otherwise
-false.
+{<B>JwIsMemberOfAdministratorsGroup</B> checks if the user is a member of the Administrators group
+and this group is enabled for access checking. Therefore if this group has the flag use-for-deny-only
+the returned value is false. This usually happens if the user is an Administrator in Windows Vista with
+activated UAC.
+ 
+@return Returns true if the user is a member of the administrators group; otherwise false.
+
+Remarks
+This function uses the Windows API function CheckTokenMembership. 
+
+JwIsMemberOfAdministratorsGroup is equal to JwCheckAdministratorAccess.
+
 }
 function JwIsMemberOfAdministratorsGroup: boolean;
 
-{<B>JwCheckAdministratorAccess</B> checks if the user has administrative access to secured object.
-This function checks if an access to a secured object, which only
-users of the administration group have access, succeeds or fails.
-The advantage of this function is that it also can be used with restricted
-tokens, which are quite common since Windows XP and especially Vista.
+{<B>JwCheckAdministratorAccess</B> checks if the user is a member of the Administrators group
+and this group is enabled for access checking. Therefore if this group has the flag use-for-deny-only
+the returned value is false. This usually happens if the user is an Administrator in Windows Vista with
+activated UAC.
 
 @return Returns true if the user has administrative access; otherwise false.
+
+Remarks
+This function mimics the Windows API function CheckTokenMembership. 
+
+JwCheckAdministratorAccess is equal to JwIsMemberOfAdministratorsGroup.
 }
 function JwCheckAdministratorAccess: boolean;
 
@@ -1819,6 +1831,9 @@ function JwIsSystem : Boolean;
 @return
 Returns true if UAC is enabled; otherwise if the Windows version does not
 support UAC the return value is false.
+
+Remarks
+On Windows Systems that do not support UAC the return value is always false.
  }
 function JwIsUACEnabled: Boolean;
 
