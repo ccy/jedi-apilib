@@ -45,10 +45,17 @@ interface
 All Jwscl-exceptions use GetLastError to obtain the winapi error code.
 They also use these text messages to show information.
 However if resourcestring is used - implicitly LoadString is called
-which does use SetLastError(0); which results in last error code 0.
+which does use SetLastError(0); which always results in last error code 0.
 }
+{
+Use always an index based format string. That means that every placeholder
+(starts with percent character) must use a zero based index that defines
+where it is located in the value array of function Format. In this way
+a location can mix up the order of the used placeholders.
+}
+
+
 const
-// USM_Exception.pas
   RsExceptionMessage = 'Message : %0:s\r\n';
 
   RsExceptionNoProc  = '(no proc)';
@@ -74,6 +81,9 @@ const
   RsUnknownGetLastError = 'unknown GetLastError';
 
 // Unit Acl.pas  RsACLClass
+
+
+//
   RsACLClassNilACLPointer = 'ACL must not be nil. To create a deny only ACL use simply Create without an ACL.';
   RsACLClassInvalidACL    = 'Invalid ACL.';
   RsACLClassGetAceFailed  = 'Call to GetAce #%0:d failed.';
@@ -117,6 +127,8 @@ const
   RsRightSpecific = '[Specific]';
 
 //Unit  JwsclCredentials.pas
+
+//
   RsCredentialsLocalName = 'local';
   RsUNCredentialsInvalidParameters = 'One or more parameters of CredUIParseU' +
   'serName are invalid!';
@@ -143,7 +155,8 @@ const
 
 
 //Unit JwsclTypes.pas
-// (rom) does not work as resourcestring for Delphi 6
+
+//
    RsAttributeHumanString0  = 'unknown';
    RsAttributeHumanString1  = 'mandatory';
    RsAttributeHumanString2  = 'default';
@@ -177,6 +190,8 @@ const
    RsAceUnknown = 'Unknown ace';
 
 //Unit Jwscl_Descriptor.pas
+
+//
   RsSecurityDescriptorInvalidAttributesSize = 'Securityattributes has invali' +
     'd size';
   RsSecurityDescriptorInvalid = 'The security descriptor is invalid. ';
@@ -190,6 +205,8 @@ const
     'tream is invalid';
 
 //Unit Jwscl_SecurityDialogs.pas
+
+//
   RsSecurityDialogsInheritanceThisDefault = 'This object';
   RsSecurityDialogsInheritanceObjectContainerDefault = 'This object, inherited obj' +
     'ects and containers';
@@ -202,10 +219,14 @@ const
   RsSecurityDialogsInheritanceOnlyObjectDefault = 'Inherited objects';
 
 //Unit JwsclLSA.pas
+
+//
   RsLSALogonUserFailedSubStatus = 'Call to LsaLogonUser failed. SubStatus: %' +
     '0:d ';
 
 //Unit JwsclMapping.pas
+
+//
   RsStringOr = 'or';
   RsMappingNotAGenericMask = 'The specified AccessMask is not one of the gen' +
     'eric constants (GENERIC_READ, GENERIC_WRITE, GENERIC_EXECUTE, GENERIC_ALL' +
@@ -224,6 +245,8 @@ const
   RsMappingInvalid = 'The given generic map class is invalid.';
 
 //Unit JwsclSecureObjects.pas
+
+//
   RsSecureObjectsInvalidGroup = 'The group of the SecurityDescriptor must no' +
     't be nil. Use JwNullSID to remove influence of group to AccessCheck call.';
   RsSecureObjectsInvalidOwner = 'The owner of the SecurityDescriptor must no' +
@@ -278,7 +301,11 @@ const
     'if_DACL_SECURITY_INFORMATION] or [siSaclSecurityInformation]. ';
   RsSecureObjectsNotEnoughMemoryForThreadData = 'Not enough memory to alloca' +
     'te thread data.';
+
+
 //unit JwsclSid.pas
+
+//
   RsSidNotEnoughMemoryPSid = 'Not enough memory to allocate memory for a new' +
     ' sid.';
   RsSidInvalidAuthoritiesLength = 'Parameter Authorities must have length of' +
@@ -310,6 +337,8 @@ const
 
 
 //Unit JwsclToken.pas
+
+//
   RsPrivilegeEnabledByDefault = 'enabled by default';
   RsPrivilegeEnabled          = 'enabled';
   RsPrivilegeRemoved          = 'removed';
@@ -402,11 +431,15 @@ const
   RsProcessNotFound = 'The process "%0:s" could not be found.';  
 
 //Unit JwsclVersion.pas
+
+//
   RsVersionOrHigher = 'or higher';
   RsVersionUnsupportedVersion = 'Unsupported version "%0:s". Need "%1:s" %2:' +
     's';
 
 //Unit JwsclDesktop.pas
+
+//
   RsDesktopFailedGetHeapSize = 'GetSecurityDesktopHeapSize : Could not get d' +
     'esktops heap size from registry';
   RsDesktopFailedEnumDesktops = 'GetSecurityDesktops : Could not get desktop' +
@@ -426,44 +459,73 @@ const
   RsDesktopFailedOpenDesktop = 'Could not open to desktop "%0:s"';
 
 //Unit JwsclWinStation.pas
+
+//
   RsWinStationCreateFailed = 'Call to CreateWindowStation failed. Tried to c' +
     'reate "%s"';
   RsWinStationOpenFailed = 'Call to OpenWindowStation failed. Tried to open ' +
     '"%s"';
 
 //Unit JwsclUtils.pas
+
+//
   RsInvalidLocalPointer  = 'Given pointer was not created by JwLocalAllocMem.'; 
   RsInvalidGlobalPointer = 'Given pointer was not created by JwGlobalAllocMem.';
   RsInvalidClassType = 'The given class type %0:s is invalid. Should be %1:s or derivates.';
 
 //Unit JwsclEncryption.pas
+
+//
   RsCryptUnsupportedMemManager = 'The memorymanager Local or Global is not supported by this method.';
   RsCryptNotImplemented = 'This methd %0:s is not implemented yet.';
 
 //Unit JwsclSecurePrivateObjects.pas
+
+//
   RsPrivateSaclAccessDenied = 'The audit acl could not be retrieved because the access was denied. Privilege SE_SECURITY_NAME could not be activated.';
   RsPrivateInvalidOwnerOrGroup = 'The security descriptor of a private object cannot be changed because the owner or group of the private object and also its parents is nil. Every object must have its own owner and group.';
   RsPrivateInvalidParentDescriptor = 'The method cannot be used for objects that do not have a parent of do not support inheritance.';
 
 //Unit JwsclElevation.pas
+
+//
   RsElevationRegDeleteError = 'The key %0:s could not be deleted.';
   RsElevationRegCreateError = 'The key %0:s could not be created.';
 
 //Unit JwsclCryptProvider.pas
+
+//
   RsKeyedHashNeedsKey     = 'A valid key is needed to create a hash object with a keyed algorithm.';
   RsNonKeyedHash          = 'A non-keyed hash cannot be created with a key.';
 
 //Unit JwsclAuthCtx.pas
+
+//
   RsInvalidObjectTypeList = 'The given array of ObjectType is invalid around index %0:d. ';
 
 //Unit JwsclComUtils.pas
+
+//
   RsInvalidPointerType = 'The given pointer type is not applicable.';
   RsInvalidWrapHandle = 'The given handle cannot be auto with TJwAutoPointer. Handles must not be zero (0) or INVALID_HANDLE_VALE.';
 
 // Unit JwsclStreams.pas
+
+//
   RsStreamsDataOutOfBounds = 'Stream data out of bounds.';
 
+
+// Unit JwsclFirewall.pas
+
+//
+  RsFWInactive = 'Windows Firewall is inactive';
+  RsFWNoExceptionsAllowed = 'Windows Firewall does not allow exceptions';
+
+
+
 //General strings
+
+//
   RsBracketNil = '(nil)';
   RsWinCallFailedWithNTStatus = 'Call to %0:s failed. NTError: %1:d';
   RsWinCallFailed = 'Call to %0:s failed.';
@@ -497,14 +559,19 @@ const
 
 
 // jwsclProcess.pas
+
+//
   RsInvalidParameterIndex = 'The given index "%0:d" in parameter "%1:s" is out of range.';
   RsMissingEvent = 'The event "%0:s" needs to be assigned. It must not be nil.';
   RsInvalidJobObject = 'The returned job object is invalid and cannot be used to assign a job to.';
   RsEnumerateProcessesFailed = 'The enumeration of processes failed. ';
   RsInvalidStartupInfo = 'The given Startupinfo must be initialized!';
 
-const
 // Unit names - do not localize
+// use these constants in the source parameter of any JWSCL Exception.
+
+//
+const
   RsUNAccountControl     = 'JwsclAccountControl.pas';
   RsUNAcl                = 'JwsclAcl.pas.pas';
   RsUNAnsi_UniCode       = 'JwsclAnsi_Unicode.pas';
@@ -516,6 +583,7 @@ const
   RsUNDesktops           = 'JwsclDesktops.pas';
   RsUNElevation          = 'JwsclElevation.pas'; 
   RsUNExceptions         = 'JwsclExceptions.pas';
+  RsUNFirewall           = 'JwsclFirewall.pas';
   RsUNImpersonation      = 'JwsclImpersonation.pas';
   RsUNKnownSid           = 'JwsclKnownSid.pas';
   RsUNLSA                = 'JwsclLSA.pas';
@@ -539,10 +607,11 @@ const
 
   RsUNCryptProvider = 'JwsclCryptProvider.pas';
 
-{<B>GetResourceStringIdentifier</B> converts a delphi resourcestring into a resource identifier.
-Use ResourcestringName as parameter rs.
+{<B>GetResourceStringIdentifier</B> converts a Delphi resourcestring into a resource identifier.
+Use ResourcestringName as parameter rs (e.g. RsInvalidIndex).
 
-The function cannot fail for correct delphi resourcestring identifiers.
+The function cannot fail for correct delphi resourcestring identifiers otherwise
+the return value is undefined.
 }
 function GetResourceStringIdentifier(rs: PResStringRec) : Integer;
 

@@ -1,4 +1,4 @@
-﻿; This is a Doc-O-Matic version 6.2.0.1278 project file.
+﻿; This is a Doc-O-Matic version 6.4.2.1326 project file.
 ; This file is maintained by Doc-O-Matic, do not edit manually.
 
 [*Control*]
@@ -401,7 +401,7 @@ CValue_9=7872391
 
 [Configurations]
 Count=6
-Current=1
+Current=0
 Name0=Configuration 1
 Name1=Configuration 2
 Name2=Configuration 3
@@ -433,7 +433,7 @@ ContentFile=contents.html
 CSSFile=default.css
 CustomSearchFile=ftxtsearch.html
 FrameHeaderFile=header.html
-FramesetFile=frames.html
+FramesetFile=index.html
 IndexFile=idx.html
 JavaScriptFile=scripts.js
 LinkErrorFile=error.html
@@ -441,7 +441,7 @@ ReferenceFile=symref.html
 UseCSS=1
 UseJavaScript=1
 UsePopups=1
-WelcomeFile=index.html
+WelcomeFile=.noindex.html
 
 [Configurations\Configuration 1\{D3A588E0-9472-11D3-BDD1-0080C8BA053D}\Copy Source Files]
 File0=
@@ -9835,7 +9835,7 @@ Topic=topic
 
 [Configurations\Configuration 1\{D3A588E0-9472-11D3-BDD1-0080C8BA053D}\Frames]
 DHTMLFixedHeader=1
-FrameOption=0
+FrameOption=2
 
 [Configurations\Configuration 1\{D3A588E0-9472-11D3-BDD1-0080C8BA053D}\General]
 ClearDirectoryBeforeExport=1
@@ -9848,7 +9848,7 @@ HTMLFilenaming=0
 HTMLFileTemplate=
 InsertCustomHEADCode=0
 OutputDir=bin\html
-OutputOptions=14
+OutputOptions=10
 OutputTOCLevels=0
 PrintFlagsInIndex=0
 PrintFlagsInTOC=1
@@ -9919,7 +9919,7 @@ ContentTableColCount=3
 [Configurations\Configuration 1\{D3A588E0-9472-11D3-BDD1-0080C8BA053D}\Layout\Footer]
 FeedbackCode=%FBDESCRIPTION%\n<a href="#" onclick="sendFeedback('%AUTHOREMAIL%', '%FBSUBJECT%', 'Project: %PROJECTTITLE%%0ATopic ID: %TOPICID%%0ATitle: %TOPICTITLE%');">\n%FBLINKTEXT%\n</a>
 FeedbackShow=1
-InfoCode=%COPYRIGHT%<br/> This help is created by Doc-O-Matic which is sponsored by <a href="http://toolsfactory.com/">toolsfactory software inc.</a>
+InfoCode=%COPYRIGHT%<br/> This help was created by Doc-O-Matic which is sponsored by <a href="http://toolsfactory.com/">toolsfactory software inc.</a>
 InfoHTML=test
 InfoImage=dmlogo.png
 Kind=0
@@ -12424,10 +12424,11 @@ BodySourceUseAutolinking=0
 BodySourceUseSyntaxHighlight=0
 
 [Configurations\Configuration 1\Disabled Topics]
-Count=3
+Count=4
 ID0=Compilers.inc
 ID1=jedi.inc
 ID2=Jwscl.inc
+ID3=TJwAutoLock.fLeaveFlag
 
 [Configurations\Configuration 1\Enabled Topics]
 Count=2
@@ -12513,6 +12514,11 @@ Vars=1
 
 [Configurations\Configuration 1\Flags]
 Count=5
+FlagAttributeName0=
+FlagAttributeName1=
+FlagAttributeName2=
+FlagAttributeName3=
+FlagAttributeName4=
 FlagImage0=indicator_new
 FlagImage1=indicator_depreciated
 FlagImage2=indicator_beta
@@ -12528,6 +12534,16 @@ FlagName1=depreciated
 FlagName2=beta
 FlagName3=preliminary
 FlagName4=CFW
+FlagSuppressOutput0=0
+FlagSuppressOutput1=0
+FlagSuppressOutput2=0
+FlagSuppressOutput3=0
+FlagSuppressOutput4=0
+FlagUseAsAttribute0=0
+FlagUseAsAttribute1=0
+FlagUseAsAttribute2=0
+FlagUseAsAttribute3=0
+FlagUseAsAttribute4=0
 FlagUseAsIndicator0=1
 FlagUseAsIndicator1=1
 FlagUseAsIndicator2=1
@@ -22967,7 +22983,7 @@ HTMLFilenaming=0
 HTMLFileTemplate=
 InsertCustomHEADCode=0
 OutputDir=bin\chm
-OutputOptions=7
+OutputOptions=6
 OutputTOCLevels=0
 PrintFlagsInIndex=0
 PrintFlagsInTOC=1
@@ -23038,7 +23054,7 @@ ContentTableColCount=3
 [Configurations\Configuration 2\{D3A588E0-9472-11D3-BDD1-0080C8BA053D}\Layout\Footer]
 FeedbackCode=%FBDESCRIPTION%\n<a href="#" onclick="sendFeedback('%AUTHOREMAIL%', '%FBSUBJECT%', 'Project: %PROJECTTITLE%%0ATopic ID: %TOPICID%%0ATitle: %TOPICTITLE%');">\n%FBLINKTEXT%\n</a>
 FeedbackShow=1
-InfoCode=%COPYRIGHT%<br/> This help is created by Doc-O-Matic which is sponsored by <a href="http://toolsfactory.com/">toolsfactory software inc.</a>
+InfoCode=%COPYRIGHT%<br/> This help was created by Doc-O-Matic which is sponsored by <a href="http://toolsfactory.com/">toolsfactory software inc.</a>
 InfoHTML=
 InfoImage=dmlogo.png
 Kind=0
@@ -25543,10 +25559,11 @@ BodySourceUseAutolinking=0
 BodySourceUseSyntaxHighlight=0
 
 [Configurations\Configuration 2\Disabled Topics]
-Count=3
+Count=4
 ID0=Compilers.inc
 ID1=jedi.inc
 ID2=Jwscl.inc
+ID3=TJwAutoLock.fLeaveFlag
 
 [Configurations\Configuration 2\Enabled Topics]
 Count=2
@@ -25632,6 +25649,11 @@ Vars=1
 
 [Configurations\Configuration 2\Flags]
 Count=5
+FlagAttributeName0=
+FlagAttributeName1=
+FlagAttributeName2=
+FlagAttributeName3=
+FlagAttributeName4=
 FlagImage0=indicator_new
 FlagImage1=indicator_depreciated
 FlagImage2=indicator_beta
@@ -25647,6 +25669,16 @@ FlagName1=depreciated
 FlagName2=beta
 FlagName3=preliminary
 FlagName4=CFW
+FlagSuppressOutput0=0
+FlagSuppressOutput1=0
+FlagSuppressOutput2=0
+FlagSuppressOutput3=0
+FlagSuppressOutput4=0
+FlagUseAsAttribute0=0
+FlagUseAsAttribute1=0
+FlagUseAsAttribute2=0
+FlagUseAsAttribute3=0
+FlagUseAsAttribute4=0
 FlagUseAsIndicator0=1
 FlagUseAsIndicator1=1
 FlagUseAsIndicator2=1
@@ -36076,7 +36108,7 @@ DHTMLFixedHeader=1
 FrameOption=0
 
 [Configurations\Configuration 3\{D3A588E0-9472-11D3-BDD1-0080C8BA053D}\General]
-ClearDirectoryBeforeExport=0
+ClearDirectoryBeforeExport=1
 CustomHEADCode=
 ExpandTOCLevels=1
 GenerateHEADContent=1
@@ -36085,8 +36117,8 @@ HTMLFileExtension=.html
 HTMLFilenaming=0
 HTMLFileTemplate=
 InsertCustomHEADCode=0
-OutputDir=$(USRDOCSOUTPUT)
-OutputOptions=7
+OutputDir=bin\xhs
+OutputOptions=6
 OutputTOCLevels=0
 PrintFlagsInIndex=0
 PrintFlagsInTOC=1
@@ -36157,7 +36189,7 @@ ContentTableColCount=3
 [Configurations\Configuration 3\{D3A588E0-9472-11D3-BDD1-0080C8BA053D}\Layout\Footer]
 FeedbackCode=%FBDESCRIPTION%\n<a href="#" onclick="sendFeedback('%AUTHOREMAIL%', '%FBSUBJECT%', 'Project: %PROJECTTITLE%%0ATopic ID: %TOPICID%%0ATitle: %TOPICTITLE%');">\n%FBLINKTEXT%\n</a>
 FeedbackShow=1
-InfoCode=%COPYRIGHT%<br/> This help is created by Doc-O-Matic which is sponsored by <a href="http://toolsfactory.com/">toolsfactory software inc.</a>
+InfoCode=%COPYRIGHT%<br/> This help was created by Doc-O-Matic which is sponsored by <a href="http://toolsfactory.com/">toolsfactory software inc.</a>
 InfoHTML=
 InfoImage=dmlogo.png
 Kind=0
@@ -38662,10 +38694,11 @@ BodySourceUseAutolinking=0
 BodySourceUseSyntaxHighlight=0
 
 [Configurations\Configuration 3\Disabled Topics]
-Count=3
+Count=4
 ID0=Compilers.inc
 ID1=jedi.inc
 ID2=Jwscl.inc
+ID3=TJwAutoLock.fLeaveFlag
 
 [Configurations\Configuration 3\Enabled Topics]
 Count=2
@@ -38751,6 +38784,11 @@ Vars=1
 
 [Configurations\Configuration 3\Flags]
 Count=5
+FlagAttributeName0=
+FlagAttributeName1=
+FlagAttributeName2=
+FlagAttributeName3=
+FlagAttributeName4=
 FlagImage0=indicator_new
 FlagImage1=indicator_depreciated
 FlagImage2=indicator_beta
@@ -38766,6 +38804,16 @@ FlagName1=depreciated
 FlagName2=beta
 FlagName3=preliminary
 FlagName4=CFW
+FlagSuppressOutput0=0
+FlagSuppressOutput1=0
+FlagSuppressOutput2=0
+FlagSuppressOutput3=0
+FlagSuppressOutput4=0
+FlagUseAsAttribute0=0
+FlagUseAsAttribute1=0
+FlagUseAsAttribute2=0
+FlagUseAsAttribute3=0
+FlagUseAsAttribute4=0
 FlagUseAsIndicator0=1
 FlagUseAsIndicator1=1
 FlagUseAsIndicator2=1
@@ -39776,7 +39824,7 @@ FooterString1=
 FooterString2=%COPYRIGHT%
 FooterString3=%P%
 FooterString4=
-FooterString5=This help is created by Doc-O-Matic which is sponsored by toolsfactory software inc.
+FooterString5=This help was created by Doc-O-Matic which is sponsored by toolsfactory software inc.
 FooterString6=
 FooterStringColumnCount=3
 FooterStringRowCount=2
@@ -48703,10 +48751,11 @@ BodySourceUseAutolinking=0
 BodySourceUseSyntaxHighlight=0
 
 [Configurations\Configuration 4\Disabled Topics]
-Count=3
+Count=4
 ID0=Compilers.inc
 ID1=jedi.inc
 ID2=Jwscl.inc
+ID3=TJwAutoLock.fLeaveFlag
 
 [Configurations\Configuration 4\Enabled Topics]
 Count=2
@@ -48792,6 +48841,11 @@ Vars=1
 
 [Configurations\Configuration 4\Flags]
 Count=5
+FlagAttributeName0=
+FlagAttributeName1=
+FlagAttributeName2=
+FlagAttributeName3=
+FlagAttributeName4=
 FlagImage0=indicator_new
 FlagImage1=indicator_depreciated
 FlagImage2=indicator_beta
@@ -48807,6 +48861,16 @@ FlagName1=depreciated
 FlagName2=beta
 FlagName3=preliminary
 FlagName4=CFW
+FlagSuppressOutput0=0
+FlagSuppressOutput1=0
+FlagSuppressOutput2=0
+FlagSuppressOutput3=0
+FlagSuppressOutput4=0
+FlagUseAsAttribute0=0
+FlagUseAsAttribute1=0
+FlagUseAsAttribute2=0
+FlagUseAsAttribute3=0
+FlagUseAsAttribute4=0
 FlagUseAsIndicator0=1
 FlagUseAsIndicator1=1
 FlagUseAsIndicator2=1
@@ -53624,10 +53688,11 @@ BodySourceUseAutolinking=0
 BodySourceUseSyntaxHighlight=0
 
 [Configurations\Configuration 5\Disabled Topics]
-Count=3
+Count=4
 ID0=Compilers.inc
 ID1=jedi.inc
 ID2=Jwscl.inc
+ID3=TJwAutoLock.fLeaveFlag
 
 [Configurations\Configuration 5\Enabled Topics]
 Count=2
@@ -53713,6 +53778,11 @@ Vars=1
 
 [Configurations\Configuration 5\Flags]
 Count=5
+FlagAttributeName0=
+FlagAttributeName1=
+FlagAttributeName2=
+FlagAttributeName3=
+FlagAttributeName4=
 FlagImage0=indicator_new
 FlagImage1=indicator_depreciated
 FlagImage2=indicator_beta
@@ -53728,6 +53798,16 @@ FlagName1=depreciated
 FlagName2=beta
 FlagName3=preliminary
 FlagName4=CFW
+FlagSuppressOutput0=0
+FlagSuppressOutput1=0
+FlagSuppressOutput2=0
+FlagSuppressOutput3=0
+FlagSuppressOutput4=0
+FlagUseAsAttribute0=0
+FlagUseAsAttribute1=0
+FlagUseAsAttribute2=0
+FlagUseAsAttribute3=0
+FlagUseAsAttribute4=0
 FlagUseAsIndicator0=1
 FlagUseAsIndicator1=1
 FlagUseAsIndicator2=1
@@ -54103,16 +54183,16 @@ ClassHierarchyTextLayoutFlatSeparator='    |'
 ClassHierarchyTextLayoutHangingIndent='    '
 ClassHierarchyTextLayoutOptions=2
 ContextIndexOptions=2595
-Copyright=
+Copyright=%COPYRIGHT%. This help was created by Doc-O-Matic which is sponsored by <a href="http://toolsfactory.com/">toolsfactory software inc.</a>
 CreateContentForFoldersGlobals=0
 CreateContentForFoldersMembers=0
 CustomBuildStepApp=
 CustomBuildStepAppIgnoreExitCode=1
 FunctionDeclarationOption=0
 GenerateGlobalClassHierarchies=1
-GenericSyntaxHighlightLanguage=0
+GenericSyntaxHighlightLanguage=2
 HidePropertyDetails=1
-IndexOptions4=1907
+IndexOptions4=95
 IndexTitleAdditionalClassEntry=about %TITLE%
 IndexTitleEnumValues=%NAME% enumeration member
 IndexTitlePrefixes=
@@ -54732,7 +54812,7 @@ Value2.9=%NSSYM% %TYPEL%
 Encoding=UTF-8
 GenerateSymbolStructure=1
 GenerateTopicStructure=1
-OutputDir=$(USRDOCSOUTPUT)
+OutputDir=bin\xml
 OutputFilename=
 ShowDocumentation=1
 UseXMLDocTags=1
@@ -54814,10 +54894,11 @@ BodySourceUseAutolinking=0
 BodySourceUseSyntaxHighlight=0
 
 [Configurations\Configuration 6\Disabled Topics]
-Count=3
+Count=4
 ID0=Compilers.inc
 ID1=jedi.inc
 ID2=Jwscl.inc
+ID3=TJwAutoLock.fLeaveFlag
 
 [Configurations\Configuration 6\Enabled Topics]
 Count=2
@@ -54903,6 +54984,11 @@ Vars=1
 
 [Configurations\Configuration 6\Flags]
 Count=5
+FlagAttributeName0=
+FlagAttributeName1=
+FlagAttributeName2=
+FlagAttributeName3=
+FlagAttributeName4=
 FlagImage0=indicator_new
 FlagImage1=indicator_depreciated
 FlagImage2=indicator_beta
@@ -54918,6 +55004,16 @@ FlagName1=depreciated
 FlagName2=beta
 FlagName3=preliminary
 FlagName4=CFW
+FlagSuppressOutput0=0
+FlagSuppressOutput1=0
+FlagSuppressOutput2=0
+FlagSuppressOutput3=0
+FlagSuppressOutput4=0
+FlagUseAsAttribute0=0
+FlagUseAsAttribute1=0
+FlagUseAsAttribute2=0
+FlagUseAsAttribute3=0
+FlagUseAsAttribute4=0
 FlagUseAsIndicator0=1
 FlagUseAsIndicator1=1
 FlagUseAsIndicator2=1
@@ -55961,7 +56057,7 @@ WallTopButtom=*
 
 [ETP Settings]
 ETPExternal=0
-ETPFilename=
+ETPFilename=jwscl.toc
 
 [Export Symbols]
 AutoAliasTypedefStructs=0
@@ -56699,6 +56795,7 @@ ID28=.php
 ID29=.dproj
 ID3=.h;.hpp;.hxx
 ID31=.dom-snippet
+ID32=.cbproj
 ID4=.pas;.inc;.int
 ID5=.vb
 ID6=.bpr;.bpk
@@ -56800,7 +56897,7 @@ Count=0
 
 [Project File Info]
 Template=
-Version=602
+Version=604
 
 [Section\0]
 Count=3
@@ -57419,7 +57516,7 @@ ID9=9
 SavedValues=1
 
 [Source Files]
-Count=65
+Count=68
 File0=..\conclusion.dtx
 File1=..\introduction.dtx
 File10=..\..\source\JwsclConstants.dtx
@@ -57440,48 +57537,51 @@ File23=..\..\source\JwsclEurekaLogUtils.dtx
 File24=..\..\source\JwsclEurekaLogUtils.pas
 File25=..\..\source\JwsclExceptions.dtx
 File26=..\..\source\JwsclExceptions.pas
-File27=..\..\source\JwsclImpersonation.dtx
-File28=..\..\source\JwsclImpersonation.pas
-File29=..\..\source\JwsclKnownSid.dtx
+File27=..\..\source\JwsclFirewall.pas
+File28=..\..\source\JwsclImpersonation.dtx
+File29=..\..\source\JwsclImpersonation.pas
 File3=..\..\source\JwsclAccounts.pas
-File30=..\..\source\JwsclKnownSid.pas
-File31=..\..\source\JwsclLogging.dtx
-File32=..\..\source\JwsclLogging.pas
-File33=..\..\source\JwsclLsa.dtx
-File34=..\..\source\JwsclLsa.pas
-File35=..\..\source\JwsclMapping.dtx
-File36=..\..\source\JwsclMapping.pas
-File37=..\..\source\JwsclPrivileges.dtx
-File38=..\..\source\JwsclPrivileges.PAS
-File39=..\..\source\JwsclProcess.dtx
+File30=..\..\source\JwsclKnownSid.dtx
+File31=..\..\source\JwsclKnownSid.pas
+File32=..\..\source\JwsclLogging.dtx
+File33=..\..\source\JwsclLogging.pas
+File34=..\..\source\JwsclLsa.dtx
+File35=..\..\source\JwsclLsa.pas
+File36=..\..\source\JwsclMapping.dtx
+File37=..\..\source\JwsclMapping.pas
+File38=..\..\source\JwsclPrivileges.dtx
+File39=..\..\source\JwsclPrivileges.PAS
 File4=..\..\source\JwsclAcl.dtx
-File40=..\..\source\JwsclProcess.pas
-File41=..\..\source\JwsclResource.dtx
-File42=..\..\source\JwsclResource.pas
-File43=..\..\source\JwsclSecureObjects.dtx
-File44=..\..\source\JwsclSecureObjects.pas
-File45=..\..\source\JwsclSecurePrivateObjects.dtx
-File46=..\..\source\JwsclSecureUserObjects.dtx
-File47=..\..\source\JwsclSecurityDialogs.dtx
-File48=..\..\source\JwsclSecurityDialogs.pas
-File49=..\..\source\JwsclSid.dtx
+File40=..\..\source\JwsclProcess.dtx
+File41=..\..\source\JwsclProcess.pas
+File42=..\..\source\JwsclResource.dtx
+File43=..\..\source\JwsclResource.pas
+File44=..\..\source\JwsclSecureObjects.dtx
+File45=..\..\source\JwsclSecureObjects.pas
+File46=..\..\source\JwsclSecurePrivateObjects.dtx
+File47=..\..\source\JwsclSecureUserObjects.dtx
+File48=..\..\source\JwsclSecurityDialogs.dtx
+File49=..\..\source\JwsclSecurityDialogs.pas
 File5=..\..\source\JwsclAcl.pas
-File50=..\..\source\JwsclSid.pas
-File51=..\..\source\JwsclStrings.dtx
-File52=..\..\source\JwsclStrings.pas
-File53=..\..\source\JwsclTerminalServer.dtx
-File54=..\..\source\JwsclTerminalServer.pas
-File55=..\..\source\JwsclToken.dtx
-File56=..\..\source\JwsclToken.pas
-File57=..\..\source\JwsclTypes.dtx
-File58=..\..\source\JwsclTypes.pas
-File59=..\..\source\JwsclUtils.dtx
+File50=..\..\source\JwsclSid.dtx
+File51=..\..\source\JwsclSid.pas
+File52=..\..\source\JwsclSimpleDescriptor.pas
+File53=..\..\source\JwsclStreams.pas
+File54=..\..\source\JwsclStrings.dtx
+File55=..\..\source\JwsclStrings.pas
+File56=..\..\source\JwsclTerminalServer.dtx
+File57=..\..\source\JwsclTerminalServer.pas
+File58=..\..\source\JwsclToken.dtx
+File59=..\..\source\JwsclToken.pas
 File6=..\..\source\JwsclAuthCtx.dtx
-File60=..\..\source\JwsclUtils.pas
-File61=..\..\source\JwsclVersion.dtx
-File62=..\..\source\JwsclVersion.pas
-File63=..\..\source\JwsclWinStations.dtx
-File64=..\..\source\JwsclWinStations.pas
+File60=..\..\source\JwsclTypes.dtx
+File61=..\..\source\JwsclTypes.pas
+File62=..\..\source\JwsclUtils.dtx
+File63=..\..\source\JwsclUtils.pas
+File64=..\..\source\JwsclVersion.dtx
+File65=..\..\source\JwsclVersion.pas
+File66=..\..\source\JwsclWinStations.dtx
+File67=..\..\source\JwsclWinStations.pas
 File7=..\..\source\JwsclAuthCtx.pas
 File8=..\..\source\JwsclComUtils.dtx
 File9=..\..\source\JwsclComUtils.pas

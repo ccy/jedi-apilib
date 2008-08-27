@@ -124,7 +124,7 @@ type
     function PushPrivileges: cardinal;
 
     {<B>RaiseOnInvalidPrimaryToken</B> checks for whether user is SYSTEM and raises exception if not.
-     @param MethodName defines the methode name of the caller 
+     @param MethodName defines the method name of the caller 
      raises
  EJwsclInvalidPrimaryToken:  if primary user token is not SYSTEM. }
     procedure RaiseOnInvalidPrimaryToken(MethodName: AnsiString);
@@ -4540,7 +4540,18 @@ begin
 
   CheckTokenAccessType(TOKEN_QUERY, 'TOKEN_QUERY', 'IsEqual');
   aToken.CheckTokenAccessType(TOKEN_QUERY, 'TOKEN_QUERY', 'IsEqual');
-  @NtCompareTokens := TJwLibraryUtilities.LoadLibProc(ntdll, 'NtCompareTokens');
+
+  try
+    @NtCompareTokens := TJwLibraryUtilities.LoadLibProc(ntdll, 'NtCompareTokens');
+  except
+    //on EJwaGetProcAddressError, EJwaLoadLibraryError do
+    on Exception do
+    begin
+      raise EJwsclNotImplementedException.CreateFmtEx(
+        RsTokenUnsupportedNTCompareTokens, 'IsEqual', ClassName,
+        RsUNToken, 0, False, []);
+    end;
+  end;
 
   SetLastError(0);
 

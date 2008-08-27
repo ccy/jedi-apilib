@@ -1207,6 +1207,7 @@ type
       }
     property ClientProtocolStr: TJwString read FClientProtocolStr;
 
+    { <b>ColorDepth</b> returns the number of colors used in the terminal session. }
     property ColorDepth: DWORD read FColorDepth;
 
     {<B>CompressionRatio</B> returns the current compression ratio as string with 2 decimals.
@@ -1306,6 +1307,8 @@ type
 
     {@exclude}
     function GetServerHandle: THandle;
+    { <b>HorizontalResolution</b> returns the width resolution of the terminal session
+      display in pixels.                                                               }
     property HorizontalResolution: DWORD read FHorizontalResolution;
 
     {<B>IdleTime</B> the elapsed time (relative to CurrentTime) since last user input in
@@ -1639,6 +1642,8 @@ type
     }
     property UserSid : TJwSecurityID read GetUserSid;
 
+    { <b>VerticalResolution</b> returns the height resolution of the terminal session
+      display in pixels.                                                              }
     property VerticalResolution: DWORD read FVerticalResolution;
 
     {WinStationDriver Flag (<B>WdFlag</B>) returns a value indicating the protocol and

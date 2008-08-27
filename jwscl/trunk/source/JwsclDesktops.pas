@@ -435,7 +435,7 @@ type
 
 
    {TJwSecurityDesktops is a administrative class that contains a list of desktops and
-    methodes to manipulate desktops.
+    methods to manipulate desktops.
   All TJwSecurityDesktop instances that are created and assigned to this class are
   automatically freed if this instance is freed.}
   TJwSecurityDesktops = class(TComponent)

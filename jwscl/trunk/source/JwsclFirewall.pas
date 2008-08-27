@@ -64,6 +64,18 @@ type
     function GetRemoteAdminAdress(): AnsiString; virtual;
     procedure SetRemoteAdminAdress(Value: AnsiString); virtual;
   public
+    { Create creates a new TJwsclFirewall instance and connects to the firewall
+      manager COM interface.
+      
+      
+      
+      
+      Exceptions
+      EJwsclFirewallProfileInitException :  This exception is raised if the connection
+                                            to the firewall COM interface failed. The
+                                            lasterror member contains the COM error
+                                            \result.
+      Wert  :                               Beschreibung                               }
     constructor Create();
     destructor Destroy(); override;
 
@@ -127,6 +139,7 @@ type
   end;
 
 implementation
+uses JwsclResource;
 
 constructor TJwsclFirewall.Create();
 begin
@@ -137,9 +150,10 @@ begin
   except
     on e: EOleSysError do
     begin
+      SetLastError(E.ErrorCode);
       raise EJwsclFirewallProfileInitException.CreateFmtEx(e.Message,
-        'Create', 'EOleSysError', 'JwsclFirewall',
-        134, True, []);
+        'Create', ClassName, RsUNFirewall,
+        0, True, []);
     end;
   end;
 
@@ -148,9 +162,10 @@ begin
   except
     on e: EOleSysError do
     begin
+      SetLastError(E.ErrorCode);
       raise EJwsclFirewallProfileInitException.CreateFmtEx(e.Message,
-        'Create', 'EOleSysError', 'JwsclFirewall',
-        154, True, []);
+        'Create', ClassName, RsUNFirewall,
+        0, True, []);
     end;
   end;
 end;
@@ -169,9 +184,10 @@ begin
   except
     on e: EOleSysError do
     begin
+      SetLastError(E.ErrorCode);
       raise EJwsclSetFWStateException.CreateFmtEx(e.Message,
-        'SetFirewallState', 'EOleSysError', 'JwsclFirewall',
-        173, True, []);
+        'SetFirewallState', ClassName, RsUNFirewall,
+        0, True, []);
     end;
   end;
 end;
@@ -184,9 +200,10 @@ begin
   except
     on e: EOleSysError do
     begin
+      SetLastError(E.ErrorCode);
       raise EJwsclGetFWStateException.CreateFmtEx(e.Message,
-        'GetFirewallState', 'EOleSysError', 'JwsclFirewall',
-        194, True, []);
+        'GetFirewallState', ClassName, RsUNFirewall,
+        0, True, []);
     end;
   end;
 end;
@@ -199,9 +216,10 @@ begin
   except
     on e: EOleSysError do
     begin
+      SetLastError(E.ErrorCode);
       raise EJwsclGetFWExceptionsAllowedException.CreateFmtEx(e.Message,
-        'GetExceptionsAllowed', 'EOleSysError', 'JwsclFirewall',
-        215, True, []);
+        'GetExceptionsAllowed', ClassName, RsUNFirewall,
+        0, True, []);
     end;
   end;
 end;
@@ -214,9 +232,10 @@ begin
   except
     on e: EOleSysError do
     begin
+      SetLastError(E.ErrorCode);
       raise EJwsclSetFWExceptionsAllowedException.CreateFmtEx(e.Message,
-        'SetExceptionsAllowed', 'EOleSysError', 'JwsclFirewall',
-        236, True, []);
+        'SetExceptionsAllowed', ClassName, RsUNFirewall,
+        0, True, []);
     end;
   end;
 end;
@@ -229,9 +248,10 @@ begin
   except
     on e: EOleSysError do
     begin
+      SetLastError(E.ErrorCode);
       raise EJwsclGetIncommingPingAllowedException.CreateFmtEx(e.Message,
-        'GetIncommingPingAllowed', 'EOleSysError', 'JwsclFirewall',
-        257, True, []);
+        'GetIncommingPingAllowed', ClassName, RsUNFirewall,
+        0, True, []);
     end;
   end;
 end;
@@ -244,9 +264,10 @@ begin
   except
     on e: EOleSysError do
     begin
+      SetLastError(E.ErrorCode);
       raise EJwsclSetIncommingPingAllowedException.CreateFmtEx(e.Message,
-        'SetIncommingPingAllowed', 'EOleSysError', 'JwsclFirewall',
-        278, True, []);
+        'SetIncommingPingAllowed', ClassName, RsUNFirewall,
+        0, True, []);
     end;
   end;
 end;
@@ -262,9 +283,10 @@ begin
   except
     on e: EOleSysError do
     begin
+      SetLastError(E.ErrorCode);
       raise EJwsclGetRemoteAdminAllowedException.CreateFmtEx(e.Message,
-        'GetRemoteAdminAllowed', 'EOleSysError', 'JwsclFirewall',
-        302, True, []);
+        'GetRemoteAdminAllowed', ClassName, RsUNFirewall,
+        0, True, []);
     end;
   end;
 end;
@@ -280,9 +302,10 @@ begin
   except
     on e: EOleSysError do
     begin
+      SetLastError(E.ErrorCode);
       raise EJwsclGetRemoteAdminAllowedException.CreateFmtEx(e.Message,
-        'SetRemoteAdminAllowed', 'EOleSysError', 'JwsclFirewall',
-        326, True, []);
+        'SetRemoteAdminAllowed', ClassName, RsUNFirewall,
+        0, True, []);
     end;
   end;
 end;
@@ -298,9 +321,10 @@ begin
   except
     on e: EOleSysError do
     begin
+      SetLastError(E.ErrorCode);
       raise EJwsclGetRemoteAdminAdressException.CreateFmtEx(e.Message,
-        'GetRemoteAdminAdress', 'EOleSysError', 'JwsclFirewall',
-        350, True, []);
+        'GetRemoteAdminAdress', ClassName, RsUNFirewall,
+        0, True, []);
     end;
   end;
 end;
@@ -316,9 +340,10 @@ begin
   except
     on e: EOleSysError do
     begin
+      SetLastError(E.ErrorCode);
       raise EJwsclSetRemoteAdminAdressException.CreateFmtEx(e.Message,
-        'SetRemoteAdminAdress', 'EOleSysError', 'JwsclFirewall',
-        374, True, []);
+        'SetRemoteAdminAdress', ClassName, RsUNFirewall,
+        0, True, []);
     end;
   end;
 end;
@@ -328,8 +353,7 @@ procedure TJwsclFirewall.AddToWinFirewall(ApplicationFilename,
   NameOnExeptionlist: AnsiString; EnableRule: Boolean);
 var
   App: INetFwAuthorizedApplication;
-begin
-
+begin                
   if GetFirewallState
     and GetExceptionsAllowed then
   begin
@@ -352,9 +376,10 @@ begin
         except
           on e: EOleSysError do
           begin
+            SetLastError(E.ErrorCode);
             raise EJwsclFirewallAddRuleException.CreateFmtEx(e.Message,
-              'AddToWinFirewall', 'EOleSysError', 'JwsclFirewall',
-              416, True, []);
+              'AddToWinFirewall', ClassName, RsUNFirewall,
+              0, True, []);
           end;
         end;
       end;
@@ -372,14 +397,18 @@ var
   Port: INetFwOpenPort;
 begin
   if not GetFirewallState then
-    raise EJwsclFirewallInactiveException.CreateFmtEx(FW_INACTIVE,
-          'AddTcpPortToFirewall', 'EException', 'JwsclFirewall',
-          445, True, []);
+  begin
+    raise EJwsclFirewallInactiveException.CreateFmtEx(RsFWInactive,
+          'AddTcpPortToFirewall', ClassName, RsUNFirewall,
+          0, false, []);
+  end;
 
   if not GetExceptionsAllowed then
-    raise EJwsclFirewallNoExceptionsException.CreateFmtEx(FW_NOEXCEPTIONSALLOWED,
-          'AddTcpPortToFirewall', 'EException', 'JwsclFirewall',
-          450, True, []);
+  begin
+    raise EJwsclFirewallNoExceptionsException.CreateFmtEx(RsFWNoExceptionsAllowed,
+          'AddTcpPortToFirewall', ClassName, RsUNFirewall,
+          0, false, []);
+  end;
 
   try
     Port := CoNetFwOpenPort.Create;
@@ -402,9 +431,10 @@ begin
     except
       on e: EOleSysError do
       begin
+        SetLastError(E.ErrorCode);
         raise EJwsclAddTcpPortToFirewallException.CreateFmtEx(e.Message,
-          'AddTcpPortToFirewall', 'EOleSysError', 'JwsclFirewall',
-          472, True, []);
+          'AddTcpPortToFirewall', ClassName, RsUNFirewall,
+          0, True, []);
       end;
     end;
   finally
@@ -420,14 +450,18 @@ var
   Port: INetFwOpenPort;
 begin
   if not GetFirewallState then
-    raise EJwsclFirewallInactiveException.CreateFmtEx(FW_INACTIVE,
-          'AddUpdPortToFirewall', 'EException', 'JwsclFirewall',
-          499, True, []);
+  begin
+    raise EJwsclFirewallInactiveException.CreateFmtEx(RsFWInactive,
+          'AddUpdPortToFirewall', ClassName, RsUNFirewall,
+          0, false, []);
+  end;
 
   if not GetExceptionsAllowed then
-    raise EJwsclFirewallNoExceptionsException.CreateFmtEx(FW_NOEXCEPTIONSALLOWED,
-          'AddUpdPortToFirewall', 'EException', 'JwsclFirewall',
-          504, True, []);
+  begin
+    raise EJwsclFirewallNoExceptionsException.CreateFmtEx(RsFWNoExceptionsAllowed,
+          'AddUpdPortToFirewall', ClassName, RsUNFirewall,
+          0, false, []);
+  end;
           
   try
     Port := CoNetFwOpenPort.Create;
@@ -450,9 +484,10 @@ begin
     except
       on e: EOleSysError do
       begin
+        SetLastError(E.ErrorCode);
         raise EJwsclAddTcpPortToFirewallException.CreateFmtEx(e.Message,
-          'AddUpdPortToFirewall', 'EOleSysError', 'JwsclFirewall',
-          526, True, []);
+          'AddUpdPortToFirewall', ClassName, RsUNFirewall,
+          0, True, []);
       end;
     end;
   finally
@@ -471,9 +506,10 @@ begin
     except
       on e: EOleSysError do
       begin
+        SetLastError(E.ErrorCode);
         raise EJwsclFirewallDelRuleException.CreateFmtEx(e.Message,
-          'DeleteFromWinFirewall', 'EOleSysError', 'JwsclFirewall',
-          553, True, []);
+          'DeleteFromWinFirewall', ClassName, RsUNFirewall,
+          0, True, []);
       end;
     end;
 end;

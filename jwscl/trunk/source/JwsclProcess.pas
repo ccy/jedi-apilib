@@ -64,9 +64,11 @@ type
   protected
   public
     {<B>LoadLibProc</B> tries to get a pointer to a function within a DLL.
-    @return Return value is a function pointer to the specified function.
-     If the library could not be found or the function is not located
-     within the library the return value is nil.  
+     @return Return value is a function pointer to the specified function.
+
+     raise
+      EJwaLoadLibraryError This exception is raised if the given library name could not be found.
+      EJwaGetProcAddressError This exception is raised if the given function name could not be found.
     }
     class function LoadLibProc(const LibName: AnsiString;
       const ProcName: AnsiString): Pointer;
@@ -847,8 +849,14 @@ end;
 class function TJwLibraryUtilities.LoadLibProc(const LibName: AnsiString; const ProcName: AnsiString): Pointer;
 var
   LibHandle: THandle;
+  R : Pointer;
 begin
-  LibHandle := LoadLibraryA(PAnsiChar(LibName));
+  R := nil;
+  //problem with direct use of Result in this procedure!
+  GetProcedureAddress(R, LibName, ProcName);
+  Result := R;
+
+ { LibHandle := LoadLibraryA(PAnsiChar(LibName));
   if LibHandle = 0 then
     Result := nil
   else
@@ -858,7 +866,7 @@ begin
     finally
       FreeLibrary(LibHandle); // Free Memory Allocated for the DLL
     end;
-  end;
+  end;}
 end;
 
 

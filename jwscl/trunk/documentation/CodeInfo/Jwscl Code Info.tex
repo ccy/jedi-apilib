@@ -275,6 +275,106 @@ Committing source code can sometimes be problematic or even dangerous. You shoul
 	\item Don't add strings directly into the source code. Instead add string constants to JwsclResource. 	
 \end{itemize}
 
+\section{Loading Functions Dynamically}
+Programmers are told that they should load functions, which are not available on all Windows versions, with LoadLibrary instead of linking them statically. That is not a problem. However a library should support a consistent way to do so. This way is called \textbf{TJwLibraryUtilities.LoadLibProc} located in JwsclProcess.pas.
+Before you're going to apply this method, you should make sure whether the JEDI API exports such a function already. And if YES use them and ignore the possible statical linking option that JEDI API offers to users. If they link their applications statically they (usually) know what consequences exist.\\
+There is also a list of available DLL names defined as constants in JEDI API unit JwaWinDLLNames. Pick one or add a new one if necessary:
+
+\begin{lstlisting}
+const
+  aclapilib = 'advapi32.dll';
+  acluilib = 'aclui.dll';
+  advapi32 = 'advapi32.dll';
+  authzlib = 'authz.dll';
+  adslib = 'activeds.dll';
+  bcryptdll = 'bcrypt.dll';
+  btapi = 'irprops.cpl';
+  cfgmgrdllname = 'cfgmgr32.dll';
+  comctl32 = 'comctl32.dll';
+  credapi = 'advapi32.dll';
+  credui = 'credui.dll';
+  crypt32 = 'crypt32.dll';
+  cryptnet = 'cryptnet.dll';
+  cryptuiapi = 'cryptui.dll';
+  dhcpapi = 'dhcpcsvc.dll';
+  dhcplib = 'dhcpsapi.dll';
+  dnsapi = 'dnsapi.dll';
+  dsprop = 'dsprop.dll';
+  dssec = 'dssec.dll';
+  dsuiext = 'dsuiext.dll';
+  dwmlib = 'dwmapi.dll';
+  faultreplib = 'faultrep.dll';
+  gdi32 = 'gdi32.dll';
+  gpeditlib = 'gpedit.dll';
+  hhctrl = 'hhctrl.ocx';
+  icmplib = 'icmp.dll';
+  imagehlplib = 'imagehlp.dll';
+  imelib = 'user32.dll';
+  iphlpapilib = 'iphlpapi.dll';
+  kernel32 = 'kernel32.dll';
+  kernel32dll = kernel32;
+  ldaplib = 'wldap32.dll';
+  loadperflib = 'loadperf.dll';
+  lpmlib = 'msidlpm.dll';
+  mapi32 = 'mapi32.dll';
+  mprlib = 'mpr.dll';
+  msgina = 'msgina.dll';
+  msilib = 'msi.dll';
+  msimg32 = 'msimg32.dll';
+  mswsocklib = 'mswsock.dll';
+  mydocs = 'mydocs.dll';
+  ncryptdll = 'ncrypt.dll';
+  netapi32 = 'netapi32.dll';
+  netsh = 'netsh.exe';
+  nsplib = 'wsock32.dll';
+  ntdll = 'ntdll.dll';
+  ntdsapilib = 'ntdsapi.dll';
+  ntdsbclilib = 'ntdsbclilib.dll';
+  opengl32 = 'opengl32.dll';
+  patchapi = 'mspatcha.dll';
+  patchwiz = 'patchwiz.dll';
+  pdhLib = 'pdh.dll';
+  powrproflib = 'powrprof.dll';
+  psapiLib = 'psapi.dll';
+  querylib = 'query.dll';
+  qosname = 'qosname.dll';
+  rpclib = 'rpcrt4.dll';
+  rpcns4 = 'rpcns4.dll';
+  secur32 = 'secur32.dll';
+  sensapilib = 'sensapi.dll';
+  setupapimodulename = 'SetupApi.dll';
+  sfclib = 'sfc.dll';
+  sisbkuplib = 'sisbkup.dll';
+  shdocvwDll = 'shdocvw.dll';
+  shell32 = 'shell32.dll';
+  shfolderdll = 'shfolder.dll';
+  shlwapidll  = 'shlwapi.dll';
+  snmpapilib = 'snmpapi.dll';
+  softpub = 'softpub.dll';
+  sporderlib = 'sporder.dll';
+  srclient = 'srclient.dll';
+  themelib = 'uxtheme.dll';
+  trafficlib = 'traffic.dll';
+  urlmondll = 'urlmon.dll';
+  user32 = 'user32.dll';
+  userenvlib = 'userenv.dll';
+  utildll = 'utildll.dll';
+  versionlib = 'version.dll';
+  winberapi = 'wldap32.dll';
+  winfax = 'winfax.dll';
+  winetdll = 'wininet.dll';
+  winspool32 = 'winspool32.drv';
+  winstadll = 'winsta.dll';
+  winternl_lib = 'ntdll.dll';
+  wow16lib = 'kernel32.dll';
+  wow32lib = 'wow32.dll';
+  wpapilib = 'wpapi.dll';
+  ws2_32 = 'ws2_32.dll';
+  wsock32 = 'wsock32.dll';
+  wtsapi = 'wtsapi32.dll';
+\end{lstlisting}
+
+
 \section{Exceptions}
 
 \begin{itemize}
@@ -332,6 +432,13 @@ exceptions like \textit{Exception} and \textit{EJwsclSecurityException}.
 \section{Create Your Own JWSCL Unit}
 If you are going to create your own JEDI Windows Security Code Library Unit you should read the following sections. There is a template unit "\_JwsclTemplate.pas" that you can use for your first steps. Make a copy of the file, rename it, adapt the unit name in the source code and start coding. Read on with the following sections.
 
+\subsection{Use JEDI API}
+Don't use the Windows unit shipping with Delphi. Its declarations may change from Delphi to Delphi and version to version. Furthermore JwaWindows provides much more API declarations that you can use. In this way it isn't usually necessary to create your own function imports.\\
+\textbf{So add JwaWindows to your uses clause and remove Windows.pas .}\\\\
+
+Perhaps for a future feature you should also add the needed single units as a comment. 
+
+
 \subsection{Header Documentation}
 The template unit contains some place holders that you should replace with the corresponding values
 \begin{enumerate}
@@ -379,6 +486,21 @@ function IsProcessInJob(hProcess : TJwProcessHandle) : Boolean;
 
 \item Add all exceptions that can be raised into the documentation even if they are raised in used methods. In the last case you should list all used methods instead, so the user can get information which exception are raised in addition.
 
+\end{itemize}
+
+
+\section{Memory Leak/Problem Detection}
+Recall these rules
+\begin{enumerate}
+  \item Make always sure that there are no memory leaks whatsoever type. 
+  \item Also make sure that you don't overwrite foreign memory by ignoring boundaries of arrays and similar.
+\end{enumerate}
+
+For these rules you can use a memory checker of your choice. Possible managers are
+\begin{itemize}
+  \item MemCheck (http://v.mahon.free.fr/pro/freeware/memcheck)
+  \item FastMM (http://sourceforge.net/projects/fastmm)
+  \item EurekaLog (http://www.eurekalog.com)
 \end{itemize}
 
 \section{Implementation}

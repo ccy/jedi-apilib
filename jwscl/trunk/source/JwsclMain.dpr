@@ -16,7 +16,7 @@ uses
 	JwsclEnumerations,
 	//JwsclEurekaLogUtils,
 	JwsclExceptions,
-    JwsclFirewall,
+  JwsclFirewall,
 	JwsclImpersonation,
 	JwsclKnownSid,
 	JwsclLogging,
@@ -30,6 +30,7 @@ uses
 	JwsclSecureUserObjects,
 	JwsclSecurityDialogs,
 	JwsclSid,
+  JwsclStreams,
 	JwsclStrings,
 	JwsclTerminalServer,
 	JwsclToken,
@@ -37,5 +38,6 @@ uses
 	JwsclUtils,
 	JwsclVersion,
 	JwsclWinStations;
+
 begin
 end.

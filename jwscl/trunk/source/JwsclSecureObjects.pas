@@ -2820,6 +2820,7 @@ uses TypInfo,
 {$IFDEF DEBUG}
      Dialogs,
 {$ENDIF DEBUG}
+     JwsclProcess,
      JwsclEnumerations;
 
 {$ENDIF SL_OMIT_SECTIONS}
@@ -8907,8 +8908,9 @@ function RegQueryReflectionKey(hBase: HKEY): shortint;
 begin
   Result := -1;
   try
-    GetProcedureAddress(Pointer(@_RegQueryReflectionKey),
-      advapi32, 'RegQueryReflectionKey');
+    {GetProcedureAddress(Pointer(@_RegQueryReflectionKey),
+      advapi32, 'RegQueryReflectionKey');}
+    _RegQueryReflectionKey := TJwLibraryUtilities.LoadLibProc(advapi32, 'RegQueryReflectionKey');
     SetLastError(0);
     _RegQueryReflectionKey(hBase, boolean(Result));
   except
@@ -8929,8 +8931,9 @@ begin
   if Enabled then
   begin
     try
-      GetProcedureAddress(Pointer(@_RegEnDisableReflectionKey),
-        advapi32, 'RegEnableReflectionKey');
+      {GetProcedureAddress(Pointer(@_RegEnDisableReflectionKey),
+        advapi32, 'RegEnableReflectionKey');}
+      _RegEnDisableReflectionKey := TJwLibraryUtilities.LoadLibProc(advapi32, 'RegEnableReflectionKey');
       SetLastError(0);
       _RegEnDisableReflectionKey(hBase);
     except
@@ -8944,8 +8947,9 @@ begin
   end
   else
     try
-      GetProcedureAddress(Pointer(@_RegEnDisableReflectionKey),
-        advapi32, 'RegDisableReflectionKey');
+      {GetProcedureAddress(Pointer(@_RegEnDisableReflectionKey),
+        advapi32, 'RegDisableReflectionKey');}
+      _RegEnDisableReflectionKey := TJwLibraryUtilities.LoadLibProc(advapi32, 'RegDisableReflectionKey');
       SetLastError(0);
       _RegEnDisableReflectionKey(hBase);
     except

@@ -35,13 +35,15 @@ The Original Code is JwsclStreams.pas.
 The Initial Developer of the Original Code is Michael Morstein.
 Portions created by Michael Morstein are Copyright (C) Michael Morstein. All rights reserved.
 
+Todo
+Add Security Features for Mapped Files. (Security Descriptor)
 }
 
 unit JwsclStreams;
 
 interface
 
-uses Windows, Classes,
+uses JwaWindows, Classes,
      jwsclExceptions, jwsclResource, JwsclStrings;
 
 const
@@ -59,7 +61,11 @@ type
     <b>Important</b>
     
     DO NOT CREATE OBJECT INSTANCES OF THIS CLASS! Use one of the other stream
-    classes instead.                                                          }
+    classes instead.
+
+    Todo
+    Add Security Features for Mapped Files. (Security Descriptor)
+  }
   TJwCustomMappedStream = class(TStream)
   private
     FFileHandle: hFile;
@@ -314,64 +320,32 @@ end;
 { TJwFileStreamEx }
 
 constructor TJwFileStreamEx.Create(FileHandle: hFile; DuplicateFileHandle: Boolean);
-type
-  TObjectInformationClass = (ObjectBasicInformation,
-                             ObjectNameInformation,
-                             ObjectTypeInformation,
-                             ObjectAllInformation,
-                             ObjectDataInformation);
-
-  PObjectBasicInformation = ^TObjectBasicInformation;
-  TObjectBasicInformation = packed record
-    Attributes: Cardinal;
-    GrantedAccess: ACCESS_MASK;
-    HandleCount: Cardinal;
-    PointerCount: Cardinal;
-    Reserved: Array[0..9] of Cardinal;
-  end;
-
-  TNtQueryObject = function(Handle: THandle;
-                            ObjectInformationClass: TObjectInformationClass;
-                            ObjectInformation: Pointer;
-                            ObjectInformationLength: Cardinal;
-                            ReturnLength: PCardinal): Cardinal; stdcall;
 
   function GetFileReadonly(f: hFile): Boolean;
-  var inf: PObjectBasicInformation;
+  var inf: TObjectBasicInformation;
       size: Cardinal;
-      ntdll: hModule;
-      NtQueryObject: TNtQueryObject;
   begin
-    ntdll := LoadLibrary('ntdll.dll');
-    if ntdll <> 0 then
-    begin
-      NtQueryObject := GetProcAddress(ntdll,'NtQueryObject');
-      FreeLibrary(ntdll);
-    end
-    else
-      raise EJwsclInvalidHandle.CreateFmtWinCall(RsWinCallFailed,'Create',Classname,RsUNStreams,0,true,'LoadLibrary',['LoadLibrary']);
-
-    if Assigned(NtQueryObject) then
     begin
       size := SizeOf(TObjectBasicInformation);
-      New(inf);
-      NtQueryObject(f,ObjectBasicInformation,inf,size,nil);
-      Result := (inf.GrantedAccess and FILE_WRITE_DATA) <> FILE_WRITE_DATA;
-      Dispose(inf);
-    end
-    else
-      raise EJwsclNilPointer.CreateFmtWinCall(RsNilPointer,'Create',Classname,RsUNStreams,0,false,'GetProcAddress',[]);
+      ZeroMemory(@inf, sizeof(inf));
+
+      if NT_SUCCESS(NtQueryObject(f,ObjectBasicInformation,@inf,size,nil)) then
+        Result := (inf.GrantedAccess and FILE_WRITE_DATA) <> FILE_WRITE_DATA
+      else
+        Result := true; //on error just use a readonly thinking
+    end;
   end;
 
   function GetFileHandle(Duplicate: Boolean): hFile;
-  var tmp: PHandle;
+  var hTmp : THandle;
   begin
     if DuplicateFileHandle then
     begin
-      New(tmp);
-      DuplicateHandle(GetCurrentProcess,FileHandle,GetCurrentProcess,tmp,0,false,DUPLICATE_SAME_ACCESS);
-      Result := tmp^;
-      Dispose(tmp);
+      hTmp := 0;
+      if DuplicateHandle(GetCurrentProcess,FileHandle,GetCurrentProcess,@hTmp,0,false,DUPLICATE_SAME_ACCESS) then
+        Result := hTmp
+      else
+        Result := INVALID_HANDLE_VALUE;
     end
     else
       Result := FileHandle;

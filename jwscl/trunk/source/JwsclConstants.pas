@@ -1357,8 +1357,12 @@ var
    bInheritHandle: False
   );
 
-
-  NullGenericMapping: TGenericMapping =
+  {<B>NullGenericMapping</B> defines a mapping record that
+  maps all generic rights to zero.
+  It can be used to reset a dynamic mapping record (may be faster
+  than call ZeroMemory).
+  }
+  NullGenericMapping : TGenericMapping =
     (GenericRead: 0;
     GenericWrite: 0;
     GenericExecute: 0;
@@ -1373,6 +1377,9 @@ const CRYPTPROTECTMEMORY_SAME_PROCESS = 0;
       CRYPTPROTECTMEMORY_SAME_LOGON = 2;
 
 const
+  {<B>JwSidAttributeStrings</B> converts all
+  enumeration values of TJwSidAttribute into their defined names.
+  }
   JwSidAttributeStrings: TJwSidAttributesStringArray =
     (
     'sidaUnknown',
@@ -1394,6 +1401,10 @@ const
     );
 
 const
+  {<B>JwSidAttributeHumanStrings</B> converts all
+  enumeration values of TJwSidAttribute into human readable strings.
+  This array uses resource strings that can be translated.
+  }
   JwSidAttributeHumanStrings: TJwSidAttributesStringArray =
     (
     RsAttributeHumanString0,//'unknown',
@@ -1416,9 +1427,20 @@ const
 
 
 const
+  //Maximum size of a resource string
   MaxResourceStringLength = 300;
+
+  {This value is used in LocalizeMapping for parameter UseDefaultOnError.
+  Set to true to ignore invalid jwscl resource strings and use default ones.
+  Otherwise an exception is raised.
+  }
   IgnoreEJwsclResourceNotFound = true;
 
+  {These values defines the first resource string for the given
+  mapping resource strings. 
+  }
+
+  //
   FileMappingStartIndex = 50000;
   FolderMappingStartIndex = 50030;
   FileFolderMappingStartIndex = 50060;
@@ -1456,26 +1478,23 @@ const
   FW_MGR_CLASS_NAME = 'HNetCfg.FwMgr';
   FW_AUTHORIZEDAPPLICATION_CLASS_NAME = 'HNetCfg.FwAuthorizedApplication';
   FW_OPENPORT_CLASS = 'HNetCfg.FWOpenPort';
-  FW_INACTIVE = 'Windows Firewall is inactive';
-  FW_NOEXCEPTIONSALLOWED = 'Windows Firewall does not allow exceptions';
-
 
 {<B>JwInitLocalizedMappings</B> translate all the rights mapping arrays using the resource.
 
-// user language or neutral if not found
-// JwInitLocalizedMappings(PRIMARYLANGID(GetUserDefaultUILanguage),
-//   SUBLANGID(GetUserDefaultUILanguage));
-//   JwInitLocalizedMappings(LANG_SYSTEM_DEFAULT, SUBLANG_SYS_DEFAULT);
+ user language or neutral if not found
+ JwInitLocalizedMappings(PRIMARYLANGID(GetUserDefaultUILanguage),
+   SUBLANGID(GetUserDefaultUILanguage));
+   JwInitLocalizedMappings(LANG_SYSTEM_DEFAULT, SUBLANG_SYS_DEFAULT);
 
-// english version
-//  JwInitLocalizedMappings(LANG_ENGLISH, SUBLANG_ENGLISH_UK);
+ english version
+  JwInitLocalizedMappings(LANG_ENGLISH, SUBLANG_ENGLISH_UK);
 
-// german version
-//  JwInitLocalizedMappings(LANG_GERMAN,SUBLANG_GERMAN);
+ german version
+  JwInitLocalizedMappings(LANG_GERMAN,SUBLANG_GERMAN);
 
-// neutral version (using constant names)
-//  JwInitLocalizedMappings(LANG_NEUTRAL, SUBLANG_SYS_DEFAULT);
-//  JwInitLocalizedMappings(0,0);
+ neutral version (using constant names)
+  JwInitLocalizedMappings(LANG_NEUTRAL, SUBLANG_SYS_DEFAULT);
+  JwInitLocalizedMappings(0,0);
 
 @param PrimaryLanguage defines the primary language id 
 @param SubLanguage defines the primary language id 

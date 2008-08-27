@@ -183,6 +183,7 @@ uses JwaWindows, SysUtils, SyncObjs;
 
 {$IFNDEF SL_INTERFACE_SECTION}
 type
+  { <b>TJwAutoPointerImpl</b> implements the auto pointer interface IJwAutoPointer. }
   TJwAutoPointerImpl = class(TInterfacedObject, IJwAutoPointer)
   protected
     fInstance : TObject;
@@ -207,8 +208,22 @@ type
   TJwAutoLock = class(TInterfacedObject, IJwAutoLock)
   protected
     fAutoPointer : TJwAutoPointerImpl;
+    { The f<b>LeaveFlag</b> field defines whether the entered section is released when
+      the instance is destroyed (false) or not (true).
+      
+      It is for future use only and thus has no public access.                         }
     fLeaveFlag : Boolean;
   public
+    { <b>Create</b> creates a new TJwAutoLock instance and enters the a thread safe
+      section defined by parameter AutoPointer. If this section was already entered by
+      another thread, the constructor is blocked until released. There is no timeout!
+      
+      
+      
+      
+      Parameters
+      AutoPointer :  This parameter defines an auto pointer implementation that holds
+                     the thread section for exclusive access to the resource.          }
     constructor Create(const AutoPointer : TJwAutoPointerImpl);
 
     function GetAutoPointer : IJwAutoPointer;
@@ -219,6 +234,12 @@ type
 
     procedure BeforeDestruction; override;
 
+    { <b>UnLock</b> releases the section lock previously gained by creating the
+      instance.
+      
+      
+      See Also
+        * Create                                                                }
     procedure UnLock;
   end;
 
