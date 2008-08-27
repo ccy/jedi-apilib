@@ -1972,6 +1972,7 @@ function StringCchCopy(
     {__in}cchDest : size_t;
     {__in}const pszSrc : STRSAFE_LPCTSTR) : HRESULT; stdcall;
 begin
+  result := ERROR_SEVERITY_SUCCESS;
 {$IFDEF UNICODE}
     _StringCchCopy := @StringCchCopyW;
 {$ELSE}
@@ -1991,6 +1992,7 @@ function StringCbCopy(
     {__in}cbDest  : size_t;
     {__in}const pszSrc : STRSAFE_LPCTSTR) : HRESULT; stdcall;
 begin
+  result := ERROR_SEVERITY_SUCCESS;
   _StringCbCopy :=
 {$IFDEF UNICODE}@StringCbCopyW{$ELSE}@StringCbCopyA{$ENDIF};
   asm
@@ -2010,6 +2012,7 @@ function StringCchCopyEx(
     {__out_opt}pcchRemaining : PSize_t;
     {__in}dwFlags : Cardinal) : HRESULT; stdcall;
 begin
+  result := ERROR_SEVERITY_SUCCESS;
   _StringCchCopyEx :=
 {$IFDEF UNICODE}@StringCchCopyExW{$ELSE}@StringCchCopyExA{$ENDIF};
   asm
@@ -2029,13 +2032,14 @@ function StringCbCopyEx(
     {__out_opt}pcbRemaining : PSize_t;
     {__in}dwFlags : Cardinal) : HRESULT; stdcall;
 begin
+  result := ERROR_SEVERITY_SUCCESS;
   _StringCbCopyEx :=
 {$IFDEF UNICODE}@StringCbCopyExA{$ELSE}@StringCbCopyExA{$ENDIF};
   asm
     MOV     ESP, EBP
     POP     EBP
     JMP     [_StringCbCopyEx]
-  end; 
+  end;
 end;
 	
 	
@@ -2046,6 +2050,7 @@ function StringCchCopyN(
     {__in}const pszSrc : STRSAFE_LPCTSTR;
     {__in}cchToCopy : size_t) : HRESULT; stdcall;
 begin
+  result := ERROR_SEVERITY_SUCCESS;
   _StringCchCopyN :=
 {$IFDEF UNICODE}@StringCchCopyNW{$ELSE}@StringCchCopyNA{$ENDIF};
   asm
@@ -2062,17 +2067,18 @@ function StringCbCopyN(
     {__in}const pszSrc : STRSAFE_LPCTSTR;
     {__in}cchToCopy : size_t) : HRESULT; stdcall;
 begin
+  result := ERROR_SEVERITY_SUCCESS;
   _StringCbCopyN :=
 {$IFDEF UNICODE}@StringCbCopyNW{$ELSE}@StringCbCopyNA{$ENDIF};
   asm
     MOV     ESP, EBP
     POP     EBP
     JMP     [_StringCbCopyN]
-  end; 
+  end;
 end;
 
-	
-var _StringCchCopyNEx : Pointer;		
+
+var _StringCchCopyNEx : Pointer;
 function StringCchCopyNEx(
     {__in_ecount(cchDest)} pszDest : STRSAFE_LPTSTR;
     {__in}cchDest : size_t;
@@ -2082,17 +2088,18 @@ function StringCchCopyNEx(
     {__out_opt size_t}pcchRemaining : PSize_t;
     {__in}dwFlags : Cardinal)  : HRESULT; stdcall;
 begin
+  result := ERROR_SEVERITY_SUCCESS;
   _StringCchCopyNEx :=
 {$IFDEF UNICODE}@StringCchCopyNExW{$ELSE}@StringCchCopyNExA{$ENDIF};
   asm
     MOV     ESP, EBP
     POP     EBP
     JMP     [_StringCchCopyNEx]
-  end; 
-end;	
-	
-	
-var _StringCbCopyNEx : Pointer;		
+  end;
+end;
+
+
+var _StringCbCopyNEx : Pointer;
 function StringCbCopyNEx(
     {__out_bcount(cbDest) } pszDest : STRSAFE_LPTSTR;
     {__in}cchDest : size_t;
@@ -2102,22 +2109,24 @@ function StringCbCopyNEx(
     {__out_opt}pcchRemaining : PSize_t;
     {__in}dwFlags : Cardinal)  : HRESULT; stdcall;
 begin
+  result := ERROR_SEVERITY_SUCCESS;
   _StringCbCopyNEx :=
 {$IFDEF UNICODE}@StringCbCopyNExW{$ELSE}@StringCbCopyNExA{$ENDIF};
   asm
     MOV     ESP, EBP
     POP     EBP
     JMP     [_StringCbCopyNEx]
-  end; 
-end;	
-	
-	
-var _StringCchCat : Pointer;	
+  end;
+end;
+
+
+var _StringCchCat : Pointer;
 function StringCchCat(
     {__inout_ecount(cchDest)} pszDest : STRSAFE_LPTSTR;
     {__in}cchDest : size_t;
     {__in}const pszSrc : STRSAFE_LPCTSTR) : HRESULT; stdcall;
 begin
+  result := ERROR_SEVERITY_SUCCESS;
   _StringCchCat :=
 {$IFDEF UNICODE}@StringCchCatW{$ELSE}@StringCchCatA{$ENDIF};
   asm
@@ -2134,6 +2143,7 @@ function StringCbCat(
     {__in}cbDest : size_t;
     {__in}const pszSrc : STRSAFE_LPCTSTR) : HRESULT; stdcall;	
 begin
+  result := ERROR_SEVERITY_SUCCESS;
   _StringCbCat :=
 {$IFDEF UNICODE}@StringCbCatW{$ELSE}@StringCbCatA{$ENDIF};
   asm
@@ -2153,6 +2163,7 @@ function StringCchCatEx(
     {__out_opt} pcchRemaining : PSize_t;
     {__in}dwFlags : Cardinal) : HRESULT; stdcall;
 begin
+  result := ERROR_SEVERITY_SUCCESS;
   _StringCchCatEx :=
 {$IFDEF UNICODE}@StringCchCatExW{$ELSE}@StringCchCatExA{$ENDIF};
   asm
@@ -2172,6 +2183,7 @@ function StringCbCatEx(
     {__out_opt} pcchRemaining : PSize_t;
     {__in}dwFlags : Cardinal) : HRESULT; stdcall;
 begin
+  result := ERROR_SEVERITY_SUCCESS;
   _StringCbCatEx :=
 {$IFDEF UNICODE}@StringCbCatExW{$ELSE}@StringCbCatExA{$ENDIF};
   asm
@@ -2189,6 +2201,7 @@ function StringCchCatN(
     {__in_ecount(cchToAppend)}const pszSrc : STRSAFE_LPCTSTR;
     {__in}cchToAppend : Cardinal) : HRESULT; stdcall;
 begin
+  result := ERROR_SEVERITY_SUCCESS;
   _StringCchCatN :=
 {$IFDEF UNICODE}@StringCchCatNW{$ELSE}@StringCchCatNA{$ENDIF};
   asm
@@ -2206,6 +2219,7 @@ function StringCbCatN(
     {__in_bcount(cbToAppend)}const pszSrc : STRSAFE_LPCTSTR;
     {__in}cchToAppend : Cardinal) : HRESULT; stdcall;
 begin
+  result := ERROR_SEVERITY_SUCCESS;
   _StringCbCatN :=
 {$IFDEF UNICODE}@StringCbCatNW{$ELSE}@StringCbCatNA{$ENDIF};
   asm
@@ -2226,6 +2240,7 @@ function StringCchCatNEx(
     {__out_opt}pcchRemaining : PSize_t;
     {__in}dwFlags : Cardinal) : HRESULT; stdcall;
 begin
+  result := ERROR_SEVERITY_SUCCESS;
   _StringCchCatNEx :=
 {$IFDEF UNICODE}@StringCchCatNExW{$ELSE}@StringCchCatNExA{$ENDIF};
   asm
@@ -2248,6 +2263,7 @@ function StringCbCatNEx(
     {__out_opt}pcchRemaining : PSize_t;
     {__in}dwFlags : Cardinal) : HRESULT; stdcall;
 begin
+  result := ERROR_SEVERITY_SUCCESS;
   _StringCbCatNEx :=
 {$IFDEF UNICODE}@StringCbCatNExW{$ELSE}@StringCbCatNExA{$ENDIF};
   asm
@@ -2263,6 +2279,7 @@ function StringCchLength(
     {__in}cchMax : size_t;
     {__out_opt} pcchLength : PSize_t) : HRESULT; stdcall;
 begin
+  result := ERROR_SEVERITY_SUCCESS;
   _StringCchLength :=
 {$IFDEF UNICODE}@StringCchLengthW{$ELSE}@StringCchLengthA{$ENDIF};
   asm
@@ -2281,6 +2298,7 @@ function StringCbLength(
     {__in}cbMax : size_t;
     {__out_opt} pcbLength : PSize_t) : HRESULT; stdcall;
 begin
+  result := ERROR_SEVERITY_SUCCESS;
   _StringCbLength :=
 {$IFDEF UNICODE}@StringCbLengthW{$ELSE}@StringCbLengthA{$ENDIF};
 {$IFDEF UNICODE}
