@@ -21,16 +21,24 @@ begin
   end;
 end;
 
-var Hash: TJwHash; Data: String; HashVal: PByte; Size: Cardinal;
+var
+  Hash: TJwHash;
+  {Warning: You get different md5 results for
+   AnsiString and WideString
+  In Delphi2009 you'll use WideString
+  }
+  Data: String;
+  HashVal: PByte;
+  Size: Cardinal;
 begin
   Hash:= TJwHash.Create(haMD5);
   try
     Readln(Data);
-    Hash.HashData(PChar(Data)^, Length(Data));
+    Hash.HashData(@Data[1], Length(Data));
     Size := Hash.GetHashLength;
     GetMem(HashVal, Size);
     try
-      Hash.RetrieveHash(HashVal^, Size);
+      Hash.RetrieveHash(HashVal, Size);
       Dump(HashVal, Size);
     finally
       FreeMem(HashVal);

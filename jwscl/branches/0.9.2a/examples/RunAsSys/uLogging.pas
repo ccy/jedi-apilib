@@ -27,8 +27,8 @@ procedure LogAndRaiseLastOsError(Log : IJwLogClient;
 
 var //log filename + path
     LogFileNameLocation : WideString = '';
-    LogFilePath : String = '';
-    FileName : String = 'RunAsSys';
+    LogFilePath : AnsiString = '';
+    FileName : AnsiString = 'RunAsSys';
 
     {
     Type of events that are logged.
