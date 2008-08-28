@@ -42,7 +42,7 @@ begin
   try
     SD := TJwSecureGeneralObject.GetNamedSecurityInfo(ParamStr(1), SE_FILE_OBJECT, [siDaclSecurityInformation]);
 
-    SD.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil, [], GENERIC_ALL, Owner, false));
+//    SD.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil, [], GENERIC_ALL, Owner, false));
     SD.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil, [], GENERIC_READ, JwWorldSID, false));
 
     TJwSecureGeneralObject.SetNamedSecurityInfo(ParamStr(1), SE_FILE_OBJECT, [siDaclSecurityInformation], SD);

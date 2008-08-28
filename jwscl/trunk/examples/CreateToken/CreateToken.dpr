@@ -110,7 +110,7 @@ try
   //get the logon ID from the user token object
   AuthenticationId := Stats.AuthenticationId;
   //this one does not work in Vista - createtoken says : the logon id may be already finished
-  //AllocateLocallyUniqueId(AuthenticationId);
+  AllocateLocallyUniqueId(AuthenticationId);
 
   writeln(Stats.GetText);
   Stats.Free;

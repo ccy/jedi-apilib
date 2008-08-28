@@ -17,7 +17,7 @@ uses
 
 var  ElevatedObject: IElevationDemoObject;
 begin
-  CoInitialize(0);
+  CoInitialize(nil);
 
   try
     OleCheck(

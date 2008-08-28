@@ -4981,7 +4981,6 @@
     <link topicid="FW_INACTIVE" displaystring="FW_INACTIVE Constant">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/FW_INACTIVE.html</target>
       <target id="html">../html/FW_INACTIVE.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/FW_INACTIVE.html</target>
       <target id="pdf">pdf://3052@JWSCL.pdf</target>
       <target id="winhelp">id_5158@JWSCL.hlp</target>
     </link>
@@ -4995,7 +4994,6 @@
     <link topicid="FW_NOEXCEPTIONSALLOWED" displaystring="FW_NOEXCEPTIONSALLOWED Constant">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/FW_NOEXCEPTIONSALLOWED.html</target>
       <target id="html">../html/FW_NOEXCEPTIONSALLOWED.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/FW_NOEXCEPTIONSALLOWED.html</target>
       <target id="pdf">pdf://3054@JWSCL.pdf</target>
       <target id="winhelp">id_5160@JWSCL.hlp</target>
     </link>
@@ -9080,6 +9078,12 @@
       <target id="pdf">pdf://3195@JWSCL.pdf</target>
       <target id="winhelp">id_5300@JWSCL.hlp</target>
     </link>
+    <link topicid="RsFWInactive" displaystring="RsFWInactive Constant">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/RsFWInactive.html</target>
+    </link>
+    <link topicid="RsFWNoExceptionsAllowed" displaystring="RsFWNoExceptionsAllowed Constant">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/RsFWNoExceptionsAllowed.html</target>
+    </link>
     <link topicid="RsInfinite" displaystring="RsInfinite Constant">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/RsInfinite.html</target>
       <target id="html">../html/RsInfinite.html</target>
@@ -10458,6 +10462,9 @@
       <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/RsUNExceptions.html</target>
       <target id="pdf">pdf://3391@JWSCL.pdf</target>
       <target id="winhelp">id_5496@JWSCL.hlp</target>
+    </link>
+    <link topicid="RsUNFirewall" displaystring="RsUNFirewall Constant">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/RsUNFirewall.html</target>
     </link>
     <link topicid="RsUNImpersonation" displaystring="RsUNImpersonation Constant">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/RsUNImpersonation.html</target>
@@ -12779,7 +12786,6 @@
     </link>
     <link topicid="TJwAutoLock.fLeaveFlag" displaystring="TJwAutoLock.fLeaveFlag Field">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwAutoLock_fLeaveFlag.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwAutoLock_fLeaveFlag.html</target>
       <target id="pdf">pdf://475@JWSCL.pdf</target>
       <target id="winhelp">id_1784@JWSCL.hlp</target>
     </link>
@@ -19294,7 +19300,7 @@
       <target id="pdf">pdf://649@JWSCL.pdf</target>
       <target id="winhelp">id_2002@JWSCL.hlp</target>
     </link>
-    <link topicid="TJwSecurityAccessControlList.Create" displaystring="TJwSecurityAccessControlList.Create Constructor">
+    <link topicid="TJwSecurityAccessControlList.Create" displaystring="TJwSecurityAccessControlList.Create Constructor ()">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwSecurityAccessControlList_Create.html</target>
       <target id="html">../html/TJwSecurityAccessControlList_Create.html</target>
       <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlList_Create.html</target>
@@ -20713,7 +20719,7 @@
       <target id="pdf">pdf://1802@JWSCL.pdf</target>
       <target id="winhelp">id_3516@JWSCL.hlp</target>
     </link>
-    <link topicid="TJwSecurityDesktop.CreateDesktop@TJwSecurityDesktops@boolean@TJwString@TJwSecurityDesktopFlags@boolean@ACCESS_MASK@TJwSecurityDescriptor" displaystring="TJwSecurityDesktop.CreateDesktop Constructor">
+    <link topicid="TJwSecurityDesktop.CreateDesktop@TJwSecurityDesktops@boolean@TJwString@TJwSecurityDesktopFlags@boolean@ACCESS_MASK@TJwSecurityDescriptor" displaystring="TJwSecurityDesktop.CreateDesktop Constructor (TJwSecurityDesktops, boolean, TJwString, TJwSecurityDesktopFlags, boolean, ACCESS_MASK, TJwSecurityDescriptor)">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwSecurityDesktop_CreateDesktop@TJwSecurityDesktops@boolean@TJwString@TJwSecurityDesktopFlags@boolean@ACCESS_MASK@TJwSecurityDescriptor.html</target>
       <target id="html">../html/TJwSecurityDesktop_CreateDesktop@TJwSecurityDesktops@boolean@TJwString@TJwSecurityDesktopFlags@boolean@ACCESS_MASK@TJwSecurityDescriptor.html</target>
       <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityDesktop_CreateDesktop@TJwSecurityDesktops@boolean@TJwString@TJwSecurityDesktopFlags@boolean@ACCESS_MASK@TJwSecurityDescriptor.html</target>
@@ -20859,7 +20865,7 @@
       <target id="pdf">pdf://1806@JWSCL.pdf</target>
       <target id="winhelp">id_3520@JWSCL.hlp</target>
     </link>
-    <link topicid="TJwSecurityDesktop.OpenDesktop@TJwSecurityDesktops@boolean@TJwString@TJwSecurityDesktopFlags@boolean@ACCESS_MASK" displaystring="TJwSecurityDesktop.OpenDesktop Constructor">
+    <link topicid="TJwSecurityDesktop.OpenDesktop@TJwSecurityDesktops@boolean@TJwString@TJwSecurityDesktopFlags@boolean@ACCESS_MASK" displaystring="TJwSecurityDesktop.OpenDesktop Constructor (TJwSecurityDesktops, boolean, TJwString, TJwSecurityDesktopFlags, boolean, ACCESS_MASK)">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwSecurityDesktop_OpenDesktop@TJwSecurityDesktops@boolean@TJwString@TJwSecurityDesktopFlags@boolean@ACCESS_MASK.html</target>
       <target id="html">../html/TJwSecurityDesktop_OpenDesktop@TJwSecurityDesktops@boolean@TJwString@TJwSecurityDesktopFlags@boolean@ACCESS_MASK.html</target>
       <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityDesktop_OpenDesktop@TJwSecurityDesktops@boolean@TJwString@TJwSecurityDesktopFlags@boolean@ACCESS_MASK.html</target>
@@ -23471,7 +23477,7 @@
       <target id="pdf">pdf://2233@JWSCL.pdf</target>
       <target id="winhelp">id_4115@JWSCL.hlp</target>
     </link>
-    <link topicid="TJwSecurityWindowStation.Create@TJwString@boolean@TJwAccessMask@boolean@TJwSecurityDescriptor" displaystring="TJwSecurityWindowStation.Create Constructor">
+    <link topicid="TJwSecurityWindowStation.Create@TJwString@boolean@TJwAccessMask@boolean@TJwSecurityDescriptor" displaystring="TJwSecurityWindowStation.Create Constructor (TJwString, boolean, TJwAccessMask, boolean, TJwSecurityDescriptor)">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwSecurityWindowStation_Create@TJwString@boolean@TJwAccessMask@boolean@TJwSecurityDescriptor.html</target>
       <target id="html">../html/TJwSecurityWindowStation_Create@TJwString@boolean@TJwAccessMask@boolean@TJwSecurityDescriptor.html</target>
       <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityWindowStation_Create@TJwString@boolean@TJwAccessMask@boolean@TJwSecurityDescriptor.html</target>
@@ -24321,7 +24327,7 @@
       <target id="pdf">pdf://253@JWSCL.pdf</target>
       <target id="winhelp">id_3135@JWSCL.hlp</target>
     </link>
-    <link topicid="TJwTagThread.Create" displaystring="TJwTagThread.Create Constructor">
+    <link topicid="TJwTagThread.Create" displaystring="TJwTagThread.Create Constructor ()">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwTagThread_Create.html</target>
       <target id="html">../html/TJwTagThread_Create.html</target>
       <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwTagThread_Create.html</target>

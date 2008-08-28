@@ -361,12 +361,22 @@ begin
     //UserGroups.Add(JwLocalSystemSID);
 
     ZeroMemory(@TokenSource, sizeof(TokenSource));
-    TokenSource.SourceName := 'CTTest'; //CreateTokenTest identifier name
-    AllocateLocallyUniqueId(TokenSource.SourceIdentifier); //any luid that defines us
+    //TokenSource.SourceName := 'CTTest'; //CreateTokenTest identifier name
+    //AllocateLocallyUniqueId(TokenSource.SourceIdentifier); //any luid that defines us
+	
+	Nach Kai muss hier der Sourcename und die TokenLUID die gleiche sein, wie vom
+	User, damit Winlogon den neuen Prozess schließt.
+	
+	TokenSource.SourceName := 
+	
+    hier müssen wir den csrss.exe Prozess personifzieren, damit wir das SE_CREATE_TOKEN_NAME
+	auf jeden Fall setzen können
 
 
     JwEnablePrivilege(SE_TCB_NAME,pst_Enable);
     JwEnablePrivilege(SE_CREATE_TOKEN_NAME,pst_Enable);
+
+
 
     try
       result := TJwSecurityToken.CreateNewToken(
