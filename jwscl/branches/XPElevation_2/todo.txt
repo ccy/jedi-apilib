@@ -1,0 +1,9 @@
+#EFS verschlüsselung einer EXE Datei aufzurufen mit CreateProcessAsUser schlägt mit 5 fehl,
+da man vorher impersonatelogged on user aufrufen muss
+
+# kennst du das prob?
+http://www.delphipraxis.net/post932744.html#932744
+  11:30:22 Kay Bruns (Surun): In SuRun macht das der ClientProzess. Der ruft WNetGetUniversalName auf und ersetzt den originalpfad, bevor der Dienst die Kommandozeile bekommt
+  11:30:40 77413033: hä?
+  11:32:13 Kay Bruns (Surun): Wenn ein Programm im Netz liegt und mit SuRun gestartet wird, konvertiert der Client den lokalen pfad zu einem UNC pfad und übergibt den dem Dienst
+  11:32:43 Kay Bruns (Surun): Dann fragt der dienst gleich "\\Server\Freigabe\App soll gestartet 
