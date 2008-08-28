@@ -1953,7 +1953,7 @@ function MessageBoxTimeOut(
       uType: UINT; wLanguageId: WORD; dwMilliseconds: DWORD): Integer; stdcall;
 
 function MessageBoxTimeOutA(
-      hWnd: HWND; lpText: PChar; lpCaption: PChar;
+      hWnd: HWND; lpText: PAnsiChar; lpCaption: PAnsiChar;
       uType: UINT; wLanguageId: WORD; dwMilliseconds: DWORD): Integer; stdcall;
 
 function MessageBoxTimeOutW(
@@ -1972,8 +1972,8 @@ function MessageBoxCheck(
       uType: UINT;  Default: Integer; RegVal: PTSTR) : Integer; stdcall;
 
 function MessageBoxCheckA(
-      hWnd: HWND; lpText: PChar; lpCaption: PChar;
-      uType: UINT;  Default: Integer; RegVal: PChar) : Integer; stdcall;
+      hWnd: HWND; lpText: PAnsiChar; lpCaption: PAnsiChar;
+      uType: UINT;  Default: Integer; RegVal: PAnsiChar) : Integer; stdcall;
 
 
 function MessageBoxCheckW(
@@ -8448,7 +8448,7 @@ var
 
 function MessageBoxTimeOutA;
 begin
-  GetProcedureAddress(_MessageBoxTimeOutA, user32, 'MessageBoxTimeOutA');
+  GetProcedureAddress(_MessageBoxTimeOutA, user32, 'MessageBoxTimeoutA');
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -8461,7 +8461,7 @@ var
 
 function MessageBoxTimeOutW;
 begin
-  GetProcedureAddress(_MessageBoxTimeOutW, user32, 'MessageBoxTimeOutW');
+  GetProcedureAddress(_MessageBoxTimeOutW, user32, 'MessageBoxTimeoutW');
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -8474,7 +8474,7 @@ var
 
 function MessageBoxTimeOut;
 begin
-  GetProcedureAddress(_MessageBoxTimeOut, user32, 'MessageBoxTimeOut' + AWSuffix);
+  GetProcedureAddress(_MessageBoxTimeOut, user32, 'MessageBoxTimeout' + AWSuffix);
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -8493,7 +8493,7 @@ var
 
 function MessageBoxCheckA;
 begin
-  GetProcedureAddress(_MessageBoxCheckA, shlwapidll,  PAnsiChar(185));  //'SHMessageBoxCheckA'
+  GetProcedureAddress(_MessageBoxCheckA, shlwapidll,  185);  //'SHMessageBoxCheckA'
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -8506,7 +8506,7 @@ var
 
 function MessageBoxCheckW;
 begin
-  GetProcedureAddress(_MessageBoxCheckW, shlwapidll, PAnsiChar(191)); //'SHMessageBoxCheckW'
+  GetProcedureAddress(_MessageBoxCheckW, shlwapidll, 191); //'SHMessageBoxCheckW'
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -8519,7 +8519,7 @@ var
 
 function MessageBoxCheck;
 begin
-  GetProcedureAddress(_MessageBoxCheck, shlwapidll, PAnsiChar({$IFDEF UNICODE}191{$ELSE}185{$ENDIF UNICODE}));
+  GetProcedureAddress(_MessageBoxCheck, shlwapidll, {$IFDEF UNICODE}191{$ELSE}185{$ENDIF UNICODE});
   asm
         MOV     ESP, EBP
         POP     EBP

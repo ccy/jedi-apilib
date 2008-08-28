@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 294
   Top = 152
-  Width = 429
-  Height = 371
   Caption = 'MessageBoxCheck'
+  ClientHeight = 335
+  ClientWidth = 413
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText

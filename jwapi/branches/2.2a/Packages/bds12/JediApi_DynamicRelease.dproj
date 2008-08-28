@@ -4,7 +4,7 @@
 			<MainSource>JediApi_DynamicRelease.dpk</MainSource>
 			<Config Condition="'$(Config)'==''">Debug</Config>
 			<DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
-			<ProjectVersion>12</ProjectVersion>
+			<ProjectVersion>12.0</ProjectVersion>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Config)'=='Basis' or '$(Base)'!=''">
 			<Base>true</Base>
@@ -44,7 +44,7 @@
 			<DCC_DependencyCheckOutputName>bin\release\dynamic\JediApi_DynamicRelease.bpl</DCC_DependencyCheckOutputName>
 			<DCC_UnitSearchPath>.;..\;..\..\common;..\..\Win32Api;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
 			<DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
-			<DCC_Define>PACKAGE_CONDITIONS;JWA_INCLUDE_SETUP_API;JWA_INCLUDE_JWAADSTLB;DEBUG;DYNAMIC_LINK;JWA_WINDOWS;JWA_INCLUDE_SHELLAPI</DCC_Define>
+			<DCC_Define>PACKAGE_CONDITIONS;JWA_INCLUDE_SETUP_API;JWA_INCLUDE_JWAADSTLB;DEBUG;DYNAMIC_LINK;JWA_WINDOWS;JWA_INCLUDE_SHELLAPI;$(DCC_Define)</DCC_Define>
 			<DCC_BplOutput>bin\release\dynamic</DCC_BplOutput>
 		</PropertyGroup>
 		<ItemGroup>

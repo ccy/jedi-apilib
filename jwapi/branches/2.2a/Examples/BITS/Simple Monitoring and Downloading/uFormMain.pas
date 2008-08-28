@@ -31,7 +31,13 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, ComObj, StdCtrls, ActiveX, JwaBits, ExtCtrls, ComCtrls, Menus;
+  Dialogs, ComObj, StdCtrls, ActiveX,
+{$IFDEF JWA_WINDOWS}
+  JwaBits,
+{$ELSE}
+  JwaWindows,
+{$ENDIF JWA_WINDOWS}
+  ExtCtrls, ComCtrls, Menus;
 
 type
   TForm1 = class(TForm, IBackgroundCopyCallback)
@@ -80,7 +86,10 @@ begin
                                    JobID,
                                    Job)) then
   begin
-    if Succeeded(Job.AddFile('http://blog.delphi-jedi.net/wp-content/uploads/2008/04/jwabits.zip', 'd:\thebitsfile.zip')) then
+    
+    if Succeeded(Job.AddFile('http://blog.delphi-jedi.net/wp-content/uploads/2008/04/jwabits.zip', 
+ Error: Set your path first!
+      'e:\thebitsfile.zip')) then
       Job.SetNotifyInterface(Self);
   end;
 end;

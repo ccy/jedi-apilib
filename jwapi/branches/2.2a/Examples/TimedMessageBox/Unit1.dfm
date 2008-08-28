@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 541
   Top = 316
-  Width = 315
-  Height = 218
   Caption = 'MessageBoxTimeOut Example...'
+  ClientHeight = 182
+  ClientWidth = 299
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
