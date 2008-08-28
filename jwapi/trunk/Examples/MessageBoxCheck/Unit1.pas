@@ -2,9 +2,16 @@ unit Unit1;
 
 interface
 
+
+{.$DEFINE JWA_WINDOWS}
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, JwaShlWAPI;
+  Dialogs, StdCtrls,
+{$IFDEF JWA_WINDOWS}
+  JwaWindows;  //first create the jwaWindows.dcu
+{$ELSE}
+  JwaShlWAPI;  //set search path to jwapi/Win32API and jwapi/Common
+{$ENDIF JWA_WINDOWS}
 
 type
   TForm1 = class(TForm)

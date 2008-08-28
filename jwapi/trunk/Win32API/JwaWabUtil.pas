@@ -850,7 +850,7 @@ begin
   Result := WabUtilLoaded;
   if (not Result) and GetWabDllPath(WabDllPath) then
   begin
-    WabLibHandle := LoadLibrary(PChar(WabDllPath));
+    WabLibHandle := LoadLibraryA(PAnsiChar(WabDllPath));
     if WabUtilLoaded then
     begin
       WABCreateIProp := GetProcAddress(WabLibHandle, 'WABCreateIProp');

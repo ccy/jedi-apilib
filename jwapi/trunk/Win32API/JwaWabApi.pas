@@ -330,7 +330,7 @@ begin
   if (not Result) and GetWabDllPath(WabDllPath) then
   begin
     ExpandEnvironmentStringsW(PWideChar(WabDllPath), W, sizeof(W)*sizeof(WideChar));
-    LibHandle := LoadLibraryW(W);//PChar(WabDllPath));
+    LibHandle := LoadLibraryW(W);//PAnsiChar(WabDllPath));
     if WabApiLoaded then
     begin
       @WABOpen := GetProcAddress(LibHandle, 'WABOpen');

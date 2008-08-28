@@ -64,8 +64,19 @@ Standalone compiling would be useless!
   {$WARNINGS OFF}
 {$ENDIF DYNAMIC_LINK}
 
+{.$DEFINE ANSICODE}
+
 // Global switch to make UNICODE versions of API functions default
 {.DEFINE UNICODE}
+
+{$IFDEF ANSICODE}
+  {$IFDEF UNICODE}
+    //Ansicode must be stronger, since Delphi 2009
+    //sets UNICODE by default. However we unset it here
+    //if the user defined ansicode
+    {$UNDEF UNICODE}
+  {$ENDIF UNICODE}
+{$ENDIF ANSICODE}
 
 // Global switch to activate the use of the original basic types of
 // Delphi Windows.pas. Either indirectly in JwaWinType.pas or
