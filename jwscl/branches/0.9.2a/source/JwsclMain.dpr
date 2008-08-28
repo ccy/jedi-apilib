@@ -1,0 +1,43 @@
+{This project is for analyze purposes only!}
+Program JwsclMain;
+uses
+  JwaWindows,
+    JwsclAccounts,
+	JwsclAcl,
+	JwsclAuthCtx,
+	JwsclComUtils,
+	JwsclConstants,
+	JwsclCredentials,
+	JwsclCryptProvider,
+	JwsclDescriptor,
+	JwsclDesktops,
+	JwsclElevation,
+	JwsclEncryption,
+	JwsclEnumerations,
+	//JwsclEurekaLogUtils,
+	JwsclExceptions,
+  JwsclFirewall,
+	JwsclImpersonation,
+	JwsclKnownSid,
+	JwsclLogging,
+	JwsclLsa,
+	JwsclMapping,
+	JwsclPrivileges,
+	JwsclProcess,
+	JwsclResource,
+	JwsclSecureObjects,
+	JwsclSecurePrivateObjects,
+	JwsclSecureUserObjects,
+	JwsclSecurityDialogs,
+	JwsclSid,
+  JwsclStreams,
+	JwsclStrings,
+	JwsclTerminalServer,
+	JwsclToken,
+	JwsclTypes,
+	JwsclUtils,
+	JwsclVersion,
+	JwsclWinStations;
+
+begin
+end.
