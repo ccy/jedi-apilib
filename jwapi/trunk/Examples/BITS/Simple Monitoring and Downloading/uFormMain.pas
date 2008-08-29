@@ -49,6 +49,7 @@ type
     Resume1: TMenuItem;
     Suspend1: TMenuItem;
     Complete1: TMenuItem;
+    dlg_Save: TSaveDialog;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure btn_AddJobClick(Sender: TObject);
@@ -81,16 +82,18 @@ var
   Job : IBackgroundCopyJob;
   JobID : TGUID;
 begin
-  if Succeeded(FManager.CreateJob('My FPC-Download',
-                                   BG_JOB_TYPE_DOWNLOAD,
-                                   JobID,
-                                   Job)) then
+  if dlg_Save.Execute then
   begin
-    
-    if Succeeded(Job.AddFile('http://blog.delphi-jedi.net/wp-content/uploads/2008/04/jwabits.zip', 
- Error: Set your path first!
-      'e:\thebitsfile.zip')) then
-      Job.SetNotifyInterface(Self);
+    if Succeeded(FManager.CreateJob('My Download',
+                                     BG_JOB_TYPE_DOWNLOAD,
+                                     JobID,
+                                     Job)) then
+    begin
+
+      if Succeeded(Job.AddFile('http://blog.delphi-jedi.net/wp-content/uploads/2008/04/jwabits.zip',
+        PWideChar(WideString(dlg_Save.FileName)))) then
+        Job.SetNotifyInterface(Self);
+    end;
   end;
 end;
 

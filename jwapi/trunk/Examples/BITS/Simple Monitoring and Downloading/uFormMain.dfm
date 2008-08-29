@@ -72,4 +72,10 @@ object Form1: TForm1
       OnClick = Complete1Click
     end
   end
+  object dlg_Save: TSaveDialog
+    Filter = 'Any file|*.*'
+    Options = [ofOverwritePrompt, ofHideReadOnly, ofPathMustExist, ofEnableSizing]
+    Left = 152
+    Top = 264
+  end
 end
