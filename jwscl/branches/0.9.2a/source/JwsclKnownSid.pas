@@ -506,7 +506,7 @@ begin
 
   i := low(JwSidMapDef);
 
-  {We use goto here because
+  {We use two while here because
    a try/except within a loop can be really slow for
    many loops.
    However the solution creating a new procedure
@@ -515,34 +515,41 @@ begin
    So if we jump out of loop in case of exception
    we can simply jump back to next loop item. 
   }
-RestartLoop:
-  try
-    while i <= high(JwSidMapDef) do
-    begin
-      if Length(JwSidMapDef[i].SidString) > 0 then
+  while i <= high(JwSidMapDef) do
+  begin
+    //this outer loop isn't usually often called 
+    try
+      while i <= high(JwSidMapDef) do
       begin
-        Str := JwSidMapDef[i].SidString;
-        if JwSidMapDef[i].SidString[1] = '-' then
-          Str := LocalSidStr + Str;
+        if Length(JwSidMapDef[i].SidString) > 0 then
+        begin
+          //Create a SID: S-1-x-y-z...
+          Str := JwSidMapDef[i].SidString;
+          if JwSidMapDef[i].SidString[1] = '-' then
+            Str := LocalSidStr + Str;
 
-        Sid := TJwSecurityID.Create(Str);
+          //may fail with an invalid sid
+          //so the outer loop catches it
+          Sid := TJwSecurityID.Create(Str);
 
-        New(Map);
-        Map.Name := JwSidMapDef[i].Name;
-        Map.SidString := Str;
-        Map.Sid := Sid;
-        SidMaps.Add(Map);
+          New(Map);
+          try
+            Map.Name := JwSidMapDef[i].Name;
+            Map.SidString := Str;
+            Map.Sid := Sid;
+            SidMaps.Add(Map);
+          except
+            Dispose(Map);
+            raise;
+          end;
+        end;
+        Inc(i);
       end;
+    except
+      JwSidMapDefErrors.Add(Pointer(i));
       Inc(i);
     end;
-  except
-    JwSidMapDefErrors.Add(Pointer(i));
-    Inc(i);
   end;
-  //also within loop!
-  if i <= high(JwSidMapDef) then
-    goto RestartLoop;
-
 end;
 
 procedure JwDoneMapping;
@@ -554,7 +561,11 @@ begin
   for i := 0 to SidMaps.Count -1 do
   begin
     if SidMaps[i] <> nil then
+    begin
+      PJwSidMap(SidMaps[i]).Sid.Free;
+      PJwSidMap(SidMaps[i]).SidString := '';
       Dispose(PJwSidMap(SidMaps[i]))
+    end;
   end;
   FreeAndNil(SidMaps);
   FreeAndNil(JwSidMapDefErrors);
