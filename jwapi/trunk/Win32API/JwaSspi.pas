@@ -90,7 +90,7 @@ type
   PSecWChar = ^TSecWChar;
   TSecWChar = SEC_WCHAR;
 
-  SEC_CHAR = CHAR;
+  SEC_CHAR = AnsiChar;
   {$EXTERNALSYM SEC_CHAR}
   PSEC_CHAR = ^SEC_CHAR;
   {$NODEFINE PSEC_CHAR}
