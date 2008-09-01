@@ -473,8 +473,7 @@ var
 {$IFNDEF SL_OMIT_SECTIONS}
 implementation
 
-uses Dialogs, IniFiles;
-
+uses IniFiles;
 {$ENDIF SL_OMIT_SECTIONS}
 
 {$IFNDEF SL_INTERFACE_SECTION}
@@ -588,8 +587,6 @@ var i : Integer;
     //Map : PJwSidMap;
 begin
   JwRaiseOnNilParameter(SidMaps, 'JwInitMapping must be called.', 'JwAddMapSid','', RsUNKnownSid);
-
-  result := nil;
 
   for i := 0 to SidMaps.Count-1 do
   begin

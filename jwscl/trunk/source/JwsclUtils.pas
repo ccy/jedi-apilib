@@ -61,7 +61,7 @@ interface
 
 uses
   Classes,
-  jwaWindows,
+  JwaWindows,
 {$IFDEF JCL}
   JclWideFormat,
   JclWideStrings,
@@ -135,10 +135,8 @@ type
     make this bijective
       index <-> pointer
 
-  } 
+  }
   TJwIntTupleList = class
-  private
-    procedure Delete(Index: DWORD);
   protected
     fList : TList;
     function GetItem(Index : DWORD) : Pointer;
@@ -1180,7 +1178,6 @@ function JwGlobalFreeMem(var hMem: HGLOBAL): HGLOBAL;
   var i : Integer;
   begin
     result := -1;
-    i := -1;
     for I := 0 to InternalMemArray.Count - 1 do
     begin
       if not PMemTuple(InternalMemArray[i]).MemType and
@@ -1277,22 +1274,6 @@ begin
   fList := TList.Create;
 end;
 
-procedure TJwIntTupleList.Delete(Index: DWORD);
-var i : Integer;
-begin
-  for i := 0 to fList.Count - 1 do
-  begin
-    if PIntTuple(fList[i])^.Index = Index then
-    begin
-      Dispose(PIntTuple(fList[i]));
-
-      fList.Delete(i);
-      exit;
-    end;
-  end;
-
-  raise ERangeError.CreateFmt('Index value %d not found',[Index]);
-end;
 
 procedure TJwIntTupleList.Clear;
 var i : Integer;
@@ -1301,6 +1282,7 @@ begin
   begin
     Dispose(PIntTuple(fList[i]));
   end;
+  fList.Clear;
 end;
 
 procedure TJwIntTupleList.DeleteIndex(Index: DWORD);
@@ -1311,6 +1293,7 @@ begin
     if PIntTuple(fList[i])^.Index = Index then
     begin
       dispose(PIntTuple(fList[i]));
+      fList.Delete(i);
       exit;
     end;
   end;

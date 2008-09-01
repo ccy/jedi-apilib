@@ -51,8 +51,6 @@ uses SysUtils, Classes,
   jwaWindows,
   jwaVista,
   JwsclResource,
-
- 
   JwsclTypes, JwsclStrings;
 
 {$ENDIF SL_OMIT_SECTIONS}

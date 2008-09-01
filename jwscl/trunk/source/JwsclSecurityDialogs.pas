@@ -46,14 +46,12 @@ unit JwsclSecurityDialogs;
 
 interface
 
-uses SysUtils, Classes, Registry, Contnrs,
-{$IFDEF FPC}
-  Buttons,
-{$ENDIF FPC}
-  jwaWindows, Dialogs, StdCtrls, ComCtrls,ActiveX,
+uses
+  SysUtils, Classes, 
+  JwaWindows, ActiveX,
   JwsclResource,
   JwsclTypes, JwsclExceptions, JwsclSid, JwsclAcl, JwsclToken,
-  JwsclMapping, JwsclKnownSid, JwsclSecureObjects,
+  JwsclMapping, JwsclKnownSid, JwsclSecureObjects, JwsclComUtils,
   JwsclVersion, JwsclConstants, JwsclDescriptor,
   JwsclStrings; //JwsclStrings, must be at the end of uses list!!!
 {$ENDIF SL_OMIT_SECTIONS}
@@ -417,7 +415,8 @@ type
     fObjectType: TGUID;
 
     //StringPool for ISecurityInformation.GetObjectInformation
-    sPageTitle, sObjectName, sServerName: PWideChar;
+    sPageTitle, sServerName: PWideChar;
+    sObjectName : TList;
 
     fAdvWindowHandle, fWindowHandle: HWND;
     fOnInitSecurityDialog: TJwOnInitSecurityDialog;
@@ -432,7 +431,6 @@ type
     fOnSetSecurity:   TJwOnSetSecurity;
     fInheritTypeList: TJwInheritTypeList;
 
-    fSetOwnerButton: TButton;
 
     fOnGetEffectivePermissions: TJwOnGetEffectivePermissions;
 
@@ -619,8 +617,8 @@ function TJwSecurityDescriptorDialog.GetObjectInformation(
   begin
     if sPageTitle <> nil then
       FreeMem(sPageTitle);
-    if sObjectName <> nil then
-      FreeMem(sObjectName);
+     {if sObjectName <> nil then
+      FreeMem(sObjectName);}
     if sServerName <> nil then
       FreeMem(sServerName);
   end;
@@ -671,8 +669,19 @@ begin
     fObjectName := fObjectName + ' ';
 
   InitString(pObjectInfo.pszObjectName, fObjectName);
-  sObjectName := pObjectInfo.pszObjectName;
-
+  // due to a problem that prevents the title to be displayed incorrectly
+  // I decided to save the pointer to the string into a list
+  // If we would delete the last created pointer, this pointer could
+  // used by the ACL window though.
+  // So we just save all pointers and destroy them in the end.
+  //
+  // It is strange that this does not happen for ObjectName and PageTitle
+  //
+  // If you find strange chars there too, this must be changed too.
+  //
+  // Of course we could also just recylcle the last pointer
+  // but this cannot be used with GetMem imho.
+  sObjectName.Add(pObjectInfo.pszObjectName);
 
   if Length(PageTitle) <> 0 then
     pObjectInfo.dwFlags := pObjectInfo.dwFlags or SI_PAGE_TITLE;
@@ -1337,8 +1346,10 @@ begin
   fObjectTypeList := nil;
 
   sPageTitle  := nil;
-  sObjectName := nil;
+
   sServerName := nil;
+
+  sObjectName := TList.Create;
 
 
   fInheritTypeList := TJwInheritTypeList.Create;
@@ -1348,13 +1359,19 @@ end;
 destructor TJwSecurityDescriptorDialog.Destroy;
 
   procedure DoneStringPool;
+  var i : Integer;
   begin
     if sPageTitle <> nil then
       FreeMem(sPageTitle);
-    if sObjectName <> nil then
-      FreeMem(sObjectName);
     if sServerName <> nil then
       FreeMem(sServerName);
+
+    for i := 0 to sObjectName.Count -1 do
+    begin
+      if sObjectName[i] <> nil then
+        FreeMem(sObjectName[i]);
+    end;
+    FreeAndNil(sObjectName);
   end;
 
 begin
@@ -1487,6 +1504,7 @@ function TJwSecurityDescriptorDialog.GetEffectivePermission(
   var pcGrantedAccessListLength: ULONG): HRESULT;
 var
   SD: TJwSecurityDescriptor;
+  tempDACL : TJwDAccessControlList;
   pDACL: PACL;
   UserSID: TJwSecurityId;
   AccessRights: ACCESS_MASK;
@@ -1503,20 +1521,54 @@ begin
     if (Assigned(SD.DACL)) then
     begin
       UserSID := TJwSecurityId.Create(pUserSid);
+       
       pDACL := SD.DACL.Create_PACL;
-
       aTrustee := UserSID.Trustee;
 
-
-      //FreeAndNil(SD);
-   {$IFDEF UNICODE}
+{$IFDEF UNICODE}
       err := GetEffectiveRightsFromAclW
-   {$ELSE}
+{$ELSE}
       err := GetEffectiveRightsFromAclA
-   {$ENDIF}
-        (pDACL, @aTrustee, AccessRights);
+{$ENDIF}
+               (pDACL, @aTrustee, AccessRights);
 
-      SD.DACL.Free_PACL(pDACL);
+      // GetEffectiveRightsFromAcl may fail with 1332 if
+      // it encounters sids that cannot be translated to names
+      if (err = ERROR_NONE_MAPPED) then
+      begin
+        SD.DACL.Free_PACL(pDACL);
+        // we create a copy of the DACL and
+        // remove all ACEs which names cannot be resolved
+        // since this error makes GetEffectiveRightsFromAcl fail
+        // This function calls LookupAccountSid which fails with
+        // lasterror 1332 (sid name cannot be resolved)
+    
+        tempDACL := TJwDAccessControlList.Create;
+          TJwAutoPointer.Wrap(tempDACL); //auto destroy
+        tempDACL.Assign(SD.DACL);
+
+        for i := tempDACL.Count -1 downto 0 do
+        begin
+          try
+            //we check only
+            tempDACL.Items[i].SID.AccountName[''];
+          except
+            tempDACL.Remove(i);
+          end;
+        end;
+
+        pDACL := tempDACL.Create_PACL;
+
+
+     {$IFDEF UNICODE}
+        err := GetEffectiveRightsFromAclW
+     {$ELSE}
+        err := GetEffectiveRightsFromAclA
+     {$ENDIF}
+          (pDACL, @aTrustee, AccessRights);
+
+        SD.DACL.Free_PACL(pDACL);
+      end;
 
       if (err = 0) then
       begin
@@ -1659,13 +1711,13 @@ begin
        +1 adds zero space
       }
       ppInheritArray := PInheritedFromW(LocalAlloc(LPTR,
-        (ACL.Count + 1) * sizeof(TInheritedFromW) + iSize *
-        sizeof(widechar)));
+        (Cardinal(ACL.Count) + 1) * sizeof(TInheritedFromW) +
+        iSize * SizeOf(WideChar)));
 
       //lots of pointer hacking frome here on!   
       //string block    
-      DataPtr := Pointer(Cardinal(ppInheritArray) + ACL.Count *
-        sizeof(TInheritedFromW));
+      DataPtr := Pointer(Cardinal(ppInheritArray) +
+        Cardinal(ACL.Count) * sizeof(TInheritedFromW));
 
       i2 := Length(InheritanceArray);
       for i := 0 to i2 - 1 do
@@ -1844,40 +1896,31 @@ end;
 
 
 { TJwSidInfoDataObject }
-//function TJwSidInfoDataObject.GetData(formatetcIn: PFormatEtc; medium: PStgMedium):  HRESULT; stdcall;
 function TJwSidInfoDataObject.GetData(const formatetcIn: TFormatEtc;
   out medium: TStgMedium): HRESULT; stdcall;
 
-var
-  aPSidList: PSID_INFO_LIST;
-  i, cnt: integer;
-  p1, p2, p3: PWideChar;
-  //function TJwSidInfoDataObject.GetData(const formatetcIn: jwaWindows.TFormatEtc; out medium: jwaWindows.TStgMedium): HRESULT; stdcall;
+//var
+//  aPSidList: PSID_INFO_LIST;
+//  i, cnt: integer;
+//  p1, p2, p3: PWideChar;
+
 begin
   FillChar(medium, sizeof(TStgMedium), 0);
   medium.hGlobal := Cardinal(fInfoList);
-//  medium.unkForRelease := nil;
   medium.tymed := TYMED_HGLOBAL;
 
+// Read the content of fInfoList here if you want:
 
-  aPSidList := PSID_INFO_LIST(GlobalLock(medium.hGlobal));
-  cnt := aPSidList.cItems;
+//  aPSidList := PSID_INFO_LIST(GlobalLock(medium.hGlobal));
+//  cnt := aPSidList.cItems;
 
-  for i := 0 to cnt - 1 do
+{  for i := 0 to cnt - 1 do
   begin
     p1 := aPSidList.aSidInfo[i].pwzCommonName;
     p2 := aPSidList.aSidInfo[i].pwzClass;
-    p3 := aPSidList.aSidInfo[i].pwzUPN;
-  end;
+  end;}
 
-  GlobalUnLock(medium.hGlobal);
- {
-  FillChar(medium, sizeof(TStgMedium), 0);
-  medium.hGlobal := GlobalAlloc(GHND,123);
-  medium.unkForRelease := nil;
-  medium.tymed := TYMED_HGLOBAL;
-                                  }
-  //  ReleaseStgMedium(medium);
+  GlobalUnLock(medium.hGlobal); //TODO: 1st Sept 2008@CW : is this necessary?
 
   Result := S_OK;
 end;

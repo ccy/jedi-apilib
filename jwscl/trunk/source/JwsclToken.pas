@@ -46,8 +46,8 @@ unit JwsclToken;
 interface
 
 uses SysUtils, Contnrs, Classes,
-  Windows, Dialogs,
-  jwaWindows, JwsclResource, JwsclUtils, JwaVista,
+  JwaWindows,
+  JwsclResource, JwsclUtils, JwaVista,
   JwsclTypes, JwsclExceptions, JwsclSid, JwsclAcl,
   JwsclDescriptor, JwsclEnumerations,
   JwsclVersion, JwsclConstants,
@@ -111,17 +111,17 @@ type
         Only objects are destroyed!
        }
     procedure Done; virtual;
-       {<B>PopPrivileges</B> restores privileges from a nested call to PushPrivileges.
-        TODO: to test
-        @return Returns the count of privilege stack elements.
-       }
-    function PopPrivileges: cardinal;
+     {<B>PopPrivileges</B> restores privileges from a nested call to PushPrivileges.
+      TODO: to test
+      @return Returns the count of privilege stack elements.
+     }
+    //function PopPrivileges: cardinal;
     {<B>PushPrivileges</B> saves the actual privilege enabled states in a stack.
         They can be restored with a correctly nested call to PopPrivileges.
                TODO: to test
         @return
        }
-    function PushPrivileges: cardinal;
+    //function PushPrivileges: cardinal;
 
     {<B>RaiseOnInvalidPrimaryToken</B> checks for whether user is SYSTEM and raises exception if not.
      @param MethodName defines the method name of the caller 
@@ -1861,14 +1861,14 @@ function JwIsUACEnabled: Boolean;
     Data : Pointer;
   begin
     result := false;
-    if RegOpenKeyExW(HKEY_LOCAL_MACHINE, 'Software\Microsoft\Windows\CurrentVersion\Policies\System', 0, KEY_READ, Key) = ERROR_SUCCESS then
+    if RegOpenKeyExW(HKEY_LOCAL_MACHINE, 'Software\Microsoft\Windows\CurrentVersion\Policies\System', 0, KEY_READ, Key) = HRESULT(ERROR_SUCCESS) then
     begin
-      Result := RegQueryValueExW(Key, 'EnableLUA', nil, nil, nil, @Size) = ERROR_SUCCESS;
+      Result := RegQueryValueExW(Key, 'EnableLUA', nil, nil, nil, @Size) = HRESULT(ERROR_SUCCESS);
       if Result then
       begin
         GetMem(Data, Size);
         try
-          if RegQueryValueExW(Key, 'EnableLUA', nil, nil, Data, @Size) = ERROR_SUCCESS then
+          if RegQueryValueExW(Key, 'EnableLUA', nil, nil, Data, @Size) = HRESULT(ERROR_SUCCESS) then
             result := Boolean(Data^);
         finally
           FreeMem(Data);
@@ -2909,7 +2909,7 @@ begin
   //  fSecurityIDList.Free;
 end;
 
-function TJwSecurityToken.PopPrivileges: cardinal;
+{function TJwSecurityToken.PopPrivileges: cardinal;
 var
   Privs, PrivPop: TJwPrivilegeSet;
   i:    integer;
@@ -2940,9 +2940,9 @@ begin
   fStackPrivilegesList.Delete(fStackPrivilegesList.Count - 1);
 
   Result := fStackPrivilegesList.Count;
-end;
+end;      }
 
-function TJwSecurityToken.PushPrivileges: cardinal;
+{function TJwSecurityToken.PushPrivileges: cardinal;
 var
   Privs: TJwPrivilegeSet;
 begin
@@ -2950,7 +2950,7 @@ begin
   fStackPrivilegesList.Add(Privs);
 
   Result := fStackPrivilegesList.Count;
-end;
+end;}
 
 procedure TJwSecurityToken.CheckTokenHandle(sSourceProc: AnsiString);
 begin
@@ -3641,7 +3641,7 @@ begin
     ptrTokenType, 0, Result) then
   begin
     iError := GetLastError;
-    if (iError <> ERROR_INSUFFICIENT_BUFFER) and (iError <> 24) then
+    if (iError <> HRESULT(ERROR_INSUFFICIENT_BUFFER)) and (iError <> 24) then
       Result := 0;
     if iError = 24 then
     begin
@@ -4302,15 +4302,11 @@ procedure TJwSecurityToken.SetIntegrityLevel(const MandatorySid: TJwSecurityId;
   const Attributes: TJwSidAttributeSet = [sidaGroupMandatory]);
 var
   mL: TTokenMandatoryLabel;
-  l:  integer;
 begin
   if not Assigned(MandatorySid) then
     raise EJwsclNILParameterException.CreateFmtEx(
       RsNilParameter, 'SetIntegrityLevel', RsTokenGlobalClassName,
       RsUNToken, 0, False, ['MandatorySid']);
-
-
-  l := MandatorySid.SIDLength;
 
   mL.Label_.Sid := MandatorySid.CreateCopyOfSID;
   mL.Label_.Attributes := TJwEnumMap.ConvertAttributes(Attributes);
@@ -4702,6 +4698,8 @@ begin
   JwRaiseOnNilParameter(RequiredPrivileges,
     'RequiredPrivileges','PrivilegeCheckEx',ClassName,RsUNToken);
 
+  result := false;
+
   pPriv := RequiredPrivileges.Create_PPRIVILEGE_SET;
 
   try
@@ -4712,11 +4710,8 @@ begin
       pPriv.Control := pPriv.Control and not PRIVILEGE_SET_ALL_NECESSARY;
 
     if not jwaWindows.PrivilegeCheck(TokenHandle, pPriv, bRes) then
-    begin
-      RequiredPrivileges.Free_PPRIVILEGE_SET(pPriv);
       raise EJwsclSecurityException.CreateFmtEx(RsWinCallFailed,
         'PrivilegeCheckEx', ClassName, RsUNToken, 0, True, ['PrivilegeCheck']);
-    end;
 
     Result := bRes;
   finally

@@ -55,9 +55,6 @@ interface
 
 uses
   SysUtils, Contnrs, Classes,
-{DEBUG}
-  Dialogs,
-{DEBUG}
   jwaWindows, JwaVista,
   JwsclResource, JwsclUtils,
 
@@ -3153,8 +3150,6 @@ end;
 class function TJwSecurityAccessControlEntry.CreateACE(
 const  AccessEntryPointer: PAccessAllowedAce): TJwSecurityAccessControlEntry;
 begin
-  Result := nil;
-
   if not Assigned(AccessEntryPointer) then
     raise EJwsclNILParameterException.CreateFmtEx(
       RsACLClassNilParameter, 'CreateACE', ClassName, RsUNAcl,
@@ -3200,7 +3195,6 @@ end;
 
 function TJwSecurityAccessControlEntry.GetDynamicTypeSize : Cardinal;
 begin
-  result := 0;
   case GetAceType of
     actAudit         : result := sizeof(SYSTEM_AUDIT_ACE);
     actAuditCallback : result := sizeof(SYSTEM_AUDIT_CALLBACK_ACE);
@@ -3331,13 +3325,6 @@ var
   //aPSID: PSID;
   Size : Cardinal;
 begin
-  if not Assigned(SID) then
-    Result := PAccessAllowedAce(GlobalAlloc(GMEM_FIXED or
-      GMEM_ZEROINIT, sizeof(TAccessAllowedAce)))
-  else
-    Result := PAccessAllowedAce(GlobalAlloc(GMEM_FIXED or
-      GMEM_ZEROINIT, sizeof(TAccessAllowedAce) + SID.SIDLength));
-
   //only allow return structures that are compatible to result type
   if
   not
@@ -3355,33 +3342,6 @@ begin
       0, False, []);
 
   result := CreateDynamicACE(Size);
-
-  (*
-  Result.Header.AceFlags := TJwEnumMap.ConvertAceFlags(Flags);
-
-
-  Result.Mask := AccessMask;
-  Result.Header.AceSize := GlobalSize(Cardinal(Result));
-  Result.SidStart := 0;
-
-
-  if Assigned(SID) then
-  begin
-    aPSID := SID.CreateCopyOfSID;
-
-    if aPSID <> nil then
-    begin
-      //mem := @Result.SidStart;
-      //FillChar(mem^, SID.SIDLength, 8);
-      CopyMemory(@Result.SidStart, aPSID, SID.SIDLength);
-      //mem := @Result.SidStart;
-
-      //if mem = nil then;
-
-      SID.FreeSID(aPSID);
-    end;
-  end;    *)
-
 end;
 
 
@@ -3697,8 +3657,6 @@ end;
 
 function TJwSecurityAccessControlEntry.GetAceType: TJwAceType;
 begin
-  Result := actUnknown;
-
   {Order must be correct
     CallbackX
     CallbackObjectX

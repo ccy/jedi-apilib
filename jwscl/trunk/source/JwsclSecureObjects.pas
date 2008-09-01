@@ -42,7 +42,8 @@ unit JwsclSecureObjects;
 // Last modified: $Date: 2007-09-10 10:00:00 +0100 $
 interface
 
-uses SysUtils, Classes, Registry, Contnrs,
+uses SysUtils, Classes, Registry,
+  Contnrs {used for TQueue},
   jwaWindows, JwsclResource,
   JwsclTypes, JwsclExceptions, JwsclSid, JwsclAcl, JwsclToken,
   JwsclMapping, JwsclKnownSid, JwsclUtils,
@@ -311,7 +312,7 @@ type
 
     function GetSecurityDescriptor(
       const SD_entries: TJwSecurityInformationFlagSet): TJwSecurityDescriptor;
-      virtual; {WARNING: abstract in code!!}
+      virtual; {WARNING: EJwsclNotImplementedException : abstract in code!!}
 
     class procedure TreeResetNamedSecurityInfo(pObjectName: TJwString;
       const aObjectType:
@@ -2817,9 +2818,6 @@ type
 implementation
 
 uses TypInfo,
-{$IFDEF DEBUG}
-     Dialogs,
-{$ENDIF DEBUG}
      JwsclProcess,
      JwsclEnumerations;
 
@@ -2830,6 +2828,7 @@ uses TypInfo,
 {$IFNDEF SL_INTERFACE_SECTION}
 
 
+const NOERROR = 0;
 
 
 function ExpandFileName(const FileName: TJwString): TJwString;
@@ -2970,7 +2969,7 @@ begin
   if pSACL <> nil then
     TJwSecurityAccessControlList.Free_PACL(jwaWindows.PACL(pSACL));
 
-  if (Res <> ERROR_SUCCESS) then
+  if (Res <> NOERROR) then
     raise EJwsclWinCallFailedException.CreateFmtEx(
       RsWinCallFailedWithNTStatus, 'SetNamedSecurityInfo',
       ClassName, RsUNSecureObjects, 0, res, ['SetSecurityInfo',res]);
@@ -3058,7 +3057,7 @@ begin
   if pSACL <> nil then
     TJwSecurityAccessControlList.Free_PACL(jwaWindows.PACL(pSACL));
 
-  if (Res <> ERROR_SUCCESS) then
+  if (Res <> NOERROR) then
     raise EJwsclWinCallFailedException.CreateFmtEx(
       RsWinCallFailedWithNTStatus,
       'SetNamedSecurityInfoW', ClassName, RsUNSecureObjects, 0, res,
@@ -3105,7 +3104,7 @@ begin
     @pDACL, @pSACL,
     jwaWindows_PSecurity_Descriptor(pSDesc));
 
-  if (Res <> ERROR_SUCCESS) then
+  if (Res <> NOERROR) then
     raise EJwsclWinCallFailedException.CreateFmtEx(
       RsWinCallFailedWithNTStatus,
       'GetSecurityInfo',ClassName, RsUNSecureObjects, 0, res,
@@ -3180,7 +3179,7 @@ begin
     nil, nil,
     jwaWindows_PSecurity_Descriptor(pSDesc));
 
-  if (Res <> ERROR_SUCCESS) then
+  if (Res <> NOERROR) then
     raise EJwsclWinCallFailedException.CreateFmtEx(
       RsWinCallFailedWithNTStatus,
       'GetSecurityInfo',
@@ -3233,7 +3232,7 @@ begin
     @pDACL, @pSACL,
     jwaWindows_PSecurity_Descriptor(pSDesc));
 
-  if (Res <> ERROR_SUCCESS) then
+  if (Res <> NOERROR) then
     raise EJwsclWinCallFailedException.CreateFmtEx(
       RsWinCallFailedWithNTStatus,
       'GetNamedSecurityInfo', ClassName, RsUNSecureObjects, 0, res,
@@ -3312,7 +3311,7 @@ begin
     nil, nil,
     jwaWindows_PSecurity_Descriptor(pSDesc));
 
-  if (Res <> ERROR_SUCCESS) then
+  if (Res <> NOERROR) then
     raise EJwsclWinCallFailedException.CreateFmtEx(
       RsWinCallFailedWithNTStatus,
       'GetSecurityInfo',
@@ -4124,7 +4123,7 @@ function TJwSecureBaseClass.GetSecurityDescriptor(
 begin
   {GetSecurityDescriptor must provide all information from a SD
    including Control flag. We cannot do this here.}
-  Raise EAbstractError.Create('You must override GetSecurityDescriptor');
+  Raise EJwsclNotImplementedException.Create('You must override GetSecurityDescriptor');
 end;
 
 
@@ -4372,7 +4371,7 @@ begin
         'GetInheritanceSource', ClassName, RsUNSecureObjects, 0, False, [hres]);
 
 
-    if hres <> ERROR_SUCCESS then
+    if hres <> NOERROR then
     begin
       raise EJwsclWinCallFailedException.CreateFmtEx(
         RsWinCallFailedWithNTStatus,
@@ -4870,8 +4869,6 @@ procedure TJwSecureFileObject.AccessCheck(
   const ClientToken: TJwSecurityToken = nil);
 var
   SD: TJwSecurityDescriptor;
-  //GA: Cardinal;
-  privSet: TJwPrivilegeSet;
 begin
   SD := GetSecurityDescriptor([siOwnerSecurityInformation,
     siGroupSecurityInformation, siDaclSecurityInformation]);
@@ -4881,7 +4878,6 @@ begin
 
   //!!!  noch tfilestream access mask hier verwenden
 
-  privSet := nil;
   try
     AccessCheck(SD, ClientToken, DesiredAccess,
       PrivilegeSet, GrantedAccess, AccessStatus);
@@ -5410,8 +5406,6 @@ function TJwSecureFileObject.GetSecurityDescriptor(
   const SD_entries: TJwSecurityInformationFlagSet): TJwSecurityDescriptor;
 
 begin
-  Result := nil;
-
   if (fFileName <> '') then
   begin
     result := GetNamedSecurityInfo(TJwPChar(fFileName), SE_FILE_OBJECT, SD_entries);
@@ -8623,7 +8617,7 @@ begin
         //get needed buffer size
         if (RegGetKeySecurity(hSubKey,
           TJwEnumMap.ConvertSecurityInformation(aSecurityInfo), pSD, SecD) <>
-          ERROR_INSUFFICIENT_BUFFER) or (SecD = 0) then
+          HRESULT(ERROR_INSUFFICIENT_BUFFER)) or (SecD = 0) then
           raise EJwsclWinCallFailedException.CreateFmtWinCall(
             RsSecureObjectsCallFailedRegGetKeySecurity,
             'GetKeyInheritanceSource', ClassName,
@@ -9360,7 +9354,7 @@ var
       FreeMem(pName);
     end;
 
-    if (ret <> ERROR_NO_MORE_ITEMS) then
+    if (ret <> HRESULT(ERROR_NO_MORE_ITEMS)) then
     begin
       //raise
     end

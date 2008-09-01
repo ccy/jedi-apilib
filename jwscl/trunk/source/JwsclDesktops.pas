@@ -50,8 +50,9 @@ unit JwsclDesktops;
 
 interface
 
-uses SysUtils, Classes, Registry, Contnrs,
-  jwaWindows, StdCtrls, ComCtrls, ActiveX,
+uses SysUtils, Classes, Contnrs,
+  Registry,
+  jwaWindows,
   JwsclResource,
   JwsclTypes, JwsclExceptions, JwsclSid, JwsclAcl, JwsclToken,
   JwsclMapping, JwsclKnownSid, JwsclSecureObjects,
@@ -89,7 +90,7 @@ type
     This especially happens if Delphi is active and shows the exception source on the default desktop.
    2. This instance does not dynamically react on changes done by direct WinAPI calls.
    }
-  TJwSecurityDesktop = class(TPersistent)
+  TJwSecurityDesktop = class
   private
     { private declarations }
     fParent:        TJwSecurityDesktops;
@@ -128,8 +129,8 @@ type
      @return OpenDesktop returns a handle to the desktop 
      raises
  OpenDesktop:  raises EJwsclOpenDesktopException with an error description if the desktop could not be opened
-             OpenDesktop raises EJwsclDesktopException if the desktop is already opened by this instance. 
-       
+             OpenDesktop raises EJwsclDesktopException if the desktop is already opened by this instance.
+
   }
     function OpenDesktop(const aName: TJwString;
       const DesktopFlags: TJwSecurityDesktopFlags;
@@ -369,7 +370,6 @@ type
 
 
   public
-    { published declarations }
     {The readonly property<B>Name</B> contains the name of the Desktops. Be aware that desktop names are case sensitive.}
     property Name: TJwString Read GetName;
     {The readonly property <B>DesiredAccess</B> contains the access mask specified by the parameter aDesiredAccess in Create }
@@ -611,8 +611,6 @@ type
  If:  an error occurs EJwsclDesktopException will be raised }
      class function GetDesktopHeapSize : Cardinal; virtual;
 {$ENDIF}
-  published
-    { published declarations }
 
    {The readonly property Desktops contains all desktops that are administered by this instance.
     Be aware that pointers to the instances can be made invalid.}
@@ -1603,7 +1601,6 @@ var
 begin
   Result := nil;
   len := 0;
-  apSID := nil;
 {$IFDEF UNICODE}
   GetUserObjectInformationW  (
 {$ELSE}

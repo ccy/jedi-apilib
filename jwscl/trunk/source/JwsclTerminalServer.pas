@@ -68,7 +68,7 @@ unit JwsclTerminalServer;
 interface
 
 uses
-  Classes, Contnrs, DateUtils, SysUtils,
+  Classes, Contnrs, SysUtils,
   JwaWindows,
   JwsclExceptions, JwsclResource, JwsclSid, JwsclTypes,
   JwsclUtils, JwsclToken, JwsclVersion, JwsclStrings;
@@ -2761,7 +2761,7 @@ begin
             finally
               // Free mem
               FreeMem(lpBuffer);
-              lpBuffer := nil;
+              //lpBuffer := nil;
             end;
 
             // Some of the used counters are explained here:
@@ -3688,8 +3688,6 @@ begin
   JwRaiseOnNilMemoryBlock(Owner,'GetToken',ClassName,RsUNTerminalServer);
 
 
-  result := nil;
-
   try
     FToken := TJwSecurityToken.CreateWTSQueryUserTokenEx(Owner.Owner, FSessionId);
   except
@@ -3816,14 +3814,10 @@ begin
 end;
 
 function TJwWTSProcess.GetToken : TJwSecurityToken;
-var
-  hProc : HANDLE;
 begin
   result := FToken;
   if Assigned(FToken) then
     exit;
-
-  result := nil;
 
   try
     //try to get a token in by all means

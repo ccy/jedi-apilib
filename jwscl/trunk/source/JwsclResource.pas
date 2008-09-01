@@ -528,6 +528,7 @@ const
 //
   RsBracketNil = '(nil)';
   RsWinCallFailedWithNTStatus = 'Call to %0:s failed. NTError: %1:d';
+  RsWinCallFailedWithSecurityStatus = 'Call to %0:s failed. SecurityStatus: %1:d';
   RsWinCallFailed = 'Call to %0:s failed.';
   RsNilParameter  = 'Parameter %0:s must not be nil';
   RsInfinite      = '(infinite)';

@@ -43,7 +43,8 @@ unit JwsclCredentials;
 
 interface
 
-uses SysUtils, Contnrs, Classes, Graphics,
+uses SysUtils, 
+  Graphics {includes Windows, SysUtils, Classes},
   jwaWindows,
   JwsclResource,
   JwsclTypes, JwsclExceptions, JwsclSid, JwsclAcl,
@@ -334,6 +335,7 @@ destructor TJwCredentialsPrompt.Destroy;
 var
   i: integer;
 begin
+  //overwrite the password and username with zeroes 
   for i := 1 to Length(fPassword) do
     fPassword[i] := '0';
   fPassword := '';

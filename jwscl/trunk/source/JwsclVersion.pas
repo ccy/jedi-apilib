@@ -44,7 +44,7 @@ unit JwsclVersion;
 
 interface
 
-uses SysUtils, Contnrs, Classes,
+uses SysUtils, 
   JwsclUtils, JwsclResource,
   jwaWindows, JwsclConstants, JwsclExceptions,
   JwsclStrings;

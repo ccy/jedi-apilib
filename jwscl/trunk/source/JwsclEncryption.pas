@@ -42,7 +42,7 @@ unit JwsclEncryption;
 interface
 
 uses
-  SysUtils, Contnrs, Classes,
+  SysUtils, Classes,
   jwaWindows, JwsclResource,
   JwsclTypes, JwsclExceptions, JwsclAcl,
   JwsclVersion, JwsclConstants,
@@ -673,7 +673,6 @@ begin
 
   GetMem(result.pbData, result.cbData);
   p := PByte(result.pbData);
-  i := 0;
 
   for i := 0 to result.cbData-1 do
   begin
@@ -693,7 +692,6 @@ var Data: TJwGetMemBlob;
     EntropyPtr: PDataBlob;
     Entropy: TDataBlob;
     Id : Cardinal;
-    P2 : Pointer;
 begin
   if (MemoryType = mtLocal) or
      (MemoryType = mtGlobal) then
@@ -775,7 +773,6 @@ var Data: TJwGetMemBlob;
     EntropyPtr: PDataBlob;
     Entropy: TDataBlob;
     Id : Cardinal;
-    P2 : Pointer;
 begin
   if (MemoryType = mtLocal) or
      (MemoryType = mtGlobal) then
@@ -851,20 +848,11 @@ begin
 end;
 
 procedure Test2;
-var Data, D : PAnsiChar;
-    S1,
+var Data : PAnsiChar;
     Size : Cardinal;
 begin
   Size := 7;
-  //GetMem(Data, Size);
   Data := PAnsiChar(LocalAlloc(LPTR,Size));
-
-//  StrCopy(Data,'12345'#0#0);
-
-
-  D := Pointer(LocalReAlloc(Cardinal(Data), Size+2, LMEM_MODIFY or LMEM_MOVEABLE or LMEM_ZEROINIT));//LocalFlags(Cardinal(P))));
-  S1 := GetLastError;
-
 
   TJwEncryptMemory.EncryptMemory(Pointer(Data),
     Size, [], mtLocal);

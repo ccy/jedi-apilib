@@ -213,6 +213,11 @@ type
     class function ConvertJobMessage(
       const FlagBits: Cardinal): TJwJobMessages; overload;
 
+    class function ConvertSecurityCapabilityType(
+      const FlagSet: TJwSecurityCapabilities): Cardinal; overload;
+    class function ConvertSecurityCapabilityMessage(
+      const FlagBits: Cardinal): TJwSecurityCapabilities; overload;
+
   end;
 
 
@@ -538,6 +543,28 @@ const
       JOB_OBJECT_MSG_ABNORMAL_EXIT_PROCESS,
       JOB_OBJECT_MSG_END_OF_JOB_TIME
    );
+
+   JwSecurityCapabilities : array[TJwSecurityCapability] of Cardinal = (
+      SECPKG_FLAG_INTEGRITY,
+      SECPKG_FLAG_PRIVACY,
+      SECPKG_FLAG_TOKEN_ONLY,
+      SECPKG_FLAG_DATAGRAM,
+      SECPKG_FLAG_CONNECTION,
+      SECPKG_FLAG_MULTI_REQUIRED,
+      SECPKG_FLAG_CLIENT_ONLY,
+      SECPKG_FLAG_EXTENDED_ERROR,
+      SECPKG_FLAG_IMPERSONATION,
+      SECPKG_FLAG_ACCEPT_WIN32_NAME,
+      SECPKG_FLAG_STREAM,
+      SECPKG_FLAG_NEGOTIABLE,
+      SECPKG_FLAG_GSS_COMPATIBLE,
+      SECPKG_FLAG_LOGON,
+      SECPKG_FLAG_ASCII_BUFFERS,
+      SECPKG_FLAG_FRAGMENT,
+      SECPKG_FLAG_MUTUAL_AUTH,
+      SECPKG_FLAG_DELEGATION
+   );
+
 
 
 
@@ -1211,7 +1238,29 @@ begin
   end;
 end;
 
+class function TJwEnumMap.ConvertSecurityCapabilityMessage(
+  const FlagBits: Cardinal): TJwSecurityCapabilities;
+var I : TJwSecurityCapability;
+begin
+  result := [];
+  for I := Low(TJwSecurityCapability) to High(TJwSecurityCapability) do
+  begin
+    if (FlagBits and JwSecurityCapabilities[I]) = JwSecurityCapabilities[I] then
+      Include(result, I);
+  end;
+end;
 
+class function TJwEnumMap.ConvertSecurityCapabilityType(
+  const FlagSet: TJwSecurityCapabilities): Cardinal;
+var I : TJwSecurityCapability;
+begin
+  result := 0;
+  for I := Low(TJwSecurityCapability) to High(TJwSecurityCapability) do
+  begin
+    if I in FlagSet then
+      result := result or JwSecurityCapabilities[I];
+  end;
+end;
 
 
 
@@ -1220,6 +1269,7 @@ end;
 {$ENDIF SL_INTERFACE_SECTION}
 
 {$IFNDEF SL_OMIT_SECTIONS}
+
 
 
 

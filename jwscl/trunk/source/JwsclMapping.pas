@@ -452,8 +452,6 @@ begin
     Inc(siArr);
   end;
 
-  siArr := nil;
-
   FreeMem(pPSI_ACCESS);
   pPSI_ACCESS := nil;
 end;
