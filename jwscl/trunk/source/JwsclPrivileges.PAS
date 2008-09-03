@@ -89,7 +89,7 @@ type
         If an exception is raised all privileges enabled to this point are
         disabled 
     }
-    constructor Create(const Privileges : array of AnsiString; const SetType : TJwPrivilegeSetType);
+    constructor Create(const Privileges : array of TJwString; const SetType : TJwPrivilegeSetType);
     destructor Destroy; override;
 
     {<B>EnabledPrivileges</B> returns an array of privileges that were given to to constructor.}
@@ -130,7 +130,7 @@ type
         disabled 
     
   }
-  function JwGetPrivilegeScope(const Privileges : array of AnsiString;
+  function JwGetPrivilegeScope(const Privileges : array of TJwString;
     const SetType : TJwPrivilegeSetType = pst_Enable) : IJwPrivilegeScope;
 
 {$ENDIF SL_IMPLEMENTATION_SECTION}
@@ -144,7 +144,7 @@ implementation
 {$ENDIF SL_INTERFACE_SECTION}
 
 {$IFNDEF SL_OMIT_SECTIONS}
-function JwGetPrivilegeScope(const Privileges : array of AnsiString;
+function JwGetPrivilegeScope(const Privileges : array of TJwString;
   const SetType : TJwPrivilegeSetType = pst_Enable) : IJwPrivilegeScope;
 begin
   result := TJwPrivilegeScope.Create(Privileges, SetType);
@@ -154,7 +154,7 @@ end;
 
 { TJwPrivilegeScope }
 
-constructor TJwPrivilegeScope.Create(const Privileges: array of AnsiString;
+constructor TJwPrivilegeScope.Create(const Privileges: array of TJwString;
   const SetType : TJwPrivilegeSetType);
 var i : Integer;
 begin

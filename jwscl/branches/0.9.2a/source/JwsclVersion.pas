@@ -44,7 +44,7 @@ unit JwsclVersion;
 
 interface
 
-uses SysUtils, Contnrs, Classes,
+uses SysUtils, 
   JwsclUtils, JwsclResource,
   jwaWindows, JwsclConstants, JwsclExceptions,
   JwsclStrings;
@@ -461,7 +461,7 @@ var VerInfoSize: DWORD;
  Translation: Pointer;
  VersionValue: TJwString;
 
-function VerInfoQuery(VerInfo: Pointer; VerValue: TJwString): AnsiString;
+function VerInfoQuery(VerInfo: Pointer; VerValue: TJwString): String;
 var VerInfoSize: DWORD;
   VerInfoPtr: Pointer;
 begin

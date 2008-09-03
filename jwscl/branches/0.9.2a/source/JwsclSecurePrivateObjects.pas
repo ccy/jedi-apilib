@@ -48,7 +48,7 @@ interface
 
 
 uses
-  SysUtils, Contnrs, Classes,
+  SysUtils, 
   JwsclTypes, JwsclExceptions, JwsclAcl, JwsclMapping, JwsclSid,
   JwsclSecureObjects, JwsclResource,
   JwsclVersion, JwsclConstants, JwsclDescriptor, JwsclToken,
@@ -336,7 +336,7 @@ type
 
 {$IFNDEF SL_OMIT_SECTIONS}
 implementation
-uses JwaWindows, Dialogs, JwsclEnumerations, JwsclKnownSid;
+uses JwaWindows, JwsclEnumerations, JwsclKnownSid;
 
 
 {$ENDIF SL_OMIT_SECTIONS}
@@ -353,15 +353,6 @@ class function TJwSecurePrivateObject.GetSecurityDescriptor(const SecurityObject
 
 var UseAccessCheck : Boolean;
     DesiredAccess: TJwAccessMask;
-    SD : TJwSecurityDescriptor;
-    Mapping : TJwSecurityGenericMappingClass;
-    PrivilegeSet: TJwPrivilegeSet;
-    GrantedAccess: TJwAccessMask;
-    AccessStatus : boolean;
-
-    NullOwner,
-    NullPrimaryGroup : boolean;
-
 begin
   UseAccessCheck := SecurityObject.GetUseAccessCheck(gactGetSecurity);
 
@@ -637,7 +628,6 @@ procedure TJwInterfacedPrivateSecurityInformation.GetSecurity(
 var Mapping : TJwSecurityGenericMappingClass;
     ParentSD,
     NewSD : TJwSecurityDescriptor;
-    PreParent,
     Parent : IJwPrivateSecurityInformation;
     Info : TJwSecurityObjectInformation;
     ObjectType : PGUID;

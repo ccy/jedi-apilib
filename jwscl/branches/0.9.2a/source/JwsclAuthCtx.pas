@@ -59,7 +59,7 @@ unit JwsclAuthCtx;
 interface
 
 uses
-  SysUtils, Contnrs, Classes,
+  SysUtils, 
   jwaWindows, JwaVista,
   JwsclResource, JwsclUtils,
 
@@ -645,9 +645,6 @@ type
 implementation
 
 uses
-{$IFDEF DEBUG}
-  Dialogs,
-{$ENDIF DEBUG}
   JwsclSecureObjects,
   Math;
 {$ENDIF SL_OMIT_SECTIONS}
@@ -948,7 +945,6 @@ constructor TJwAuthContext.CreateAndAddSids(
   const RestrictedSids : TJwSecurityIdList);
 var luid : TLuid;
     pSid, pRSid : PSidAndAttributesArray;
-    tSid, tRSid : TSidAndAttributes;
 
     c1, c2 : Cardinal;
 begin

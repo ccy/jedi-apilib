@@ -2845,6 +2845,8 @@ var
 begin
   result := FileName;
 
+  //just check the necessary space for the filename
+  Buffer := nil;
   len := GetFullPathNameW(TJwPChar(FileName), 0, Buffer, FName);
 
   if Len = 0 then

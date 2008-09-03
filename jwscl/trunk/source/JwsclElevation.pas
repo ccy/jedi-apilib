@@ -501,7 +501,7 @@ class procedure TJwElevationClassFactory.UpdateRegistry(RegisterFactory: Boolean
 {$ELSE}
 procedure TJwElevationClassFactory.UpdateRegistry(RegisterFactory: Boolean);
 
-  procedure RaiseRegError(Reason, Key : AnsiString);
+  procedure RaiseRegError(Reason, Key : String);
   begin
     try
       raise EJwsclAccessDenied.CreateFmtEx(
@@ -523,7 +523,7 @@ var
   Reg : TRegistry;
   GuidString,
   DllPath,
-  DllName : AnsiString;
+  DllName : String;
 
   SD : TJwSecurityDescriptor;
   pSecDescr : PSecurityDescriptor;
@@ -553,6 +553,9 @@ begin
   //JwInitWellKnownSIDs;
 
 {$IFDEF UNIT_TEST}
+  //
+  // This is not production code!
+  //
   DllPath := 'c:\programme\mydll.dll';
   DllName := ExtractFileName(DllPath);
   GuidString := '{E108B186-B399-4E46-99B4-345F8179C26E}';

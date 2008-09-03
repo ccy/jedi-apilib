@@ -44,9 +44,8 @@ unit JwsclDescriptor;
 
 interface
 
-uses SysUtils, Contnrs, Classes,
-  Windows, Dialogs,
-  jwaWindows, JwaVista, JwsclResource, JwsclMapping,
+uses SysUtils, Classes,
+  JwaWindows, JwaVista, JwsclResource, JwsclMapping,
   JwsclTypes, JwsclExceptions, JwsclSid, JwsclAcl,
   JwsclVersion, JwsclConstants,  
   JwsclStrings; //JwsclStrings, must be at the end of uses list!!!
@@ -1480,15 +1479,10 @@ begin
     begin
       Free_SD(pSD);
 
-      //try
        raise EJwsclWinCallFailedException.CreateFmtEx(
         RsWinCallFailed,
         'Create_SD;', ClassName, RsUNDescriptor, 0, True,
         ['MakeSelfRelativeSD']);
-      {except
-        on E : Exception do
-          ShowMEssage(e.MEssage);
-      end;}
     end;
 
     Free_SD(pSD);

@@ -45,7 +45,7 @@ interface
 
 
 uses
-  SysUtils, Contnrs, Classes,
+  SysUtils, Classes,
   jwaWindows,
   JwsclTypes, JwsclExceptions, JwsclResource,
   JwsclStrings; //JwsclStrings, must be at the end of uses list!!!

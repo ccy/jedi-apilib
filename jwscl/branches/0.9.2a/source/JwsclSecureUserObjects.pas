@@ -42,8 +42,7 @@ unit JwsclSecureUserObjects;
 interface
 
 uses
-  Classes,
-  SysUtils, Contnrs,
+  SysUtils,
   JwsclTypes, JwsclExceptions, JwsclAcl, JwsclMapping, JwsclSid,
   JwsclSecureObjects, JwsclResource, JwsclSecurePrivateObjects,
   JwsclVersion, JwsclConstants,  JwsclDescriptor, JwsclToken,

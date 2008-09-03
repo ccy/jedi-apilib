@@ -2,7 +2,7 @@
 Program JwsclMain;
 uses
   JwaWindows,
-    JwsclAccounts,
+  JwsclAccounts,
 	JwsclAcl,
 	JwsclAuthCtx,
 	JwsclComUtils,
@@ -38,6 +38,5 @@ uses
 	JwsclUtils,
 	JwsclVersion,
 	JwsclWinStations;
-
 begin
 end.

@@ -43,10 +43,11 @@ unit JwsclWinStations;
 
 interface
 
-uses SysUtils, Classes, Registry, Contnrs,
-
+uses
+  SysUtils,
+  Contnrs {for TStack},
   JwsclUtils, JwsclResource,
-  jwaWindows, StdCtrls, ComCtrls, ActiveX,
+  jwaWindows,
   JwsclTypes, JwsclExceptions, JwsclSid, JwsclAcl, JwsclToken,
   JwsclMapping, JwsclKnownSid, JwsclSecureObjects,
   JwsclVersion, JwsclConstants, JwsclDescriptor,
@@ -63,7 +64,7 @@ type
   TJwSecurityWindowStationArray = array of TJwSecurityWindowStation;
 
   {<B>TJwSecurityWindowStation</B> provides access to window station api.}
-  TJwSecurityWindowStation = class(TPersistent)
+  TJwSecurityWindowStation = class
   private
   protected
     fOldWinStations: TStack;
@@ -183,7 +184,7 @@ type
 
 
   {<B>TJwSecurityWindowStations</B> provides access to window stations}
-  TJwSecurityWindowStations = class(TPersistent)
+  TJwSecurityWindowStations = class
   private
   protected
     fWinstationList: TJwSecurityWindowStationArray;
@@ -223,9 +224,6 @@ type
 
 {$IFNDEF SL_OMIT_SECTIONS}
 implementation
-uses Dialogs;
-
-
 
 {$ENDIF SL_OMIT_SECTIONS}
 
@@ -646,7 +644,6 @@ var
 begin
   Result := nil;
   len := 0;
-  apSID := nil;
   GetUserObjectInformation(fHandle,//HANDLE hObj,
     UOI_USER_SID,//int nIndex,
     nil,//PVOID pvInfo,

@@ -43,7 +43,8 @@ unit JwsclProcess;
 
 interface
 
-uses Classes, jwaWindows, SysUtils,
+uses SysUtils, Classes,
+  JwaWindows, 
   JwsclTypes, JwsclToken, JwsclSid, JwsclTerminalServer, JwsclUtils,
   JwsclSecureObjects, JwsclResource,
   JwsclLogging, JwsclLsa, JwsclDescriptor,JwsclEnumerations, JwsclComUtils,
@@ -128,8 +129,10 @@ BOOL WINAPI TerminateJobObject(HANDLE hJob, UINT uExitCode);
     fIOHandle : THandle;
     fRemainPort : Boolean;
   public
-    constructor Create(const Parent: TJwJobObject; const CreateSuspended: Boolean; const Name: AnsiString);
-    constructor CreateWithIOPort(const Parent: TJwJobObject; IOPort : THandle; const CreateSuspended: Boolean; const Name: AnsiString);
+    constructor Create(const Parent: TJwJobObject;
+      const CreateSuspended: Boolean; const Name: TJwString);
+    constructor CreateWithIOPort(const Parent: TJwJobObject; IOPort : THandle;
+      const CreateSuspended: Boolean; const Name: TJwString);
     procedure Execute; override;
 
     procedure Terminate; reintroduce;
@@ -705,8 +708,9 @@ type {<B>TJwCreateProcessParameters</B> contains information supplied to CreateP
         'WinSta0\Default' used instead}
        DefaultDesktop : Boolean;
 
-       {Defines the logon process name for LSA connection}
-       LogonProcessName : TJwString;
+       {Defines the logon process name for LSA connection.
+        It must not exceed 127 characters. Only ansicode is supported.}
+       LogonProcessName : AnsiString;
 
        //entweder LogonToken oder LogonSID oder keines!
        {<B>LogonToken</B> can contain the logon sid to be used for the new token.
@@ -816,7 +820,7 @@ procedure JwCreateProcessAsAdminUser(
 
 {$IFNDEF SL_OMIT_SECTIONS}
 implementation
-uses Dialogs, Math, JwsclExceptions,
+uses Math, JwsclExceptions,
   JwsclKnownSid, JwsclVersion,
   JwsclAcl, JwsclConstants;
 
@@ -848,7 +852,6 @@ end;
 
 class function TJwLibraryUtilities.LoadLibProc(const LibName: AnsiString; const ProcName: AnsiString): Pointer;
 var
-  LibHandle: THandle;
   R : Pointer;
 begin
   R := nil;
@@ -1271,7 +1274,7 @@ begin
 
           FreeAndNil(OutVars.LinkedToken);
           FreeAndNil(OutVars.UserToken);
-          UserToken := nil;
+          //UserToken := nil;
 
           Log.Log('...sucessfully.');
           raise;
@@ -2045,17 +2048,12 @@ end;
 
 
 function TJwJobObject.GetProcesses : TJwProcessList;
-var Data : Pointer;
-    List : PJobObjectBasicProcessIdList;
-  //len, i,
-  //rlen,
-  //res : DWORD;
+var
+  List : PJobObjectBasicProcessIdList;
   len, i,
   rlen : DWORD;
 begin
   rlen := 0;
-  len := 0;
-  Data := nil;
 
   Len := GetJobObjectInformationLength(JobObjectBasicProcessIdList);
 
@@ -2365,7 +2363,6 @@ var
 begin
   rlen := 0;
   len := 32;
-  Data := nil;
 
 
   SetLastError(ERROR_MORE_DATA);
@@ -2577,7 +2574,7 @@ end;
 
 
 constructor TJwInternalJobObjectIOCompletitionThread.Create(
- const Parent: TJwJobObject;const CreateSuspended: Boolean; const Name: AnsiString);
+ const Parent: TJwJobObject;const CreateSuspended: Boolean; const Name: TJwString);
 begin
   fJwJobObject := Parent;
   fIOHandle := CreateIoCompletionPort(
@@ -2597,7 +2594,7 @@ end;
 
 constructor TJwInternalJobObjectIOCompletitionThread.CreateWithIOPort(
   const Parent: TJwJobObject; IOPort : THandle;
-  const CreateSuspended: Boolean; const Name: AnsiString);
+  const CreateSuspended: Boolean; const Name: TJwString);
 begin
   fJwJobObject := Parent;
   fIOHandle := IOPort;
@@ -2618,7 +2615,6 @@ procedure TJwInternalJobObjectIOCompletitionThread.Execute;
   function GetUserData(ProcessID : DWORD) : Pointer;
   //var i : Integer;
   begin
-    result := nil;
     fJwJobObject.fLock.BeginRead;
     try
       try
@@ -2835,7 +2831,10 @@ begin
     JobObjectIndex := ID;
     NewObject := nil;
 
-    while ID >= fList.Count do
+    {Just to be sure we check for negative count
+     otherwise this loop may run forever.
+    }
+    while (fList.Count >= 0) and (ID >= Cardinal(fList.Count)) do
     begin
       NewObject := nil;
       OnNewJobObject(Self, Process, ID, fList.Count ,NewObject);

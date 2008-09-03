@@ -44,7 +44,7 @@ unit JwsclStreams;
 interface
 
 uses JwaWindows, Classes,
-     jwsclExceptions, jwsclResource, JwsclStrings;
+     JwsclExceptions, JwsclResource, JwsclStrings;
 
 const
   fmCreateTemporary    = 4;

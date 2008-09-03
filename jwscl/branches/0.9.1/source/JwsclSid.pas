@@ -1148,7 +1148,7 @@ begin
       'Create(const SystemName, AccountName : TJwString);', ClassName,
       RsUNSid, 0, True, []);
 
-  UpdateDbgData;
+ // UpdateDbgData;
 end;
 
 destructor TJwSecurityId.Destroy;

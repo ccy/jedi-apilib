@@ -46,7 +46,7 @@ uses
   Classes,
   SysUtils,
 
-  //mote  JWSCL units here
+  //more  JWSCL units here
   JwsclUtils,      //utility functions like thread, localization, memory, exception utils
   JwsclExceptions, //exception classes
   JwsclResource,   //resource strings

@@ -210,10 +210,12 @@ type
 
     fAttributes: Cardinal;
 
+{$IFDEF DEBUG}
     {<B>fDbgData</B> contains the values of the properties of the instance for debugging purposes.
      It is only used if DEBUG is defined.
      }
     fDbgData: AnsiString;
+{$ENDIF DEBUG}    
 
       {<B>fDbgDisableException</B> disables the raising of exceptions in the following methods :
         +GetAccountSidString

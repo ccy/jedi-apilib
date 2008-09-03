@@ -361,7 +361,7 @@ raises
 }
 procedure JwCheckInitKnownSid(
   const Sids : array of TJwSecurityKnownSID;
-  const SidNames : array of AnsiString;
+  const SidNames : array of TJwString;
   const MethodName, ClassName, FileName : TJwString);
 
 
@@ -780,7 +780,7 @@ procedure InitSid(const Idx : Integer; var SID : TJwSecurityKnownSID);
 begin
   if not Assigned(SID) then
   try
-    SID := TJwSecurityKnownSID.Create(KnownSids[Idx]);
+    SID := TJwSecurityKnownSID.Create(TJwString(KnownSids[Idx]));
   except
     On E : Exception do
     begin
@@ -1050,11 +1050,11 @@ end;
 
 procedure JwCheckInitKnownSid(
   const Sids : array of TJwSecurityKnownSID;
-  const SidNames : array of AnsiString;
+  const SidNames : array of TJwString;
   const MethodName, ClassName, FileName : TJwString);
 var
   i,count : Integer;
-  Errors : String;
+  Errors : TJwString;
 begin
   Errors := '';
   count := 0;

@@ -68,7 +68,7 @@ unit JwsclTerminalServer;
 interface
 
 uses
-  Classes, Contnrs, DateUtils, SysUtils,
+  Classes, Contnrs, SysUtils,
   JwaWindows,
   JwsclExceptions, JwsclResource, JwsclSid, JwsclTypes,
   JwsclUtils, JwsclToken, JwsclVersion, JwsclStrings;
@@ -551,7 +551,7 @@ type
 	 
 	 <B>Check for a nil property value Servers</B> 
     }
-    function EnumerateServers(ADomain: AnsiString):Boolean;
+    function EnumerateServers(ADomain: TJwString):Boolean;
 
     {<B>EnumerateSessions</B> enumerates all sessions on the Terminal Server and fills the
      Sessions property with a TJwSessionList. This list contains all sessions
@@ -2761,7 +2761,7 @@ begin
             finally
               // Free mem
               FreeMem(lpBuffer);
-              lpBuffer := nil;
+              //lpBuffer := nil;
             end;
 
             // Some of the used counters are explained here:
@@ -2773,8 +2773,8 @@ begin
             // So we take the sum of it and call it ProcessCPUTime
             FProcessCPUTime := UserTime.QuadPart + KernelTime.QuadPart;
 
-            FProcessCPUTimeStr := CPUTime2Str(
-              LARGE_INTEGER(UserTime.QuadPart + KernelTime.QuadPart));
+            FProcessCPUTimeStr := TJwString(CPUTime2Str(
+              LARGE_INTEGER(UserTime.QuadPart + KernelTime.QuadPart)));
             // Amount of memory in bytes that a process needs to execute
             // efficiently. Maps to Mem Size column in Task Manager.
             // So we call it ProcessMemUsage
@@ -2883,7 +2883,7 @@ begin
   Result := Res;
 end;
 
-function TJwTerminalServer.EnumerateServers(ADomain: AnsiString): Boolean;
+function TJwTerminalServer.EnumerateServers(ADomain: TJwString): Boolean;
 begin
   // Does the thread exist?
   if Assigned(FEnumServersThread) then
@@ -2979,7 +2979,7 @@ begin
   inherited Create(CreateSuspended, Format('%s (%s)', [ClassName, AOwner.Server]));
   FreeOnTerminate := False;
 
-  OutputDebugString('creating wtsevent thread');
+  //OutputDebugString('creating wtsevent thread');
 
   FOwner := AOwner;
 end;
@@ -3058,12 +3058,12 @@ begin
   if {$IFDEF UNICODE}WTSEnumerateServersW{$ELSE}WTSEnumerateServersA{$ENDIF UNICODE}
    (TJwPChar(FDomain), 0, 1, PWTS_SERVER_INFO(ServerInfoPtr),
     pCount) then
-  begin
+  begin                                      
     for i := 0 to pCount - 1 do
     begin
       // If the thread is terminated then leave the loop
       if Terminated then Break;
-      FServer := ServerInfoPtr^[i].pServerName;
+      FServer := String(PWideChar(ServerInfoPtr^[i].pServerName));
       Synchronize(AddToServerList);
     end;
 
@@ -3652,12 +3652,12 @@ begin
   GetWinStationDriver;
   // Retreive WinStationInformation
   GetWinStationInformation;
+
   // This function queries Terminal Server for the real remote ip address
   // and port (as opposed to WTSClientAddress which retreives the client's
   // local ip address
-
-  tempStr := AnsiString(FRemoteAddress);
-  WinStationGetRemoteIPAddress(GetServerHandle, SessionId, tempStr,
+  tempStr := WideString(FRemoteAddress);
+  WinStationGetRemoteIPAddress(GetServerHandle, SessionId, {WideString}tempStr,
     FRemotePort);
 
   FRemoteAddress := WideString(tempStr);
@@ -3687,8 +3687,6 @@ begin
 
   JwRaiseOnNilMemoryBlock(Owner,'GetToken',ClassName,RsUNTerminalServer);
 
-
-  result := nil;
 
   try
     FToken := TJwSecurityToken.CreateWTSQueryUserTokenEx(Owner.Owner, FSessionId);
@@ -3816,14 +3814,10 @@ begin
 end;
 
 function TJwWTSProcess.GetToken : TJwSecurityToken;
-var
-  hProc : HANDLE;
 begin
   result := FToken;
   if Assigned(FToken) then
     exit;
-
-  result := nil;
 
   try
     //try to get a token in by all means

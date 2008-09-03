@@ -65,11 +65,13 @@ type
     {<B>Create</B> creates a new instance of TJwSecurityLsa and
 	registers the current process as a logon process.
 	This call needs TCB privilege!
-	
+   @param LogonProcessName This parameter receives a name in ansi format that
+     does not exceed 127 characters.
+
 	@raises
 	  EJwsclWinCallFailedException: This exception will be raised
 	    if the call to LsaRegisterLogonProcess failed.
-	} 
+	}
     constructor Create(const LogonProcessName: AnsiString);
 	               
     {<B>CreateUntrusted</B> creates a new instance of TJwSecurityLsa and
@@ -222,8 +224,9 @@ The returned pointer can be freed by LocalFree .
 }
 function JwCreate_MSV1_0_INTERACTIVE_LOGON(
   MessageType: MSV1_0_LOGON_SUBMIT_TYPE;
-  LogonDomainName, UserName,
-  Password: WideString;
+  const LogonDomainName,
+        UserName,
+        Password: WideString;
   out authLen: Cardinal): PMSV1_0_INTERACTIVE_LOGON;
 
 
@@ -247,8 +250,6 @@ function JwInitLsaStringW(
 var
   dwLen : DWORD;
 begin
-  dwLen := 0;
-
   dwLen := Length(pwszString);
   if (dwLen > $7ffe) then  // String is too large
   begin
@@ -274,6 +275,7 @@ end;
 
 
 function JwCreateLSAString(const aString: AnsiString): LSA_STRING;
+//aString must be AnsiString !!
 var
   pStr: PAnsiChar;
 begin
@@ -297,7 +299,7 @@ end;
 
 
 constructor TJwSecurityLsa.CreateUntrusted;
-var res: Cardinal;
+var res: NTSTATUS;
 begin
   res := LsaConnectUntrusted(fLsaHandle);
   if res <> STATUS_SUCCESS then
@@ -315,7 +317,7 @@ end;
 constructor TJwSecurityLsa.Create(const LogonProcessName: AnsiString);
 var
   lsaHostString: LSA_STRING;
-  res: Cardinal;
+  res: NTSTATUS;
   lsaSecurityMode: LSA_OPERATIONAL_MODE;
 
 const
@@ -324,7 +326,6 @@ const
     Buffer: '12'#0);
 begin
   lsaHostString := JwCreateLSAString(LogonProcessName);
-
 
   res := LsaRegisterLogonProcess(lsaHostString, fLsaHandle, @lsaSecurityMode);
 
@@ -360,8 +361,9 @@ end;
 
 function JwCreate_MSV1_0_INTERACTIVE_LOGON(
   MessageType: MSV1_0_LOGON_SUBMIT_TYPE;
-  LogonDomainName, UserName,
-  Password: WideString;
+  const LogonDomainName,
+        UserName,
+        Password: WideString;
   out authLen: Cardinal): PMSV1_0_INTERACTIVE_LOGON;
 var
   iSize: integer;
@@ -414,7 +416,7 @@ procedure TJwSecurityLsa.LsaLogonUser(anOriginName: AnsiString;
   out aQuotaLimits: QUOTA_LIMITS; out SubStatus: NTSTATUS);
 
 var
-  res: Cardinal;
+  res: NTSTATUS;
   lsaOrig, lsaPackageName: LSA_STRING;
 
   pLocalGroups: PTokenGroups;
@@ -551,7 +553,6 @@ begin
     result[i] := LuidPtr^;
     Inc(LuidPtr);
   end;
-  LuidPtr := nil;
 
 
   LsaFreeReturnBuffer(List);
@@ -823,7 +824,7 @@ end;
 
 function TJwLsaPolicy.GetPrivateData(Key: WideString): WideString;
 var
-  ntsResult : Cardinal;
+  ntsResult : NTSTATUS;
   pData : PLSA_UNICODE_STRING;
   pStr : LSA_UNICODE_STRING;
   dwLen : Cardinal;
@@ -858,7 +859,7 @@ end;
 
 procedure TJwLsaPolicy.SetPrivateData(Key, Data: WideString);
 var
-  ntsResult : Cardinal;
+  ntsResult : NTSTATUS;
   pData,
   pStr : LSA_UNICODE_STRING;
 begin

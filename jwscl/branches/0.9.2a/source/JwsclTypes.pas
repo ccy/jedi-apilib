@@ -629,7 +629,7 @@ type
 
   TJwSiAccessArray = array of SI_ACCESS;
 
-  TJwStringArray = array of AnsiString;
+  TJwStringArray = array of TJwString;
 
   TJwIntegrityLabelType = (
     iltNone,
@@ -732,7 +732,7 @@ type
     //If the check box is selected, show the Save check box and return TRUE in the pfSave output parameter, otherwise, return FALSE. CREDUI_FLAGS_DO_NOT_PERSIST must be specified to use this flag. Check box uses the value in pfSave by default.
     , cfFlagsUserNameTargetCredentials
     //The credential is a "runas" credential. The TargetName parameter specifies the name of the command or program being run. It is used for prompting purposes only.
-    );
+  );
   {<B>TJwCredentialFlagSet</B> defines the winapi credential flags bitmask as a set}
   TJwCredentialFlagSet = set of TJwCredentialFlag;
 
@@ -1165,6 +1165,29 @@ type
 	Hash : Pointer;
     Size : Cardinal;
   end;
+
+  TJwSecurityCapability = (
+    scIntegrity,//  SECPKG_FLAG_INTEGRITY         // Supports integrity on messages
+    scPrivacy,  //SECPKG_FLAG_PRIVACY           // Supports privacy (confidentiality)
+    scTokenOnly,  //SECPKG_FLAG_TOKEN_ONLY        // Only security token needed
+    scDatagram,  //SECPKG_FLAG_DATAGRAM          // Datagram RPC support
+    scConnection,  //SECPKG_FLAG_CONNECTION        // Connection oriented RPC support
+    scMultiRequired,  //SECPKG_FLAG_MULTI_REQUIRED    // Full 3-leg required for re-auth.
+    scClientOnly,  //SECPKG_FLAG_CLIENT_ONLY       // Server side functionality not available
+    scExtendedError,  //SECPKG_FLAG_EXTENDED_ERROR    // Supports extended error msgs
+    scImpersonation,  //SECPKG_FLAG_IMPERSONATION     // Supports impersonation
+    scAcceptWin32Name,  //SECPKG_FLAG_ACCEPT_WIN32_NAME // Accepts Win32 names
+    scStream,  //SECPKG_FLAG_STREAM            // Supports stream semantics
+    scNegotiable,  //SECPKG_FLAG_NEGOTIABLE        // Can be used by the negotiate package
+    scGSSCompatible,  //SECPKG_FLAG_GSS_COMPATIBLE    // GSS Compatibility Available
+    scLogon,  //SECPKG_FLAG_LOGON             // Supports common LsaLogonUser
+    scASCIIBuffers,  //SECPKG_FLAG_ASCII_BUFFERS     // Token Buffers are in ASCII
+    scFragment,  //SECPKG_FLAG_FRAGMENT          // Package can fragment to fit
+    scMutualAuth,  //SECPKG_FLAG_MUTUAL_AUTH       // Package can perform mutual authentication
+    scDelegation  //SECPKG_FLAG_DELEGATION        // Package can delegate
+  );
+  TJwSecurityCapabilities = set of TJwSecurityCapability;
+
 
 {$ENDIF SL_IMPLEMENTATION_SECTION}
 

@@ -46,8 +46,8 @@ unit JwsclToken;
 interface
 
 uses SysUtils, Contnrs, Classes,
-  Windows, Dialogs,
-  jwaWindows, JwsclResource, JwsclUtils, JwaVista,
+  JwaWindows,
+  JwsclResource, JwsclUtils, JwaVista,
   JwsclTypes, JwsclExceptions, JwsclSid, JwsclAcl,
   JwsclDescriptor, JwsclEnumerations,
   JwsclVersion, JwsclConstants,
@@ -111,23 +111,23 @@ type
         Only objects are destroyed!
        }
     procedure Done; virtual;
-       {<B>PopPrivileges</B> restores privileges from a nested call to PushPrivileges.
-        TODO: to test
-        @return Returns the count of privilege stack elements.
-       }
-    function PopPrivileges: cardinal;
+     {<B>PopPrivileges</B> restores privileges from a nested call to PushPrivileges.
+      TODO: to test
+      @return Returns the count of privilege stack elements.
+     }
+    //function PopPrivileges: cardinal;
     {<B>PushPrivileges</B> saves the actual privilege enabled states in a stack.
         They can be restored with a correctly nested call to PopPrivileges.
                TODO: to test
         @return
        }
-    function PushPrivileges: cardinal;
+    //function PushPrivileges: cardinal;
 
     {<B>RaiseOnInvalidPrimaryToken</B> checks for whether user is SYSTEM and raises exception if not.
      @param MethodName defines the method name of the caller 
      raises
  EJwsclInvalidPrimaryToken:  if primary user token is not SYSTEM. }
-    procedure RaiseOnInvalidPrimaryToken(MethodName: AnsiString);
+    procedure RaiseOnInvalidPrimaryToken(MethodName: TJwString);
   public
     {see TokenType }
     function GetTokenType: TOKEN_TYPE; virtual;
@@ -231,10 +231,10 @@ type
       virtual; //SE_TCB_NAME
 
 
-    function GetPrivilegeEnabled(Name: AnsiString): boolean; virtual;
-    procedure SetPrivilegeEnabled(Name: AnsiString; En: boolean); virtual;
+    function GetPrivilegeEnabled(Name: TJwString): boolean; virtual;
+    procedure SetPrivilegeEnabled(Name: TJwString; En: boolean); virtual;
 
-    function GetPrivilegeAvailable(Name: AnsiString): boolean;
+    function GetPrivilegeAvailable(Name: TJwString): boolean;
 
     function GetIntegrityLevel: TJwSecurityIdList; virtual;
     function GetIntegrityLevelType: TJwIntegrityLabelType; virtual;
@@ -256,7 +256,7 @@ type
          @param aSourceProc defines the caller method  
          raises
  EJwsclInvalidTokenHandle:  is raised if the property TokenHandle is invalid. }
-    procedure CheckTokenHandle(sSourceProc: AnsiString); virtual;
+    procedure CheckTokenHandle(sSourceProc: TJwString); virtual;
 
         {<B>CheckTokenAccessType</B> checks if the given token was opened with the desired access mask.
          If the desired access is not included in the token access mask an exception will be raised; otherwise nothing happens.
@@ -277,14 +277,14 @@ type
  EJwsclPrivilegeCheckException:  will be raised if one privilege was not found 
         }
 
-    procedure CheckTokenPrivileges(Privileges: array of AnsiString);
+    procedure CheckTokenPrivileges(Privileges: array of TJwString);
 
         {<B>IsPrivilegeAvailable</B> checks if one token holds a privilege.
          The privilege names are compared case sensitive.
          @param Priv contains the privilege name to be checked for 
          @return <B>IsPrivilegeAvailable</B> returns true if the privilege could be found in the tokens privileges; otherwise false 
         }
-    function IsPrivilegeAvailable(Priv: AnsiString): boolean;
+    function IsPrivilegeAvailable(Priv: TJwString): boolean;
 
     function GetIsRestricted: boolean;
 
@@ -1162,13 +1162,13 @@ type
            If you try to read a privilege that could not be found in the privilege list the return value will be false.
 
          }
-    property PrivilegeEnabled[Name: AnsiString]: boolean
+    property PrivilegeEnabled[Name: TJwString]: boolean
       Read GetPrivilegeEnabled Write SetPrivilegeEnabled;
 
         {<B>PrivilegeAvailable[Name</B> checks whether a defined privilege is available in the token.
          It returns true if the privilege was found; otherwise false.
         }
-    property PrivilegeAvailable[Name: AnsiString]: boolean
+    property PrivilegeAvailable[Name: TJwString]: boolean
       Read GetPrivilegeAvailable;
 
     {<B>RunElevation</B> returns the elavation status of the process on a Windows Vista system.
@@ -1478,7 +1478,7 @@ type
     //see property PrivByIdx 
     function GetPrivByIdx(Index: cardinal): TJwPrivilege;
     //see property PrivByName 
-    function GetPrivByName(Index: AnsiString): TJwPrivilege;
+    function GetPrivByName(Index: TJwString): TJwPrivilege;
     //see property PrivByLUID 
     function GetPrivByLUID(Index: LUID): TJwPrivilege;
 
@@ -1725,7 +1725,7 @@ type
         You can use system constants from JwaWinNT (like SE_CREATE_TOKEN_NAME).
         If the given privilege was not found the result is nil.
         }
-    property PrivByName[Index: AnsiString]: TJwPrivilege Read GetPrivByName;
+    property PrivByName[Index: TJwString]: TJwPrivilege Read GetPrivByName;
        {
        <B>PrivByLUID[Index</B> returns a privilege by its LUID (locally unique ID)
         If the given privilege was not found the result is nil.}
@@ -1752,7 +1752,7 @@ type
 @param query defines whether the given privilege should be checked for availability or is enable
 @return Returns true if the privilege is available and enabled. If the privilege is not available or disabled the result is false.
 }
-function JwIsPrivilegeSet(const Index: AnsiString;
+function JwIsPrivilegeSet(const Index: TJwString;
   const Query: TJwPrivilegeQueryType = pqt_Available): boolean;
 
 {<B>JwEnablePrivilege</B> en- or disables a given privilege.
@@ -1766,7 +1766,7 @@ raises
         otherwise the return value is false. If query is pst_EnableIfAvail the return is false, if the privilege could not be enabled.
         In this case no exception is raised.
 }
-function JwEnablePrivilege(const Index: AnsiString;
+function JwEnablePrivilege(const Index: TJwString;
   const Query: TJwPrivilegeSetType): boolean;
 
 {<B>JwGetPrivilegesText</B> returns a string filled with privilege names (of current token) and their states seperated by #13#10.
@@ -1783,7 +1783,7 @@ This function returns the status of the given privileges in parameter DisplayPri
 }
 
 function JwGetPrivilegesText(
-  const DisplayPrivileges: array of AnsiString): TJwString;
+  const DisplayPrivileges: array of TJwString): TJwString;
   overload;
 
 {<B>JwIsMemberOfAdministratorsGroup</B> checks if the user is a member of the Administrators group
@@ -1861,14 +1861,14 @@ function JwIsUACEnabled: Boolean;
     Data : Pointer;
   begin
     result := false;
-    if RegOpenKeyExW(HKEY_LOCAL_MACHINE, 'Software\Microsoft\Windows\CurrentVersion\Policies\System', 0, KEY_READ, Key) = ERROR_SUCCESS then
+    if RegOpenKeyExW(HKEY_LOCAL_MACHINE, 'Software\Microsoft\Windows\CurrentVersion\Policies\System', 0, KEY_READ, Key) = HRESULT(ERROR_SUCCESS) then
     begin
-      Result := RegQueryValueExW(Key, 'EnableLUA', nil, nil, nil, @Size) = ERROR_SUCCESS;
+      Result := RegQueryValueExW(Key, 'EnableLUA', nil, nil, nil, @Size) = HRESULT(ERROR_SUCCESS);
       if Result then
       begin
         GetMem(Data, Size);
         try
-          if RegQueryValueExW(Key, 'EnableLUA', nil, nil, Data, @Size) = ERROR_SUCCESS then
+          if RegQueryValueExW(Key, 'EnableLUA', nil, nil, Data, @Size) = HRESULT(ERROR_SUCCESS) then
             result := Boolean(Data^);
         finally
           FreeMem(Data);
@@ -1959,7 +1959,7 @@ end;
 
 
 function JwGetPrivilegesText(
-  const DisplayPrivileges: array of AnsiString): TJwString;
+  const DisplayPrivileges: array of TJwString): TJwString;
 var
   t:    TJwSecurityToken;
   Priv: TJwPrivilege;
@@ -1984,7 +1984,7 @@ begin
           Result := Result + #13#10 + Priv.Name + ' ' + RsTokenDisabledText;
       end
       else
-        Result := Result + #13#10 + DisplayPrivileges[i] + ' ' +
+        Result := Result + #13#10 + TJwString(DisplayPrivileges[i]) + ' ' +
           RsTokenUnavailableText;
     end;
 
@@ -2027,7 +2027,7 @@ end;
 
 
 
-function JwEnablePrivilege(const Index: AnsiString;
+function JwEnablePrivilege(const Index: TJwString;
   const Query: TJwPrivilegeSetType): boolean;
 var
   t: TJwSecurityToken;
@@ -2056,7 +2056,7 @@ begin
   end;
 end;
 
-function JwIsPrivilegeSet(const Index: AnsiString;
+function JwIsPrivilegeSet(const Index: TJwString;
   const Query: TJwPrivilegeQueryType = pqt_Available): boolean;
 var
   t: TJwSecurityToken;
@@ -2223,7 +2223,7 @@ begin
   Result := TJwPrivilege(fList.Items[Index]);
 end;
 
-function TJwPrivilegeSet.GetPrivByName(Index: AnsiString): TJwPrivilege;
+function TJwPrivilegeSet.GetPrivByName(Index: TJwString): TJwPrivilege;
 var
   i: integer;
   p: TJwPrivilege;
@@ -2909,7 +2909,7 @@ begin
   //  fSecurityIDList.Free;
 end;
 
-function TJwSecurityToken.PopPrivileges: cardinal;
+{function TJwSecurityToken.PopPrivileges: cardinal;
 var
   Privs, PrivPop: TJwPrivilegeSet;
   i:    integer;
@@ -2940,9 +2940,9 @@ begin
   fStackPrivilegesList.Delete(fStackPrivilegesList.Count - 1);
 
   Result := fStackPrivilegesList.Count;
-end;
+end;      }
 
-function TJwSecurityToken.PushPrivileges: cardinal;
+{function TJwSecurityToken.PushPrivileges: cardinal;
 var
   Privs: TJwPrivilegeSet;
 begin
@@ -2950,9 +2950,9 @@ begin
   fStackPrivilegesList.Add(Privs);
 
   Result := fStackPrivilegesList.Count;
-end;
+end;}
 
-procedure TJwSecurityToken.CheckTokenHandle(sSourceProc: AnsiString);
+procedure TJwSecurityToken.CheckTokenHandle(sSourceProc: TJwString);
 begin
   //TODO: check also non null tokens
   if fTokenHandle = 0 then
@@ -3220,7 +3220,7 @@ constructor TJwSecurityToken.CreateCompatibilityQueryUserToken(
 
   {origin:
    http://www.delphipraxis.net/post721630.html#721630}
-  function GetProcessID(Exename: AnsiString): DWORD;
+  function GetProcessID(Exename: TJwString): DWORD;
   var
     hProcessHandle: THandle;
     pEntry: TProcessEntry32;
@@ -3641,7 +3641,7 @@ begin
     ptrTokenType, 0, Result) then
   begin
     iError := GetLastError;
-    if (iError <> ERROR_INSUFFICIENT_BUFFER) and (iError <> 24) then
+    if (iError <> HRESULT(ERROR_INSUFFICIENT_BUFFER)) and (iError <> 24) then
       Result := 0;
     if iError = 24 then
     begin
@@ -3660,7 +3660,7 @@ procedure TJwSecurityToken.GetTokenInformation(hTokenHandle: TJwTokenHandle;
   TokenInformationClass: TTokenInformationClass;
   out TokenInformation: Pointer);
 
-  procedure doRaiseError(EClass: EJwsclExceptionClass; msg: AnsiString);
+  procedure doRaiseError(EClass: EJwsclExceptionClass; msg: TJwString);
   begin
     if EClass = nil then
       EClass := EJwsclTokenInformationException;
@@ -4145,7 +4145,7 @@ begin
   end;
 end;
 
-function TJwSecurityToken.GetPrivilegeAvailable(Name: AnsiString): boolean;
+function TJwSecurityToken.GetPrivilegeAvailable(Name: TJwString): boolean;
 var
   privSet: TJwPrivilegeSet;
 begin
@@ -4160,7 +4160,7 @@ begin
   end;
 end;
 
-function TJwSecurityToken.GetPrivilegeEnabled(Name: AnsiString): boolean;
+function TJwSecurityToken.GetPrivilegeEnabled(Name: TJwString): boolean;
 var
   privSet: TJwPrivilegeSet;
 begin
@@ -4175,7 +4175,7 @@ begin
   privSet.Free;
 end;
 
-procedure TJwSecurityToken.SetPrivilegeEnabled(Name: AnsiString; En: boolean);
+procedure TJwSecurityToken.SetPrivilegeEnabled(Name: TJwString; En: boolean);
 var
   privSet: TJwPrivilegeSet;
   S: TJwString;
@@ -4302,15 +4302,11 @@ procedure TJwSecurityToken.SetIntegrityLevel(const MandatorySid: TJwSecurityId;
   const Attributes: TJwSidAttributeSet = [sidaGroupMandatory]);
 var
   mL: TTokenMandatoryLabel;
-  l:  integer;
 begin
   if not Assigned(MandatorySid) then
     raise EJwsclNILParameterException.CreateFmtEx(
       RsNilParameter, 'SetIntegrityLevel', RsTokenGlobalClassName,
       RsUNToken, 0, False, ['MandatorySid']);
-
-
-  l := MandatorySid.SIDLength;
 
   mL.Label_.Sid := MandatorySid.CreateCopyOfSID;
   mL.Label_.Attributes := TJwEnumMap.ConvertAttributes(Attributes);
@@ -4702,6 +4698,8 @@ begin
   JwRaiseOnNilParameter(RequiredPrivileges,
     'RequiredPrivileges','PrivilegeCheckEx',ClassName,RsUNToken);
 
+  result := false;
+
   pPriv := RequiredPrivileges.Create_PPRIVILEGE_SET;
 
   try
@@ -4712,11 +4710,8 @@ begin
       pPriv.Control := pPriv.Control and not PRIVILEGE_SET_ALL_NECESSARY;
 
     if not jwaWindows.PrivilegeCheck(TokenHandle, pPriv, bRes) then
-    begin
-      RequiredPrivileges.Free_PPRIVILEGE_SET(pPriv);
       raise EJwsclSecurityException.CreateFmtEx(RsWinCallFailed,
         'PrivilegeCheckEx', ClassName, RsUNToken, 0, True, ['PrivilegeCheck']);
-    end;
 
     Result := bRes;
   finally
@@ -5117,7 +5112,7 @@ begin
   HeapFree(GetProcessHeap, 0, ptrTokenType);
 end;
 
-procedure TJwSecurityToken.CheckTokenPrivileges(Privileges: array of AnsiString);
+procedure TJwSecurityToken.CheckTokenPrivileges(Privileges: array of TJwString);
 var
   privSet: TJwPrivilegeSet;
   i: integer;
@@ -5139,7 +5134,7 @@ begin
 end;
 
 
-function TJwSecurityToken.IsPrivilegeAvailable(Priv: AnsiString): boolean;
+function TJwSecurityToken.IsPrivilegeAvailable(Priv: TJwString): boolean;
 var
   privSet: TJwPrivilegeSet;
 begin
@@ -5197,7 +5192,7 @@ procedure TJwSecurityToken.CheckTokenAccessType(aDesiredAccessMask:
   TJwAccessMask;
   StringMask, SourceProc: TJwString);
 
-  function IntToBin(Value: cardinal): AnsiString;
+  function IntToBin(Value: cardinal): TJwString;
   var
     i: integer;
   begin
@@ -5545,7 +5540,7 @@ begin
     SE_KERNEL_OBJECT, SecurityFlags, SecurityDescriptor);
 end;
 
-procedure TJwSecurityToken.RaiseOnInvalidPrimaryToken(MethodName: AnsiString);
+procedure TJwSecurityToken.RaiseOnInvalidPrimaryToken(MethodName: TJwString);
 var
   Token: TJwSecurityToken;
   Sid:   TJwSecurityID;

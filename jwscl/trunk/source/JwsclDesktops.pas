@@ -793,7 +793,7 @@ end;
 {$IFDEF DELPHI7_UP}
 class function TJwSecurityDesktops.GetDesktopHeapSize: Cardinal;
 var Reg : TRegistry;
-    Value, sSize : AnsiString;
+    Value, sSize : String; //this depends on TRegistry string type
     Strings : TStringList;
     p : Integer;
 begin

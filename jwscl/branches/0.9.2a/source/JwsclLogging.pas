@@ -511,10 +511,10 @@ function CreateLogServer(Elements : TStringList;
 
 var //JwStrNewLine : AnsiString = #13#10;
     //identation string (default #9 = tabulator char)
-    JwStrIdent : AnsiString = #9;
+    JwStrIdent : TJwString = #9;
 
     //format of start attribute value for processlog tag
-    JwTimeOutputString : AnsiString = 'dd.mm.yyyy hh:nn:ss:zzz';
+    JwTimeOutputString : TJwString = 'dd.mm.yyyy hh:nn:ss:zzz';
 
     //strings for log tag value
     JwLogTypeStrings : array[TJwLogType] of TJwString = (

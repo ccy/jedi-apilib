@@ -129,8 +129,10 @@ BOOL WINAPI TerminateJobObject(HANDLE hJob, UINT uExitCode);
     fIOHandle : THandle;
     fRemainPort : Boolean;
   public
-    constructor Create(const Parent: TJwJobObject; const CreateSuspended: Boolean; const Name: AnsiString);
-    constructor CreateWithIOPort(const Parent: TJwJobObject; IOPort : THandle; const CreateSuspended: Boolean; const Name: AnsiString);
+    constructor Create(const Parent: TJwJobObject;
+      const CreateSuspended: Boolean; const Name: TJwString);
+    constructor CreateWithIOPort(const Parent: TJwJobObject; IOPort : THandle;
+      const CreateSuspended: Boolean; const Name: TJwString);
     procedure Execute; override;
 
     procedure Terminate; reintroduce;
@@ -706,8 +708,9 @@ type {<B>TJwCreateProcessParameters</B> contains information supplied to CreateP
         'WinSta0\Default' used instead}
        DefaultDesktop : Boolean;
 
-       {Defines the logon process name for LSA connection}
-       LogonProcessName : TJwString;
+       {Defines the logon process name for LSA connection.
+        It must not exceed 127 characters. Only ansicode is supported.}
+       LogonProcessName : AnsiString;
 
        //entweder LogonToken oder LogonSID oder keines!
        {<B>LogonToken</B> can contain the logon sid to be used for the new token.
@@ -2571,7 +2574,7 @@ end;
 
 
 constructor TJwInternalJobObjectIOCompletitionThread.Create(
- const Parent: TJwJobObject;const CreateSuspended: Boolean; const Name: AnsiString);
+ const Parent: TJwJobObject;const CreateSuspended: Boolean; const Name: TJwString);
 begin
   fJwJobObject := Parent;
   fIOHandle := CreateIoCompletionPort(
@@ -2591,7 +2594,7 @@ end;
 
 constructor TJwInternalJobObjectIOCompletitionThread.CreateWithIOPort(
   const Parent: TJwJobObject; IOPort : THandle;
-  const CreateSuspended: Boolean; const Name: AnsiString);
+  const CreateSuspended: Boolean; const Name: TJwString);
 begin
   fJwJobObject := Parent;
   fIOHandle := IOPort;

@@ -43,7 +43,7 @@ unit JwsclAccounts;
 interface
 
 uses
-  SysUtils, Contnrs, Classes,
+  SysUtils, Contnrs, 
   jwaWindows,
   JwsclTypes, JwsclExceptions, JwsclAcl,
   JwsclVersion, JwsclConstants, 

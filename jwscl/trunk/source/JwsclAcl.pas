@@ -1751,7 +1751,7 @@ uses Math, JwsclEnumerations;
 
 {$IFNDEF SL_INTERFACE_SECTION}
 
-procedure RaiseOnInvalidRevision(const Revision: Cardinal; const MethodName, ClassName : AnsiString);
+procedure RaiseOnInvalidRevision(const Revision: Cardinal; const MethodName, ClassName : TJwString);
 begin
  if (Revision < MIN_ACL_REVISION) or (Revision > MAX_ACL_REVISION) then
    raise EJwsclInvalidRevision.CreateFmtEx(RsInvalidRevision,
@@ -2379,13 +2379,9 @@ end;
 var
   i:  integer;
   bInserted: boolean;
-  s, s2: AnsiString;
   b1,
-  //[Hint] b2,
   b3: boolean;
 begin
-  s := ClassName;
-
   if not Assigned(AccessEntry) then
     raise EJwsclNILParameterException.CreateFmtEx(RsACLClassNilParameter,
       'Add', ClassName, RsUNAcl, 0, False, ['AObject']);
@@ -2403,7 +2399,7 @@ begin
       RsACLClassInvalidAceInDacl,
       'Add', ClassName, RsUNAcl, 0, False, [AccessEntry.ClassName]);
 
-  s2 := AccessEntry.ClassName;
+
   b1 := (Self is TJwSAccessControlList);
 
 
@@ -3248,9 +3244,11 @@ var p1 : PACCESS_ALLOWED_CALLBACK_ACE;
 
     AceType : TJwAceType;
 {$IFDEF DEBUG}
+{
 type TB = array[0..27] of byte;
 var
     Data : ^TB;
+}
 {$ENDIF DEBUG}
 
 begin
@@ -3265,7 +3263,7 @@ begin
 
 
 {$IFDEF DEBUG}
-  Data := result;
+//  Data := result;  //get the contents in this way
 {$ENDIF DEBUG}
 
   PACCESS_ALLOWED_ACE(result).Header.AceType

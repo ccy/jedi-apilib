@@ -65,11 +65,13 @@ type
     {<B>Create</B> creates a new instance of TJwSecurityLsa and
 	registers the current process as a logon process.
 	This call needs TCB privilege!
-	
+   @param LogonProcessName This parameter receives a name in ansi format that
+     does not exceed 127 characters.
+
 	@raises
 	  EJwsclWinCallFailedException: This exception will be raised
 	    if the call to LsaRegisterLogonProcess failed.
-	} 
+	}
     constructor Create(const LogonProcessName: AnsiString);
 	               
     {<B>CreateUntrusted</B> creates a new instance of TJwSecurityLsa and
@@ -273,6 +275,7 @@ end;
 
 
 function JwCreateLSAString(const aString: AnsiString): LSA_STRING;
+//aString must be AnsiString !!
 var
   pStr: PAnsiChar;
 begin
@@ -323,7 +326,6 @@ const
     Buffer: '12'#0);
 begin
   lsaHostString := JwCreateLSAString(LogonProcessName);
-
 
   res := LsaRegisterLogonProcess(lsaHostString, fLsaHandle, @lsaSecurityMode);
 

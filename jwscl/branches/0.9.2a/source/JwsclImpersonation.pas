@@ -168,10 +168,10 @@ begin
 end;
 
 constructor TJwImpersonation.Create(const UseWTSCall : Boolean = false);
-var ShellWindow : HWND;
-    ThreadId,
-    ProcessId : DWORD;
-    ProcessHandle : THandle;
+//var   ShellWindow : HWND;
+    //ThreadId,
+    //ProcessId : DWORD;
+    //ProcessHandle : THandle;
 
 const ProgManName : WideString = 'Progman1';
 

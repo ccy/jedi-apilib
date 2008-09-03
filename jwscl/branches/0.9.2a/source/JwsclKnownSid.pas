@@ -361,7 +361,7 @@ raises
 }
 procedure JwCheckInitKnownSid(
   const Sids : array of TJwSecurityKnownSID;
-  const SidNames : array of AnsiString;
+  const SidNames : array of TJwString;
   const MethodName, ClassName, FileName : TJwString);
 
 
@@ -473,8 +473,7 @@ var
 {$IFNDEF SL_OMIT_SECTIONS}
 implementation
 
-uses Dialogs, IniFiles;
-
+uses IniFiles;
 {$ENDIF SL_OMIT_SECTIONS}
 
 {$IFNDEF SL_INTERFACE_SECTION}
@@ -588,8 +587,6 @@ var i : Integer;
     //Map : PJwSidMap;
 begin
   JwRaiseOnNilParameter(SidMaps, 'JwInitMapping must be called.', 'JwAddMapSid','', RsUNKnownSid);
-
-  result := nil;
 
   for i := 0 to SidMaps.Count-1 do
   begin
@@ -783,7 +780,7 @@ procedure InitSid(const Idx : Integer; var SID : TJwSecurityKnownSID);
 begin
   if not Assigned(SID) then
   try
-    SID := TJwSecurityKnownSID.Create(KnownSids[Idx]);
+    SID := TJwSecurityKnownSID.Create(TJwString(KnownSids[Idx]));
   except
     On E : Exception do
     begin
@@ -1053,11 +1050,11 @@ end;
 
 procedure JwCheckInitKnownSid(
   const Sids : array of TJwSecurityKnownSID;
-  const SidNames : array of AnsiString;
+  const SidNames : array of TJwString;
   const MethodName, ClassName, FileName : TJwString);
 var
   i,count : Integer;
-  Errors : String;
+  Errors : TJwString;
 begin
   Errors := '';
   count := 0;

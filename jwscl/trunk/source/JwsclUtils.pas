@@ -83,9 +83,9 @@ type
   TJwThread = class(TThread)
   private
     { Private declarations }
-    FName: AnsiString;
+    FName: TJwString;
 
-    procedure SetName(const Name: AnsiString);
+    procedure SetName(const Name: TJwString);
   protected
     FTerminatedEvent: THandle;
   public
@@ -99,7 +99,7 @@ type
       and commenced immediately (false) or suspended (true). 
      @param Name defines the thread's name 
      }
-    constructor Create(const CreateSuspended: Boolean; const Name: AnsiString);
+    constructor Create(const CreateSuspended: Boolean; const Name: TJwString);
     destructor Destroy; override;
 
     function GetReturnValue : Integer;
@@ -124,7 +124,7 @@ type
      The name is retrieved from internal variable. Changing the thread's name
      using foreign code does not affect this property.
     }
-    property Name: AnsiString read FName write SetName;
+    property Name: TJwString read FName write SetName;
 
   end;
 
@@ -422,11 +422,11 @@ identifier for a thread.
 <B>JwSetThreadName</B> must be called without using parameter ThreadID
  as a precondition to use JwGetThreadName .
 
-@param Name defines an ansi name for the thread 
+@param Name defines an name for the thread. This Name is converted to ansicode internally.
 @param ThreadID defines which thread is named. A value of Cardinal(-1)  uses
   the current thread 
 }
-procedure JwSetThreadName(const Name: AnsiString; const ThreadID : Cardinal = Cardinal(-1));
+procedure JwSetThreadName(const Name: TJwString; const ThreadID : Cardinal = Cardinal(-1));
 
 {<B>JwGetThreadName</B> returns the name of a thread set by JwSetThreadName.
  This function only returns the name of the current thread. It cannot be used
@@ -792,13 +792,13 @@ type
   end;
 
 
-procedure TJwThread.SetName(const Name: AnsiString);
+procedure TJwThread.SetName(const Name: TJwString);
 begin
   FName := Name;
   JwSetThreadName(Name, ThreadID);
 end;
 
-constructor TJwThread.Create(const CreateSuspended: Boolean; const Name: AnsiString);
+constructor TJwThread.Create(const CreateSuspended: Boolean; const Name: TJwString);
 begin
   inherited Create(CreateSuspended);
 
@@ -832,7 +832,7 @@ begin
 end;
 
 //source http://msdn2.microsoft.com/en-us/library/xcb2z8hs(vs.71).aspx
-procedure JwSetThreadName(const Name: AnsiString; const ThreadID : Cardinal = Cardinal(-1));
+procedure JwSetThreadName(const Name: TJwString; const ThreadID : Cardinal = Cardinal(-1));
 {$IFDEF MSWINDOWS}
 var
   ThreadNameInfo: TThreadNameInfo;
@@ -840,6 +840,7 @@ var
 begin
 {$IFDEF MSWINDOWS}
   ThreadNameInfo.FType := $1000;
+  //CW : imho, only ansicode is supported. So we cast it here.
   ThreadNameInfo.FName := PAnsiChar(AnsiString(Name));
   if (ThreadID = Cardinal(-1)) or (ThreadID = GetCurrentThreadID) then
     InternalThreadName := WideString(Name);
@@ -971,8 +972,12 @@ var ArrayHi,ArrayLo : Cardinal;
   begin
     for i := 1 to Length(S) do
     begin
-      //if not ((S[i] >= '0') and (S[i] <= '9')) then
+{$IFDEF UNICODE}
+//in this way Delphi 2009 does not generate a warning
+      if not ((S[i] >= '0') and (S[i] <= '9')) then
+{$ELSE}
       if not (S[i] in [TJwChar('0')..TJwChar('9')]) then
+{$ENDIF UNICODE}
       begin
         SetLength(S, i-1);
         break;
@@ -1127,7 +1132,6 @@ var Index : Integer;
 {$ENDIF FullDebugMode}
 
 begin
-  result := 0;
 {$IFDEF FullDebugMode}
   if LocalLock(hMem) <> nil then
   begin
@@ -1194,7 +1198,6 @@ function JwGlobalFreeMem(var hMem: HGLOBAL): HGLOBAL;
 var Index : Integer;
 {$ENDIF FullDebugMode}
 begin
-  result := 0;
 {$IFDEF FullDebugMode}
   if GlobalLock(hMem) <> nil then
   begin

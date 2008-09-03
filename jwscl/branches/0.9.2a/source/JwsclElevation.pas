@@ -47,7 +47,7 @@ unit JwsclElevation;
 {$IFNDEF SL_IMPLEMENTATION_SECTION}
 
 interface
-uses ComObj, JwaWindows, ShellApi,JwsclStrings;
+uses ComObj, JwaWindows, JwsclStrings;
 
 type
   {<B>TJwElevationClassFactory</B> provides a registration for a typed com object.
@@ -273,7 +273,7 @@ const
 
 {$IFNDEF SL_OMIT_SECTIONS}
 implementation
-uses Registry, SysUtils, ActiveX, Dialogs,
+uses Registry, SysUtils, ActiveX,
      JwsclTypes,   JwsclExceptions, JwsclSid,     JwsclAcl,
      JwsclVersion, JwsclConstants,  JwsclUtils,
      JwsclToken, JwaVista,
@@ -320,7 +320,7 @@ begin
     if sefNoUi in Flags then
       shExecInfo.fMask := shExecInfo.fMask or SEE_MASK_FLAG_NO_UI;
     
-    shExecInfo.Wnd := hWnd;
+    shExecInfo.hwnd := hWnd;
 
 
     if (sefFixDirWithRunAs in Flags) and (Length(Directory) > 0) and
@@ -350,7 +350,7 @@ begin
     shExecInfo.hInstApp := NULL;
 
     SetLastError(0);
-    if {$IFDEF UNICODE}ShellExecuteExW{$ELSE}ShellExecuteExA{$ENDIF}(@shExecInfo) then
+    if {$IFDEF UNICODE}ShellExecuteExW{$ELSE}ShellExecuteExA{$ENDIF}(shExecInfo) then
       result := shExecInfo.hProcess
     else
       raise EJwsclWinCallFailedException.CreateFmtWinCall(RsWinCallFailed,'src','','JwsclElevation.pas',0,
@@ -381,7 +381,7 @@ var
   MonikerName : WideString;
   BindOptions : TBindOpts3;
   Token : TJwSecurityToken;
-  LastError,
+
   iLen : Cardinal;
 begin
   ResultValue := 0;
@@ -424,7 +424,6 @@ function JwCoCreateInstanceAsAdmin(
   const ClassId: TGUID;
   const IID: TGUID;
  out ObjectInterface) : HRESULT;
-var iLen : Cardinal;
 begin
   result := JwCoCreateInstanceAsEx(
     'Elevation:Administrator!new:', ParentWindowHandle, ClassId, IID, ObjectInterface);
@@ -502,7 +501,7 @@ class procedure TJwElevationClassFactory.UpdateRegistry(RegisterFactory: Boolean
 {$ELSE}
 procedure TJwElevationClassFactory.UpdateRegistry(RegisterFactory: Boolean);
 
-  procedure RaiseRegError(Reason, Key : AnsiString);
+  procedure RaiseRegError(Reason, Key : String);
   begin
     try
       raise EJwsclAccessDenied.CreateFmtEx(
@@ -513,7 +512,7 @@ procedure TJwElevationClassFactory.UpdateRegistry(RegisterFactory: Boolean);
       on E : Exception do
       begin
         if Self.ShowErrors then
-          ShowMessage(E.Message)
+          MessageBoxW(0, PWideChar(WideString(E.Message)), 'Error', MB_ICONHAND or MB_OK)
         else
           raise;
       end;
@@ -524,7 +523,7 @@ var
   Reg : TRegistry;
   GuidString,
   DllPath,
-  DllName : AnsiString;
+  DllName : String;
 
   SD : TJwSecurityDescriptor;
   pSecDescr : PSecurityDescriptor;
@@ -554,6 +553,9 @@ begin
   //JwInitWellKnownSIDs;
 
 {$IFDEF UNIT_TEST}
+  //
+  // This is not production code!
+  //
   DllPath := 'c:\programme\mydll.dll';
   DllName := ExtractFileName(DllPath);
   GuidString := '{E108B186-B399-4E46-99B4-345F8179C26E}';

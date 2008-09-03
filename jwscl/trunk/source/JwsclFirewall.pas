@@ -41,7 +41,9 @@ interface
 
 uses ComObj,
     NetFwTypeLib_TLB, //can be found at \jwapi\trunk\COM
-    JwsclConstants, JwsclExceptions;
+    JwsclConstants,
+    JwsclExceptions,
+    JwsclStrings;
 
 type
   TJwsclFirewall = class(TObject)
@@ -61,8 +63,8 @@ type
     function GetRemoteAdminAllowed(): Boolean; virtual;
     procedure SetRemoteAdminAllowed(Value: Boolean); virtual;
 
-    function GetRemoteAdminAdress(): AnsiString; virtual;
-    procedure SetRemoteAdminAdress(Value: AnsiString); virtual;
+    function GetRemoteAdminAdress(): TJwString; virtual;
+    procedure SetRemoteAdminAdress(Value: TJwString); virtual;
   public
     { Create creates a new TJwsclFirewall instance and connects to the firewall
       manager COM interface.
@@ -85,13 +87,13 @@ type
       rules list
      @param EnableRule defines if the new rule should be active or not
      }
-    procedure AddToWinFirewall(ApplicationFilename, NameOnExeptionlist: AnsiString;
+    procedure AddToWinFirewall(ApplicationFilename, NameOnExeptionlist: TJwString;
       EnableRule: Boolean); virtual;
 
     {<B>DeleteFromWinFirewall</B> Removes a program's firewall rule.
      @param ApplicationFilename defines the executable of the program
     }
-    procedure DeleteFromWinFirewall(ApplicationFilename: AnsiString); virtual;
+    procedure DeleteFromWinFirewall(ApplicationFilename: TJwString); virtual;
 
     {<B>AddTcpPortToFirewall</B> Adds a rule for a single tcp port to the firewall.
      @param ProtocollName gives a description of the opened port (e.g. "FTP-Server") 
@@ -99,9 +101,9 @@ type
      @param SubnetOnly defines if the rule affects only the pc's subnet or not
      @param PortRemoteAddresses defines which Remoteadress and port should be allowed
     }
-    procedure AddTcpPortToFirewall(ProtocollName: AnsiString;
+    procedure AddTcpPortToFirewall(ProtocollName: TJwString;
       ProtocollPort: Integer; const SubnetOnly: Boolean = False;
-      const PortRemoteAddresses: AnsiString = '*'); virtual;
+      const PortRemoteAddresses: TJwString = '*'); virtual;
 
     {<B>AddUpdPortToFirewall</B> Adds a rule for a single udp port to the firewall.
      @param ProtocollName gives a description of the opened port (e.g. "FTP-Server")
@@ -109,14 +111,14 @@ type
      @param SubnetOnly defines if the rule affects only the pc's subnet or not
      @param PortRemoteAddresses defines which Remoteadress and port should be allowed
     }
-    procedure AddUpdPortToFirewall(ProtocollName: AnsiString;
+    procedure AddUpdPortToFirewall(ProtocollName: TJwString;
       ProtocollPort: Integer; const SubnetOnly: Boolean = False;
-      const PortRemoteAddresses: AnsiString = '*'); virtual;
+      const PortRemoteAddresses: TJwString = '*'); virtual;
 
     {<B>IsAppRulePresent</B> Checks if a firewall rule for the specified application is already present
      @param ApplicationFilename defines the executable of the program
     }
-    function IsAppRulePresent(ApplicationFilename: AnsiString): Boolean;
+    function IsAppRulePresent(ApplicationFilename: TJwString): Boolean;
 
     {<B>Active</B> Sets or gets if the windows firewall is active or not}
     property Active: Boolean read GetFirewallState write SetFirewallState;
@@ -134,7 +136,7 @@ type
       write SetRemoteAdminAllowed;
 
     {<B>ExceptionsAllowed</B> Sets or gets the adress(es) which are allowed for remote administration}
-    property RemoteAdminAdress: AnsiString read GetRemoteAdminAdress
+    property RemoteAdminAdress: TJwString read GetRemoteAdminAdress
       write SetRemoteAdminAdress;
   end;
 
@@ -311,7 +313,7 @@ begin
 end;
 
 
-function TJwsclFirewall.GetRemoteAdminAdress(): AnsiString;
+function TJwsclFirewall.GetRemoteAdminAdress(): TJwString;
 var
   RASettings: INetFwRemoteAdminSettings;
 begin
@@ -330,7 +332,7 @@ begin
 end;
 
 
-procedure TJwsclFirewall.SetRemoteAdminAdress(Value: AnsiString);
+procedure TJwsclFirewall.SetRemoteAdminAdress(Value: TJwString);
 var
   RASettings: INetFwRemoteAdminSettings;
 begin
@@ -350,7 +352,7 @@ end;
 
 
 procedure TJwsclFirewall.AddToWinFirewall(ApplicationFilename,
-  NameOnExeptionlist: AnsiString; EnableRule: Boolean);
+  NameOnExeptionlist: TJwString; EnableRule: Boolean);
 var
   App: INetFwAuthorizedApplication;
 begin                
@@ -390,9 +392,9 @@ begin
 end;
 
 
-procedure TJwsclFirewall.AddTcpPortToFirewall(ProtocollName: AnsiString;
+procedure TJwsclFirewall.AddTcpPortToFirewall(ProtocollName: TJwString;
   ProtocollPort: Integer; const SubnetOnly: Boolean = False;
-  const PortRemoteAddresses: AnsiString = '*');
+  const PortRemoteAddresses: TJwString = '*');
 var
   Port: INetFwOpenPort;
 begin
@@ -443,9 +445,9 @@ begin
 end;
 
 
-procedure TJwsclFirewall.AddUpdPortToFirewall(ProtocollName: AnsiString;
+procedure TJwsclFirewall.AddUpdPortToFirewall(ProtocollName: TJwString;
   ProtocollPort: Integer; const SubnetOnly: Boolean = False;
-  const PortRemoteAddresses: AnsiString = '*');
+  const PortRemoteAddresses: TJwString = '*');
 var
   Port: INetFwOpenPort;
 begin
@@ -496,7 +498,7 @@ begin
 end;
 
 
-procedure TJwsclFirewall.DeleteFromWinFirewall(ApplicationFilename: AnsiString);
+procedure TJwsclFirewall.DeleteFromWinFirewall(ApplicationFilename: TJwString);
 begin
 
   if GetFirewallState
@@ -515,7 +517,7 @@ begin
 end;
 
 
-function TJwsclFirewall.IsAppRulePresent(ApplicationFilename: AnsiString): Boolean;
+function TJwsclFirewall.IsAppRulePresent(ApplicationFilename: TJwString): Boolean;
 var
   App: INetFwAuthorizedApplication;
 begin

@@ -629,7 +629,7 @@ type
 
   TJwSiAccessArray = array of SI_ACCESS;
 
-  TJwStringArray = array of AnsiString;
+  TJwStringArray = array of TJwString;
 
   TJwIntegrityLabelType = (
     iltNone,
