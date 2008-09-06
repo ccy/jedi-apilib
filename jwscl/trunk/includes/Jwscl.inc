@@ -20,14 +20,16 @@ Of course they will fail if Vista stuff is called on them.
 {$DEFINE VISTA}
 
 //adds compiler version directives
-{$I jedi.inc}
+//jwscl.inc is only added by JWSCL units in source folder
+//so we're actually in the source folder and must jump up
+{$I ..\include\jedi.inc}
 
 {$IFDEF FPC}
 {$mode delphi}{.$H+}
 {$ENDIF}
 
 {$IFDEF DEBUG}
-  {$WARNINGS OFF}
+  {.$WARNINGS OFF}
 {$ENDIF DEBUG}
 
 

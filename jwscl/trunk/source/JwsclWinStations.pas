@@ -37,7 +37,7 @@ Portions created by Christian Wimmer are Copyright (C) Christian Wimmer. All rig
 }
 {$IFNDEF SL_OMIT_SECTIONS}
 unit JwsclWinStations;
-{$I Jwscl.inc}
+{$INCLUDE ..\includes\Jwscl.inc}
 // Last modified: $Date: 2007-09-10 10:00:00 +0100 $
 
 
@@ -439,8 +439,7 @@ begin
 
   if fHandle = 0 then
     raise EJwsclWinCallFailedException.CreateFmtWinCall(
-      RsWinStationCreateFailed,
-      //const sMsg: AnsiString;
+      RsWinStationCreateFailed,     //const sMsg: TJwString;
       'Create',                               //sSourceProc
       ClassName,                                //sSourceClass
       RsUNWinStation,                          //sSourceFile
@@ -700,8 +699,7 @@ begin
     (TJwPChar(sName), bInherit, cDesiredAccess);
   if fHandle = 0 then
     raise EJwsclOpenWindowStationException.CreateFmtWinCall(
-      RsWinStationOpenFailed,
-      //const sMsg: AnsiString;
+      RsWinStationOpenFailed,      //const sMsg: TJwString;
       'Open',                               //sSourceProc
       ClassName,                                //sSourceClass
       RsUNWinStation,                          //sSourceFile

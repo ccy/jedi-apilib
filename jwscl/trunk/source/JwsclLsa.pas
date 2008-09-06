@@ -39,7 +39,7 @@ Portions created by Christian Wimmer are Copyright (C) Christian Wimmer. All rig
 }
 {$IFNDEF SL_OMIT_SECTIONS}
 unit JwsclLsa;
-{$INCLUDE Jwscl.inc}
+{$INCLUDE ..\includes\Jwscl.inc}
 // Last modified: $Date: 2007-09-10 10:00:00 +0100 $
 
 interface
@@ -73,7 +73,7 @@ type
 	    if the call to LsaRegisterLogonProcess failed.
 	}
     constructor Create(const LogonProcessName: AnsiString);
-	               
+
     {<B>CreateUntrusted</B> creates a new instance of TJwSecurityLsa and
 	 creates an untrusted connection to LSA 
 	 
@@ -111,7 +111,7 @@ type
 
   end;
 
-  TJwWideStringArray = array of WideString;
+
   TJwAccountRightStringW = TJwWideStringArray;
   TJwEnumerationInformation = array of TJwSecurityId;
 

@@ -38,7 +38,7 @@ Portions created by Christian Wimmer are Copyright (C) Christian Wimmer. All rig
 
 }
 unit JwsclImpersonation;
-{$INCLUDE Jwscl.inc}
+{$INCLUDE ..\includes\Jwscl.inc}
 // Last modified: $Date: 2007-09-10 10:00:00 +0100 $
 
 

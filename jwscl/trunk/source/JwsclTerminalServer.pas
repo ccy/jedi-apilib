@@ -63,7 +63,7 @@
 
 {$IFNDEF SL_OMIT_SECTIONS}
 unit JwsclTerminalServer;
-{$I Jwscl.inc}
+{$INCLUDE ..\includes\Jwscl.inc}
 
 interface
 

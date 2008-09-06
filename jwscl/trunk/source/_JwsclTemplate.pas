@@ -37,7 +37,7 @@ The Initial Developer of the Original Code is <Author Name>
 }
 unit _JwsclTemplate;
 
-{$INCLUDE Jwscl.inc}
+{$INCLUDE ..\includes\Jwscl.inc}
 
 interface
 uses

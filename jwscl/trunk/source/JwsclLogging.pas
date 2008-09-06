@@ -38,7 +38,7 @@ Portions created by Christian Wimmer are Copyright (C) Christian Wimmer. All rig
 }
 unit JwsclLogging;
 
-{$INCLUDE Jwscl.inc}
+{$INCLUDE ..\includes\Jwscl.inc}
 interface
 uses ActiveX,
      ComServ,

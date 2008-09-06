@@ -37,7 +37,7 @@ Portions created by Christian Wimmer are Copyright (C) Christian Wimmer. All rig
 }
 {$IFNDEF SL_OMIT_SECTIONS}
 unit JwsclCredentials;
-{$INCLUDE Jwscl.inc}
+{$INCLUDE ..\includes\Jwscl.inc}
 // Last modified: $Date: 2007-09-10 10:00:00 +0100 $
 
 

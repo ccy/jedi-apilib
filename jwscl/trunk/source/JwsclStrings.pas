@@ -37,7 +37,7 @@ Portions created by Christian Wimmer are Copyright (C) Christian Wimmer. All rig
 }
 {$IFNDEF SL_OMIT_SECTIONS}
 unit JwsclStrings;
-{$INCLUDE Jwscl.inc}
+{$INCLUDE ..\includes\Jwscl.inc}
 // Last modified: $Date: 2007-09-10 10:00:00 +0100 $
 
 interface
@@ -48,9 +48,16 @@ uses JwaWindows;
 
 {$IFNDEF SL_IMPLEMENTATION_SECTION}
 type
+  {
+  Warning: don't use type on the right side and in front of
+   a type like
+    XY = type Z;
+   It creates a new type. But we need just renamed types.
+  }
+
   {$IFDEF UNICODE}
   //<B>TJwString</B> defines an unicode string type if compiler directive UNICODE is defined; otherwise ansicode
-  TJwString = WideString;
+  TJwString = UnicodeString; //WideString;
   //<B>TJwPChar</B> defines an unicode pointer to wide char type if compiler directive UNICODE is defined; otherwise ansicode
   TJwPChar  = PWideChar;
   //<B>TJwChar</B> defines an unicode wide char type if compiler directive UNICODE is defined; otherwise ansicode
@@ -64,7 +71,14 @@ type
   TJwChar   = AnsiChar;
   {$ENDIF UNICODE}
 
+  {<B>TJwTJwStringArray</B> defines an dynamic array of TJwString.
+   It can be either ansi or unicode strings}
   TJwTJwStringArray = array of TJwString;
+
+  TJwWideStringArray = array of WideString;
+
+  TJwWideString = WideString;
+  TJwAnsiString = AnsiString;
 
 
 const
@@ -121,6 +135,8 @@ procedure JwFreeLSAString(var aString: LSA_STRING);
 
 function PWideCharToJwString(const APWideChar: PWideChar): TJwString;
 
+{<B>JwOutputDebugString</B> calls API OutputDebugString but works with TJwString}
+procedure JwOutputDebugString(const Value : TJwString; const Args : array of const);
 
 {$ENDIF SL_IMPLEMENTATION_SECTION}
 
@@ -137,6 +153,17 @@ uses
 
 
 {$IFNDEF SL_INTERFACE_SECTION}
+
+procedure JwOutputDebugString(const Value : TJwString; const Args : array of const);
+begin
+{$IFDEF DEBUG}
+{$IFDEF UNICODE}
+  OutputDebugStringW(PWideChar(WideFormat('%s. Security id: %s ',Args)));
+{$ELSE}
+  OutputDebugStringA(PAnsiChar(Format('%s. Security id: %s ',Args)));
+{$ENDIF UNICODE}
+{$ENDIF DEBUG}
+end;
 
 function JwCreateUnicodeString(const NewString: WideString): PUnicodeString;
 begin

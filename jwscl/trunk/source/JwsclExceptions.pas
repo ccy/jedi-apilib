@@ -42,7 +42,7 @@ Install JCL and compile this unit with compiler directive SM_JCLDEBUG and TD32 D
 
 {$IFNDEF SL_OMIT_SECTIONS}
 unit JwsclExceptions;
-{$I Jwscl.inc}
+{$INCLUDE ..\includes\Jwscl.inc}
 // Last modified: $Date: 2007-09-10 10:00:00 +0100 $
 
 interface

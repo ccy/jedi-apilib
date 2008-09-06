@@ -42,7 +42,7 @@ Portions created by Christian Wimmer are Copyright (C) Christian Wimmer. All rig
 }
 {$IFNDEF SL_OMIT_SECTIONS}
 unit JwsclSid;
-{$INCLUDE Jwscl.inc}
+{$INCLUDE ..\includes\Jwscl.inc}
 // Last modified: $Date: 2007-09-10 10:00:00 +0100 $
 
 interface
@@ -214,7 +214,7 @@ type
     {<B>fDbgData</B> contains the values of the properties of the instance for debugging purposes.
      It is only used if DEBUG is defined.
      }
-    fDbgData: AnsiString;
+    fDbgData: TJwString;
 {$ENDIF DEBUG}    
 
       {<B>fDbgDisableException</B> disables the raising of exceptions in the following methods :
@@ -1694,7 +1694,7 @@ end;
 procedure TJwSecurityId.UpdateDbgData;
 {$IFDEF DEBUG}
 var
-  Data: array[1..10] of AnsiString;
+  Data: array[1..10] of TJwString;
   i: integer;
   ident: TSidIdentifierAuthority;
 {$ENDIF DEBUG}

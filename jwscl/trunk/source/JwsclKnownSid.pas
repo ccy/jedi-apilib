@@ -39,7 +39,7 @@ Portions created by Christian Wimmer are Copyright (C) Christian Wimmer. All rig
 {$IFNDEF SL_OMIT_SECTIONS}
 unit JwsclKnownSid;
 // Last modified: $Date: 2007-09-10 10:00:00 +0100 $
-{$INCLUDE Jwscl.inc}
+{$INCLUDE ..\includes\Jwscl.inc}
 
 interface
 
@@ -784,9 +784,7 @@ begin
   except
     On E : Exception do
     begin
-{$IFDEF DEBUG}
-      OutputDebugStringA(PAnsiChar(Format('%s. Security id: %s ',[E.Message,KnownSids[Idx]])));
-{$ENDIF DEBUG}
+      JwOutputDebugString('%s. Security id: %s ',[E.Message,KnownSids[Idx]]);
       SID := nil;
     end;
   end;

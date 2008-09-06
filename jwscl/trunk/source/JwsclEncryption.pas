@@ -35,7 +35,7 @@
 {$IFNDEF SL_OMIT_SECTIONS}
 unit JwsclEncryption;
 
-{$I Jwscl.inc}
+{$INCLUDE ..\includes\Jwscl.inc}
 
 //do not move header comment from above unit declaration!
 

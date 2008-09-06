@@ -45,7 +45,7 @@ Secure object types:
 }
 {$IFNDEF SL_OMIT_SECTIONS}
 unit JwsclDesktops;
-{$I Jwscl.inc}
+{$INCLUDE ..\includes\Jwscl.inc}
 // Last modified: $Date: 2007-09-10 10:00:00 +0100 $
 
 interface
