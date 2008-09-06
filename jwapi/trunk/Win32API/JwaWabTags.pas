@@ -51,7 +51,7 @@ interface
 uses
   Windows, ActiveX, JwaWabDefs;
 
-{$I jediapilib.inc}
+{$I ..\Includes\JediAPILib.inc}
 
 
 {$ALIGN ON}

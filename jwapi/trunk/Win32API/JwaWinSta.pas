@@ -26,7 +26,7 @@ unit JwaWinSta;
 
 interface
 
-{$I jediapilib.inc}
+{$I ..\Includes\JediAPILib.inc}
 
 uses
   DateUtils, SysUtils, JwaWinType, // JwaWinType must be declared before JwaWinBase because of duplicate declaration of FILETIME

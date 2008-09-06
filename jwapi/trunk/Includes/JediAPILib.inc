@@ -1,3 +1,4 @@
+
 {$IFNDEF JEDIAPILIB_INC}
 {$DEFINE JEDIAPILIB_INC}
 
@@ -41,7 +42,7 @@
 // It defines several mutually exclusive IFDEFs which determine
 // the Windows version the API conversion is usable with.
 
-{$I jedi.inc}
+{$I ..\Includes\jedi.inc}
 
 {$IFNDEF JEDI_INC}
 ALERT_jedi_inc_incompatible

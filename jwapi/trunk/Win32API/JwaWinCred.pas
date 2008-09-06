@@ -53,8 +53,8 @@ unit JwaWinCred;
 {$HPPEMIT ''}
 
 {$IFNDEF JWA_OMIT_SECTIONS}
-{$I jediapilib.inc}
-{$I jedi.inc} //used for D5 compiling
+{$I ..\Includes\JediAPILib.inc}
+{$I ..\Includes\jedi.inc} //used for D5 compiling
 
 interface
 

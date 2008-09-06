@@ -172,8 +172,8 @@ the one of the project.
 
 
 //extra compiler options
-{$I jedi.inc}
-{$I jediapilib.inc} //add "..\..\Common" to source path if not found
+{$I ..\Includes\jedi.inc}
+{$I ..\Includes\JediAPILib.inc} //add "..\..\Common" to source path if not found
 
 
 

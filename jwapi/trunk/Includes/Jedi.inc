@@ -1,53 +1,49 @@
 {$IFNDEF JEDI_INC}
 {$DEFINE JEDI_INC}
 
-{******************************************************************************}
-{                                                                              }
-{  The contents of this file are subject to the Mozilla Public License         }
-{  Version 1.1 (the "License"); you may not use this file except in            }
-{  compliance with the License. You may obtain a copy of the License at        }
-{  http://www.mozilla.org/MPL/                                                 }
-{                                                                              }
-{  Software distributed under the License is distributed on an "AS IS" basis,  }
-{  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License    }
-{  for the specific language governing rights and limitations under the        }
-{  License.                                                                    }
-{                                                                              }
-{  The Original Code is: jedi.inc.                                             }
-{  The Initial Developer of the Original Code is Project JEDI                  }
-{  http://www.delphi-jedi.org                                                  }
-{                                                                              }
-{  Alternatively, the contents of this file may be used under the terms of     }
-{  the GNU Lesser General Public License (the  "LGPL License"), in which case  }
-{  the provisions of the LGPL License are applicable instead of those above.   }
-{  If you wish to allow use of your version of this file only under the terms  }
-{  of the LGPL License and not to allow others to use your version of this     }
-{  file under the MPL, indicate your decision by deleting the provisions       }
-{  above and replace them with the notice and other provisions required by     }
-{  the LGPL License. If you do not delete the provisions above, a recipient    }
-{  may use your version of this file under either the MPL or the LGPL License. }
-{                                                                              }
-{  For more information about the LGPL:                                        }
-{  http://www.gnu.org/copyleft/lesser.html                                     }
-{                                                                              }
-{******************************************************************************}
-{                                                                              }
-{  This file defines various generic compiler directives used in different     }
-{  libraries, e.g. in the JEDI Code Library (JCL) and JEDI Visual Component    }
-{  Library Library (J-VCL). The directives in this file are of generic nature  }
-{  and consist mostly of mappings from the VERXXX directives defined by        }
-{  Delphi, C++ Builder and FPC to friendly names such as DELPHI5 and           }
-{  SUPPORTS_WIDESTRING. These friendly names are subsequently used in the      }
-{  libraries to test for compiler versions and/or whether the compiler         }
-{  supports certain features (such as widestrings or 64 bit integers. The      }
-{  libraries provide an additional, library specific, include file. For the    }
-{  JCL e.g. this is jcl.inc. These files should be included in source files    }
-{  instead of this file (which is pulled in automatically).                    }
-{                                                                              }
-{******************************************************************************}
-
-// Last modified: $Date: 2007/04/05 10:30:32 $
-// For history see end of file
+{**************************************************************************************************}
+{                                                                                                  }
+{  The contents of this file are subject to the Mozilla Public License Version 1.1 (the "License");}
+{  you may not use this file except in compliance with the License. You may obtain a copy of the   }
+{  License at http://www.mozilla.org/MPL/                                                          }
+{                                                                                                  }
+{  Software distributed under the License is distributed on an "AS IS" basis, WITHOUT WARRANTY OF  }
+{  ANY KIND, either express or implied. See the License for the specific language governing rights }
+{  and limitations under the License.                                                              }
+{                                                                                                  }
+{  The Original Code is: jedi.inc.                                                                 }
+{  The Initial Developer of the Original Code is Project JEDI http://www.delphi-jedi.org           }
+{                                                                                                  }
+{  Alternatively, the contents of this file may be used under the terms of the GNU Lesser General  }
+{  Public License (the  "LGPL License"), in which case the provisions of the LGPL License are      }
+{  applicable instead of those above. If you wish to allow use of your version of this file only   }
+{  under the terms of the LGPL License and not to allow others to use your version of this file    }
+{  under the MPL, indicate your decision by deleting the provisions above and replace them with    }
+{  the notice and other provisions required by the LGPL License. If you do not delete the          }
+{  provisions above, a recipient may use your version of this file under either the MPL or the     }
+{  LGPL License.                                                                                   }
+{                                                                                                  }
+{  For more information about the LGPL: http://www.gnu.org/copyleft/lesser.html                    }
+{                                                                                                  }
+{**************************************************************************************************}
+{                                                                                                  }
+{  This file defines various generic compiler directives used in different libraries, e.g. in the  }
+{  JEDI Code Library (JCL) and JEDI Visual Component Library Library (JVCL). The directives in     }
+{  this file are of generic nature and consist mostly of mappings from the VERXXX directives       }
+{  defined by Delphi, C++ Builder and FPC to friendly names such as DELPHI5 and                    }
+{  SUPPORTS_WIDESTRING. These friendly names are subsequently used in the libraries to test for    }
+{  compiler versions and/or whether the compiler supports certain features (such as widestrings or }
+{  64 bit integers. The libraries provide an additional, library specific, include file. For the   }
+{  JCL e.g. this is jcl.inc. These files should be included in source files instead of this file   }
+{  (which is pulled in automatically).                                                             }
+{                                                                                                  }
+{**************************************************************************************************}
+{                                                                                                  }
+{ Last modified: $Date:: 2008-08-31 17:17:46 +0200 (dim. 31 août 2008)                          $ }
+{ Revision:      $Rev:: 2446                                                                     $ }
+{ Author:        $Author:: outchy                                                                $ }
+{                                                                                                  }
+{**************************************************************************************************}
 
 (*
 
@@ -81,13 +77,14 @@
   MSWINDOWS           Defined when target platform is 32 bit Windows
   LINUX               Defined when target platform is Linux
   UNIX                Defined when target platform is Unix-like (including Linux)
+  CLR                 Defined when target platform is .NET
 
 - Architecture directives. These are auto-defined by FPC
   CPU32 and CPU64 are mostly for generic pointer size dependant differences rather
   than for a specific architecture.
 
-  CPU386              Defined when target platform is x86 (win32)
-  CPUx86_64           Defined when target platform is x86_64 (win64)
+  CPU386              Defined when target platform is native x86 (win32)
+  CPUx86_64           Defined when target platform is native x86_64 (win64)
   CPU32               Defined when target is 32-bit
   CPU64	              Defined when target is 64-bit
 
@@ -135,7 +132,11 @@
   DELPHI2005          Defined when compiling with Delphi 2005
   DELPHI9             Alias for DELPHI2005
   DELPHI10            Defined when compiling with Delphi Personality of BDS 4.0
-  DELPHI11            Defined when compiling with Delphi for Win32 2007 
+  DELPHI2006          Alias for DELPHI10
+  DELPHI11            Defined when compiling with Delphi 2007 for Win32 
+  DELPHI2007          Alias for DELPHI11
+  DELPHI12            Defined when compiling with Delphi for Win32 2009 
+  DELPHI2009          Alias for DELPHI12
   DELPHI1_UP          Defined when compiling with Delphi 1 or higher
   DELPHI2_UP          Defined when compiling with Delphi 2 or higher
   DELPHI3_UP          Defined when compiling with Delphi 3 or higher
@@ -147,7 +148,11 @@
   DELPHI2005_UP       Defined when compiling with Delphi 2005 or higher
   DELPHI9_UP          Alias for DELPHI2005_UP
   DELPHI10_UP         Defined when compiling with Delphi Personality of BDS 4.0 or higher
-  DELPHI11_UP         Defined when compiling with Delphi for Win32 2007 or higher
+  DELPHI2006_UP       Alias for DELPHI10_UP
+  DELPHI11_UP         Defined when compiling with Delphi 2007 for Win32 or higher
+  DELPHI2007_UP       Alias for DELPHI11_UP
+  DELPHI12_UP         Defined when compiling with Delphi for Win32 2009 or higher
+  DELPHI2009_UP       Alias for DELPHI12_UP
 
 
 - Kylix Versions
@@ -180,7 +185,8 @@
   DELPHICOMPILER8      Defined when compiling with Delphi 8
   DELPHICOMPILER9      Defined when compiling with Delphi 2005
   DELPHICOMPILER10     Defined when compiling with Delphi Personality of BDS 4.0
-  DELPHICOMPILER11     Defined when compiling with Delphi for Win32 2007
+  DELPHICOMPILER11     Defined when compiling with Delphi 2007 for Win32
+  DELPHICOMPILER12     Defined when compiling with Delphi Personality of BDS 6.0
   DELPHICOMPILER1_UP   Defined when compiling with Delphi 1 or higher
   DELPHICOMPILER2_UP   Defined when compiling with Delphi 2 or higher
   DELPHICOMPILER3_UP   Defined when compiling with Delphi 3 or higher
@@ -191,7 +197,8 @@
   DELPHICOMPILER8_UP   Defined when compiling with Delphi 8 or higher
   DELPHICOMPILER9_UP   Defined when compiling with Delphi 2005
   DELPHICOMPILER10_UP  Defined when compiling with Delphi Personality of BDS 4.0 or higher
-  DELPHICOMPILER11_UP  Defined when compiling with Delphi for Win32 2007 or higher
+  DELPHICOMPILER11_UP  Defined when compiling with Delphi 2007 for Win32 or higher
+  DELPHICOMPILER12_UP  Defined when compiling with Delphi Personality of BDS 6.0 or higher
 
 
 - C++ Builder Versions
@@ -207,16 +214,20 @@
   BCB4         Defined when compiling with C++ Builder 4
   BCB5         Defined when compiling with C++ Builder 5
   BCB6         Defined when compiling with C++ Builder 6
-  BCB10        Defined when compiling with C++ Builder Personality of BDS 4.0
+  BCB10        Defined when compiling with C++ Builder Personality of BDS 4.0 (also known as C++Builder 2006)
+  BCB11        Defined when compiling with C++ Builder Personality of RAD Studio 2007 (also known as C++Builder 2007)
+  BCB12        Defined when compiling with C++ Builder Personality of RAD Studio 2009 (also known as C++Builder 2009)
   BCB1_UP      Defined when compiling with C++ Builder 1 or higher
   BCB3_UP      Defined when compiling with C++ Builder 3 or higher
   BCB4_UP      Defined when compiling with C++ Builder 4 or higher
   BCB5_UP      Defined when compiling with C++ Builder 5 or higher
   BCB6_UP      Defined when compiling with C++ Builder 6 or higher
   BCB10_UP     Defined when compiling with C++ Builder Personality of BDS 4.0 or higher
+  BCB11_UP     Defined when compiling with C++ Builder Personality of RAD Studio 2007 or higher
+  BCB12_UP     Defined when compiling with C++ Builder Personality of RAD Studio 2009 or higher
 
 
-- Borland Developer Studio Versions
+- CodeGear RAD Studio / Borland Developer Studio Versions
 
   The following directives are direct mappings from the VERXXX directives to a
   friendly name of the associated IDE. These directives are only defined if
@@ -231,11 +242,13 @@
   BDS2         Defined when compiling with BDS 2.0 (Delphi 8)
   BDS3         Defined when compiling with BDS 3.0 (Delphi 2005)
   BDS4         Defined when compiling with BDS 4.0 (Borland Developer Studio 2006)
-  BDS5         Defined when compiling with BDS 5.0 (Codegear RAD Studio 2007)
+  BDS5         Defined when compiling with BDS 5.0 (CodeGear RAD Studio 2007)
+  BDS6         Defined when compiling with BDS 6.0 (CodeGear RAD Studio 2009)
   BDS2_UP      Defined when compiling with BDS 2.0 or higher
   BDS3_UP      Defined when compiling with BDS 3.0 or higher
   BDS4_UP      Defined when compiling with BDS 4.0 or higher
   BDS5_UP      Defined when compiling with BDS 5.0 or higher
+  BDS6_UP      Defined when compiling with BDS 6.0 or higher
 
 - Compiler Versions
 
@@ -258,7 +271,8 @@
   COMPILER8      Defined when compiling with Delphi 8
   COMPILER9      Defined when compiling with Delphi 9
   COMPILER10     Defined when compiling with Delphi or C++ Builder Personalities of BDS 4.0
-  COMPILER11     Defined when compiling with Delphi for Win32 2007
+  COMPILER11     Defined when compiling with Delphi 2007 for Win32
+  COMPILER12     Defined when compiling with Delphi or C++ Builder Personalities of BDS 6.0
   COMPILER1_UP   Defined when compiling with Delphi 1 or higher
   COMPILER2_UP   Defined when compiling with Delphi 2 or C++ Builder 1 or higher
   COMPILER3_UP   Defined when compiling with Delphi 3 or higher
@@ -270,7 +284,8 @@
   COMPILER8_UP   Defined when compiling with Delphi 8
   COMPILER9_UP   Defined when compiling with Delphi Personalities of BDS 3.0
   COMPILER10_UP  Defined when compiling with Delphi or C++ Builder Personalities of BDS 4.0 or higher
-  COMPILER11_UP  Defined when compiling with Delphi for Win32 2007 ir higher
+  COMPILER11_UP  Defined when compiling with Delphi 2007 for Win32 or higher
+  COMPILER12_UP  Defined when compiling with Delphi or C++ Builder Personalities of BDS 6.0 or higher
 
 
 - RTL Versions
@@ -278,27 +293,42 @@
   Use e.g. following to determine the exact RTL version since version 14.0:
     {$IFDEF CONDITIONALEXPRESSIONS}
       {$IF Declared(RTLVersion) and (RTLVersion >= 14.2)}
-        // code for Delphi 6.02 or later, Kylix 2 or later, C++ Builder 6 or later
+        // code for Delphi 6.02 or higher, Kylix 2 or higher, C++ Builder 6 or higher
         ...
       {$IFEND}
     {$ENDIF}
 
   Directive     Description
   ------------------------------------------------------------------------------
-  RTL80_UP      Defined when compiling with Delphi 1 or later
-  RTL90_UP      Defined when compiling with Delphi 2 or later
-  RTL93_UP      Defined when compiling with C++ Builder 1 or later
-  RTL100_UP     Defined when compiling with Delphi 3 or later
-  RTL110_UP     Defined when compiling with C++ Builder 3 or later
-  RTL120_UP     Defined when compiling with Delphi 4 or later
-  RTL125_UP     Defined when compiling with C++ Builder 4 or later
-  RTL130_UP     Defined when compiling with Delphi 5 or C++ Builder 5 or later
-  RTL140_UP     Defined when compiling with Delphi 6, Kylix 1, 2 or 3 or C++ Builder 6 or later
-  RTL150_UP     Defined when compiling with Delphi 7 or later
-  RTL160_UP     Defined when compiling with Delphi 8 or later
-  RTL170_UP     Defined when compiling with Delphi Personalities of BDS 3.0 or later
-  RTL180_UP     Defined when compiling with Delphi or C++ Builder Personalities of BDS 4.0 or later
-  RTL185_UP     Defined when compiling with Delphi for Win32 2007 or later
+  RTL80_UP      Defined when compiling with Delphi 1 or higher
+  RTL90_UP      Defined when compiling with Delphi 2 or higher
+  RTL93_UP      Defined when compiling with C++ Builder 1 or higher
+  RTL100_UP     Defined when compiling with Delphi 3 or higher
+  RTL110_UP     Defined when compiling with C++ Builder 3 or higher
+  RTL120_UP     Defined when compiling with Delphi 4 or higher
+  RTL125_UP     Defined when compiling with C++ Builder 4 or higher
+  RTL130_UP     Defined when compiling with Delphi 5 or C++ Builder 5 or higher
+  RTL140_UP     Defined when compiling with Delphi 6, Kylix 1, 2 or 3 or C++ Builder 6 or higher
+  RTL150_UP     Defined when compiling with Delphi 7 or higher
+  RTL160_UP     Defined when compiling with Delphi 8 or higher
+  RTL170_UP     Defined when compiling with Delphi Personalities of BDS 3.0 or higher
+  RTL180_UP     Defined when compiling with Delphi or C++ Builder Personalities of BDS 4.0 or higher
+  RTL185_UP     Defined when compiling with Delphi 2007 for Win32 or higher
+  RTL190_UP     Defined when compiling with Delphi.NET of BDS 5.0 or later
+  RTL200_UP     Defined when compiling with Delphi or C++ Builder Personalities of BDS 6.0 or later
+
+
+- CLR Versions
+
+  Directive     Description
+  ------------------------------------------------------------------------------
+  CLR            Defined when compiling for .NET
+  CLR10          Defined when compiling for .NET 1.0 (may be overriden by FORCE_CLR10)
+  CLR10_UP       Defined when compiling for .NET 1.0 or higher
+  CLR11          Defined when compiling for .NET 1.1 (may be overriden by FORCE_CLR11)
+  CLR11_UP       Defined when compiling for .NET 1.1 or higher
+  CLR20          Defined when compiling for .NET 2.0 (may be overriden by FORCE_CLR20)
+  CLR20_UP       Defined when compiling for .NET 2.0 or higher
 
 
 - Feature Directives
@@ -346,6 +376,7 @@
   SUPPORTS_STRICT               Compiler supports strict keyword (D9.NET, D10+)
   SUPPORTS_STATIC               Compiler supports static keyword (D9.NET, D10+)
   SUPPORTS_FINAL                Compiler supports final keyword (D9.NET, D10+)
+  SUPPORTS_GENERICS             Compiler supports generic implementations (D11.net, D12+)
   ACCEPT_DEPRECATED             Compiler supports or ignores the deprecated directive (D6+/BCB6+/FPC)
   ACCEPT_PLATFORM               Compiler supports or ignores the platform directive (D6+/BCB6+/FPC)
   ACCEPT_LIBRARY                Compiler supports or ignores the library directive (D6+/BCB6+)
@@ -358,13 +389,18 @@
   SUPPORTS_UNSAFE_WARNINGS      Compiler supports unsafe warnings (D7)
   SUPPORTS_WEAKPACKAGEUNIT      Compiler supports the WEAKPACKAGEUNIT directive
   SUPPORTS_COMPILETIME_MESSAGES Compiler supports the MESSAGE directive
+  SUPPORTS_PACKAGES             Compiler supports Packages 
   HAS_UNIT_LIBC                 Unit Libc exists (Kylix, FPC on Linux/x86)
   HAS_UNIT_RTLCONSTS            Unit RTLConsts exists (D6+/BCB6+/FPC)
   HAS_UNIT_TYPES                Unit Types exists (D6+/BCB6+/FPC)
   HAS_UNIT_VARIANTS             Unit Variants exists (D6+/BCB6+/FPC)
   HAS_UNIT_STRUTILS             Unit StrUtils exists (D6+/BCB6+/FPC)
-  HAS_UNIT_DATEUTILS		Unit DateUtils exists (D6+/BCB6+/FPC)
+  HAS_UNIT_DATEUTILS            Unit DateUtils exists (D6+/BCB6+/FPC)
+  HAS_UNIT_CONTNRS              Unit contnrs exists (D6+/BCB6+/FPC)
+  HAS_UNIT_ANSISTRINGS          Unit AnsiStrings exists (D12+)
   XPLATFORM_RTL                 The RTL supports crossplatform function names (e.g. RaiseLastOSError) (D6+/BCB6+/FPC)
+  SUPPORTS_UNICODE              string type is aliased to an unicode string (WideString or UnicodeString) (DX.net, D12+)
+  SUPPORTS_UNICODE_STRING       Compiler supports UnicodeString (D12+)
 
 
 - Compiler Settings
@@ -401,7 +437,7 @@
 { Set FreePascal to Delphi mode }
 {$IFDEF FPC}
   {$MODE DELPHI}
-  {$ASMMODE Intel}  
+  {$ASMMODE Intel}
   {$UNDEF BORLAND}
    // FPC defines CPU* and Unix automatically
 {$ENDIF}
@@ -410,8 +446,10 @@
   {$IFDEF LINUX}
     {$DEFINE KYLIX}
   {$ENDIF LINUX}
-  {$DEFINE CPU386}  // For Borland compilers select the x86 compat assembler by default
-  {$DEFINE CPU32}   // Assume Borland compilers are 32-bit (rather than 64-bit)
+  {$IFNDEF CLR}
+    {$DEFINE CPU386}  // For Borland compilers select the x86 compat assembler by default
+    {$DEFINE CPU32}   // Assume Borland compilers are 32-bit (rather than 64-bit)
+  {$ENDIF ~CLR}
 {$ENDIF BORLAND}
 
 {------------------------------------------------------------------------------}
@@ -515,6 +553,9 @@
     {$IFDEF VER160}
       {$DEFINE BDS2}
       {$DEFINE BDS}
+      {$IFDEF CLR}
+        {$DEFINE CLR10}
+      {$ENDIF CLR}
       {$DEFINE COMPILER8}
       {$DEFINE DELPHI8}
       {$DEFINE DELPHICOMPILER8}
@@ -525,6 +566,9 @@
     {$IFDEF VER170}
       {$DEFINE BDS3}
       {$DEFINE BDS}
+      {$IFDEF CLR}
+        {$DEFINE CLR11}
+      {$ENDIF CLR}
       {$DEFINE COMPILER9}
       {$DEFINE DELPHI9}
       {$DEFINE DELPHI2005} // synonym to DELPHI9
@@ -535,6 +579,9 @@
 
     {$IFDEF VER180}
       {$DEFINE BDS}
+      {$IFDEF CLR}
+        {$DEFINE CLR11}
+      {$ENDIF CLR}
       {$IFDEF VER185}
         {$DEFINE BDS5}
         {$DEFINE COMPILER11}
@@ -542,6 +589,7 @@
           {$DEFINE BCB11}
         {$ELSE}
           {$DEFINE DELPHI11}
+          {$DEFINE DELPHI2007} // synonym to DELPHI11
           {$DEFINE DELPHICOMPILER11}
         {$ENDIF}
         {$DEFINE RTL185_UP}
@@ -552,6 +600,7 @@
           {$DEFINE BCB10}
         {$ELSE}
           {$DEFINE DELPHI10}
+          {$DEFINE DELPHI2006} // synonym to DELPHI10
           {$DEFINE DELPHICOMPILER10}
         {$ENDIF}
         {$DEFINE RTL180_UP}
@@ -559,13 +608,58 @@
       {$UNDEF UNKNOWN_COMPILER_VERSION}
     {$ENDIF}
 
-    {$IFDEF UNKNOWN_COMPILER_VERSION} // adjust for newer version
-      {$DEFINE BDS5}
+    {$IFDEF VER190} // Delphi 2007 for .NET
       {$DEFINE BDS}
+      {$DEFINE BDS5}
+      {$IFDEF CLR}
+        {$DEFINE CLR20}
+      {$ENDIF CLR}
       {$DEFINE COMPILER11}
       {$DEFINE DELPHI11}
+      {$DEFINE DELPHI2007} // synonym to DELPHI11
       {$DEFINE DELPHICOMPILER11}
-      {$DEFINE RTL185_UP}
+      {$DEFINE RTL190_UP}
+      {$UNDEF UNKNOWN_COMPILER_VERSION}
+    {$ENDIF VER190}
+
+    {$IFDEF VER200} // RAD Studio 2009
+      {$DEFINE BDS}
+      {$DEFINE BDS6}
+      {$IFDEF CLR}
+        {$DEFINE CLR20}
+      {$ENDIF CLR}
+      {$DEFINE COMPILER12}
+      {$IFDEF BCB}
+        {$DEFINE BCB12}
+      {$ELSE}
+        {$DEFINE DELPHI12}
+        {$DEFINE DELPHI2009} // synonym to DELPHI12
+        {$DEFINE DELPHICOMPILER12}
+      {$ENDIF BCB}
+      {$IFDEF CLR}
+        {$DEFINE RTL190_UP}
+      {$ELSE}
+        {$DEFINE RTL200_UP}
+      {$ENDIF}
+      {$UNDEF UNKNOWN_COMPILER_VERSION}
+    {$ENDIF VER200}
+
+    {$IFDEF UNKNOWN_COMPILER_VERSION} // adjust for newer version (always use latest version)
+      {$DEFINE BDS}
+      {$DEFINE BDS6}
+      {$DEFINE COMPILER12}
+      {$IFDEF BCB}
+        {$DEFINE BCB12}
+      {$ELSE}
+        {$DEFINE DELPHI12}
+        {$DEFINE DELPHI2009} // synonym to DELPHI12
+        {$DEFINE DELPHICOMPILER12}
+      {$ENDIF BCB}
+      {$IFDEF CLR}
+        {$DEFINE RTL190_UP}
+      {$ELSE}
+        {$DEFINE RTL200_UP}
+      {$ENDIF}
       {$UNDEF UNKNOWN_COMPILER_VERSION}
     {$ENDIF}
 
@@ -585,6 +679,7 @@
 { DELPHIX_UP from DELPHIX mappings                                             }
 {------------------------------------------------------------------------------}
 
+{$IFDEF DELPHI12} {$DEFINE DELPHI12_UP} {$ENDIF}
 {$IFDEF DELPHI11} {$DEFINE DELPHI11_UP} {$ENDIF}
 {$IFDEF DELPHI10} {$DEFINE DELPHI10_UP} {$ENDIF}
 {$IFDEF DELPHI9}  {$DEFINE DELPHI9_UP}  {$ENDIF}
@@ -601,8 +696,20 @@
 { DELPHIX_UP from DELPHIX_UP mappings                                          }
 {------------------------------------------------------------------------------}
 
-{$IFDEF DELPHI11_UP} {$DEFINE DELPHI10_UP} {$ENDIF}
-{$IFDEF DELPHI10_UP} {$DEFINE DELPHI9_UP}  {$ENDIF}
+{$IFDEF DELPHI12_UP}
+  {$DEFINE DELPHI2009_UP} // synonym to DELPHI12_UP
+  {$DEFINE DELPHI11_UP}
+{$ENDIF}
+
+{$IFDEF DELPHI11_UP}
+  {$DEFINE DELPHI2007_UP} // synonym to DELPHI11_UP
+  {$DEFINE DELPHI10_UP}
+{$ENDIF}
+
+{$IFDEF DELPHI10_UP}
+  {$DEFINE DELPHI2006_UP} // synonym to DELPHI10_UP
+  {$DEFINE DELPHI9_UP}
+{$ENDIF}
 
 {$IFDEF DELPHI9_UP}
   {$DEFINE DELPHI2005_UP} // synonym to DELPHI9_UP
@@ -621,6 +728,7 @@
 { BCBX_UP from BCBX mappings                                                   }
 {------------------------------------------------------------------------------}
 
+{$IFDEF BCB12} {$DEFINE BCB12_UP} {$ENDIF}
 {$IFDEF BCB11} {$DEFINE BCB11_UP} {$ENDIF}
 {$IFDEF BCB10} {$DEFINE BCB10_UP} {$ENDIF}
 {$IFDEF BCB6}  {$DEFINE BCB6_UP}  {$ENDIF}
@@ -633,6 +741,7 @@
 { BCBX_UP from BCBX_UP mappings                                                }
 {------------------------------------------------------------------------------}
 
+{$IFDEF BCB12_UP} {$DEFINE BCB11_UP} {$ENDIF}
 {$IFDEF BCB11_UP} {$DEFINE BCB10_UP} {$ENDIF}
 {$IFDEF BCB10_UP} {$DEFINE BCB6_UP}  {$ENDIF}
 {$IFDEF BCB6_UP}  {$DEFINE BCB5_UP}  {$ENDIF}
@@ -644,6 +753,7 @@
 { BDSX_UP from BDSX mappings                                                   }
 {------------------------------------------------------------------------------}
 
+{$IFDEF BDS6} {$DEFINE BDS6_UP} {$ENDIF}
 {$IFDEF BDS5} {$DEFINE BDS5_UP} {$ENDIF}
 {$IFDEF BDS4} {$DEFINE BDS4_UP} {$ENDIF}
 {$IFDEF BDS3} {$DEFINE BDS3_UP} {$ENDIF}
@@ -653,6 +763,7 @@
 { BDSX_UP from BDSX_UP mappings                                                }
 {------------------------------------------------------------------------------}
 
+{$IFDEF BDS6_UP} {$DEFINE BDS5_UP} {$ENDIF}
 {$IFDEF BDS5_UP} {$DEFINE BDS4_UP} {$ENDIF}
 {$IFDEF BDS4_UP} {$DEFINE BDS3_UP} {$ENDIF}
 {$IFDEF BDS3_UP} {$DEFINE BDS2_UP} {$ENDIF}
@@ -661,6 +772,7 @@
 { DELPHICOMPILERX_UP from DELPHICOMPILERX mappings                             }
 {------------------------------------------------------------------------------}
 
+{$IFDEF DELPHICOMPILER12} {$DEFINE DELPHICOMPILER12_UP} {$ENDIF}
 {$IFDEF DELPHICOMPILER11} {$DEFINE DELPHICOMPILER11_UP} {$ENDIF}
 {$IFDEF DELPHICOMPILER10} {$DEFINE DELPHICOMPILER10_UP} {$ENDIF}
 {$IFDEF DELPHICOMPILER9}  {$DEFINE DELPHICOMPILER9_UP}  {$ENDIF}
@@ -677,6 +789,7 @@
 { DELPHICOMPILERX_UP from DELPHICOMPILERX_UP mappings                          }
 {------------------------------------------------------------------------------}
 
+{$IFDEF DELPHICOMPILER12_UP} {$DEFINE DELPHICOMPILER11_UP} {$ENDIF}
 {$IFDEF DELPHICOMPILER11_UP} {$DEFINE DELPHICOMPILER10_UP} {$ENDIF}
 {$IFDEF DELPHICOMPILER10_UP} {$DEFINE DELPHICOMPILER9_UP}  {$ENDIF}
 {$IFDEF DELPHICOMPILER9_UP}  {$DEFINE DELPHICOMPILER8_UP}  {$ENDIF}
@@ -693,6 +806,7 @@
 { COMPILERX_UP from COMPILERX mappings                                         }
 {------------------------------------------------------------------------------}
 
+{$IFDEF COMPILER12} {$DEFINE COMPILER12_UP} {$ENDIF}
 {$IFDEF COMPILER11} {$DEFINE COMPILER11_UP} {$ENDIF}
 {$IFDEF COMPILER10} {$DEFINE COMPILER10_UP} {$ENDIF}
 {$IFDEF COMPILER9}  {$DEFINE COMPILER9_UP}  {$ENDIF}
@@ -710,6 +824,7 @@
 { COMPILERX_UP from COMPILERX_UP mappings                                      }
 {------------------------------------------------------------------------------}
 
+{$IFDEF COMPILER12_UP} {$DEFINE COMPILER11_UP} {$ENDIF}
 {$IFDEF COMPILER11_UP} {$DEFINE COMPILER10_UP} {$ENDIF}
 {$IFDEF COMPILER10_UP} {$DEFINE COMPILER9_UP}  {$ENDIF}
 {$IFDEF COMPILER9_UP}  {$DEFINE COMPILER8_UP}  {$ENDIF}
@@ -726,6 +841,8 @@
 { RTLX_UP from RTLX_UP mappings                                                }
 {------------------------------------------------------------------------------}
 
+{$IFDEF RTL200_UP} {$DEFINE RTL190_UP} {$ENDIF}
+{$IFDEF RTL190_UP} {$DEFINE RTL185_UP} {$ENDIF}
 {$IFDEF RTL185_UP} {$DEFINE RTL180_UP} {$ENDIF}
 {$IFDEF RTL180_UP} {$DEFINE RTL170_UP} {$ENDIF}
 {$IFDEF RTL170_UP} {$DEFINE RTL160_UP} {$ENDIF}
@@ -741,6 +858,45 @@
 {$IFDEF RTL100_UP} {$DEFINE RTL93_UP}  {$ENDIF}
 {$IFDEF RTL93_UP}  {$DEFINE RTL90_UP}  {$ENDIF}
 {$IFDEF RTL90_UP}  {$DEFINE RTL80_UP}  {$ENDIF}
+
+{------------------------------------------------------------------------------}
+{ Check for CLR overrides of default detection                                 }
+{------------------------------------------------------------------------------}
+
+{$IFDEF CLR}
+  {$IFDEF FORCE_CLR10}
+    {$DEFINE CLR10}
+    {$UNDEF CLR11}
+    {$UNDEF CLR20}
+  {$ENDIF FORCE_CLR10}
+
+  {$IFDEF FORCE_CLR11}
+    {$UNDEF CLR10}
+    {$DEFINE CLR11}
+    {$UNDEF CLR20}
+  {$ENDIF FORCE_CLR11}
+
+  {$IFDEF FORCE_CLR20}
+    {$UNDEF CLR10}
+    {$UNDEF CLR11}
+    {$DEFINE CLR20}
+  {$ENDIF FORCE_CLR20}
+{$ENDIF CLR}
+
+{------------------------------------------------------------------------------}
+{ CLRX from CLRX_UP mappings                                                   }
+{------------------------------------------------------------------------------}
+
+{$IFDEF CLR10} {$DEFINE CLR10_UP} {$ENDIF}
+{$IFDEF CLR11} {$DEFINE CLR11_UP} {$ENDIF}
+{$IFDEF CLR20} {$DEFINE CLR20_UP} {$ENDIF}
+
+{------------------------------------------------------------------------------}
+{ CLRX_UP from CLRX_UP mappings                                                }
+{------------------------------------------------------------------------------}
+
+{$IFDEF CLR20_UP} {$DEFINE CLR11_UP} {$ENDIF}
+{$IFDEF CLR11_UP} {$DEFINE CLR10_UP} {$ENDIF}
 
 {------------------------------------------------------------------------------}
 
@@ -773,7 +929,7 @@
 
 {$IFDEF FPC}
   {$IFDEF  VER1_0}
-     Please use FPC 2.0 or later to compile this.
+     Please use FPC 2.0 or higher to compile this.
   {$ELSE}
     {$DEFINE SUPPORTS_OUTPARAMS}
     {$DEFINE SUPPORTS_WIDECHAR}
@@ -815,6 +971,7 @@
     {$IFDEF LINUX}
       {$DEFINE HAS_UNIT_LIBC}
     {$ENDIF LINUX}
+    {$DEFINE HAS_UNIT_CONTNRS}
     {$DEFINE HAS_UNIT_TYPES}
     {$DEFINE HAS_UNIT_VARIANTS}
     {$DEFINE HAS_UNIT_STRUTILS}
@@ -835,11 +992,16 @@
   {$ENDIF}
 {$ENDIF FPC}
 
+{$IFDEF CLR}
+  {$DEFINE SUPPORTS_UNICODE}
+{$ENDIF CLR}
+
 {$IFDEF COMPILER1_UP}
   {$DEFINE SUPPORTS_CONSTPARAMS}
   {$DEFINE SUPPORTS_SINGLE}
   {$DEFINE SUPPORTS_DOUBLE}
   {$DEFINE SUPPORTS_EXTENDED}
+  {$DEFINE SUPPORTS_PACKAGES} 
 {$ENDIF COMPILER1_UP}
 
 {$IFDEF COMPILER2_UP}
@@ -919,6 +1081,21 @@
   {$DEFINE SUPPORTS_FINAL}
 {$ENDIF COMPILER10_UP}
 
+{$IFDEF COMPILER11_UP}
+  {$IFDEF CLR}
+    {$DEFINE SUPPORTS_GENERICS}
+  {$ENDIF CLR}
+{$ENDIF COMPILER11_UP}
+
+{$IFDEF COMPILER12_UP}
+  {$DEFINE SUPPORTS_GENERICS}
+  {$DEFINE HAS_UNIT_ANSISTRINGS}
+  {$IFNDEF CLR}
+    {$DEFINE SUPPORTS_UNICODE}
+    {$DEFINE SUPPORTS_UNICODE_STRING}
+  {$ENDIF  CLR}
+{$ENDIF COMPILER12_UP}
+
 {$IFDEF RTL140_UP}
   {$IFDEF LINUX}
     {$DEFINE HAS_UNIT_LIBC}
@@ -930,6 +1107,10 @@
   {$DEFINE HAS_UNIT_DATEUTILS}
   {$DEFINE XPLATFORM_RTL}
 {$ENDIF RTL140_UP}
+
+{$IFDEF RTL130_UP}
+  {$DEFINE HAS_UNIT_CONTNRS}
+{$ENDIF RTL130_UP}
 
 {------------------------------------------------------------------------------}
 { Cross-platform related defines                                               }

@@ -49,7 +49,7 @@ This unit does not support Borland C++ yet!
 {$ENDIF JWA_OMIT_SECTIONS}
 
 {$IFNDEF JWA_OMIT_SECTIONS}
-{$I jediapilib.inc}
+{$I ..\Includes\JediAPILib.inc}
 
 interface
 

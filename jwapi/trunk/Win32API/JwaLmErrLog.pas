@@ -53,7 +53,7 @@ unit JwaLmErrLog;
 {$HPPEMIT ''}
 
 {$IFNDEF JWA_OMIT_SECTIONS_LM}
-{$I jediapilib.inc}
+{$I ..\Includes\JediAPILib.inc}
 
 interface
 

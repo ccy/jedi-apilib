@@ -45,7 +45,7 @@ unit Jwa<UnitName>;
 {$HPPEMIT '#include "xxxx.h"'}
 {$HPPEMIT ''}
 
-{$I jediapilib.inc}
+{$I ..\Includes\JediAPILib.inc}
 {$IFNDEF JWA_OMIT_SECTIONS}
 
 

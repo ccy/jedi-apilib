@@ -45,7 +45,7 @@
 {$IFNDEF JWA_OMIT_SECTIONS}
 unit JwaWinCrypt;
 
-{$I jediapilib.inc}
+{$I ..\Includes\JediAPILib.inc}
 
 {$WEAKPACKAGEUNIT}
 {$ENDIF JWA_OMIT_SECTIONS}

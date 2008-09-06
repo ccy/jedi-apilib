@@ -30,7 +30,6 @@
 unit JwaModuleLoader;
 {$ENDIF JWA_OMIT_SECTIONS}
 
-{.$I jvcl.inc}
 
 {$IFNDEF JWA_OMIT_SECTIONS}
 {$WEAKPACKAGEUNIT ON}

@@ -75,7 +75,7 @@ unit JwaAdsTLB;
 
 {$IFNDEF JWA_OMIT_SECTIONS}
 interface
-{$i jediapilib.inc}
+{$I ..\Includes\JediAPILib.inc}
 uses
   Windows, ActiveX, Classes 
      {$ifndef FPC} {$IFNDEF NOVCL} , Graphics, OleServer, OleCtrls, StdVCL {$ENDIF} {$endif} ;  // Are these used at all?

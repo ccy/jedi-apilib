@@ -58,7 +58,7 @@ uses
 
 (*$HPPEMIT '#include <wabmem.h>'*)
 
-{$I jediapilib.inc}
+{$I ..\Includes\JediAPILib.inc}
 
 
 {$ENDIF JWA_OMIT_SECTIONS}

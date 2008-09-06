@@ -47,7 +47,7 @@ unit JwaActiveX;
 
 {$WEAKPACKAGEUNIT}
 
-{$I jediapilib.inc}
+{$I ..\Includes\JediAPILib.inc}
 
 interface
 

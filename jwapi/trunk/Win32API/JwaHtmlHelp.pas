@@ -47,7 +47,7 @@
 {$IFNDEF JWA_OMIT_SECTIONS}
 unit JwaHtmlHelp;
 
-{$I jediapilib.inc}
+{$I ..\Includes\JediAPILib.inc}
 
 interface
 
