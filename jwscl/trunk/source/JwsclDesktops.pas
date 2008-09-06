@@ -182,7 +182,7 @@ type
    }
     procedure SetDesktopFlags(const DesktopFlags: TJwSecurityDesktopFlags);
 
-     {<B>GetDesktopFlags</B> returns the actual flags of the opened desktop.
+     {<B>GetDesktopFlags</B> returns the current flags of the opened desktop.
     @return GeTSecurityDesktopFlags returns the flag of the opened desktop or a empty set if desktop is not opened/valid }
     function GetDesktopFlags: TJwSecurityDesktopFlags; virtual;
 
@@ -248,7 +248,7 @@ type
       const aSecurityDescriptor: TJwSecurityDescriptor);
       overload;
 
-     {<B>CreateDesktop</B> creates a new desktop using the actual window station.
+     {<B>CreateDesktop</B> creates a new desktop using the current window station.
       See Create  for more information.
      }
     constructor CreateDesktop(const aParent: TJwSecurityDesktops;
@@ -259,7 +259,7 @@ type
       const aDesiredAccess: ACCESS_MASK;
       const aSecurityDescriptor: TJwSecurityDescriptor);
       overload;
-     {<B>OpenDesktop</B> opens a desktop using the actual window station.
+     {<B>OpenDesktop</B> opens a desktop using the current window station.
       See Create  for more information.
      }
     constructor OpenDesktop(const aParent: TJwSecurityDesktops;
@@ -414,7 +414,7 @@ type
     property ObjectType: TJwString Read GetObjectType;
   public
 
-     {<B>SecurityDescriptor[Info</B> sets or gets the security descriptor of the actual window station.
+     {<B>SecurityDescriptor[Info</B> sets or gets the security descriptor of the current window station.
       This property uses a parameter Info to set which information is to be set or get.
        ex. SecurityDescriptor[[sif_XXXX,sif_XXXX]]
 
@@ -481,7 +481,7 @@ type
     
     Developer warning: 
       Currently this function returns the first desktop that was created/opened by OpenInputDesktop 
-    and not the actual real input desktop.
+    and not the current real input desktop.
     TODO: change behaviour  
    }
     function FindInputDesktop: TJwSecurityDesktop; virtual;

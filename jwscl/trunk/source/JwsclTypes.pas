@@ -596,7 +596,7 @@ type
 
 
    {TJwSecurityDesktopFlags is a set of desktop flags.
-    Actually it can only contain dfAllowOtherAccountHook or nothgin :
+    Currently it can only contain dfAllowOtherAccountHook or nothing :
   Use [] as a aparameter if you don't want other applications to create hooks. Otherwise
   use [dfAllowOtherAccountHook].
   Never use [dfPad0]!

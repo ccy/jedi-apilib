@@ -79,17 +79,6 @@ type
       to a impersonation token. However the first process token cannot be converted. It must be duplicated and then
       converted. After that the thread can call SetThreadToken to change its security context.
 
-      Actually these token functions are not supported :
-      
-      #  - NTCreateToken
-      
-
-      <B>TJwSecurityToken</B> does only support few vista enhancements :
-        
-        #  Elevation
-        #  ElevationType
-      
-
       <B>TJwSecurityToken</B> does not support some of the values defined in the MSDN http://msdn2.microsoft.com/en-us/library/aa379626.aspx
 
       <B>TJwSecurityToken</B> administers a token (impersonated or not) 
@@ -116,7 +105,7 @@ type
       @return Returns the count of privilege stack elements.
      }
     //function PopPrivileges: cardinal;
-    {<B>PushPrivileges</B> saves the actual privilege enabled states in a stack.
+    {<B>PushPrivileges</B> saves the current privilege enabled states in a stack.
         They can be restored with a correctly nested call to PopPrivileges.
                TODO: to test
         @return
@@ -324,7 +313,7 @@ type
         the process by changing enabled privileges. This does not affect
         an impersonation of the token because for this action is has to be duplicated.
 
-        @param aProcessHandle Receives a process handle which is used to get the process token. The handle can be zero (0) to use the actual process handle of the caller 
+        @param aProcessHandle Receives a process handle which is used to get the process token. The handle can be zero (0) to use the current process handle of the caller 
         @param aDesiredAccess Receives the desired access for this token. The access types can be get from the following list. Access flags must be concatenated with or operator.
               Can be MAXIMUM_ALLOWED to get maximum access. 
         @param Duplicate Defines whether the token of the Processhandle should be spawned into this process.
@@ -483,7 +472,7 @@ type
          @param SessionID defines the session which is used to obtain the token.
                If set to INVALID_HANDLE_VALUE, the function does the following :
                
-                1. Try to open the token of the actual console session. Using WtsGetActiveConsoleSessionID to obtain the session ID. 
+                1. Try to open the token of the current console session. Using WtsGetActiveConsoleSessionID to obtain the session ID. 
                 2. Try to open the token of the current session using the session ID WTS_CURRENT_SESSION 
                 
                If this fails an exception is raised. 
@@ -507,7 +496,7 @@ type
       @param SessionID defines the session which is used to obtain the token.
          If set to INVALID_HANDLE_VALUE, the function does the following :
          
-          1. Try to open the token of the actual console session. Using WtsGetActiveConsoleSessionID to obtain the session ID. 
+          1. Try to open the token of the current console session. Using WtsGetActiveConsoleSessionID to obtain the session ID. 
           2. Try to open the token of the current session using the session ID WTS_CURRENT_SESSION 
           
          If this fails an exception is raised. 
@@ -1113,7 +1102,7 @@ type
       Read GetTokenRestrictedSids;
 
         {<B>TokenDefaultDacl</B> sets or gets the defaul discretionary access control list of the token.
-         The value is dynamic returned. It always returns the actual token state and is not saved.
+         The value is dynamic returned. It always returns the current token state and is not saved.
          So after a reading call the returned object must be freed!
 
          }
@@ -1173,7 +1162,8 @@ type
 
     {<B>RunElevation</B> returns the elavation status of the process on a Windows Vista system.
      If the system is not a supported the exception EJwsclUnsupportedWindowsVersionException will be raised
-     Actually only windows vista is supported.
+     
+     Only Windows Vista is supported.
 
      If the token is elevated the return value is 1; otherwise 0.
      }
@@ -1181,7 +1171,7 @@ type
 
         {<B>ElevationType</B> returns the elavation type of the process on a Windows Vista system.
          If the system is not a supported the exception EJwsclUnsupportedWindowsVersionException will be raised
-         Actually only windows vista is supported.
+         Only Windows Vista is supported.
          }
     property ElevationType: TTokenElevationType Read GetElevationType;
 
@@ -1218,13 +1208,13 @@ type
 
         {<B>VirtualizationAllowed</B> returns the status of allowance of virtualization of the process on a Windows Vista system.
          If the system is not a supported the exception EJwsclUnsupportedWindowsVersionException will be raised
-         Actually only windows vista is supported.
+         Only Windows Vista is supported.
          }
     property VirtualizationAllowed: boolean Read GetVirtualizationAllowed;
 
         {<B>VirtualizationEnabled</B> returns the status of status of virtualization. It is either on or off and only works on a Windows Vista system.
          If the system is not a supported the exception EJwsclUnsupportedWindowsVersionException will be raised
-         Actually only windows vista is supported.
+         Only Windows Vista is supported.
          }
     property VirtualizationEnabled: boolean Read GetVirtualizationEnabled;
 
@@ -1747,7 +1737,7 @@ type
   TJwPrivilegeQueryType = (pqt_Available, pqt_Enabled);
   TJwPrivilegeSetType   = (pst_Enable, pst_EnableIfAvail, pst_Disable);
 
-{<B>JwIsPrivilegeSet</B> checks whether a given privilege is available or enabled in the actual process or thread.
+{<B>JwIsPrivilegeSet</B> checks whether a given privilege is available or enabled in the current process or thread.
 @param Index gets the privilege name
 @param query defines whether the given privilege should be checked for availability or is enable
 @return Returns true if the privilege is available and enabled. If the privilege is not available or disabled the result is false.

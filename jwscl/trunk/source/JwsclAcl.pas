@@ -1621,7 +1621,7 @@ type
     {<B>Compare</B> compare the mandatory ACE with another one.
 
      @param MandatoryLabel defines a label to be compared 
-     @return The return value is smaller than zero if the actual label is less
+     @return The return value is smaller than zero if the current label is less
       privileged than the given label. If the return value is greater than zero
       the given label has a higher level than the given one.
       The returned value is the difference of

@@ -85,7 +85,7 @@ type
        raises
          EJwsclNilPointer: is raised if the memory is a nil pointer.
 
-       @return Returns the number of bytes which have actually been read into the buffer.
+       @return Returns the number of bytes which have currently been read from the buffer.
     }
     function Read(var Buffer; Count: Longint): Longint; override;
     
@@ -96,7 +96,7 @@ type
        raises
          EJwsclNilPointer: is raised if the memory is a nil pointer.
 
-       @return Returns the number of bytes which have actually been written into the stream.
+       @return Returns the number of bytes which have currenly been written to the stream.
     }
     function Write(const Buffer; Count: Longint): Longint; override;
 

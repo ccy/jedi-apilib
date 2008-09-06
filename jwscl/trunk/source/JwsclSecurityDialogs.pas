@@ -523,7 +523,7 @@ type
     {see TJwOnGetEffectivePermissions }
     property OnGetEffectivePermissions: TJwOnGetEffectivePermissions
       Read fOnGetEffectivePermissions Write fOnGetEffectivePermissions;
-    {<B>OnLookupSIDs</B> is not supported actually and must not be used!}
+    {<B>OnLookupSIDs</B> is not supported currently and must not be used!}
     property OnLookupSIDs: TJwOnLookupSIDs
       Read fOnLookupSIDs Write fOnLookupSIDs;
     {see TOnJwIsDaclCanonical }

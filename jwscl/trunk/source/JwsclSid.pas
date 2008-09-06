@@ -357,7 +357,7 @@ type
        }
     function GetWindowsAccountDomainSid: TJwSecurityId; overload;
       {<B>GetWindowsAccountDomainSid</B> returns the domain sid of the sid instance given as parameter.
-        The actual SID instance will be checked with CheckSID. Also the
+        The current SID instance will be checked with CheckSID. Also the
          the parameter aSID and the result will be checked in this way.
 
        @param aSID contains the sid to be examined. 
@@ -373,7 +373,7 @@ type
 
       {<B>EqualPrefixSid</B> tests two security-identifier (SID) prefix values for equality.
        A SID prefix is the entire SID except for the last subauthority value
-       @param pSid1 the SID to be compared with the actual sid instance 
+       @param pSid1 the SID to be compared with the current sid instance 
        @return If the SID prefixes are equal, the return value is true; otherwise false 
        raises
  EJwsclNILParameterException:  if parameter pSID1 is nil 
@@ -382,7 +382,7 @@ type
       }
     function EqualPrefixSid(pSid1: TJwSecurityId): boolean;virtual;
       {<B>EqualSid</B> tests two security-identifier (SID) values for equality.
-       @param pSid1 the SID to be compared with the actual sid instance 
+       @param pSid1 the SID to be compared with the current sid instance 
        @return If the SID prefixes are equal, the return value is true; otherwise false 
        raises
  EJwsclNILParameterException:  if parameter pSID1 is nil 
@@ -391,7 +391,7 @@ type
     function EqualSid(pSid1: TJwSecurityId): boolean;virtual;
 
       {<B>EqualDomainSid</B> determines whether two SIDs are from the same domain.
-       @param pSid1 the SID to be compared with the actual sid instance 
+       @param pSid1 the SID to be compared with the current sid instance 
        @return If the SID domains are equal, the return value is true; otherwise false 
        raises
  EJwsclNILParameterException:  if parameter pSID1 is nil 
@@ -456,7 +456,7 @@ type
        The SID instance will be copied into a new SID structure that is attached to the returned structure in its SID value.
        The new created structure must be freed by Free_PSID_AND_ATTRIBUTES.
 
-       Actually two memory blocks will be allocated and initialized:
+       Currently two memory blocks will be allocated and initialized:
          1. PSID_AND_ATTRIBUTES
          2. PSID
 

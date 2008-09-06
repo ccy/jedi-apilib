@@ -58,12 +58,12 @@ type
 
       @param pObjectName contains the object name 
       @param cStatus constains the status of the last operation (GetLastError) 
-      @param pInvokeSetting defines the actual operation and can be changed to set the next step.
+      @param pInvokeSetting defines the current operation and can be changed to set the next step.
              The following values are recognized :
                 
                  # pis_ProgressCancelOperation This value stops the propagation and ends the called function. Warning: This can lead to unpredictable ACLs 
                  # pis_ProgressRetryOperation Retries to set or get the security information 
-                 # Any other constants is used to ignore the actual object and resume on the next one 
+                 # Any other constants is used to ignore the current object and resume on the next one 
                  
                  
       @param E Contains an exception that maybe has more information. This Exception is a type of EJwsclSecurityException. It can be nil. 
@@ -90,12 +90,12 @@ type
 
       @param pObjectName contains the object name 
       @param cStatus constains the status of the last operation (GetLastError) 
-      @param pInvokeSetting defines the actual operation and can be changed to set the next step.
+      @param pInvokeSetting defines the current operation and can be changed to set the next step.
              The following values are recognized :
                 
                  # pis_ProgressCancelOperation This value stops the propagation and ends the called function. Warning: This can lead to unpredictable ACLs 
                  # pis_ProgressRetryOperation Retries to set or get the security information 
-                 # Any other constants is used to ignore the actual object and resume on the next one 
+                 # Any other constants is used to ignore the current object and resume on the next one 
                  
                  
       @param E Contains an exception that maybe has more information. This Exception is a type of EJwsclSecurityException. It can be nil. 
@@ -6033,7 +6033,7 @@ var
 {$ENDIF}
   ;
   stack: TQueue;
-  ActualFileName, ActualPath: TJwString;
+  CurrentFileName, CurrentPath: TJwString;
 
   ptrFindData: PFindData;
 
@@ -6044,10 +6044,10 @@ var
   Count:  integer;
 
     {<B>SetSecurity</B> sets the security of a file or folder
-     @param ActualFileName absolute path to file or folder
+     @param CurrentFileName absolute path to file or folder
      @param bRoot defines, if the folder is the first one specified the the user
     }
-  procedure SetSecurity(ActualFileName: TJwString; bRoot: boolean);
+  procedure SetSecurity(CurrentFileName: TJwString; bRoot: boolean);
 
   {not necessary}
     procedure CopyWithoutInheritance(
@@ -6091,7 +6091,7 @@ var
        }
     if bKeepExplicit or (SetType = tstSet) then
     begin
-      TJwSecureFileObject.GetNamedSecurityInfo(ActualFileName, SE_FILE_OBJECT,
+      TJwSecureFileObject.GetNamedSecurityInfo(CurrentFileName, SE_FILE_OBJECT,
         aSecurityInfo,
         oldUser, oldGroup, oldDACL, oldSACL);
 
@@ -6121,7 +6121,7 @@ var
 
       try
         TJwSecureFileObject.SetNamedSecurityInfo(
-          ActualFileName, SE_FILE_OBJECT,
+          CurrentFileName, SE_FILE_OBJECT,
           aSecurityInfo, Owner, Group, oldDACL, oldSACL);
       finally
         FreeAndNil(oldUser);
@@ -6159,7 +6159,7 @@ var
 
       try
         TJwSecureFileObject.SetNamedSecurityInfo(
-          ActualFileName, SE_FILE_OBJECT,
+          CurrentFileName, SE_FILE_OBJECT,
           aSecurityInfo, Owner, Group, oldDACL, oldSACL);
 
       finally
@@ -6169,16 +6169,16 @@ var
     end;
   end;
 
-    {<B>ProcessFile</B> processes the actual find file data.
+    {<B>ProcessFile</B> processes the current find file data.
      Sets the security, catches a possible exception and calls the callback function.
 
      @param FindDataFile the file or folder name (but not path) returned by the FindFirst/FindNext function
-     @param ActualFileName Defines the actual path to the file or folder given in FindDataFile. It must also include it at the end of path.
+     @param CurrentFileName Defines the current path to the file or folder given in FindDataFile. It must also include it at the end of path.
      @param bRoot defines whether this folder is the path given by the first function call. All other calls use FALSE.
 
      @return Returns true if the callback function defined pis_ProgressCancelOperation as the next operation. In this case bAbort is set to true.
     }
-  function ProcessFile(FindDataFile, ActualFileName: TJwString;
+  function ProcessFile(FindDataFile, CurrentFileName: TJwString;
     bRoot: boolean = False): boolean;
   begin
     Result := False;
@@ -6216,30 +6216,30 @@ var
                { if (siDaclSecurityInformation in aSecurityInfo) then
                 begin
                   TJwSecureFileObject.SetNamedSecurityInfo(
-                    ActualFileName,SE_FILE_OBJECT,
+                    CurrentFileName,SE_FILE_OBJECT,
                           [siDaclSecurityInformation], nil, nil, nil, nil);
                 end;
                 //remove old SACL
                 if (siSaclSecurityInformation in aSecurityInfo) then
                 begin
                   TJwSecureFileObject.SetNamedSecurityInfo(
-                    ActualFileName,SE_FILE_OBJECT,
+                    CurrentFileName,SE_FILE_OBJECT,
                           [siSaclSecurityInformation], nil, nil, nil, nil);
                 end;
 
 
                 TJwSecureFileObject.SetNamedSecurityInfo(
-                  ActualFileName,SE_FILE_OBJECT,
+                  CurrentFileName,SE_FILE_OBJECT,
                           aSecurityInfo, Owner, Group, DACL, SACL);
             }
-          SetSecurity(ActualFileName, bRoot);
+          SetSecurity(CurrentFileName, bRoot);
         except
           on E: EJwsclSecurityException do
           begin
             bError := True;
 
             if (Action = pis_ProgressInvokeOnError) then
-              FNProgress(ActualFileName,
+              FNProgress(CurrentFileName,
                 //const pObjectName : TJwString;              // Name of object just processed
                 GetLastError(),
                 //const cStatus : Cardinal;                    // Status of operation on object
@@ -6255,7 +6255,7 @@ var
         end;
         if not bError and (Action = pis_ProgressInvokeEveryObject) then
         begin
-          FNProgress(ActualFileName,
+          FNProgress(CurrentFileName,
             //const pObjectName : TJwString;              // Name of object just processed
             0,
             //const cStatus : Cardinal;                    // Status of operation on object
@@ -6282,7 +6282,7 @@ var
   end;
 
 begin
-  ActualPath := Path;
+  CurrentPath := Path;
   stack := TQueue.Create;
 
   bFirst := True;
@@ -6292,7 +6292,7 @@ begin
 
   FillChar(FindFileData, sizeof(FindFileData), 0);
   //set security to
-  bAbort  := ProcessFile(ActualPath, ActualPath, bIsRoot{isRootObject});
+  bAbort  := ProcessFile(CurrentPath, CurrentPath, bIsRoot{isRootObject});
   bIsRoot := False;
 
   if Assigned(DACL) then
@@ -6325,7 +6325,7 @@ begin
     if (stack.Count > 0) then
     begin
       ptrFindData := PFindData(stack.Pop);
-      ActualPath  := ptrFindData.PathName;
+      CurrentPath  := ptrFindData.PathName;
       FreeMem(ptrFindData);
       {stack.Count = stack.Count-1 and ptrFindData <> nil}
     end
@@ -6338,9 +6338,9 @@ begin
 
     SetLastError(0);
 {$IFDEF UNICODE}
-    hFind := FindFirstFileExW(TJwPChar(ActualPath+'\*.*'),//  LPCTSTR lpFileName,
+    hFind := FindFirstFileExW(TJwPChar(CurrentPath+'\*.*'),//  LPCTSTR lpFileName,
 {$ELSE}
-    hFind := FindFirstFileExA(TJwPChar(ActualPath + '\*.*'),
+    hFind := FindFirstFileExA(TJwPChar(CurrentPath + '\*.*'),
       //  LPCTSTR lpFileName,
 {$ENDIF}
       FindExInfoStandard,//FINDEX_INFO_LEVELS fInfoLevelId,
@@ -6351,11 +6351,11 @@ begin
       );
     if hFind <> INVALID_HANDLE_VALUE then
     begin
-      ActualFileName := CombinePath(ActualPath, FindFileData.cFileName);
+      CurrentFileName := CombinePath(CurrentPath, FindFileData.cFileName);
 
-      //OutputDebugString(TJwPChar(ActualFileName+#13));
+      //OutputDebugString(TJwPChar(CurrentFileName+#13));
 
-      bAbort := ProcessFile(TJwString(FindFileData.cFileName), ActualFileName);
+      bAbort := ProcessFile(TJwString(FindFileData.cFileName), CurrentFileName);
 
       if (TJwString(FindFileData.cFileName) <> '.') and
         (TJwString(FindFileData.cFileName) <> '..') and
@@ -6364,7 +6364,7 @@ begin
       begin
         GetMem(ptrFindData, sizeof(TFindData));
         FillChar(ptrFindData^, sizeof(TFindData), 0);
-        ptrFindData.PathName := ActualFileName;
+        ptrFindData.PathName := CurrentFileName;
         stack.Push(ptrFindData);
       end;
 
@@ -6387,9 +6387,9 @@ begin
         end
         else
         begin
-          ActualFileName := CombinePath(ActualPath, FindFileData.cFileName);
+          CurrentFileName := CombinePath(CurrentPath, FindFileData.cFileName);
           bAbort := ProcessFile(TJwString(FindFileData.cFileName),
-            ActualFileName);
+            CurrentFileName);
 
           if (TJwString(FindFileData.cFileName) <> '.') and
             (TJwString(FindFileData.cFileName) <> '..') and
@@ -6398,7 +6398,7 @@ begin
           begin
             GetMem(ptrFindData, sizeof(TFindData));
             FillChar(ptrFindData^, sizeof(TFindData), 0);
-            ptrFindData.PathName := ActualFileName;
+            ptrFindData.PathName := CurrentFileName;
             stack.Push(ptrFindData);
           end;
         end;
@@ -6415,7 +6415,7 @@ begin
       if (Action = pis_ProgressInvokeOnError) or
         (Action = pis_ProgressInvokeEveryObject) then
       begin
-        FNProgress(ActualPath,
+        FNProgress(CurrentPath,
           //const pObjectName : TJwString;              // Name of object just processed
           GetLastError(),
           //const cStatus : Cardinal;                    // Status of operation on object
@@ -6430,7 +6430,7 @@ begin
       end;
 
       if (pInvokeSetting = pis_ProgressRetryOperation) then
-        IterateFolder(ActualPath,
+        IterateFolder(CurrentPath,
           aSecurityInfo,
           //const aSecurityInfo : TJwSecurityInformationFlagSet; //  SECURITY_INFORMATION SecurityInfo,
           Action,//const Action : TJwProgInvokeSetting;
@@ -6868,7 +6868,7 @@ class function TJwSecureFileObject.GetFileInheritanceSource(
         (afInheritedAce in PreviousInhACL[i].Flags) and
           //root ACE is inherited
           not (afInheritedAce in SD.DACL[ps].Flags) and
-          //actual ACE is explicit
+          //current ACE is explicit
           not (PreviousInhACL[i].Ignore) then
           //root ACE was not already considered
         begin
@@ -8753,7 +8753,7 @@ class function TJwSecureRegistryKey.GetKeyInheritanceSource(
         (afInheritedAce in PreviousInhACL[i].Flags) and
           //root ACE is inherited
           not (afInheritedAce in SD.DACL[ps].Flags) and
-          //actual ACE is explicit
+          //current ACE is explicit
           not (PreviousInhACL[i].Ignore) then
           //root ACE was not already considered
         begin
@@ -9079,22 +9079,20 @@ type
 
 var
   stack: TQueue;
-  //[Hint] ActualFileName,
-  ActualPath: TJwString;
+  CurrentPath: TJwString;
 
   ptrFindData: PFindData;
 
   bFirst,
-  //[Hint] bCallback,
   bError: boolean;
   pInvokeSetting: TJwProgInvokeSetting;
   Count:  integer;
 
     {<B>SetSecurity</B> sets the security of a file or folder
-     @param ActualFileName absolute path to file or folder
+     @param CurrentFileName absolute path to file or folder
      @param bRoot defines, if the folder is the first one specified the the user
     }
-  procedure SetSecurity(ActualKeyName: TJwString; bRoot: boolean);
+  procedure SetSecurity(CurrentKeyName: TJwString; bRoot: boolean);
   var
     oldDACL: TJwDAccessControlList;
     oldSACL: TJwSAccessControlList;
@@ -9111,7 +9109,7 @@ var
     if bKeepExplicit or (SetType = tstSet) then
     begin
       SD := TJwSecureRegistryKey.GetSecurityDescriptorEx(
-        ActualKeyName, aSecurityInfo, False);
+        CurrentKeyName, aSecurityInfo, False);
 
       try
         oldDACL := SD.DACL;
@@ -9137,7 +9135,7 @@ var
 
 
         TJwSecureRegistryKey.SetSecurityDescriptorEx(
-          ActualKeyName, aSecurityInfo, SD, False);
+          CurrentKeyName, aSecurityInfo, SD, False);
       finally
         FreeAndNil(SD);
       end;
@@ -9172,7 +9170,7 @@ var
         SD.SACL := oldSACL;
 
         TJwSecureRegistryKey.SetSecurityDescriptorEx(
-          ActualKeyName, aSecurityInfo, SD, False);
+          CurrentKeyName, aSecurityInfo, SD, False);
 
       finally
         FreeAndNil(oldSACL);
@@ -9185,12 +9183,12 @@ var
      Sets the security, catches a possible exception and calls the callback function.
 
      @param FindDataFile the file or folder name (but not path) returned by the FindFirst/FindNext function
-     @param ActualFileName Defines the actual path to the file or folder given in FindDataFile. It must also include it at the end of path.
+     @param CurrentFileName Defines the current path to the file or folder given in FindDataFile. It must also include it at the end of path.
      @param bRoot defines whether this folder is the path given by the first function call. All other calls use FALSE.
 
      @return Returns true if the callback function defined pis_ProgressCancelOperation as the next operation. In this case bAbort is set to true.
     }
-  function ProcessKey(ActualKeyName: TJwString;
+  function ProcessKey(CurrentKeyName: TJwString;
     bRoot: boolean = False): boolean;
   var
     bOldReg64Redirection: boolean;
@@ -9230,33 +9228,33 @@ var
                { if (siDaclSecurityInformation in aSecurityInfo) then
                 begin
                   TJwSecureFileObject.SetNamedSecurityInfo(
-                    ActualFileName,SE_FILE_OBJECT,
+                    CurrentFileName,SE_FILE_OBJECT,
                           [siDaclSecurityInformation], nil, nil, nil, nil);
                 end;
                 //remove old SACL
                 if (siSaclSecurityInformation in aSecurityInfo) then
                 begin
                   TJwSecureFileObject.SetNamedSecurityInfo(
-                    ActualFileName,SE_FILE_OBJECT,
+                    CurrentFileName,SE_FILE_OBJECT,
                           [siSaclSecurityInformation], nil, nil, nil, nil);
                 end;
 
 
                 TJwSecureFileObject.SetNamedSecurityInfo(
-                  ActualFileName,SE_FILE_OBJECT,
+                  CurrentFileName,SE_FILE_OBJECT,
                           aSecurityInfo, Owner, Group, DACL, SACL);
             }
         bOldReg64Redirection := False;
         try
           if Disable64Redirection then
             bOldReg64Redirection :=
-              EnableReg64Redirection(ActualKeyName, not Disable64Redirection);
+              EnableReg64Redirection(CurrentKeyName, not Disable64Redirection);
 
           //set security
-          SetSecurity(ActualKeyName, bRoot);
+          SetSecurity(CurrentKeyName, bRoot);
         finally
           if Disable64Redirection then
-            EnableReg64Redirection(ActualKeyName,
+            EnableReg64Redirection(CurrentKeyName,
               bOldReg64Redirection);
         end;
       except
@@ -9265,7 +9263,7 @@ var
           bError := True;
 
           if (Action = pis_ProgressInvokeOnError) then
-            FNProgress(ActualKeyName,
+            FNProgress(CurrentKeyName,
               //const pObjectName : TJwString;              // Name of object just processed
               GetLastError(),
               //const cStatus : Cardinal;                    // Status of operation on object
@@ -9281,7 +9279,7 @@ var
       end;
       if not bError and (Action = pis_ProgressInvokeEveryObject) then
       begin
-        FNProgress(ActualKeyName,
+        FNProgress(CurrentKeyName,
           //const pObjectName : TJwString;              // Name of object just processed
           0,
           //const cStatus : Cardinal;                    // Status of operation on object
@@ -9415,9 +9413,9 @@ var
 begin
   subKeys := nil;
 
-  ActualPath := Path;
-  if (Length(ActualPath) > 0) and (ActualPath[Length(ActualPath)] <> '\') then
-    ActualPath := ActualPath + '\';
+  CurrentPath := Path;
+  if (Length(CurrentPath) > 0) and (CurrentPath[Length(CurrentPath)] <> '\') then
+    CurrentPath := CurrentPath + '\';
 
   {Create a stack on heap for saving
    key recursion
@@ -9432,7 +9430,7 @@ begin
 
 
   //set security
-  bAbort := ProcessKey(ActualPath, bIsRoot{isRootObject});
+  bAbort := ProcessKey(CurrentPath, bIsRoot{isRootObject});
 
 
   if Assigned(DACL) then
@@ -9468,11 +9466,11 @@ begin
     if Count > 0 then
     begin
       ptrFindData := PFindData(stack.Pop);
-      ActualPath  := ptrFindData.SubKey;
+      CurrentPath  := ptrFindData.SubKey;
       FreeMem(ptrFindData);
 
       //set security
-      bAbort := ProcessKey(ActualPath, bFirst);
+      bAbort := ProcessKey(CurrentPath, bFirst);
     end;
 
     if not bAbort then
@@ -9480,7 +9478,7 @@ begin
       SetLastError(0);
 
       //get sub keys
-      subKeys := EnumKeys(ActualPath);
+      subKeys := EnumKeys(CurrentPath);
 
       //call user if error occured
       if GetLastError() <> 0 then
@@ -9495,7 +9493,7 @@ begin
           begin
             //call user function for
             //next step
-            FNProgress(ActualPath,
+            FNProgress(CurrentPath,
               //const pObjectName : TJwString;              // Name of object just processed
               GetLastError(),
               //const cStatus : Cardinal;                    // Status of operation on object
@@ -9512,7 +9510,7 @@ begin
           SetLastError(0);
           //retry
           if (pInvokeSetting = pis_ProgressRetryOperation) then
-            subKeys := EnumKeys(ActualPath)
+            subKeys := EnumKeys(CurrentPath)
           else
           //abort
           if bAbort or (pInvokeSetting = pis_ProgressCancelOperation) then

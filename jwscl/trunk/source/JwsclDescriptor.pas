@@ -606,7 +606,7 @@ type
    {<B>RMControl</B> sets or gets the resource managercontrol values of the sd.
     Do not change them if you do not know what it means.
         For more information see MSDN.
-    This value is ignored in actual version.
+    This value is ignored in current version.
     }
     property RMControl: jwaWindows.TSecurityDescriptorControl
       Read GetRMControl Write SetRMControl;
@@ -1359,7 +1359,7 @@ begin
   if Assigned(fDACL) and Assigned(anACL) then
     fDACL.Assign(anACL);
 
-  //if there is no anACL list we free the actual one
+  //if there is no anACL list we free the current one
   //so we get a NULL DACL
   if not Assigned(anACL) then
   begin
@@ -1384,7 +1384,7 @@ begin
   if Assigned(fAuditACL) and Assigned(anACL) then
     fAuditACL.Assign(anACL);
 
-  //if there is no anACL list we free the actual one
+  //if there is no anACL list we free the current one
   //so we get a NULL SACL
   if not Assigned(anACL) then
   begin

@@ -1428,7 +1428,7 @@ type
     {<B>RemoteAddress</B> returns the real IP Address that is connected to the Terminal Server.
      
      Remarks
-  <B>RemoteAddress</B> returns the IP address that is actually connected
+  <B>RemoteAddress</B> returns the IP address that is currently connected
      to the Terminal Server (as opposed to ClientAddress which returns the
      address as reported by the client which is usually just it's local ip
      address).

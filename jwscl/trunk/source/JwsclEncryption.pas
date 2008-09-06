@@ -1,6 +1,6 @@
 { Project JEDI Windows Security Code Library (JWSCL)
   
-  Actually the Windows Vista Crypt API is not supported by this unit. The direct
+  Currently the Windows Vista Crypt API is not supported by this unit. The direct
   memory encryption is simulated.
   Author
     * Christian Wimmer
@@ -97,7 +97,7 @@ type
           # pmSameLogon - defines only the same use can decrypt the data 
          
      @param MemoryType defines which type of memory manager created P.
-       Actually only mtGetMem is supported. 
+       Currently only mtGetMem is supported. 
      raises
  EjwsclCryptUnsupportedException:  if MemoryType is not mtGetMem. 
       EjwsclCryptApiException: if an underlying API function failed. 
@@ -118,7 +118,7 @@ type
        
      @param Flags Must be the same value of Flags specified in a previous call to EncryptMemory.  
      @param MemoryType defines which type of memory manager created P.
-       Actually only mtGetMem is supported. 
+       Currently only mtGetMem is supported. 
      raises
  EjwsclCryptUnsupportedException:  if MemoryType is not mtGetMem. 
       EjwsclCryptApiException: if an underlying API function failed. 

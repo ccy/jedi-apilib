@@ -86,11 +86,11 @@ type
             TJwSecurityObjectInformationFlagSet): TJwSecurityObjectInformation;
 
     {<B>GetParent</B> is called to retrieve the parent security descriptor of
-     the actual private object. This is used by GetPrivateInheritanceSource and
+     the current private object. This is used by GetPrivateInheritanceSource and
      other inheritance methods)
      @param Parent received a pointer to the parent private object. Return nil
       if no parent exists - e.g. it is on top of a tree structure. 
-     @return Return S_OK if the parameter Parent is valid or the actual object
+     @return Return S_OK if the parameter Parent is valid or the current object
       has no parent.
       Return E_NOTIMPL if the private object does not support tree structures. 
      }

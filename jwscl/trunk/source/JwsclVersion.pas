@@ -129,7 +129,7 @@ type
 
     {<B>GetWindowsType</B> returns a constant that defines the windows version the process is running.
      @return The return value can be one of these constants defined in JwsclConstants
-     Actually these items are supported 
+     Currently these items are supported 
      
        #  Spacing(Compact)
        #  cOsUnknown = The system is unknown
@@ -239,7 +239,7 @@ type
   public
       {<B>GetWindowsType</B> returns a constant that defines the windows version the process is running.
        @return The return value can be one of these constants defined in JwsclConstants
-        Actually these items are supported
+        Currently these items are supported
         
          #  cOsUnknown = The system is unknown
          #  cOsWin95   = running on Windows 95
@@ -357,7 +357,7 @@ type
 
       {<B>IsWindowsVista</B> checks if the system has the version given in the function name.
 
-       Actually the parameter bOrHigher has no meaning in this function!
+       Currenty the parameter bOrHigher has no meaning in this function!
 
        @param bOrHigher defines if the return value should also be <B>true</B> if the system
               is better/higher than the requested system version. 
@@ -373,7 +373,7 @@ type
 
       {<B>IsWindows2008</B> checks if the system has the version given in the function name.
 
-       Actually the parameter bOrHigher has no meaning in this function!
+       Currently the parameter bOrHigher has no meaning in this function!
 
        @param bOrHigher defines if the return value should also be <B>true</B> if the system
               is better/higher than the requested system version. 
@@ -393,11 +393,11 @@ type
 
 
       {<B>CheckWindowsVersion</B> raises an EJwsclUnsupportedWindowsVersionException exception if
-       the actual windows version does not correspond to the required one in the parameters.
+       the current windows version does not correspond to the required one in the parameters.
 
        @param iWinVer contains a cOsXXXXX onstant that is defined in JwsclConstants.
               If iWinVer is not between the bounds of sOSVerString the value iWinVer will be set to -1 without an error. 
-       @param bOrHigher If true the exception will only be raised if the actual system version
+       @param bOrHigher If true the exception will only be raised if the current system version
                is smaller than the given on in iWinVer; otherwise the system version must be exactly the given one in iWinVer 
        @param SourceProc contains the caller method name to be displayed in the exception message 
        @param SourceClass contains the caller class name to be displayed in the exception message 
