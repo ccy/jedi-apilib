@@ -160,7 +160,7 @@ begin
 
   try
     F := TJclFileVersionInfo.Create(ParamStr(0));
-    with F do
+    with F do  //<--- only for F.AddField
     begin
       AddField('Info_BinFileVersion',BinFileVersion);
       AddField('Info_BinProductVersion',BinProductVersion);

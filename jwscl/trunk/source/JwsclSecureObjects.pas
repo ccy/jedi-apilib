@@ -5531,7 +5531,6 @@ begin
     SetNamedSecurityInfo(TJwPChar(fFileName), SE_FILE_OBJECT,
       Flags, anOwner,
       anGroup, aDACL, list);
-
   end
   else
   if HasValidHandle then
@@ -5629,10 +5628,8 @@ var //[Hint] DACL : TJwDAccessControlList;
   SD: TJwSecurityDescriptor;
 begin
   SD := TJwSecureGeneralObject.GetSecurityInfo(Handle,
-    SE_FILE_OBJECT,
-    //const aObjectType : TSeObjectType;
-    [
-    siDaclSecurityInformation]//aSecurityInfo : TJwSecurityInformationFlagSet;
+    SE_FILE_OBJECT, //const aObjectType : TSeObjectType;
+    [siDaclSecurityInformation]//aSecurityInfo : TJwSecurityInformationFlagSet;
     );
   try
     if Assigned(SD.DACL) then
@@ -5644,11 +5641,10 @@ begin
 
 
       TJwSecureGeneralObject.SetSecurityInfo(Handle,
-        SE_FILE_OBJECT,
-        //const aObjectType : TSeObjectType;
+        SE_FILE_OBJECT,  //const aObjectType : TSeObjectType;
         [siDaclSecurityInformation,
         siProtectedDaclSecurityInformation],
-        //aSecurityInfo : TJwSecurityInformationFlagSet;
+          //aSecurityInfo : TJwSecurityInformationFlagSet;
         nil,//const anOwner : TJwSecurityId;
         nil,//const anGroup : TJwSecurityId;
         SD.DACL,
@@ -5667,10 +5663,8 @@ var //[Hint] DACL : TJwDAccessControlList;
   SD: TJwSecurityDescriptor;
 begin
   SD := TJwSecureGeneralObject.GetNamedSecurityInfo(PathName,
-    SE_FILE_OBJECT,
-    //const aObjectType : TSeObjectType;
-    [
-    siDaclSecurityInformation]//aSecurityInfo : TJwSecurityInformationFlagSet;
+    SE_FILE_OBJECT, //const aObjectType : TSeObjectType;
+    [siDaclSecurityInformation]//aSecurityInfo : TJwSecurityInformationFlagSet;
     );
   try
     if Assigned(SD.DACL) then
@@ -5682,8 +5676,7 @@ begin
 
 
       TJwSecureGeneralObject.SetNamedSecurityInfo(PathName,
-        SE_FILE_OBJECT,
-        //const aObjectType : TSeObjectType;
+        SE_FILE_OBJECT,   //const aObjectType : TSeObjectType;
         [siDaclSecurityInformation,
         siProtectedDaclSecurityInformation],
         //aSecurityInfo : TJwSecurityInformationFlagSet;
@@ -5754,10 +5747,8 @@ var
 begin
   try
     SD := TJwSecureGeneralObject.GetSecurityInfo(Handle,
-      SE_FILE_OBJECT,
-      //const aObjectType : TSeObjectType;
-      [
-      siDaclSecurityInformation]//aSecurityInfo : TJwSecurityInformationFlagSet;
+      SE_FILE_OBJECT, //const aObjectType : TSeObjectType;
+      [siDaclSecurityInformation]//aSecurityInfo : TJwSecurityInformationFlagSet;
       );
 
   except
@@ -5779,10 +5770,8 @@ begin
 
       //again
       SD := TJwSecureGeneralObject.GetSecurityInfo(Handle,
-        SE_FILE_OBJECT,
-        //const aObjectType : TSeObjectType;
-        [
-        siDaclSecurityInformation]//aSecurityInfo : TJwSecurityInformationFlagSet;
+        SE_FILE_OBJECT, //const aObjectType : TSeObjectType;
+        [siDaclSecurityInformation]//aSecurityInfo : TJwSecurityInformationFlagSet;
         );
     end;
   end;
@@ -5799,8 +5788,7 @@ begin
     end;
 
     TJwSecureGeneralObject.SetSecurityInfo(Handle,
-      SE_FILE_OBJECT,
-      //const aObjectType : TSeObjectType;
+      SE_FILE_OBJECT,   //const aObjectType : TSeObjectType;
       [siDaclSecurityInformation,
       siUnprotectedDaclSecurityInformation],
       //aSecurityInfo : TJwSecurityInformationFlagSet;
@@ -5829,10 +5817,8 @@ begin
 
   try
     SD := TJwSecureGeneralObject.GetNamedSecurityInfo(PathName,
-      SE_FILE_OBJECT,
-      //const aObjectType : TSeObjectType;
-      [
-      siDaclSecurityInformation]//aSecurityInfo : TJwSecurityInformationFlagSet;
+      SE_FILE_OBJECT,   //const aObjectType : TSeObjectType;
+      [siDaclSecurityInformation]//aSecurityInfo : TJwSecurityInformationFlagSet;
       );
   except
     on E: EJwsclWinCallFailedException do
@@ -6566,23 +6552,27 @@ begin
 
 
     //call callback function, the thread has ended
-    with Data^ do
-    begin
-      if Assigned(FNProgressMethod) then
-        try
-          p := pis_ProgressFinished;
-          FNProgressMethod(pObjectName, 0, p, nil, ProgressUserData, False);
-        except
-        end;
+    if Assigned(Data^.FNProgressMethod) then
+      try
+        p := pis_ProgressFinished;
+        Data^.FNProgressMethod(Data^.pObjectName, 0, p, nil, Data^.ProgressUserData, False);
+      except
+        //don't let us get out of the concept!
+        //so just ignore the users exception
+        //After all, we're maybe in a thread!
+      end;
 
-      if Assigned(FNProgressProcedure) then
-        try
-          p := pis_ProgressFinished;
-          Data^.FNProgressProcedure(pObjectName, 0, p, nil,
-            ProgressUserData, False);
-        except
-        end;
-    end;
+
+    if Assigned(Data^.FNProgressProcedure) then
+      try
+        p := pis_ProgressFinished;
+        Data^.FNProgressProcedure(Data^.pObjectName, 0, p, nil,
+          Data^.ProgressUserData, False);
+      except
+        //don't let us get out of the concept!
+        //so just ignore the users exception
+        //After all, we're maybe in a thread!
+      end;
 
     Data.Owner.Free;
     Data.Group.Free;
@@ -9599,23 +9589,27 @@ begin
   finally
 
     //call callback function, the thread has ended
-    with Data^ do
-    begin
-      if Assigned(FNProgressMethod) then
-        try
-          p := pis_ProgressFinished;
-          FNProgressMethod(pObjectName, 0, p, nil, ProgressUserData, False);
-        except
-        end;
+    if Assigned(Data^.FNProgressMethod) then
+      try
+        p := pis_ProgressFinished;
+        Data^.FNProgressMethod(Data^.pObjectName, 0, p, nil, Data^.ProgressUserData, False);
+      except
+        //don't let us get out of the concept!
+        //so just ignore the users exception
+        //After all, we're maybe in a thread!
+      end;
 
-      if Assigned(FNProgressProcedure) then
-        try
-          p := pis_ProgressFinished;
-          Data^.FNProgressProcedure(pObjectName, 0, p, nil,
-            ProgressUserData, False);
-        except
-        end;
-    end;
+
+    if Assigned(Data^.FNProgressProcedure) then
+      try
+        p := pis_ProgressFinished;
+        Data^.FNProgressProcedure(Data^.pObjectName, 0, p, nil,
+          Data^.ProgressUserData, False);
+      except
+        //don't let us get out of the concept!
+        //so just ignore the users exception
+        //After all, we're maybe in a thread!
+      end;
 
     Data.Owner.Free;
     Data.Group.Free;

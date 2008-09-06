@@ -456,6 +456,19 @@ You also should add additional information about the unit if necessary. It may c
 \subsection{Names}
 Make sure that you name your identifiers are unique in all JWSCL units. Thus you should add resource strings, constants and simple types to special units as described in chapter ~\pageref{Whatbelongswhere} on page ~\ref{Whatbelongswhere}.
 
+\subsection{Do's and Don'ts}
+
+\subsubsection{Don't use With-Statement at all}
+Don't use With-Statement at all. It has some glitches.
+
+\begin{itemize}
+  \item If it is used in the wrong way, it can be hard to understand for other people.
+  \item Most Delphi Debuggers don't show the value of the variable members at runtime.
+  \item It can be complicated if variable members and other variables have the same name. If they are used in the same with-statement you can get in trouble.
+\end{itemize}
+
+
+
 \section{Documentation}
 Documentation is a main part of the JWSCL and the language is simple english. There are two types of documentation:
 \begin{enumerate}

@@ -361,29 +361,24 @@ begin
   begin
     try
       App := CoNetFwAuthorizedApplication.Create;
+	  //Create throws OleException if anything goes wrong
 
-      if Assigned(@App) then
-      begin
-        with App do
-        begin
-          ProcessImageFileName := ApplicationFilename;
-          Name := NameOnExeptionlist;
-          Scope := NET_FW_SCOPE_ALL;
-          IpVersion := NET_FW_IP_VERSION_ANY;
-          Enabled := EnableRule;
-        end;
+	  App.ProcessImageFileName := ApplicationFilename;
+	  App.Name := NameOnExeptionlist;
+	  App.Scope := NET_FW_SCOPE_ALL;
+	  App.IpVersion := NET_FW_IP_VERSION_ANY;
+	  App.Enabled := EnableRule;
 
-        try
-          FProfile.AuthorizedApplications.Add(App);
-        except
-          on e: EOleSysError do
-          begin
-            SetLastError(E.ErrorCode);
-            raise EJwsclFirewallAddRuleException.CreateFmtEx(e.Message,
-              'AddToWinFirewall', ClassName, RsUNFirewall,
-              0, True, []);
-          end;
-        end;
+	  try
+	    FProfile.AuthorizedApplications.Add(App);
+	  except
+	    on e: EOleSysError do
+	    begin
+	  	  SetLastError(E.ErrorCode);
+		  raise EJwsclFirewallAddRuleException.CreateFmtEx(e.Message,
+			'AddToWinFirewall', ClassName, RsUNFirewall,
+			0, True, []);
+		end;
       end;
     finally
       App := nil;
@@ -415,18 +410,16 @@ begin
   try
     Port := CoNetFwOpenPort.Create;
 
-    with Port do
-    begin
-      Name := ProtocollName;
-      Protocol := NET_FW_IP_PROTOCOL_TCP;
-      Port := ProtocollPort;
-      if SubnetOnly then
-        Scope := NET_FW_SCOPE_LOCAL_SUBNET
-      else
-        Scope := NET_FW_SCOPE_ALL;
-      RemoteAddresses := PortRemoteAddresses;
-      Enabled := True;
-    end;
+    Port.Name := ProtocollName;
+    Port.Protocol := NET_FW_IP_PROTOCOL_TCP;
+	  
+    Port.Port := ProtocollPort;
+    if SubnetOnly then
+      Port.Scope := NET_FW_SCOPE_LOCAL_SUBNET
+    else
+      Port.Scope := NET_FW_SCOPE_ALL;
+    Port.RemoteAddresses := PortRemoteAddresses;
+    Port.Enabled := True;
 
     try
       FProfile.GloballyOpenPorts.Add(Port);
@@ -468,18 +461,16 @@ begin
   try
     Port := CoNetFwOpenPort.Create;
 
-    with Port do
-    begin
-      Name := ProtocollName;
-      Protocol := NET_FW_IP_PROTOCOL_UDP;
-      Port := ProtocollPort;
-      if SubnetOnly then
-        Scope := NET_FW_SCOPE_LOCAL_SUBNET
-      else
-        Scope := NET_FW_SCOPE_ALL;
-      RemoteAddresses := PortRemoteAddresses;
-      Enabled := True;
-    end;
+    Port.Name := ProtocollName;
+    Port.Protocol := NET_FW_IP_PROTOCOL_UDP;
+    Port.Port := ProtocollPort;
+    if SubnetOnly then
+      Port.Scope := NET_FW_SCOPE_LOCAL_SUBNET
+    else
+      Port.Scope := NET_FW_SCOPE_ALL;
+    Port.RemoteAddresses := PortRemoteAddresses;
+    Port.Enabled := True;
+    
 
     try
       FProfile.GloballyOpenPorts.Add(Port);
