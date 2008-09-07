@@ -1133,6 +1133,7 @@ var Index : Integer;
 
 begin
 {$IFDEF FullDebugMode}
+  result := 0;
   if LocalLock(hMem) <> nil then
   begin
     Index := Find;
@@ -1147,10 +1148,10 @@ begin
     InternalMemArray.Delete(Index);
 
     LocalUnlock(hMem);
-{$ENDIF FullDebugMode}
     result := LocalFree(hMem);
-{$IFDEF FullDebugMode}
   end;
+{$ELSE}
+  result := LocalFree(hMem);
 {$ENDIF FullDebugMode}
   hMem := 0;
 end;
@@ -1199,6 +1200,7 @@ var Index : Integer;
 {$ENDIF FullDebugMode}
 begin
 {$IFDEF FullDebugMode}
+  result := 0;
   if GlobalLock(hMem) <> nil then
   begin
     Index := Find;
@@ -1212,12 +1214,11 @@ begin
     FreeMem(PMemTuple(InternalMemArray[Index]));
     InternalMemArray.Delete(Index);
 
-    GlobalUnlock(hMem);
-{$ENDIF FullDebugMode}
-
+    GlobalUnlock(hMem);                
     result := GlobalFree(hMem);
-{$IFDEF FullDebugMode}
   end;
+{$ELSE}
+  result := GlobalFree(hMem);          
 {$ENDIF FullDebugMode}
   hMem := 0;
 end;

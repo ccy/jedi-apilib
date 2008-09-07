@@ -56,8 +56,16 @@ type
   }
 
   {$IFDEF UNICODE}
-  //<B>TJwString</B> defines an unicode string type if compiler directive UNICODE is defined; otherwise ansicode
-  TJwString = UnicodeString; //WideString;
+  {<B>TJwString</B> defines an unicode string type if compiler directive UNICODE is defined; otherwise ansicod
+  Delphi 2009 uses the more efficient UnicodeString type.
+
+  However this type must not be used for COM Methods! A cast to WideString is necessary before!
+  
+  If you get an error here for <= Delphi2007 you must make sure that
+  you're using an updated version of jedi.inc (included by jwscl.inc)
+  that supports the DELPHI2009_UP switch!
+  }
+  TJwString = {$IFDEF DELPHI2009_UP}UnicodeString;{$ELSE}WideString;{$ENDIF DELPHI2009_UP} 
   //<B>TJwPChar</B> defines an unicode pointer to wide char type if compiler directive UNICODE is defined; otherwise ansicode
   TJwPChar  = PWideChar;
   //<B>TJwChar</B> defines an unicode wide char type if compiler directive UNICODE is defined; otherwise ansicode

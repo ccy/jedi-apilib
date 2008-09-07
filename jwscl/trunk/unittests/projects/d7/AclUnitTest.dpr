@@ -8,8 +8,8 @@ program AclUnitTest;
 {.$APPTYPE CONSOLE}
 
 {Define one of these directive to use memory leak manager}
-{.$DEFINE FASTMM4}
-{$UNDEF FASTMM4}
+{$DEFINE FASTMM4}
+{.$UNDEF FASTMM4}
 
 {$IFDEF FASTMM4}
   {$UNDEF MEMCHECK}
@@ -90,7 +90,8 @@ begin
   JwInitWellKnownSIDs;
 
 {$IFDEF FASTMM4}
-  {$IFNDEF COMPILER_8_UP}FastMM4.{$ENDIF}ReportMemoryLeaksOnShutdown := true;
+  //{$IFNDEF COMPILER_8_UP}FastMM4.{$ENDIF}
+  //FastMM4.ReportMemoryLeaksOnShutdown := true;
 {$ENDIF}
 
    Application.Initialize;

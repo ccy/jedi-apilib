@@ -22,7 +22,11 @@ Of course they will fail if Vista stuff is called on them.
 //adds compiler version directives
 //jwscl.inc is only added by JWSCL units in source folder
 //so we're actually in the source folder and must jump up
-{$I ..\include\jedi.inc}
+
+//This is for compability reasons only!
+//On of them should work. However the second one is standard and supported.
+{.$I .\jedi.inc}
+{$I ..\Includes\jedi.inc}
 
 {$IFDEF FPC}
 {$mode delphi}{.$H+}

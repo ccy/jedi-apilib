@@ -3,7 +3,7 @@ unit UMainForm;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls,
   jwaWindows, JwsclUtils,
   JwsclTypes, JwsclExceptions, JwsclSid, JwsclAcl, JwsclToken,
@@ -55,6 +55,9 @@ begin
 
   ACLEditor.Flags :=  [sdfAdvanced, sdfEditDacl, sdfEditOwner, sdfEditEffective,
                        sdfNoAdditionalPermission, sdfEditSacl];
+  ACLEditor.ObjectName := 'ACL Editor Demo';
+  ACLEditor.ServerName := '';
+
 
   SecurityDescriptor := nil;
   try

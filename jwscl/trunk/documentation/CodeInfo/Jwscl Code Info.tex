@@ -208,6 +208,7 @@ folded code
 \item There is no FreePascal support at the moment.
 \end{itemize}
 
+\label{SourceFormatter}
 \section{Source Formatter}
 It is possible to use a source formatter. However don't use a source formatter that uses a format that differs too much from the existing source format. An appropriate formatter has the JEDI Code Format Project\footnote{The JEDI Code formatter can be found at http://jedicodeformat.sourceforge.net}.
 
@@ -467,7 +468,21 @@ Don't use With-Statement at all. It has some glitches.
   \item It can be complicated if variable members and other variables have the same name. If they are used in the same with-statement you can get in trouble.
 \end{itemize}
 
+\subsubsection{Don't add units from JWA or JWSCL to examples download}
+If you create a package for an example download, you must not add any units from JEDI API and/or WSCL.
 
+\subsection{Creating a Demo}
+If your are going to create a demo/sample project you should consider some points:
+
+\begin{enumerate}
+  \item Use good coding techniques! That contains name conventions of filenames and also code items (identifieres, classnames, etc.), code formatting (See Source Formatter title on page ~\ref{SourceFormatter}) and comments and documentation. Be aware that people are learning the API by studying your example.
+  \item Check where your example belongs to? JEDI API or JEDI WSCL? Exmples are located in the examples folder of the trunk and nowhere else. Create your own folder in the example folder but don't use an existing one if your example isn't closely related to it.
+  \item Think of the license you want to use. You can use any license that you can think of (or think up one yourself). Of course it is possible to use no license at all. However the copyright remains on you in all cases, but you agree that changes and publications can be done without your permission by the JEDI team.
+  \item If you create a package for an example download, you must not add any units from JEDI API and/or WSCL.
+  \item Only add necessary files to the examples. Res, rsm, dcu, dof, cfg, dproj.local are not necessary for a release. Also try to compile your project without these files (by moving or deleting them) and check what is necessary to run it.
+  \item Create a document header that describes the purpose of the example and more stuff. There is already a template file in the JEDI API examples folder called "header\_template.txt". Adapt header to your needs and add it to all source files of your project. If you don't have a license just remove the given license text.
+  \item Think of the prerequisites to compile the project. Does the user need third party modules? Which Delphi version is at least necessary to run the example? 
+\end{enumerate}
 
 \section{Documentation}
 Documentation is a main part of the JWSCL and the language is simple english. There are two types of documentation:
