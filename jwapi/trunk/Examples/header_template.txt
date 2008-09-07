@@ -1,5 +1,5 @@
 {******************************************************************************}
-{ JEDI API example <name> 													   }
+{ JEDI example <name> 													   }
 { http://jedi-apilib.sourceforge.net										   }
 { 																			   }
 { Obtained through: Joint Endeavour of Delphi Innovators (Project JEDI)        }
@@ -26,7 +26,7 @@
 Example:
 
 {******************************************************************************}
-{ JEDI API example Example Project											   }
+{ JEDI example Example Project											   }
 { http://jedi-apilib.sourceforge.net										   }
 { 																			   }
 { Obtained through: Joint Endeavour of Delphi Innovators (Project JEDI)        }
