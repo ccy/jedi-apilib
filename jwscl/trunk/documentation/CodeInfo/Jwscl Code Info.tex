@@ -10,12 +10,12 @@
 % Duplex: oneside / twoside
 % Base Font Size: 10pt / 11pt / 12pt
 
-
+\usepackage{ifpdf}
 %% Normal LaTeX or pdfLaTeX? %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% ==> The new if-Command "\ifpdf" will be used at some
 %% ==> places to ensure the compatibility between
 %% ==> LaTeX and pdfLaTeX.
-\newif\ifpdf
+\ifpdf
 \ifx\pdfoutput\undefined
 	\pdffalse              %%normal LaTeX is executed
 \else
