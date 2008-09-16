@@ -341,7 +341,6 @@ type
   PBindOpts2 = ^TBindOpts2;
   {$EXTERNALSYM BIND_OPTS2}
 
-{$IFDEF WINVISTA_UP}
   //>= VISTA
   BIND_OPTS3 = record
     cbStruct:            DWORD;
@@ -357,7 +356,7 @@ type
   TBindOpts3 = BIND_OPTS3;
   PBindOpts3 = ^TBindOpts3;
   {$EXTERNALSYM BIND_OPTS3}
-{$ENDIF WINVISTA_UP}
+
 
   IBindCtx = interface(IUnknown)
     ['{0000000E-0000-0000-C000-000000000046}']

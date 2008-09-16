@@ -4,7 +4,7 @@
 			<MainSource>JediApi_SingleUnits.dpk</MainSource>
 			<Config Condition="'$(Config)'==''">Debug</Config>
 			<DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
-			<ProjectVersion>12</ProjectVersion>
+			<ProjectVersion>12.0</ProjectVersion>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Config)'=='Basis' or '$(Base)'!=''">
 			<Base>true</Base>
@@ -20,16 +20,22 @@
 			<Base>true</Base>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base)'!=''">
+			<DCC_DcpOutput>bin\single</DCC_DcpOutput>
+			<DCC_UnitSearchPath>..\..\common;..\..\includes;..\..\win32api;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+			<DCC_BplOutput>bin\single</DCC_BplOutput>
+			<DCC_DcuOutput>bin\</DCC_DcuOutput>
+			<DCC_SymbolReferenceInfo>1</DCC_SymbolReferenceInfo>
 			<GenDll>true</GenDll>
 			<DCC_OutputNeverBuildDcps>true</DCC_OutputNeverBuildDcps>
 			<GenPackage>true</GenPackage>
 			<DCC_WriteableConstants>true</DCC_WriteableConstants>
 			<DesignOnlyPackage>false</DesignOnlyPackage>
 			<DCC_ImageBase>00400000</DCC_ImageBase>
-			<DCC_DependencyCheckOutputName>C:\Users\Public\Documents\RAD Studio\6.0\Bpl\JediApi_SingleUnits.bpl</DCC_DependencyCheckOutputName>
+			<DCC_DependencyCheckOutputName>bin\single\JediApi_SingleUnits.bpl</DCC_DependencyCheckOutputName>
 			<DCC_Define>USE_DELPHI_TYPES;DEBUG</DCC_Define>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_1)'!=''">
+			<DCC_DcuOutput>bin\single</DCC_DcuOutput>
 			<DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
 			<DCC_DebugInformation>false</DCC_DebugInformation>
 			<DCC_Define>RELEASE;$(DCC_Define)</DCC_Define>
@@ -37,17 +43,13 @@
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_2)'!=''">
 			<DCC_DcuOutput>bin\single</DCC_DcuOutput>
-			<DCC_DependencyCheckOutputName>bin\single\JediApi_SingleUnits.bpl</DCC_DependencyCheckOutputName>
-			<DCC_UnitSearchPath>.;..\;..\..\common;..\..\Win32Api;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+			<DCC_UnitSearchPath>.;..\;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
 			<DCC_BplOutput>bin\single</DCC_BplOutput>
 		</PropertyGroup>
 		<ItemGroup>
 			<DelphiCompile Include="JediApi_SingleUnits.dpk">
 				<MainSource>MainSource</MainSource>
 			</DelphiCompile>
-			<DCCReference Include="$(SystemRoot)\system32\rtl.dcp"/>
-			<DCCReference Include="$(SystemRoot)\system32\vcl.dcp"/>
-			<DCCReference Include="$(SystemRoot)\system32\vclie.dcp"/>
 			<DCCReference Include="..\..\Win32API\JwaShellAPI.pas"/>
 			<DCCReference Include="..\..\Win32API\JwaShLWAPI.pas"/>
 			<DCCReference Include="..\..\win32Api\JwaAccCtrl.pas"/>
@@ -282,6 +284,7 @@
 			<DCCReference Include="..\..\Win32API\JwaWtsApi32.pas"/>
 			<DCCReference Include="..\..\Win32API\JwaZMOUSE.pas"/>
 			<DCCReference Include="..\..\Win32API\JwaRpcWinsta.pas"/>
+			<DCCReference Include="..\..\Win32API\JwaBitFields.pas"/>
 			<BuildConfiguration Include="Basis">
 				<Key>Base</Key>
 			</BuildConfiguration>

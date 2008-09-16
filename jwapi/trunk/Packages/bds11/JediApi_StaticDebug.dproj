@@ -39,10 +39,10 @@
     <DCC_ObjOutput>bin\debug\static</DCC_ObjOutput>
     <DCC_HppOutput>bin\debug\static</DCC_HppOutput>
     <DCC_BplOutput>bin\debug\static</DCC_BplOutput>
-    <DCC_UnitSearchPath>.;..\;..\..\common;..\..\Win32Api</DCC_UnitSearchPath>
-    <DCC_ResourcePath>.;..\;..\..\common;..\..\Win32Api</DCC_ResourcePath>
-    <DCC_ObjPath>.;..\;..\..\common;..\..\Win32Api</DCC_ObjPath>
-    <DCC_IncludePath>.;..\;..\..\common;..\..\Win32Api</DCC_IncludePath>
+    <DCC_UnitSearchPath>..\..\common;..\..\includes;..\..\win32api</DCC_UnitSearchPath>
+    <DCC_ResourcePath>..\..\common;..\..\includes;..\..\win32api</DCC_ResourcePath>
+    <DCC_ObjPath>..\..\common;..\..\includes;..\..\win32api</DCC_ObjPath>
+    <DCC_IncludePath>..\..\common;..\..\includes;..\..\win32api</DCC_IncludePath>
     <DCC_Define>JWA_WINDOWS;JWA_INCLUDE_SETUP_API;JWA_INCLUDE_JWAADSTLB;DEBUG;PACKAGE_CONDITIONS;JWA_INCLUDE_SHELLAPI</DCC_Define>
   </PropertyGroup>
   <ProjectExtensions>

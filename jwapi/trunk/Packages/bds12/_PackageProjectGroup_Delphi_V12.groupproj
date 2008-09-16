@@ -19,12 +19,12 @@
 				<Dependencies/>
 			</Projects>
 		</ItemGroup>
-		<Import Project="$(MSBuildBinPath)\Borland.Group.Targets" Condition="Exists('$(MSBuildBinPath)\Borland.Group.Targets')"/>
 		<ProjectExtensions>
-			<Borland.Personality>Default.Personality</Borland.Personality>
+			<Borland.Personality>Default.Personality.12</Borland.Personality>
 			<Borland.ProjectType/>
-			<BorlandProject><BorlandProject><Default.Personality></Default.Personality></BorlandProject>
-</BorlandProject>
+			<BorlandProject>
+				<Default.Personality/>
+			</BorlandProject>
 		</ProjectExtensions>
 		<Target Name="JediApi_DynamicDebug">
 			<MSBuild Projects="JediApi_DynamicDebug.dproj"/>
@@ -80,4 +80,5 @@
 		<Target Name="Make">
 			<CallTarget Targets="JediApi_DynamicDebug:Make;JediApi_DynamicRelease:Make;JediApi_StaticDebug:Make;JediApi_StaticRelease:Make;JediApi_SingleUnits:Make"/>
 		</Target>
+		<Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 	</Project>

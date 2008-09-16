@@ -4,7 +4,7 @@
 			<MainSource>JediApi_StaticRelease.dpk</MainSource>
 			<Config Condition="'$(Config)'==''">Debug</Config>
 			<DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
-			<ProjectVersion>12</ProjectVersion>
+			<ProjectVersion>12.0</ProjectVersion>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Config)'=='Basis' or '$(Base)'!=''">
 			<Base>true</Base>
@@ -20,6 +20,10 @@
 			<Base>true</Base>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base)'!=''">
+			<DCC_DcuOutput>bin\release\static</DCC_DcuOutput>
+			<DCC_BplOutput>bin\release\static</DCC_BplOutput>
+			<DCC_UnitSearchPath>..\..\common;..\..\includes;..\..\win32api;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+			<DCC_DcpOutput>bin\release\static</DCC_DcpOutput>
 			<GenDll>true</GenDll>
 			<DCC_OutputNeverBuildDcps>true</DCC_OutputNeverBuildDcps>
 			<DCC_AssertionsAtRuntime>false</DCC_AssertionsAtRuntime>
@@ -28,7 +32,7 @@
 			<DCC_DebugInformation>false</DCC_DebugInformation>
 			<DesignOnlyPackage>false</DesignOnlyPackage>
 			<DCC_ImageBase>00400000</DCC_ImageBase>
-			<DCC_DependencyCheckOutputName>C:\Users\Public\Documents\RAD Studio\6.0\Bpl\JediApi_StaticRelease.bpl</DCC_DependencyCheckOutputName>
+			<DCC_DependencyCheckOutputName>bin\release\static\JediApi_StaticRelease.bpl</DCC_DependencyCheckOutputName>
 			<RuntimeOnlyPackage>true</RuntimeOnlyPackage>
 			<DCC_Description>Jedi Windows Api JwaWindows Package Static Release</DCC_Description>
 			<DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
@@ -37,8 +41,7 @@
 		<PropertyGroup Condition="'$(Cfg_1)'!=''"/>
 		<PropertyGroup Condition="'$(Cfg_2)'!=''">
 			<DCC_DcuOutput>bin\release\static</DCC_DcuOutput>
-			<DCC_DependencyCheckOutputName>bin\release\static\JediApi_StaticRelease.bpl</DCC_DependencyCheckOutputName>
-			<DCC_UnitSearchPath>.;..\;..\..\common;..\..\Win32Api;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+			<DCC_UnitSearchPath>.;..\;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
 			<DCC_Define>DEBUG;JWA_WINDOWS;$(DCC_Define)</DCC_Define>
 			<DCC_BplOutput>bin\release\static</DCC_BplOutput>
 		</PropertyGroup>

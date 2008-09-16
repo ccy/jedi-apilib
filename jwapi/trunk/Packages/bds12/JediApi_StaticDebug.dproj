@@ -4,7 +4,7 @@
 			<MainSource>JediApi_StaticDebug.dpk</MainSource>
 			<Config Condition="'$(Config)'==''">Debug</Config>
 			<DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
-			<ProjectVersion>12</ProjectVersion>
+			<ProjectVersion>12.0</ProjectVersion>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Config)'=='Basis' or '$(Base)'!=''">
 			<Base>true</Base>
@@ -20,13 +20,17 @@
 			<Base>true</Base>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base)'!=''">
+			<DCC_DcuOutput>bin\debug\static</DCC_DcuOutput>
+			<DCC_UnitSearchPath>..\..\common;..\..\includes;..\..\win32api;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+			<DCC_BplOutput>bin\debug\static</DCC_BplOutput>
+			<DCC_DcpOutput>bin\debug\static</DCC_DcpOutput>
 			<DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
 			<GenDll>true</GenDll>
 			<DCC_OutputNeverBuildDcps>true</DCC_OutputNeverBuildDcps>
 			<GenPackage>true</GenPackage>
 			<DesignOnlyPackage>false</DesignOnlyPackage>
 			<DCC_ImageBase>00400000</DCC_ImageBase>
-			<DCC_DependencyCheckOutputName>C:\Users\Public\Documents\RAD Studio\6.0\Bpl\JediApi_StaticDebug.bpl</DCC_DependencyCheckOutputName>
+			<DCC_DependencyCheckOutputName>bin\debug\static\JediApi_StaticDebug.bpl</DCC_DependencyCheckOutputName>
 			<RuntimeOnlyPackage>true</RuntimeOnlyPackage>
 			<DCC_Description>Jedi Windows Api JwaWindows Package Static Debug</DCC_Description>
 			<DCC_Optimize>false</DCC_Optimize>
@@ -41,8 +45,7 @@
 		<PropertyGroup Condition="'$(Cfg_2)'!=''">
 			<DCC_DcuOutput>bin\debug\static</DCC_DcuOutput>
 			<DCC_DebugDCUs>true</DCC_DebugDCUs>
-			<DCC_DependencyCheckOutputName>bin\debug\static\JediApi_StaticDebug.bpl</DCC_DependencyCheckOutputName>
-			<DCC_UnitSearchPath>.;..\;..\..\common;..\..\Win32Api;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+			<DCC_UnitSearchPath>.;..\;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
 			<DCC_Define>JWA_WINDOWS;$(DCC_Define)</DCC_Define>
 			<DCC_BplOutput>bin\debug\static</DCC_BplOutput>
 		</PropertyGroup>

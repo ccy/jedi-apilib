@@ -1437,6 +1437,7 @@ const
   {$EXTERNALSYM DOMAIN_ALIAS_RID_TS_LICENSE_SERVERS}
 
 type
+//TODO: MERGE
   WELL_KNOWN_SID_TYPE = (
 {$IFDEF WINVISTA_UP}
     WinNullSid {= 0},
@@ -1519,7 +1520,7 @@ type
     WinNewEnterpriseReadonlyControllersSid {= 77},
     WinBuiltinCertSvcDComAccessGroup {= 78}
 {$ELSE}
-    WinNullSid,
+    WinNullSid,               
     WinWorldSid,
     WinLocalSid,
     WinCreatorOwnerSid,
@@ -2682,6 +2683,7 @@ type
 //
 
 type
+//TODO: MERGE
   _TOKEN_INFORMATION_CLASS =
 {$IFDEF WINVISTA_UP}
     (TokenPadding0,
@@ -9075,7 +9077,7 @@ const
   ACTIVATION_CONTEXT_SECTION_CLR_SURROGATES               = 9;
   {$EXTERNALSYM ACTIVATION_CONTEXT_SECTION_CLR_SURROGATES}
 
-{$IFDEF WINVISTA_UP}
+
 type
   {Token elevation type.
    TokenElevationTypePad0 does not belong to this type. It is only a pad.
@@ -9289,12 +9291,11 @@ const
   {$EXTERNALSYM ProtectedProcessIL}
 
 
+{$IFDEF WINVISTA_UP}
   function AddMandatoryAce(pAcl: PACL; dwAceRevision, AceFlags, MandatoryPolicy: DWORD;
     pLabelSid: PSID): BOOL; stdcall;
   {$EXTERNALSYM AddMandatoryAce}
   {$EXTERNALSYM AddMandatoryAce}
-
-
 {$ENDIF WINVISTA_UP}
 
 {$ENDIF JWA_IMPLEMENTATIONSECTION}

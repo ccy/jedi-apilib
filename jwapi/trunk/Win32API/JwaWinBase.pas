@@ -6087,13 +6087,14 @@ function GetNumaNodeProcessorMask(Node: UCHAR; ProcessorMask: ULONGLONG): BOOL; 
 function GetNumaAvailableMemoryNode(Node: UCHAR; var AvailableBytes: ULONGLONG): BOOL; stdcall;
 {$EXTERNALSYM GetNumaAvailableMemoryNode}
 
-{$IFDEF WINVISTA_UP}
+
 const
   PROCESS_DEP_ENABLE = 1;
   {$EXTERNALSYM PROCESS_DEP_ENABLE}
   PROCESS_DEP_DISABLE_ATL_THUNK_EMULATION = 2;
   {$EXTERNALSYM PROCESS_DEP_DISABLE_ATL_THUNK_EMULATION}
 
+{$IFDEF WINVISTA_UP}  
   {http://msdn2.microsoft.com/en-us/library/bb736299(VS.85).aspx}
   function SetProcessDEPPolicy({__in}dwFlags : DWORD) : Boolean; stdcall;
   {$EXTERNALSYM SetProcessDEPPolicy}

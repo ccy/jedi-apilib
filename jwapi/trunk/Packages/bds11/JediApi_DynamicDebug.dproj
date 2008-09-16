@@ -31,10 +31,10 @@
     <DCC_HppOutput>bin\debug\dynamic</DCC_HppOutput>
     <DCC_BplOutput>bin\debug\dynamic</DCC_BplOutput>
     <DCC_DcpOutput>bin\debug\dynamic</DCC_DcpOutput>
-    <DCC_UnitSearchPath>.;..\;..\..\common;..\..\Win32Api</DCC_UnitSearchPath>
-    <DCC_ResourcePath>.;..\;..\..\common;..\..\Win32Api</DCC_ResourcePath>
-    <DCC_ObjPath>.;..\;..\..\common;..\..\Win32Api</DCC_ObjPath>
-    <DCC_IncludePath>.;..\;..\..\common;..\..\Win32Api</DCC_IncludePath>
+    <DCC_UnitSearchPath>..\..\common;..\..\includes;..\..\win32api</DCC_UnitSearchPath>
+    <DCC_ResourcePath>..\..\common;..\..\includes;..\..\win32api</DCC_ResourcePath>
+    <DCC_ObjPath>..\..\common;..\..\includes;..\..\win32api</DCC_ObjPath>
+    <DCC_IncludePath>..\..\common;..\..\includes;..\..\win32api</DCC_IncludePath>
     <DCC_Define>PACKAGE_CONDITIONS;JWA_INCLUDE_SETUP_API;JWA_INCLUDE_JWAADSTLB;DEBUG;DYNAMIC_LINK;JWA_WINDOWS;JWA_INCLUDE_SHELLAPI</DCC_Define>
     <DCC_MapFile>3</DCC_MapFile>
   </PropertyGroup>
@@ -49,6 +49,8 @@
     <DelphiCompile Include="JediApi_DynamicDebug.dpk">
       <MainSource>MainSource</MainSource>
     </DelphiCompile>
+    <DCCReference Include="..\..\..\..\jwscl\trunk\source\rtl.dcp" />
+    <DCCReference Include="..\..\..\..\jwscl\trunk\source\vcl.dcp" />
     <DCCReference Include="..\..\Win32API\JwaVista.pas" />
     <DCCReference Include="..\..\Win32API\JwaWindows\JwaWindows.pas" />
   </ItemGroup>
