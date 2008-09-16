@@ -531,6 +531,11 @@ const
   RsWinCallFailedWithSecurityStatus = 'Call to %0:s failed. SecurityStatus: %1:d';
   RsWinCallFailed = 'Call to %0:s failed.';
   RsNilParameter  = 'Parameter %0:s must not be nil';
+  RsVistaFeaturesDisabled = 'EJwsclVistaFeaturesDisabled</B> is raised if the JWSCL library'+
+    'was compiled with the compiler directive VISTA deactivated.'+
+    'To use vista features you must activate the directive in file'+
+    'includes\Jwscl.inc and make sure that you also compiled JwaWindows'+
+    'with at least WINVISTA or WIN2008 to enable Vista features.';
   RsInfinite      = '(infinite)';
 
   RsResourceInitFailed = 'Loadstring failed when tried to load first string index %d.';

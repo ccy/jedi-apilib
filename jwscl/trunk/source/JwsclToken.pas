@@ -744,7 +744,12 @@ type
      raises
  EJwsclInitWellKnownException:  will be raised if InitWellKnownException was not called 
       EJwsclNILParameterException: will be raised if parameter MandatorySid is nil 
-      EJwsclWinCallFailedException: will be raised if the integrity level could not be changed 
+      EJwsclWinCallFailedException: will be raised if the integrity level could not be changed
+
+    Remarks
+      If the compiler directive VISTA (jwscl.inc) is not defined, an exception
+      EJwsclVistaFeaturesDisabled is raised. This feature can only be used with
+      activated VISTA compiler directive.
     }
     procedure SetIntegrityLevel(const MandatorySid: TJwSecurityId;
       const Attributes: TJwSidAttributeSet = [sidaGroupMandatory]);
@@ -753,12 +758,17 @@ type
     {<B>SetIntegrityLevel</B> sets the integrity level of the token using a Sid structure.
      <B>SetIntegrityLevel</B> needs InitWellKnownException from JwsclKnownSid to be called before.
 
-     @param MandatorySidType a mandatory . Must not be nil 
-     @param Attributes defines attributes for the Sid 
+     @param MandatorySidType a mandatory . Must not be nil
+     @param Attributes defines attributes for the Sid
      raises
- EJwsclInitWellKnownException:  will be raised if InitWellKnownException was not called 
-      EJwsclNILParameterException: will be raised if parameter MandatorySid is nil 
-      EJwsclWinCallFailedException: will be raised if the integrity level could not be changed 
+ EJwsclInitWellKnownException:  will be raised if InitWellKnownException was not called
+      EJwsclNILParameterException: will be raised if parameter MandatorySid is nil
+      EJwsclWinCallFailedException: will be raised if the integrity level could not be changed
+
+     Remarks
+      If the compiler directive VISTA (jwscl.inc) is not defined, an exception
+      EJwsclVistaFeaturesDisabled is raised. This feature can only be used with
+      activated VISTA compiler directive.
     }
     procedure SetIntegrityLevel(const LabelType: TJwIntegrityLabelType;
       const Attributes: TJwSidAttributeSet = [sidaGroupMandatory]);
@@ -1162,22 +1172,51 @@ type
 
     {<B>RunElevation</B> returns the elavation status of the process on a Windows Vista system.
      If the system is not a supported the exception EJwsclUnsupportedWindowsVersionException will be raised
-     
-     Only Windows Vista is supported.
 
-     If the token is elevated the return value is 1; otherwise 0.
+     Raises
+       EJwsclUnsupportedWindowsVersionException This exception will be raised if the
+         Windows System is not a Windows Vista/Server or newer.
+
+     Remarks
+       Only Windows Vista is supported.
+       If the token is elevated the return value is 1; otherwise 0.
+
+       If the compiler directive VISTA (jwscl.inc) is not defined, an exception
+       EJwsclVistaFeaturesDisabled is raised. This feature can only be used with
+       activated VISTA compiler directive.
      }
     property RunElevation: cardinal Read GetRunElevation;
 
-        {<B>ElevationType</B> returns the elavation type of the process on a Windows Vista system.
-         If the system is not a supported the exception EJwsclUnsupportedWindowsVersionException will be raised
+      {<B>ElevationType</B> returns the elavation type of the process on a Windows Vista system.
+       If the system is not a supported the exception EJwsclUnsupportedWindowsVersionException will be raised
+
+       Raises
+         EJwsclUnsupportedWindowsVersionException This exception will be raised if the
+           Windows System is not a Windows Vista/Server or newer.
+
+
+       Remarks
          Only Windows Vista is supported.
-         }
+
+         If the compiler directive VISTA (jwscl.inc) is not defined, an exception
+         EJwsclVistaFeaturesDisabled is raised. This feature can only be used with
+         activated VISTA compiler directive.
+       }
     property ElevationType: TTokenElevationType Read GetElevationType;
 
     {<B>TokenIntegrityLevel</B> returns the integrity level of the token.
-     This function only works in Windows Vista and newer.
-     The caller is responsible for freeing the resulting TJwSecurityIdList.
+
+     Raises
+       EJwsclUnsupportedWindowsVersionException This exception will be raised if the
+         Windows System is not a Windows Vista/Server 2008 or newer.
+
+     Remarks
+       This function only works in Windows Vista and newer.
+       The caller is responsible for freeing the resulting TJwSecurityIdList.
+
+       If the compiler directive VISTA (jwscl.inc) is not defined, an exception
+       EJwsclVistaFeaturesDisabled is raised. This feature can only be used with
+       activated VISTA compiler directive.
     }
     property TokenIntegrityLevel: TJwSecurityIdList Read GetIntegrityLevel;
 
@@ -1185,10 +1224,20 @@ type
      This property uses iltLow, iltMedium, iltHigh, iltSystem and iltProtected to
      get or set the integrity level.
 
-     If the token does not have a level the function returns iltNone.
-     The value iltNone cannot be set!
 
-     This property can raise exceptions on get and set! See SetIntegrityLevel.
+     Raises
+       EJwsclUnsupportedWindowsVersionException This exception will be raised if the
+         Windows System is not a Windows Vista/Server 2008 or newer.
+
+     Remarks
+       If the token does not have a level the function returns iltNone.
+       The value iltNone cannot be set!
+
+       This property can raise exceptions on get and set! See SetIntegrityLevel.
+
+       If the compiler directive VISTA (jwscl.inc) is not defined, an exception
+       EJwsclVistaFeaturesDisabled is raised. This feature can only be used with
+       activated VISTA compiler directive.
     }
     property TokenIntegrityLevelType: TJwIntegrityLabelType
       Read GetIntegrityLevelType Write SetIntegrityLevelType;
@@ -1202,20 +1251,52 @@ type
      and other functions which get this token checks whether the user can use this
      token or not. 
 
-    This function only works in Windows Vista and newer.
-     The caller is responsible for freeing the resulting TJwSecurityToken}
+     Raises
+       EJwsclUnsupportedWindowsVersionException This exception will be raised if the
+         Windows System is not a Windows Vista/Server 2008 or newer.
+
+     Remarks
+       This function only works in Windows Vista and newer.
+       The caller is responsible for freeing the resulting TJwSecurityToken
+
+       If the compiler directive VISTA (jwscl.inc) is not defined, an exception
+       EJwsclVistaFeaturesDisabled is raised. This feature can only be used with
+       activated VISTA compiler directive.
+    }
     property LinkedToken: TJwSecurityToken Read GetLinkedToken;
 
-        {<B>VirtualizationAllowed</B> returns the status of allowance of virtualization of the process on a Windows Vista system.
-         If the system is not a supported the exception EJwsclUnsupportedWindowsVersionException will be raised
-         Only Windows Vista is supported.
-         }
+    {<B>VirtualizationAllowed</B> returns the status of allowance of virtualization of the process on a Windows Vista system.
+     If the system is not a supported the exception EJwsclUnsupportedWindowsVersionException will be raised
+
+     Raises
+       EJwsclUnsupportedWindowsVersionException This exception will be raised if the
+         Windows System is not a Windows Vista/Server 2008 or newer.
+
+     Remarks
+      Only Windows Vista is supported.
+
+      If the compiler directive VISTA (jwscl.inc) is not defined, an exception
+      EJwsclVistaFeaturesDisabled is raised. This feature can only be used with
+      activated VISTA compiler directive.
+     }
     property VirtualizationAllowed: boolean Read GetVirtualizationAllowed;
 
-        {<B>VirtualizationEnabled</B> returns the status of status of virtualization. It is either on or off and only works on a Windows Vista system.
-         If the system is not a supported the exception EJwsclUnsupportedWindowsVersionException will be raised
-         Only Windows Vista is supported.
-         }
+    {<B>VirtualizationEnabled</B> returns the status of status of virtualization. It is either on or off and only works on a Windows Vista system.
+     If the system is not a supported the exception EJwsclUnsupportedWindowsVersionException will be raised
+
+     Raises
+       EJwsclUnsupportedWindowsVersionException This exception will be raised if the
+         Windows System is not a Windows Vista/Server 2008 or newer.
+
+     Remarks
+      Only Windows Vista is supported.
+
+      If the compiler directive VISTA (jwscl.inc) is not defined, an exception
+      EJwsclVistaFeaturesDisabled is raised. This feature can only be used with
+      activated VISTA compiler directive.
+
+
+     }
     property VirtualizationEnabled: boolean Read GetVirtualizationEnabled;
 
     {<B>MandatoryPolicy</B> returns the mandatory policy of the token.
@@ -1224,8 +1305,16 @@ type
         # TOKEN_MANDATORY_POLICY_OFF No mandatory integrity policy is enforced for the token. 
         # TOKEN_MANDATORY_POLICY_NO_WRITE_UP A process associated with the token cannot write to objects that have a greater mandatory integrity level. 
         # TOKEN_MANDATORY_POLICY_NEW_PROCESS_MIN A process created with the token has an integrity level that is the lesser of the parent-process integrity level and the executable-file integrity level. 
-        # TOKEN_MANDATORY_POLICY_VALID_MASK A combination of TOKEN_MANDATORY_POLICY_NO_WRITE_UP and TOKEN_MANDATORY_POLICY_NEW_PROCESS_MIN 
-      
+        # TOKEN_MANDATORY_POLICY_VALID_MASK A combination of TOKEN_MANDATORY_POLICY_NO_WRITE_UP and TOKEN_MANDATORY_POLICY_NEW_PROCESS_MIN
+
+    Raises
+       EJwsclUnsupportedWindowsVersionException This exception will be raised if the
+         Windows System is not a Windows Vista/Server 2008 or newer.
+
+    Remarks
+      If the compiler directive VISTA (jwscl.inc) is not defined, an exception
+      EJwsclVistaFeaturesDisabled is raised. This feature can only be used with
+      activated VISTA compiler directive.
     }
 
     property MandatoryPolicy: TJwTokenMandatoryPolicies
@@ -3640,7 +3729,7 @@ begin
        We fix that here
       }
       case aTokenInformationClass of
-        JwaVista.TokenSessionId : result := SizeOf(DWORD);
+        JwaWindows.TokenSessionId : result := SizeOf(DWORD);
       end;
     end;
   end;
@@ -3743,7 +3832,7 @@ begin
 (*{$IFDEF SL_OMIT_SECTIONS}JwsclLibrary.{$ELSE}
     JwsclTypes.
 {$ENDIF}*)
-    JwaVista.TokenUser, Pointer(pUser));
+    JwaWindows.TokenUser, Pointer(pUser));
 
 
   Result := TJwSecurityId.Create(PSidAndAttributes(@pUser^.User));
@@ -3885,7 +3974,7 @@ begin
 (*{$IFDEF SL_OMIT_SECTIONS}JwsclLibrary.{$ELSE}
     JwsclTypes.
 {$ENDIF}*)
-    JwaVista.TokenGroups, Pointer(pGroups));
+    JwaWindows.TokenGroups, Pointer(pGroups));
 
   Result := TJwSecurityIdList.Create(True, pGroups);
 
@@ -3901,7 +3990,7 @@ begin
 (*{$IFDEF SL_OMIT_SECTIONS}JwsclLibrary.{$ELSE}
     JwsclTypes.
 {$ENDIF}*)
-    JwaVista.TokenGroups, Pointer(Result));
+    JwaWindows.TokenGroups, Pointer(Result));
 end;
 
 
@@ -3916,7 +4005,7 @@ begin
 (*{$IFDEF SL_OMIT_SECTIONS}JwsclLibrary.{$ELSE}
     JwsclTypes.
 {$ENDIF}     *)
-    JwaVista.TokenRestrictedSids, Pointer(pGroups));
+    JwaWindows.TokenRestrictedSids, Pointer(pGroups));
   Result := TJwSecurityIdList.Create(True, pGroups);
   HeapFree(JwProcessHeap, 0, pGroups);
 end;
@@ -3934,7 +4023,7 @@ begin
 (*{$IFDEF SL_OMIT_SECTIONS}JwsclLibrary.{$ELSE}
     JwsclTypes.
 {$ENDIF}     *)
-    JwaVista.TokenDefaultDacl, Pointer(pDACL));
+    JwaWindows.TokenDefaultDacl, Pointer(pDACL));
   {If the value of the TokenInformationClass parameter is TokenDefaultDacl and the
   token has no default DACL, the function sets the variable pointed to by ReturnLength
   to sizeof(TOKEN_DEFAULT_DACL) and sets the DefaultDacl member of the
@@ -3983,7 +4072,7 @@ begin
 (*{$IFDEF SL_OMIT_SECTIONS}JwsclLibrary.{$ELSE}
     JwsclTypes.
 {$ENDIF}     *)
-    JwaVista.TokenOrigin, Pointer(pOrigin));
+    JwaWindows.TokenOrigin, Pointer(pOrigin));
   try
     Result := pOrigin^.OriginatingLogonSession;
   finally
@@ -4026,7 +4115,7 @@ begin
 (*{$IFDEF SL_OMIT_SECTIONS}JwsclLibrary.{$ELSE}
     JwsclTypes.
 {$ENDIF}     *)
-    JwaVista.TokenOwner, Pointer(pOwner));
+    JwaWindows.TokenOwner, Pointer(pOwner));
   try
     Result := TJwSecurityId.Create(PSidAndAttributes(@pOwner^.Owner));
   finally
@@ -4066,7 +4155,7 @@ begin
 (*{$IFDEF SL_OMIT_SECTIONS}JwsclLibrary.{$ELSE}
     JwsclTypes.
 {$ENDIF}     *)
-    JwaVista.TokenPrimaryGroup, Pointer(pPrimaryGroup));
+    JwaWindows.TokenPrimaryGroup, Pointer(pPrimaryGroup));
   try
     Result := TJwSecurityId.Create(PSidAndAttributes(
       @pPrimaryGroup^.PrimaryGroup));
@@ -4103,7 +4192,7 @@ begin
 (*{$IFDEF SL_OMIT_SECTIONS}JwsclLibrary.{$ELSE}
     JwsclTypes.
 {$ENDIF}     *)
-    JwaVista.TokenSessionId, Pointer(ID));
+    JwaWindows.TokenSessionId, Pointer(ID));
   try
     Result := ID^;
   finally
@@ -4188,41 +4277,61 @@ begin
 end;
 
 function TJwSecurityToken.GetRunElevation: cardinal;
+{$IFDEF VISTA}
 var
   privs: PTokenElevation;
+{$ENDIF VISTA}
 begin
   TJwWindowsVersion.CheckWindowsVersion(
     cOsVista, True, 'GetRunElevation', ClassName, RsUNToken, 0);
   CheckTokenHandle('GetRunElevation');
 
+  JwCheckVISTACompilerSwitch('GetRunElevation', ClassName, RsUNToken);
+
+{$IFDEF VISTA}
+{
+If JwaWindows.TokenElevation could not be found, you probably
+did not set the WINVISTA compiler directive for JwaWindows.pas
+in \includes\jediapilib.inc.
+}
+
   //Raises an exception if errors occur
   Self.GetTokenInformation(fTokenHandle,
-(*{$IFDEF SL_OMIT_SECTIONS}JwsclLibrary.{$ELSE}
-    JwsclTypes.
-{$ENDIF}*)
-    JwaVista.TTokenInformationClass(
-(*{$IFNDEF SL_OMIT_SECTIONS}
-    JwsclTypes.
-{$ENDIF SL_OMIT_SECTIONS}*)
-    JwaVista.TokenElevation), Pointer(privs));
+    JwaWindows.TTokenInformationClass(
+    JwaWindows.TokenElevation), Pointer(privs));
 
   Result := privs^.TokenIsElevated;
 
   HeapFree(GetProcessHeap, 0, privs);
+{$ELSE}
+  result := 0;
+{$ENDIF VISTA}  
 end;
 
 
 function TJwSecurityToken.GetLinkedToken: TJwSecurityToken;
+{$IFDEF VISTA}
 var
   Data: PTokenLinkedToken;
+{$ENDIF VISTA}  
 begin
   TJwWindowsVersion.CheckWindowsVersion(
     cOsVista, True, 'GetLinkedToken', ClassName, RsUNToken, 0);
   CheckTokenHandle('GetLinkedToken');
 
+  JwCheckVISTACompilerSwitch('GetLinkedToken', ClassName, RsUNToken);
+
+{$IFDEF VISTA}
+{
+If JwaWindows.XXX could not be found, you probably
+did not set the WINVISTA compiler directive for JwaWindows.pas
+in \includes\jediapilib.inc.
+}
+
+
   //Raises an exception if errors occur
   Self.GetTokenInformation(fTokenHandle,
-    JwaVista.TTokenInformationClass(JwaVista.TokenLinkedToken), Pointer(Data));
+    JwaWindows.TTokenInformationClass(JwaWindows.TokenLinkedToken), Pointer(Data));
 
   try
     {TODO: Warning:
@@ -4233,6 +4342,9 @@ begin
   finally
     HeapFree(GetProcessHeap, 0, Data);
   end;
+{$ELSE}
+  result := nil;  
+{$ENDIF VISTA}  
 end;
 
 function TJwSecurityToken.GetIntegrityLevelType: TJwIntegrityLabelType;
@@ -4290,20 +4402,32 @@ end;
 
 procedure TJwSecurityToken.SetIntegrityLevel(const MandatorySid: TJwSecurityId;
   const Attributes: TJwSidAttributeSet = [sidaGroupMandatory]);
+{$IFDEF VISTA}
 var
   mL: TTokenMandatoryLabel;
+{$ENDIF VISTA}  
 begin
   if not Assigned(MandatorySid) then
     raise EJwsclNILParameterException.CreateFmtEx(
       RsNilParameter, 'SetIntegrityLevel', RsTokenGlobalClassName,
       RsUNToken, 0, False, ['MandatorySid']);
 
+  JwCheckVISTACompilerSwitch('SetIntegrityLevel', ClassName, RsUNToken);
+
+{$IFDEF VISTA}
   mL.Label_.Sid := MandatorySid.CreateCopyOfSID;
   mL.Label_.Attributes := TJwEnumMap.ConvertAttributes(Attributes);
 
+
+{
+If JwaWindows.XXX could not be found, you probably
+did not set the WINVISTA compiler directive for JwaWindows.pas
+in \includes\jediapilib.inc.
+}
+
   try
     if (not SetTokenInformation(fTokenHandle,
-      JwaWindows.TTokenInformationClass(JwaVista.TokenIntegrityLevel),
+      JwaWindows.TTokenInformationClass(JwaWindows.TokenIntegrityLevel),
       Pointer(@mL), sizeof(mL))) then
       raise EJwsclWinCallFailedException.CreateFmtEx(
         RsWinCallFailed, 'SetIntegrityLevel', ClassName,
@@ -4311,19 +4435,33 @@ begin
   finally
     MandatorySid.FreeSID(mL.Label_.Sid);
   end;
+{$ENDIF VISTA}
 end;
 
 function TJwSecurityToken.GetIntegrityLevel: TJwSecurityIdList;
+{$IFDEF VISTA}
 var
   mL: PTokenMandatoryLabel;
+{$ENDIF VISTA}  
 begin
   TJwWindowsVersion.CheckWindowsVersion(
     cOsVista, True, 'GetIntegrityLevel', ClassName, RsUNToken, 0);
   CheckTokenHandle('GetIntegrityLevel');
 
+  JwCheckVISTACompilerSwitch('GetIntegrityLevel', ClassName, RsUNToken);
+
+
+{$IFDEF VISTA}
+{
+If JwaWindows.XXX could not be found, you probably
+did not set the WINVISTA compiler directive for JwaWindows.pas
+in \includes\jediapilib.inc.
+}
+
+
   //Raises an exception if errors occur
   Self.GetTokenInformation(fTokenHandle,
-    JwaVista.TTokenInformationClass(JwaVista.TokenIntegrityLevel),
+    JwaWindows.TTokenInformationClass(JwaWindows.TokenIntegrityLevel),
     Pointer(mL));
 
   Result := nil;
@@ -4333,92 +4471,126 @@ begin
     finally
       HeapFree(GetProcessHeap, 0, mL);
     end;
+{$ELSE}
+  result := nil;
+{$ENDIF VISTA}
 end;
 
 function TJwSecurityToken.GetElevationType: TTokenElevationType;
+{$IFDEF VISTA}
 var
   privs: PTokenElevationType;
+{$ENDIF VISTA}
 begin
   TJwWindowsVersion.CheckWindowsVersion(
     cOsVista, True, 'GetElevationType', ClassName, RsUNToken, 0);
   CheckTokenHandle('GetElevationType');
 
+  JwCheckVISTACompilerSwitch('GetElevationType', ClassName, RsUNToken);
+
+{$IFDEF VISTA}
+
+{
+If JwaWindows.XXX could not be found, you probably
+did not set the WINVISTA compiler directive for JwaWindows.pas
+in \includes\jediapilib.inc.
+}
+
   //Raises an exception if errors occur
   Self.GetTokenInformation(fTokenHandle,
-(*{$IFDEF SL_OMIT_SECTIONS}JwsclLibrary.{$ELSE}
-    JwsclTypes.
-{$ENDIF}*)
-    JwaVista.TTokenInformationClass(
-(*{$IFNDEF SL_OMIT_SECTIONS}
-    JwsclTypes.
-{$ENDIF SL_OMIT_SECTIONS}*)
-    JwaVista.TokenElevationType), Pointer(privs));
+    JwaWindows.TTokenInformationClass(
+
+    JwaWindows.TokenElevationType), Pointer(privs));
 
   Result := privs^;
 
   HeapFree(GetProcessHeap, 0, privs);
+{$ELSE}
+  result := TokenElevationTypeDefault;
+{$ENDIF VISTA}
 end;
 
 function TJwSecurityToken.GetVirtualizationAllowed: boolean;
+{$IFDEF VISTA}
 var
   privs: PCardinal;
+{$ENDIF VISTA}
 begin
   TJwWindowsVersion.CheckWindowsVersion(
     cOsVista, True, 'GetVirtualizationAllowed', ClassName, RsUNToken, 0);
   CheckTokenHandle('GetVirtualizationAllowed');
 
+  JwCheckVISTACompilerSwitch('GetVirtualizationAllowed', ClassName, RsUNToken);
+
+
+{$IFDEF VISTA}
+{
+If JwaWindows.XXX could not be found, you probably
+did not set the WINVISTA compiler directive for JwaWindows.pas
+in \includes\jediapilib.inc.
+}
+
+
   //Raises an exception if errors occur
   Self.GetTokenInformation(fTokenHandle,
-(*{$IFDEF SL_OMIT_SECTIONS}JwsclLibrary.{$ELSE}
-    JwsclTypes.
-{$ENDIF}*)
-    JwaVista.TTokenInformationClass(
-(*{$IFNDEF SL_OMIT_SECTIONS}
-    JwsclTypes.
-{$ENDIF SL_OMIT_SECTIONS}*)
-    JwaVista.TokenVirtualizationAllowed), Pointer(privs));
+    JwaWindows.TTokenInformationClass(
+    JwaWindows.TokenVirtualizationAllowed), Pointer(privs));
 
   Result := privs^ <> 0;
 
   HeapFree(GetProcessHeap, 0, privs);
+{$ELSE}
+  result := false;
+{$ENDIF VISTA}
 end;
 
 function TJwSecurityToken.GetVirtualizationEnabled: boolean;
+{$IFDEF VISTA}
 var
   privs: PCardinal;
+{$ENDIF VISTA}
 begin
   TJwWindowsVersion.CheckWindowsVersion(
     cOsVista, True, 'GetVirtualizationEnabled', ClassName, RsUNToken, 0);
   CheckTokenHandle('GetVirtualizationEnabled');
 
+  JwCheckVISTACompilerSwitch('GetVirtualizationEnabled', ClassName, RsUNToken);
+
+
+{$IFDEF VISTA}
   //Raises an exception if errors occur
   Self.GetTokenInformation(fTokenHandle,
-(*{$IFDEF SL_OMIT_SECTIONS}JwsclLibrary.{$ELSE}
-    JwsclTypes.
-{$ENDIF}*)
-    JwaVista.TTokenInformationClass(
-(*{$IFNDEF SL_OMIT_SECTIONS}
-    JwsclTypes.
-{$ENDIF SL_OMIT_SECTIONS}*)
-    JwaVista.TokenVirtualizationEnabled), Pointer(privs));
+    JwaWindows.TTokenInformationClass(
+
+    JwaWindows.TokenVirtualizationEnabled), Pointer(privs));
 
   Result := privs^ <> 0;
-
   HeapFree(GetProcessHeap, 0, privs);
+{$ELSE}
+  result := false;
+{$ENDIF VISTA}
 end;
 
 
 function TJwSecurityToken.GetMandatoryPolicy: TJwTokenMandatoryPolicies;
+{$IFDEF VISTA}
 var
   p: PTokenMandatoryPolicy;
+{$ENDIF VISTA}
 begin
+  JwCheckVISTACompilerSwitch('GetMandatoryPolicy', ClassName, RsUNToken);
+
+{$IFDEF VISTA}
   //Raises an exception if errors occur
   Self.GetTokenInformation(fTokenHandle,
-    JwaVista.TokenMandatoryPolicy, Pointer(p));
+    JwaWindows.TokenMandatoryPolicy, Pointer(p));
 
   Result := TJwEnumMap.ConvertTokenMandatoryPolicyFlags(p^.Policy);
 
   HeapFree(GetProcessHeap, 0, p);
+{$ELSE}
+  result := [];
+{$ENDIF VISTA}
 end;
 
 
@@ -4431,7 +4603,7 @@ begin
 (*{$IFDEF SL_OMIT_SECTIONS}JwsclLibrary.{$ELSE}
     JwsclTypes.
 {$ENDIF}     *)
-    JwaVista.TokenPrivileges, Pointer(privs));
+    JwaWindows.TokenPrivileges, Pointer(privs));
 
   Result := TJwPrivilegeSet.Create(Self, privs);
   fPrivelegesList.Add(Result);
@@ -4447,7 +4619,7 @@ begin
 (*{$IFDEF SL_OMIT_SECTIONS}JwsclLibrary.{$ELSE}
     JwsclTypes.
 {$ENDIF}     *)
-    JwaVista.TokenPrivileges, Pointer(Result));
+    JwaWindows.TokenPrivileges, Pointer(Result));
 end;
 
 function TJwSecurityToken.CreateRestrictedToken(
@@ -4793,7 +4965,7 @@ begin
 (*{$IFDEF SL_OMIT_SECTIONS}JwsclLibrary.{$ELSE}
     JwsclTypes.
 {$ENDIF}*)
-    JwaVista.TokenStatistics, Pointer(stat));
+    JwaWindows.TokenStatistics, Pointer(stat));
 
   Result := TJwSecurityTokenStatistics.Create(stat^);
 
@@ -5095,7 +5267,7 @@ begin
 (*{$IFDEF SL_OMIT_SECTIONS}JwsclLibrary.{$ELSE}
     JwsclTypes.
 {$ENDIF}     *)
-    JwaVista.TokenType, Pointer(ptrTokenType));
+    JwaWindows.TokenType, Pointer(ptrTokenType));
 
   Result := ptrTokenType^;
 

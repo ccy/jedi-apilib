@@ -182,4 +182,5 @@ initialization
 
 {$IFNDEF SL_OMIT_SECTIONS}
 end.
+
 {$ENDIF SL_OMIT_SECTIONS}

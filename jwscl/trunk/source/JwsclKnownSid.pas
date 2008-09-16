@@ -927,7 +927,7 @@ begin
     try
       if not Assigned(JwKnownSid[i]) then
         JwKnownSid[i] := TJwSecurityKnownSID.
-          CreateWellKnownSid(jwaVista.TWellKnownSidType(i));
+          CreateWellKnownSid(TWellKnownSidType(i));
     except
       JwKnownSid[i] := nil;
     end;
@@ -946,7 +946,7 @@ begin
     begin
       if not Assigned(JwKnownSid[i]) then
         JwKnownSid[i] := TJwSecurityKnownSID.
-          CreateWellKnownSid(jwaVista.TWellKnownSidType(i));
+          CreateWellKnownSid(TWellKnownSidType(i));
     end;
   end;
 end;

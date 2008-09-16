@@ -391,6 +391,14 @@ type
 
 
   EJwsclInvalidStartupInfo = class(EJwsclSecurityException);
+
+  {<B>EJwsclVistaFeaturesDisabled</B> is raised if the JWSCL library
+  was compiled with the compiler directive VISTA deactivated.
+  To use vista features you must activate the directive in file
+  includes\Jwscl.inc and make sure that you also compiled JwaWindows
+  with at least WINVISTA or WIN2008 to enable Vista features.
+  }
+  EJwsclVistaFeaturesDisabled = class(EJwsclSecurityException);
   
 
   JwGeneralExceptionClass = class of Exception;

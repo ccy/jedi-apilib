@@ -1505,6 +1505,18 @@ procedure JwInitLocalizedMappings(PrimaryLanguage,
   SubLanguage : Word; Inst : HINST = 0);
 
 
+const
+  {
+  <B>ERROR_CANCELLED</B>
+  The user has canceled the UAC prompt.
+  }
+  E_USER_CANCELED_OPERATION = HRESULT($800704C7);//
+  {
+  <B>E_CLASS_IS_NOT_SETUP</B> 
+  The requested COM class has not been setup to be used for elevation.
+  }
+  E_CLASS_IS_NOT_SETUP = HRESULT($80080017); 
+
 {$ENDIF SL_IMPLEMENTATION_SECTION}
 
 {$IFNDEF SL_OMIT_SECTIONS}

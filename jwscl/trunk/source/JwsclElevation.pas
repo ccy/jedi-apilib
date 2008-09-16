@@ -259,14 +259,6 @@ raises
 function JwShellExecute(const hWnd: HWND; FileName, Parameters,
   Directory: TJwString; ShowCmd: Integer; Flags : TJwShellExecuteFlags = [sefNoClosehProcess]): HANDLE;
 
-
-
-const
-  E_USER_CANCELED_OPERATION = HRESULT($800704C7);//
-  E_CLASS_IS_NOT_SETUP = HRESULT($80080017); 
-
-
-
 {$ENDIF SL_IMPLEMENTATION_SECTION}
 
 
@@ -400,7 +392,7 @@ begin
       BindOptions.dwClassContext := CLSCTX_LOCAL_SERVER;
       BindOptions.hwnd := ParentWindowHandle;
 
-      result := CoGetObject(PWideChar(MonikerName), @BindOptions, IID, ObjectInterface);
+      result := JwaWindows.CoGetObject(PWideChar(MonikerName), @BindOptions, IID, ObjectInterface);
       if result = E_USER_CANCELED_OPERATION then
         ResultValue := ERROR_CANCELLED
       else

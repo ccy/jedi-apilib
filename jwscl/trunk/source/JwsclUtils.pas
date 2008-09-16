@@ -620,6 +620,13 @@ remarks
 function JwLoadHashFromRegistry(const Hive: Cardinal;
    const Key, HashName, SizeName : String) : TJwFileHashData;
 
+
+{<B>JwCheckVISTACompilerSwitch</B> raises an exception EJwsclVistaFeaturesDisabled
+if the current code isn't compiled with the VISTA compiler directive.
+Otherwise it does nothing.
+}
+procedure JwCheckVISTACompilerSwitch(MethodName, ClassName, FileName : TJwString);
+
 implementation
 uses SysUtils, Registry, JwsclToken, JwsclKnownSid, JwsclDescriptor, JwsclAcl,
      JwsclSecureObjects, JwsclMapping, JwsclStreams, JwsclCryptProvider
@@ -628,6 +635,14 @@ uses SysUtils, Registry, JwsclToken, JwsclKnownSid, JwsclDescriptor, JwsclAcl,
 {$ENDIF JW_TYPEINFO}
       ;
 
+procedure JwCheckVISTACompilerSwitch(MethodName, ClassName, FileName : TJwString);
+begin
+{$IFNDEF VISTA}
+  raise EJwsclVistaFeaturesDisabled.CreateFmtEx(
+      RsVistaFeaturesDisabled, MethodName,
+      ClassName, FileName, 0, False, []);
+{$ENDIF VISTA}      
+end;
 
 
 function JwCompareFileHash(
