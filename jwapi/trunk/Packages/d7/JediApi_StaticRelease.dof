@@ -94,10 +94,10 @@ OutputDir=
 UnitOutputDir=bin\release\static
 PackageDLLOutputDir=bin\release\static
 PackageDCPOutputDir=bin\release\static
-SearchPath=..\..\win32Api;..\..\Common
+SearchPath=..\..\common;..\..\includes;..\..\win32api
 Packages=Vcl50;Vclx50;VclSmp50;Vcldb50;vclado50;ibevnt50;Vclbde50;vcldbx50;Qrpt50;TeeUI50;TeeDB50;Tee50;Dss50;TeeQR50;VCLIB50;Vclmid50;vclie50;Inetdb50;Inet50;NMFast50;webmid50;dclocx50;dclaxserver50
 Conditionals=WINVISTA;PACKAGE_CONDITIONS;JWA_INCLUDE_SETUP_API;JWA_INCLUDE_JWAADSTLB;JWA_INCLUDE_SHELLAPI;RELEASE;JWA_WINDOWS
-DebugSourceDirs=..\..\win32Api;..\..\Common
+DebugSourceDirs=..\..\common;..\..\includes;..\..\win32api
 UsePackages=0
 [Parameters]
 RunParams=
@@ -133,6 +133,3 @@ LegalTrademarks=
 OriginalFilename=
 ProductName=
 ProductVersion=1.0.0.0
-[HistoryLists\hlDebugSourcePath]
-Count=1
-Item0=..\..\win32Api;..\..\Common
