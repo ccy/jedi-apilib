@@ -50,7 +50,7 @@
       <MainSource>MainSource</MainSource>
     </DelphiCompile>
     <DCCReference Include="..\..\Win32API\JwaVista.pas" />
-    <DCCReference Include="..\..\Win32API\JwaWindows.pas" />
+    <DCCReference Include="..\..\Win32API\JwaWindows\JwaWindows.pas" />
   </ItemGroup>
 </Project>
 

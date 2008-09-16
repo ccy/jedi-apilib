@@ -39,7 +39,7 @@ requires
   vcl;
 
 contains
-  JwaWindows in '..\..\Win32API\JwaWindows.pas',
+  JwaWindows in '..\..\Win32API\JwaWindows\JwaWindows.pas',
   JwaVista in '..\..\Win32API\JwaVista.pas';
 
 end.

@@ -51,7 +51,7 @@
 			</DelphiCompile>
 			<DCCReference Include="$(SystemRoot)\system32\rtl.dcp"/>
 			<DCCReference Include="$(SystemRoot)\system32\vcl.dcp"/>
-			<DCCReference Include="..\..\Win32API\JwaWindows.pas"/>
+			<DCCReference Include="..\..\Win32API\JwaWindows\JwaWindows.pas"/>
 			<DCCReference Include="..\..\Win32API\JwaVista.pas"/>
 			<BuildConfiguration Include="Basis">
 				<Key>Base</Key>

@@ -54,7 +54,7 @@
 			<DCCReference Include="rtl.dcp"/>
 			<DCCReference Include="vcl.dcp"/>
 			<DCCReference Include="..\..\Win32API\JwaVista.pas"/>
-			<DCCReference Include="..\..\Win32API\JwaWindows.pas"/>
+			<DCCReference Include="..\..\Win32API\JwaWindows\JwaWindows.pas"/>
 			<BuildConfiguration Include="Basis">
 				<Key>Base</Key>
 			</BuildConfiguration>
