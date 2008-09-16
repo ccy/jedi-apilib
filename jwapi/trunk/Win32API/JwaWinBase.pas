@@ -6087,6 +6087,19 @@ function GetNumaNodeProcessorMask(Node: UCHAR; ProcessorMask: ULONGLONG): BOOL; 
 function GetNumaAvailableMemoryNode(Node: UCHAR; var AvailableBytes: ULONGLONG): BOOL; stdcall;
 {$EXTERNALSYM GetNumaAvailableMemoryNode}
 
+{$IFDEF WINVISTA_UP}
+const
+  PROCESS_DEP_ENABLE = 1;
+  {$EXTERNALSYM PROCESS_DEP_ENABLE}
+  PROCESS_DEP_DISABLE_ATL_THUNK_EMULATION = 2;
+  {$EXTERNALSYM PROCESS_DEP_DISABLE_ATL_THUNK_EMULATION}
+
+  {http://msdn2.microsoft.com/en-us/library/bb736299(VS.85).aspx}
+  function SetProcessDEPPolicy({__in}dwFlags : DWORD) : Boolean; stdcall;
+  {$EXTERNALSYM SetProcessDEPPolicy}
+
+{$ENDIF WINVISTA_UP}
+
 {$ENDIF JWA_IMPLEMENTATIONSECTION}
 
 {$IFNDEF JWA_OMIT_SECTIONS}
@@ -18986,6 +18999,19 @@ begin
   end;
 end;
 
+var
+  _SetProcessDEPPolicy: Pointer;
+
+function SetProcessDEPPolicy({__in}dwFlags : DWORD) : Boolean;
+begin
+  GetProcedureAddress(_SetProcessDEPPolicy, kernel32, 'SetProcessDEPPolicy');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_SetProcessDEPPolicy]
+  end;
+end;
+
 {$ELSE}
 
 function InterlockedCompareExchange64; external kernel32 name 'InterlockedCompareExchange64';
@@ -19968,6 +19994,7 @@ function GetNumaHighestNodeNumber; external kernel32 name 'GetNumaHighestNodeNum
 function GetNumaProcessorNode; external kernel32 name 'GetNumaProcessorNode';
 function GetNumaNodeProcessorMask; external kernel32 name 'GetNumaNodeProcessorMask';
 function GetNumaAvailableMemoryNode; external kernel32 name 'GetNumaAvailableMemoryNode';
+function SetProcessDEPPolicy; external kernel32 name 'SetProcessDEPPolicy';
 
 {$ENDIF DYNAMIC_LINK}
 

@@ -169,8 +169,9 @@ unit JwaNative;
 
 interface
 {$INCLUDE jediapilib.inc}
+
 uses
-  JwaWinType, JwaWinNT, JwaWinBase, JwaNtStatus;
+  JwaWinType, JwaWinNT, JwaWinBase, JwaNtStatus, JwaBitFields;
 
 {$WEAKPACKAGEUNIT}
 
@@ -3088,6 +3089,115 @@ type
   (*22c*)FlsHighIndex: ULONG;
   end;
 
+  {
+  PEB vor Windows VISTA - not confirmed!!
+
+  }
+  _PEB_VISTA = record
+     InheritedAddressSpace,
+     ReadImageFileExecOptions,
+     BeingDebugged,
+     BitField : UCHAR;
+
+     Bitfields_1: Set of
+     (
+      ImageUsesLargePages,
+      IsProtectedProcess,
+      IsLegacyProcess,
+      IsImageDynamicallyRelocated,
+      SpareBits = al32Bit   //
+     );
+
+     Mutant : PVOID;
+     ImageBaseAddress : PVOID;
+     Ldr : PPEB_LDR_DATA;
+     ProcessParameters : PRTL_USER_PROCESS_PARAMETERS;
+     SubSystemData : PVOID;
+     ProcessHeap : PVOID;
+     FastPebLock : PRTL_CRITICAL_SECTION;
+     AtlThunkSListPtr : PVOID;
+     IFEOKey : PVOID;
+     CrossProcessFlags : ULONG;
+
+     ProcessBits : set of
+     (
+       ProcessInJob,
+       ProcessInitializing
+     );
+
+     ReservedBits0 : set of
+     (
+       Bits_0  = al16bit,
+       Bits_1  = al16bit
+     );
+     {ULONG ProcessInJob: 1;
+     ULONG ProcessInitializing: 1;
+     ULONG ReservedBits0: 30;
+     }
+     TableOrUserPtr : PVOID;
+    {union
+     PVOID KernelCallbackTable;
+     PVOID UserSharedInfoPtr;
+    }
+     SystemReserved : array[0..0] of ULONG;
+     SpareUlong : ULONG;
+     FreeList : PPEB_FREE_BLOCK;
+     TlsExpansionCounter : ULONG;
+     TlsBitmap : PVOID;
+     TlsBitmapBits : array[0..1] of ULONG;
+     ReadOnlySharedMemoryBase : PVOID;
+     HotpatchInformation : PVOID;
+     ReadOnlyStaticServerData : PPVOID;
+     AnsiCodePageData : PVOID;
+     OemCodePageData : PVOID;
+     UnicodeCaseTableData : PVOID;
+     NumberOfProcessors : ULONG;
+     NtGlobalFlag :  ULONG;
+     CriticalSectionTimeout : LARGE_INTEGER;
+     HeapSegmentReserve,
+     HeapSegmentCommit,
+     HeapDeCommitTotalFreeThreshold,
+     HeapDeCommitFreeBlockThreshold,
+     NumberOfHeaps,
+     MaximumNumberOfHeaps : ULONG;
+     ProcessHeaps : PPVOID;
+     GdiSharedHandleTable : PVOID;
+     ProcessStarterHelper : PVOID;
+     GdiDCAttributeList : ULONG;
+     LoaderLock : PRTL_CRITICAL_SECTION;
+     OSMajorVersion,
+     OSMinorVersion : ULONG;
+     OSBuildNumber,
+     OSCSDVersion : WORD;
+     OSPlatformId,
+     ImageSubsystem,
+     ImageSubsystemMajorVersion,
+     ImageSubsystemMinorVersion,
+     ImageProcessAffinityMask : ULONG;
+     GdiHandleBuffer : array[0..33] of ULONG;
+     PostProcessInitRoutine,
+     TlsExpansionBitmap : PVOID;
+     TlsExpansionBitmapBits : array[0..31] of ULONG;
+     SessionId : ULONG;
+     AppCompatFlags,
+     AppCompatFlagsUser : ULARGE_INTEGER;
+     pShimData,
+     AppCompatInfo : PVOID;
+     CSDVersion : UNICODE_STRING;
+     ActivationContextData : Pointer;//*_ACTIVATION_CONTEXT_DATA;
+     ProcessAssemblyStorageMap : Pointer; //*_ASSEMBLY_STORAGE_MAP
+     SystemDefaultActivationContextData : Pointer; //*_ACTIVATION_CONTEXT_DATA
+     SystemAssemblyStorageMap : Pointer; //*_ASSEMBLY_STORAGE_MAP
+     MinimumStackCommit : ULONG;
+     FlsCallback : Pointer;//*_FLS_CALLBACK_INFO
+     FlsListHead : LIST_ENTRY;
+     FlsBitmap : PVOID;
+     FlsBitmapBits : array[0..3] of ULONG;
+     FlsHighIndex : ULONG;
+     WerRegistrationData,
+     WerShipAssertPtr : PVOID;
+  end;
+
   {$IFDEF WINNT4}
   _PEB = _PEB_W2K; // Exact layout for NT4 unknown
   {$ENDIF WINNT4}
@@ -3103,6 +3213,15 @@ type
   {$IFDEF WIN2003}
   _PEB = _PEB_2K3;
   {$ENDIF WIN2003}
+
+  {$IFDEF WINVISTA}
+  _PEB = _PEB_2K3;
+  {$ENDIF WINVISTA}
+
+  {$IFDEF WIN2008}
+  _PEB = Pointer;
+  {$ENDIF WIN2008}
+
 
   PEB = _PEB;
   PPEB = ^_PEB;
