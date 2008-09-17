@@ -20,6 +20,8 @@
 			<Base>true</Base>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base)'!=''">
+			<DCC_SYMBOL_PLATFORM>false</DCC_SYMBOL_PLATFORM>
+			<DCC_GARBAGE>false</DCC_GARBAGE>
 			<DCC_DcpOutput>bin\single</DCC_DcpOutput>
 			<DCC_UnitSearchPath>..\..\common;..\..\includes;..\..\win32api;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
 			<DCC_BplOutput>bin\single</DCC_BplOutput>
@@ -50,6 +52,9 @@
 			<DelphiCompile Include="JediApi_SingleUnits.dpk">
 				<MainSource>MainSource</MainSource>
 			</DelphiCompile>
+			<DCCReference Include="rtl.dcp"/>
+			<DCCReference Include="vcl.dcp"/>
+			<DCCReference Include="vclie.dcp"/>
 			<DCCReference Include="..\..\Win32API\JwaShellAPI.pas"/>
 			<DCCReference Include="..\..\Win32API\JwaShLWAPI.pas"/>
 			<DCCReference Include="..\..\win32Api\JwaAccCtrl.pas"/>
@@ -285,6 +290,7 @@
 			<DCCReference Include="..\..\Win32API\JwaZMOUSE.pas"/>
 			<DCCReference Include="..\..\Win32API\JwaRpcWinsta.pas"/>
 			<DCCReference Include="..\..\Win32API\JwaBitFields.pas"/>
+			<None Include="..\..\Win32API\JwaStrSafe.obj"/>
 			<BuildConfiguration Include="Basis">
 				<Key>Base</Key>
 			</BuildConfiguration>

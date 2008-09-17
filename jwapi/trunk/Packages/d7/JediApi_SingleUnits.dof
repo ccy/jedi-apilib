@@ -78,7 +78,7 @@ SuspiciousTypecast=1
 PrivatePropAccessor=1
 UnsafeType=0
 UnsafeCode=0
-UnsafeCast=0
+UnsafeCast=1
 [Linker]
 MapFile=0
 OutputObjs=0
@@ -105,6 +105,10 @@ HostApplication=
 Launcher=
 UseLauncher=0
 DebugCWD=
+[Language]
+ActiveLang=
+ProjectLang=
+RootDir=
 [Version Info]
 IncludeVerInfo=1
 AutoIncBuild=0

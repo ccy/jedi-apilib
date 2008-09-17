@@ -47,7 +47,11 @@
 This unit must not be included in JwaWindows.pas because it is not compatible!
 {$ENDIF JWA_INCLUDEMODE}
 
-unit JwaVista;
+unit JwaVista deprecated;
+{
+JwaVista was merged with the JEDI API headers and is no more supported.
+}
+
 
 interface
 

@@ -1915,10 +1915,6 @@ function StringCbLength(
 implementation
 uses Sysutils;
 
-{$DEFINE StrSafe_WARNINGS}
-{$WARNINGS OFF}
-
-
 {$ENDIF JWA_OMIT_SECTIONS}
 
 {$IFNDEF JWA_INTERFACESECTION}
@@ -2325,7 +2321,4 @@ end;
 
 end.
 
-{$IFDEF StrSafe_WARNINGS}
-{$WARNINGS ON}
-{$ENDIF}
 {$ENDIF JWA_OMIT_SECTIONS}

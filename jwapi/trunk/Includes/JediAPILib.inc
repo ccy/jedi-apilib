@@ -49,6 +49,7 @@ ALERT_jedi_inc_incompatible
 // secure against old versions of jedi.inc.
 {$ENDIF !JEDI_INC}
 
+
 {WARNING:
 Do not change state of
 JWA_INCLUDEMODE
@@ -62,7 +63,7 @@ Standalone compiling would be useless!
 {.DEFINE DYNAMIC_LINK}
 {$IFDEF DYNAMIC_LINK}
   {$STACKFRAMES ON}
-  {$WARNINGS OFF}
+  {.$WARNINGS OFF}
 {$ENDIF DYNAMIC_LINK}
 
 {.$DEFINE ANSICODE}

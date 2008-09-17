@@ -28,6 +28,11 @@ interface
 
 {$I ..\Includes\JediAPILib.inc}
 
+{$IFDEF DELPHI7_UP}
+  {$WARN UNSAFE_CAST OFF} //some typecasts problems are found but are wrong 
+{$ENDIF DELPHI7_UP}
+
+
 uses
   DateUtils, SysUtils, JwaWinType, // JwaWinType must be declared before JwaWinBase because of duplicate declaration of FILETIME
   JwaWinBase, JwaWinError, JwaNTStatus, JwaWinNT, JwaWinsock2,
@@ -1292,10 +1297,11 @@ begin
   FileTimeToSystemTime(FILETIME(ACPUTime), SystemTime);
 {$IFDEF COMPILER7_UP}
   GetLocaleFormatSettings(LOCALE_SYSTEM_DEFAULT, FS);
-  Result := TimeToStr(SystemTimeToDateTime(SystemTime), FS);
+  Result := AnsiString(TimeToStr(SystemTimeToDateTime(SystemTime), FS));
 {$ELSE}
   Result := TimeToStr(SystemTimeToDateTime(SystemTime));
 {$ENDIF COMPILER7_UP}
+
 end;
 
 function DateTimeStringSafe(DateTime: PFILETIME; lpBuffer: PWideChar;
