@@ -103,6 +103,15 @@ Standalone compiling would be useless!
 //jwaWinBase::InterlockedExchangePointer
 {$DEFINE CPU64BIT}
 
+{$IFDEF DEBUG}
+  {.$WARNINGS OFF}
+{$IFDEF DELPHI7_UP}
+  {$WARN GARBAGE OFF} //removes warning about code behind end.
+{$ENDIF DELPHI7_UP}
+{$ENDIF DEBUG}
+
+
+
 // Global switch for the Windows version the files are compatible with
 // ONLY A SINGLE ONE IS ALLOWED TO BE ACTIVATED BY CHANGING THE DOT TO A DOLLAR SIGN!
 // Default is WINXP
