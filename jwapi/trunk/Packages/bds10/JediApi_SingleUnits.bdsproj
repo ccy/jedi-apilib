@@ -42,8 +42,8 @@
 			<Compiler Name="X">1</Compiler>
 			<Compiler Name="Y">1</Compiler>
 			<Compiler Name="Z">1</Compiler>
-			<Compiler Name="ShowHints">True</Compiler>
-			<Compiler Name="ShowWarnings">True</Compiler>
+			<Compiler Name="ShowHints">False</Compiler>
+			<Compiler Name="ShowWarnings">False</Compiler>
 			<Compiler Name="UnitAliases">WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;</Compiler>
 			<Compiler Name="NamespacePrefix"></Compiler>
 			<Compiler Name="GenerateDocumentation">False</Compiler>

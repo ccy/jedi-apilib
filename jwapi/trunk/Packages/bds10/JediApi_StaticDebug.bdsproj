@@ -42,8 +42,8 @@
 			<Compiler Name="X">1</Compiler>
 			<Compiler Name="Y">1</Compiler>
 			<Compiler Name="Z">1</Compiler>
-			<Compiler Name="ShowHints">True</Compiler>
-			<Compiler Name="ShowWarnings">True</Compiler>
+			<Compiler Name="ShowHints">False</Compiler>
+			<Compiler Name="ShowWarnings">False</Compiler>
 			<Compiler Name="UnitAliases">WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;</Compiler>
 			<Compiler Name="NamespacePrefix"></Compiler>
 			<Compiler Name="GenerateDocumentation">False</Compiler>
@@ -125,7 +125,7 @@
 			<Directories Name="PackageDCPOutputDir">bin\debug\static</Directories>
 			<Directories Name="SearchPath">..\..\common;..\..\includes;..\..\win32api</Directories>
 			<Directories Name="Packages"></Directories>
-			<Directories Name="Conditionals">PACKAGE_CONDITIONS;JWA_INCLUDE_SETUP_API;JWA_INCLUDE_JWAADSTLB;DEBUG;JWA_WINDOWS</Directories>
+			<Directories Name="Conditionals">PACKAGE_CONDITIONS;JWA_INCLUDE_SETUP_API;JWA_INCLUDE_JWAADSTLB;DEBUG;JWA_INCLUDE_SHELLAPI;JWA_WINDOWS</Directories>
 			<Directories Name="DebugSourceDirs">..\..\common;..\..\includes;..\..\win32api</Directories>
 			<Directories Name="UsePackages">False</Directories>
 		</Directories>
