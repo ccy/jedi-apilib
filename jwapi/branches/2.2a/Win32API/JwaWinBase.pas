@@ -2040,13 +2040,12 @@ procedure FatalExit(ExitCode: Integer); stdcall;
 function GetEnvironmentStringsW: LPWSTR; stdcall;
 {$EXTERNALSYM GetEnvironmentStringsW}
 
-function GetEnvironmentStrings: LPSTR; stdcall;
+function GetEnvironmentStrings: LPTSTR; stdcall;
 {$EXTERNALSYM GetEnvironmentStrings}
 
-{$IFNDEF UNICODE}
 function GetEnvironmentStringsA: LPSTR; stdcall;
 {$EXTERNALSYM GetEnvironmentStringsA}
-{$ENDIF !UNICODE}
+
 
 
 {$IFDEF WIN2003_UP}
@@ -7578,8 +7577,6 @@ begin
   end;
 end;
 
-{$IFNDEF UNICODE}
-
 var
   _GetEnvironmentStringsA: Pointer;
 
@@ -7593,7 +7590,6 @@ begin
   end;
 end;
 
-{$ENDIF !UNICODE}
 
 {$IFDEF WIN2003_UP}
 var
@@ -19085,9 +19081,7 @@ function GetExitCodeProcess; external kernel32 name 'GetExitCodeProcess';
 procedure FatalExit; external kernel32 name 'FatalExit';
 function GetEnvironmentStringsW; external kernel32 name 'GetEnvironmentStringsW';
 function GetEnvironmentStrings; external kernel32 name 'GetEnvironmentStrings' + AWSuffix;
-{$IFNDEF UNICODE}
 function GetEnvironmentStringsA; external kernel32 name 'GetEnvironmentStringsA';
-{$ENDIF !UNICODE}
 
 {$IFDEF WIN2003_UP}
 function SetEnvironmentStringsA; external kernel32 name 'SetEnvironmentStringsA';

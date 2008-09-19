@@ -31,6 +31,7 @@ package JediApi_DynamicDebug;
 {$DEFINE DEBUG}
 {$DEFINE DYNAMIC_LINK}
 {$DEFINE JWA_WINDOWS}
+{$DEFINE JWA_INCLUDE_SHELLAPI}
 
 requires
   rtl,
