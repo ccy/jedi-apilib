@@ -38,7 +38,7 @@ Portions created by Philip Dittmann are Copyright (C) Philip Dittmann. All right
 {$IFNDEF SL_OMIT_SECTIONS}
 unit JwsclCryptProvider;
 //do not move header comment from above unit declaration!
-{$INCLUDE Jwscl.inc}
+{$INCLUDE ..\includes\Jwscl.inc}
 
 
 interface
@@ -407,15 +407,45 @@ type
       PubKey: TJwCryptKey; Flags: TJwKeyFlagSet);
 
     {Randomly generates a key
-    @param CSP The cryptographic service provider 
-    @param Alg The algorithm for which the key is to be used 
-    @param Flags Flags to use with the WinAPI call 
-    @param Length The length of the key 
+    @param CSP The cryptographic service provider
+    @param Alg The algorithm for which the key is to be used
+    @param Flags Flags to use with the WinAPI call
+    @param Length The length of the key
     raises
  EJwsclKeyApiException:  will be raised if the
              underlying Windows call fails.}
     constructor Generate(CSP: TJwCryptProvider; Alg: TJwEncryptionAlgorithm;
       Flags: TJwKeyFlagSet; Length: Word);
+
+    {Randomly generates a public/private key pair and stores
+    it in the key container of the specified CSP. The new key
+    replaces the old key (if existing) in the container. Thus,
+    this constructor is generally used in the following way:
+    <code lang="Delphi">
+    try
+      //try to get the key pair
+      Key := TJwCryptKey.GetUserKey(CSP, KeyType)
+    except
+      on E: EJwsclKeyApiException do
+        if E.LastError = NTE_NO_KEY then
+          //No key pair existed: We create one and put in the
+          //container.
+          Key := TJwCryptKey.GenerateContainerKey(CSP, KeyType, [], 0)
+        else
+          raise;
+    end;
+    </code>
+    @param CSP The cryptographic service provider
+    @param KeyPair They key pair to replace in the key container
+                   of the CSP.
+    @param Flags Flags to use with the WinAPI call
+    @param Length The length of the key
+    raises
+ EJwsclKeyApiException:  will be raised if the
+             underlying Windows call fails.}
+
+    constructor GenerateContainerKey(CSP: TJwCryptProvider;
+      KeyPair: TJwKeyPairType; Flags: TJwKeyFlagSet; Length: Word);
 
     {Derives a key from a specified seed
     @param CSP The cryptographic service provider 
@@ -575,8 +605,9 @@ end;
 
 destructor TJwCryptProvider.Destroy;
 begin
-  if not CryptReleaseContext(fCSPHandle, 0) then
-    RaiseApiError('Destroy', 'CryptReleaseContext');
+  if fCSPHandle <> 0 then
+    if not CryptReleaseContext(fCSPHandle, 0) then
+      RaiseApiError('Destroy', 'CryptReleaseContext');
   inherited;
 end;
 
@@ -810,8 +841,9 @@ end;
 
 destructor TJwHash.Destroy;
 begin
-  if not CryptDestroyHash(fHashHandle) then
-    RaiseApiError('Destroy', 'CryptDestroyHash');
+  if fHashHandle <> 0 then
+    if not CryptDestroyHash(fHashHandle) then
+      RaiseApiError('Destroy', 'CryptDestroyHash');
   fProvider.Free;
   inherited;
 end;
@@ -989,6 +1021,22 @@ begin
     RaiseApiError('Generate', 'CryptGenKey');
 end;
 
+constructor TJwCryptKey.GenerateContainerKey(CSP: TJwCryptProvider; KeyPair: TJwKeyPairType; Flags: TJwKeyFlagSet; Length: Word);
+begin
+  if not (Flags<=GenerateKeyFlags) then
+    raise EJwsclInvalidFlagsException.CreateFmtEx(
+      RsInvalidFlags,
+      'Generate',
+      ClassName,
+      RsUNCryptProvider,
+      0,
+      false,
+      []);
+  inherited Create;
+  if not CryptGenKey(CSP.CSPHandle, TJwEnumMap.ConvertKeyPairType(KeyPair), TJwEnumMap.ConvertKeyFlagSet(Flags) or (Length shl 16), fHandle) then
+    RaiseApiError('Generate', 'CryptGenKey');
+end;
+
 constructor TJwCryptKey.Derive(CSP: TJwCryptProvider; Alg: TJwEncryptionAlgorithm;
   Flags: TJwKeyFlagSet; Length: Word; BaseData: TJwHash);
 begin
@@ -1008,8 +1056,9 @@ end;
 
 destructor TJwCryptKey.Destroy;
 begin
-  if not CryptDestroyKey(fHandle) then
-    RaiseApiError('Destroy', 'CryptDestroyKey');
+  if fHandle <> 0 then
+    if not CryptDestroyKey(fHandle) then
+      RaiseApiError('Destroy', 'CryptDestroyKey');
   inherited Destroy;
 end;
 

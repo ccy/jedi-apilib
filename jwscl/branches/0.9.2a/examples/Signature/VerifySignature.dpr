@@ -21,7 +21,7 @@ const
   PublicKeyFile = 'PublicKey.pbk';
 
 var Provider: TJwCryptProvider; Key: TJwCryptKey; Hash: TJwHash;
-    Data: string; Len: Cardinal; Blob: Pointer; MS: TMemoryStream;
+    Data: string; MS: TMemoryStream;
 begin
   Provider := TJwCryptProvider.Create('', '', ctRsaFull, [ccfVerifyContext]);
   try
@@ -48,7 +48,7 @@ begin
           except
             on E: EJwsclHashApiException do
             begin
-              if E.LastError = NTE_BAD_SIGNATURE then
+              if E.LastError = Cardinal(NTE_BAD_SIGNATURE) then
                 Writeln('The signature is invalid!')
               else
                 Writeln(E.Message);
