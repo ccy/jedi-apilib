@@ -60,7 +60,7 @@ interface
 
 uses
   SysUtils, 
-  jwaWindows, JwaVista,
+  jwaWindows, 
   JwsclResource, JwsclUtils,
 
   JwsclTypes, JwsclExceptions, JwsclMapping, JwsclACL, JwsclToken,

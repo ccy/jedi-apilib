@@ -45,7 +45,7 @@ unit JwsclDescriptor;
 interface
 
 uses SysUtils, Classes,
-  JwaWindows, JwaVista, JwsclResource, JwsclMapping,
+  JwaWindows, JwsclResource, JwsclMapping,
   JwsclTypes, JwsclExceptions, JwsclSid, JwsclAcl,
   JwsclVersion, JwsclConstants,  
   JwsclStrings; //JwsclStrings, must be at the end of uses list!!!

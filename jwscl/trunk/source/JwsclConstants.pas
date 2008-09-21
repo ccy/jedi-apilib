@@ -49,7 +49,6 @@ interface
 uses
   JwsclResource,
   jwaWindows,
-  jwaVista,
   JwsclTypes,
   JwsclStrings;
 

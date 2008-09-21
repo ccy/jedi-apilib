@@ -34,13 +34,15 @@ Warning #2: If the JEDI API headers are used with a directive WIN_XP or lower
 {$I ..\Includes\jedi.inc}
 
 
-
 {$IFDEF FPC}
 {$mode delphi}{.$H+}
 {$ENDIF}
 
 {$IFDEF DEBUG}
   {.$WARNINGS OFF}
+{$IFDEF DELPHI7_UP}
+  {$WARN GARBAGE OFF} //removes warning about code behind end.
+{$ENDIF DELPHI7_UP}
 {$ENDIF DEBUG}
 
 

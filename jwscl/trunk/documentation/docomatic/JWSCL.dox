@@ -56812,11 +56812,11 @@ FoldersThreshold=0
 Keywords=
 Summary=
 Symbol Hierarchy Folders=903
-Title=JWSCL Documentation BETA
+Title=JWSCL Documentation BETA revision 616
 TypeDefStructsAsStructs=1
 VersionBuild=0
-VersionMajor=0
-VersionMinor=5
+VersionMajor=616
+VersionMinor=0
 VersionRelease=0
 
 [Generic Sources]

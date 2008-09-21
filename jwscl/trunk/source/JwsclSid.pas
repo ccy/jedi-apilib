@@ -49,7 +49,7 @@ interface
 
 uses
   SysUtils, Contnrs, Classes,
-  JwaWindows, JwaVista, JwsclUtils, JwsclResource,
+  JwaWindows, JwsclUtils, JwsclResource,
   JwsclTypes, JwsclExceptions, JwsclEnumerations,
   JwsclVersion, JwsclConstants, 
   JwsclStrings; //JwsclStrings, must be at the end of uses list!!!

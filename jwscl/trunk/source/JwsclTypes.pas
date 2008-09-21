@@ -45,7 +45,6 @@ interface
 
 uses
   JwaWindows,
-  JwaVista,
   JwsclResource,
   JwsclStrings; //JwsclStrings, must be at the end of uses list!!!
 {$ENDIF SL_OMIT_SECTIONS}

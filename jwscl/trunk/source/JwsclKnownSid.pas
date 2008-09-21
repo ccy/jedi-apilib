@@ -45,7 +45,6 @@ interface
 
 uses SysUtils, Classes,
   jwaWindows,
-  JwaVista,
   JwsclResource,
   JwsclSid, JwsclToken, JwsclUtils,
   JwsclTypes, JwsclExceptions,

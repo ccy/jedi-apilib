@@ -49,7 +49,6 @@ interface
 uses
   SysUtils,
   jwaWindows,
-  jwaVista,
   JwsclTypes,
   JwsclConstants
   ;
