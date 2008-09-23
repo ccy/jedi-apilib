@@ -145,6 +145,24 @@ type
   PULONGLONG = ^ULONGLONG;
   {$EXTERNALSYM PULONGLONG}
 
+  {
+  WARNING!!!
+  Originally WinDef.h defines BOOL as an int type with 4 bytes.
+  However Delphi treats BOOL, boolean and Integer differently.
+  Here is ASM code how Delphi (7) sets a value to true:
+
+  fDelayedAutostart := true;
+  BOOL/LongBool
+    mov [d],$ffffffff   (infact it is -1)
+  Boolean
+    mov byte ptr [d],$01
+  Integer
+    fDelayedAutostart := Integer(True);
+    mov [d],$00000001
+
+  Some WinAPI functions like ChangeServiceConfig2 refuses -1 as a true value
+   (error 87- invalid parameter).
+  }
   BOOL = {$IFDEF USE_DELPHI_TYPES} Windows.BOOL {$ELSE} LongBool {$ENDIF};
   {$EXTERNALSYM BOOL}
 

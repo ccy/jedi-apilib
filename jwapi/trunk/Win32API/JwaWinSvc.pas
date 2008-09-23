@@ -274,6 +274,8 @@ const
   {$EXTERNALSYM SERVICE_CONFIG_DESCRIPTION}
   SERVICE_CONFIG_FAILURE_ACTIONS = 2;
   {$EXTERNALSYM SERVICE_CONFIG_FAILURE_ACTIONS}
+  SERVICE_CONFIG_DELAYED_AUTO_START_INFO = 3; //VISTA
+  {$EXTERNALSYM SERVICE_CONFIG_DELAYED_AUTO_START_INFO}
 
 //
 // Service description string
@@ -390,6 +392,30 @@ type
   TServiceFailureActions = TServiceFailureActionsA;
   PServiceFailureActions = PServiceFailureActionsA;
   {$ENDIF UNICODE}
+
+  _SERVICE_DELAYED_AUTO_START_INFO = record
+    {WARNING:
+	The C struct uses a BOOL which is in fact an Integer.
+	You can't use true and false here without casting to Integer first:
+	  fDelayedAutostart := Integer(true);
+	Using Boolean or BOOL does not work since the record must be 4 bytes in size,
+	otherwise random data behind the first byte is also interpreted by the functions.
+	
+	BOOL defines true as -1 and not 1. ChangeServiceConfig2 uses this record
+	and refuses to work if -1 is supplied.	
+	
+	See also BOOL declaration in JwaWinType.pas for more information.
+	
+	CW@2008
+	} 
+    fDelayedAutostart : Integer; 
+  end;
+  {$EXTERNALSYM _SERVICE_DELAYED_AUTO_START_INFO}
+  SERVICE_DELAYED_AUTO_START_INFO = _SERVICE_DELAYED_AUTO_START_INFO;
+  {$EXTERNALSYM SERVICE_DELAYED_AUTO_START_INFO}
+  
+  TServiceDelayedAutoStartInfo = _SERVICE_DELAYED_AUTO_START_INFO;
+  PServiceDelayedAutoStartInfo = ^TServiceDelayedAutoStartInfo;
 
 //
 // Handle Types
