@@ -107,8 +107,8 @@ begin
 
     //These messages are not send, if the winlogon desktop is shown without
     //password input
-    WTS_SESSION_LOCK: S := 'The session #%d was locked.';
-    WTS_SESSION_UNLOCK: S := 'The session #%d was unlocked.';
+    WTS_SESSION_LOCK: S := 'The session #%d is locked.';
+    WTS_SESSION_UNLOCK: S := 'The session #%d is unlocked.';
 
     WTS_SESSION_REMOTE_CONTROL:
       begin
