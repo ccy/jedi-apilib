@@ -4,22 +4,21 @@
 
 <image jwscllogotxtnew01-small>
 
-<b>JEDI Windows Security Library BETA</b> This is the preliminary version of
-JWSCL.
+<b>JEDI Windows Security Library BETA</b>
 
 The suite is a bunch of classes that encapsulated MS Windows security functions
 in object oriented way.
 
-The goal of this project is to make security programming easier to delphi
+The goal of this project is to make security programming easier to Delphi
 programmers. This includes that the programmer must not allocate Windows API
 memory and also free it. Furthermore she can use simple Delphi String (Ansi- and
 WideString) in all function that needs string manipulation. The memory
 allocation and deallocation for these things is done internally with a content
-check. Of course it is possible to retrieve winapi structures easily to use in
-other winapi calls (e.g. <link TJwSecurityDescriptor>.<link TJwSecurityDescriptor.Create_SD@Cardinal@boolean, Create_SD>).
+check. Of course it is possible to retrieve WinAPI structures easily to use in
+other WinAPI calls (e.g. <link TJwSecurityDescriptor>.<link TJwSecurityDescriptor.Create_SD@Cardinal@boolean, Create_SD>).
 The caller also has to free it using a counter part function (e.g. <link TJwSecurityDescriptor>.<link TJwSecurityDescriptor.Free_SD@PSecurityDescriptor, Free_SD>).
 
-Also api functions are wrapped together in classes to diminish initialization
+Also API functions are wrapped together in classes to diminish initialization
 that consumes a great amount of time which (s)he could use for better things.
 All the programmer has to do is to free the class instance after she has used
 it.
@@ -31,16 +30,29 @@ know what tokens, principals, secure objects, sessions and so on are.
 
 On the other hand if you want to test the software by creating good test
 scenarios (module, function, class, integration testing) you are welcome. With
-good tests I mean tests that are reproducable, have a high function cover and
+good tests I mean tests that are reproducible, have a high function cover and
 uses DUnit.
 
-<b>This library has beta status and is surely not bug free.</b>
+<b>This library has beta status but it does not mean that there are major
+problems to be expected. It means that not all features are tested well and
+radically changes can break source compatibility (e.g. changing names - seldom).</b>
 
-For information about <b>license facts</b> see <link conclusion.txt, Conclusion>.
+The following table shows supported Delphi versions:
+<table 79%, 39c%, 71c%>
+Library                   Supported Delphi versions
+------------------------  ----------------------------------------------------
+JEDI Windows API Header   Delphi 5 to Delphi 2009
+ Conversions               
+JEDI Windows Security     Delphi 7 to Delphi 2009<p />Currently there is no
+ Code Library              intention to support Delphi 5,6 because there isn't
+                           just enough man power.
+</table>
+
+For information about <b>license facts</b> see <link conclusion.txt, License page>.
 
 Do not forget to send bugs, comments or greets to the authors.
 
-Christian Wimmer – mail[at]delphi-jedi.net
+Christian Wimmer – mail[at]delphi-jedi[dot]net
 
 Stuttgart, Germany
 
@@ -51,10 +63,26 @@ Contributors (in alphabetical order)
   * Danila Galimov
   * Binh Ly (ComLib.pas)
   * Remko Weijnen
-and in Memory Of Robert Marquardt
+In Memory Of Robert Marquardt
 
 
 
 Visit Source Forge Project
   * <extlink http://sourceforge.net/projects/jedi-apilib>Sourceforge</extlink>
   * <extlink http://blog.delphi-jedi.net>Webblog</extlink>
+
+* Contact options at a glance *
+<table 50c%>
+###################  ################################################################################################################################################################
+Mail contact         mail[at]delphi-jedi[dot]net
+Mailing list         Subscribe to the mailing lists at sourceforge:<p /><extlink http://sourceforge.net/mail/?group_id=121894>http://sourceforge.net/mail/?group_id=121894</extlink>
+Newsgroups           1. <extlink news://forums.talkto.net:119/jedi.apiconversion>news://forums.talkto.net:119/jedi.apiconversion</extlink>
+                      2. <extlink news://forums.talkto.net:119/jedi.general>news://forums.talkto.net:119/jedi.general</extlink>
+JEDI Issue           <extlink http://homepages.codegear.com/jedi/issuetracker>http://homepages.codegear.com/jedi/issuetracker</extlink>
+ Tracker<p />Select   
+ "API &amp; WSC       
+ Library" in the      
+ upper right          
+ corner and           
+ switch.              
+</table>

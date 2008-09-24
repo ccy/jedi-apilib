@@ -13451,6 +13451,9 @@
       <target id="pdf">pdf://574@JWSCL.pdf</target>
       <target id="winhelp">id_1901@JWSCL.hlp</target>
     </link>
+    <link topicid="TJwCryptKey.GenerateContainerKey@TJwCryptProvider@TJwKeyPairType@TJwKeyFlagSet@Word" displaystring="TJwCryptKey.GenerateContainerKey Constructor">
+      <target id="html">../html/TJwCryptKey_GenerateContainerKey@TJwCryptProvider@TJwKeyPairType@TJwKeyFlagSet@Word.html</target>
+    </link>
     <link topicid="TJwCryptKey.GetDWordKeyParam@Integer" displaystring="TJwCryptKey.GetDWordKeyParam Method">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwCryptKey_GetDWordKeyParam@Integer.html</target>
       <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwCryptKey_GetDWordKeyParam@Integer.html</target>
@@ -27876,6 +27879,7 @@
       <method name="ExportKey"></method>
       <method name="FreeBuffer"></method>
       <method name="Generate"></method>
+      <method name="GenerateContainerKey"></method>
       <method name="GetDWordKeyParam"></method>
       <method name="GetExportKeyLength"></method>
       <method name="GetKeyParam"></method>
