@@ -1,30 +1,35 @@
 {******************************************************************************}
 { JEDI Windows Terminal Server Session Notification Example                    }
-{ http://jedi-apilib.sourceforge.net										                       }
-{ 																			                                       }
+{ http://jedi-apilib.sourceforge.net										   }
+{ 																			   }
 { Obtained through: Joint Endeavour of Delphi Innovators (Project JEDI)        }
-{ 																			                                       }
-{ Author(s): Christian Wimmer												                           }
-{ Creation date: 24th September 2008 					   				   			               }
-{ Last modification date: 24th September 2008										               }
-{ 																			                                       }
-{ Description: Shows how to use the session notification messages 		         }
+{ 																			   }
+{ Author(s): Christian Wimmer												   }
+{ Creation date: 24th September 2008 					   				   	   }
+{ Last modification date: 24th September 2008								   }
+{ 																			   }
+{ Description: Shows how to use the session notification messages 		       }
 {   This technique cannot be used for services.                                }
 {    Instead use HandlerEx mechanism (MSDN).                                   }
+{ 																			   }
 { Tested on: Windows Vista SP1                                                 }
+{ 																			   }
+{ Requires: Windows XP or newer                                                }
+{ 																			   }
 { Delphi: Delphi 7                                                             }
-{ Preparations: JWA must be ready to use.       							                 }
-{ 																			                                       }
-{ 																			                                       }
-{ Version history: 24th Sept 2008 initial release				     	             	   }
-{ 																			                                       }
+{ 																			   }
+{ Preparations: JWA must be ready to use.       							   }
+{ 																			   }
+{ 																			   }
+{ Version history: 24th Sept 2008 initial release				     	       }
+{ 																			   }
 { No license. Use this example with no warranty at all and on your own risk.   }
-{ This example is just for learning purposes and should not be used in 		     }
-{ productive environments.													                           }
+{ This example is just for learning purposes and should not be used in 		   }
+{ productive environments.													   }
 { The code has surely some errors that need to be fixed. In such a case	   	   }
 { you can contact the author(s) through the JEDI API hompage, the mailinglist  }
-{ or via the article link (if available).													             }
-{ 																			                                       }
+{ or via the article link (if available).									   }
+{ 																			   }
 {******************************************************************************}
 unit MainForm;
 
