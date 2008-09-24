@@ -427,7 +427,7 @@ function PathBuildRootA(pszRoot: PAnsiChar; iDrive: Integer): PAnsiChar; stdcall
 {$EXTERNALSYM PathBuildRootW}
 function PathBuildRootW(pszRoot: PWideChar; iDrive: Integer): PWideChar; stdcall;
 {$EXTERNALSYM PathBuildRoot}
-function PathBuildRoot(pszRoot: PTSTR; iDrive: Integer): PAnsiChar; stdcall;
+function PathBuildRoot(pszRoot: PTSTR; iDrive: Integer): PTSTR; stdcall;
 {$EXTERNALSYM PathCanonicalizeA}
 function PathCanonicalizeA(pszBuf, pszPath: PAnsiChar): BOOL; stdcall;
 {$EXTERNALSYM PathCanonicalizeW}
@@ -439,7 +439,7 @@ function PathCombineA(pszDest, pszDir, pszFile: PAnsiChar): PAnsiChar; stdcall;
 {$EXTERNALSYM PathCombineW}
 function PathCombineW(pszDest, pszDir, pszFile: PWideChar): PWideChar; stdcall;
 {$EXTERNALSYM PathCombine}
-function PathCombine(pszDest, pszDir, pszFile: PTSTR): PAnsiChar; stdcall;
+function PathCombine(pszDest, pszDir, pszFile: PTSTR): PTSTR; stdcall;
 {$EXTERNALSYM PathCompactPathA}
 function PathCompactPathA(hDC: HDC; pszPath: PAnsiChar; dx: UINT): BOOL; stdcall;
 {$EXTERNALSYM PathCompactPathW}
@@ -936,7 +936,7 @@ function UrlGetLocationA(psz1: PAnsiChar): PAnsiChar; stdcall;
 {$EXTERNALSYM UrlGetLocationW}
 function UrlGetLocationW(psz1: PWideChar): PWideChar; stdcall;
 {$EXTERNALSYM UrlGetLocation}
-function UrlGetLocation(psz1: PTSTR): PAnsiChar; stdcall;
+function UrlGetLocation(psz1: PTSTR): PTSTR; stdcall;
 {$EXTERNALSYM UrlUnescapeA}
 function UrlUnescapeA(pszUrl, pszUnescaped: PAnsiChar; pcchUnescaped: PDWORD; dwFlags: DWORD): HResult; stdcall;
 {$EXTERNALSYM UrlUnescapeW}
