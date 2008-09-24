@@ -694,7 +694,7 @@ function PathSkipRootA(pszPath: PAnsiChar): PAnsiChar; stdcall;
 {$EXTERNALSYM PathSkipRootW}
 function PathSkipRootW(pszPath: PWideChar): PWideChar; stdcall;
 {$EXTERNALSYM PathSkipRoot}
-function PathSkipRoot(pszPath: PTSTR): PAnsiChar; stdcall;
+function PathSkipRoot(pszPath: PTSTR): PTSTR; stdcall;
 {$EXTERNALSYM PathStripPathA}
 procedure PathStripPathA(pszPath: PAnsiChar); stdcall;
 {$EXTERNALSYM PathStripPathW}
@@ -917,6 +917,8 @@ function UrlIsOpaque(pszURL: PTSTR): BOOL; stdcall;
 function UrlIsNoHistoryA(pszURL: PAnsiChar): BOOL; stdcall;
 {$EXTERNALSYM UrlIsNoHistoryW}
 function UrlIsNoHistoryW(pszURL: PWideChar): BOOL; stdcall;
+{$EXTERNALSYM UrlIsNoHistory}
+function UrlIsNoHistory(pszURL: PTSTR): BOOL; stdcall;
 {$EXTERNALSYM UrlIsFileUrlA}
 function UrlIsFileUrlA(pszURL: PAnsiChar): BOOL;
 {$EXTERNALSYM UrlIsFileUrlW}
@@ -2414,6 +2416,7 @@ function UrlIsOpaqueW; external shlwapidll name 'UrlIsOpaqueW';
 function UrlIsOpaque; external shlwapidll name 'UrlIsOpaque'+AWSuffix;
 function UrlIsNoHistoryA; external shlwapidll name 'UrlIsNoHistoryA';
 function UrlIsNoHistoryW; external shlwapidll name 'UrlIsNoHistoryW';
+function UrlIsNoHistory; external shlwapidll name 'UrlIsNoHistory'+AWSuffix;
 function UrlIsA; external shlwapidll name 'UrlIsA';
 function UrlIsW; external shlwapidll name 'UrlIsW';
 function UrlIs; external shlwapidll name 'UrlIs'+AWSuffix;
@@ -6346,6 +6349,20 @@ begin
         JMP     [_UrlIsNoHistoryW]
   end;
 end;
+
+var
+  _UrlIsNoHistory: Pointer;
+
+function UrlIsNoHistory;
+begin
+  GetProcedureAddress(_UrlIsNoHistory, shlwapidll, 'UrlIsNoHistory'+AWSuffix);
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_UrlIsNoHistory]
+  end;
+end;
+
 
 var
   _UrlIsA: Pointer;

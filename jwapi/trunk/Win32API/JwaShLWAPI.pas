@@ -694,7 +694,7 @@ function PathSkipRootA(pszPath: PAnsiChar): PAnsiChar; stdcall;
 {$EXTERNALSYM PathSkipRootW}
 function PathSkipRootW(pszPath: PWideChar): PWideChar; stdcall;
 {$EXTERNALSYM PathSkipRoot}
-function PathSkipRoot(pszPath: PTSTR): PAnsiChar; stdcall;
+function PathSkipRoot(pszPath: PTSTR): PTSTR; stdcall;
 {$EXTERNALSYM PathStripPathA}
 procedure PathStripPathA(pszPath: PAnsiChar); stdcall;
 {$EXTERNALSYM PathStripPathW}
