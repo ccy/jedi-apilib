@@ -9848,7 +9848,7 @@ HTMLFilenaming=0
 HTMLFileTemplate=
 InsertCustomHEADCode=0
 OutputDir=bin\html
-OutputOptions=10
+OutputOptions=14
 OutputTOCLevels=0
 PrintFlagsInIndex=0
 PrintFlagsInTOC=1
@@ -9911,7 +9911,7 @@ MakeRelative=1
 
 [Configurations\Configuration 1\{D3A588E0-9472-11D3-BDD1-0080C8BA053D}\Index Options]
 IndexColumns=2
-IndexDynamicSearch=0
+IndexDynamicSearch=1
 
 [Configurations\Configuration 1\{D3A588E0-9472-11D3-BDD1-0080C8BA053D}\Layout]
 ContentTableColCount=3
@@ -9919,7 +9919,7 @@ ContentTableColCount=3
 [Configurations\Configuration 1\{D3A588E0-9472-11D3-BDD1-0080C8BA053D}\Layout\Footer]
 FeedbackCode=%FBDESCRIPTION%\n<a href="#" onclick="sendFeedback('%AUTHOREMAIL%', '%FBSUBJECT%', 'Project: %PROJECTTITLE%%0ATopic ID: %TOPICID%%0ATitle: %TOPICTITLE%');">\n%FBLINKTEXT%\n</a>
 FeedbackShow=1
-InfoCode=%COPYRIGHT%<br/> This help was created by Doc-O-Matic which is sponsored by <a href="http://toolsfactory.com/">toolsfactory software inc.</a>
+InfoCode=%COPYRIGHT%<br/> This help was created by Doc-O-Matic sponsored by <a href="http://toolsfactory.com/">toolsfactory software inc.</a>
 InfoHTML=test
 InfoImage=dmlogo.png
 Kind=0
@@ -12342,8 +12342,8 @@ TableMoreThreshold=3
 UseTOCTable=0
 
 [Configurations\Configuration 1\{D3A588E0-9472-11D3-BDD1-0080C8BA053D}\Topic Paths]
-Options=0
-Prefix='<em>You are here:</em> '
+Options=1
+Prefix='<em>Location:</em> '
 Separator=' &gt; '
 Suffix=
 
@@ -12913,7 +12913,7 @@ AutoDocText2=The %CATEGORYL% members of the %NAME% class are listed here.
 AutoDocText3=The following table lists %CATEGORYL% in this documentation.
 AutoDocText4=This is the overview for the %NAME% %TYPEL% overload.
 AutoSyntaxHighlightCodeBlock=1
-ClassHierarchyCommonLayoutOptions=0
+ClassHierarchyCommonLayoutOptions=1
 ClassHierarchyLayoutOutputDir=$(USRDOCSGRAPHICS)
 ClassHierarchyTextLayoutFlatSeparator='    |'
 ClassHierarchyTextLayoutHangingIndent='    '
@@ -12928,7 +12928,7 @@ FunctionDeclarationOption=0
 GenerateGlobalClassHierarchies=1
 GenericSyntaxHighlightLanguage=0
 HidePropertyDetails=1
-IndexOptions4=1907
+IndexOptions4=1867
 IndexTitleAdditionalClassEntry=about %TITLE%
 IndexTitleEnumValues=%NAME% enumeration member
 IndexTitlePrefixes=
@@ -56885,8 +56885,9 @@ UseParameterListInlineComments=1
 WallCharacters="#$%&'*+-/=@[\]^_`{|}~
 
 [Parsing\ConditionalDefines]
-Count=1
+Count=2
 Define_0=UNICODE
+Define_1=VISTA
 HandleConditionalDefines=1
 
 [Parsing\Excluded Source Files]

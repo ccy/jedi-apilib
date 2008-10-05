@@ -2965,9 +2965,11 @@
       <target id="pdf">pdf://3024@JWSCL.pdf</target>
       <target id="winhelp">id_5129@JWSCL.hlp</target>
     </link>
+    <link topicid="authZSF_ComputePrivileges" displaystring="authZSF_ComputePrivileges">
+      <target id="html">../html/TAuthZSidContextFlag.html</target>
+    </link>
     <link topicid="authZSF_ComputePrivleges" displaystring="authZSF_ComputePrivleges">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TAuthZSidContextFlag.html</target>
-      <target id="html">../html/TAuthZSidContextFlag.html</target>
       <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TAuthZSidContextFlag.html</target>
       <target id="pdf">pdf://2839@JWSCL.pdf</target>
       <target id="winhelp">id_4948@JWSCL.hlp</target>
@@ -6462,6 +6464,9 @@
       <target id="pdf">pdf://2769@JWSCL.pdf</target>
       <target id="winhelp">id_4887@JWSCL.hlp</target>
     </link>
+    <link topicid="JwFreeThreadName" displaystring="JwFreeThreadName Function">
+      <target id="html">../html/JwFreeThreadName.html</target>
+    </link>
     <link topicid="JwGeneralExceptionClass" displaystring="JwGeneralExceptionClass Type">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/JwGeneralExceptionClass.html</target>
       <target id="html">../html/JwGeneralExceptionClass.html</target>
@@ -6883,6 +6888,9 @@
       <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/JwProtectedProcessIL.html</target>
       <target id="pdf">pdf://3077@JWSCL.pdf</target>
       <target id="winhelp">id_5182@JWSCL.hlp</target>
+    </link>
+    <link topicid="JwPWideCharToJwString@PWideChar" displaystring="JwPWideCharToJwString Function">
+      <target id="html">../html/JwPWideCharToJwString@PWideChar.html</target>
     </link>
     <link topicid="JwRaiseOnClassTypeMisMatch@TObject@TClass@TJwString@TJwString@TJwString" displaystring="JwRaiseOnClassTypeMisMatch Function">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/JwRaiseOnClassTypeMisMatch@TObject@TClass@TJwString@TJwString@TJwString.html</target>
@@ -8392,7 +8400,6 @@
     </link>
     <link topicid="PWideCharToJwString@PWideChar" displaystring="PWideCharToJwString Function">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/PWideCharToJwString@PWideChar.html</target>
-      <target id="html">../html/PWideCharToJwString@PWideChar.html</target>
       <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/PWideCharToJwString@PWideChar.html</target>
       <target id="pdf">pdf://2821@JWSCL.pdf</target>
       <target id="winhelp">id_4945@JWSCL.hlp</target>
@@ -11880,7 +11887,6 @@
     </link>
     <link topicid="srtNone" displaystring="srtNone">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwSecurityResetType.html</target>
-      <target id="html">../html/TJwSecurityResetType.html</target>
       <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityResetType.html</target>
       <target id="pdf">pdf://2864@JWSCL.pdf</target>
       <target id="winhelp">id_4983@JWSCL.hlp</target>
@@ -16700,7 +16706,6 @@
     </link>
     <link topicid="TJwObjectTypeListArray" displaystring="TJwObjectTypeListArray Type">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwObjectTypeListArray.html</target>
-      <target id="html">../html/TJwObjectTypeListArray.html</target>
       <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwObjectTypeListArray.html</target>
       <target id="pdf">pdf://1793@JWSCL.pdf</target>
       <target id="winhelp">id_3501@JWSCL.hlp</target>
@@ -22337,6 +22342,9 @@
       <target id="pdf">pdf://2864@JWSCL.pdf</target>
       <target id="winhelp">id_4983@JWSCL.hlp</target>
     </link>
+    <link topicid="TJwSecurityResetTypes" displaystring="TJwSecurityResetTypes Type">
+      <target id="html">../html/TJwSecurityResetTypes.html</target>
+    </link>
     <link topicid="TJwSecuritySemaphoreMapping" displaystring="TJwSecuritySemaphoreMapping Class">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwSecuritySemaphoreMapping.html</target>
       <target id="html">../html/TJwSecuritySemaphoreMapping.html</target>
@@ -27548,7 +27556,7 @@
       <field name="systemAuditAce"></field>
     </class>
     <class name="TAuthZSidContextFlag" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings">
-      <field name="authZSF_ComputePrivleges"></field>
+      <field name="authZSF_ComputePrivileges"></field>
       <field name="authZSF_Default"></field>
       <field name="authZSF_RequireS4ULogon"></field>
       <field name="authZSF_SkipTokenGroups"></field>
@@ -29739,7 +29747,6 @@
     </class>
     <class name="TJwSecurityResetType" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings">
       <field name="srtDacl"></field>
-      <field name="srtNone"></field>
       <field name="srtOwner"></field>
       <field name="srtSacl"></field>
     </class>

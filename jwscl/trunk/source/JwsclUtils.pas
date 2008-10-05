@@ -428,6 +428,17 @@ identifier for a thread.
 }
 procedure JwSetThreadName(const Name: TJwString; const ThreadID : Cardinal = Cardinal(-1));
 
+{<b>JwFreeThreadName</b> frees the thread variable allocated by JwSetThreadName.
+This procedure must be call at the end of thread to avoid a memory leak in
+some situation.
+
+Remarks
+This procedure is not always necessary. Although it is told otherwise, it seems that
+Delphi sometimes cleans up the memory. However if you use TJwThread the
+cleanup is done automatically.
+}
+procedure JwFreeThreadName;
+
 {<B>JwGetThreadName</B> returns the name of a thread set by JwSetThreadName.
  This function only returns the name of the current thread. It cannot be used
  with different threads than the current one.
@@ -798,6 +809,9 @@ begin
   Result := BitMask and Check = Check;
 end;
 
+threadvar
+  InternalThreadName : WideString;
+
 type
   TThreadNameInfo = record
     FType: LongWord;     // must be 0x1000
@@ -824,6 +838,7 @@ end;
 
 destructor TJwThread.Destroy;
 begin
+  JwFreeThreadName;
   CloseHandle(FTerminatedEvent);
   inherited;
 end;
@@ -839,11 +854,14 @@ begin
   result := ReturnValue;
 end;
 
-threadvar InternalThreadName : WideString;
-
 function JwGetThreadName : WideString;
 begin
   result := InternalThreadName;
+end;
+
+procedure JwFreeThreadName;
+begin
+  InternalThreadName := '';
 end;
 
 //source http://msdn2.microsoft.com/en-us/library/xcb2z8hs(vs.71).aspx

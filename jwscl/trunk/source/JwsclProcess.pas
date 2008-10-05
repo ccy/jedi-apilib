@@ -2448,6 +2448,7 @@ end;
 function TJwJobObject.IsProcessInJob(hProcess : TJwProcessHandle) : Boolean;
 var LB : LongBool;
 begin
+  LB := false; 
   if not JwaWindows.IsProcessInJob(hProcess, fHandle, LB) then
      raise EJwsclWinCallFailedException.CreateFmtWinCall(
         '',

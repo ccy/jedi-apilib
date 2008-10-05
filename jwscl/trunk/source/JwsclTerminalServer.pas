@@ -551,7 +551,7 @@ type
 	 
 	 <B>Check for a nil property value Servers</B> 
     }
-    function EnumerateServers(ADomain: TJwString):Boolean;
+    function EnumerateServers(const ADomain: TJwString):Boolean;
 
     {<B>EnumerateSessions</B> enumerates all sessions on the Terminal Server and fills the
      Sessions property with a TJwSessionList. This list contains all sessions
@@ -2621,16 +2621,16 @@ begin
     if WinStationNameFromLogonIdW(FServerHandle, SessionId,
       WinStationNamePtr) then
     begin
-      Result := PWideCharToJwString(WinStationNamePtr);
+      Result := JwPWideCharToJwString(WinStationNamePtr);
     end;
 
     // Return disconnected if WinStationName = empty
     if Result = '' then
     begin
-//      Result := PWideCharToJwString(StrConnectState(WTSDisconnected, False));
+//      Result := JwPWideCharToJwString(StrConnectState(WTSDisconnected, False));
       // Confirm to TSAdmin behaviour and list sessionname as (Idle) (we use
       // StrConnectState api to localise)
-      Result := '(' + PWideCharToJwString(StrConnectState(WTSIdle, False)) + ')';
+      Result := '(' + JwPWideCharToJwString(StrConnectState(WTSIdle, False)) + ')';
     end;
   finally
     FreeMem(WinStationNamePtr);
@@ -2757,7 +2757,7 @@ begin
               FProcessAge := (DiffTime.wDays * SECONDS_PER_DAY) +
                 (DiffTime.wHours * SECONDS_PER_HOUR) +
                 (DiffTime.wMinutes * SECONDS_PER_MINUTE);
-              FProcessAgeStr := PWideCharToJwString(lpBuffer);
+              FProcessAgeStr := JwPWideCharToJwString(lpBuffer);
             finally
               // Free mem
               FreeMem(lpBuffer);
@@ -2883,7 +2883,7 @@ begin
   Result := Res;
 end;
 
-function TJwTerminalServer.EnumerateServers(ADomain: TJwString): Boolean;
+function TJwTerminalServer.EnumerateServers(const ADomain: TJwString): Boolean;
 begin
   // Does the thread exist?
   if Assigned(FEnumServersThread) then
@@ -3324,7 +3324,7 @@ begin
       // taskmgr.exe.mui with same id
       if LoadStringW(hModule, 10005, lpBuffer, nBufferMax) > 0 then
       begin
-        FIdleProcessName := PWideCharToJwString(lpBuffer);
+        FIdleProcessName := JwPWideCharToJwString(lpBuffer);
       end;
       // Cleanup
       FreeMem(lpBuffer);
@@ -3473,7 +3473,7 @@ begin
     WdConfig, @WinStationDriver, SizeOf(WinStationDriver),
     dwReturnLength) then
   begin
-    FWdName := PWideCharToJwString(WinStationDriver.WdName);
+    FWdName := JwPWideCharToJwString(WinStationDriver.WdName);
     FWdFlag := WinStationDriver.WdFlag;
   end;
 end;
@@ -3501,7 +3501,7 @@ begin
       try
         // Format LogonTime string
         DateTimeStringSafe(@WinStationInfo.LogonTime, lpBuffer, MAX_PATH);
-        FLogonTimeStr := PWideCharToJwString(lpBuffer);
+        FLogonTimeStr := JwPWideCharToJwString(lpBuffer);
       finally
         FreeMem(lpBuffer);
         lpBuffer := nil;
@@ -3553,7 +3553,7 @@ begin
       DiffTimeString(WinStationInfo.LastInputTime, WinStationInfo.CurrentTime,
         lpBuffer);
       try
-        FIdleTimeStr := PWideCharToJwString(lpBuffer);
+        FIdleTimeStr := JwPWideCharToJwString(lpBuffer);
       finally
         // We free the memory DiffTimeString has allocated for us
         FreeMem(lpBuffer);
@@ -3633,7 +3633,7 @@ begin
   FSessionId := SessionId;
   FShadow := TJwWTSSessionShadow.Create(Self); 
   FConnectState := ConnectState;
-  FConnectStateStr := PWideCharToJwString(StrConnectState(FConnectState, False));
+  FConnectStateStr := JwPWideCharToJwString(StrConnectState(FConnectState, False));
   FWinStationName := WinStationName;
   FApplicationName := GetSessionInfoStr(WTSApplicationName);
   FClientAddress := GetClientAddress;

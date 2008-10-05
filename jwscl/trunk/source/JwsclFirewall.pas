@@ -87,13 +87,14 @@ type
       rules list
      @param EnableRule defines if the new rule should be active or not
      }
-    procedure AddToWinFirewall(ApplicationFilename, NameOnExeptionlist: TJwString;
-      EnableRule: Boolean); virtual;
+    procedure AddToWinFirewall(const ApplicationFilename, NameOnExeptionlist: TJwString;
+      const EnableRule: Boolean); virtual;
+
 
     {<B>DeleteFromWinFirewall</B> Removes a program's firewall rule.
      @param ApplicationFilename defines the executable of the program
     }
-    procedure DeleteFromWinFirewall(ApplicationFilename: TJwString); virtual;
+    procedure DeleteFromWinFirewall(const ApplicationFilename: TJwString); virtual;
 
     {<B>AddTcpPortToFirewall</B> Adds a rule for a single tcp port to the firewall.
      @param ProtocollName gives a description of the opened port (e.g. "FTP-Server") 
@@ -118,7 +119,7 @@ type
     {<B>IsAppRulePresent</B> Checks if a firewall rule for the specified application is already present
      @param ApplicationFilename defines the executable of the program
     }
-    function IsAppRulePresent(ApplicationFilename: TJwString): Boolean;
+    function IsAppRulePresent(const ApplicationFilename: TJwString): Boolean;
 
     {<B>Active</B> Sets or gets if the windows firewall is active or not}
     property Active: Boolean read GetFirewallState write SetFirewallState;
@@ -351,8 +352,8 @@ begin
 end;
 
 
-procedure TJwsclFirewall.AddToWinFirewall(ApplicationFilename,
-  NameOnExeptionlist: TJwString; EnableRule: Boolean);
+procedure TJwsclFirewall.AddToWinFirewall(const ApplicationFilename,
+  NameOnExeptionlist: TJwString; const EnableRule: Boolean);
 var
   App: INetFwAuthorizedApplication;
 begin                
@@ -489,7 +490,7 @@ begin
 end;
 
 
-procedure TJwsclFirewall.DeleteFromWinFirewall(ApplicationFilename: TJwString);
+procedure TJwsclFirewall.DeleteFromWinFirewall(const ApplicationFilename: TJwString);
 begin
 
   if GetFirewallState
@@ -508,7 +509,7 @@ begin
 end;
 
 
-function TJwsclFirewall.IsAppRulePresent(ApplicationFilename: TJwString): Boolean;
+function TJwsclFirewall.IsAppRulePresent(const ApplicationFilename: TJwString) : Boolean;
 var
   App: INetFwAuthorizedApplication;
 begin

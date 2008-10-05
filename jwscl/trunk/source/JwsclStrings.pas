@@ -141,7 +141,14 @@ function JwUnicodeStringToJwString(const AUnicodeString: TUnicodeString):
 function JwCreateLSAString(const aString: AnsiString): LSA_STRING;
 procedure JwFreeLSAString(var aString: LSA_STRING);
 
-function PWideCharToJwString(const APWideChar: PWideChar): TJwString;
+{<b>JwPWideCharToJwString</b> converts pointer to an widechar array to
+WideString or AnsiString depending on the Unicode directive.
+This routine does the same like:
+<code>
+aJwString := TJWString(TJwPChar(aPWideChar));
+</code>
+}
+function JwPWideCharToJwString(const APWideChar: PWideChar): TJwString;
 
 {<B>JwOutputDebugString</B> calls API OutputDebugString but works with TJwString}
 procedure JwOutputDebugString(const Value : TJwString; const Args : array of const);
@@ -314,7 +321,7 @@ begin
   FillChar(aString, sizeof(aString), 0);
 end;
 
-function PWideCharToJwString(const APWideChar: PWideChar): TJwString;
+function JwPWideCharToJwString(const APWideChar: PWideChar): TJwString;
 begin
   Result := APWideChar;
 end;

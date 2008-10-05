@@ -92,9 +92,10 @@ type
 		interactive logondata)
 
 	}
-    procedure LsaLogonUser(anOriginName: AnsiString;
+    procedure LsaLogonUser(
+      const anOriginName: AnsiString;
       aLogonType: SECURITY_LOGON_TYPE;
-      anAuthenticationPackageName: AnsiString;
+      const anAuthenticationPackageName: AnsiString;
       anAuthenticationInformation: Pointer;
       anAuthenticationInformationLength: Cardinal;
       aLocalGroups: TJwSecurityIdList;
@@ -406,8 +407,10 @@ begin
   _initUnicodeString(@Result.Password, pPass, cbPass);
 end;
 
-procedure TJwSecurityLsa.LsaLogonUser(anOriginName: AnsiString;
-  aLogonType: SECURITY_LOGON_TYPE; anAuthenticationPackageName: AnsiString;
+procedure TJwSecurityLsa.LsaLogonUser(
+  const anOriginName: AnsiString;
+  aLogonType: SECURITY_LOGON_TYPE;
+  const anAuthenticationPackageName: AnsiString;
   anAuthenticationInformation: Pointer;
   anAuthenticationInformationLength: Cardinal;
   aLocalGroups: TJwSecurityIdList; aSourceContext: TTokenSource;

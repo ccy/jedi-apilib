@@ -6178,7 +6178,7 @@ var
 
      @return Returns true if the callback function defined pis_ProgressCancelOperation as the next operation. In this case bAbort is set to true.
     }
-  function ProcessFile(FindDataFile, CurrentFileName: TJwString;
+  function ProcessFile(const FindDataFile, CurrentFileName: TJwString;
     bRoot: boolean = False): boolean;
   begin
     Result := False;

@@ -263,7 +263,7 @@ type
         The privilege names are compared case sensitive. 
         @param Privileges contains all privileges names that the token must held 
         raises
- EJwsclPrivilegeCheckException:  will be raised if one privilege was not found 
+ EJwsclPrivilegeCheckException:  will be raised if one privilege was not found
         }
 
     procedure CheckTokenPrivileges(Privileges: array of TJwString);
@@ -844,7 +844,7 @@ type
          (e.g. set privileges) don't have an effect on the token of the thread. Create a new instance by calling TJwSecurityToken.CreateTokenByThread to get the new thread token or
          call ConvertToImpersonatedToken to get an thread token directly without creating a new instance.
         raises
- EJwsclAccessTypeException:  will be raised if the token is an impersonation token and does not have access type TOKEN_QUERY and TOKEN_IMPERSONATE 
+ EJwsclAccessTypeException:  will be raised if the token is an impersonation token and does not have access type TOKEN_QUERY and TOKEN_IMPERSONATE
          EJwsclAccessTypeException: will be raised if the token is a primary token and does not have access type TOKEN_QUERY and TOKEN_DUPLICATE 
          EJwsclSecurityException: will be raised if a winapi function failed 
         }
@@ -852,9 +852,9 @@ type
 
         {<B>PrivilegeCheck</B> is a simulation of WinAPI PrivilegeCheck (http://msdn2.microsoft.com/en-us/library/aa379304.aspx)
          <B>PrivilegeCheck</B> checks for enabled privleges of the token.
-         If RequiresAllPrivs is false <B>PrivilegeCheck</B> returns true if one privilege provided in aRequiredPrivileges is enabled in the token
+         If RequiresAllPrivs is pcDefault <B>PrivilegeCheck</B> returns true if one privilege provided in aRequiredPrivileges is enabled in the token
           If no privilege from aRequiredPrivileges is enabled in the token the function returns false.
-         If RequiresAllPrivs is true <B>PrivilegeCheck</B> returns true if all privileges from aRequiredPrivileges are enabled in the token; otherwise false.
+         If RequiresAllPrivs is pcAllPrivsEnabled <B>PrivilegeCheck</B> returns true if all privileges from aRequiredPrivileges are enabled in the token; otherwise false.
 
          Every privilege that was used for a privilege check will have the property Privilege_Used_For_Access set to true.
 
@@ -872,9 +872,9 @@ type
 
         {<B>PrivilegeCheck</B> is a simulation of WinAPI PrivilegeCheck (http://msdn2.microsoft.com/en-us/library/aa379304.aspx)
          <B>PrivilegeCheck</B> checks for enabled privleges of the token.
-         If RequiresAllPrivs is false <B>PrivilegeCheck</B> returns true if one privilege provided in aRequiredPrivileges is enabled in the token
+         If RequiresAllPrivs is pcDefault <B>PrivilegeCheck</B> returns true if one privilege provided in aRequiredPrivileges is enabled in the token
           If no privilege from aRequiredPrivileges is enabled in the token the function returns false.
-         If RequiresAllPrivs is true <B>PrivilegeCheck</B> returns true if all privileges from aRequiredPrivileges are enabled in the token; otherwise false.
+         If RequiresAllPrivs is pcAllPrivsEnabled <B>PrivilegeCheck</B> returns true if all privileges from aRequiredPrivileges are enabled in the token; otherwise false.
 
          @param ClientToken is a token that is used to check the privileges 
          @param aRequiredPrivileges provides a list of priveleges that are compared with the token  
@@ -2687,7 +2687,7 @@ constructor TJwPrivilege.Create(anOwner: TJwPrivilegeSet;
     HeapFree(JwProcessHeap, 0, sName);
   end;
 
-  function GetDisplayName(aName: TJwString;
+  function GetDisplayName(const aName: TJwString;
     out aLanguageID: cardinal): TJwString;
   var
     len:   cardinal;
@@ -5053,7 +5053,7 @@ procedure TJwSecurityToken.LoadUserProfile(
     DomainControllerInfo := nil;
     
     try
-      //ask domain controler for its name
+      //ask domain controller for its name
       Res := {$IFDEF UNICODE}DsGetDcNameW{$ELSE}DsGetDcNameA{$ENDIF}
         (nil, nil, nil, nil, DS_BACKGROUND_ONLY or
         DS_RETURN_FLAT_NAME, DomainControllerInfo);
@@ -5101,7 +5101,7 @@ begin
   the caller in error case.
   Otherwise Loaduserprofile would just return 5 (Access denied).
 
-  The Interface disables them at the end of in case of exception
+  The Interface disables them at the end of this function or in case of an exception
   }
   PrivScope := JwGetPrivilegeScope([SE_RESTORE_NAME, SE_BACKUP_NAME]);
 

@@ -191,7 +191,7 @@ type
                   the process token. 
             # rttTokenPrimary The process token is forced to use.
                     See TJwSecurityToken.CreateTokenByProcess for more information 
-            # rttTokenImpersonation The thread token is forced to use.
+            # rttTokenImpersonation The thread token is forced to be used.
                   The token is opened against the process rights.
                     See TJwSecurityToken.CreateTokenByThread for more information 
           
@@ -224,7 +224,7 @@ type
  EJwsclWinCallFailedException:  will be raised if the string could not be parsed correctly.
         }
 
-    constructor Create(aSDString:
+    constructor Create(const aSDString:
  {$IFNDEF SL_OMIT_SECTIONS}JwsclStrings.{$ENDIF SL_OMIT_SECTIONS}TJwString);
       overload;
 
@@ -1062,7 +1062,7 @@ begin
   end;
 end;
 
-constructor TJwSecurityDescriptor.Create(aSDString:
+constructor TJwSecurityDescriptor.Create(const aSDString:
  {$IFNDEF SL_OMIT_SECTIONS}JwsclStrings.{$ENDIF SL_OMIT_SECTIONS}TJwString);
 var
   pSD: PSECURITY_DESCRIPTOR;

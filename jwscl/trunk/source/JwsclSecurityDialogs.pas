@@ -133,8 +133,7 @@ type
     const GuidObjectType: TGUID;
     const sServerName: WideString;
     const SD: TJwSecurityDescriptor;
-    var ObjectTypeList:
-    TJwObjectTypeListArray;
+    var ObjectTypeList: TJwObjectTypeArray;
     var GrantedAccessList: TJwAccessMaskArray): Cardinal of object;
 
   {Not supported}
@@ -298,7 +297,7 @@ type
       @param SecurityType contains information which part of the SD is changed.
       @param SecurityDialogFlags contains information about flags, states and checkboxes states
               in the dialog that are set 
-      @param SecurityResetType defines whether the SD must be recursively iterated through the objects.
+      @param SecurityResetTypes defines what parts the SD must be recursively assigned to the objects.
       @param Settings contains the SD control bits of the parameter NewSecurityDescriptor.
       @param NewSecurityDescriptor is the security descriptor which contains the security information
                that was changed in the dialog 
@@ -313,7 +312,7 @@ type
   TJwOnSetSecurity = procedure(Sender: TJwSecurityDescriptorDialog;
     SecurityType: TJwSecurityInformationFlagSet;
     SecurityDialogFlags: TJwSecurityDialogFlags;
-    SecurityResetType: TJwSecurityResetType;
+    SecurityResetTypes: TJwSecurityResetTypes;
     Settings: TJwSecurityDescriptorControlSet;
     NewSecurityDescriptor, MergedSecurityDescriptor
     : TJwSecurityDescriptor;
@@ -435,7 +434,7 @@ type
     fOnGetEffectivePermissions: TJwOnGetEffectivePermissions;
 
 
-    fObjectTypeList: TJwObjectTypeListArray;
+    fObjectTypeList: TJwObjectTypeArray;
 
 
 
@@ -1176,7 +1175,7 @@ var
   secControl: TJwSecurityDescriptorControlSet;
 
   MergedSD, SD: TJwSecurityDescriptor;
-  SecurityResetType: TJwSecurityResetType;
+  SecurityResetTypes: TJwSecurityResetTypes;
   secInfoEx: TJwSecurityDialogFlags;
   bSuccess:  boolean;
 
@@ -1257,22 +1256,22 @@ begin
   end;
 
   //set reset state, so user can easily see whether he must reset all children
-  SecurityResetType := srtNone;
+  SecurityResetTypes := [];
   if (SecurityInformation and SI_OWNER_RECURSE = SI_OWNER_RECURSE) then
-    SecurityResetType := srtOwner
-  else
+    Include(SecurityResetTypes, srtOwner);
+
   if (SecurityInformation and SI_RESET_DACL_TREE = SI_RESET_DACL_TREE) then
-    SecurityResetType := srtDacl
-  else
+    Include(SecurityResetTypes, srtDacl);
+
   if (SecurityInformation and SI_RESET_SACL_TREE = SI_RESET_SACL_TREE) then
-    SecurityResetType := srtSacl;
+    Include(SecurityResetTypes, srtSacl);
 
 
   bSuccess := False;
   try
     if Assigned(fOnSetSecurity) then
       fOnSetSecurity(Self, secInfo, secInfoEx,
-        SecurityResetType,
+        SecurityResetTypes,
         SD.Control, SD, MergedSD, bSuccess);
     if bSuccess then
       fSD.Assign(MergedSD);
@@ -1591,7 +1590,7 @@ begin
             //const sServerName : WideString;
             SD,//const SD : TJwSecurityDescriptor
             fObjectTypeList,
-            //var ObjectTypeList : TJwObjectTypeListArray;
+            //var ObjectTypeList : TJwObjectTypeArray;
             GrantedAccessList
             //var GrantedAccessList : TJwAccessMaskArray) : Cardinal;
             );
@@ -1622,10 +1621,10 @@ begin
       pcGrantedAccessListLength := Length(GrantedAccessList);
 
       pcObjectTypeListLength := Length(fObjectTypeList);
-     { SetLength(TJwObjectTypeListArray(ppObjectTypeList), pcObjectTypeListLength);
+     { SetLength(TJwObjectTypeArray(ppObjectTypeList), pcObjectTypeListLength);
       for i := 0 to Length(ObjectTypeList)-1 do
       begin
-        TJwObjectTypeListArray(ppObjectTypeList)[i] := ObjectTypeList[i];
+        TJwObjectTypeArray(ppObjectTypeList)[i] := ObjectTypeList[i];
       end;    }
       ppObjectTypeList := @fObjectTypeList;
 
