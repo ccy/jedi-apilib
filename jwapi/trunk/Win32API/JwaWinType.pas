@@ -90,7 +90,7 @@ WARNING: Do not load a function defined by its index like PAnsiChar(123) in Proc
 procedure GetProcedureAddress(var P: Pointer; const ModuleName, ProcName: AnsiString); overload;
 
 {GetProcedureAddress loads a function using a module name and an function index.}
-procedure GetProcedureAddress(var P: Pointer; const ModuleName : AnsiString; ProcNumber : DWORD); overload;
+procedure GetProcedureAddress(var P: Pointer; const ModuleName : AnsiString; ProcNumber : Cardinal); overload;
 
 type
   // (rom) moved from JwaRpc.pas
@@ -1866,13 +1866,13 @@ begin
   if not Assigned(P) then
   begin
     ModuleHandle := {$IFDEF JWA_INCLUDEMODE}jwaWinType_GetModuleHandle
-                    {$ELSE}GetModuleHandleA
+                    {$ELSE}GetModuleHandle
                     {$ENDIF JWA_INCLUDEMODE}
                     (PAnsiChar(AnsiString(ModuleName)));
     if ModuleHandle = 0 then
     begin
       ModuleHandle := {$IFDEF JWA_INCLUDEMODE}jwaWinType_LoadLibrary
-                    {$ELSE}LoadLibraryA
+                    {$ELSE}LoadLibrary
                     {$ENDIF JWA_INCLUDEMODE}(PAnsiChar(ModuleName));
       if ModuleHandle = 0 then
         raise EJwaLoadLibraryError.CreateFmt(RsELibraryNotFound, [ModuleName]);
@@ -1885,20 +1885,20 @@ begin
   end;
 end;
 
-procedure GetProcedureAddress(var P: Pointer; const ModuleName : AnsiString; ProcNumber : DWORD);
+procedure GetProcedureAddress(var P: Pointer; const ModuleName : AnsiString; ProcNumber : Cardinal);
 var
   ModuleHandle: HMODULE;
 begin
   if not Assigned(P) then
   begin
     ModuleHandle := {$IFDEF JWA_INCLUDEMODE}jwaWinType_GetModuleHandle
-                    {$ELSE}GetModuleHandleA
+                    {$ELSE}GetModuleHandle
                     {$ENDIF JWA_INCLUDEMODE}
                     (PAnsiChar(AnsiString(ModuleName)));
     if ModuleHandle = 0 then
     begin
       ModuleHandle := {$IFDEF JWA_INCLUDEMODE}jwaWinType_LoadLibrary
-                    {$ELSE}LoadLibraryA
+                    {$ELSE}LoadLibrary
                     {$ENDIF JWA_INCLUDEMODE}(PAnsiChar(ModuleName));
       if ModuleHandle = 0 then
         raise EJwaLoadLibraryError.CreateFmt(RsELibraryNotFound, [ModuleName]);

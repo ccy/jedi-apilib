@@ -36,7 +36,8 @@
 { For more information about the LGPL: http://www.gnu.org/copyleft/lesser.html }
 {                                                                              }
 {******************************************************************************}
-{$A+,Z4}
+{$A+} {record alignment on 4 byte boundaries}
+{$Z4} {enum size is 4 bytes}
 
 // This file is intended for C header conversions.
 // It defines several mutually exclusive IFDEFs which determine
@@ -69,7 +70,7 @@ Standalone compiling would be useless!
 {.$DEFINE ANSICODE}
 
 // Global switch to make UNICODE versions of API functions default
-{.DEFINE UNICODE}
+{.$DEFINE UNICODE}
 
 {$IFDEF ANSICODE}
   {$IFDEF UNICODE}
