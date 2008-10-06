@@ -44,13 +44,21 @@
 {$IFNDEF JWA_OMIT_SECTIONS}
 unit JwaUrlMon;
 
+{$I ..\Includes\JediAPILib.inc}
 interface
 
 uses
-  ActiveX, msxml,
+  ActiveX,
+{$IFNDEF DELPHI5}msxml,{$ENDIF}
   JwaWinBase, JwaWinUser, JwaWinType, JwaActiveX;
 
+{$IFDEF DELPHI6_UP}
 {$ALIGN 8}
+{$ELSE}
+{$A+}
+//Warning: Record alignment 4
+{$ENDIF DELPHI6_UP}
+
 
 {$HPPEMIT '//---------------------------------------------------------------------------'}
 {$HPPEMIT '// if compilation errors occur while attempting to access structs, unions, or enums'}
@@ -2273,7 +2281,7 @@ type
   {$EXTERNALSYM ISoftDistExt}
   ISoftDistExt = interface(IUnknown)
   ['{B15B8DC1-C7E1-11d0-8680-00AA00BDCB71}']
-    function ProcessSoftDist(szCDFURL: PWideChar; pSoftDistElement: IXMLElement;
+    function ProcessSoftDist(szCDFURL: PWideChar; pSoftDistElement: {$IFDEF DELPHI5}Pointer{$ELSE}IXMLElement{$ENDIF};
       var lpsdi: TSoftDistInfo): HResult; stdcall;
     function GetFirstCodeBase(szCodeBase: PPWideChar;
       var dwMaxSize: DWORD): HResult; stdcall;
@@ -3532,28 +3540,30 @@ begin
 end;
 
 var
-  _CoInternetIsFeatureEnabledForUrl: Pointer;
+  //_CoInternetIsFeatureEnabledForUrl: Pointer;
+  _CoInternetIsFeatureEFU: Pointer;
 
 function CoInternetIsFeatureEnabledForUrl;
 begin
-  GetProcedureAddress(_CoInternetIsFeatureEnabledForUrl, UrlMonDll, 'CoInternetIsFeatureEnabledForUrl');
+  GetProcedureAddress(_CoInternetIsFeatureEFU, UrlMonDll, 'CoInternetIsFeatureEnabledForUrl');
   asm
         MOV     ESP, EBP
         POP     EBP
-        JMP     [_CoInternetIsFeatureEnabledForUrl]
+        JMP     [_CoInternetIsFeatureEFU]
   end;
 end;
 
 var
-  _CoInternetIsFeatureZoneElevationEnabled: Pointer;
+  //_CoInternetIsFeatureZoneElevationEnabled: Pointer;
+  _CoInternetIsFeatureZEE: Pointer;
 
 function CoInternetIsFeatureZoneElevationEnabled;
 begin
-  GetProcedureAddress(_CoInternetIsFeatureZoneElevationEnabled, UrlMonDll, 'CoInternetIsFeatureZoneElevationEnabled');
+  GetProcedureAddress(_CoInternetIsFeatureZEE, UrlMonDll, 'CoInternetIsFeatureZoneElevationEnabled');
   asm
         MOV     ESP, EBP
         POP     EBP
-        JMP     [_CoInternetIsFeatureZoneElevationEnabled]
+        JMP     [_CoInternetIsFeatureZEE]
   end;
 end;
 
@@ -3753,15 +3763,16 @@ begin
 end;
 
 var
-  _SetSoftwareUpdateAdvertisementState: Pointer;
+  //_SetSoftwareUpdateAdvertisementState: Pointer;
+  _SetSoftwareUpdateAS: Pointer;
 
 function SetSoftwareUpdateAdvertisementState;
 begin
-  GetProcedureAddress(_SetSoftwareUpdateAdvertisementState, UrlMonDll, 'SetSoftwareUpdateAdvertisementState');
+  GetProcedureAddress(_SetSoftwareUpdateAS, UrlMonDll, 'SetSoftwareUpdateAdvertisementState');
   asm
         MOV     ESP, EBP
         POP     EBP
-        JMP     [_SetSoftwareUpdateAdvertisementState]
+        JMP     [_SetSoftwareUpdateAS]
   end;
 end;
 

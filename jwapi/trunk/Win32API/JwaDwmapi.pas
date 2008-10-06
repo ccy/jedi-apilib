@@ -83,7 +83,8 @@ type
   {$EXTERNALSYM PDWM_BLURBEHIND}
 
   // Window attributes
-  DWMWINDOWATTRIBUTE = (DWMWA_NCRENDERING_ENABLED = 1,      // [get] Is non-client rendering enabled/disabled
+  DWMWINDOWATTRIBUTE = ({$IFDEF DELPHI5}DWMWA_PAD,{$ENDIF}
+                        DWMWA_NCRENDERING_ENABLED{$IFDEF DELPHI6_UP} = 1{$ENDIF},      // [get] Is non-client rendering enabled/disabled
                         DWMWA_NCRENDERING_POLICY,           // [set] Non-client rendering policy
                         DWMWA_TRANSITIONS_FORCEDISABLED,    // [set] Potentially enable/forcibly disable transitions
                         DWMWA_ALLOW_NCPAINT,                // [set] Allow contents rendered in the non-client area to be visible on the DWM-drawn frame.
@@ -575,15 +576,15 @@ begin
 end;
 
 var
-  _DwmModifyPreviousDxFrameDuration: Pointer;
+  _DwmModifyPreviousDxFrameD: Pointer;
 
 function DwmModifyPreviousDxFrameDuration;
 begin
-  GetProcedureAddress(_DwmModifyPreviousDxFrameDuration, dwmlib, 'DwmModifyPreviousDxFrameDuration');
+  GetProcedureAddress(_DwmModifyPreviousDxFrameD, dwmlib, 'DwmModifyPreviousDxFrameDuration');
   asm
         MOV     ESP, EBP
         POP     EBP
-        JMP     [_DwmModifyPreviousDxFrameDuration]
+        JMP     [_DwmModifyPreviousDxFrameD]
   end;
 end;
 
@@ -718,15 +719,16 @@ begin
 end;
 
 var
-  _DwmGetGraphicsStreamTransformHint: Pointer;
+  //_DwmGetGraphicsStreamTransformHint: Pointer;
+  _DwmGetGraphicsStreamTH: Pointer;
 
 function DwmGetGraphicsStreamTransformHint;
 begin
-  GetProcedureAddress(_DwmGetGraphicsStreamTransformHint, dwmlib, 'DwmGetGraphicsStreamTransformHint');
+  GetProcedureAddress(_DwmGetGraphicsStreamTH, dwmlib, 'DwmGetGraphicsStreamTransformHint');
   asm
         MOV     ESP, EBP
         POP     EBP
-        JMP     [_DwmGetGraphicsStreamTransformHint]
+        JMP     [_DwmGetGraphicsStreamTH]
   end;
 end;
 

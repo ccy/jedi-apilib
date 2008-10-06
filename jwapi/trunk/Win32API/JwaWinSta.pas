@@ -34,7 +34,10 @@ interface
 
 
 uses
-  DateUtils, SysUtils, JwaWinType, // JwaWinType must be declared before JwaWinBase because of duplicate declaration of FILETIME
+{$IFDEF DELPHI6_UP}
+  DateUtils,
+{$ENDIF}
+  SysUtils, JwaWinType, // JwaWinType must be declared before JwaWinBase because of duplicate declaration of FILETIME
   JwaWinBase, JwaWinError, JwaNTStatus, JwaWinNT, JwaWinsock2,
   JwaWinSvc, JwaWtsApi32, JwaNative;
 {$ENDIF JWA_OMIT_SECTIONS}
@@ -832,15 +835,16 @@ begin
 end;
 
 var
-  __WinStationBroadcastSystemMessage: Pointer;
+  //__WinStationBroadcastSystemMessage: Pointer;
+  __WinStationBroadcastSM: Pointer;
 
 function WinStationBroadcastSystemMessage;
 begin
-  GetProcedureAddress(__WinStationBroadcastSystemMessage, winstadll, 'WinStationBroadcastSystemMessage');
+  GetProcedureAddress(__WinStationBroadcastSM, winstadll, 'WinStationBroadcastSystemMessage');
   asm
         MOV     ESP, EBP
         POP     EBP
-        JMP     [__WinStationBroadcastSystemMessage]
+        JMP     [__WinStationBroadcastSM]
   end;
 end;
 
@@ -976,15 +980,15 @@ begin
 end;
 
 var
-  __WinStationGetTermSrvCountersValue: Pointer;
+  __WinStationGetTermSrvCountersV: Pointer;
 
 function WinStationGetTermSrvCountersValue;
 begin
-  GetProcedureAddress(__WinStationGetTermSrvCountersValue, winstadll, 'WinStationGetTermSrvCountersValue');
+  GetProcedureAddress(__WinStationGetTermSrvCountersV, winstadll, 'WinStationGetTermSrvCountersValue');
   asm
         MOV     ESP, EBP
         POP     EBP
-        JMP     [__WinStationGetTermSrvCountersValue]
+        JMP     [__WinStationGetTermSrvCountersV]
   end;
 end;
 
@@ -1042,15 +1046,15 @@ begin
 end;
 
 var
-  __WinStationQueryLogonCredentialsW: Pointer;
+  __WinStationQueryLogonCW: Pointer;
 
 function WinStationQueryLogonCredentialsW;
 begin
-  GetProcedureAddress(__WinStationQueryLogonCredentialsW, winstadll, 'WinStationQueryLogonCredentialsW');
+  GetProcedureAddress(__WinStationQueryLogonCW, winstadll, 'WinStationQueryLogonCredentialsW');
   asm
         MOV     ESP, EBP
         POP     EBP
-        JMP     [__WinStationQueryLogonCredentialsW]
+        JMP     [__WinStationQueryLogonCW]
   end;
 end;
 
@@ -1094,15 +1098,15 @@ begin
 end;
 
 var
-  __WinStationRegisterConsoleNotification: Pointer;
+  __WinStationRegisterCN: Pointer;
 
 function WinStationRegisterConsoleNotification;
 begin
-  GetProcedureAddress(__WinStationRegisterConsoleNotification, winstadll, 'WinStationRegisterConsoleNotification');
+  GetProcedureAddress(__WinStationRegisterCN, winstadll, 'WinStationRegisterConsoleNotification');
   asm
         MOV     ESP, EBP
         POP     EBP
-        JMP     [__WinStationRegisterConsoleNotification]
+        JMP     [__WinStationRegisterCN]
   end;
 end;
 
@@ -1226,15 +1230,15 @@ begin
 end;
 
 var
-  __WinStationUnRegisterConsoleNotification: Pointer;
+  __WinStationUnRegisterCN: Pointer;
 
 function WinStationUnRegisterConsoleNotification;
 begin
-  GetProcedureAddress(__WinStationUnRegisterConsoleNotification, winstadll, 'WinStationUnRegisterConsoleNotification');
+  GetProcedureAddress(__WinStationUnRegisterCN, winstadll, 'WinStationUnRegisterConsoleNotification');
   asm
         MOV     ESP, EBP
         POP     EBP
-        JMP     [__WinStationUnRegisterConsoleNotification]
+        JMP     [__WinStationUnRegisterCN]
   end;
 end;
 {$ENDIF DYNAMIC_LINK}
@@ -1418,9 +1422,12 @@ begin
     if Result then
     begin
       LogonTime := FileTime2DateTime(Info.LogonTime);
+//TODO: Remko: YearOf is not available
+{$IFDEF DELPHI6_UP}
       if YearOf(LogonTime) = 1601 then
         sLogonTime := ''
       else
+{$ENDIF DELPHI6_UP}
         {$IFDEF COMPILER7_UP}
         sLogonTime := DateTimeToStr(LogonTime, FS);
         {$ELSE}
@@ -1440,14 +1447,23 @@ begin
       CurrentTime := FileTime2DateTime(Info.CurrentTime);
       LastInputTime := FileTime2DateTime(Info.LastInputTime);
 
+//TODO: YearOf is not available
+{$IFDEF DELPHI6_UP}
       // Disconnected session = idle since DisconnectTime
       if YearOf(LastInputTime) = 1601 then
         LastInputTime := FileTime2DateTime(Info.DisconnectTime);
+{$ENDIF}
 
       IdleTime := LastInputTime - CurrentTime;
       Days := Trunc(IdleTime);
+//TODO: Remko: HoursOf, MinuteOf are not available
+{$IFDEF DELPHI6_UP}
       Hours := HourOf(IdleTime);
       Minutes := MinuteOf(IdleTime);
+{$ELSE}
+      Hours := 0;
+      Minutes := 0;
+{$ENDIF}
       if Days > 0 then
         sIdleTime := Format('%dd %d:%1.2d', [Days, Hours, Minutes])
       else

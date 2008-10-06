@@ -52,10 +52,14 @@ unit JwaActiveX;
 interface
 
 uses
+{$IFDEF DELPHI5}
+  ActiveX,
+{$ENDIF}
   JwaWinType;
 {$ENDIF JWA_OMIT_SECTIONS}
 
 {$IFNDEF JWA_IMPLEMENTATIONSECTION}
+
 
 const
   { IConnectionPoint status codes }

@@ -40,7 +40,11 @@ unit JwaWinLDAP;
 interface
 
 uses
-  Windows;
+  Windows
+{$IFDEF DELPHI5}
+  , JwaWinType
+{$ENDIF}
+  ;
 {$ENDIF JWA_OMIT_SECTIONS}
 
 {$IFNDEF JWA_IMPLEMENTATIONSECTION}

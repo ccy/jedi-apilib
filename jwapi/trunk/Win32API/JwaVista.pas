@@ -47,7 +47,7 @@
 This unit must not be included in JwaWindows.pas because it is not compatible!
 {$ENDIF JWA_INCLUDEMODE}
 
-unit JwaVista deprecated;
+unit JwaVista {$IFDEF DELPHI6_UP}deprecated{$ENDIF};
 {
 JwaVista was merged with the JEDI API headers and is no more supported.
 }

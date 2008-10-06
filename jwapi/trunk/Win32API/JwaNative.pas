@@ -3105,7 +3105,42 @@ type
       IsProtectedProcess,
       IsLegacyProcess,
       IsImageDynamicallyRelocated,
+{$IFDEF DELPHI6_UP}
       SpareBits = al32Bit   //
+{$ELSE}
+      SpareBit1,
+      SpareBit2,
+      SpareBit3,
+      SpareBit4,
+      SpareBit5,
+      SpareBit6,
+      SpareBit7,
+      SpareBit8,
+      SpareBit9,
+      SpareBit10,
+      SpareBit11,
+      SpareBit12,
+      SpareBit13,
+      SpareBit14,
+      SpareBit15,
+      SpareBit16,
+      SpareBit17,
+      SpareBit18,
+      SpareBit19,
+      SpareBit20,
+      SpareBit21,
+      SpareBit22,
+      SpareBit23,
+      SpareBit24,
+      SpareBit25,
+      SpareBit26,
+      SpareBit27,
+      SpareBit28,
+      SpareBit29,
+      SpareBit30,
+      SpareBit31,
+      SpareBit32
+{$ENDIF}
      );
 
      Mutant : PVOID;
@@ -3127,8 +3162,44 @@ type
 
      ReservedBits0 : set of
      (
+{$IFDEF DELPHI6_UP}
        Bits_0  = al16bit,
        Bits_1  = al16bit
+{$ELSE}
+       Bits_0_1,
+       Bits_0_2,
+       Bits_0_3,
+       Bits_0_4,
+       Bits_0_5,
+       Bits_0_6,
+       Bits_0_7,
+       Bits_0_8,
+       Bits_0_9,
+       Bits_0_10,
+       Bits_0_11,
+       Bits_0_12,
+       Bits_0_13,
+       Bits_0_14,
+       Bits_0_15,
+       Bits_0_16,
+
+       Bits_1_1,
+       Bits_1_2,
+       Bits_1_3,
+       Bits_1_4,
+       Bits_1_5,
+       Bits_1_6,
+       Bits_1_7,
+       Bits_1_8,
+       Bits_1_9,
+       Bits_1_10,
+       Bits_1_11,
+       Bits_1_12,
+       Bits_1_13,
+       Bits_1_14,
+       Bits_1_15,
+       Bits_1_16
+{$ENDIF}
      );
      {ULONG ProcessInJob: 1;
      ULONG ProcessInitializing: 1;

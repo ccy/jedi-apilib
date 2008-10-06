@@ -52,7 +52,12 @@ uses
   JwaWinType
   ;
 
+{$IFDEF DELPHI6_UP}
 {$ALIGN 8}
+{$ELSE}
+{$A+}
+//Warning: Record alignment 4
+{$ENDIF DELPHI6_UP}
 
 {$HPPEMIT '#include "UrlHist.h"'}
 

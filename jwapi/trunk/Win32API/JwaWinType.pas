@@ -93,6 +93,17 @@ procedure GetProcedureAddress(var P: Pointer; const ModuleName, ProcName: AnsiSt
 procedure GetProcedureAddress(var P: Pointer; const ModuleName : AnsiString; ProcNumber : Cardinal); overload;
 
 type
+{$IFDEF DELPHI5}
+  PShortInt = ^ShortInt;
+  PSingle = ^Single;
+  PDouble = ^Double;
+  PPAnsiChar = ^PAnsiChar;
+{$IFNDEF JWA_OMIT_SECTIONS}
+  PLongint = ^Longint;
+  PCardinal = ^Cardinal;
+{$ENDIF JWA_OMIT_SECTIONS}
+{$ENDIF}
+
   // (rom) moved from JwaRpc.pas
   RPC_STATUS = Longint;
   {$EXTERNALSYM RPC_STATUS}

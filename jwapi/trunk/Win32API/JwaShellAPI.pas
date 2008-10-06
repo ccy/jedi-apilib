@@ -1023,12 +1023,16 @@ function SHSetLocalizedName(pszPath, pszResModule: PWideChar; idsRes: Integer): 
 //                         like wsprintf
 //
 
+{$IFDEF DELPHI6_UP}
+//variable arguments are not supported in delphi 5
+//maybe this also applies to d6
 {$EXTERNALSYM ShellMessageBoxA}
 function ShellMessageBoxA(hAppInst: THandle; hWnd: HWND; lpcText, lpcTitle: PAnsiChar; fuStyle: UINT): Integer; cdecl; varargs;
 {$EXTERNALSYM ShellMessageBoxW}
 function ShellMessageBoxW(hAppInst: THandle; hWnd: HWND; lpcText, lpcTitle: PWideChar; fuStyle: UINT): Integer; cdecl; varargs;
 {$EXTERNALSYM ShellMessageBox}
 function ShellMessageBox(hAppInst: THandle; hWnd: HWND; lpcText, lpcTitle: PTSTR; fuStyle: UINT): Integer; cdecl; varargs;
+{$ENDIF DELPHI6_UP}
 
 {$EXTERNALSYM IsLFNDriveA}
 function IsLFNDriveA(pszPath: PAnsiChar): BOOL; stdcall;
@@ -1102,11 +1106,12 @@ begin
   Result := -x;
 end;
 
+{$IFDEF DELPHI6_UP}
 //cannot be dynamical because of varargs
 function ShellMessageBoxA; external Shell32 name 'ShellMessageBoxA';
 function ShellMessageBoxW; external Shell32 name 'ShellMessageBoxW';
 function ShellMessageBox; external Shell32 name 'ShellMessageBox'+ AWSuffix;
-
+{$ENDIF}
 
 {$IFNDEF DYNAMIC_LINK}
 
@@ -2036,15 +2041,16 @@ begin
 end;
 
 var
-  _SHLoadNonloadedIconOverlayIdentifiers: Pointer;
+  //_SHLoadNonloadedIconOverlayIdentifiers: Pointer; //too long name for d5
+  _SHLoadNonloadedIOI: Pointer;
 
 function  SHLoadNonloadedIconOverlayIdentifiers;
 begin
-  GetProcedureAddress(_SHLoadNonloadedIconOverlayIdentifiers, Shell32, 'SHLoadNonloadedIconOverlayIdentifiers');
+  GetProcedureAddress(_SHLoadNonloadedIOI, Shell32, 'SHLoadNonloadedIconOverlayIdentifiers');
   asm
         MOV     ESP, EBP
         POP     EBP
-        JMP     [_SHLoadNonloadedIconOverlayIdentifiers]
+        JMP     [_SHLoadNonloadedIOI]
   end;
 end;
 

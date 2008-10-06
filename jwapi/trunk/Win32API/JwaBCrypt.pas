@@ -43,7 +43,12 @@
 {$IFNDEF JWA_OMIT_SECTIONS}
 unit JwaBCrypt;
 
+{$IFDEF DELPHI6_UP}
 {$ALIGN 8}
+{$ELSE}
+{$A+}
+//Warning: Record alignment 4
+{$ENDIF DELPHI6_UP}
 
 interface
 
@@ -1647,28 +1652,30 @@ begin
 end;
 
 var
-  _BCryptRegisterConfigChangeNotify: Pointer;
+  //_BCryptRegisterConfigChangeNotify: Pointer;
+  _BCryptRegisterConfigCN: Pointer;
 
 function BCryptRegisterConfigChangeNotify;
 begin
-  GetProcedureAddress(_BCryptRegisterConfigChangeNotify, bcryptdll, 'BCryptRegisterConfigChangeNotify');
+  GetProcedureAddress(_BCryptRegisterConfigCN, bcryptdll, 'BCryptRegisterConfigChangeNotify');
   asm
         MOV     ESP, EBP
         POP     EBP
-        JMP     [_BCryptRegisterConfigChangeNotify]
+        JMP     [_BCryptRegisterConfigCN]
   end;
 end;
 
 var
-  _BCryptUnregisterConfigChangeNotify: Pointer;
+  //_BCryptUnregisterConfigChangeNotify: Pointer;
+  _BCryptUnregisterConfigCN: Pointer;
 
 function BCryptUnregisterConfigChangeNotify;
 begin
-  GetProcedureAddress(_BCryptUnregisterConfigChangeNotify, bcryptdll, 'BCryptUnregisterConfigChangeNotify');
+  GetProcedureAddress(_BCryptUnregisterConfigCN, bcryptdll, 'BCryptUnregisterConfigChangeNotify');
   asm
         MOV     ESP, EBP
         POP     EBP
-        JMP     [_BCryptUnregisterConfigChangeNotify]
+        JMP     [_BCryptUnregisterConfigCN]
   end;
 end;
 
@@ -1842,54 +1849,58 @@ begin
 end;
 
 var
-  _BCryptQueryContextFunctionConfiguration: Pointer;
+  //_BCryptQueryContextFunctionConfiguration: Pointer;
+  _BCryptQueryContextFC: Pointer;
 
 function BCryptQueryContextFunctionConfiguration;
 begin
-  GetProcedureAddress(_BCryptQueryContextFunctionConfiguration, bcryptdll, 'BCryptQueryContextFunctionConfiguration');
+  GetProcedureAddress(_BCryptQueryContextFC, bcryptdll, 'BCryptQueryContextFunctionConfiguration');
   asm
         MOV     ESP, EBP
         POP     EBP
-        JMP     [_BCryptQueryContextFunctionConfiguration]
+        JMP     [_BCryptQueryContextFC]
   end;
 end;
 
 var
-  _BCryptEnumContextFunctionProviders: Pointer;
+  //_BCryptEnumContextFunctionProviders: Pointer;
+  _BCryptEnumContextFP: Pointer;
 
 function BCryptEnumContextFunctionProviders;
 begin
-  GetProcedureAddress(_BCryptEnumContextFunctionProviders, bcryptdll, 'BCryptEnumContextFunctionProviders');
+  GetProcedureAddress(_BCryptEnumContextFP, bcryptdll, 'BCryptEnumContextFunctionProviders');
   asm
         MOV     ESP, EBP
         POP     EBP
-        JMP     [_BCryptEnumContextFunctionProviders]
+        JMP     [_BCryptEnumContextFP]
   end;
 end;
 
 var
-  _BCryptSetContextFunctionProperty: Pointer;
+  //_BCryptSetContextFunctionProperty: Pointer;
+  _BCryptSetContextFP: Pointer;
 
 function BCryptSetContextFunctionProperty;
 begin
-  GetProcedureAddress(_BCryptSetContextFunctionProperty, bcryptdll, 'BCryptSetContextFunctionProperty');
+  GetProcedureAddress(_BCryptSetContextFP, bcryptdll, 'BCryptSetContextFunctionProperty');
   asm
         MOV     ESP, EBP
         POP     EBP
-        JMP     [_BCryptSetContextFunctionProperty]
+        JMP     [_BCryptSetContextFP]
   end;
 end;
 
 var
-  _BCryptQueryContextFunctionProperty: Pointer;
+  //_BCryptQueryContextFunctionProperty: Pointer;
+  _BCryptQueryContextFP: Pointer;
 
 function BCryptQueryContextFunctionProperty;
 begin
-  GetProcedureAddress(_BCryptQueryContextFunctionProperty, bcryptdll, 'BCryptQueryContextFunctionProperty');
+  GetProcedureAddress(_BCryptQueryContextFP, bcryptdll, 'BCryptQueryContextFunctionProperty');
   asm
         MOV     ESP, EBP
         POP     EBP
-        JMP     [_BCryptQueryContextFunctionProperty]
+        JMP     [_BCryptQueryContextFP]
   end;
 end;
 

@@ -45,7 +45,7 @@
 {$IFNDEF JWA_OMIT_SECTIONS}
 unit JwaShlObj;
 
-
+{$I ..\Includes\JediAPILib.inc}
 interface
 
 uses
@@ -58,7 +58,8 @@ uses
 
   }
   Windows, ActiveX,
-  CommCtrl, msxml, ShDocVw,
+  CommCtrl, {$IFDEF DELPHI6_UP}msxml,{$ENDIF DELPHI6_UP}
+  ShDocVw,
   //
   JwaWinBase, JwaWinUser, JwaWinType, JwaActiveX, JwaWinInet,
   JwaShlDisp, JwaShellApi, JwaUrlMon;
@@ -77,7 +78,12 @@ uses
 //===========================================================================
 
 {$WEAKPACKAGEUNIT}
+{$IFDEF DELPHI6_UP}
 {$ALIGN 8}
+{$ELSE}
+{$A+}
+//Warning: Record alignment 4
+{$ENDIF DELPHI6_UP}
 
 {$HPPEMIT '#include "shlobj.h"'}
 
@@ -1361,7 +1367,12 @@ const
   SID_SCommDlgBrowser: TGUID = (
     D1:$80F30233; D2:$B7DF; D3:$11D2; D4:($A3,$3B,$00,$60,$97,$DF,$5B,$D4));
 
+{$IFDEF DELPHI6_UP}
 {$ALIGN 8}
+{$ELSE}
+{$A+}
+//Warning: Record alignment 4
+{$ENDIF DELPHI6_UP}
 
 // -- shtypes.h --
 
@@ -1441,7 +1452,12 @@ type
   {$NODEFINE PPItemIDListArray}
   PPItemIDListArray = ^TPItemIDListArray;
 
+{$IFDEF DELPHI6_UP}
 {$ALIGN 8}
+{$ELSE}
+{$A+}
+//Warning: Record alignment 4
+{$ENDIF DELPHI6_UP}
 
 //-------------------------------------------------------------------------
 //
@@ -3116,7 +3132,7 @@ type
     function Initialize(pdo: IDataObject; dwOptions: DWORD;
       pszServiceProvider: PWideChar): HResult; stdcall;
     function GetTransferManifest(out phrFromTransfer: HRESULT;
-      out pdocManifest: IXMLDOMDocument): HResult; stdcall;
+      out pdocManifest: {$IFDEF DELPHI5}Pointer{$ELSE}IXMLDOMDocument{$ENDIF}): HResult; stdcall;
   end;
 
 const
@@ -11765,15 +11781,16 @@ begin
 end;
 
 var
-  _SHCreateQueryCancelAutoPlayMoniker: Pointer;
+  //_SHCreateQueryCancelAutoPlayMoniker: Pointer;
+  _SHCreateQueryCancelAM: Pointer;
 
 function SHCreateQueryCancelAutoPlayMoniker;
 begin
-  GetProcedureAddress(_SHCreateQueryCancelAutoPlayMoniker, shell32, 'SHCreateQueryCancelAutoPlayMoniker');
+  GetProcedureAddress(_SHCreateQueryCancelAM, shell32, 'SHCreateQueryCancelAutoPlayMoniker');
   asm
         MOV     ESP, EBP
         POP     EBP
-        JMP     [_SHCreateQueryCancelAutoPlayMoniker]
+        JMP     [_SHCreateQueryCancelAM]
   end;
 end;
 
@@ -12064,15 +12081,16 @@ begin
 end;
 
 var
-  _SHMapIDListToImageListIndexAsync: Pointer;
+  //_SHMapIDListToImageListIndexAsync: Pointer;
+  _SHMapIDListToImageLIA: Pointer;
 
 function SHMapIDListToImageListIndexAsync;
 begin
-  GetProcedureAddress(_SHMapIDListToImageListIndexAsync, shdocvwDll, 'SHMapIDListToImageListIndexAsync');
+  GetProcedureAddress(_SHMapIDListToImageLIA, shdocvwDll, 'SHMapIDListToImageListIndexAsync');
   asm
         MOV     ESP, EBP
         POP     EBP
-        JMP     [_SHMapIDListToImageListIndexAsync]
+        JMP     [_SHMapIDListToImageLIA]
   end;
 end;
 

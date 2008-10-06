@@ -59,7 +59,12 @@ interface
   uses JwaWinBase, JwaWinType, JwaWmiStr, JwaEventDefs;
 {$ENDIF JWA_WINDOWS}
 
+{$IFDEF DELPHI6_UP}
 {$ALIGN 8}
+{$ELSE}
+{$A+}
+//Warning: Record alignment 4
+{$ENDIF DELPHI6_UP}
 
 {$ENDIF JWA_OMIT_SECTIONS}
 

@@ -1615,28 +1615,30 @@ begin
 end;
 
 var
-  _WTSRegisterSessionNotificationEx: Pointer;
+  //_WTSRegisterSessionNotificationEx: Pointer;
+  _WTSRegisterSessionNEx: Pointer;
 
 function WTSRegisterSessionNotificationEx;
 begin
-  GetProcedureAddress(_WTSRegisterSessionNotificationEx, wtsapi, 'WTSRegisterSessionNotificationEx');
+  GetProcedureAddress(_WTSRegisterSessionNEx, wtsapi, 'WTSRegisterSessionNotificationEx');
   asm
         MOV     ESP, EBP
         POP     EBP
-        JMP     [_WTSRegisterSessionNotificationEx]
+        JMP     [_WTSRegisterSessionNEx]
   end;
 end;
 
 var
-  _WTSUnRegisterSessionNotificationEx: Pointer;
+  //_WTSUnRegisterSessionNotificationEx: Pointer;
+  _WTSUnRegisterSessionNEx: Pointer;
 
 function WTSUnRegisterSessionNotificationEx;
 begin
-  GetProcedureAddress(_WTSUnRegisterSessionNotificationEx, wtsapi, 'WTSUnRegisterSessionNotificationEx');
+  GetProcedureAddress(_WTSUnRegisterSessionNEx, wtsapi, 'WTSUnRegisterSessionNotificationEx');
   asm
         MOV     ESP, EBP
         POP     EBP
-        JMP     [_WTSUnRegisterSessionNotificationEx]
+        JMP     [_WTSUnRegisterSessionNEx]
   end;
 end;
 
