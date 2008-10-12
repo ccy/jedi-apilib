@@ -65,10 +65,6 @@ uses SysUtils, Classes, Contnrs,
 type
 
 
-{$IFNDEF DELPHI6_UP}
-  EOSError = EWin32Error;
-{$ENDIF}
-
 
 
   {Forward declaration of TDesktops}

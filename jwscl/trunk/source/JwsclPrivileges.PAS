@@ -61,7 +61,7 @@ type
    privilege administration.
    See JwGetPrivilegeScope how to use this.
   }
-  IJwPrivilegeScope = interface (IInterface)
+  IJwPrivilegeScope = interface {$IFDEF DELPHI6_UP}(IInterface){$ENDIF}
     ['{257AC2B6-7B56-4C34-80AC-B4233BA71313}']
     function GetEnabledPrivileges : TJwStringArray;
     property EnabledPrivileges : TJwStringArray read GetEnabledPrivileges;

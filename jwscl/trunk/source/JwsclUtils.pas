@@ -16,7 +16,7 @@ Software distributed under the License is distributed on an "AS IS" basis, WITHO
 ANY KIND, either express or implied. See the License for the specific language governing rights
 and limitations under the License.
 
-Alternatively, the contents of this file may be used under the terms of the  
+Alternatively, the contents of this file may be used under the terms of the
 GNU Lesser General Public License (the  "LGPL License"), in which case the   
 provisions of the LGPL License are applicable instead of those above.        
 If you wish to allow use of your version of this file only under the terms   
@@ -51,7 +51,7 @@ unit JwsclUtils;
 //check for Eurekalog
 {$IFDEF EUREKALOG}
   {$DEFINE FullDebugMode}
-{to see if this memory manager catches Local/Global leaks}  
+{to see if this memory manager catches Local/Global leaks}
   {.$UNDEF FASTMM4}
   {.$UNDEF MEMCHECK}
   {.$UNDEF FullDebugMode}
@@ -71,7 +71,6 @@ uses
   JwsclResource,
   //JwsclDescriptor, //do not set!
   JwsclStrings;
-
 
 
 type
@@ -115,6 +114,9 @@ type
     Remarks
       The method does not support waiting with message loop support in the case
        when parameter MsgLoop is true and the current thread is not the main thread.
+
+      Delphi 5 does not support SyncEvent. This event is signaled every time
+      a thread wishes to synchronize with the main thread.
      }
     function WaitWithTimeOut(const TimeOut: DWORD;
       const MsgLoop : Boolean = true) : LongWord;
@@ -639,7 +641,7 @@ Otherwise it does nothing.
 procedure JwCheckVISTACompilerSwitch(MethodName, ClassName, FileName : TJwString);
 
 implementation
-uses SysUtils, Registry, JwsclToken, JwsclKnownSid, JwsclDescriptor, JwsclAcl,
+uses SysUtils, Registry, D5Impl, JwsclToken, JwsclKnownSid, JwsclDescriptor, JwsclAcl,
      JwsclSecureObjects, JwsclMapping, JwsclStreams, JwsclCryptProvider
 {$IFDEF JW_TYPEINFO}
      ,TypInfo
@@ -1526,19 +1528,22 @@ begin
         But that's too easy
         }
         if MsgLoop then
-          WaitResult := JwMsgWaitForMultipleObjects([Handle, SyncEvent, hTimer], False, INFINITE, QS_SENDMESSAGE)
+          WaitResult := JwMsgWaitForMultipleObjects([Handle, {$IFDEF DELPHI7_UP}SyncEvent,{$ENDIF} hTimer], False, INFINITE, QS_SENDMESSAGE)
         else
-          WaitResult := JwWaitForMultipleObjects([Handle, SyncEvent, hTimer], False, INFINITE);
-          
-        CheckThreadError(WaitResult <> WAIT_FAILED);
+          WaitResult := JwWaitForMultipleObjects([Handle, {$IFDEF DELPHI7_UP}SyncEvent,{$ENDIF} hTimer], False, INFINITE);
 
+
+        CheckThreadError(WaitResult <> WAIT_FAILED);
         if WaitResult = WAIT_OBJECT_0 + 1 then
-          CheckSynchronize;
+{$IFDEF DELPHI7_UP}
+          CheckSynchronize;         //not supported in D5
+
         if WaitResult = WAIT_OBJECT_0 + 2 then
+{$ENDIF DELPHI7_UP}
         begin
           result := WAIT_TIMEOUT;
           exit;
-        end;         
+        end;
       until WaitResult = WAIT_OBJECT_0;
     finally
       if hTimer <> INVALID_HANDLE_VALUE then
@@ -1547,6 +1552,7 @@ begin
   end
   else
     WaitForSingleObject(Handle, TimeOut);
+
 
   CheckThreadError(GetExitCodeThread(Handle, Result));
 end;

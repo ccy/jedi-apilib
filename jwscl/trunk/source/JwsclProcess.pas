@@ -820,7 +820,7 @@ procedure JwCreateProcessAsAdminUser(
 
 {$IFNDEF SL_OMIT_SECTIONS}
 implementation
-uses Math, JwsclExceptions,
+uses Math, D5impl, JwsclExceptions,
   JwsclKnownSid, JwsclVersion,
   JwsclAcl, JwsclConstants;
 

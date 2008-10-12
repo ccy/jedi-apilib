@@ -1923,9 +1923,7 @@ implementation
 
 uses JwsclKnownSid, JwsclMapping, JwsclSecureObjects, JwsclProcess,
      JwsclTerminalServer, JwsclLsa,
-      JwsclPrivileges, Math;
-
-
+      JwsclPrivileges, Math, D5impl;
 
 {$ENDIF SL_OMIT_SECTIONS}
 

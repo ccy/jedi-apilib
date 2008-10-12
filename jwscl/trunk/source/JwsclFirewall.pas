@@ -39,7 +39,9 @@ unit JwsclFirewall;
 
 interface
 
-uses ComObj,
+uses
+    JwaWindows,
+    ComObj,
     NetFwTypeLib_TLB, //can be found at \jwapi\trunk\COM
     JwsclConstants,
     JwsclExceptions,

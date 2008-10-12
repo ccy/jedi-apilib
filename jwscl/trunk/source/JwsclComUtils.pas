@@ -55,7 +55,7 @@ unit JwsclComUtils;
 interface
 
 uses
-  Classes, JwsclTypes, JwsclResource ,Jwsclexceptions;
+  JwaWindows, Classes, JwsclTypes, JwsclResource ,Jwsclexceptions;
 {$ENDIF SL_OMIT_SECTIONS}
 
 {$IFNDEF SL_IMPLEMENTATION_SECTION}
@@ -177,7 +177,7 @@ type
 
 {$IFNDEF SL_OMIT_SECTIONS}
 implementation
-uses JwaWindows, SysUtils, SyncObjs;
+uses SysUtils, SyncObjs;
 {$ENDIF SL_OMIT_SECTIONS}
 
 

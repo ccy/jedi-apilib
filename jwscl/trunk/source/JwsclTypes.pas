@@ -46,16 +46,12 @@ interface
 uses
   JwaWindows,
   JwsclResource,
+  SysUtils,
   JwsclStrings; //JwsclStrings, must be at the end of uses list!!!
 {$ENDIF SL_OMIT_SECTIONS}
 
 {$IFNDEF SL_IMPLEMENTATION_SECTION}
 type
-{$IFNDEF DELPHI6_UP}
-  { <b>PCardinal</b> is defined for Delphi 5 because it does not know this type. }
-  PCardinal = ^Cardinal;
-{$ENDIF DELPHI6_UP}
-
 {$IFDEF DELPHI6_UP}
  {$ALIGN 4}  //warning do not remove. WinApi relies on that!
 {$ELSE}

@@ -48,7 +48,7 @@ unit JwsclExceptions;
 interface
 
 uses SysUtils, Classes,
-  jwaWindows,
+  jwaWindows, D5impl,
   JwsclResource,
   JwsclTypes, JwsclStrings;
 
@@ -438,6 +438,8 @@ implementation
 {$IFDEF SM_JCLDEBUG}
 uses jclDebug;
 {$ENDIF}
+
+
 {$ENDIF SL_OMIT_SECTIONS}
 
 

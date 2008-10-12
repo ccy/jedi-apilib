@@ -1470,7 +1470,7 @@ begin
       G := aList[i].pguid^;
 
     fInheritTypeList.Add(G,
-        TJwSecurityAccessControlEntry.ConvertAceCardinalToAceFlagSet(aList[i].dwFlags),
+        TJwEnumMap.ConvertAceFlags(aList[i].dwFlags),
         aList[i].pszName);
   end;
 {$ELSE}
