@@ -589,13 +589,12 @@ The list has no order!}
 
 {$DEFINE JWA_INCLUDEMODE}
 
-//these files needs a newer version due to missing units
 {$IFDEF JWA_NEW_WINSTA}
   {$I JwaRpcWinsta.pas}
 {$ELSE}
-  {$IFDEF COMPILER6_UP}
-   {$I JwaWinSta.pas}
-  {$ENDIF}
+  {.$IFDEF COMPILER6_UP}
+   {$I JwaWinSta.pas} //has some unsolved probs with DateUtils
+  {.$ENDIF}
   {$IFDEF FPC}
    {$I JwaWinSta.pas}
   {$ENDIF}
@@ -968,13 +967,12 @@ The list has no order!}
 
 {.$I JwaWinternl.pas} //not used anymore!
 
-//these files needs a newer version due to missing units
 {$IFDEF JWA_NEW_WINSTA}
   {$I JwaRpcWinsta.pas}
 {$ELSE}
-  {$IFDEF COMPILER6_UP}
-   {$I JwaWinSta.pas}
-  {$ENDIF}
+  {.$IFDEF COMPILER6_UP}
+   {$I JwaWinSta.pas} //has some unsolved probs with DateUtils
+  {.$ENDIF}
   {$IFDEF FPC}
    {$I JwaWinSta.pas}
   {$ENDIF}
