@@ -42,7 +42,7 @@ interface
 uses
     JwaWindows,
     ComObj,
-    NetFwTypeLib_TLB, //can be found at \jwapi\trunk\COM
+    NetFwTypeLib_TLB, //can be found in \jwapi\trunk\COM
     JwsclConstants,
     JwsclExceptions,
     JwsclStrings;

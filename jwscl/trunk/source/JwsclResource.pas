@@ -582,6 +582,7 @@ const
   RsUNAcl                = 'JwsclAcl.pas.pas';
   RsUNAnsi_UniCode       = 'JwsclAnsi_Unicode.pas';
   RsUNAuthZCtx           = 'JwsclAuthCtx.pas';
+  RsUNCertificates       = 'JwsclCertificates.pas';
   RsUNComUtils           = 'JwsclComUtils.pas';
   RsUNConstants          = 'JwsclConstants.pas';
   RsUNCredentials        = 'JwsclCredentials.pas';

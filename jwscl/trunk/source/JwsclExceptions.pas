@@ -398,7 +398,8 @@ type
   with at least WINVISTA or WIN2008 to enable Vista features.
   }
   EJwsclVistaFeaturesDisabled = class(EJwsclSecurityException);
-  
+
+  EJwsclCertApiException = class(EJwsclSecurityException);
 
   JwGeneralExceptionClass = class of Exception;
 
