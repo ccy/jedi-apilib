@@ -256,7 +256,7 @@ const
   WTD_UI_CONTEXT_INSTALL = 1;
 
 {$EXTERNALSYM WinVerifyTrust}
-function WinVerifyTrust(hwnd: HWND; const pgActionID: TGUID; const pWinTrustData: _WINTRUST_DATA): HRESULT;
+function WinVerifyTrust(hwnd: HWND; const pgActionID: TGUID; const pWinTrustData: _WINTRUST_DATA): HRESULT; stdcall;
 
 
 
