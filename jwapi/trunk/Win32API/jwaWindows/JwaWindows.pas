@@ -632,11 +632,6 @@ The list has no order!}
 {$I JwaWabUtil.pas}
 {$I JwaWabTags.pas}
 {$I JwaWabNot.pas}
-
-
-
-
-
 {.$I JwaWinternl.pas}  //not used anymore!
 
 {$I JwaModuleLoader.pas}//set source path ..\..\Common if not found
@@ -653,6 +648,12 @@ The list has no order!}
   {$I ..\SaCMAPI\Cfg.pas}
   {$I ..\SaCMAPI\CfgMgr32.pas}
 {$ENDIF JWA_INCLUDE_SETUP_API}
+
+{$I JwaWintrust.pas} //Allignment 8
+{$I JwaSoftpub.pas}  //Allignment 8
+
+{******* Add here new units *******}
+
 
 {$UNDEF JWA_INTERFACESECTION}
 
@@ -1027,6 +1028,11 @@ If you get this error you should do the things described or upgrade.
 {$I ..\SaCMAPI\Cfg.pas}
 {$I ..\SaCMAPI\CfgMgr32.pas}
 {$ENDIF JWA_INCLUDE_SETUP_API}
+
+{$I JwaWintrust.pas} //Allignment 8
+{$I JwaSoftpub.pas}  //Allignment 8
+
+{******* Add here new units *******}
 
 {$UNDEF JWA_IMPLEMENTATIONSECTION}
 
