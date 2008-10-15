@@ -132,9 +132,15 @@ var
 
 
 var
+  SuRunCode : Cardinal;
   i : Integer;
+
+  SuRun,
   Parameters : String;
   hRes : HRESULT;
+  hProc : HANDLE;
+  Continue : Boolean;
+  Shell : TShellExecuteInfo;
 begin
   result := 0;
   Log := nil;
@@ -211,17 +217,6 @@ begin
     begin
       InitLog;
       try
-        if not (TJwWindowsVersion.IsWindowsVista(true) or
-          TJwWindowsVersion.IsWindows2008(true)) then
-        begin
-          if MessageDlg('You have to logon as administrator. Please enter your admin credentials. ',
-              mtInformation, [mbOK,mbCancel],0) = mrCancel then
-          begin
-            result := 2;
-            exit;
-          end;
-        end;
-
         if ParamCount = 0 then
           Parameters := CheckParameters(log)
         else
@@ -234,14 +229,73 @@ begin
           System.Delete(Parameters, 1,1);
         end;
 
-        Log.Log(Format('Try to elevate with these parameters: %s',[Parameters]));
-        JwShellExecute(0, //const hWnd: HWND;
-          ParamStr(0), //FileName,
-          Parameters, //Parameters,
-          '', //Directory: TJwString;
-          0, //ShowCmd: Integer;
-          [sefIgnoreElevationIfNotAvailable]//Flags : TJwShellExecuteFlags = [sefNoClosehProcess]): HANDLE;
-        );
+        Continue := true;
+        begin
+          Log.Log(Format('Try to surun with these parameters: %s',[Parameters]));
+
+          ZeroMemory(@Shell, sizeof(TShellExecuteInfo));
+          Shell.cbSize := sizeof(TShellExecuteInfo);
+          Shell.lpVerb := 'SuRun';
+          Shell.lpFile := PChar(ParamStr(0));
+          Shell.lpParameters := PChar(Parameters);
+          Shell.fMask := SEE_MASK_NOCLOSEPROCESS or SEE_MASK_FLAG_NO_UI;
+
+          if ShellExecuteEx(Shell) then
+          if Shell.hProcess <> 0 then
+          begin
+            case WaitForSingleObject(hProc, 60*1000) of
+              WAIT_FAILED : Continue := true;
+              WAIT_OBJECT_0 :
+                begin
+                  if GetExitCodeProcess(hProc,SuRunCode) then
+                  begin
+{
+#define RETVAL_OK           0
+#define RETVAL_ACCESSDENIED 1
+#define RETVAL_RESTRICT     3
+#define RETVAL_CANCELLED    4
+}
+                    Continue := (SuRunCode <> 0) and (SuRunCode <> 4);
+                    if Continue then
+                    begin
+                      Log.Log(lsError,Format('SuRun returned error code: %d',[SuRunCode]));
+                    end;
+                    ShowMessage(IntToStr(SuRunCode));
+                  end;
+                end;
+            end;
+
+            CloseHandle(hProc);
+
+            if Continue then
+              Log.Log('SuRun did not work! Falling through to compatibility mode.');
+          end;  // if Shell.hProcess <> 0 then
+
+        end;
+
+        if Continue then
+        begin
+          if not (TJwWindowsVersion.IsWindowsVista(true) or
+            TJwWindowsVersion.IsWindows2008(true)) then
+          begin
+            if MessageDlg('You have to logon as administrator. Please enter your admin credentials. ',
+                mtInformation, [mbOK,mbCancel],0) = mrCancel then
+            begin
+              result := 2;
+              exit;
+            end;
+          end;
+
+
+          Log.Log(Format('Try to elevate with these parameters: %s',[Parameters]));
+          JwShellExecute(0, //const hWnd: HWND;
+            ParamStr(0), //FileName,
+            Parameters, //Parameters,
+            '', //Directory: TJwString;
+            0, //ShowCmd: Integer;
+            [sefIgnoreElevationIfNotAvailable]//Flags : TJwShellExecuteFlags = [sefNoClosehProcess]): HANDLE;
+          );
+        end;
       except
         on E : EJwsclWinCallFailedException do
         begin
