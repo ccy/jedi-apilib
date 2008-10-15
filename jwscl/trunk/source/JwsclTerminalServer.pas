@@ -2612,11 +2612,25 @@ end;
 function TJwTerminalServer.GetWinStationName(const SessionId: DWORD): TJwString;
 var
   WinStationNamePtr: PWideChar;
+const PaddingFac = 2;
 begin
   // Get and zero memory (
-  GetMem(WinStationNamePtr, WINSTATIONNAME_LENGTH * SizeOf(WideChar));
+  {CW@2008
+  WINSTATIONNAME_LENGTH may not define enough space for WinStationNameFromLogonIdW
+  to store the string so we increase the constant by factor two and create
+  enough space.
+  It seems that WinStationNameFromLogonIdW sets a zero character (2 bytes)
+  on top of WINSTATIONNAME_LENGTH-sized memory block. Strange!
+
+  The necessary size of the memory block is 132. It consists of
+    132 = sizeof(WideChar) * 66 : WideChar
+    66  = 2 + 64
+    64  = 2 * 32 = 2 * WINSTATIONNAME_LENGTH : String
+    2   = Additional zero termination (WideChar)
+  }
+  GetMem(WinStationNamePtr, PaddingFac * (WINSTATIONNAME_LENGTH+1) * SizeOf(WideChar));
   try
-    ZeroMemory(WinStationNamePtr, WINSTATIONNAME_LENGTH * SizeOf(WideChar));
+    ZeroMemory(WinStationNamePtr, PaddingFac * (WINSTATIONNAME_LENGTH+1)* SizeOf(WideChar));
 
     if WinStationNameFromLogonIdW(FServerHandle, SessionId,
       WinStationNamePtr) then
