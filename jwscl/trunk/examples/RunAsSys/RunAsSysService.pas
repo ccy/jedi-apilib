@@ -60,6 +60,7 @@ procedure TRunAsSysSvc3.OnWinLogonFoundInSameSession(const Sender2 : TJwTerminal
 
 var ProcessData : PInternalProcessData absolute Data;
 begin
+  try
   Cancel :=
       {
         same session
@@ -75,6 +76,9 @@ begin
         So we ignore them otherwise the user gets a system elevated process.
       }
       and (Assigned(Process.UserSid) and Process.UserSid.EqualSid(JwLocalSystemSID));
+  except
+    cancel := false;
+  end;
 end;
 
 procedure ServiceController(CtrlCode: DWord); stdcall;

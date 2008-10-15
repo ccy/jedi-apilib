@@ -12,6 +12,7 @@ Visit at http://blog.delphi-jedi.net/
 program RunAsSys;
 
 uses
+  FastMM4,
 {$IFDEF EUREKALOG}
   ExceptionLog,
 {$ENDIF EUREKALOG}  
@@ -29,6 +30,7 @@ uses
   JwsclElevation,
   JwsclVersion,
   JwsclExceptions,
+  JwsclConstants,
   RunAsSysService in 'RunAsSysService.pas' {RunAsSysSvc3: TService};
 
 {$R *.RES}
