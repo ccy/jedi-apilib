@@ -138,7 +138,7 @@ var
   SuRun,
   Parameters : String;
   hRes : HRESULT;
-  hProc : HANDLE;
+
   Continue : Boolean;
   Shell : TShellExecuteInfo;
 begin
@@ -230,6 +230,14 @@ begin
         end;
 
         Continue := true;
+
+        {This section uses the surun verb to execute the process
+        as an administrator.
+        Get SuRun from http://kay-bruns.de/wp/software/surun/
+        }
+
+        //hold key to ignore surun !
+        if GetAsyncKeyState(VK_SHIFT) = 0 then
         begin
           Log.Log(Format('Try to surun with these parameters: %s',[Parameters]));
 
@@ -243,11 +251,18 @@ begin
           if ShellExecuteEx(Shell) then
           if Shell.hProcess <> 0 then
           begin
-            case WaitForSingleObject(hProc, 60*1000) of
-              WAIT_FAILED : Continue := true;
+            //60sec timeout period
+            case WaitForSingleObject(Shell.hProcess, 60*1000) of
+              WAIT_FAILED :
+                begin
+                  Continue := true;
+                  Log.Log(lsWarning,Format('Waiting for SuRun failed: %d',[GetLastError]));
+                  //not sure what to do here so we just continue
+                end;
               WAIT_OBJECT_0 :
                 begin
-                  if GetExitCodeProcess(hProc,SuRunCode) then
+                  ShowMessage('test'); 
+                  if GetExitCodeProcess(Shell.hProcess,SuRunCode) then
                   begin
 {
 #define RETVAL_OK           0
@@ -260,12 +275,11 @@ begin
                     begin
                       Log.Log(lsError,Format('SuRun returned error code: %d',[SuRunCode]));
                     end;
-                    ShowMessage(IntToStr(SuRunCode));
                   end;
                 end;
             end;
 
-            CloseHandle(hProc);
+            CloseHandle(Shell.hProcess);
 
             if Continue then
               Log.Log('SuRun did not work! Falling through to compatibility mode.');
@@ -273,6 +287,7 @@ begin
 
         end;
 
+        //compatibility mode
         if Continue then
         begin
           if not (TJwWindowsVersion.IsWindowsVista(true) or
