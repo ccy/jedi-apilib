@@ -46,7 +46,8 @@ unit JwaWintrust;
 {$HPPEMIT ''}
 
 {$IFNDEF JWA_OMIT_SECTIONS}
-{$I jediapilib.inc}
+{$I ..\Includes\JediAPILib.inc}
+
 
 {$IFDEF DELPHI6_UP}
 {$ALIGN 8}
