@@ -256,9 +256,125 @@ const
   {$EXTERNALSYM WTD_UI_CONTEXT_INSTALL}
   WTD_UI_CONTEXT_INSTALL = 1;
 
-{$EXTERNALSYM WinVerifyTrust}
-function WinVerifyTrust(hwnd: HWND; const pgActionID: TGUID; const pWinTrustData: _WINTRUST_DATA): HRESULT; stdcall;
 
+type
+  PCRYPT_PROVIDER_PRIVDATA = ^CRYPT_PROVIDER_PRIVDATA;
+  _CRYPT_PROVIDER_PRIVDATA = packed record
+    cbStruct: DWORD;
+    gProviderID: GUID;
+    cbProvData: DWORD;
+    pvProvData: Pointer;
+  end;
+  CRYPT_PROVIDER_PRIVDATA = _CRYPT_PROVIDER_PRIVDATA;
+
+  PPROVDATA_SIP = ^PROVDATA_SIP;
+  _PROVDATA_SIP = packed record
+    cbStruct: DWORD;
+    gSubject: GUID;
+
+    //The following members are actually typed pointers. The
+    //corresponding structures are defined in mssip.h.
+    pSip: Pointer;
+    pCATSip: Pointer;
+    psSipSubjectInfo: Pointer;
+    psSipCATSubjectInfo: Pointer;
+    psIndirectData: Pointer;
+  end;
+  PROVDATA_SIP = _PROVDATA_SIP;
+
+  PCRYPT_PROVIDER_CERT = ^CRYPT_PROVIDER_CERT;
+  _CRYPT_PROVIDER_CERT = packed record
+    cbStruct: DWORD;
+    pCert: PCCERT_CONTEXT;
+    fCommercial: BOOL;
+    fTrustedRoot: BOOL;
+    fSelfSigned: BOOL;
+    fTestCert: BOOL;
+    dwRevokedReason: DWORD;
+    dwConfidence: DWORD;
+    dwError: DWORD;
+    pTrustListContext: PCTL_CONTEXT;
+    fTrustListSignerCert: BOOL;
+    pCtlContext: PCCTL_CONTEXT;
+    dwCtlError: DWORD;
+    fIsCyclic: BOOL;
+    pChainElement: PCERT_CHAIN_ELEMENT;
+  end;
+  CRYPT_PROVIDER_CERT = _CRYPT_PROVIDER_CERT;
+
+  PCRYPT_PROVIDER_SGNR = ^CRYPT_PROVIDER_SGNR;
+  _CRYPT_PROVIDER_SGNR = packed record
+    cbStruct: DWORD;
+    sftVerifyAsOf: FILETIME;
+    csCertChain: PCRYPT_PROVIDER_CERT;
+    dwSignerType: DWORD;
+    psSigner: PCMSG_SIGNER_INFO;
+    dwError: DWORD;
+    csCounterSigners: DWORD;
+    pasCounterSigners: PCRYPT_PROVIDER_SGNR;
+    pChainContext: PCCERT_CHAIN_CONTEXT;
+  end;
+  CRYPT_PROVIDER_SGNR = _CRYPT_PROVIDER_SGNR;
+
+  PCryptProviderData = ^TCryptProviderData;
+  PCRYPT_PROVIDER_DATA = ^CRYPT_PROVIDER_DATA;
+  _CRYPT_PROVIDER_DATA = packed record
+    cbStruct: DWORD;
+    pWintrustData: PWINTRUST_DATA;
+    fOpenedFile: BOOL;
+    hWndParent: HWND;
+    pgActionId: PGUID;
+    hProv: HCRYPTPROV;
+    dwError: DWORD;
+    dwRegSecuritySettings: DWORD;
+    dwRegPolicySettings: DWORD;
+    psPfns: Pointer; //actually a pointer to a _CRYPT_PROVIDER_FUNCTIONS
+    cdwTrustStepErrors: DWORD;
+    padwTrustStepErrors: PDWORD;
+    chStores: DWORD;
+    pahStores: PHCERTSTORE;
+    dwEncoding: DWORD;
+    hMsg: HCRYPTMSG;
+    csSigners: DWORD;
+    pasSigners: PCRYPT_PROVIDER_SGNR;
+    csProvPrivData: DWORD;
+    pasProvPrivData: PCRYPT_PROVIDER_PRIVDATA;
+    dwSubjectChoice: DWORD;
+    pPDSIP: PPROVDATA_SIP; //in C a union with one member
+    pszUsageOID: PAnsiChar;
+    fRecallWithState: BOOL;
+    sftSystemTime: FILETIME;
+    pszCTLSignerUsageOID: PAnsiChar;
+    dwProvFlags: DWORD;
+    dwFinalError: DWORD;
+    pRequestUsage: PCERT_USAGE_MATCH;
+    dwTrustPubSettings: DWORD;
+    dwUIStateFlags: DWORD;
+  end;
+  CRYPT_PROVIDER_DATA = _CRYPT_PROVIDER_DATA;
+  TCryptProviderData = _CRYPT_PROVIDER_DATA;
+
+{$EXTERNALSYM WinVerifyTrust}
+function WinVerifyTrust(hwnd: HWND; const pgActionID: TGUID; var pWinTrustData: _WINTRUST_DATA): LONG; stdcall;
+
+
+{$EXTERNALSYM WTHelperGetProvSignerFromChain}
+function WTHelperGetProvSignerFromChain(pProvData: PCRYPT_PROVIDER_DATA; idxSigner: DWORD; fCounterSigner: BOOL; idxCounterSigner: DWORD): PCRYPT_PROVIDER_SGNR; stdcall;
+
+{$EXTERNALSYM WTHelperGetProvCertFromChain}
+function WTHelperGetProvCertFromChain(pSgnr: PCRYPT_PROVIDER_SGNR; idxCert: DWORD): PCRYPT_PROVIDER_CERT; stdcall;
+
+{$EXTERNALSYM WTHelperProvDataFromStateData}
+function WTHelperProvDataFromStateData(hStateData: THandle): PCRYPT_PROVIDER_DATA; stdcall;
+
+{$EXTERNALSYM WTHelperGetProvPrivateDataFromChain}
+function WTHelperGetProvPrivateDataFromChain(pProvData: PCRYPT_PROVIDER_DATA; const pgProviderId: TGUID): PCRYPT_PROVIDER_PRIVDATA; stdcall;
+
+{$EXTERNALSYM WTHelperCertIsSelfSigned}
+function WTHelperCertIsSelfSigned(dwEncoding: DWORD; pCert: PCERT_INFO): BOOL; stdcall;
+
+{$EXTERNALSYM WTHelperCertCheckValidSignature}
+function WTHelperCertCheckValidSignature(pProvData: PCRYPT_PROVIDER_DATA): HRESULT; stdcall;
 
 
 {$ENDIF JWA_IMPLEMENTATIONSECTION}
@@ -300,9 +416,96 @@ begin
 end;
 
 
+var
+  _WTHelperGetProvSignerFromChain: Pointer;
+
+function WTHelperGetProvSignerFromChain;
+begin
+  GetProcedureAddress(_WTHelperGetProvSignerFromChain, wintrust, 'WTHelperGetProvSignerFromChain');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_WTHelperGetProvSignerFromChain]
+  end;
+end;
+
+var
+  _WTHelperGetProvCertFromChain: Pointer;
+
+function WTHelperGetProvCertFromChain;
+begin
+  GetProcedureAddress(_WTHelperGetProvCertFromChain, wintrust, 'WTHelperGetProvCertFromChain');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_WTHelperGetProvCertFromChain]
+  end;
+end;
+
+var
+  _WTHelperProvDataFromStateData: Pointer;
+
+function WTHelperProvDataFromStateData;
+begin
+  GetProcedureAddress(_WTHelperProvDataFromStateData, wintrust, 'WTHelperProvDataFromStateData');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_WTHelperProvDataFromStateData]
+  end;
+end;
+
+var
+  _WTHelperGetProvPrivateDataFromChain: Pointer;
+
+function WTHelperGetProvPrivateDataFromChain;
+begin
+  GetProcedureAddress(_WTHelperGetProvPrivateDataFromChain, wintrust, 'WTHelperGetProvPrivateDataFromChain');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_WTHelperGetProvPrivateDataFromChain]
+  end;
+end;
+
+var
+  _WTHelperCertIsSelfSigned: Pointer;
+
+function WTHelperCertIsSelfSigned;
+begin
+  GetProcedureAddress(_WTHelperCertIsSelfSigned, wintrust, 'WTHelperCertIsSelfSigned');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_WTHelperCertIsSelfSigned]
+  end;
+end;
+
+var
+  _WTHelperCertCheckValidSignature: Pointer;
+
+function WTHelperCertCheckValidSignature;
+begin
+  GetProcedureAddress(_WTHelperCertCheckValidSignature, wintrust, 'WTHelperCertCheckValidSignature');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_WTHelperCertCheckValidSignature]
+  end;
+end;
+
+
+
 {$ELSE}
 
 function WinVerifyTrust; external wintrust name 'WinVerifyTrust';
+
+function WTHelperGetProvSignerFromChain; external wintrust name 'WTHelperGetProvSignerFromChain';
+function WTHelperGetProvCertFromChain; external wintrust name 'WTHelperGetProvCertFromChain';
+function WTHelperProvDataFromStateData; external wintrust name 'WTHelperProvDataFromStateData';
+function WTHelperGetProvPrivateDataFromChain; external wintrust name 'WTHelperGetProvPrivateDataFromChain';
+function WTHelperCertIsSelfSigned; external wintrust name 'WTHelperCertIsSelfSigned';
+function WTHelperCertCheckValidSignature; external wintrust name 'WTHelperCertCheckValidSignature';
 
 {$ENDIF DYNAMIC_LINK}
 
