@@ -401,7 +401,7 @@ CValue_9=7872391
 
 [Configurations]
 Count=6
-Current=0
+Current=5
 Name0=Configuration 1
 Name1=Configuration 2
 Name2=Configuration 3
@@ -12424,16 +12424,22 @@ BodySourceUseAutolinking=0
 BodySourceUseSyntaxHighlight=0
 
 [Configurations\Configuration 1\Disabled Topics]
-Count=4
+Count=9
 ID0=Compilers.inc
 ID1=jedi.inc
 ID2=Jwscl.inc
 ID3=TJwAutoLock.fLeaveFlag
+ID4=TJwProcessEnumerator.Create@TJwWTSProcessList
+ID5=TJwSecureGeneralObject.Dummy
+ID6=TJwSecureRegistryKey.Dummy
+ID7=TJwSecureRegistryKey.TreeRegKeySetNamedSecurityInfo_Execute@Pointer
+ID8=TJwSessionsEnumerator.Create@TJwWTSSessionList
 
 [Configurations\Configuration 1\Enabled Topics]
-Count=2
+Count=3
 ID0=!!FILES
 ID1=!!SYMREF
+ID2=TJwProcessEnumerator
 
 [Configurations\Configuration 1\Export Symbols]
 Classes=1
@@ -12898,9 +12904,13 @@ OffsetX=4
 OffsetY=4
 
 [Configurations\Configuration 1\Non TOC Topics]
-Count=2
+Count=6
 ID0=Compilers.inc
 ID1=jedi.inc
+ID2=TJwProcessEnumerator.Create@TJwWTSProcessList
+ID3=TJwSecureGeneralObject.Dummy
+ID4=TJwSecureRegistryKey.Dummy
+ID5=TJwSecureRegistryKey.TreeRegKeySetNamedSecurityInfo_Execute@Pointer
 
 [Configurations\Configuration 1\Output Options]
 AdditionalInformationFormatStr=%NAME% %NUMBER%
@@ -25559,16 +25569,22 @@ BodySourceUseAutolinking=0
 BodySourceUseSyntaxHighlight=0
 
 [Configurations\Configuration 2\Disabled Topics]
-Count=4
+Count=9
 ID0=Compilers.inc
 ID1=jedi.inc
 ID2=Jwscl.inc
 ID3=TJwAutoLock.fLeaveFlag
+ID4=TJwProcessEnumerator.Create@TJwWTSProcessList
+ID5=TJwSecureGeneralObject.Dummy
+ID6=TJwSecureRegistryKey.Dummy
+ID7=TJwSecureRegistryKey.TreeRegKeySetNamedSecurityInfo_Execute@Pointer
+ID8=TJwSessionsEnumerator.Create@TJwWTSSessionList
 
 [Configurations\Configuration 2\Enabled Topics]
-Count=2
+Count=3
 ID0=!!FILES
 ID1=!!SYMREF
+ID2=TJwProcessEnumerator
 
 [Configurations\Configuration 2\Export Symbols]
 Classes=1
@@ -26033,9 +26049,13 @@ OffsetX=4
 OffsetY=4
 
 [Configurations\Configuration 2\Non TOC Topics]
-Count=2
+Count=6
 ID0=Compilers.inc
 ID1=jedi.inc
+ID2=TJwProcessEnumerator.Create@TJwWTSProcessList
+ID3=TJwSecureGeneralObject.Dummy
+ID4=TJwSecureRegistryKey.Dummy
+ID5=TJwSecureRegistryKey.TreeRegKeySetNamedSecurityInfo_Execute@Pointer
 
 [Configurations\Configuration 2\Output Options]
 AdditionalInformationFormatStr=%NAME% %NUMBER%
@@ -38694,16 +38714,22 @@ BodySourceUseAutolinking=0
 BodySourceUseSyntaxHighlight=0
 
 [Configurations\Configuration 3\Disabled Topics]
-Count=4
+Count=9
 ID0=Compilers.inc
 ID1=jedi.inc
 ID2=Jwscl.inc
 ID3=TJwAutoLock.fLeaveFlag
+ID4=TJwProcessEnumerator.Create@TJwWTSProcessList
+ID5=TJwSecureGeneralObject.Dummy
+ID6=TJwSecureRegistryKey.Dummy
+ID7=TJwSecureRegistryKey.TreeRegKeySetNamedSecurityInfo_Execute@Pointer
+ID8=TJwSessionsEnumerator.Create@TJwWTSSessionList
 
 [Configurations\Configuration 3\Enabled Topics]
-Count=2
+Count=3
 ID0=!!FILES
 ID1=!!SYMREF
+ID2=TJwProcessEnumerator
 
 [Configurations\Configuration 3\Export Symbols]
 Classes=1
@@ -39168,9 +39194,13 @@ OffsetX=4
 OffsetY=4
 
 [Configurations\Configuration 3\Non TOC Topics]
-Count=2
+Count=6
 ID0=Compilers.inc
 ID1=jedi.inc
+ID2=TJwProcessEnumerator.Create@TJwWTSProcessList
+ID3=TJwSecureGeneralObject.Dummy
+ID4=TJwSecureRegistryKey.Dummy
+ID5=TJwSecureRegistryKey.TreeRegKeySetNamedSecurityInfo_Execute@Pointer
 
 [Configurations\Configuration 3\Output Options]
 AdditionalInformationFormatStr=%NAME% %NUMBER%
@@ -48751,16 +48781,22 @@ BodySourceUseAutolinking=0
 BodySourceUseSyntaxHighlight=0
 
 [Configurations\Configuration 4\Disabled Topics]
-Count=4
+Count=9
 ID0=Compilers.inc
 ID1=jedi.inc
 ID2=Jwscl.inc
 ID3=TJwAutoLock.fLeaveFlag
+ID4=TJwProcessEnumerator.Create@TJwWTSProcessList
+ID5=TJwSecureGeneralObject.Dummy
+ID6=TJwSecureRegistryKey.Dummy
+ID7=TJwSecureRegistryKey.TreeRegKeySetNamedSecurityInfo_Execute@Pointer
+ID8=TJwSessionsEnumerator.Create@TJwWTSSessionList
 
 [Configurations\Configuration 4\Enabled Topics]
-Count=2
+Count=3
 ID0=!!FILES
 ID1=!!SYMREF
+ID2=TJwProcessEnumerator
 
 [Configurations\Configuration 4\Export Symbols]
 Classes=1
@@ -49225,9 +49261,13 @@ OffsetX=4
 OffsetY=4
 
 [Configurations\Configuration 4\Non TOC Topics]
-Count=2
+Count=6
 ID0=Compilers.inc
 ID1=jedi.inc
+ID2=TJwProcessEnumerator.Create@TJwWTSProcessList
+ID3=TJwSecureGeneralObject.Dummy
+ID4=TJwSecureRegistryKey.Dummy
+ID5=TJwSecureRegistryKey.TreeRegKeySetNamedSecurityInfo_Execute@Pointer
 
 [Configurations\Configuration 4\Output Options]
 AdditionalInformationFormatStr=%NAME% %NUMBER%
@@ -53688,16 +53728,22 @@ BodySourceUseAutolinking=0
 BodySourceUseSyntaxHighlight=0
 
 [Configurations\Configuration 5\Disabled Topics]
-Count=4
+Count=9
 ID0=Compilers.inc
 ID1=jedi.inc
 ID2=Jwscl.inc
 ID3=TJwAutoLock.fLeaveFlag
+ID4=TJwProcessEnumerator.Create@TJwWTSProcessList
+ID5=TJwSecureGeneralObject.Dummy
+ID6=TJwSecureRegistryKey.Dummy
+ID7=TJwSecureRegistryKey.TreeRegKeySetNamedSecurityInfo_Execute@Pointer
+ID8=TJwSessionsEnumerator.Create@TJwWTSSessionList
 
 [Configurations\Configuration 5\Enabled Topics]
-Count=2
+Count=3
 ID0=!!FILES
 ID1=!!SYMREF
+ID2=TJwProcessEnumerator
 
 [Configurations\Configuration 5\Export Symbols]
 Classes=1
@@ -54162,9 +54208,13 @@ OffsetX=4
 OffsetY=4
 
 [Configurations\Configuration 5\Non TOC Topics]
-Count=2
+Count=6
 ID0=Compilers.inc
 ID1=jedi.inc
+ID2=TJwProcessEnumerator.Create@TJwWTSProcessList
+ID3=TJwSecureGeneralObject.Dummy
+ID4=TJwSecureRegistryKey.Dummy
+ID5=TJwSecureRegistryKey.TreeRegKeySetNamedSecurityInfo_Execute@Pointer
 
 [Configurations\Configuration 5\Output Options]
 AdditionalInformationFormatStr=%NAME% %NUMBER%
@@ -54894,16 +54944,22 @@ BodySourceUseAutolinking=0
 BodySourceUseSyntaxHighlight=0
 
 [Configurations\Configuration 6\Disabled Topics]
-Count=4
+Count=9
 ID0=Compilers.inc
 ID1=jedi.inc
 ID2=Jwscl.inc
 ID3=TJwAutoLock.fLeaveFlag
+ID4=TJwProcessEnumerator.Create@TJwWTSProcessList
+ID5=TJwSecureGeneralObject.Dummy
+ID6=TJwSecureRegistryKey.Dummy
+ID7=TJwSecureRegistryKey.TreeRegKeySetNamedSecurityInfo_Execute@Pointer
+ID8=TJwSessionsEnumerator.Create@TJwWTSSessionList
 
 [Configurations\Configuration 6\Enabled Topics]
-Count=2
+Count=3
 ID0=!!FILES
 ID1=!!SYMREF
+ID2=TJwProcessEnumerator
 
 [Configurations\Configuration 6\Export Symbols]
 Classes=1
@@ -55368,9 +55424,13 @@ OffsetX=4
 OffsetY=4
 
 [Configurations\Configuration 6\Non TOC Topics]
-Count=2
+Count=6
 ID0=Compilers.inc
 ID1=jedi.inc
+ID2=TJwProcessEnumerator.Create@TJwWTSProcessList
+ID3=TJwSecureGeneralObject.Dummy
+ID4=TJwSecureRegistryKey.Dummy
+ID5=TJwSecureRegistryKey.TreeRegKeySetNamedSecurityInfo_Execute@Pointer
 
 [Configurations\Configuration 6\Output Options]
 AdditionalInformationFormatStr=%NAME% %NUMBER%

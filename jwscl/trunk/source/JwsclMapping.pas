@@ -164,6 +164,10 @@ type
       override;
   end;
 
+  { TJwSecurityWinStationMapping provides methods that map generic access rights to
+    specific access rights for a WindowStation, converts single access rights to a
+    string or create a SI_ACCESS structure for usage in a security descriptor editor
+    (TJwSecurityDescriptorDialog in JwsclSecurityDialogs.pas)                        }
   TJwSecurityWinStationMapping = class(TJwSecurityGenericMapping)
   public
     {<B>GetMapping</B> returns the generic mapping for registry objects.}

@@ -194,6 +194,7 @@ type
 
     function GetTokenRestrictedSids: TJwSecurityIdList; virtual;
 
+    function IsTokenType(index : Integer) : Boolean; virtual;
 
 
     function GetTokenDefaultDacl: TJwDAccessControlList;
@@ -417,7 +418,7 @@ type
 
         {<B>CreateTokenEffective</B> opens a thread token or process. If it can not open the thread token it simply opens the process tokens
         @param aDesiredAccess Receives the desired access for this token. The access types can be get from the following list. Access flags must be concatenated with or operator.
-        If you want to use DuplicateToken or creating an impersonated token (by ConvertToImpersonatedToken) you must specific TOKEN_DUPLICATE. 
+        If you want to use DuplicateToken or creating an impersonated token (by ConvertToImpersonatedToken) you must specific TOKEN_DUPLICATE.
 
         @param aDesiredAccess The desired access rights of the new token.
            It can be MAXIMUM_ALLOWED to get the maximum possible access.
@@ -437,19 +438,44 @@ type
      @param aTokenHandle The token handle to be copied.
      @param aDesiredAccess The desired access rights of the new token.
        It can be MAXIMUM_ALLOWED to get the maximum possible access.
-      
+
      @param UseDuplicateExistingToken For C++ compability only. If you are using C++ and want to use this constructor instead of Create.
           Set this parameter to true of false. This parameter is ignored!
+
+     raises
+       EJwsclSecurityException See ConvertToImpersonatedToken and ConvertToPrimaryToken for possible exceptions.
      }
     constructor CreateDuplicateExistingToken(
       const aTokenHandle: TJwTokenHandle; const aDesiredAccess: TJwAccessMask;
-      UseDuplicateExistingToken: boolean = False); virtual;
+      UseDuplicateExistingToken: boolean = False); overload; virtual;
+
+    {<B>CreateDuplicateExistingToken</B> create a duplicate token from an existing one. The token will be a primary one.
+     You cannot use the class to adapt an existing token, because the access mask of the token is unkown. (AccessCheck not implemented yet)
+     The token needs the TOKEN_DUPLICATE access type.
+
+     New: <B>CreateDuplicateExistingToken</B> creates in every case a second handle. Shared will be set to false so the handle is closed
+      if instance is freed.
+
+     @param Token The token instance to be copied.
+     @param DesiredAccess The desired access rights of the new token.
+       It can be MAXIMUM_ALLOWED to get the maximum possible access.
+
+     @param UseDuplicateExistingToken For C++ compability only. If you are using C++ and want to use this constructor instead of Create.
+          Set this parameter to true of false. This parameter is ignored!
+
+     raises
+       EJwsclNILParameterException This exception is raised if if parameter Token is nil.
+     }
+    constructor CreateDuplicateExistingToken(
+      const Token: TJwSecurityToken; const DesiredAccess: TJwAccessMask;
+      UseDuplicateExistingToken: boolean = False); overload; virtual;
+
 
     {<B>Create</B> creates a token instance using an already existing token handle.
      It can be choosen whether the token instance will close the handle or not.
 
      @param aTokeHandle defines the handle to the token.
-       <B>Create</B> does not do a validity check on the handle! 
+       <B>Create</B> does not do a validity check on the handle!
      @param ShareTokenHandle defines whether the instance ought to close the handle
       or not 
      @param aDesiredAccess defines the access to the token handle.
@@ -659,6 +685,13 @@ type
      Because the old handle is discarded you must call these functions again :
        GetTokenPrivileges
 
+     ConvertToImpersonatedToken needs the following access rights:
+      # TOKEN_QUERY
+      # READ_CONTROL
+      # TOKEN_DUPLICATE
+     You can use TOKEN_READ instead of TOKEN_QUERY and READ_CONTROL.
+
+
      This function does the same as ImpersonateLoggedOnUser if used in this way:
      <code lang="Delphi">
      var Token : TJwSecurityToken;
@@ -705,7 +738,11 @@ type
          Because the old handle is discarded you must call these functions again :
            GetTokenPrivileges
 
-
+        ConvertToPrimaryToken needs the following access rights:
+          # TOKEN_QUERY
+          # READ_CONTROL
+          # TOKEN_DUPLICATE
+         You can use TOKEN_READ instead of TOKEN_QUERY and READ_CONTROL.
 
         @param aDesiredAccess Receives the desired access for this token. The access types can be get from the following list. Access flags must be concatenated with or operator.
         If you want to use DuplicateToken or creating an primary token (by ConvertToPrimaryToken) you must specify TOKEN_DUPLICATE.
@@ -833,7 +870,7 @@ type
         <B>RemoveThreadToken</B> removes the token from the thread.
         @param Thread contains the thread handle. If Thread is zero the calling thread will be used. 
         raises
- EJwsclSecurityException:  will be raised if a winapi function failed 
+ EJwsclSecurityException:  will be raised if a winapi function failed
         }
     class procedure RemoveThreadToken(const Thread: TJwThreadHandle);
 
@@ -1249,7 +1286,7 @@ type
      rights.
      However this token is useless for non privileged tokens because SetThreadToken
      and other functions which get this token checks whether the user can use this
-     token or not. 
+     token or not.
 
      Raises
        EJwsclUnsupportedWindowsVersionException This exception will be raised if the
@@ -1319,6 +1356,16 @@ type
 
     property MandatoryPolicy: TJwTokenMandatoryPolicies
       Read GetMandatoryPolicy;
+
+    {<b>IsPrimaryToken</b> returns true if the current token instance
+     is a primary token; otherwise false.}
+    property IsPrimaryToken : Boolean index 1 read IsTokenType;
+    {<b>IsImpersonationToken</b> returns true if the current token instance
+     is a impersonated token; otherwise false. Same as IsThreadToken}
+    property IsImpersonationToken : Boolean index 2 read IsTokenType;
+    {<b>IsThreadToken</b> returns true if the current token instance
+     is a thread token; otherwise false; Same as IsImpersonationToken.}
+    property IsThreadToken : Boolean index 2 read IsTokenType;
 
   end;
 
@@ -3084,6 +3131,7 @@ begin
 
   //  ShowMEssage(SD.Text);
   try
+    //TOKEN_READ = TOKEN_QUERY + READ_CONTROL = read access to dacl
     Token := TJwSecurityToken.CreateTokenEffective(TOKEN_READ or
       TOKEN_QUERY or TOKEN_DUPLICATE);
     Token.ConvertToImpersonatedToken(SecurityImpersonation,
@@ -3483,8 +3531,8 @@ begin
   fAccessMask  := TOKEN_ALL_ACCESS;
 
   try
-    //first convert token to thread token
-    //this method will do thing if token is already impersonated
+    //first convert the token to a thread token
+    //this method will do nothing if the token is already impersonated
 
     ConvertToImpersonatedToken(DEFAULT_IMPERSONATION_LEVEL, aDesiredAccess);
     //If the token handle differs we have a new token handle that
@@ -3501,6 +3549,17 @@ begin
     raise;
   end;
 end;
+
+constructor TJwSecurityToken.CreateDuplicateExistingToken(
+  const Token: TJwSecurityToken;
+  const DesiredAccess: TJwAccessMask; UseDuplicateExistingToken: boolean);
+begin
+  JwRaiseOnNilParameter(Token, 'Token', 'CreateDuplicateExistingToken', ClassName, RsUNToken);
+
+  CreateDuplicateExistingToken(Token.TokenHandle, DesiredAccess, UseDuplicateExistingToken);
+end;
+
+
 
 constructor TJwSecurityToken.CreateRestrictedToken(
   PrevTokenHandle : TJwTokenHandle;
@@ -3600,6 +3659,10 @@ procedure TJwSecurityToken.ConvertToImpersonatedToken(
 var
   hNewTokenHandle: TJwTokenHandle;
 begin
+  {
+  TOKEN_READ = TOKEN_QUERY + READ_CONTROL
+   We need access to the DACL for GetMaximumAllowed
+  }
   //check for valid token handle
   CheckTokenHandle('ConvertToImpersonatedToken');
   CheckTokenAccessType(TOKEN_DUPLICATE + TOKEN_READ,
@@ -3629,7 +3692,7 @@ begin
     
       
 	try
-      if aDesiredAccess = MAXIMUM_ALLOWED then
+    if aDesiredAccess = MAXIMUM_ALLOWED then
 	    fAccessMask := GetMaximumAllowed
 	  else
 	    fAccessMask := aDesiredAccess;
@@ -3651,6 +3714,11 @@ procedure TJwSecurityToken.ConvertToPrimaryToken(
 var
   hNewTokenHandle: TJwTokenHandle;
 begin
+  {
+  TOKEN_READ = TOKEN_QUERY + READ_CONTROL
+   We need access to the DACL for GetMaximumAllowed
+  }
+
   //check for valid token handle
   CheckTokenHandle('ConvertToPrimaryToken');
   CheckTokenAccessType(TOKEN_DUPLICATE + TOKEN_READ,
@@ -5724,9 +5792,21 @@ begin
 end;
 
 
+function TJwSecurityToken.IsTokenType(index: Integer): Boolean;
+begin
+  case index of
+    {primary}1 : result := TokenType = TokenPrimary;
+    {impersonation}2 : result := TokenType = TokenImpersonation;
+  else
+    result := false;
+  end;
+end;
+
+
 {$ENDIF SL_INTERFACE_SECTION}
 
 {$IFNDEF SL_OMIT_SECTIONS}
+
 
 
 

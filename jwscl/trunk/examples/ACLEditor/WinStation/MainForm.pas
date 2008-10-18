@@ -50,7 +50,7 @@ type
     procedure OnSetSecurity(Sender : TJwSecurityDescriptorDialog;
               SecurityType : TJwSecurityInformationFlagSet;
               SecurityDialogFlags : TJwSecurityDialogFlags;
-              SecurityResetType : TJwSecurityResetType;
+              SecurityResetType : TJwSecurityResetTypes;
               Settings : TJwSecurityDescriptorControlSet;
               NewSecurityDescriptor,
               MergedSecurityDescriptor
@@ -552,7 +552,7 @@ end;
 procedure TForm1.OnSetSecurity(Sender: TJwSecurityDescriptorDialog;
   SecurityType: TJwSecurityInformationFlagSet;
   SecurityDialogFlags: TJwSecurityDialogFlags;
-  SecurityResetType: TJwSecurityResetType;
+  SecurityResetType: TJwSecurityResetTypes;
   Settings: TJwSecurityDescriptorControlSet;
   NewSecurityDescriptor,
   MergedSecurityDescriptor: TJwSecurityDescriptor;

@@ -2332,6 +2332,8 @@ type
   end;
 
 
+  { This class is used by TJwWTSSessionList to provide extended enumeration of
+    session using Delphi 2005 and newer "for in" syntax.                       }
   TJwSessionsEnumerator = class
   private
     FIndex: Integer;
@@ -2345,6 +2347,8 @@ type
 
 
 
+  { This class is used by TJwWTSProcessList to provide extended enumeration of
+    processes using Delphi 2005 and newer "for in" syntax.                     }
   TJwProcessEnumerator = class
   private
     FIndex: Integer;

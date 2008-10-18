@@ -53,8 +53,6 @@
     </link>
     <link topicid="!!MEMBEROVERVIEW_IJwLogClient" displaystring="IJwLogClient Members">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/!!MEMBEROVERVIEW_IJwLogClient.html</target>
-      <target id="html">../html/!!MEMBEROVERVIEW_IJwLogClient.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!MEMBEROVERVIEW_IJwLogClient.html</target>
     </link>
     <link topicid="!!MEMBEROVERVIEW_IJwLogServer" displaystring="IJwLogServer Members">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/!!MEMBEROVERVIEW_IJwLogServer.html</target>
@@ -278,8 +276,6 @@
     </link>
     <link topicid="!!MEMBEROVERVIEW_TJwPrivilegeScope" displaystring="TJwPrivilegeScope Members">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/!!MEMBEROVERVIEW_TJwPrivilegeScope.html</target>
-      <target id="html">../html/!!MEMBEROVERVIEW_TJwPrivilegeScope.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!MEMBEROVERVIEW_TJwPrivilegeScope.html</target>
     </link>
     <link topicid="!!MEMBEROVERVIEW_TJwPrivilegeSet" displaystring="TJwPrivilegeSet Members">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/!!MEMBEROVERVIEW_TJwPrivilegeSet.html</target>
@@ -666,6 +662,9 @@
       <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!MEMBERTYPE_Fields_EJwsclSecurityException.html</target>
       <target id="pdf">pdf://314@JWSCL.pdf</target>
     </link>
+    <link topicid="!!MEMBERTYPE_Fields_IJwPrivilegeScope" displaystring="IJwPrivilegeScope Fields">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!MEMBERTYPE_Fields_IJwPrivilegeScope.html</target>
+    </link>
     <link topicid="!!MEMBERTYPE_Fields_TJwAuditAccessControlEntry" displaystring="TJwAuditAccessControlEntry Fields">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/!!MEMBERTYPE_Fields_TJwAuditAccessControlEntry.html</target>
       <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!MEMBERTYPE_Fields_TJwAuditAccessControlEntry.html</target>
@@ -773,7 +772,6 @@
     </link>
     <link topicid="!!MEMBERTYPE_Fields_TJwPrivilegeScope" displaystring="TJwPrivilegeScope Fields">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/!!MEMBERTYPE_Fields_TJwPrivilegeScope.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!MEMBERTYPE_Fields_TJwPrivilegeScope.html</target>
       <target id="pdf">pdf://1233@JWSCL.pdf</target>
     </link>
     <link topicid="!!MEMBERTYPE_Fields_TJwsclFirewall" displaystring="TJwsclFirewall Fields">
@@ -933,8 +931,6 @@
     </link>
     <link topicid="!!MEMBERTYPE_Methods_IJwLogClient" displaystring="IJwLogClient Methods">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/!!MEMBERTYPE_Methods_IJwLogClient.html</target>
-      <target id="html">../html/!!MEMBERTYPE_Methods_IJwLogClient.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!MEMBERTYPE_Methods_IJwLogClient.html</target>
       <target id="pdf">pdf://2707@JWSCL.pdf</target>
     </link>
     <link topicid="!!MEMBERTYPE_Methods_IJwLogServer" displaystring="IJwLogServer Methods">
@@ -945,7 +941,6 @@
     </link>
     <link topicid="!!MEMBERTYPE_Methods_IJwPrivilegeScope" displaystring="IJwPrivilegeScope Methods">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/!!MEMBERTYPE_Methods_IJwPrivilegeScope.html</target>
-      <target id="html">../html/!!MEMBERTYPE_Methods_IJwPrivilegeScope.html</target>
       <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!MEMBERTYPE_Methods_IJwPrivilegeScope.html</target>
       <target id="pdf">pdf://2719@JWSCL.pdf</target>
     </link>
@@ -1177,7 +1172,6 @@
     </link>
     <link topicid="!!MEMBERTYPE_Methods_TJwPrivilegeScope" displaystring="TJwPrivilegeScope Methods">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/!!MEMBERTYPE_Methods_TJwPrivilegeScope.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!MEMBERTYPE_Methods_TJwPrivilegeScope.html</target>
       <target id="pdf">pdf://1235@JWSCL.pdf</target>
     </link>
     <link topicid="!!MEMBERTYPE_Methods_TJwPrivilegeSet" displaystring="TJwPrivilegeSet Methods">
@@ -1707,8 +1701,6 @@
     </link>
     <link topicid="!!MEMBERTYPE_Properties_TJwPrivilegeScope" displaystring="TJwPrivilegeScope Properties">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/!!MEMBERTYPE_Properties_TJwPrivilegeScope.html</target>
-      <target id="html">../html/!!MEMBERTYPE_Properties_TJwPrivilegeScope.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!MEMBERTYPE_Properties_TJwPrivilegeScope.html</target>
       <target id="pdf">pdf://1236@JWSCL.pdf</target>
     </link>
     <link topicid="!!MEMBERTYPE_Properties_TJwPrivilegeSet" displaystring="TJwPrivilegeSet Properties">
@@ -2307,8 +2299,6 @@
     </link>
     <link topicid="!!OVERLOADED_Exception_IJwLogClient" displaystring="Exception Method">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/!!OVERLOADED_Exception_IJwLogClient.html</target>
-      <target id="html">../html/!!OVERLOADED_Exception_IJwLogClient.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!OVERLOADED_Exception_IJwLogClient.html</target>
       <target id="pdf">pdf://2708@JWSCL.pdf</target>
     </link>
     <link topicid="!!OVERLOADED_Exception_TJwLogClientImpl" displaystring="Exception Method">
@@ -2400,8 +2390,6 @@
     </link>
     <link topicid="!!OVERLOADED_Log_IJwLogClient" displaystring="Log Method">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/!!OVERLOADED_Log_IJwLogClient.html</target>
-      <target id="html">../html/!!OVERLOADED_Log_IJwLogClient.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!OVERLOADED_Log_IJwLogClient.html</target>
       <target id="pdf">pdf://2710@JWSCL.pdf</target>
     </link>
     <link topicid="!!OVERLOADED_Log_TJwLogClientImpl" displaystring="Log Method">
@@ -2418,8 +2406,6 @@
     </link>
     <link topicid="!!OVERLOADED_Memory_IJwLogClient" displaystring="Memory Method">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/!!OVERLOADED_Memory_IJwLogClient.html</target>
-      <target id="html">../html/!!OVERLOADED_Memory_IJwLogClient.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!OVERLOADED_Memory_IJwLogClient.html</target>
       <target id="pdf">pdf://2713@JWSCL.pdf</target>
     </link>
     <link topicid="!!OVERLOADED_Memory_TJwLogClientImpl" displaystring="Memory Method">
@@ -2517,7 +2503,6 @@
     </link>
     <link topicid="!!OVERLOADED_SetSize_TJwFileStreamEx" displaystring="SetSize Method">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/!!OVERLOADED_SetSize_TJwFileStreamEx.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!OVERLOADED_SetSize_TJwFileStreamEx.html</target>
       <target id="pdf">pdf://833@JWSCL.pdf</target>
     </link>
     <link topicid="!!OVERLOADED_Sign_TJwHash" displaystring="Sign Method">
@@ -2528,8 +2513,6 @@
     </link>
     <link topicid="!!OVERLOADED_Signal_IJwLogClient" displaystring="Signal Method">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/!!OVERLOADED_Signal_IJwLogClient.html</target>
-      <target id="html">../html/!!OVERLOADED_Signal_IJwLogClient.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!OVERLOADED_Signal_IJwLogClient.html</target>
       <target id="pdf">pdf://2715@JWSCL.pdf</target>
     </link>
     <link topicid="!!OVERLOADED_Signal_TJwLogClientImpl" displaystring="Signal Method">
@@ -2967,10 +2950,10 @@
     </link>
     <link topicid="authZSF_ComputePrivileges" displaystring="authZSF_ComputePrivileges">
       <target id="html">../html/TAuthZSidContextFlag.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TAuthZSidContextFlag.html</target>
     </link>
     <link topicid="authZSF_ComputePrivleges" displaystring="authZSF_ComputePrivleges">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TAuthZSidContextFlag.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TAuthZSidContextFlag.html</target>
       <target id="pdf">pdf://2839@JWSCL.pdf</target>
       <target id="winhelp">id_4948@JWSCL.hlp</target>
     </link>
@@ -4375,7 +4358,6 @@
     </link>
     <link topicid="EJwsclSecurityException.Create@AnsiString" displaystring="EJwsclSecurityException.Create Constructor (AnsiString)">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/EJwsclSecurityException_Create@AnsiString.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/EJwsclSecurityException_Create@AnsiString.html</target>
       <target id="pdf">pdf://284@JWSCL.pdf</target>
       <target id="winhelp">id_16@JWSCL.hlp</target>
     </link>
@@ -4388,33 +4370,34 @@
     </link>
     <link topicid="EJwsclSecurityException.Create@String" displaystring="EJwsclSecurityException.Create Constructor (String)">
       <target id="html">../html/EJwsclSecurityException_Create@String.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/EJwsclSecurityException_Create@String.html</target>
     </link>
     <link topicid="EJwsclSecurityException.CreateFmtEx@AnsiString@AnsiString@AnsiString@AnsiString@Cardinal@boolean@array of const" displaystring="EJwsclSecurityException.CreateFmtEx Constructor (AnsiString, AnsiString, AnsiString, AnsiString, Cardinal, boolean, array of const)">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/EJwsclSecurityException_CreateFmtEx@AnsiString@AnsiString@AnsiString@AnsiString@Cardinal@boolean@array_of_const.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/EJwsclSecurityException_CreateFmtEx@AnsiString@AnsiString@AnsiString@AnsiString@Cardinal@boolean@array_of_const.html</target>
       <target id="pdf">pdf://313@JWSCL.pdf</target>
       <target id="winhelp">id_1179@JWSCL.hlp</target>
     </link>
     <link topicid="EJwsclSecurityException.CreateFmtEx@AnsiString@AnsiString@AnsiString@AnsiString@Cardinal@Cardinal@array of const" displaystring="EJwsclSecurityException.CreateFmtEx Constructor (AnsiString, AnsiString, AnsiString, AnsiString, Cardinal, Cardinal, array of const)">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/EJwsclSecurityException_CreateFmtEx@AnsiString@AnsiString@AnsiString@AnsiString@Cardinal@Cardinal@array_of_const.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/EJwsclSecurityException_CreateFmtEx@AnsiString@AnsiString@AnsiString@AnsiString@Cardinal@Cardinal@array_of_const.html</target>
       <target id="pdf">pdf://285@JWSCL.pdf</target>
       <target id="winhelp">id_17@JWSCL.hlp</target>
     </link>
     <link topicid="EJwsclSecurityException.CreateFmtEx@TJwString@TJwString@TJwString@TJwString@Cardinal@boolean@array of const" displaystring="EJwsclSecurityException.CreateFmtEx Constructor (TJwString, TJwString, TJwString, TJwString, Cardinal, boolean, array of const)">
       <target id="html">../html/EJwsclSecurityException_CreateFmtEx@TJwString@TJwString@TJwString@TJwString@Cardinal@boolean@array_of_const.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/EJwsclSecurityException_CreateFmtEx@TJwString@TJwString@TJwString@TJwString@Cardinal@boolean@array_of_const.html</target>
     </link>
     <link topicid="EJwsclSecurityException.CreateFmtEx@TJwString@TJwString@TJwString@TJwString@Cardinal@Cardinal@array of const" displaystring="EJwsclSecurityException.CreateFmtEx Constructor (TJwString, TJwString, TJwString, TJwString, Cardinal, Cardinal, array of const)">
       <target id="html">../html/EJwsclSecurityException_CreateFmtEx@TJwString@TJwString@TJwString@TJwString@Cardinal@Cardinal@array_of_const.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/EJwsclSecurityException_CreateFmtEx@TJwString@TJwString@TJwString@TJwString@Cardinal@Cardinal@array_of_const.html</target>
     </link>
     <link topicid="EJwsclSecurityException.CreateFmtWinCall@AnsiString@AnsiString@AnsiString@AnsiString@Cardinal@boolean@AnsiString@array of const" displaystring="EJwsclSecurityException.CreateFmtWinCall Constructor">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/EJwsclSecurityException_CreateFmtWinCall@AnsiString@AnsiString@AnsiString@AnsiString@Cardinal@boolean@AnsiString@array_of_const.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/EJwsclSecurityException_CreateFmtWinCall@AnsiString@AnsiString@AnsiString@AnsiString@Cardinal@boolean@AnsiString@array_of_const.html</target>
       <target id="pdf">pdf://286@JWSCL.pdf</target>
       <target id="winhelp">id_18@JWSCL.hlp</target>
     </link>
     <link topicid="EJwsclSecurityException.CreateFmtWinCall@TJwString@TJwString@TJwString@TJwString@Cardinal@boolean@TJwString@array of const" displaystring="EJwsclSecurityException.CreateFmtWinCall Constructor">
       <target id="html">../html/EJwsclSecurityException_CreateFmtWinCall@TJwString@TJwString@TJwString@TJwString@Cardinal@boolean@TJwString@array_of_const.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/EJwsclSecurityException_CreateFmtWinCall@TJwString@TJwString@TJwString@TJwString@Cardinal@boolean@TJwString@array_of_const.html</target>
     </link>
     <link topicid="EJwsclSecurityException.fComSource" displaystring="EJwsclSecurityException.fComSource Field">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/EJwsclSecurityException_fComSource.html</target>
@@ -4710,6 +4693,7 @@
     </link>
     <link topicid="EJwsclVistaFeaturesDisabled" displaystring="EJwsclVistaFeaturesDisabled Class">
       <target id="html">../html/EJwsclVistaFeaturesDisabled.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/EJwsclVistaFeaturesDisabled.html</target>
     </link>
     <link topicid="EJwsclWinCallFailedException" displaystring="EJwsclWinCallFailedException Class">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/EJwsclWinCallFailedException.html</target>
@@ -4741,8 +4725,6 @@
     </link>
     <link topicid="EOSError" displaystring="EOSError Type">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/EOSError.html</target>
-      <target id="html">../html/EOSError.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/EOSError.html</target>
       <target id="pdf">pdf://2685@JWSCL.pdf</target>
       <target id="winhelp">id_4761@JWSCL.hlp</target>
     </link>
@@ -4843,6 +4825,14 @@
       <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/EventMappingStartIndex.html</target>
       <target id="pdf">pdf://3045@JWSCL.pdf</target>
       <target id="winhelp">id_5151@JWSCL.hlp</target>
+    </link>
+    <link topicid="Exception@Exception" displaystring="Exception Function">
+      <target id="html">../html/Exception@Exception.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/Exception@Exception.html</target>
+    </link>
+    <link topicid="Exception@Exception@TJwString@TJwString@TJwString" displaystring="Exception Function">
+      <target id="html">../html/Exception@Exception@TJwString@TJwString@TJwString.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/Exception@Exception@TJwString@TJwString@TJwString.html</target>
     </link>
     <link topicid="ExplorerProcessName" displaystring="ExplorerProcessName Constant">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/ExplorerProcessName.html</target>
@@ -5416,71 +5406,51 @@
     </link>
     <link topicid="IJwLogClient.Exception@Exception" displaystring="IJwLogClient.Exception Method (Exception)">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/IJwLogClient_Exception@Exception.html</target>
-      <target id="html">../html/IJwLogClient_Exception@Exception.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/IJwLogClient_Exception@Exception.html</target>
       <target id="pdf">pdf://1034@JWSCL.pdf</target>
       <target id="winhelp">id_2584@JWSCL.hlp</target>
     </link>
     <link topicid="IJwLogClient.Exception@Exception@TJwString@TJwString@TJwString" displaystring="IJwLogClient.Exception Method (Exception, TJwString, TJwString, TJwString)">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/IJwLogClient_Exception@Exception@TJwString@TJwString@TJwString.html</target>
-      <target id="html">../html/IJwLogClient_Exception@Exception@TJwString@TJwString@TJwString.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/IJwLogClient_Exception@Exception@TJwString@TJwString@TJwString.html</target>
       <target id="pdf">pdf://2709@JWSCL.pdf</target>
       <target id="winhelp">id_4802@JWSCL.hlp</target>
     </link>
     <link topicid="IJwLogClient.Log@TJwLogType@TJwString" displaystring="IJwLogClient.Log Method (TJwLogType, TJwString)">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/IJwLogClient_Log@TJwLogType@TJwString.html</target>
-      <target id="html">../html/IJwLogClient_Log@TJwLogType@TJwString.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/IJwLogClient_Log@TJwLogType@TJwString.html</target>
       <target id="pdf">pdf://1035@JWSCL.pdf</target>
       <target id="winhelp">id_2585@JWSCL.hlp</target>
     </link>
     <link topicid="IJwLogClient.Log@TJwLogType@TJwString@TJwString@TJwString@TJwString" displaystring="IJwLogClient.Log Method (TJwLogType, TJwString, TJwString, TJwString, TJwString)">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/IJwLogClient_Log@TJwLogType@TJwString@TJwString@TJwString@TJwString.html</target>
-      <target id="html">../html/IJwLogClient_Log@TJwLogType@TJwString@TJwString@TJwString@TJwString.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/IJwLogClient_Log@TJwLogType@TJwString@TJwString@TJwString@TJwString.html</target>
       <target id="pdf">pdf://2711@JWSCL.pdf</target>
       <target id="winhelp">id_4803@JWSCL.hlp</target>
     </link>
     <link topicid="IJwLogClient.Log@TJwString@TJwLogType" displaystring="IJwLogClient.Log Method (TJwString, TJwLogType)">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/IJwLogClient_Log@TJwString@TJwLogType.html</target>
-      <target id="html">../html/IJwLogClient_Log@TJwString@TJwLogType.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/IJwLogClient_Log@TJwString@TJwLogType.html</target>
       <target id="pdf">pdf://2712@JWSCL.pdf</target>
       <target id="winhelp">id_4804@JWSCL.hlp</target>
     </link>
     <link topicid="IJwLogClient.Memory@TJwMemoryType@TJwString@TJwString" displaystring="IJwLogClient.Memory Method (TJwMemoryType, TJwString, TJwString)">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/IJwLogClient_Memory@TJwMemoryType@TJwString@TJwString.html</target>
-      <target id="html">../html/IJwLogClient_Memory@TJwMemoryType@TJwString@TJwString.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/IJwLogClient_Memory@TJwMemoryType@TJwString@TJwString.html</target>
       <target id="pdf">pdf://1036@JWSCL.pdf</target>
       <target id="winhelp">id_2586@JWSCL.hlp</target>
     </link>
     <link topicid="IJwLogClient.Memory@TJwMemoryType@TJwString@TJwString@TJwString@TJwString@TJwString" displaystring="IJwLogClient.Memory Method (TJwMemoryType, TJwString, TJwString, TJwString, TJwString, TJwString)">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/IJwLogClient_Memory@TJwMemoryType@TJwString@TJwString@TJwString@TJwString@TJwString.html</target>
-      <target id="html">../html/IJwLogClient_Memory@TJwMemoryType@TJwString@TJwString@TJwString@TJwString@TJwString.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/IJwLogClient_Memory@TJwMemoryType@TJwString@TJwString@TJwString@TJwString@TJwString.html</target>
       <target id="pdf">pdf://2714@JWSCL.pdf</target>
       <target id="winhelp">id_4805@JWSCL.hlp</target>
     </link>
     <link topicid="IJwLogClient.SetEventTypes@TJwEventTypes" displaystring="IJwLogClient.SetEventTypes Method">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/IJwLogClient_SetEventTypes@TJwEventTypes.html</target>
-      <target id="html">../html/IJwLogClient_SetEventTypes@TJwEventTypes.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/IJwLogClient_SetEventTypes@TJwEventTypes.html</target>
       <target id="pdf">pdf://1037@JWSCL.pdf</target>
       <target id="winhelp">id_2587@JWSCL.hlp</target>
     </link>
     <link topicid="IJwLogClient.Signal@TJwSignalType@TJwString@TJwString@TJwString" displaystring="IJwLogClient.Signal Method (TJwSignalType, TJwString, TJwString, TJwString)">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/IJwLogClient_Signal@TJwSignalType@TJwString@TJwString@TJwString.html</target>
-      <target id="html">../html/IJwLogClient_Signal@TJwSignalType@TJwString@TJwString@TJwString.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/IJwLogClient_Signal@TJwSignalType@TJwString@TJwString@TJwString.html</target>
       <target id="pdf">pdf://1038@JWSCL.pdf</target>
       <target id="winhelp">id_2588@JWSCL.hlp</target>
     </link>
     <link topicid="IJwLogClient.Signal@TJwSignalType@TJwString@TJwString@TJwString@TJwString@TJwString@TJwString" displaystring="IJwLogClient.Signal Method (TJwSignalType, TJwString, TJwString, TJwString, TJwString, TJwString, TJwString)">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/IJwLogClient_Signal@TJwSignalType@TJwString@TJwString@TJwString@TJwString@TJwString@TJwString.html</target>
-      <target id="html">../html/IJwLogClient_Signal@TJwSignalType@TJwString@TJwString@TJwString@TJwString@TJwString@TJwString.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/IJwLogClient_Signal@TJwSignalType@TJwString@TJwString@TJwString@TJwString@TJwString@TJwString.html</target>
       <target id="pdf">pdf://2716@JWSCL.pdf</target>
       <target id="winhelp">id_4806@JWSCL.hlp</target>
     </link>
@@ -5493,8 +5463,6 @@
     </link>
     <link topicid="IJwLogServer.Connect@TJwEnterType@TJwString@TJwString@TJwString@TJwString" displaystring="IJwLogServer.Connect Method">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/IJwLogServer_Connect@TJwEnterType@TJwString@TJwString@TJwString@TJwString.html</target>
-      <target id="html">../html/IJwLogServer_Connect@TJwEnterType@TJwString@TJwString@TJwString@TJwString.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/IJwLogServer_Connect@TJwEnterType@TJwString@TJwString@TJwString@TJwString.html</target>
       <target id="pdf">pdf://1075@JWSCL.pdf</target>
       <target id="winhelp">id_2629@JWSCL.hlp</target>
     </link>
@@ -5589,6 +5557,14 @@
       <target id="pdf">pdf://1223@JWSCL.pdf</target>
       <target id="winhelp">id_2836@JWSCL.hlp</target>
     </link>
+    <link topicid="IJwPrivilegeScope.Create@array of TJwString@TJwPrivilegeSetType" displaystring="IJwPrivilegeScope.Create Constructor">
+      <target id="html">../html/IJwPrivilegeScope_Create@array_of_TJwString@TJwPrivilegeSetType.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/IJwPrivilegeScope_Create@array_of_TJwString@TJwPrivilegeSetType.html</target>
+    </link>
+    <link topicid="IJwPrivilegeScope.Destroy" displaystring="IJwPrivilegeScope.Destroy Destructor">
+      <target id="html">../html/IJwPrivilegeScope_Destroy.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/IJwPrivilegeScope_Destroy.html</target>
+    </link>
     <link topicid="IJwPrivilegeScope.EnabledPrivileges" displaystring="IJwPrivilegeScope.EnabledPrivileges Property">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/IJwPrivilegeScope_EnabledPrivileges.html</target>
       <target id="html">../html/IJwPrivilegeScope_EnabledPrivileges.html</target>
@@ -5596,9 +5572,11 @@
       <target id="pdf">pdf://1230@JWSCL.pdf</target>
       <target id="winhelp">id_2841@JWSCL.hlp</target>
     </link>
+    <link topicid="IJwPrivilegeScope.fEnabledPrivileges" displaystring="IJwPrivilegeScope.fEnabledPrivileges Field">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/IJwPrivilegeScope_fEnabledPrivileges.html</target>
+    </link>
     <link topicid="IJwPrivilegeScope.GetEnabledPrivileges" displaystring="IJwPrivilegeScope.GetEnabledPrivileges Method">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/IJwPrivilegeScope_GetEnabledPrivileges.html</target>
-      <target id="html">../html/IJwPrivilegeScope_GetEnabledPrivileges.html</target>
       <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/IJwPrivilegeScope_GetEnabledPrivileges.html</target>
       <target id="pdf">pdf://1228@JWSCL.pdf</target>
       <target id="winhelp">id_2838@JWSCL.hlp</target>
@@ -6235,12 +6213,12 @@
     </link>
     <link topicid="JwCheckInitKnownSid@array of TJwSecurityKnownSID@array of AnsiString@TJwString@TJwString@TJwString" displaystring="JwCheckInitKnownSid Function">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/JwCheckInitKnownSid@array_of_TJwSecurityKnownSID@array_of_AnsiString@TJwString@TJwString@TJwString.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/JwCheckInitKnownSid@array_of_TJwSecurityKnownSID@array_of_AnsiString@TJwString@TJwString@TJwString.html</target>
       <target id="pdf">pdf://2741@JWSCL.pdf</target>
       <target id="winhelp">id_4852@JWSCL.hlp</target>
     </link>
     <link topicid="JwCheckInitKnownSid@array of TJwSecurityKnownSID@array of TJwString@TJwString@TJwString@TJwString" displaystring="JwCheckInitKnownSid Function">
       <target id="html">../html/JwCheckInitKnownSid@array_of_TJwSecurityKnownSID@array_of_TJwString@TJwString@TJwString@TJwString.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/JwCheckInitKnownSid@array_of_TJwSecurityKnownSID@array_of_TJwString@TJwString@TJwString@TJwString.html</target>
     </link>
     <link topicid="JwCheckInitKnownSid@TJwString@TJwString@TJwString" displaystring="JwCheckInitKnownSid Function">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/JwCheckInitKnownSid@TJwString@TJwString@TJwString.html</target>
@@ -6251,6 +6229,7 @@
     </link>
     <link topicid="JwCheckVISTACompilerSwitch@TJwString@TJwString@TJwString" displaystring="JwCheckVISTACompilerSwitch Function">
       <target id="html">../html/JwCheckVISTACompilerSwitch@TJwString@TJwString@TJwString.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/JwCheckVISTACompilerSwitch@TJwString@TJwString@TJwString.html</target>
     </link>
     <link topicid="JwCoCreateInstanceAsAdmin@HWND@TGUID@TGUID@" displaystring="JwCoCreateInstanceAsAdmin Function">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/JwCoCreateInstanceAsAdmin@HWND@TGUID@TGUID@.html</target>
@@ -6387,12 +6366,12 @@
     </link>
     <link topicid="JwEnablePrivilege@AnsiString@TJwPrivilegeSetType" displaystring="JwEnablePrivilege Function">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/JwEnablePrivilege@AnsiString@TJwPrivilegeSetType.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/JwEnablePrivilege@AnsiString@TJwPrivilegeSetType.html</target>
       <target id="pdf">pdf://2760@JWSCL.pdf</target>
       <target id="winhelp">id_4877@JWSCL.hlp</target>
     </link>
     <link topicid="JwEnablePrivilege@TJwString@TJwPrivilegeSetType" displaystring="JwEnablePrivilege Function">
       <target id="html">../html/JwEnablePrivilege@TJwString@TJwPrivilegeSetType.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/JwEnablePrivilege@TJwString@TJwPrivilegeSetType.html</target>
     </link>
     <link topicid="JwEncryptString@TJwString@TJwString@Boolean@Boolean@PDataBlob" displaystring="JwEncryptString Function">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/JwEncryptString@TJwString@TJwString@Boolean@Boolean@PDataBlob.html</target>
@@ -6466,6 +6445,7 @@
     </link>
     <link topicid="JwFreeThreadName" displaystring="JwFreeThreadName Function">
       <target id="html">../html/JwFreeThreadName.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/JwFreeThreadName.html</target>
     </link>
     <link topicid="JwGeneralExceptionClass" displaystring="JwGeneralExceptionClass Type">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/JwGeneralExceptionClass.html</target>
@@ -6497,12 +6477,12 @@
     </link>
     <link topicid="JwGetPrivilegeScope@array of AnsiString@TJwPrivilegeSetType" displaystring="JwGetPrivilegeScope Function">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/JwGetPrivilegeScope@array_of_AnsiString@TJwPrivilegeSetType.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/JwGetPrivilegeScope@array_of_AnsiString@TJwPrivilegeSetType.html</target>
       <target id="pdf">pdf://2700@JWSCL.pdf</target>
       <target id="winhelp">id_4818@JWSCL.hlp</target>
     </link>
     <link topicid="JwGetPrivilegeScope@array of TJwString@TJwPrivilegeSetType" displaystring="JwGetPrivilegeScope Function">
       <target id="html">../html/JwGetPrivilegeScope@array_of_TJwString@TJwPrivilegeSetType.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/JwGetPrivilegeScope@array_of_TJwString@TJwPrivilegeSetType.html</target>
     </link>
     <link topicid="JwGetPrivilegesText" displaystring="JwGetPrivilegesText Function">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/JwGetPrivilegesText.html</target>
@@ -6513,12 +6493,12 @@
     </link>
     <link topicid="JwGetPrivilegesText@array of AnsiString" displaystring="JwGetPrivilegesText Function">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/JwGetPrivilegesText@array_of_AnsiString.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/JwGetPrivilegesText@array_of_AnsiString.html</target>
       <target id="pdf">pdf://2774@JWSCL.pdf</target>
       <target id="winhelp">id_4892@JWSCL.hlp</target>
     </link>
     <link topicid="JwGetPrivilegesText@array of TJwString" displaystring="JwGetPrivilegesText Function">
       <target id="html">../html/JwGetPrivilegesText@array_of_TJwString.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/JwGetPrivilegesText@array_of_TJwString.html</target>
     </link>
     <link topicid="JwGetProcessLogonSession@TJwProcessId" displaystring="JwGetProcessLogonSession Function">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/JwGetProcessLogonSession@TJwProcessId.html</target>
@@ -6683,12 +6663,12 @@
     </link>
     <link topicid="JwIsPrivilegeSet@AnsiString@TJwPrivilegeQueryType" displaystring="JwIsPrivilegeSet Function">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/JwIsPrivilegeSet@AnsiString@TJwPrivilegeQueryType.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/JwIsPrivilegeSet@AnsiString@TJwPrivilegeQueryType.html</target>
       <target id="pdf">pdf://2799@JWSCL.pdf</target>
       <target id="winhelp">id_4920@JWSCL.hlp</target>
     </link>
     <link topicid="JwIsPrivilegeSet@TJwString@TJwPrivilegeQueryType" displaystring="JwIsPrivilegeSet Function">
       <target id="html">../html/JwIsPrivilegeSet@TJwString@TJwPrivilegeQueryType.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/JwIsPrivilegeSet@TJwString@TJwPrivilegeQueryType.html</target>
     </link>
     <link topicid="JwIsSystem" displaystring="JwIsSystem Function">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/JwIsSystem.html</target>
@@ -6860,6 +6840,7 @@
     </link>
     <link topicid="JwOutputDebugString@TJwString@array of const" displaystring="JwOutputDebugString Function">
       <target id="html">../html/JwOutputDebugString@TJwString@array_of_const.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/JwOutputDebugString@TJwString@array_of_const.html</target>
     </link>
     <link topicid="JwPowerUsersSID" displaystring="JwPowerUsersSID Variable">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/JwPowerUsersSID.html</target>
@@ -6891,6 +6872,7 @@
     </link>
     <link topicid="JwPWideCharToJwString@PWideChar" displaystring="JwPWideCharToJwString Function">
       <target id="html">../html/JwPWideCharToJwString@PWideChar.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/JwPWideCharToJwString@PWideChar.html</target>
     </link>
     <link topicid="JwRaiseOnClassTypeMisMatch@TObject@TClass@TJwString@TJwString@TJwString" displaystring="JwRaiseOnClassTypeMisMatch Function">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/JwRaiseOnClassTypeMisMatch@TObject@TClass@TJwString@TJwString@TJwString.html</target>
@@ -7202,6 +7184,7 @@
     </link>
     <link topicid="JwSecurityCapabilities" displaystring="JwSecurityCapabilities Constant">
       <target id="html">../html/JwSecurityCapabilities.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/JwSecurityCapabilities.html</target>
     </link>
     <link topicid="JwSecurityCurrentThreadUserSID" displaystring="JwSecurityCurrentThreadUserSID Function">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/JwSecurityCurrentThreadUserSID.html</target>
@@ -7275,12 +7258,12 @@
     </link>
     <link topicid="JwSetThreadName@AnsiString@Cardinal" displaystring="JwSetThreadName Function">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/JwSetThreadName@AnsiString@Cardinal.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/JwSetThreadName@AnsiString@Cardinal.html</target>
       <target id="pdf">pdf://2778@JWSCL.pdf</target>
       <target id="winhelp">id_4897@JWSCL.hlp</target>
     </link>
     <link topicid="JwSetThreadName@TJwString@Cardinal" displaystring="JwSetThreadName Function">
       <target id="html">../html/JwSetThreadName@TJwString@Cardinal.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/JwSetThreadName@TJwString@Cardinal.html</target>
     </link>
     <link topicid="JwShellExecute@HWND@TJwString@TJwString@TJwString@Integer@TJwShellExecuteFlags" displaystring="JwShellExecute Function">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/JwShellExecute@HWND@TJwString@TJwString@TJwString@Integer@TJwShellExecuteFlags.html</target>
@@ -7597,6 +7580,14 @@
       <target id="pdf">pdf://2819@JWSCL.pdf</target>
       <target id="winhelp">id_4943@JWSCL.hlp</target>
     </link>
+    <link topicid="Log@TJwLogType@TJwString@TJwString@TJwString@TJwString" displaystring="Log Function">
+      <target id="html">../html/Log@TJwLogType@TJwString@TJwString@TJwString@TJwString.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/Log@TJwLogType@TJwString@TJwString@TJwString@TJwString.html</target>
+    </link>
+    <link topicid="Log@TJwString@TJwLogType" displaystring="Log Function">
+      <target id="html">../html/Log@TJwString@TJwLogType.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/Log@TJwString@TJwLogType.html</target>
+    </link>
     <link topicid="lsError" displaystring="lsError">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwLogType.html</target>
       <target id="html">../html/TJwLogType.html</target>
@@ -7730,6 +7721,14 @@
       <target id="pdf">pdf://3098@JWSCL.pdf</target>
       <target id="winhelp">id_5219@JWSCL.hlp</target>
     </link>
+    <link topicid="Memory@TJwMemoryType@TJwString@TJwString" displaystring="Memory Function">
+      <target id="html">../html/Memory@TJwMemoryType@TJwString@TJwString.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/Memory@TJwMemoryType@TJwString@TJwString.html</target>
+    </link>
+    <link topicid="Memory@TJwMemoryType@TJwString@TJwString@TJwString@TJwString@TJwString" displaystring="Memory Function">
+      <target id="html">../html/Memory@TJwMemoryType@TJwString@TJwString@TJwString@TJwString@TJwString.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/Memory@TJwMemoryType@TJwString@TJwString@TJwString@TJwString@TJwString.html</target>
+    </link>
     <link topicid="mpNoExecuteUp" displaystring="mpNoExecuteUp">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwMandatoryPolicy.html</target>
       <target id="html">../html/TJwMandatoryPolicy.html</target>
@@ -7837,6 +7836,7 @@
     </link>
     <link topicid="NOERROR" displaystring="NOERROR Constant">
       <target id="html">../html/NOERROR.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/NOERROR.html</target>
     </link>
     <link topicid="NULL_GUID" displaystring="NULL_GUID Constant">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/NULL_GUID.html</target>
@@ -7875,8 +7875,6 @@
     </link>
     <link topicid="PCardinal" displaystring="PCardinal Type">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/PCardinal.html</target>
-      <target id="html">../html/PCardinal.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/PCardinal.html</target>
       <target id="pdf">pdf://2898@JWSCL.pdf</target>
       <target id="winhelp">id_5005@JWSCL.hlp</target>
     </link>
@@ -8400,7 +8398,6 @@
     </link>
     <link topicid="PWideCharToJwString@PWideChar" displaystring="PWideCharToJwString Function">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/PWideCharToJwString@PWideChar.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/PWideCharToJwString@PWideChar.html</target>
       <target id="pdf">pdf://2821@JWSCL.pdf</target>
       <target id="winhelp">id_4945@JWSCL.hlp</target>
     </link>
@@ -10665,6 +10662,7 @@
     </link>
     <link topicid="RsVistaFeaturesDisabled" displaystring="RsVistaFeaturesDisabled Constant">
       <target id="html">../html/RsVistaFeaturesDisabled.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/RsVistaFeaturesDisabled.html</target>
     </link>
     <link topicid="RsWinCallFailed" displaystring="RsWinCallFailed Constant">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/RsWinCallFailed.html</target>
@@ -10682,6 +10680,7 @@
     </link>
     <link topicid="RsWinCallFailedWithSecurityStatus" displaystring="RsWinCallFailedWithSecurityStatus Constant">
       <target id="html">../html/RsWinCallFailedWithSecurityStatus.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/RsWinCallFailedWithSecurityStatus.html</target>
     </link>
     <link topicid="RsWinStationCreateFailed" displaystring="RsWinStationCreateFailed Constant">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/RsWinStationCreateFailed.html</target>
@@ -10776,39 +10775,51 @@
     </link>
     <link topicid="scAcceptWin32Name" displaystring="scAcceptWin32Name">
       <target id="html">../html/TJwSecurityCapability.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityCapability.html</target>
     </link>
     <link topicid="scASCIIBuffers" displaystring="scASCIIBuffers">
       <target id="html">../html/TJwSecurityCapability.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityCapability.html</target>
     </link>
     <link topicid="scClientOnly" displaystring="scClientOnly">
       <target id="html">../html/TJwSecurityCapability.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityCapability.html</target>
     </link>
     <link topicid="scConnection" displaystring="scConnection">
       <target id="html">../html/TJwSecurityCapability.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityCapability.html</target>
     </link>
     <link topicid="scDatagram" displaystring="scDatagram">
       <target id="html">../html/TJwSecurityCapability.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityCapability.html</target>
     </link>
     <link topicid="scDelegation" displaystring="scDelegation">
       <target id="html">../html/TJwSecurityCapability.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityCapability.html</target>
     </link>
     <link topicid="scExtendedError" displaystring="scExtendedError">
       <target id="html">../html/TJwSecurityCapability.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityCapability.html</target>
     </link>
     <link topicid="scFragment" displaystring="scFragment">
       <target id="html">../html/TJwSecurityCapability.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityCapability.html</target>
     </link>
     <link topicid="scGSSCompatible" displaystring="scGSSCompatible">
       <target id="html">../html/TJwSecurityCapability.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityCapability.html</target>
     </link>
     <link topicid="scImpersonation" displaystring="scImpersonation">
       <target id="html">../html/TJwSecurityCapability.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityCapability.html</target>
     </link>
     <link topicid="scIntegrity" displaystring="scIntegrity">
       <target id="html">../html/TJwSecurityCapability.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityCapability.html</target>
     </link>
     <link topicid="scLogon" displaystring="scLogon">
       <target id="html">../html/TJwSecurityCapability.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityCapability.html</target>
     </link>
     <link topicid="SCManagerGenericMapping" displaystring="SCManagerGenericMapping Variable">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/SCManagerGenericMapping.html</target>
@@ -10833,9 +10844,11 @@
     </link>
     <link topicid="scMultiRequired" displaystring="scMultiRequired">
       <target id="html">../html/TJwSecurityCapability.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityCapability.html</target>
     </link>
     <link topicid="scMutualAuth" displaystring="scMutualAuth">
       <target id="html">../html/TJwSecurityCapability.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityCapability.html</target>
     </link>
     <link topicid="scnComputer" displaystring="scnComputer">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwSidClassName.html</target>
@@ -10846,6 +10859,7 @@
     </link>
     <link topicid="scNegotiable" displaystring="scNegotiable">
       <target id="html">../html/TJwSecurityCapability.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityCapability.html</target>
     </link>
     <link topicid="scnGroup" displaystring="scnGroup">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwSidClassName.html</target>
@@ -10877,12 +10891,15 @@
     </link>
     <link topicid="scPrivacy" displaystring="scPrivacy">
       <target id="html">../html/TJwSecurityCapability.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityCapability.html</target>
     </link>
     <link topicid="scStream" displaystring="scStream">
       <target id="html">../html/TJwSecurityCapability.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityCapability.html</target>
     </link>
     <link topicid="scTokenOnly" displaystring="scTokenOnly">
       <target id="html">../html/TJwSecurityCapability.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityCapability.html</target>
     </link>
     <link topicid="SD_HEADER_SIZE" displaystring="SD_HEADER_SIZE Constant">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/SD_HEADER_SIZE.html</target>
@@ -11297,6 +11314,10 @@
       <target id="pdf">pdf://3426@JWSCL.pdf</target>
       <target id="winhelp">id_5531@JWSCL.hlp</target>
     </link>
+    <link topicid="SetEventTypes@TJwEventTypes" displaystring="SetEventTypes Function">
+      <target id="html">../html/SetEventTypes@TJwEventTypes.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/SetEventTypes@TJwEventTypes.html</target>
+    </link>
     <link topicid="SetEventTypesEnabled@IJwLogServer@Boolean" displaystring="SetEventTypesEnabled Function">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/SetEventTypesEnabled@IJwLogServer@Boolean.html</target>
       <target id="html">../html/SetEventTypesEnabled@IJwLogServer@Boolean.html</target>
@@ -11464,6 +11485,14 @@
       <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/SidMaps.html</target>
       <target id="pdf">pdf://3000@JWSCL.pdf</target>
       <target id="winhelp">id_5117@JWSCL.hlp</target>
+    </link>
+    <link topicid="Signal@TJwSignalType@TJwString@TJwString@TJwString" displaystring="Signal Function">
+      <target id="html">../html/Signal@TJwSignalType@TJwString@TJwString@TJwString.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/Signal@TJwSignalType@TJwString@TJwString@TJwString.html</target>
+    </link>
+    <link topicid="Signal@TJwSignalType@TJwString@TJwString@TJwString@TJwString@TJwString@TJwString" displaystring="Signal Function">
+      <target id="html">../html/Signal@TJwSignalType@TJwString@TJwString@TJwString@TJwString@TJwString@TJwString.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/Signal@TJwSignalType@TJwString@TJwString@TJwString@TJwString@TJwString@TJwString.html</target>
     </link>
     <link topicid="siGroupSecurityInformation" displaystring="siGroupSecurityInformation">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwSecurityInformationFlag.html</target>
@@ -11887,7 +11916,6 @@
     </link>
     <link topicid="srtNone" displaystring="srtNone">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwSecurityResetType.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityResetType.html</target>
       <target id="pdf">pdf://2864@JWSCL.pdf</target>
       <target id="winhelp">id_4983@JWSCL.hlp</target>
     </link>
@@ -12271,6 +12299,7 @@
     </link>
     <link topicid="TJwAnsiString" displaystring="TJwAnsiString Type">
       <target id="html">../html/TJwAnsiString.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwAnsiString.html</target>
     </link>
     <link topicid="TJwAuditAccessControlEntry" displaystring="TJwAuditAccessControlEntry Class">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwAuditAccessControlEntry.html</target>
@@ -13459,6 +13488,7 @@
     </link>
     <link topicid="TJwCryptKey.GenerateContainerKey@TJwCryptProvider@TJwKeyPairType@TJwKeyFlagSet@Word" displaystring="TJwCryptKey.GenerateContainerKey Constructor">
       <target id="html">../html/TJwCryptKey_GenerateContainerKey@TJwCryptProvider@TJwKeyPairType@TJwKeyFlagSet@Word.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwCryptKey_GenerateContainerKey@TJwCryptProvider@TJwKeyPairType@TJwKeyFlagSet@Word.html</target>
     </link>
     <link topicid="TJwCryptKey.GetDWordKeyParam@Integer" displaystring="TJwCryptKey.GetDWordKeyParam Method">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwCryptKey_GetDWordKeyParam@Integer.html</target>
@@ -13754,10 +13784,12 @@
     </link>
     <link topicid="TJwCustomMappedStream.Seek@Int64@TSeekOrigin" displaystring="TJwCustomMappedStream.Seek Method">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwCustomMappedStream_Seek@Int64@TSeekOrigin.html</target>
-      <target id="html">../html/TJwCustomMappedStream_Seek@Int64@TSeekOrigin.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwCustomMappedStream_Seek@Int64@TSeekOrigin.html</target>
       <target id="pdf">pdf://634@JWSCL.pdf</target>
       <target id="winhelp">id_1976@JWSCL.hlp</target>
+    </link>
+    <link topicid="TJwCustomMappedStream.Seek@Longint@Word" displaystring="TJwCustomMappedStream.Seek Method">
+      <target id="html">../html/TJwCustomMappedStream_Seek@Longint@Word.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwCustomMappedStream_Seek@Longint@Word.html</target>
     </link>
     <link topicid="TJwCustomMappedStream.Write@@Longint" displaystring="TJwCustomMappedStream.Write Method">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwCustomMappedStream_Write@@Longint.html</target>
@@ -14447,9 +14479,11 @@
     </link>
     <link topicid="TJwEnumMap.ConvertSecurityCapabilityMessage@Cardinal" displaystring="TJwEnumMap.ConvertSecurityCapabilityMessage Method">
       <target id="html">../html/TJwEnumMap_ConvertSecurityCapabilityMessage@Cardinal.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwEnumMap_ConvertSecurityCapabilityMessage@Cardinal.html</target>
     </link>
     <link topicid="TJwEnumMap.ConvertSecurityCapabilityType@TJwSecurityCapabilities" displaystring="TJwEnumMap.ConvertSecurityCapabilityType Method">
       <target id="html">../html/TJwEnumMap_ConvertSecurityCapabilityType@TJwSecurityCapabilities.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwEnumMap_ConvertSecurityCapabilityType@TJwSecurityCapabilities.html</target>
     </link>
     <link topicid="TJwEnumMap.ConvertSecurityControl@jwaWindows.TSecurityDescriptorControl" displaystring="TJwEnumMap.ConvertSecurityControl Method (jwaWindows.TSecurityDescriptorControl)">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwEnumMap_ConvertSecurityControl@jwaWindows_TSecurityDescriptorControl.html</target>
@@ -14661,11 +14695,10 @@
     </link>
     <link topicid="TJwFileStreamEx.SetSize@Int64" displaystring="TJwFileStreamEx.SetSize Method (Int64)">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwFileStreamEx_SetSize@Int64.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwFileStreamEx_SetSize@Int64.html</target>
       <target id="pdf">pdf://826@JWSCL.pdf</target>
       <target id="winhelp">id_2295@JWSCL.hlp</target>
     </link>
-    <link topicid="TJwFileStreamEx.SetSize@Longint" displaystring="TJwFileStreamEx.SetSize Method (Longint)">
+    <link topicid="TJwFileStreamEx.SetSize@Longint" displaystring="TJwFileStreamEx.SetSize Method">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwFileStreamEx_SetSize@Longint.html</target>
       <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwFileStreamEx_SetSize@Longint.html</target>
       <target id="pdf">pdf://834@JWSCL.pdf</target>
@@ -15103,21 +15136,21 @@
     </link>
     <link topicid="TJwInternalJobObjectIOCompletitionThread.Create@TJwJobObject@Boolean@AnsiString" displaystring="TJwInternalJobObjectIOCompletitionThread.Create Constructor">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwInternalJobObjectIOCompletitionThread_Create@TJwJobObject@Boolean@AnsiString.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwInternalJobObjectIOCompletitionThread_Create@TJwJobObject@Boolean@AnsiString.html</target>
       <target id="pdf">pdf://896@JWSCL.pdf</target>
       <target id="winhelp">id_2408@JWSCL.hlp</target>
     </link>
     <link topicid="TJwInternalJobObjectIOCompletitionThread.Create@TJwJobObject@Boolean@TJwString" displaystring="TJwInternalJobObjectIOCompletitionThread.Create Constructor">
       <target id="html">../html/TJwInternalJobObjectIOCompletitionThread_Create@TJwJobObject@Boolean@TJwString.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwInternalJobObjectIOCompletitionThread_Create@TJwJobObject@Boolean@TJwString.html</target>
     </link>
     <link topicid="TJwInternalJobObjectIOCompletitionThread.CreateWithIOPort@TJwJobObject@THandle@Boolean@AnsiString" displaystring="TJwInternalJobObjectIOCompletitionThread.CreateWithIOPort Constructor">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwInternalJobObjectIOCompletitionThread_CreateWithIOPort@TJwJobObject@THandle@Boolean@AnsiString.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwInternalJobObjectIOCompletitionThread_CreateWithIOPort@TJwJobObject@THandle@Boolean@AnsiString.html</target>
       <target id="pdf">pdf://897@JWSCL.pdf</target>
       <target id="winhelp">id_2409@JWSCL.hlp</target>
     </link>
     <link topicid="TJwInternalJobObjectIOCompletitionThread.CreateWithIOPort@TJwJobObject@THandle@Boolean@TJwString" displaystring="TJwInternalJobObjectIOCompletitionThread.CreateWithIOPort Constructor">
       <target id="html">../html/TJwInternalJobObjectIOCompletitionThread_CreateWithIOPort@TJwJobObject@THandle@Boolean@TJwString.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwInternalJobObjectIOCompletitionThread_CreateWithIOPort@TJwJobObject@THandle@Boolean@TJwString.html</target>
     </link>
     <link topicid="TJwInternalJobObjectIOCompletitionThread.Execute" displaystring="TJwInternalJobObjectIOCompletitionThread.Execute Method">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwInternalJobObjectIOCompletitionThread_Execute.html</target>
@@ -16706,7 +16739,6 @@
     </link>
     <link topicid="TJwObjectTypeListArray" displaystring="TJwObjectTypeListArray Type">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwObjectTypeListArray.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwObjectTypeListArray.html</target>
       <target id="pdf">pdf://1793@JWSCL.pdf</target>
       <target id="winhelp">id_3501@JWSCL.hlp</target>
     </link>
@@ -17032,43 +17064,31 @@
     </link>
     <link topicid="TJwPrivilegeScope" displaystring="TJwPrivilegeScope Class">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwPrivilegeScope.html</target>
-      <target id="html">../html/TJwPrivilegeScope.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwPrivilegeScope.html</target>
       <target id="pdf">pdf://198@JWSCL.pdf</target>
       <target id="winhelp">id_2828@JWSCL.hlp</target>
     </link>
     <link topicid="TJwPrivilegeScope.Create@array of AnsiString@TJwPrivilegeSetType" displaystring="TJwPrivilegeScope.Create Constructor">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwPrivilegeScope_Create@array_of_AnsiString@TJwPrivilegeSetType.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwPrivilegeScope_Create@array_of_AnsiString@TJwPrivilegeSetType.html</target>
       <target id="pdf">pdf://1225@JWSCL.pdf</target>
       <target id="winhelp">id_2844@JWSCL.hlp</target>
     </link>
-    <link topicid="TJwPrivilegeScope.Create@array of TJwString@TJwPrivilegeSetType" displaystring="TJwPrivilegeScope.Create Constructor">
-      <target id="html">../html/TJwPrivilegeScope_Create@array_of_TJwString@TJwPrivilegeSetType.html</target>
-    </link>
     <link topicid="TJwPrivilegeScope.Destroy" displaystring="TJwPrivilegeScope.Destroy Destructor">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwPrivilegeScope_Destroy.html</target>
-      <target id="html">../html/TJwPrivilegeScope_Destroy.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwPrivilegeScope_Destroy.html</target>
       <target id="pdf">pdf://1226@JWSCL.pdf</target>
       <target id="winhelp">id_2845@JWSCL.hlp</target>
     </link>
     <link topicid="TJwPrivilegeScope.EnabledPrivileges" displaystring="TJwPrivilegeScope.EnabledPrivileges Property">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwPrivilegeScope_EnabledPrivileges.html</target>
-      <target id="html">../html/TJwPrivilegeScope_EnabledPrivileges.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwPrivilegeScope_EnabledPrivileges.html</target>
       <target id="pdf">pdf://1231@JWSCL.pdf</target>
       <target id="winhelp">id_2842@JWSCL.hlp</target>
     </link>
     <link topicid="TJwPrivilegeScope.fEnabledPrivileges" displaystring="TJwPrivilegeScope.fEnabledPrivileges Field">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwPrivilegeScope_fEnabledPrivileges.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwPrivilegeScope_fEnabledPrivileges.html</target>
       <target id="pdf">pdf://1227@JWSCL.pdf</target>
       <target id="winhelp">id_2847@JWSCL.hlp</target>
     </link>
     <link topicid="TJwPrivilegeScope.GetEnabledPrivileges" displaystring="TJwPrivilegeScope.GetEnabledPrivileges Method">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwPrivilegeScope_GetEnabledPrivileges.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwPrivilegeScope_GetEnabledPrivileges.html</target>
       <target id="pdf">pdf://1229@JWSCL.pdf</target>
       <target id="winhelp">id_2839@JWSCL.hlp</target>
     </link>
@@ -17246,9 +17266,11 @@
     </link>
     <link topicid="TJwPrivilegeSet.GetPrivByName@AnsiString" displaystring="TJwPrivilegeSet.GetPrivByName Method">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwPrivilegeSet_GetPrivByName@AnsiString.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwPrivilegeSet_GetPrivByName@AnsiString.html</target>
       <target id="pdf">pdf://1255@JWSCL.pdf</target>
       <target id="winhelp">id_2876@JWSCL.hlp</target>
+    </link>
+    <link topicid="TJwPrivilegeSet.GetPrivByName@TJwString" displaystring="TJwPrivilegeSet.GetPrivByName Method">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwPrivilegeSet_GetPrivByName@TJwString.html</target>
     </link>
     <link topicid="TJwPrivilegeSet.GetText" displaystring="TJwPrivilegeSet.GetText Method">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwPrivilegeSet_GetText.html</target>
@@ -17599,30 +17621,30 @@
     </link>
     <link topicid="TJwsclFirewall.AddTcpPortToFirewall@AnsiString@Integer@Boolean@AnsiString" displaystring="TJwsclFirewall.AddTcpPortToFirewall Method">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwsclFirewall_AddTcpPortToFirewall@AnsiString@Integer@Boolean@AnsiString.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwsclFirewall_AddTcpPortToFirewall@AnsiString@Integer@Boolean@AnsiString.html</target>
       <target id="pdf">pdf://1307@JWSCL.pdf</target>
       <target id="winhelp">id_2959@JWSCL.hlp</target>
     </link>
     <link topicid="TJwsclFirewall.AddTcpPortToFirewall@TJwString@Integer@Boolean@TJwString" displaystring="TJwsclFirewall.AddTcpPortToFirewall Method">
       <target id="html">../html/TJwsclFirewall_AddTcpPortToFirewall@TJwString@Integer@Boolean@TJwString.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwsclFirewall_AddTcpPortToFirewall@TJwString@Integer@Boolean@TJwString.html</target>
     </link>
     <link topicid="TJwsclFirewall.AddToWinFirewall@AnsiString@AnsiString@Boolean" displaystring="TJwsclFirewall.AddToWinFirewall Method">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwsclFirewall_AddToWinFirewall@AnsiString@AnsiString@Boolean.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwsclFirewall_AddToWinFirewall@AnsiString@AnsiString@Boolean.html</target>
       <target id="pdf">pdf://1308@JWSCL.pdf</target>
       <target id="winhelp">id_2960@JWSCL.hlp</target>
     </link>
     <link topicid="TJwsclFirewall.AddToWinFirewall@TJwString@TJwString@Boolean" displaystring="TJwsclFirewall.AddToWinFirewall Method">
       <target id="html">../html/TJwsclFirewall_AddToWinFirewall@TJwString@TJwString@Boolean.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwsclFirewall_AddToWinFirewall@TJwString@TJwString@Boolean.html</target>
     </link>
     <link topicid="TJwsclFirewall.AddUpdPortToFirewall@AnsiString@Integer@Boolean@AnsiString" displaystring="TJwsclFirewall.AddUpdPortToFirewall Method">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwsclFirewall_AddUpdPortToFirewall@AnsiString@Integer@Boolean@AnsiString.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwsclFirewall_AddUpdPortToFirewall@AnsiString@Integer@Boolean@AnsiString.html</target>
       <target id="pdf">pdf://1309@JWSCL.pdf</target>
       <target id="winhelp">id_2961@JWSCL.hlp</target>
     </link>
     <link topicid="TJwsclFirewall.AddUpdPortToFirewall@TJwString@Integer@Boolean@TJwString" displaystring="TJwsclFirewall.AddUpdPortToFirewall Method">
       <target id="html">../html/TJwsclFirewall_AddUpdPortToFirewall@TJwString@Integer@Boolean@TJwString.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwsclFirewall_AddUpdPortToFirewall@TJwString@Integer@Boolean@TJwString.html</target>
     </link>
     <link topicid="TJwsclFirewall.Create" displaystring="TJwsclFirewall.Create Constructor">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwsclFirewall_Create.html</target>
@@ -17633,12 +17655,12 @@
     </link>
     <link topicid="TJwsclFirewall.DeleteFromWinFirewall@AnsiString" displaystring="TJwsclFirewall.DeleteFromWinFirewall Method">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwsclFirewall_DeleteFromWinFirewall@AnsiString.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwsclFirewall_DeleteFromWinFirewall@AnsiString.html</target>
       <target id="pdf">pdf://1310@JWSCL.pdf</target>
       <target id="winhelp">id_2962@JWSCL.hlp</target>
     </link>
     <link topicid="TJwsclFirewall.DeleteFromWinFirewall@TJwString" displaystring="TJwsclFirewall.DeleteFromWinFirewall Method">
       <target id="html">../html/TJwsclFirewall_DeleteFromWinFirewall@TJwString.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwsclFirewall_DeleteFromWinFirewall@TJwString.html</target>
     </link>
     <link topicid="TJwsclFirewall.Destroy" displaystring="TJwsclFirewall.Destroy Destructor">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwsclFirewall_Destroy.html</target>
@@ -17705,12 +17727,12 @@
     </link>
     <link topicid="TJwsclFirewall.IsAppRulePresent@AnsiString" displaystring="TJwsclFirewall.IsAppRulePresent Method">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwsclFirewall_IsAppRulePresent@AnsiString.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwsclFirewall_IsAppRulePresent@AnsiString.html</target>
       <target id="pdf">pdf://1316@JWSCL.pdf</target>
       <target id="winhelp">id_2968@JWSCL.hlp</target>
     </link>
     <link topicid="TJwsclFirewall.IsAppRulePresent@TJwString" displaystring="TJwsclFirewall.IsAppRulePresent Method">
       <target id="html">../html/TJwsclFirewall_IsAppRulePresent@TJwString.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwsclFirewall_IsAppRulePresent@TJwString.html</target>
     </link>
     <link topicid="TJwsclFirewall.RemoteAdminAdress" displaystring="TJwsclFirewall.RemoteAdminAdress Property">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwsclFirewall_RemoteAdminAdress.html</target>
@@ -17746,9 +17768,11 @@
     </link>
     <link topicid="TJwsclFirewall.SetRemoteAdminAdress@AnsiString" displaystring="TJwsclFirewall.SetRemoteAdminAdress Method">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwsclFirewall_SetRemoteAdminAdress@AnsiString.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwsclFirewall_SetRemoteAdminAdress@AnsiString.html</target>
       <target id="pdf">pdf://1320@JWSCL.pdf</target>
       <target id="winhelp">id_2972@JWSCL.hlp</target>
+    </link>
+    <link topicid="TJwsclFirewall.SetRemoteAdminAdress@TJwString" displaystring="TJwsclFirewall.SetRemoteAdminAdress Method">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwsclFirewall_SetRemoteAdminAdress@TJwString.html</target>
     </link>
     <link topicid="TJwsclFirewall.SetRemoteAdminAllowed@Boolean" displaystring="TJwsclFirewall.SetRemoteAdminAllowed Method">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwsclFirewall_SetRemoteAdminAllowed@Boolean.html</target>
@@ -19429,7 +19453,7 @@
       <target id="pdf">pdf://649@JWSCL.pdf</target>
       <target id="winhelp">id_2002@JWSCL.hlp</target>
     </link>
-    <link topicid="TJwSecurityAccessControlList.Create" displaystring="TJwSecurityAccessControlList.Create Constructor">
+    <link topicid="TJwSecurityAccessControlList.Create" displaystring="TJwSecurityAccessControlList.Create Constructor ()">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwSecurityAccessControlList_Create.html</target>
       <target id="html">../html/TJwSecurityAccessControlList_Create.html</target>
       <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlList_Create.html</target>
@@ -19660,9 +19684,11 @@
     </link>
     <link topicid="TJwSecurityCapabilities" displaystring="TJwSecurityCapabilities Type">
       <target id="html">../html/TJwSecurityCapabilities.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityCapabilities.html</target>
     </link>
     <link topicid="TJwSecurityCapability" displaystring="TJwSecurityCapability Enumeration">
       <target id="html">../html/TJwSecurityCapability.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityCapability.html</target>
     </link>
     <link topicid="TJwSecurityDescriptor" displaystring="TJwSecurityDescriptor Class">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwSecurityDescriptor.html</target>
@@ -20455,7 +20481,6 @@
     </link>
     <link topicid="TJwSecurityDescriptorDialog.fSetOwnerButton" displaystring="TJwSecurityDescriptorDialog.fSetOwnerButton Field">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwSecurityDescriptorDialog_fSetOwnerButton.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityDescriptorDialog_fSetOwnerButton.html</target>
       <target id="pdf">pdf://1736@JWSCL.pdf</target>
       <target id="winhelp">id_3453@JWSCL.hlp</target>
     </link>
@@ -20854,7 +20879,7 @@
       <target id="pdf">pdf://1802@JWSCL.pdf</target>
       <target id="winhelp">id_3516@JWSCL.hlp</target>
     </link>
-    <link topicid="TJwSecurityDesktop.CreateDesktop@TJwSecurityDesktops@boolean@TJwString@TJwSecurityDesktopFlags@boolean@ACCESS_MASK@TJwSecurityDescriptor" displaystring="TJwSecurityDesktop.CreateDesktop Constructor">
+    <link topicid="TJwSecurityDesktop.CreateDesktop@TJwSecurityDesktops@boolean@TJwString@TJwSecurityDesktopFlags@boolean@ACCESS_MASK@TJwSecurityDescriptor" displaystring="TJwSecurityDesktop.CreateDesktop Constructor (TJwSecurityDesktops, boolean, TJwString, TJwSecurityDesktopFlags, boolean, ACCESS_MASK, TJwSecurityDescriptor)">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwSecurityDesktop_CreateDesktop@TJwSecurityDesktops@boolean@TJwString@TJwSecurityDesktopFlags@boolean@ACCESS_MASK@TJwSecurityDescriptor.html</target>
       <target id="html">../html/TJwSecurityDesktop_CreateDesktop@TJwSecurityDesktops@boolean@TJwString@TJwSecurityDesktopFlags@boolean@ACCESS_MASK@TJwSecurityDescriptor.html</target>
       <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityDesktop_CreateDesktop@TJwSecurityDesktops@boolean@TJwString@TJwSecurityDesktopFlags@boolean@ACCESS_MASK@TJwSecurityDescriptor.html</target>
@@ -21000,7 +21025,7 @@
       <target id="pdf">pdf://1806@JWSCL.pdf</target>
       <target id="winhelp">id_3520@JWSCL.hlp</target>
     </link>
-    <link topicid="TJwSecurityDesktop.OpenDesktop@TJwSecurityDesktops@boolean@TJwString@TJwSecurityDesktopFlags@boolean@ACCESS_MASK" displaystring="TJwSecurityDesktop.OpenDesktop Constructor">
+    <link topicid="TJwSecurityDesktop.OpenDesktop@TJwSecurityDesktops@boolean@TJwString@TJwSecurityDesktopFlags@boolean@ACCESS_MASK" displaystring="TJwSecurityDesktop.OpenDesktop Constructor (TJwSecurityDesktops, boolean, TJwString, TJwSecurityDesktopFlags, boolean, ACCESS_MASK)">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwSecurityDesktop_OpenDesktop@TJwSecurityDesktops@boolean@TJwString@TJwSecurityDesktopFlags@boolean@ACCESS_MASK.html</target>
       <target id="html">../html/TJwSecurityDesktop_OpenDesktop@TJwSecurityDesktops@boolean@TJwString@TJwSecurityDesktopFlags@boolean@ACCESS_MASK.html</target>
       <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityDesktop_OpenDesktop@TJwSecurityDesktops@boolean@TJwString@TJwSecurityDesktopFlags@boolean@ACCESS_MASK.html</target>
@@ -22344,6 +22369,7 @@
     </link>
     <link topicid="TJwSecurityResetTypes" displaystring="TJwSecurityResetTypes Type">
       <target id="html">../html/TJwSecurityResetTypes.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityResetTypes.html</target>
     </link>
     <link topicid="TJwSecuritySemaphoreMapping" displaystring="TJwSecuritySemaphoreMapping Class">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwSecuritySemaphoreMapping.html</target>
@@ -22569,9 +22595,11 @@
     </link>
     <link topicid="TJwSecurityToken.CheckTokenHandle@AnsiString" displaystring="TJwSecurityToken.CheckTokenHandle Method">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwSecurityToken_CheckTokenHandle@AnsiString.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityToken_CheckTokenHandle@AnsiString.html</target>
       <target id="pdf">pdf://2080@JWSCL.pdf</target>
       <target id="winhelp">id_3938@JWSCL.hlp</target>
+    </link>
+    <link topicid="TJwSecurityToken.CheckTokenHandle@TJwString" displaystring="TJwSecurityToken.CheckTokenHandle Method">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityToken_CheckTokenHandle@TJwString.html</target>
     </link>
     <link topicid="TJwSecurityToken.CheckTokenMembership@TJwSecurityId" displaystring="TJwSecurityToken.CheckTokenMembership Method">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwSecurityToken_CheckTokenMembership@TJwSecurityId.html</target>
@@ -22582,9 +22610,11 @@
     </link>
     <link topicid="TJwSecurityToken.CheckTokenPrivileges@array of AnsiString" displaystring="TJwSecurityToken.CheckTokenPrivileges Method">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwSecurityToken_CheckTokenPrivileges@array_of_AnsiString.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityToken_CheckTokenPrivileges@array_of_AnsiString.html</target>
       <target id="pdf">pdf://2082@JWSCL.pdf</target>
       <target id="winhelp">id_3940@JWSCL.hlp</target>
+    </link>
+    <link topicid="TJwSecurityToken.CheckTokenPrivileges@array of TJwString" displaystring="TJwSecurityToken.CheckTokenPrivileges Method">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityToken_CheckTokenPrivileges@array_of_TJwString.html</target>
     </link>
     <link topicid="TJwSecurityToken.ConvertToImpersonatedToken@SECURITY_IMPERSONATION_LEVEL@TJwAccessMask" displaystring="TJwSecurityToken.ConvertToImpersonatedToken Method">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwSecurityToken_ConvertToImpersonatedToken@SECURITY_IMPERSONATION_LEVEL@TJwAccessMask.html</target>
@@ -22810,21 +22840,21 @@
     </link>
     <link topicid="TJwSecurityToken.GetPrivilegeAvailable@AnsiString" displaystring="TJwSecurityToken.GetPrivilegeAvailable Method">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwSecurityToken_GetPrivilegeAvailable@AnsiString.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityToken_GetPrivilegeAvailable@AnsiString.html</target>
       <target id="pdf">pdf://2101@JWSCL.pdf</target>
       <target id="winhelp">id_3959@JWSCL.hlp</target>
     </link>
     <link topicid="TJwSecurityToken.GetPrivilegeAvailable@TJwString" displaystring="TJwSecurityToken.GetPrivilegeAvailable Method">
       <target id="html">../html/TJwSecurityToken_GetPrivilegeAvailable@TJwString.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityToken_GetPrivilegeAvailable@TJwString.html</target>
     </link>
     <link topicid="TJwSecurityToken.GetPrivilegeEnabled@AnsiString" displaystring="TJwSecurityToken.GetPrivilegeEnabled Method">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwSecurityToken_GetPrivilegeEnabled@AnsiString.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityToken_GetPrivilegeEnabled@AnsiString.html</target>
       <target id="pdf">pdf://2102@JWSCL.pdf</target>
       <target id="winhelp">id_3960@JWSCL.hlp</target>
     </link>
     <link topicid="TJwSecurityToken.GetPrivilegeEnabled@TJwString" displaystring="TJwSecurityToken.GetPrivilegeEnabled Method">
       <target id="html">../html/TJwSecurityToken_GetPrivilegeEnabled@TJwString.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityToken_GetPrivilegeEnabled@TJwString.html</target>
     </link>
     <link topicid="TJwSecurityToken.GetRunElevation" displaystring="TJwSecurityToken.GetRunElevation Method">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwSecurityToken_GetRunElevation.html</target>
@@ -23052,9 +23082,11 @@
     </link>
     <link topicid="TJwSecurityToken.IsPrivilegeAvailable@AnsiString" displaystring="TJwSecurityToken.IsPrivilegeAvailable Method">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwSecurityToken_IsPrivilegeAvailable@AnsiString.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityToken_IsPrivilegeAvailable@AnsiString.html</target>
       <target id="pdf">pdf://2133@JWSCL.pdf</target>
       <target id="winhelp">id_3992@JWSCL.hlp</target>
+    </link>
+    <link topicid="TJwSecurityToken.IsPrivilegeAvailable@TJwString" displaystring="TJwSecurityToken.IsPrivilegeAvailable Method">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityToken_IsPrivilegeAvailable@TJwString.html</target>
     </link>
     <link topicid="TJwSecurityToken.IsRestricted" displaystring="TJwSecurityToken.IsRestricted Property">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwSecurityToken_IsRestricted.html</target>
@@ -23191,12 +23223,12 @@
     </link>
     <link topicid="TJwSecurityToken.SetPrivilegeEnabled@AnsiString@boolean" displaystring="TJwSecurityToken.SetPrivilegeEnabled Method">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwSecurityToken_SetPrivilegeEnabled@AnsiString@boolean.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityToken_SetPrivilegeEnabled@AnsiString@boolean.html</target>
       <target id="pdf">pdf://2143@JWSCL.pdf</target>
       <target id="winhelp">id_4002@JWSCL.hlp</target>
     </link>
     <link topicid="TJwSecurityToken.SetPrivilegeEnabled@TJwString@boolean" displaystring="TJwSecurityToken.SetPrivilegeEnabled Method">
       <target id="html">../html/TJwSecurityToken_SetPrivilegeEnabled@TJwString@boolean.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityToken_SetPrivilegeEnabled@TJwString@boolean.html</target>
     </link>
     <link topicid="TJwSecurityToken.SetSecurityDescriptor@TJwSecurityInformationFlagSet@TJwSecurityDescriptor" displaystring="TJwSecurityToken.SetSecurityDescriptor Method">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwSecurityToken_SetSecurityDescriptor@TJwSecurityInformationFlagSet@TJwSecurityDescriptor.html</target>
@@ -23621,7 +23653,7 @@
       <target id="pdf">pdf://2233@JWSCL.pdf</target>
       <target id="winhelp">id_4115@JWSCL.hlp</target>
     </link>
-    <link topicid="TJwSecurityWindowStation.Create@TJwString@boolean@TJwAccessMask@boolean@TJwSecurityDescriptor" displaystring="TJwSecurityWindowStation.Create Constructor">
+    <link topicid="TJwSecurityWindowStation.Create@TJwString@boolean@TJwAccessMask@boolean@TJwSecurityDescriptor" displaystring="TJwSecurityWindowStation.Create Constructor (TJwString, boolean, TJwAccessMask, boolean, TJwSecurityDescriptor)">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwSecurityWindowStation_Create@TJwString@boolean@TJwAccessMask@boolean@TJwSecurityDescriptor.html</target>
       <target id="html">../html/TJwSecurityWindowStation_Create@TJwString@boolean@TJwAccessMask@boolean@TJwSecurityDescriptor.html</target>
       <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityWindowStation_Create@TJwString@boolean@TJwAccessMask@boolean@TJwSecurityDescriptor.html</target>
@@ -24471,7 +24503,7 @@
       <target id="pdf">pdf://253@JWSCL.pdf</target>
       <target id="winhelp">id_3135@JWSCL.hlp</target>
     </link>
-    <link topicid="TJwTagThread.Create" displaystring="TJwTagThread.Create Constructor">
+    <link topicid="TJwTagThread.Create" displaystring="TJwTagThread.Create Constructor ()">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwTagThread_Create.html</target>
       <target id="html">../html/TJwTagThread_Create.html</target>
       <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwTagThread_Create.html</target>
@@ -24602,12 +24634,12 @@
     </link>
     <link topicid="TJwTerminalServer.EnumerateServers@AnsiString" displaystring="TJwTerminalServer.EnumerateServers Method">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwTerminalServer_EnumerateServers@AnsiString.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwTerminalServer_EnumerateServers@AnsiString.html</target>
       <target id="pdf">pdf://261@JWSCL.pdf</target>
       <target id="winhelp">id_4215@JWSCL.hlp</target>
     </link>
     <link topicid="TJwTerminalServer.EnumerateServers@TJwString" displaystring="TJwTerminalServer.EnumerateServers Method">
       <target id="html">../html/TJwTerminalServer_EnumerateServers@TJwString.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwTerminalServer_EnumerateServers@TJwString.html</target>
     </link>
     <link topicid="TJwTerminalServer.EnumerateSessions" displaystring="TJwTerminalServer.EnumerateSessions Method">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwTerminalServer_EnumerateSessions.html</target>
@@ -25070,12 +25102,12 @@
     </link>
     <link topicid="TJwThread.Create@Boolean@AnsiString" displaystring="TJwThread.Create Constructor">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwThread_Create@Boolean@AnsiString.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwThread_Create@Boolean@AnsiString.html</target>
       <target id="pdf">pdf://894@JWSCL.pdf</target>
       <target id="winhelp">id_2406@JWSCL.hlp</target>
     </link>
     <link topicid="TJwThread.Create@Boolean@TJwString" displaystring="TJwThread.Create Constructor">
       <target id="html">../html/TJwThread_Create@Boolean@TJwString.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwThread_Create@Boolean@TJwString.html</target>
     </link>
     <link topicid="TJwThread.Destroy" displaystring="TJwThread.Destroy Destructor">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwThread_Destroy.html</target>
@@ -25231,6 +25263,7 @@
     </link>
     <link topicid="TJwWideString" displaystring="TJwWideString Type">
       <target id="html">../html/TJwWideString.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwWideString.html</target>
     </link>
     <link topicid="TJwWideStringArray" displaystring="TJwWideStringArray Type">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwWideStringArray.html</target>
@@ -27072,297 +27105,297 @@
     </link>
   </linkdatabase>
   <classinformation>
-    <class name="EJwsclAccessDenied" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclAccessDenied" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclAccessTypeException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclAccessTypeException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclAdaptSecurityInfoException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclAdaptSecurityInfoException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclAddTcpPortToFirewallException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclAddTcpPortToFirewallException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclGenericFirewallException"></ancestor>
     </class>
-    <class name="EJwsclAddUdpPortToFirewallException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclAddUdpPortToFirewallException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclGenericFirewallException"></ancestor>
     </class>
-    <class name="EJwsclAdjustPrivilegeException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclAdjustPrivilegeException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclPrivilegeException"></ancestor>
     </class>
-    <class name="EJwsclClassTypeMismatch" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclClassTypeMismatch" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclCloseDesktopException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclCloseDesktopException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclDesktopException"></ancestor>
     </class>
-    <class name="EJwsclCreateDesktopException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclCreateDesktopException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclDesktopException"></ancestor>
     </class>
-    <class name="EJwsclCreateProcessFailed" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclCreateProcessFailed" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclCryptApiException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclCryptApiException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EjwsclCryptException"></ancestor>
     </class>
-    <class name="EJwsclCryptException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclCryptException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclCryptUnsupportedException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclCryptUnsupportedException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EjwsclCryptException"></ancestor>
     </class>
-    <class name="EJwsclCSPApiException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclCSPApiException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclCSPException"></ancestor>
     </class>
-    <class name="EJwsclCSPException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclCSPException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclCryptException"></ancestor>
     </class>
-    <class name="EJwsclDesktopException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclDesktopException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclDuplicateListEntryException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclDuplicateListEntryException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclDuplicateTokenException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclDuplicateTokenException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclEmptyACLException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclEmptyACLException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclEndOfStream" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclEndOfStream" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclEnumerateProcessFailed" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclEnumerateProcessFailed" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclFailedAddACE" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclFailedAddACE" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclFirewallAddRuleException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclFirewallAddRuleException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclGenericFirewallException"></ancestor>
     </class>
-    <class name="EJwsclFirewallDelRuleException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclFirewallDelRuleException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclGenericFirewallException"></ancestor>
     </class>
-    <class name="EJwsclFirewallInactiveException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclFirewallInactiveException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclGenericFirewallException"></ancestor>
     </class>
-    <class name="EJwsclFirewallInitException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclFirewallInitException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclGenericFirewallException"></ancestor>
     </class>
-    <class name="EJwsclFirewallNoExceptionsException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclFirewallNoExceptionsException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclGenericFirewallException"></ancestor>
     </class>
-    <class name="EJwsclFirewallProfileInitException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclFirewallProfileInitException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclGenericFirewallException"></ancestor>
     </class>
-    <class name="EJwsclGenericFirewallException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclGenericFirewallException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclGetFWExceptionsAllowedException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclGetFWExceptionsAllowedException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclGenericFirewallException"></ancestor>
     </class>
-    <class name="EJwsclGetFWStateException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclGetFWStateException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclGenericFirewallException"></ancestor>
     </class>
-    <class name="EJwsclGetIncommingPingAllowedException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclGetIncommingPingAllowedException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclGenericFirewallException"></ancestor>
     </class>
-    <class name="EJwsclGetRemoteAdminAdressException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclGetRemoteAdminAdressException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclGenericFirewallException"></ancestor>
     </class>
-    <class name="EJwsclGetRemoteAdminAllowedException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclGetRemoteAdminAllowedException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclGenericFirewallException"></ancestor>
     </class>
-    <class name="EJwsclHashApiException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclHashApiException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclHashException"></ancestor>
     </class>
-    <class name="EJwsclHashException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclHashException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclCryptException"></ancestor>
     </class>
-    <class name="EJwsclHashMismatch" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclHashMismatch" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclIndexOutOfBoundsException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclIndexOutOfBoundsException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclInheritanceSourceNotSupportedException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclInheritanceSourceNotSupportedException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclInitWellKnownException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclInitWellKnownException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclKeyException"></ancestor>
     </class>
-    <class name="EJwsclInvalidACEException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclInvalidACEException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclInvalidAceMismatch" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclInvalidAceMismatch" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclInvalidComputer" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclInvalidComputer" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclInvalidFlagsException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclInvalidFlagsException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclInvalidGenericAccessMask" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclInvalidGenericAccessMask" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclInvalidGroupSIDException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclInvalidGroupSIDException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclInvalidSIDException"></ancestor>
     </class>
-    <class name="EJwsclInvalidHandle" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclInvalidHandle" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclInvalidIndex" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclInvalidIndex" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclInvalidIndexPrivilegeException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclInvalidIndexPrivilegeException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclPrivilegeException"></ancestor>
     </class>
-    <class name="EJwsclInvalidKeyPath" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclInvalidKeyPath" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclInvalidKnownSIDException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclInvalidKnownSIDException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclInvalidSIDException"></ancestor>
       <field name="fSidType"></field>
       <property name="SidType" info="TWellKnownSidType"></property>
     </class>
-    <class name="EJwsclInvalidMandatoryLevelException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclInvalidMandatoryLevelException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclInvalidObjectArrayException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclInvalidObjectArrayException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclInvalidObjectException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclInvalidObjectException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclInvalidOwnerException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclInvalidOwnerException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclInvalidOwnerSIDException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclInvalidOwnerSIDException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclInvalidSIDException"></ancestor>
     </class>
-    <class name="EJwsclInvalidParameterException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclInvalidParameterException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclInvalidParentDescriptor" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclInvalidParentDescriptor" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclInvalidPathException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclInvalidPathException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclInvalidPointerType" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclInvalidPointerType" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclInvalidPrimaryToken" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclInvalidPrimaryToken" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclTokenPrimaryException"></ancestor>
     </class>
-    <class name="EJwsclInvalidRevision" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclInvalidRevision" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclInvalidSecurityDescriptor" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclInvalidSecurityDescriptor" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclInvalidSecurityListException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclInvalidSecurityListException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclInvalidSession" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclInvalidSession" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclInvalidSidAuthorityValue" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclInvalidSidAuthorityValue" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclInvalidSIDException"></ancestor>
     </class>
-    <class name="EJwsclInvalidSIDException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclInvalidSIDException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclInvalidStartupInfo" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclInvalidStartupInfo" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclInvalidTokenHandle" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclInvalidTokenHandle" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclKeyApiException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclKeyApiException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclKeyException"></ancestor>
     </class>
-    <class name="EJwsclKeyException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclKeyException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclCryptException"></ancestor>
     </class>
-    <class name="EJwsclLSAException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclLSAException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclMissingEvent" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclMissingEvent" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclNILParameterException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclNILParameterException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclNilPointer" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclNilPointer" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclNoSuchLogonSession" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclNoSuchLogonSession" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclNotEnoughMemory" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclNotEnoughMemory" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclNoThreadTokenAvailable" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclNoThreadTokenAvailable" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclNotImplementedException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclNotImplementedException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclOpenDesktopException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclOpenDesktopException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclDesktopException"></ancestor>
     </class>
-    <class name="EJwsclOpenProcessTokenException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclOpenProcessTokenException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclOpenThreadTokenException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclOpenThreadTokenException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclOpenWindowStationException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclOpenWindowStationException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclWindowStationException"></ancestor>
     </class>
-    <class name="EJwsclOSError" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclOSError" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclPrivilegeCheckException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclPrivilegeCheckException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclPrivilegeException"></ancestor>
     </class>
-    <class name="EJwsclPrivilegeException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclPrivilegeException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclPrivilegeNotFoundException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclPrivilegeNotFoundException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclPrivilegeException"></ancestor>
     </class>
-    <class name="EJwsclProcessIdNotAvailable" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclProcessIdNotAvailable" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclProcessNotFound" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclProcessNotFound" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclReadOnlyPropertyException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclReadOnlyPropertyException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclResourceException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclResourceException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclResourceInitFailed" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclResourceInitFailed" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclResourceException"></ancestor>
     </class>
-    <class name="EJwsclResourceNotFound" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclResourceNotFound" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclResourceException"></ancestor>
     </class>
-    <class name="EJwsclResourceUnequalCount" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclResourceUnequalCount" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclResourceException"></ancestor>
     </class>
-    <class name="EJwsclRevisionMismatchException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclRevisionMismatchException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclSACLAccessDenied" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclSACLAccessDenied" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclAccessDenied"></ancestor>
     </class>
-    <class name="EJwsclSecurityException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclSecurityException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="Exception"></ancestor>
       <field name="fComSource"></field>
       <field name="fiSourceLine"></field>
@@ -27390,91 +27423,91 @@
       <method name="GetErrorMessage"></method>
       <method name="GetLastErrorMessage"></method>
     </class>
-    <class name="EJwsclSecurityObjectException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclSecurityObjectException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclSetFWExceptionsAllowedException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclSetFWExceptionsAllowedException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclGenericFirewallException"></ancestor>
     </class>
-    <class name="EJwsclSetFWStateException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclSetFWStateException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclGenericFirewallException"></ancestor>
     </class>
-    <class name="EJwsclSetIncommingPingAllowedException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclSetIncommingPingAllowedException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclGenericFirewallException"></ancestor>
     </class>
-    <class name="EJwsclSetRemoteAdminAdressException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclSetRemoteAdminAdressException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclGenericFirewallException"></ancestor>
     </class>
-    <class name="EJwsclSetRemoteAdminAllowedException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclSetRemoteAdminAllowedException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclGenericFirewallException"></ancestor>
     </class>
-    <class name="EJwsclSharedTokenException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclSharedTokenException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclStreamException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclStreamException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclStreamHashException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclStreamHashException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclStreamException"></ancestor>
     </class>
-    <class name="EJwsclStreamInvalidMagicException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclStreamInvalidMagicException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclStreamException"></ancestor>
     </class>
-    <class name="EJwsclStreamSizeException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclStreamSizeException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclStreamException"></ancestor>
     </class>
-    <class name="EJwsclTerminalServerConnectException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclTerminalServerConnectException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclTerminalServerException"></ancestor>
     </class>
-    <class name="EJwsclTerminalServerException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclTerminalServerException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclTerminalServiceException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclTerminalServiceException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclTerminalServiceNecessary" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclTerminalServiceNecessary" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclTerminalServiceException"></ancestor>
     </class>
-    <class name="EJwsclTerminalSessionException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclTerminalSessionException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclTerminalServerException"></ancestor>
     </class>
-    <class name="EJwsclThreadException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclThreadException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclTokenImpersonationException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclTokenImpersonationException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclTokenInformationException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclTokenInformationException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclTokenPrimaryException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclTokenPrimaryException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclUnimplemented" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclUnimplemented" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclUnsupportedACE" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclUnsupportedACE" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclUnsupportedWindowsVersionException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclUnsupportedWindowsVersionException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclVistaFeaturesDisabled" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclVistaFeaturesDisabled" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclWinCallFailedException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclWinCallFailedException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="EJwsclWindowStationException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="EJwsclWindowStationException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="ESetOwnerException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="ESetOwnerException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclStreamException"></ancestor>
     </class>
-    <class name="ESetSecurityException" language="0" type="0" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="ESetSecurityException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
-    <class name="IJwAutoLock" language="0" type="1" using="Classes,Jwsclexceptions,JwsclResource,JwsclTypes">
+    <class name="IJwAutoLock" language="0" type="1" using="Classes,JwaWindows,Jwsclexceptions,JwsclResource,JwsclTypes">
       <property name="Instance" info="TObject"></property>
       <property name="Pointer" info="Pointer"></property>
       <property name="PointerType" info="TJwPointerType"></property>
@@ -27485,7 +27518,7 @@
       <method name="GetPointerType"></method>
       <method name="UnLock"></method>
     </class>
-    <class name="IJwAutoPointer" language="0" type="1" using="Classes,Jwsclexceptions,JwsclResource,JwsclTypes">
+    <class name="IJwAutoPointer" language="0" type="1" using="Classes,JwaWindows,Jwsclexceptions,JwsclResource,JwsclTypes">
       <property name="Instance" info="TObject"></property>
       <property name="Pointer" info="Pointer"></property>
       <property name="PointerType" info="TJwPointerType"></property>
@@ -27499,23 +27532,23 @@
       <ancestor name="IUnknown"></ancestor>
     </class>
     <class name="IJwLogClient" language="0" type="1" using="ActiveX,Classes,ComObj,ComServ,JwsclStrings,SyncObjs,SysUtils">
-      <ancestor name="IInterface"></ancestor>
-      <method name="Exception"></method>
-      <method name="Exception"></method>
-      <method name="Log"></method>
-      <method name="Log"></method>
-      <method name="Log"></method>
-      <method name="Memory"></method>
-      <method name="Memory"></method>
-      <method name="SetEventTypes"></method>
-      <method name="Signal"></method>
-      <method name="Signal"></method>
+      <ancestor name="Log"></ancestor>
+      <ancestor name="LogType"></ancestor>
+      <ancestor name="TJwLogType"></ancestor>
+      <ancestor name="LogMessage"></ancestor>
+      <ancestor name="TJwString"></ancestor>
     </class>
     <class name="IJwLogServer" language="0" type="1" using="ActiveX,Classes,ComObj,ComServ,JwsclStrings,SyncObjs,SysUtils">
-      <ancestor name="IInterface"></ancestor>
+      <ancestor name="Connect"></ancestor>
+      <ancestor name="EnterType"></ancestor>
+      <ancestor name="TJwEnterType"></ancestor>
+      <ancestor name="ClassName"></ancestor>
+      <ancestor name="MethodName"></ancestor>
+      <ancestor name="FileName"></ancestor>
+      <ancestor name="MessageText"></ancestor>
+      <ancestor name="TJwString"></ancestor>
       <property name="OnXMLWrite" info="TJwOnXMLWrite"></property>
       <property name="OnXMLWriting" info="TJwOnXMLWriting"></property>
-      <method name="Connect"></method>
       <method name="Disconnect"></method>
       <method name="Done"></method>
       <method name="GetLogTypes"></method>
@@ -27528,8 +27561,17 @@
       <method name="SetWriterClass"></method>
     </class>
     <class name="IJwPrivilegeScope" language="0" type="1" using="Classes,jwaWindows,JwsclAcl,JwsclConstants,JwsclExceptions,JwsclStrings,JwsclToken,JwsclTypes,JwsclVersion,SysUtils">
-      <ancestor name="IInterface"></ancestor>
+      <ancestor name="GetEnabledPrivileges"></ancestor>
+      <ancestor name="TJwStringArray"></ancestor>
+      <ancestor name="EnabledPrivileges"></ancestor>
+      <ancestor name="read"></ancestor>
+      <ancestor name="TJwPrivilegeScope"></ancestor>
+      <ancestor name="TInterfacedObject"></ancestor>
+      <ancestor name="IJwPrivilegeScope"></ancestor>
+      <field name="fEnabledPrivileges"></field>
       <property name="EnabledPrivileges" info="TJwStringArray"></property>
+      <method name="Create"></method>
+      <method name="Destroy"></method>
       <method name="GetEnabledPrivileges"></method>
     </class>
     <class name="IJwWriterClass" language="0" type="1" using="ActiveX,Classes,ComObj,ComServ,JwsclStrings,SyncObjs,SysUtils">
@@ -27549,13 +27591,13 @@
       <ancestor name="IUnknown"></ancestor>
       <method name="GetInheritSource"></method>
     </class>
-    <class name="TAce" language="0" type="5" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TAce" language="0" type="5" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="accessAllowedAce"></field>
       <field name="accessDeniedAce"></field>
       <field name="AceType"></field>
       <field name="systemAuditAce"></field>
     </class>
-    <class name="TAuthZSidContextFlag" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TAuthZSidContextFlag" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="authZSF_ComputePrivileges"></field>
       <field name="authZSF_Default"></field>
       <field name="authZSF_RequireS4ULogon"></field>
@@ -27585,12 +27627,12 @@
       <field name="Index"></field>
       <field name="Value"></field>
     </class>
-    <class name="TJwAccessControlListType" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwAccessControlListType" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="acltAuditing"></field>
       <field name="acltDiscretionary"></field>
       <field name="acltMandatory"></field>
     </class>
-    <class name="TJwAceFlag" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwAceFlag" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="afContainerInheritAce"></field>
       <field name="afFailedAccessAceFlag"></field>
       <field name="afInheritedAce"></field>
@@ -27600,7 +27642,7 @@
       <field name="afSuccessfulAccessAceFlag"></field>
       <field name="afValidInheritFlags"></field>
     </class>
-    <class name="TJwAceType" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwAceType" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="actAllow"></field>
       <field name="actAllowCallback"></field>
       <field name="actAllowCallbackObject"></field>
@@ -27616,12 +27658,12 @@
       <field name="actMandatory"></field>
       <field name="actUnknown"></field>
     </class>
-    <class name="TJwACLProtection" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwACLProtection" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="aclpForceUnprotect"></field>
       <field name="aclpProtected"></field>
       <field name="aclpUnprotected"></field>
     </class>
-    <class name="TJwACLProtectionState" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwACLProtectionState" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="apNone"></field>
       <field name="apProtected"></field>
       <field name="apUnprotected"></field>
@@ -27728,12 +27770,12 @@
       <method name="Create"></method>
       <method name="Destroy"></method>
     </class>
-    <class name="TJwAuthZResourceManagerFlag" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwAuthZResourceManagerFlag" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="authRM_Default"></field>
       <field name="authRM_InitializeUnderImpersonation"></field>
       <field name="authRM_NoAudit"></field>
     </class>
-    <class name="TJwAutoLock" language="0" type="0" using="Classes,Jwsclexceptions,JwsclResource,JwsclTypes">
+    <class name="TJwAutoLock" language="0" type="0" using="Classes,JwaWindows,Jwsclexceptions,JwsclResource,JwsclTypes">
       <ancestor name="TInterfacedObject"></ancestor>
       <ancestor name="IJwAutoLock"></ancestor>
       <field name="fAutoPointer"></field>
@@ -27747,7 +27789,7 @@
       <method name="GetPointerType"></method>
       <method name="UnLock"></method>
     </class>
-    <class name="TJwAutoPointer" language="0" type="0" using="Classes,Jwsclexceptions,JwsclResource,JwsclTypes">
+    <class name="TJwAutoPointer" language="0" type="0" using="Classes,JwaWindows,Jwsclexceptions,JwsclResource,JwsclTypes">
       <method name="CreateInstance"></method>
       <method name="CreateInstance"></method>
       <method name="CreateNewPointer"></method>
@@ -27755,7 +27797,7 @@
       <method name="Wrap"></method>
       <method name="Wrap"></method>
     </class>
-    <class name="TJwAutoPointerImpl" language="0" type="0" using="Classes,Jwsclexceptions,JwsclResource,JwsclTypes">
+    <class name="TJwAutoPointerImpl" language="0" type="0" using="Classes,JwaWindows,Jwsclexceptions,JwsclResource,JwsclTypes">
       <ancestor name="TInterfacedObject"></ancestor>
       <ancestor name="IJwAutoPointer"></ancestor>
       <field name="fHandle"></field>
@@ -27779,7 +27821,7 @@
       <field name="RM"></field>
       <field name="UserData"></field>
     </class>
-    <class name="TJwCopyFlag" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwCopyFlag" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="cfCopyInstance"></field>
       <field name="cfPointAtInstance"></field>
     </class>
@@ -27822,7 +27864,7 @@
       <field name="ProcessAttributes"></field>
       <field name="ThreadAttributes"></field>
     </class>
-    <class name="TJwCredentialFlag" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwCredentialFlag" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="cfFlagsAlwaysShowUi"></field>
       <field name="cfFlagsDoNotPersist"></field>
       <field name="cfFlagsExcludeCertificates"></field>
@@ -27895,11 +27937,11 @@
       <method name="Import"></method>
       <method name="RaiseApiError"></method>
     </class>
-    <class name="TJwCryptProtectFlag" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwCryptProtectFlag" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="cfLocalMachine"></field>
       <field name="cfUiFobidden"></field>
     </class>
-    <class name="TJwCryptProtectOnPromptFlag" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwCryptProtectOnPromptFlag" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="cppf_Pad0"></field>
       <field name="cppf_PromptOnProtect"></field>
       <field name="cppf_PromptOnUnprotect"></field>
@@ -27925,13 +27967,13 @@
       <method name="RaiseApiError"></method>
       <method name="SetDefaultProvider"></method>
     </class>
-    <class name="TJwCSPCreationFlag" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwCSPCreationFlag" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="ccfMachineKeyset"></field>
       <field name="ccfNewKeyset"></field>
       <field name="ccfSilent"></field>
       <field name="ccfVerifyContext"></field>
     </class>
-    <class name="TJwCSPType" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwCSPType" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="ctDhSchannel"></field>
       <field name="ctDss"></field>
       <field name="ctDssDh"></field>
@@ -27970,7 +28012,7 @@
       <method name="GetInheritance"></method>
       <method name="MakeCanonical"></method>
     </class>
-    <class name="TJwDesktopCreationFlag" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwDesktopCreationFlag" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="dcfCreate"></field>
       <field name="dcfOpen"></field>
     </class>
@@ -28028,7 +28070,7 @@
       <method name="EncryptPointer"></method>
       <method name="EncryptPointerWithPrompt"></method>
     </class>
-    <class name="TJwEncryptionAlgorithm" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwEncryptionAlgorithm" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="ea3Des"></field>
       <field name="ea3Des112"></field>
       <field name="eaAgreedKeyAny"></field>
@@ -28065,7 +28107,7 @@
       <field name="etNone"></field>
       <field name="etThread"></field>
     </class>
-    <class name="TJwEnumAlgorithmsEntry" language="0" type="5" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwEnumAlgorithmsEntry" language="0" type="5" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="AlgId"></field>
       <field name="DefaultKeyLen"></field>
       <field name="EncrAlgType"></field>
@@ -28133,11 +28175,11 @@
       <method name="ConvertTokenMandatoryPolicyFlags"></method>
       <method name="ConvertTokenMandatoryPolicyFlags"></method>
     </class>
-    <class name="TJwEnumProviderEntry" language="0" type="5" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwEnumProviderEntry" language="0" type="5" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="Name"></field>
       <field name="ProviderType"></field>
     </class>
-    <class name="TJwEqualAceType" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwEqualAceType" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="eactSameAccessMask"></field>
       <field name="eactSameFlags"></field>
       <field name="eactSameSid"></field>
@@ -28155,12 +28197,12 @@
       <field name="TagName"></field>
       <field name="TypeValues"></field>
     </class>
-    <class name="TJwExceptionMapping" language="0" type="5" using="Classes,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+    <class name="TJwExceptionMapping" language="0" type="5" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <field name="ExcPtr"></field>
       <field name="ID"></field>
       <field name="Name"></field>
     </class>
-    <class name="TJwFileHashData" language="0" type="5" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwFileHashData" language="0" type="5" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="Hash"></field>
       <field name="Size"></field>
     </class>
@@ -28173,21 +28215,20 @@
       <method name="Destroy"></method>
       <method name="EOSHandler"></method>
       <method name="SetSize"></method>
-      <method name="SetSize"></method>
     </class>
     <class name="TJwFileVersion" language="0" type="0" using="jwaWindows,JwsclConstants,JwsclExceptions,JwsclResource,JwsclStrings,JwsclUtils,SysUtils">
       <ancestor name="TObject"></ancestor>
       <method name="GetFileInfo"></method>
     </class>
-    <class name="TJwGetAccessCheckType" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwGetAccessCheckType" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="gactGetSecurity"></field>
       <field name="gactSetSecurity"></field>
     </class>
-    <class name="TJwGetInheritFlagsType" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwGetInheritFlagsType" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="giftCreatePrivate"></field>
       <field name="giftSetPrivate"></field>
     </class>
-    <class name="TJwGetMemBlob" language="0" type="5" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwGetMemBlob" language="0" type="5" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="Data"></field>
       <field name="Size"></field>
     </class>
@@ -28218,7 +28259,7 @@
       <method name="Sign"></method>
       <method name="VerifySignature"></method>
     </class>
-    <class name="TJwHashAlgorithm" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwHashAlgorithm" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="haHMAC"></field>
       <field name="haMAC"></field>
       <field name="haMD2"></field>
@@ -28237,12 +28278,12 @@
       <method name="Create"></method>
       <method name="Destroy"></method>
     </class>
-    <class name="TJwInheritedFromRecord" language="0" type="5" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwInheritedFromRecord" language="0" type="5" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="AncestorName"></field>
       <field name="GenerationGap"></field>
       <field name="SID"></field>
     </class>
-    <class name="TJwInheritFlag" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwInheritFlag" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="ifAvoidOwnerCheck"></field>
       <field name="ifAvoidOwnerRestriction"></field>
       <field name="ifAvoidPrivilegeCheck"></field>
@@ -28272,7 +28313,7 @@
       <method name="NewRecord"></method>
       <method name="Put"></method>
     </class>
-    <class name="TJwIntegrityLabelType" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwIntegrityLabelType" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="iltHigh"></field>
       <field name="iltLow"></field>
       <field name="iltMedium"></field>
@@ -28311,7 +28352,7 @@
       <method name="EOSHandler"></method>
       <method name="OpenMapView"></method>
     </class>
-    <class name="TJwJobLimit" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwJobLimit" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="jlACTIVEPROCESS"></field>
       <field name="jlAFFINITY"></field>
       <field name="jlBREAKAWAYOK"></field>
@@ -28333,7 +28374,7 @@
       <field name="jlSILENTBREAKAWAYOK"></field>
       <field name="jlWORKINGSET"></field>
     </class>
-    <class name="TJwJobMessage" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwJobMessage" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="jmsgABNORMALEXITPROCESS"></field>
       <field name="jmsgACTIVEPROCESSLIMIT"></field>
       <field name="jmsgACTIVEPROCESSZERO"></field>
@@ -28427,12 +28468,12 @@
       <method name="GetProcessHandle"></method>
       <method name="SetTerminateJobsOnFree"></method>
     </class>
-    <class name="TJwJobTermination" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwJobTermination" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="jtAll"></field>
       <field name="jtNone"></field>
       <field name="jtSubjection"></field>
     </class>
-    <class name="TJwJobUiLimit" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwJobUiLimit" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="juilDESKTOP"></field>
       <field name="juilDISPLAYSETTINGS"></field>
       <field name="juilEXITWINDOWS"></field>
@@ -28443,7 +28484,7 @@
       <field name="juilSYSTEMPARAMETERS"></field>
       <field name="juilWRITECLIPBOARD"></field>
     </class>
-    <class name="TJwKeyExportKind" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwKeyExportKind" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="kekOpaque"></field>
       <field name="kekPlainText"></field>
       <field name="kekPrivate"></field>
@@ -28451,7 +28492,7 @@
       <field name="kekSimple"></field>
       <field name="kekSymmetricWrap"></field>
     </class>
-    <class name="TJwKeyFlag" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwKeyFlag" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="kfCreateSalt"></field>
       <field name="kfDestroyKey"></field>
       <field name="kfExportable"></field>
@@ -28462,7 +28503,7 @@
       <field name="kfUpdateKey"></field>
       <field name="kfUserProtected"></field>
     </class>
-    <class name="TJwKeyPairType" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwKeyPairType" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="kptKeyExchange"></field>
       <field name="kptSignature"></field>
       <field name="kptUnknown"></field>
@@ -28607,12 +28648,12 @@
       <method name="RemoveAccountRights"></method>
       <method name="SetPrivateData"></method>
     </class>
-    <class name="TJwMandatoryPolicy" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwMandatoryPolicy" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="mpNoExecuteUp"></field>
       <field name="mpNoReadUp"></field>
       <field name="mpNoWriteUp"></field>
     </class>
-    <class name="TJwMemoryType" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwMemoryType" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="mtGetMem"></field>
       <field name="mtGlobal"></field>
       <field name="mtLocal"></field>
@@ -28624,7 +28665,7 @@
       <field name="uPage"></field>
       <field name="userData"></field>
     </class>
-    <class name="TJwPointerType" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwPointerType" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="ptClass"></field>
       <field name="ptGetMem"></field>
       <field name="ptHandle"></field>
@@ -28632,7 +28673,7 @@
       <field name="ptNew"></field>
       <field name="ptUnknown"></field>
     </class>
-    <class name="TJwPrivCheck" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwPrivCheck" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="pcAllPrivsEnabled"></field>
       <field name="pcDefault"></field>
     </class>
@@ -28670,15 +28711,6 @@
     <class name="TJwPrivilegeQueryType" language="0" type="7" using="Classes,Contnrs,JwaWindows,JwsclAcl,JwsclConstants,JwsclDescriptor,JwsclEnumerations,JwsclExceptions,JwsclResource,JwsclSid,JwsclStrings,JwsclTypes,JwsclUtils,JwsclVersion,SysUtils">
       <field name="pqt_Available"></field>
       <field name="pqt_Enabled"></field>
-    </class>
-    <class name="TJwPrivilegeScope" language="0" type="0" using="Classes,jwaWindows,JwsclAcl,JwsclConstants,JwsclExceptions,JwsclStrings,JwsclToken,JwsclTypes,JwsclVersion,SysUtils">
-      <ancestor name="TInterfacedObject"></ancestor>
-      <ancestor name="IJwPrivilegeScope"></ancestor>
-      <field name="fEnabledPrivileges"></field>
-      <property name="EnabledPrivileges" info="TJwStringArray"></property>
-      <method name="Create"></method>
-      <method name="Destroy"></method>
-      <method name="GetEnabledPrivileges"></method>
     </class>
     <class name="TJwPrivilegeSet" language="0" type="0" using="Classes,Contnrs,JwaWindows,JwsclAcl,JwsclConstants,JwsclDescriptor,JwsclEnumerations,JwsclExceptions,JwsclResource,JwsclSid,JwsclStrings,JwsclTypes,JwsclUtils,JwsclVersion,SysUtils">
       <ancestor name="TObject"></ancestor>
@@ -28738,11 +28770,11 @@
       <field name="ProfileInfo"></field>
       <field name="UserToken"></field>
     </class>
-    <class name="TJwProcessParameterType" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwProcessParameterType" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="pptHandle"></field>
       <field name="pptID"></field>
     </class>
-    <class name="TJwProfileInfo" language="0" type="5" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwProfileInfo" language="0" type="5" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="DefaultPath"></field>
       <field name="Flags"></field>
       <field name="PolicyPath"></field>
@@ -28751,7 +28783,7 @@
       <field name="ServerName"></field>
       <field name="UserName"></field>
     </class>
-    <class name="TJwProfileMember" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwProfileMember" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="pmDefaultPath"></field>
       <field name="pmFlags"></field>
       <field name="pmPolicyPath"></field>
@@ -28759,7 +28791,7 @@
       <field name="pmServerName"></field>
       <field name="pmUserName"></field>
     </class>
-    <class name="TJwProgInvokeSetting" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwProgInvokeSetting" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="pis_0"></field>
       <field name="pis_1"></field>
       <field name="pis_2"></field>
@@ -28776,7 +28808,7 @@
       <field name="pis_ProgressInvokeOnError"></field>
       <field name="pis_ProgressRetryOperation"></field>
     </class>
-    <class name="TJwProtectMemoryFlag" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwProtectMemoryFlag" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="pmCrossProcess"></field>
       <field name="pmSameLogon"></field>
       <field name="pmSameProcess"></field>
@@ -28787,24 +28819,24 @@
       <method name="GetData"></method>
       <method name="GetStandardRandomData"></method>
     </class>
-    <class name="TJwReplyErrorEnum" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwReplyErrorEnum" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="reAccessDenied"></field>
       <field name="rePrivilegeNotHeld"></field>
       <field name="reSuccess"></field>
       <field name="reUnknown"></field>
     </class>
-    <class name="TJwRequestedTokenType" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwRequestedTokenType" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="rttAuto"></field>
       <field name="rttTokenImpersonation"></field>
       <field name="rttTokenPrimary"></field>
     </class>
-    <class name="TJwRightsMapping" language="0" type="5" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwRightsMapping" language="0" type="5" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="Flags"></field>
       <field name="Name"></field>
       <field name="Right"></field>
       <field name="StringId"></field>
     </class>
-    <class name="TJwRightType" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwRightType" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="rtGeneric"></field>
       <field name="rtMaximum"></field>
       <field name="rtNone"></field>
@@ -28814,14 +28846,14 @@
       <field name="rtSystem"></field>
       <field name="rtUnknown"></field>
     </class>
-    <class name="TJwRootKeyEnum" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwRootKeyEnum" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="rkeClasses"></field>
       <field name="rkeConfig"></field>
       <field name="rkeCurrentUser"></field>
       <field name="rkeLocal"></field>
       <field name="rkeUsers"></field>
     </class>
-    <class name="TJwRootRegKey" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwRootRegKey" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="rrkClassesRoot"></field>
       <field name="rrkCurrentConfig"></field>
       <field name="rrkCurrentUser"></field>
@@ -28829,7 +28861,7 @@
       <field name="rrkString"></field>
       <field name="rrkUsers"></field>
     </class>
-    <class name="TJwRootTuple" language="0" type="5" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwRootTuple" language="0" type="5" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="Key"></field>
       <field name="RootKey"></field>
       <field name="RootName"></field>
@@ -28848,7 +28880,7 @@
       <method name="SetMandatoryLabel"></method>
       <method name="SetMandatoryLabelEx"></method>
     </class>
-    <class name="TJwsclFirewall" language="0" type="0" using="ComObj,JwsclConstants,JwsclExceptions,JwsclStrings,NetFwTypeLib_TLB">
+    <class name="TJwsclFirewall" language="0" type="0" using="ComObj,JwaWindows,JwsclConstants,JwsclExceptions,JwsclStrings,NetFwTypeLib_TLB">
       <ancestor name="TObject"></ancestor>
       <field name="FFWMgr"></field>
       <field name="FProfile"></field>
@@ -29194,7 +29226,7 @@
       <method name="RemoveOwners"></method>
       <method name="SetRevision"></method>
     </class>
-    <class name="TJwSecurityCapability" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwSecurityCapability" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="scAcceptWin32Name"></field>
       <field name="scASCIIBuffers"></field>
       <field name="scClientOnly"></field>
@@ -29298,7 +29330,7 @@
       <method name="SetRMControl"></method>
       <method name="SetSACL"></method>
     </class>
-    <class name="TJwSecurityDescriptorControl" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwSecurityDescriptorControl" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="sdcDaclAutoInherited"></field>
       <field name="sdcDaclAutoInheritReq"></field>
       <field name="sdcDaclDefaulted"></field>
@@ -29465,7 +29497,7 @@
       <method name="SwitchDesktop"></method>
       <method name="SwitchDesktopBack"></method>
     </class>
-    <class name="TJwSecurityDesktopFlag" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwSecurityDesktopFlag" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="dfAllowOtherAccountHook"></field>
       <field name="dfPad0"></field>
     </class>
@@ -29496,7 +29528,7 @@
       <method name="OpenInputDesktop"></method>
       <method name="Update"></method>
     </class>
-    <class name="TJwSecurityDialogFlag" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwSecurityDialogFlag" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="sdfAdvanced"></field>
       <field name="sdfContainer"></field>
       <field name="sdfEditDacl"></field>
@@ -29651,7 +29683,7 @@
       <method name="Notify"></method>
       <method name="Remove"></method>
     </class>
-    <class name="TJwSecurityInformationFlag" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwSecurityInformationFlag" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="siDaclSecurityInformation"></field>
       <field name="siGroupSecurityInformation"></field>
       <field name="siLabelSecurityInformation"></field>
@@ -29688,21 +29720,21 @@
       <method name="GetMapping"></method>
       <method name="MapAccessMaskToString"></method>
     </class>
-    <class name="TJwSecurityObjectInformation" language="0" type="5" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwSecurityObjectInformation" language="0" type="5" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="Level"></field>
       <field name="ObjectGuid"></field>
       <field name="ObjectName"></field>
       <field name="ObjectType"></field>
       <field name="ServerName"></field>
     </class>
-    <class name="TJwSecurityObjectInformationFlag" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwSecurityObjectInformationFlag" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="soifLevel"></field>
       <field name="soifObjectGuid"></field>
       <field name="soifObjectName"></field>
       <field name="soifObjectType"></field>
       <field name="soifServerName"></field>
     </class>
-    <class name="TJwSecurityPageType" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwSecurityPageType" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="sptAclWindow"></field>
       <field name="sptAdvWindow"></field>
       <field name="sptPadding1"></field>
@@ -29745,7 +29777,7 @@
       <method name="GetMapping"></method>
       <method name="MapAccessMaskToString"></method>
     </class>
-    <class name="TJwSecurityResetType" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwSecurityResetType" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="srtDacl"></field>
       <field name="srtOwner"></field>
       <field name="srtSacl"></field>
@@ -30046,7 +30078,7 @@
       <field name="ssNone"></field>
       <field name="ssShadowing"></field>
     </class>
-    <class name="TJwSharedHandle" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwSharedHandle" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="shOwned"></field>
       <field name="shShared"></field>
     </class>
@@ -30056,7 +30088,7 @@
       <field name="sefNoClosehProcess"></field>
       <field name="sefNoUi"></field>
     </class>
-    <class name="TJwSidAttribute" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwSidAttribute" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="sidaGroupEnabled"></field>
       <field name="sidaGroupEnabledByDefault"></field>
       <field name="sidaGroupIntegrity"></field>
@@ -30074,7 +30106,7 @@
       <field name="sidaPad5"></field>
       <field name="sidaUnknown"></field>
     </class>
-    <class name="TJwSidClassName" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwSidClassName" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="scnComputer"></field>
       <field name="scnGroup"></field>
       <field name="scnNone"></field>
@@ -30099,7 +30131,7 @@
       <method name="QueryGetData"></method>
       <method name="SetData"></method>
     </class>
-    <class name="TJwSidInfoRecord" language="0" type="5" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwSidInfoRecord" language="0" type="5" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="Exception"></field>
       <field name="pSid"></field>
       <field name="sClass"></field>
@@ -30155,7 +30187,7 @@
       <method name="Create"></method>
       <method name="Execute"></method>
     </class>
-    <class name="TJwTempResetEnum" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwTempResetEnum" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="treDacl"></field>
       <field name="treGroup"></field>
       <field name="treOwner"></field>
@@ -30260,12 +30292,12 @@
       <method name="SetName"></method>
       <method name="WaitWithTimeOut"></method>
     </class>
-    <class name="TJwTokenMandatoryPolicy" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwTokenMandatoryPolicy" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="tmpNewProcessMin"></field>
       <field name="tmpNoWriteUp"></field>
       <field name="tmpOff"></field>
     </class>
-    <class name="TJwTreeSetType" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwTreeSetType" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="tstReset"></field>
       <field name="tstSet"></field>
     </class>
@@ -30275,7 +30307,7 @@
     <class name="TJwUserAccounts" language="0" type="0" using="Contnrs,jwaWindows,JwsclAcl,JwsclConstants,JwsclExceptions,JwsclStrings,JwsclTypes,JwsclVersion,SysUtils">
       <ancestor name="TObjectList"></ancestor>
     </class>
-    <class name="TJwUserDataCopy" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings">
+    <class name="TJwUserDataCopy" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="ucCopyMemory"></field>
       <field name="ucUseMemory"></field>
     </class>

@@ -12,7 +12,9 @@ Visit at http://blog.delphi-jedi.net/
 program RunAsSys;
 
 uses
+{$IFDEF FASTMM}
   FastMM4,
+{$ENDIF}  
 {$IFDEF EUREKALOG}
   ExceptionLog,
 {$ENDIF EUREKALOG}  
@@ -261,7 +263,6 @@ begin
                 end;
               WAIT_OBJECT_0 :
                 begin
-                  ShowMessage('test'); 
                   if GetExitCodeProcess(Shell.hProcess,SuRunCode) then
                   begin
 {

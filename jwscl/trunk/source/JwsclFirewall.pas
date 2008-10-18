@@ -48,6 +48,8 @@ uses
     JwsclStrings;
 
 type
+  { TJwsclFirewall implements methods and properties to access, administer, set and
+    get the Microsoft Windows Firewall.                                             }
   TJwsclFirewall = class(TObject)
   protected
     FFWMgr: INetFwMgr;
