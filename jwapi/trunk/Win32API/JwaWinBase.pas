@@ -981,6 +981,12 @@ const
   CREATE_FORCEDOS         = $00002000;
   {$EXTERNALSYM CREATE_FORCEDOS}
 
+  CREATE_PROTECTED_PROCESS  = $00040000;
+  {$EXTERNALSYM CREATE_PROTECTED_PROCESS}
+
+  EXTENDED_STARTUPINFO_PRESENT = $00080000;
+  {$EXTERNALSYM EXTENDED_STARTUPINFO_PRESENT}
+
   BELOW_NORMAL_PRIORITY_CLASS = $00004000;
   {$EXTERNALSYM BELOW_NORMAL_PRIORITY_CLASS}
   ABOVE_NORMAL_PRIORITY_CLASS = $00008000;
@@ -3160,6 +3166,91 @@ function WriteFileGather(hFile: HANDLE; aSegmentArray: PFILE_SEGMENT_ELEMENT;
   nNumberOfBytesToWrite: DWORD; lpReserved: LPDWORD; lpOverlapped: LPOVERLAPPED): BOOL; stdcall;
 {$EXTERNALSYM WriteFileGather}
 
+
+
+//
+// Extended process and thread attribute support
+//
+const
+  {$EXTERNALSYM SHUTDOWN_NORETRY}
+  PROC_THREAD_ATTRIBUTE_NUMBER    = $0000FFFF;
+  {$EXTERNALSYM SHUTDOWN_NORETRY}
+  PROC_THREAD_ATTRIBUTE_THREAD    = $00010000;  // Attribute may be used with thread creation
+  {$EXTERNALSYM SHUTDOWN_NORETRY}
+  PROC_THREAD_ATTRIBUTE_INPUT     = $00020000;  // Attribute is input only
+  {$EXTERNALSYM SHUTDOWN_NORETRY}
+  PROC_THREAD_ATTRIBUTE_ADDITIVE  = $00040000;  // Attribute may be "accumulated," e.g. bitmasks, counters, etc.
+
+type
+  {$EXTERNALSYM _PROC_THREAD_ATTRIBUTE_NUM}
+  _PROC_THREAD_ATTRIBUTE_NUM = (
+    {$EXTERNALSYM ProcThreadAttributeParentProcess}
+    ProcThreadAttributeParentProcess{ = 0},
+    {$EXTERNALSYM ProcThreadAttributeExtendedFlags}
+    ProcThreadAttributeExtendedFlags,
+    {$EXTERNALSYM ProcThreadAttributeHandleList}
+    ProcThreadAttributeHandleList,
+    {$EXTERNALSYM ProcThreadAttributeMax}
+    ProcThreadAttributeMax);
+
+  {$EXTERNALSYM PROC_THREAD_ATTRIBUTE_NUM}
+  PROC_THREAD_ATTRIBUTE_NUM = ^_PROC_THREAD_ATTRIBUTE_NUM;
+  TProcThreadAttributeNum = _PROC_THREAD_ATTRIBUTE_NUM;
+  PProcThreadAttributeNum = ^TProcThreadAttributeNum;
+
+  {Macro function}
+  function ProcThreadAttributeValue(const Number : DWORD;
+     Thread, Input, Additive : Boolean) : DWORD;
+  {Macro function}
+  function PROC_THREAD_ATTRIBUTE_PARENT_PROCESS : DWORD;
+  {Macro function}
+  function PROC_THREAD_ATTRIBUTE_EXTENDED_FLAGS : DWORD;
+  {Macro function}  
+  function PROC_THREAD_ATTRIBUTE_HANDLE_LIST : DWORD;
+
+type
+  {$EXTERNALSYM _PROC_THREAD_ATTRIBUTE_LIST}
+  _PROC_THREAD_ATTRIBUTE_LIST = record
+  end;
+  {$EXTERNALSYM PPROC_THREAD_ATTRIBUTE_LIST}
+  PPROC_THREAD_ATTRIBUTE_LIST = ^_PROC_THREAD_ATTRIBUTE_LIST;
+  {$EXTERNALSYM LPPROC_THREAD_ATTRIBUTE_LIST}
+  LPPROC_THREAD_ATTRIBUTE_LIST = PPROC_THREAD_ATTRIBUTE_LIST;
+
+  TProcThreadAttributeList = _PROC_THREAD_ATTRIBUTE_LIST;
+  PProcThreadAttributeList = PPROC_THREAD_ATTRIBUTE_LIST;
+
+  {$EXTERNALSYM InitializeProcThreadAttributeList}
+  function InitializeProcThreadAttributeList(
+    {__out_xcount_opt(*lpSize)} lpAttributeList : LPPROC_THREAD_ATTRIBUTE_LIST;
+    {__in} dwAttributeCount : DWORD;
+    {__in __reserved} dwFlags : DWORD;
+    {__inout} var lpSize : SIZE_T
+    ) : BOOL; stdcall;
+
+  {$EXTERNALSYM DeleteProcThreadAttributeList}
+  procedure DeleteProcThreadAttributeList(
+    {__inout} lpAttributeList : LPPROC_THREAD_ATTRIBUTE_LIST
+    ); stdcall;
+
+const
+  {$EXTERNALSYM PROC_THREAD_ATTRIBUTE_REPLACE_VALUE}
+  PROC_THREAD_ATTRIBUTE_REPLACE_VALUE     = $00000001;
+
+  {$EXTERNALSYM UpdateProcThreadAttribute}
+  function UpdateProcThreadAttribute(
+    {__inout} lpAttributeList : LPPROC_THREAD_ATTRIBUTE_LIST;
+    {__in} dwFlags : DWORD;
+    {__in} Attribute : DWORD_PTR;
+    {__in_bcount_opt(cbSize)} lpValue : PVOID;
+    {__in} cbSize : SIZE_T;
+    {__out_bcount_opt(cbSize)} lpPreviousValue : PVOID;
+    {__in_opt} lpReturnSize : PSIZE_T
+    ) : BOOL; stdcall;
+
+
+
+
 //
 // Dual Mode API below this line. Dual Mode Structures also included.
 //
@@ -3244,21 +3335,64 @@ type
   TStartupInfoW = STARTUPINFOW;
   PStartupInfoW = LPSTARTUPINFOW;
 
-  {$IFDEF UNICODE}
+  {$EXTERNALSYM _STARTUPINFOEXA}
+  _STARTUPINFOEXA = record
+    StartupInfo : STARTUPINFOA;
+    lpAttributeList : PPROC_THREAD_ATTRIBUTE_LIST;
+  end;
+  {$EXTERNALSYM STARTUPINFOEXA}
+  STARTUPINFOEXA = _STARTUPINFOEXA;
+  {$EXTERNALSYM LPSTARTUPINFOEXA}
+  LPSTARTUPINFOEXA = ^LPSTARTUPINFOEXA;
+
+  TStartupInfoExA = _STARTUPINFOEXA;
+  PStartupInfoExA = ^TStartupInfoExA;
+
+  {$EXTERNALSYM _STARTUPINFOEXW}
+  _STARTUPINFOEXW = record
+    StartupInfo : STARTUPINFOW;
+    lpAttributeList : PPROC_THREAD_ATTRIBUTE_LIST;
+  end;
+  {$EXTERNALSYM STARTUPINFOEXW}
+  STARTUPINFOEXW = _STARTUPINFOEXW;
+  {$EXTERNALSYM LPSTARTUPINFOEXW}
+  LPSTARTUPINFOEXW = ^LPSTARTUPINFOEXW;
+
+  TStartupInfoExW = _STARTUPINFOEXW;
+  PStartupInfoExW = ^TStartupInfoExW;
+
+{$IFDEF UNICODE}
   STARTUPINFO = STARTUPINFOW;
   {$EXTERNALSYM STARTUPINFO}
   LPSTARTUPINFO = LPSTARTUPINFOW;
   {$EXTERNALSYM LPSTARTUPINFO}
   TStartupInfo = TStartupInfoW;
   PStartupInfo = PStartupInfoW;
-  {$ELSE}
+
+  {$EXTERNALSYM STARTUPINFOEX}
+  STARTUPINFOEX = _STARTUPINFOEXW;
+  {$EXTERNALSYM LPSTARTUPINFOEX}
+  LPSTARTUPINFOEX = ^LPSTARTUPINFOEXW;
+
+  TStartupInfoEx = TStartupInfoExW;
+  PStartupInfoEx = PStartupInfoExW;
+{$ELSE}
   STARTUPINFO = STARTUPINFOA;
   {$EXTERNALSYM STARTUPINFO}
   LPSTARTUPINFO = LPSTARTUPINFOA;
   {$EXTERNALSYM LPSTARTUPINFO}
   TStartupInfo = TStartupInfoA;
   PStartupInfo = PStartupInfoA;
-  {$ENDIF UNICODE}
+
+  {$EXTERNALSYM STARTUPINFOEX}
+  STARTUPINFOEX = _STARTUPINFOEXA;
+  {$EXTERNALSYM LPSTARTUPINFOEX}
+  LPSTARTUPINFOEX = ^LPSTARTUPINFOEXA;
+
+  TStartupInfoEx = TStartupInfoExA;
+  PStartupInfoEx = PStartupInfoExA;
+{$ENDIF UNICODE}
+
 
 const
   SHUTDOWN_NORETRY = $00000001;
@@ -3547,6 +3681,8 @@ function NeedCurrentDirectoryForExePathW(ExeName: LPCWSTR): BOOL; stdcall;
 {$EXTERNALSYM NeedCurrentDirectoryForExePathW}
 function NeedCurrentDirectoryForExePath(ExeName: LPCTSTR): BOOL; stdcall;
 {$EXTERNALSYM NeedCurrentDirectoryForExePath}
+
+
 
 function CreateProcessA(lpApplicationName: LPCSTR; lpCommandLine: LPSTR;
   lpProcessAttributes, lpThreadAttributes: LPSECURITY_ATTRIBUTES;
@@ -6306,25 +6442,14 @@ begin
     Result := TCreateMutexW(_CreateMutexW)(lpMutexAttributes, LongBool(0), lpName)
 end;
 
+function CreateMutex(lpMutexAttributes: LPSECURITY_ATTRIBUTES; bInitialOwner: BOOL; lpName: LPCTSTR): HANDLE;
+begin
 {$IFDEF UNICODE}
-function CreateMutex(lpMutexAttributes: LPSECURITY_ATTRIBUTES; bInitialOwner: BOOL; lpName: LPCWSTR): HANDLE;
-begin
-  GetProcedureAddress(_CreateMutexW, kernel32, 'CreateMutexW');
-  if bInitialOwner then
-    Result := TCreateMutexW(_CreateMutexW)(lpMutexAttributes, LongBool(1), lpName)
-  else
-    Result := TCreateMutexW(_CreateMutexW)(lpMutexAttributes, LongBool(0), lpName)
-end;
+  result := CreateMutexW(lpMutexAttributes, bInitialOwner, lpName);
 {$ELSE}
-function CreateMutex(lpMutexAttributes: LPSECURITY_ATTRIBUTES; bInitialOwner: BOOL; lpName: LPCSTR): HANDLE;
-begin
-  GetProcedureAddress(_CreateMutexA, kernel32, 'CreateMutexA');
-  if bInitialOwner then
-    Result := TCreateMutexA(_CreateMutexA)(lpMutexAttributes, LongBool(1), lpName)
-  else
-    Result := TCreateMutexA(_CreateMutexA)(lpMutexAttributes, LongBool(0), lpName)
+  result := CreateMutexA(lpMutexAttributes, bInitialOwner, lpName);
+{$ENDIF UNICODE}  
 end;
-{$ENDIF UNICODE}
 
 {$IFDEF DYNAMIC_LINK}
 
@@ -11533,6 +11658,49 @@ begin
         JMP     [_GetModuleHandle]
   end;
 end;
+
+
+var
+  _InitializePTAttrList: Pointer;
+
+function InitializeProcThreadAttributeList;
+begin
+  GetProcedureAddress(_InitializePTAttrList, kernel32, 'InitializeProcThreadAttributeList');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_InitializePTAttrList]
+  end;
+end;
+
+var
+  _DeleteProcTAttrList: Pointer;
+
+procedure DeleteProcThreadAttributeList;
+begin
+  GetProcedureAddress(_DeleteProcTAttrList, kernel32, 'DeleteProcThreadAttributeList');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_DeleteProcTAttrList]
+  end;
+end;
+
+var
+  _UpdateProcTAttr: Pointer;
+
+function UpdateProcThreadAttribute;
+begin
+  GetProcedureAddress(_UpdateProcTAttr, kernel32, 'UpdateProcThreadAttribute');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_UpdateProcTAttr]
+  end;
+end;
+
+////////////
+
 
 var
   _CreateProcessA: Pointer;
@@ -19415,6 +19583,9 @@ function GetModuleFileName; external kernel32 name 'GetModuleFileName' + AWSuffi
 function GetModuleHandleA; external kernel32 name 'GetModuleHandleA';
 function GetModuleHandleW; external kernel32 name 'GetModuleHandleW';
 function GetModuleHandle; external kernel32 name 'GetModuleHandle' + AWSuffix;
+function InitializeProcThreadAttributeList; external kernel32 name 'InitializeProcThreadAttributeList';
+procedure DeleteProcThreadAttributeList; external kernel32 name 'DeleteProcThreadAttributeList';
+function UpdateProcThreadAttribute; external kernel32 name 'UpdateProcThreadAttribute';
 function CreateProcessA; external kernel32 name 'CreateProcessA';
 function CreateProcessW; external kernel32 name 'CreateProcessW';
 function CreateProcess; external kernel32 name 'CreateProcess' + AWSuffix;
@@ -19993,6 +20164,51 @@ function SetProcessDEPPolicy; external kernel32 name 'SetProcessDEPPolicy';
 
 {$ENDIF DYNAMIC_LINK}
 
+function ProcThreadAttributeValue(const Number : DWORD;
+     Thread, Input, Additive : Boolean) : DWORD;
+begin
+{
+#define ProcThreadAttributeValue(Number, Thread, Input, Additive) \
+    (((Number) & PROC_THREAD_ATTRIBUTE_NUMBER) | \
+     ((Thread != FALSE) ? PROC_THREAD_ATTRIBUTE_THREAD : 0) | \
+     ((Input != FALSE) ? PROC_THREAD_ATTRIBUTE_INPUT : 0) | \
+     ((Additive != FALSE) ? PROC_THREAD_ATTRIBUTE_ADDITIVE : 0))
+}
+  result := Number and PROC_THREAD_ATTRIBUTE_NUMBER;
+  if Thread then
+    result := result or PROC_THREAD_ATTRIBUTE_THREAD;
+  if Input then
+    result := result or PROC_THREAD_ATTRIBUTE_INPUT;
+  if Additive then
+    result := result or PROC_THREAD_ATTRIBUTE_ADDITIVE;
+end;
+
+function PROC_THREAD_ATTRIBUTE_PARENT_PROCESS : DWORD;
+begin
+{
+#define PROC_THREAD_ATTRIBUTE_PARENT_PROCESS \
+    ProcThreadAttributeValue (ProcThreadAttributeParentProcess, FALSE, TRUE, FALSE)
+}
+  result := ProcThreadAttributeValue(DWORD(ProcThreadAttributeParentProcess), false, true, false);
+end;
+
+function PROC_THREAD_ATTRIBUTE_EXTENDED_FLAGS : DWORD;
+begin
+{
+#define PROC_THREAD_ATTRIBUTE_EXTENDED_FLAGS \
+    ProcThreadAttributeValue (ProcThreadAttributeExtendedFlags, FALSE, TRUE, TRUE)
+}
+  result := ProcThreadAttributeValue(DWORD(ProcThreadAttributeExtendedFlags), false, true, true);
+end;
+
+function PROC_THREAD_ATTRIBUTE_HANDLE_LIST : DWORD;
+begin
+{
+#define PROC_THREAD_ATTRIBUTE_HANDLE_LIST \
+    ProcThreadAttributeValue (ProcThreadAttributeHandleList, FALSE, TRUE, FALSE)
+}
+  result := ProcThreadAttributeValue(DWORD(ProcThreadAttributeHandleList), false, true, false);
+end;
 {$ENDIF JWA_INTERFACESECTION}
 
 {$IFNDEF JWA_OMIT_SECTIONS}
