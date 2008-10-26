@@ -3477,6 +3477,8 @@ begin
     begin
       {
       Duplicate the ClientToken and make it a thread token
+
+      ConvertToImpersonatedToken needs TOKEN_READ to work
       }
       Token := TJwSecurityToken.CreateDuplicateExistingToken(ClientToken, TOKEN_READ or TOKEN_IMPERSONATE or TOKEN_DUPLICATE);
       Token.ConvertToImpersonatedToken(
@@ -3493,9 +3495,15 @@ begin
     Get the primary or thread token.
     If we get a primary token only we convert it to a thread token
      since AccessCheck wants it that way.
+
+    ConvertToImpersonatedToken needs TOKEN_READ to work
     }
+{    Token := TJwSecurityToken.CreateTokenEffective(TOKEN_READ or
+        TOKEN_IMPERSONATE or TOKEN_DUPLICATE);
+}
     Token := TJwSecurityToken.CreateTokenEffective(TOKEN_QUERY or
         TOKEN_IMPERSONATE or TOKEN_DUPLICATE);
+
 
     if (Token.IsPrimaryToken) then
     begin
@@ -3602,6 +3610,8 @@ begin
     pSDesc := tempSD.Create_SD(false);
 
     try
+      pPrivsSize := 0;
+
       PrepareAccessCheckTokenAssignment(ClientToken, {out}Token,{out}hToken);
       {
       We do not impersonate here since AccessCheck does only use the given
