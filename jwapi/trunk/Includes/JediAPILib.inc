@@ -50,6 +50,10 @@ ALERT_jedi_inc_incompatible
 // secure against old versions of jedi.inc.
 {$ENDIF !JEDI_INC}
 
+{******* WARNINGS OFF *********
+Currently the generated warnings from Delphi make no sense.
+So we turn them off.}
+{$WARNINGS OFF}
 
 {WARNING:
 Do not change state of
@@ -64,7 +68,6 @@ Standalone compiling would be useless!
 {.DEFINE DYNAMIC_LINK}
 {$IFDEF DYNAMIC_LINK}
   {$STACKFRAMES ON}
-  {.$WARNINGS OFF}
 {$ENDIF DYNAMIC_LINK}
 
 {.$DEFINE ANSICODE}
