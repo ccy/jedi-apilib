@@ -196,7 +196,7 @@ end;
 function JwIsFileTrusted(FileName: TJwString): Boolean;
 var Res: Integer;
 begin
-  CheckFileSignature(FileName, Res);
+  JwCheckFileSignature(FileName, Res);
   Result := Res = 0;
 end;
 
