@@ -3464,57 +3464,64 @@ class procedure TJwSecureBaseClass.PrepareAccessCheckTokenAssignment(
   out hToken : TJwTokenHandle);
 begin
   Token := nil;
-  if Assigned(ClientToken) then
-  begin
-    if ClientToken.IsThreadToken then
+  hToken := INVALID_HANDLE_VALUE;
+  try
+    if Assigned(ClientToken) then
     begin
-      {
-      AccessCheck only allows a thread token!
-      }
-      hToken := ClientToken.TokenHandle;
+      if ClientToken.IsThreadToken then
+      begin
+        {
+        AccessCheck only allows a thread token!
+        }
+        hToken := ClientToken.TokenHandle;
+      end
+      else
+      begin
+        {
+        Duplicate the ClientToken and make it a thread token
+
+        ConvertToImpersonatedToken needs TOKEN_READ to work
+        }
+        Token := TJwSecurityToken.CreateDuplicateExistingToken(ClientToken, TOKEN_READ or TOKEN_IMPERSONATE or TOKEN_DUPLICATE);
+
+        Token.ConvertToImpersonatedToken(
+          jwaWindows.TSecurityImpersonationLevel(SecurityImpersonation),
+          MAXIMUM_ALLOWED);
+        Assert(Token.IsThreadToken, 'Converted client token is not a thread token.');
+
+        hToken := Token.TokenHandle;
+      end;
     end
     else
     begin
       {
-      Duplicate the ClientToken and make it a thread token
+      Get the primary or thread token.
+      If we get a primary token only we convert it to a thread token
+       since AccessCheck wants it that way.
 
       ConvertToImpersonatedToken needs TOKEN_READ to work
       }
-      Token := TJwSecurityToken.CreateDuplicateExistingToken(ClientToken, TOKEN_READ or TOKEN_IMPERSONATE or TOKEN_DUPLICATE);
-      Token.ConvertToImpersonatedToken(
-        jwaWindows.TSecurityImpersonationLevel(SecurityImpersonation),
-        MAXIMUM_ALLOWED);
-      Assert(Token.IsThreadToken, 'Converted client token is not a thread token.');
+      Token := TJwSecurityToken.CreateTokenEffective(TOKEN_READ or
+          TOKEN_IMPERSONATE or TOKEN_DUPLICATE);
+  
+      if (Token.IsPrimaryToken) then
+      begin
+        Token.ConvertToImpersonatedToken(
+          jwaWindows.TSecurityImpersonationLevel(SecurityImpersonation),
+          MAXIMUM_ALLOWED);
+      end;
+
+      Assert(Token.IsThreadToken, 'Converted token is not a thread token.');
 
       hToken := Token.TokenHandle;
     end;
-  end
-  else
-  begin
-    {
-    Get the primary or thread token.
-    If we get a primary token only we convert it to a thread token
-     since AccessCheck wants it that way.
-
-    ConvertToImpersonatedToken needs TOKEN_READ to work
-    }
-{    Token := TJwSecurityToken.CreateTokenEffective(TOKEN_READ or
-        TOKEN_IMPERSONATE or TOKEN_DUPLICATE);
-}
-    Token := TJwSecurityToken.CreateTokenEffective(TOKEN_QUERY or
-        TOKEN_IMPERSONATE or TOKEN_DUPLICATE);
-
-
-    if (Token.IsPrimaryToken) then
+  except
+    on E : EJwsclSecurityException do
     begin
-      Token.ConvertToImpersonatedToken(
-        jwaWindows.TSecurityImpersonationLevel(SecurityImpersonation),
-        MAXIMUM_ALLOWED);
+      hToken := INVALID_HANDLE_VALUE;
+      FreeAndNil(Token);
+      raise;
     end;
-
-    Assert(Token.IsThreadToken, 'Converted token is not a thread token.');
-
-    hToken := Token.TokenHandle;
   end;
 end;
 
@@ -3610,6 +3617,8 @@ begin
     pSDesc := tempSD.Create_SD(false);
 
     try
+      //if PrepareAccessCheckTokenAssignment fails with an exception
+      //the finally part checks for the privilege size: pPrivsSize
       pPrivsSize := 0;
 
       PrepareAccessCheckTokenAssignment(ClientToken, {out}Token,{out}hToken);
@@ -3618,8 +3627,9 @@ begin
       Token handle for access checks.
       }
 
-      ZeroMemory(@pPrivs, sizeof(pPrivs));
       pPrivsSize := Sizeof(pPrivs);
+      ZeroMemory(@pPrivs, pPrivsSize);
+
 
       //mappings
       if Assigned(GenericMapping) then
