@@ -33,7 +33,7 @@ begin
   //inits JwUsersSID
   JwInitWellKnownSIDs;
   try
-    SecReg := TJwSecureRegistryKey.Create('CURRENT_USER\test');
+    SecReg := TJwSecureRegistryKey.Create('CURRENT_USER\JWSCLTest');
     try
       DACL := SecReg.DACL; //get a cached DACL
 
