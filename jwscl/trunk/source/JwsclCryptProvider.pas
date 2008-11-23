@@ -38,7 +38,7 @@ Portions created by Philip Dittmann are Copyright (C) Philip Dittmann. All right
 {$IFNDEF SL_OMIT_SECTIONS}
 unit JwsclCryptProvider;
 //do not move header comment from above unit declaration!
-{$INCLUDE ..\includes\Jwscl.inc}
+{$INCLUDE Jwscl.inc}
 
 
 interface
