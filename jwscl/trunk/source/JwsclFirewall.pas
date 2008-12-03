@@ -36,6 +36,7 @@ The Initial Developer of the Original Code is Heiko Adams
 
 }
 unit JwsclFirewall;
+{$INCLUDE ..\includes\Jwscl.inc}
 
 interface
 

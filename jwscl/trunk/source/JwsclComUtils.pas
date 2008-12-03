@@ -329,7 +329,7 @@ begin
     case fPointerType of
       ptClass  : fInstance.Free();
       ptGetMem : FreeMem(fPointer);
-      ptLocalAlloc : LocalFree(Cardinal(fPointer));
+      ptLocalAlloc : LocalFree(HLOCAL(fPointer));
       ptNew : Dispose(fPointer);
       ptHandle : CloseHandle(fHandle); 
     end;

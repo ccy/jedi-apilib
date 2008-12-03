@@ -821,7 +821,7 @@ begin
   if SID <> nil then
   begin
     FillChar(SID^, sizeof(SID^), 0);
-    //GlobalFree(Cardinal(SID));
+    //GlobalFree(HGLOBAL(SID));
     FreeMem(SID);
   end;
 
@@ -854,7 +854,7 @@ begin
   Create;
 
   fSID := NewSID; //getmem
-  len  := SECURITY_MAX_SID_SIZE; //sizeof(fSID^);//GlobalSize(Cardinal(fSid));
+  len  := SECURITY_MAX_SID_SIZE; //sizeof(fSID^);//GlobalSize(HGLOBAL(fSid));
 
   if not CopySid(len, fSid, SID) then
     raise EJwsclWinCallFailedException.CreateFmtEx(RsWinCallFailed,
@@ -1123,7 +1123,7 @@ begin
       (TJwPChar(SystemName), TJwPChar(AccountName), tempSID, iSidSize,
       TJwPChar(pDomainName), iDomainName, SidNameUse) then
     begin
-      LocalFree(Cardinal(pDomainName));
+      LocalFree(HLOCAL(pDomainName));
       raise EJwsclWinCallFailedException.CreateFmtEx(
         RsWinCallFailed,
         'Create(const SystemName, AccountName : TJwString);', ClassName,
@@ -1149,7 +1149,7 @@ begin
     //free the SID
     LocalFree(HLOCAL(tempSID));
 
-    LocalFree(Cardinal(pDomainName));
+    LocalFree(HLOCAL(pDomainName));
   end
   else
     raise EJwsclWinCallFailedException.CreateFmtEx(
@@ -1182,7 +1182,7 @@ begin
 
   Result := TJwString(sSid);
 
-  LocalFree(Cardinal(sSid));
+  LocalFree(HLOCAL(sSid));
 end;
 
 function TJwSecurityId.GetTrustee: TTrusteeEx;
@@ -1321,8 +1321,8 @@ begin
       (TJwPChar(SystemName), Self.SID, TJwPChar(pSIDName), iSIDName,
       TJwPChar(pDomainName), iDomainName, SidNameUse) then
     begin
-      LocalFree(Cardinal(pSIDName));
-      LocalFree(Cardinal(pDomainName));
+      LocalFree(HLOCAL(pSIDName));
+      LocalFree(HLOCAL(pDomainName));
 
       if fDbgDisableException then
         Exit;
@@ -1335,8 +1335,8 @@ begin
     DomainName := TJwString(pDomainName);
     Result := TJwString(pSIDName);
 
-    LocalFree(Cardinal(pSIDName));
-    LocalFree(Cardinal(pDomainName));
+    LocalFree(HLOCAL(pSIDName));
+    LocalFree(HLOCAL(pDomainName));
   end
   else
   if not fDbgDisableException then
@@ -1639,7 +1639,7 @@ begin
 
   FreeSID(Sids.Sid);
 
-  //GlobalFree(Cardinal(sids));
+  //GlobalFree(HGLOBAL(sids));
   FillChar(sids^, sizeof(sids^), 0);
   FreeMem(sids);
 
@@ -1871,7 +1871,7 @@ begin
     TJwSecurityId.FreeSID(sids[i].Sid);
   end;
 
-  //GlobalFree(Cardinal(Sids));
+  //GlobalFree(HGLOBAL(Sids));
   //FillChar(sids^,sizeof(sids^),0);
   FreeMem(sids);
   Sids := nil;

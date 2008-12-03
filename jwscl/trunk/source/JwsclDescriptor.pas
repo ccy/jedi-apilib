@@ -1101,7 +1101,7 @@ begin
   if pSD <> nil then
   begin
     Self.Create(jwaWindows.PSECURITY_DESCRIPTOR(pSD));
-    LocalFree(Cardinal(pSD));
+    LocalFree(HLOCAL(pSD));
   end
   else
     Self.Create;
@@ -1465,7 +1465,7 @@ begin
       if not MakeSelfRelativeSD(pSD, Result, ipSDSize) then
       begin
         FreeMem(Result);
-        //LocalFree(Cardinal(result));
+        //LocalFree(HLOCAL(result));
         raise EJwsclWinCallFailedException.CreateFmtEx(
           RsWinCallFailed, 'Create_SD;', ClassName,
           RsUNDescriptor, 0, True,
@@ -1673,7 +1673,7 @@ begin
 
   if SD.Control and SE_SELF_RELATIVE = SE_SELF_RELATIVE then
   begin
-    //LocalFree(Cardinal(SD));
+    //LocalFree(HLOCAL(SD));
     FreeMem(SD);
   end
   else
@@ -1691,10 +1691,10 @@ begin
       TJwSecurityAccessControlList.Free_PACL(SD.Dacl);
 
     FreeMem(SD);
-    //LocalFree(Cardinal(SD));
+    //LocalFree(HLOCAL(SD));
   end;
 
-  //GlobalFree(Cardinal(SD));
+  //GlobalFree(HGLOBAL(SD));
   SD := nil;
 end;
 
@@ -1871,7 +1871,7 @@ begin
   SetLength(Result, iStrSD);
   Result := pStrSD;
 
-  LocalFree(Cardinal(pStrSD));
+  LocalFree(HLOCAL(pStrSD));
 
   Free_SD(pSD);
 end;
@@ -2193,7 +2193,7 @@ begin
 
   finally
     Self.Free_SD(ObjectSD);
-    LocalFree(Cardinal(ResultSD));
+    LocalFree(HLOCAL(ResultSD));
   end;
 end;
 
@@ -2316,7 +2316,7 @@ begin
       end;
 
   finally
-    LocalFree(Cardinal(ObjectSD));
+    LocalFree(HLOCAL(ObjectSD));
     TJwSecurityDescriptor.Free_SD(ModSD);
     FreeAndNil(TokenInstance);
   end;

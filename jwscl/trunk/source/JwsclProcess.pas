@@ -238,7 +238,7 @@ BOOL WINAPI TerminateJobObject(HANDLE hJob, UINT uExitCode);
     destructor Destroy; override;
 
     {<B>IsProcessInJob</B> returns whether a process is assigned to the job.
-    @param hProcess defines any handle to the process that is tested for membership. 
+    @param hProcess defines any handle to the process that is tested for membership.
     @param Returns tre if the process is a member of the job; otherwise false.
     @return Returns true if the given process is assigned to the current job instance; otherwise false. 
     raises
@@ -398,7 +398,7 @@ BOOL WINAPI TerminateJobObject(HANDLE hJob, UINT uExitCode);
    through parameter NewJobObject. The return value must not be nil.
   The new job object does not need to have a name.
   @param Sender defines the job object list instance that calls this event 
-  @param ProcessHandle defines the process to be assigned to the job 
+  @param ProcessHandle defines the process to be assigned to the job
   @param ProcessSessionID defines the session id that the given process
    belongs to 
   @param CurrentSessionID defines a session index. The event method can
@@ -598,7 +598,7 @@ mostly debugging purposes. If this parameter is nil, no events are logged
 raises
  EJwsclProcessIdNotAvailable:  will be raised if no token could be found
 for the given SessionID 
- EJwsclNilPointer: will be raised if JwInitWellKnownSIDs was not called before 
+ EJwsclNilPointer: will be raised if JwInitWellKnownSIDs was not called before
 }
 procedure JwCreateProcessInSession(
   const ApplicationName : TJwString;
@@ -640,7 +640,7 @@ function JwGetTokenFromProcess (const OnProcessFound : TJwOnProcessFound;
 
 {<B>GetProcessSessionID</B> returns the session ID of a process given by handle or ID.
 @param ProcessIDorHandle defines the process ID or handle. Which one is
-  used, is defined by parameter ParameterType.
+  used, is defined by parameter ParameterType. Can be zero or -1 to use current process.
 @param ParameterType defines whether parameter ProcessIDorHandle is a process
   or a handle 
 @return Returns the session ID (zero based).
@@ -653,7 +653,7 @@ raises
      # TJwSecurityToken.TokenSessionId 
     
 }
-function JwGetProcessSessionID(const ProcessIDorHandle : Cardinal;
+function JwGetProcessSessionID(ProcessIDorHandle : Cardinal;
   const ParameterType : TJwProcessParameterType) : Cardinal;
 
 
@@ -684,7 +684,7 @@ type {<B>TJwCreateProcessParameters</B> contains information supplied to CreateP
         lpCurrentDirectory    : TJwString;
       end;
 
-     {Test} 
+     {<b>TJwCreateProcessInfo</b> contains extra information for JwCreateProcessAsAdminUser}
      TJwCreateProcessInfo = record
        {<B>StartupInfo</B> defines startup info delivered to to CreateProcess parameter with
        same name}
@@ -724,6 +724,17 @@ type {<B>TJwCreateProcessParameters</B> contains information supplied to CreateP
        {<B>Parameters</B> contains parameters for CreateProcessAsUser}
        Parameters : TJwCreateProcessParameters; //Parameter für CP
 
+       {<b>MaximumTryCount</b> defines the maximum try count for CreateProcessAsUser.
+       The call is only repeated if CPAU returns ERROR_PIPE_BUSY which is a known
+       bug in Windows XP.
+       Set this value to INFINITE if CPAU should be called indefinitely on error ERROR_PIPE_BUSY.
+       }
+       MaximumTryCount : Integer;
+
+       {<b>BusyPipeSleep</b> defines the sleep time before CPAU is called again.
+       Values are possible between 100msec and 60 000msec.
+       If the value is out of the bounds the default value of 5sec is used.}
+       BusyPipeSleep : DWORD;
      end;
 
      {<B>TJwCreateProcessOut</B> contains output information after the process has started.
@@ -829,16 +840,24 @@ uses Math, D5impl, JwsclExceptions,
 {$IFNDEF SL_INTERFACE_SECTION}
 
 
-function JwGetProcessSessionID(const ProcessIDorHandle : Cardinal;
+function JwGetProcessSessionID(ProcessIDorHandle : Cardinal;
   const ParameterType : TJwProcessParameterType) : Cardinal;
 var Token : TJwSecurityToken;
 begin
   Token := nil;
   result := WTS_CURRENT_SESSION;
-  
+
+  //make sure we can access 0 or -1
+  if (ProcessIDorHandle = 0) or
+     (ProcessIDorHandle = GetCurrentProcessId) then
+  case ParameterType of
+    pptHandle : ProcessIDorHandle := 0;
+    pptID     : ProcessIDorHandle := GetCurrentProcessId;
+  end;
+
   case ParameterType of
     pptHandle : Token := TJwSecurityToken.CreateTokenByProcess(ProcessIDorHandle, TOKEN_READ or TOKEN_QUERY);
-    pptID : Token := TJwSecurityToken.CreateTokenByProcessId(ProcessIDorHandle, TOKEN_READ or TOKEN_QUERY);
+    pptID     : Token := TJwSecurityToken.CreateTokenByProcessId(ProcessIDorHandle, TOKEN_READ or TOKEN_QUERY);
   end;
 
   if Assigned(Token) then
@@ -902,6 +921,8 @@ var pLogonData : PMSV1_0_INTERACTIVE_LOGON;
     lpProcAttr, lpThreadAttr :  PSecurityAttributes;
 
     i : Integer;
+
+    CPAUResult : Boolean;
 begin
   JwRaiseOnNilMemoryBlock(JwLocalSystemSID,'JwCreateProcessAsAdminUser','','JwsclProcess.pas');
 
@@ -1229,8 +1250,12 @@ begin
         // Create new process
         //
         Log.Log('Calling CreateProcessAsUser...');
-        SetLastError(0);
-        if {$IFDEF UNICODE}CreateProcessAsUserW{$ELSE}CreateProcessAsUserA{$ENDIF}(
+
+
+        i := 1; //first try
+        repeat
+          SetLastError(0);
+          CPAUResult := {$IFDEF UNICODE}CreateProcessAsUserW{$ELSE}CreateProcessAsUserA{$ENDIF}(
               UserToken.TokenHandle,//HANDLE hToken,
               AppName,//__in_opt     LPCTSTR lpApplicationName,
               CmdLine, //__inout_opt  LPTSTR lpCommandLine,
@@ -1242,7 +1267,27 @@ begin
               CurrentDirectory,//'',//TJwPChar(InVars.Parameters.lpCurrentDirectory),//__in_opt     LPCTSTR lpCurrentDirectory,
               StartupInfo,//__in         LPSTARTUPINFO lpStartupInfo,
               OutVars.ProcessInfo //__out        LPPROCESS_INFORMATION lpProcessInformation
-          ) then
+             );
+
+          {Check for a known XP bug
+          The pipe is not available at some time
+          so wait for it
+          }
+          if GetLastError() = ERROR_PIPE_NOT_CONNECTED then
+          begin
+            if (InVars.MaximumTryCount >= 0) and (i >= InVars.MaximumTryCount) then
+              Break;
+
+            if (InVars.BusyPipeSleep < 100) or (InVars.BusyPipeSleep > 60* 100) then
+               Sleep(InVars.BusyPipeSleep)
+            else
+               Sleep(5* 1000); //default 5sec
+
+            Inc(i);
+          end;
+        until (GetLastError() <> ERROR_PIPE_NOT_CONNECTED);
+        
+        if not CPAUResult then
         begin
           Log.Log('Call to CreateProcessAsUser succeeded. Returning.');
         end
@@ -1282,7 +1327,7 @@ begin
       end; //6.
 
     except //2.
-      LocalFree(Cardinal(pLogonData));
+      LocalFree(HLOCAL(pLogonData));
       //pLogonData := nil;
 
       LsaFreeReturnBuffer(OutVars.ProfBuffer);
@@ -1296,7 +1341,7 @@ begin
     //vars that must be freed
     //
     if pLogonData <> nil then
-      LocalFree(Cardinal(pLogonData));
+      LocalFree(HLOCAL(pLogonData));
   except //1.
     on E : Exception do
     begin

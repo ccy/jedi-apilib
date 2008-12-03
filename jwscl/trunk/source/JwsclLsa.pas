@@ -392,11 +392,12 @@ begin
 
   Result.MessageType := MessageType;
   p := PWCHAR(Result);
-  Inc(integer(p), cbHeader);
+//WARNING: possible 3gb Adress Space problem when p is converted to integer   
+  Inc(p, cbHeader);
 
   pDom  := p;
-  pUser := PWChar(integer(p) + cbDom);
-  pPass := PWChar(integer(p) + cbDom + cbUser);
+  pUser := PWChar(p + cbDom);
+  pPass := PWChar(p + cbDom + cbUser);
 
   CopyMemory(pDom, @LogonDomainName[1], cbDom);
   CopyMemory(pUser, @UserName[1], cbUser);

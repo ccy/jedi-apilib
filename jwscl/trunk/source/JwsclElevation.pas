@@ -41,6 +41,7 @@ Not compilable by FreePascal/Lazarus. Missing TTypedComObjectFactory.
 
 {$IFNDEF SL_OMIT_SECTIONS}
 unit JwsclElevation;
+{$INCLUDE ..\includes\Jwscl.inc}
 // Last modified: $Date: 2007-09-10 10:00:00 +0100 $
 {$ENDIF SL_OMIT_SECTIONS}
 

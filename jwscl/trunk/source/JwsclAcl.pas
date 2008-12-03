@@ -896,7 +896,7 @@ type
       # actDenyObject - ACCESS_DENIED_OBJECT_ACE 
       # actDenyCallbackObject - ACCESS_DENIED_CALLBACK_OBJECT_ACE 
      
-     @param Size returns the memory size of the newly allocated block in bytes. 
+     @param Size returns the memory size of the newly allocated block in bytes.
      @return The return value is a pointer to a ACE Winapi structure. The supported
        types can be read from the description above.
        The memory block must be freed with GlobalFree. 
@@ -2090,7 +2090,7 @@ begin
     try
       Create(ppACL);
     finally
-      LocalFree(Cardinal(ppACL));
+      LocalFree(HLOCAL(ppACL));
     end;
 end;
 
@@ -2225,7 +2225,7 @@ function TJwSecurityAccessControlList.Create_PACL: PACL;
           AceSize//__in     DWORD nAceListLength
         );
 
-      GlobalFree(Cardinal(ppACE));
+      GlobalFree(HGLOBAL(ppACE));
 //      s := ACe.ClassName;
     end;
   end;
@@ -2279,7 +2279,7 @@ begin
 
   if not InitializeAcl(Result, iSize, fRevision) then
   begin
-    GlobalFree(HRESULT(Result));
+    GlobalFree(HGLOBAL(Result));
 
     raise EJwsclWinCallFailedException.CreateFmtEx(
           RsWinCallFailed,
@@ -2296,7 +2296,7 @@ begin
 
       if not bResult then
       begin
-        GlobalFree(HRESULT(Result));
+        GlobalFree(HGLOBAL(Result));
 
         raise EJwsclFailedAddACE.CreateFmtEx(
           RsACLClassAddXAccessAceFailed,
@@ -2312,7 +2312,7 @@ begin
   if AclPointerList = nil then
     Exit;
 
-  GlobalFree(Cardinal(AclPointerList));
+  GlobalFree(HGLOBAL(AclPointerList));
 
   AclPointerList := nil;
 end;
@@ -2848,7 +2848,7 @@ begin
   end;
 
  { if pExpAccess <> nil then
-    LocalFree(Cardinal(pExpAccess));
+    LocalFree(HLOCAL(pExpAccess));
   }
 
 end;
@@ -3357,7 +3357,7 @@ end;
 procedure TJwSecurityAccessControlEntry.Free_PACE(var AccessEntryPointer: PAccessDeniedAce);
 begin
   if AccessEntryPointer <> nil then
-    GlobalFree(Cardinal(AccessEntryPointer));
+    GlobalFree(HGLOBAL(AccessEntryPointer));
   AccessEntryPointer := nil;
 end;
 

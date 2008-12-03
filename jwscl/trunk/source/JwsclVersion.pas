@@ -397,8 +397,9 @@ type
       {<B>CheckWindowsVersion</B> raises an EJwsclUnsupportedWindowsVersionException exception if
        the current windows version does not correspond to the required one in the parameters.
 
-       @param iWinVer contains a cOsXXXXX onstant that is defined in JwsclConstants.
-              If iWinVer is not between the bounds of sOSVerString the value iWinVer will be set to -1 without an error. 
+       @param iWinVer contains a cOsXXXXX constant that is defined in JwsclConstants.
+              If iWinVer is not between the bounds of sOSVerString the windows version will be checked though, but on
+			  exception the supplied cOsXXXX constant will be presented as "Unknown System".
        @param bOrHigher If true the exception will only be raised if the current system version
                is smaller than the given on in iWinVer; otherwise the system version must be exactly the given one in iWinVer 
        @param SourceProc contains the caller method name to be displayed in the exception message 
@@ -411,7 +412,7 @@ type
                 ((fWindowsType = iWinVer) or
                 (bOrHigher and (fWindowsType > iWinVer)))  
        }
-    class procedure CheckWindowsVersion(iWinVer: integer;
+    class procedure CheckWindowsVersion(const iWinVer: integer;
       bOrHigher: boolean; SourceProc, SourceClass, SourceFile: TJwString;
       SourcePos: Cardinal); virtual;
 
@@ -429,8 +430,17 @@ type
     // <B>IsWindows64</B> returns true if the process is running on any 64 bit Windows version
     class function IsWindows64 : boolean;
 
-    // <B>IsProcess64</B> returns true if we are currently in a 64 bit process
-    class function IsProcess64 : boolean;
+    {<B>IsProcess64</B> checks if a process is 64 bit.
+	 param ProcessHandle Defines the process to be checked for 64 bit. If this parameter is zero
+	   the current process is used instead.
+	 return Returns true if the given process is a 64bit process.
+	 
+	 raises
+	   EJwsclWinCallFailedException This exception will be raised if the process handle has not the following rights
+	       XP/2003 : ROCESS_QUERY_INFORMATION
+	       Vista: ROCESS_QUERY_INFORMATION and PROCESS_QUERY_LIMITED_INFORMATION 
+	}
+    class function IsProcess64(ProcessHandle : DWORD = 0) : boolean;
   end;
 
 
@@ -666,7 +676,7 @@ end;
 
 
 
-class procedure TJwWindowsVersion.CheckWindowsVersion(iWinVer: integer;
+class procedure TJwWindowsVersion.CheckWindowsVersion(const iWinVer: integer;
   bOrHigher: boolean; SourceProc, SourceClass, SourceFile: TJwString;
   SourcePos: Cardinal);
 var
@@ -674,9 +684,9 @@ var
 
 begin
   if (iWinVer < low(sOSVerString)) or (iWinVer > high(sOSVerString)) then
-    iWinVer := -1;
-
-  sWinVer := sOSVerString[iWinVer];
+    sWinVer := RsUnknownSuppliedOS
+  else
+    sWinVer := sOSVerString[iWinVer];
 
   try
     sActWinVer := sOSVerString[fWindowsType];
@@ -900,16 +910,33 @@ begin
 end;
 
 
-class function TJwWindowsVersion.IsProcess64 : boolean;
+class function TJwWindowsVersion.IsProcess64(ProcessHandle : DWORD = 0) : boolean;
 var
   RunningInsideWOW64 : BOOL;
 begin
+  if ProcessHandle = 0 then
+    ProcessHandle := GetCurrentProcess();
+	
   // If we are on a 64 bit Windows but NOT inside WOW64 we are running natively
-  if IsWindows64 and IsWow64Process(GetCurrentProcess(), RunningInsideWOW64)
-    then
+  if IsWindows64 then
+  begin
+    if IsWow64Process(ProcessHandle, RunningInsideWOW64) then
       result := not RunningInsideWOW64
-    else
-      result := false;
+	else
+	   raise EJwsclWinCallFailedException.CreateFmtWinCall(
+        '',
+        'IsProcess64',                                //sSourceProc
+        ClassName,                                //sSourceClass
+        RSUnVersion,                          //sSourceFile
+        0,                                           //iSourceLine
+        True,                                  //bShowLastError
+        'IsWow64Process',                   //sWinCall
+        ['IsWow64Process']);                                  //const Args: array of const
+  end
+  else
+  begin
+    result := false;
+  end;
 end;
 
 {$ENDIF SL_INTERFACE_SECTION}

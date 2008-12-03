@@ -359,7 +359,7 @@ begin
           Inc(pS, Len); //skip string
           Inc(i);
         end;
-        UnlockResource(Cardinal(pS));
+        UnlockResource(HGLOBAL(pS));
       end;
       FreeResource(res);
     end;
@@ -444,7 +444,7 @@ begin
           Inc(pS, Len); //skip string
           Inc(i);
         end;
-        UnlockResource(Cardinal(pS));
+        UnlockResource(HGLOBAL(pS));
       end;
       FreeResource(res);
     end;

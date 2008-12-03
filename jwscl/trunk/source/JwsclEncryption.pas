@@ -586,7 +586,7 @@ begin
     CopyMemory(Data.Data, Blob.pbData, Data.Size);
   end;
   if Blob.pbData <> nil then
-    LocalFree(Cardinal(Blob.pbData));
+    LocalFree(HLOCAL(Blob.pbData));
 
 end;
 
@@ -635,7 +635,7 @@ begin
     CopyMemory(Data.Data, Blob.pbData, Data.Size);
   end;
   if Blob.pbData <> nil then
-    LocalFree(Cardinal(Blob.pbData));
+    LocalFree(HLOCAL(Blob.pbData));
 end;
 
 { TJwRandomDataGenerator }
@@ -727,14 +727,14 @@ begin
     mtGetMem : ReallocMem(P, Size);
 {    mtLocal  :
      begin
-       //P2 := LocalLock(Cardinal(P));
-       //FillChar(P2^, LocalSize(Cardinal(P)), 0);
-       //LocalUnlock(Cardinal(P));
-       P := Pointer(LocalReAlloc(Cardinal(P), Size, LMEM_ZEROINIT));//LocalFlags(Cardinal(P))));
+       //P2 := LocalLock(HLOCAL(P));
+       //FillChar(P2^, LocalSize(HLOCAL(P)), 0);
+       //LocalUnlock(HLOCAL(P));
+       P := Pointer(LocalReAlloc(HLOCAL(P), Size, LMEM_ZEROINIT));//LocalFlags(HLOCAL(P))));
        ID := GetLastError();
        if ID = 0 then;
      end;
-    mtGlobal : GlobalReAlloc(Cardinal(P), Size, GlobalFlags(Cardinal(P)));}
+    mtGlobal : GlobalReAlloc(HGLOBAL(P), Size, GlobalFlags(HGLOBAL(P)));}
   end;
 
   try
@@ -746,16 +746,16 @@ begin
         end;
      { mtLocal  :
         begin
-          ID := LocalSize(Cardinal(P));
+          ID := LocalSize(HLOCAL(P));
           if ID = 0 then;
-          P2 := LocalLock(Cardinal(P));
+          P2 := LocalLock(HLOCAL(P));
 //          CopyMemory(P, Data.Data, Size);
 //          FillChar(Data.Data^, Data.Size, 0);
           FillChar(P2^, 2, 0);
-          LocalFlags(Cardinal(P));
-          LocalUnlock(Cardinal(P));
+          LocalFlags(HLOCAL(P));
+          LocalUnlock(HLOCAL(P));
 
-          LocalFlags(Cardinal(P));
+          LocalFlags(HLOCAL(P));
         end;
 
       //mtGlobal : GlobalLock(P);      }
@@ -763,7 +763,7 @@ begin
   finally
     FreeMem(Data.Data);
   end;
-  LocalFlags(Cardinal(P));
+  LocalFlags(HLOCAL(P));
 end;
 
 class procedure TJwEncryptMemory.DecryptMemory(var P : Pointer;
@@ -804,8 +804,8 @@ begin
 
   case MemoryType of
     mtGetMem : ReallocMem(P, Size);
-  {  mtLocal  : LocalReAlloc(Cardinal(P), Size, LocalFlags(Cardinal(P)));
-    mtGlobal : GlobalReAlloc(Cardinal(P), Size, GlobalFlags(Cardinal(P)));
+  {  mtLocal  : LocalReAlloc(HLOCAL(P), Size, LocalFlags(HLOCAL(P)));
+    mtGlobal : GlobalReAlloc(HGLOBAL(P), Size, GlobalFlags(HGLOBAL(P)));
     }
   end;
 
@@ -818,10 +818,10 @@ begin
         end;
     {  mtLocal  :
         begin
-          P2 := LocalLock(Cardinal(P));
+          P2 := LocalLock(HLOCAL(P));
           CopyMemory(P2, Data.Data, Size);
           FillChar(Data.Data^, Size, 0);
-          LocalUnlock(Cardinal(P));
+          LocalUnlock(HLOCAL(P));
         end;
 
       //mtGlobal : GlobalLock(P);}

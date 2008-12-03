@@ -855,12 +855,12 @@ begin
           (sizeof(SID_INFO) * (Length(SIDInfoList) + 2));
         //GetMem(fInfoList, iLen);
         fInfoList := PSID_INFO_LIST(GlobalAlloc(GHND, iLen));
-        fInfoList := GlobalLock(Cardinal(fInfoList));
+        fInfoList := GlobalLock(HGLOBAL(fInfoList));
 
         fPSIDList := TList.Create;
         //manage PSID structures - remove in destroy of TJwSidInfoDataObject
         fSidStrings := TList.Create;
-        try  //3. fInfoList := GlobalLock(Cardinal(fInfoList));
+        try  //3. fInfoList := GlobalLock(HGLOBAL(fInfoList));
           ppdo := TJwSidInfoDataObject.Create(fInfoList, fPSIDList, fSidStrings);
           Result := S_OK;
 
@@ -934,8 +934,8 @@ begin
               fSidStrings.Add(fInfoList.aSidInfo[i].pwzClass);
             end;
           end;
-        finally  //3: fInfoList := GlobalLock(Cardinal(fInfoList));
-          GlobalUnlock(Cardinal(fInfoList));
+        finally  //3: fInfoList := GlobalLock(HGLOBAL(fInfoList));
+          GlobalUnlock(HGLOBAL(fInfoList));
         end;
       finally //2. call to fOnLookupSIDs(
       end;
@@ -1050,7 +1050,7 @@ begin
   Rec.Dlg := Self;
   REc.hHandle := hwnd;
   REc.userData := Pointer(GetWindowLongPtr(hwnd, GWLP_USERDATA));
-  SetWindowLongPtr(hwnd, GWLP_USERDATA, integer(Rec));
+  SetWindowLongPtr(hwnd, GWLP_USERDATA, LONG_PTR(Rec));
 
   ProcList.Add(Rec);
 
@@ -1068,7 +1068,7 @@ begin
     Rec := ProcList[i];
     if (Rec.uPage = uPage) then
     begin
-      SetWindowLongPtr(Rec.hHandle, GWLP_WNDPROC, integer(Rec.pProc));
+      SetWindowLongPtr(Rec.hHandle, GWLP_WNDPROC, LONG_PTR(Rec.pProc));
       FreeMem(Rec);
       ProcList.Delete(i);
       exit;
@@ -1105,7 +1105,7 @@ begin
       //fWindowHandle := GetActiveWindow;
       fWindowHandle := (GetParent(aHwnd)); //parent of tabsheet is main dialog
       if AddNewPageRec(fWindowHandle, SI_PAGE_TYPE(sptAclWindow)) then
-        SetWindowLongPtr(fWindowHandle, GWLP_WNDPROC, integer(@NewWindowProc));
+        SetWindowLongPtr(fWindowHandle, GWLP_WNDPROC, LONG_PTR(@NewWindowProc));
 
       if Assigned(fOnInitSecurityDialog) then
         fOnInitSecurityDialog(Self, sptAclWindow);
@@ -1115,7 +1115,7 @@ begin
     begin
       fAdvWindowHandle := (GetParent(aHwnd));
       if AddNewPageRec(fAdvWindowHandle, SI_PAGE_TYPE(sptAdvWindow)) then
-        SetWindowLongPtr(fAdvWindowHandle, GWLP_WNDPROC, integer(
+        SetWindowLongPtr(fAdvWindowHandle, GWLP_WNDPROC, LONG_PTR(
           @NewWindowProc));
 
       if Assigned(fOnInitSecurityDialog) then
@@ -1126,7 +1126,7 @@ begin
       fOnInitSecurityDialog(Self, TJwSecurityPageType(uPage));
 
     if AddNewPageRec(aHwnd, uPage) then
-      SetWindowLongPtr(aHwnd, GWLP_WNDPROC, integer(@NewWindowProc));
+      SetWindowLongPtr(aHwnd, GWLP_WNDPROC, LONG_PTR(@NewWindowProc));
   end;
 
   if (uMsg = PSPCB_CREATE) then
@@ -1715,7 +1715,7 @@ begin
 
       //lots of pointer hacking frome here on!   
       //string block    
-      DataPtr := Pointer(Cardinal(ppInheritArray) +
+      DataPtr := Pointer(DWORD_PTR(ppInheritArray) +
         Cardinal(ACL.Count) * sizeof(TInheritedFromW));
 
       i2 := Length(InheritanceArray);
@@ -1778,9 +1778,9 @@ var
 begin
   p := Get(Index);
 
-  {LocalFree(Cardinal(p^.pguid));
-  LocalFree(Cardinal(p^.pszName));
-  LocalFree(Cardinal(p));  }
+  {LocalFree(HLOCAL(p^.pguid));
+  LocalFree(HLOCAL(p^.pszName));
+  LocalFree(HLOCAL(p));  }
 
   FreeMem(p^.pguid);
   FreeMem(p^.pszName);
@@ -1794,7 +1794,7 @@ var
   i: integer;
 begin
   if fData <> nil then
-    LocalFree(Cardinal(fData));
+    LocalFree(HLOCAL(fData));
 
   for i := Count - 1 downto 0 do
     Delete(i);
@@ -1817,7 +1817,7 @@ var
   SiPointer : PSI_INHERIT_TYPE;
 begin
   if fData <> nil then
-    LocalFree(Cardinal(fData));
+    LocalFree(HLOCAL(fData));
 
   Result := PSI_INHERIT_TYPE(LocalAlloc(LPTR, Count*sizeof(SI_INHERIT_TYPE)));
   fData  := Result;
@@ -1881,9 +1881,9 @@ var
 begin
   p := Get(Index);
 
-  {LocalFree(Cardinal(p^.pguid));
-  LocalFree(Cardinal(p^.pszName));
-  LocalFree(Cardinal(p)); }
+  {LocalFree(HLOCAL(p^.pguid));
+  LocalFree(HLOCAL(p^.pszName));
+  LocalFree(HLOCAL(p)); }
 
   FreeMem(p^.pguid);
   FreeMem(p^.pszName);
@@ -1905,7 +1905,7 @@ function TJwSidInfoDataObject.GetData(const formatetcIn: TFormatEtc;
 
 begin
   FillChar(medium, sizeof(TStgMedium), 0);
-  medium.hGlobal := Cardinal(fInfoList);
+  medium.hGlobal := HGLOBAL(fInfoList);
   medium.tymed := TYMED_HGLOBAL;
 
 // Read the content of fInfoList here if you want:
@@ -1940,7 +1940,7 @@ var
   apSID: PSID;
   p: Pointer;
 begin
-  // GlobalFree(Cardinal(fInfoList));
+  // GlobalFree(HGLOBAL(fInfoList));
   fInfoList := nil;
 
   if Assigned(fPSIDList) then

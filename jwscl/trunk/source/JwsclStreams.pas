@@ -300,7 +300,8 @@ begin
     if FPosition + Count > Size then
       Count := FSize-FPosition;
 
-    Move(Pointer(Integer(FMemory)+FPosition)^,Buffer,Count);
+//64bit Warning: Converting a pointer to Cardinal may conflict with 64bit
+    Move(Pointer(DWORD_PTR(FMemory)+FPosition)^,Buffer,Count);
     inc(FPosition,Count);
     Result := Count;
   end
@@ -329,7 +330,8 @@ begin
     if (FPosition + Count > FSize) then
       EOSHandler(Count);
 
-    Move(Buffer,Pointer(Integer(FMemory) + FPosition)^,Count);
+//64bit Warning: Converting a pointer to Cardinal may conflict with 64bit
+    Move(Buffer,Pointer(DWORD_PTR(FMemory) + FPosition)^,Count);
     inc(FPosition,Count);
     Result := Count;
   end

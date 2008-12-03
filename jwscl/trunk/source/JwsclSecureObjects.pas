@@ -2964,7 +2964,7 @@ begin
   GetFullPathNameW(PWideChar(FileName), len, Buffer, FName);
 
   result := TJwString(Buffer);
-  LocalFree(Cardinal(Buffer));
+  LocalFree(HLOCAL(Buffer));
 end;
 {$ENDIF}
 
@@ -4474,7 +4474,7 @@ begin
   finally
     if pFromArray <> nil then
       FreeInheritedFromArray(PINHERITED_FROMW(pFromArray), ACL.Count, nil);
-    //    LocalFree(Cardinal(pFromArray));
+    //    LocalFree(HLOCAL(pFromArray));
 
     ACL.Free_PACL(aPACL);
   end;

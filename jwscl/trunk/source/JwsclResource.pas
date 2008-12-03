@@ -436,6 +436,7 @@ const
   RsVersionOrHigher = 'or higher';
   RsVersionUnsupportedVersion = 'Unsupported version "%0:s". Need "%1:s" %2:' +
     's';
+  RsUnknownSuppliedOS = '(The supplied WindowsVersion to CheckWindowsVersion is unknown. Add it to JwsclResource.pas::sOSVerString)';
 
 //Unit JwsclDesktop.pas
 

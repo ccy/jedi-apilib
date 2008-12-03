@@ -155,7 +155,7 @@ type
    ) of object;
 
 
-  {<B>TJwAuthZAccessRequest</B> provides simple access to arequest that is submitted
+  {<B>TJwAuthZAccessRequest</B> provides simple access to a request that is submitted
   to TJwAuthContext.AccessCheck }
   TJwAuthZAccessRequest = class
   protected
@@ -544,7 +544,7 @@ type
                                          access checking. The owner and group must not
                                          be nil; otherwise the call will fail 
       OptionalSecurityDescriptorArray :  defines additional security descriptor which
-                                         are used for the access check. They a simply
+                                         are used for the access check. They are simply
                                          added at the end of the primary security
                                          descriptor (logical order). The canonical ACE
                                          order is not enforced. Deny ACE in the optional

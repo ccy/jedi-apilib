@@ -257,8 +257,8 @@ begin
 
   if (Result <> NO_ERROR) then
   begin
-    LocalFree(Cardinal(pUser));
-    LocalFree(Cardinal(pDomain));
+    LocalFree(HLOCAL(pUser));
+    LocalFree(HLOCAL(pDomain));
     case Result of
       ERROR_INVALID_PARAMETER:
         raise EJwsclInvalidParameterException.CreateFmtEx(
@@ -476,8 +476,8 @@ begin
 
   if (lResult <> NO_ERROR) then
   begin
-    LocalFree(Cardinal(pUser));
-    LocalFree(Cardinal(pPass));
+    LocalFree(HLOCAL(pUser));
+    LocalFree(HLOCAL(pPass));
 
 
     case lResult of
@@ -517,8 +517,8 @@ begin
     FillChar(pPass^, fMaxPasswordLength, 0);
 
     //FreeMemory(pUser);
-    LocalFree(Cardinal(pUser));
-    LocalFree(Cardinal(pPass));
+    LocalFree(HLOCAL(pUser));
+    LocalFree(HLOCAL(pPass));
     //FreeMemory(pPass);
   end;
 
