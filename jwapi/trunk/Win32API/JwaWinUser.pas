@@ -11935,7 +11935,8 @@ end;
 
 function RAWINPUT_ALIGN(x: Pointer): Pointer;
 begin
-  Result := Pointer((Integer(x) + SizeOf(DWORD) - 1) and not (SizeOf(DWORD) - 1));
+//Warning: Converting a pointer to Integer may conflict with 3GB adress space (and later 64bit)
+  Result := Pointer((DWORD_PTR(x) + SizeOf(DWORD) - 1) and not (SizeOf(DWORD) - 1));
 end;
 
 function NEXTRAWINPUTBLOCK(ptr: PRawInput): PRawInput;

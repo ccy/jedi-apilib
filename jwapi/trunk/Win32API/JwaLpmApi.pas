@@ -1527,7 +1527,8 @@ end;
 
 function ObjData(const x: TRsvpObjHdr): Pointer;
 begin
-  Result := Pointer(Integer(@x) + SizeOf(x));
+//Warning: Converting a pointer to Integer may conflict with 3GB adress space (and later 64bit)
+  Result := Pointer(DWORD_PTR(@x) + SizeOf(x));
 end;
 
 function Style_is_Wildcard(p: DWORD): Boolean;

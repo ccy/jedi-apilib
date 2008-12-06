@@ -9489,14 +9489,16 @@ end;
 
 // IMAGE_FIRST_SECTION by Nico Bendlin - supplied by Markus Fuchs
 
-function FieldOffset(const Struc; const Field): Cardinal;
+function FieldOffset(const Struc; const Field): DWORD_PTR;
 begin
-  Result := Cardinal(@Field) - Cardinal(@Struc);
+//64bit Warning: Converting a pointer to Cardinal may conflict with 64bit
+  Result := DWORD_PTR(@Field) - DWORD_PTR(@Struc);
 end;
 
 function IMAGE_FIRST_SECTION(NtHeader: PImageNtHeaders): PImageSectionHeader;
 begin
-  Result := PImageSectionHeader(Cardinal(NtHeader) +
+//64bit Warning: Converting a pointer to Cardinal may conflict with 64bit
+  Result := PImageSectionHeader(DWORD_PTR(NtHeader) +
       FieldOffset(NtHeader^, NtHeader^.OptionalHeader) +
       NtHeader^.FileHeader.SizeOfOptionalHeader);
 end;
