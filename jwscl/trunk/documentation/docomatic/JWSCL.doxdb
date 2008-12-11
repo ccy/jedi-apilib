@@ -2255,6 +2255,9 @@
       <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!OVERLOADED_CreateDesktop_TJwSecurityDesktop.html</target>
       <target id="pdf">pdf://1845@JWSCL.pdf</target>
     </link>
+    <link topicid="!!OVERLOADED_CreateDuplicateExistingToken_TJwSecurityToken" displaystring="CreateDuplicateExistingToken Constructor">
+      <target id="html">../html/!!OVERLOADED_CreateDuplicateExistingToken_TJwSecurityToken.html</target>
+    </link>
     <link topicid="!!OVERLOADED_CreateFmtEx_EJwsclSecurityException" displaystring="CreateFmtEx Constructor">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/!!OVERLOADED_CreateFmtEx_EJwsclSecurityException.html</target>
       <target id="html">../html/!!OVERLOADED_CreateFmtEx_EJwsclSecurityException.html</target>
@@ -3691,6 +3694,9 @@
       <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/EJwsclAdjustPrivilegeException.html</target>
       <target id="pdf">pdf://13@JWSCL.pdf</target>
       <target id="winhelp">id_92@JWSCL.hlp</target>
+    </link>
+    <link topicid="EJwsclCertApiException" displaystring="EJwsclCertApiException Class">
+      <target id="html">../html/EJwsclCertApiException.html</target>
     </link>
     <link topicid="EJwsclClassTypeMismatch" displaystring="EJwsclClassTypeMismatch Class">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/EJwsclClassTypeMismatch.html</target>
@@ -10340,6 +10346,9 @@
       <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/RsUNAuthZCtx.html</target>
       <target id="pdf">pdf://3368@JWSCL.pdf</target>
       <target id="winhelp">id_5473@JWSCL.hlp</target>
+    </link>
+    <link topicid="RsUNCertificates" displaystring="RsUNCertificates Constant">
+      <target id="html">../html/RsUNCertificates.html</target>
     </link>
     <link topicid="RsUNComUtils" displaystring="RsUNComUtils Constant">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/RsUNComUtils.html</target>
@@ -17330,7 +17339,6 @@
     </link>
     <link topicid="TJwProcessEnumerator.Create@TJwWTSProcessList" displaystring="TJwProcessEnumerator.Create Constructor">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwProcessEnumerator_Create@TJwWTSProcessList.html</target>
-      <target id="html">../html/TJwProcessEnumerator_Create@TJwWTSProcessList.html</target>
       <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwProcessEnumerator_Create@TJwWTSProcessList.html</target>
       <target id="pdf">pdf://1274@JWSCL.pdf</target>
       <target id="winhelp">id_2899@JWSCL.hlp</target>
@@ -19453,7 +19461,7 @@
       <target id="pdf">pdf://649@JWSCL.pdf</target>
       <target id="winhelp">id_2002@JWSCL.hlp</target>
     </link>
-    <link topicid="TJwSecurityAccessControlList.Create" displaystring="TJwSecurityAccessControlList.Create Constructor ()">
+    <link topicid="TJwSecurityAccessControlList.Create" displaystring="TJwSecurityAccessControlList.Create Constructor">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwSecurityAccessControlList_Create.html</target>
       <target id="html">../html/TJwSecurityAccessControlList_Create.html</target>
       <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityAccessControlList_Create.html</target>
@@ -20879,7 +20887,7 @@
       <target id="pdf">pdf://1802@JWSCL.pdf</target>
       <target id="winhelp">id_3516@JWSCL.hlp</target>
     </link>
-    <link topicid="TJwSecurityDesktop.CreateDesktop@TJwSecurityDesktops@boolean@TJwString@TJwSecurityDesktopFlags@boolean@ACCESS_MASK@TJwSecurityDescriptor" displaystring="TJwSecurityDesktop.CreateDesktop Constructor (TJwSecurityDesktops, boolean, TJwString, TJwSecurityDesktopFlags, boolean, ACCESS_MASK, TJwSecurityDescriptor)">
+    <link topicid="TJwSecurityDesktop.CreateDesktop@TJwSecurityDesktops@boolean@TJwString@TJwSecurityDesktopFlags@boolean@ACCESS_MASK@TJwSecurityDescriptor" displaystring="TJwSecurityDesktop.CreateDesktop Constructor">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwSecurityDesktop_CreateDesktop@TJwSecurityDesktops@boolean@TJwString@TJwSecurityDesktopFlags@boolean@ACCESS_MASK@TJwSecurityDescriptor.html</target>
       <target id="html">../html/TJwSecurityDesktop_CreateDesktop@TJwSecurityDesktops@boolean@TJwString@TJwSecurityDesktopFlags@boolean@ACCESS_MASK@TJwSecurityDescriptor.html</target>
       <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityDesktop_CreateDesktop@TJwSecurityDesktops@boolean@TJwString@TJwSecurityDesktopFlags@boolean@ACCESS_MASK@TJwSecurityDescriptor.html</target>
@@ -21025,7 +21033,7 @@
       <target id="pdf">pdf://1806@JWSCL.pdf</target>
       <target id="winhelp">id_3520@JWSCL.hlp</target>
     </link>
-    <link topicid="TJwSecurityDesktop.OpenDesktop@TJwSecurityDesktops@boolean@TJwString@TJwSecurityDesktopFlags@boolean@ACCESS_MASK" displaystring="TJwSecurityDesktop.OpenDesktop Constructor (TJwSecurityDesktops, boolean, TJwString, TJwSecurityDesktopFlags, boolean, ACCESS_MASK)">
+    <link topicid="TJwSecurityDesktop.OpenDesktop@TJwSecurityDesktops@boolean@TJwString@TJwSecurityDesktopFlags@boolean@ACCESS_MASK" displaystring="TJwSecurityDesktop.OpenDesktop Constructor">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwSecurityDesktop_OpenDesktop@TJwSecurityDesktops@boolean@TJwString@TJwSecurityDesktopFlags@boolean@ACCESS_MASK.html</target>
       <target id="html">../html/TJwSecurityDesktop_OpenDesktop@TJwSecurityDesktops@boolean@TJwString@TJwSecurityDesktopFlags@boolean@ACCESS_MASK.html</target>
       <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityDesktop_OpenDesktop@TJwSecurityDesktops@boolean@TJwString@TJwSecurityDesktopFlags@boolean@ACCESS_MASK.html</target>
@@ -22665,7 +22673,10 @@
       <target id="pdf">pdf://2068@JWSCL.pdf</target>
       <target id="winhelp">id_3925@JWSCL.hlp</target>
     </link>
-    <link topicid="TJwSecurityToken.CreateDuplicateExistingToken@TJwTokenHandle@TJwAccessMask@boolean" displaystring="TJwSecurityToken.CreateDuplicateExistingToken Constructor">
+    <link topicid="TJwSecurityToken.CreateDuplicateExistingToken@TJwSecurityToken@TJwAccessMask@boolean" displaystring="TJwSecurityToken.CreateDuplicateExistingToken Constructor (TJwSecurityToken, TJwAccessMask, boolean)">
+      <target id="html">../html/TJwSecurityToken_CreateDuplicateExistingToken@TJwSecurityToken@TJwAccessMask@boolean.html</target>
+    </link>
+    <link topicid="TJwSecurityToken.CreateDuplicateExistingToken@TJwTokenHandle@TJwAccessMask@boolean" displaystring="TJwSecurityToken.CreateDuplicateExistingToken Constructor (TJwTokenHandle, TJwAccessMask, boolean)">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwSecurityToken_CreateDuplicateExistingToken@TJwTokenHandle@TJwAccessMask@boolean.html</target>
       <target id="html">../html/TJwSecurityToken_CreateDuplicateExistingToken@TJwTokenHandle@TJwAccessMask@boolean.html</target>
       <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityToken_CreateDuplicateExistingToken@TJwTokenHandle@TJwAccessMask@boolean.html</target>
@@ -23080,6 +23091,12 @@
       <target id="pdf">pdf://2132@JWSCL.pdf</target>
       <target id="winhelp">id_3991@JWSCL.hlp</target>
     </link>
+    <link topicid="TJwSecurityToken.IsImpersonationToken" displaystring="TJwSecurityToken.IsImpersonationToken Property">
+      <target id="html">../html/TJwSecurityToken_IsImpersonationToken.html</target>
+    </link>
+    <link topicid="TJwSecurityToken.IsPrimaryToken" displaystring="TJwSecurityToken.IsPrimaryToken Property">
+      <target id="html">../html/TJwSecurityToken_IsPrimaryToken.html</target>
+    </link>
     <link topicid="TJwSecurityToken.IsPrivilegeAvailable@AnsiString" displaystring="TJwSecurityToken.IsPrivilegeAvailable Method">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwSecurityToken_IsPrivilegeAvailable@AnsiString.html</target>
       <target id="pdf">pdf://2133@JWSCL.pdf</target>
@@ -23095,12 +23112,18 @@
       <target id="pdf">pdf://2155@JWSCL.pdf</target>
       <target id="winhelp">id_4015@JWSCL.hlp</target>
     </link>
+    <link topicid="TJwSecurityToken.IsThreadToken" displaystring="TJwSecurityToken.IsThreadToken Property">
+      <target id="html">../html/TJwSecurityToken_IsThreadToken.html</target>
+    </link>
     <link topicid="TJwSecurityToken.IsTokenMemberShip" displaystring="TJwSecurityToken.IsTokenMemberShip Property">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwSecurityToken_IsTokenMemberShip.html</target>
       <target id="html">../html/TJwSecurityToken_IsTokenMemberShip.html</target>
       <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityToken_IsTokenMemberShip.html</target>
       <target id="pdf">pdf://2156@JWSCL.pdf</target>
       <target id="winhelp">id_4016@JWSCL.hlp</target>
+    </link>
+    <link topicid="TJwSecurityToken.IsTokenType@Integer" displaystring="TJwSecurityToken.IsTokenType Method">
+      <target id="html">../html/TJwSecurityToken_IsTokenType@Integer.html</target>
     </link>
     <link topicid="TJwSecurityToken.LinkedToken" displaystring="TJwSecurityToken.LinkedToken Property">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwSecurityToken_LinkedToken.html</target>
@@ -23653,7 +23676,7 @@
       <target id="pdf">pdf://2233@JWSCL.pdf</target>
       <target id="winhelp">id_4115@JWSCL.hlp</target>
     </link>
-    <link topicid="TJwSecurityWindowStation.Create@TJwString@boolean@TJwAccessMask@boolean@TJwSecurityDescriptor" displaystring="TJwSecurityWindowStation.Create Constructor (TJwString, boolean, TJwAccessMask, boolean, TJwSecurityDescriptor)">
+    <link topicid="TJwSecurityWindowStation.Create@TJwString@boolean@TJwAccessMask@boolean@TJwSecurityDescriptor" displaystring="TJwSecurityWindowStation.Create Constructor">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwSecurityWindowStation_Create@TJwString@boolean@TJwAccessMask@boolean@TJwSecurityDescriptor.html</target>
       <target id="html">../html/TJwSecurityWindowStation_Create@TJwString@boolean@TJwAccessMask@boolean@TJwSecurityDescriptor.html</target>
       <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSecurityWindowStation_Create@TJwString@boolean@TJwAccessMask@boolean@TJwSecurityDescriptor.html</target>
@@ -24054,7 +24077,6 @@
     </link>
     <link topicid="TJwSessionsEnumerator.Create@TJwWTSSessionList" displaystring="TJwSessionsEnumerator.Create Constructor">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwSessionsEnumerator_Create@TJwWTSSessionList.html</target>
-      <target id="html">../html/TJwSessionsEnumerator_Create@TJwWTSSessionList.html</target>
       <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSessionsEnumerator_Create@TJwWTSSessionList.html</target>
       <target id="pdf">pdf://2309@JWSCL.pdf</target>
       <target id="winhelp">id_4223@JWSCL.hlp</target>
@@ -24503,7 +24525,7 @@
       <target id="pdf">pdf://253@JWSCL.pdf</target>
       <target id="winhelp">id_3135@JWSCL.hlp</target>
     </link>
-    <link topicid="TJwTagThread.Create" displaystring="TJwTagThread.Create Constructor ()">
+    <link topicid="TJwTagThread.Create" displaystring="TJwTagThread.Create Constructor">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwTagThread_Create.html</target>
       <target id="html">../html/TJwTagThread_Create.html</target>
       <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwTagThread_Create.html</target>
@@ -27123,6 +27145,9 @@
     <class name="EJwsclAdjustPrivilegeException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclPrivilegeException"></ancestor>
     </class>
+    <class name="EJwsclCertApiException" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
+      <ancestor name="EJwsclSecurityException"></ancestor>
+    </class>
     <class name="EJwsclClassTypeMismatch" language="0" type="0" using="Classes,D5impl,jwaWindows,JwsclResource,JwsclStrings,JwsclTypes,SysUtils">
       <ancestor name="EJwsclSecurityException"></ancestor>
     </class>
@@ -27827,10 +27852,12 @@
     </class>
     <class name="TJwCreateProcessInfo" language="0" type="5" using="Classes,JwaWindows,JwsclComUtils,JwsclDescriptor,JwsclEnumerations,JwsclLogging,JwsclLsa,JwsclResource,JwsclSecureObjects,JwsclSid,JwsclStrings,JwsclTerminalServer,JwsclToken,JwsclTypes,JwsclUtils,SysUtils">
       <field name="AdditionalGroups"></field>
+      <field name="BusyPipeSleep"></field>
       <field name="DefaultDesktop"></field>
       <field name="LogonProcessName"></field>
       <field name="LogonSID"></field>
       <field name="LogonToken"></field>
+      <field name="MaximumTryCount"></field>
       <field name="OriginName"></field>
       <field name="Parameters"></field>
       <field name="SessionID"></field>
@@ -28949,6 +28976,9 @@
       <method name="GetTempOwner"></method>
       <method name="GetTempSACL"></method>
       <method name="HasValidHandle"></method>
+      <method name="PrepareAccessCheckGenericACE"></method>
+      <method name="PrepareAccessCheckSecurityDescriptor"></method>
+      <method name="PrepareAccessCheckTokenAssignment"></method>
       <method name="ReplaceGenericRightsInDACL"></method>
       <method name="ResetTemp"></method>
       <method name="SetDACL"></method>
@@ -29835,7 +29865,10 @@
       <property name="AccessMask" info="TJwAccessMask"></property>
       <property name="ElevationType" info="TTokenElevationType"></property>
       <property name="ImpersonationLevel" info="TSecurityImpersonationLevel"></property>
+      <property name="IsImpersonationToken" info="Boolean"></property>
+      <property name="IsPrimaryToken" info="Boolean"></property>
       <property name="IsRestricted" info="boolean"></property>
+      <property name="IsThreadToken" info="Boolean"></property>
       <property name="IsTokenMemberShip" info="boolean"></property>
       <property name="LinkedToken" info="TJwSecurityToken"></property>
       <property name="MandatoryPolicy" info="TJwTokenMandatoryPolicies"></property>
@@ -29872,6 +29905,7 @@
       <method name="Create"></method>
       <method name="Create_OBJECT_ATTRIBUTES"></method>
       <method name="CreateCompatibilityQueryUserToken"></method>
+      <method name="CreateDuplicateExistingToken"></method>
       <method name="CreateDuplicateExistingToken"></method>
       <method name="CreateDuplicateToken"></method>
       <method name="CreateLogonUser"></method>
@@ -29931,6 +29965,7 @@
       <method name="ImpersonateSelf"></method>
       <method name="IsEqual"></method>
       <method name="IsPrivilegeAvailable"></method>
+      <method name="IsTokenType"></method>
       <method name="LoadUserProfile"></method>
       <method name="PrivilegeCheck"></method>
       <method name="PrivilegeCheck"></method>

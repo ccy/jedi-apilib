@@ -1,7 +1,6 @@
 {This project is for analyze purposes only!}
 Program JwsclMain;
 uses
-  ExceptionLog,
   JwaWindows,
   JwsclAccounts,
   JwsclAcl,

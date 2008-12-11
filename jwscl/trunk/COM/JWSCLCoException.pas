@@ -65,17 +65,19 @@ begin
     JE := ExceptionType as EJwsclSecurityException;
 
     Data.Values[SJWEXCEPTIONNAME] := JE.ClassName;
-    Data.Values[SJWMETHODNAME] := JE.SourceProc;
     Data.Values[SJWCLASSNAME] := JE.SourceClass;
+    Data.Values[SJWMESSAGE] := JE.Message;
+    Data.Values[SCOMETHODNAME] := CoMethodName;
+	Data.Values[SCOCLASSNAME] := CoClassName;
+    Data.Values[SCOSOURCEFILE] := CoUnitName;
+    Data.Values[SCOSOURCELINE] := '0';
+    
+
+    Data.Values[SJWMETHODNAME] := JE.SourceProc;
     Data.Values[SJWSOURCEFILE] := JE.SourceFile;
     Data.Values[SJWSOURCELINE] := IntToStr(JE.SourceLine);
     Data.Values[SJWGETLASTERROR] := IntToStr(JE.LastError);
     Data.Values[SJWWINCALLNAME] := JE.WinCallName;
-    Data.Values[SJWMESSAGE] := JE.Message;
-    Data.Values[SCOMETHODNAME] := CoMethodName;
-    Data.Values[SCOCLASSNAME] := CoClassName;
-    Data.Values[SCOSOURCEFILE] := CoUnitName;
-    Data.Values[SCOSOURCELINE] := '0';
     Data.Values[SJWSTACKTRACE] := JE.StackTrace;
 
     Position := JwFormatString('COM:%s::%s(%s:%d);JWSCL:%s::%s(%s:%d)',
