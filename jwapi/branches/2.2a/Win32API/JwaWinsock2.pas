@@ -448,7 +448,7 @@ type
   {$EXTERNALSYM SunB}
 
   SunC = packed record
-    s_c1, s_c2, s_c3, s_c4: Char;
+    s_c1, s_c2, s_c3, s_c4: AnsiChar;
   end;
   {$NODEFINE SunC}
 
@@ -553,7 +553,7 @@ type
     sin_family: Smallint;
     sin_port: u_short;
     sin_addr: in_addr;
-    sin_zero: array [0..7] of Char;
+    sin_zero: array [0..7] of AnsiChar;
   end;
   {$EXTERNALSYM sockaddr_in}
   TSockAddrIn = sockaddr_in;
@@ -569,8 +569,8 @@ type
   WSAData = record
     wVersion: WORD;
     wHighVersion: WORD;
-    szDescription: array [0..WSADESCRIPTION_LEN] of Char;
-    szSystemStatus: array [0..WSASYS_STATUS_LEN] of Char;
+    szDescription: array [0..WSADESCRIPTION_LEN] of AnsiChar;
+    szSystemStatus: array [0..WSASYS_STATUS_LEN] of AnsiChar;
     iMaxSockets: Word;
     iMaxUdpDg: Word;
     lpVendorInfo: PAnsiChar;
@@ -803,7 +803,7 @@ const
 type
   sockaddr = record
     sa_family: u_short;              // address family
-    sa_data: array [0..13] of Char;            // up to 14 bytes of direct address
+    sa_data: array [0..13] of AnsiChar;            // up to 14 bytes of direct address
   end;
   {$EXTERNALSYM sockaddr}
   TSockAddr = sockaddr;
@@ -836,12 +836,12 @@ const
 type
   sockaddr_storage = record
     ss_family: short;               // Address family.
-    __ss_pad1: array [0.._SS_PAD1SIZE - 1] of char;  // 6 byte pad, this is to make
+    __ss_pad1: array [0.._SS_PAD1SIZE - 1] of AnsiChar;  // 6 byte pad, this is to make
                                    // implementation specific pad up to
                                    // alignment field that follows explicit
                                    // in the data structure.
     __ss_align: Int64;            // Field to force desired structure.
-    __ss_pad2: array [0.._SS_PAD2SIZE - 1] of char;  // 112 byte pad to achieve desired size;
+    __ss_pad2: array [0.._SS_PAD2SIZE - 1] of AnsiChar;  // 112 byte pad to achieve desired size;
                                    // _SS_MAXSIZE value minus size of
                                    // ss_family, __ss_pad1, and
                                    // __ss_align fields is 112.
@@ -1568,7 +1568,7 @@ type
     iSecurityScheme: Integer;
     dwMessageSize: DWORD;
     dwProviderReserved: DWORD;
-    szProtocol: array [0..WSAPROTOCOL_LEN] of Char;
+    szProtocol: array [0..WSAPROTOCOL_LEN] of AnsiChar;
   end;
   {$EXTERNALSYM _WSAPROTOCOL_INFOA}
   WSAPROTOCOL_INFOA = _WSAPROTOCOL_INFOA;

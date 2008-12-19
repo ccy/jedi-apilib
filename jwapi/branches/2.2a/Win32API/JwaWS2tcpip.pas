@@ -683,7 +683,7 @@ begin
 end;
 
 var
-  gai_strerror_buffA: array [0..GAI_STRERROR_BUFFER_SIZE-1] of Char;
+  gai_strerror_buffA: array [0..GAI_STRERROR_BUFFER_SIZE-1] of AnsiChar;
   gai_strerror_buffW: array [0..GAI_STRERROR_BUFFER_SIZE-1] of WideChar;
 
 function gai_strerrorA(ecode: Integer): PAnsiChar;

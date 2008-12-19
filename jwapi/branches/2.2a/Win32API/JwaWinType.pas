@@ -422,7 +422,7 @@ const
 //
 
 type
-  CCHAR = Char;
+  CCHAR = AnsiChar;
   {$EXTERNALSYM CCHAR}
   CSHORT = Shortint;
   {$EXTERNALSYM CSHORT}
@@ -712,9 +712,9 @@ type
 // Pointer to an Asciiz string
 //
 
-  PSZ = ^CHAR;
+  PSZ = ^AnsiChar;
   {$EXTERNALSYM PSZ}
-  PCSZ = ^CHAR;
+  PCSZ = ^AnsiChar;
   {$EXTERNALSYM PCSZ}
 
 //
@@ -756,7 +756,7 @@ type
   TCString = CSTRING;
 
 const
-  ANSI_NULL = CHAR(0);
+  ANSI_NULL = AnsiChar(0);
   {$EXTERNALSYM ANSI_NULL}
   UNICODE_NULL = WCHAR(0);
   {$EXTERNALSYM UNICODE_NULL}
@@ -1188,7 +1188,7 @@ const
 
 type
 
-//unsigned char       BYTE;
+//unsigned AnsiChar       BYTE;
 //unsigned short      WORD;
 
   FLOAT = Single;

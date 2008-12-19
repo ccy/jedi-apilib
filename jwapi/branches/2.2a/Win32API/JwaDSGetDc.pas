@@ -272,7 +272,7 @@ function DsValidateSubnetName(SubnetName: LPCTSTR): DWORD; stdcall;
 type
   sockaddr = record
     sa_family: Word;                  // address family
-    sa_data: array [0..13] of Char;   // up to 14 bytes of direct address
+    sa_data: array [0..13] of AnsiChar;   // up to 14 bytes of direct address
   end;
   {$EXTERNALSYM sockaddr}
 

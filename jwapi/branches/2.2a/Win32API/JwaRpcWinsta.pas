@@ -134,25 +134,25 @@ type
 
 type
   NASISPECIFICNAMEW = Array[0..NASISPECIFICNAME_LENGTH] of WCHAR;
-  NASISPECIFICNAMEA = Array[0..NASISPECIFICNAME_LENGTH] of CHAR;
+  NASISPECIFICNAMEA = Array[0..NASISPECIFICNAME_LENGTH] of AnsiChar;
 
   NASIUSERNAMEW = Array[0..NASIUSERNAME_LENGTH] of WCHAR;
-  NASIUSERNAMEA = Array[0..NASIUSERNAME_LENGTH] of CHAR;
+  NASIUSERNAMEA = Array[0..NASIUSERNAME_LENGTH] of AnsiChar;
 
   NASIPASSWORDW = Array[0..NASIPASSWORD_LENGTH] of WCHAR;
-  NASIPASSWORDA = Array[0..NASIPASSWORD_LENGTH] of CHAR;
+  NASIPASSWORDA = Array[0..NASIPASSWORD_LENGTH] of AnsiChar;
 
   NASISESSIONNAMEW = Array[0..NASISESSIONNAME_LENGTH] of WCHAR;
-  NASISESSIONNAMEA = Array[0..NASISESSIONNAME_LENGTH] of CHAR;
+  NASISESSIONNAMEA = Array[0..NASISESSIONNAME_LENGTH] of AnsiChar;
 
   NASIFILESERVERW = Array[0..NASIFILESERVER_LENGTH] of WCHAR;
-  NASIFILESERVERA = Array[0..NASIFILESERVER_LENGTH] of CHAR;
+  NASIFILESERVERA = Array[0..NASIFILESERVER_LENGTH] of AnsiChar;
 
-  CLIENTDATANAME = Array[0..CLIENTDATANAME_LENGTH] of CHAR;
+  CLIENTDATANAME = Array[0..CLIENTDATANAME_LENGTH] of AnsiChar;
   PCLIENTDATANAME = PAnsiChar;
 
   WINSTATIONNAMEW = Array[0..WINSTATIONNAME_LENGTH] of WCHAR;
-  WINSTATIONNAMEA = Array[0..WINSTATIONNAME_LENGTH] of CHAR;
+  WINSTATIONNAMEA = Array[0..WINSTATIONNAME_LENGTH] of AnsiChar;
 
 type
   _TS_SYSTEMTIME = record
@@ -257,7 +257,7 @@ const
 type
   PDNAMEW = Array[0..PDNAME_LENGTH] of WCHAR;
   PPDNAMEW = PWCHAR;
-  PDNAMEA = Array[0..PDNAME_LENGTH] of CHAR;
+  PDNAMEA = Array[0..PDNAME_LENGTH] of AnsiChar;
   PPDNAMEA = PAnsiChar;
 
 {$IFDEF UNICODE}
@@ -273,7 +273,7 @@ type
 type
   WDNAMEW = Array[0..WDNAME_LENGTH] of WCHAR;
   PWDNAMEW = PWCHAR;
-  WDNAMEA = Array[0..WDNAME_LENGTH] of CHAR;
+  WDNAMEA = Array[0..WDNAME_LENGTH] of AnsiChar;
   PWDNAMEA = PAnsiChar;
 {$IFDEF UNICODE}
   WDNAME = WDNAMEW;
@@ -288,7 +288,7 @@ type
 type
   CDNAMEW = Array[0..CDNAME_LENGTH] of WCHAR;
   PCDNAMEW = PWCHAR;
-  CDNAMEA = Array[0..CDNAME_LENGTH] of CHAR;
+  CDNAMEA = Array[0..CDNAME_LENGTH] of AnsiChar;
   PCDNAMEA = PAnsiChar;
 {$IFDEF UNICODE}
   CDNAME = CDNAMEW;
@@ -303,7 +303,7 @@ type
 type
   DEVICENAMEW = Array[0..DEVICENAME_LENGTH] of WCHAR;
   PDEVICENAMEW = PWCHAR;
-  DEVICENAMEA = Array[0..DEVICENAME_LENGTH] of CHAR;
+  DEVICENAMEA = Array[0..DEVICENAME_LENGTH] of AnsiChar;
   PDEVICENAMEA = PAnsiChar;
 {$IFDEF UNICODE}
   DEVICENAME = DEVICENAMEW;
@@ -318,7 +318,7 @@ type
 type
   MODEMNAMEW = Array[0..MODEMNAME_LENGTH] of WCHAR;
   PMODEMNAMEW = PWCHAR;
-  MODEMNAMEA = Array[0..MODEMNAME_LENGTH] of CHAR;
+  MODEMNAMEA = Array[0..MODEMNAME_LENGTH] of AnsiChar;
   PMODEMNAMEA = PAnsiChar;
 {$IFDEF UNICODE}
 type
@@ -334,7 +334,7 @@ type
 type
   DLLNAMEW = Array[0..DLLNAME_LENGTH] of WCHAR;
   PDLLNAMEW = PWCHAR;
-  DLLNAMEA = Array[0..DLLNAME_LENGTH] of CHAR;
+  DLLNAMEA = Array[0..DLLNAME_LENGTH] of AnsiChar;
   PDLLNAMEA = PAnsiChar;
 {$IFDEF UNICODE}
   DLLNAME = DLLNAMEW;
@@ -349,7 +349,7 @@ type
 type
   WDPREFIXW = Array[0..WDPREFIX_LENGTH] of WCHAR;
   PWDPREFIXW = PWCHAR;
-  WDPREFIXA = Array[0..WDPREFIX_LENGTH] of CHAR;
+  WDPREFIXA = Array[0..WDPREFIX_LENGTH] of AnsiChar;
   PWDPREFIXA = PAnsiChar;
 
 {$IFDEF UNICODE}
@@ -404,7 +404,7 @@ type
 type
   APPLICATIONNAMEW = Array[0..MAX_BR_NAME] of WCHAR;
   PAPPLICATIONNAMEW = PWCHAR;
-  APPLICATIONNAMEA = Array[0..MAX_BR_NAME] of CHAR;
+  APPLICATIONNAMEA = Array[0..MAX_BR_NAME] of AnsiChar;
   PAPPLICATIONNAMEA = PAnsiChar;
 {$IFDEF UNICODE}
   APPLICATIONNAME = APPLICATIONNAMEW;
@@ -641,12 +641,12 @@ type
 type
   _USERCONFIGA = record
     Flags: TUserConfigFlags;
-    UserName: Array[0..USERNAME_LENGTH] of Char;
-    Domain: Array[0..DOMAIN_LENGTH] of Char;
-    Password: Array[0..PASSWORD_LENGTH] of Char;
-    WorkDirectory: Array[0..DIRECTORY_LENGTH] of Char;
-    InitialProgram: Array[0..INITIALPROGRAM_LENGTH] of Char;
-    CallbackNumber: Array[0..CALLBACK_LENGTH] of Char;
+    UserName: Array[0..USERNAME_LENGTH] of AnsiChar;
+    Domain: Array[0..DOMAIN_LENGTH] of AnsiChar;
+    Password: Array[0..PASSWORD_LENGTH] of AnsiChar;
+    WorkDirectory: Array[0..DIRECTORY_LENGTH] of AnsiChar;
+    InitialProgram: Array[0..INITIALPROGRAM_LENGTH] of AnsiChar;
+    CallbackNumber: Array[0..CALLBACK_LENGTH] of AnsiChar;
     Callback: CALLBACKCLASS;
     Shadow: SHADOWCLASS;
     MaxConnectionTime: ULONG;
@@ -654,11 +654,11 @@ type
     MaxIdleTime: ULONG;
     KeyboardLayout: ULONG;
     MinEncryptionLevel: BYTE;
-    NWLogonServer: Array[0..NASIFILESERVER_LENGTH] of Char;
+    NWLogonServer: Array[0..NASIFILESERVER_LENGTH] of AnsiChar;
     PublishedName: APPLICATIONNAMEA;
-    WFProfilePath: Array[0..DIRECTORY_LENGTH] of Char;
-    WFHomeDir: Array[0..DIRECTORY_LENGTH] of Char;
-    WFHomeDirDrive: Array[0..3] of Char;
+    WFProfilePath: Array[0..DIRECTORY_LENGTH] of AnsiChar;
+    WFHomeDir: Array[0..DIRECTORY_LENGTH] of AnsiChar;
+    WFHomeDirDrive: Array[0..3] of AnsiChar;
   end {_USERCONFIGA};
   USERCONFIGA = _USERCONFIGA;
   PUSERCONFIGA = ^_USERCONFIGA;
@@ -760,8 +760,8 @@ type
   	  fEnableRTS,                                        //: 1
       _FlowControlFlagsAlign = al32Bit
     );
-    XonChar: Char;
-    XoffChar: Char;
+    XonChar: AnsiChar;
+    XoffChar: AnsiChar;
     Type_: FLOWCONTROLCLASS;
     HardwareReceive: RECEIVEFLOWCONTROLCLASS;
     HardwareTransmit: TRANSMITFLOWCONTROLCLASS;
@@ -1146,16 +1146,16 @@ type
   _WINSTATIONCONFIGW = record
     Comment: Array[0..WINSTATIONCOMMENT_LENGTH] of WCHAR;
     User: USERCONFIGW;
-    OEMId: Array[0..3] of Char;
+    OEMId: Array[0..3] of AnsiChar;
   end {_WINSTATIONCONFIGW};
   WINSTATIONCONFIGW = _WINSTATIONCONFIGW;
   PWINSTATIONCONFIGW = ^_WINSTATIONCONFIGW;
 
 type
   _WINSTATIONCONFIGA = record
-    Comment: Array[0..WINSTATIONCOMMENT_LENGTH] of Char;
+    Comment: Array[0..WINSTATIONCOMMENT_LENGTH] of AnsiChar;
     User: USERCONFIGA;
-    OEMId: Array[0..3] of Char;
+    OEMId: Array[0..3] of AnsiChar;
   end {_WINSTATIONCONFIGA};
   WINSTATIONCONFIGA = _WINSTATIONCONFIGA;
   PWINSTATIONCONFIGA = ^_WINSTATIONCONFIGA;
@@ -1355,16 +1355,16 @@ type
 type
   _WINSTATIONCLIENTA = record
     WinStationClientFlags: TWinStationClientFlags;
-    ClientName: Array[0..CLIENTNAME_LENGTH] of Char;
-    Domain: Array[0..DOMAIN_LENGTH] of Char;
-    UserName: Array[0..USERNAME_LENGTH] of Char;
-    Password: Array[0..PASSWORD_LENGTH] of Char;
-    WorkDirectory: Array[0..DIRECTORY_LENGTH] of Char;
-    InitialProgram: Array[0..INITIALPROGRAM_LENGTH] of Char;
+    ClientName: Array[0..CLIENTNAME_LENGTH] of AnsiChar;
+    Domain: Array[0..DOMAIN_LENGTH] of AnsiChar;
+    UserName: Array[0..USERNAME_LENGTH] of AnsiChar;
+    Password: Array[0..PASSWORD_LENGTH] of AnsiChar;
+    WorkDirectory: Array[0..DIRECTORY_LENGTH] of AnsiChar;
+    InitialProgram: Array[0..INITIALPROGRAM_LENGTH] of AnsiChar;
     SerialNumber: ULONG;
     EncryptionLevel: BYTE;
     ClientAddressFamily: ULONG;
-    ClientAddress: Array[0..CLIENTADDRESS_LENGTH] of Char;
+    ClientAddress: Array[0..CLIENTADDRESS_LENGTH] of AnsiChar;
     HRes: USHORT;
     VRes: USHORT;
     ColorDepth: USHORT;
@@ -1373,20 +1373,20 @@ type
     KeyboardType: ULONG;
     KeyboardSubType: ULONG;
     KeyboardFunctionKey: ULONG;
-    imeFileName: Array[0..IMEFILENAME_LENGTH] of Char;
-    ClientDirectory: Array[0..DIRECTORY_LENGTH] of Char;
-    ClientLicense: Array[0..CLIENTLICENSE_LENGTH] of Char;
-    ClientModem: Array[0..CLIENTMODEM_LENGTH] of Char;
+    imeFileName: Array[0..IMEFILENAME_LENGTH] of AnsiChar;
+    ClientDirectory: Array[0..DIRECTORY_LENGTH] of AnsiChar;
+    ClientLicense: Array[0..CLIENTLICENSE_LENGTH] of AnsiChar;
+    ClientModem: Array[0..CLIENTMODEM_LENGTH] of AnsiChar;
     ClientBuildNumber: ULONG;
     ClientHardwareId: ULONG;
     ClientProductId: USHORT;
     OutBufCountHost: USHORT;
     OutBufCountClient: USHORT;
     OutBufLength: USHORT;
-    AudioDriverName: Array[0..8] of Char;
+    AudioDriverName: Array[0..8] of AnsiChar;
     ClientTimeZone: TS_TIME_ZONE_INFORMATION;
     ClientSessionId: ULONG;
-    clientDigProductId: Array[0..CLIENT_PRODUCT_ID_LENGTH-1] of Char;
+    clientDigProductId: Array[0..CLIENT_PRODUCT_ID_LENGTH-1] of AnsiChar;
     PerformanceFlags: ULONG;
     ActiveInputLocale: ULONG;
   end {_WINSTATIONCLIENTA};
@@ -1544,8 +1544,8 @@ type
     LastInputTime: LARGE_INTEGER;
     LogonTime: LARGE_INTEGER;
     Status: PROTOCOLSTATUS;
-    Domain: Array[0..DOMAIN_LENGTH] of Char;
-    UserName: Array[0..USERNAME_LENGTH] of Char;
+    Domain: Array[0..DOMAIN_LENGTH] of AnsiChar;
+    UserName: Array[0..USERNAME_LENGTH] of AnsiChar;
     CurrentTime: LARGE_INTEGER;
   end {_WINSTATIONINFORMATIONA};
   WINSTATIONINFORMATIONA = _WINSTATIONINFORMATIONA;
@@ -1630,9 +1630,9 @@ type
 
 type
   _WINSTATIONPRODIDA = record
-    DigProductId: Array[0..CLIENT_PRODUCT_ID_LENGTH-1] of Char;
-    ClientDigProductId: Array[0..CLIENT_PRODUCT_ID_LENGTH-1] of Char;
-    OuterMostDigProductId: Array[0..CLIENT_PRODUCT_ID_LENGTH-1] of Char;
+    DigProductId: Array[0..CLIENT_PRODUCT_ID_LENGTH-1] of AnsiChar;
+    ClientDigProductId: Array[0..CLIENT_PRODUCT_ID_LENGTH-1] of AnsiChar;
+    OuterMostDigProductId: Array[0..CLIENT_PRODUCT_ID_LENGTH-1] of AnsiChar;
     curentSessionId: ULONG;
     ClientSessionId: ULONG;
     OuterMostSessionId: ULONG;

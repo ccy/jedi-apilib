@@ -476,7 +476,7 @@ type
     sin_family: Smallint;
     sin_port: u_short;
     sin_addr: in_addr;
-    sin_zero: array [0..7] of Char;
+    sin_zero: array [0..7] of AnsiChar;
   end;
   {$EXTERNALSYM sockaddr_in}
   TSockAddrIn = sockaddr_in;
@@ -492,8 +492,8 @@ type
   WSAData = record
     wVersion: WORD;
     wHighVersion: WORD;
-    szDescription: array [0..WSADESCRIPTION_LEN] of Char;
-    szSystemStatus: array [0..WSASYS_STATUS_LEN] of Char;
+    szDescription: array [0..WSADESCRIPTION_LEN] of AnsiChar;
+    szSystemStatus: array [0..WSASYS_STATUS_LEN] of AnsiChar;
     iMaxSockets: Word;
     iMaxUdpDg: Word;
     lpVendorInfo: PAnsiChar;
@@ -746,7 +746,7 @@ const
 type
   sockaddr = record
     sa_family: u_short;              // address family
-    sa_data: array [0..13] of Char;            // up to 14 bytes of direct address
+    sa_data: array [0..13] of AnsiChar;            // up to 14 bytes of direct address
   end;
   {$EXTERNALSYM sockaddr}
   TSockAddr = sockaddr;

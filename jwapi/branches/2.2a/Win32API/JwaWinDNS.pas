@@ -1805,7 +1805,7 @@ type
   {$EXTERNALSYM PDNS_MESSAGE_BUFFER}
   _DNS_MESSAGE_BUFFER = record
     MessageHead: DNS_HEADER;
-    MessageBody: array [0..0] of CHAR;
+    MessageBody: array [0..0] of AnsiChar;
   end;
   {$EXTERNALSYM _DNS_MESSAGE_BUFFER}
   DNS_MESSAGE_BUFFER = _DNS_MESSAGE_BUFFER;

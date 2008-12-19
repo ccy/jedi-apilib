@@ -124,7 +124,7 @@ type
   BFT = WCHAR;
   {$EXTERNALSYM BFT}
   {$ELSE}
-  BFT = Char;
+  BFT = AnsiChar;
   {$EXTERNALSYM BFT}
   {$ENDIF UNICODE}
 
