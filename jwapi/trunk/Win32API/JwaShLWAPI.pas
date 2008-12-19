@@ -307,7 +307,7 @@ function SHLoadIndirectString(pszSource, pszOutBuf: PWideChar; cchOutBuf: UINT; 
   {$EXTERNALSYM IsCharSpaceW}
   function IsCharSpaceW(wch: WideChar): BOOL stdcall;
   {$EXTERNALSYM IsCharSpace}
-  function IsCharSpace(wch: Char): BOOL; stdcall;
+  function IsCharSpace(wch: AnsiChar): BOOL; stdcall;
 
   {$EXTERNALSYM StrCmpCA}
   function StrCmpCA(pszStr1, pszStr2: PAnsiChar): Integer stdcall;

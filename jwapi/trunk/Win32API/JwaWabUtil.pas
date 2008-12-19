@@ -806,12 +806,12 @@ const
 
 function SzFindCh(lpsz: LPCTSTR; ch: Byte): LPCTSTR;
 begin
-  Result := StrScan(lpsz, Char(ch));
+  Result := StrScan(lpsz, AnsiChar(ch));
 end;
 
 function SzFindLastCh(lpsz: LPCTSTR; ch: Byte): LPCTSTR;
 begin
-  Result := StrRScan(lpsz, Char(ch));
+  Result := StrRScan(lpsz, AnsiChar(ch));
 end;
 
 function SzFindSz(lpsz, lpszKey: LPCTSTR): LPCTSTR;

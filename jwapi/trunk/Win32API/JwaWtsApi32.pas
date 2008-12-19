@@ -443,9 +443,9 @@ type
     OutgoingFrames : DWORD;
     IncomingCompressedBytes : DWORD;
     OutgoingCompressedBytes : DWORD;
-    WinStationName : array[0..WINSTATIONNAME_LENGTH - 1] of CHAR;
-    Domain : array[0..DOMAIN_LENGTH - 1] of CHAR;
-    UserName : array[0..USERNAME_LENGTH{ + 1 - 1}] of CHAR;// name of WinStation this session is
+    WinStationName : array[0..WINSTATIONNAME_LENGTH - 1] of AnsiChar;
+    Domain : array[0..DOMAIN_LENGTH - 1] of AnsiChar;
+    UserName : array[0..USERNAME_LENGTH{ + 1 - 1}] of AnsiChar;// name of WinStation this session is
                                                            // connected to
     ConnectTime : LARGE_INTEGER;
     DisconnectTime : LARGE_INTEGER;
@@ -499,25 +499,25 @@ type
 
 type
   _WTSCLIENTA = record
-    ClientName : array[0..CLIENTNAME_LENGTH { + 1 - 1}] of CHAR;
-    Domain : array[0..DOMAIN_LENGTH { + 1 - 1}] of CHAR;
-    UserName : array[0..USERNAME_LENGTH { + 1 - 1}] of CHAR;
-    WorkDirectory : array[0..MAX_PATH { + 1 - 1}] of CHAR;
-    InitialProgram : array[0..MAX_PATH { + 1 - 1}] of CHAR;
+    ClientName : array[0..CLIENTNAME_LENGTH { + 1 - 1}] of AnsiChar;
+    Domain : array[0..DOMAIN_LENGTH { + 1 - 1}] of AnsiChar;
+    UserName : array[0..USERNAME_LENGTH { + 1 - 1}] of AnsiChar;
+    WorkDirectory : array[0..MAX_PATH { + 1 - 1}] of AnsiChar;
+    InitialProgram : array[0..MAX_PATH { + 1 - 1}] of AnsiChar;
     EncryptionLevel : BYTE;       // security level of encryption pd
     ClientAddressFamily : ULONG;
     ClientAddress : array[0..CLIENTADDRESS_LENGTH { + 1 - 1}] of USHORT;
     HRes : USHORT;
     VRes : USHORT;
     ColorDepth : USHORT;
-    ClientDirectory : array[0..MAX_PATH { + 1 - 1}] of CHAR;
+    ClientDirectory : array[0..MAX_PATH { + 1 - 1}] of AnsiChar;
     ClientBuildNumber : ULONG;
     ClientHardwareId : ULONG;    // client software serial number
     ClientProductId : USHORT;     // client software product id
     OutBufCountHost : USHORT;     // number of outbufs on host
     OutBufCountClient : USHORT;   // number of outbufs on client
     OutBufLength : USHORT;        // length of outbufs in bytes
-    DeviceId : array[0..MAX_PATH { + 1 - 1}] of CHAR;
+    DeviceId : array[0..MAX_PATH { + 1 - 1}] of AnsiChar;
   end;
   {$EXTERNALSYM _WTSCLIENTA}
   WTSCLIENTA = _WTSCLIENTA;

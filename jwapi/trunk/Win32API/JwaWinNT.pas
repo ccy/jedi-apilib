@@ -2893,7 +2893,7 @@ type
   PTOKEN_SOURCE = ^TOKEN_SOURCE;
   {$EXTERNALSYM PTOKEN_SOURCE}
   _TOKEN_SOURCE = record
-    SourceName: array [0..TOKEN_SOURCE_LENGTH - 1] of CHAR;
+    SourceName: array [0..TOKEN_SOURCE_LENGTH - 1] of AnsiChar;
     SourceIdentifier: LUID;
   end;
   {$EXTERNALSYM _TOKEN_SOURCE}
@@ -4714,8 +4714,8 @@ type
   {$EXTERNALSYM PIMAGE_OS2_HEADER}
   _IMAGE_OS2_HEADER = record
     ne_magic: Word;        // Magic number
-    ne_ver: CHAR;          // Version number
-    ne_rev: CHAR;          // Revision number
+    ne_ver: AnsiChar;          // Version number
+    ne_rev: AnsiChar;          // Revision number
     ne_enttab: Word;       // Offset of Entry Table
     ne_cbenttab: Word;     // Number of bytes in Entry Table
     ne_crc: Longint;       // Checksum of whole file
@@ -6717,7 +6717,7 @@ type
   {$EXTERNALSYM PIMAGE_RESOURCE_DIRECTORY_STRING}
   _IMAGE_RESOURCE_DIRECTORY_STRING = record
     Length: Word;
-    NameString: array [0..0] of CHAR;
+    NameString: array [0..0] of AnsiChar;
   end;
   {$EXTERNALSYM _IMAGE_RESOURCE_DIRECTORY_STRING}
   IMAGE_RESOURCE_DIRECTORY_STRING = _IMAGE_RESOURCE_DIRECTORY_STRING;
@@ -7471,7 +7471,7 @@ type
     dwMinorVersion: DWORD;
     dwBuildNumber: DWORD;
     dwPlatformId: DWORD;
-    szCSDVersion: array [0..127] of CHAR; // Maintenance string for PSS usage
+    szCSDVersion: array [0..127] of AnsiChar; // Maintenance string for PSS usage
   end;
   {$EXTERNALSYM _OSVERSIONINFOA}
   OSVERSIONINFOA = _OSVERSIONINFOA;
@@ -7522,7 +7522,7 @@ type
     dwMinorVersion: DWORD;
     dwBuildNumber: DWORD;
     dwPlatformId: DWORD;
-    szCSDVersion: array [0..127] of CHAR;     // Maintenance string for PSS usage
+    szCSDVersion: array [0..127] of AnsiChar;     // Maintenance string for PSS usage
     wServicePackMajor: WORD;
     wServicePackMinor: WORD;
     wSuiteMask: WORD;
@@ -8317,7 +8317,7 @@ type
     // SID   UserSid
     // WCHAR Strings[]
     // BYTE  Data[]
-    // CHAR  Pad[]
+    // AnsiChar  Pad[]
     // DWORD Length;
     //
   end;

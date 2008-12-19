@@ -1496,7 +1496,7 @@ type
       STRRET_OFFSET:
         (uOffset: UINT);
       STRRET_CSTR:
-        (cStr: array[0..259] of Char);
+        (cStr: array[0..259] of AnsiChar);
   end;
   {$EXTERNALSYM STRRET}
   STRRET = _STRRET;
