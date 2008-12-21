@@ -351,20 +351,30 @@ type
     constructor Create; overload;
   public
       {<B>GetWindowsAccountDomainSid</B> returns the domain sid of the sid instance.
+
+        This function simulates the WINAPI function GetWindowsAccountDomainSid
+        and is therefore also available on Windows 2000.
+
        @return <B>GetWindowsAccountDomainSid</B> returns the sid domain of the sid instance 
        raises
- EJwsclWinCallFailedException:  if the call to a winapi function failed 
+         EJwsclWinCallFailedException:  if the call to a winapi function failed
+         EJwsclInvalidSIDException: This exception is raised if the given SID instance
+          does not match the pattern "S-1-5-21-xx-yy-zz..."
        }
     function GetWindowsAccountDomainSid: TJwSecurityId; overload;
       {<B>GetWindowsAccountDomainSid</B> returns the domain sid of the sid instance given as parameter.
         The current SID instance will be checked with CheckSID. Also the
          the parameter aSID and the result will be checked in this way.
 
-       @param aSID contains the sid to be examined. 
-       @return <B>GetWindowsAccountDomainSid</B> returns the sid domain of the sid instance. 
+        This function simulates the WINAPI function GetWindowsAccountDomainSid
+        and is therefore also available on Windows 2000.
+
+       @param aSID contains the sid to be examined.
+       @return <B>GetWindowsAccountDomainSid</B> returns the sid domain of the sid instance.
        raises
- EJwsclNILParameterException:  if parameter aSID is nil 
-        EJwsclWinCallFailedException: if the call to a winapi function failed 
+        EJwsclNILParameterException:  if parameter aSID is nil
+        EJwsclInvalidSIDException: This exception is raised if the given SID instance
+          does not match the pattern "S-1-5-21-xx-yy-zz..."
         EJwsclSecurityException: See CheckSID  for more exceptions 
 
        }
@@ -373,11 +383,16 @@ type
 
       {<B>EqualPrefixSid</B> tests two security-identifier (SID) prefix values for equality.
        A SID prefix is the entire SID except for the last subauthority value
+
+       This function simulates the WINAPI function GetWindowsAccountDomainSid
+        and is therefore also available on Windows 2000.
+
        @param pSid1 the SID to be compared with the current sid instance 
        @return If the SID prefixes are equal, the return value is true; otherwise false 
        raises
- EJwsclNILParameterException:  if parameter pSID1 is nil 
-        EJwsclWinCallFailedException: if the call to a winapi function failed 
+         EJwsclNILParameterException:  if parameter pSID1 is nil
+         EJwsclInvalidSIDException: This exception is raised if the given SID instance
+          does not match the pattern "S-1-5-21-xx-yy-zz..."
 
       }
     function EqualPrefixSid(pSid1: TJwSecurityId): boolean;virtual;
@@ -1198,10 +1213,98 @@ end;
 
 class function TJwSecurityId.GetWindowsAccountDomainSid(aSID: TJwSecurityId):
 TJwSecurityId;
+
+{
+WINAPI calls ONLY and not really good error checking
+
+function JwGetWindowsAccountDomainSid(const aSid : PSid) : PSid;
+const
+   DomainIndent : TSidIdentifierAuthority = (Value : (0,0,0,0,0,5));
 var
-  pDomainSID: PSID;
-  dwSize: Cardinal;
+  dw : DWORD;
+  Ident : PSidIdentifierAuthority;
+   i, count : Integer;
+   SubAuth : Array[0..3] of DWORD;
 begin
+  result := nil;
+
+  for i := 0 to 3 do
+    SubAuth[i] := 0;
+
+  if not IsValidSid(aSid) then
+    RaiseLastOSError;
+
+  SetLastError(0);
+  Ident := GetSidIdentifierAuthority(aSid);
+  if (GetLastError() <> 0) and not CompareMem(@DomainIndent.Value, @Ident^.Value, SizeOf(DomainIndent.Value)) then
+    RaiseLastOSError;
+
+  SetLastError(0);
+  count := DWORD(GetSidSubAuthorityCount(aSid)^);
+  if GetLastError() <> 0 then
+    RaiseLastOSError;
+
+  dw := DWORD(GetSidSubAuthority(aSid, 0)^);
+  if (count < 4) or (dw <> 21) then
+    exit;
+
+  if count > 4 then
+    count := 4;
+
+  for i := 0 to count -1 do
+  begin
+    SubAuth[i] := DWORD(GetSidSubAuthority(aSid, i)^);
+  end;
+
+  if not AllocateAndInitializeSid(
+    @DomainIndent,//__in   PSID_IDENTIFIER_AUTHORITY pIdentifierAuthority,
+    4,//__in   BYTE nSubAuthorityCount,
+    SubAuth[0],//__in   DWORD dwSubAuthority0,
+    SubAuth[1],//__in   DWORD dwSubAuthority1,
+    SubAuth[2],//__in   DWORD dwSubAuthority2,
+    SubAuth[3],//__in   DWORD dwSubAuthority3,
+    0,//__in   DWORD dwSubAuthority4,
+    0,//__in   DWORD dwSubAuthority5,
+    0,//__in   DWORD dwSubAuthority6,
+    0,//__in   DWORD dwSubAuthority7,
+    result//__out  PSID *pSid
+    ) then
+    RaiseLastOSError
+end;
+}
+
+  function JwGetWindowsAccountDomainSid(const SID : TJwSecurityId) : TJwSecurityId;
+  const DomainIndent : TSidIdentifierAuthority = (Value : (0,0,0,0,0,5));
+  var
+    i : Integer;
+    SubAuth : TJwSubAuthorityArray;
+    SidIdent : TSidIdentifierAuthority;
+    Valid : Boolean;
+  begin
+    SidIdent := Sid.IdentifierAuthority;
+
+    //Just check for this pattern: S-1-5-21-xx-yy-zz-??...
+    Valid := CompareMem(@DomainIndent, @SidIdent, SizeOf(DomainIndent)); //S-?-5
+    Valid := Valid and (Sid.SubAuthorityCount >= 4) and (SID.SubAuthority[0] = 21); //21-xx-yy-zz...
+
+    if not Valid then
+      raise EJwsclInvalidSIDException.CreateFmtEx(
+        RsInvalidDomainSid, 'GetWindowsAccountDomainSid',
+        ClassName, RsUNSid, 0, false, [Sid.GetText(true)]);
+
+    //copy the sub authorites: 21-xx-yy-zz
+    SetLength(SubAuth, 4);
+    for i := 0 to 3 do
+      SubAuth[i] := Sid.SubAuthorityArray[i];
+
+    result := TJwSecurityId.Create(SubAuth, DomainIndent);
+  end;
+
+//var
+//  pDomainSID: PSID;
+//  dwSize: Cardinal;
+begin
+
   if not Assigned(aSID) then
     raise EJwsclNILParameterException.CreateFmtEx(
       RsNilParameter, 'GetWindowsAccountDomainSid',
@@ -1209,6 +1312,8 @@ begin
 
   aSID.CheckSID;
 
+  {
+  ** Only available in Windows XP/2003 and newer
   pDomainSID := NewSID;
 
   dwSize := SECURITY_MAX_SID_SIZE;
@@ -1223,7 +1328,9 @@ begin
   end;
 
   Result := TJwSecurityId.Create(pDomainSID);
-  FreeSID(pDomainSID);
+  FreeSID(pDomainSID); }
+
+  Result := JwGetWindowsAccountDomainSid(aSID);
 
   Result.CheckSID;
 end;

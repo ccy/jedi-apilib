@@ -334,6 +334,7 @@ const
   RsSidUnknownSid    = '(S-1-????)\r\n%s';
   RsSidTextString    = '%0:s %1:s (%2:s) [%3:s]';
   RsInvalidSidAuthorityValue = 'The identifier authority value must not be larger than $FFFFFFFFFFFF.';
+  RsInvalidDomainSid = 'The given SID (%0:s) does not match "S-1-5-21-xx-yy-zz" pattern.';
 
 
 //Unit JwsclToken.pas
