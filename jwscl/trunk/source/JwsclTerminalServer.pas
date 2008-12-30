@@ -1010,6 +1010,8 @@ type
     {@exclude}
     FCurrentTime: TDateTime;
     {@exclude}
+    FData: Pointer;
+    {@exclude}
     FDisconnectTime: TDateTime;
     {@exclude}
     FDomain: TJwString;
@@ -1276,6 +1278,10 @@ type
      }
     property CurrentTime: TDateTime read FCurrentTime;
 
+    {<B>Data</B> allows storage of a pointer to user specific data and can be freely
+     used.}
+    property Data: Pointer read FData write FData;
+
     {The <B>Disconnect</B> function disconnects the logged-on user from the specified
      Terminal Services session without closing the session. The session remains
      attached to the terminal server in the disconnected state and currently
@@ -1288,10 +1294,10 @@ type
      (starting from Server 2008 this is called TS Session Broker) care of
      redirecting a user to the server where he has a disconnected session.
      @param bWait Indicates whether the operation is synchronous. Specify TRUE
-     to wait for the operation to complete, or FALSE to return immediately. 
+     to wait for the operation to complete, or FALSE to return immediately.
 
      raises
- EJwsclWinCallFailedException:  will be raised if the call fails. 
+ EJwsclWinCallFailedException:  will be raised if the call fails.
      }
     procedure Disconnect(bWait: Boolean);
 
@@ -2398,7 +2404,6 @@ type
 constructor TJwTerminalServer.Create;
 begin
   inherited Create;
-  OutputDebugString('TJwTerminalServer.Create');
   FSessions := TJwWTSSessionList.Create(True);
   FSessions.Owner := Self;
 
@@ -2659,7 +2664,6 @@ procedure TJwTerminalServer.OnEnumServersThreadTerminate(Sender: TObject);
 begin
   // nil it!
   FEnumServersThread := nil;
-  OutputDebugString('nil it!');
 end;
 
 procedure TJwTerminalServer.SetServer(const Value: TJwString);
@@ -2906,13 +2910,11 @@ begin
   // Does the thread exist?
   if Assigned(FEnumServersThread) then
   begin
-    OutputDebugString('thread is already assigned');
     Result := False;
   end
   else
   begin
     // Create the thread
-    OutputDebugString('create thread');
     FEnumServersThread := TJwWTSEnumServersThread.Create(True, Self, ADomain);
     FEnumServersThread.OnTerminate := OnEnumServersThreadTerminate;
     FEnumServersThread.Resume;
@@ -2997,8 +2999,6 @@ begin
   inherited Create(CreateSuspended, Format('%s (%s)', [ClassName, AOwner.Server]));
   FreeOnTerminate := False;
 
-  //OutputDebugString('creating wtsevent thread');
-
   FOwner := AOwner;
 end;
 
@@ -3011,14 +3011,12 @@ begin
   while not Terminated do
   begin
     // Wait some time to prevent duplicate event dispatch
-    Sleep(500);
-    OutputDebugString('Entering WTSWaitSystemEvent');
+    Sleep(50);
 
     if WTSWaitSystemEvent(FOwner.ServerHandle, WTS_EVENT_ALL, FEventFlag) then
     begin
       if FEventFlag > WTS_EVENT_FLUSH then
       begin
-        OutputDebugString('Dispatching');
         Synchronize(DispatchEvent);
       end;
     end
@@ -3028,7 +3026,9 @@ begin
         'WTSWaitSystemEvent', ClassName, RsUNTerminalServer, 0, True,
         'Server: %s LastEvent: %d', [FOwner.Server, FOwner.LastEventFlag]);
     end;
-    Sleep(0);
+    // http://blogs.msdn.com/oldnewthing/archive/2005/10/04/476847.aspx
+    // changed Sleep(0) to SwitchToThread()
+    SwitchToThread;
   end;
 end;
 
@@ -3045,7 +3045,6 @@ constructor TJwWTSEnumServersThread.Create(CreateSuspended: Boolean;
   Owner: TJwTerminalServer; Domain: TJwString);
 begin
   JwRaiseOnNilParameter(Owner, 'Owner','Create', ClassName, RsUNTerminalServer);
-  OutputDebugString('Creating EnumServers thread');
 
   inherited Create(CreateSuspended, Format('%s (%s)', [ClassName, Owner.Server]));
 
@@ -3065,7 +3064,6 @@ var
 begin
   inherited Execute;
 
-  OutputDebugString('thread is executing');
   // Clear the serverlist
   Synchronize(ClearServerList);
 
