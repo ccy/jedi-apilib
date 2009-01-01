@@ -266,6 +266,7 @@ contains
   JwaWtsApi32 in '..\..\Win32API\JwaWtsApi32.pas',
   JwaZMOUSE in '..\..\Win32API\JwaZMOUSE.pas',
   JwaRpcWinsta in '..\..\Win32API\JwaRpcWinsta.pas',
-  JwaBitFields in '..\..\Win32API\JwaBitFields.pas';
+  JwaBitFields in '..\..\Win32API\JwaBitFields.pas',
+  JwaWabUtil in '..\..\win32api\JwaWabUtil.pas';
 
 end.
