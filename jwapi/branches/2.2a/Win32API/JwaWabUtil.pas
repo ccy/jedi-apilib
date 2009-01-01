@@ -49,7 +49,7 @@ unit JwaWabUtil;
 interface
 
 uses
-  Windows, ActiveX, JwaWabDefs, JwaWabMem;
+  JwaWinType, JwaWinBase, ActiveX, JwaWabDefs, JwaWabMem;
 
 {$I jediapilib.inc}
 
@@ -795,7 +795,7 @@ var
 implementation
 
 uses
-  WabApi, SysUtils;
+  JwaWinDLLNames, JwaWabApi, SysUtils;
 
 const
   mapi32 = 'mapi32.dll';
@@ -806,12 +806,12 @@ const
 
 function SzFindCh(lpsz: LPCTSTR; ch: Byte): LPCTSTR;
 begin
-  Result := StrScan(lpsz, AnsiChar(ch));
+  Result := StrScan(lpsz, {$IFDEF UNICODE}WideChar{$ELSE}AnsiChar{$ENDIF}(ch));
 end;
 
 function SzFindLastCh(lpsz: LPCTSTR; ch: Byte): LPCTSTR;
 begin
-  Result := StrRScan(lpsz, AnsiChar(ch));
+  Result := StrRScan(lpsz, {$IFDEF UNICODE}WideChar{$ELSE}AnsiChar{$ENDIF}(ch)); //must be CHAR !!
 end;
 
 function SzFindSz(lpsz, lpszKey: LPCTSTR): LPCTSTR;
@@ -845,12 +845,12 @@ end;
 
 function LoadWabUtil: Boolean;
 var
-  WabDllPath: string;
+  WabDllPath: Widestring;
 begin
   Result := WabUtilLoaded;
   if (not Result) and GetWabDllPath(WabDllPath) then
   begin
-    WabLibHandle := LoadLibraryA(PAnsiChar(WabDllPath));
+    WabLibHandle := LoadLibraryW(PWideChar(WabDllPath));
     if WabUtilLoaded then
     begin
       WABCreateIProp := GetProcAddress(WabLibHandle, 'WABCreateIProp');
