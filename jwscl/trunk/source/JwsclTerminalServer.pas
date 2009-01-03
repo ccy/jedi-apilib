@@ -45,26 +45,26 @@
   domain.
     * TJwTerminalServer.Shutdown Shuts down and optionally restarts the specified
   Terminal Server.
-  
+
   TJwTerminalServer also offers Events to monitor Terminal Server activity such as
   OnSessionConnect, OnSessionCreate, OnSessionLogon and OnSessionLogoff.
-  
+
   A unique feature of TJwTerminalServer is that it's able to return detailled
   information about Terminal Server, Sessions and Processes that is not available
   using the normal Terminal Server API's or Microsoft Tools! This includes
   detailled process memory usage information and extended session information such
   as ShadowMode, ShadowState and Remote Address.
-  
+
   The schema belows shows the relations between TJwTerminalServer, the
   TJwWTSSessionList with TJwWTSSessions and the TJwWTSProcessList with
   TjwWTSSessions.
-  
+
   <image TJwTerminalServer-Hierarchy>                                              }
 
 {$IFNDEF SL_OMIT_SECTIONS}
 unit JwsclTerminalServer;
 {$INCLUDE ..\includes\Jwscl.inc}
-
+{$TYPEINFO ON}
 interface
 
 uses
@@ -908,7 +908,7 @@ type
     {Call <B>Create</B> to create a @classname Thread.
      @Param CreateSuspended If CreateSuspended is False, Execute is called
      immediately. If CreateSuspended is True, Execute won't be called until
-     after Resume is called. 
+     after Resume is called.
      @Param Owner Specifies the TJwTerminalServer instance that owns the thread 
     }
     constructor Create(CreateSuspended: Boolean; AOwner: TJwTerminalServer);
@@ -977,7 +977,7 @@ type
    
    A TJwWTSSession is owned by a JTwWTSSessionList.
    }
-  TJwWTSSession = class(TObject)
+  TJwWTSSession = class(TObjectList)
   protected
     {@exclude}
     FApplicationName: TJwString;
@@ -1010,7 +1010,7 @@ type
     {@exclude}
     FCurrentTime: TDateTime;
     {@exclude}
-    FData: Pointer;
+    FData: Integer;
     {@exclude}
     FDisconnectTime: TDateTime;
     {@exclude}
@@ -1089,17 +1089,17 @@ type
     procedure GetWinStationDriver;
 
     {@exclude}
-    function GetToken : TJwSecurityToken;
+    function GetToken: TJwSecurityToken;
     {@exclude}
-    function GetUserSid : TJwSecurityID;
+    function GetUserSid: TJwSecurityID;
   private
-  public
+  published
     {The <B>Create</B> constructor creates a TJwWTSSession instance and allocates memory for it
-     @Param Owner Specifies the TJwTerminalServer instance that owns the session 
-     @Param SessionId The Session Identifier 
-     @Param WinStationName The Session Name 
-     @Param ConnectState The current connection state of the session 
-     
+     @Param Owner Specifies the TJwTerminalServer instance that owns the session
+     @Param SessionId The Session Identifier
+     @Param WinStationName The Session Name
+     @Param ConnectState The current connection state of the session
+
      Remarks
   It's not necessary to manually create a session instance.
      Enumerating sessions with the EnumerateSessions function will create a
@@ -1111,7 +1111,7 @@ type
       const ConnectState: TWtsConnectStateClass);
 
     {The <B>Destroy</B> destructor disposes the Session object.
-     
+
      Remarks
   Since a session is Owned by a SessionList by default
      <B>you should not destroy/free a session manually</B> . The only scenario
@@ -1123,7 +1123,7 @@ type
     {<B>ApplicationName</B> returns the the startup application as specified in the
      Terminal Server client. If no startup application was specified
      an empty string is returned.
-     
+
      Remarks
   Console sessions always returns empty value.
      }
@@ -1131,7 +1131,7 @@ type
 
     {<B>ClientAddress</B> returns the Client IP Address as string. This is the local IP
      address of a client as reported by the Terminal Server Client
-     
+
      Remarks
   Console sessions always returns empty value.
      }
@@ -1145,7 +1145,7 @@ type
      * RemoteAddress
      * RemotePort
      }
-     property ClientBuildNumber: DWORD read FClientBuildNumber;
+     property ClientBuildNumber: DWORD read FClientBuildNumber write FClientBuildNumber;
 
     {<B>ClientDirectory</B> returns the version number of the Terminal Server Client
      
@@ -1234,7 +1234,7 @@ type
      
      You can connect to a session only if it is in either an active or
      disconnected state.
-     
+
      You cannot connect to another session from the console session.
      
      Note that if you connect to another session your existing session will be
@@ -1280,7 +1280,7 @@ type
 
     {<B>Data</B> allows storage of a pointer to user specific data and can be freely
      used.}
-    property Data: Pointer read FData write FData;
+    property Data: Integer read FData write FData;
 
     {The <B>Disconnect</B> function disconnects the logged-on user from the specified
      Terminal Services session without closing the session. The session remains
@@ -1402,7 +1402,7 @@ type
     }
     property Owner: TJwWTSSessionList read FOwner write FOwner;
     {<B>OutgoingBytes</B> uncompressed RDP data from the server to the client.
-     
+
      Remarks
   This value is not returned for console sessions.
      @seealso(IncomingBytes)
@@ -1419,7 +1419,7 @@ type
      
      @returns If the function fails you can use GetLastError to get extended
      error information 
-     
+
      Remarks
   PostMessage does not wait for the user to respond.
      See Also
@@ -1497,7 +1497,7 @@ type
      
      @returns If the function fails you can use GetLastError to get extended
      error information 
-     
+
      Remarks  If you don't need to wait for the user's response you can
      use the PostMessage function
      See Also
@@ -1507,7 +1507,7 @@ type
       const uType: DWORD; const ATimeOut: DWORD): DWORD;
 
     {<B>Server</B> the netbios name of the Terminal Server.
-     
+
      Remarks
   If you want to connect to a Terminal Server locally
      you should not specify the server name. Please note that in the case of a
@@ -1519,7 +1519,7 @@ type
      
      There are some reserved SessionId's that serve a special purpose. The
      following table lists the reserved SessionId's:
-     
+
      <table 33c%>
       Value     Meaning
       --------  -----------------
@@ -1561,7 +1561,7 @@ type
       recommended, because doing so <B>resets all sessions that use the same
       Terminal Services connection.</B>  Resetting a user's session without warning
       can result in loss of data at the client.
-      
+
       <B>Idle sessions</B> 
       To optimize the performance of a terminal server, idle sessions are
       initialized by the server before client connections are made.
@@ -1688,7 +1688,7 @@ type
     property WinStationDriverName: TJwString read FWdName;
 
     {<B>WinStationName</B> returns the session name.
-     
+
      Remarks
   Despite its name, specifying this property does not return
      the window station name. Rather, it returns the name of the Terminal
@@ -1706,13 +1706,13 @@ type
   {<B>PJwWTSSessionList</B> is a pointer to a TJwWTSSessionList}
   PJwWTSSessionList = ^TJwWTSSessionList;
   {<B>TJwWTSSessionList</B> is a List of all Sessions running on the Terminal Server
-   and their properties 
+   and their properties
 
    Each item in the list points to a TJwWTSSession object that can be queried
    and manipulated.
    The list is filled by calling the EnumerateSessions function of the owning
    TJwTerminalServer instance.
-   
+
    Example:
    <code lang="Delphi">
    var
@@ -1748,6 +1748,7 @@ type
    end;
    </code>
   }
+
   TJwWTSSessionList = class(TObjectList)
   protected
     {@exclude}
@@ -2420,6 +2421,8 @@ end;
 destructor TJwTerminalServer.Destroy;
 var
   EventFlag: DWORD;
+  AThreadHandle: THandle;
+  dwResult: DWORD;
 begin
   // Close connection
   if Assigned(FEnumServersThread) then
@@ -2430,36 +2433,15 @@ begin
     // Signal Termination to the thread
     FEnumServersThread.Terminate;
 
+    AThreadHandle := FEnumServersThread.Handle;
     // Wait a while, see if thread terminates
-    if WaitForSingleObject(FEnumServersThread.Handle, 1000) = WAIT_TIMEOUT then
+    if WaitForSingleObject(AThreadHandle, 1000) = WAIT_TIMEOUT then
     begin
       // it didn't, so kill it (we don't want the user to wait forever)!
       // TSAdmin does it the same way...
-      TerminateThread(FEnumServersThread.Handle, 0);
+      TerminateThread(AThreadHandle, 0);
     end;
 
-//    FEnumServersThread.Wait;
-  end;
-
-  // Terminate the Event Thread before closing the connection.
-  if Assigned(FTerminalServerEventThread) then
-  begin
-    // Terminate Event Thread
-    FTerminalServerEventThread.Terminate;
-
-    // unblock the waiter
-    WTSWaitSystemEvent(FServerHandle, WTS_EVENT_FLUSH, EventFlag);
-
-    // wait for the thread to finish
-    FTerminalServerEventThread.WaitFor;
-
-    // Free
-    FreeAndNil(FTerminalServerEventThread);
-  end;
-
-  if Connected then
-  begin
-    Disconnect;
   end;
 
     // Free the SessionList
@@ -2471,10 +2453,45 @@ begin
   // Free the Serverlist
     FreeAndNil(FServers);
 
-  // Free the Serverlist
-//    FreeAndNil(FServerList);
+  // Terminate the Event Thread before closing the connection.
+  if Assigned(FTerminalServerEventThread) then
+  begin
+    AThreadHandle := FTerminalServerEventThread.Handle;
 
-  inherited;
+    // Terminate Event Thread
+    FTerminalServerEventThread.Terminate;
+
+    // unblock the waiter
+    WTSWaitSystemEvent(FServerHandle, WTS_EVENT_FLUSH, EventFlag);
+    // wait for the thread to finish
+
+    // Wait a while, see if thread terminates
+    dwResult := WaitForSingleObject(AThreadHandle, 5000);
+    if dwResult = WAIT_TIMEOUT then
+    begin
+      // The thread didn't close, probably because it doesn't respond to
+      // WTS_EVENT_FLUSH, this is a bug in winsta.dll.
+      // see http://support.microsoft.com/kb/941561
+      //
+      // WORKAROUND: Kill the thread...
+      TerminateThread(AThreadHandle, 0);
+    end
+    else begin
+
+      FTerminalServerEventThread.WaitFor;
+    end;
+
+    // Free Memory
+    FreeAndNil(FTerminalServerEventThread);
+
+  end;
+
+  if Connected then
+  begin
+    Disconnect;
+  end;
+
+  inherited Destroy;
 end;
 
 
@@ -2998,7 +3015,6 @@ constructor TJwWTSEventThread.Create(CreateSuspended: Boolean;
 begin
   inherited Create(CreateSuspended, Format('%s (%s)', [ClassName, AOwner.Server]));
   FreeOnTerminate := False;
-
   FOwner := AOwner;
 end;
 
@@ -3010,12 +3026,13 @@ begin
 
   while not Terminated do
   begin
-    // Wait some time to prevent duplicate event dispatch
+    // Wait some time to prevent duplicate event dispatch on Windows 2000
+    // see http://support.microsoft.com/kb/249315  
     Sleep(50);
-
     if WTSWaitSystemEvent(FOwner.ServerHandle, WTS_EVENT_ALL, FEventFlag) then
     begin
-      if FEventFlag > WTS_EVENT_FLUSH then
+
+      if FEventFlag > WTS_EVENT_NONE then
       begin
         Synchronize(DispatchEvent);
       end;
@@ -3026,9 +3043,6 @@ begin
         'WTSWaitSystemEvent', ClassName, RsUNTerminalServer, 0, True,
         'Server: %s LastEvent: %d', [FOwner.Server, FOwner.LastEventFlag]);
     end;
-    // http://blogs.msdn.com/oldnewthing/archive/2005/10/04/476847.aspx
-    // changed Sleep(0) to SwitchToThread()
-    SwitchToThread;
   end;
 end;
 
@@ -3632,6 +3646,10 @@ begin
   end;
 end;
 
+{constructor TJwWTSSession.CreateEmpty;
+begin
+  inherited Create;
+end;}
 
 constructor TJwWTSSession.Create(const Owner: TJwWTSSessionList;
   const SessionId: TJwSessionId; const WinStationName: TJwString;
@@ -3647,7 +3665,7 @@ begin
   FOwner := Owner; // Session is owned by the SessionList
   // First store the SessionID
   FSessionId := SessionId;
-  FShadow := TJwWTSSessionShadow.Create(Self); 
+  FShadow := TJwWTSSessionShadow.Create(Self);
   FConnectState := ConnectState;
   FConnectStateStr := JwPWideCharToJwString(StrConnectState(FConnectState, False));
   FWinStationName := WinStationName;
@@ -3945,4 +3963,4 @@ end;
 {$IFNDEF SL_OMIT_SECTIONS}
 end.
 {$ENDIF SL_OMIT_SECTIONS}
-
+``
