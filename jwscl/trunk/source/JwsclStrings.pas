@@ -132,10 +132,17 @@ function LoadLocalizedStringArray(const Index : TResourceIndexArray; LanguageId 
  Instance : HInst) : TResourceTStringArray;}
 
 
+{<B>JwCreateUnicodeString</B>Returns a pointer to an Initialized counted
+Unicode string}
 function JwCreateUnicodeString(const NewString: WideString): PUnicodeString;
+{<B>JwCreateUnicodeString</B>Initializes a counted Unicode string}
 function JwCreateTUnicodeString(const NewString: WideString): TUnicodeString;
+
+{<B>JwUnicodeStringToJwString</B> converts a UNICODE_STRING into a TJwString}
 function JwUnicodeStringToJwString(const AUnicodeString: TUnicodeString):
   TJwString;
+
+{<B>JwTSUnicodeStringToJwString</B> converts a TS_UNICODE_STRING into a TJwString}
 function JwTSUnicodeStringToJwString(const AUnicodeString: TTSUnicodeString):
   TJwString;
 

@@ -751,7 +751,14 @@ type
     {
      COM: Also available as com method.
     }
-    property ChachedUserFromSid : WideString read GetCachedUserFromSid;
+
+    {<B>CachedGetUserFromSid</B> uses a function that is exported by utildll.dll
+    it does a sid to name translation but caches the last result. It was
+    originally written by Citrix (and is also present in Citrix' version of
+    utildll) and is used by TSAdmin and Taskmanager. When enumerating processes
+    on a Terminal Server this function has the advantage that we can profit
+    from cached and thus fast lookup.}
+    property CachedUserFromSid : WideString read GetCachedUserFromSid;
 
        {<B>AccountDomainName[SystemName</B> returns the domain account name of the SID on the computer given in SystemName.
        For more information see the see also section.
