@@ -752,12 +752,32 @@ type
      COM: Also available as com method.
     }
 
-    {<B>CachedGetUserFromSid</B> uses a function that is exported by utildll.dll
-    it does a sid to name translation but caches the last result. It was
-    originally written by Citrix (and is also present in Citrix' version of
-    utildll) and is used by TSAdmin and Taskmanager. When enumerating processes
-    on a Terminal Server this function has the advantage that we can profit
-    from cached and thus fast lookup.}
+    {<B>CachedGetUserFromSid</B> uses an undocumented  function that is exported
+     by utildll.dll. It keeps a variable with this structure:
+     CACHED_USERNAME = record  // RW The structure probably has a different name
+       cbUsername: DWORD;
+       Crc16: WORD
+       Username: array[0..USERNAME_LENGTH-1] of WCHAR;  // USERNAME_LENGTH = 20
+     end;
+
+     The function compares the Crc16 of the given Sid to the stored one and if
+     it matches returns the stored username. If it doesn't match a lookup is
+     done and the result in stored in the structure.
+
+     Access to the variable is guarded by CRITICAL_SECTIONS to prevent
+     multi threading issues.
+
+     This functions was written and is optimal for enumerating processes using
+     WinStationGetAllProcesses because this API returns a SID (and not a
+     username)and typically a user has more than 1 process open.
+
+     The function was tested on the following OS versions:
+     Windows 2000 Server
+     Windows XP
+     Windows 2003
+     Windows Vista
+     Windows 2008
+    }
     property CachedUserFromSid : WideString read GetCachedUserFromSid;
 
        {<B>AccountDomainName[SystemName</B> returns the domain account name of the SID on the computer given in SystemName.
