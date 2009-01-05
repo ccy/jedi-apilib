@@ -136,8 +136,10 @@ function JwCreateUnicodeString(const NewString: WideString): PUnicodeString;
 function JwCreateTUnicodeString(const NewString: WideString): TUnicodeString;
 function JwUnicodeStringToJwString(const AUnicodeString: TUnicodeString):
   TJwString;
+function JwTSUnicodeStringToJwString(const AUnicodeString: TTSUnicodeString):
+  TJwString;
 
-  
+
 function JwCreateLSAString(const aString: AnsiString): LSA_STRING;
 procedure JwFreeLSAString(var aString: LSA_STRING);
 
@@ -200,6 +202,17 @@ begin
   // Convert to TJwString
   Result := WideCharLenToString(AUniCodeString.Buffer, Len);
 end;
+
+function JwTSUnicodeStringToJwString(const AUnicodeString: TS_UNICODE_STRING):
+  TJwString;
+var Len: DWORD;
+begin
+  // Determine UnicodeStringLength (-1 because string has no #0 terminator)
+  Len := RtlUnicodeStringToAnsiSize(@AUnicodeString)-1;
+  // Convert to TJwString
+  Result := WideCharLenToString(AUniCodeString.Buffer, Len);
+end;
+
 
 procedure JwReplaceBreaks(var Str : TJwString);
 var
