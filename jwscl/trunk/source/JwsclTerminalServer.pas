@@ -2466,7 +2466,7 @@ begin
     // wait for the thread to finish
 
     // Wait a while, see if thread terminates
-    dwResult := WaitForSingleObject(AThreadHandle, 5000);
+    dwResult := WaitForSingleObject(AThreadHandle, 500);
     if dwResult = WAIT_TIMEOUT then
     begin
       // The thread didn't close, probably because it doesn't respond to
@@ -2724,7 +2724,8 @@ function TJwTerminalServer.EnumerateProcesses(const OnProcessFound : TJwOnProces
     Data : Pointer) : Boolean;
 var
   Count: Integer;
-  ProcessInfoPtr: PWINSTA_PROCESS_INFO_ARRAY;
+//  ProcessInfoPtr: PWINSTA_PROCESS_INFO_ARRAY;
+  ProcessInfoPtr: PTS_ALL_PROCESSES_INFO_ARRAY;
   i: Integer;
   AProcess: TJwWTSProcess;
   strProcessName: TJwString;
@@ -2749,41 +2750,43 @@ begin
 
   Result := WinStationGetAllProcesses(FServerHandle, 0, Count, ProcessInfoPtr);
 
-
-
   try
     if Result then
     begin
       for i := 0 to Count-1 do
       begin
-        with ProcessInfoPtr^[i], ExtendedInfo^ do
+
+        with ProcessInfoPtr^[i], pTsProcessInfo^ do
         begin
           // System Idle Process
-          if ProcessId = 0 then
+          if UniqueProcessId = 0 then
           begin
             strProcessName := GetIdleProcessName;
             strUserName := SystemUsername;
           end
           else
           begin
-            strProcessName := JwUnicodeStringToJwString(ProcessName);
+            strProcessName := JwTSUnicodeStringToJwString(ImageName);
 
-            if IsValidSid(pUserSid) then
+            if IsValidSid(UserSid) then
             begin
-              with TJwSecurityID.Create(pUserSid) do
+              with TJwSecurityID.Create(UserSid) do
               begin
                 strUsername := GetCachedUserFromSid;
-  //              strSid := StringSID;
                 Free;
               end;
+            end
+            else begin
+              // if User is nonadmin WinStationGetAllProcesses returns empty or
+              // invalid SID, in this case we will set user to Unknown.
+              strUsername := 'Unknown';
             end;
           end;
 
           AProcess := TJwWTSProcess.Create(FProcesses, SessionId,
-            ProcessId, strProcessName, strUsername);
+            UniqueProcessId, strProcessName, strUsername);
           with AProcess do
           begin
-  //          FSidStr := strSid;
             // Calculate Process Age
             CalculateElapsedTime(@CreateTime, DiffTime);
 
@@ -2817,11 +2820,11 @@ begin
             // Amount of memory in bytes that a process needs to execute
             // efficiently. Maps to Mem Size column in Task Manager.
             // So we call it ProcessMemUsage
-            FProcessMemUsage := VmCounters.WorkingSetSize;
+            FProcessMemUsage := WorkingSetSize;
             // Pagefileusage is the amount of page file space that a process is
             // using currently. This value is consistent with the VMSize value
             // in TaskMgr.exe. So we call it ProcessVMSize
-            FProcessVMSize := VmCounters.PagefileUsage;
+            FProcessVMSize := PagefileUsage;
           end;
 
           try
@@ -3318,8 +3321,9 @@ var
 begin
   if not Modify then
   begin
+  // WinStationShadowInformation = 26
 {    if not }WinStationQueryInformationW(FOwner.GetServerHandle, FOwner.SessionId,
-     WinStationShadowInformation, @FWinStationShadowInformation,
+     WinStationShadowInfo, @FWinStationShadowInformation,
      SizeOf(FWinstationShadowInformation), ReturnedLength);{ then
       raise EJwsclWinCallFailedException.CreateFmtWinCall(RsWinCallFailed,
        'UpdateShadowInformation', ClassName, RsUNTerminalServer, 0, True,
@@ -3327,7 +3331,7 @@ begin
   end
   else
     if not WinStationSetInformationW(FOwner.GetServerHandle, FOwner.SessionId,
-     WinStationShadowInformation, @FWinStationShadowInformation,
+     WinStationShadowInfo, @FWinStationShadowInformation,
      SizeOf(FWinstationShadowInformation)) then
       raise EJwsclWinCallFailedException.CreateFmtWinCall(RsWinCallFailed,
        'UpdateShadowInformation', ClassName, RsUNTerminalServer, 0, True,
@@ -3499,8 +3503,9 @@ begin
   // ZeroMemory
   ZeroMemory(@WinStationDriver, SizeOf(WinStationDriver));
 
+  // WdConfig = 3
   if WinStationQueryInformationW(GetServerHandle, FSessionId,
-    WdConfig, @WinStationDriver, SizeOf(WinStationDriver),
+    WinStationWd, @WinStationDriver, SizeOf(WinStationDriver),
     dwReturnLength) then
   begin
     FWdName := JwPWideCharToJwString(WinStationDriver.WdName);
@@ -3511,14 +3516,15 @@ end;
 // #todo Remove IdleTime helper from JwaWinsta
 procedure TJwWTSSession.GetWinStationInformation;
 var
-  WinStationInfo: _WINSTATION_INFORMATIONW;
+//  WinStationInfo: _WINSTATION_INFORMATIONW;
+  WinStationInfo: _WINSTATIONINFORMATIONW;
   dwReturnLength: DWORD;
   lpBuffer: PWideChar;
 begin
   // ZeroMemory
   ZeroMemory(@WinStationInfo, SizeOf(WinStationInfo));
   lpBuffer := nil;
-
+  // WinStationInformation = 8
   if WinStationQueryInformationW(GetServerHandle, FSessionId,
     WinStationInformation, @WinStationInfo, SizeOf(WinStationInfo),
     dwReturnLength) then
@@ -3540,20 +3546,28 @@ begin
       if FWdFlag > WD_FLAG_CONSOLE then
       begin
         // Counter values (Status from TSAdmin)
-        FIncomingBytes := WinStationInfo.IncomingBytes;
-        FIncomingCompressedBytes := WinStationInfo.IncomingCompressedBytes;
-        FIncomingFrames := WinStationInfo.IncomingFrames;
+//        FIncomingBytes := WinStationInfo.IncomingBytes;
+//        FIncomingCompressedBytes := WinStationInfo.IncomingCompressedBytes;
+//        FIncomingFrames := WinStationInfo.IncomingFrames;
+        FIncomingBytes := WinStationInfo.Status.Input.WdBytes;
+        FIncomingCompressedBytes := WinStationInfo.Status.Input.CompressedBytes;
+        FIncomingFrames := WinStationInfo.Status.Input.WdFrames;
 
-        FOutgoingBytes := WinStationInfo.OutgoingBytes;
+
+{        FOutgoingBytes := WinStationInfo.OutgoingBytes;
         FOutgoingCompressBytes := WinStationInfo.OutgoingCompressBytes;
-        FOutgoingFrames := WinStationInfo.OutgoingFrames;
+        FOutgoingFrames := WinStationInfo.OutgoingFrames;}
+        FOutgoingBytes := WinStationInfo.Status.Output.WdBytes;
+        FOutgoingCompressBytes := WinStationInfo.Status.Output.CompressedBytes;
+        FOutgoingFrames := WinStationInfo.Status.Output.WdFrames;
 
         // Calculate Compression ratio and store as formatted string
-        if WinStationInfo.OutgoingBytes > 0 then // 0 division check
+//        if WinStationInfo.OutgoingBytes > 0 then // 0 division check
+        if FOutgoingBytes > 0 then // 0 division check
+
         begin
           FCompressionRatio := Format('%1.2f',
-            [WinStationInfo.OutgoingCompressBytes /
-            WinStationInfo.OutgoingBytes]);
+            [FOutgoingCompressBytes / FOutgoingBytes]);
         end
         else
           FCompressionRatio := '(inf)'; //infinite output
@@ -3565,7 +3579,8 @@ begin
       WinStationInfo.LastInputTime := WinStationInfo.DisconnectTime;
     end;
 
-    if FUsername = '' then
+    //  Vista returns LastInputTime 0
+    if (FUsername = '') or (Int64(WinStationInfo.LastInputTime) = 0) then
     begin
       // A session without a user is not idle, usually these are special
       // sessions like Listener, Services or console session
@@ -3580,7 +3595,7 @@ begin
         Int64(WinStationInfo.CurrentTime));
       // Calculate & Format Idle Time String, DiffTimeString allocates the
       // memory for us
-      DiffTimeString(WinStationInfo.LastInputTime, WinStationInfo.CurrentTime,
+      DiffTimeString(FileTime(WinStationInfo.LastInputTime), FileTime(WinStationInfo.CurrentTime),
         lpBuffer);
       try
         FIdleTimeStr := JwPWideCharToJwString(lpBuffer);
@@ -3590,13 +3605,13 @@ begin
       end;
     end;
 
-    FConnectTime := FileTime2DateTime(WinStationInfo.ConnectTime);
-    FDisconnectTime := FileTime2DateTime(WinStationInfo.DisconnectTime);
+    FConnectTime := FileTime2DateTime(FileTime(WinStationInfo.ConnectTime));
+    FDisconnectTime := FileTime2DateTime(FileTime(WinStationInfo.DisconnectTime));
     // for A disconnected session LastInputTime has been set to DisconnectTime
-    FLastInputTime := FileTime2DateTime(WinStationInfo.LastInputTime);
+    FLastInputTime := FileTime2DateTime(FileTime(WinStationInfo.LastInputTime));
 //    FLogonTime := FileTime2DateTime(WinStationInfo.LogonTime);
     FLogonTime := Int64(WinStationInfo.LogonTime);
-    FCurrentTime := FileTime2DateTime(WinStationInfo.CurrentTime);
+    FCurrentTime := FileTime2DateTime(FileTime(WinStationInfo.CurrentTime));
   end;
 
 end;
