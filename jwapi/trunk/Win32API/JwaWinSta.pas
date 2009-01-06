@@ -1411,7 +1411,7 @@ var
 
 function WinStationOpenServerW;
 begin
-  GetProcedureAddress(__WinStationOpenServerA, winstadll, 'WinStationOpenServerW');
+  GetProcedureAddress(__WinStationOpenServerW, winstadll, 'WinStationOpenServerW');
   asm
         MOV     ESP, EBP
         POP     EBP
