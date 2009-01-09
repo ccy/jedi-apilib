@@ -1516,7 +1516,7 @@ type
     property Server: TJwString read GetServer;
 
     {<B>SessionId</B> the session identifier
-     
+
      There are some reserved SessionId's that serve a special purpose. The
      following table lists the reserved SessionId's:
 
@@ -1782,7 +1782,7 @@ type
      with the requested SessionId.
      @Param SessionId The Session Identifier 
      @Returns TJwWTSSession 
-     
+
      Remarks
   If the SessionId was not found return value will be @nil.
     }
@@ -1917,6 +1917,8 @@ type
    }
   TJwWTSProcess = class(TObject)
   protected
+    {@exlude}
+    FData: Integer;
     {@exclude}
     FOwner: TJwWTSProcessList;
     {@exclude}
@@ -1967,6 +1969,10 @@ type
       const ProcessName: TJwString; const Username: TJwString);
     destructor Destroy; override;
   public
+    {<B>Data</B> allows storage of a pointer to user specific data and can be freely
+     used.}
+    property Data: Integer read FData write FData;
+
     {The <B>Terminate</B> function terminates the specified process on the specified
      terminal server.
     }
@@ -2877,6 +2883,7 @@ var
   i: integer;
   Res: Longbool;
   ASession: TJwWTSSession;
+  LastError: Integer;
 begin
   if not Connected then
   begin
@@ -2885,7 +2892,8 @@ begin
 
   // Clear the sessionslist
   FSessions.Clear;
-
+  pCount := 0;
+  
   Res :=
 {$IFDEF UNICODE}
     WTSEnumerateSessionsW(FServerHandle, 0, 1, PWTS_SESSION_INFOW(SessionInfoPtr),
@@ -2894,8 +2902,10 @@ begin
     WTSEnumerateSessions(FServerHandle, 0, 1, PWTS_SESSION_INFOA(SessionInfoPtr),
       pCount);
 {$ENDIF UNICODE}
+  LastError := GetLastError;
+  if LastError = 997 then Res := True;
 
-
+  // RW: Ignore Error 997 Overlapped I/O in progress??
   if not Res then begin
     raise EJwsclWinCallFailedException.CreateFmtWinCall(RsWinCallFailed,
       'EnumerateSessions', ClassName, RsUNTerminalServer, 923, True,
@@ -2912,13 +2922,16 @@ begin
   end;
 
   // After enumerating we create an event thread to listen for session changes
-  if FTerminalServerEventThread = nil then
+  if Res and (FTerminalServerEventThread = nil) then
   begin
     FTerminalServerEventThread := TJwWTSEventThread.Create(False, Self);
   end;
 
-
-  WTSFreeMemory(SessionInfoPtr);
+  if pCount > 0 then
+  begin
+    WTSFreeMemory(SessionInfoPtr);
+  end;
+  
   SessionInfoPtr := nil;
 
   // Pass the result
@@ -2942,6 +2955,44 @@ begin
   end;
 end;
 
+{ this is a workaround for a bug in Vista
+  When opening a server connection with WTSOpenServer it is supposed to return
+  0 if the connection fails but instead it returns a handle to the localmachine.
+  This function tries to open the Ctx_WinStation_API_service Pipe
+}
+function IsConnectionValid(const Servername: String): Boolean;
+const
+  CtxWinStationAPIservice: TJwString = 'Ctx_WinStation_API_service';
+var
+  PipeName: TJwPChar;
+  PipeHandle: THandle;
+begin
+  // Pipename will be \\server\pipe\Ctx_WinStation_API_service
+  // Note that this pipe can be opened only remotely
+  PipeName := TJwPChar(Format('\\%s\pipe\%s', [Servername, CtxWinStationAPIservice]));
+
+  // Try to open the Named Pipe with least possible rights, if the call succeeds
+  // we trust the connection
+  PipeHandle := {$IFDEF UNICODE}CreateFileW{$ELSE}CreateFileA{$ENDIF}(
+    PipeName,       //__in      LPCTSTR lpFileName,
+    SYNCHRONIZE,    //__in      DWORD dwDesiredAccess,
+    0,              //__in      DWORD dwShareMode,
+    nil,            //__in_opt  LPSECURITY_ATTRIBUTES lpSecurityAttributes,
+    OPEN_EXISTING,  //__in      DWORD dwCreationDisposition,
+    0,              //__in      DWORD dwFlagsAndAttributes,
+    0               //__in_opt  HANDLE hTemplateFile
+  );
+
+  // Return False if PipeHandle = INVALID_HANDLE_VALUE
+  Result := PipeHandle <> INVALID_HANDLE_VALUE;
+
+  // Close the Handle
+  if PipeHandle <> INVALID_HANDLE_VALUE then
+  begin
+    CloseHandle(PipeHandle);
+  end;
+end;
+
 procedure TJwTerminalServer.Connect;
 begin
   if not FConnected then
@@ -2960,12 +3011,13 @@ begin
       WTSOpenServerA(PAnsiChar(FServer));
 {$ENDIF}
       // If WTSOpenServer fails the return value is 0
-      if FServerHandle = 0 then
+      // Workaround for (possible) bug, see comments in IsConnectionValid function
+      if (FServerHandle = 0) or (not IsConnectionValid(FServer)) then
       begin
         // Mark handle as invalid
         FServerHandle := INVALID_HANDLE_VALUE;
         FConnected := False;
-        
+
         // and raise exception
         raise EJwsclTerminalServerConnectException.CreateFmtWinCall(RsWinCallFailed,
           'WTSOpenServer', ClassName, RsUNTerminalServer, 0, True,
@@ -2976,6 +3028,7 @@ begin
       end
       else
       begin
+        OutputDebugString(PChar(Format('Connected, handle=%d', [FServerHandle])));
         FConnected := True;
       end;
     end;
@@ -3073,7 +3126,7 @@ end;
 
 procedure TJwWTSEnumServersThread.Execute;
 type
-  PWTS_SERVER_INFO = {$IFDEF UNICODE}PWTS_SERVER_INFOW{$ELSE}PWTS_SERVER_INFOA{$ENDIF UNICODE};
+  PWTS_SERVER_INFO = PWTS_SERVER_INFOA;
 var
   ServerInfoPtr: PJwWtsServerInfoAArray;
   pCount: DWORD;
@@ -3088,15 +3141,14 @@ begin
   // Since we return to a Stringlist (which does not support unicode)
   // we only use WTSEnumerateServersA
 
-  if {$IFDEF UNICODE}WTSEnumerateServersW{$ELSE}WTSEnumerateServersA{$ENDIF UNICODE}
-   (TJwPChar(FDomain), 0, 1, PWTS_SERVER_INFO(ServerInfoPtr),
-    pCount) then
+  if WTSEnumerateServersA(PAnsiChar(FDomain), 0, 1,
+    PWTS_SERVER_INFOA(ServerInfoPtr), pCount) then
   begin                                      
     for i := 0 to pCount - 1 do
     begin
       // If the thread is terminated then leave the loop
       if Terminated then Break;
-      FServer := String(PWideChar(ServerInfoPtr^[i].pServerName));
+      FServer := ServerInfoPtr^[i].pServerName;
       Synchronize(AddToServerList);
     end;
 
@@ -3978,4 +4030,4 @@ end;
 {$IFNDEF SL_OMIT_SECTIONS}
 end.
 {$ENDIF SL_OMIT_SECTIONS}
-``
+
