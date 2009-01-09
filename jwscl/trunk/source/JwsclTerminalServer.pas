@@ -3140,15 +3140,14 @@ begin
   ServerInfoPtr := nil;
   // Since we return to a Stringlist (which does not support unicode)
   // we only use WTSEnumerateServersA
-
-  if WTSEnumerateServersA(PAnsiChar(FDomain), 0, 1,
+  if WTSEnumerateServersA(PAnsiChar(AnsiString(FDomain)), 0, 1,
     PWTS_SERVER_INFOA(ServerInfoPtr), pCount) then
   begin                                      
     for i := 0 to pCount - 1 do
     begin
       // If the thread is terminated then leave the loop
       if Terminated then Break;
-      FServer := ServerInfoPtr^[i].pServerName;
+      FServer := String(ServerInfoPtr^[i].pServerName);
       Synchronize(AddToServerList);
     end;
 
