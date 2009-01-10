@@ -34,9 +34,9 @@ interface
 
 
 uses
-{$IFDEF DELPHI6_UP}
-  DateUtils,
-{$ENDIF}
+{.$IFDEF DELPHI6_UP}
+//  DateUtils,
+{.$ENDIF}
   SysUtils, JwaWinType, // JwaWinType must be declared before JwaWinBase because of duplicate declaration of FILETIME
   JwaWinBase, JwaWinError, JwaNTStatus, JwaWinNT, JwaWinsock2,
   JwaWinSvc, JwaWtsApi32, JwaNative;
@@ -834,8 +834,8 @@ function StrConnectState(ConnectState: WTS_CONNECTSTATE_CLASS;
 
 function WinStationBroadcastSystemMessage(hServer: HANDLE;
   SendToAllWinstations: BOOL; SessionId: DWORD; TimeOut: DWORD;
-  dwFlags: DWORD; lpdwRecipients: DWORD; uiMessage: ULONG; wParam: WPARAM;
-  lParam: LPARAM; pResponse: LONGINT): LONGINT; stdcall;
+  dwFlags: DWORD; lpdwRecipients: DWORD; uiMessage: ULONG; _wParam: WPARAM;
+  _lParam: LPARAM; pResponse: LONGINT): LONGINT; stdcall;
 
 function WinStationCallBack(hServer:HANDLE; SessionId: DWORD;
 	pPhoneNumber: LPWSTR): BOOL; stdcall;
@@ -902,7 +902,7 @@ function WinStationQueryLogonCredentialsW(
 function WinstationQueryUserToken(hServer: HANDLE; SessionId: DWORD;
   var hToken: HANDLE): Boolean;
 
-function WinStationRegisterConsoleNotification(hServer: HANDLE; hwnd: HWND;
+function WinStationRegisterConsoleNotification(hServer: HANDLE; _hwnd: HWND;
   dwFlags: Cardinal): Boolean; stdcall;
 
 // WinStationRename needs Admin rights and always returns true
@@ -1765,12 +1765,30 @@ begin
 end;
 
 function FileTime2DateTime(FileTime: TFileTime): TDateTime;
-var LocalFileTime: TFileTime;
+var
+  LocalFileTime: TFileTime;
   SystemTime: TSystemTime;
 begin
-  FileTimeToLocalFileTime(FileTime, LocalFileTime);
-  FileTimeToSystemTime(LocalFileTime, SystemTime);
-  Result := SystemTimeToDateTime(SystemTime);
+  { TerminalServer works with FILETIMES which represent the number of
+    100-nanosecond intervals since January 1, 1601, so we set the default to
+    that date }
+  Result := EncodeDateTime(1601, 1, 1, 0, 0, 0, 0);
+
+  if FileTimeToLocalFileTime(FileTime, LocalFileTime) then
+  begin
+    if FileTimeToSystemTime(LocalFileTime, SystemTime) then
+    begin
+      try
+        // SystemTimeToDateTime can raise EConvertError!
+        Result := SystemTimeToDateTime(SystemTime);
+      except
+        on E: Exception do
+        begin
+          // Ignore the exception and thus return default
+        end;
+      end;
+    end;
+  end;
 end;
 
 function GetWTSLogonIdleTime(hServer: HANDLE; SessionId: DWORD;
@@ -1798,11 +1816,12 @@ begin
     begin
       LogonTime := FileTime2DateTime(FileTime(Info.LogonTime));
 //TODO: Remko: YearOf is not available
-{$IFDEF DELPHI6_UP}
-      if (YearOf(LogonTime) = 1601) or (YearOf(LastInputTime) = 1601) then
+{.$IFDEF DELPHI6_UP}
+//      if (YearOf(LogonTime) = 1601) or (YearOf(LastInputTime) = 1601) then
+      if Int64(Info.LogonTime) = 0 then
         sLogonTime := ''
       else
-{$ENDIF DELPHI6_UP}
+{.$ENDIF DELPHI6_UP}
         {$IFDEF COMPILER7_UP}
         sLogonTime := DateTimeToStr(LogonTime, FS);
         {$ELSE}
@@ -1823,11 +1842,12 @@ begin
       LastInputTime := FileTime2DateTime(FileTime(Info.LastInputTime));
 
 //TODO: YearOf is not available
-{$IFDEF DELPHI6_UP}
+{.$IFDEF DELPHI6_UP}
       // Disconnected session = idle since DisconnectTime
-      if YearOf(LastInputTime) = 1601 then
+//      if YearOf(LastInputTime) = 1601 then
+      if Int64(Info.LastInputTime) = 0 then
         LastInputTime := FileTime2DateTime(FileTime(Info.DisconnectTime));
-{$ENDIF}
+{.$ENDIF}
 
       IdleTime := LastInputTime - CurrentTime;
       Days := Trunc(IdleTime);
