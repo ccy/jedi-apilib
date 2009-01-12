@@ -132,10 +132,15 @@ the one of the project.
    See jediapilib.inc for more declarations}
   {$DEFINE WINVISTA}
 
+
   {.$DEFINE JWA_NEW_WINSTA}
 {$ENDIF PACKAGE_CONDITIONS}
 
+{Use one of the following defines to force or ignore unicode for all
+packages}
 {.$DEFINE UNICODE}
+{.$UNDEF UNICODE}
+
 
 {------ end of your business ------}
 

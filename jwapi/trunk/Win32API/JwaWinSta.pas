@@ -39,7 +39,11 @@ uses
 {.$ENDIF}
   SysUtils, JwaWinType, // JwaWinType must be declared before JwaWinBase because of duplicate declaration of FILETIME
   JwaWinBase, JwaWinError, JwaNTStatus, JwaWinNT, JwaWinsock2,
-  JwaWinSvc, JwaWtsApi32, JwaNative;
+  JwaWinSvc, JwaWtsApi32, JwaNative, JwaBitFields
+{$IFDEF DELPHI6_UP}
+  , DateUtils
+{$ENDIF}
+  ;
 {$ENDIF JWA_OMIT_SECTIONS}
 
 
@@ -787,6 +791,9 @@ function ElapsedTimeStringSafe(DiffTime: PDiffTime; bShowSeconds: Boolean;
 function ElapsedTimeStringVistaRTM(DiffTime: PDiffTime; bShowSeconds: Boolean;
   lpElapsedTime: PWideChar; cchDest: SIZE_T): HRESULT; stdcall;
 
+
+
+//returns -109205 on error
 function FileTime2DateTime(FileTime: TFileTime): TDateTime;
 
 function GetUnknownString: PWideChar; stdcall;
@@ -1768,11 +1775,14 @@ function FileTime2DateTime(FileTime: TFileTime): TDateTime;
 var
   LocalFileTime: TFileTime;
   SystemTime: TSystemTime;
+const
+   EncodeDateTimeMinValue = -109205;
 begin
   { TerminalServer works with FILETIMES which represent the number of
     100-nanosecond intervals since January 1, 1601, so we set the default to
     that date }
-  Result := EncodeDateTime(1601, 1, 1, 0, 0, 0, 0);
+
+  Result := EncodeDateTimeMinValue; //EncodeDateTime(1601, 1, 1, 0, 0, 0, 0); = -109205
 
   if FileTimeToLocalFileTime(FileTime, LocalFileTime) then
   begin
@@ -1790,6 +1800,8 @@ begin
     end;
   end;
 end;
+
+
 
 function GetWTSLogonIdleTime(hServer: HANDLE; SessionId: DWORD;
   var sLogonTime: string; var sIdleTime: string): Boolean;

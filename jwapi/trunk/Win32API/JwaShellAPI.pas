@@ -150,10 +150,19 @@ type
   DRAGINFOW = _DRAGINFOW;
   TDragInfoW = DRAGINFOW;
 
+
+
+{$IFDEF UNICODE}
+  {$EXTERNALSYM DRAGINFO}
+  DRAGINFO = DRAGINFOW;
+  TDragInfo = TDragInfoW;
+  PDragInfo = PDragInfoW;
+{$ELSE}
   {$EXTERNALSYM DRAGINFO}
   DRAGINFO = DRAGINFOA;
   TDragInfo = TDragInfoA;
   PDragInfo = PDragInfoA;
+{$ENDIF}
 
 
 ////
@@ -224,6 +233,8 @@ type
   {$EXTERNALSYM APPBARDATA}
   APPBARDATA = _AppBarData;
   TAppBarData = APPBARDATA;
+
+
 
 {$EXTERNALSYM SHAppBarMessage}
 function SHAppBarMessage(dwMessage: DWORD; var Data: TAppBarData): UINT; stdcall;
@@ -365,10 +376,16 @@ type
   SHFILEOPSTRUCTW = _SHFILEOPSTRUCTW;
   TSHFileOpStructW = SHFILEOPSTRUCTW;
 
+{$IFDEF UNICODE}
   {$EXTERNALSYM SHFILEOPSTRUCT}
+  SHFILEOPSTRUCT = SHFILEOPSTRUCTW;
+  TSHFileOpStruct = TSHFileOpStructW;
+  PSHFileOpStruct = PSHFileOpStructW;
+{$ELSE}                                             {$EXTERNALSYM SHFILEOPSTRUCT}
   SHFILEOPSTRUCT = SHFILEOPSTRUCTA;
   TSHFileOpStruct = TSHFileOpStructA;
   PSHFileOpStruct = PSHFileOpStructA;
+{$ENDIF}
 
 {$EXTERNALSYM SHFileOperationA}
 function SHFileOperationA(var lpFileOp: TSHFileOpStructA): Integer; stdcall;
@@ -404,10 +421,19 @@ type
   SHNAMEMAPPINGW = _SHNAMEMAPPINGW;
   TSHNameMappingW = SHNAMEMAPPINGW;
 
+
+
+{$IFDEF UNICODE}
+  {$EXTERNALSYM SHNAMEMAPPING}
+  SHNAMEMAPPING = SHNAMEMAPPINGW;
+  PSHNameMapping = PSHNameMappingW;
+  TSHNameMapping = TSHNameMappingW;
+{$ELSE}
   {$EXTERNALSYM SHNAMEMAPPING}
   SHNAMEMAPPING = SHNAMEMAPPINGA;
   PSHNameMapping = PSHNameMappingA;
   TSHNameMapping = TSHNameMappingA;
+{$ENDIF}
 
 ////
 //// End Shell File Operations
@@ -547,10 +573,20 @@ type
   SHELLEXECUTEINFOW = _SHELLEXECUTEINFOW;
   TShellExecuteInfoW = SHELLEXECUTEINFOW;
 
+
+{$IFDEF UNICODE}
+  {$EXTERNALSYM SHELLEXECUTEINFO}
+  SHELLEXECUTEINFO = SHELLEXECUTEINFOW;
+
+  PShellExecuteInfo = PShellExecuteInfoW;
+  TShellExecuteInfo = TShellExecuteInfoW;
+{$ELSE}
   {$EXTERNALSYM SHELLEXECUTEINFO}
   SHELLEXECUTEINFO = SHELLEXECUTEINFOA;
+
   PShellExecuteInfo = PShellExecuteInfoA;
   TShellExecuteInfo = TShellExecuteInfoA;
+{$ENDIF}
 
 
 
