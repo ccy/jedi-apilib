@@ -2427,7 +2427,7 @@ end;
 destructor TJwTerminalServer.Destroy;
 var
   EventFlag: DWORD;
-  AThreadHandle: THandle;
+  ThreadHandle: THandle;
   dwResult: DWORD;
 begin
   // Close connection
@@ -2439,13 +2439,13 @@ begin
     // Signal Termination to the thread
     FEnumServersThread.Terminate;
 
-    AThreadHandle := FEnumServersThread.Handle;
+    ThreadHandle := FEnumServersThread.Handle;
     // Wait a while, see if thread terminates
-    if WaitForSingleObject(AThreadHandle, 1000) = WAIT_TIMEOUT then
+    if WaitForSingleObject(ThreadHandle, 1000) = WAIT_TIMEOUT then
     begin
       // it didn't, so kill it (we don't want the user to wait forever)!
       // TSAdmin does it the same way...
-      TerminateThread(AThreadHandle, 0);
+      TerminateThread(ThreadHandle, 0);
     end;
 
   end;
@@ -2462,7 +2462,7 @@ begin
   // Terminate the Event Thread before closing the connection.
   if Assigned(FTerminalServerEventThread) then
   begin
-    AThreadHandle := FTerminalServerEventThread.Handle;
+    ThreadHandle := FTerminalServerEventThread.Handle;
 
     // Terminate Event Thread
     FTerminalServerEventThread.Terminate;
@@ -2472,7 +2472,9 @@ begin
     // wait for the thread to finish
 
     // Wait a while, see if thread terminates
-    dwResult := WaitForSingleObject(AThreadHandle, 500);
+    OutputDebugString('WAITING FOR THREAD TO END.....................');
+    dwResult := WaitForSingleObject(ThreadHandle, 500);
+
     if dwResult = WAIT_TIMEOUT then
     begin
       // The thread didn't close, probably because it doesn't respond to
@@ -2480,11 +2482,10 @@ begin
       // see http://support.microsoft.com/kb/941561
       //
       // WORKAROUND: Kill the thread...
-      TerminateThread(AThreadHandle, 0);
-    end
-    else begin
-
-      FTerminalServerEventThread.WaitFor;
+{$IFDEF DEBUG}
+      OutputDebugString('Terminating TJwWTSEnumServersThread thread because WTSWAIT did not return');
+{$ENDIF}
+      TerminateThread(ThreadHandle, 0);
     end;
 
     // Free Memory
@@ -2660,9 +2661,11 @@ begin
     64  = 2 * 32 = 2 * WINSTATIONNAME_LENGTH : String
     2   = Additional zero termination (WideChar)
   }
-  GetMem(WinStationNamePtr, PaddingFac * (WINSTATIONNAME_LENGTH+1) * SizeOf(WideChar));
+
+//  GetMem(WinStationNamePtr, 100 + PaddingFac * (WINSTATIONNAME_LENGTH+1) * SizeOf(WideChar));
+  WinStationNamePtr := PWideChar(LocalAlloc(LMEM_ZEROINIT, 132));
   try
-    ZeroMemory(WinStationNamePtr, PaddingFac * (WINSTATIONNAME_LENGTH+1)* SizeOf(WideChar));
+//    ZeroMemory(WinStationNamePtr, PaddingFac * (WINSTATIONNAME_LENGTH+1)* SizeOf(WideChar));
 
     if WinStationNameFromLogonIdW(FServerHandle, SessionId,
       WinStationNamePtr) then
@@ -2673,13 +2676,13 @@ begin
     // Return disconnected if WinStationName = empty
     if Result = '' then
     begin
-//      Result := JwPWideCharToJwString(StrConnectState(WTSDisconnected, False));
+      Result := JwPWideCharToJwString(StrConnectState(WTSDisconnected, False));
       // Confirm to TSAdmin behaviour and list sessionname as (Idle) (we use
       // StrConnectState api to localise)
       Result := '(' + JwPWideCharToJwString(StrConnectState(WTSIdle, False)) + ')';
     end;
   finally
-    FreeMem(WinStationNamePtr);
+    LocalFree(DWORD(WinStationNamePtr));
   end;
 end;
 
@@ -2843,6 +2846,11 @@ begin
               break;
         end;
       end;
+    end
+    else begin
+      raise EJwsclEnumerateProcessFailed.CreateFmtWinCall(RsWinCallFailed,
+       'EnumerateProcesses', ClassName, RsUNTerminalServer, 0, True,
+          'WinStationGetAllProcesses', ['WinStationGetAllProcesses', FServer]);
     end;
   finally
     // Cleanup
@@ -2893,7 +2901,7 @@ begin
   // Clear the sessionslist
   FSessions.Clear;
   pCount := 0;
-  
+
   Res :=
 {$IFDEF UNICODE}
     WTSEnumerateSessionsW(FServerHandle, 0, 1, PWTS_SESSION_INFOW(SessionInfoPtr),
@@ -2931,7 +2939,7 @@ begin
   begin
     WTSFreeMemory(SessionInfoPtr);
   end;
-  
+
   SessionInfoPtr := nil;
 
   // Pass the result
@@ -3028,7 +3036,6 @@ begin
       end
       else
       begin
-        OutputDebugString(PChar(Format('Connected, handle=%d', [FServerHandle])));
         FConnected := True;
       end;
     end;
@@ -3083,8 +3090,8 @@ begin
   while not Terminated do
   begin
     // Wait some time to prevent duplicate event dispatch on Windows 2000
-    // see http://support.microsoft.com/kb/249315  
-    Sleep(50);
+    // see http://support.microsoft.com/kb/249315
+//    Sleep(50);
     if WTSWaitSystemEvent(FOwner.ServerHandle, WTS_EVENT_ALL, FEventFlag) then
     begin
 
@@ -3895,7 +3902,7 @@ begin
   FOwner := Owner;
   FSessionID := SessionId;
 
-  FWinStationName := FOwner.Owner.GetWinStationName(SessionId);
+//  FWinStationName := FOwner.Owner.GetWinStationName(SessionId);
 
   FProcessId := ProcessId;
   FProcessName := ProcessName;
