@@ -1624,6 +1624,20 @@ begin
 end;
 {$ENDIF DYNAMIC_LINK}
 
+function IsWindows7Beta: boolean;
+var VersionInfo: TOSVersionInfoEx;
+begin
+  // Zero Memory and set structure size
+  ZeroMemory(@VersionInfo, SizeOf(VersionInfo));
+  VersionInfo.dwOSVersionInfoSize := SizeOf(VersionInfo);
+  GetVersionEx(@VersionInfo);
+  // Are we running Vista RTM?
+  Result := (VersionInfo.dwMajorVersion = 6) and
+    (VersionInfo.dwMinorVersion = 1) and
+    (VersionInfo.wProductType = VER_NT_WORKSTATION) and
+    (VersionInfo.dwBuildNumber = 7000);
+end;
+
 // This function is not exported
 function IsVistaRTM: boolean;
 var VersionInfo: TOSVersionInfoEx;
@@ -1696,7 +1710,7 @@ begin
   ZeroMemory(lpBuffer, cchDest * SizeOf(WCHAR));
 
  // Are we running Vista?
-  if IsVistaRTM then
+  if IsVistaRTM or IsWindows7Beta then
   begin
     // Vista version
     Result := DateTimeStringVistaRTM(DateTime, lpBuffer, cchDest);
@@ -1752,7 +1766,7 @@ begin
   ZeroMemory(lpElapsedTime, cchDest * SizeOf(WCHAR));
 
  // Are we running Vista?
-  if IsVistaRTM then
+  if IsVistaRTM or IsWindows7Beta then
   begin
     hr := ElapsedTimeStringVistaRTM(DiffTime, bShowSeconds, lpElapsedTime,
       cchDest);
@@ -1929,7 +1943,7 @@ function QueryCurrentWinStationSafe(pWinStationName: LPWSTR;
   var WdFlag: DWORD): Boolean;
 begin
   // Zero Memory
-  ZeroMemory(pWinStationName, 66);
+  ZeroMemory(pWinStationName, (WINSTATIONNAME_LENGTH+1) * SizeOf(WChar));
   ZeroMemory(pUserName, cchDest * SizeOf(WCHAR));
 
   // Are we running Vista?
