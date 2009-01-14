@@ -25,6 +25,7 @@ package JediApi_SingleUnits;
 {$IMPLICITBUILD OFF}
 {$DEFINE USE_DELPHI_TYPES}
 {$DEFINE DEBUG}
+{$DEFINE JW_SINGLE_UNITS_PACKAGE}
 
 requires
   rtl,

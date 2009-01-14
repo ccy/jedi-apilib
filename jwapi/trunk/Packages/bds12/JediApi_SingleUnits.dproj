@@ -34,7 +34,7 @@
 			<DesignOnlyPackage>false</DesignOnlyPackage>
 			<DCC_ImageBase>00400000</DCC_ImageBase>
 			<DCC_DependencyCheckOutputName>bin\single\JediApi_SingleUnits.bpl</DCC_DependencyCheckOutputName>
-			<DCC_Define>USE_DELPHI_TYPES;DEBUG</DCC_Define>
+			<DCC_Define>USE_DELPHI_TYPES;DEBUG;JW_SINGLE_UNITS_PACKAGE</DCC_Define>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_1)'!=''">
 			<DCC_DcuOutput>bin\single</DCC_DcuOutput>
