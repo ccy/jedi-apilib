@@ -1,4 +1,4 @@
-﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 		<PropertyGroup>
 			<ProjectGuid>{053FA306-77E3-4C73-A765-DE9ED1D19EA2}</ProjectGuid>
 			<MainSource>JediApi_SingleUnits.dpk</MainSource>
@@ -290,6 +290,7 @@
 			<DCCReference Include="..\..\Win32API\JwaZMOUSE.pas"/>
 			<DCCReference Include="..\..\Win32API\JwaRpcWinsta.pas"/>
 			<DCCReference Include="..\..\Win32API\JwaBitFields.pas"/>
+			<DCCReference Include="..\..\win32api\JwaWabUtil.pas"/>
 			<None Include="..\..\Win32API\JwaStrSafe.obj"/>
 			<BuildConfiguration Include="Basis">
 				<Key>Base</Key>

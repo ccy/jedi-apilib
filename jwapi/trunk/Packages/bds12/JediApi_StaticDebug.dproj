@@ -1,4 +1,4 @@
-﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 		<PropertyGroup>
 			<ProjectGuid>{6735A6F1-06F1-4C87-BE0B-C8934D3E7374}</ProjectGuid>
 			<MainSource>JediApi_StaticDebug.dpk</MainSource>
