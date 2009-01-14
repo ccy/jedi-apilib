@@ -34,9 +34,6 @@ interface
 
 
 uses
-{.$IFDEF DELPHI6_UP}
-//  DateUtils,
-{.$ENDIF}
   SysUtils, JwaWinType, // JwaWinType must be declared before JwaWinBase because of duplicate declaration of FILETIME
   JwaWinBase, JwaWinError, JwaNTStatus, JwaWinNT, JwaWinsock2,
   JwaWinSvc, JwaWtsApi32, JwaNative, JwaBitFields
