@@ -355,6 +355,7 @@ type
 
   EJwsclEndOfStream = class(EJwsclSecurityException);
 
+  EJwsclInvalidRegistryPath = class(EJwsclSecurityException);
 
   {}
   EJwsclEnumerateProcessFailed = class(EJwsclSecurityException);
@@ -400,6 +401,18 @@ type
   EJwsclVistaFeaturesDisabled = class(EJwsclSecurityException);
 
   EJwsclCertApiException = class(EJwsclSecurityException);
+
+
+  EJwsclElevateProcessException = class(EJwsclSecurityException);
+
+  EJwsclSuRunErrorException = class(EJwsclElevateProcessException);
+  EJwsclAbortException = class(EJwsclElevateProcessException);
+
+  EJwsclElevationException = class(EJwsclElevateProcessException);
+  EJwsclShellExecuteException = class(EJwsclElevateProcessException);
+
+
+
 
   JwGeneralExceptionClass = class of Exception;
 

@@ -420,7 +420,8 @@ const
   RsTokenCheckAccessTypeText = 'The desired access mask is not included in t' +
     'he token access mask!\r\nyour  mask: \r\ntoken mask: \r\n%0:s (%1:s)\r\%2' +
     ':s\r\nCheckTokenAccessType called by %3:s'+#13#10+
-    'Token access rights:\r%s\rYour requested rights:\r%s';
+    'Token access rights:\r%4:s\rYour requested rights:\r%5:s';
+	
   RsTokenStatisticsText = 'TokenID: %0:s\r\AuthenticationId: %1:s\r\nExpirat' +
     'ionTime: %2:s\r\nToken type: %3:d\r\nImpersonation level: 0x%4:x\r\nDynam' +
     'ic charged: 0x%5:x\r\nDynamic available: 0x%6:x\r\nGroup count: %7:d\r\nP' +
@@ -546,7 +547,7 @@ const
     'given mapping array size %2:d.\r\nThe high index %0:d was read from '+
     'the string resource at string index given by parameter StartStringID %1:d.';
   RsProcessIdNotFound = 'The process "%0:s" (Id: 0x%1:x) could not be found.';
-  RsOpenProcessFailed = 'The process "%0:s" (Id: 0x%1:x) could not opened.';
+  RsOpenProcessFailed = 'The process "%0:s" (Id: 0x%1:x) could not be opened.';
 
   RsInvalidResultValue = 'The value result of a method is invalid: %0:d ';
 
@@ -588,6 +589,7 @@ const
   RsUNComUtils           = 'JwsclComUtils.pas';
   RsUNConstants          = 'JwsclConstants.pas';
   RsUNCredentials        = 'JwsclCredentials.pas';
+  RsUNCryptProvider      = 'JwsclCryptProvider.pas';
   RsUNDescriptor         = 'JwsclDescriptor.pas';
   RsUNDesktops           = 'JwsclDesktops.pas';
   RsUNElevation          = 'JwsclElevation.pas'; 
@@ -614,7 +616,7 @@ const
 
   RsUnLibrary = 'JwscLibrary.pas';
 
-  RsUNCryptProvider = 'JwsclCryptProvider.pas';
+  
 
 {<B>GetResourceStringIdentifier</B> converts a Delphi resourcestring into a resource identifier.
 Use ResourcestringName as parameter rs (e.g. RsInvalidIndex).

@@ -640,13 +640,186 @@ Otherwise it does nothing.
 }
 procedure JwCheckVISTACompilerSwitch(MethodName, ClassName, FileName : TJwString);
 
+{JwCreateClassHash calculates an integer hash value from a memory structure.}
+function JwCreateClassHash(const Data : Pointer; const Size : Cardinal) : Integer;
+
+{JwBeginCreateHash begins a hash calculation and returns an hash handle
+that is used with other hash functions like:
+JwStringHash, JwIntegerHash, JwDataHash, JwObjectHash
+
+@return
+  The untyped returned value must be freed by JwEndCreateHash.
+}
+function JwBeginCreateHash : Pointer;
+
+{JwStringHash hashes a string and adds it to the given hash handle.}
+procedure JwStringHash(const Hash: Pointer; const S : string);
+
+{JwIntegerHash hashes an integer and adds it to the given hash handle.}
+procedure JwIntegerHash(const Hash: Pointer; const I : Integer);
+
+{JwDataHash hashes a data structure and adds it to the given hash handle.}
+procedure JwDataHash(const Hash: Pointer; const P : Pointer; const Size : Cardinal);
+
+{JwObjectHash hashes an object and adds it to the given hash handle.}
+procedure JwObjectHash(const Hash: Pointer; const Obj : IJwBase);
+
+{JwEndCreateHash frees a hash value created by JwBeginCreateHash
+and returns the hash value over all calculated hashes.
+
+@param Hash Receives a hash handle created by JwBeginCreateHash and frees it. The parameter value
+  will be nil afterwards.
+@return
+  Returns a hash value.
+}
+function JwEndCreateHash(var Hash : Pointer) : Integer;
+
+{JwCreateToString creates a comma separated string (compatible to TStringList.CommaText)
+with names and values. This string is used in toString() methods of JWSCL
+classes for property output.
+
+@param Values Contains a single value or tuples for the output.
+  Each value in this parameter can be an Integer, Boolean, Int64, Ansi-&WideString and ShortString;
+  other types are output to '??'. All entries must have a second entry (a so called tuple)
+
+
+Remarks
+  The following example shows the usage
+  <code lang="Delphi">
+   result := JwCreateToString(
+    ['aString','', //simple string
+     'Hash',123, //name='Hash', value=GetHashCode
+  </code>
+  The output looks like:
+  <pre>aString,Hash=123</pre>
+}
+function JwCreateToString(const Values : array of const) : String;
+
 implementation
-uses SysUtils, Registry, D5Impl, JwsclToken, JwsclKnownSid, JwsclDescriptor, JwsclAcl,
+uses SysUtils, Registry, Math, D5Impl, JwsclToken, JwsclKnownSid, JwsclDescriptor, JwsclAcl,
      JwsclSecureObjects, JwsclMapping, JwsclStreams, JwsclCryptProvider
 {$IFDEF JW_TYPEINFO}
      ,TypInfo
 {$ENDIF JW_TYPEINFO}
       ;
+
+function JwCreateToString(const Values : array of const) : String;
+  function GetValue(I : Integer; const Values : array of const) : String;
+  const B : Array[boolean] of ShortString = ('true','false');
+  begin    
+    case Values[i].VType of
+      vtInteger : result := IntToStr(Values[i].VInteger);
+      vtBoolean : result := String(B[Values[i].VBoolean]);
+      vtInt64 : result := IntToStr(Values[i].VInt64^);
+
+      vtAnsiString : result := String(AnsiString(Values[i].VAnsiString));
+      vtWideString : result := WideString(Values[i].VWideString);
+      vtString : result := String(Values[i].VString^);
+    else
+      Result := '??';
+    end;
+  end;
+
+var
+  i : Integer;
+  List : TStringList;
+begin
+  List := TStringList.Create;
+
+  result := '';
+  i := low(Values);
+  {i = Vl}
+  while i < High(Values) do
+  begin
+    {i < Vh}
+    if Values[i+1].VString = nil then
+      result := GetValue(i, Values)
+    else
+      result := GetValue(i, Values)+'='+GetValue(i+1, Values);
+    List.Add(result);
+    Inc(i,2);
+    {i = i + 2}
+  end;
+  {i = Vh}
+
+  result := List.CommaText;
+  List.Free;
+end;
+
+
+function JwCreateClassHash(const Data : Pointer; const Size : Cardinal) : Integer;
+{var
+  i: Integer;
+  P : PByte;
+  Hash : TJwHash;
+begin
+  P := Data;
+  result := 0;
+
+  for i := 0 to Size-1 do
+  begin
+    result := result shl 1;
+    result := result xor P^;
+
+    Inc(P);
+  end;
+end; }
+var
+  i, x: Integer;
+  P : PByte;
+begin
+  Result := 0;
+  P := Data;
+
+  //http://www.scalabium.com/faq/dct0136.htm
+  for i := 1 to Size do
+  begin
+    Result := (Result shl 4) + Ord(P^);
+    x := Result and $F0000000;
+    if (x <> 0) then
+      Result := Result xor (x shr 24);
+    Result := Result and (not x);
+
+    Inc(P);
+  end;
+end;
+
+function JwBeginCreateHash : Pointer;
+begin
+  result := TMemoryStream.Create;
+end;
+
+procedure JwStringHash(const Hash: Pointer; const S : string);
+begin
+  TMemoryStream(Hash).Write(S[1], Length(S) * SizeOf(S[1]));
+end;
+
+procedure JwIntegerHash(const Hash: Pointer; const I : Integer);
+begin
+  TMemoryStream(Hash).Write(I, SizeOf(I));
+end;
+
+procedure JwDataHash(const Hash: Pointer; const P : Pointer; const Size : Cardinal);
+begin
+  TMemoryStream(Hash).Write(P^, Size);
+end;
+
+procedure JwObjectHash(const Hash: Pointer; const Obj : IJwBase);
+begin
+  if Assigned(Obj) then
+    JwIntegerHash(Hash, Obj.GetHashCode);
+end;
+
+function JwEndCreateHash(var Hash : Pointer) : Integer;
+begin
+  result := JwCreateClassHash(TMemoryStream(Hash).Memory, TMemoryStream(Hash).Size);
+
+  TMemoryStream(Hash).Free;
+  Hash := nil;
+end;
+
+
+
 
 procedure JwCheckVISTACompilerSwitch(MethodName, ClassName, FileName : TJwString);
 begin

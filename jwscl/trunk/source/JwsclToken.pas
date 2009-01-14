@@ -84,7 +84,7 @@ type
       <B>TJwSecurityToken</B> administers a token (impersonated or not) 
       }
 
-  TJwSecurityToken = class(TObject)//,ISecurityMemoryClass)
+  TJwSecurityToken = class(TInterfacedObject, IJwBase)
   private
        {fPrivelegesList administers all created privileges list by GetTokenPrivileges .
         If a list was not freed by user, it will be freed on the instance ending.
@@ -95,6 +95,9 @@ type
     fTokenHandle: TJwTokenHandle;
     //shared status
     fShared:      boolean;
+
+    fClassHash : Integer;
+
     fAccessMask:  TJwAccessMask;
        {<B>Done</B> is called by Destroy to free all things that were allocated by Create();
         Only objects are destroyed!
@@ -113,7 +116,7 @@ type
     //function PushPrivileges: cardinal;
 
     {<B>RaiseOnInvalidPrimaryToken</B> checks for whether user is SYSTEM and raises exception if not.
-     @param MethodName defines the method name of the caller 
+     @param MethodName defines the method name of the caller
      raises
  EJwsclInvalidPrimaryToken:  if primary user token is not SYSTEM. }
     procedure RaiseOnInvalidPrimaryToken(MethodName: TJwString);
@@ -385,7 +388,7 @@ type
 
      @param ProcessID defines a process ID 
      @param DesiredAccess Receives the desired access for this token. The access types can be get from the list written at CreateTokenByProcess.
-        Access flags must be concatenated with or operator. Can be MAXIMUM_ALLOWED to get maximum access. 
+        Access flags must be concatenated with or operator. Can be MAXIMUM_ALLOWED to get maximum access.
 
      raises
  EJwsclOpenProcessTokenException:  If the token could not be opened 
@@ -521,9 +524,9 @@ type
       be processed. Use nil to use current server. 
       @param SessionID defines the session which is used to obtain the token.
          If set to INVALID_HANDLE_VALUE, the function does the following :
-         
+
           1. Try to open the token of the current console session. Using WtsGetActiveConsoleSessionID to obtain the session ID. 
-          2. Try to open the token of the current session using the session ID WTS_CURRENT_SESSION 
+          2. Try to open the token of the current session using the session ID WTS_CURRENT_SESSION
           
          If this fails an exception is raised. 
 
@@ -827,7 +830,7 @@ type
       
 
      @param AccessMask defines the access to the token handle.
-       MAXIMUM_ALLOWED can be used to get the maximum access allowed. 
+       MAXIMUM_ALLOWED can be used to get the maximum access allowed.
     }
     function CreateDuplicateToken(AccessMask: TJwAccessMask;
       Security: PSECURITY_ATTRIBUTES): TJwSecurityToken;
@@ -861,7 +864,7 @@ type
          @param Thread contains the thread handle. If Thread is zero the calling thread will be used. 
 
         raises
- EJwsclSecurityException:  will be raised if the token could not be attached to the thread 
+ EJwsclSecurityException:  will be raised if the token could not be attached to the thread
          EJwsclSecurityException: will be raised if a winapi function failed 
         }
     procedure SetThreadToken(const Thread: TJwThreadHandle);
@@ -895,7 +898,7 @@ type
 
          Every privilege that was used for a privilege check will have the property Privilege_Used_For_Access set to true.
 
-         @param aRequiredPrivileges provides a list of priveleges that are compared with the token  
+         @param aRequiredPrivileges provides a list of priveleges that are compared with the token
          @return see description 
          }
     function PrivilegeCheck(const RequiredPrivileges: TJwPrivilegeSet;
@@ -963,7 +966,7 @@ type
           set the correct user name 
 
       # pmProfilePath Exclude this value if you want to let the method
-        get the roaming profile. 
+        get the roaming profile.
      
       
 
@@ -997,7 +1000,7 @@ type
 
          The audit event can be seen in the event viewer in security leaf.
 
-         @param ClientToken is the token to be used in audit log.  
+         @param ClientToken is the token to be used in audit log.
 
          raises
  EJwsclPrivilegeNotFoundException:  will be raised if the process token does not have the privilege : SE_AUDIT_NAME 
@@ -1059,6 +1062,13 @@ type
     procedure SetSecurityDescriptor(
       const SecurityFlags: TJwSecurityInformationFlagSet;
       const SecurityDescriptor: TJwSecurityDescriptor); virtual;
+
+  public
+    //overriden basic methods
+    function Equals(Obj: TObject): Boolean; {$IFDEF DELPHI2009_UP}override;{$ELSE}virtual;{$ENDIF}
+    function GetHashCode: Integer;          {$IFDEF DELPHI2009_UP}override;{$ELSE}virtual;{$ENDIF}
+    function ToString: String;              {$IFDEF DELPHI2009_UP}override;{$ELSE}virtual;{$ENDIF}
+
   public
     {TokenHandle contains a handle to the opened token. It can be zero.}
     property TokenHandle: TJwTokenHandle Read fTokenHandle;
@@ -1972,7 +1982,7 @@ function JwIsUACEnabled: Boolean;
 implementation
 
 uses JwsclKnownSid, JwsclMapping, JwsclSecureObjects, JwsclProcess,
-     JwsclTerminalServer, JwsclLsa,
+     JwsclTerminalServer, JwsclLsa, TypInfo,
       JwsclPrivileges, Math, D5impl;
 
 {$ENDIF SL_OMIT_SECTIONS}
@@ -2039,6 +2049,8 @@ begin
   T := TJwSecurityToken.CreateTokenByProcess(0, TOKEN_READ or TOKEN_QUERY);
   try
     Stat := T.GetTokenStatistics;
+
+    //Compare the authentication ID with 0x999d (SYSTEM)
     result := CompareMem(@Stat.fAuthenticationId, @SYSTEM_LUID, sizeof(TLUID));
     Stat.Free;
   finally
@@ -3008,6 +3020,8 @@ begin
 
   fTokenHandle := 0;
   fShared      := True;
+
+  fClassHash := 0;
 end;
 
 procedure TJwSecurityToken.Done;
@@ -5806,9 +5820,74 @@ begin
 end;
 
 
+function TJwSecurityToken.Equals(Obj: TObject): Boolean;
+begin
+  result := IsEqual(Obj as TJwSecurityToken);
+end;
+
+function TJwSecurityToken.GetHashCode: Integer;
+var
+  P : Pointer;
+begin
+  P := JwBeginCreateHash;
+
+   JwIntegerHash(P, TokenHandle);
+   JwIntegerHash(P, Integer(TokenType));
+   JwIntegerHash(P, Integer(Shared));
+   JwIntegerHash(P, Integer(TokenOrigin.LowPart));
+   JwStringHash(P, ClassName);
+   JwStringHash(P, TokenUserName);
+   JwStringHash(P, UserName);
+
+  result := JwEndCreateHash(P);
+end;
+
+function TJwSecurityToken.ToString: String;
+var
+  Groups,Restricted : TJwSecurityIdList;
+  Privs : TJwPrivilegeSet;
+begin
+  Groups := TokenGroups;
+  Restricted := TokenRestrictedSids;
+  Privs := GetTokenPrivileges;
+
+
+  try
+    result := JwCreateToString(
+    [ClassName,'',
+     'Hash',GetHashCode,
+     'Handle',TokenHandle,
+     'AccessMask', JwFormatAccessRightsSimple(AccessMask, TokenMapping),
+     'IsPrimaryToken',IsPrimaryToken,
+     'IsThreadtoken',IsThreadToken,
+     'IsRestricted',IsRestricted,
+     'SessionID',TokenSessionId,
+     'PrimaryGroup',PrimaryGroup.ToString,
+     'TokenUserName',TokenUserName,
+     'UserName',UserName,
+     'TokenType', GetEnumName(TypeInfo(TOKEN_TYPE), integer(TokenType)),
+     'Shared', Shared,
+     'Origin',Format('%d.%d',[TokenOrigin.HighPart, TokenOrigin.LowPart]),
+     'Groups', Groups.Count,
+     'GroupMembers',Groups.GetText(true), //TODO: instead .ToString
+     'Restricted', Restricted.Count,
+     'RestrictedMembers',Restricted.GetText(true), //TODO: instead .ToString
+     'Privileges',Privs.Count,
+     'PrivilegesMembers',Privs.GetText //TODO: instead .ToString
+     ]);
+
+  finally
+    Groups.Free;
+    Restricted.Free;
+    Privs.Free;
+  end;
+end;
+
 {$ENDIF SL_INTERFACE_SECTION}
 
 {$IFNDEF SL_OMIT_SECTIONS}
+
+
 
 
 

@@ -528,8 +528,6 @@ type
    Do not make instance of this class but use instead the static methods.
    }
   TJwSecureGeneralObject = class(TJwSecureBaseClass)
-  protected
-    procedure Dummy; virtual; abstract;
   public
       {<B>SetSecurityInfo</B> sets security information of a named object
        <B>SetSecurityInfo</B> cannot change inheritance protection flow. Instead use SetSecurityInfo
@@ -1270,8 +1268,6 @@ type
     fDuplicateHandle: boolean;
     fFileName:        TJwString;
 
-    procedure Dummy; virtual; abstract;
-
     {<B>TreeFileObjectSetNamedSecurityInfo_Execute</B> is used as a thread function by TreeFileObjectSetNamedSecurityInfo}
     class function TreeFileObjectSetNamedSecurityInfo_Execute(
       pData: Pointer): integer;
@@ -1987,8 +1983,7 @@ type
 
     fReg: TRegistry;
 
-    procedure Dummy; virtual; abstract;
-
+    
     function GetKey(out bUsesName: boolean): HKEY; virtual;
     class function TreeRegKeySetNamedSecurityInfo_Execute(pData: Pointer)
       : integer; virtual;
@@ -2025,6 +2020,12 @@ type
 
       {<B>Create</B> creates a registry instance using a path to the registry key.
        The property Handle will not be used.
+
+       @param RegPath This parameter receives the absolute path to the registry key to be accessed.
+        Be aware that "HKEY_xxx" constants must be string mapped to "xxx" (without "HKEY_")
+        The constructor does not check validity. This check is done when you call any of the
+        security methods which actually access the key. In most cases an exception
+        with GetLastError "invalid parameter" is raised.
 
        }
     constructor Create(const RegPath: TJwString); overload;
@@ -2834,25 +2835,25 @@ type
    {<B>JwsclEnumerations</B> is not implemented yet}
    TJwSecureWindowObject = class(TJwSecureBaseClass)
    protected
-      procedure Dummy; virtual; abstract;
+      //procedure Dummy; virtual; abstract;
    end;
 
    {<B>JwsclEnumerations</B> is not implemented yet}
    TJwSecurePrinter = class(TJwSecureBaseClass)
    protected
-      procedure Dummy; virtual; abstract;
+      //procedure Dummy; virtual; abstract;
    end;
 
    {<B>JwsclEnumerations</B> is not implemented yet}
    TJwSecureService = class(TJwSecureBaseClass)
    protected
-      procedure Dummy; virtual; abstract;
+      //procedure Dummy; virtual; abstract;
    end;
 
    {<B>JwsclEnumerations</B> is not implemented yet}
    TJwSecureLMShare = class(TJwSecureBaseClass)
    protected
-      procedure Dummy; virtual; abstract;
+      //procedure Dummy; virtual; abstract;
    end;
 
    //SetNamedSecurityInfo

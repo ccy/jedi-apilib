@@ -200,7 +200,7 @@ type
     MSDN on http://msdn2.microsoft.com/en-us/library/aa379594.aspx
                      http://msdn2.microsoft.com/en-us/library/aa379597.aspx
     }
-  TJwSecurityId = class(TObject)
+  TJwSecurityId = class(TInterfacedObject, IJwBase)
   private
     fWellKnownSidType: TWellKnownSidType;
 
@@ -666,6 +666,11 @@ type
 
     {<B>Destroy</B> destroys the instance and frees the SID.}
     destructor Destroy; override;
+
+  public
+    function Equals(Obj: TObject): Boolean; {$IFDEF DELPHI2009_UP}override;{$ELSE}virtual;{$ENDIF}
+    function GetHashCode: Integer;          {$IFDEF DELPHI2009_UP}override;{$ELSE}virtual;{$ENDIF}
+    function ToString: String;              {$IFDEF DELPHI2009_UP}override;{$ELSE}virtual;{$ENDIF}
   public
        {<B>SID</B> contains a pointer to the internal SID structure.
         The SID structure must not be freed by CloseHandle otherwise the behavior of the instance is undefined.
@@ -2109,12 +2114,36 @@ begin
 end;
 
 
+
+function TJwSecurityId.Equals(Obj: TObject): Boolean;
+begin
+  result := EqualSid(Obj as TJwSecurityId);
+end;
+
+function TJwSecurityId.GetHashCode: Integer;
+var P : Pointer;
+begin
+  P := JwBeginCreateHash;
+
+  JwDataHash(P, Sid, SIDLength);
+
+  result := JwEndCreateHash(P);
+end;
+
+function TJwSecurityId.ToString: String;
+begin
+  result := Format('%s@%d',[ClassName, GetHashCode]);
+end;
+
+
+
 {$ENDIF SL_INTERFACE_SECTION}
 
 {$IFNDEF SL_OMIT_SECTIONS}
 
-
 end.
+
+
 {$ENDIF SL_OMIT_SECTIONS}(*
  BOOL IsUserAdmin(VOID)
 /*++

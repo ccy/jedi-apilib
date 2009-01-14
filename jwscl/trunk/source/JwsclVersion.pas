@@ -443,6 +443,10 @@ type
     // <B>IsWindows64</B> returns true if the process is running on any 64 bit Windows version
     class function IsWindows64 : boolean;
 
+    class function IsUACEnabled : Boolean;
+
+
+
     {<B>IsProcess64</B> checks if a process is 64 bit.
 	 param ProcessHandle Defines the process to be checked for 64 bit. If this parameter is zero
 	   the current process is used instead.
@@ -463,7 +467,7 @@ type
 {$IFNDEF SL_OMIT_SECTIONS}
 implementation
 
-uses SysConst;
+uses SysConst, Registry;
 
 
 {$ENDIF SL_OMIT_SECTIONS}
@@ -862,8 +866,8 @@ begin
           Result := cOsVista
         else if (majorVer = 6) and (minorVer = 0) and (fIsServer) then
           Result := cOsWin2008
-        else if (majorVer = 6) and (minorVer = 0) then
-          Result := cOsVista
+        else if (majorVer = 6) and (minorVer = 1) then
+          Result := cOsWin7
         else if (majorVer = 6) and (minorVer = 1) then
           Result := cOsWin7
         else
@@ -900,6 +904,26 @@ end;
 
 
 
+class function TJwWindowsVersion.IsUACEnabled: Boolean;
+var R : TRegistry;
+begin
+  R := TRegistry.Create;
+  R.RootKey := HKEY_LOCAL_MACHINE;
+  if R.OpenKeyReadOnly('SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System') then
+  begin
+    result := R.ReadInteger('EnableLUA') = 1;
+  end
+  else
+   raise EJwsclWinCallFailedException.CreateFmtWinCall(
+        RsWinCallFailed,
+        'IsUACEnabled',                                //sSourceProc
+        ClassName,                                //sSourceClass
+        RSUnVersion,                          //sSourceFile
+        0,                                           //iSourceLine
+        True,                                  //bShowLastError
+        'OpenKeyReadOnly',                   //sWinCall
+        ['OpenKeyReadOnly']);                                  //const Args: array of const
+end;
 
 class function TJwWindowsVersion.GetNativeProcessorArchitecture : Cardinal;
 var
@@ -951,7 +975,7 @@ begin
       result := not RunningInsideWOW64
 	else
 	   raise EJwsclWinCallFailedException.CreateFmtWinCall(
-        '',
+        RsWinCallFailed,
         'IsProcess64',                                //sSourceProc
         ClassName,                                //sSourceClass
         RSUnVersion,                          //sSourceFile

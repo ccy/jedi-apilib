@@ -127,7 +127,8 @@ const
   cOSXP64    = 9;  //The system is a XP 64 bit version
   cOsVista   = 10; //The system is a Vista
   cOsWin2008 = 11; //The system is a 2008 Server (tested with RC)
-  cOsWin7    = 12; //The system is a Windows 7
+  cOsWin7    = 12; //The system is a Win7
+  //cOsWinXXX  = cOsWin7; //use this to set proper name for this OS!
 
   {<B>sOSVerString</B> contains the windows version as text}
   sOSVerString: array[-1..15] of TJwString =
@@ -144,7 +145,7 @@ const
     'Windows XP 64 Edition',
     'Windows Vista',
     'Windows 2008',
-    '',
+    'Windows 7',
     '',
     '',
     ''

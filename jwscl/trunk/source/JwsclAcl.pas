@@ -1701,6 +1701,10 @@ type
     const AccessStatus : TJwCardinalArray;
     RightsMapping : Array of TJwRightsMapping) : TJwString; overload;
 
+  {<b>JwFormatAccessRightsSimple</b> does the same as JwFormatAccessRights
+   but returns just a comma separated list of specific  access rights names.}
+  function JwFormatAccessRightsSimple(const Access : Cardinal;
+     RightsMapping : Array of TJwRightsMapping) : TJwString;
 
 
   {<B>IsStandardRight</B> returns true if the given right has a standard (16-23) bit set;
@@ -1785,6 +1789,22 @@ begin
 
     result := result + #13#10;
   end;
+end;
+
+function JwFormatAccessRightsSimple(const Access : Cardinal;
+     RightsMapping : Array of TJwRightsMapping) : TJwString;
+var i : Integer;
+begin
+  for i := low(RightsMapping) to high(RightsMapping) do
+  begin
+    if Access and RightsMapping[i].Right =
+      RightsMapping[i].Right then
+    begin
+      //names may vary depeding on resource string contents
+      Result := Result + RightsMapping[i].Name+', ';
+    end;
+  end;
+  System.Delete(Result, Length(Result)-1, 2);
 end;
 
 function IsStandardRight(const Right : Cardinal) : Boolean;

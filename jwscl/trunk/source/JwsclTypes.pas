@@ -35,7 +35,7 @@ The Initial Developer of the Original Code is Christian Wimmer.
 Portions created by Christian Wimmer are Copyright (C) Christian Wimmer. All rights reserved.
 
 }
-{$IFNDEF SL_OMIT_SECTIONS}
+
 unit JwsclTypes;
 // Last modified: $Date: 2007-09-10 10:00:00 +0100 $
 {$INCLUDE ..\includes\Jwscl.inc}
@@ -48,9 +48,8 @@ uses
   JwsclResource,
   SysUtils,
   JwsclStrings; //JwsclStrings, must be at the end of uses list!!!
-{$ENDIF SL_OMIT_SECTIONS}
 
-{$IFNDEF SL_IMPLEMENTATION_SECTION}
+
 type
 {$IFDEF DELPHI6_UP}
  {$ALIGN 4}  //warning do not remove. WinApi relies on that!
@@ -1350,22 +1349,46 @@ type
   TJwSecurityCapabilities = set of TJwSecurityCapability;
 
 
-{$ENDIF SL_IMPLEMENTATION_SECTION}
+  {IJwBase is the new base interface class for all JWSCL classes
+  which want to implement basic methods.}
+  IJwBase = interface
+{.$IFNDEF DELPHI2009_UP}
+    function Equals(Obj: TObject): Boolean;
+    function GetHashCode: Integer;
+    function ToString: String;
+{.$ENDIF DELPHI2009_UP}
+  end;
 
-{$IFNDEF SL_OMIT_SECTIONS}
+
+{IJwBase_Equals implements IJwBase.Equals and always returns false.}
+function IJwBase_Equals(Obj: TObject): Boolean;
+
+{IJwBase_GetHashCode implements IJwBase.GetHashCode and always returns 0.}
+function IJwBase_GetHashCode(self : TObject): Integer;
+
+{IJwBase_ToString implements IJwBase.ToString and always returns the classname of
+ given self parameter.}
+function IJwBase_ToString(self : TObject): String;
+
+
 implementation
-{$ENDIF SL_OMIT_SECTIONS}
 
+function IJwBase_Equals(Obj: TObject): Boolean;
+begin
+  result := false;
+end;
 
+function IJwBase_GetHashCode(self : TObject): Integer;
+begin
+  result := 0;
+end;
 
+function IJwBase_ToString(self : TObject): String;
+begin
+  result := self.ClassName;
+end;
 
-{$IFNDEF SL_OMIT_SECTIONS}
 initialization
-{$ENDIF SL_OMIT_SECTIONS}
 
-{$IFNDEF SL_INITIALIZATION_SECTION}
-{$ENDIF SL_INITIALIZATION_SECTION}
-
-{$IFNDEF SL_OMIT_SECTIONS}
 end.
-{$ENDIF SL_OMIT_SECTIONS}
+
