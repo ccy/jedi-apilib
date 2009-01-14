@@ -70,7 +70,21 @@ uses JwaWinType;
 
 {$IFNDEF JWA_IMPLEMENTATIONSECTION}
 
-{$LINK JwaStrSafe.obj}
+{$IFDEF PACKAGE_CONDITIONS}
+  //use by the jedi api units
+  {$LINK ..\..\win32api\JwaStrSafe.obj}
+{$ELSE}
+  {$IFDEF JW_SINGLE_UNITS_PACKAGE}
+    //well this only works when the jedi api single unit package is compiled
+    //if it does not work though, the single unit is missing the
+    //JW_SINGLE_UNITS_PACKAGE directive. Add it to the options of the package
+    {$LINK ..\..\win32api\JwaStrSafe.obj}
+  {$ELSE}
+    //You have to include the source path to \win32api
+    //to make it work
+    {$LINK JwaStrSafe.obj}
+  {$ENDIF JW_SINGLE_UNITS_PACKAGE}
+{$ENDIF PACKAGE_CONDITIONS}
 
 type
 {$IFNDEF JWA_OMIT_SECTIONS}
