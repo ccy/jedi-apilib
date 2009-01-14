@@ -3020,7 +3020,7 @@ begin
 {$ENDIF}
       // If WTSOpenServer fails the return value is 0
       // Workaround for (possible) bug, see comments in IsConnectionValid function
-      if (FServerHandle = 0) or (not IsConnectionValid(FServer)) then
+      if (FServerHandle = 0) {or (not IsConnectionValid(FServer)) }then
       begin
         // Mark handle as invalid
         FServerHandle := INVALID_HANDLE_VALUE;

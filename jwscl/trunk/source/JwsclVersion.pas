@@ -227,6 +227,19 @@ type
     }
     function IsWindowsVista(bOrHigher: boolean = False): boolean;
 
+    {<B>IsWindowsBeta</B> checks if the system has the version given in the function name.
+     @param bOrHigher defines if the return value should also be <B>true</B> if the system
+     is better/higher than the requested system version.
+     @return <B>IsWindowsVista</B> returns <B>true</B> if the system is the requested version (or higher if bOrHigher is true);
+     otherwise <B>false</B>.
+     If bOrHigher is <B>true</B> the return value is the result of
+     <B>true</B> if (bOrHigher and (GetWindowsType > iVer)) is true;
+     <B>false</B> if GetWindowsType < (requested version)
+
+    }
+    function IsWindows7(bOrHigher: boolean = False): boolean;
+
+
     {<B>Server</B> is the servername as returned by Windows Api}
     property Server: TJwString read FServer;
   end;
@@ -633,6 +646,10 @@ begin
   begin
     Result := cOsVista;
   end
+  else if (FMajorVersion = 6) and (FMinorVersion = 1) then
+  begin
+    Result := cOsWin7;
+  end
   else
   begin
     Result := cOsUnknown;
@@ -666,6 +683,14 @@ const
 begin
   Result := (FWindowsType = iVer) or (bOrHigher and (FWindowsType > iVer));
 end;
+
+function TJwServerInfo.IsWindows7(bOrHigher: Boolean = False): Boolean;
+const
+  iVer = cOsWin7;
+begin
+  Result := (FWindowsType = iVer) or (bOrHigher and (FWindowsType > iVer));
+end;
+
 
 function TJwServerInfo.IsWindows2008(bOrHigher: Boolean = False): Boolean;
 const
@@ -839,6 +864,8 @@ begin
           Result := cOsWin2008
         else if (majorVer = 6) and (minorVer = 0) then
           Result := cOsVista
+        else if (majorVer = 6) and (minorVer = 1) then
+          Result := cOsWin7
         else
           Result := cOsUnknown;
       end;
@@ -872,7 +899,7 @@ begin
 end;
 
 
-  
+
 
 class function TJwWindowsVersion.GetNativeProcessorArchitecture : Cardinal;
 var
