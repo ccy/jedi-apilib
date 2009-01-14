@@ -755,7 +755,7 @@ function CalculateDiffTime(TimeLow: INT64; TimeHigh: INT64): INT64;
 function CalculateElapsedTime(lpFileTime: PFILETIME; var DiffTime: TDiffTime):
   Boolean; stdcall;
 
-function CpuTime2Str(ACPUTime: LARGE_INTEGER): AnsiString;
+function CpuTime2Str(ACPUTime: LARGE_INTEGER): String;
 
 function CurrentDateTimeString(out lpBuffer: PWideChar): Boolean; stdcall;
 
@@ -1687,8 +1687,9 @@ end;
 
 // This functions converts CPU times as returned by
 // TSystemProcesses structure to a string
-function CpuTime2Str(ACPUTime: LARGE_INTEGER): AnsiString;
-var SystemTime: TSystemTime;
+function CpuTime2Str(ACPUTime: LARGE_INTEGER): String;
+var
+  SystemTime: TSystemTime;
 {$IFDEF COMPILER7_UP}
   FS: TFormatSettings;
 {$ENDIF COMPILER7_UP}
@@ -1696,7 +1697,9 @@ begin
   FileTimeToSystemTime(FILETIME(ACPUTime), SystemTime);
 {$IFDEF COMPILER7_UP}
   GetLocaleFormatSettings(LOCALE_SYSTEM_DEFAULT, FS);
-  Result := AnsiString(TimeToStr(SystemTimeToDateTime(SystemTime), FS));
+  // force to style
+  FS.LongTimeFormat := 'hh:mm:ss';
+  Result := TimeToStr(SystemTimeToDateTime(SystemTime), FS);
 {$ELSE}
   Result := TimeToStr(SystemTimeToDateTime(SystemTime));
 {$ENDIF COMPILER7_UP}
