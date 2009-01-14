@@ -28,19 +28,10 @@ interface
 
 {$I ..\Includes\JediAPILib.inc}
 
-{$IFDEF DELPHI7_UP}
-  {$WARN UNSAFE_CAST OFF} //some typecasts problems are found but are wrong 
-{$ENDIF DELPHI7_UP}
-
-
 uses
   SysUtils, JwaWinType, // JwaWinType must be declared before JwaWinBase because of duplicate declaration of FILETIME
   JwaWinBase, JwaWinError, JwaNTStatus, JwaWinNT, JwaWinsock2,
-  JwaWinSvc, JwaWtsApi32, JwaNative, JwaBitFields
-{$IFDEF DELPHI6_UP}
-  , DateUtils
-{$ENDIF}
-  ;
+  JwaWinSvc, JwaWtsApi32, JwaWinNLS, JwaNative, JwaBitFields;
 {$ENDIF JWA_OMIT_SECTIONS}
 
 
@@ -794,9 +785,6 @@ function ElapsedTimeStringVistaRTM(DiffTime: PDiffTime; bShowSeconds: Boolean;
 function FileTime2DateTime(FileTime: TFileTime): TDateTime;
 
 function GetUnknownString: PWideChar; stdcall;
-
-function GetWTSLogonIdleTime(hServer: Handle; SessionId: DWORD;
-  var sLogonTime: string; var sIdleTime: string): Boolean;
 
 // Helper function that inits the structure for you!
 procedure InitTermSrvCounterArray(
@@ -1687,20 +1675,13 @@ end;
 function CpuTime2Str(ACPUTime: LARGE_INTEGER): String;
 var
   SystemTime: TSystemTime;
-{$IFDEF COMPILER7_UP}
-  FS: TFormatSettings;
-{$ENDIF COMPILER7_UP}
+  TimeSeparator: Char;
 begin
+  TimeSeparator := GetLocaleChar(LOCALE_USER_DEFAULT, LOCALE_STIME, ':');
   FileTimeToSystemTime(FILETIME(ACPUTime), SystemTime);
-{$IFDEF COMPILER7_UP}
-  GetLocaleFormatSettings(LOCALE_SYSTEM_DEFAULT, FS);
-  // force to style
-  FS.LongTimeFormat := 'hh:mm:ss';
-  Result := TimeToStr(SystemTimeToDateTime(SystemTime), FS);
-{$ELSE}
-  Result := TimeToStr(SystemTimeToDateTime(SystemTime));
-{$ENDIF COMPILER7_UP}
 
+  Result := Format('%0:.2d%1:s%2:.2d%3:s%4:.2d', [SystemTime.wHour, TimeSeparator,
+    SystemTime.wMinute, TimeSeparator, SystemTime.wSecond]);
 end;
 
 function DateTimeStringSafe(DateTime: PFILETIME; lpBuffer: PWideChar;
@@ -1812,92 +1793,6 @@ begin
         end;
       end;
     end;
-  end;
-end;
-
-
-
-function GetWTSLogonIdleTime(hServer: HANDLE; SessionId: DWORD;
-  var sLogonTime: string; var sIdleTime: string): Boolean;
-var
-  uReturnLength: DWORD;
-  Info: _WINSTATIONINFORMATIONW;
-  CurrentTime: TDateTime;
-  LastInputTime: TDateTime;
-  IdleTime: TDateTime;
-  LogonTime: TDateTime;
-  Days, Hours, Minutes: Word;
-  {$IFDEF COMPILER7_UP}
-  FS: TFormatSettings;
-  {$ENDIF COMPILER7_UP}
-begin
-  {$IFDEF COMPILER7_UP}
-  GetLocaleFormatSettings(LOCALE_SYSTEM_DEFAULT, FS);
-  {$ENDIF COMPILER7_UP}
-  uReturnLength := 0;
-  try
-    Result := WinStationQueryInformationW(hServer, SessionId,
-      WinStationInformation, @Info, SizeOf(Info), uReturnLength);
-    if Result then
-    begin
-      LogonTime := FileTime2DateTime(FileTime(Info.LogonTime));
-//TODO: Remko: YearOf is not available
-{.$IFDEF DELPHI6_UP}
-//      if (YearOf(LogonTime) = 1601) or (YearOf(LastInputTime) = 1601) then
-      if Int64(Info.LogonTime) = 0 then
-        sLogonTime := ''
-      else
-{.$ENDIF DELPHI6_UP}
-        {$IFDEF COMPILER7_UP}
-        sLogonTime := DateTimeToStr(LogonTime, FS);
-        {$ELSE}
-        sLogonTime := DateTimeToStr(LogonTime);
-        {$ENDIF COMPILER7_UP}
-      { from Usenet post by Chuck Chopp
-        http://groups.google.com/group/microsoft.public.win32.programmer.kernel/browse_thread/thread/c6dd86e7df6d26e4/3cf53e12a3246e25?lnk=st&q=WinStationQueryInformationa+group:microsoft.public.*&rnum=1&hl=en#3cf53e12a3246e25
-        2)  The system console session cannot go into an idle/disconnected state.
-            As such, the LastInputTime value will always math CurrentTime for the
-            console session.
-        3)  The LastInputTime value will be zero if the session has gone
-            disconnected.  In that case, use the DisconnectTime value in place of
-            LastInputTime when calculating the current idle time for a disconnected session.
-        4)  All of these time values are GMT time values.
-        5)  The disconnect time value will be zero if the sesson has never been
-            disconnected.}
-      CurrentTime := FileTime2DateTime(FileTime(Info.CurrentTime));
-      LastInputTime := FileTime2DateTime(FileTime(Info.LastInputTime));
-
-//TODO: YearOf is not available
-{.$IFDEF DELPHI6_UP}
-      // Disconnected session = idle since DisconnectTime
-//      if YearOf(LastInputTime) = 1601 then
-      if Int64(Info.LastInputTime) = 0 then
-        LastInputTime := FileTime2DateTime(FileTime(Info.DisconnectTime));
-{.$ENDIF}
-
-      IdleTime := LastInputTime - CurrentTime;
-      Days := Trunc(IdleTime);
-//TODO: Remko: HoursOf, MinuteOf are not available
-{$IFDEF DELPHI6_UP}
-      Hours := HourOf(IdleTime);
-      Minutes := MinuteOf(IdleTime);
-{$ELSE}
-      Hours := 0;
-      Minutes := 0;
-{$ENDIF}
-      if Days > 0 then
-        sIdleTime := Format('%dd %d:%1.2d', [Days, Hours, Minutes])
-      else
-      if Hours > 0 then
-        sIdleTime := Format('%d:%1.2d', [Hours, Minutes])
-      else
-      if Minutes > 0 then
-        sIdleTime := IntToStr(Minutes)
-      else
-        sIdleTime := '-';
-    end;
-  except
-    Result := False;
   end;
 end;
 
