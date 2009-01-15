@@ -48,7 +48,7 @@ unit JwsclElevation;
 {$IFNDEF SL_IMPLEMENTATION_SECTION}
 
 interface
-uses ComObj, JwaWindows, JwsclStrings;
+uses ComObj, JwaWindows, JwsclVersion, JwsclStrings;
 
 type
   {<B>TJwElevationClassFactory</B> provides a registration for a typed com object.
@@ -273,6 +273,7 @@ type
   //Abort = exit function
   //UserName = '' -> use 'Administrator'
   TJwOnElevationGetCredentials = procedure (var Abort : Boolean; var UserName, Password : TJwString;
+                var EncryptedPassword : Boolean; var Entropy : PDataBlob; var EncryptionPrompt : Boolean;
                 var Environment : Pointer; var lpStartupInfo: TStartupInfoW)  of object;
 
 { Description
@@ -376,6 +377,31 @@ function JwElevateProcess(const FileName : TJwString;
                 const OnElevationGetCredentials : TJwOnElevationGetCredentials) : THandle;
 
 
+type
+   TJwSuRunStatus = record
+     //SuRun version as array: e.g. 1.2.0.6
+     Version : array[0..3] of WORD;
+     //Path of SuRun.exe (with exe file)
+     LocationPath : String;
+     //Command line for shell exe file
+     ExeFileShellCommand : String;
+
+     //timeout of SuRun prompt (since 1.2.0.6)
+     CancelTimeOut : Integer;
+     //timeout active at all? (since 1.2.0.6)
+     UseCancelTimeOut : Boolean;
+     //PID return value supported? (since 1.2.0.6)
+     //SuRun returns PID of newly created process
+     PIDSupport : Boolean;
+
+     //LastError code of the attempt to connect to running SuRun
+     ServerStatusCode : DWORD;
+
+     //extended FileInformation of SuRun.exe
+     FileVersionInfo : TFileVersionInfo;
+   end;
+
+function JwCheckSuRunStatus(out StatusData : TJwSuRunStatus) : Boolean;
 
 {$ENDIF SL_IMPLEMENTATION_SECTION}
 
@@ -385,12 +411,123 @@ function JwElevateProcess(const FileName : TJwString;
 implementation
 uses Registry, SysUtils, ActiveX,
      JwsclTypes,   JwsclExceptions, JwsclSid,     JwsclAcl,
-     JwsclVersion, JwsclConstants,  JwsclUtils,
+     JwsclConstants,  JwsclUtils, JwsclEncryption,
      JwsclToken, JwaVista,
      JwsclDescriptor, JwsclKnownSid, JwsclMapping, JwsclResource;
 {$ENDIF SL_OMIT_SECTIONS}
 
 {$IFNDEF SL_INTERFACE_SECTION}
+
+
+
+function JwCheckSuRunStatus(out StatusData : TJwSuRunStatus) : Boolean;
+var
+  R : TRegistry;
+  pWindowsPath : array[0..MAX_PATH+1] of WideChar;
+  WindowsPath : TJwString;
+  hPipe : THandle;
+  i : Integer;
+  FileVer : TFileVersionInfo;
+  VersionStr : TJwString;
+begin
+  ZeroMemory(@StatusData, sizeof(StatusData));
+
+  //First get some information that can be there if even SuRun does not run
+  R := TRegistry.Create;
+  try
+    try
+      R.RootKey := HKEY_CLASSES_ROOT;
+      result := R.OpenKeyReadOnly('exefile\shell\SuRun\command');
+      if result then
+      begin
+        StatusData.ExeFileShellCommand := R.ReadString('');
+      end;
+      R.CloseKey;
+
+      R.RootKey := HKEY_LOCAL_MACHINE;
+      result := R.OpenKeyReadOnly('Software\SuRun');
+      if result then
+      begin
+        StatusData.CancelTimeOut := R.ReadInteger('CancelTimeOut');
+        StatusData.UseCancelTimeOut := R.ReadBool('UseCancelTimeOut');
+      end;
+    finally
+      R.Free;
+    end;
+  except
+    //continue though
+  end;
+
+  //try to connect to SuRun service pipe. If it fails SuRun does not run
+  // at the moment or is not installed
+  i := 4;
+  repeat
+    SetLastError(0);
+    hPipe := CreateFile('\\.\Pipe\SuperUserRun',GENERIC_WRITE,0,nil,OPEN_EXISTING,0,0);
+    result := (hPipe <> INVALID_HANDLE_VALUE);
+    Sleep(250);
+    Dec(i);
+  until result or
+        (i = 0) or
+        (GetLastError() = ERROR_FILE_NOT_FOUND) or
+        (GetLastError() = ERROR_ACCESS_DENIED);
+
+  StatusData.ServerStatusCode := GetLastError();
+
+
+  GetWindowsDirectoryW(pWindowsPath, sizeof(pWindowsPath));
+  WindowsPath := TJwString(pWindowsPath);  //W -> A is possible
+
+  //Get path to SuRun installation. It is saved in Windows folder
+  if Length(WindowsPath) > 0 then
+  begin
+    if WindowsPath[Length(WindowsPath)-1] <> '\' then
+      WindowsPath := WindowsPath + '\';
+
+{$IFNDEF TESTSURUN}
+    StatusData.LocationPath := WindowsPath + 'SuRun.exe';
+{$ELSE}
+    //only for testing
+    StatusData.LocationPath := 'E:\temp\surunsrc\SuRun.exe';
+{$ENDIF}
+
+    //Get more information about the SuRun.exe
+    TJwFileVersion.GetFileInfo(TJwString(StatusData.LocationPath), FileVer);
+
+    //if it fails it just returns an empty FileVer record. Doesn't matter
+
+    StatusData.FileVersionInfo := FileVer;
+
+    //parse the FileVersion string into the given Version array members.
+    VersionStr := TJwString(FileVer.FileVersion);
+    i := low(StatusData.Version);
+
+    while (i <= High(StatusData.Version)) and
+        (Length(VersionStr) > 0) do
+    begin
+      if VersionStr[1] in ['0'..'9'] then
+      begin
+        StatusData.Version[i] := 10 * StatusData.Version[i] + Ord(VersionStr[1])-48;
+      end
+      else
+      if (VersionStr[1] = ',') then //comma separated
+      begin
+        Inc(I); //get to next Version
+      end;
+      System.Delete(VersionStr, 1, 1);
+    end;
+
+    //PID return value is only supported in version 1.2.0.6 and newer
+    StatusData.PIDSupport := 1000 * StatusData.Version[0] +
+            100 * StatusData.Version[1] +
+            10 * StatusData.Version[2] +
+            1 * StatusData.Version[3]
+            >= 1206;
+  end;
+
+
+end;
+
 
 
 function JwElevateProcess(const FileName : TJwString;
@@ -403,28 +540,8 @@ function JwElevateProcess(const FileName : TJwString;
 var
   UACFlags : TJwShellExecuteFlags;
 
-  function IsSuRunAvailable : Boolean;
-  var
-    R : TRegistry;
-    S : String;
-  begin
-    R := TRegistry.Create;
-    try
-      try
-        R.RootKey := HKEY_CLASSES_ROOT;
-        result := R.OpenKeyReadOnly('exefile\shell\SuRun\command');
-        if result then
-        begin
-          S := R.ReadString('');
-          result := Length(S) > 0; //easiest way
-        end;
-      finally
-        R.Free;
-      end;
-    except
-      result := false;
-    end;
-  end;
+  SuRunAvail : Boolean; //IsSuRun available at all?
+  SuRunStatus : TJwSuRunStatus; //Current SuRun status information. Is it active?
 
   function RunUAC : THandle;
   var P : EJwsclJwShellExecuteException;
@@ -435,11 +552,12 @@ var
       on E : EJwsclWinCallFailedException do
       begin
         if E.LastError = E_USER_CANCELED_OPERATIONint then
-          raise EJwsclAbortException.CreateFmtWinCall('','JwShellExecute','','JwsclElevation.pas',0,
+          raise EJwsclAbortException.CreateFmtWinCall(RsElevationAbort,'JwShellExecute','',RsUNElevation,0,
                       true,'JwShellExecute',[])
         else
         begin
-          P := EJwsclJwShellExecuteException.CreateFmtWinCall(E.Message,'JwShellExecute','','JwsclElevation.pas',0,
+          //encapsulate the failed win call
+          P := EJwsclJwShellExecuteException.CreateFmtWinCall(E.Message,'JwShellExecute','',RsUNElevation,0,
                       true,'JwShellExecute',[]);
           P.LastError := E.LastError;
           raise P;
@@ -471,7 +589,7 @@ var
 
     if not  {$IFDEF UNICODE}ShellExecuteExW{$ELSE}ShellExecuteExA{$ENDIF}(Shell) then
     begin
-      raise EJwsclShellExecuteException.CreateFmtWinCall('','JwElevateProcess::RunUAC','','JwsclElevation.pas',0,
+      raise EJwsclShellExecuteException.CreateFmtWinCall(RsSuRunShellExecute,'JwElevateProcess::RunUAC','',RsUNElevation,0,
         true,'ShellExecuteEx',[]);
     end;
 
@@ -481,13 +599,13 @@ var
       WAIT_TIMEOUT :
         begin
           SetLastError(WAIT_TIMEOUT);
-          raise EJwsclSuRunErrorException.CreateFmtWinCall('','JwElevateProcess::RunSuRun','','JwsclElevation.pas',0,
+          raise EJwsclSuRunErrorException.CreateFmtWinCall(RsSuRunShellExecute,'JwElevateProcess::RunSuRun','',RsUNElevation,0,
                       true,'SuRun',[]);
         end;
       WAIT_FAILED :
         begin
           SetLastError(WAIT_FAILED);
-          raise EJwsclSuRunErrorException.CreateFmtWinCall('','JwElevateProcess::RunSuRun','','JwsclElevation.pas',0,
+          raise EJwsclSuRunErrorException.CreateFmtWinCall(RsSuRunShellExecute,'JwElevateProcess::RunSuRun','',RsUNElevation,0,
                       true,'SuRun',[]);
         end;
       WAIT_OBJECT_0 :
@@ -505,12 +623,12 @@ var
 
             if Continue then
             begin
-              raise EJwsclSuRunErrorException.CreateFmtWinCall('','JwElevateProcess::RunSuRun','','JwsclElevation.pas',0,
-                      true,'SuRun',[]);
+              raise EJwsclSuRunErrorException.CreateFmtWinCall(RsSunRunFailed,'JwElevateProcess::RunSuRun','',RsUNElevation,0,
+                      true,'SuRun',[SuRunCode]);
             end;
             if SuRunCode = 4 then
             begin
-              raise EJwsclAbortException.CreateFmtWinCall('','JwElevateProcess::RunSuRun','','JwsclElevation.pas',0,
+              raise EJwsclAbortException.CreateFmtWinCall(RsElevationAbort,'JwElevateProcess::RunSuRun','',RsUNElevation,0,
                       true,'SuRun',[]);
             end;
           end;
@@ -529,6 +647,11 @@ var
     CmdLine : PWideChar;
     Environment : Pointer;
     Flags : DWORD;
+
+    DecryptedPassword : TJwString;
+    IsEncryptedPassword : Boolean;
+    Entropy : PDataBlob;
+    EncryptionPrompt : Boolean;
   begin
     UserName := 'Administrator';
     Password := '';
@@ -538,8 +661,13 @@ var
 
 
     ZeroMemory(@lpStartupInfo, sizeof(lpStartupInfo));
+
+    //there are situations where an empty lpDesktop lets CreateProcess... fail
     lpStartupInfo.lpDesktop := 'winsta0\default';
 
+    IsEncryptedPassword := false;
+    Entropy := nil;
+    EncryptionPrompt := false;
     {get
       abort status
       username + password
@@ -547,10 +675,12 @@ var
       startupinfoW for createprocess 
     }
     if Assigned(OnElevationGetCredentials) then
-      OnElevationGetCredentials(Abort, UserName, Password, Environment, lpStartupInfo);
+      OnElevationGetCredentials(Abort, UserName, Password,
+        IsEncryptedPassword, Entropy, EncryptionPrompt,
+        Environment, lpStartupInfo);
 
     if Abort then
-      raise EJwsclAbortException.CreateFmtWinCall('','JwElevateProcess::RunSuRun','','JwsclElevation.pas',0,
+      raise EJwsclAbortException.CreateFmtWinCall(RsElevationAbort,'JwElevateProcess::RunSuRun','',RsUNElevation,0,
                       true,'OnElevationGetCredentials',[]);
 
     //setup commandline
@@ -572,6 +702,11 @@ var
     if Environment <> nil then
       Flags := Flags or CREATE_UNICODE_ENVIRONMENT;
 
+    if IsEncryptedPassword or (Entropy = nil) then
+    begin
+      DecryptedPassword := JwDecryptString(Password, EncryptionPrompt, Entropy);
+    end;
+
     try
       if not CreateProcessWithLogonW(
         PWideChar(WideString(UserName)),//lpUsername,
@@ -587,20 +722,22 @@ var
         lpProcessInformation//var lpProcessInformation: PROCESS_INFORMATION
       ) then
       raise EJwsclWinCallFailedException.CreateFmtWinCall(RsWinCallFailed,'JwElevateProcess::RunSuRun','',
-         'JwsclElevation.pas',0, true,'CreateProcessWithLogonW',['CreateProcessWithLogonW']);
+         RsUNElevation,0, true,'CreateProcessWithLogonW',['CreateProcessWithLogonW']);
     finally
-      Password := 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
-      SetLength(Password, 0);
+      JwZeroPassword(Password);
+      JwZeroPassword(DecryptedPassword);
     end;
 
     CloseHandle(lpProcessInformation.hThread);
     result := lpProcessInformation.hProcess;
   end;
 
-var SuRunAvail : Boolean;
+
+
+
 begin
   //is SuRun allowed?
-  SuRunAvail := IsSuRunAvailable and (epfAllowSuRun in ElevationProcessFlags);
+  SuRunAvail := (epfAllowSuRun in ElevationProcessFlags) and JwCheckSuRunStatus(SuRunStatus);
 
   //standard flags for JwShellExecute
   UACFlags := [sefNoUi, sefNoClosehProcess];
@@ -632,7 +769,7 @@ begin
         //if UAC is not available though, use CreateProcess...
         result := RunCreateProcess;
       end;
-      //otherwise we get EJwsclWinCallFailedException
+      //otherwise we get EJwsclWinCallFailedException or EJwsclAbortException
     end;
   end
   else
@@ -641,20 +778,23 @@ begin
     // it shows an credential dialog
     if not (epfNoUi in ElevationProcessFlags) then
     begin
-      //in 2000/XP, don't use UAC instead use RunAs verb
+      //ShellExecute can show credential prompt
       Exclude(UACFlags, sefNoUi);
+      //ignore UAC
       Include(UACFlags, sefIgnoreElevationIfNotAvailable);
       Include(UACFlags, sefFixDirWithRunAs);
 
+      //in 2000/XP, don't use UAC instead use RunAs verb
       result := RunUAC
     end
     else
       //otherwise use CreateProcessWithLogonW with event
+      //because noUI is set. ShellExecute does not work this way
       result := RunCreateProcess;
   end;
 
   if (epfCloseProcessHandle in ElevationProcessFlags) and
-    (result <> 0) and (result <> Cardinal(-1)) then
+    JwIsHandleValid(result) then
   begin
     CloseHandle(result);
     result := 0;
@@ -733,7 +873,7 @@ begin
     if {$IFDEF UNICODE}ShellExecuteExW{$ELSE}ShellExecuteExA{$ENDIF}(shExecInfo) then
       result := shExecInfo.hProcess
     else
-      raise EJwsclWinCallFailedException.CreateFmtWinCall(RsWinCallFailed,'src','','JwsclElevation.pas',0,
+      raise EJwsclWinCallFailedException.CreateFmtWinCall(RsWinCallFailed,'src','',RsUNElevation,0,
             true,'ShellExecuteEx',['ShellExecuteEx']);
 
     if (result <> 0) and not (sefNoClosehProcess in Flags) then

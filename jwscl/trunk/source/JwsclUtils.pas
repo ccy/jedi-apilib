@@ -695,6 +695,8 @@ Remarks
 }
 function JwCreateToString(const Values : array of const) : String;
 
+procedure JwZeroPassword(var S : TJwString);
+
 implementation
 uses SysUtils, Registry, Math, D5Impl, JwsclToken, JwsclKnownSid, JwsclDescriptor, JwsclAcl,
      JwsclSecureObjects, JwsclMapping, JwsclStreams, JwsclCryptProvider
@@ -702,6 +704,43 @@ uses SysUtils, Registry, Math, D5Impl, JwsclToken, JwsclKnownSid, JwsclDescripto
      ,TypInfo
 {$ENDIF JW_TYPEINFO}
       ;
+
+
+type
+   TLStr = array[0..1] of AnsiChar;
+
+procedure JwZeroPassword(var S : TJwString);
+{$IFOPT O+}
+ {$DEFINE OPT_ON}
+{$ELSE}
+ {$UNDEF OPT_ON}
+{$ENDIF}
+{$O-}
+var i,i2 : Integer;
+      Data : ^TLStr;
+      len : Integer;
+begin
+  if Length(S) = 0 then
+    exit;
+
+  randomize;
+  len := Length(S) * sizeof(S[1]); //also get widechar size
+  Data := Pointer(@S[1]); //get first char
+
+  for i2 := 1 to len do
+  for i := 0 to len-1 do //goes through all chars (even both widechar)
+  begin
+    {$IFOPT O+}
+     Error //: this procedure must not be compiled with optimization
+    {$ENDIF}
+    Data^[i] := AnsiChar(Random(255));
+  end;
+  ZeroMemory(Data, len);
+  SetLength(S, 0);
+end;
+{$IFDEF OPT_ON}
+ {$O+}
+{$ENDIF}
 
 function JwCreateToString(const Values : array of const) : String;
   function GetValue(I : Integer; const Values : array of const) : String;

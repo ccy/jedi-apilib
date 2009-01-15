@@ -494,6 +494,9 @@ const
 //
   RsElevationRegDeleteError = 'The key %0:s could not be deleted.';
   RsElevationRegCreateError = 'The key %0:s could not be created.';
+  RsElevationAbort          = 'The user aborted the elevation process.';
+  RsSuRunShellExecute       = 'ShellExecute failed while trying to run SuRun.';
+  RsSunRunFailed            = 'SuRun failed and returned status code: %0:d';
 
 //Unit JwsclCryptProvider.pas
 
