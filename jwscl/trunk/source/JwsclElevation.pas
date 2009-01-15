@@ -211,7 +211,7 @@ This function only works on Windows Vista and newer OS versions.
  will not be shown but a new task is displayed it the taskbar. Otherwise the elevation dialog
  will be shown direclty. 
 @param ClassId defines a guid that describes a registered com object 
-@param IID defines the requested com object to be returned 
+@param IID defines the requested com object to be returned
 @param ObjectInterface returns the requested and elevated com object 
 @return Returns a COM result code. If the call was successfull the return value is S_OK 
 }
@@ -255,10 +255,127 @@ can fail. If ShellExecute determines an error the return value is 0 and
 an exception is raised.
  
 raises
- EJwsclWinCallFailedException:  will be raised if a call to ShellExecuteEx failed 
+ EJwsclWinCallFailedException:  will be raised if a call to ShellExecuteEx failed
+ EJwsclUnsupportedWindowsVersionException will be raised if the flag
+     sefIgnoreElevationIfNotAvailable is set and UAC is not available
 }
 function JwShellExecute(const hWnd: HWND; FileName, Parameters,
   Directory: TJwString; ShowCmd: Integer; Flags : TJwShellExecuteFlags = [sefNoClosehProcess]): HANDLE;
+
+type
+  TJwElevationProcessFlag = (
+    epfNoUi,
+    epfAllowSuRun,
+    //returned handle is closed
+    epfCloseProcessHandle);
+  TJwElevationProcessFlags = set of TJwElevationProcessFlag;
+
+  //Abort = exit function
+  //UserName = '' -> use 'Administrator'
+  TJwOnElevationGetCredentials = procedure (var Abort : Boolean; var UserName, Password : TJwString;
+                var Environment : Pointer; var lpStartupInfo: TStartupInfoW)  of object;
+
+{ Description
+  JwElevateProcess is much like JwShellExecute but also may work on Windows 2000
+  and XP without UAC. Instead it uses SuRun if installed. On Vista/2008 and newer
+  it tries to use UAC. If UAC and SuRun is not available it falls back to
+  ShellExecute with the RunAs verb. In this case a dialog pops up the receives a
+  username and password to use (usually Administrator). If no UI is allowed the
+  function can use another method that receives the username and password from a
+  generated even method (OnElevationGetCredentials). In this case the process is
+  started using Windows Secondary Logon Service.
+  
+  The return value is a process handle, in case of SuRun zero, or zero if it
+  closed automatically.
+  Parameters
+  FileName :                   TBD
+  Parameters\ :                TBD
+  Directory :                  TBD
+  hWindow :                    TBD
+  ElevationProcessFlags :      TBD
+  OnElevationGetCredentials :  TBD<p /><p />
+  Returns
+  The return value is a process handle of the newly created process. If there was
+  an error the return value is undefined (in this case an exception is raised
+  anyway).
+  
+  If the process is started by SuRun the process handle cannot be returned. In
+  this case the returned value is 0.
+  
+  If the flag epfCloseProcessHandle is set in ElevationProcessFlags, the returned
+  value is also 0.
+  
+  In any other case the handle must be closed using CloseHandle.
+  Exceptions
+  EJwsclAbortException :           The elevation was aborted by the user.
+  EJwsclElevateProcessException :  Super class of
+                                   * EJwsclAbortException
+                                   * EJwsclElevationException
+                                   * EJwsclJwShellExecuteException
+                                   * EJwsclShellExecuteException
+                                   * EJwsclSuRunErrorException
+                                   Actually this exception is not raised.
+  EJwsclElevationException :       Currently not used.
+  EJwsclJwShellExecuteException :  A call to JwShellExecute failed. This happens
+                                   only on system with UAC available. See property
+                                   LastError for more information.
+  EJwsclShellExecuteException :    This exception is raised if SuRun is not setup
+                                   properly.See property LastError for more
+                                   information.
+  EJwsclSuRunErrorException :      This exception will be raised if SuRun fails to
+                                   elevate the new process. The property LastError
+                                   of this exception contains more information
+                                   about the error. See remarks section for more
+                                   information.
+  EJwsclWinCallFailedException :   This error only happens when a call to the
+                                   Secondary Logon Process failed.See property
+                                   LastError for more information.
+  Remarks
+  In case of the EJwsclSuRunErrorException the LastError property contains more
+  information. SuRun returns some status error code information that can be used.
+  <table 20c%>
+  Status value                  \Description
+  ----------------------------  -----------------------------------------------------
+  \-1<p />(WAIT_FAILED)         Not a SuRun status code. It happens when a wait call
+                                 for the SuRun process failed because the process
+                                 handle is invalid.
+  258<p />(WAIT_TIMEOUT)        Not a SuRun status code. A time out occurred while
+                                 waiting for the SuRun process to finish. This
+                                 usually happens when SuRun stucks or Surun's
+                                 credential prompt time out is greater than
+                                 60seconds. (constant timeout)
+  0<p />(RETVAL_OK)             SuRun returned successfully. The designated
+                                 application is run elevated.
+  1<p />(RETVAL_ACCESSDENIED)   SuRun: TBD
+  3<p />(RETVAL_RESTRICT)       SuRun: The current user is not allowed to run
+                                 applications elevated or this application cannot be
+                                 run elevated by the current user.
+  4<p />(RETVAL_CANCELLED)      SuRun: The user canceled the elevation process.
+  </table>
+  Conditions
+  The function acts the following way:
+    1. If it detects SuRun and parameter ElevationProcessFlags contains
+       epfAllowSuRun it uses SuRun to elevate the application.
+    2. If Windows Vista, 2008, 7 is detected
+       1. and UAC is available, it uses UAC to elevate the process.
+       2. and UAC is not available, it uses Secondary Logon Process and thus event
+          parameter OnElevationGetCredentials is called
+    3. In all other cases it uses Secondary Logon Process and thus event parameter
+       OnElevationGetCredentials is called
+  
+  JwElevateProcess does not fall back to Secondary Logon Process if UAC is enabled
+  but fails.                                                                          }
+
+
+
+function JwElevateProcess(const FileName : TJwString;
+                Parameters : TJwString;
+                Directory : TJwString;
+                hWindow : HWND;
+                ElevationProcessFlags : TJwElevationProcessFlags;
+                const OnElevationGetCredentials : TJwOnElevationGetCredentials) : THandle;
+
+
 
 {$ENDIF SL_IMPLEMENTATION_SECTION}
 
@@ -274,6 +391,276 @@ uses Registry, SysUtils, ActiveX,
 {$ENDIF SL_OMIT_SECTIONS}
 
 {$IFNDEF SL_INTERFACE_SECTION}
+
+
+function JwElevateProcess(const FileName : TJwString;
+                Parameters : TJwString;
+                Directory : TJwString;
+                hWindow : HWND;
+                ElevationProcessFlags : TJwElevationProcessFlags;
+                const OnElevationGetCredentials : TJwOnElevationGetCredentials) : THandle;
+
+var
+  UACFlags : TJwShellExecuteFlags;
+
+  function IsSuRunAvailable : Boolean;
+  var
+    R : TRegistry;
+    S : String;
+  begin
+    R := TRegistry.Create;
+    try
+      try
+        R.RootKey := HKEY_CLASSES_ROOT;
+        result := R.OpenKeyReadOnly('exefile\shell\SuRun\command');
+        if result then
+        begin
+          S := R.ReadString('');
+          result := Length(S) > 0; //easiest way
+        end;
+      finally
+        R.Free;
+      end;
+    except
+      result := false;
+    end;
+  end;
+
+  function RunUAC : THandle;
+  var P : EJwsclJwShellExecuteException;
+  begin
+    try
+      Result := JwShellExecute(hWindow, FileName, Parameters, Directory, SW_NORMAL, UACFlags);
+    except
+      on E : EJwsclWinCallFailedException do
+      begin
+        if E.LastError = E_USER_CANCELED_OPERATIONint then
+          raise EJwsclAbortException.CreateFmtWinCall('','JwShellExecute','','JwsclElevation.pas',0,
+                      true,'JwShellExecute',[])
+        else
+        begin
+          P := EJwsclJwShellExecuteException.CreateFmtWinCall(E.Message,'JwShellExecute','','JwsclElevation.pas',0,
+                      true,'JwShellExecute',[]);
+          P.LastError := E.LastError;
+          raise P;
+        end;
+      end;
+
+    end;
+  end;
+
+  function RunSuRun : THandle;
+  var
+    SuRunCode : Cardinal;
+    Shell : {$IFDEF UNICODE}TShellExecuteInfoW;{$ELSE}TShellExecuteInfoA;{$ENDIF}
+    Continue : Boolean;
+  begin
+
+    {This section uses the surun verb to execute the process
+    as an administrator.
+    Get SuRun from http://kay-bruns.de/wp/software/surun/
+    }
+    ZeroMemory(@Shell, sizeof(Shell));
+    Shell.cbSize := sizeof(Shell);
+    Shell.lpVerb := 'SuRun';
+    Shell.lpFile := TJwPChar(TJwString(ParamStr(0)));
+    Shell.lpParameters := TJwPChar(Parameters);
+    Shell.lpDirectory := TJwPChar(Directory);
+    Shell.fMask := SEE_MASK_NOCLOSEPROCESS or SEE_MASK_FLAG_NO_UI;
+    Shell.hwnd := hWindow;
+
+    if not  {$IFDEF UNICODE}ShellExecuteExW{$ELSE}ShellExecuteExA{$ENDIF}(Shell) then
+    begin
+      raise EJwsclShellExecuteException.CreateFmtWinCall('','JwElevateProcess::RunUAC','','JwsclElevation.pas',0,
+        true,'ShellExecuteEx',[]);
+    end;
+
+
+    //60sec timeout period
+    case WaitForSingleObject(Shell.hProcess, 60*1000) of
+      WAIT_TIMEOUT :
+        begin
+          SetLastError(WAIT_TIMEOUT);
+          raise EJwsclSuRunErrorException.CreateFmtWinCall('','JwElevateProcess::RunSuRun','','JwsclElevation.pas',0,
+                      true,'SuRun',[]);
+        end;
+      WAIT_FAILED :
+        begin
+          SetLastError(WAIT_FAILED);
+          raise EJwsclSuRunErrorException.CreateFmtWinCall('','JwElevateProcess::RunSuRun','','JwsclElevation.pas',0,
+                      true,'SuRun',[]);
+        end;
+      WAIT_OBJECT_0 :
+        begin
+          if GetExitCodeProcess(Shell.hProcess,SuRunCode) then
+          begin
+            {
+            #define RETVAL_OK           0
+            #define RETVAL_ACCESSDENIED 1
+            #define RETVAL_RESTRICT     3
+            #define RETVAL_CANCELLED    4
+            }
+            Continue := (SuRunCode <> 0) and (SuRunCode <> 4);
+            SetLastError(SuRunCode);
+
+            if Continue then
+            begin
+              raise EJwsclSuRunErrorException.CreateFmtWinCall('','JwElevateProcess::RunSuRun','','JwsclElevation.pas',0,
+                      true,'SuRun',[]);
+            end;
+            if SuRunCode = 4 then
+            begin
+              raise EJwsclAbortException.CreateFmtWinCall('','JwElevateProcess::RunSuRun','','JwsclElevation.pas',0,
+                      true,'SuRun',[]);
+            end;
+          end;
+        end;
+    end;
+    result := 0; //don't use -1 it is what GetcurrentProcess returns. Could be mixed up.
+  end;
+
+  function RunCreateProcess : THandle;
+  var
+    lpStartupInfo: STARTUPINFOW;
+    lpProcessInformation: PROCESS_INFORMATION;
+    UserName, Password : TJwString;
+    Abort : Boolean;
+    CurDir,
+    CmdLine : PWideChar;
+    Environment : Pointer;
+    Flags : DWORD;
+  begin
+    UserName := 'Administrator';
+    Password := '';
+    Abort := false;
+
+    Environment := nil;
+
+
+    ZeroMemory(@lpStartupInfo, sizeof(lpStartupInfo));
+    lpStartupInfo.lpDesktop := 'winsta0\default';
+
+    {get
+      abort status
+      username + password
+      environment for createprocess
+      startupinfoW for createprocess 
+    }
+    if Assigned(OnElevationGetCredentials) then
+      OnElevationGetCredentials(Abort, UserName, Password, Environment, lpStartupInfo);
+
+    if Abort then
+      raise EJwsclAbortException.CreateFmtWinCall('','JwElevateProcess::RunSuRun','','JwsclElevation.pas',0,
+                      true,'OnElevationGetCredentials',[]);
+
+    //setup commandline
+    if Length(Parameters) > 0 then
+      CmdLine := PWideChar(WideString(Parameters))
+    else
+      CmdLine := nil;
+
+    //setup directory  
+    if Length(Directory) > 0 then
+      CurDir := PWideChar(WideString(Directory))
+    else
+      CurDir := nil;
+
+    //prevent size change from event  
+    lpStartupInfo.cb := sizeof(lpStartupInfo);
+
+    Flags := CREATE_NEW_CONSOLE;
+    if Environment <> nil then
+      Flags := Flags or CREATE_UNICODE_ENVIRONMENT;
+
+    try
+      if not CreateProcessWithLogonW(
+        PWideChar(WideString(UserName)),//lpUsername,
+        '',//lpDomain,
+        PWideChar(WideString(Password)),//lpPassword: LPCWSTR;
+        LOGON_WITH_PROFILE,//dwLogonFlags: DWORD;
+        PWideChar(WideString(FileName)),//lpApplicationName: LPCWSTR;
+        CmdLine,//lpCommandLine: LPWSTR;
+        Flags,//dwCreationFlags: DWORD;
+        Environment,//lpEnvironment: LPVOID;
+        CurDir,//lpCurrentDirectory: LPCWSTR;
+        lpStartupInfo,//const lpStartupInfo: STARTUPINFOW;
+        lpProcessInformation//var lpProcessInformation: PROCESS_INFORMATION
+      ) then
+      raise EJwsclWinCallFailedException.CreateFmtWinCall(RsWinCallFailed,'JwElevateProcess::RunSuRun','',
+         'JwsclElevation.pas',0, true,'CreateProcessWithLogonW',['CreateProcessWithLogonW']);
+    finally
+      Password := 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
+      SetLength(Password, 0);
+    end;
+
+    CloseHandle(lpProcessInformation.hThread);
+    result := lpProcessInformation.hProcess;
+  end;
+
+var SuRunAvail : Boolean;
+begin
+  //is SuRun allowed?
+  SuRunAvail := IsSuRunAvailable and (epfAllowSuRun in ElevationProcessFlags);
+
+  //standard flags for JwShellExecute
+  UACFlags := [sefNoUi, sefNoClosehProcess];
+
+  //remove flags from UAC if neccessary
+  if (epfCloseProcessHandle in ElevationProcessFlags) then
+    Exclude(UACFlags, sefNoClosehProcess);
+  if (epfNoUi in ElevationProcessFlags) then
+    Exclude(UACFlags, sefNoUi);
+
+  //use SuRun first and if enabled
+  //regardeless of OS
+  if SuRunAvail then
+  begin
+    result := RunSuRun;
+  end
+  else
+  //if UAC is supported by OS
+  if TJwWindowsVersion.IsWindowsVista(true) or
+     TJwWindowsVersion.IsWindows2008(true) then
+  begin
+    //this flags raises an exception if UAC is not available
+    Exclude(UACFlags, sefIgnoreElevationIfNotAvailable);
+    try
+      result := RunUAC;
+    except
+      on E : EJwsclUnsupportedWindowsVersionException do
+      begin
+        //if UAC is not available though, use CreateProcess...
+        result := RunCreateProcess;
+      end;
+      //otherwise we get EJwsclWinCallFailedException
+    end;
+  end
+  else
+  begin
+    //if UI is allowed use RunAs verb with Shellexecute
+    // it shows an credential dialog
+    if not (epfNoUi in ElevationProcessFlags) then
+    begin
+      //in 2000/XP, don't use UAC instead use RunAs verb
+      Exclude(UACFlags, sefNoUi);
+      Include(UACFlags, sefIgnoreElevationIfNotAvailable);
+      Include(UACFlags, sefFixDirWithRunAs);
+
+      result := RunUAC
+    end
+    else
+      //otherwise use CreateProcessWithLogonW with event
+      result := RunCreateProcess;
+  end;
+
+  if (epfCloseProcessHandle in ElevationProcessFlags) and
+    (result <> 0) and (result <> Cardinal(-1)) then
+  begin
+    CloseHandle(result);
+    result := 0;
+  end;
+end;
+
 
 function JwShellExecute(const hWnd: HWND;  FileName, Parameters,
   Directory: TJwString; ShowCmd: Integer; Flags : TJwShellExecuteFlags = [sefNoClosehProcess]): HANDLE;

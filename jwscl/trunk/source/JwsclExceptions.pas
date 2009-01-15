@@ -410,6 +410,7 @@ type
 
   EJwsclElevationException = class(EJwsclElevateProcessException);
   EJwsclShellExecuteException = class(EJwsclElevateProcessException);
+  EJwsclJwShellExecuteException = class(EJwsclElevateProcessException);
 
 
 

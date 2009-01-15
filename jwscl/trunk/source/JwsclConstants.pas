@@ -1512,11 +1512,26 @@ const
   The user has canceled the UAC prompt.
   }
   E_USER_CANCELED_OPERATION = HRESULT($800704C7);//
+
   {
-  <B>E_CLASS_IS_NOT_SETUP</B> 
+  <B>ERROR_CANCELLED</B>
+  The user has canceled the UAC prompt.
+  Integer version. Contains only code part of HRESULT.
+  }
+  E_USER_CANCELED_OPERATIONint = 1223;//
+
+  {
+  <B>E_CLASS_IS_NOT_SETUP</B>
   The requested COM class has not been setup to be used for elevation.
   }
-  E_CLASS_IS_NOT_SETUP = HRESULT($80080017); 
+  E_CLASS_IS_NOT_SETUP = HRESULT($80080017);
+
+  {
+  <B>E_CLASS_IS_NOT_SETUPint</B>
+  The requested COM class has not been setup to be used for elevation.
+  Integer version. Contains only code part of HRESULT.
+  }
+  E_CLASS_IS_NOT_SETUPint = 23;
 
 {$ENDIF SL_IMPLEMENTATION_SECTION}
 
