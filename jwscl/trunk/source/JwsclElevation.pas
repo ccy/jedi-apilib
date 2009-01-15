@@ -702,7 +702,7 @@ var
     if Environment <> nil then
       Flags := Flags or CREATE_UNICODE_ENVIRONMENT;
 
-    if IsEncryptedPassword or (Entropy = nil) then
+    if IsEncryptedPassword then
     begin
       DecryptedPassword := JwDecryptString(Password, EncryptionPrompt, Entropy);
     end;
