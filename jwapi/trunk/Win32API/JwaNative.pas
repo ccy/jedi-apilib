@@ -186,6 +186,8 @@ const
 {$ENDIF JWA_OMIT_SECTIONS}
 {$IFNDEF JWA_IMPLEMENTATIONSECTION}
 
+
+  
 type
  
   _CLIENT_ID = record
@@ -3790,6 +3792,7 @@ type
   PTEB = ^_TEB;
   PPTEB = ^PTEB;
 
+//from JwaWinternl.pas
 type
   _OBJECT_NAME_INFORMATION = record
     Name: UNICODE_STRING;
@@ -3798,6 +3801,42 @@ type
   POBJECT_NAME_INFORMATION = ^OBJECT_NAME_INFORMATION;
   TObjectNameInformation = OBJECT_NAME_INFORMATION;
   PObjectNameInformation = ^OBJECT_NAME_INFORMATION;
+
+
+
+
+_PROCESS_BASIC_INFORMATION = record
+    Reserved1: PVOID;
+    PebBaseAddress: PPEB;
+    Reserved2: array [0..1] of PVOID;
+    UniqueProcessId: ULONG_PTR;
+    Reserved3: PVOID;
+  end;
+  PROCESS_BASIC_INFORMATION = _PROCESS_BASIC_INFORMATION;
+  PPROCESS_BASIC_INFORMATION = ^PROCESS_BASIC_INFORMATION;
+  TProcessBasicInformation = PROCESS_BASIC_INFORMATION;
+  PProcessBasicInformation = ^TProcessBasicInformation;
+
+  _SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION = record
+    IdleTime: LARGE_INTEGER;
+    KernelTime: LARGE_INTEGER;
+    UserTime: LARGE_INTEGER;
+    Reserved1: array [0..1] of LARGE_INTEGER;
+    Reserved2: ULONG;
+  end;
+  SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION = _SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION;
+  PSYSTEM_PROCESSOR_PERFORMANCE_INFORMATION = ^SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION;
+  TSystemProcessorPerformanceInformation = SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION;
+  PSystemProcessorPerformanceInformation = ^TSystemProcessorPerformanceInformation;
+
+
+
+
+
+
+
+
+
 
 const
   NtCurrentProcess = HANDLE(-1);

@@ -285,6 +285,14 @@ function RegDeleteKeyW(hKey: HKEY; lpSubKey: LPCWSTR): LONG; stdcall;
 function RegDeleteKey(hKey: HKEY; lpSubKey: LPCTSTR): LONG; stdcall;
 {$EXTERNALSYM RegDeleteKey}
 
+function RegDeleteKeyExA(hKey: HKEY; lpSubKey: LPCSTR; samDesired : REGSAM; Reserved : DWORD): LONG; stdcall;
+{$EXTERNALSYM RegDeleteKeyExA}
+function RegDeleteKeyExW(hKey: HKEY; lpSubKey: LPCWSTR; samDesired : REGSAM; Reserved : DWORD): LONG; stdcall;
+{$EXTERNALSYM RegDeleteKeyExW}
+function RegDeleteKeyEx(hKey: HKEY; lpSubKey: LPCTSTR; samDesired : REGSAM; Reserved : DWORD): LONG; stdcall;
+{$EXTERNALSYM RegDeleteKeyEx}
+
+
 function RegDeleteValueA(hKey: HKEY; lpValueName: LPCSTR): LONG; stdcall;
 {$EXTERNALSYM RegDeleteValueA}
 function RegDeleteValueW(hKey: HKEY; lpValueName: LPCWSTR): LONG; stdcall;
@@ -793,6 +801,49 @@ begin
         JMP     [_RegDeleteKey]
   end;
 end;
+
+//
+
+var
+  _RegDeleteKeyExA: Pointer;
+
+function RegDeleteKeyExA;
+begin
+  GetProcedureAddress(_RegDeleteKeyExA, advapi32, 'RegDeleteKeyExA');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_RegDeleteKeyExA]
+  end;
+end;
+
+var
+  _RegDeleteKeyExW: Pointer;
+
+function RegDeleteKeyExW;
+begin
+  GetProcedureAddress(_RegDeleteKeyExW, advapi32, 'RegDeleteKeyExW');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_RegDeleteKeyExW]
+  end;
+end;
+
+var
+  _RegDeleteKeyEx: Pointer;
+
+function RegDeleteKeyEx;
+begin
+  GetProcedureAddress(_RegDeleteKeyEx, advapi32, 'RegDeleteKeyEx' + AWSuffix);
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_RegDeleteKeyEx]
+  end;
+end;
+
+
 
 var
   _RegDeleteValueA: Pointer;
@@ -1684,6 +1735,9 @@ function RegCreateKeyEx; external advapi32 name 'RegCreateKeyEx' + AWSuffix;
 function RegDeleteKeyA; external advapi32 name 'RegDeleteKeyA';
 function RegDeleteKeyW; external advapi32 name 'RegDeleteKeyW';
 function RegDeleteKey; external advapi32 name 'RegDeleteKey' + AWSuffix;
+function RegDeleteKeyExA; external advapi32 name 'RegDeleteKeyExA';
+function RegDeleteKeyExW; external advapi32 name 'RegDeleteKeyExW';
+function RegDeleteKeyEx; external advapi32 name 'RegDeleteKeyEx' + AWSuffix;
 function RegDeleteValueA; external advapi32 name 'RegDeleteValueA';
 function RegDeleteValueW; external advapi32 name 'RegDeleteValueW';
 function RegDeleteValue; external advapi32 name 'RegDeleteValue' + AWSuffix;

@@ -159,7 +159,10 @@ procedure FillMemory(Destination: PVOID; Length: SIZE_T; Fill: BYTE);
 {$EXTERNALSYM FillMemory}
 procedure ZeroMemory(Destination: PVOID; Length: SIZE_T);
 {$EXTERNALSYM ZeroMemory}
-//#define SecureZeroMemory RtlSecureZeroMemory TODO
+
+
+function SecureZeroMemory({__in}ptr : PVOID;{__in}cnt : SIZE_T) : Pointer;{$IFDEF DELPHI2005_UP}inline;{$ENDIF}
+{$EXTERNALSYM ZeroMemory}
 
 //
 // File creation flags must start at the high end since they
@@ -6273,6 +6276,12 @@ end;
 procedure ZeroMemory(Destination: PVOID; Length: SIZE_T);
 begin
   FillChar(Destination^, Length, 0);
+end;
+
+function SecureZeroMemory({__in}ptr : PVOID;{__in}cnt : SIZE_T) : Pointer;
+begin
+  FillChar(ptr^, cnt, 0);
+  result := ptr;
 end;
 
 function FreeModule(hLibModule: HMODULE): BOOL;
