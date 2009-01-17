@@ -198,7 +198,7 @@ type
      If bOrHigher is <B>true</B> the return value is the result of
      <B>true</B> if (bOrHigher and (GetWindowsType > iVer)) is true;
      <B>false</B> if GetWindowsType < (requested version)
-      
+
     }
     function IsWindowsXP(bOrHigher: boolean = False): boolean;
 
@@ -274,6 +274,9 @@ type
 
     class function GetWindowsType: integer; virtual;
 
+    class function GetCachedWindowsType: integer;
+    class function SetCachedWindowsType(const WindowsType : Integer; Server : Boolean = False) : Integer; virtual;
+    class procedure ResetCachedWindowsType; virtual;
       {<B>IsWindows95</B> checks if the system has the version given in the function name.
        @param bOrHigher defines if the return value should also be <B>true</B> if the system
               is better/higher than the requested system version. 
@@ -294,7 +297,7 @@ type
                If bOrHigher is <B>true</B> the return value is the result of
                 <B>true</B> if (bOrHigher and (GetWindowsType > iVer)) is true;
                 <B>false</B> if GetWindowsType < (requested version)
-                
+
        }
 
     class function IsWindows98(bOrHigher: boolean = False): boolean;
@@ -358,7 +361,7 @@ type
 
       {<B>IsWindowsXP</B> checks if the system has the version given in the function name.
        @param bOrHigher defines if the return value should also be <B>true</B> if the system
-              is better/higher than the requested system version. 
+              is better/higher than the requested system version.
        @return <B>IsWindowsXP</B> returns <B>true</B> if the system is the requested version (or higher if bOrHigher is true);
                otherwise <B>false</B>.
                If bOrHigher is <B>true</B> the return value is the result of
@@ -375,7 +378,7 @@ type
        Currenty the parameter bOrHigher has no meaning in this function!
 
        @param bOrHigher defines if the return value should also be <B>true</B> if the system
-              is better/higher than the requested system version. 
+              is better/higher than the requested system version.
        @return <B>IsWindowsVista</B> returns <B>true</B> if the system is the requested version (or higher if bOrHigher is true);
                otherwise <B>false</B>.
                If bOrHigher is <B>true</B> the return value is the result of
@@ -401,6 +404,9 @@ type
        }
     class function IsWindows2008(bOrHigher: boolean = False): boolean;
       virtual;
+
+    class function IsWindows7(bOrHigher: Boolean = False): Boolean; virtual;
+
 
       {<B>IsServer</B> checks if the system is a server version
        @return Returns true if the system is a server; otherwise false (Workstation). }
@@ -481,6 +487,7 @@ uses SysConst, Registry;
 var
   fWindowsType: integer;
   fIsServer: boolean;
+
 
 class function TJwFileVersion.GetFileInfo(const Filename: TJwString;
   var FileVersionInfo: TFileVersionInfo): Boolean;
@@ -613,9 +620,9 @@ begin
     NetApiBufferFree(ServerInfoPtr);
   end
   else begin
-    raise EJwsclWinCallFailedException.CreateFmtEx('',
-      'NetServerGetInfo', ClassName, RsUNVersion, 0, nStatus,
-          [FServer]);
+    raise EJwsclWinCallFailedException.CreateFmtEx(
+      RsWinCallFailedWithNTStatus+#13#10+'Server: %2:s', 'DisableAllPrivileges', ClassName,
+      RsUNVersion, 0, True, ['NetServerGetInfo', nStatus,FServer]);
   end;
 end;
 
@@ -990,16 +997,56 @@ begin
   end;
 end;
 
+
+
+
+
+class function TJwWindowsVersion.GetCachedWindowsType: integer;
+begin
+  result := fWindowsType;
+end;
+
+class procedure TJwWindowsVersion.ResetCachedWindowsType;
+var Srv : TJwServerInfo;
+begin
+  fWindowsType := GetWindowsType;
+
+  try
+    Srv := TJwServerInfo.Create('');
+    try
+      fIsServer := Srv.IsServer;
+    finally
+      Srv.Free;
+    end;
+  except
+    fIsServer := False;  
+  end;
+end;
+
+class function TJwWindowsVersion.SetCachedWindowsType(
+  const WindowsType: Integer; Server: Boolean): Integer;
+begin
+  fWindowsType := WindowsType;
+  fIsServer  := Server;
+end;
+
 {$ENDIF SL_INTERFACE_SECTION}
 
 {$IFNDEF SL_OMIT_SECTIONS}
 
 
+class function TJwWindowsVersion.IsWindows7(bOrHigher: Boolean): Boolean;
+const
+  iVer = cOsWin7;
+begin
+  Result := (FWindowsType = iVer) or (bOrHigher and (FWindowsType > iVer));
+end;
+
 initialization
 {$ENDIF SL_OMIT_SECTIONS}
 
 {$IFNDEF SL_INITIALIZATION_SECTION}
-  fWindowsType := TJwWindowsVersion.GetWindowsType;
+  TJwWindowsVersion.ResetCachedWindowsType;
 
 {$ENDIF SL_INITIALIZATION_SECTION}
 

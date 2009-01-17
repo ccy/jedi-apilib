@@ -5568,7 +5568,7 @@ begin
     dwLogonType, dwLogonProvider, fTokenHandle);
 
   if (not bResult) then
-    raise EJwsclSecurityException.CreateFmtEx(RsWinCallFailed,
+    raise EJwsclWinCallFailedException.CreateFmtEx(RsWinCallFailed,
       'CreateLogonUser', ClassName, RsUNToken, 0, True, ['LogonUser']);
 end;
 

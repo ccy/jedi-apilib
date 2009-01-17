@@ -440,7 +440,10 @@ begin
       result := R.OpenKeyReadOnly('exefile\shell\SuRun\command');
       if result then
       begin
-        StatusData.ExeFileShellCommand := R.ReadString('');
+        try
+          StatusData.ExeFileShellCommand := R.ReadString('');
+        except
+        end;
       end;
       R.CloseKey;
 
@@ -448,8 +451,14 @@ begin
       result := R.OpenKeyReadOnly('Software\SuRun');
       if result then
       begin
-        StatusData.CancelTimeOut := R.ReadInteger('CancelTimeOut');
-        StatusData.UseCancelTimeOut := R.ReadBool('UseCancelTimeOut');
+        try
+          StatusData.CancelTimeOut := R.ReadInteger('CancelTimeOut');
+        except
+        end;
+        try
+          StatusData.UseCancelTimeOut := R.ReadBool('UseCancelTimeOut');
+        except
+        end;
       end;
     finally
       R.Free;
@@ -465,12 +474,16 @@ begin
     SetLastError(0);
     hPipe := CreateFile('\\.\Pipe\SuperUserRun',GENERIC_WRITE,0,nil,OPEN_EXISTING,0,0);
     result := (hPipe <> INVALID_HANDLE_VALUE);
+    if result then
+      CloseHandle(hPipe);
     Sleep(250);
     Dec(i);
   until result or
         (i = 0) or
         (GetLastError() = ERROR_FILE_NOT_FOUND) or
         (GetLastError() = ERROR_ACCESS_DENIED);
+
+
 
   StatusData.ServerStatusCode := GetLastError();
 
@@ -628,11 +641,12 @@ var
             end;
             if SuRunCode = 4 then
             begin
+              SetLastError(E_USER_CANCELED_OPERATIONint);
               raise EJwsclAbortException.CreateFmtWinCall(RsElevationAbort,'JwElevateProcess::RunSuRun','',RsUNElevation,0,
                       true,'SuRun',[]);
             end;
           end;
-        end;
+        end;                        
     end;
     result := 0; //don't use -1 it is what GetcurrentProcess returns. Could be mixed up.
   end;
@@ -663,7 +677,7 @@ var
     ZeroMemory(@lpStartupInfo, sizeof(lpStartupInfo));
 
     //there are situations where an empty lpDesktop lets CreateProcess... fail
-    lpStartupInfo.lpDesktop := 'winsta0\default';
+    //lpStartupInfo.lpDesktop := 'winsta0\default';
 
     IsEncryptedPassword := false;
     Entropy := nil;
@@ -680,8 +694,11 @@ var
         Environment, lpStartupInfo);
 
     if Abort then
+    begin
+      SetLastError(E_USER_CANCELED_OPERATIONint);
       raise EJwsclAbortException.CreateFmtWinCall(RsElevationAbort,'JwElevateProcess::RunSuRun','',RsUNElevation,0,
                       true,'OnElevationGetCredentials',[]);
+    end;
 
     //setup commandline
     if Length(Parameters) > 0 then
@@ -711,7 +728,7 @@ var
       if not CreateProcessWithLogonW(
         PWideChar(WideString(UserName)),//lpUsername,
         '',//lpDomain,
-        PWideChar(WideString(Password)),//lpPassword: LPCWSTR;
+        PWideChar(WideString(DecryptedPassword)),//lpPassword: LPCWSTR;
         LOGON_WITH_PROFILE,//dwLogonFlags: DWORD;
         PWideChar(WideString(FileName)),//lpApplicationName: LPCWSTR;
         CmdLine,//lpCommandLine: LPWSTR;
