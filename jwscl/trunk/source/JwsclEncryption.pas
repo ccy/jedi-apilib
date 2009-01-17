@@ -344,7 +344,7 @@ begin
       false,//const NoUi : Boolean;
       [cppf_PromptOnProtect,cppf_PromptOnUnprotect],//const PromptFlags : TJwCryptProtectOnPromptFlagSet;
       0,//const WindowParent : HWND;
-      'hallo',//const Prompt : TJwString;
+      '',//const Prompt : TJwString;
       Blob//out Data : TJwGetMemBlob
       );
   try
@@ -376,7 +376,7 @@ begin
       false,//const NoUi : Boolean;
       [],//const PromptFlags : TJwCryptProtectOnPromptFlagSet;
       0,//const WindowParent : HWND;
-      '123',//const Prompt : TJwString;
+      '',//const Prompt : TJwString;
       Blob//out Data : TJwGetMemBlob
       );
   try

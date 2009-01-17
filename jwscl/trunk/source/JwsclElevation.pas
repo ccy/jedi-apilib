@@ -265,9 +265,7 @@ function JwShellExecute(const hWnd: HWND; FileName, Parameters,
 type
   TJwElevationProcessFlag = (
     epfNoUi,
-    epfAllowSuRun,
-    //returned handle is closed
-    epfCloseProcessHandle);
+    epfAllowSuRun);
   TJwElevationProcessFlags = set of TJwElevationProcessFlag;
 
   //Abort = exit function
@@ -295,18 +293,14 @@ type
   hWindow :                    TBD
   ElevationProcessFlags :      TBD
   OnElevationGetCredentials :  TBD<p /><p />
+
   Returns
-  The return value is a process handle of the newly created process. If there was
-  an error the return value is undefined (in this case an exception is raised
-  anyway).
-  
-  If the process is started by SuRun the process handle cannot be returned. In
-  this case the returned value is 0.
-  
-  If the flag epfCloseProcessHandle is set in ElevationProcessFlags, the returned
-  value is also 0.
-  
-  In any other case the handle must be closed using CloseHandle.
+  The return value is a processID of the newly created process.
+
+  If the process is started by SuRun the returned value can be 0 although
+  the process was elevated successfully.
+  SuRun 1.2.0.5 and older don't support PIDs. In this case zero (0) is returned.
+
   Exceptions
   EJwsclAbortException :           The elevation was aborted by the user.
   EJwsclElevateProcessException :  Super class of
@@ -557,10 +551,14 @@ var
   SuRunStatus : TJwSuRunStatus; //Current SuRun status information. Is it active?
 
   function RunUAC : THandle;
-  var P : EJwsclJwShellExecuteException;
+  var
+    P : EJwsclJwShellExecuteException;
+    Handle : THandle;
   begin
     try
-      Result := JwShellExecute(hWindow, FileName, Parameters, Directory, SW_NORMAL, UACFlags);
+      Handle := JwShellExecute(hWindow, FileName, Parameters, Directory, SW_NORMAL, UACFlags);
+      Result := GetProcessId(Handle);
+      CloseHandle(Handle);
     except
       on E : EJwsclWinCallFailedException do
       begin
@@ -584,8 +582,10 @@ var
   var
     SuRunCode : Cardinal;
     Shell : {$IFDEF UNICODE}TShellExecuteInfoW;{$ELSE}TShellExecuteInfoA;{$ENDIF}
-    Continue : Boolean;
+    IsSuRunError : Boolean;
   begin
+    //SuRun does not support PID return value on older versions than 1.2.0.6
+    result := 0; //don't use -1 it is what GetcurrentProcess returns. Could be mixed up.
 
     {This section uses the surun verb to execute the process
     as an administrator.
@@ -631,14 +631,28 @@ var
             #define RETVAL_RESTRICT     3
             #define RETVAL_CANCELLED    4
             }
-            Continue := (SuRunCode <> 0) and (SuRunCode <> 4);
-            SetLastError(SuRunCode);
 
-            if Continue then
+            if SuRunStatus.PIDSupport then
             begin
+              //If SuRun supports PID return value
+              //and Code is smaller 100 and not 4 (cancel elevation)
+              //there is a real error
+              IsSuRunError := (SuRunCode < 100) and (SuRunCode <> 4);
+            end
+            else
+            begin
+              IsSuRunError := (SuRunCode <> 0) and (SuRunCode <> 4);
+            end;
+
+            if IsSuRunError then
+            begin
+              SetLastError(SuRunCode);
               raise EJwsclSuRunErrorException.CreateFmtWinCall(RsSunRunFailed,'JwElevateProcess::RunSuRun','',RsUNElevation,0,
                       true,'SuRun',[SuRunCode]);
-            end;
+            end
+            else
+              result := SuRunCode; //return PID on success (otherwise it's 0)
+
             if SuRunCode = 4 then
             begin
               SetLastError(E_USER_CANCELED_OPERATIONint);
@@ -648,7 +662,6 @@ var
           end;
         end;                        
     end;
-    result := 0; //don't use -1 it is what GetcurrentProcess returns. Could be mixed up.
   end;
 
   function RunCreateProcess : THandle;
@@ -675,9 +688,6 @@ var
 
 
     ZeroMemory(@lpStartupInfo, sizeof(lpStartupInfo));
-
-    //there are situations where an empty lpDesktop lets CreateProcess... fail
-    //lpStartupInfo.lpDesktop := 'winsta0\default';
 
     IsEncryptedPassword := false;
     Entropy := nil;
@@ -746,7 +756,8 @@ var
     end;
 
     CloseHandle(lpProcessInformation.hThread);
-    result := lpProcessInformation.hProcess;
+    result := GetProcessId(lpProcessInformation.hProcess);
+    CloseHandle(lpProcessInformation.hProcess);
   end;
 
 
@@ -760,8 +771,6 @@ begin
   UACFlags := [sefNoUi, sefNoClosehProcess];
 
   //remove flags from UAC if neccessary
-  if (epfCloseProcessHandle in ElevationProcessFlags) then
-    Exclude(UACFlags, sefNoClosehProcess);
   if (epfNoUi in ElevationProcessFlags) then
     Exclude(UACFlags, sefNoUi);
 
@@ -808,13 +817,6 @@ begin
       //otherwise use CreateProcessWithLogonW with event
       //because noUI is set. ShellExecute does not work this way
       result := RunCreateProcess;
-  end;
-
-  if (epfCloseProcessHandle in ElevationProcessFlags) and
-    JwIsHandleValid(result) then
-  begin
-    CloseHandle(result);
-    result := 0;
   end;
 end;
 

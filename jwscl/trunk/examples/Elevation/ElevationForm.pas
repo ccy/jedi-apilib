@@ -39,6 +39,7 @@ type
     btnRun: TButton;
     chkAllowUI: TCheckBox;
     dlgLogin: TJvLoginDialog;
+    lblPID: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure dlgLoginGetPassword(Sender: TObject; const UserName: String;
       var Password: String);
@@ -117,7 +118,7 @@ begin
 
   ///fXX is set in dlgLoginGetPassword
   Password := fPassword;
-  UserName := fUserName;
+  UserName := fUserName; //encrypted username is not supported!
 
   //the password is encrypted
   EncryptedPassword := True;
@@ -134,9 +135,10 @@ begin
   JwZeroPassword(fPassword);
   JwZeroPassword(fUserName);
 
-  //secure password in memory - on local machine only
-  fPassword := JwEncryptString(Password, '', true);
-  fUserName := UserName;
+  //secure password in memory -
+  //no prompt and on local machine only
+  fPassword := JwEncryptString(Password, '', false,true);
+  fUserName := UserName; //don't encrypt username !
 end;
 
 procedure TForm1.RadioButton2000Click(Sender: TObject);
@@ -148,8 +150,7 @@ end;
 procedure TForm1.btnRunClick(Sender: TObject);
 var ElevationProcessFlags : TJwElevationProcessFlags;
 begin
-  //we ignore process handle
-  ElevationProcessFlags := [epfCloseProcessHandle];
+  ElevationProcessFlags := [];
 
   //use surun?
   if chkSuRun.Checked then
@@ -159,9 +160,12 @@ begin
   if not chkAllowUI.Checked then
     ElevationProcessFlags := ElevationProcessFlags + [epfNoUi];
 
+  lblPID.caption := '';
+
   //simulate other winver for JwElevateProcess
   TJwWindowsVersion.SetCachedWindowsType(fWinver);
   try
+    lblPID.caption := Format('Process started with PID: %d',[
     JwElevateProcess(
          JvFilenameEdit1.FileName,//const FileName : TJwString;
          '',//Parameters : TJwString;
@@ -169,7 +173,7 @@ begin
          handle,//hWindow : HWND;
          ElevationProcessFlags,//ElevationProcessFlags : TJwElevationProcessFlags;
          OnElevationGetCredentials//const OnElevationGetCredentials : TJwOnElevationGetCredentials
-         );
+         )]);
   finally
     //get back to original winver
     TJwWindowsVersion.ResetCachedWindowsType;
@@ -182,7 +186,7 @@ procedure TForm1.dlgLoginCheckUser(Sender: TObject; const UserName,
 var T : TJwSecurityToken;
 begin
   T := nil;
-  if TJwWindowsVersion.IsWindowsXP(true) then //win2000 needs tcb privilege, soo ignore
+  if TJwWindowsVersion.IsWindowsXP(true) then //win2000 needs tcb privilege, so ignore
   try
     //verify user logon data
     T := TJwSecurityToken.CreateLogonUser(UserName, '', password, LOGON32_LOGON_INTERACTIVE,
@@ -191,6 +195,9 @@ begin
     {This logon dialog has top most flag and therefore
     all message boxes will be shown behind it.
 
+    You should use a better suited dialog!
+    I also hope that Password string in dialog is also freed correctly. Well
+    it is just a demo nonetheless! 
     }
     AllowLogin := False;
     Exit;

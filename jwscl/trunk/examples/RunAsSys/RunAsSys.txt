@@ -16,6 +16,9 @@ You don't need SuRun to use RunAsSys!
 
 History:
 
+1.2.14
++Fixed a bug on Win2000
+
 1.2
 +Fixed a heap buffer overflow bug 
 +Added support for SuRun. 

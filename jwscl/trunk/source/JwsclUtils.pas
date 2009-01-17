@@ -727,7 +727,6 @@ begin
   len := Length(S) * sizeof(S[1]); //also get widechar size
   Data := Pointer(@S[1]); //get first char
 
-  for i2 := 1 to len do
   for i := 0 to len-1 do //goes through all chars (even both widechar)
   begin
     {$IFOPT O+}

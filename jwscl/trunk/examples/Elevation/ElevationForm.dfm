@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 465
-  Top = 145
+  Left = 2509
+  Top = 191
   Width = 376
   Height = 322
   Caption = 'Form1'
@@ -18,9 +18,9 @@ object Form1: TForm1
   object Label1: TLabel
     Left = 16
     Top = 48
-    Width = 31
+    Width = 42
     Height = 13
-    Caption = 'Label1'
+    Caption = 'Filename'
   end
   object lblCurrentUser: TLabel
     Left = 16
@@ -44,8 +44,14 @@ object Form1: TForm1
     Height = 13
     Caption = 'Surun is available'
   end
+  object lblPID: TLabel
+    Left = 152
+    Top = 256
+    Width = 3
+    Height = 13
+  end
   object JvFilenameEdit1: TJvFilenameEdit
-    Left = 56
+    Left = 64
     Top = 48
     Width = 281
     Height = 21
