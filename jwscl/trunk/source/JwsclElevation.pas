@@ -48,7 +48,7 @@ unit JwsclElevation;
 {$IFNDEF SL_IMPLEMENTATION_SECTION}
 
 interface
-uses ComObj, JwaWindows, JwsclVersion, JwsclStrings;
+uses ComObj, JwaWindows, JwsclVersion, JwsclTypes,JwsclStrings;
 
 type
   {<B>TJwElevationClassFactory</B> provides a registration for a typed com object.
@@ -300,6 +300,7 @@ type
   If the process is started by SuRun the returned value can be 0 although
   the process was elevated successfully.
   SuRun 1.2.0.5 and older don't support PIDs. In this case zero (0) is returned.
+  If there was an error getting the PID the exception EJwsclPIDException will be raised.
 
   Exceptions
   EJwsclAbortException :           The elevation was aborted by the user.
@@ -325,6 +326,10 @@ type
   EJwsclWinCallFailedException :   This error only happens when a call to the
                                    Secondary Logon Process failed.See property
                                    LastError for more information.
+  EJwsclPIDException :             This error occurs when the PID could not be returned.
+                                   You can ignore this error if you don't use the return value.
+                                   The exception won't be thrown if SuRun does not support PIDs.  
+
   Remarks
   In case of the EJwsclSuRunErrorException the LastError property contains more
   information. SuRun returns some status error code information that can be used.
@@ -368,7 +373,7 @@ function JwElevateProcess(const FileName : TJwString;
                 Directory : TJwString;
                 hWindow : HWND;
                 ElevationProcessFlags : TJwElevationProcessFlags;
-                const OnElevationGetCredentials : TJwOnElevationGetCredentials) : THandle;
+                const OnElevationGetCredentials : TJwOnElevationGetCredentials) : TJwProcessId;
 
 
 type
@@ -404,7 +409,7 @@ function JwCheckSuRunStatus(out StatusData : TJwSuRunStatus) : Boolean;
 {$IFNDEF SL_OMIT_SECTIONS}
 implementation
 uses Registry, SysUtils, ActiveX,
-     JwsclTypes,   JwsclExceptions, JwsclSid,     JwsclAcl,
+     JwsclExceptions, JwsclSid,     JwsclAcl,
      JwsclConstants,  JwsclUtils, JwsclEncryption,
      JwsclToken, JwaVista,
      JwsclDescriptor, JwsclKnownSid, JwsclMapping, JwsclResource;
@@ -542,13 +547,39 @@ function JwElevateProcess(const FileName : TJwString;
                 Directory : TJwString;
                 hWindow : HWND;
                 ElevationProcessFlags : TJwElevationProcessFlags;
-                const OnElevationGetCredentials : TJwOnElevationGetCredentials) : THandle;
+                const OnElevationGetCredentials : TJwOnElevationGetCredentials) : TJwProcessId;
 
 var
   UACFlags : TJwShellExecuteFlags;
 
   SuRunAvail : Boolean; //IsSuRun available at all?
   SuRunStatus : TJwSuRunStatus; //Current SuRun status information. Is it active?
+
+  {GetProcessID exists since Windows XP1
+  To support all windows version we use the old fashion style 
+  }
+  function GetProcessID(const Handle : THandle) : TJwProcessId;
+  var P : TProcessBasicInformation;
+  begin
+    result := NtQueryInformationProcess(
+      Handle,//__in       HANDLE ProcessHandle,
+      ProcessBasicInformation,//__in       PROCESSINFOCLASS ProcessInformationClass,
+      @P,//__out      PVOID ProcessInformation,
+      sizeof(P),//__in       ULONG ProcessInformationLength,
+      nil//__out_opt  PULONG ReturnLength
+    );
+
+    if result = 0 then
+      result := P.UniqueProcessId
+    else
+    begin
+      RtlSetLastWin32ErrorAndNtStatusFromNtStatus(result);
+      raise EJwsclPIDException.CreateFmtWinCall(
+          RsWinCallFailedWithNTStatus,'JwShellExecute','',RsUNElevation,0,
+                      true,'NtQueryInformationProcess',['NtQueryInformationProcess',result]);
+    end;
+  end;
+
 
   function RunUAC : THandle;
   var
@@ -557,7 +588,7 @@ var
   begin
     try
       Handle := JwShellExecute(hWindow, FileName, Parameters, Directory, SW_NORMAL, UACFlags);
-      Result := GetProcessId(Handle);
+      Result := {localcall}GetProcessId(Handle);
       CloseHandle(Handle);
     except
       on E : EJwsclWinCallFailedException do
@@ -756,8 +787,11 @@ var
     end;
 
     CloseHandle(lpProcessInformation.hThread);
-    result := GetProcessId(lpProcessInformation.hProcess);
-    CloseHandle(lpProcessInformation.hProcess);
+    try
+      result := {localcall}GetProcessId(lpProcessInformation.hProcess);
+    finally
+      CloseHandle(lpProcessInformation.hProcess);
+    end;
   end;
 
 
