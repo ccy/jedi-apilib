@@ -302,6 +302,9 @@ const
   RsSecureObjectsNotEnoughMemoryForThreadData = 'Not enough memory to alloca' +
     'te thread data.';
 
+  RsPrivilegeLabelBug = 'To obtain the integrity level from a named service object you need to '+
+    ' apply siSaclSecurityInformation and the privilege SE_SECURITY_NAME.';
+
 
 //unit JwsclSid.pas
 

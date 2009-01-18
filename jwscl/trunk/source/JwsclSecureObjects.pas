@@ -56,7 +56,7 @@ type
      {<B>TJwFnProgressMethod</B> is a callback method that is used by TreeFileObjectSetNamedSecurityInfo.
        It is called on errors or every object which security information is set.
 
-      @param pObjectName contains the object name 
+      @param pObjectName contains the object name
       @param cStatus constains the status of the last operation (GetLastError) 
       @param pInvokeSetting defines the current operation and can be changed to set the next step.
              The following values are recognized :
@@ -2927,6 +2927,7 @@ implementation
 
 uses TypInfo,
      JwsclProcess,
+     JwsclPrivileges,
      JwsclEnumerations;
 
 {$ENDIF SL_OMIT_SECTIONS}
@@ -3400,9 +3401,35 @@ var
   //[Hint] pSACL : PACL;
 
   pSDesc: PSecurityDescriptor;
-
+  Privs : IJwPrivilegeScope;
 begin
   pSDesc := nil;
+
+
+  {This is a bug in Vista.
+   GetNamedSecurityInfo only retrieves the integrity level information
+   if siSaclSecurityInformation is used and privilege SE_SECURITY_NAME is active.
+   In the other way around:
+    SetNamedSecurity does not need the SE_SECURITY_NAME privilege
+  }
+  if (aObjectType = SE_SERVICE) and
+     (siLabelSecurityInformation in aSecurityInfo) and
+     not (siSaclSecurityInformation in aSecurityInfo) and
+     ((TJwWindowsVersion.IsWindowsVista(false) or
+      (TJwWindowsVersion.IsWindows2008(false)))
+     ) then
+  begin
+    try
+      Privs := JwGetPrivilegeScope([SE_SECURITY_NAME])
+    except
+      on E : EJwsclPrivilegeException do
+        raise EJwsclPrivilegeException.CreateFmtEx(
+              RsSecureObjectsPrivilegeSecurityMissing + #13#10 + RsPrivilegeLabelBug,
+              'GetSecurityInfo',
+              ClassName, RsUNSecureObjects, 0, false,
+              [SE_SECURITY_NAME]);
+    end;
+  end;
 
 
   //[Hint] OwnerPSID := nil;
