@@ -272,8 +272,8 @@ type
 {<B>JwEncryptString</B> encrypts and protects a string.
 @param S defines a string that must be encrypted. 
 @param Description Defines a string that describes the data. Can be empty. 
-@param Prompt defines a text to be displayed in the prompt dialog. This parameter
-       applies only if NoUi is false. 
+@param Prompt defines a whether a encryption prompt is displayed to confirm
+  the decryption by the user.
 @param LocalMachineOnly Set to true so the data can only be decrypted on the
  same computer; otherwise false. 
 @param Entropy Defines additional data to be used to encrypt the data.
@@ -292,8 +292,8 @@ function JwEncryptString(const S : TJwString;
 
 {<B>JwDecryptString</B> decrypts a string and checks for manipulation.
 @param S defines a string that must be decrypted. 
-@param Prompt defines a text to be displayed in the prompt dialog. This parameter
-       applies only if NoUi is false. 
+@param Prompt defines a whether a encryption prompt is displayed to confirm
+  the decryption by the user.
 @param Entropy Defines additional data to be used to encrypt the data.
 The same Entropy must be specified to the decryption method DecryptPointerWithPrompt.
 Can be nil to use no entropy. 

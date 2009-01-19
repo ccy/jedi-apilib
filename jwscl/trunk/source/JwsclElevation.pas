@@ -119,7 +119,7 @@ This function only works on Windows Vista and newer OS versions.
  will not be shown but a new task is displayed it the taskbar. Otherwise the elevation dialog
  will be shown direclty. 
 @param ClassId defines a guid that describes a registered com object 
-@param IID defines the requested com object to be returned 
+@param IID defines the requested com object to be returned
 @param ObjectInterface returns the requested and elevated com object 
 @return Returns a COM result code. If the call was successfull the return value is S_OK 
 }
@@ -150,7 +150,7 @@ This function only works on Windows Vista and newer OS versions.
  will be shown direclty. 
 @param ClassId defines a guid that describes a registered com object 
 @param IID defines the requested com object to be returned 
-@param ObjectInterface returns the requested and elevated com object 
+@param ObjectInterface returns the requested and elevated com object
 @return Returns a COM result code. If the call was successfull the return value is S_OK 
 }
 function JwCoCreateInstanceAsAdmin(
@@ -222,27 +222,6 @@ function JwCoGetClassFactoyAsAdmin(
   out ObjectInterface) : HRESULT;
 
 
-type {<B>TJwShellExecuteFlag</B> controls execution of JwShellExecute }
-     TJwShellExecuteFlag = (
-        //does not display GUI elements on errors
-        sefNoUi,
-        {does not try to elevate if it is not available
-         In this case verb "open" is used.
-        }
-        sefIgnoreElevationIfNotAvailable,
-        {On Elevation and a given directory it uses
-         a trick to set the correct path for the target application
-         This is because ShellExecute does not set given directory
-         for the target app.
-         This may lead to a command line window in background
-        }
-        sefFixDirWithRunAs,
-
-        //does not close returned process handle
-        sefNoClosehProcess
-        );
-     TJwShellExecuteFlags = set of TJwShellExecuteFlag;
-
 {<B>JwShellExecute</B> runs a process with elevated privileges in Windows Vista.
 If the current is already elevated the function simply opens the given
 filename. The verb of shellexecute cannot be changed.
@@ -262,22 +241,10 @@ raises
 function JwShellExecute(const hWnd: HWND; FileName, Parameters,
   Directory: TJwString; ShowCmd: Integer; Flags : TJwShellExecuteFlags = [sefNoClosehProcess]): HANDLE;
 
-type
-  TJwElevationProcessFlag = (
-    epfNoUi,
-    epfAllowSuRun);
-  TJwElevationProcessFlags = set of TJwElevationProcessFlag;
 
-  //Abort = exit function
-  //UserName = '' -> use 'Administrator'
-  TJwOnElevationGetCredentials = procedure (var Abort : Boolean; var UserName, Password : TJwString;
-                var EncryptedPassword : Boolean; var Entropy : PDataBlob; var EncryptionPrompt : Boolean;
-                var Environment : Pointer; var lpStartupInfo: TStartupInfoW)  of object;
-
-{ Description
-  JwElevateProcess is much like JwShellExecute but also may work on Windows 2000
-  and XP without UAC. Instead it uses SuRun if installed. On Vista/2008 and newer
-  it tries to use UAC. If UAC and SuRun is not available it falls back to
+{ JwElevateProcess is much like JwShellExecute but also may work on Windows 2000
+  and XP without UAC. Instead of UAC it uses SuRun if installed. On Vista/2008 and
+  newer it tries to use UAC. If UAC and SuRun is not available it falls back to
   ShellExecute with the RunAs verb. In this case a dialog pops up the receives a
   username and password to use (usually Administrator). If no UI is allowed the
   function can use another method that receives the username and password from a
@@ -287,23 +254,40 @@ type
   The return value is a process handle, in case of SuRun zero, or zero if it
   closed automatically.
   Parameters
-  FileName :                   TBD
-  Parameters\ :                TBD
-  Directory :                  TBD
-  hWindow :                    TBD
-  ElevationProcessFlags :      TBD
-  OnElevationGetCredentials :  TBD<p /><p />
-
+  FileName :                   This parameter receives the application to be
+                               elevated.
+  Parameters\ :                This parameter receives the parameter to be applied
+                               to the new process.
+  Directory :                  This parameter receives the target directory of the
+                               new process.
+  hWindow :                    If any UI is display this window handle is used as a
+                               parent. Can be 0 to use no parent at all (not
+                               recommended). This handle is used by
+                               * UAC prompt
+                               * Windows default credentials prompt
+                               * SuRun
+  ElevationProcessFlags :      Receives a set of flags that controls the behavior
+                               of the function. See <link TJwElevationProcessFlags>
+                               for more information.
+  OnElevationGetCredentials :  This event is used only if
+                               * SuRun is not available or ignored (due to missing
+                                 epfAllowSuRun)
+                               * UAC is not supported by OS
+                               * epfNoUi is set in parameter ElevationProcessFlags
+                               See <link TJwOnElevationGetCredentials>
   Returns
   The return value is a processID of the newly created process.
-
-  If the process is started by SuRun the returned value can be 0 although
-  the process was elevated successfully.
-  SuRun 1.2.0.5 and older don't support PIDs. In this case zero (0) is returned.
-  If there was an error getting the PID the exception EJwsclPIDException will be raised.
-
+  
+  If the process is started by SuRun the returned value can be 0 although the
+  process was elevated successfully. SuRun 1.2.0.5 and older don't support PIDs.
+  In this case zero (0) is returned. If there was an error getting the PID the
+  exception EJwsclPIDException will be raised.
   Exceptions
   EJwsclAbortException :           The elevation was aborted by the user.
+  EjwsclCryptApiException :        This exception is raised if the encrypted
+                                   password received through the
+                                   OnElevationGetCredentials event could not be
+                                   decrypted.
   EJwsclElevateProcessException :  Super class of
                                    * EJwsclAbortException
                                    * EJwsclElevationException
@@ -326,10 +310,10 @@ type
   EJwsclWinCallFailedException :   This error only happens when a call to the
                                    Secondary Logon Process failed.See property
                                    LastError for more information.
-  EJwsclPIDException :             This error occurs when the PID could not be returned.
-                                   You can ignore this error if you don't use the return value.
-                                   The exception won't be thrown if SuRun does not support PIDs.  
-
+  EJwsclPIDException :             This error occurs when the PID could not be
+                                   returned. You can ignore this error if you don't
+                                   use the return value. The exception won't be
+                                   thrown if SuRun does not support PIDs.
   Remarks
   In case of the EJwsclSuRunErrorException the LastError property contains more
   information. SuRun returns some status error code information that can be used.
@@ -376,30 +360,15 @@ function JwElevateProcess(const FileName : TJwString;
                 const OnElevationGetCredentials : TJwOnElevationGetCredentials) : TJwProcessId;
 
 
-type
-   TJwSuRunStatus = record
-     //SuRun version as array: e.g. 1.2.0.6
-     Version : array[0..3] of WORD;
-     //Path of SuRun.exe (with exe file)
-     LocationPath : String;
-     //Command line for shell exe file
-     ExeFileShellCommand : String;
+{JwCheckSuRunStatus checks whether SuRun is availab.e
+<extlink http://kay-bruns.de/wp/software/surun/>SuRun</extlink> is a UAC like
+clone that runs in Win2000, XP and newer.
 
-     //timeout of SuRun prompt (since 1.2.0.6)
-     CancelTimeOut : Integer;
-     //timeout active at all? (since 1.2.0.6)
-     UseCancelTimeOut : Boolean;
-     //PID return value supported? (since 1.2.0.6)
-     //SuRun returns PID of newly created process
-     PIDSupport : Boolean;
+StatusData : This out parameter returns status information of SuRun.
 
-     //LastError code of the attempt to connect to running SuRun
-     ServerStatusCode : DWORD;
-
-     //extended FileInformation of SuRun.exe
-     FileVersionInfo : TFileVersionInfo;
-   end;
-
+Returns
+JwCheckSuRunStatus returns true if SuRun is running; otherwise false.
+}
 function JwCheckSuRunStatus(out StatusData : TJwSuRunStatus) : Boolean;
 
 {$ENDIF SL_IMPLEMENTATION_SECTION}
@@ -426,7 +395,7 @@ var
   WindowsPath : TJwString;
   hPipe : THandle;
   i : Integer;
-  FileVer : TFileVersionInfo;
+  FileVer : TJwFileVersionInfo;
   VersionStr : TJwString;
 begin
   ZeroMemory(@StatusData, sizeof(StatusData));
@@ -784,6 +753,8 @@ var
     finally
       JwZeroPassword(Password);
       JwZeroPassword(DecryptedPassword);
+      if Environment <> nil then
+        DestroyEnvironmentBlock(Environment);
     end;
 
     CloseHandle(lpProcessInformation.hThread);

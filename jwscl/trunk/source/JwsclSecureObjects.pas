@@ -3420,7 +3420,8 @@ begin
      ) then
   begin
     try
-      Privs := JwGetPrivilegeScope([SE_SECURITY_NAME])
+      Privs := JwGetPrivilegeScope([SE_SECURITY_NAME]);
+      Include(aSecurityInfo, siSaclSecurityInformation);
     except
       on E : EJwsclPrivilegeException do
         raise EJwsclPrivilegeException.CreateFmtEx(

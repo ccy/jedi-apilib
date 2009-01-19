@@ -786,7 +786,7 @@ type
     cfVerifyProtection});
   TJwCryptProtectFlagSet = set of  TJwCryptProtectFlag;
 
-  {<B>TJwCryptProtectOnPromptFlag</B> defines when a prompt should occur.}
+
   TJwCryptProtectOnPromptFlag =
    (cppf_Pad0,
     //prompt on data protection
@@ -1347,6 +1347,163 @@ type
   );
   {<b>TJwSecurityCapabilities</b> is used by TJwSecurityPackageInfo}
   TJwSecurityCapabilities = set of TJwSecurityCapability;
+
+
+  TJwFileVersionInfo = record
+    CompanyName: TJwString;
+    FileDescription: TJwString;
+    FileVersion: TJwString;
+    InternalName: TJwString;
+    LegalCopyright: TJwString;
+    LegalTradeMarks: TJwString;
+    OriginalFilename: TJwString;
+    ProductName: TJwString;
+    ProductVersion: TJwString;
+    Comments: TJwString;
+  end;
+
+
+
+   {<B>TJwShellExecuteFlag</B> controls execution of JwShellExecute }
+  TJwShellExecuteFlag = (
+      //does not display GUI elements on errors
+      sefNoUi,
+      {does not try to elevate if it is not available
+       In this case verb "open" is used.
+      }
+      sefIgnoreElevationIfNotAvailable,
+      {On Elevation and a given directory it uses
+       a trick to set the correct path for the target application
+       This is because ShellExecute does not set given directory
+       for the target app.
+       This may lead to a command line window in background
+      }
+      sefFixDirWithRunAs,
+
+      //does not close returned process handle
+      sefNoClosehProcess
+  );
+
+
+  {<B>TJwShellExecuteFlag</B> controls execution of JwShellExecute
+    See TJwShellExecuteFlag}
+  TJwShellExecuteFlags = set of TJwShellExecuteFlag;
+
+    {TJwSuRunStatus contains status information of SuRun}
+  TJwSuRunStatus = record
+     {Version contains the SuRun version as an array: e.g. 1.2.0.6}
+     Version : array[0..3] of WORD;
+     {LocationPath contains the full path to SuRun.exe (with exe file)}
+     LocationPath : String;
+     {ExeFileShellCommand contains the command line for shell exe file setting}
+     ExeFileShellCommand : String;
+
+     {CancelTimeOut contains the timeout of SuRun prompt (since 1.2.0.6)}
+     CancelTimeOut : Integer;
+     {UseCancelTimeOut contains whether the timeout is active or not (since 1.2.0.6)}
+     UseCancelTimeOut : Boolean;
+
+     {PIDSupport defines whether the installed SuRun supports
+      returning a PID of the new process? (since 1.2.0.6)}
+     PIDSupport : Boolean;
+
+     {ServerStatusCode contains the LastError code of the attempt to connect to running SuRun}
+     ServerStatusCode : DWORD;
+
+     {FileVersionInfo contains extended FileInformation of SuRun.exe}
+     FileVersionInfo : TJwFileVersionInfo;
+   end;
+
+  { TJwElevationProcessFlag is used by <link JwElevateProcess@TJwString@TJwString@TJwString@HWND@TJwElevationProcessFlags@TJwOnElevationGetCredentials, JwElevateProcess Function>
+    and controls certain aspects of this function.                                                                                                                                 }
+  TJwElevationProcessFlag = (
+    { This flag must be set to disallow the <link JwElevateProcess@TJwString@TJwString@TJwString@HWND@TJwElevationProcessFlags@TJwOnElevationGetCredentials, JwElevateProcess Function>
+      to display a dialog box for user credentials.                                                                                                                                     }
+    epfNoUi,
+    { This flag must be set to allow the <link JwElevateProcess@TJwString@TJwString@TJwString@HWND@TJwElevationProcessFlags@TJwOnElevationGetCredentials, JwElevateProcess Function>
+      to use SuRun if it is available.                                                                                                                                               }
+    epfAllowSuRun
+  );
+
+
+  { TJwElevationProcessFlags is used by <link JwElevateProcess@TJwString@TJwString@TJwString@HWND@TJwElevationProcessFlags@TJwOnElevationGetCredentials, JwElevateProcess Function>
+    and controls certain aspects of this function.
+    See TJwElevationProcessFlag}
+  TJwElevationProcessFlags = set of TJwElevationProcessFlag;
+
+    { The TJwOnElevationGetCredentials event is called by the <link JwElevateProcess@TJwString@TJwString@TJwString@HWND@TJwElevationProcessFlags@TJwOnElevationGetCredentials, JwElevateProcess Function>
+    if
+      * SuRun is not available
+      * UAC is not supported by OS
+      * epfNoUi is set in parameter ElevationProcessFlags so no dialog box is shown.
+    
+    It receives user credential to be used by CreateProcess.
+    Parameters
+    Abort :              Set abort to true if you like to abort the elevation
+                         process. A EJwsclAbortException will be thrown though.
+    UserName :           Receives a username that has administrative privileges. By
+                         default it contains "Administrator.". However the <link JwElevateProcess@TJwString@TJwString@TJwString@HWND@TJwElevationProcessFlags@TJwOnElevationGetCredentials, JwElevateProcess Function>
+                         does not check whether the user is really an administrator
+                         or even exists. It just tries to create the process and will
+                         fail if the user does not exist. The new process mayb not
+                         have administrator powers.
+    Password :           This parameter receives a plaintext or encrypted password
+                         depending on parameter EncryptedPassword.
+    EncryptedPassword :  Defines whether parameter Password is encrypted (true) or
+                         plaintext (false).
+    Entropy :            Receives additional data that was used for the encryption
+                         and must be supplied to decrypt the password.
+    EncryptionPrompt :   This parameter defines whether a decryption prompt is shown
+                         (true) to confirm the decryption by the user. Set to false
+                         to suppress the dialog (default).
+    Environment :        This parameter receives the user environment block created
+                         by WinAPI CreateEnvironmentBlock. The data is freed
+                         automatically if Abort is false.
+    lpStartupInfo :      This parameter receives a <extlink http://msdn.microsoft.com/en-us/library/ms686331(VS.85).aspx>StartupInfo
+                         structure</extlink> that contains more information for
+                         CreateProcess. The cb member (size) is ignored.<p />
+    Remarks
+    Any exception thrown in this function is returned by the <link JwElevateProcess@TJwString@TJwString@TJwString@HWND@TJwElevationProcessFlags@TJwOnElevationGetCredentials, JwElevateProcess Function>.
+    
+    The exception EjwsclCryptApiException will be raised if the encrypted password
+    could not be decrypted.
+    See Also
+    <link JwElevateProcess@TJwString@TJwString@TJwString@HWND@TJwElevationProcessFlags@TJwOnElevationGetCredentials, JwElevateProcess Function>
+    Example
+    This examples shows how to encrypt a password for OnElevationGetCredentials:
+    
+    <code lang="delphi">
+    procedure TForm1.OnElevationGetCredentials(var Abort: Boolean;
+     var UserName, Password: TJwString; var EncryptedPassword: Boolean;
+     var Entropy: PDataBlob; var EncryptionPrompt: Boolean;
+     var Environment: Pointer; var lpStartupInfo: TStartupInfoW);
+    begin
+     //set default username
+     YourCredentialPrompt.UserName := UserName;
+    
+     //run login dialog
+     Abort := not YourCredentialPrompt.Execute;
+     if Abort then
+     exit;
+    
+     UserName := YourCredentialPrompt.UserName;
+    
+     //secure password in memory -
+     //no prompt and on local machine only
+     Password := JwEncryptString(YourCredentialPrompt.Password, '', false,true);
+    
+     //the password is encrypted
+     EncryptedPassword := True;
+    end;
+    </code>                                                                                                                                                                                                            }
+  TJwOnElevationGetCredentials = procedure (
+    var Abort : Boolean;
+    var UserName, Password : TJwString;
+    var EncryptedPassword : Boolean;
+    var Entropy : PDataBlob;
+    var EncryptionPrompt : Boolean;
+    var Environment : Pointer;
+    var lpStartupInfo: TStartupInfoW)  of object;
 
 
   {IJwBase is the new base interface class for all JWSCL classes

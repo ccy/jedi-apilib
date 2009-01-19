@@ -46,25 +46,14 @@ interface
 
 uses SysUtils, 
   JwsclUtils, JwsclResource,
-  jwaWindows, JwsclConstants, JwsclExceptions,
+  jwaWindows, JwsclConstants, JwsclExceptions, JwsclTypes,
   JwsclStrings;
 
 {$ENDIF SL_OMIT_SECTIONS}
 
 {$IFNDEF SL_IMPLEMENTATION_SECTION}
 type
-  TFileVersionInfo = record
-    CompanyName: TJwString;
-    FileDescription: TJwString;
-    FileVersion: TJwString;
-    InternalName: TJwString;
-    LegalCopyright: TJwString;
-    LegalTradeMarks: TJwString;
-    OriginalFilename: TJwString;
-    ProductName: TJwString;
-    ProductVersion: TJwString;
-    Comments: TJwString;
-  end;
+
 
   TJwFileVersion = class(TObject)
   private
@@ -73,7 +62,7 @@ type
     {<B>GetFileInfo</B> retrieves a TFileVersionInfo structure for a given Filename.
     }
     class function GetFileInfo(const Filename: TJwString;
-      var FileVersionInfo: TFileVersionInfo): Boolean;
+      var FileVersionInfo: TJwFileVersionInfo): Boolean;
   end;
 
 
@@ -490,7 +479,7 @@ var
 
 
 class function TJwFileVersion.GetFileInfo(const Filename: TJwString;
-  var FileVersionInfo: TFileVersionInfo): Boolean;
+  var FileVersionInfo: TJwFileVersionInfo): Boolean;
 var VerInfoSize: DWORD;
  DummyVar: DWORD;
  VersionInfo: Pointer;

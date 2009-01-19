@@ -695,6 +695,25 @@ Remarks
 }
 function JwCreateToString(const Values : array of const) : String;
 
+{ <b>JwZeroPassword</b> erases securely a UNICODE or ANSICODE string.
+  
+  
+  
+  
+  Parameters
+  S :  Defines the string to be erased securely. The returned string will have a
+       length of 0.
+  
+  
+  
+  Remarks
+  JwZeroPassword writes random data over all characters of the string. In a second
+  step it zeroes all characters and sets the length of the string to zero (0).
+  
+  This function works with UNICODE and ANSICODE.
+  
+  
+                                                                                   }
 procedure JwZeroPassword(var S : TJwString);
 
 implementation
