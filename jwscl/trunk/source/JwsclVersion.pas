@@ -1026,6 +1026,7 @@ end;
 class function TJwWindowsVersion.SetCachedWindowsType(
   const WindowsType: Integer; Server: Boolean): Integer;
 begin
+  result := fWindowsType; //returns previous value
   fWindowsType := WindowsType;
   fIsServer  := Server;
 end;
