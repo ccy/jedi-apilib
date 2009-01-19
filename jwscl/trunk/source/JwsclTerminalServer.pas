@@ -89,6 +89,12 @@ type
   TJwWTSProcess = class;
   TJwWTSProcessList = class;
 
+  { CachedUsername record }
+  TCachedUser = record
+    SessionId: DWORD;
+    Username: TJwString;
+  end;
+
   TJwSessionsEnumerator = class;
   TJwProcessEnumerator = class;
 
@@ -129,6 +135,7 @@ type
                                                                                      }
   TJwTerminalServer = class(TObject)
   protected
+    CachedUser: TCachedUser;
     {@exclude}
     FComputerName: TJwString;
     {@exclude}
@@ -180,6 +187,8 @@ type
     {@exclude}
     FTag: Integer;
 
+    {@exclude}
+    function CachedGetUserFromSessionId(const Sessionid: DWORD): TJwString;
     {@exclude}
     function GetIdleProcessName: TJwString;
     {@exclude}
@@ -2407,7 +2416,6 @@ type
   PJwWtsServerInfoWArray = ^TJwWtsServerInfoWArray;
   TJwWtsServerInfoWArray = array[0..ANYSIZE_ARRAY-1] of TWtsServerInfoW;
 
-
 constructor TJwTerminalServer.Create;
 begin
   inherited Create;
@@ -2421,7 +2429,8 @@ begin
   FServers := TStringList.Create;
 
   FOnServersEnumerated := nil;
-//  FServerLis := TStringList.Create;
+
+  CachedUser.SessionId := DWORD(-1);
 end;
 
 destructor TJwTerminalServer.Destroy;
@@ -2644,45 +2653,20 @@ end;
 
 function TJwTerminalServer.GetWinStationName(const SessionId: DWORD): TJwString;
 var
-  WinStationNamePtr: PWideChar;
-const PaddingFac = 2;
+  WinStationName: array[0..WINSTATIONNAME_LENGTH+1] of WChar;
 begin
-  // Get and zero memory (
-  {CW@2008
-  WINSTATIONNAME_LENGTH may not define enough space for WinStationNameFromLogonIdW
-  to store the string so we increase the constant by factor two and create
-  enough space.
-  It seems that WinStationNameFromLogonIdW sets a zero character (2 bytes)
-  on top of WINSTATIONNAME_LENGTH-sized memory block. Strange!
+  Result := '';
+  // Only use Unicode version since Ansi version doesn't seem to work on Vista
+  if WinStationNameFromLogonIdW(FServerHandle, SessionId, WinStationName) then
+  begin
+    Result := WinStationName;
+  end;
 
-  The necessary size of the memory block is 132. It consists of
-    132 = sizeof(WideChar) * 66 : WideChar
-    66  = 2 + 64
-    64  = 2 * 32 = 2 * WINSTATIONNAME_LENGTH : String
-    2   = Additional zero termination (WideChar)
-  }
-
-//  GetMem(WinStationNamePtr, 100 + PaddingFac * (WINSTATIONNAME_LENGTH+1) * SizeOf(WideChar));
-  WinStationNamePtr := PWideChar(LocalAlloc(LMEM_ZEROINIT, 132));
-  try
-//    ZeroMemory(WinStationNamePtr, PaddingFac * (WINSTATIONNAME_LENGTH+1)* SizeOf(WideChar));
-
-    if WinStationNameFromLogonIdW(FServerHandle, SessionId,
-      WinStationNamePtr) then
-    begin
-      Result := JwPWideCharToJwString(WinStationNamePtr);
-    end;
-
-    // Return disconnected if WinStationName = empty
-    if Result = '' then
-    begin
-      Result := JwPWideCharToJwString(StrConnectState(WTSDisconnected, False));
-      // Confirm to TSAdmin behaviour and list sessionname as (Idle) (we use
-      // StrConnectState api to localise)
-      Result := '(' + JwPWideCharToJwString(StrConnectState(WTSIdle, False)) + ')';
-    end;
-  finally
-    LocalFree(DWORD(WinStationNamePtr));
+  if Result = '' then
+  begin
+    // Confirm to TSAdmin behaviour and list sessionname as (Idle)
+    // (we use StrConnectState api to localise)
+    Result := '(' + JwPWideCharToJwString(StrConnectState(WTSIdle, False)) + ')';
   end;
 end;
 
@@ -2733,7 +2717,6 @@ function TJwTerminalServer.EnumerateProcesses(const OnProcessFound : TJwOnProces
     Data : Pointer) : Boolean;
 var
   Count: Integer;
-//  ProcessInfoPtr: PWINSTA_PROCESS_INFO_ARRAY;
   ProcessInfoPtr: PTS_ALL_PROCESSES_INFO_ARRAY;
   i: Integer;
   AProcess: TJwWTSProcess;
@@ -2741,7 +2724,6 @@ var
   strUsername: TJwString;
   lpBuffer: PWideChar;
   DiffTime: TDiffTime;
-//  strSid: TjwString;
   Cancel : Boolean;
 begin
   ProcessInfoPtr := nil;
@@ -2773,9 +2755,15 @@ begin
             strProcessName := GetIdleProcessName;
             strUserName := SystemUsername;
           end
+          else if UniqueProcessId = 4 then
+          begin
+            strProcessName := JwTSUnicodeStringToJwString(ImageName);
+            strUserName := SystemUsername;
+          end
           else
           begin
             strProcessName := JwTSUnicodeStringToJwString(ImageName);
+              strUsername := CachedGetUserFromSessionId(SessionId);
 
             if IsValidSid(UserSid) then
             begin
@@ -2787,8 +2775,9 @@ begin
             end
             else begin
               // if User is nonadmin WinStationGetAllProcesses returns empty or
-              // invalid SID, in this case we will set user to Unknown.
-              strUsername := 'Unknown';
+              // invalid SID, in this case we try to obtain the username by
+              // other means...
+              strUsername := CachedGetUserFromSessionId(SessionId);
             end;
           end;
 
@@ -3396,6 +3385,32 @@ begin
        'WinStationSetInformationW', ['WinStationSetInformationW']);
 end;
 
+function TJwTerminalServer.CachedGetUserFromSessionId(const Sessionid: Cardinal): TJwString;
+var
+  WinStationInfo: _WINSTATIONINFORMATIONW;
+  dwReturnLength: DWORD;
+begin
+  Result := 'Unknown';
+
+  if SessionId = CachedUser.SessionId  then
+  begin
+    Result := CachedUser.Username;
+  end
+  else begin
+    ZeroMemory(@WinStationInfo, SizeOf(WinStationInfo));
+
+    if WinStationQueryInformationW(ServerHandle, SessionId,
+      WinStationInformation, @WinStationInfo, SizeOf(WinStationInfo),
+      dwReturnLength) then
+    begin
+      CachedUser.SessionId := SessionId;
+      CachedUser.Username := TJwString(WinStationInfo.UserName);
+    end;
+
+  end;
+
+end;
+
 function TJwTerminalServer.GetIdleProcessName: TJwString;
 var
   hModule: THandle;
@@ -3604,23 +3619,16 @@ begin
       if FWdFlag > WD_FLAG_CONSOLE then
       begin
         // Counter values (Status from TSAdmin)
-//        FIncomingBytes := WinStationInfo.IncomingBytes;
-//        FIncomingCompressedBytes := WinStationInfo.IncomingCompressedBytes;
-//        FIncomingFrames := WinStationInfo.IncomingFrames;
         FIncomingBytes := WinStationInfo.Status.Input.WdBytes;
         FIncomingCompressedBytes := WinStationInfo.Status.Input.CompressedBytes;
         FIncomingFrames := WinStationInfo.Status.Input.WdFrames;
 
 
-{        FOutgoingBytes := WinStationInfo.OutgoingBytes;
-        FOutgoingCompressBytes := WinStationInfo.OutgoingCompressBytes;
-        FOutgoingFrames := WinStationInfo.OutgoingFrames;}
         FOutgoingBytes := WinStationInfo.Status.Output.WdBytes;
         FOutgoingCompressBytes := WinStationInfo.Status.Output.CompressedBytes;
         FOutgoingFrames := WinStationInfo.Status.Output.WdFrames;
 
         // Calculate Compression ratio and store as formatted string
-//        if WinStationInfo.OutgoingBytes > 0 then // 0 division check
         if FOutgoingBytes > 0 then // 0 division check
 
         begin
@@ -3667,7 +3675,6 @@ begin
     FDisconnectTime := FileTime2DateTime(FileTime(WinStationInfo.DisconnectTime));
     // for A disconnected session LastInputTime has been set to DisconnectTime
     FLastInputTime := FileTime2DateTime(FileTime(WinStationInfo.LastInputTime));
-//    FLogonTime := FileTime2DateTime(WinStationInfo.LogonTime);
     FLogonTime := Int64(WinStationInfo.LogonTime);
     FCurrentTime := FileTime2DateTime(FileTime(WinStationInfo.CurrentTime));
   end;
@@ -3902,7 +3909,7 @@ begin
   FOwner := Owner;
   FSessionID := SessionId;
 
-//  FWinStationName := FOwner.Owner.GetWinStationName(SessionId);
+  FWinStationName := FOwner.Owner.GetWinStationName(SessionId);
 
   FProcessId := ProcessId;
   FProcessName := ProcessName;
