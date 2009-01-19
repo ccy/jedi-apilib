@@ -562,6 +562,36 @@ type
   TKeyValueEntry = KEY_VALUE_ENTRY;
   PKeyValueEntry = ^TKeyValueEntry;
 
+  _KEY_FULL_INFORMATION = record
+    LastWriteTime: LARGE_INTEGER;
+    TitleIndex: ULONG;
+    ClassOffset: ULONG;
+    ClassLength: ULONG;
+    SubKeys: ULONG;
+    MaxNameLen: ULONG;
+    MaxClassLen: ULONG;
+    Values: ULONG;
+    MaxValueNameLen: ULONG;
+    MaxValueDataLen: ULONG;
+    Class_: Array[0..0] of WCHAR;
+  end;
+  PKEY_FULL_INFORMATION = ^_KEY_FULL_INFORMATION;
+  PKeyFullInformation = PKEY_FULL_INFORMATION;
+  TKeyFullInformation = _KEY_FULL_INFORMATION;
+
+  _KEY_VALUE_FULL_INFORMATION = record
+    TitleIndex: ULONG;
+    Type_: ULONG;
+    DataOffset: ULONG;
+    DataLength: ULONG;
+    NameLength: ULONG;
+    Name: Array[0..0] of WCHAR;
+  end;
+  PKEY_VALUE_FULL_INFORMATION = ^_KEY_VALUE_FULL_INFORMATION;
+  TKeyValueFullInformation = _KEY_VALUE_FULL_INFORMATION;
+  PKeyValueFullInformation = PKEY_VALUE_FULL_INFORMATION;
+
+
   {$IFNDEF JWA_INCLUDEMODE}
   _DEVICE_POWER_STATE = (
     PowerDeviceUnspecified,
