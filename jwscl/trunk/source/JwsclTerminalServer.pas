@@ -1515,6 +1515,10 @@ type
     function SendMessage(const AMessage: TJwString; const ACaption: TJwString;
       const uType: DWORD; const ATimeOut: DWORD): DWORD;
 
+    class function SendLocalMessage(const SessionID : TJwSessionId; const AMessage: TJwString;
+  const ACaption: TJwString; const uType: DWORD; const ATimeOut: DWORD): DWORD;
+
+
     {<B>Server</B> the netbios name of the Terminal Server.
 
      Remarks
@@ -3873,6 +3877,22 @@ begin
     Result, ATimeOut <> 0);
 {$ENDIF UNICODE}
 end;
+
+class function TJwWTSSession.SendLocalMessage(const SessionID : TJwSessionId; const AMessage: TJwString;
+  const ACaption: TJwString; const uType: DWORD; const ATimeOut: DWORD): DWORD;
+begin
+{$IFDEF UNICODE}
+  WTSSendMessageW(0, SessionID, PWideChar(ACaption),
+    Length(ACaption) * SizeOf(WCHAR), PWideChar(AMessage),
+    Length(AMessage) * SizeOf(WCHAR), uType, ATimeOut, Result, ATimeOut <> 0);
+{$ELSE}
+  WTSSendMessageA(0, SessionID, PAnsiChar(ACaption),
+    Length(ACaption), PAnsiChar(AMessage), Length(AMessage), uType, ATimeOut,
+    Result, ATimeOut <> 0);
+{$ENDIF UNICODE}
+end;
+
+
 
 function TJwWTSSession.PostMessage(const AMessage: TJwString;
   const ACaption: TJwString; const uType: DWORD): DWORD;
