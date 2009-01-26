@@ -217,7 +217,7 @@ type
 
 
 
-  {<B>TJwAuthZAccessReply</B> contains information about a successfull call to TJwAuthContext.AccesCheck}
+  {<B>TJwAuthZAccessReply</B> contains information about a call to TJwAuthContext.AccessCheck}
   TJwAuthZAccessReply = class
   protected
     fGrantedAccessMask : TJwAccessMaskArray;
@@ -240,19 +240,19 @@ type
      Values are from
       http://msdn2.microsoft.com/en-us/library/aa376321(VS.85).aspx
      
-      # ERROR_SUCCESS  All the access bits, not including MAXIMUM_ALLOWED, are granted and the GrantedAccessMask member is not zero. 
-      # ERROR_PRIVILEGE_NOT_HELD DesiredAccess includes ACCESS_SYSTEM_SECURITY and the client does not have SeSecurityPrivilege. 
-      # ERROR_ACCESS_DENIED Includes each of the following:
-    * The requested bits are not granted.
-    * MaximumAllowed bit is on and granted access is zero.
-    * DesiredAccess is zero. 
+     # ERROR_SUCCESS  All the access bits, not including MAXIMUM_ALLOWED, are granted and the GrantedAccessMask member is not zero. 
+     # ERROR_PRIVILEGE_NOT_HELD DesiredAccess includes ACCESS_SYSTEM_SECURITY and the client does not have SeSecurityPrivilege. 
+     # ERROR_ACCESS_DENIED Includes each of the following:
+		* The requested bits are not granted.
+		* MaximumAllowed bit is on and granted access is zero.
+		* DesiredAccess is zero. 
       
      }
     property Error : TJwCardinalArray read fError;
 
     {<B>ErrorByType</B> defines an array of at least one element that contains
      the error result of the access check. It is the same result as in property
-     Error.
+     Error but instead a Delphi enumeration type (TJwReplyErrorEnumArray) is used for better understanding.
      }
     property ErrorByType : TJwReplyErrorEnumArray read fErrorByType;
   end;

@@ -251,6 +251,7 @@ type
 
     function GetMandatoryPolicy: TJwTokenMandatoryPolicies; virtual;
 
+    function RetrieveSpecificAccessRights(const AccessMask : TJwAccessMask) : TJwAccessMask; virtual;
   protected
         {<B>CheckTokenHandle</B> checks the TokenHandle of this instance and raises EJwsclInvalidTokenHandle if the token is invalid; otherwise it does nothing
          @param aSourceProc defines the caller method  
@@ -3055,17 +3056,7 @@ begin
       RsUNToken, 0, True, ['OpenProcessToken']);
   end;
 
-  try
-    if aDesiredAccess = MAXIMUM_ALLOWED then
-      fAccessMask := GetMaximumAllowed
-    else
-      fAccessMask := aDesiredAccess;
-  except
-    //if GetMaximumAllowed does not have the READ_CONTROL flag
-    //we may fail here, so just set access mask to zero
-    //many people don't even read it.
-    fAccessMask := 0;
-  end;
+  fAccessMask := RetrieveSpecificAccessRights(aDesiredAccess);
 
 
   Shared := False;
@@ -3130,17 +3121,7 @@ begin
     end;
   end;
 
-  try
-    if aDesiredAccess = MAXIMUM_ALLOWED then
-      fAccessMask := GetMaximumAllowed
-    else
-      fAccessMask := aDesiredAccess;
-  except
-    //if GetMaximumAllowed does not have the READ_CONTROL flag
-    //we may fail here, so just set access mask to zero
-    //many people don't even read it.
-    fAccessMask := 0;
-  end;
+  fAccessMask := RetrieveSpecificAccessRights(aDesiredAccess);
 
   Shared := False;
 end;
@@ -3175,17 +3156,7 @@ begin
     //open process token
     CreateTokenByProcess(0, aDesiredAccess);
 
-  try
-    if aDesiredAccess = MAXIMUM_ALLOWED then
-      fAccessMask := GetMaximumAllowed
-    else
-      fAccessMask := aDesiredAccess;
-  except
-    //if GetMaximumAllowed does not have the READ_CONTROL flag
-    //we may fail here, so just set access mask to zero
-    //many people don't even read it.
-    fAccessMask := 0;
-  end;
+  fAccessMask := RetrieveSpecificAccessRights(aDesiredAccess);
 end;
 
 constructor TJwSecurityToken.Create(const aTokenHandle: TJwTokenHandle;
@@ -3199,17 +3170,7 @@ begin
   fShared := ShareTokenHandle = shShared;
 
 
-  try
-    if aDesiredAccess = MAXIMUM_ALLOWED then
-      fAccessMask := GetMaximumAllowed
-    else
-      fAccessMask := aDesiredAccess;
-  except
-    //if GetMaximumAllowed does not have the READ_CONTROL flag
-    //we may fail here, so just set access mask to zero
-    //many people don't even read it.
-    fAccessMask := 0;
-  end;
+  fAccessMask := RetrieveSpecificAccessRights(aDesiredAccess);
 end;
 
 
@@ -3551,17 +3512,7 @@ begin
     fTokenHandle := hNewTokenHandle;
     
       
-	try
-      if aDesiredAccess = MAXIMUM_ALLOWED then
-	    fAccessMask := GetMaximumAllowed
-	  else
-	    fAccessMask := aDesiredAccess;
-	except
-	//if GetMaximumAllowed does not have the READ_CONTROL flag
-	//we may fail here, so just set access mask to zero
-	//many people don't even read it.
-	fAccessMask := 0;
-	end;      
+  	fAccessMask := RetrieveSpecificAccessRights(aDesiredAccess);  
   end
   else
     raise EJwsclTokenImpersonationException.CreateFmtEx(
@@ -3599,17 +3550,7 @@ begin
       CloseHandle(fTokenHandle);
     fTokenHandle := hNewTokenHandle;
 
-    try
-	  if aDesiredAccess = MAXIMUM_ALLOWED then
-	    fAccessMask := GetMaximumAllowed
-	  else
-	    fAccessMask := aDesiredAccess;
-	except
-	  //if GetMaximumAllowed does not have the READ_CONTROL flag
-	  //we may fail here, so just set access mask to zero
-	  //many people don't even read it.
-	  fAccessMask := 0;
-	end;            
+    fAccessMask := RetrieveSpecificAccessRights(aDesiredAccess);        
   end
   else
     raise EJwsclTokenPrimaryException.CreateFmtEx(
@@ -5564,6 +5505,22 @@ begin
 end;
 
 
+function TJwSecurityToken.RetrieveSpecificAccessRights(
+  const AccessMask: TJwAccessMask): TJwAccessMask;
+begin
+  try
+    //TODO: GENERICS hier noch!
+    if AccessMask = MAXIMUM_ALLOWED then
+      result := GetMaximumAllowed
+    else
+      result := TJwSecurityTokenMapping.GenericMap(AccessMask)
+  except
+    //if GetMaximumAllowed does not have the READ_CONTROL flag
+    //we may fail here, so just set access mask to zero
+    //many people don't even read it.
+    result := 0;
+  end;
+end;
 {$ENDIF SL_INTERFACE_SECTION}
 
 {$IFNDEF SL_OMIT_SECTIONS}

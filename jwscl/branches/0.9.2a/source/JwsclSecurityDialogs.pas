@@ -133,8 +133,7 @@ type
     const GuidObjectType: TGUID;
     const sServerName: WideString;
     const SD: TJwSecurityDescriptor;
-    var ObjectTypeList:
-    TJwObjectTypeListArray;
+    var ObjectTypeList: TJwObjectTypeArray;
     var GrantedAccessList: TJwAccessMaskArray): Cardinal of object;
 
   {Not supported}
@@ -435,7 +434,7 @@ type
     fOnGetEffectivePermissions: TJwOnGetEffectivePermissions;
 
 
-    fObjectTypeList: TJwObjectTypeListArray;
+    fObjectTypeList: TJwObjectTypeArray;
 
 
 
@@ -523,7 +522,7 @@ type
     {see TJwOnGetEffectivePermissions }
     property OnGetEffectivePermissions: TJwOnGetEffectivePermissions
       Read fOnGetEffectivePermissions Write fOnGetEffectivePermissions;
-    {<B>OnLookupSIDs</B> is not supported actually and must not be used!}
+    {<B>OnLookupSIDs</B> is not supported currently and must not be used!}
     property OnLookupSIDs: TJwOnLookupSIDs
       Read fOnLookupSIDs Write fOnLookupSIDs;
     {see TOnJwIsDaclCanonical }
@@ -1591,7 +1590,7 @@ begin
             //const sServerName : WideString;
             SD,//const SD : TJwSecurityDescriptor
             fObjectTypeList,
-            //var ObjectTypeList : TJwObjectTypeListArray;
+            //var ObjectTypeList : TJwObjectTypeArray;
             GrantedAccessList
             //var GrantedAccessList : TJwAccessMaskArray) : Cardinal;
             );
@@ -1622,10 +1621,10 @@ begin
       pcGrantedAccessListLength := Length(GrantedAccessList);
 
       pcObjectTypeListLength := Length(fObjectTypeList);
-     { SetLength(TJwObjectTypeListArray(ppObjectTypeList), pcObjectTypeListLength);
+     { SetLength(TJwObjectTypeArray(ppObjectTypeList), pcObjectTypeListLength);
       for i := 0 to Length(ObjectTypeList)-1 do
       begin
-        TJwObjectTypeListArray(ppObjectTypeList)[i] := ObjectTypeList[i];
+        TJwObjectTypeArray(ppObjectTypeList)[i] := ObjectTypeList[i];
       end;    }
       ppObjectTypeList := @fObjectTypeList;
 

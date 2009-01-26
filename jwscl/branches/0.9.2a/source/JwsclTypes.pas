@@ -550,8 +550,7 @@ type
 
 
   TJwAccessMaskArray     = array of TJwAccessMask;
-  TJwObjectTypeListArray = array of TObjectTypeList;
-
+  TJwObjectTypeArray = array of TObjectTypeList;
 
   TJwSidClassName = (scnNone, scnComputer, scnUser, scnGroup,
     scnUnknown);
@@ -596,7 +595,7 @@ type
 
 
    {TJwSecurityDesktopFlags is a set of desktop flags.
-    Actually it can only contain dfAllowOtherAccountHook or nothgin :
+    Currently it can only contain dfAllowOtherAccountHook or nothing :
   Use [] as a aparameter if you don't want other applications to create hooks. Otherwise
   use [dfAllowOtherAccountHook].
   Never use [dfPad0]!
@@ -996,53 +995,120 @@ type
      );
   TJwAuthZResourceManagerFlags = set of TJwAuthZResourceManagerFlag;
 
+  {Currently only available for TJwAuthContext.CreateBySid.
+  Read MSDN doc on AuthzInitializeContextFromSid to get more information.}
   TAuthZSidContextFlag =
     (
+     {}
      authZSF_Default,
+     {}
      authZSF_SkipTokenGroups,
+     {}
      authZSF_RequireS4ULogon,
-     authZSF_ComputePrivleges
+     {}
+     authZSF_ComputePrivileges
      );
+  {<b>TAuthZSidContextFlags</b> is used by TJwAuthContext.}
   TAuthZSidContextFlags = set of TAuthZSidContextFlag;
 
-  TJwObjectTypeArray = array of TObjectTypeList;
 
-
-  TJwReplyErrorEnum = (reSuccess, rePrivilegeNotHeld, reAccessDenied, reUnknown);
+  {<b>TJwReplyErrorEnum</b> is used by TJwAuthZAccessReply to
+   define the result of an access checked element.
+  }
+  TJwReplyErrorEnum = (
+    {The access check was successful for the given element so
+    all access bits are granted (excluding MAXIMUM_ALLOWED).
+    }
+    reSuccess,
+    {The DesiredAccess value contained ACCESS_SYSTEM_SECURITY,
+    but the privilege SE_SECURITY_PRIVILEGE was not set. }
+    rePrivilegeNotHeld,
+    {The access was denied.
+     The following reason can be:
+       * The requested bits are not granted.
+       * MaximumAllowed bit is on and granted access is zero.
+       * DesiredAccess is zero. }
+    reAccessDenied,
+    {The result value was not recognized. You must use the property  TJwAuthZAccessReply.Error to get more information.}
+    reUnknown);
+	
+  {<b>TJwReplyErrorEnumArray</b> defines an dynamic array of TJwReplyErrorEnum.
+  It is used by TJwAuthZAccessReply to save each return value of TJwAuthContext.AccessCheck}
   TJwReplyErrorEnumArray = array of TJwReplyErrorEnum;
 
 
+  {<b>TJwCardinalArray</b> is a utility type that defines a dynamic array of cardinal values.}
   TJwCardinalArray = array of Cardinal;
 
 
-  TJwRequestedTokenType = (rttAuto, rttTokenPrimary, rttTokenImpersonation);
+  {<b>TJwSecurityDescriptor.CreateDefaultByToken</b> is used by TJwRequestedTokenType.CreateDefaultByToken
+  This types defines which token should be used for the new security descriptor.
+  }   
+  TJwRequestedTokenType = (
+    {The token of the thread will be used if any; otherwise the process token.}
+    rttAuto, 
+	{The process token is forced to be use.See TJwSecurityToken.CreateTokenByProcess for more information }
+	rttTokenPrimary, 
+	{The thread token is forced to be used. 
+     See TJwSecurityToken.CreateTokenByThread for more information.}
+	rttTokenImpersonation);
 
+  {<b>TJwTokenMandatoryPolicy</b> is used by TJwSecurityToken.MandatoryPolicy and
+  defines how mandatory policy is enforced for the token.}
   TJwTokenMandatoryPolicy = (
+    {No mandatory integrity policy is enforced for the token.}
     tmpOff,
+    {A process associated with the token cannot write to objects that have a greater mandatory integrity level.}
     tmpNoWriteUp,
-    tmpNewProcessMin);
+    {A process created with the token has an integrity level that is the lesser of the parent-process integrity level and the executable-file integrity level.}
+    tmpNewProcessMin
+    );
 
+  {<b>TJwTokenMandatoryPolicies</b> is used by TJwSecurityToken.MandatoryPolicy and
+  defines how mandatory policy is enforced for the token.
+
+  Remarks
+    An empty set is invalid.
+  }
   TJwTokenMandatoryPolicies = set of TJwTokenMandatoryPolicy;
 
+  {<b>TJwPrivCheck</b> is used by methods from TJwSecurityToken.}
   TJwPrivCheck = (
+    {Use default mechanism.}
     pcDefault,
+    {All privileges must be enabled.}
     pcAllPrivsEnabled);
 
   TWellKnownSidTypeSet = set of TWellKnownSidType;
 
+  {<b>TJwProfileMember</b> is used by TJwSecurityToken.LoadUserProfile 
+   and influences the behavior of the functions.
+   Please retrieve their meaning from the LoadUserProfile MSDN page or TJwProfileInfo}
   TJwProfileMember = (
+    {If this enum constant is set, the flags parameter for WinAPI function LoadUserProfile
+	will just contain PI_NOUI. Otherwise the flags from ProfileInfo.Flags will be used.	}
     pmFlags,
+	{If this enum constant is set the username from the current username of the token instance is used to
+    initialize call the profile. Otherwise the ProfileInfo.UserName member is used.}
     pmUserName,
+	{If this enum constant is set the roaming user's profile path is detected and used. Otherwise
+	the ProfileInfo.ProfilePath member is used.}
     pmProfilePath,
+	{If this enum constant is set the member ProfileInfo.DefaultPath is ignored.}
     pmDefaultPath,
+	{If this enum constant is set the member ProfileInfo.ServerName is ignored.}
     pmServerName,
+	{If this enum constant is set the member ProfileInfo.PolicyPath is ignored.}
     pmPolicyPath
   );
 
+  {<b>TJwProfileMembers</b> defines a set of TJwProfileMember.
+  Used by TJwSecurityToken.LoadUserProfile}
   TJwProfileMembers = set of TJwProfileMember;
 
   {<B>TJwProfileInfo</B> contains and receives information
    about a users profile.
+   TJwSecurityToken.LoadUserProfile
   }
   TJwProfileInfo = record
     // See flags above
@@ -1061,15 +1127,25 @@ type
     Profile: HANDLE;
   end;
 
-
+  {<b>TJwPointerType</b> is used by IJwAutoLock to determine the
+   type of stored pointer.}
   TJwPointerType = (
+    {The pointer type is unknown.}
     ptUnknown,
+    {The pointer was created by New function}
     ptNew,
+    {The pointer was created by GetMem function.}
     ptGetMem,
+    {The pointer was created by LocalAlloc function.}
     ptLocalAlloc,
+    {The pointer is a handle. Use GetHandle method.}
     ptHandle,
+    {The pointer is a class. Use Instance property instead.}
     ptClass);
 
+    
+  {<b>TJwJobLimit</b> is used by TJwJobObject class to set or get job user interface limits.
+  Read the MSDN doc on JOBOBJECT_BASIC_LIMIT_INFORMATION member LimitFlags.}
   TJwJobLimit = (
     jlWORKINGSET,
     jlPROCESSTIME,
@@ -1090,50 +1166,92 @@ type
     jlRESERVED4,
     jlRESERVED5,
     jlRESERVED6,
+    {No limits are applied}
     jlNone
   );
+  {<b>TJwJobLimits</b> is used by TJwJobObject class to set or get job user interface limits.
+  Read the MSDN doc on JOBOBJECT_BASIC_LIMIT_INFORMATION member LimitFlags.}
   TJwJobLimits = set of TJwJobLimit;
 
+  {<b>TJwJobUiLimit</b> is used by TJwJobObject class to set or get job user interface limits.
+  Read the MSDN doc on JOBOBJECT_BASIC_UI_RESTRICTIONS.}
   TJwJobUiLimit = (
+    {Prevents the process from using USER handles not owned by a process assigned to the job.}
     juilHANDLES,
+    {}
     juilREADCLIPBOARD,
+    {}
     juilWRITECLIPBOARD,
+    {}
     juilSYSTEMPARAMETERS,
+    {}
     juilDISPLAYSETTINGS,
+    {}
     juilGLOBALATOMS,
+    {}
     juilDESKTOP,
+    {}
     juilEXITWINDOWS,
+    {No limits are applied}
     juilNone
   );
+  {<b>TJwJobUiLimits</b> is used by TJwJobObject class to set or get job user interface limits}
   TJwJobUiLimits = set of TJwJobUiLimit;
 
+  {<b>TJwJobMessage</b> is used by TJwOnJobNotification
+  to show the type of job message that was received.}
   TJwJobMessage = (
     jmsgUnknown,
     jmsgACTIVEPROCESSZERO,
     jmsgENDOFPROCESSTIME,
     jmsgACTIVEPROCESSLIMIT,
+    {The memory limit of a process was reached.}
     jmsgPROCESSMEMORYLIMIT,
+    {The memory limit of the whole job was reached.}
     jmsgJOBMEMORYLIMIT,
+    {A new process was added to the job}
     jmsgNEWPROCESS,
+    {A process exited the job and was removed.}
     jmsgEXITPROCESS,
+    {A process was forced to be shut down.}
     jmsgABNORMALEXITPROCESS,
+    {The time assigned to a process has ended.}
     jmsgENDOFJOBTIME
   );
+  {<b>TJwJobMessages</b> is used by TJwOnJobNotification
+  to show the types of job message that were received.}
   TJwJobMessages = set of TJwJobMessage;
 
-
+  {<b>TJwRightType</b> is returned by JwRightType and
+  defines the type of a given right access mask.
+  The return type is the first set bit of the access mask.
+  }
   TJwRightType = (
+    {The set bit in the access mask is unknown.}
     rtUnknown,
+    {There is no bit set.}
     rtNone,
+    {A generic bit is set.}
     rtGeneric,
+    {A reserved bit is set.}
     rtReserved,
+    {The maximum allowed bit is set.}
     rtMaximum,
+    {The system security bit is set.}
     rtSystem,
+    {A standard bit is set.}
     rtStandard,
+    {A specific right bit is set.}
     rtSpecific);
 
+  {<b>TJwProcessParameterType</b> is used by JwGetProcessSessionID
+  and defines whether its parameter ProcessIDorHandle is
+  a handle or process ID value.
+  }
   TJwProcessParameterType = (
+    {The given value is a handle obtained by OpenProcess or similar.}
     pptHandle,
+    {The given value is an ID of a process.}
     pptID);
 
   {<B>TJwJobTermination</B> defines how processes in job objects are terminated
@@ -1166,6 +1284,7 @@ type
     Size : Cardinal;
   end;
 
+  {<b>TJwSecurityCapability</b> is used by TJwSecurityPackageInfo}
   TJwSecurityCapability = (
     scIntegrity,//  SECPKG_FLAG_INTEGRITY         // Supports integrity on messages
     scPrivacy,  //SECPKG_FLAG_PRIVACY           // Supports privacy (confidentiality)
@@ -1186,6 +1305,7 @@ type
     scMutualAuth,  //SECPKG_FLAG_MUTUAL_AUTH       // Package can perform mutual authentication
     scDelegation  //SECPKG_FLAG_DELEGATION        // Package can delegate
   );
+  {<b>TJwSecurityCapabilities</b> is used by TJwSecurityPackageInfo}
   TJwSecurityCapabilities = set of TJwSecurityCapability;
 
 
