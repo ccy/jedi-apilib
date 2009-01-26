@@ -206,21 +206,10 @@ type
   {$EXTERNALSYM LPPROCESSENTRY32W}
   TProcessEntry32W = PROCESSENTRY32W;
 
-  {$IFDEF UNICODE}
 
-  PROCESSENTRY32 = PROCESSENTRY32W;
-  {$EXTERNALSYM PROCESSENTRY32}
-  PPROCESSENTRY32 = PPROCESSENTRY32W;
-  {$EXTERNALSYM PPROCESSENTRY32}
-  LPPROCESSENTRY32 = LPPROCESSENTRY32W;
-  {$EXTERNALSYM LPPROCESSENTRY32}
-  TProcessEntry32 = TProcessEntry32W;
-
-  {$ELSE}
-
-  PPROCESSENTRY32 = ^PROCESSENTRY32;
-  {$EXTERNALSYM PPROCESSENTRY32}
-  tagPROCESSENTRY32 = record
+  //Pseudo ansi version:
+  PPROCESSENTRY32A = ^PROCESSENTRY32A;
+  tagPROCESSENTRY32A = record
     dwSize: DWORD;
     cntUsage: DWORD;
     th32ProcessID: DWORD;          // this process
@@ -232,24 +221,50 @@ type
     dwFlags: DWORD;
     szExeFile: array [0..MAX_PATH - 1] of AnsiChar;    // Path
   end;
+  PROCESSENTRY32A = tagPROCESSENTRY32A;
+  LPPROCESSENTRY32A = ^PROCESSENTRY32A;
+  TProcessEntry32A = PROCESSENTRY32A;
+
+{$IFDEF UNICODE}
+  tagPROCESSENTRY32 = tagPROCESSENTRY32W;
   {$EXTERNALSYM tagPROCESSENTRY32}
-  PROCESSENTRY32 = tagPROCESSENTRY32;
+  PROCESSENTRY32    = tagPROCESSENTRY32W;
   {$EXTERNALSYM PROCESSENTRY32}
+
+{$ELSE}
+
+  tagPROCESSENTRY32 = tagPROCESSENTRY32A;
+  {$EXTERNALSYM tagPROCESSENTRY32}
+  PROCESSENTRY32    = tagPROCESSENTRY32A;
+  {$EXTERNALSYM PROCESSENTRY32}
+{$ENDIF}
+
+  PPROCESSENTRY32 = ^PROCESSENTRY32;
+  {$EXTERNALSYM PPROCESSENTRY32}
   LPPROCESSENTRY32 = ^PROCESSENTRY32;
   {$EXTERNALSYM LPPROCESSENTRY32}
   TProcessEntry32 = PROCESSENTRY32;
 
-  {$ENDIF UNICODE}
+
 
 function Process32FirstW(hSnapshot: HANDLE; var lppe: PROCESSENTRY32W): BOOL; stdcall;
 {$EXTERNALSYM Process32FirstW}
 function Process32NextW(hSnapshot: HANDLE; var lppe: PROCESSENTRY32W): BOOL; stdcall;
 {$EXTERNALSYM Process32NextW}
 
-function Process32First(hSnapshot: HANDLE; var lppe: PROCESSENTRY32): BOOL; stdcall;//always ANSI!
+function Process32FirstA(hSnapshot: HANDLE; var lppe: PROCESSENTRY32A): BOOL; stdcall;
 {$EXTERNALSYM Process32First}
-function Process32Next(hSnapshot: HANDLE; var lppe: PROCESSENTRY32): BOOL; stdcall; //always ANSI!
+function Process32NextA(hSnapshot: HANDLE; var lppe: PROCESSENTRY32A): BOOL; stdcall;
 {$EXTERNALSYM Process32Next}
+
+//This function does no more map to ANSI only version!
+function Process32First(hSnapshot: HANDLE; var lppe: PROCESSENTRY32): BOOL; stdcall;
+{$EXTERNALSYM Process32First}
+
+//This function does no more map to ANSI only version!
+function Process32Next(hSnapshot: HANDLE; var lppe: PROCESSENTRY32): BOOL; stdcall;
+{$EXTERNALSYM Process32Next}
+
 
 // Thread walking
 
@@ -480,11 +495,37 @@ begin
 end;
 
 var
+  _Process32FirstA: Pointer;
+
+function Process32FirstA;
+begin
+  GetProcedureAddress(_Process32FirstA, kernel32, 'Process32FirstA');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_Process32FirstA]
+  end;
+end;
+
+var
+  _Process32NextA: Pointer;
+
+function Process32NextA;
+begin
+  GetProcedureAddress(_Process32NextA, kernel32, 'Process32NextA');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_Process32NextA]
+  end;
+end;
+
+var
   _Process32First: Pointer;
 
 function Process32First;
 begin
-  GetProcedureAddress(_Process32First, kernel32, 'Process32First');
+  GetProcedureAddress(_Process32First, kernel32, 'Process32First'+AWSuffix);
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -497,7 +538,7 @@ var
 
 function Process32Next;
 begin
-  GetProcedureAddress(_Process32Next, kernel32, 'Process32Next');
+  GetProcedureAddress(_Process32Next, kernel32, 'Process32Next'+AWSuffix);
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -596,10 +637,12 @@ function Thread32Next; external kernel32 name 'Thread32Next';
 
 
 function Process32FirstW; external kernel32 name 'Process32FirstW';
-function Process32First; external kernel32 name 'Process32First'; //ANSI
+function Process32FirstA; external kernel32 name 'Process32FirstA';
+function Process32First; external kernel32 name 'Process32First'+AWSuffix;
 
 function Process32NextW; external kernel32 name 'Process32NextW';
-function Process32Next; external kernel32 name 'Process32Next';  //ANSI
+function Process32NextA; external kernel32 name 'Process32NextA';
+function Process32Next; external kernel32 name 'Process32Next'+AWSuffix;
 
 function Module32First; external kernel32 name 'Module32First'; //ANSI
 function Module32FirstW; external kernel32 name 'Module32FirstW';

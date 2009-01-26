@@ -6232,12 +6232,30 @@ const
   PROCESS_DEP_DISABLE_ATL_THUNK_EMULATION = 2;
   {$EXTERNALSYM PROCESS_DEP_DISABLE_ATL_THUNK_EMULATION}
 
-{$IFDEF WINVISTA_UP}  
+{$IFDEF WINVISTA_UP}
   {http://msdn2.microsoft.com/en-us/library/bb736299(VS.85).aspx}
   function SetProcessDEPPolicy({__in}dwFlags : DWORD) : Boolean; stdcall;
   {$EXTERNALSYM SetProcessDEPPolicy}
 
+  function GetNamedPipeServerSessionId(Pipe : HANDLE; out ServerSessionID : ULONG) : Boolean; stdcall;
+  {$EXTERNALSYM GetNamedPipeServerSessionId}
+  function GetNamedPipeServerProcessId(Pipe : HANDLE; out ServerProcessId : ULONG) : Boolean; stdcall;
+  {$EXTERNALSYM GetNamedPipeServerProcessId}
+
+  function GetNamedPipeClientProcessId(Pipe : HANDLE; out ClientProcessId : ULONG) : Boolean; stdcall;
+  {$EXTERNALSYM GetNamedPipeClientProcessId}
+  function GetNamedPipeClientSessionId(Pipe : HANDLE; out ClientSessionId : ULONG) : Boolean; stdcall;
+  {$EXTERNALSYM GetNamedPipeClientSessionId}
+
+  function GetNamedPipeClientComputerName(Pipe : HANDLE; out ClientComputerName : LPTSTR; ClientComputerNameLength : ULONG) : Boolean; stdcall;
+  {$EXTERNALSYM GetNamedPipeClientComputerName}
+  function GetNamedPipeClientComputerNameA(Pipe : HANDLE; out ClientComputerName : LPSTR; ClientComputerNameLength : ULONG) : Boolean; stdcall;
+  {$EXTERNALSYM GetNamedPipeClientComputerNameA}
+  function GetNamedPipeClientComputerNameW(Pipe : HANDLE; out ClientComputerName : LPWSTR; ClientComputerNameLength : ULONG) : Boolean; stdcall;
+  {$EXTERNALSYM GetNamedPipeClientComputerNameA}
 {$ENDIF WINVISTA_UP}
+
+
 
 {$ENDIF JWA_IMPLEMENTATIONSECTION}
 
@@ -19173,6 +19191,8 @@ begin
   end;
 end;
 
+
+{$IFDEF WINVISTA_UP}
 var
   _SetProcessDEPPolicy: Pointer;
 
@@ -19186,7 +19206,105 @@ begin
   end;
 end;
 
+
+var
+  _GetNamedPipeSrvSId: Pointer;
+
+function GetNamedPipeServerSessionId;
+begin
+  GetProcedureAddress(_GetNamedPipeSrvSId, kernel32, 'GetNamedPipeServerSessionId');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_GetNamedPipeSrvSId]
+  end;
+end;
+
+
+var
+  _GetNamedPipeSrvProcId: Pointer;
+
+function GetNamedPipeServerProcessId;
+begin
+  GetProcedureAddress(_GetNamedPipeSrvProcId, kernel32, 'GetNamedPipeServerProcessId');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_GetNamedPipeSrvProcId]
+  end;
+end;
+
+
+var
+  _GetNamedPipeClProcId: Pointer;
+
+function GetNamedPipeClientProcessId;
+begin
+  GetProcedureAddress(_GetNamedPipeClProcId, kernel32, 'GetNamedPipeClientProcessId');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_GetNamedPipeClProcId]
+  end;
+end;
+
+var
+  _GetNamedPipeClSId: Pointer;
+
+function GetNamedPipeClientSessionId;
+begin
+  GetProcedureAddress(_GetNamedPipeClSId, kernel32, 'GetNamedPipeClientSessionId');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_GetNamedPipeClSId]
+  end;
+end;
+
+
+var
+  _GetNamedPipeClCompName: Pointer;
+
+function GetNamedPipeClientComputerName;
+begin
+  GetProcedureAddress(_GetNamedPipeClCompName, kernel32, 'GetNamedPipeClientComputerName'+AWSuffix);
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_GetNamedPipeClCompName]
+  end;
+end;
+
+var
+  _GetNamedPipeClCompNameA: Pointer;
+
+function GetNamedPipeClientComputerNameA;
+begin
+  GetProcedureAddress(_GetNamedPipeClCompNameA, kernel32, 'GetNamedPipeClientComputerNameA');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_GetNamedPipeClCompNameA]
+  end;
+end;
+
+var
+  _GetNamedPipeClCompNameW: Pointer;
+
+function GetNamedPipeClientComputerNameW;
+begin
+  GetProcedureAddress(_GetNamedPipeClCompNameW, kernel32, 'GetNamedPipeClientComputerNameW');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_GetNamedPipeClCompNameW]
+  end;
+end;
+
+{$ENDIF WINVISTA_UP}
+
 {$ELSE}
+
 
 function InterlockedCompareExchange64; external kernel32 name 'InterlockedCompareExchange64';
 function InterlockedIncrement; external kernel32 name 'InterlockedIncrement';
@@ -20169,7 +20287,21 @@ function GetNumaHighestNodeNumber; external kernel32 name 'GetNumaHighestNodeNum
 function GetNumaProcessorNode; external kernel32 name 'GetNumaProcessorNode';
 function GetNumaNodeProcessorMask; external kernel32 name 'GetNumaNodeProcessorMask';
 function GetNumaAvailableMemoryNode; external kernel32 name 'GetNumaAvailableMemoryNode';
+
+
+{$IFDEF WINVISTA_UP}
 function SetProcessDEPPolicy; external kernel32 name 'SetProcessDEPPolicy';
+function GetNamedPipeServerSessionId; external kernel32 name 'GetNamedPipeServerSessionId';
+function GetNamedPipeServerProcessId; external kernel32 name 'GetNamedPipeServerProcessId';
+
+function GetNamedPipeClientProcessId; external kernel32 name 'GetNamedPipeClientProcessId';
+function GetNamedPipeClientSessionId; external kernel32 name 'GetNamedPipeClientSessionId';
+
+function GetNamedPipeClientComputerName; external kernel32 name 'GetNamedPipeClientComputerName'+AWSuffix;
+function GetNamedPipeClientComputerNameA; external kernel32 name 'GetNamedPipeClientComputerNameA';
+function GetNamedPipeClientComputerNameW; external kernel32 name 'GetNamedPipeClientComputerNameW';
+{$ENDIF WINVISTA_UP}
+
 
 {$ENDIF DYNAMIC_LINK}
 
