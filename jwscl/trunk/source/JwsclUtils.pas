@@ -735,7 +735,7 @@ procedure JwZeroPassword(var S : TJwString);
  {$UNDEF OPT_ON}
 {$ENDIF}
 {$O-}
-var i,i2 : Integer;
+var i : Integer;
       Data : ^TLStr;
       len : Integer;
 begin

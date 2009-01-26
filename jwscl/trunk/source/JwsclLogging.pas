@@ -326,13 +326,13 @@ type
        ['{B7202309-4766-4D62-9E16-ECE5953C2AEA}']
         {<B>Log</B> creates an ordinary log entry.
          @param LogType defines the type of log entry. See TJwLogType for more information 
-         @param LogMessage defines the message to be shown 
+         @param LogMessage This parameter receives a message string that is shown in the log. 
          }
         procedure Log(const LogType : TJwLogType; const LogMessage : TJwString); overload; safecall;
 
          {<B>Log</B> creates an ordinary log entry.
          @param LogType defines the type of log entry. See TJwLogType for more information 
-         @param LogMessage defines the message to be shown 
+         @param LogMessage This parameter receives a message string that is shown in the log.
          }
         procedure Log(const LogMessage : TJwString; const LogType : TJwLogType = lsMessage); overload; safecall;
 
@@ -343,7 +343,7 @@ type
          @param Methodname defines the name of the method or function 
          @param Filename defines the filename where the method is located. The filename can contain
           a source line at the end of string succeeded by a colon. 
-         @param LogMessage defines the message to be shown 
+         @param LogMessage This parameter receives a message string that is shown in the log.
          }
         procedure Log(const LogType : TJwLogType; const ClassName, MethodName, FileName, LogMessage : TJwString); overload; safecall;
 
@@ -352,7 +352,7 @@ type
          @param SignalType defines the type of signal entry. See TJwSignalType for more information 
          @param Source defines the source of the signal, like another thread or process ID. 
          @param Target defines the target of the signal, like another thread or process ID. 
-         @param LogMessage defines the message to be shown 
+         @param LogMessage This parameter receives a message string that is shown in the log.
          }
         procedure Signal(const SignalType : TJwSignalType; const Source, Target, LogMessage : TJwString); overload; safecall;
 
@@ -366,7 +366,7 @@ type
          @param Methodname defines the name of the method or function 
          @param Filename defines the filename where the method is located. The filename can contain
           a source line at the end of string succeeded by a colon. 
-         @param LogMessage defines the message to be shown 
+         @param LogMessage This parameter receives a message string that is shown in the log.
          }
         procedure Signal(const SignalType : TJwSignalType; const Source, Target, ClassName, MethodName, FileName, LogMessage : TJwString); overload; safecall;
 

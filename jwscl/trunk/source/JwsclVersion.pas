@@ -507,7 +507,6 @@ begin
 
   VerInfoPtr := nil; // Memory is freed when freeing VersionInfo Pointer
 end;
-
 begin
   Result := False;
   ZeroMemory(@FileVersionInfo, SizeOf(FileVersionInfo));
