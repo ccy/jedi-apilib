@@ -44,7 +44,7 @@ unit JwsclProcess;
 interface
 
 uses SysUtils, Classes,
-  JwaWindows, 
+  JwaWindows,
   JwsclTypes, JwsclToken, JwsclSid, JwsclTerminalServer, JwsclUtils,
   JwsclSecureObjects, JwsclResource,
   JwsclLogging, JwsclLsa, JwsclDescriptor,JwsclEnumerations, JwsclComUtils,
@@ -55,7 +55,9 @@ uses SysUtils, Classes,
 {$IFNDEF SL_IMPLEMENTATION_SECTION}
 
 const
-  IID_IJwJobObject = '{5F6DBA7A-B8DC-498E-A151-49AD0DCD8CF8}';
+//  IID_IJwJobObject = '{5F6DBA7A-B8DC-498E-A151-49AD0DCD8CF8}';
+
+  //Internal job name prefix
   IOJOBNAME = 'IOJobCompletion\';
 
 type
@@ -625,13 +627,13 @@ was found. The callback function determines whether the process should be used
 to return the token. If the process cannot be used to retrieve the token, <B>JwGetTokenFromProcess</B>
 will continue enumerating 
 @param LogServer receives a logging instance where log events are logged to.
- Can be nil if no logging is used 
+ Can be nil if no logging is used
 @param Data may contain user defined data to be assigned to a call to OnProcessFound 
 @return <B>JwGetTokenFromProcess</B> returns the primary token of a process. If no process could be used
 to get a token the return value is nil. 
 
 raises
- EJwsclNILParameterException:  will be raised if parameter OnProcessFound is nil 
+ EJwsclNILParameterException:  will be raised if parameter OnProcessFound is nil
 }
 function JwGetTokenFromProcess (const OnProcessFound : TJwOnProcessFound;
   LogServer : IJwLogServer; Data : Pointer) : TJwSecurityToken;
@@ -642,20 +644,37 @@ function JwGetTokenFromProcess (const OnProcessFound : TJwOnProcessFound;
 @param ProcessIDorHandle defines the process ID or handle. Which one is
   used, is defined by parameter ParameterType. Can be zero or -1 to use current process.
 @param ParameterType defines whether parameter ProcessIDorHandle is a process
-  or a handle 
+  or a handle
 @return Returns the session ID (zero based).
 raises
  EJwsclSecurityException:  <B>GetProcessSessionID</B> can raise a child class of this
   exception class. The following functions are used that can fail:
-   
-     # TJwSecurityToken.CreateTokenByProcess 
-     # TJwSecurityToken.CreateTokenByProcessId 
-     # TJwSecurityToken.TokenSessionId 
-    
-}
-function JwGetProcessSessionID(ProcessIDorHandle : Cardinal;
-  const ParameterType : TJwProcessParameterType) : Cardinal;
 
+     # TJwSecurityToken.CreateTokenByProcess
+     # TJwSecurityToken.CreateTokenByProcessId
+     # TJwSecurityToken.TokenSessionId
+
+}
+function JwGetProcessSessionID(ProcessIDorHandle : TJwProcessId;
+  const ParameterType : TJwProcessParameterType) : TJwSessionId;
+
+
+{<B>JwProcessIdToSessionId</B> returns the session ID of a process.
+This function uses the new API of Vista or otherwise calls just JwGetProcessSessionID.
+It ist faster because it does not create an object if run on Vista or newer.
+
+@param ProcessID defines the process ID.
+@return Returns the session ID (zero based).
+raises
+ EJwsclWinCallFailedException: Is raised if ProcessIdToSessionId fails.
+ EJwsclSecurityException: See JwGetProcessSessionID for more information.
+
+remarks
+ If you want to use the WinAPI function ProcessIdToSessionId and you also use JWSCL
+ you should consider this function instead. It works on all Windows NT versions
+ (>=2000).
+}
+function JwProcessIdToSessionId(const ProcessID : TJwProcessId) : TJwSessionId;
 
 
 
@@ -827,6 +846,7 @@ procedure JwCreateProcessAsAdminUser(
 
 
 
+
 {$ENDIF SL_IMPLEMENTATION_SECTION}
 
 {$IFNDEF SL_OMIT_SECTIONS}
@@ -839,9 +859,29 @@ uses Math, D5impl, JwsclExceptions,
 
 {$IFNDEF SL_INTERFACE_SECTION}
 
+function JwProcessIdToSessionId(const ProcessID : TJwProcessId) : TJwSessionId;
+begin
+  if TJwWindowsVersion.IsWindowsVista(true) and
+     TJwWindowsVersion.IsWindows2008(true) then
+  begin
+    if ProcessIdToSessionId(ProcessID, result) then
+      raise EJwsclWinCallFailedException.CreateFmtWinCall(
+          '',
+          'JwProcessIdToSessionId',                                //sSourceProc
+          '',                                //sSourceClass
+          '',                          //sSourceFile
+          0,                                           //iSourceLine
+          True,                                  //bShowLastError
+          'ProcessIdToSessionId',                   //sWinCall
+          ['ProcessIdToSessionId']);                                  //const Args: array of const
+  end
+  else
+    result := JwGetProcessSessionID(ProcessID, pptID);
+end;
 
-function JwGetProcessSessionID(ProcessIDorHandle : Cardinal;
-  const ParameterType : TJwProcessParameterType) : Cardinal;
+
+function JwGetProcessSessionID(ProcessIDorHandle : TJwProcessId;
+  const ParameterType : TJwProcessParameterType) : TJwSessionId;
 var Token : TJwSecurityToken;
 begin
   Token := nil;
@@ -861,11 +901,11 @@ begin
   end;
 
   if Assigned(Token) then
-    try
-      result := Token.TokenSessionId;
-    finally
-      Token.Free;
-    end;
+  try
+    result := Token.TokenSessionId;
+  finally
+    Token.Free;
+  end;
 end;
 
 
