@@ -955,7 +955,7 @@ end;
 
 var _RtlFreeAnsiString: Pointer;
 
-function RtlFreeAnsiString;
+procedure RtlFreeAnsiString;
 begin
   GetProcedureAddress(_RtlFreeAnsiString, winternl_lib, 'RtlFreeAnsiString');
   asm
@@ -968,7 +968,7 @@ end;
 var _RtlFreeUnicodeString: Pointer;
 
 
-function RtlFreeUnicodeString;
+procedure RtlFreeUnicodeString;
 begin
   GetProcedureAddress(_RtlFreeUnicodeString, winternl_lib, 'RtlFreeUnicodeString');
   asm
@@ -981,7 +981,7 @@ end;
 var _RtlFreeOemString: Pointer;
 
 
-function RtlFreeOemString;
+procedure RtlFreeOemString;
 begin
   GetProcedureAddress(_RtlFreeOemString, winternl_lib, 'RtlFreeOemString');
   asm
@@ -994,7 +994,7 @@ end;
 var _RtlInitString: Pointer;
 
 
-function RtlInitString;
+procedure RtlInitString;
 begin
   GetProcedureAddress(_RtlInitString, winternl_lib, 'RtlInitString');
   asm
@@ -1007,7 +1007,7 @@ end;
 var _RtlInitAnsiString: Pointer;
 
 
-function RtlInitAnsiString;
+procedure RtlInitAnsiString;
 begin
   GetProcedureAddress(_RtlInitAnsiString, winternl_lib, 'RtlInitAnsiString');
   asm
@@ -1020,7 +1020,7 @@ end;
 var _RtlInitUnicodeString: Pointer;
 
 
-function RtlInitUnicodeString;
+procedure RtlInitUnicodeString;
 begin
   GetProcedureAddress(_RtlInitUnicodeString, winternl_lib, 'RtlInitUnicodeString');
   asm
@@ -1125,7 +1125,7 @@ end;
 
 var _RtlUnwind: Pointer;
 
-function RtlUnwind;
+procedure RtlUnwind;
 begin
   GetProcedureAddress(_RtlUnwind, winternl_lib, 'RtlUnwind');
   asm
