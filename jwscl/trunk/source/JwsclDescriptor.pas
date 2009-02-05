@@ -743,14 +743,14 @@ type
     property Tag : Integer read fTag write fTag;
   end;
 
-const {<B>SD_MAGIC_HEADER</B> is the header string that initiates a security descriptor stream block used
-       by TJwSecurityDescriptor.SaveToStream and TJwSecurityDescriptor.LoadFromStream.
-      }
-  SD_MAGIC_HEADER = #3#4'SDH';
-
-      {<B>SD_MAGIC_LENGTH</B> is the size of the magic header length in a security descriptor stream.
+const       {<B>SD_MAGIC_LENGTH</B> is the size of the magic header length in a security descriptor stream.
        See TJwSecurityDescriptor.SaveToStream and TJwSecurityDescriptor.LoadFromStream}
   SD_MAGIC_LENGTH = 5;
+
+  {<B>SD_MAGIC_HEADER</B> is the header string that initiates a security descriptor stream block used
+       by TJwSecurityDescriptor.SaveToStream and TJwSecurityDescriptor.LoadFromStream.
+      }
+  SD_MAGIC_HEADER : array[0..SD_MAGIC_LENGTH-1] of AnsiChar = (#3,#4,'S','D','H');
 
       {<B>SD_HEADER_SIZE</B> is the size of the header written into a stream by TJwSecurityDescriptor.SaveToStream 
        and TJwSecurityDescriptor.LoadFromStream }
@@ -1921,13 +1921,11 @@ var
   iHash: int64;
   iSDSize: Cardinal;
 
-  magic: array[0..SD_MAGIC_LENGTH - 1] of char;
   isHashed: byte;
 begin
-  magic := SD_MAGIC_HEADER;
   SD := Create_SD(iSDSize, True);
   try
-    Stream.Write(magic, SD_MAGIC_LENGTH);
+    Stream.Write(SD_MAGIC_HEADER, SD_MAGIC_LENGTH);
     Stream.Write(iSDSize, sizeof(iSDSize));
 
     iHash := 0;
@@ -1964,7 +1962,7 @@ procedure TJwSecurityDescriptor.LoadFromStream(const Stream: TStream);
 var
   SD:  TJwSecurityDescriptor;
   pSD: PSecurityDescriptor;
-  magic: array[0..SD_MAGIC_LENGTH - 1] of char;
+  magic: array[0..SD_MAGIC_LENGTH - 1] of AnsiChar;
   iRHash, iCHash: int64;
   iSDSize: Cardinal;
   byteHashed: byte;
