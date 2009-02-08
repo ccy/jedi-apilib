@@ -89,7 +89,8 @@ type
   TJwWTSProcess = class;
   TJwWTSProcessList = class;
 
-  { CachedUsername record }
+  { The <b>CachedUsername</b> record is use internally in the <link TJwTerminalServer.CachedGetUserFromSessionId@DWORD, CachedGetUserFromSessionId>
+    function.                                                                                                                                       }
   TCachedUser = record
     SessionId: DWORD;
     Username: TJwString;
@@ -171,6 +172,8 @@ type
     {@exclude}
     FOnWinStationRename: TNotifyEvent;
     {@exclude}
+    FProcessors: Integer;
+    {@exclude}
     FServerHandle: THandle;
     {@exclude}
     FServers: TStringList;
@@ -187,7 +190,7 @@ type
     {@exclude}
     FTag: Integer;
 
-    {@exclude}
+
     function CachedGetUserFromSessionId(const Sessionid: DWORD): TJwString;
     {@exclude}
     function GetIdleProcessName: TJwString;
@@ -713,11 +716,12 @@ type
     }
     property OnSessionStateChange: TNotifyEvent read FOnSessionStateChange write FOnSessionStateChange;
 
+    property Processors: Integer read FProcessors;
     {<B>Processes</B> contains a TJwWTSProcessList of which each item contains a
      TJwWTSProcess. This processlist contains all enumerated processes
      and their properties such as Process Name, Process Id, Username, Memory
      Usage and so on.
-     
+
      Remarks
   The Processlist is filled by calling the EnumerateProcesses
      function.
@@ -725,12 +729,12 @@ type
     property Processes: TJwWTSProcessList read FProcesses write FProcesses;
 
     {<B>Server</B> the netbios name of the Terminal Server.
-     
+
      Remarks
   If you want to connect to a Terminal Server locally
      you should not specify the server name. Please note that in the case of a
      local connection this property <B>will return the computername</B> )
-     
+
      Note that Windows XP SP 2 by default does not allow remote
      RPC connection to Terminal Server (enumerating sessions and processes).
      You can change this behaviour by creating the following registry entry
@@ -1939,7 +1943,11 @@ type
     {@exclude}
     FProcessAgeStr: TJwString;
     {@exclude}
-    FProcessCreateTime: TJwString;
+    FProcessCreateTime: Int64;
+    {@exclude}
+    FProcessCreateTimeStr: TJwString;
+    {@exclude}
+    FProcessCPU: Integer;
     {@exclude}
     FProcessCPUTime: Int64;
     {@exclude}
@@ -2024,11 +2032,16 @@ type
     }
     property ProcessAgeStr: TJwString read FProcessAgeStr;
 
+
+    {<B>ProcessCPU</B> can be used to store the relative CPU Time as percentage
+     total. Needs to be calculated by caller... }
+    property ProcessCPU: Integer read FProcessCPU write FProcessCPU;
+
     {<B>ProcessCPUTime</B> the total CPU Time (Usertime + Kerneltime) for the given process
      in 100-nanosecond intervals since January 1, 1601 (TFileTime).
-     
+
      Remarks
-  This value matches the CPU Time column in Task Manager.
+     This value matches the CPU Time column in Task Manager.
      See Also
      * ProcessCPUTimeStr
     }
@@ -2045,9 +2058,11 @@ type
     }
     property ProcessCPUTimeStr: TJwString read FProcessCPUTimeStr;
 
+    {<B>ProcessCreateTime</B> the Process Creation Time }
+    property ProcessCreateTime: Int64 read FProcessCreateTime;
     {<B>ProcessCreateTime</B> the Process Creation Time formatted as localised string.
     }
-    property ProcessCreateTime: TJwString read FProcessCreateTime;
+    property ProcessCreateTimeStr: TJwString read FProcessCreateTimeStr;
 
     {<B>ProcessId</B> the Process Identifier or PID
     }
@@ -2173,6 +2188,10 @@ type
     {@exclude}
     FOwner: TJwTerminalServer;
     {@exclude}
+    FIdleTime: Int64;
+    {@exclude}
+    FCPUTime: Int64;
+    {@exclude}
     function GetItem(Index: Integer): TJwWTSProcess;
     {@exclude}
     procedure SetItem(Index: Integer; AProcess: TJwWTSProcess);
@@ -2184,7 +2203,7 @@ type
     }
     function Add(AProcess: TJwWTSProcess): Integer;
 
-
+    function FindByPid(const PID: DWORD): TJwWTSProcess;
     {<B>GetEnumerator</B> returns an enumerator that can be used to iterate through
      the image list collection with Delphi's for in loop (Delphi 2005 and
      higher).
@@ -2233,8 +2252,16 @@ type
     }
     function GetEnumerator: TJwProcessEnumerator;
 
+    {@Returns the total IdleTime (sum of UserMode + KernelMode of the Idle Process).
+    }
+    property IdleTime: Int64 read FIdleTime;
 
-    {@Returns the index of the Process object in the ProcessList. 
+    {@Returns the total CPUTime (sum of UserMode + KernelMode of all Processes
+     except the Idle Process).
+    }
+    property CPUTime: Int64 read FCPUTime;
+
+    {@Returns the index of the Process object in the ProcessList.
     }
     function IndexOf(AProcess: TJwWTSProcess): Integer;
 
@@ -2705,8 +2732,10 @@ end;
 function TJwTerminalServer.EnumerateProcesses: Boolean;
 begin
   FProcesses.Clear;
+  FProcesses.FIdleTime := 0;
+  FProcesses.FCPUTime := 0;
 
-  result := EnumerateProcesses(OnInternalProcessFound, nil);
+  Result := EnumerateProcesses(OnInternalProcessFound, nil);
 end;
 
 procedure TJwTerminalServer.EnumerateProcessesEx(const OnProcessFound : TJwOnProcessFound; Data : Pointer);
@@ -2729,6 +2758,7 @@ var
   lpBuffer: PWideChar;
   DiffTime: TDiffTime;
   Cancel : Boolean;
+  LastError: Integer;
 begin
   ProcessInfoPtr := nil;
   Count := 0;
@@ -2744,6 +2774,11 @@ begin
   ProcessInfoPtr := nil;
 
   Result := WinStationGetAllProcesses(FServerHandle, 0, Count, ProcessInfoPtr);
+  LastError := GetLastError;
+
+  // Ignore Error 997 Overlapped I/O in progress which somtimes happens but
+  // seems to return correct results...
+  if (not Result) and (LastError = 997) and (Count > 0) then Result := True;
 
   try
     if Result then
@@ -2753,21 +2788,25 @@ begin
 
         with ProcessInfoPtr^[i], pTsProcessInfo^ do
         begin
+
+          Inc(FProcesses.FCPUTime, UserTime.QuadPart + KernelTime.QuadPart);
+
           // System Idle Process
           if UniqueProcessId = 0 then
           begin
+            FProcessors := NumberOfThreads;
             strProcessName := GetIdleProcessName;
             strUserName := SystemUsername;
+            FProcesses.FIdleTime := UserTime.QuadPart + KernelTime.QuadPart;
           end
           else if UniqueProcessId = 4 then
           begin
             strProcessName := JwTSUnicodeStringToJwString(ImageName);
             strUserName := SystemUsername;
           end
-          else
-          begin
+          else begin
             strProcessName := JwTSUnicodeStringToJwString(ImageName);
-              strUsername := CachedGetUserFromSessionId(SessionId);
+            strUsername := CachedGetUserFromSessionId(SessionId);
 
             if IsValidSid(UserSid) then
             begin
@@ -2811,8 +2850,13 @@ begin
             // Some of the used counters are explained here:
             // http://msdn2.microsoft.com/en-us/library/aa394372.aspx
 
-            FProcessCreateTime :=
+            FProcessCreateTime := CreateTime.QuadPart;
+            FProcessCreateTimeStr :=
               TimeToStr(FileTime2DateTime(FILETIME(CreateTime)));
+
+            // Set ProcessCPU to -1 (callee has to calculate it...)
+            FProcessCPU := -1;
+
             // The CPU Time column in Taskmgr.exe is Usertime + Kerneltime
             // So we take the sum of it and call it ProcessCPUTime
             FProcessCPUTime := UserTime.QuadPart + KernelTime.QuadPart;
@@ -2839,6 +2883,7 @@ begin
               break;
         end;
       end;
+
     end
     else begin
       raise EJwsclEnumerateProcessFailed.CreateFmtWinCall(RsWinCallFailed,
@@ -2904,12 +2949,14 @@ begin
       pCount);
 {$ENDIF UNICODE}
   LastError := GetLastError;
-  if LastError = 997 then Res := True;
 
-  // RW: Ignore Error 997 Overlapped I/O in progress??
+  // Ignore Error 997 Overlapped I/O in progress which somtimes happens but
+  // seems to return correct results...
+  if (not Res) and (LastError = 997) and (pCount > 0) then Res := True;
+
   if not Res then begin
     raise EJwsclWinCallFailedException.CreateFmtWinCall(RsWinCallFailed,
-      'EnumerateSessions', ClassName, RsUNTerminalServer, 923, True,
+      'EnumerateSessions', ClassName, RsUNTerminalServer, 0, True,
           'WTSEnumerateSessions', ['WTSEnumerateSessions']);
   end;
 
@@ -3311,6 +3358,21 @@ end;
 function TJwWTSProcessList.Add(AProcess: TJwWTSProcess): Integer;
 begin
   Result := inherited Add(AProcess);
+end;
+
+function TJwWTSProcessList.FindByPid(const PID: Cardinal): TJwWTSProcess;
+var
+  i: Integer;
+begin
+  Result := nil;
+
+  for i := 0 to Self.Count - 1 do
+  begin
+    if Items[i].FProcessId = PID then
+    begin
+      Result := Items[i];
+    end;
+  end;
 end;
 
 function TJwWTSProcessList.GetEnumerator: TJwProcessEnumerator;
