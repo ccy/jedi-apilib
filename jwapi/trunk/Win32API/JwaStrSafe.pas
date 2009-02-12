@@ -42,8 +42,7 @@
 {               a bit more safe in reference to security and                   }
 {               robustness                                                     }
 {                                                                              }
-{ Following functions are not implemented (variable argument list)             }
-{  StringCchVPrintf, StringCbVPrintf, StringCchPrintf, StringCbPrintf,         }
+{ Following functions are not implemented                                      }
 { StringCchPrintfEx, StringCbPrintfEx, StringCchVPrintfEx, StringCbVPrintfExA  }
 { and inline only                                                              }
 {  StringCchGets, StringCbGets, StringCchGetsEx, StringCbGetsEx                }
@@ -56,19 +55,23 @@
 unit JwaStrSafe;
 {$ENDIF JWA_OMIT_SECTIONS}
 
+
+
+
 {$IFNDEF JWA_OMIT_SECTIONS}
 {$I ..\Includes\JediAPILib.inc}
 interface
 //use either JwaWindows.pas or single mode units
 {$IFDEF JWA_WINDOWS}
-uses JwaWindows; 
+uses JwaWindows;
 {$ELSE}
-uses JwaWinType;
+uses JwaWinType, JwaWinBase;
 {$ENDIF}
 
 {$ENDIF JWA_OMIT_SECTIONS}
 
 {$IFNDEF JWA_IMPLEMENTATIONSECTION}
+
 
 {$IFDEF PACKAGE_CONDITIONS}
   //use by the jedi api units
@@ -85,6 +88,7 @@ uses JwaWinType;
     {$LINK JwaStrSafe.obj}
   {$ENDIF JW_SINGLE_UNITS_PACKAGE}
 {$ENDIF PACKAGE_CONDITIONS}
+
 
 type
 {$IFNDEF JWA_OMIT_SECTIONS}
@@ -163,6 +167,211 @@ const
   STRSAFE_E_INVALID_PARAMETER        = HRESULT($80070057);  // $57 =  87L = ERROR_INVALID_PARAMETER
   STRSAFE_E_END_OF_FILE              = HRESULT($80070026);  // $26 =  38L = ERROR_HANDLE_EOF
 
+
+
+{
+
+STDAPI
+StringCchPrintfX(
+    __out_ecount(cchDest) LPTSTR  pszDest,
+    __in size_t  cchDest,
+    __in __format_string  LPCTSTR pszFormat,
+    ...
+    );
+
+Routine Description:
+
+    This routine is a safer version of the C built-in function 'sprintf'.
+    The size of the destination buffer (in characters) is a parameter and
+    this function will not write past the end of this buffer and it will
+    ALWAYS null terminate the destination buffer (unless it is zero length).
+
+    This function returns a hresult, and not a pointer.  It returns
+    S_OK if the string was printed without truncation and null terminated,
+    otherwise it will return a failure code. In failure cases it will return
+    a truncated version of the ideal result.
+
+    Usage in Delphi
+
+    var
+      S : array[0..100] of WideChar;
+      SA : array[0..100] of AnsiChar;
+     ...
+    StringCchPrintfW(@S, sizeof(S) div 2, 'String %d %d %s', 5,6, Ansistring('Str'));
+    StringCchPrintfA(@SA, sizeof(SA), 'String %d %d %s', 5,6, WideString('Str'));
+
+Arguments:
+
+    pszDest     -  destination string
+
+    cchDest     -  size of destination buffer in characters
+                   length must be sufficient to hold the resulting formatted
+                   string, including the null terminator.
+
+    pszFormat   -  format string which must be null terminated
+
+    ...         -  additional parameters to be formatted according to
+                   the format string
+
+Notes:
+    Behavior is undefined if destination, format strings or any arguments
+    strings overlap.
+
+    pszDest and pszFormat should not be NULL.  See StringCchPrintfEx if you
+    require the handling of NULL values.
+
+Return Value:
+
+    S_OK           -   if there was sufficient space in the dest buffer for
+                       the resultant string and it was null terminated.
+
+    failure        -   you can use the macro HRESULT_CODE() to get a win32
+                       error code for all hresult failure cases
+
+      STRSAFE_E_INSUFFICIENT_BUFFER /
+      HRESULT_CODE(hr) == ERROR_INSUFFICIENT_BUFFER
+                   -   this return value is an indication that the print
+                       operation failed due to insufficient space. When this
+                       error occurs, the destination buffer is modified to
+                       contain a truncated version of the ideal result and is
+                       null terminated. This is useful for situations where
+                       truncation is ok.
+
+    It is strongly recommended to use the SUCCEEDED() / FAILED() macros to test the
+    return value of this function
+
+}
+
+
+
+(*StringCchPrintf cannot be declared in Delphi
+unless *)
+(*function StringCchPrintf(
+    {__out_bcount(cbDest)} pszDest : STRSAFE_LPTSTR;
+    {__in} cchDest : size_t;
+    {__in __format_string} pszFormat : STRSAFE_LPCTSTR
+    {...}
+    ) : HRESULT; stdcall;
+  *)
+
+  function StringCchPrintfW(
+    {__out_bcount(cbDest)} pszDest : STRSAFE_LPWSTR;
+    {__in} cchDest : size_t;
+    {__in __format_string} pszFormat : STRSAFE_LPCWSTR
+    {...}
+    ) : HRESULT; stdcall; varargs; external;
+
+  function StringCchPrintfA(
+    {__out_bcount(cbDest)} pszDest : STRSAFE_LPSTR;
+    {__in} cchDest : size_t;
+    {__in __format_string} pszFormat : STRSAFE_LPCSTR
+    {...}
+    ) : HRESULT; stdcall; varargs; external;
+
+{
+STDAPI
+StringCbPrintf(
+    __out_bcount(cbDest) LPTSTR  pszDest,
+    __in size_t  cbDest,
+    __in __format_string LPCTSTR pszFormat,
+    ...
+    );
+
+Routine Description:
+
+    This routine is a safer version of the C built-in function 'sprintf'.
+    The size of the destination buffer (in bytes) is a parameter and
+    this function will not write past the end of this buffer and it will
+    ALWAYS null terminate the destination buffer (unless it is zero length).
+
+    This function returns a hresult, and not a pointer.  It returns
+    S_OK if the string was printed without truncation and null terminated,
+    otherwise it will return a failure code. In failure cases it will return
+    a truncated version of the ideal result.
+
+    Usage in Delphi
+
+    var
+      S : array[0..100] of WideChar;
+      SA : array[0..100] of AnsiChar;
+     ...
+    StringCbPrintfW(@S, sizeof(S), 'String %d %d %s', 5,6, Ansistring('Str'));
+    StringCbPrintfA(@SA, sizeof(SA), 'String %d %d %s', 5,6, WideString('Str'));
+
+
+Arguments:
+
+    pszDest     -  destination string
+
+    cbDest      -  size of destination buffer in bytes
+                   length must be sufficient to hold the resulting formatted
+                   string, including the null terminator.
+
+    pszFormat   -  format string which must be null terminated
+
+    ...         -  additional parameters to be formatted according to
+                   the format string
+
+Notes:
+    Behavior is undefined if destination, format strings or any arguments
+    strings overlap.
+
+    pszDest and pszFormat should not be NULL.  See StringCbPrintfEx if you
+    require the handling of NULL values.
+
+
+Return Value:
+
+    S_OK           -   if there was sufficient space in the dest buffer for
+                       the resultant string and it was null terminated.
+
+    failure        -   you can use the macro HRESULT_CODE() to get a win32
+                       error code for all hresult failure cases
+
+      STRSAFE_E_INSUFFICIENT_BUFFER /
+      HRESULT_CODE(hr) == ERROR_INSUFFICIENT_BUFFER
+                   -   this return value is an indication that the print
+                       operation failed due to insufficient space. When this
+                       error occurs, the destination buffer is modified to
+                       contain a truncated version of the ideal result and is
+                       null terminated. This is useful for situations where
+                       truncation is ok.
+
+    It is strongly recommended to use the SUCCEEDED() / FAILED() macros to test the
+    return value of this function
+
+
+}
+
+
+
+(*StringCchPrintf cannot be declared in Delphi
+unless *)
+(*function StringCchPrintf(
+    {__out_bcount(cbDest)} pszDest : STRSAFE_LPTSTR;
+    {__in} cchDest : size_t;
+    {__in __format_string} pszFormat : STRSAFE_LPCTSTR
+    {...}
+    ) : HRESULT; stdcall;
+  *)
+
+function StringCbPrintfW(
+    {__out_bcount(cbDest)} pszDest : STRSAFE_LPWSTR;
+    {__in} cbDest : size_t;
+    {__in __format_string} pszFormat : STRSAFE_LPCWSTR
+    {...}
+      ) : HRESULT; stdcall; varargs; external;
+
+function StringCbPrintfA(
+    {__out_bcount(cbDest)} pszDest : STRSAFE_LPSTR;
+    {__in} cbDest : size_t;
+    {__in __format_string} pszFormat : STRSAFE_LPCSTR
+    {...}
+    ) : HRESULT; stdcall; varargs; external;
+
+
+//StringCchVPrintf, StringCbVPrintf, StringCchPrintf, StringCbPrintf,
+//StringCchPrintfEx, StringCbPrintfEx, StringCchVPrintfEx, StringCbVPrintfExA
 
 
 {++
@@ -1941,23 +2150,45 @@ begin
   result := ptr;
 end;
 
-function __vsnprintf(pszDest, cchDest,cchMax, pszFormat, argList : Pointer) : Pointer; cdecl;
+type
+  t_vsnprintf = function (
+   buffer : PAnsiChar;
+   count : size_t;
+   const format : PAnsiChar;
+   const Args : Pointer) : Integer;  cdecl;
+
+var _vsnprintf : t_vsnprintf;
+
+function __vsnprintf(pszDest : PAnsiChar; cchDest : size_t; pszFormat : PAnsiChar;
+  argList : Pointer) : size_t; cdecl;
 begin
-{
-StringVPrintfWorkerA
-StringVPrintfExWorkerA
-}
-  result := nil;
+  try
+    GetProcedureAddress(Pointer(@_vsnprintf), 'msvcr71.dll', '_vsnprintf');
+  except
+    GetProcedureAddress(Pointer(@_vsnprintf), 'msvcrt.dll', '_vsnprintf');
+  end;
+  result := _vsnprintf(pszDest, cchDest, pszFormat, argList);
 end;
 
-function __vsnwprintf(pszDest, cchDest,cchMax, pszFormat, argList : Pointer) : Pointer; cdecl;
-begin
-{
 
-StringVPrintfWorkerW
-StringVPrintfExWorkerW
-}
-  result := nil;
+type
+  t_vsnwprintf = function (
+   buffer : PWideChar;
+   count : size_t;
+   const format : PWideChar;
+   const Args : Pointer) : Integer;  cdecl;
+
+var _vsnwprintf : t_vsnwprintf;
+
+function __vsnwprintf(pszDest : PWideChar; cchDest : size_t; pszFormat : PWideChar;
+  argList : Pointer) : size_t; cdecl;
+begin
+  try
+    GetProcedureAddress(Pointer(@_vsnwprintf), 'msvcr71.dll', '_vsnwprintf');
+  except
+    GetProcedureAddress(Pointer(@_vsnwprintf), 'msvcrt.dll', '_vsnwprintf');
+  end;
+  result := _vsnwprintf(pszDest, cchDest, pszFormat, argList);
 end;
 
 
@@ -1975,6 +2206,7 @@ function STRSAFE_GET_FILL_PATTERN(const dwFlags : Cardinal) : Cardinal;
 begin
   result := Integer(dwFlags and $000000FF);
 end;
+
 
 var _StringCchCopy : Pointer;
 function StringCchCopy(
@@ -2011,7 +2243,7 @@ begin
     JMP     [_StringCbCopy]
   end; 
 end;
-	
+
 
 var _StringCchCopyEx : Pointer;
 function StringCchCopyEx(
@@ -2032,7 +2264,7 @@ begin
   end; 
 end;
 	
-	
+
 var _StringCbCopyEx : Pointer;
 function StringCbCopyEx(
     {__out_bcount(cbDest)} pszDest : STRSAFE_LPTSTR;
@@ -2146,7 +2378,7 @@ begin
   end; 
 end;	
 
-	
+
 var _StringCbCat : Pointer;		
 function StringCbCat(
     {__inout_bcount(cbDest)} pszDest : STRSAFE_LPTSTR;
@@ -2163,8 +2395,8 @@ begin
   end; 
 end;	
 	
-	
-var _StringCchCatEx : Pointer;		
+
+var _StringCchCatEx : Pointer;
 function StringCchCatEx(
     {__inout_ecount(cchDest)} pszDest : STRSAFE_LPTSTR;
     {__in}cchDest : size_t;
@@ -2180,8 +2412,8 @@ begin
     MOV     ESP, EBP
     POP     EBP
     JMP     [_StringCchCatEx]
-  end; 
-end;	
+  end;
+end;
 	
 	
 var _StringCbCatEx : Pointer;		
@@ -2203,7 +2435,7 @@ begin
   end; 
 end;	
 	
-	
+
 var _StringCchCatN : Pointer;		
 function StringCchCatN(
     {__inout_ecount(cchDest)} pszDest : STRSAFE_LPTSTR;
@@ -2263,7 +2495,7 @@ end;
 	
 	
 	
-var _StringCbCatNEx : Pointer;		
+var _StringCbCatNEx : Pointer;
 function StringCbCatNEx(
     {__inout_bcount(cbDest)} pszDest : STRSAFE_LPTSTR;
     {__in}cchDest : size_t;
@@ -2283,7 +2515,7 @@ begin
   end; 
 end;	
 
-var _StringCchLength : Pointer;	
+var _StringCchLength : Pointer;
 function StringCchLength(
     {__in}const psz : STRSAFE_LPCTSTR;
     {__in}cchMax : size_t;
@@ -2296,7 +2528,7 @@ begin
     MOV     ESP, EBP
     POP     EBP
     JMP     [_StringCchLength]
-  end; 
+  end;
 end;	
 
 
