@@ -2830,8 +2830,6 @@ uses TypInfo,
 
 const NOERROR = 0;
 
-function GetFullPathNameW_(lpFileName: LPCWSTR; nBufferLength: DWORD;
-  lpBuffer: LPWSTR; lpFilePart: PLPWSTR): DWORD; stdcall; external 'Kernel32.dll' name 'GetFullPathNameW';
 
 function ExpandFileName(FileName: TJwString): TJwString;
 
@@ -2856,14 +2854,14 @@ begin
 
   //just check the necessary space for the filename
   Buffer := nil;
-  len := GetFullPathNameW_('C:'{TJwPChar(FileName)}, 0, Buffer, nil);
+  len := GetFullPathNameW(PWideChar(WideString(FileName), 0, Buffer, FName);
 
   if Len = 0 then
     exit;
 
   Buffer := PWideChar(LocalAlloc(LPTR, (5+len)*sizeof(TJwChar)));
 
-  GetFullPathNameW_(PWideChar(FileName), len, Buffer, nil);
+  GetFullPathNameW(PWideChar(WideString(FileName)), len, Buffer, FName);
 
   result := TJwString(Buffer);
   LocalFree(Cardinal(Buffer));
@@ -6913,7 +6911,7 @@ class function TJwSecureFileObject.GetFileInheritanceSource(
         (afInheritedAce in PreviousInhACL[i].Flags) and
           //root ACE is inherited
           not (afInheritedAce in SD.DACL[ps].Flags) and
-          //actual ACE is explicit
+          //current ACE is explicit
           not (PreviousInhACL[i].Ignore) then
           //root ACE was not already considered
         begin
@@ -6931,15 +6929,12 @@ class function TJwSecureFileObject.GetFileInheritanceSource(
       end;
     end;
 
-  //  ShowMessage(PreviousInhACL.GetTextMap(TJwSecurityFileFolderMapping));
     for i := 0 to PreviousInhACL.Count - 1 do
     begin
 
       if (afInheritedAce in PreviousInhACL[i].Flags) and
         not PreviousInhACL[i].Ignore then
       begin
-        OutputDebugString(PChar(Format('%s',[PreviousInhACL[i].SID.StringSID])));
-
         PathName := GetParent(PathName);
 
         {If sPathName is something like C:
@@ -7010,13 +7005,12 @@ begin
 
   //we need absolute path
   sPathName := ExpandFileName(PathName);
-
+  //TODO: UNC???
 
   try
     SD := GetNamedSecurityInfo(sPathName, SE_FILE_OBJECT, aSecurityInfo);
 
-  //  ShowMessage(SD.GetTextMap(TJwSecurityFileFolderMapping));
-    //do not use invalid SD or nil DACL
+    //do not use invalid SD or nil DACL 
     if Assigned(SD) and Assigned(SD.DACL) then
     begin
       {We can encounter GENERIC rights in a DACL of a file.
@@ -7182,7 +7176,7 @@ end;
 
 
 {<B>TJwSecureRegistryKey.GetKey</B> returns the key opened by a create constructor, or
-if a named was given, returns zero and sets bUsesName to true.
+if a name was given, returns zero and sets bUsesName to true.
 @param bUsesName Defines whether the instance was created by using a name.
 @return Returns the key handle of the opened key.
      If the key is invalid the return value is 0.

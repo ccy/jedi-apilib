@@ -263,9 +263,17 @@ type
         systemAuditAce: TSystemAuditAce);
   end;
 
-  TJwEqualAceType    = (eactSameSid,
+  {<b>TJwEqualAceType</b> defines how the method TJwSecurityAccessControlList.FindEqualACE
+   finds an access control element.
+  }
+  TJwEqualAceType    = (
+    {The SID is used to compare (EqualSID) and must be equal}
+    eactSameSid,
+    {The Flags are compared and must be equal}
     eactSameFlags,
+    {The AccessMasks are compared and must be equal}
     eactSameAccessMask,
+    {The ACE type (deny, allow) are compared and must be equal}
     eactSameType,
 
     {This flag can only be used in combination with eactSameAccessMask.
@@ -279,9 +287,15 @@ type
     eactGEFlags,
     eactSEFlags
     );
+
+  {<b>TJwEqualAceTypeSet</b> defines how the method TJwSecurityAccessControlList.FindEqualACE
+   finds an access control element.
+  }
   TJwEqualAceTypeSet = set of TJwEqualAceType;
 
 const
+  {<b>JwAllEqualAceTypes</b> defines that all flags are set for
+   TJwSecurityAccessControlList.FindEqualACE }
   JwAllEqualAceTypes = [eactSameSid, eactSameFlags,
     eactSameAccessMask, eactSameType];
 
@@ -292,7 +306,8 @@ type
 
 
 
-
+  {<b>TJwSecurityInformationFlag</b> defines what types of security information
+  is enforced on or retrevied from an secured object.}
   TJwSecurityInformationFlag    = (
     siOwnerSecurityInformation,
     siGroupSecurityInformation,
@@ -309,9 +324,17 @@ type
     //this flag removes protection from the SACL
     siUnprotectedSaclSecurityInformation);
 
+  {<b>TJwSecurityInformationFlagSet</b> defines what types of security information
+  is enforced on or retrevied from an secured object.}
   TJwSecurityInformationFlagSet = set of TJwSecurityInformationFlag;
 
 const
+  {JwAllSiFlags defines
+    * owner
+    * DACL
+    * SACL
+   security information to be set or retrieved
+    }
   JwAllSiFlags = [siOwnerSecurityInformation,
     siDaclSecurityInformation,
     siSaclSecurityInformation];
@@ -335,9 +358,9 @@ type
   }
   TJwInheritedFromRecord = record
     {<B>GenerationGap</B> defines the gap between the source and heirs.
-    -1 defines that the gap could not be determined.}
+    (-1) defines that the gap could not be determined.}
     GenerationGap: TCardinalE;
-    {<B>AncestorName</B> defines the name of the acestor. (Always unicode.
+    {<B>AncestorName</B> defines the name of the ancestor. (Always unicode.
      See TJwInheritedFromArrayEx )}
     AncestorName:  WideString;
     {<B>SID</B> defines the name of the Sid which this record is dealing with.
@@ -358,6 +381,7 @@ type
    adapt TJwSecureBaseClass.GetInheritanceSource.}
   TJwInheritedFromArrayEx = array of TInheritedFromW;
 
+  {<b>TJwLuidArray</b> defines an array of TLUID}
   TJwLuidArray = array of TLuid;
 
 
