@@ -2854,7 +2854,7 @@ begin
 
   //just check the necessary space for the filename
   Buffer := nil;
-  len := GetFullPathNameW(PWideChar(WideString(FileName), 0, Buffer, FName);
+  len := GetFullPathNameW(PWideChar(WideString(FileName)), 0, Buffer, FName);
 
   if Len = 0 then
     exit;
