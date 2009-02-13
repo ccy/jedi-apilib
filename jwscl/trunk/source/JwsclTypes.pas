@@ -279,7 +279,19 @@ type
     {The AccessMasks are compared and must be equal}
     eactSameAccessMask,
     {The ACE type (deny, allow) are compared and must be equal}
-    eactSameType);
+    eactSameType,
+
+    {This flag can only be used in combination with eactSameAccessMask.
+     It defines that the comparison is true if the access mask of the given
+     ACE can be a subset of a found ACE.
+
+     SE = Smaller or Equal
+    }
+    eactSEAccessMask,
+
+    eactGEFlags,
+    eactSEFlags
+    );
 
   {<b>TJwEqualAceTypeSet</b> defines how the method TJwSecurityAccessControlList.FindEqualACE
    finds an access control element.
@@ -362,9 +374,9 @@ type
   }
   TJwInheritedFromRecord = record
     {<B>GenerationGap</B> defines the gap between the source and heirs.
-    -1 defines that the gap could not be determined.}
+    (-1) defines that the gap could not be determined.}
     GenerationGap: TCardinalE;
-    {<B>AncestorName</B> defines the name of the acestor. (Always unicode.
+    {<B>AncestorName</B> defines the name of the ancestor. (Always unicode.
      See TJwInheritedFromArrayEx )}
     AncestorName:  WideString;
     {<B>SID</B> defines the name of the Sid which this record is dealing with.

@@ -737,7 +737,8 @@ type
         @param ProgressUserData defines user data to be used as parameter ProgressUserData in the callback methods.
 
         raises
- EJwsclWinCallFailedException:  is raised if the winapi call failed.
+           EJwsclWinCallFailedException:  is raised if the winapi call failed.
+           EJwsclUnsupportedWindowsVersionException: This is exception is raised if the Windows system does not support this call.
         }
     class procedure TreeResetNamedSecurityInfo(pObjectName: TJwString;
       const aObjectType:
@@ -1659,11 +1660,12 @@ type
         @param aSecurityInfo defines which security information to be set. (Owner...SACL). If a flag is not set, but the
                 parameter Owner...SACL is not nil, it is also set. 
         @param FNProgressMethod defines a object method to be called if a file or folder is changed. Can be nil. See TJwFnProgressMethod  
-        @param FNProgressProcedure defines a procedure to be called if a file or folder is changed. Can be nil. See TJwFnProgressProcedure  
+        @param FNProgressProcedure defines a procedure to be called if a file or folder is changed. Can be nil. See TJwFnProgressProcedure
         @param ProgressUserData defines user data to be used as parameter ProgressUserData in the callback methods. 
 
         raises
- EJwsclWinCallFailedException:  is raised if the winapi call failed.
+           EJwsclWinCallFailedException:  is raised if the winapi call failed.
+           EJwsclUnsupportedWindowsVersionException: This is exception is raised if the Windows system does not support this call.
         }
     class procedure TreeResetNamedSecurityInfo(pObjectName: TJwString;
       const aSecurityInfo:
@@ -1697,7 +1699,7 @@ type
                    
                     # pis_ProgressInvokeNever  The callback method should not be called 
                     # pis_ProgressInvokeEveryObject The callback method is called for all objects. Including the finished callback. 
-                    # pis_ProgressInvokeOnError The callback method is called for all errors. Including the finished callback. 
+                    # pis_ProgressInvokeOnError The callback method is called for all errors. Including the finished callback.
                     
                   The finish callback is called after the security of the last file/folder was changed. The last callback
                   uses the parameter pObjectName and the constant pis_ProgressFinished in parameter pInvokeSetting. 
@@ -1779,8 +1781,8 @@ type
       nil): TJwInheritedFromArray;
     {PINHERITED_FROM pInheritArray} reintroduce; virtual;
 
-      {<B>GetFileInheritanceSource</B> retrieves the source if inheritance for the ACEs in the ACL of the given object.
-       This method simulates GetInheritanceSource, so that it can be used in all windows versions with ACL support.
+      {<B>GetFileInheritanceSource</B> retrieves the source of inheritance for the ACEs in the ACL of the given object.
+       This method simulates GetInheritanceSource so it can be used in all windows versions with ACL support.
 
        @param PathName defines an absolute PathName to a file or folder
        @param aSecurityInfo defines the type of security inheritance is to be obtained. The value can be one of siDaclSecurityInformation or siSaclSecurityInformation.
@@ -2433,6 +2435,7 @@ type
 
         raises
           EJwsclWinCallFailedException:  is raised if the winapi call failed.
+          EJwsclUnsupportedWindowsVersionException: This is exception is raised if the Windows system does not support this call.
         }
     class procedure TreeResetNamedSecurityInfo(
       const RootKey: TJwRootRegKey;
@@ -4284,6 +4287,25 @@ begin
 end;
 
 
+var
+  _TreeResetNamedSecurityInfo : Pointer;
+
+function InternalTreeResetNamedSecurityInfo(pObjectName: TJwPchar; ObjectType: SE_OBJECT_TYPE;
+    SecurityInfo: SECURITY_INFORMATION; pOwner, pGroup: PSID; pDacl, pSacl: PACL;
+    KeepExplicit: BOOL; fnProgress: FN_PROGRESS; ProgressInvokeSetting: PROG_INVOKE_SETTING;
+    Args: PVOID): DWORD;
+const Suffix = {$IFDEF UNICODE}'W'{$ELSE}'A'{$ENDIF UNICODE};
+begin
+  //raises exception if not found!!
+  GetProcedureAddress(_TreeResetNamedSecurityInfo, aclapilib, 'TreeResetNamedSecurityInfo'+Suffix);
+
+  if @_TreeResetNamedSecurityInfo = nil then
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_TreeResetNamedSecurityInfo]
+  end;
+end;
 
 
 class procedure TJwSecureBaseClass.TreeResetNamedSecurityInfo(
@@ -4311,6 +4333,12 @@ var
   FNProgressRecord: PFNProgressRecord;
   SecurityInfo: TJwSecurityInformationFlagSet;
 begin
+   if not (TJwWindowsVersion.IsWindowsXP(True) or
+    TJwWindowsVersion.IsWindows2003(True)) then
+    raise EJwsclUnsupportedWindowsVersionException.CreateFmtEx(
+      RsTokenUnsupportedWtsCall, 'TreeResetNamedSecurityInfo', ClassName, RsUNToken, 0, False, []);
+
+
 
   FNProgressRecord := nil;
   if Assigned(FNProgressMethod) or Assigned(FNProgressProcedure) then
@@ -4356,11 +4384,8 @@ begin
   //[Hint] result := 0;
   try
     Result :=
-{$IFDEF UNICODE}JwaWindows.TreeResetNamedSecurityInfoW
-                        {$ELSE}
-      JwaWindows.TreeResetNamedSecurityInfoA
-{$ENDIF}
-      (TJwPChar(pObjectName),  //LPTSTR pObjectName,
+    InternalTreeResetNamedSecurityInfo(
+      TJwPChar(pObjectName),  //LPTSTR pObjectName,
       aObjectType,        //SE_OBJECT_TYPE ObjectType,
       TJwEnumMap.ConvertSecurityInformation(SecurityInfo),
       //SECURITY_INFORMATION SecurityInfo,
@@ -6918,6 +6943,14 @@ class function TJwSecureFileObject.GetFileInheritanceSource(
       Result := s;
   end;
 
+  procedure RemoveGenericRights(ACL: TJwDAccessControlList);
+  var i : Integer;
+  begin
+    for I := 0 to ACL.Count - 1 do
+    begin
+      ACL[i].AccessMask := TJwSecurityFileFolderMapping.GenericMap(ACL[i].AccessMask);
+    end;
+  end;
 
   procedure UpdateObjectInheritedDACL(PathName: TJwString;
   const PreviousInhACL: TJwDAccessControlList;
@@ -6930,16 +6963,16 @@ class function TJwSecureFileObject.GetFileInheritanceSource(
     bError: boolean;
     SD:  TJwSecurityDescriptor;
   begin
-    //[Hint] bError := false;
+    bError := false;
     SD := nil;
     try
       SD := GetNamedSecurityInfo(PathName, SE_FILE_OBJECT, aSecurityInfo);
     except
-      //[Hint] bError := true; //file or folder not found
+      bError := true; //file or folder not found
     end;
 
 
-    bError := not Assigned(SD) or (Assigned(SD) and not Assigned(SD.DACL));
+    bError := bError or (not Assigned(SD) or (Assigned(SD) and not Assigned(SD.DACL)));
 
     if bError then
     begin
@@ -6955,13 +6988,30 @@ class function TJwSecureFileObject.GetFileInheritanceSource(
       exit;
     end;
 
+    {We can encounter GENERIC rights in a DACL of a file.
+     So we convert them all to specific rights to make
+     it possible to find the ACE for FindEqualACE.
+    }
+    RemoveGenericRights(SD.DACL);
+
+    //ShowMessage(PreviousInhACL.GetTextMap({nil));//}TJwSecurityFileFolderMapping));
+    //ShowMessage(SD.DACL.GetTextMap({nil));//}TJwSecurityFileFolderMapping));
+
+
     // try
     for i := 0 to PreviousInhACL.Count - 1 do
     begin
        {SID := PreviousInhACL[i].SID.AccountName[''];
        if Sid = '' then;}
+      OutputDebugString(PChar(Format('%s, AM:%d',[PreviousInhACL[i].SID.StringSID, PreviousInhACL[i].AccessMask])));
+
+      {Fixed bug:
+        Sometimes Windows creates inherited ACE differently than their parents.
+        Their (inherited) access masks can have less bits set than their parents.
+        So we check using eactSEAccessMask (smaller equal)
+      }
       ps := SD.DACL.FindEqualACE(PreviousInhACL[i], [eactSameSid,
-        eactSameAccessMask, eactSameType]);
+        eactSameAccessMask, eactSEAccessMask, eactSameType]);
 
       if (ps >= 0) then
       begin
@@ -6999,8 +7049,25 @@ class function TJwSecureFileObject.GetFileInheritanceSource(
         not PreviousInhACL[i].Ignore then
       begin
         PathName := GetParent(PathName);
-        UpdateObjectInheritedDACL(PathName, PreviousInhACL,
-          pInhArray, Level + 1);
+
+        {If sPathName is something like C:
+         GetParent returns an empty string: there are no more parents.
+
+         We cannot go deeper and stop here.
+         BTW:
+           It should not be possible that there is an inherited flag set
+           on a ACE which is defined for the c: object
+        }
+        if Length(PathName) >= 3 then
+        begin
+          UpdateObjectInheritedDACL(PathName, PreviousInhACL,
+              pInhArray, Level + 1);
+        end
+        else
+        begin
+          {In this case we set the error value.  }
+          pInhArray[i].GenerationGap := -1;
+        end;
         break;
       end;
     end;
@@ -7048,7 +7115,10 @@ begin
     bPrivEn := JwEnablePrivilege(SE_SECURITY_NAME, pst_Enable);
   end;
 
+
+  //we need absolute path
   sPathName := ExpandFileName(PathName);
+  //TODO: UNC???
 
   try
     SD := GetNamedSecurityInfo(sPathName, SE_FILE_OBJECT, aSecurityInfo);
@@ -7056,10 +7126,19 @@ begin
     //do not use invalid SD or nil DACL 
     if Assigned(SD) and Assigned(SD.DACL) then
     begin
+      {We can encounter GENERIC rights in a DACL of a file.
+       So we convert them all to specific rights to make
+       it possible to find the ACE for FindEqualACE.
+      }
+      RemoveGenericRights(SD.DACL);
+
       SetLength(Result, SD.DACL.Count);
       try
         sPathName := GetParent(sPathName);
-        UpdateObjectInheritedDACL(sPathName, SD.DACL, Result, 1);
+
+        {sPathName can be c:}
+        if Length(PathName) >= 3 then
+          UpdateObjectInheritedDACL(sPathName, SD.DACL, Result, 1);
       finally
         SD.Free;
       end;
