@@ -266,7 +266,19 @@ type
   TJwEqualAceType    = (eactSameSid,
     eactSameFlags,
     eactSameAccessMask,
-    eactSameType);
+    eactSameType,
+
+    {This flag can only be used in combination with eactSameAccessMask.
+     It defines that the comparison is true if the access mask of the given
+     ACE can be a subset of a found ACE.
+
+     SE = Smaller or Equal
+    }
+    eactSEAccessMask,
+
+    eactGEFlags,
+    eactSEFlags
+    );
   TJwEqualAceTypeSet = set of TJwEqualAceType;
 
 const

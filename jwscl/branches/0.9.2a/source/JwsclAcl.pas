@@ -2591,7 +2591,7 @@ begin
   begin
     anACE := Items[i];
 
-    Result := Result + '#' + IntToStr(i) + #13#10 +
+    Result := Result + #13#10 + '#' + IntToStr(i) +
       anACE.GetTextMap(Mapping) + #13#10;
   end;
 end;
@@ -2716,10 +2716,35 @@ begin
       B := B and ACEi.SID.EqualSid(AccessEntry.SID);
 
     if (eactSameFlags in EqualAceTypeSet) then
-      B := B and (ACEi.Flags = AccessEntry.Flags);
+    begin
+      if (eactGEFlags in EqualAceTypeSet) then
+        B := B and (ACEi.Flags >= AccessEntry.Flags)
+      else if (eactSEFlags in EqualAceTypeSet) then
+        B := B and (ACEi.Flags <= AccessEntry.Flags)
+      else
+        B := B and (ACEi.Flags = AccessEntry.Flags);
+    end;
 
     if (eactSameAccessMask in EqualAceTypeSet) then
-      B := B and (ACEi.AccessMask = AccessEntry.AccessMask);
+    begin
+      {Instead of 100% equality we just check whether
+       AccessEntry.AccessMask is part of ACEi.AccessMask.
+
+       SE:                        TRUE   FALSE
+       ACEi.AccessMask        = 100101   010101
+       AccessEntry.AccessMask = 000101   110111
+                                ---------------
+                                000101   010101
+       So if the and operation returns the same flags as AccessEntry.AccessMask contains,
+       we have a true result.
+
+      }
+      //and the other way around
+      if (eactSEAccessMask in EqualAceTypeSet) then
+        B := B and (ACEi.AccessMask and AccessEntry.AccessMask = AccessEntry.AccessMask)
+      else
+        B := B and (ACEi.AccessMask = AccessEntry.AccessMask);
+    end;
 
     if (eactSameType in EqualAceTypeSet) then
       B := B and (ACEi.AceType = AccessEntry.AceType);

@@ -42,7 +42,7 @@ unit JwsclSecureObjects;
 // Last modified: $Date: 2007-09-10 10:00:00 +0100 $
 interface
 
-uses SysUtils, Classes, Registry,
+uses SysUtils, Classes, Registry, dialogs,
   Contnrs {used for TQueue},
   jwaWindows, JwsclResource,
   JwsclTypes, JwsclExceptions, JwsclSid, JwsclAcl, JwsclToken,
@@ -2830,8 +2830,17 @@ uses TypInfo,
 
 const NOERROR = 0;
 
+function GetFullPathNameW_(lpFileName: LPCWSTR; nBufferLength: DWORD;
+  lpBuffer: LPWSTR; lpFilePart: PLPWSTR): DWORD; stdcall; external 'Kernel32.dll' name 'GetFullPathNameW';
 
-function ExpandFileName(const FileName: TJwString): TJwString;
+function ExpandFileName(FileName: TJwString): TJwString;
+
+{$IFDEF DELPHI2009_UP}
+begin
+  Result := SysUtils.ExpandFileName(FileName);
+end;
+{$ELSE}
+
 {$IFNDEF UNICODE}
 begin
   Result := SysUtils.ExpandFileName(FileName);
@@ -2847,19 +2856,20 @@ begin
 
   //just check the necessary space for the filename
   Buffer := nil;
-  len := GetFullPathNameW(TJwPChar(FileName), 0, Buffer, FName);
+  len := GetFullPathNameW_('C:'{TJwPChar(FileName)}, 0, Buffer, nil);
 
   if Len = 0 then
     exit;
 
   Buffer := PWideChar(LocalAlloc(LPTR, (5+len)*sizeof(TJwChar)));
 
-  GetFullPathNameW(PWideChar(FileName), len, Buffer, FName);
+  GetFullPathNameW_(PWideChar(FileName), len, Buffer, nil);
 
   result := TJwString(Buffer);
   LocalFree(Cardinal(Buffer));
 end;
 {$ENDIF}
+{$ENDIF DELPHI2009_UP}
 
 constructor TJwSecureBaseClass.Create;
 begin
@@ -6821,6 +6831,14 @@ class function TJwSecureFileObject.GetFileInheritanceSource(
       Result := s;
   end;
 
+  procedure RemoveGenericRights(ACL: TJwDAccessControlList);
+  var i : Integer;
+  begin
+    for I := 0 to ACL.Count - 1 do
+    begin
+      ACL[i].AccessMask := TJwSecurityFileFolderMapping.GenericMap(ACL[i].AccessMask);
+    end;
+  end;
 
   procedure UpdateObjectInheritedDACL(PathName: TJwString;
   const PreviousInhACL: TJwDAccessControlList;
@@ -6833,16 +6851,16 @@ class function TJwSecureFileObject.GetFileInheritanceSource(
     bError: boolean;
     SD:  TJwSecurityDescriptor;
   begin
-    //[Hint] bError := false;
+    bError := false;
     SD := nil;
     try
       SD := GetNamedSecurityInfo(PathName, SE_FILE_OBJECT, aSecurityInfo);
     except
-      //[Hint] bError := true; //file or folder not found
+      bError := true; //file or folder not found
     end;
 
 
-    bError := not Assigned(SD) or (Assigned(SD) and not Assigned(SD.DACL));
+    bError := bError or (not Assigned(SD) or (Assigned(SD) and not Assigned(SD.DACL)));
 
     if bError then
     begin
@@ -6858,13 +6876,30 @@ class function TJwSecureFileObject.GetFileInheritanceSource(
       exit;
     end;
 
+    {We can encounter GENERIC rights in a DACL of a file.
+     So we convert them all to specific rights to make
+     it possible to find the ACE for FindEqualACE.
+    }
+    RemoveGenericRights(SD.DACL);
+
+    //ShowMessage(PreviousInhACL.GetTextMap({nil));//}TJwSecurityFileFolderMapping));
+    //ShowMessage(SD.DACL.GetTextMap({nil));//}TJwSecurityFileFolderMapping));
+
+
     // try
     for i := 0 to PreviousInhACL.Count - 1 do
     begin
        {SID := PreviousInhACL[i].SID.AccountName[''];
        if Sid = '' then;}
+      OutputDebugString(PChar(Format('%s, AM:%d',[PreviousInhACL[i].SID.StringSID, PreviousInhACL[i].AccessMask])));
+
+      {Fixed bug:
+        Sometimes Windows creates inherited ACE differently than their parents.
+        Their (inherited) access masks can have less bits set than their parents.
+        So we check using eactSEAccessMask (smaller equal)
+      }
       ps := SD.DACL.FindEqualACE(PreviousInhACL[i], [eactSameSid,
-        eactSameAccessMask, eactSameType]);
+        eactSameAccessMask, eactSEAccessMask, eactSameType]);
 
       if (ps >= 0) then
       begin
@@ -6896,14 +6931,35 @@ class function TJwSecureFileObject.GetFileInheritanceSource(
       end;
     end;
 
+  //  ShowMessage(PreviousInhACL.GetTextMap(TJwSecurityFileFolderMapping));
     for i := 0 to PreviousInhACL.Count - 1 do
     begin
+
       if (afInheritedAce in PreviousInhACL[i].Flags) and
         not PreviousInhACL[i].Ignore then
       begin
+        OutputDebugString(PChar(Format('%s',[PreviousInhACL[i].SID.StringSID])));
+
         PathName := GetParent(PathName);
-        UpdateObjectInheritedDACL(PathName, PreviousInhACL,
-          pInhArray, Level + 1);
+
+        {If sPathName is something like C:
+         GetParent returns an empty string: there are no more parents.
+
+         We cannot go deeper and stop here.
+         BTW:
+           It should not be possible that there is an inherited flag set
+           on a ACE which is defined for the c: object
+        }
+        if Length(PathName) >= 3 then
+        begin
+          UpdateObjectInheritedDACL(PathName, PreviousInhACL,
+              pInhArray, Level + 1);
+        end
+        else
+        begin
+          {In this case we set the error value.  }
+          pInhArray[i].GenerationGap := -1;
+        end;
         break;
       end;
     end;
@@ -6951,18 +7007,31 @@ begin
     bPrivEn := JwEnablePrivilege(SE_SECURITY_NAME, pst_Enable);
   end;
 
+
+  //we need absolute path
   sPathName := ExpandFileName(PathName);
+
 
   try
     SD := GetNamedSecurityInfo(sPathName, SE_FILE_OBJECT, aSecurityInfo);
 
-    //do not use invalid SD or nil DACL 
+  //  ShowMessage(SD.GetTextMap(TJwSecurityFileFolderMapping));
+    //do not use invalid SD or nil DACL
     if Assigned(SD) and Assigned(SD.DACL) then
     begin
+      {We can encounter GENERIC rights in a DACL of a file.
+       So we convert them all to specific rights to make
+       it possible to find the ACE for FindEqualACE.
+      }
+      RemoveGenericRights(SD.DACL);
+
       SetLength(Result, SD.DACL.Count);
       try
         sPathName := GetParent(sPathName);
-        UpdateObjectInheritedDACL(sPathName, SD.DACL, Result, 1);
+
+        {sPathName can be c:}
+        if Length(PathName) >= 3 then
+          UpdateObjectInheritedDACL(sPathName, SD.DACL, Result, 1);
       finally
         SD.Free;
       end;
