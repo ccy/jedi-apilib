@@ -2694,8 +2694,13 @@ end;
 
 
 function TJwSecurityAccessControlList.FindEqualACE(
-  const AccessEntry: TJwSecurityAccessControlEntry; EqualAceTypeSet: TJwEqualAceTypeSet;
+  const AccessEntry: TJwSecurityAccessControlEntry;
+  EqualAceTypeSet: TJwEqualAceTypeSet;
   const StartIndex: integer = -1): integer;
+
+
+
+
 var
   i: integer;
   ACEi: TJwSecurityAccessControlEntry;
@@ -2739,9 +2744,19 @@ begin
        we have a true result.
 
       }
+
       //and the other way around
       if (eactSEAccessMask in EqualAceTypeSet) then
-        B := B and (ACEi.AccessMask and AccessEntry.AccessMask = AccessEntry.AccessMask)
+      begin
+        //B := B and (ACEi.AccessMask and AccessEntry.AccessMask = AccessEntry.AccessMask) // Untermenge Element Obermenge
+        //           Obermenge           Untermenge
+        B := B and ((ACEi.AccessMask and AccessEntry.AccessMask) = ACEi.AccessMask); // Obermenge Element Untermenge
+
+{$IFDEF DEBUG}
+        OutputDebugStringA(PAnsiChar(AnsiString(Format('Compating: Acei:AE: %s:%s = %s',
+          [#13#10+JwAccesMaskToBits(ACEi.AccessMask),#13#10+JwAccesMaskToBits(AccessEntry.AccessMask), BoolToStr(B,true)]))));
+{$ENDIF DEBUG}
+      end
       else
         B := B and (ACEi.AccessMask = AccessEntry.AccessMask);
     end;
@@ -3800,8 +3815,10 @@ function TJwSecurityAccessControlEntry.GetTextMap(
 var
   i: TJwAceFlag;
   SidText,
-  FlagString : TJwString;
+  FlagString,
+  sBits,
   sMap : TJwString;
+
 begin
   FlagString := '';
   for i := low(TJwAceFlag) to high(TJwAceFlag) do
@@ -3822,7 +3839,7 @@ begin
   else
     sMap := RsMapNoMapGiven + ' ' + IntToStr(Accessmask) +', 0x' + IntToHex(AccessMask,4);
 
-
+  sBits := '['+JwAccesMaskToBits(Accessmask) + '] (' + IntToStr(Accessmask) +', 0x' + IntToHex(AccessMask,4)+')';
 
   if not Assigned(SID) then
     SidText := RsBracketNil
@@ -3835,7 +3852,8 @@ begin
      TAceTypeString[AceType],
      FlagString,
      sMap,
-     SidText
+     SidText,
+     sBits
      ]);
 end;
 

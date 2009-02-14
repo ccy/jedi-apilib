@@ -53,6 +53,10 @@ uses SysUtils, Classes, Registry, dialogs,
 
 {$IFNDEF SL_IMPLEMENTATION_SECTION}
 type
+  TJwOnGetNamedSecurityInfo =
+    function (PathName : TJwString; SeType : TSeObjectType; const aSecurityInfo: TJwSecurityInformationFlagSet) : TJwSecurityDescriptor;
+
+
      {<B>TJwFnProgressMethod</B> is a callback method that is used by TreeFileObjectSetNamedSecurityInfo.
        It is called on errors or every object which security information is set.
 
@@ -1720,7 +1724,9 @@ type
        }
     class function GetFileInheritanceSource(const PathName: TJwString;
       const aSecurityInfo: TJwSecurityInformationFlagSet =
-      [siDaclSecurityInformation]): TJwInheritedFromArray; overload; virtual;
+      [siDaclSecurityInformation];
+      const OnGetNamedSecurityInfo : TJwOnGetNamedSecurityInfo = nil
+      ): TJwInheritedFromArray; overload; virtual;
 
       {<B>GetFileInheritanceSource</B> retrieves the source if inheritance for the ACEs in the ACL of the given object.
        This method simulates GetInheritanceSource, so that it can be used in all windows versions with ACL support.
@@ -6797,10 +6803,14 @@ begin
   end;
 end;
 
+
+//SD := GetNamedSecurityInfo(PathName, SE_FILE_OBJECT, aSecurityInfo);
+
 class function TJwSecureFileObject.GetFileInheritanceSource(
   const PathName: TJwString;
   const aSecurityInfo: TJwSecurityInformationFlagSet =
-  [siDaclSecurityInformation]): TJwInheritedFromArray;
+  [siDaclSecurityInformation];
+  const OnGetNamedSecurityInfo : TJwOnGetNamedSecurityInfo = nil): TJwInheritedFromArray;
 
   function GetParent(PathName: TJwString; bStop: boolean = False): TJwString;
   var //[Hint] l,l2,
@@ -6838,6 +6848,14 @@ class function TJwSecureFileObject.GetFileInheritanceSource(
     end;
   end;
 
+
+  function FormatAR(const Access : DWORD) : String;
+  begin
+    result := 'Human: '+ #13#10 + JwFormatAccessRights(Access, FileFolderMappingEx) + #13#10#13#10;
+    result := result + 'Ex:    '#13#10 + JwFormatAccessRights(Access, FileFolderMappingEx) + #13#10;
+  //  JwFormatStringEx()
+  end;
+
   procedure UpdateObjectInheritedDACL(PathName: TJwString;
   const PreviousInhACL: TJwDAccessControlList;
   var pInhArray: TJwInheritedFromArray; Level: integer);
@@ -6852,9 +6870,13 @@ class function TJwSecureFileObject.GetFileInheritanceSource(
     bError := false;
     SD := nil;
     try
-      SD := GetNamedSecurityInfo(PathName, SE_FILE_OBJECT, aSecurityInfo);
+      if Assigned(OnGetNamedSecurityInfo) then
+        SD := OnGetNamedSecurityInfo(PathName, SE_FILE_OBJECT, aSecurityInfo)
+      else
+        SD := GetNamedSecurityInfo(PathName, SE_FILE_OBJECT, aSecurityInfo);
     except
-      bError := true; //file or folder not found
+      //bError := true; //file or folder not found
+      raise;
     end;
 
 
@@ -6878,10 +6900,12 @@ class function TJwSecureFileObject.GetFileInheritanceSource(
      So we convert them all to specific rights to make
      it possible to find the ACE for FindEqualACE.
     }
+//    ShowMessage(SD.DACL.GetTextMap({nil));//}TJwSecurityFileFolderMapping));
     RemoveGenericRights(SD.DACL);
 
-    //ShowMessage(PreviousInhACL.GetTextMap({nil));//}TJwSecurityFileFolderMapping));
-    //ShowMessage(SD.DACL.GetTextMap({nil));//}TJwSecurityFileFolderMapping));
+//    ShowMessage(PreviousInhACL.GetTextMap({nil));//}TJwSecurityFileFolderMapping));
+//    ShowMessage(SD.DACL.GetTextMap({nil));//}TJwSecurityFileFolderMapping));
+
 
 
     // try
@@ -6889,6 +6913,7 @@ class function TJwSecureFileObject.GetFileInheritanceSource(
     begin
        {SID := PreviousInhACL[i].SID.AccountName[''];
        if Sid = '' then;}
+
       OutputDebugString(PChar(Format('%s, AM:%d',[PreviousInhACL[i].SID.StringSID, PreviousInhACL[i].AccessMask])));
 
       {Fixed bug:
@@ -6926,6 +6951,11 @@ class function TJwSecureFileObject.GetFileInheritanceSource(
           pInhArray[i].SID := SID;
           PreviousInhACL[i].Ignore := True; //Ignore this ACE next time
         end;
+      end
+      else
+      begin
+        ShowMessageFmt('Could not find the access entry at %d. AccessRights are %s ',[i,#13#10+FormatAR(PreviousInhACL[i].AccessMask)])
+
       end;
     end;
 
@@ -6993,7 +7023,7 @@ begin
 
   //[Hint] Level := 0;
 
-  if (aSecurityInfo = [siSaclSecurityInformation]) then
+ { if (aSecurityInfo = [siSaclSecurityInformation]) then
   begin
     if not JwIsPrivilegeSet(SE_SECURITY_NAME) then
       raise EJwsclPrivilegeNotFoundException.CreateFmtEx(
@@ -7001,14 +7031,24 @@ begin
 
     bPrivEn := JwEnablePrivilege(SE_SECURITY_NAME, pst_Enable);
   end;
+  }
+  if (siSaclSecurityInformation in aSecurityInfo) then
+  begin
+    raise EJwsclUnimplemented.CreateFmtEx(
+        RsUnimplementedFeature, 'GetFileInheritanceSource', ClassName, RsUNSecureObjects, 0, False, [RsUnimplementedSACLInheritance]);
 
+  end;
 
   //we need absolute path
   sPathName := ExpandFileName(PathName);
   //TODO: UNC???
 
   try
-    SD := GetNamedSecurityInfo(sPathName, SE_FILE_OBJECT, aSecurityInfo);
+    //SD := GetNamedSecurityInfo(sPathName, SE_FILE_OBJECT, aSecurityInfo);
+    if Assigned(OnGetNamedSecurityInfo) then
+      SD := OnGetNamedSecurityInfo(PathName, SE_FILE_OBJECT, aSecurityInfo)
+    else
+      SD := GetNamedSecurityInfo(PathName, SE_FILE_OBJECT, aSecurityInfo);
 
     //do not use invalid SD or nil DACL 
     if Assigned(SD) and Assigned(SD.DACL) then

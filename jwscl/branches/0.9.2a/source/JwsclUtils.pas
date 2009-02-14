@@ -620,14 +620,35 @@ remarks
 function JwLoadHashFromRegistry(const Hive: Cardinal;
    const Key, HashName, SizeName : String) : TJwFileHashData;
 
+function JwAccesMaskToBits(const Access : DWORD) : TJwString;
+
 implementation
 uses SysUtils, Registry, JwsclToken, JwsclKnownSid, JwsclDescriptor, JwsclAcl,
-     JwsclSecureObjects, JwsclMapping, JwsclStreams, JwsclCryptProvider
+     JwsclSecureObjects, JwsclMapping, JwsclStreams, JwsclCryptProvider,
+     JwsclConstants
 {$IFDEF JW_TYPEINFO}
      ,TypInfo
 {$ENDIF JW_TYPEINFO}
       ;
 
+
+
+function JwAccesMaskToBits(const Access : DWORD) : TJwString;
+var i : byte;
+begin
+  result := '';
+  for I := 1 to (sizeof(Access)*8) do
+  begin
+    if (i in  [17, 25,26,29]) then
+      result := ' ' + result;
+
+
+    if Access and Powers2[I] = Powers2[I] then
+      result := '1' + result
+    else
+      result := '0' + result;
+  end;
+end;
 
 
 function JwCompareFileHash(

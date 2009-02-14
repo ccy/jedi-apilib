@@ -111,7 +111,7 @@ const
   RsACLClassPropertyReadOnly = 'Property is readonly.';
   RsACLClassInvalidAceSid = 'The ACE must define a SID to use this method.';
   RsACLClassGetTextMap = '\r\nClassName: %0:s\r\nAceType: %1:s\r\nFlags: %2:' +
-    's\r\nAccessmask: %3:s\r\nSID: %4:s';
+    's\r\nAccessmask: %3:s\r\nAccessMaskBits: %5:s \r\nSID: %4:s';
   RsMapNoMapGiven = 'No map class given.';
   RsUnsupportedACE = 'The given ACE type is not supported by this library.';
   RsInvalidMandatoryLevelType = 'The given SID has so sub authority or the sub authority is invalid or unknown. The RID must be a number of SECURITY_MANDATORY_XXXXX constants.';
@@ -302,6 +302,7 @@ const
   RsSecureObjectsNotEnoughMemoryForThreadData = 'Not enough memory to alloca' +
     'te thread data.';
 
+  RsUnimplementedSACLInheritance = 'Inheritance of SACL.';
 
 //unit JwsclSid.pas
 
@@ -557,7 +558,7 @@ const
 
   RsInvalidIndex = 'The given index %0:d is invalid for this call.';
 
-
+  RsUnimplementedFeature = 'The feature "%s" is not yet implemented.';
 
 // jwsclProcess.pas
 

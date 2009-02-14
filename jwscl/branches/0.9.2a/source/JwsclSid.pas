@@ -904,6 +904,10 @@ begin
   if not JwaWindows.CreateWellKnownSid(JwaWindows.WELL_KNOWN_SID_TYPE(WellKnownSidType),
     pDomainSid, tempSID, dwSize) then
   begin
+    {
+    If this exception is raised in a call of JwInitWellKnownSID...
+    you can ignore it!
+    }
     Excp := EJwsclInvalidKnownSIDException.CreateFmtEx(
       RsWinCallFailed, 'CreateWellKnownSid',
       ClassName, RsUNSid, 0, True, ['CreateWellKnownSid']);

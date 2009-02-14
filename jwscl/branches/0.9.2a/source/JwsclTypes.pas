@@ -1345,6 +1345,7 @@ type
   TJwSecurityCapabilities = set of TJwSecurityCapability;
 
 
+
 {$ENDIF SL_IMPLEMENTATION_SECTION}
 
 {$IFNDEF SL_OMIT_SECTIONS}
