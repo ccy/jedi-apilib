@@ -2751,11 +2751,11 @@ begin
         //B := B and (ACEi.AccessMask and AccessEntry.AccessMask = AccessEntry.AccessMask) // Untermenge Element Obermenge
         //           Obermenge           Untermenge
         B := B and ((ACEi.AccessMask and AccessEntry.AccessMask) = ACEi.AccessMask); // Obermenge Element Untermenge
-
+(*
 {$IFDEF DEBUG}
         OutputDebugStringA(PAnsiChar(AnsiString(Format('Compating: Acei:AE: %s:%s = %s',
           [#13#10+JwAccesMaskToBits(ACEi.AccessMask),#13#10+JwAccesMaskToBits(AccessEntry.AccessMask), BoolToStr(B,true)]))));
-{$ENDIF DEBUG}
+{$ENDIF DEBUG}*)
       end
       else
         B := B and (ACEi.AccessMask = AccessEntry.AccessMask);

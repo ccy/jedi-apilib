@@ -6914,7 +6914,9 @@ class function TJwSecureFileObject.GetFileInheritanceSource(
        {SID := PreviousInhACL[i].SID.AccountName[''];
        if Sid = '' then;}
 
-      OutputDebugString(PChar(Format('%s, AM:%d',[PreviousInhACL[i].SID.StringSID, PreviousInhACL[i].AccessMask])));
+{$IFDEF DEBUG}
+//      OutputDebugStringA(PAnsiChar(AnsiString(Format('%s, AM:%d',[PreviousInhACL[i].SID.StringSID, PreviousInhACL[i].AccessMask]))));
+{$ENDIF DEBUG}
 
       {Fixed bug:
         Sometimes Windows creates inherited ACE differently than their parents.
@@ -6923,6 +6925,10 @@ class function TJwSecureFileObject.GetFileInheritanceSource(
       }
       ps := SD.DACL.FindEqualACE(PreviousInhACL[i], [eactSameSid,
         eactSameAccessMask, eactSEAccessMask, eactSameType]);
+
+{$IFDEF DEBUG}
+//      OutputDebugStringA(PAnsiChar(AnsiString(Format('For %d found %d',[i,ps]))));
+{$ENDIF DEBUG}
 
       if (ps >= 0) then
       begin
@@ -6954,8 +6960,10 @@ class function TJwSecureFileObject.GetFileInheritanceSource(
       end
       else
       begin
-        ShowMessageFmt('Could not find the access entry at %d. AccessRights are %s ',[i,#13#10+FormatAR(PreviousInhACL[i].AccessMask)])
-
+        //ShowMessageFmt('Could not find the access entry at %d. AccessRights are %s ',[i,#13#10+FormatAR(PreviousInhACL[i].AccessMask)])
+{$IFDEF DEBUG}
+//        OutputDebugStringA(PAnsiChar(AnsiString(Format('Could not find the access entry at %d. AccessRights are %s ',[i,#13#10+FormatAR(PreviousInhACL[i].AccessMask)]))));
+{$ENDIF DEBUG}
       end;
     end;
 
