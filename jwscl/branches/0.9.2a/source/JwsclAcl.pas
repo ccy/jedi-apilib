@@ -2752,10 +2752,10 @@ begin
         //           Obermenge           Untermenge
         B := B and ((ACEi.AccessMask and AccessEntry.AccessMask) = ACEi.AccessMask); // Obermenge Element Untermenge
 (*
-{$IFDEF DEBUG}
+{$IFDEF JWSCL_DEBUG_INFO}
         OutputDebugStringA(PAnsiChar(AnsiString(Format('Compating: Acei:AE: %s:%s = %s',
           [#13#10+JwAccesMaskToBits(ACEi.AccessMask),#13#10+JwAccesMaskToBits(AccessEntry.AccessMask), BoolToStr(B,true)]))));
-{$ENDIF DEBUG}*)
+{$ENDIF JWSCL_DEBUG_INFO}*)
       end
       else
         B := B and (ACEi.AccessMask = AccessEntry.AccessMask);
@@ -3283,13 +3283,13 @@ var p1 : PACCESS_ALLOWED_CALLBACK_ACE;
     //p4 : PACCESS_ALLOWED_CALLBACK_OBJECT_ACE;
 
     AceType : TJwAceType;
-{$IFDEF DEBUG}
+{$IFDEF JWSCL_DEBUG_INFO}
 {
 type TB = array[0..27] of byte;
 var
     Data : ^TB;
 }
-{$ENDIF DEBUG}
+{$ENDIF JWSCL_DEBUG_INFO}
 
 begin
   Size := GetDynamicTypeSize;
@@ -3302,9 +3302,9 @@ begin
   Result := Pointer(GlobalAlloc(GMEM_FIXED or GMEM_ZEROINIT, Size));
 
 
-{$IFDEF DEBUG}
+{$IFDEF JWSCL_DEBUG_INFO}
 //  Data := result;  //get the contents in this way
-{$ENDIF DEBUG}
+{$ENDIF JWSCL_DEBUG_INFO}
 
   PACCESS_ALLOWED_ACE(result).Header.AceType
     := TJwEnumMap.ConvertAceType(Self.AceType);

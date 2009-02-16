@@ -210,12 +210,12 @@ type
 
     fAttributes: Cardinal;
 
-{$IFDEF DEBUG}
+{$IFDEF JWSCL_DEBUG_INFO}
     {<B>fDbgData</B> contains the values of the properties of the instance for debugging purposes.
      It is only used if DEBUG is defined.
      }
     fDbgData: AnsiString;
-{$ENDIF DEBUG}    
+{$ENDIF JWSCL_DEBUG_INFO}
 
       {<B>fDbgDisableException</B> disables the raising of exceptions in the following methods :
         +GetAccountSidString
@@ -862,8 +862,9 @@ begin
       ['CopySid']);
 
   CheckSID;
-
+{$IFDEF JWSCL_DEBUG_INFO}
   UpdateDbgData;
+{$ENDIF JWSCL_DEBUG_INFO}
 end;
 
 constructor TJwSecurityId.Create(const SecurityID: TJwSecurityId);
@@ -879,7 +880,9 @@ begin
 
   CheckSID;
 
+{$IFDEF JWSCL_DEBUG_INFO}
   UpdateDbgData;
+{$ENDIF JWSCL_DEBUG_INFO}
 end;
 
 constructor TJwSecurityId.CreateWellKnownSid(WellKnownSidType:
@@ -939,7 +942,9 @@ begin
 
   CheckSID;
 
+{$IFDEF JWSCL_DEBUG_INFO}
   UpdateDbgData;
+{$ENDIF JWSCL_DEBUG_INFO}
 end;
 
 constructor TJwSecurityId.Create(const SID: PSidAndAttributes);
@@ -980,7 +985,9 @@ begin
 
   FreeMem(aIdentifier);
 
+{$IFDEF JWSCL_DEBUG_INFO}
   UpdateDbgData;
+{$ENDIF JWSCL_DEBUG_INFO}
 end;   *)
 
 var
@@ -1011,7 +1018,9 @@ begin
 
   CheckSID;
 
+{$IFDEF JWSCL_DEBUG_INFO}
   UpdateDbgData;
+{$ENDIF JWSCL_DEBUG_INFO}
 end;
 
 constructor TJwSecurityId.Create(const Authorities: TJwSubAuthorityArray;
@@ -1050,7 +1059,9 @@ begin
 
   CheckSID;
 
+{$IFDEF JWSCL_DEBUG_INFO}
   UpdateDbgData;
+{$ENDIF JWSCL_DEBUG_INFO}
 end;
 
 constructor TJwSecurityId.Create(const SIDString: TJwString);
@@ -1085,7 +1096,9 @@ begin
   //free the SID
   LocalFree(HLOCAL(tempSID));
 
+{$IFDEF JWSCL_DEBUG_INFO}
   UpdateDbgData;
+{$ENDIF JWSCL_DEBUG_INFO}
 end;
 
 constructor TJwSecurityId.Create(const SystemName, AccountName: TJwString);
@@ -1696,14 +1709,14 @@ begin
 end;
 
 procedure TJwSecurityId.UpdateDbgData;
-{$IFDEF DEBUG}
+{$IFDEF JWSCL_DEBUG_INFO}
 var
   Data: array[1..10] of AnsiString;
   i: integer;
   ident: TSidIdentifierAuthority;
-{$ENDIF DEBUG}
+{$ENDIF JWSCL_DEBUG_INFO}
 begin
-{$IFDEF DEBUG}
+{$IFDEF JWSCL_DEBUG_INFO}
   fDbgDisableException := True;
 
 
@@ -1766,7 +1779,7 @@ begin
   begin
     fDbgData := fDbgData + Data[i] + #13#10;
   end;
-{$ENDIF DEBUG}
+{$ENDIF JWSCL_DEBUG_INFO}
 end;
 
 {*********** TJwSecurityIdList *************}

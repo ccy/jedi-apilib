@@ -22,6 +22,16 @@ Of course they will fail if Vista stuff is called on them.
 //adds compiler version directives
 {$I jedi.inc}
 
+
+{Special debug information for. Is a performance killer.
+Switch it off here.
++TJwSecuritySID.fDbgData
+}
+{$IFDEF DEBUG}
+{.$DEFINE JWSCL_DEBUG_INFO}
+{$ENDIF DEBUG}
+
+
 {$IFDEF FPC}
 {$mode delphi}{.$H+}
 {$ENDIF}
