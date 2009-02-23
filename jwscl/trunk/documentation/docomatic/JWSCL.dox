@@ -22997,8 +22997,8 @@ OutputOptions=6
 OutputTOCLevels=0
 PrintFlagsInIndex=0
 PrintFlagsInTOC=1
-TargetBOM=0
-TargetCodepage=windows-1252
+TargetBOM=1
+TargetCodepage=utf-8
 TopLinkRawText=Top
 UseDHTMLForTOC=1
 
@@ -23064,7 +23064,7 @@ ContentTableColCount=3
 [Configurations\Configuration 2\{D3A588E0-9472-11D3-BDD1-0080C8BA053D}\Layout\Footer]
 FeedbackCode=%FBDESCRIPTION%\n<a href="#" onclick="sendFeedback('%AUTHOREMAIL%', '%FBSUBJECT%', 'Project: %PROJECTTITLE%%0ATopic ID: %TOPICID%%0ATitle: %TOPICTITLE%');">\n%FBLINKTEXT%\n</a>
 FeedbackShow=1
-InfoCode=%COPYRIGHT%<br/> This help was created by Doc-O-Matic sponsored by <a href="http://toolsfactory.com/">toolsfactory software inc.</a>. </BR>This help reflects developer version (trunk).
+InfoCode=%COPYRIGHT%<br/> This help was created by Doc-O-Matic sponsored by <a href="http://toolsfactory.com/">toolsfactory software inc.</a>
 InfoHTML=
 InfoImage=dmlogo.png
 Kind=0
@@ -56872,7 +56872,7 @@ FoldersThreshold=0
 Keywords=
 Summary=
 Symbol Hierarchy Folders=903
-Title=JWSCL Documentation BETA revision 616
+Title=JWSCL Documentation BETA revision 716 (trunk)
 TypeDefStructsAsStructs=1
 VersionBuild=0
 VersionMajor=616

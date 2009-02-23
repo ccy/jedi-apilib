@@ -955,7 +955,6 @@ begin
       ['CopySid']);
 
   CheckSID;
-
   fCachedSidString := StringSID;
 
 {$IFDEF JWSCL_DEBUG_INFO}
@@ -1158,6 +1157,7 @@ begin
   }
 
   CheckSID;
+
 
   fCachedSidString := StringSID;
 

@@ -27,7 +27,7 @@ type
     procedure OnSetSecurity(Sender: TJwSecurityDescriptorDialog;
       SecurityType: TJwSecurityInformationFlagSet;
       SecurityDialogFlags: TJwSecurityDialogFlags;
-      SecurityResetType: TJwSecurityResetType;
+      SecurityResetType: TJwSecurityResetTypes;
       Settings: TJwSecurityDescriptorControlSet;
       NewSecurityDescriptor, MergedSecurityDescriptor
       : TJwSecurityDescriptor;
@@ -104,6 +104,7 @@ begin
   ComboBoxMapping.Items.AddObject('Registry',Pointer(TJwSecurityRegistryMapping));
   ComboBoxMapping.Items.AddObject('TJwSecurityFileMapping',Pointer(TJwSecurityFileMapping));
   ComboBoxMapping.Items.AddObject('TJwSecurityFileMapMapping',Pointer(TJwSecurityFileMapMapping));
+  ComboBoxMapping.Items.AddObject('FileFolder',Pointer(TJwSecurityFileFolderMapping));
   ComboBoxMapping.Items.AddObject('Token',Pointer(TJwSecurityTokenMapping));
   ComboBoxMapping.Items.AddObject('Semaphore',Pointer(TJwSecuritySemaphoreMapping));
   ComboBoxMapping.Items.AddObject('Event',Pointer(TJwSecurityEventMapping));
@@ -114,18 +115,12 @@ begin
   ComboBoxMapping.Items.AddObject('Service',Pointer(TJwSecurityServiceMapping));
   ComboBoxMapping.Items.AddObject('Printer',Pointer(TJwSecurityPrinterMapping));
   ComboBoxMapping.Items.AddObject('Timer',Pointer(TJwSecurityTimerMapping));
-
-
-
-
-
-
 end;
 
 procedure TForm1.OnSetSecurity(Sender: TJwSecurityDescriptorDialog;
   SecurityType: TJwSecurityInformationFlagSet;
   SecurityDialogFlags: TJwSecurityDialogFlags;
-  SecurityResetType: TJwSecurityResetType;
+  SecurityResetType: TJwSecurityResetTypes;
   Settings: TJwSecurityDescriptorControlSet; NewSecurityDescriptor,
   MergedSecurityDescriptor: TJwSecurityDescriptor; var bSuccess: boolean);
 begin

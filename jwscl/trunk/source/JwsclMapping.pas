@@ -781,8 +781,9 @@ end;
 class function TJwSecurityFileFolderMapping.GetAccessNames(
   out iCount: Cardinal): PSI_ACCESS;
 begin
-//  Result := GetAccessNamesEx(iCount, FileFolderMapping);
   Result := GetAccessNamesEx(iCount, FileFolderMappingEx);
+//  The Ex version contains constant names instead of human readable name constants
+//  Result := GetAccessNamesEx(iCount, FileFolderMappingEx);
 end;
 
 class function TJwSecurityFileFolderMapping.GetMapping: TGenericMapping;
