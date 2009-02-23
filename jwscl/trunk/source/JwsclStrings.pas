@@ -249,9 +249,10 @@ function JwTSUnicodeStringToJwString(const AUnicodeString: TS_UNICODE_STRING):
 var Len: DWORD;
 begin
   // Determine UnicodeStringLength (-1 because string has no #0 terminator)
-  Len := RtlUnicodeStringToAnsiSize(@AUnicodeString)-1;
+//  Len := RtlUnicodeStringToAnsiSize(@AUnicodeString)-1;
+  Len := AUnicodeString.Length div 2;
   // Convert to TJwString
-  Result := WideCharLenToString(AUniCodeString.Buffer, Len);
+  Result := String(PChar(WideCharLenToString(AUniCodeString.Buffer, Len)));
 end;
 
 
