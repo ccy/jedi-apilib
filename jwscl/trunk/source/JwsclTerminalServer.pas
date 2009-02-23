@@ -70,7 +70,7 @@ interface
 uses
   Classes, Contnrs, SysUtils,
   JwaWindows,
-  JwsclExceptions, JwsclResource, JwsclSid, JwsclTypes,
+  JwsclExceptions, JwsclResource, JwsclKnownSid, JwsclSid, JwsclTypes,
   JwsclUtils, JwsclToken, JwsclVersion, JwsclStrings;
 
 {$ENDIF SL_OMIT_SECTIONS}
@@ -1023,6 +1023,8 @@ type
     {@exclude}
     FCurrentTime: TDateTime;
     {@exclude}
+    FCurrentTimeEx: Int64;
+    {@exclude}
     FData: Integer;
     {@exclude}
     FDisconnectTime: TDateTime;
@@ -1290,6 +1292,8 @@ type
      used to calculate time differences such as idle time
      }
     property CurrentTime: TDateTime read FCurrentTime;
+
+    property CurrentTimeEx: Int64 read FCurrentTimeEx;
 
     {<B>Data</B> allows storage of a pointer to user specific data and can be freely
      used.}
@@ -1959,6 +1963,8 @@ type
     {@exclude}
     FProcessName: TJwString;
     {@exclude}
+    FProcessVirtualSize: DWORD;
+    {@exclude}
     FProcessVMSize: DWORD;
     {@exclude}
     FSessionId: TJwSessionID;
@@ -2085,6 +2091,8 @@ type
      This value matches the Mem Usage column in Task Manager.
     }
     property ProcessMemUsage: DWORD read FProcessMemUsage;
+
+    property ProcessVirtualSize: DWORD read FProcessVirtualSize;
 
     {<B>ProcessVMSize</B> the Amount of Virtual memory in Bytes used by the process
      
@@ -2676,6 +2684,7 @@ begin
   begin
     JwSid := TJwSecurityId.Create('S-1-5-18');
     FSystemUsername := JwSid.GetCachedUserFromSid;
+    if FSystemUsername = '' then FSystemUsername := 'SYSTEM';
     JwSid.Free;
   end;
 
@@ -2683,11 +2692,14 @@ begin
 end;
 
 function TJwTerminalServer.GetWinStationName(const SessionId: DWORD): TJwString;
+const
+  BufferOverrunGuardFactor = 2;
 var
-  WinStationName: array[0..WINSTATIONNAME_LENGTH+1] of WChar;
+  WinStationName: array[0..WINSTATIONNAME_LENGTH*BufferOverrunGuardFactor+1] of WChar;
 begin
   Result := '';
   // Only use Unicode version since Ansi version doesn't seem to work on Vista
+  ZeroMemory(@WinStationName, SizeOf(WinStationName));
   if WinStationNameFromLogonIdW(FServerHandle, SessionId, WinStationName) then
   begin
     Result := WinStationName;
@@ -2725,6 +2737,8 @@ end;
 procedure TJwTerminalServer.EnumerateProcessesEx;
 begin
   FProcesses.Clear;
+  FProcesses.FIdleTime := 0;
+  FProcesses.FCPUTime := 0;
 
   EnumerateProcessesEx(OnInternalProcessFound, nil);
 end;
@@ -2759,6 +2773,7 @@ var
   DiffTime: TDiffTime;
   Cancel : Boolean;
   LastError: Integer;
+  JwSid: TJwSecurityId;
 begin
   ProcessInfoPtr := nil;
   Count := 0;
@@ -2785,6 +2800,7 @@ begin
     begin
       for i := 0 to Count-1 do
       begin
+        strUsername := '';
 
         with ProcessInfoPtr^[i], pTsProcessInfo^ do
         begin
@@ -2806,21 +2822,34 @@ begin
           end
           else begin
             strProcessName := JwTSUnicodeStringToJwString(ImageName);
-            strUsername := CachedGetUserFromSessionId(SessionId);
 
             if IsValidSid(UserSid) then
             begin
-              with TJwSecurityID.Create(UserSid) do
-              begin
-                strUsername := GetCachedUserFromSid;
-                Free;
+              try
+                try
+                  JwSid := TJwSecurityID.Create(UserSid);
+                  strUsername := JwSid.GetCachedUserFromSid;
+                finally
+                  FreeAndNil(JwSid);
+                end;
+              except
+                // Ignore exception
               end;
-            end
-            else begin
+            end;
+
+            if (strUsername = '') or (CompareText(strUsername, '(unknown)') = 0) then
+            begin
               // if User is nonadmin WinStationGetAllProcesses returns empty or
               // invalid SID, in this case we try to obtain the username by
               // other means...
               strUsername := CachedGetUserFromSessionId(SessionId);
+
+              // sort of a hack, if we cannot determine the user it is probably SYSTEM
+              if (strUsername = '') or (CompareText(strUsername, '(unknown)') = 0) then
+              begin
+                strUsername := 'SYSTEM';
+              end;
+
             end;
           end;
 
@@ -2870,6 +2899,8 @@ begin
             // Pagefileusage is the amount of page file space that a process is
             // using currently. This value is consistent with the VMSize value
             // in TaskMgr.exe. So we call it ProcessVMSize
+
+            FProcessVirtualSize := VirtualSize;
             FProcessVMSize := PagefileUsage;
           end;
 
@@ -3456,7 +3487,7 @@ var
   WinStationInfo: _WINSTATIONINFORMATIONW;
   dwReturnLength: DWORD;
 begin
-  Result := 'Unknown';
+  Result := '(unknown)';
 
   if SessionId = CachedUser.SessionId  then
   begin
@@ -3472,9 +3503,7 @@ begin
       CachedUser.SessionId := SessionId;
       CachedUser.Username := TJwString(WinStationInfo.UserName);
     end;
-
   end;
-
 end;
 
 function TJwTerminalServer.GetIdleProcessName: TJwString;
@@ -3712,7 +3741,7 @@ begin
     end;
 
     //  Vista returns LastInputTime 0
-    if (FUsername = '') or (Int64(WinStationInfo.LastInputTime) = 0) then
+    if (FUsername = '') or (WinStationInfo.LastInputTime.QuadPart = 0) then
     begin
       // A session without a user is not idle, usually these are special
       // sessions like Listener, Services or console session
@@ -3723,8 +3752,8 @@ begin
     else
     begin
       // Store the IdleTime as elapsed seconds
-      FIdleTime := CalculateDiffTime(Int64(WinStationInfo.LastInputTime),
-        Int64(WinStationInfo.CurrentTime));
+      FIdleTime := CalculateDiffTime(WinStationInfo.LastInputTime.QuadPart,
+        WinStationInfo.CurrentTime.QuadPart);
       // Calculate & Format Idle Time String, DiffTimeString allocates the
       // memory for us
       DiffTimeString(FileTime(WinStationInfo.LastInputTime), FileTime(WinStationInfo.CurrentTime),
@@ -3741,8 +3770,9 @@ begin
     FDisconnectTime := FileTime2DateTime(FileTime(WinStationInfo.DisconnectTime));
     // for A disconnected session LastInputTime has been set to DisconnectTime
     FLastInputTime := FileTime2DateTime(FileTime(WinStationInfo.LastInputTime));
-    FLogonTime := Int64(WinStationInfo.LogonTime);
+    FLogonTime := WinStationInfo.LogonTime.QuadPart;
     FCurrentTime := FileTime2DateTime(FileTime(WinStationInfo.CurrentTime));
+    FCurrentTimeEx := WinStationInfo.CurrentTime.QuadPart
   end;
 
 end;
