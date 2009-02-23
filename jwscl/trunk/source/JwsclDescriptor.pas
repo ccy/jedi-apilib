@@ -88,6 +88,7 @@ type
     fOwnerInherited, fPrimaryGroupInherited: boolean;
     fDACLInherited, fAuditInherited: boolean;
 
+    fDACLGenericRemoved,
     fInheritHandles : Boolean;
 
     fControl: TJwSecurityDescriptorControlSet;
@@ -740,6 +741,12 @@ type
      }
     property InheritHandles : Boolean read fInheritHandles write fInheritHandles;
 
+    {<b>DACLGenericRemoved</b> is used by TJwSecureFileObject.GetFileInheritanceSourc
+    to decided whether the DACL's accessmask has been mapped from generic to
+    specific rights.
+    }
+    property DACLGenericRemoved : Boolean read fDACLGenericRemoved write fDACLGenericRemoved;
+
     property Tag : Integer read fTag write fTag;
   end;
 
@@ -810,6 +817,8 @@ begin
   OnHashCodeMethod := hashCode;
 
   fInheritHandles := false;
+
+  fDACLGenericRemoved := false;
 
   fControl := [];
 end;

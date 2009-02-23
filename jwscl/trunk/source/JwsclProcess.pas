@@ -380,7 +380,7 @@ BOOL WINAPI TerminateJobObject(HANDLE hJob, UINT uExitCode);
           do sth with Job.JobObject[x]
         finally
           Job.Lock.EndWrite;
-        end;
+        end;                                                                    
     </code>
     }
     property Lock : TMultiReadExclusiveWriteSynchronizer read fLock;

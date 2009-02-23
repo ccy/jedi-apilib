@@ -634,6 +634,8 @@ function JwLoadHashFromRegistry(const Hive: Cardinal;
    const Key, HashName, SizeName : String) : TJwFileHashData;
 
 
+function JwAccessMaskToBits(const Access : DWORD) : TJwString;
+
 {<B>JwCheckVISTACompilerSwitch</B> raises an exception EJwsclVistaFeaturesDisabled
 if the current code isn't compiled with the VISTA compiler directive.
 Otherwise it does nothing.
@@ -718,7 +720,8 @@ procedure JwZeroPassword(var S : TJwString);
 
 implementation
 uses SysUtils, Registry, Math, D5Impl, JwsclToken, JwsclKnownSid, JwsclDescriptor, JwsclAcl,
-     JwsclSecureObjects, JwsclMapping, JwsclStreams, JwsclCryptProvider
+     JwsclSecureObjects, JwsclMapping, JwsclStreams, JwsclCryptProvider,
+     JwsclConstants
 {$IFDEF JW_TYPEINFO}
      ,TypInfo
 {$ENDIF JW_TYPEINFO}
@@ -840,6 +843,25 @@ begin
     Inc(P);
   end;
 end;
+
+
+function JwAccessMaskToBits(const Access : DWORD) : TJwString;
+var i : byte;
+begin
+  result := '';
+  for I := 1 to (sizeof(Access)*8) do
+  begin
+    if (i in  [17, 25,26,29]) then
+      result := ' ' + result;
+
+
+    if Access and Powers2[I] = Powers2[I] then
+      result := '1' + result
+    else
+      result := '0' + result;
+  end;
+end;
+
 
 function JwBeginCreateHash : Pointer;
 begin

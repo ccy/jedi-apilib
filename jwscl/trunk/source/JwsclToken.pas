@@ -1313,6 +1313,10 @@ type
        If the compiler directive VISTA (jwscl.inc) is not defined, an exception
        EJwsclVistaFeaturesDisabled is raised. This feature can only be used with
        activated VISTA compiler directive.
+
+       The token must be converted to a primary token first to be usable in
+       CreateProcessAsUser. However this duplication needs the TCB privilege
+       even if the linked token has less rights.
     }
     property LinkedToken: TJwSecurityToken Read GetLinkedToken;
 
@@ -3381,6 +3385,22 @@ begin
 end;
 
 
+type
+  TWtsGetActiveConsoleSessionID = function : DWORD; stdcall;
+var
+  _WtsGetActiveConsoleSessionID : TWtsGetActiveConsoleSessionID = nil;
+
+function InternalWtsGetActiveConsoleSessionID : DWORD;
+begin
+  if @_WtsGetActiveConsoleSessionID = nil then
+    _WtsGetActiveConsoleSessionID := GetProcAddress(
+       GetModuleHandle('kernel32.dll'),'WTSGetActiveConsoleSessionId');
+
+  if @_WtsGetActiveConsoleSessionID <> nil then
+    result := _WtsGetActiveConsoleSessionID
+  else
+    result := 0;
+end;
 
 constructor TJwSecurityToken.CreateWTSQueryUserTokenEx(
   const Server: TObject; SessionID: cardinal);
@@ -3421,7 +3441,7 @@ begin
 
   if SessionID = INVALID_HANDLE_VALUE then
   begin
-    if not WinStationQueryUserToken(hServer, WtsGetActiveConsoleSessionID,
+    if not WinStationQueryUserToken(hServer, InternalWtsGetActiveConsoleSessionID,
       fTokenHandle) then
       if not WinStationQueryUserToken(hServer, WTS_CURRENT_SESSION,
         fTokenHandle) then
@@ -3471,7 +3491,7 @@ begin
 
   if SessionID = INVALID_HANDLE_VALUE then
   begin
-    if not WTSQueryUserToken(WtsGetActiveConsoleSessionID, fTokenHandle) then
+    if not WTSQueryUserToken(InternalWtsGetActiveConsoleSessionID, fTokenHandle) then
       if not WTSQueryUserToken(WTS_CURRENT_SESSION, fTokenHandle) then
         raise EJwsclWinCallFailedException.CreateFmtEx(
           RsTokenCallWtsQueryUserTokenFailed, 'WTSQueryUserToken',

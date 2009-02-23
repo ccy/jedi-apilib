@@ -2714,7 +2714,8 @@ end;
 
 
 function TJwSecurityAccessControlList.FindEqualACE(
-  const AccessEntry: TJwSecurityAccessControlEntry; EqualAceTypeSet: TJwEqualAceTypeSet;
+  const AccessEntry: TJwSecurityAccessControlEntry;
+  EqualAceTypeSet: TJwEqualAceTypeSet;
   const StartIndex: integer = -1): integer;
 var
   i: integer;
@@ -2759,9 +2760,19 @@ begin
        we have a true result.
 
       }
+
       //and the other way around
       if (eactSEAccessMask in EqualAceTypeSet) then
-        B := B and (ACEi.AccessMask and AccessEntry.AccessMask = AccessEntry.AccessMask)
+      begin
+        //B := B and (ACEi.AccessMask and AccessEntry.AccessMask = AccessEntry.AccessMask) // Untermenge Element Obermenge
+        //           Obermenge           Untermenge
+        B := B and ((ACEi.AccessMask and AccessEntry.AccessMask) = ACEi.AccessMask); // Obermenge Element Untermenge
+(*
+{$IFDEF JWSCL_DEBUG_INFO}
+        OutputDebugStringA(PAnsiChar(AnsiString(Format('Compating: Acei:AE: %s:%s = %s',
+          [#13#10+JwAccesMaskToBits(ACEi.AccessMask),#13#10+JwAccesMaskToBits(AccessEntry.AccessMask), BoolToStr(B,true)]))));
+{$ENDIF JWSCL_DEBUG_INFO}*)
+      end
       else
         B := B and (ACEi.AccessMask = AccessEntry.AccessMask);
     end;
@@ -3288,13 +3299,13 @@ var p1 : PACCESS_ALLOWED_CALLBACK_ACE;
     //p4 : PACCESS_ALLOWED_CALLBACK_OBJECT_ACE;
 
     AceType : TJwAceType;
-{$IFDEF DEBUG}
+{$IFDEF JWSCL_DEBUG_INFO}
 {
 type TB = array[0..27] of byte;
 var
     Data : ^TB;
 }
-{$ENDIF DEBUG}
+{$ENDIF JWSCL_DEBUG_INFO}
 
 begin
   Size := GetDynamicTypeSize;
@@ -3307,9 +3318,9 @@ begin
   Result := Pointer(GlobalAlloc(GMEM_FIXED or GMEM_ZEROINIT, Size));
 
 
-{$IFDEF DEBUG}
+{$IFDEF JWSCL_DEBUG_INFO}
 //  Data := result;  //get the contents in this way
-{$ENDIF DEBUG}
+{$ENDIF JWSCL_DEBUG_INFO}
 
   PACCESS_ALLOWED_ACE(result).Header.AceType
     := TJwEnumMap.ConvertAceType(Self.AceType);
@@ -3820,8 +3831,10 @@ function TJwSecurityAccessControlEntry.GetTextMap(
 var
   i: TJwAceFlag;
   SidText,
-  FlagString : TJwString;
+  FlagString,
+  sBits,
   sMap : TJwString;
+
 begin
   FlagString := '';
   for i := low(TJwAceFlag) to high(TJwAceFlag) do
@@ -3842,7 +3855,7 @@ begin
   else
     sMap := RsMapNoMapGiven + ' ' + IntToStr(Accessmask) +', 0x' + IntToHex(AccessMask,4);
 
-
+  sBits := '['+JwAccessMaskToBits(Accessmask) + '] (' + IntToStr(Accessmask) +', 0x' + IntToHex(AccessMask,4)+')';
 
   if not Assigned(SID) then
     SidText := RsBracketNil
@@ -3855,7 +3868,8 @@ begin
      TAceTypeString[AceType],
      FlagString,
      sMap,
-     SidText
+     SidText,
+     sBits
      ]);
 end;
 
