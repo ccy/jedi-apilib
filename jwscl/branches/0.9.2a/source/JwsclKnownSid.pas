@@ -119,7 +119,7 @@ var
       SD.OwnOwner := false;
       SD.Owner := JwAdministratorsSID;
       ...
-      SD.DACL.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil,[],FILE_EXECUTE,JwSecurityCurrentThreadUserSID, false)); //see?: false
+      SD.DACL.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil,[],FILE_EXECUTE,JwAdministratorsSID, false)); //see?: false
      </code>
     }
   JwAdministratorsSID,
@@ -132,7 +132,7 @@ var
       ...
       SD.OwnOwner := false;
       SD.Owner := JwUsersSID;
-      SD.DACL.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil,[],FILE_EXECUTE,JwSecurityCurrentThreadUserSID, false)); //see?: false
+      SD.DACL.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil,[],FILE_EXECUTE,JwUsersSID, false)); //see?: false
      </code>
     }
   JwUsersSID,
@@ -266,18 +266,25 @@ var
 
 //    LocalAdministratorSID : TJwSecurityKnownSID;
 
-{<B>JwSecurityCurrentThreadUserSID</B> gets the current owner or impersonated thread owner of the current thread
+{<B>JwSecurityCurrentThreadUserSID</B> gets the current process user or impersonated thread user of the current thread
 that is used to call this function.
 The caller is responsible to free the SecurityID instance.
+
+Despite its name, the function does not fail if the current thread is not impersonated. In this case
+the process user is returned.
 
 Use:
 <code lang="Delphi">
 SD : TJwSecurityDescriptor;
+Sid : TJwSecurityThreadUserSID;
 ...
 SD.OwnOwner := true;
 SD.Owner := JwSecurityCurrentThreadUserSID;
 
-SD.DACL.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil,[],FILE_EXECUTE,JwSecurityCurrentThreadUserSID, true)); //see?: true
+Sid := JwSecurityCurrentThreadUserSID;
+SD.DACL.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil,[],FILE_EXECUTE,Sid, true)); //see?: true
+
+Sid.Free;
 </code>
 
 }
@@ -784,9 +791,9 @@ begin
   except
     On E : Exception do
     begin
-{$IFDEF DEBUG}
-      OutputDebugStringA(PAnsiChar(Format('%s. Security id: %s ',[E.Message,KnownSids[Idx]])));
-{$ENDIF DEBUG}
+{$IFDEF JWSCL_DEBUG_INFO}    
+      JwOutputDebugString('%s. Security id: %s ',[E.Message,KnownSids[Idx]]);
+{$ENDIF JWSCL_DEBUG_INFO}
       SID := nil;
     end;
   end;
