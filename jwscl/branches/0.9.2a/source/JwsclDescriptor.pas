@@ -88,6 +88,7 @@ type
     fOwnerInherited, fPrimaryGroupInherited: boolean;
     fDACLInherited, fAuditInherited: boolean;
 
+    fDACLGenericRemoved,
     fInheritHandles : Boolean;
 
     fControl: TJwSecurityDescriptorControlSet;
@@ -402,7 +403,7 @@ type
        {<B>SaveToStream</B> writes a relative security descriptor into a stream.
         The method uses a magic header to check for position errors in a stream.
 
-        
+
         # Bytes         |  Value 
         # 1..5 (5)      |  SD_MAGIC_HEADER (byte array) 
         # 6..9 (4)      |  SD size (Cardinal) 
@@ -447,7 +448,7 @@ type
 
     {<B>ReplaceDescriptorElements</B> replaces the security descriptor elements given in SecurityInformationSet with
      the ones in SecurityDescriptor.
-     @param SecurityInformationSet Contains the members of the SD to be replaced. 
+     @param SecurityInformationSet Contains the members of the SD to be replaced.
      @param SecurityDescriptor defines the SD which is used to copy the members into
         the instance. 
     }
@@ -740,6 +741,12 @@ type
      }
     property InheritHandles : Boolean read fInheritHandles write fInheritHandles;
 
+    {<b>DACLGenericRemoved</b> is used by TJwSecureFileObject.GetFileInheritanceSourc
+    to decided whether the DACL's accessmask has been mapped from generic to
+    specific rights.
+    }
+    property DACLGenericRemoved : Boolean read fDACLGenericRemoved write fDACLGenericRemoved;
+
     property Tag : Integer read fTag write fTag;
   end;
 
@@ -810,6 +817,8 @@ begin
   OnHashCodeMethod := hashCode;
 
   fInheritHandles := false;
+
+  fDACLGenericRemoved := false;
 
   fControl := [];
 end;

@@ -1089,7 +1089,7 @@ end;
 function JwMsgWaitForMultipleObjects(const Handles: array of THandle; bWaitAll: LongBool;
            dwMilliseconds: DWord; dwWakeMask: DWord): DWord;
 begin
-  Result := MsgWaitForMultipleObjects(Length(Handles), @Handles[0], bWaitAll, dwMilliseconds, dwWakeMask);
+  Result := JwaWindows.MsgWaitForMultipleObjects(Length(Handles), @Handles[0], bWaitAll, dwMilliseconds, dwWakeMask);
 end;
 
 function JwWaitForMultipleObjects(const Handles: array of THandle; bWaitAll: LongBool;
