@@ -1,4 +1,4 @@
-This is the preview Version of RunAsSys 1.1 for Windows XP and Vista made with the help of JWSCL.
+This is the preview Version of RunAsSys 1.1 for Windows 200, XP, Vista and Win7 made with the help of JWSCL.
 RunAsSys runs application as SYSTEM user in the current user's session. If you start it without any parameters
 it creates a command prompt with SYSTEM privileges by default. Otherwise you can add an application with parameters to start this process as SYSTEM user. Use quotation marks if necessary for your path.
 On Windows Vista and UAC it should prompt you for elevation. On XP without Admin privileges it should prompt you for Admin credentials.
