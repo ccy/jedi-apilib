@@ -4591,12 +4591,15 @@ end;
 
 class procedure TJwSecureBaseClass.TakeOwnerShip(const PathName: TJwString;
   const aObjectType: TSeObjectType; SID: TJwSecurityId = nil);
+var InternalSid : TJwSecurityId;
 begin
   if JwIsPrivilegeSet(SE_TAKE_OWNERSHIP_NAME) then
     JwEnablePrivilege(SE_TAKE_OWNERSHIP_NAME, pst_Enable);
 
-  if SID = nil then
-    SID := JwSecurityCurrentThreadUserSID;
+  InternalSid := SID;
+
+  if InternalSid = nil then
+    InternalSid := JwSecurityCurrentThreadUserSID;
 
   try
     TJwSecureGeneralObject.SetNamedSecurityInfo(PathName,
@@ -4604,7 +4607,7 @@ begin
       //const aObjectType : TSeObjectType;
       [siOwnerSecurityInformation],
       //aSecurityInfo : TJwSecurityInformationFlagSet;
-      SID,//const anOwner : TJwSecurityId;
+      InternalSid,//const anOwner : TJwSecurityId;
       nil,//const anGroup : TJwSecurityId;
       nil,
       nil//const aSACL : TJwSAccessControlList);
@@ -4612,17 +4615,22 @@ begin
   finally
     if JwIsPrivilegeSet(SE_TAKE_OWNERSHIP_NAME) then
       JwEnablePrivilege(SE_TAKE_OWNERSHIP_NAME, pst_Disable);
+
+    InternalSid.Free;
   end;
 end;
 
 class procedure TJwSecureBaseClass.TakeOwnerShip(const Handle: THandle;
   const aObjectType: TSeObjectType; SID: TJwSecurityId = nil);
+var InternalSid : TJwSecurityId;  
 begin
   if JwIsPrivilegeSet(SE_TAKE_OWNERSHIP_NAME) then
     JwEnablePrivilege(SE_TAKE_OWNERSHIP_NAME, pst_Enable);
 
-  if SID = nil then
-    SID := JwSecurityCurrentThreadUserSID;
+  InternalSid := SID;
+
+  if InternalSid = nil then
+    InternalSid := JwSecurityCurrentThreadUserSID;
 
   try
     TJwSecureGeneralObject.SetSecurityInfo(Handle,
@@ -4630,7 +4638,7 @@ begin
       //const aObjectType : TSeObjectType;
       [siOwnerSecurityInformation],
       //aSecurityInfo : TJwSecurityInformationFlagSet;
-      SID,//const anOwner : TJwSecurityId;
+      InternalSid,//const anOwner : TJwSecurityId;
       nil,//const anGroup : TJwSecurityId;
       nil,
       nil//const aSACL : TJwSAccessControlList);
@@ -4638,6 +4646,8 @@ begin
   finally
     if JwIsPrivilegeSet(SE_TAKE_OWNERSHIP_NAME) then
       JwEnablePrivilege(SE_TAKE_OWNERSHIP_NAME, pst_Disable);
+
+    InternalSid.Free;
   end;
 end;
 
@@ -5884,12 +5894,12 @@ procedure TJwSecureFileObject.TakeOwnerShip(SID: TJwSecurityId = nil);
 begin
   if (fFileName <> '') then
   begin
-    TakeOwnerShip(SID);
+    TakeOwnerShip(fFileName, SID);
   end
   else
   if HasValidHandle then
   begin
-    TakeOwnerShip(SID);
+    TakeOwnerShip(fHandle, SID);
   end
   else
     raise EJwsclInvalidObjectException.CreateFmtEx(
@@ -5914,6 +5924,7 @@ class procedure TJwSecureFileObject.RestoreInheritanceFlow(
 var
   DACL: TJwDAccessControlList;
   SD: TJwSecurityDescriptor;
+  InternalSid : TJwSecurityId;  
 begin
   try
     SD := TJwSecureGeneralObject.GetSecurityInfo(Handle,
@@ -5933,7 +5944,7 @@ begin
         raise EJwsclAdaptSecurityInfoException.CreateFmtEx(
           RsSecureObjectsDaclAdaptionFailed,
           'RestoreInheritanceFlow', ClassName, RsUNSecureObjects, 0, True,
-          [JwSecurityCurrentThreadUserSID.AccountName['']]);
+          []);
       end;
 
       TakeOwnerShip(Handle);
@@ -6002,7 +6013,7 @@ begin
         raise EJwsclAdaptSecurityInfoException.CreateFmtEx(
           RsSecureObjectsDaclAdaptionFailed,
           'RestoreInheritanceFlow', ClassName, RsUNSecureObjects,
-          0, True, [PathName, JwSecurityCurrentThreadUserSID.AccountName['']]);
+          0, True, []);
       end;
 
       TakeOwnerShip(PathName);
@@ -8384,7 +8395,7 @@ begin
         raise EJwsclAdaptSecurityInfoException.CreateFmtEx(
           RsSecureObjectsDaclAdaptionFailed
           , 'RestoreInheritanceFlow', ClassName, RsUNSecureObjects, 0,
-          True, [JwSecurityCurrentThreadUserSID.AccountName['']]);
+          True, []);
       end;
 
       TakeOwnerShip(Handle);
@@ -8457,7 +8468,7 @@ begin
         raise EJwsclAdaptSecurityInfoException.CreateFmtEx(
           RsSecureObjectsDaclAdaptionFailed,
           'RestoreInheritanceFlow', ClassName, RsUNSecureObjects, 0, True,
-          [KeyName, JwSecurityCurrentThreadUserSID.AccountName['']]);
+          []);
       end;
 
       TakeOwnerShip(KeyName);
@@ -8522,12 +8533,12 @@ procedure TJwSecureRegistryKey.TakeOwnerShip(SID: TJwSecurityId = nil);
 begin
   if (fKeyName <> '') then
   begin
-    TakeOwnerShip(SID);
+    TakeOwnerShip(fKeyName, SID);
   end
   else
   if HasValidHandle then
   begin
-    TakeOwnerShip(SID);
+    TakeOwnerShip(fHandle, SID);
   end
   else
     raise EJwsclInvalidObjectException.CreateFmtEx(

@@ -260,7 +260,7 @@ const
   RsSecureObjectsNoCopyOfObjectHandle = 'Object handle could not be copied.';
   RsSecureObjectsFileFolderNotFound = 'File or directory not found: %s';
   RsSecureObjectsInvalidFileNameHandle = 'Filename and handle is invalid';
-  RsSecureObjectsDaclAdaptionFailed = 'The function failed to adapt the DACL of the file/folder handle. You must have either WRITE_DAC access rights or be the owner. Process SID: %s';
+  RsSecureObjectsDaclAdaptionFailed = 'The function failed to adapt the DACL of the secured object. You must have either WRITE_DAC access rights or be the owner.';
   RsSecureObjectsInvalidFileOrFolder = 'The instance must be created with a file or folder name. GetFileInheritanceSource cannot be used with a handle! ';
     RsSecureObjectsNilSdParameter = 'The security descriptor must not be nil. ' +
     '(path: %s)';
