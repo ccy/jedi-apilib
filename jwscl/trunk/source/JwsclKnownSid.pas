@@ -790,7 +790,9 @@ begin
   except
     On E : Exception do
     begin
+{$IFDEF JWSCL_DEBUG_INFO}    
       JwOutputDebugString('%s. Security id: %s ',[E.Message,KnownSids[Idx]]);
+{$ENDIF JWSCL_DEBUG_INFO}
       SID := nil;
     end;
   end;

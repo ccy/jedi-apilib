@@ -39,6 +39,10 @@ Warning #2: If the JEDI API headers are used with a directive WIN_XP or lower
 {$ENDIF}
 
 {$IFDEF DEBUG}
+{.$DEFINE JWSCL_DEBUG_INFO}
+{$ENDIF DEBUG}
+
+{$IFDEF DEBUG}
   {.$WARNINGS OFF}
 {$IFDEF DELPHI7_UP}
   {$WARN GARBAGE OFF} //removes warning about code behind end.
