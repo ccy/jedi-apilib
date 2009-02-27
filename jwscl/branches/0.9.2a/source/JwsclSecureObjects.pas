@@ -76,7 +76,7 @@ type
   }
   TJwOnGetNamedSecurityInfo =
     function (PathName : TJwString; SeType : TSeObjectType; const aSecurityInfo: TJwSecurityInformationFlagSet;
-       var OwnedSD : Boolean) : TJwSecurityDescriptor;
+       var OwnedSD : Boolean; const Data : Pointer) : TJwSecurityDescriptor;
 
 
      {<B>TJwFnProgressMethod</B> is a callback method that is used by TreeFileObjectSetNamedSecurityInfo.
@@ -1729,6 +1729,8 @@ type
 
        @param PathName defines an absolute PathName to a file or folder
        @param aSecurityInfo defines the type of security inheritance is to be obtained. The value can be one of siDaclSecurityInformation or siSaclSecurityInformation.
+       @param OnGetNamedSecurityInfo defines a callback function which is called everytime security information is retrieved. Set to nil if not used.
+       @param Data receives custom information applied to the Data parameter of all OnGetNamedSecurityInfo function calls.
 
        @return The return value is an array of TJwInheritedFromRecord with the count of ACE in the DACL of the object in PathName
                 Each array entry consists of
@@ -1747,8 +1749,8 @@ type
     class function GetFileInheritanceSource(const PathName: TJwString;
       const aSecurityInfo: TJwSecurityInformationFlagSet =
       [siDaclSecurityInformation];
-      const OnGetNamedSecurityInfo : TJwOnGetNamedSecurityInfo = nil
-      ): TJwInheritedFromArray; overload; virtual;
+      const OnGetNamedSecurityInfo : TJwOnGetNamedSecurityInfo = nil;
+      const Data : Pointer = nil): TJwInheritedFromArray; overload; virtual;
 
       {<B>GetFileInheritanceSource</B> retrieves the source if inheritance for the ACEs in the ACL of the given object.
        This method simulates GetInheritanceSource, so that it can be used in all windows versions with ACL support.
@@ -2482,7 +2484,9 @@ type
       nil): TJwInheritedFromArray;
     {PINHERITED_FROM pInheritArray} reintroduce; virtual;
 
-      {<B>GetKeyInheritanceSource</B> retrieves the source if inheritance for the ACEs in the ACL of the given object.
+      {<b>BUGBUGBUG - DO NOT USE!</b>
+
+       <B>GetKeyInheritanceSource</B> retrieves the source if inheritance for the ACEs in the ACL of the given object.
        This method simulates GetInheritanceSource, so that it can be used in all windows versions with ACL support.
 
        <B>GetKeyInheritanceSource</B> supports connection to a remote registry. To use a remote connection set RootKey to rrkString and use
@@ -6847,7 +6851,8 @@ class function TJwSecureFileObject.GetFileInheritanceSource(
   const PathName: TJwString;
   const aSecurityInfo: TJwSecurityInformationFlagSet =
   [siDaclSecurityInformation];
-  const OnGetNamedSecurityInfo : TJwOnGetNamedSecurityInfo = nil): TJwInheritedFromArray;
+  const OnGetNamedSecurityInfo : TJwOnGetNamedSecurityInfo = nil;
+  const Data : Pointer = nil): TJwInheritedFromArray;
 
   function GetParent(PathName: TJwString; bStop: boolean = False): TJwString;
   var //[Hint] l,l2,
@@ -6931,7 +6936,7 @@ class function TJwSecureFileObject.GetFileInheritanceSource(
     try
       bOwnedSD := false;
       if Assigned(OnGetNamedSecurityInfo) then
-        SD := OnGetNamedSecurityInfo(PathName, SE_FILE_OBJECT, aSecurityInfo, bOwnedSD)
+        SD := OnGetNamedSecurityInfo(PathName, SE_FILE_OBJECT, aSecurityInfo, bOwnedSD, Data)
       else
         SD := GetNamedSecurityInfo(PathName, SE_FILE_OBJECT, aSecurityInfo);
     except
@@ -7112,7 +7117,7 @@ begin
     bOwnedSD := false;
 
     if Assigned(OnGetNamedSecurityInfo) then
-      SD := OnGetNamedSecurityInfo(PathName, SE_FILE_OBJECT, aSecurityInfo, bOwnedSD)
+      SD := OnGetNamedSecurityInfo(PathName, SE_FILE_OBJECT, aSecurityInfo, bOwnedSD, Data)
     else
       SD := GetNamedSecurityInfo(PathName, SE_FILE_OBJECT, aSecurityInfo);
 
