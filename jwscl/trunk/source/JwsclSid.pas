@@ -321,7 +321,7 @@ type
     #  WinBuiltinAuthorizationAccessSid,
     #  WinBuiltinTerminalServerLicenseServersSid
     
-     
+
       }
     function GetWellKnownSidType: TWellKnownSidType;
 
@@ -432,8 +432,15 @@ type
             #  SidTypeInvalid        = 7;
             #  SidTypeUnknown        = 8;
             #  SidTypeComputer       = 9;
-         
-       @return <B>GetAccountSidString</B> returns the account name associated by this SID. 
+
+       Remarks
+         If the compiler directive JWSCL_SIDCACHE or JWSCL_USE_CACHES is active
+         <b>GetAccountSidString</b> uses an caching algorithm per thread basis
+         to return the name. A new SID is stored in the global JwSidNameCache
+         variable (per thread) and used every time the same SID is returned.
+         A SID is determined by its SidString (property) and its System name.
+
+       @return <B>GetAccountSidString</B> returns the account name associated by this SID.
        raises
  EJwsclWinCallFailedException:  if the call to a winapi function failed 
         EJwsclSecurityException: See CheckSID  for more exceptions 
@@ -509,7 +516,7 @@ type
       {<B>GetText</B> creates a text that contains domain, account name and humand readable SID structure.
        The form is "[domain@]name (S-1-XXXXXX)" where [] is optional.
        @param ignoreExceptions if set to true ignores exceptions that are thrown 
-       @return Returns the string value 
+       @return Returns the string value
       }
     function GetText(ignoreExceptions: boolean = False): TJwString; virtual;
 
@@ -753,6 +760,13 @@ type
        EJwsclWinCallFailedException if the call to a winapi function failed
        @Seealso(GetAccountSidString);
 
+       Remarks
+         If the compiler directive JWSCL_SIDCACHE or JWSCL_USE_CACHES is active
+         <b>GetAccountSidString</b> uses an caching algorithm per thread basis
+         to return the name. A new SID is stored in the global JwSidNameCache
+         variable (per thread) and used every time the same SID is returned.
+         A SID is determined by its SidString (property) and its System name.
+
        COM: Also available as com method.
        }
     property AccountName[SystemName: TJwString]: TJwString Read GetAccountName;
@@ -873,6 +887,8 @@ threadvar
 {<b>JwFreeSidNameCache</b> frees the variable JwSidNameCache
 and sets it to nil. This procedure must be called in the end
 of every thread separately; this includes the main thread.
+
+This call is automatically done for the first thread!
 }
 procedure JwFreeSidNameCache;
 
@@ -883,6 +899,8 @@ procedure JwClearSidNameCache;
 {<b>JwClearSidNameCache</b> initializes the JwSidNameCache string list.
 It must be called only once for every thread. Multiple calls
 will create dangling pointers.
+
+This call is automatically done for the first thread!
 }
 procedure JwInitSidNameCache;
 
@@ -1519,7 +1537,11 @@ var
 begin
   CheckSID;
 
+  
+
 {$IFDEF JWSCL_SIDCACHE}
+  ASSERT(JwSidNameCache <> nil, 'Sid Cache was enabled but JwInitSidNameCache was not called before.');
+
   if (JwSidNameCache.Find(SystemName+fCachedSidString, i)) then
   begin
     result :=  JwSidNameCache[i];
@@ -2278,8 +2300,14 @@ begin
 end;
 
 initialization
+{$IFDEF JWSCL_SIDCACHE}
+  JwInitSidNameCache;
+{$ENDIF JWSCL_SIDCACHE}
 
-
+finalization
+{$IFDEF JWSCL_SIDCACHE}
+  JwFreeSidNameCache;
+{$ENDIF JWSCL_SIDCACHE}
 
 {$ENDIF SL_INTERFACE_SECTION}
 
@@ -2288,67 +2316,4 @@ initialization
 end.
 
 
-{$ENDIF SL_OMIT_SECTIONS}(*
- BOOL IsUserAdmin(VOID)
-/*++
-Routine Description: This routine returns TRUE if the caller's
-process is a member of the Administrators local group. Caller is NOT
-expected to be impersonating anyone and is expected to be able to
-open its own process and process token.
-Arguments: None.
-Return Value:
-   TRUE - Caller has Administrators local group.
-   FALSE - Caller does not have Administrators local group. --
-*/
-{
-BOOL b;
-SID_IDENTIFIER_AUTHORITY NtAuthority = SECURITY_NT_AUTHORITY;
-PSID AdministratorsGroup;
-b = AllocateAndInitializeSid(
-    &NtAuthority,
-    2,
-    SECURITY_BUILTIN_DOMAIN_RID,
-    DOMAIN_ALIAS_RID_ADMINS,
-    0, 0, 0, 0, 0, 0,
-    &AdministratorsGroup);
-if(b)
-{
-    if (!CheckTokenMembership( NULL, AdministratorsGroup, &b))
-    {
-         b = FALSE;
-    }
-    FreeSid(AdministratorsGroup);
-}
-
-return(b);
-}
-
-Access check
-http://msdn2.microsoft.com/en-us/library/aa379648.aspx
-
-Determine Whether the File System Supports ACLs
-You can use the following code to determine whether a given file system supports ACLs. All you need to do is change the szVol variable to point to the volume.
-
-#include <stdio.h>
-#include <windows.h>
-void main() {
-    char *szVol = "c:\\";
-    DWORD dwFlags = 0;
-
-    if (GetVolumeInformation(szVol,
-                             NULL,
-                             0,
-                             NULL,
-                             NULL,
-                             &dwFlags,
-                             NULL,
-                             0)) {
-        printf("Volume %s does%s support ACLs.",
-               szVol,
-               (dwFlags & FS_PERSISTENT_ACLS) ? "" : " not");
-    } else {
-        printf("Error %d",GetLastError());
-    }
-}
-
-*)
+{$ENDIF SL_OMIT_SECTIONS}

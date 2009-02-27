@@ -64,6 +64,7 @@ type
            GetFileInheritanceSource sets it to siDaclSecurityInformation.
    @param OwnedSD Receives whether the returned security descriptor can be freed securely.
            Set to true if the caller (of this event) should not free it; otherwise set to false (default).
+   @param Data This parameter contains user defined data.
 
    @return Returns the security descriptor for this object.
      The caller frees the security descriptor if parameter OwnedSD is false (default).
@@ -1812,6 +1813,8 @@ type
 
        @param PathName defines an absolute PathName to a file or folder
        @param aSecurityInfo defines the type of security inheritance is to be obtained. The value can be one of siDaclSecurityInformation or siSaclSecurityInformation.
+       @param OnGetNamedSecurityInfo defines a callback function which is called everytime security information is retrieved. Set to nil if not used.
+       @param Data receives custom information applied to the Data parameter of all OnGetNamedSecurityInfo function calls.
 
        @return The return value is an array of TJwInheritedFromRecord with the count of ACE in the DACL of the object in PathName
                 Each array entry consists of
@@ -2587,7 +2590,9 @@ type
       nil): TJwInheritedFromArray;
     {PINHERITED_FROM pInheritArray} reintroduce; virtual;
 
-      {<B>GetKeyInheritanceSource</B> retrieves the source if inheritance for the ACEs in the ACL of the given object.
+      {<b>BUGBUGBUG - DO NOT USE!</b>
+
+       <B>GetKeyInheritanceSource</B> retrieves the source if inheritance for the ACEs in the ACL of the given object.
        This method simulates GetInheritanceSource, so that it can be used in all windows versions with ACL support.
 
        <B>GetKeyInheritanceSource</B> supports connection to a remote registry. To use a remote connection set RootKey to rrkString and use
@@ -5924,7 +5929,6 @@ class procedure TJwSecureFileObject.RestoreInheritanceFlow(
 var
   DACL: TJwDAccessControlList;
   SD: TJwSecurityDescriptor;
-  InternalSid : TJwSecurityId;  
 begin
   try
     SD := TJwSecureGeneralObject.GetSecurityInfo(Handle,
