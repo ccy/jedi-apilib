@@ -85,32 +85,40 @@ type
   TApplicationRecoveryCallback = APPLICATION_RECOVERY_CALLBACK;
 
   function ApplicationRecoveryFinished({__in}bSuccess : BOOL) : HRESULT; stdcall;
+  {$EXTERNALSYM ApplicationRecoveryFinished}
 
   function ApplicationRecoveryInProgress(out pbCanceled : BOOL) : HRESULT; stdcall;
+  {$EXTERNALSYM ApplicationRecoveryInProgress}
 
   function GetApplicationRecoveryCallback({__in}hProcess: THandle;
     {__out}pRecoveryCallback : TApplicationRecoveryCallback;
     {__deref_opt_out_opt}ppvParameter : PPointer;
     {__out_opt}dwPingInterval : PDWORD;
     {__out_opt}dwFlags : PDWORD) : HRESULT; stdcall;
+  {$EXTERNALSYM GetApplicationRecoveryCallback}
 
   function GetApplicationRestartSettings({__in}hProcess: THandle;
     {__out_opt}pwzCommandline : PWideChar;
     {__inout}var pcchSize : DWORD;
     {_out_opt}pdwFlags : PDWORD) : HRESULT; stdcall;
+  {$EXTERNALSYM GetApplicationRestartSettings}
 
   function RegisterApplicationRecoveryCallback(
     {__in}pRecoveryCallback : TApplicationRecoveryCallback;
     {__in_opt}pvParameter : Pointer;
     {__in}dwPingInterval : DWORD;
     {__in}dwFlags : DWORD) : HRESULT; stdcall;
+  {$EXTERNALSYM RegisterApplicationRecoveryCallback}
 
   function RegisterApplicationRestart({__in_opt}pwzCommandline: PWideChar;
     {__in}dwFlags: DWORD): HRESULT; stdcall;
+  {$EXTERNALSYM RegisterApplicationRestart}
 
   function UnregisterApplicationRecoveryCallback : HRESULT; stdcall;
+  {$EXTERNALSYM UnregisterApplicationRecoveryCallback}
 
   function UnregisterApplicationRestart : HRESULT; stdcall;
+  {$EXTERNALSYM UnregisterApplicationRestart}
 
 {$ENDIF JWA_IMPLEMENTATIONSECTION}
 
