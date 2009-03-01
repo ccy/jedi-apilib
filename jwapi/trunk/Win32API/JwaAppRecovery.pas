@@ -67,7 +67,6 @@ uses
 
 
 {$IFNDEF JWA_IMPLEMENTATIONSECTION}
-//add here public interface definition
 const
   RESTART_NO_FLAGS      = 0;
   RESTART_NO_CRASH      = 1;
