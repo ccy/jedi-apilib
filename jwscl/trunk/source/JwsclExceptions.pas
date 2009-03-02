@@ -371,8 +371,8 @@ type
 	  EJwsclGetFWExceptionsAllowedException = class(EJwsclGenericFirewallException);
 	  EJwsclSetFWExceptionsAllowedException = class(EJwsclGenericFirewallException);
 
-	  EJwsclGetIncommingPingAllowedException = class(EJwsclGenericFirewallException);
-	  EJwsclSetIncommingPingAllowedException = class(EJwsclGenericFirewallException);
+	  EJwsclGetIncomingPingAllowedException = class(EJwsclGenericFirewallException);
+	  EJwsclSetIncomingPingAllowedException = class(EJwsclGenericFirewallException);
 
 	  EJwsclGetRemoteAdminAllowedException = class(EJwsclGenericFirewallException);
 	  EJwsclSetRemoteAdminAllowedException = class(EJwsclGenericFirewallException);
