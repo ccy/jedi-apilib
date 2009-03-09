@@ -56,8 +56,29 @@ uses SysUtils, Classes,
 
 {$IFNDEF SL_IMPLEMENTATION_SECTION}
 type
+  EJwsclSecurityException = class;
+
+  TJwExceptionConstructorType = (ctNone, ctIgnore, ctCreateMsg, ctCreateWithException,
+      ctCreateFmtEx, ctCreateFmtWinCall);
+
+
+  {<b>TJwOnFormatExceptionMessage</b> is used by JwOnFormatExceptionMessage.
+
+   @param Sender Defines the exception. Use it for formatting the exception.
+   @param ConstructorType Defines the constructor type which calls this function.
+   @param Msg Contains the original message which can be replaced.
+
+   Remarks
+     Do not raise an exception in this function.
+   }
+  TJwOnFormatExceptionMessage = procedure(Sender : EJwsclSecurityException;
+        ConstructorType : TJwExceptionConstructorType; Var Msg : TJwString);
+
   {<B>EJwsclSecurityException</B> is the main exception class that is used if an error occurs in any
         Security Library unit.
+
+  Remarks
+    You can define JwOnFormatExceptionMessage to format the exception message.
   }
   EJwsclSecurityException = class(Exception)
   protected
@@ -68,8 +89,13 @@ type
     fWinCallName: TJwString;
     fComSource : TJwString;
     fLog : TJwString;
+    fSimpleMessage : TJwString;
+
+    fCurrentExceptionConstructorType : TJwExceptionConstructorType;
 
     fStackTrace : TJwString;
+
+    procedure DoFormatExceptionMessage(ConstructorType : TJwExceptionConstructorType);
   public
     constructor Create(const Msg: String); overload;
            {<B>CreateFmtEx</B> creates an instance of the @classname exception.
@@ -124,6 +150,10 @@ type
     property SourceLine: Cardinal
       Read fiSourceLine Write fiSourceLine;
 
+    {<b>SimpleMessage</b> contains the original text that was inteded for this exception.
+     It does not contain any other (for debugging purposes) information.} 
+    property SimpleMessage : TJwString read fSimpleMessage write fSimpleMessage;
+
     {<B>WinCallName</B> defines the winapi function name of the failed call.}
     property WinCallName: TJwString Read fWinCallName Write fWinCallName;
 
@@ -132,6 +162,13 @@ type
     property StackTrace : TJwString read fStackTrace write fStackTrace;
   end;
 
+var
+  {<b>JwOnFormatExceptionMessage</b> is called every time a JWSCL exception is
+   raised and the message should be formatted. }
+  JwOnFormatExceptionMessage : TJwOnFormatExceptionMessage = nil;
+
+
+type
   //<B>EJwsclOpenThreadTokenException</B> is raised if the thread token could not be opened
   EJwsclOpenThreadTokenException = class(EJwsclSecurityException);
   //<B>EJwsclOpenProcessTokenException</B> is raised if the process token could not be opened
@@ -511,11 +548,28 @@ end;
 
 
 {$IFNDEF SL_INTERFACE_SECTION}
+
+procedure EJwsclSecurityException.DoFormatExceptionMessage(
+  ConstructorType : TJwExceptionConstructorType);
+var Msg : TJwString;
+begin
+  if Assigned(JwOnFormatExceptionMessage)
+    and (fCurrentExceptionConstructorType <> ctIgnore) then
+  begin
+    Msg := Message;
+    JwOnFormatExceptionMessage(Self, ConstructorType, Msg);
+    Message := Msg;
+  end;
+end;
+
 constructor EJwsclSecurityException.Create(const Msg: String);
 begin
-  inherited Create(Msg);
-
   fLastError := GetLastError;
+
+  inherited Create(Msg);
+  fSimpleMessage := Msg;
+
+  DoFormatExceptionMessage(ctCreateMsg);
 end;
 
 constructor EJwsclSecurityException.CreateFmtWinCall(const sMsg: TJwString;
@@ -525,9 +579,16 @@ constructor EJwsclSecurityException.CreateFmtWinCall(const sMsg: TJwString;
   sWinCall: TJwString;
   const Args: array of const);
 begin
+  //ignore call of JwOnFormatExceptionMessage in the next function
+  fCurrentExceptionConstructorType := ctIgnore;
+
   CreateFmtEx(sMsg, sSourceProc, sSourceClass, sSourceFile,
     iSourceLine, bShowLastError, Args);
   fWinCallName := sWinCall;
+
+  fSimpleMessage := sMsg;
+
+  DoFormatExceptionMessage(ctCreateFmtWinCall);
 end;
 
 constructor EJwsclSecurityException.Create(
@@ -535,12 +596,16 @@ constructor EJwsclSecurityException.Create(
 begin
   inherited Create(anException.Message);
 
+  fSimpleMessage := anException.Message;
+
   fLastError := anException.fLastError;
   fSourceProc := anException.fSourceProc;
   fsSourceClass := anException.fsSourceClass;
   fsSourceFile := anException.fsSourceFile;
   fiSourceLine := anException.fiSourceLine;
   fWinCallName := anException.fWinCallName;
+
+  DoFormatExceptionMessage(ctCreateWithException);
 end;
 
 constructor EJwsclSecurityException.CreateFmtEx(const MessageString: TJwString;
@@ -564,6 +629,8 @@ begin
   fsSourceClass := sSourceClass;
   fsSourceFile := sSourceFile;
   fiSourceLine := fiSourceLine;
+
+  fSimpleMessage := MessageString;
 
   if Length(MessageString) > 0 then
   begin
@@ -624,6 +691,8 @@ begin
 
 
   inherited Create(aMessage);
+
+  DoFormatExceptionMessage(ctCreateFmtEx);
 end;
 
 
@@ -651,6 +720,7 @@ begin
   fsSourceFile := sSourceFile;
   fiSourceLine := fiSourceLine;
 
+  fSimpleMessage := MessageString;
 
 
   if Length(MessageString) > 0 then
@@ -717,7 +787,7 @@ begin
 
   inherited Create(aMessage);
 
-
+  DoFormatExceptionMessage(ctCreateFmtEx);
 end;
 
 
