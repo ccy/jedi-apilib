@@ -27,7 +27,9 @@ interface
 
 uses
   JwaWindows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, AdvFileSearch,
+  Dialogs, 
+  
+  AdvFileSearch, //See readme.txt
 
   JwsclTypes,
   JwsclConstants,

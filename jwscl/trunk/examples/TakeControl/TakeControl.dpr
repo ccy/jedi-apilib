@@ -1,7 +1,6 @@
 program TakeControl;
 
 uses
-  ExceptionLog,
   Forms,
   UMainForm in 'UMainForm.pas' {FormMain};
 
