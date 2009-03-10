@@ -76,7 +76,7 @@ type
   }
   TJwOnGetNamedSecurityInfo =
     function (PathName : TJwString; SeType : TSeObjectType; const aSecurityInfo: TJwSecurityInformationFlagSet;
-       var OwnedSD : Boolean; const Data : Pointer) : TJwSecurityDescriptor;
+       var OwnedSD : Boolean; const Data : Pointer) : TJwSecurityDescriptor of object;
 
 
      {<B>TJwFnProgressMethod</B> is a callback method that is used by TreeFileObjectSetNamedSecurityInfo.

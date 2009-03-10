@@ -16,20 +16,22 @@ Warning: Unsetting this value will not remove constructor, method and property
 definitions created for Windows Vista. It only removes function calls
 so that static linked apps will not fail immediately on pre Vista systems.
 Of course they will fail if Vista stuff is called on them.
+
+Warning #2: If the JEDI API headers are used with a directive WIN_XP or lower
+  this switch must be unset.
+  These compiler directives reside in includes\jediapilib.inc
+  Use at least WINVISTA or WIN2008 
 }
-{$DEFINE VISTA}
+{$DEFINE VISTA}   
 
 //adds compiler version directives
-{$I jedi.inc}
+//jwscl.inc is only added by JWSCL units in source folder
+//so we're actually in the source folder and must jump up
 
-
-{Special debug information for. Is a performance killer.
-Switch it off here.
-+TJwSecuritySID.fDbgData
-}
-{$IFDEF DEBUG}
-{.$DEFINE JWSCL_DEBUG_INFO}
-{$ENDIF DEBUG}
+//This is for compability reasons only!
+//On of them should work. However the second one is standard and supported.
+{.$I .\jedi.inc}
+{$I ..\Includes\jedi.inc}
 
 
 {$IFDEF FPC}
@@ -37,7 +39,20 @@ Switch it off here.
 {$ENDIF}
 
 {$IFDEF DEBUG}
-  {$WARNINGS OFF}
+{.$DEFINE JWSCL_DEBUG_INFO}
+{$ENDIF DEBUG}
+
+{$DEFINE JWSCL_USE_CACHES}
+
+{$IFDEF JWSCL_USE_CACHES}
+  {$DEFINE JWSCL_SIDCACHE}
+{$ENDIF JWSCL_USE_CACHES}
+
+{$IFDEF DEBUG}
+  {.$WARNINGS OFF}
+{$IFDEF DELPHI7_UP}
+  {$WARN GARBAGE OFF} //removes warning about code behind end.
+{$ENDIF DELPHI7_UP}
 {$ENDIF DEBUG}
 
 
