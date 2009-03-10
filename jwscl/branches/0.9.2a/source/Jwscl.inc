@@ -29,12 +29,10 @@ Warning #2: If the JEDI API headers are used with a directive WIN_XP or lower
 //so we're actually in the source folder and must jump up
 
 //This is for compability reasons only!
-//On of them should work. However the second one is standard and supported.
-{.$I .\jedi.inc}
-{$I ..\Includes\jedi.inc}
+{$I jedi.inc} 
 
 
-{$IFDEF FPC}
+{$IFDEF FPC} 
 {$mode delphi}{.$H+}
 {$ENDIF}
 
