@@ -140,6 +140,7 @@ type
     class function GetLastErrorMessage(
       const iGetLastError: Cardinal = Cardinal(-1)): TJwString; virtual;
 
+  private //do not use
     procedure SaveToStream(const Stream : TStream); virtual;
     procedure LoadFromStream(const Stream : TStream); virtual;
     //http://www.blong.com/Conferences/BorConUK98/DelphiRTTI/CB140.htm
@@ -485,12 +486,12 @@ const JwExceptionMapping : array[0..3] of TJwExceptionMapping =
       ((Name: 'Exception';
         ID: '{138EDC0B-B10B-4FA3-BB5D-DFDABBEBDDA4}';
         ExcPtr : Exception),
-       (Name: 'EJwsclWinCallFailedException';
-        ID: '{138EDC0B-B10B-4FA3-BB5D-DFDABBEBDDA5}';
-        ExcPtr : EJwsclWinCallFailedException),
        (Name: 'EJwsclSecurityException';
-        ID: '{138EDC0B-B10B-4FA3-BB5D-DFDABBEBDDA6}';
+        ID: '{138EDC0B-B10B-4FA3-BB5D-DFDABBEBDDA5}';
         ExcPtr : EJwsclSecurityException),
+       (Name: 'EJwsclWinCallFailedException';
+        ID: '{138EDC0B-B10B-4FA3-BB5D-DFDABBEBDDA6}';
+        ExcPtr : EJwsclWinCallFailedException),
        (Name: 'EJwsclNILParameterException';
         ID: '{138EDC0B-B10B-4FA3-BB5D-DFDABBEBDDA7}';
         ExcPtr : EJwsclNILParameterException)
@@ -831,7 +832,7 @@ var v : DWORD;
 begin
   Stream.Read(v, sizeof(v));
 
-  SetLength(WideS[1], v);
+  SetLength(WideS, v);
   Stream.Read(WideS[1], V * sizeof(WideChar));
   Value := WideS;
 end;
@@ -854,7 +855,20 @@ begin
 end;
 
 procedure EJwsclSecurityException.SaveToStream(const Stream: TStream);
+var
+  i : Integer;
+  Guid : TGuid;
 begin
+  ZeroMemory(@Guid, sizeof(Guid));
+  for i := High(JwExceptionMapping) to low(JwExceptionMapping) do
+  begin
+    if Self is JwExceptionMapping[i].ExcPtr then
+    begin
+      Guid := JwExceptionMapping[i].ID;
+      Break;
+    end;
+  end;
+  Stream.Write(Guid, sizeof(Guid));
   Stream.Write(fLastError, sizeof(fLastError));
   Stream.Write(fSourceProc, sizeof(fSourceProc));
   Stream.Write(fsSourceClass, sizeof(fsSourceClass));
