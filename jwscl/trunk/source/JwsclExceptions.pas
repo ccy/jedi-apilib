@@ -89,9 +89,11 @@ type
     fWinCallName: TJwString;
     fComSource : TJwString;
     fLog : TJwString;
+    fUnsupportedProperties,
     fSimpleMessage : TJwString;
 
     fCurrentExceptionConstructorType : TJwExceptionConstructorType;
+
 
     fStackTrace : TJwString;
 
@@ -138,7 +140,11 @@ type
     class function GetLastErrorMessage(
       const iGetLastError: Cardinal = Cardinal(-1)): TJwString; virtual;
 
+    procedure SaveToStream(const Stream : TStream); virtual;
+    procedure LoadFromStream(const Stream : TStream); virtual;
+    //http://www.blong.com/Conferences/BorConUK98/DelphiRTTI/CB140.htm
   public
+  //published
     {<B>LastError</B> contains the LastError error code provided the the CreateFmtEx constructor}
     property LastError: Cardinal Read fLastError write fLastError;
 
@@ -151,7 +157,7 @@ type
       Read fiSourceLine Write fiSourceLine;
 
     {<b>SimpleMessage</b> contains the original text that was inteded for this exception.
-     It does not contain any other (for debugging purposes) information.} 
+     It does not contain any other (for debugging purposes) information.}
     property SimpleMessage : TJwString read fSimpleMessage write fSimpleMessage;
 
     {<B>WinCallName</B> defines the winapi function name of the failed call.}
@@ -160,6 +166,12 @@ type
     property Log : TJwString read fLog write fLog;
     property ComSource: TJwString read fComSource write fComSource;
     property StackTrace : TJwString read fStackTrace write fStackTrace;
+
+    {<b>UnsupportedProperties</b> contains a comma separated list of
+     property names that could not be written/read from stream
+     by SaveToStream/LoadFromStream.}
+    property UnsupportedProperties : TJwString read fUnsupportedProperties;
+
   end;
 
 var
@@ -376,8 +388,12 @@ type
   {<B>EJwsclInitWellKnownException</B> is raised if JwInitWellKnownSIDs was not called.}
   EJwsclInitWellKnownException = class(EJwsclKeyException);
 
+  {<b>EJwsclUnimplemented</b>
+  The called function isn't implemented yet.}
   EJwsclUnimplemented = class(EJwsclSecurityException);
 
+  {<b>EJwsclNilPointer</b>
+  A given parameter or variable is nil but must not be nil.}
   EJwsclNilPointer = class(EJwsclSecurityException);
   EJwsclCreateProcessFailed = class(EJwsclSecurityException);
   EJwsclInvalidPointerType = class(EJwsclSecurityException);
@@ -463,7 +479,8 @@ type
      ExcPtr : JwGeneralExceptionClass;
    end;
 
-
+//Mappings for JWSCL exceptions so we can
+//stream and restore them
 const JwExceptionMapping : array[0..3] of TJwExceptionMapping =
       ((Name: 'Exception';
         ID: '{138EDC0B-B10B-4FA3-BB5D-DFDABBEBDDA4}';
@@ -489,7 +506,7 @@ function JwMapException(Const Name : WideString) : TGuid; overload;
 implementation
 
 {$IFDEF SM_JCLDEBUG}
-uses jclDebug;
+uses jclDebug, JwsclStrings, JwsclConstants;
 {$ENDIF}
 
 
@@ -800,11 +817,61 @@ begin
     Result := GetErrorMessage(iGetLastError);
 end;
 
+procedure WriteStringToStream(const Stream : TStream; const Value : WideString);
+var v : DWORD;
+begin
+  v := Length(Value);
+  Stream.Write(v, sizeof(v));
+  Stream.Write(Value[1], Length(Value) * sizeof(WideChar));
+end;
+
+procedure ReadStringFromStream(const Stream : TStream; out Value : TJwString);
+var v : DWORD;
+  WideS : WideString;
+begin
+  Stream.Read(v, sizeof(v));
+
+  SetLength(WideS[1], v);
+  Stream.Read(WideS[1], V * sizeof(WideChar));
+  Value := WideS;
+end;
+
+procedure EJwsclSecurityException.LoadFromStream(const Stream: TStream);
+var Guid : TGuid;
+begin
+  Stream.Read(Guid, sizeof(Guid));
+  Stream.Read(fLastError, sizeof(fLastError));
+  Stream.Read(fSourceProc, sizeof(fSourceProc));
+  Stream.Read(fsSourceClass, sizeof(fsSourceClass));
+  Stream.Read(fsSourceFile, sizeof(fsSourceFile));
+  Stream.Read(fiSourceLine, sizeof(fiSourceLine));
+  ReadStringFromStream(Stream, fWinCallName);
+  ReadStringFromStream(Stream, fComSource);
+  ReadStringFromStream(Stream, fLog);
+  Stream.Read(fUnsupportedProperties, sizeof(fUnsupportedProperties));
+  ReadStringFromStream(Stream, fSimpleMessage);
+  ReadStringFromStream(Stream, fStackTrace);
+end;
+
+procedure EJwsclSecurityException.SaveToStream(const Stream: TStream);
+begin
+  Stream.Write(fLastError, sizeof(fLastError));
+  Stream.Write(fSourceProc, sizeof(fSourceProc));
+  Stream.Write(fsSourceClass, sizeof(fsSourceClass));
+  Stream.Write(fsSourceFile, sizeof(fsSourceFile));
+  Stream.Write(fiSourceLine, sizeof(fiSourceLine));
+  WriteStringToStream(Stream, fWinCallName);
+  WriteStringToStream(Stream, fComSource);
+  WriteStringToStream(Stream, fLog);
+  Stream.Write(fUnsupportedProperties, sizeof(fUnsupportedProperties));
+  WriteStringToStream(Stream, fSimpleMessage);
+  WriteStringToStream(Stream, fStackTrace);
+end;
+
 class function EJwsclSecurityException.GetErrorMessage(errNumber: TJwLastError)
 : TJwString;
 var
   s: TJwPChar;
-//  i : DWORD;
 begin
   if (
 {$IFDEF UNICODE}
@@ -821,7 +888,6 @@ begin
     0, nil) = 0) then
   begin
     Result := RsUnknownGetLastError;
-//    i := GetLasterror;
     exit;
   end;
   Result := s;
