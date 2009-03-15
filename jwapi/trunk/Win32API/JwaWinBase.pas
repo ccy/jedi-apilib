@@ -6441,11 +6441,17 @@ end;
   False. Changing the bInitalOwner parameter type to Boolean fixes the problem
   (Boolean(True) = 1) but that would be implementation specific and might break
   in the future, though unlikely. Hence the CreateMutex function here which
-  explicitly passes LongBool(1) instead of LongBool(True). }
+  explicitly passes LongBool(1) instead of LongBool(True).
+
+
+  CW@2009:
+    bInitialOwner as LongBool doesn't help at all. So I set it to DWORD to have the
+    same size (4). Today, LongBool is the same as BOOL.
+}
 
 type
-  TCreateMutexA = function(lpMutexAttributes: LPSECURITY_ATTRIBUTES; bInitialOwner: LongBool; lpName: LPCSTR): HANDLE; stdcall;
-  TCreateMutexW = function(lpMutexAttributes: LPSECURITY_ATTRIBUTES; bInitialOwner: LongBool; lpName: LPCWSTR): HANDLE; stdcall;
+  TCreateMutexA = function(lpMutexAttributes: LPSECURITY_ATTRIBUTES; bInitialOwner: DWORD; lpName: LPCSTR): HANDLE; stdcall;
+  TCreateMutexW = function(lpMutexAttributes: LPSECURITY_ATTRIBUTES; bInitialOwner: DWORD; lpName: LPCWSTR): HANDLE; stdcall;
 
 var
   _CreateMutexA: Pointer;
@@ -6454,19 +6460,13 @@ var
 function CreateMutexA(lpMutexAttributes: LPSECURITY_ATTRIBUTES; bInitialOwner: BOOL; lpName: LPCSTR): HANDLE;
 begin
   GetProcedureAddress(_CreateMutexA, kernel32, 'CreateMutexA');
-  if bInitialOwner then
-    Result := TCreateMutexA(_CreateMutexA)(lpMutexAttributes, LongBool(1), lpName)
-  else
-    Result := TCreateMutexA(_CreateMutexA)(lpMutexAttributes, LongBool(0), lpName)
+  Result := TCreateMutexA(_CreateMutexA)(lpMutexAttributes, DWORD(Boolean(bInitialOwner)), lpName)
 end;
 
 function CreateMutexW(lpMutexAttributes: LPSECURITY_ATTRIBUTES; bInitialOwner: BOOL; lpName: LPCWSTR): HANDLE;
 begin
   GetProcedureAddress(_CreateMutexW, kernel32, 'CreateMutexW');
-  if bInitialOwner then
-    Result := TCreateMutexW(_CreateMutexW)(lpMutexAttributes, LongBool(1), lpName)
-  else
-    Result := TCreateMutexW(_CreateMutexW)(lpMutexAttributes, LongBool(0), lpName)
+  Result := TCreateMutexW(_CreateMutexW)(lpMutexAttributes, DWORD(Boolean(bInitialOwner)), lpName)
 end;
 
 function CreateMutex(lpMutexAttributes: LPSECURITY_ATTRIBUTES; bInitialOwner: BOOL; lpName: LPCTSTR): HANDLE;
