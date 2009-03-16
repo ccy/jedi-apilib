@@ -291,7 +291,17 @@ type
 
     eactGEFlags,
     eactSEFlags
-    );
+   );
+
+  {<b>TJwExclusionFlag</b> whether TJwSecurityAccessControlList.FindEqualACE
+   should ignore inherited or explicit ACEs}
+  TJwExclusionFlag = (
+    efInherited,
+    efExplicit
+  );
+  {<b>TJwExclusionFlags</b> whether TJwSecurityAccessControlList.FindEqualACE
+   should ignore inherited or explicit ACEs}
+  TJwExclusionFlags = set of TJwExclusionFlag;
 
   {<b>TJwEqualAceTypeSet</b> defines how the method TJwSecurityAccessControlList.FindEqualACE
    finds an access control element.
@@ -382,6 +392,14 @@ type
     {<B>SID</B> defines the name of the Sid which this record is dealing with.
      It looks like <pre><SID account name>@<S-X-X...></pre> }
     SID:           WideString;
+
+    {<B>SIDString</B> defines the SID string in format <S-X-X...>}
+    SIDString,
+    {<B>UserName</B> defines the user name of the SID. It can be empty
+     if the name could not retrieved.}
+    UserName,
+    {<B>System</B> defines the systemname (computer or domain) of the SID.}
+    System : WideString;
   end;
 
   TJwInheritedFromArray = array of TJwInheritedFromRecord;

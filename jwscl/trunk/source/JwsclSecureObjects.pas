@@ -77,7 +77,7 @@ type
   }
   TJwOnGetNamedSecurityInfo =
     function (PathName : TJwString; SeType : TSeObjectType; const aSecurityInfo: TJwSecurityInformationFlagSet;
-       var OwnedSD : Boolean; const Data : Pointer) : TJwSecurityDescriptor;
+       var OwnedSD : Boolean; const Data : Pointer) : TJwSecurityDescriptor of object;
 
 
      {<B>TJwFnProgressMethod</B> is a callback method that is used by TreeFileObjectSetNamedSecurityInfo.
@@ -430,7 +430,7 @@ type
 
        @param Handle Defines a handle to the file or folder which owner is to be changed
        @param aObjectType Defines the type of object
-       @param SID defines the new owner. If nil the current user is used. 
+       @param SID defines the new owner. If nil the current user is used.
 
        raises
  EJwsclSecurityException:  See SetNamedSecurityInfo for more exception
@@ -466,7 +466,7 @@ type
        @return Returns a list of sids. The list must be freed by the caller. 
        raises
  EJwsclSecurityException:  An exception can be raised if a call to one of the following items failed:
-                
+
                  # CreateTokenEffective
                  # GetTokenGroups
                  # GetTokenOwner
@@ -1330,7 +1330,7 @@ type
           the handle will be duplicated with same access.
           A duplicated file handle is automatically closed if the instace is destroyed. 
       @param AccessMask gets the desired access mask to the new file handle. If set to 0 the same access mask of the old handle is used. 
-      @param bDuplicateHandle defines whether the file handle should be duplicated or directly be used 
+      @param bDuplicateHandle defines whether the file handle should be duplicated or directly be used
       raises
  EJwsclSecurityObjectException:  will be raised if the file handle could not be copied. 
       }
@@ -1829,6 +1829,14 @@ type
         EJwsclInvalidParameterException: will be raised if aSecurityInfo is not [siDaclSecurityInformation] or [siSaclSecurityInformation]
         EJwsclPrivilegeNotFoundException: will be raised if aSecurityInfo is [siSaclSecurityInformation] and the current thread does cannot access audit information, because the privilege could not be activated.
 
+       Remarks
+         This functions emulates the GetInheritanceSource function available in
+         Windows XP and newer. Since the inheritance functionality of NTFS
+         isn't fully known to the author (and also may change) the emulation
+         will not be 100% compatible to the original.
+         If you run on Windows XP or newer you should consider to use the original
+         function. However in this case you can't use a security descriptor cache mechanism
+         through the OnGetNamedSecurityInfo event.
        }
     class function GetFileInheritanceSource(const PathName: TJwString;
       const aSecurityInfo: TJwSecurityInformationFlagSet =
@@ -4534,7 +4542,7 @@ begin
       SE_FILE_OBJECT,//aObjectType,    //SE_OBJECT_TYPE ObjectType,
       //DACL_SECURITY_INFORMATION,
       TJwEnumMap.ConvertSecurityInformation(aSecurityInfo), //SECURITY_INFORMATION SecurityInfo,
-      bContainer,//  BOOL Container,
+      DWORD(bContainer),//  BOOL Container,
       @aPGUID,  //GUID** pObjectClassGuids,
       Length(GUIDs), //DWORD GuidCount,
       jwaWindows_PACL(aPACL), //PACL pAcl,
@@ -7013,6 +7021,29 @@ class function TJwSecureFileObject.GetFileInheritanceSource(
   end;
 
 
+  //Fill inherited array element with its data
+  procedure UpdateInheritedArrayElement(var InhArray : TJwInheritedFromArray;
+    const Index, Level : Integer; const PathName : TJwString; const SID : TJwSecurityId);
+  var
+    DomainName : TJwString;
+    SidUse : Cardinal;
+  begin
+    try
+      InhArray[Index].UserName := SID.GetAccountSidString('', DomainName, SidUse);
+      InhArray[Index].System := DomainName; //new
+    except
+      InhArray[Index].UserName := '';
+      InhArray[Index].System := SID.CachedSystemName;
+    end;
+    InhArray[Index].GenerationGap := Level;
+    InhArray[Index].AncestorName := PathName;
+
+    InhArray[Index].SIDString := SID.CachedSidString;
+
+    //string format stays for compatibility 
+    InhArray[Index].SID := InhArray[Index].UserName + '@' + InhArray[Index].SIDString;
+  end;
+
 
   procedure UpdateObjectInheritedDACL(PathName: TJwString;
   const PreviousInhACL: TJwDAccessControlList;
@@ -7020,12 +7051,11 @@ class function TJwSecureFileObject.GetFileInheritanceSource(
 
   var
     i, ps: integer;
-    SID: TJwString;
-    //    Flags1, Flags2 : TJwAceFlags;
     bError: boolean;
     SD:  TJwSecurityDescriptor;
 
     bOwnedSD : Boolean;
+
 
   begin
     bError := false;
@@ -7096,7 +7126,15 @@ class function TJwSecureFileObject.GetFileInheritanceSource(
         So we check using eactSEAccessMask (smaller equal)
       }
       ps := SD.DACL.FindEqualACE(PreviousInhACL[i], [eactSameSid,
-        eactSameAccessMask, eactSEAccessMask, eactSameType]);
+        eactSameAccessMask, eactSEAccessMask, eactSameType], -1, [efExplicit] , true);
+
+      if ps < 0 then
+        ps := SD.DACL.FindEqualACE(PreviousInhACL[i], [eactSameSid,
+          eactSameAccessMask, eactSEAccessMask, eactSameType], -1, [efInherited], false);
+
+      //ShowMessage( SD.DACL[i].GetTextMap(TJwSecurityFileFolderMapping));
+
+
 
 {$IFDEF DEBUG}
 //      OutputDebugStringA(PAnsiChar(AnsiString(Format('For %d found %d',[i,ps]))));
@@ -7118,24 +7156,18 @@ class function TJwSecureFileObject.GetFileInheritanceSource(
           not (PreviousInhACL[i].Ignore) then
           //root ACE was not already considered
         begin
-          try
-            SID := SD.DACL[ps].SID.AccountName[''] + '@' +
-              SD.DACL[ps].SID.CachedSidString;
-          except
-            SID := SD.DACL[ps].SID.AccountName[''];
-          end;
-          pInhArray[i].GenerationGap := Level;
-          pInhArray[i].AncestorName := PathName;
-          pInhArray[i].SID := SID;
+          UpdateInheritedArrayElement(pInhArray, ps, Level, PathName, SD.DACL[ps].SID);
+
           PreviousInhACL[i].Ignore := True; //Ignore this ACE next time
+        end
+        else
+        begin
+          //ShowMessageFmt('Could not find the access entry at %d. AccessRights are %s ',[i,#13#10+FormatAR(PreviousInhACL[i].AccessMask)])
+  {$IFDEF DEBUG}
+  //        OutputDebugStringA(PAnsiChar(AnsiString(Format('Could not find the access entry at %d. AccessRights are %s ',[i,#13#10+FormatAR(PreviousInhACL[i].AccessMask)]))));
+  {$ENDIF DEBUG}
         end;
-      end
-      else
-      begin
-        //ShowMessageFmt('Could not find the access entry at %d. AccessRights are %s ',[i,#13#10+FormatAR(PreviousInhACL[i].AccessMask)])
-{$IFDEF DEBUG}
-//        OutputDebugStringA(PAnsiChar(AnsiString(Format('Could not find the access entry at %d. AccessRights are %s ',[i,#13#10+FormatAR(PreviousInhACL[i].AccessMask)]))));
-{$ENDIF DEBUG}
+
       end;
     end;
 
@@ -7174,6 +7206,7 @@ class function TJwSecureFileObject.GetFileInheritanceSource(
       FreeAndNil(SD);
     // end;
   end;
+
 
 var
   sPathName: TJwString;
@@ -7251,6 +7284,7 @@ begin
           {sPathName can be c:}
           if Length(PathName) >= 3 then
             UpdateObjectInheritedDACL(sPathName, SD.DACL, Result, 1);
+
         finally
           if not bOwnedSD then
             SD.Free;

@@ -918,7 +918,8 @@ class function TJwSecurityId.NewSID: PSID;
 begin
   //Result := PSID(GlobalAlloc(GMEM_FIXED or GMEM_ZEROINIT,SECURITY_MAX_SID_SIZE));
   GetMem(Result, SECURITY_MAX_SID_SIZE); //GetMem is compatible to FastMM4
-  FillChar(Result^, SECURITY_MAX_SID_SIZE, 0);
+  //FillChar(Result^, SECURITY_MAX_SID_SIZE, 0);
+  ZeroMemory(Result, SECURITY_MAX_SID_SIZE);
 
   if Result = nil then
     raise EJwsclNotEnoughMemory.CreateFmtEx(
@@ -930,7 +931,8 @@ class procedure TJwSecurityId.FreeSID(var SID: PSID);
 begin
   if SID <> nil then
   begin
-    FillChar(SID^, sizeof(SID^), 0);
+    //FillChar(SID^, sizeof(SID^), 0);
+    ZeroMemory(SID, sizeof(SID^));
     //GlobalFree(HGLOBAL(SID));
     FreeMem(SID);
   end;
@@ -1523,6 +1525,7 @@ type
   TStringRec = record
     Domain : TJwString;
     SidNameUse : TSidNameUse;
+    UserName : TJwString;
   end;
 
 function TJwSecurityId.GetAccountSidString(const SystemName: TJwString;
@@ -1544,7 +1547,11 @@ begin
 
   if (JwSidNameCache.Find(SystemName+fCachedSidString, i)) then
   begin
-    result :=  JwSidNameCache[i];
+    if PStringRec(JwSidNameCache.Objects[i])^.UserName = '' then
+      result := JwSidNameCache[i]
+    else
+      result := PStringRec(JwSidNameCache.Objects[i])^.UserName;
+
     DomainName := PStringRec(JwSidNameCache.Objects[i])^.Domain;
     SidNameUse := PStringRec(JwSidNameCache.Objects[i])^.SidNameUse;
     exit;
@@ -1596,6 +1603,7 @@ begin
     begin
       PStringRec(JwSidNameCache.Objects[i])^.Domain := DomainName;
       PStringRec(JwSidNameCache.Objects[i])^.SidNameUse := SidNameUse;
+      PStringRec(JwSidNameCache.Objects[i])^.UserName := Result;
     end
     else
     begin
@@ -1603,6 +1611,7 @@ begin
       Initialize(P^);
       P^.Domain := DomainName;
       P^.SidNameUse := SidNameUse;
+      P^.UserName := Result;
       JwSidNameCache.AddObject(SystemName+fCachedSidString, TObject(P));
     end;
 {$ENDIF JWSCL_SIDCACHE}

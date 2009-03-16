@@ -135,6 +135,9 @@ type
       EJwsclFailedAddACE: will be raised if a AddXXX winapi call for a given ACE in the list failed.  
     }
     function Create_PACL: PACL;
+    
+    {Deprecated. Do not use.}
+    function Create_PACL_Deprecated: PACL;
 
     {<B>Free_PACL</B> frees an access control list created by Create_PACL.
 
@@ -312,7 +315,8 @@ type
              If the value iPos is out of bounds, or the ACE could not be found the return value is -1
      }
     function FindEqualACE(const AccessEntry: TJwSecurityAccessControlEntry;
-      EqualAceTypeSet: TJwEqualAceTypeSet; const StartIndex: integer = -1): integer;
+      EqualAceTypeSet: TJwEqualAceTypeSet; const StartIndex: integer = -1;
+      const Exclusion : TJwExclusionFlags = []; const Reverse : Boolean = false): integer;
 
     {<B>ConvertInheritedToExplicit</B> removes the inheritance flag from all ACEs.
       This is useful if a DACL with inherited ACEs must be converted into a DACL with
@@ -2200,6 +2204,116 @@ begin
 end;
 
 
+function TJwSecurityAccessControlList.Create_PACL_Deprecated: PACL;
+var
+  c, i: integer;
+  //[Hint] aPSID: PSID;
+
+  aAudit:  TJwAuditAccessControlEntry;
+  Mandatory : TJwSystemMandatoryAccessControlEntry;
+  bResult: boolean;
+
+  iSize: Cardinal;
+begin
+  for i := 0 to Count - 1 do
+  begin
+    if not Assigned(Items[i].SID) or
+      (Assigned(Items[i].SID) and (Items[i].SID.SID = nil)) then
+      raise EJwsclInvalidSIDException.CreateFmtEx(
+        RsACLClassNilSid,
+        'Create_PACL', ClassName, RsUNAcl, 0, True, [i]);
+  end;
+
+  c := max(1, Count);
+
+  //determining the size comes from http://msdn2.microsoft.com/en-US/library/aa378853.aspx
+  iSize := sizeof(TACL) + (sizeof(ACCESS_ALLOWED_ACE) -
+    sizeof(Cardinal)) * c;
+
+  for i := 0 to Count - 1 do
+  begin
+    if Assigned(Items[i].SID) and (Items[i].SID.SID <> nil) then
+      try
+        Inc(iSize, Items[i].SID.SIDLength); //can throw exception!
+      except
+        on E: EJwsclSecurityException do
+        begin
+          raise EJwsclInvalidSIDException.CreateFmtEx(
+            RsACLClassNilSid, 'Create_PACL', ClassName, RsUNAcl,
+            0, True, [i]);
+        end;
+      end;
+  end;
+
+  Result := PACL(GlobalAlloc(GMEM_FIXED or GMEM_ZEROINIT, iSize));
+
+  if Result = nil then
+    raise EJwsclNotEnoughMemory.CreateFmtEx(
+      RsACLClassNewAclNotEnoughMemory,
+      'Create_PACL', ClassName, RsUNAcl, 0, True, []);
+
+  // InitializeAcl(Result,GlobalSize(Cardinal(Result)),ACL_REVISION);
+  InitializeAcl(Result, iSize, ACL_REVISION);
+
+  //Add...ex functions only Windows 2000 or higher
+  for i := 0 to Count - 1 do
+  begin
+    if Assigned(Items[i].SID) and (Items[i].SID.SID <> nil) then
+    begin
+      if Items[i] is TJwDiscretionaryAccessControlEntryAllow then
+        bResult := AddAccessAllowedAceEx(Result, ACL_REVISION,
+          TJwEnumMap.ConvertAceFlags(
+          Items[i].Flags), Items[i].AccessMask, Items[i].SID.SID)
+      else
+      if Items[i] is TJwDiscretionaryAccessControlEntryDeny then
+        bResult := AddAccessDeniedAceEx(Result, ACL_REVISION,
+          TJwEnumMap.ConvertAceFlags(
+          Items[i].Flags), Items[i].AccessMask, Items[i].SID.SID)
+      else
+      if Items[i] is TJwAuditAccessControlEntry then
+      begin
+        aAudit  := (Items[i] as TJwAuditAccessControlEntry);
+        bResult := AddAuditAccessAce(Result, ACL_REVISION,
+          Items[i].AccessMask, Items[i].SID.SID,
+          aAudit.AuditSuccess,
+          aAudit.AuditFailure);
+      end
+      else
+{$IFDEF VISTA}
+      if Items[i] is TJwSystemMandatoryAccessControlEntry then
+      begin
+        Mandatory := (Items[i] as TJwSystemMandatoryAccessControlEntry);
+        bResult := AddMandatoryAce(
+              Result,//PACL pAcl,
+              ACL_REVISION,//DWORD dwAceRevision,
+              TJwEnumMap.ConvertAceFlags(Items[i].Flags),//DWORD AceFlags,
+              Mandatory.AccessMask,//DWORD MandatoryPolicy,
+              Items[i].SID.SID,//PSID pLabelSid
+            );
+      end
+      else
+{$ENDIF}      
+      begin //class is not supported
+        GlobalFree(HRESULT(Result));
+
+        raise EJwsclUnsupportedACE.CreateFmtEx(
+          RsACLClassUnknownAccessAce,
+          'Create_PACL', ClassName, RsUNAcl, 0, True, [Items[i].ClassName,i]);
+      end;
+
+      if not bResult then
+      begin
+        GlobalFree(HRESULT(Result));
+
+        raise EJwsclFailedAddACE.CreateFmtEx(
+          RsACLClassAddXAccessAceFailed,
+          'Create_PACL', ClassName, RsUNAcl, 0, True, [i]);
+      end;
+    end;
+
+  end;
+end;
+
 
 function TJwSecurityAccessControlList.Create_PACL: PACL;
 
@@ -2268,15 +2382,20 @@ begin
   end;
 
   iSize := sizeof(TACL); //header size for ACL
+    //determining the size comes from http://msdn2.microsoft.com/en-US/library/aa378853.aspx
+
 
   for i := 0 to Count - 1 do
   begin
+    //update ACL revision to highest ACE revision 
+    if Items[i].Revision > Self.Revision then
+      Self.Revision := Items[i].Revision;
+
     Inc(iSize, Items[i].GetDynamicTypeSize); //get size of ACE structure
 
     if Assigned(Items[i].SID) and (Items[i].SID.SID <> nil) then
       try
         Inc(iSize, Items[i].SID.SIDLength); //can throw exception!
-
       except
         on E: EJwsclSecurityException do
         begin
@@ -2286,8 +2405,6 @@ begin
         end;
       end;
   end;
-
-  //iSize := 1000;
   Result := PACL(GlobalAlloc(GMEM_FIXED or GMEM_ZEROINIT, iSize));
 
   if Result = nil then
@@ -2311,7 +2428,8 @@ begin
   begin
     if Assigned(Items[i].SID) and (Items[i].SID.SID <> nil) then
     begin
-      //bResult := AddAccessAllowedAce(result, Items[i].Revision, Items[i].AccessMask, Items[i].SID.Sid);
+      {bResult := AddAccessAllowedAceEx(result, Items[i].Revision, TJwEnumMap.ConvertAceFlags(
+          Items[i].Flags), Items[i].AccessMask, Items[i].SID.Sid);}
       bResult := AddAceToList(Result, Items[i], iSize);
 
       if not bResult then
@@ -2716,14 +2834,24 @@ end;
 function TJwSecurityAccessControlList.FindEqualACE(
   const AccessEntry: TJwSecurityAccessControlEntry;
   EqualAceTypeSet: TJwEqualAceTypeSet;
-  const StartIndex: integer = -1): integer;
+  const StartIndex: integer = -1;
+  //new
+  const Exclusion : TJwExclusionFlags = [];
+  const Reverse : Boolean = false): integer;
 var
   i: integer;
   ACEi: TJwSecurityAccessControlEntry;
   B: boolean;
 begin
   Result := -1;
-  for i := StartIndex + 1 to Count - 1 do
+
+  if Reverse then
+    i := Count -1
+  else
+    i := StartIndex + 1;
+
+  while (Reverse and (i > StartIndex) or
+        (not Reverse and (i < Count))) do
   begin
     try
       ACEi := GetItem(i);
@@ -2786,6 +2914,11 @@ begin
       Result := i;
       Exit;
     end;
+
+    if Reverse then
+      Dec(i)
+    else
+      Inc(i);
   end;
 end;
 
@@ -3269,6 +3402,12 @@ begin
       RsInvalidAceType,
       'GetDynamicTypeSize', ClassName, RsUNAcl, 0, False, []);
   end;
+
+  {The correct size of a ACE header does not include the
+   SidStart (DWORD) member of the ACE type. The SidStart member is only a placeholder
+   for a sid structure that is placed behind the ACE header. 
+  }
+  Dec(Result, sizeof(DWORD));
 end;                                
 
 function TJwSecurityAccessControlEntry.CreateDynamicACE(out Size : Cardinal) : Pointer;
@@ -3310,11 +3449,10 @@ var
 begin
   Size := GetDynamicTypeSize;
 
+
   if Assigned(SID) and (SID.SID <> nil) then
     Inc(Size, SID.SIDLength);
 
-  //GetMem(result, Size);
-  //ZeroMemory(result,Size);
   Result := Pointer(GlobalAlloc(GMEM_FIXED or GMEM_ZEROINIT, Size));
 
 
@@ -3324,10 +3462,14 @@ begin
 
   PACCESS_ALLOWED_ACE(result).Header.AceType
     := TJwEnumMap.ConvertAceType(Self.AceType);
+
   PACCESS_ALLOWED_ACE(result).Header.AceFlags
     := TJwEnumMap.ConvertAceFlags(Self.Flags);
+
   PACCESS_ALLOWED_ACE(result).Header.AceSize
     := Size;
+
+
 
   AceType := GetAceType;
   case AceType of
