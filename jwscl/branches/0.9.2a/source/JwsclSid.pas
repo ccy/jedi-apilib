@@ -798,7 +798,45 @@ type
   end;
 
 
-var SidsCache : TStringList;
+{Threadvar}
+threadvar
+  {JwSidNameCache is only used if JWSCL_SIDCACHE (or JWSCL_USE_CACHES)
+   is defined; otherwise it is nil;
+   It is used to cache translation from Sid number to account name.
+
+   Before using call JwInitSidNameCache() in every thread separately.
+
+   You need to call JwInitSidNameCache() to make it work!
+   Also don't forget to call JwFreeSidNameCache().
+
+   From time to time you should clear the cache; otherwise it can
+   become too big; then use JwClearSidNameCache().
+
+   JwInitSidNameCache(), JwClearSidNameCache() and JwFreeSidNameCache()
+   must be called for every thread separately.
+  }
+  JwSidNameCache : TStringList;
+
+
+{<b>JwFreeSidNameCache</b> frees the variable JwSidNameCache
+and sets it to nil. This procedure must be called in the end
+of every thread separately; this includes the main thread.
+
+This call is automatically done for the first thread!
+}
+procedure JwFreeSidNameCache;
+
+{<b>JwClearSidNameCache</b> removes all list entries.
+JwInitSidNameCache() must be called before using this procedure.}
+procedure JwClearSidNameCache;
+
+{<b>JwClearSidNameCache</b> initializes the JwSidNameCache string list.
+It must be called only once for every thread. Multiple calls
+will create dangling pointers.
+
+This call is automatically done for the first thread!
+}
+procedure JwInitSidNameCache;
 
 {$ENDIF SL_IMPLEMENTATION_SECTION}
 
@@ -814,7 +852,8 @@ class function TJwSecurityId.NewSID: PSID;
 begin
   //Result := PSID(GlobalAlloc(GMEM_FIXED or GMEM_ZEROINIT,SECURITY_MAX_SID_SIZE));
   GetMem(Result, SECURITY_MAX_SID_SIZE); //GetMem is compatible to FastMM4
-  FillChar(Result^, SECURITY_MAX_SID_SIZE, 0);
+  //FillChar(Result^, SECURITY_MAX_SID_SIZE, 0);
+  ZeroMemory(Result, SECURITY_MAX_SID_SIZE);
 
   if Result = nil then
     raise EJwsclNotEnoughMemory.CreateFmtEx(
@@ -826,8 +865,9 @@ class procedure TJwSecurityId.FreeSID(var SID: PSID);
 begin
   if SID <> nil then
   begin
-    FillChar(SID^, sizeof(SID^), 0);
-    //GlobalFree(Cardinal(SID));
+    //FillChar(SID^, sizeof(SID^), 0);
+    ZeroMemory(SID, sizeof(SID^));
+    //GlobalFree(HGLOBAL(SID));
     FreeMem(SID);
   end;
 
@@ -1331,31 +1371,38 @@ type
   TStringRec = record
     Domain : TJwString;
     SidNameUse : TSidNameUse;
+    UserName : TJwString;
   end;
-
-{$IFDEF JWSCL_USE_CACHES}
-{$DEFINE SIDCACHE}
-{$ENDIF}
 
 function TJwSecurityId.GetAccountSidString(const SystemName: TJwString;
   out DomainName: TJwString; out SidNameUse: TSidNameUse): TJwString;
 var
   pSIDName, pDomainName: TJwPChar;
   iSIDName, iDomainName: Cardinal;
+{$IFDEF JWSCL_SIDCACHE}
   i : Integer;
   P : PStringRec;
+{$ENDIF JWSCL_SIDCACHE}
 begin
   CheckSID;
 
-{$IFDEF SIDCACHE}
-  if (SidsCache.Find(SystemName+fCachedSidString, i)) then
+  
+
+{$IFDEF JWSCL_SIDCACHE}
+  ASSERT(JwSidNameCache <> nil, 'Sid Cache was enabled but JwInitSidNameCache was not called before.');
+
+  if (JwSidNameCache.Find(SystemName+fCachedSidString, i)) then
   begin
-    result :=  SidsCache[i];
-    DomainName := PStringRec(SidsCache.Objects[i])^.Domain;
-    SidNameUse := PStringRec(SidsCache.Objects[i])^.SidNameUse;
+    if PStringRec(JwSidNameCache.Objects[i])^.UserName = '' then
+      result := JwSidNameCache[i]
+    else
+      result := PStringRec(JwSidNameCache.Objects[i])^.UserName;
+
+    DomainName := PStringRec(JwSidNameCache.Objects[i])^.Domain;
+    SidNameUse := PStringRec(JwSidNameCache.Objects[i])^.SidNameUse;
     exit;
   end;
-{$ENDIF SIDCACHE}
+{$ENDIF JWSCL_SIDCACHE}
 
   DomainName := '';
   SidNameUse := SidTypeInvalid;
@@ -1397,11 +1444,12 @@ begin
     DomainName := TJwString(pDomainName);
     Result := TJwString(pSIDName);
 
-{$IFDEF SIDCACHE}
-    if (SidsCache.Find(Result, i)) then
+{$IFDEF JWSCL_SIDCACHE}
+    if (JwSidNameCache.Find(Result, i)) then
     begin
-      PStringRec(SidsCache.Objects[i])^.Domain := DomainName;
-      PStringRec(SidsCache.Objects[i])^.SidNameUse := SidNameUse;
+      PStringRec(JwSidNameCache.Objects[i])^.Domain := DomainName;
+      PStringRec(JwSidNameCache.Objects[i])^.SidNameUse := SidNameUse;
+      PStringRec(JwSidNameCache.Objects[i])^.UserName := Result;
     end
     else
     begin
@@ -1409,9 +1457,10 @@ begin
       Initialize(P^);
       P^.Domain := DomainName;
       P^.SidNameUse := SidNameUse;
-      SidsCache.AddObject(SystemName+fCachedSidString, TObject(P));
+      P^.UserName := Result;
+      JwSidNameCache.AddObject(SystemName+fCachedSidString, TObject(P));
     end;
-{$ENDIF SIDCACHE}
+{$ENDIF JWSCL_SIDCACHE}
 
 
 
@@ -1691,7 +1740,7 @@ begin
   Result.SubAuthorityCount := c;
   Result.IdentifierAuthority := IdentifierAuthority;
 
-  for i := 0 to SubAuthorityCount - 1 do
+  for i := 0 to c - 1 do
     Result.SubAuthority[i] := SubAuthorityArray[i];
 end;
 
@@ -2062,31 +2111,46 @@ end;
 {$IFNDEF SL_OMIT_SECTIONS}
 
 
-procedure ClearSidsCache;
+procedure JwClearSidNameCache;
 var i : integer;
 begin
-  SidsCache.BeginUpdate;
-  for I := 0 to SidsCache.Count - 1 do
+  JwSidNameCache.BeginUpdate;
+  for I := 0 to JwSidNameCache.Count - 1 do
   begin
-    Finalize(PStringRec(SidsCache.Objects[i])^);
-    Dispose(PStringRec(SidsCache.Objects[i]));
+    Finalize(PStringRec(JwSidNameCache.Objects[i])^);
+    Dispose(PStringRec(JwSidNameCache.Objects[i]));
   end;
-  SidsCache.Clear;
-  SidsCache.EndUpdate;
+  JwSidNameCache.Clear;
+  JwSidNameCache.EndUpdate;
+end;
+
+procedure JwInitSidNameCache;
+begin
+  JwSidNameCache := TStringList.Create;
+  JwSidNameCache.Sorted := true;
+  JwSidNameCache.Duplicates := dupAccept;
+  JwSidNameCache.CaseSensitive := false;
+end;
+
+procedure JwFreeSidNameCache;
+begin
+  JwClearSidNameCache;
+  FreeAndNil(JwSidNameCache);
 end;
 
 initialization
-
-  SidsCache := TStringList.Create;
-  SidsCache.Sorted := true;
-  SidsCache.Duplicates := dupAccept;
-  SidsCache.CaseSensitive := false;
-
+{$IFDEF JWSCL_SIDCACHE}
+  JwInitSidNameCache;
+{$ENDIF JWSCL_SIDCACHE}
 
 finalization
-  ClearSidsCache;
-  FreeAndNil(SidsCache);
+{$IFDEF JWSCL_SIDCACHE}
+  JwFreeSidNameCache;
+{$ENDIF JWSCL_SIDCACHE}
 
+{$ENDIF SL_INTERFACE_SECTION}
+
+{$IFNDEF SL_OMIT_SECTIONS}
 
 end.
 {$ENDIF SL_OMIT_SECTIONS}(*

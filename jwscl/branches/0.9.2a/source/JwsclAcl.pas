@@ -312,7 +312,8 @@ type
              If the value iPos is out of bounds, or the ACE could not be found the return value is -1
      }
     function FindEqualACE(const AccessEntry: TJwSecurityAccessControlEntry;
-      EqualAceTypeSet: TJwEqualAceTypeSet; const StartIndex: integer = -1): integer;
+      EqualAceTypeSet: TJwEqualAceTypeSet; const StartIndex: integer = -1;
+      const Exclusion : TJwExclusionFlags = []; const Reverse : Boolean = false): integer;
 
     {<B>ConvertInheritedToExplicit</B> removes the inheritance flag from all ACEs.
       This is useful if a DACL with inherited ACEs must be converted into a DACL with
@@ -1621,7 +1622,7 @@ type
     {<B>Compare</B> compare the mandatory ACE with another one.
 
      @param MandatoryLabel defines a label to be compared 
-     @return The return value is smaller than zero if the actual label is less
+     @return The return value is smaller than zero if the current label is less
       privileged than the given label. If the return value is greater than zero
       the given label has a higher level than the given one.
       The returned value is the difference of
@@ -1701,6 +1702,10 @@ type
     const AccessStatus : TJwCardinalArray;
     RightsMapping : Array of TJwRightsMapping) : TJwString; overload;
 
+  {<b>JwFormatAccessRightsSimple</b> does the same as JwFormatAccessRights
+   but returns just a comma separated list of specific  access rights names.}
+  function JwFormatAccessRightsSimple(const Access : Cardinal;
+     RightsMapping : Array of TJwRightsMapping) : TJwString;
 
 
   {<B>IsStandardRight</B> returns true if the given right has a standard (16-23) bit set;
@@ -1785,6 +1790,22 @@ begin
 
     result := result + #13#10;
   end;
+end;
+
+function JwFormatAccessRightsSimple(const Access : Cardinal;
+     RightsMapping : Array of TJwRightsMapping) : TJwString;
+var i : Integer;
+begin
+  for i := low(RightsMapping) to high(RightsMapping) do
+  begin
+    if Access and RightsMapping[i].Right =
+      RightsMapping[i].Right then
+    begin
+      //names may vary depeding on resource string contents
+      Result := Result + RightsMapping[i].Name+', ';
+    end;
+  end;
+  System.Delete(Result, Length(Result)-1, 2);
 end;
 
 function IsStandardRight(const Right : Cardinal) : Boolean;
@@ -2251,6 +2272,10 @@ begin
 
   for i := 0 to Count - 1 do
   begin
+    //update ACL revision to highest ACE revision 
+    if Items[i].Revision > Self.Revision then
+      Self.Revision := Items[i].Revision;
+
     Inc(iSize, Items[i].GetDynamicTypeSize); //get size of ACE structure
 
     if Assigned(Items[i].SID) and (Items[i].SID.SID <> nil) then
@@ -2266,8 +2291,6 @@ begin
         end;
       end;
   end;
-
-  //iSize := 1000;
   Result := PACL(GlobalAlloc(GMEM_FIXED or GMEM_ZEROINIT, iSize));
 
   if Result = nil then
@@ -2696,18 +2719,24 @@ end;
 function TJwSecurityAccessControlList.FindEqualACE(
   const AccessEntry: TJwSecurityAccessControlEntry;
   EqualAceTypeSet: TJwEqualAceTypeSet;
-  const StartIndex: integer = -1): integer;
-
-
-
-
+  const StartIndex: integer = -1;
+  //new
+  const Exclusion : TJwExclusionFlags = [];
+  const Reverse : Boolean = false): integer;
 var
   i: integer;
   ACEi: TJwSecurityAccessControlEntry;
   B: boolean;
 begin
   Result := -1;
-  for i := StartIndex + 1 to Count - 1 do
+
+  if Reverse then
+    i := Count -1
+  else
+    i := StartIndex + 1;
+
+  while (Reverse and (i > StartIndex) or
+        (not Reverse and (i < Count))) do
   begin
     try
       ACEi := GetItem(i);
@@ -2770,6 +2799,11 @@ begin
       Result := i;
       Exit;
     end;
+
+    if Reverse then
+      Dec(i)
+    else
+      Inc(i);
   end;
 end;
 
@@ -3253,6 +3287,12 @@ begin
       RsInvalidAceType,
       'GetDynamicTypeSize', ClassName, RsUNAcl, 0, False, []);
   end;
+
+  {The correct size of a ACE header does not include the
+   SidStart (DWORD) member of the ACE type. The SidStart member is only a placeholder
+   for a sid structure that is placed behind the ACE header. 
+  }
+  Dec(Result, sizeof(DWORD));
 end;                                
 
 function TJwSecurityAccessControlEntry.CreateDynamicACE(out Size : Cardinal) : Pointer;
@@ -3297,8 +3337,6 @@ begin
   if Assigned(SID) and (SID.SID <> nil) then
     Inc(Size, SID.SIDLength);
 
-  //GetMem(result, Size);
-  //ZeroMemory(result,Size);
   Result := Pointer(GlobalAlloc(GMEM_FIXED or GMEM_ZEROINIT, Size));
 
 
