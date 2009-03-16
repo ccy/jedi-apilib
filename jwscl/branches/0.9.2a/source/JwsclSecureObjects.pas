@@ -1226,7 +1226,6 @@ type
     fDuplicateHandle: boolean;
     fFileName:        TJwString;
 
-    procedure Dummy; virtual; abstract;
 
     {<B>TreeFileObjectSetNamedSecurityInfo_Execute</B> is used as a thread function by TreeFileObjectSetNamedSecurityInfo}
     class function TreeFileObjectSetNamedSecurityInfo_Execute(
