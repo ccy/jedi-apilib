@@ -4542,7 +4542,7 @@ begin
       SE_FILE_OBJECT,//aObjectType,    //SE_OBJECT_TYPE ObjectType,
       //DACL_SECURITY_INFORMATION,
       TJwEnumMap.ConvertSecurityInformation(aSecurityInfo), //SECURITY_INFORMATION SecurityInfo,
-      DWORD(bContainer),//  BOOL Container,
+      bContainer,//  BOOL Container,
       @aPGUID,  //GUID** pObjectClassGuids,
       Length(GUIDs), //DWORD GuidCount,
       jwaWindows_PACL(aPACL), //PACL pAcl,

@@ -2288,7 +2288,7 @@ begin
               ACL_REVISION,//DWORD dwAceRevision,
               TJwEnumMap.ConvertAceFlags(Items[i].Flags),//DWORD AceFlags,
               Mandatory.AccessMask,//DWORD MandatoryPolicy,
-              Items[i].SID.SID,//PSID pLabelSid
+              Items[i].SID.SID//PSID pLabelSid
             );
       end
       else
@@ -2428,7 +2428,8 @@ begin
   begin
     if Assigned(Items[i].SID) and (Items[i].SID.SID <> nil) then
     begin
-      {bResult := AddAccessAllowedAceEx(result, Items[i].Revision, TJwEnumMap.ConvertAceFlags(
+      {//make sure AddAceToList does the same as this one:
+      	bResult := AddAccessAllowedAceEx(result, Items[i].Revision, TJwEnumMap.ConvertAceFlags(
           Items[i].Flags), Items[i].AccessMask, Items[i].SID.Sid);}
       bResult := AddAceToList(Result, Items[i], iSize);
 
