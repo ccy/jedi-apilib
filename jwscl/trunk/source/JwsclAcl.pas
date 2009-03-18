@@ -316,7 +316,8 @@ type
      }
     function FindEqualACE(const AccessEntry: TJwSecurityAccessControlEntry;
       EqualAceTypeSet: TJwEqualAceTypeSet; const StartIndex: integer = -1;
-      const Exclusion : TJwExclusionFlags = []; const Reverse : Boolean = false): integer;
+      const Exclusion : TJwExclusionFlags = [];
+      const Inclusion : TJwInclusionFlags = []; const Reverse : Boolean = false): integer;
 
     {<B>ConvertInheritedToExplicit</B> removes the inheritance flag from all ACEs.
       This is useful if a DACL with inherited ACEs must be converted into a DACL with
@@ -2838,6 +2839,7 @@ function TJwSecurityAccessControlList.FindEqualACE(
   const StartIndex: integer = -1;
   //new
   const Exclusion : TJwExclusionFlags = [];
+  const Inclusion : TJwInclusionFlags = [];
   const Reverse : Boolean = false): integer;
 var
   i: integer;

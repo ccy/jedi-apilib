@@ -259,6 +259,9 @@ var
 
   {<B>JwKnownSid</B> contains a set of known sids. It is (partly) initialized
    by a call to JwInitWellKnownSIDsEx.
+
+   Remarks
+     Some values are nil because they could not be initialized.
   }
   JwKnownSid : array[TWellKnownSidType] of TJwSecurityKnownSID;
 

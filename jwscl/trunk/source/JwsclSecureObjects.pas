@@ -42,7 +42,7 @@ unit JwsclSecureObjects;
 // Last modified: $Date: 2007-09-10 10:00:00 +0100 $
 interface
 
-uses SysUtils, Classes, Registry,
+uses SysUtils, Classes, Registry, Dialogs,
   Contnrs {used for TQueue},
   jwaWindows, JwsclResource,
   JwsclTypes, JwsclExceptions, JwsclSid, JwsclAcl, JwsclToken,
@@ -1839,8 +1839,10 @@ type
          through the OnGetNamedSecurityInfo event.
        }
     class function GetFileInheritanceSource(const PathName: TJwString;
+      const Container : Boolean;
       const aSecurityInfo: TJwSecurityInformationFlagSet =
       [siDaclSecurityInformation];
+
       const OnGetNamedSecurityInfo : TJwOnGetNamedSecurityInfo = nil;
       const Data : Pointer = nil
       ): TJwInheritedFromArray; overload; virtual;
@@ -1864,6 +1866,7 @@ type
         EJwsclPrivilegeNotFoundException: will be raised if aSecurityInfo is [siSaclSecurityInformation] and the current thread does cannot access audit information, because the privilege could not be activated.
       }
     function GetFileInheritanceSource(
+      const Container : Boolean;
       const aSecurityInfo: TJwSecurityInformationFlagSet =
       [siDaclSecurityInformation]): TJwInheritedFromArray; overload; virtual;
 
@@ -6087,6 +6090,7 @@ end;
 
 
 function TJwSecureFileObject.GetFileInheritanceSource(
+  const Container : Boolean;
   const aSecurityInfo: TJwSecurityInformationFlagSet =
   [siDaclSecurityInformation]): TJwInheritedFromArray;
 begin
@@ -6095,7 +6099,7 @@ begin
       RsSecureObjectsInvalidFileOrFolder,
       'GetFileInheritanceSource', ClassName, RsUNSecureObjects, 0, False, []);
 
-  Result := GetFileInheritanceSource(fFileName, aSecurityInfo);
+  Result := GetFileInheritanceSource(fFileName, Container, aSecurityInfo);
 end;
 
 
@@ -6974,19 +6978,29 @@ end;
 
 class function TJwSecureFileObject.GetFileInheritanceSource(
   const PathName: TJwString;
+  const Container : Boolean;
   const aSecurityInfo: TJwSecurityInformationFlagSet =
   [siDaclSecurityInformation];
+
   const OnGetNamedSecurityInfo : TJwOnGetNamedSecurityInfo = nil;
   const Data : Pointer = nil): TJwInheritedFromArray;
 
   function GetParent(PathName: TJwString): TJwString;
-  var 
+  var
     len,
     p1,
     i : integer;
   begin
     Result := '';
     len := Length(PathName);
+
+    //prevents stack overflow for the caller
+    if Len <= 3 then
+    begin
+      result := '';
+      exit;
+    end;
+
     p1 := 0;
     for i := len-1 downto 1 do //ignore last char - usually a \
     begin
@@ -7055,10 +7069,11 @@ class function TJwSecureFileObject.GetFileInheritanceSource(
     SD:  TJwSecurityDescriptor;
 
     bOwnedSD : Boolean;
+    IncFlags : TJwInclusionFlag;
 
 
   begin
-    bError := false;
+   bError := false;
     SD := nil;
     try
       bOwnedSD := false;
@@ -7125,13 +7140,22 @@ class function TJwSecureFileObject.GetFileInheritanceSource(
         Their (inherited) access masks can have less bits set than their parents.
         So we check using eactSEAccessMask (smaller equal)
       }
-      ps := SD.DACL.FindEqualACE(PreviousInhACL[i], [eactSameSid,
-        eactSameAccessMask, eactSEAccessMask, eactSameType], -1, [efExplicit] , true);
+     { IncFlags := [efInherited];
+      if Container then
+        Include(ExclusionFlags, efLeaf)
+      else
+        Include(ExclusionFlags, ef)  }
 
+      ps := SD.DACL.FindEqualACE(PreviousInhACL[i], [eactSameSid,
+        eactSameAccessMask, eactSEAccessMask, eactSameType], -1, [efExplicit], [], true);
+
+      //not inherited found
+      //search for explicit only
       if ps < 0 then
         ps := SD.DACL.FindEqualACE(PreviousInhACL[i], [eactSameSid,
-          eactSameAccessMask, eactSEAccessMask, eactSameType], -1, [efInherited], false);
+          eactSameAccessMask, eactSEAccessMask, eactSameType], -1, [efInherited], [],  false);
 
+  //    ShowMessage(PreviousInhACL[i].GetTextMap(TJwSecurityFileFolderMapping));
       //ShowMessage( SD.DACL[i].GetTextMap(TJwSecurityFileFolderMapping));
 
 
@@ -7142,22 +7166,25 @@ class function TJwSecureFileObject.GetFileInheritanceSource(
 
       if (ps >= 0) then
       begin
-         {Flags1 := PreviousInhACL[i].Flags;
-         Flags2 := SD.DACL[ps].Flags;
-         Exclude(Flags1, afInheritedAce);
-         Exclude(Flags2, afInheritedAce);
-                                                 }
+        //* The for loop variable I iterates through PreviousInhACL
+        //* The variable ps points to an item in SD.DACL
 
-        if //(Flags1 = Flags2) and
+        if //the previous ACE is inherited
         (afInheritedAce in PreviousInhACL[i].Flags) and
-          //root ACE is inherited
+          //the current root ACE is not inherited
           not (afInheritedAce in SD.DACL[ps].Flags) and
+
+          //if object is container, only check container inheritance
+          ((Container and (afContainerInheritAce in SD.DACL[ps].Flags)) or
+           (not Container and (afObjectInheritAce in SD.DACL[ps].Flags))) and
+          //not (afContainerInheritAce in SD.DACL[ps].Flags) and
           //current ACE is explicit
           not (PreviousInhACL[i].Ignore) then
           //root ACE was not already considered
         begin
-          UpdateInheritedArrayElement(pInhArray, ps, Level, PathName, SD.DACL[ps].SID);
+          UpdateInheritedArrayElement(pInhArray, i, Level, PathName, SD.DACL[ps].SID);
 
+          //This ACE has its inheritance, so don't touch it anymore
           PreviousInhACL[i].Ignore := True; //Ignore this ACE next time
         end
         else
@@ -7282,7 +7309,7 @@ begin
           sPathName := GetParent(sPathName);
 
           {sPathName can be c:}
-          if Length(PathName) >= 3 then
+          if Length(sPathName) >= 3 then
             UpdateObjectInheritedDACL(sPathName, SD.DACL, Result, 1);
 
         finally

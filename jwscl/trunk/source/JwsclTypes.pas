@@ -303,6 +303,14 @@ type
    should ignore inherited or explicit ACEs}
   TJwExclusionFlags = set of TJwExclusionFlag;
 
+  TJwInclusionFlag = (
+    ifInherited,
+    ifExplicit,
+    ifContainer,
+    ifLeaf
+  );
+  TJwInclusionFlags = set of TJwInclusionFlag;
+
   {<b>TJwEqualAceTypeSet</b> defines how the method TJwSecurityAccessControlList.FindEqualACE
    finds an access control element.
   }
