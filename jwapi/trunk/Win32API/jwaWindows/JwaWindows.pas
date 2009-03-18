@@ -597,9 +597,7 @@ The list has no order!}
 {$IFDEF JWA_NEW_WINSTA}
   {$I JwaRpcWinsta.pas}
 {$ELSE}
-  {.$IFDEF COMPILER6_UP}
-   {$I JwaWinSta.pas} //has some unsolved probs with DateUtils
-  {.$ENDIF}
+   {$I JwaWinSta.pas}
   {$IFDEF FPC}
    {$I JwaWinSta.pas}
   {$ENDIF}
@@ -609,7 +607,7 @@ The list has no order!}
 
 
 {$IFDEF JWA_INCLUDE_SHELLAPI}
-{$I JwaUrlHist.pas}         
+{$I JwaUrlHist.pas}
 {$I JwaUrlMon.pas}
 {$I JwaSHFolder.pas}
 {$I JwaSHAppMgr.pas}
@@ -637,6 +635,8 @@ The list has no order!}
 {$I JwaWabUtil.pas}
 {$I JwaWabTags.pas}
 {$I JwaWabNot.pas}
+{$I JwaWdm.pas}
+
 {.$I JwaWinternl.pas}  //not used anymore!
 
 {$I JwaModuleLoader.pas}//set source path ..\..\Common if not found
