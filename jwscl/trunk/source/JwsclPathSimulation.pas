@@ -63,10 +63,12 @@ type
     fSD : TStringList;
 
     function GetSD(Path : String) : TJwSecurityDescriptor;
+    function GetSDIdx(Index : Integer) : TJwSecurityDescriptor;
   public
     constructor Create(const Path : string);
 
     property SD[Path : String] : TJwSecurityDescriptor read GetSD;
+    property SDi[Index : Integer] : TJwSecurityDescriptor read GetSDIdx;
     property Path : String read fPath;
   end;
 
@@ -113,6 +115,11 @@ begin
     result := TJwSecurityDescriptor(fSD.Objects[i])
   else
     result := nil;
+end;
+
+function TJwInheritancePath.GetSDIdx(Index: Integer): TJwSecurityDescriptor;
+begin
+  result :=  TJwSecurityDescriptor(fSD.Objects[Index])
 end;
 
 end.
