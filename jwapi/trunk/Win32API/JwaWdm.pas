@@ -118,25 +118,50 @@ type
   { Note: these RDD records need to be Packed to arrive unalligned in }
   { the variant record CM_PARTIAL_RESOURCE_DESCRIPTOR }
   RDD_Generic = packed record
-  Start: PHYSICAL_ADDRESS;
-  Length: ULONG;
+    Start: PHYSICAL_ADDRESS;
+    Length: ULONG;
   end;
   PRDD_Generic = ^RDD_Generic;
 
-  RDD_Port = RDD_Generic;
+  // This is for x64
+  RDD_GENERIC_EX = packed record
+    Start: PHYSICAL_ADDRESS;
+    Length: ULONGLONG;
+  end;
+  PRDD_GENERIC_EX = ^RDD_GENERIC_EX;
+
+
+  RDD_PORT = RDD_GENERIC;
   PRDD_Port = ^RDD_Port;
 
-  RDD_Memory = RDD_Generic;
-  PRDD_Memory = ^RDD_Memory;
+  // This is for x64
+  RDD_PORT_EX = RDD_GENERIC_EX;
+  PRDD_PORT_EX = ^RDD_PORT_EX;
+
+  RDD_MEMORY = RDD_GENERIC;
+  PRDD_MEMORY = ^RDD_MEMORY;
+
+  // This is for x64
+  RDD_MEMORY_EX = RDD_GENERIC_EX;
+  PRDD_MEMORY_EX = ^RDD_MEMORY_EX;
 
   { IRQL and vector. Should be same values as were passed to }
   { HalGetInterruptVector(). }
-  RDD_Interrupt = packed record
+  RDD_INTERRUPT = packed record
     Level: ULONG;
     Vector: ULONG;
     Affinity: ULONG;
   end;
-  PRDD_Interrupt = ^RDD_Interrupt;
+  PRDD_INTERRUPT = ^RDD_INTERRUPT;
+
+  // This is for x64
+  RDD_INTERRUPT_EX = packed record
+    Level: ULONG;
+    Vector: ULONG;
+    Affinity: ULONG;
+  end;
+  PRDD_INTERRUPT_EX = ^RDD_INTERRUPT_EX;
+
 
   { Physical DMA channel. }
   RDD_DMA = packed record
@@ -145,6 +170,7 @@ type
     Reserved1: ULONG;
     end;
   PRDD_DMA = ^RDD_DMA;
+
 
   { Device driver private data, usually used to help it figure }
   { what the resource assignments decisions that were made. }
@@ -161,6 +187,7 @@ type
     end;
   PRDD_BusNumber = ^RDD_BusNumber;
 
+
   { Device Specific information defined by the driver. }
   { The DataSize field indicates the size of the data in bytes. The }
   { data is located immediately after the DeviceSpecificData field in }
@@ -171,6 +198,7 @@ type
     Reserved2: ULONG;
   end;
   PRDD_DeviceSpecificData = ^RDD_DeviceSpecificData;
+
 
   CM_PARTIAL_RESOURCE_DESCRIPTOR = packed record
     ResType: UCHAR;
@@ -187,6 +215,23 @@ type
       7: (DeviceSpecificData: RDD_DeviceSpecificData);
   end;
   PCM_PARTIAL_RESOURCE_DESCRIPTOR = ^CM_PARTIAL_RESOURCE_DESCRIPTOR;
+
+  // This is for x64
+  CM_PARTIAL_RESOURCE_DESCRIPTOR_EX = packed record
+    ResType: UCHAR;
+    ShareDisposition: CM_SHARE_DISPOSITION; // has UCHAR = Byte size
+    Flags: USHORT;
+    case Byte of
+      0: (Generic: RDD_GENERIC_EX);
+      1: (Port: RDD_PORT_EX);
+      2: (Interrupt: RDD_INTERRUPT_EX);
+      3: (Memory: RDD_MEMORY_EX);
+      4: (Dma: RDD_DMA);
+      5: (DevicePrivate: RDD_DevicePrivate);
+      6: (BusNumber: RDD_BusNumber);
+      7: (DeviceSpecificData: RDD_DeviceSpecificData);
+  end;
+  PCM_PARTIAL_RESOURCE_DESCRIPTOR_EX = ^CM_PARTIAL_RESOURCE_DESCRIPTOR_EX;
 
   CM_PARTIAL_RESOURCE_LIST = packed record
     Version: USHORT;
@@ -208,6 +253,7 @@ type
     List: array[0..ANYSIZE_ARRAY-1] of CM_FULL_RESOURCE_DESCRIPTOR;
   end;
   PCM_RESOURCE_LIST = ^CM_RESOURCE_LIST;
+
 {$ENDIF JWA_IMPLEMENTATIONSECTION}
 
 
