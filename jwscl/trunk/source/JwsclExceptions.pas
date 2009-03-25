@@ -58,6 +58,11 @@ uses SysUtils, Classes,
 type
   EJwsclSecurityException = class;
 
+  //<B>EJwsclExceptionClass</B> is the class of EJwsclSecurityException
+  EJwsclExceptionClass = class of EJwsclSecurityException;
+  EJwsclSecurityExceptionClass = class of EJwsclSecurityException;
+
+
   TJwExceptionConstructorType = (ctNone, ctIgnore, ctCreateMsg, ctCreateWithException,
       ctCreateFmtEx, ctCreateFmtWinCall);
 
@@ -91,6 +96,7 @@ type
     fLog : TJwString;
     fUnsupportedProperties,
     fSimpleMessage : TJwString;
+    fGuid : TGuid;
 
     fCurrentExceptionConstructorType : TJwExceptionConstructorType;
 
@@ -140,7 +146,9 @@ type
     class function GetLastErrorMessage(
       const iGetLastError: Cardinal = Cardinal(-1)): TJwString; virtual;
 
-  private //do not use
+    class function CreateExceptionFromStream(const Stream: TStream;
+      const DefaultExceptionClass : EJwsclExceptionClass = nil) : Exception; virtual;
+  public //do not use
     procedure SaveToStream(const Stream : TStream); virtual;
     procedure LoadFromStream(const Stream : TStream); virtual;
     //http://www.blong.com/Conferences/BorConUK98/DelphiRTTI/CB140.htm
@@ -173,6 +181,7 @@ type
      by SaveToStream/LoadFromStream.}
     property UnsupportedProperties : TJwString read fUnsupportedProperties;
 
+    property Guid : TGuid read fGuid;
   end;
 
 var
@@ -210,8 +219,7 @@ type
   //<B>EJwsclPrivilegeException</B> is raised if an errors occurs that includes a problem with a privilege
   EJwsclPrivilegeException = class(EJwsclSecurityException);
   //<B>EJwsclInvalidIndexPrivilegeException</B> is raised if the given index is out of bounds of the privileges list
-  EJwsclInvalidIndexPrivilegeException =
-    class(EJwsclPrivilegeException);
+    EJwsclInvalidIndexPrivilegeException = class(EJwsclPrivilegeException);
   //<B>EJwsclPrivilegeNotFoundException</B> is raised if a given privilege was not found
   EJwsclPrivilegeNotFoundException = class(EJwsclPrivilegeException);
   //<B>EJwsclPrivilegeCheckException</B> is raised if a given privilege was not found in the list of privileges of the token
@@ -246,8 +254,8 @@ type
 
   //<B>EJwsclInvalidSIDException</B> is raised if a SID has an invalid structure
   EJwsclInvalidSIDException = class(EJwsclSecurityException);
-  EJwsclInvalidOwnerSIDException = class(EJwsclInvalidSIDException);
-  EJwsclInvalidGroupSIDException = class(EJwsclInvalidSIDException);
+    EJwsclInvalidOwnerSIDException = class(EJwsclInvalidSIDException);
+    EJwsclInvalidGroupSIDException = class(EJwsclInvalidSIDException);
 
   EJwsclInvalidComputer = class(EJwsclSecurityException);
 
@@ -288,10 +296,10 @@ type
   EJwsclNoSuchLogonSession = class(EJwsclSecurityException);
 
   EJwsclStreamException = class(EJwsclSecurityException);
-  EJwsclStreamSizeException = class(EJwsclStreamException);
-  EJwsclStreamInvalidMagicException = class(EJwsclStreamException);
+    EJwsclStreamSizeException = class(EJwsclStreamException);
+    EJwsclStreamInvalidMagicException = class(EJwsclStreamException);
 
-  EJwsclStreamHashException = class(EJwsclStreamException);
+    EJwsclStreamHashException = class(EJwsclStreamException);
 
   //EHashMismatch is raised in case of unequal hash data
   EJwsclHashMismatch = class(EJwsclSecurityException);
@@ -309,39 +317,37 @@ type
   EJwsclInvalidParentDescriptor = class(EJwsclSecurityException);
 
   ESetSecurityException = class(EJwsclSecurityException);
-  ESetOwnerException = class(EJwsclStreamException);
+  ESetOwnerException = class(ESetSecurityException);
 
-  //<B>EJwsclExceptionClass</B> is the class of EJwsclSecurityException
-  EJwsclExceptionClass = class of EJwsclSecurityException;
 
   EJwsclLSAException = class(EJwsclSecurityException);
 
   EJwsclAccessDenied = class(EJwsclSecurityException);
-  EJwsclSACLAccessDenied = class(EJwsclAccessDenied);
-        {
-        EDesktopException is the general exception that is raised if an error occurred
-        during desktop manipulation.
-        }
-  EJwsclDesktopException = class(EJwsclSecurityException);
+    EJwsclSACLAccessDenied = class(EJwsclAccessDenied);
+          {
+          EDesktopException is the general exception that is raised if an error occurred
+          during desktop manipulation.
+          }
+    EJwsclDesktopException = class(EJwsclSecurityException);
 
-        {EOpenDesktopException is raised if there was an error during opening a desktops.
-        Possible cases are :
-        1. Desktop does not exists
-        }
-  EJwsclOpenDesktopException = class(EJwsclDesktopException);
+          {EOpenDesktopException is raised if there was an error during opening a desktops.
+          Possible cases are :
+          1. Desktop does not exists
+          }
+    EJwsclOpenDesktopException = class(EJwsclDesktopException);
 
-        {ECreateDesktopException is raised if there was an error during creating a new desktop.
-        Possible cases are :
-        1. Desktop already exists
-        2. Not enough rights}
-  EJwsclCreateDesktopException = class(EJwsclDesktopException);
-        {ECloseDesktopException is raised if there was an error during closing a desktop.
-        Possible cases are :
-        1. Desktop handle is not valid
-        2. not enough rights
-        }
+          {ECreateDesktopException is raised if there was an error during creating a new desktop.
+          Possible cases are :
+          1. Desktop already exists
+          2. Not enough rights}
+    EJwsclCreateDesktopException = class(EJwsclDesktopException);
+          {ECloseDesktopException is raised if there was an error during closing a desktop.
+          Possible cases are :
+          1. Desktop handle is not valid
+          2. not enough rights
+          }
 
-  EJwsclCloseDesktopException = class(EJwsclDesktopException);
+    EJwsclCloseDesktopException = class(EJwsclDesktopException);
 
 
   EJwsclWindowStationException = class(EJwsclSecurityException);
@@ -351,7 +357,6 @@ type
   EJwsclUnsupportedACE = class(EJwsclSecurityException);
   EJwsclFailedAddACE = class(EJwsclSecurityException);
 
-  EJwsclSecurityExceptionClass = class of EJwsclSecurityException;
 
   EJwsclResourceException = class(EJwsclSecurityException);
   EJwsclResourceNotFound = class(EJwsclResourceException);
@@ -387,7 +392,7 @@ type
   EJwsclKeyApiException = class(EJwsclKeyException);
 
   {<B>EJwsclInitWellKnownException</B> is raised if JwInitWellKnownSIDs was not called.}
-  EJwsclInitWellKnownException = class(EJwsclKeyException);
+  EJwsclInitWellKnownException = class(EJwsclSecurityException);
 
   {<b>EJwsclUnimplemented</b>
   The called function isn't implemented yet.}
@@ -467,7 +472,9 @@ type
   EJwsclJwShellExecuteException = class(EJwsclElevateProcessException);
   EJwsclPIDException = class(EJwsclElevateProcessException);
 
-
+  {EJwsclUnsupportedException This exception is raised if an exception could
+    not be interpreted as an JWSCL exception.}
+  EJwsclUnsupportedException = class(EJwsclElevateProcessException);
 
 
   JwGeneralExceptionClass = class of Exception;
@@ -482,7 +489,7 @@ type
 
 //Mappings for JWSCL exceptions so we can
 //stream and restore them
-const JwExceptionMapping : array[0..3] of TJwExceptionMapping =
+const JwExceptionMapping : array[0..5] of TJwExceptionMapping =
       ((Name: 'Exception';
         ID: '{138EDC0B-B10B-4FA3-BB5D-DFDABBEBDDA4}';
         ExcPtr : Exception),
@@ -494,7 +501,13 @@ const JwExceptionMapping : array[0..3] of TJwExceptionMapping =
         ExcPtr : EJwsclWinCallFailedException),
        (Name: 'EJwsclNILParameterException';
         ID: '{138EDC0B-B10B-4FA3-BB5D-DFDABBEBDDA7}';
-        ExcPtr : EJwsclNILParameterException)
+        ExcPtr : EJwsclNILParameterException),
+        (Name: 'EJwsclPrivilegeException';
+        ID: '{138EDC0B-B10B-4FA3-BB5D-DFDABBEBDDA8}';
+        ExcPtr : EJwsclPrivilegeException),
+        (Name: 'EJwsclInvalidIndexPrivilegeException';
+        ID: '{138EDC0B-B10B-4FA3-BB5D-DFDABBEBDDA9}';
+        ExcPtr : EJwsclInvalidIndexPrivilegeException)
       );
 
 function JwCreateException(const Name : WideString) : JwGeneralExceptionClass;
@@ -586,6 +599,7 @@ begin
 
   inherited Create(Msg);
   fSimpleMessage := Msg;
+  ZeroMemory(@fGuid, sizeof(fGuid));
 
   DoFormatExceptionMessage(ctCreateMsg);
 end;
@@ -606,6 +620,8 @@ begin
 
   fSimpleMessage := sMsg;
 
+  ZeroMemory(@fGuid, sizeof(fGuid));
+
   DoFormatExceptionMessage(ctCreateFmtWinCall);
 end;
 
@@ -622,6 +638,8 @@ begin
   fsSourceFile := anException.fsSourceFile;
   fiSourceLine := anException.fiSourceLine;
   fWinCallName := anException.fWinCallName;
+
+  ZeroMemory(@fGuid, sizeof(fGuid));
 
   DoFormatExceptionMessage(ctCreateWithException);
 end;
@@ -647,6 +665,7 @@ begin
   fsSourceClass := sSourceClass;
   fsSourceFile := sSourceFile;
   fiSourceLine := fiSourceLine;
+  ZeroMemory(@fGuid, sizeof(fGuid));
 
   fSimpleMessage := MessageString;
 
@@ -737,6 +756,8 @@ begin
   fsSourceClass := sSourceClass;
   fsSourceFile := sSourceFile;
   fiSourceLine := fiSourceLine;
+
+  ZeroMemory(@fGuid, sizeof(fGuid));
 
   fSimpleMessage := MessageString;
 
@@ -837,10 +858,75 @@ begin
   Value := WideS;
 end;
 
-procedure EJwsclSecurityException.LoadFromStream(const Stream: TStream);
-var Guid : TGuid;
+class function EJwsclSecurityException.CreateExceptionFromStream(const Stream: TStream;
+    const DefaultExceptionClass : EJwsclExceptionClass = nil) : Exception;
+
+  //load jwscl properties if this is a jwscl exception
+  procedure LoadFromStream(var E : Exception; Mem : TStream);
+  begin
+    if E is EJwsclSecurityException then
+    begin
+      try
+        (E as EJwsclSecurityException).LoadFromStream(Mem);
+      except
+        E.Free;
+        E := nil;
+      end;
+    end;
+  end;
+var
+  E : EJwsclSecurityException;
+  i : Integer;
+  Guid : TGuid;
+  Mem : TMemoryStream;
 begin
-  Stream.Read(Guid, sizeof(Guid));
+  Mem := TMemoryStream.Create;
+  try
+    E := EJwsclSecurityException.Create('');
+    try
+      //make a copy of the stream data into mem
+      E.LoadFromStream(Stream);
+      E.SaveToStream(Mem);
+      Mem.Position := 0;
+
+      result := nil;
+      //lower indexes are more generic classes so start from the ending
+      //find the exception class from the guid
+      for i := High(JwExceptionMapping) downto Low(JwExceptionMapping) do
+      begin
+        if CompareMem(@E.Guid, @JwExceptionMapping[i].ID, sizeof(TGuid)) then
+        begin
+          result := JwExceptionMapping[i].ExcPtr.Create(E.Message);
+          LoadFromStream(result, Mem);
+          break;
+        end;
+      end;
+
+      //could not find a mapping
+      if not Assigned(result) then
+      begin
+        //use supplied exception class
+        if DefaultExceptionClass <> nil then
+        begin
+          result := DefaultExceptionClass.Create(E.Message);
+          LoadFromStream(result, Mem);
+        end
+        else
+          //otherwise create error
+          raise EJwsclUnsupportedException.CreateFmt('An exception could not be '+
+             'created because the guid could not be mapped to the exception class (ID:%s) ',[GUIDToString(E.Guid)]);
+      end;
+    finally
+      E.Free;
+    end;
+  finally
+    Mem.Free;
+  end;
+end;
+
+procedure EJwsclSecurityException.LoadFromStream(const Stream: TStream);
+begin
+  Stream.Read(fGuid, sizeof(fGuid));
   Stream.Read(fLastError, sizeof(fLastError));
   Stream.Read(fSourceProc, sizeof(fSourceProc));
   Stream.Read(fsSourceClass, sizeof(fsSourceClass));
@@ -860,7 +946,7 @@ var
   Guid : TGuid;
 begin
   ZeroMemory(@Guid, sizeof(Guid));
-  for i := High(JwExceptionMapping) to low(JwExceptionMapping) do
+  for i := High(JwExceptionMapping) downto low(JwExceptionMapping) do
   begin
     if Self is JwExceptionMapping[i].ExcPtr then
     begin
@@ -868,6 +954,7 @@ begin
       Break;
     end;
   end;
+
   Stream.Write(Guid, sizeof(Guid));
   Stream.Write(fLastError, sizeof(fLastError));
   Stream.Write(fSourceProc, sizeof(fSourceProc));
