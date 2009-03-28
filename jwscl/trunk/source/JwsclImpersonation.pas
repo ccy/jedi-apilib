@@ -74,15 +74,22 @@ type {<B>IJwImpersonation</B> defines an interface for TJwImpersonation. }
        constructor Create(const LogonSessionLuid : TLuid); overload;
        constructor Create(const LogonSessionId : ULONG); overload;
 	   
-	   {<B>Create</B> creates a new instance and impersonates the user logged onto
-	   the console session (typically 0 in xp and 1 in vista).
-	   
-	   @param UseWTSCall Set to true to use Windows Terminal Service API to get the user token;
-	     otherwise compability methods are used (useful in Windows 2000 Workstation).
-		 
-	    Remarks
-          This constructor is intended only for use in services. 
-	   }
+       {<B>Create</B> creates a new instance and impersonates the user logged onto
+       the console session (typically 0 in xp and 1 in vista).
+
+       @param UseWTSCall Set to true to use Windows Terminal Service API to get the user token;
+         otherwise compability methods are used (useful in Windows 2000 Workstation).
+
+        Remarks
+           This constructor is intended only for use in services.
+           If parameter UseWTSCall is false a compatibility function
+           TJwSecurityToken.CreateCompatibilityQueryUserToken is called
+           that returns the token from the first explorer.exe it finds.
+           In this way any user explorer process can be returned - not only the
+           console user. To avoid this problem call this constructor
+           using true as parameter. Only apply FALSE if the current system
+           does not support multiple users (like Win2000 Workstation) 
+       }
        constructor Create(const UseWTSCall : Boolean = false); overload;
 
        destructor Destroy; override;
@@ -90,17 +97,18 @@ type {<B>IJwImpersonation</B> defines an interface for TJwImpersonation. }
        property Token : TJwSecurityToken read fToken;
      end;
 
-{<B>JwImpersonateLoggedOnUser</B> impersonates the current logged on user and returns an interface pointer to the
+{<B>JwImpersonateLoggedOnUser</B> impersonates the current logged on user (on console) and returns an interface pointer to the
 token. It's automatically freed and reverted to self if it runs out of scope.
 
 raises
  EJwsclProcessIdNotAvailable:  will be raised it the process does not have
-  SE_TCB_NAME privilege and a try to get the explorer handle failed 
- EJwsclWinCallFailedException: will be raised if OpenProcess fails 
- 
+    SE_TCB_NAME privilege and a try to get the explorer handle failed
+ EJwsclWinCallFailedException: will be raised if OpenProcess fails
+ EJwsclPrivilegeException : will be raised if SE_TCB_NAME is not available
 Remarks
-  This function is intended only for use in services. It impersonates the user working in the 
+  This function is intended only for use in services. It impersonates the user working in the
   active console session and ignores all the other terminal session (like RDP).
+  This function works also on Windows 2000 Workstation.
 }
 function JwImpersonateLoggedOnUser: IJwImpersonation; overload;
 
@@ -126,18 +134,20 @@ function JwImpersonateLoggedOnUser(const LogonSessionLuid : TLuid) : IJwImperson
 
 
 implementation
-uses SysUtils;
+uses SysUtils, JwsclPrivileges;
 
 function JwImpersonateLoggedOnUser: IJwImpersonation;
+var Scope : IJwPrivilegeScope;
 begin
+  Scope := JwGetPrivilegeScope([SE_TCB_NAME]);
   try
     //first try WTS call then look for explorer
     //WTSXXX calls need TCB privilege - so it often simply fails
-    result := TJwImpersonation.Create(false);
+    result := TJwImpersonation.Create(true);
   except
     on E : EJwsclSecurityException do
       result := TJwImpersonation.Create(false);
-  end;
+  end;  
 end;
 function JwImpersonateLoggedOnUser(const LogonSessionId : ULONG) : IJwImpersonation;
 begin
@@ -168,13 +178,6 @@ begin
 end;
 
 constructor TJwImpersonation.Create(const UseWTSCall : Boolean = false);
-//var   ShellWindow : HWND;
-    //ThreadId,
-    //ProcessId : DWORD;
-    //ProcessHandle : THandle;
-
-const ProgManName : WideString = 'Progman1';
-
 begin
   if UseWTSCall then
     Create(WTSGetActiveConsoleSessionId)
@@ -182,44 +185,7 @@ begin
   begin
     //
     fToken := TJwSecurityToken.CreateCompatibilityQueryUserToken(
-      TOKEN_IMPERSONATE or TOKEN_DUPLICATE or TOKEN_READ or TOKEN_QUERY,
-      ProgManName);
-
-(*	Wrong source made obsolete by constructor above
-	
-    ShellWindow := FindWindowExW(0,0,PWideChar(ProgManName),nil);
-    ThreadId := GetWindowThreadProcessId(ShellWindow,@ProcessId);
-    if ThreadId = 0 then
-    begin
-      raise EJwsclProcessIdNotAvailable.CreateFmtEx(
-        RsProcessIdNotFound,// const MessageString: string;
-        'Create',ClassName,//sSourceProc, sSourceClass,
-        RsUNImpersonation,//sSourceFile: string;
-        0,//iSourceLine:  Cardinal;
-        true,//bShowLastError: boolean;
-        [ProgManName, ShellWindow]//const Args: array of const
-        );
-    end;
-
-    ProcessHandle := OpenProcess(PROCESS_QUERY_INFORMATION, false, ProcessId);
-    if ProcessHandle = 0 then
-    begin
-      raise EJwsclWinCallFailedException.CreateFmtWinCall(
-        RsOpenProcessFailed,// const MessageString: string;
-        'Create',ClassName,//sSourceProc, sSourceClass,
-        RsUNImpersonation,//sSourceFile: string;
-        0,//iSourceLine:  Cardinal;
-        true,//bShowLastError: boolean;
-        'OpenProcess',
-        [ProgManName, ShellWindow]//const Args: array of const
-        );
-    end;
-    try
-      fToken := TJwSecurityToken.CreateTokenByProcess(ProcessHandle,
-        TOKEN_IMPERSONATE or TOKEN_DUPLICATE or TOKEN_READ or TOKEN_QUERY);
-    finally
-      CloseHandle(ProcessHandle);
-    end;      *)
+      TOKEN_IMPERSONATE or TOKEN_DUPLICATE or TOKEN_READ or TOKEN_QUERY);
 
     try
       fToken.ConvertToImpersonatedToken(SecurityImpersonation,

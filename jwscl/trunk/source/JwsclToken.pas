@@ -565,10 +565,14 @@ type
        process could not be opened 
       EJwsclSecurityException: Several exceptions can be raised by used methods:
        
-         # CreateTokenByProcess 
-         # CreateDuplicateExistingToken 
-        
-    }
+      Remarks
+           This constructor creates a token from the first explorer.exe it finds.
+           In this way any user explorer process can be returned - not only the
+           console user. To avoid this problem call this constructor
+           using true as parameter. Only apply FALSE if the current system
+           does not support multiple users (like Win2000 Workstation)
+       }
+
     constructor CreateCompatibilityQueryUserToken(
       const DesiredAccess: TJwAccessMask;
       const ProcessName: TJwString = ExplorerProcessName);
