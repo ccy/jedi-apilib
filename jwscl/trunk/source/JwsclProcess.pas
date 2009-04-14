@@ -663,7 +663,7 @@ function JwGetProcessSessionID(ProcessIDorHandle : TJwProcessId;
 This function uses the new API of Vista or otherwise calls just JwGetProcessSessionID.
 It ist faster because it does not create an object if run on Vista or newer.
 
-@param ProcessID defines the process ID.
+@param ProcessID defines the process ID. Can be zero or -1 to use current process.
 @return Returns the session ID (zero based).
 raises
  EJwsclWinCallFailedException: Is raised if ProcessIdToSessionId fails.

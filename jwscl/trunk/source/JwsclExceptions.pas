@@ -203,7 +203,7 @@ type
 
   //<B>EJwsclSharedTokenException</B> is raised is not used.
   EJwsclSharedTokenException = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0003-A0183067E63D]};
+    {[2B2288BC-7905-46F5-0003-A0183067E63D]};
 
   //<B>EJwsclTokenInformationException</B> is raised if token information could not be retrieved.
   EJwsclTokenInformationException = class(EJwsclSecurityException)

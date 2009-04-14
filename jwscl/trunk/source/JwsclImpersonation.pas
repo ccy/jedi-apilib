@@ -56,7 +56,8 @@ uses ActiveX,
 
 type {<B>IJwImpersonation</B> defines an interface for TJwImpersonation. }
     IJwImpersonation = Interface(IUnknown)
-     end;
+      function GetToken : TJwSecurityToken;
+    end;
 
      {<B>TJwImpersonation</B> provides methods to impersonate a logged on client.
       Do not use this class instead use JwImpersonateLoggedOnUser, JwImpersonateLoggedOnUser or
@@ -92,9 +93,11 @@ type {<B>IJwImpersonation</B> defines an interface for TJwImpersonation. }
        }
        constructor Create(const UseWTSCall : Boolean = false); overload;
 
+       function GetToken : TJwSecurityToken;
+
        destructor Destroy; override;
 
-       property Token : TJwSecurityToken read fToken;
+       property Token : TJwSecurityToken read GetToken;
      end;
 
 {<B>JwImpersonateLoggedOnUser</B> impersonates the current logged on user (on console) and returns an interface pointer to the
@@ -208,6 +211,11 @@ begin
    
   FreeAndNil(fToken);
   inherited;
+end;
+
+function TJwImpersonation.GetToken: TJwSecurityToken;
+begin
+  result := fToken;
 end;
 
 procedure Test;

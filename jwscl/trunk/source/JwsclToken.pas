@@ -512,8 +512,7 @@ type
           EJwsclPrivilegeCheckException: is raised if the privilege SE_TCB_NAME is not held. 
           EJwsclWinCallFailedException: if a call to WTSQueryUserToken failed 
          }
-    constructor CreateWTSQueryUserToken(SessionID: cardinal =
-      INVALID_HANDLE_VALUE);
+    constructor CreateWTSQueryUserToken(SessionID: TJwSessionId = INVALID_HANDLE_VALUE);
       overload; virtual;
 
     {<B>CreateWTSQueryUserTokenEx</B> opens a token of a logged on user on a local or remote server.
@@ -3473,7 +3472,7 @@ begin
 end;
 
 constructor TJwSecurityToken.CreateWTSQueryUserToken(SessionID:
-  cardinal {= INVALID_HANDLE_VALUE});
+  TJwSessionId = INVALID_HANDLE_VALUE);
 begin
   RaiseOnInvalidPrimaryToken('CreateWTSQueryUserToken');
 
