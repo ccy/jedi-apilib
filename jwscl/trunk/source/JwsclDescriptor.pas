@@ -880,7 +880,7 @@ begin
 end;
 
 procedure TJwSecurityDescriptor.ReplaceOwner(const Sid: TJwSecurityId);
-var Own : Boolean
+var Own : Boolean;
 begin
   Own := OwnOwner;
   try
