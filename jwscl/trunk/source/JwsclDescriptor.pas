@@ -152,6 +152,7 @@ type
     constructor Create(aSecurityDescriptor: TJwSecurityDescriptor);
       overload;
 
+
     {<B>CreatePrivateObjectSecurity</B> combines a parent and a creator security descriptor into a new security descriptor.
      For detailed information see MSDN http://msdn2.microsoft.com/en-us/library/aa446581.aspx
 
@@ -403,7 +404,7 @@ type
        {<B>SaveToStream</B> writes a relative security descriptor into a stream.
         The method uses a magic header to check for position errors in a stream.
 
-        
+
         # Bytes         |  Value 
         # 1..5 (5)      |  SD_MAGIC_HEADER (byte array) 
         # 6..9 (4)      |  SD size (Cardinal) 
@@ -486,6 +487,8 @@ type
 
     function GetTextMap(const Mapping: TJwSecurityGenericMappingClass =
       nil): TJwString;
+
+    procedure ReplaceOwner(const Sid : TJwSecurityId);
   public
     {<B>Owner</B> sets or gets the owner of the SD.
     If the property OwnOwner is true and the property is set, the old Owner TJwSecurityId instance will be freed and
@@ -873,6 +876,22 @@ begin
   if siSaclSecurityInformation in SecurityInformationSet then
   begin
     SACL := SecurityDescriptor.SACL;
+  end;
+end;
+
+procedure TJwSecurityDescriptor.ReplaceOwner(const Sid: TJwSecurityId);
+var Own : Boolean
+begin
+  Own := OwnOwner;
+  try
+    //first free or disconnect old owner
+    //1. If OwnOwner is true, the Owner instance will be freed
+    //2. If OwnOwner is false, the property will be set to nil
+    Owner := nil;
+    OwnOwner := false; //set to false so the next step does not copy the security id in a new instance
+    Owner := Sid;
+  finally
+    OwnOwner := Own;
   end;
 end;
 
