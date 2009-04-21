@@ -1566,6 +1566,11 @@ function IJwBase_GetHashCode(self : TObject): Integer;
 function IJwBase_ToString(self : TObject): String;
 
 
+
+
+type
+  TJwHandles = array of THandle;
+
 implementation
 
 function IJwBase_Equals(Obj: TObject): Boolean;

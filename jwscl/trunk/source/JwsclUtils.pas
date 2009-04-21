@@ -471,7 +471,10 @@ windows are responsible. This function returns if such a message is received.
 @return Returns a status code. See MsgWaitForMultipleObjects (http://msdn.microsoft.com/en-us/library/ms684242.aspx) in MSDN for more information.
 }
 function JwMsgWaitForMultipleObjects(const Handles: array of THandle; bWaitAll: LongBool;
-           dwMilliseconds: DWord; dwWakeMask: DWord): DWord;
+           dwMilliseconds: DWord; dwWakeMask: DWord): DWord; overload;
+
+function JwMsgWaitForMultipleObjects(const Handles: TJwHandles; bWaitAll: LongBool;
+           dwMilliseconds: DWord; dwWakeMask: DWord): DWord; overload;
 
 {<B>JwWaitForMultipleObjects</B> encapsulates WaitForMultipleObjects using an open array
 parameter.
@@ -486,8 +489,15 @@ parameter.
 @return Returns a status code. See WaitForMultipleObjects (http://msdn.microsoft.com/en-us/library/aa931008.aspx) in MSDN for more information.
 }
 function JwWaitForMultipleObjects(const Handles: array of THandle; bWaitAll: LongBool;
-           dwMilliseconds: DWord): DWord;
+           dwMilliseconds: DWord): DWord; overload;
 
+
+
+function JwWaitForMultipleObjects(const Handles: TJwHandles; bWaitAll: LongBool;
+           dwMilliseconds: DWord): DWord; overload;
+
+function JwHandlesArray(const Handles: array of THandle) : TJwHandles;
+function JwAddHandleToArray(TargetHandles: TJwHandles; const Handles: array of THandle) : TJwHandles;
 
 {<B>JwCreateWaitableTimer</B> creates a waitable timer handle.
 
@@ -1358,7 +1368,50 @@ begin
   Result := MsgWaitForMultipleObjects(Length(Handles), @Handles[0], bWaitAll, dwMilliseconds, dwWakeMask);
 end;
 
+function JwMsgWaitForMultipleObjects(const Handles: TJwHandles; bWaitAll: LongBool;
+           dwMilliseconds: DWord; dwWakeMask: DWord): DWord;
+begin
+  Result := MsgWaitForMultipleObjects(Length(Handles), @Handles[0], bWaitAll, dwMilliseconds, dwWakeMask);
+end;
+
 function JwWaitForMultipleObjects(const Handles: array of THandle; bWaitAll: LongBool;
+           dwMilliseconds: DWord): DWord;
+begin
+  Result := WaitForMultipleObjects(Length(Handles), @Handles[0], bWaitAll, dwMilliseconds);
+end;
+
+function JwHandlesArray(const Handles: array of THandle) : TJwHandles;
+var i : Integer;
+begin
+  if Length(Handles) = 0 then
+    result := nil
+  else
+    SetLength(result, Length(Handles));
+  for I := low(Handles) to High(Handles) do
+  begin
+    result[i] := Handles[i];
+  end;
+end;
+
+function JwAddHandleToArray(TargetHandles: TJwHandles; const Handles: array of THandle) : TJwHandles;
+var i, len : Integer;
+begin
+  result := TargetHandles;
+
+  len := Length(TargetHandles);
+  if len < 0 then
+    len := 0;
+
+  if Length(Handles) > 0 then
+    SetLength(result, len+Length(Handles));
+  for I := low(Handles) to High(Handles) do
+  begin
+    result[i+Length(TargetHandles)] := Handles[i];
+  end;
+end;
+
+
+function JwWaitForMultipleObjects(const Handles: TJwHandles; bWaitAll: LongBool;
            dwMilliseconds: DWord): DWord;
 begin
   Result := WaitForMultipleObjects(Length(Handles), @Handles[0], bWaitAll, dwMilliseconds);

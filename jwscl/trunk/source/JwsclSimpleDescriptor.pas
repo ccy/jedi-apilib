@@ -172,7 +172,7 @@ var SidObj : TJwSecurityID;
 begin
   SidObj := TJwSecurityId.Create(Sid);
   try
-    Allow(Sid, Access);
+    Allow(SidObj, Access);
   finally
     SidObj.Free;
   end;
@@ -181,7 +181,7 @@ end;
 procedure TJwSimpleDescriptor.Allow(const SID: TJwSecurityID; const Access : TJwAccessMask = GENERIC_ALL);
 begin
   CheckDACL;
-  fSD.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil, [], Access, Sid, true))
+  fSD.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil, [], Access, Sid, false))
 end;
 
 procedure TJwSimpleDescriptor.CheckDACL;
@@ -226,7 +226,7 @@ var SidObj : TJwSecurityID;
 begin
   SidObj := TJwSecurityId.Create(Sid);
   try
-    Deny(Sid, Access);
+    Deny(SidObj, Access);
   finally
     SidObj.Free;
   end;
@@ -235,7 +235,7 @@ end;
 procedure TJwSimpleDescriptor.Deny(const SID: TJwSecurityID; const Access : TJwAccessMask = GENERIC_ALL);
 begin
   CheckDACL;
-  fSD.DACL.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil, [], Access, Sid, true))
+  fSD.DACL.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil, [], Access, Sid, false))
 end;
 
 destructor TJwSimpleDescriptor.Destroy;
@@ -264,12 +264,18 @@ end;
 
 procedure TJwSimpleDescriptor.SetOwner(const SID: TJwSecurityId);
 begin
-  fSD.ReplaceOwner(TJwSecurityId.Create(SID));
+  if not Assigned(Sid) then
+    fSD.Owner := nil
+  else
+    fSD.ReplaceOwner(TJwSecurityId.Create(SID));
 end;
 
 procedure TJwSimpleDescriptor.SetOwner(const SID: PSID);
 begin
-  fSD.ReplaceOwner(TJwSecurityId.Create(SID));
+  if not Assigned(Sid) then
+    fSD.Owner := nil
+  else
+    fSD.ReplaceOwner(TJwSecurityId.Create(SID));
 end;
 
 

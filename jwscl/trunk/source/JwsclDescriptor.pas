@@ -498,7 +498,6 @@ type
     the new one will directly point to the new SID.
 
     The following code can be used to set a newly created instance.
-
     <code lang="Delphi">
        //first free or disconnect old owner
        //1. If OwnOwner is true, the Owner instance will be freed
@@ -508,13 +507,6 @@ type
        Owner := TJwSecurityID.Create(..); //set new Sid
        OwnOwner := true; //lets free the Sid automatically
     </code>
-
-    Use this code to release old owner and copy new owner into a new instance:
-    <code lang="Delphi">
-       Owner := nil; //free or release old owner
-       OwnOwner := true; //next set copies owner
-       Owner := SecurityDescriptor.Owner; //create copy of owner and set it
-    </code>
     This code is equivalent:
     <code lang="Delphi">
        Owner := nil; //free or release old owner
@@ -522,6 +514,15 @@ type
        Owner := TJwSecurityID.Create(SecurityDescriptor.Owner);
        OwnOwner := true; //lets free the Sid automatically
     </code>
+
+    Use this code to release old owner and copy new owner into a new instance:
+    <code lang="Delphi">
+       Owner := nil; //free or release old owner
+       OwnOwner := true; //next set copies owner
+       Owner := SecurityDescriptor.Owner; //create copy of owner and set it
+    </code>
+
+
 
 
     Use this code to use the same instance from another SD instance in both
@@ -1622,7 +1623,6 @@ begin
           ['SetSecurityDescriptorDacl']);
       end;
 
-
       //we create an absolute SD, so we must not free it!
       //DACL.Free_PACL(aACL);
 
@@ -1826,7 +1826,7 @@ begin
     exit;
 
   if OwnOwner and Assigned(fOwner) and (not fOwner.IsStandardSID) then
-    //dont free a standard sid from USM_KnwonSID
+    //dont free a standard sid from JwsclKnownSid
     fOwner.Free;
 
   if OwnOwner and Assigned(Value) then

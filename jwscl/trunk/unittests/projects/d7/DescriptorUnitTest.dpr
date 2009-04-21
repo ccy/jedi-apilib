@@ -27,29 +27,18 @@ program DescriptorUnitTest;
 
 
 uses
-{$IFDEF FASTMM4}
   FastMm4,
-{$ENDIF FASTMM4}  
-  //JEDI API LIB
   jwaWindows,
   JwaVista,
-  
-  //VCL
   SysUtils,
   Dialogs,
   Forms,
   Classes,
-  Windows, //only for TKeyboardState 
-
-  //DUNIT
+  Windows,
   TestFramework,
   GUITestRunner,
   TextTestRunner,
-
-  //Tools
   UMessageForm in '..\..\source\UMessageForm.pas' {frmMessage},
-
-  //JEDI WSCL
   JwsclResource,
   JwsclAcl,
   JwsclConstants,
@@ -78,11 +67,10 @@ uses
   JwsclTerminalServer,
   JwsclSecurePrivateObjects,
   JwsclSecureUserObjects,
+  JwsclSimpleDescriptor,
   JwsclAccounts,
-
-  //JWSCL Unit Tests
-  JwsclDescriptorTests in '..\..\source\JwsclDescriptorTests.pas';
-
+  JwsclDescriptorTests in '..\..\source\JwsclDescriptorTests.pas',
+  JwsclSimpleDescriptorTests in '..\..\source\JwsclSimpleDescriptorTests.pas';
 
 //never ever use JwsclLibrary and one of the Jwscl units at the same time!!
 

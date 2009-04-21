@@ -1,5 +1,5 @@
 unit JwsclDescriptorTests;
-{$I Jwscl.inc}
+{$I ..\includes\Jwscl.inc}
 interface
 
 uses
@@ -55,6 +55,8 @@ type
     procedure Test_SetGetSACL;
 
     procedure Test_Assign;
+
+    procedure Test_Owner;
 
   end;
 
@@ -291,6 +293,96 @@ begin
 end;
 
 
+
+procedure TSecurityDescriptorTests.Test_Owner;
+var
+  SD : TJwSecurityDescriptor;
+  Sid, Sid2 : TJwSecurityId;
+begin
+  SD := TJwSecurityDescriptor.Create;
+
+  try
+    Sid := TJwSecurityId.Create('S-1-0-0');
+
+    CheckFalse(SD.OwnOwner);
+    CheckNull(SD.Owner);
+
+    SD.Owner := nil;
+    CheckNull(SD.Owner);
+
+    SD.Owner := Sid;
+    CheckNotNull(SD.Owner);
+
+    SD.Owner := nil;
+    CheckNull(SD.Owner);
+    CheckNotNull(Sid);
+
+    SD.Owner := Sid;
+    CheckNotNull(SD.Owner);
+    CheckNotNull(Sid);
+
+
+    SD.OwnOwner := true;
+    SD.Owner := nil;
+    CheckNull(SD.Owner);
+    {This is very likely to break if the memory is changed where the Sid
+    object was saved. But it is the only way of checking whether
+    the Sid was destroyed because the destructor frees and sets the Sid property
+    to nil.
+    }
+    CheckEquals(0, Integer(Sid.Sid));
+
+    //The following code can be used to set a newly created instance.
+    //first free or disconnect old owner
+    //1. If OwnOwner is true, the Owner instance will be freed
+    //2. If OwnOwner is false, the property will be set to nil
+    SD.Owner := nil;
+    SD.OwnOwner := false; //set to false so the next step does not copy the security id in a new instance
+    SD.Owner := TJwSecurityID.Create('S-1-0-0'); //set new Sid
+    SD.OwnOwner := true; //lets free the Sid automatically
+    SD.Owner := nil;
+    CheckEquals(0, Integer(Sid.Sid));
+
+    //This code is equivalent:
+    SD.Owner := nil; //free or release old owner
+    SD.OwnOwner := false; //set to false so the next step does not copy the security id in a new instance
+    SD.Owner := TJwSecurityID.Create('S-1-0-0');
+    SD.OwnOwner := true; //lets free the Sid automatically
+    SD.Owner := nil;
+    CheckEquals(0, Integer(Sid.Sid));
+
+
+    //Use this code to release old owner and copy new owner into a new instance:
+    Sid := TJwSecurityID.Create('S-1-0-0');
+    SD.Owner := nil; //free or release old owner
+    SD.OwnOwner := true; //next set copies owner
+    SD.Owner := Sid; //create copy of owner and set it
+    CheckNotNull(Sid);
+    CheckNotNull(SD.Owner);
+    SD.Owner := nil;
+    CheckNotEquals(0, Integer(Sid.Sid));
+
+
+    { Use this code to use the same instance from another SD instance in both
+      security descriptors. In this instance the owner will not be freed.
+      You should free this instance first, before freeing the other one because
+      if the original instance is freed you cannot access the owner because
+      it is invalid but differs from nil.
+    }
+    Sid := TJwSecurityID.Create('S-1-0-0');
+    SD.Owner := nil; //free or release old owner
+    SD.OwnOwner := false; //do not free owner
+    SD.Owner := Sid; //just point to this instance
+    CheckNotNull(Sid);
+    CheckNotNull(SD.Owner);
+    SD.Owner := nil;
+
+    CheckNotNull(Sid);
+    CheckNull(SD.Owner);
+  finally
+    SD.Free();
+  end;
+end;
 
 procedure TSecurityDescriptorTests.Test_SetGetAudit;
 
@@ -657,12 +749,14 @@ end;
 
 procedure TSecurityDescriptorTests.Test_Stream;
 var StreamArray : array[1..10] of TMemoryStream;
-    magic : array[0..SD_MAGIC_LENGTH-1] of Char;
+    magic : array[0..SD_MAGIC_LENGTH-1] of AnsiChar;
     i,
     iSDSize : Cardinal;
 
 
 begin
+
+
   for i := low(StreamArray) to high(StreamArray) do
     StreamArray[i] := nil;
 
@@ -738,8 +832,8 @@ begin
   }
   StreamArray[3] := TMemoryStream.Create;
   try
-    magic:= SD_MAGIC_HEADER;
-    StreamArray[3].Write(magic,SD_MAGIC_LENGTH);
+//    magic:= SD_MAGIC_HEADER;
+    StreamArray[3].Write(SD_MAGIC_HEADER,SD_MAGIC_LENGTH);
 
     iSDSize := 0;
     StreamArray[3].Write(iSDSize,sizeof(iSDSize));
@@ -786,8 +880,8 @@ begin
   {Check for invalid size}
   StreamArray[5] := TMemoryStream.Create;
   try
-    magic:= SD_MAGIC_HEADER;
-    StreamArray[5].Write(magic,SD_MAGIC_LENGTH);
+//    magic:= SD_MAGIC_HEADER;
+    StreamArray[5].Write(SD_MAGIC_HEADER,SD_MAGIC_LENGTH);
 
     iSDSize := 1;
     StreamArray[5].Write(iSDSize,sizeof(iSDSize));
