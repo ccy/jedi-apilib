@@ -553,8 +553,8 @@ type
 
      {<B>DACL</B> sets or gets the discretionary access control list.
       The read value is the internal used DACL. So do not free it directly. Instead set the write value to nil.
-      The write value is copied into a new DACL (using Assign) if the property OwnDACL is true
-       otherwise the given DACL instance directly used.
+      The write value is copied into a new DACL (using Assign) if the property OwnDACL is false
+       otherwise the given DACL instance is used directly (using ":=").
 
       If the write value is nil the internal list is freed and set to nil.
 
@@ -1372,7 +1372,8 @@ end;
 procedure TJwSecurityDescriptor.SetDACL(anACL: TJwDAccessControlList);
 begin
   //if we have a nil fdACL class we must create one
-  if Assigned(anACL) and not Assigned(fDACL) then
+  if not Assigned(fDACL) and
+     Assigned(anACL) then
   begin
     if OwnDACL then
       fDACL := anACL
@@ -1382,9 +1383,11 @@ begin
       fDACL.Assign(anACL);
     end;
   end
+
   else
-  //if anACL list was provided we assign it to our
-  if Assigned(fDACL) and Assigned(anACL) then
+  //if anACL list was provided we assign it to our own
+  if Assigned(fDACL) and
+     Assigned(anACL) then
     fDACL.Assign(anACL);
 
   //if there is no anACL list we free the current one
