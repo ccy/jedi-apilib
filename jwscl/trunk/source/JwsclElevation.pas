@@ -26,7 +26,7 @@ replace  them with the notice and other provisions required by the LGPL
 License.  If you do not delete the provisions above, a recipient may use     
 your version of this file under either the MPL or the LGPL License.          
                                                                              
-For more information about the LGPL: http://www.gnu.org/copyleft/lesser.html 
+For more information about the LGPL: http://www.gnu.org/copyleft/lesser.html
 
 Note
 
@@ -486,7 +486,11 @@ begin
     while (i <= High(StatusData.Version)) and
         (Length(VersionStr) > 0) do
     begin
+{$IFNDEF DELPHI2009_UP}
       if VersionStr[1] in ['0'..'9'] then
+{$ELSE}
+      if CharInSet(VersionStr[1], ['0'..'9']) then
+{$ENDIF DELPHI2009_UP}
       begin
         StatusData.Version[i] := 10 * StatusData.Version[i] + Ord(VersionStr[1])-48;
       end

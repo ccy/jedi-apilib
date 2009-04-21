@@ -30,6 +30,7 @@ uses
   JwsclSecureUserObjects,
   JwsclSecurityDialogs,
   JwsclSid,
+  JwsclSimpleDescriptor,
   JwsclStreams,
   JwsclStrings,
   JwsclTerminalServer,
