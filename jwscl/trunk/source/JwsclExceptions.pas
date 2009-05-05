@@ -277,7 +277,7 @@ type
 
   //<B>EJwsclWinCallFailedException</B> is raised if a call to a windows API function failed. For more information see the LastError property
   EJwsclWinCallFailedException = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0020-A0183067E63D]};
+    {[2B2288BC-7905-46F2-1020-A0183067E63D]};
 
   EJwsclProcessIdNotAvailable = class(EJwsclSecurityException)
     {[2B2288BC-7905-46F2-0021-A0183067E63D]};
@@ -442,7 +442,7 @@ type
           1. Desktop already exists
           2. Not enough rights}
     EJwsclCreateDesktopException = class(EJwsclDesktopException)
-      {[2B2288BC-7905-46F2-0065-A0183067E63D]};
+      {[2B2288BC-7905-46F2-1065-A0183067E63D]};
 
           {ECloseDesktopException is raised if there was an error during closing a desktop.
           Possible cases are :
@@ -509,13 +509,13 @@ type
 
   //general exception for terminal session methods
   EJwsclTerminalSessionException = class(EJwsclTerminalServerException)
-    {[2B2288BC-7905-46F2-0082-A0183067E63D]};
+    {[2B2288BC-7905-46F2-1082-A0183067E63D]};
 
   EJwsclCSPException = class(EJwsclCryptException)
     {[2B2288BC-7905-46F2-0083-A0183067E63D]};
 
   EJwsclCSPApiException = class(EJwsclCSPException)
-    {[2B2288BC-7905-46F2-0013-A0183067E63D]};
+    {[2B2288BC-7905-46F2-1013-A0183067E63D]};
 
   EJwsclHashException = class(EJwsclCryptException)
     {[2B2288BC-7905-46F2-0084-A0183067E63D]};
@@ -536,7 +536,7 @@ type
   {<b>EJwsclUnimplemented</b>
   The called function isn't implemented yet.}
   EJwsclUnimplemented = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0013-A0183067E63D]};
+    {[2B2288BC-7905-FFFF-0013-A0183067E63D]};
 
   {<b>EJwsclNilPointer</b>
   A given parameter or variable is nil but must not be nil.}
