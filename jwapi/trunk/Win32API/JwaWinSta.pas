@@ -41,15 +41,15 @@ uses
 //==============================================================================
 const
   SERVERNAME_CURRENT = 0;
-  
-  // constants used for WinStationGetTermSrvCounters
-  TOTAL_SESSIONS_CREATED_COUNTER = 1;
+
+  // old (reversed) constants used for WinStationGetTermSrvCounters
+{  TOTAL_SESSIONS_CREATED_COUNTER = 1;
   TOTAL_SESSIONS_DISCONNECTED_COUNTER = 2;
   TOTAL_SESSIONS_RECONNECTED_COUNTER = 3;
   TOTAL_SESSIONS_TOTAL_CONNECTED_NOW_COUNTER = 4;
   TOTAL_SESSIONS_TOTAL_DISCONNECTED_NOW_COUNTER = 5;
   TOTAL_SESSIONS_TOTAL_CONNECTED_NOW_COUNTER_2 = 6; //TermSrvSuccLocalLogons;
-  TOTAL_SESSIONS_TOTAL_DISCONNECTED_NOW_COUNTER_2 = 7;
+  TOTAL_SESSIONS_TOTAL_DISCONNECTED_NOW_COUNTER_2 = 7;}
 
   // Max lenght for ElapsedTimeString (server 2008 version of utildll
   // fixes size at 15, so that's assumed to be safe
@@ -225,6 +225,14 @@ type
   // You must set ProcessId and ThreadId to the valid values
   // Function actually duplicates a token handle to the
   // process, which id (ProcessId and ThreadId) are set here.
+  _WINSTATIONUSERTOKEN = record
+    ProcessId: DWORD;
+    ThreadId: DWORD;
+    UserToken: HANDLE;
+  end;
+  TWinStationUserToken = _WINSTATIONUSERTOKEN;  {WinStationUserToken is alreay an enum}
+  PWINSTATIONUSERTOKEN = ^_WINSTATIONUSERTOKEN;
+
   _WINSTA_USER_TOKEN = record
     ProcessId : DWORD;
     ThreadId : DWORD;
@@ -234,23 +242,35 @@ type
   TWinstaUserToken = _WINSTA_USER_TOKEN;
   PWinstaUserToken = ^TWinstaUserToken;
 
- // this type is used for WinStationGetTemSrvCounters
-  _TERM_SRV_COUNTER = record
-    dwIndex: DWORD;
-    bSuccess: BOOL;
-    dwValue: DWORD;
-    Reserved2: DWORD;
-    Reserved3: DWORD;
-    Reserved4: DWORD;
-  end;
-  PTERM_SRV_COUNTER = ^_TERM_SRV_COUNTER;
-  TTermSrvCounter = _TERM_SRV_COUNTER;
-  PTermSrvCounter = ^TTermSrvCounter;
+  _LOADFACTORTYPE = (
+    ErrorConstraint,
+    PagedPoolConstraint,
+    NonPagedPoolConstraint,
+    AvailablePagesConstraint,
+    SystemPtesConstraint,
+    CPUConstraint  );
+  LOADFACTORTYPE = _LOADFACTORTYPE;
+  TLoadFactorType = _LOADFACTORTYPE;
 
-  TERM_SRV_COUNTER_ARRAY = array [1..7] of _TERM_SRV_COUNTER;
-  PTERM_SRV_COUNTER_ARRAY = ^TERM_SRV_COUNTER_ARRAY;
-  TTermSrvCounterArray = TERM_SRV_COUNTER_ARRAY;
-  PTermSrvCounterArray = PTERM_SRV_COUNTER_ARRAY;
+  _WINSTATIONLOADINDICATORDATA = record
+    RemainingSessionCapacity: ULONG;
+    LoadFactor: LOADFACTORTYPE;
+    TotalSessions: ULONG;
+    DisconnectedSessions: ULONG;
+    IdleCPU: LARGE_INTEGER;
+    TotalCPU: LARGE_INTEGER;
+    RawSessionCapacity: ULONG;
+    reserved1: ULONG;
+    SessionAvgPaged: ULONG;   { undocumented }
+    reserved3: ULONG;
+    SessionAvgCommit: ULONG;  { undocumented }
+    SessionAvgPte: ULONG;     { undocumented }
+    SessionAvgPaged2: ULONG;  { undocumented }
+    reserved: array[0..2] of ULONG
+  end {_WINSTATIONLOADINDICATORDATA};
+  WINSTATIONLOADINDICATORDATA = _WINSTATIONLOADINDICATORDATA;
+  TWinStationLoadIndicatorData = WINSTATIONLOADINDICATORDATA;
+  PWINSTATIONLOADINDICATORDATA = ^_WINSTATIONLOADINDICATORDATA;
 
   _TS_UNICODE_STRING = record
     Length: USHORT;
@@ -432,6 +452,21 @@ type
   TS_TIME_ZONE_INFORMATION = _TS_TIME_ZONE_INFORMATION;
 
 
+const
+  TS_PERF_DISABLE_NOTHING = $0;
+  TS_PERF_DISABLE_WALLPAPER = $1;
+  TS_PERF_DISABLE_FULLWINDOWDRAG = $2;
+  TS_PERF_DISABLE_MENUANIMATIONS = $4;
+  TS_PERF_DISABLE_THEMING = $8;
+  TS_PERF_ENABLE_ENHANCED_GRAPHICS = $10;
+  TS_PERF_DISABLE_CURSOR_SHADOW = $20;
+  TS_PERF_DISABLE_CURSORSETTINGS = $40;
+  TS_PERF_ENABLE_FONT_SMOOTHING= $80;
+  TS_PERF_ENABLE_DESKTOP_COMPOSITION = $100;
+  TS_PERF_DEFAULT_NONPERFCLIENT_SETTING = $40000000;
+  TS_PERF_RESERVED1 = $80000000;
+
+type
   _WINSTATIONCLIENTW = record
     WinStationClientFlags: TWinStationClientFlags;
     ClientName: Array[0..CLIENTNAME_LENGTH] of WCHAR;
@@ -730,7 +765,67 @@ type
   PWINSTATION_PIPE_INFORMATIONW = ^_WINSTATION_PIPE_INFORMATIONW;
   TWinStationPipeInformationW = _WINSTATION_PIPE_INFORMATIONW;
   PWinStationPipeInformationW = PWINSTATION_PIPE_INFORMATIONW;
-    
+
+ { The header of the Terminal Services performance counter structure providing
+   general information on the counter.
+   dwCounterID: The identifier of the counter. Set by the caller of
+   (Rpc)WinStationGetTermSrvCountersValue to indicate the counter on which to
+   retrieve data. This will be set to zero by
+   (Rpc)WinStationGetTermSrvCountersValue if the dwCounterId isn't recognized.
+   bResult: Set to TRUE if counter information is returned. Set to FALSE if
+   counter data isn't being returned because the counter ID being requested
+   was unrecognized.
+
+   The following counters are supported:
+   Total number of sessions: dwCounterId SHOULD be TERMSRV_TOTAL_SESSIONS.
+   Value will indicate the total number of reconnections to the server since
+   startup.
+   Number of disconnected sessions: dwCounterId SHOULD be TERMSRV_DISC_SESSIONS.
+   Value will indicate the total number of disconnections from the server since
+   startup.
+   Number of reconnected sessions: dwCounterId SHOULD be TERMSRV_RECON_SESSIONS.
+   Value will indicate the total number of all reconnected sessions that have
+   existed on the server since startup.
+   Current number of active sessions: dwCounterId SHOULD be
+   TERMSRV_CURRENT_ACTIVE_SESSIONS.
+   Value will indicate the current number of active sessions on the server.
+   Current number of disconnected sessions: dwCounterId SHOULD be
+   TERMSRV_CURRENT_DISC_SESSIONS. Value will indicate the current number of
+   disconnected sessions on the server. Windows XP only
+   }
+  const TERMSRV_TOTAL_SESSIONS = 1;
+  const TERMSRV_DISC_SESSIONS = 2;
+  const TERMSRV_RECON_SESSIONS = 3;
+  const TERMSRV_CURRENT_ACTIVE_SESSIONS = 4;
+  const TERMSRV_CURRENT_DISC_SESSIONS = 5;
+  const TERMSRV_PENDING_SESSIONS = 6;
+  const TERMSRV_SUCC_TOTAL_LOGONS = 7;
+  const TERMSRV_SUCC_LOCAL_LOGONS = 8;
+  const TERMSRV_SUCC_REMOTE_LOGONS = 9;
+  const TERMSRV_SUCC_SESSION0_LOGONS = 10;
+  const TERMSRV_CURRENT_TERMINATING_SESSIONS = 11;
+  const TERMSRV_CURRENT_LOGGEDON_SESSIONS = 12;
+
+type
+  _TS_COUNTER_HEADER = record
+    dwCounterID: DWORD;
+    bResult: Boolean;
+  end;
+  TS_COUNTER_HEADER = _TS_COUNTER_HEADER;
+  TTSCounterHeader = TS_COUNTER_HEADER;
+  PTS_COUNTER_HEADER = ^TS_COUNTER_HEADER;
+  PTSCounterHeader = PTS_COUNTER_HEADER;
+
+  _TS_COUNTER = record
+    CounterHead: TS_COUNTER_HEADER;
+    dwValue: DWORD;
+    StartTime: LARGE_INTEGER; //Currently, always set to zero because time stamps are not supported.
+  end;
+  TS_COUNTER = _TS_COUNTER;
+  TTSCounter = TS_COUNTER;
+  PTS_COUNTER = ^TS_COUNTER;
+  PTSCounter = PTS_COUNTER;
+
 function AreWeRunningTerminalServices: Boolean;
 
 procedure CachedGetUserFromSid(pSid: PSID; pUserName: LPWSTR;
@@ -785,10 +880,6 @@ function ElapsedTimeStringVistaRTM(DiffTime: PDiffTime; bShowSeconds: Boolean;
 function FileTime2DateTime(FileTime: TFileTime): TDateTime;
 
 function GetUnknownString: PWideChar; stdcall;
-
-// Helper function that inits the structure for you!
-procedure InitTermSrvCounterArray(
-  var ATermSrvCounterArray: TTermSrvCounterArray);
 
 function IsTerminalServiceRunning: boolean;
 
@@ -870,8 +961,7 @@ function WinStationGetRemoteIPAddress(hServer: HANDLE; SessionId: DWORD;
   var RemoteIPAddress: WideString; var Port: WORD): Boolean;
 
 function WinStationGetTermSrvCountersValue(hServer: Handle;
-  dwArraySize: DWORD; PCountersArray: PTERM_SRV_COUNTER_ARRAY): Boolean;
-  stdcall;
+  dwEntries: DWORD; pCounter: PTS_COUNTER): Boolean; stdcall;
 
 function WinStationNameFromLogonIdA(hServer: HANDLE; SessionId: ULONG;
   pWinStationName: LPSTR): Boolean; stdcall;
@@ -1796,7 +1886,7 @@ begin
   end;
 end;
 
-procedure InitTermSrvCounterArray(var ATermSrvCounterArray: TTermSrvCounterArray);
+{procedure InitTermSrvCounterArray(var ATermSrvCounterArray: TTermSrvCounterArray);
 begin
   ATermSrvCounterArray[1].dwIndex := TOTAL_SESSIONS_CREATED_COUNTER;
   ATermSrvCounterArray[2].dwIndex := TOTAL_SESSIONS_DISCONNECTED_COUNTER;
@@ -1805,7 +1895,7 @@ begin
   ATermSrvCounterArray[5].dwIndex := TOTAL_SESSIONS_TOTAL_DISCONNECTED_NOW_COUNTER;
   ATermSrvCounterArray[6].dwIndex := TOTAL_SESSIONS_TOTAL_CONNECTED_NOW_COUNTER_2;
   ATermSrvCounterArray[7].dwIndex := TOTAL_SESSIONS_TOTAL_DISCONNECTED_NOW_COUNTER_2;
-end;
+end;}
 
 // This is the way WTSApi32.dll checks if Terminal Service is running
 function IsTerminalServiceRunning: boolean;
