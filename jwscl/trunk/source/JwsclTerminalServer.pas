@@ -3618,7 +3618,6 @@ end;
 procedure TJwWTSSessionStatistics.UpdateCounters;
 var
   i: Integer;
-  bSucceeded: Boolean;
 begin
   { Initialize Array }
   for i := Low(TSCounterArray) to High(TSCounterArray) do
