@@ -2568,7 +2568,7 @@ begin
   for i := 0 to Count - 1 do
   begin
     Result^.Privileges[i].Luid := PrivByIdx[i].LUID;
-    Result^.Privileges[i].Attributes := 0;
+    Result^.Privileges[i].Attributes := PrivByIdx[i].Attributes;
     //SE_PRIVILEGE_ENABLED_BY_DEFAULT or SE_PRIVILEGE_ENABLED;
   end;
 end;
@@ -5274,21 +5274,16 @@ end;
 
 class function TJwSecurityToken.HasThreadAToken(): boolean;
 var
-  p: TJwSecurityToken;
+  Handle : DWORD;
 begin
-  p := nil;
-  try
-    p      := GetThreadToken(TOKEN_QUERY or TOKEN_READ, False);
-    Result := Assigned(p);
-    if not Result then
-      p := GetThreadToken(TOKEN_QUERY or TOKEN_READ, True);
-    Result := Assigned(p);
+  Handle := INVALID_HANDLE_VALUE;
+  result := OpenThreadToken(GetCurrentThread, TOKEN_QUERY or TOKEN_READ, false, Handle);
 
-  except
-    Result := False;
-  end;
+  if not result then
+    result := OpenThreadToken(GetCurrentThread, TOKEN_QUERY or TOKEN_READ, true, Handle);
 
-  p.Free;
+  if Handle <> INVALID_HANDLE_VALUE then
+    CloseHandle(Handle);
 end;
 
 class function TJwSecurityToken.GetThreadToken(
@@ -5800,8 +5795,18 @@ begin
    JwIntegerHash(P, Integer(Shared));
    JwIntegerHash(P, Integer(TokenOrigin.LowPart));
    JwStringHash(P, ClassName);
-   JwStringHash(P, TokenUserName);
+   try
+     JwStringHash(P, TokenUserName);
+   except
+     {
+     http://msdn.microsoft.com/en-us/magazine/cc163883.aspx
+     If the token is opened with SECURITY_IDENTIFICATION
+     this fails.
+     }
+   end;
+
    JwStringHash(P, UserName);
+
 
   result := JwEndCreateHash(P);
 end;
@@ -5810,11 +5815,22 @@ function TJwSecurityToken.ToString: String;
 var
   Groups,Restricted : TJwSecurityIdList;
   Privs : TJwPrivilegeSet;
+  sUserName : String;
 begin
   Groups := TokenGroups;
   Restricted := TokenRestrictedSids;
   Privs := GetTokenPrivileges;
 
+  try
+    sUserName := TokenUserName;
+  except
+   {
+   http://msdn.microsoft.com/en-us/magazine/cc163883.aspx
+   If the token is opened with SECURITY_IDENTIFICATION
+   this fails.
+   }
+    sUserName := '<Access denied>';
+  end;
 
   try
     result := JwCreateToString(
@@ -5827,7 +5843,7 @@ begin
      'IsRestricted',IsRestricted,
      'SessionID',TokenSessionId,
      'PrimaryGroup',PrimaryGroup.ToString,
-     'TokenUserName',TokenUserName,
+     'TokenUserName',sUserName,
      'UserName',UserName,
      'TokenType', GetEnumName(TypeInfo(TOKEN_TYPE), integer(TokenType)),
      'Shared', Shared,

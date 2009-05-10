@@ -95,6 +95,7 @@ type
     function Lock : IJwAutoLock;
   end;
 
+
   {<B>TJwAutoPointer</B> implements tool functions for creating new and wrapping existing
    pointers and classes for auto destruction. }
   TJwAutoPointer = class
@@ -218,7 +219,7 @@ type
       section defined by parameter AutoPointer. If this section was already entered by
       another thread, the constructor is blocked until released. There is no timeout!
       
-      
+
       
       
       Parameters

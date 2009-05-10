@@ -96,6 +96,8 @@ type
     fDACL:     TJwDAccessControlList;
     fAuditACL: TJwSAccessControlList;
 
+    fDACLPresent : Boolean;
+
     fProtectionDACLState,
     fProtectionSACLState  : TJwACLProtection;
     fTag : Integer;
@@ -712,6 +714,23 @@ type
     property AuditInherited: boolean
       Read fAuditInherited Write fAuditInherited;
 
+    {This property is useful to determine whether the property DACL should be
+    considered if its value is nil. A nil DACL is considered as "allow everybody".
+    If DACLPresent is true and DACL is nil and any of the Create_SD and Create_SA
+    function is called, the newly created winapi security descriptor will have a
+    NULL DACL and so allow everybody access; otherwise the SD will not have a DACL at all.
+
+    This situation is equal to a DACL with an access entry that grants GENERIC_ALL to World SID.
+
+    This property is automatically set to true if a DACL was set to a value different to nil;
+    otherwise it won't be set.
+
+    The initial value is true.
+    }
+    property DACLPresent : Boolean read fDACLPresent write fDACLPresent;
+
+
+
 (*       {<B>Text</B> creates a security string descriptor.
         You can set flags to define which information is placed in the newly created string.
         The following flags can be combined with OR:
@@ -811,6 +830,8 @@ begin
 
   fOwnOwner := False;
   fOwnPrimaryGroup := False;
+
+  DACLPresent := true;
 
   fOwnerInherited := False;
   fPrimaryGroupInherited := False;
@@ -1383,6 +1404,8 @@ begin
       fDACL := TJwDAccessControlList.Create;
       fDACL.Assign(anACL);
     end;
+
+    DACLPresent := True; //we have a DACL
   end
 
   else
@@ -1414,7 +1437,9 @@ begin
 
   //if anACL list was provided we assign it to our
   if Assigned(fAuditACL) and Assigned(anACL) then
+  begin
     fAuditACL.Assign(anACL);
+  end;
 
   //if there is no anACL list we free the current one
   //so we get a NULL SACL
@@ -1587,7 +1612,7 @@ begin
       //DACL.Free_PACL(aACL);
     end
     else
-    if not SetSecurityDescriptorDacl(Result, False, nil, fDACLInherited) then
+    if not SetSecurityDescriptorDacl(Result, DACLPresent, nil, fDACLInherited) then
     begin
       FreeMem(Result);
       raise EJwsclWinCallFailedException.CreateFmtEx(

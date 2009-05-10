@@ -497,7 +497,7 @@ function JwWaitForMultipleObjects(const Handles: TJwHandles; bWaitAll: LongBool;
            dwMilliseconds: DWord): DWord; overload;
 
 function JwHandlesArray(const Handles: array of THandle) : TJwHandles;
-function JwAddHandleToArray(TargetHandles: TJwHandles; const Handles: array of THandle) : TJwHandles;
+procedure JwAddHandleToArray(var TargetHandles: TJwHandles; const Handles: array of THandle);
 
 {<B>JwCreateWaitableTimer</B> creates a waitable timer handle.
 
@@ -632,8 +632,10 @@ previously saved by JwSaveHashToRegistry.
 TJwFileHashData must be freed by TJwHash.FreeBuffer (unit JwsclCryptProvider.pas).
 
 raise
+  ERegistryException If the given key was not found.
   Exception This procedure may raise exception coming from TRegistry methods.
-  
+
+
 remarks
   The procedure has some characteristics :
   * It does not check for a correct hash value. However the key type of "HashName" must be binary though.
@@ -785,8 +787,11 @@ function JwCreateToString(const Values : array of const) : String;
       vtAnsiString : result := String(AnsiString(Values[i].VAnsiString));
       vtWideString : result := WideString(Values[i].VWideString);
       vtString : result := String(Values[i].VString^);
+{$IFDEF DELPHI2009_UP}
+      vtUnicodeString : result := UnicodeString(Values[i].VUnicodeString);
+{$ENDIF DELPHI2009_UP}
     else
-      Result := '??';
+      Result := '<error>';
     end;
   end;
 
@@ -992,23 +997,23 @@ var
 begin
   result.Size := 0;
   result.Hash := nil;
-  
+
+  Reg := TRegistry.Create(KEY_QUERY_VALUE or KEY_READ);
   try
-    Reg := TRegistry.Create(KEY_QUERY_VALUE or KEY_READ);
-    try
-      Reg.RootKey := Hive;
-      if Reg.OpenKey(Key, false)
-	   //don't check for these value since we need an exception to notify the caller 
-       { and Reg.ValueExists(SizeName)
-        and Reg.ValueExists(HashName)}
-        then
+    Reg.RootKey := Hive;
+    if Reg.OpenKey(Key, false)
+   //don't check for these value since we need an exception to notify the caller
+     { and Reg.ValueExists(SizeName)
+      and Reg.ValueExists(HashName)}
+      then
+    begin
       try
         result.Size := Reg.ReadInteger(SizeName);
         if (result.Size > 0) and (result.Size < 1024) then
         begin
-		  // TJwHash uses GetMem; the returned record 
-		  // TJwFileHashData is freed by TJwHash.FreeBuffer
-		  // Change this memory manager when TJwHash is changed.
+      // TJwHash uses GetMem; the returned record
+      // TJwFileHashData is freed by TJwHash.FreeBuffer
+      // Change this memory manager when TJwHash is changed.
           GetMem(result.Hash, result.Size);
 		  
           ZeroMemory(result.Hash, result.Size);
@@ -1021,10 +1026,11 @@ begin
       finally
         Reg.CloseKey;
       end;
-    finally
-      Reg.Free;
-    end;
-  except
+    end
+    else
+      raise ERegistryException.CreateFmt('Key %s not found/accessible.',[Key]);
+  finally
+    Reg.Free;
   end;
 end;
 
@@ -1393,20 +1399,19 @@ begin
   end;
 end;
 
-function JwAddHandleToArray(TargetHandles: TJwHandles; const Handles: array of THandle) : TJwHandles;
-var i, len : Integer;
+procedure JwAddHandleToArray(var TargetHandles: TJwHandles; const Handles: array of THandle);
+var i, len, StartI : Integer;
 begin
-  result := TargetHandles;
-
   len := Length(TargetHandles);
   if len < 0 then
     len := 0;
 
+  StartI := Len;
   if Length(Handles) > 0 then
-    SetLength(result, len+Length(Handles));
+    SetLength(TargetHandles, len+Length(Handles));
   for I := low(Handles) to High(Handles) do
   begin
-    result[i+Length(TargetHandles)] := Handles[i];
+    TargetHandles[i+StartI] := Handles[i];
   end;
 end;
 

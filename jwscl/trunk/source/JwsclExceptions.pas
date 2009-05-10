@@ -37,6 +37,7 @@ Portions created by Christian Wimmer are Copyright (C) Christian Wimmer. All rig
 Remarks
 Install JCL and compile this unit with compiler directive SM_JCLDEBUG and TD32 Debug Info.
 
+Warning: Only use Delphi 7 syntax!
 
 }
 
