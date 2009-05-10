@@ -814,7 +814,7 @@ type {<B>TJwCreateProcessParameters</B> contains information supplied to CreateP
        {<B>QuotaLimits</B> receives information about quota limits}
        QuotaLimits: QUOTA_LIMITS;
        {<B>SubStatus</B> receives extended error information from LsaLogonUser}
-       SubStatus: integer; //Fehler von LSALogonUser
+       SubStatus: NTSTATUS; //Fehler von LSALogonUser
      end;
 
 {<B>JwCreateProcessAsAdminUser</B> logs on a user and creates a new process under its logon session.
