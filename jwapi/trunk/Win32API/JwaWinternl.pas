@@ -173,7 +173,7 @@ type
 
 {$IFNDEF JWA_INCLUDEMODE}
 type
-  NTSTATUS = Longword;
+  NTSTATUS = ULONG;
 
   PCSZ = PAnsiChar;
 
