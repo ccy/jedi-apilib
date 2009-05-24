@@ -141,7 +141,7 @@ const
   ws2_32 = 'ws2_32.dll';
   wsock32 = 'wsock32.dll';
   wtsapi = 'wtsapi32.dll';
-
+  ktmw32 = 'ktmw32.dll';
 
 
   
