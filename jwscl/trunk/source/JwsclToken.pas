@@ -500,12 +500,12 @@ type
          to call CreateProcessAsUser to lunch a process in the given terminal session.
 
          @param SessionID defines the session which is used to obtain the token.
-               If set to INVALID_HANDLE_VALUE, the function does the following :
+               If set to INVALID_HANDLE_VALUE, the function does the following steps:
                
                 1. Try to open the token of the current console session. Using WtsGetActiveConsoleSessionID to obtain the session ID. 
                 2. Try to open the token of the current session using the session ID WTS_CURRENT_SESSION 
                 
-               If this fails an exception is raised. 
+               If it fails an exception is raised. 
 
          raises
  EJwsclUnsupportedWindowsVersionException:  is raised if the Windows System does not have WTS function support 
@@ -521,18 +521,21 @@ type
      to CreateWTSQueryUserToken.
 
      @param Server defines the Terminal Server where this function will
-      be processed. Use nil to use current server. 
-      @param SessionID defines the session which is used to obtain the token.
-         If set to INVALID_HANDLE_VALUE, the function does the following :
+      be processed. Use nil to use current server.
+      This parameter receives an instance of a TJwTerminalServer object or derivat.
+     @param SessionID defines the session which is used to obtain the token.
+         If set to INVALID_HANDLE_VALUE, the function does the following steps :
 
-          1. Try to open the token of the current console session. Using WtsGetActiveConsoleSessionID to obtain the session ID. 
+          1. Try to open the token of the current console session. Using WtsGetActiveConsoleSessionID to obtain the session ID.
           2. Try to open the token of the current session using the session ID WTS_CURRENT_SESSION
-          
-         If this fails an exception is raised. 
+
+         If it fails an exception is raised.
 
      raises
- EJwsclTerminalServiceNecessary:  will be raised if the no terminal
-      service is running 
+      EInvalidCast: This exception will be raised if a given instance to parameter Server
+        is not a TJwTerminalServer object or a derivat.
+      EJwsclTerminalServiceNecessary:  will be raised if the no terminal
+        service is running
       EJwsclInvalidPrimaryToken: will be raised if the process token
       is not a SYSTEM user token 
       EJwsclPrivilegeCheckException: will be raised if the privilege
@@ -3418,12 +3421,13 @@ begin
   if Assigned(Server) then
   begin
     TS := Server as TJwTerminalServer;
-    //TODO: @remko : TS.IsTerminalServiceRunning needs to be implemented
-    TSRunning := false;
     hServer := TS.ServerHandle;
+
+    TSRunning := true;
   end
   else
-    TSRunning := TJwWindowsVersion.IsTerminalServiceRunning;
+    TSRunning := TJwWindowsVersion.IsWindows7 or //On Win7 WTS calls are always valid
+      TJwWindowsVersion.IsTerminalServiceRunning;
 
   if (not TSRunning) then
     raise EJwsclTerminalServiceNecessary.CreateFmtEx(

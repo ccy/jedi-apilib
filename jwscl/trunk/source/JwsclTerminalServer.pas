@@ -2429,6 +2429,10 @@ type
       function GetCounterValue(const CounterID: Integer): Integer;
   published
     public
+      {
+      Raises
+        EJwsclNILParameterException: will be raised if AOwner is nil. 
+      }
       constructor Create(const AOwner: TJwTerminalServer);
       property TotalSessionsCreated: Integer index TERMSRV_TOTAL_SESSIONS read GetCounterValue;
       property TotalSessionsDisconnected: Integer index TERMSRV_DISC_SESSIONS read GetCounterValue;
@@ -3582,6 +3586,8 @@ end;
 
 constructor TJwWTSSessionStatistics.Create(const AOwner: TJwTerminalServer);
 begin
+  JwRaiseOnNilParameter(AOwner, 'AOwner', 'Create', ClassName, RsUNTerminalServer);
+
   FOwner := AOwner;
   UpdateCounters;
 end;
