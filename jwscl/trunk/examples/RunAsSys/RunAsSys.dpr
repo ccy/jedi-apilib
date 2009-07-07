@@ -12,19 +12,11 @@ Visit at http://blog.delphi-jedi.net/
 program RunAsSys;
 
 uses
-{$IFDEF FASTMM}
-  FastMM4,
-{$ENDIF}  
-{$IFDEF EUREKALOG}
-  ExceptionLog,
-{$ENDIF EUREKALOG}  
   SvcMgr,
   SysUtils,
   Dialogs,
-
   Controls,
   uLogging,
-
   JwaWindows,
   JwsclLogging,
   JwsclToken,
@@ -32,8 +24,9 @@ uses
   JwsclElevation,
   JwsclVersion,
   JwsclExceptions,
+  jwscltypes,
   JwsclConstants,
-  RunAsSysService in 'RunAsSysService.pas' {RunAsSysSvc3: TService};
+  RunAsSysService in 'RunAsSysService.pas' {RunAsSysSvc9: TService};
 
 {$R *.RES}
 
@@ -70,12 +63,12 @@ begin
       for i := 1 to ParamCount do
       begin
         Log.Log('Adding Parameter: '+ParamStr(i));
-        GetMem(args[i], Length(ParamStr(i))+2);
+        GetMem(args[i], SizeOf(Char) * (Length(ParamStr(i))+2));
         StringCchCopy(args[i], Length(ParamStr(i))+2, PChar(ParamStr(i)));
       end;
       try
         Log.Log('Start service...');
-        if not StartServiceA(hSvc, Length(args), @args[0]) then
+        if not StartService(hSvc, Length(args), @args[0]) then
           RaiseLastOSError;
         Log.Log('Cleanup...');
       finally
@@ -135,11 +128,13 @@ var
 
 var
   SuRunCode : Cardinal;
+  Retries,
   i : Integer;
 
   SuRun,
   Parameters : String;
   hRes : HRESULT;
+
 
   Continue : Boolean;
   Shell : TShellExecuteInfo;
@@ -158,7 +153,7 @@ begin
      
       Log.Log('Found service privileges. Starting service...');
       SvcMgr.Application.Initialize;
-      SvcMgr.Application.CreateForm(TRunAsSysSvc3, RunAsSysSvc3);
+      SvcMgr.Application.CreateForm(TRunAsSysSvc9, RunAsSysSvc9);
   {$IFDEF CMD}
       RunAsSysSvc3.DoExecute();
   {$ELSE}
@@ -191,22 +186,45 @@ begin
       SvcMgr.Application.Free;
       SvcMgr.Application := TServiceApplicationEx.Create(nil);
       SvcMgr.Application.Initialize;
-      SvcMgr.Application.CreateForm(TRunAsSysSvc3, RunAsSysSvc3);
+      SvcMgr.Application.CreateForm(TRunAsSysSvc9, RunAsSysSvc9);
+
+
+      Randomize;
+      Retries := 5;
+
+     {
+     Todo:
+       The service itself started above must be changed as well to the name given here.
+       Otherwise it wont start.
+     }
+    {  while Retries > 0 do}
+      begin
+{        RunAsSysSvc8.Name := 'RunAsSysSvc'+IntToStr(Random(100000));
+        RunAsSysSvc8.DisplayName := 'This is a temporary RunAsSys service. ' + DateTimeToStr(Now) ;
+
+ }
+        RunAsSysSvc9.DisplayName := 'This is a temporary RunAsSys service. ' + DateTimeToStr(Now) ;
+
+        try
+          Log.Log('Registering service...');
+          TServiceApplicationEx(SvcMgr.Application).RegisterServices(true, true);
+          Retries := 0;
+        except
+          on E : EOSError do
+          begin
+            Log.Exception(E);
+            if (E.ErrorCode <> 1073) {and (Retries <= 0)} then
+              raise;
+            Dec(Retries);
+          end;
+        end;
+
+      end;
+
 
       try
-        Log.Log('Registering service...');
-        TServiceApplicationEx(SvcMgr.Application).RegisterServices(true, true);
-      except
-        on E : EOSError do
-        begin
-          Log.Exception(E);
-          if E.ErrorCode <> 1073 then
-            raise;
-        end;
-      end;
-      try
         Log.Log('Starting service...');
-        StartTheService(RunAsSysSvc3);
+        StartTheService(RunAsSysSvc9);
       finally
        Log.Log('Remove service.');
        TServiceApplicationEx(SvcMgr.Application).RegisterServices(false, true);
