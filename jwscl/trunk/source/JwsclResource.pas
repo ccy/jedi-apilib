@@ -306,6 +306,9 @@ const
     ' apply siSaclSecurityInformation and the privilege SE_SECURITY_NAME.';
     
   RsUnimplementedSACLInheritance = 'Inheritance of SACL.';
+  RsInvalidParameterAccessCheck = 'The parameter DesiredAccess must not contain MAXIMUM_ALLOWED for this method. '+
+    'If you need to retrieve maximum allowed rights you should call the other AccessCheck method with parameter '+
+    'GrantedAccess present.';
 
 
 

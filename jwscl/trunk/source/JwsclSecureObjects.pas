@@ -1560,6 +1560,11 @@ type
       {<B>AccessCheck</B> checks whether the user has access to the the file of the instance or not.
        @param DesiredAccess defines which access rights are to be checked. If set to High(Cardinal)
           the access rights given in the constructor are used.
+
+       Exceptions
+        EJwsclInvalidParameterException: This exception will be raised if DesiredAccess contains the
+            MAXIMUM_ALLOWED access right. If you want to check for granted access rights call
+            the other method and read parameter GrantedAccess.
       }
     function AccessCheck(DesiredAccess: TJwAccessMask = Cardinal(-1);
       const ClientToken: TJwSecurityToken = nil)
@@ -2354,6 +2359,11 @@ type
        {<B>AccessCheck</B> checks whether the user has access to the the file of the instance or not.
        @param DesiredAccess defines which access rights are to be checked. If set to High(Cardinal)
           the access rights given in the constructor are used.
+
+       Exceptions
+        EJwsclInvalidParameterException: This exception will be raised if DesiredAccess contains the
+            MAXIMUM_ALLOWED access right. If you want to check for granted access rights call
+            the other method and read parameter GrantedAccess.
       }
     function AccessCheck(DesiredAccess: TJwAccessMask = Cardinal(-1);
       const ClientToken: TJwSecurityToken = nil)
@@ -5042,6 +5052,13 @@ var
   GA: Cardinal;
   privSet: TJwPrivilegeSet;
 begin
+  if DesiredAccess and MAXIMUM_ALLOWED <> 0 then
+  begin
+    raise EJwsclInvalidParameterException.CreateFmtEx(
+      RsInvalidParameterAccessCheck, 'AccessCheck',
+      ClassName, RsUNSecureObjects, 0, False, []);
+  end;
+  
   SD := GetSecurityDescriptor([siOwnerSecurityInformation,
     siGroupSecurityInformation, siDaclSecurityInformation]);
 
@@ -7069,7 +7086,7 @@ class function TJwSecureFileObject.GetFileInheritanceSource(
     SD:  TJwSecurityDescriptor;
 
     bOwnedSD : Boolean;
-    IncFlags : TJwInclusionFlag;
+    //IncFlags : TJwInclusionFlag;
 
 
   begin
@@ -7140,20 +7157,20 @@ class function TJwSecureFileObject.GetFileInheritanceSource(
         Their (inherited) access masks can have less bits set than their parents.
         So we check using eactSEAccessMask (smaller equal)
       }
-     { IncFlags := [efInherited];
+   {   IncFlags := [efInherited];
       if Container then
         Include(ExclusionFlags, efLeaf)
       else
-        Include(ExclusionFlags, ef)  }
+        Include(ExclusionFlags, ef)   }
 
       ps := SD.DACL.FindEqualACE(PreviousInhACL[i], [eactSameSid,
-        eactSameAccessMask, eactSEAccessMask, eactSameType], -1, [efExplicit], [], true);
+        eactSameAccessMask, eactSEAccessMask, eactSameType, eactSameFlags, eactGEFlags], -1, [],[efExplicit], true);
 
       //not inherited found
       //search for explicit only
       if ps < 0 then
         ps := SD.DACL.FindEqualACE(PreviousInhACL[i], [eactSameSid,
-          eactSameAccessMask, eactSEAccessMask, eactSameType], -1, [efInherited], [],  false);
+          eactSameAccessMask, eactSEAccessMask, eactSameType], -1, [], [efInherited]  ,false);
 
   //    ShowMessage(PreviousInhACL[i].GetTextMap(TJwSecurityFileFolderMapping));
       //ShowMessage( SD.DACL[i].GetTextMap(TJwSecurityFileFolderMapping));
@@ -7175,8 +7192,8 @@ class function TJwSecureFileObject.GetFileInheritanceSource(
           not (afInheritedAce in SD.DACL[ps].Flags) and
 
           //if object is container, only check container inheritance
-          ((Container and (afContainerInheritAce in SD.DACL[ps].Flags)) or
-           (not Container and (afObjectInheritAce in SD.DACL[ps].Flags))) and
+        {  ((Container and (afContainerInheritAce in SD.DACL[ps].Flags)) or
+           (not Container and (afObjectInheritAce in SD.DACL[ps].Flags))) and}
           //not (afContainerInheritAce in SD.DACL[ps].Flags) and
           //current ACE is explicit
           not (PreviousInhACL[i].Ignore) then
@@ -7619,10 +7636,16 @@ function TJwSecureRegistryKey.AccessCheck(DesiredAccess: TJwAccessMask =
   TJwSecurityToken = nil): boolean;
 var
   SD: TJwSecurityDescriptor;
-  //[Hint] GA : TJwSecurityGenericMapping;
   privSet: TJwPrivilegeSet;
   GrantedAccess: Cardinal;
 begin
+  if DesiredAccess and MAXIMUM_ALLOWED <> 0 then
+  begin
+    raise EJwsclInvalidParameterException.CreateFmtEx(
+      RsInvalidParameterAccessCheck, 'AccessCheck',
+      ClassName, RsUNSecureObjects, 0, False, []);
+  end;
+
   SD := GetSecurityDescriptor([siOwnerSecurityInformation,
     siGroupSecurityInformation, siDaclSecurityInformation]);
 

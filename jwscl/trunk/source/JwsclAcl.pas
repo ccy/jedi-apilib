@@ -304,10 +304,10 @@ type
      @param EqualACETypeSet defines the criterias that are used to compare the ACE.
        The following criterias are available and can be combined in a set.
           
-           # eactSameSid    The SID is used to compare (EqualSID) and must be equal 
+           # eactSameSid    The SID is used to compare (EqualSID) and must be equal
            # eactSameFlags The Flags are compared and must be equal 
            # eactSameAccessMask The AccessMasks are compared and must be equal 
-           # eactSameType The ACE type (deny, allow) are compared and must be equal 
+           # eactSameType The ACE type (deny, allow) are compared and must be equal
            
      @param iPos defines the start position for the search in the ACL list starting from zero (0).
 
@@ -316,8 +316,9 @@ type
      }
     function FindEqualACE(const AccessEntry: TJwSecurityAccessControlEntry;
       EqualAceTypeSet: TJwEqualAceTypeSet; const StartIndex: integer = -1;
+      const Inclusion : TJwInclusionFlags = [ifInherited, ifExplicit, ifContainer, ifLeaf];
       const Exclusion : TJwExclusionFlags = [];
-      const Inclusion : TJwInclusionFlags = []; const Reverse : Boolean = false): integer;
+      const Reverse : Boolean = false): integer;
 
     {<B>ConvertInheritedToExplicit</B> removes the inheritance flag from all ACEs.
       This is useful if a DACL with inherited ACEs must be converted into a DACL with
@@ -2838,8 +2839,8 @@ function TJwSecurityAccessControlList.FindEqualACE(
   EqualAceTypeSet: TJwEqualAceTypeSet;
   const StartIndex: integer = -1;
   //new
+  const Inclusion : TJwInclusionFlags = [ifInherited, ifExplicit, ifContainer, ifLeaf];
   const Exclusion : TJwExclusionFlags = [];
-  const Inclusion : TJwInclusionFlags = [];
   const Reverse : Boolean = false): integer;
 var
   i: integer;
@@ -2911,6 +2912,11 @@ begin
     if (eactSameType in EqualAceTypeSet) then
       B := B and (ACEi.AceType = AccessEntry.AceType);
 
+    if B and (ifContainer in Inclusion) then
+      B := B and (afContainerInheritAce in ACEi.Flags);
+
+    if B and (ifLeaf in Inclusion) then
+      B := B and (afObjectInheritAce in ACEi.Flags);
 
     if B then
     begin

@@ -1358,7 +1358,7 @@ type
     {<B>Hash</B> defines a dynamic memory block that contains
 	a hash. The pointer must be freed by TJwHash.FreeBuffer (unit JwsclCryptProvider.pas).
 	}
-	Hash : Pointer;
+  	Hash : Pointer;
     Size : Cardinal;
   end;
 

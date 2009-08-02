@@ -340,24 +340,6 @@ procedure JwUNIMPLEMENTED_DEBUG;
 {<B>JwUNIMPLEMENTED</B> raises exception EJwsclUnimplemented}
 procedure JwUNIMPLEMENTED;
 
-{<B>JwRaiseOnNilMemoryBlock</B> raises an exception EJwsclNilPointer if parameter P
- is nil; otherwise nothing happens.
-This function is like Assert but it will not be removed in a release build.
-
-@param P defines a pointer to be validated 
-@param ParameterName defines the name of the parameter which is validated and
- belongs to this pointer 
-@param MethodName defines the name of the method this parameter belongs to
-@param ClassName defines the name of the class the method belongs to. Can be
-  empty if the method does not belong to a class
-@param FileName defines the source file of the call to this procedure.
-
-raises
- EJwsclNilPointer:  will be raised if P is nil
-}
-procedure JwRaiseOnNilMemoryBlock(const P : Pointer;
-  const MethodName, ClassName, FileName : TJwString);
-
 {<B>JwCheckInitKnownSid</B> checks for the call of JwInitWellKnownSIDs
 and raises EJwsclInitWellKnownException if it was not called.
 
@@ -376,42 +358,6 @@ raises
 
 procedure JwCheckInitKnownSid(const MethodName, ClassName, FileName : TJwString);
 
-
-{<B>JwRaiseOnNilParameter</B> raises an exception EJwsclNILParameterException if parameter P
- is nil; otherwise nothing happens.
-This function is like Assert but it will not be removed in a release build.
-
-@param P defines a pointer to be validated
-@param ParameterName defines the name of the parameter which is validated and
- belongs to this pointer
-@param MethodName defines the name of the method this parameter belongs to
-@param ClassName defines the name of the class the method belongs to. Can be
-  empty if the method does not belong to a class
-@param FileName defines the source file of the call to this procedure.
-
-raises
- EJwsclNILParameterException:  will be raised if P is nil
-}
-procedure JwRaiseOnNilParameter(const P : Pointer;
-  const ParameterName, MethodName, ClassName, FileName : TJwString);
-
-{<B>JwRaiseOnClassTypeMisMatch</B> raises an exception EJwsclClassTypeMismatch if parameter Instance
- is not of type ExpectedClass.
-This function is like Assert but it will not be removed in a release build.
-
-@param Instance defines the class to be tested. If this parameter is nil, the procedure exists without harm.
-@param ExpectedClass defines the class type to be checked for.
-@param MethodName defines the name of the method this parameter belongs to
-@param ClassName defines the name of the class the method belongs to. Can be
-  empty if the method does not belong to a class
-@param FileName defines the source file of the call to this procedure.
-
-raises
- EJwsclNILParameterException:  will be raised if P is nil
-}
-procedure JwRaiseOnClassTypeMisMatch(const Instance : TObject;
-  const ExpectedClass : TClass;
-  const MethodName, ClassName, FileName : TJwString);
 
 {$IFDEF JW_TYPEINFO}
 {<B>GetUnitName</B> returns the name of unit where the given objects was defined in source code.
@@ -581,7 +527,7 @@ raise
 remarks
   * This function uses TJwFileStreamEx for getting hash in the fastest way possible.
   * This function uses SHA hashing.
-  
+
 }
 function JwCompareFileHash(const FilePath : WideString;
   const OriginalHash : TJwFileHashData) : Boolean;
@@ -713,7 +659,7 @@ function JwCreateToString(const Values : array of const) : String;
   
   
   
-  
+
   Parameters
   S :  Defines the string to be erased securely. The returned string will have a
        length of 0.
@@ -1160,13 +1106,7 @@ begin
 end;
 
 
-procedure JwRaiseOnNilParameter(const P : Pointer; const ParameterName, MethodName, ClassName, FileName : TJwString);
-begin
-  if not Assigned(P) then
-  raise EJwsclNILParameterException.CreateFmtEx(
-      RsNilParameter, MethodName,
-      ClassName, FileName, 0, False, [ParameterName]);
-end;
+
 
 procedure JwCheckInitKnownSid(const MethodName, ClassName, FileName : TJwString);
 begin
@@ -1176,25 +1116,6 @@ begin
       MethodName, ClassName, FileName, 0, false, []);
 end;
 
-procedure JwRaiseOnNilMemoryBlock(const P : Pointer; const MethodName, ClassName, FileName : TJwString);
-begin
-  if P = nil then
-    raise EJwsclNilPointer.CreateFmtEx(
-     RsNilPointer,
-      MethodName, ClassName, FileName, 0, false, []);
-end;
-
-procedure JwRaiseOnClassTypeMisMatch(const Instance : TObject;
-  const ExpectedClass : TClass;
-  const MethodName, ClassName, FileName : TJwString);
-begin
-  if Assigned(Instance) and
-    not (Instance is TJwSecurityDescriptor) then
-      raise EJwsclClassTypeMismatch.CreateFmtEx(
-               RsInvalidClassType,
-               MethodName, ClassName, FileName, 0, false,
-                [Instance.ClassName, ExpectedClass.ClassName]);
-end;
 
 function JwCheckArray(const Objs : TJwObjectTypeArray; out Index : Integer) : Boolean;
 var

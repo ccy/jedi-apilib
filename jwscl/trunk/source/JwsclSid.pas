@@ -2284,6 +2284,9 @@ end;
 procedure JwClearSidNameCache;
 var i : integer;
 begin
+  if not Assigned(JwSidNameCache) then
+    exit;
+
   JwSidNameCache.BeginUpdate;
   for I := 0 to JwSidNameCache.Count - 1 do
   begin
@@ -2296,6 +2299,9 @@ end;
 
 procedure JwInitSidNameCache;
 begin
+  if Assigned(JwSidNameCache) then
+    exit;
+
   JwSidNameCache := TStringList.Create;
   JwSidNameCache.Sorted := true;
   JwSidNameCache.Duplicates := dupAccept;

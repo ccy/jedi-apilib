@@ -424,6 +424,16 @@ type
       bOrHigher: boolean; SourceProc, SourceClass, SourceFile: TJwString;
       SourcePos: Cardinal); virtual;
 
+    {<B>IsTerminalServiceRunning</B> checks the status of the terminal service.
+
+     Return
+        Returns true if the terminal service is running; otherwise false.
+     Remarks
+        On Windows 7 (Workstation) the function returns in most cases false because
+        of a changed Windows TS architecture.
+        Even if TS is not running you can safely call any WTS function. So
+        you just need to check for Windows 7 and ignore the result of IsTerminalServiceRunning.
+    }
     class function IsTerminalServiceRunning : Boolean;
 
     // <B>GetNativeProcessorArchitecture</B> returns processor architecture of the current Windows version

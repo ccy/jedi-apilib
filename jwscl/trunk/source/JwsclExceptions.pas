@@ -35,7 +35,10 @@ Portions created by Christian Wimmer are Copyright (C) Christian Wimmer. All rig
 
 
 Remarks
-Install JCL and compile this unit with compiler directive SM_JCLDEBUG and TD32 Debug Info.
+* Install JCL and compile this unit with compiler directive SM_JCLDEBUG and TD32 Debug Info.
+* The GUIDs of each JWSCL exception are unique and won't be changed. If you add a new exception also
+  add a new and unique GUID to it. They will be parsed to create JwsclExceptionMappings.inc that contains the
+  JwExceptionMapping array. It will be used to de-/serialize exceptions to and from streams.
 
 Warning: Only use Delphi 7 syntax!
 
@@ -686,6 +689,64 @@ type
      ExcPtr : JwGeneralExceptionClass;
    end;
 
+procedure JwRaiseLastOSError(const FailedWin32FunctionName,
+  Method, ClassName, FileName : TJwString);
+
+
+{<B>JwRaiseOnNilParameter</B> raises an exception EJwsclNILParameterException if parameter P
+ is nil; otherwise nothing happens.
+This function is like Assert but it will not be removed in a release build.
+
+@param P defines a pointer to be validated
+@param ParameterName defines the name of the parameter which is validated and
+ belongs to this pointer
+@param MethodName defines the name of the method this parameter belongs to
+@param ClassName defines the name of the class the method belongs to. Can be
+  empty if the method does not belong to a class
+@param FileName defines the source file of the call to this procedure.
+
+raises
+ EJwsclNILParameterException:  will be raised if P is nil
+}
+procedure JwRaiseOnNilParameter(const P : Pointer;
+  const ParameterName, MethodName, ClassName, FileName : TJwString);
+
+{<B>JwRaiseOnClassTypeMisMatch</B> raises an exception EJwsclClassTypeMismatch if parameter Instance
+ is not of type ExpectedClass.
+This function is like Assert but it will not be removed in a release build.
+
+@param Instance defines the class to be tested. If this parameter is nil, the procedure exists without harm.
+@param ExpectedClass defines the class type to be checked for.
+@param MethodName defines the name of the method this parameter belongs to
+@param ClassName defines the name of the class the method belongs to. Can be
+  empty if the method does not belong to a class
+@param FileName defines the source file of the call to this procedure.
+
+raises
+ EJwsclNILParameterException:  will be raised if P is nil
+}
+procedure JwRaiseOnClassTypeMisMatch(const Instance : TObject;
+  const ExpectedClass : TClass;
+  const MethodName, ClassName, FileName : TJwString);
+
+
+{<B>JwRaiseOnNilMemoryBlock</B> raises an exception EJwsclNilPointer if parameter P
+ is nil; otherwise nothing happens.
+This function is like Assert but it will not be removed in a release build.
+
+@param P defines a pointer to be validated
+@param ParameterName defines the name of the parameter which is validated and
+ belongs to this pointer
+@param MethodName defines the name of the method this parameter belongs to
+@param ClassName defines the name of the class the method belongs to. Can be
+  empty if the method does not belong to a class
+@param FileName defines the source file of the call to this procedure.
+
+raises
+ EJwsclNilPointer:  will be raised if P is nil
+}
+procedure JwRaiseOnNilMemoryBlock(const P : Pointer;
+  const MethodName, ClassName, FileName : TJwString);
 
 
 //Mappings for JWSCL exceptions so we can
@@ -702,14 +763,50 @@ function JwMapException(Const Name : WideString) : TGuid; overload;
 {$IFNDEF SL_OMIT_SECTIONS}
 implementation
 
+uses JwsclConstants, JwsclDescriptor
 {$IFDEF SM_JCLDEBUG}
-uses jclDebug, JwsclStrings, JwsclConstants;
+  ,jclDebug, JwsclStrings
 {$ENDIF}
+;
 
 
 {$ENDIF SL_OMIT_SECTIONS}
 
 
+procedure JwRaiseLastOSError(const FailedWin32FunctionName,
+  Method, ClassName, FileName : TJwString);
+begin
+  raise EJwsclWinCallFailedException.CreateFmtEx(
+     RsWinCallFailed,
+      Method, ClassName, FileName, 0, false, [FailedWin32FunctionName]);
+end;
+
+procedure JwRaiseOnNilMemoryBlock(const P : Pointer; const MethodName, ClassName, FileName : TJwString);
+begin
+  if P = nil then
+    raise EJwsclNilPointer.CreateFmtEx(
+     RsNilPointer,
+      MethodName, ClassName, FileName, 0, false, []);
+end;
+
+procedure JwRaiseOnClassTypeMisMatch(const Instance : TObject;
+  const ExpectedClass : TClass;
+  const MethodName, ClassName, FileName : TJwString);
+begin
+  if Assigned(Instance) and
+    not (Instance is TJwSecurityDescriptor) then
+      raise EJwsclClassTypeMismatch.CreateFmtEx(
+               RsInvalidClassType,
+               MethodName, ClassName, FileName, 0, false,
+                [Instance.ClassName, ExpectedClass.ClassName]);
+end;
+procedure JwRaiseOnNilParameter(const P : Pointer; const ParameterName, MethodName, ClassName, FileName : TJwString);
+begin
+  if not Assigned(P) then
+  raise EJwsclNILParameterException.CreateFmtEx(
+      RsNilParameter, MethodName,
+      ClassName, FileName, 0, False, [ParameterName]);
+end;
 
 
 function JwMapException(Const Id : TGuid) : WideString;
