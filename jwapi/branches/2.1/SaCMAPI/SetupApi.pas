@@ -4185,7 +4185,7 @@ function SetupDiDestroyDeviceInfoList(DeviceInfoSet: HDEVINFO): BOOL; stdcall;
 {$EXTERNALSYM SetupDiDestroyDeviceInfoList}
 
 function SetupDiEnumDeviceInterfaces(DeviceInfoSet: HDEVINFO;
-  DeviceInfoData: PSPDevInfoData; const InterfaceClassGuid: TGUID;
+  DeviceInfoData: PSPDevInfoData; var InterfaceClassGuid: TGUID;
   MemberIndex: DWORD; var DeviceInterfaceData: TSPDeviceInterfaceData): BOOL; stdcall;
 {$EXTERNALSYM SetupDiEnumDeviceInterfaces}
 
@@ -4194,7 +4194,7 @@ function SetupDiEnumDeviceInterfaces(DeviceInfoSet: HDEVINFO;
 //
 
 function SetupDiEnumInterfaceDevice(DeviceInfoSet: HDEVINFO;
-  DeviceInfoData: PSPDevInfoData; const InterfaceClassGuid: TGUID;
+  DeviceInfoData: PSPDevInfoData; var InterfaceClassGuid: TGUID;
   MemberIndex: DWORD; var DeviceInterfaceData: TSPDeviceInterfaceData): BOOL; stdcall;
 {$EXTERNALSYM SetupDiEnumDeviceInterfaces}
 
