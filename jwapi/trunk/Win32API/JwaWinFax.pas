@@ -1699,7 +1699,7 @@ var
 
 function FaxEnableRoutingMethodA;
 begin
-  GetProcedureAddress(_FaxEnableRoutingMethodA, ntdll, 'FaxEnableRoutingMethodA');
+  GetProcedureAddress(_FaxEnableRoutingMethodA, winfax, 'FaxEnableRoutingMethodA');
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -1712,7 +1712,7 @@ var
 
 function FaxEnableRoutingMethodW;
 begin
-  GetProcedureAddress(_FaxEnableRoutingMethodW, ntdll, 'FaxEnableRoutingMethodW');
+  GetProcedureAddress(_FaxEnableRoutingMethodW, winfax, 'FaxEnableRoutingMethodW');
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -1726,7 +1726,7 @@ var
 
 function FaxEnableRoutingMethod;
 begin
-  GetProcedureAddress(_FaxEnableRoutingMethod, ntdll, 'FaxEnableRoutingMethod'+AWSuffix);
+  GetProcedureAddress(_FaxEnableRoutingMethod, winfax, 'FaxEnableRoutingMethod'+AWSuffix);
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -1740,7 +1740,7 @@ var
 
 function FaxEnumGlobalRoutingInfoA;
 begin
-  GetProcedureAddress(_FaxEnumGlobalRoutingInfoA, ntdll, 'FaxEnumGlobalRoutingInfoA');
+  GetProcedureAddress(_FaxEnumGlobalRoutingInfoA, winfax, 'FaxEnumGlobalRoutingInfoA');
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -1753,7 +1753,7 @@ var
 
 function FaxEnumGlobalRoutingInfoW;
 begin
-  GetProcedureAddress(_FaxEnumGlobalRoutingInfoW, ntdll, 'FaxEnumGlobalRoutingInfoW');
+  GetProcedureAddress(_FaxEnumGlobalRoutingInfoW, winfax, 'FaxEnumGlobalRoutingInfoW');
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -1767,7 +1767,7 @@ var
 
 function FaxEnumGlobalRoutingInfo;
 begin
-  GetProcedureAddress(_FaxEnumGlobalRoutingInfo, ntdll, 'FaxEnumGlobalRoutingInfo'+AWSuffix);
+  GetProcedureAddress(_FaxEnumGlobalRoutingInfo, winfax, 'FaxEnumGlobalRoutingInfo'+AWSuffix);
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -1781,7 +1781,7 @@ var
 
 function FaxSetGlobalRoutingInfoA;
 begin
-  GetProcedureAddress(_FaxSetGlobalRoutingInfoA, ntdll, 'FaxSetGlobalRoutingInfoA');
+  GetProcedureAddress(_FaxSetGlobalRoutingInfoA, winfax, 'FaxSetGlobalRoutingInfoA');
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -1794,7 +1794,7 @@ var
 
 function FaxSetGlobalRoutingInfoW;
 begin
-  GetProcedureAddress(_FaxSetGlobalRoutingInfoW, ntdll, 'FaxSetGlobalRoutingInfoW');
+  GetProcedureAddress(_FaxSetGlobalRoutingInfoW, winfax, 'FaxSetGlobalRoutingInfoW');
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -1808,7 +1808,7 @@ var
 
 function FaxSetGlobalRoutingInfo;
 begin
-  GetProcedureAddress(_FaxSetGlobalRoutingInfo, ntdll, 'FaxSetGlobalRoutingInfo'+AWSuffix);
+  GetProcedureAddress(_FaxSetGlobalRoutingInfo, winfax, 'FaxSetGlobalRoutingInfo'+AWSuffix);
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -1823,7 +1823,7 @@ var
 
 function FaxGetRoutingInfoA;
 begin
-  GetProcedureAddress(_FaxGetRoutingInfoA, ntdll, 'FaxGetRoutingInfoA');
+  GetProcedureAddress(_FaxGetRoutingInfoA, winfax, 'FaxGetRoutingInfoA');
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -1836,7 +1836,7 @@ var
 
 function FaxGetRoutingInfoW;
 begin
-  GetProcedureAddress(_FaxGetRoutingInfoW, ntdll, 'FaxGetRoutingInfoW');
+  GetProcedureAddress(_FaxGetRoutingInfoW, winfax, 'FaxGetRoutingInfoW');
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -1850,7 +1850,7 @@ var
 
 function FaxGetRoutingInfo;
 begin
-  GetProcedureAddress(_FaxGetRoutingInfo, ntdll, 'FaxGetRoutingInfo'+AWSuffix);
+  GetProcedureAddress(_FaxGetRoutingInfo, winfax, 'FaxGetRoutingInfo'+AWSuffix);
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -1864,7 +1864,7 @@ var
 
 function FaxSetRoutingInfoA;
 begin
-  GetProcedureAddress(_FaxSetRoutingInfoA, ntdll, 'FaxSetRoutingInfoA');
+  GetProcedureAddress(_FaxSetRoutingInfoA, winfax, 'FaxSetRoutingInfoA');
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -1877,7 +1877,7 @@ var
 
 function FaxSetRoutingInfoW;
 begin
-  GetProcedureAddress(_FaxSetRoutingInfoW, ntdll, 'FaxSetRoutingInfoW');
+  GetProcedureAddress(_FaxSetRoutingInfoW, winfax, 'FaxSetRoutingInfoW');
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -1891,7 +1891,7 @@ var
 
 function FaxSetRoutingInfo;
 begin
-  GetProcedureAddress(_FaxSetRoutingInfo, ntdll, 'FaxSetRoutingInfo'+AWSuffix);
+  GetProcedureAddress(_FaxSetRoutingInfo, winfax, 'FaxSetRoutingInfo'+AWSuffix);
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -1905,7 +1905,7 @@ var
 
 function FaxStartPrintJobA;
 begin
-  GetProcedureAddress(_FaxStartPrintJobA, ntdll, 'FaxStartPrintJobA');
+  GetProcedureAddress(_FaxStartPrintJobA, winfax, 'FaxStartPrintJobA');
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -1918,7 +1918,7 @@ var
 
 function FaxStartPrintJobW;
 begin
-  GetProcedureAddress(_FaxStartPrintJobW, ntdll, 'FaxStartPrintJobW');
+  GetProcedureAddress(_FaxStartPrintJobW, winfax, 'FaxStartPrintJobW');
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -1932,7 +1932,7 @@ var
 
 function FaxStartPrintJob;
 begin
-  GetProcedureAddress(_FaxStartPrintJob, ntdll, 'FaxStartPrintJob'+AWSuffix);
+  GetProcedureAddress(_FaxStartPrintJob, winfax, 'FaxStartPrintJob'+AWSuffix);
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -1946,7 +1946,7 @@ var
 
 function FaxPrintCoverPageA;
 begin
-  GetProcedureAddress(_FaxPrintCoverPageA, ntdll, 'FaxPrintCoverPageA');
+  GetProcedureAddress(_FaxPrintCoverPageA, winfax, 'FaxPrintCoverPageA');
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -1959,7 +1959,7 @@ var
 
 function FaxPrintCoverPageW;
 begin
-  GetProcedureAddress(_FaxPrintCoverPageW, ntdll, 'FaxPrintCoverPageW');
+  GetProcedureAddress(_FaxPrintCoverPageW, winfax, 'FaxPrintCoverPageW');
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -1973,7 +1973,7 @@ var
 
 function FaxPrintCoverPage;
 begin
-  GetProcedureAddress(_FaxPrintCoverPage, ntdll, 'FaxPrintCoverPage'+AWSuffix);
+  GetProcedureAddress(_FaxPrintCoverPage, winfax, 'FaxPrintCoverPage'+AWSuffix);
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -1988,7 +1988,7 @@ var
 
 function FaxRegisterServiceProviderW;
 begin
-  GetProcedureAddress(_FaxRegisterServiceProviderW, ntdll, 'FaxRegisterServiceProviderW');
+  GetProcedureAddress(_FaxRegisterServiceProviderW, winfax, 'FaxRegisterServiceProviderW');
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -2002,7 +2002,7 @@ var
 
 function FaxRegisterRoutingExtensionW;
 begin
-  GetProcedureAddress(_FaxRegisterRoutingExtensionW, ntdll, 'FaxRegisterRoutingExtensionW');
+  GetProcedureAddress(_FaxRegisterRoutingExtensionW, winfax, 'FaxRegisterRoutingExtensionW');
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -2017,7 +2017,7 @@ var
 
 function FaxAccessCheck;
 begin
-  GetProcedureAddress(_FaxAccessCheck, ntdll, 'FaxAccessCheck');
+  GetProcedureAddress(_FaxAccessCheck, winfax, 'FaxAccessCheck');
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -2034,7 +2034,7 @@ var
 
 function FaxUnregisterRoutingExtensionA;
 begin
-  GetProcedureAddress(_FaxUnregisterRoutingExtensionA, ntdll, 'FaxUnregisterRoutingExtensionA');
+  GetProcedureAddress(_FaxUnregisterRoutingExtensionA, winfax, 'FaxUnregisterRoutingExtensionA');
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -2047,7 +2047,7 @@ var
 
 function FaxUnregisterRoutingExtensionW;
 begin
-  GetProcedureAddress(_FaxUnregisterRoutingExtensionW, ntdll, 'FaxUnregisterRoutingExtensionW');
+  GetProcedureAddress(_FaxUnregisterRoutingExtensionW, winfax, 'FaxUnregisterRoutingExtensionW');
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -2060,7 +2060,7 @@ var
 
 function FaxUnregisterRoutingExtension;
 begin
-  GetProcedureAddress(_FaxUnregisterRoutingExtension, ntdll, 'FaxUnregisterRoutingExtension'+AWSuffix);
+  GetProcedureAddress(_FaxUnregisterRoutingExtension, winfax, 'FaxUnregisterRoutingExtension'+AWSuffix);
   asm
         MOV     ESP, EBP
         POP     EBP
