@@ -2281,7 +2281,12 @@ type
   {$EXTERNALSYM ISoftDistExt}
   ISoftDistExt = interface(IUnknown)
   ['{B15B8DC1-C7E1-11d0-8680-00AA00BDCB71}']
-    function ProcessSoftDist(szCDFURL: PWideChar; pSoftDistElement: {$IFDEF DELPHI5}Pointer{$ELSE}IXMLElement{$ENDIF};
+    function ProcessSoftDist(szCDFURL: PWideChar; pSoftDistElement:
+{TODO: Delphi 2010 doesn't support IXMLElement obviously.
+  Should be renamed when available.
+ }
+ (*     {$IFDEF DELPHI5}Pointer{$ELSE}{$IFDEF } IXMLElement{$ENDIF};*)
+  Pointer;
       var lpsdi: TSoftDistInfo): HResult; stdcall;
     function GetFirstCodeBase(szCodeBase: PPWideChar;
       var dwMaxSize: DWORD): HResult; stdcall;
