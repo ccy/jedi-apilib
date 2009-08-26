@@ -1267,6 +1267,7 @@ end;
 }
 
 {$IFNDEF WINVISTA_UP}
+
 var
   _WNetRestoreConnectionW: Pointer;
 
@@ -1280,13 +1281,13 @@ begin
   end;
 end;
 
-var
-  _WNetRestoreConnection: Pointer;
-
 {WNetRestoreConnectionA is no more available
 See bug tracker
 http://sourceforge.net/tracker/index.php?func=detail&aid=1846980&group_id=121894&atid=694029
 }
+
+var
+  _WNetRestoreConnection: Pointer;
 
 function WNetRestoreConnection;
 begin

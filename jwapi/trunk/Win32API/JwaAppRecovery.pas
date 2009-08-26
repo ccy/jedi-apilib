@@ -151,6 +151,7 @@ end;
 
 var
   _ApplicationRecoveryInProgress: Pointer;
+
 function ApplicationRecoveryInProgress;
 begin
   GetProcedureAddress(_ApplicationRecoveryInProgress, kernel32, 'ApplicationRecoveryInProgress');
@@ -163,6 +164,7 @@ end;
 
 var
   _GetApplicationRecoveryCallback: Pointer;
+
 function GetApplicationRecoveryCallback;
 begin
   GetProcedureAddress(_GetApplicationRecoveryCallback, kernel32, 'GetApplicationRecoveryCallback');
@@ -175,6 +177,7 @@ end;
 
 var
   _GetApplicationRestartSettings: Pointer;
+
 function GetApplicationRestartSettings;
 begin
   GetProcedureAddress(_GetApplicationRestartSettings, kernel32, 'GetApplicationRestartSettings');
@@ -187,6 +190,7 @@ end;
 
 var
   _RegisterApplicationRecoveryCallback: Pointer;
+
 function RegisterApplicationRecoveryCallback;
 begin
   GetProcedureAddress(_RegisterApplicationRecoveryCallback, kernel32, 'RegisterApplicationRecoveryCallback');
@@ -199,6 +203,7 @@ end;
 
 var
   _RegisterApplicationRestart: Pointer;
+
 function RegisterApplicationRestart;
 begin
   GetProcedureAddress(_RegisterApplicationRestart, kernel32, 'RegisterApplicationRestart');
@@ -211,6 +216,7 @@ end;
 
 var
   _UnregisterApplicationRecoveryCallback: Pointer;
+
 function UnregisterApplicationRecoveryCallback;
 begin
   GetProcedureAddress(_UnregisterApplicationRecoveryCallback, kernel32, 'UnregisterApplicationRecoveryCallback');
@@ -223,6 +229,7 @@ end;
 
 var
   _UnregisterApplicationRestart: Pointer;
+
 function UnregisterApplicationRestart;
 begin
   GetProcedureAddress(_UnregisterApplicationRestart, kernel32, 'UnregisterApplicationRestart');
@@ -232,9 +239,6 @@ begin
         JMP     [_UnregisterApplicationRestart]
   end;
 end;
-
-
-
 
 {$ELSE}
 

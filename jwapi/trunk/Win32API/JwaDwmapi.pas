@@ -719,16 +719,27 @@ begin
 end;
 
 var
-  //_DwmGetGraphicsStreamTransformHint: Pointer;
+{$IFDEF SUPPORT_LONG_VARNAMES}
+  _DwmGetGraphicsStreamTransformHint: Pointer;
+{$ELSE}
   _DwmGetGraphicsStreamTH: Pointer;
+{$ENDIF}
 
 function DwmGetGraphicsStreamTransformHint;
 begin
+{$IFDEF SUPPORT_LONG_VARNAMES}
+  GetProcedureAddress(_DwmGetGraphicsStreamTransformHint, dwmlib, 'DwmGetGraphicsStreamTransformHint');
+{$ELSE}
   GetProcedureAddress(_DwmGetGraphicsStreamTH, dwmlib, 'DwmGetGraphicsStreamTransformHint');
+{$ENDIF}
   asm
         MOV     ESP, EBP
         POP     EBP
+{$IFDEF SUPPORT_LONG_VARNAMES}
+        JMP     [_DwmGetGraphicsStreamTransformHint]
+{$ELSE}
         JMP     [_DwmGetGraphicsStreamTH]
+{$ENDIF}
   end;
 end;
 

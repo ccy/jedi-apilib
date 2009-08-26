@@ -218,13 +218,13 @@ type
 //
 // ERROR_ALREADY_EXISTS       If this is a nested restore point
 
-function SRSetRestorePointA(pRestorePtSpec: PRESTOREPOINTINFOA; pSMgrStatus: PSTATEMGRSTATUS): BOOL stdcall;
+function SRSetRestorePointA(pRestorePtSpec: PRESTOREPOINTINFOA; pSMgrStatus: PSTATEMGRSTATUS): BOOL; stdcall;
 {$EXTERNALSYM SRSetRestorePointA}
-function SRSetRestorePointW(pRestorePtSpec: PRESTOREPOINTINFOW; pSMgrStatus: PSTATEMGRSTATUS): BOOL stdcall;
+function SRSetRestorePointW(pRestorePtSpec: PRESTOREPOINTINFOW; pSMgrStatus: PSTATEMGRSTATUS): BOOL; stdcall;
 {$EXTERNALSYM SRSetRestorePointW}
 function SRRemoveRestorePoint(dwRPNum: DWORD): DWORD; stdcall;
 {$EXTERNALSYM SRRemoveRestorePoint}
-function SRSetRestorePoint(pRestorePtSpec: PRESTOREPOINTINFO; pSMgrStatus: PSTATEMGRSTATUS): BOOL stdcall;
+function SRSetRestorePoint(pRestorePtSpec: PRESTOREPOINTINFO; pSMgrStatus: PSTATEMGRSTATUS): BOOL; stdcall;
 {$EXTERNALSYM SRSetRestorePoint}
 
 {$ENDIF JWA_IMPLEMENTATIONSECTION}

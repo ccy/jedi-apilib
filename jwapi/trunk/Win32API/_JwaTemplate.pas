@@ -99,7 +99,7 @@ var
 
 function ConvertedFunction;
 begin
-  GetProcedureAddress(_<FunctionPointer, LIBConstantName_LIB, 'ConvertedFunction');
+  GetProcedureAddress(_ConvertedFunction, LIBConstantName_LIB, 'ConvertedFunction');
   asm
         MOV     ESP, EBP
         POP     EBP

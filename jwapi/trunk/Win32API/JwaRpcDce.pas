@@ -1339,6 +1339,7 @@ const
 {$ENDIF JWA_INCLUDEMODE}
 
 {$IFDEF DYNAMIC_LINK}
+
 var
   _I_RpcBindingIsClientLocal: Pointer;
 
