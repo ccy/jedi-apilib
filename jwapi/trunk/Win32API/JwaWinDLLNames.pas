@@ -133,6 +133,7 @@ const
   versionlib = 'version.dll';
   winberapi = 'wldap32.dll';
   winfax = 'winfax.dll';
+  wimgapi = 'wimgapi.dll';
   winetdll = 'wininet.dll';
   winspool32 = 'winspool32.drv';
   winstadll = 'winsta.dll';
