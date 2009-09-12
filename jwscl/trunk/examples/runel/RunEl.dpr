@@ -17,6 +17,8 @@ uses
   JwsclToken,
   JwsclElevation,
   JwsclVersion,
+  JwsclTypes,
+  JwsclConstants,
   JwsclExceptions;
 
 
