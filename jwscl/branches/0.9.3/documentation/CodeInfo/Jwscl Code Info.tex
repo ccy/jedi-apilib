@@ -1,0 +1,712 @@
+%% Based on a TeXnicCenter-Template by Tino Weinkauf.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% HEADER
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[a4paper,oneside,10pt]{article}
+% Alternative Options:
+%	Paper Size: a4paper / a5paper / b5paper / letterpaper / legalpaper / executivepaper
+% Duplex: oneside / twoside
+% Base Font Size: 10pt / 11pt / 12pt
+
+\usepackage{ifpdf}
+%% Normal LaTeX or pdfLaTeX? %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% ==> The new if-Command "\ifpdf" will be used at some
+%% ==> places to ensure the compatibility between
+%% ==> LaTeX and pdfLaTeX.
+\ifpdf
+\ifx\pdfoutput\undefined
+	\pdffalse              %%normal LaTeX is executed
+\else
+	\pdfoutput=1           
+	\pdftrue               %%pdfLaTeX is executed
+\fi
+
+
+%% Fonts for pdfLaTeX %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% ==> Only needed, if cm-super-fonts are not installed
+\ifpdf
+	\usepackage{ae}       %%Use only just one of these packages:
+	%\usepackage{zefonts}  %%depends on your installation.
+\else
+	%%Normal LaTeX - no special packages for fonts required
+\fi
+
+
+%% Language %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\usepackage[francais]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[latin1]{inputenc}
+
+%% Packages for Graphics & Figures %%%%%%%%%%%%%%%%%%%%%%%%%%
+\ifpdf %%Inclusion of graphics via \includegraphics{file}
+	\usepackage[pdftex]{graphicx} %%graphics in pdfLaTeX
+\else
+	\usepackage[dvips]{graphicx} %%graphics and normal LaTeX
+\fi
+%\usepackage[hang,tight,raggedright]{subfigure} %%Subfigures inside a figure
+%\usepackage{pst-all} %%PSTricks - not useable with pdfLaTeX
+
+
+%% Math Packages %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+
+
+%% Line Spacing %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\usepackage{setspace}
+%\singlespacing        %% 1-spacing (default)
+%\onehalfspacing       %% 1,5-spacing
+%\doublespacing        %% 2-spacing
+
+
+%% Other Packages %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\usepackage{a4wide} %%Smaller margins = more text per page.
+%\usepackage{fancyhdr} %%Fancy headings
+%\usepackage{longtable} %%For tables, that exceed one page
+
+\usepackage{listings} 
+\usepackage{color} 
+\usepackage{hyperref} 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Remarks
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% TODO:
+% 1. Edit the used packages and their options (see above).
+% 2. If you want, add a BibTeX-File to the project
+%    (e.g., 'literature.bib').
+% 3. Happy TeXing!
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Options / Modifications
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\input{options} %You need a file 'options.tex' for this
+%% ==> TeXnicCenter supplies some possible option files
+%% ==> with its templates (File | New from Template...).
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% DOCUMENT
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+% Listings formatieren 
+\definecolor{codegray}{gray}{.95} 
+\definecolor{darkblue}{rgb}{0,0,.6} 
+\definecolor{darkred}{rgb}{.6,0,0} 
+\definecolor{darkgreen}{rgb}{0,.6,0} 
+\definecolor{red}{rgb}{.98,0,0} 
+%\lstset{numbers=left, numberstyle=\tiny, numbersep=3pt, tabsize=3} 
+\lstset{basicstyle=\small, frame=single, backgroundcolor=\color{codegray}, breaklines, commentstyle=\itshape\color{darkgreen}, keywordstyle=\bfseries\color{darkblue}, stringstyle=\color{darkred}, xleftmargin=0.5cm, language=Delphi}  
+
+%% File Extensions of Graphics %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% ==> This enables you to omit the file extension of a graphic.
+%% ==> "\includegraphics{title.eps}" becomes "\includegraphics{title}".
+%% ==> If you create 2 graphics with same content (but different file types)
+%% ==> "title.eps" and "title.pdf", only the file processable by
+%% ==> your compiler will be used.
+%% ==> pdfLaTeX uses "title.pdf". LaTeX uses "title.eps".
+\ifpdf
+	\DeclareGraphicsExtensions{.pdf,.jpg,.png}
+\else
+	\DeclareGraphicsExtensions{.eps}
+\fi
+
+\pagestyle{empty} %No headings for the first pages.
+
+
+%% Title Page %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% ==> Write your text here or include other files.
+
+%% The simple version:
+\title{JWSCL Coding Conventions\\Version 1.0}
+\author{Christian Wimmer}
+%\date{} %%If commented, the current date is used.
+\maketitle
+
+%% The nice version:
+%\input{titlepage} %%You need a file 'titlepage.tex' for this.
+%% ==> TeXnicCenter supplies a possible titlepage file
+%% ==> with its templates (File | New from Template...).
+
+
+%% Inhaltsverzeichnis %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\tableofcontents %Table of contents
+\cleardoublepage %The first chapter should start on an odd page.
+
+\pagestyle{plain} %Now display headings: headings / fancy / ...
+
+
+
+%% Chapters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% ==> Write your text here or include other files.
+
+%\input{intro} %You need a file 'intro.tex' for this.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% ==> Some hints are following:
+
+%\chapter{About the implementation}
+
+\section{Who Should Read This Document?}
+This documentation is for all people who want or are writing code for the JEDI Windows Security API project. It is intended to help them to improve the source code, the readability and the documentation .Try to stick as much as possible and ask your tutor or JEDI Administrators if there are problems, additions and more.
+
+\section{General}
+
+Before you start writing your JEDI code read this documentation completely. It avoids additional work to be done in your code. You should also read the JEDI style guide conventions located in the documentation file "`JEDI StyleGuid.pdf"' located in the subversion folder jwscl/trunk/documentation\footnote{It can be downloaded from http://jedi-apilib.svn.sourceforge.net/viewvc/*checkout*/jedi-apilib/jwscl/trunk/documentation/JEDI StyleGuide.pdf?revision=4} on your harddisk. Try to stick to the styleguide as best as possible.
+
+\section{Contact}
+
+You can contact us at mail@delphi-jedi.net.
+
+As a JEDI API\&WSCL member you can contact us using the instant messanger protocol Jabber.\\
+The JEDI Jabber Accounts of the current Administrators (July 2008) are:
+\begin{itemize}
+	\item \textbf{Christian Wimmer} christianwimmer@delphi-jedi.net
+	\item \textbf{Remko Weijne}n rweijnen@delphi-jedi.net
+\end{itemize}
+
+The JEDI Jabber Server cannot be contacted through other Jabber Servers. You need an account on the server. The account can only be received by an invitation!\\
+The logon credentials are: \\
+
+\begin{tabular}{ll}
+Server 	 & delphi-jedi.net\\			
+Port	   & 5223\\
+Activate SSL or TLS!\\
+\end{tabular}
+
+
+\section{Target Delphi Versions}
+\begin{itemize}
+	\item \textbf{JWSCL} can be compiled with \textbf{Delphi 7} and newer. Do not use new Delphi statements without using compiler IFDEFS defined in jedi.inc. This include file is automatically included by jwscl.inc which is used by all JWSCL units. For example you can check for Delphi 2007 using \textbf{DELPHI11\_UP}.
+\begin{lstlisting} 
+{$IFFDEF DELPHI11_UP}
+ new Delphi code
+{$ELSE}
+ backwards compatible code
+{$ENDIF DELPHI11_UP}
+{$...} //don't use new compiler directives outside!
+\end{lstlisting}  
+\item If you want to use a new Delphi construct you must make sure that a programmer with an old Delphi version has also the possibility to use the feature in another way.
+\item New Delphi versions (since Delphi 2005 to be exact) implements code regions. These regions can be used to show or hide code areas in the Delphi IDE. They have no other purpose. However this feature is problematic for the JWSCL units since it creates errors in old Delphi versions. Of course it is possible to use the feature in examples or projects that includes JWSCL units. In this way just the example/project is limited to new Delphi versions.
+
+\begin{lstlisting}
+{$REGION 'name'}
+folded code    
+{$ENDREGION}
+\end{lstlisting}
+
+\item There is no FreePascal support at the moment.
+\end{itemize}
+
+\label{SourceFormatter}
+\section{Source Formatter}
+It is possible to use a source formatter. However don't use a source formatter that uses a format that differs too much from the existing source format. An appropriate formatter has the JEDI Code Format Project\footnote{The JEDI Code formatter can be found at http://jedicodeformat.sourceforge.net}.
+
+\section{Configuration Managment (with Subversion)}
+The JEDI WSCL Project and its sister project the JEDI API are maintained with Subversion hosted on Sourceforge.net.
+It can be downloaded using a Subversion Client\footnote{Version 1.4.6 command line client: http://subversion.tigris.org/files/documents/15/41687/svn-1.4.6-setup.exe\\Windows Client: http://tortoisesvn.tigris.org}
+
+\subsection{Layout}
+The Subversion repository is structured into \textit{tags}, \textit{branches} and a \textit{trunk} folder.
+\begin{itemize}
+	\item \textbf{Trunk} The trunk folder is the main developer folder. It includes code that has alpha status and should be used with care. The following sub folders are available:
+	  
+		\begin{itemize}
+			\item \textbf{COM} This folder contains sources that implements (nearly) all JWSCL classes as COM interfaces. In this way it will be possible to access the JWSCL with C++, Basic, script languages and others. However this endeavour isn't finished yet and thus the code is not usable yet.
+			\item \textbf{documentation} This folder contains documentation about the JWSCL. It also contains the JEDI StyleGuide.
+			\item \textbf{examples} This folder contains examples which show how to use the library. 
+			\item \textbf{packages} This folder will contain packages that are used to compile all JWSCL unit. In this way it is possible to automatically do syntax checking.
+			\item \textbf{source} This folder contains the main source code files of JWSCL. Each delphi file is accompanied by a dtx file which contains external documentation for Doc-O-Matic. It will be created and maintained only by the document managment.
+			\item \textbf{unittests} This folder contains tests for (nearly) all classes of JWSCL. Of course many classes cannot be tested because of their nature. Therefore it is hardly possible to test a multi-threaded environment or windows API calls that depend on an environment.
+		\end{itemize}
+	\item \textbf{Branches} This folder contains a copy of the Trunk folder at a specific version. In this way it is possible to create a parallel development to do specific changes or releases. A release has a version number identifier (like 0.9.1). A release is not used to add additional features but just fixes bugs.
+	\item \textbf{Tags} This folder contains a static copy of the Trunk or Branch version of the code at a specific revision\footnote{A revision is a code version created on a SVN commit.}. In contrary to the Branches folder, a tagged version cannot be changed\footnote{In fact the Subversion server doesn't deny write access to the \textit{Tag} folder. However it is against the rules to change the Tags.}. 
+\end{itemize}
+
+\subsection{A New Release}
+When a new release it about to be published and all features of a trunk are ready to use, a new branch is created with the version identifier (e.g. 0.9.2) and a pre-release tag "`b"' (which stands for beta like 0.9.2b). In this way the release can be tested and finally be released without the beta tag. The upcoming release is feature-complete and thus will only receive fixed bugs.
+
+\subsection{Commit}
+Always make sure that your code can be compiled properly without errors and to come off best no warnings at all. It is always an annoyance to get errors and to wait for a fix.
+
+\subsection{Risk}
+Committing source code can sometimes be problematic or even dangerous. You should always make sure that you don't include sensible information (like passwords) into the source code and upload it to the server. Everybody can download the source code and thus get your credential data. If it is too late the only choice you have is to change your login data.
+
+\section{What Belongs Where?}\label{Whatbelongswhere}
+\begin{itemize}
+	\item Add your exceptions to \textit{JwsclExceptions.pas}.
+  \item Add your simple types to \textit{JwsclTypes.pas}.
+  \item Add your constants to \textit{JwsclConstants.pas}.
+  \item Add utility functions to \textit{JwsclUtils.pas}.
+  \item Add COM utilities to \textit{JwsclComUtils.pas}.
+  \item Add strings and exception descriptions to \textit{JwsclResource.pas}.
+\end{itemize}
+
+\section{Naming Conventions}
+\begin{itemize}
+	\item Name your classes with the JEDI Windows lettes \textbf{Jw} 
+	\begin{lstlisting}
+	TJwYourClass = class
+	\end{lstlisting} 
+	\item Start every word of a name with a capital letter 
+	\begin{lstlisting}
+	 ThisCanBeAName
+	\end{lstlisting}
+	\item Constant names are to be written in capital letters
+\end{itemize}
+
+\section{Using Strings}
+\begin{itemize}
+	\item Use \textit{TJwString} and \textit{TJwPChar} if you support Ansi- and Unicode. Otherwise use \textit{AnsiString}, \textit{WideString} and their c parts \textit{PAnsiChar} and \textit{PWideChar} instead of simple \textit{String} and \textit{PChar}. The last two simple types may become incompatible with newer Delphi versions\footnote{It is directly addressed to the upcoming Delphi which implements Unicode by default. So String will automatically become WideString. This may break existing JWSCL code.}.
+	\item If you need to call a WinAPI function that is Ansi- and Unicode aware you must implement them both instead of calling the generic function \footnote{The JEDI Windows API implements automatic creation of Ansi- or Unicode functions. Most times a Windows API function is implemented three times. E.g. \textit{CreateProcessA} (Ansicode), \textit{CreateProcessW} (Unicode) and \textit{CreateProcess} that points to \textit{CreateProcessA} or \textit{CreateProcessW} depending on the compiler directive \textbf{UNICODE}. If it is set \textit{CreateProcessW} is used; otherwise \textit{CreateProcessA}. However JWSCL does only rely on its on \textbf{UNICODE} directive.}.  
+  \begin{lstlisting}
+    If {$IFDEF UNICODE}CreateProcessW{$ELSE}CreateProcessA{$ENDIF UNICODE}(TJwPChar(Name),...) then ...
+  \end{lstlisting} 
+  You can use TJwPChar to automatically cast to PWideChar or PAnsiChar depending on the UNICODE directive.
+	\item Don't add strings directly into the source code. Instead add string constants to JwsclResource. 	
+\end{itemize}
+
+\section{Loading Functions Dynamically}
+Programmers are told that they should load functions, which are not available on all Windows versions, with LoadLibrary instead of linking them statically. That is not a problem. However a library should support a consistent way to do so. This way is called \textbf{TJwLibraryUtilities.LoadLibProc} located in JwsclProcess.pas.
+Before you're going to apply this method, you should make sure whether the JEDI API exports such a function already. And if YES use them and ignore the possible statical linking option that JEDI API offers to users. If they link their applications statically they (usually) know what consequences exist.\\
+There is also a list of available DLL names defined as constants in JEDI API unit JwaWinDLLNames. Pick one or add a new one if necessary:
+
+\begin{lstlisting}
+const
+  aclapilib = 'advapi32.dll';
+  acluilib = 'aclui.dll';
+  advapi32 = 'advapi32.dll';
+  authzlib = 'authz.dll';
+  adslib = 'activeds.dll';
+  bcryptdll = 'bcrypt.dll';
+  btapi = 'irprops.cpl';
+  cfgmgrdllname = 'cfgmgr32.dll';
+  comctl32 = 'comctl32.dll';
+  credapi = 'advapi32.dll';
+  credui = 'credui.dll';
+  crypt32 = 'crypt32.dll';
+  cryptnet = 'cryptnet.dll';
+  cryptuiapi = 'cryptui.dll';
+  dhcpapi = 'dhcpcsvc.dll';
+  dhcplib = 'dhcpsapi.dll';
+  dnsapi = 'dnsapi.dll';
+  dsprop = 'dsprop.dll';
+  dssec = 'dssec.dll';
+  dsuiext = 'dsuiext.dll';
+  dwmlib = 'dwmapi.dll';
+  faultreplib = 'faultrep.dll';
+  gdi32 = 'gdi32.dll';
+  gpeditlib = 'gpedit.dll';
+  hhctrl = 'hhctrl.ocx';
+  icmplib = 'icmp.dll';
+  imagehlplib = 'imagehlp.dll';
+  imelib = 'user32.dll';
+  iphlpapilib = 'iphlpapi.dll';
+  kernel32 = 'kernel32.dll';
+  kernel32dll = kernel32;
+  ldaplib = 'wldap32.dll';
+  loadperflib = 'loadperf.dll';
+  lpmlib = 'msidlpm.dll';
+  mapi32 = 'mapi32.dll';
+  mprlib = 'mpr.dll';
+  msgina = 'msgina.dll';
+  msilib = 'msi.dll';
+  msimg32 = 'msimg32.dll';
+  mswsocklib = 'mswsock.dll';
+  mydocs = 'mydocs.dll';
+  ncryptdll = 'ncrypt.dll';
+  netapi32 = 'netapi32.dll';
+  netsh = 'netsh.exe';
+  nsplib = 'wsock32.dll';
+  ntdll = 'ntdll.dll';
+  ntdsapilib = 'ntdsapi.dll';
+  ntdsbclilib = 'ntdsbclilib.dll';
+  opengl32 = 'opengl32.dll';
+  patchapi = 'mspatcha.dll';
+  patchwiz = 'patchwiz.dll';
+  pdhLib = 'pdh.dll';
+  powrproflib = 'powrprof.dll';
+  psapiLib = 'psapi.dll';
+  querylib = 'query.dll';
+  qosname = 'qosname.dll';
+  rpclib = 'rpcrt4.dll';
+  rpcns4 = 'rpcns4.dll';
+  secur32 = 'secur32.dll';
+  sensapilib = 'sensapi.dll';
+  setupapimodulename = 'SetupApi.dll';
+  sfclib = 'sfc.dll';
+  sisbkuplib = 'sisbkup.dll';
+  shdocvwDll = 'shdocvw.dll';
+  shell32 = 'shell32.dll';
+  shfolderdll = 'shfolder.dll';
+  shlwapidll  = 'shlwapi.dll';
+  snmpapilib = 'snmpapi.dll';
+  softpub = 'softpub.dll';
+  sporderlib = 'sporder.dll';
+  srclient = 'srclient.dll';
+  themelib = 'uxtheme.dll';
+  trafficlib = 'traffic.dll';
+  urlmondll = 'urlmon.dll';
+  user32 = 'user32.dll';
+  userenvlib = 'userenv.dll';
+  utildll = 'utildll.dll';
+  versionlib = 'version.dll';
+  winberapi = 'wldap32.dll';
+  winfax = 'winfax.dll';
+  winetdll = 'wininet.dll';
+  winspool32 = 'winspool32.drv';
+  winstadll = 'winsta.dll';
+  winternl_lib = 'ntdll.dll';
+  wow16lib = 'kernel32.dll';
+  wow32lib = 'wow32.dll';
+  wpapilib = 'wpapi.dll';
+  ws2_32 = 'ws2_32.dll';
+  wsock32 = 'wsock32.dll';
+  wtsapi = 'wtsapi32.dll';
+\end{lstlisting}
+
+
+\section{Exceptions}
+
+\begin{itemize}
+	\item Use the whole power of the JWSCL exception constructors. An example for a failed windows api function call can look like the following listing:
+\begin{lstlisting}
+raise EJwsclWinCallFailedException.CreateFmtWinCall(
+ //Message as a resource string
+ RsSecurityDescriptorInvalid,          
+ 
+ //Source procedure name
+ 'GetJobObjectInformationLength',      
+ 
+ //Source class name
+ ClassName,                            
+ 
+ //Source unit file name
+ RsUNSid,                              
+ 
+ //Source line (set to 0)
+ 0,                                    
+ 
+ //add GetLastError information?
+ True,                                 
+ 
+ //Windows API function name that failed
+ 'QueryInformationJobObject',          
+ 
+ //format string parameters for message
+ ['...']);
+\end{lstlisting}            
+  \item Instead of returning an error code, always raise an exception.
+  \item Create your own meaningful exception classes derived from EJwsclSecurityException or any of it descendants.
+  \item Never use the \textit{EJwsclSecurityException} in a \textbf{raise} statement.
+  \item Do not use WinAPI calls in a EJWsclSecurityException (or derived) constructor call since it may change the GetLastError value before the constructor can read it. Instead save the GetLastError manually in a variable and reset it by calling SetLastError.
+\begin{lstlisting}  
+var 
+  StoredLastError : DWORD;
+  DataString : AnsiString;
+begin
+  if not <WinAPI Function> then
+  begin
+    StoredLastError := GetLastError;
+    DataString := <Another WinAPI Function>;
+    SetLastError(StoredLastError);
+    raise EJwsclWinCallFailedException.Create(..., DataString, ...);
+  end;
+end;
+\end{lstlisting}
+
+  \item Try to check for specific exceptions that you can handle. Do not catch generic
+exceptions like \textit{Exception} and \textit{EJwsclSecurityException}.
+
+\end{itemize}
+
+\section{Create Your Own JWSCL Unit}
+If you are going to create your own JEDI Windows Security Code Library Unit you should read the following sections. There is a template unit "\_JwsclTemplate.pas" that you can use for your first steps. Make a copy of the file, rename it, adapt the unit name in the source code and start coding. Read on with the following sections.
+
+\subsection{Use JEDI API}
+Don't use the Windows unit shipping with Delphi. Its declarations may change from Delphi to Delphi and version to version. Furthermore JwaWindows provides much more API declarations that you can use. In this way it isn't usually necessary to create your own function imports.\\
+\textbf{So add JwaWindows to your uses clause and remove Windows.pas .}\\\\
+
+Perhaps for a future feature you should also add the needed single units as a comment. 
+
+
+\subsection{Header Documentation}
+The template unit contains some place holders that you should replace with the corresponding values
+\begin{enumerate}
+	\item \textbf{<Description here>} Add the description of the provided features of this unit.
+  \item \textbf{<Author name>} Add all authors who supplied work to the unit.
+  \item \textbf{<UnitName>} Replace with the correct unit name.
+\end{enumerate}
+You also should add additional information about the unit if necessary. It may contain
+\begin{itemize}
+  \item A more detailed description.
+  \item A list of known bugs.
+  \item Example(s) how to use certain features.  
+\end{itemize}
+
+\subsection{Names}
+Make sure that you name your identifiers are unique in all JWSCL units. Thus you should add resource strings, constants and simple types to special units as described in chapter ~\pageref{Whatbelongswhere} on page ~\ref{Whatbelongswhere}.
+
+\subsection{Do's and Don'ts}
+
+\subsubsection{Don't use With-Statement at all}
+Don't use With-Statement at all. It has some glitches.
+
+\begin{itemize}
+  \item If it is used in the wrong way, it can be hard to understand for other people.
+  \item Most Delphi Debuggers don't show the value of the variable members at runtime.
+  \item It can be complicated if variable members and other variables have the same name. If they are used in the same with-statement you can get in trouble.
+\end{itemize}
+
+\subsubsection{Don't add units from JWA or JWSCL to examples download}
+If you create a package for an example download, you must not add any units from JEDI API and/or WSCL.
+
+\subsection{Creating a Demo}
+If your are going to create a demo/sample project you should consider some points:
+
+\begin{enumerate}
+  \item Use good coding techniques! That contains name conventions of filenames and also code items (identifieres, classnames, etc.), code formatting (See Source Formatter title on page ~\ref{SourceFormatter}) and comments and documentation. Be aware that people are learning the API by studying your example.
+  \item Check where your example belongs to? JEDI API or JEDI WSCL? Exmples are located in the examples folder of the trunk and nowhere else. Create your own folder in the example folder but don't use an existing one if your example isn't closely related to it.
+  \item Think of the license you want to use. You can use any license that you can think of (or think up one yourself). Of course it is possible to use no license at all. However the copyright remains on you in all cases, but you agree that changes and publications can be done without your permission by the JEDI team.
+  \item If you create a package for an example download, you must not add any units from JEDI API and/or WSCL.
+  \item Only add necessary files to the examples. Res, rsm, dcu, dof, cfg, dproj.local are not necessary for a release. Also try to compile your project without these files (by moving or deleting them) and check what is necessary to run it.
+  \item Create a document header that describes the purpose of the example and more stuff. There is already a template file in the JEDI API examples folder called "header\_template.txt". Adapt header to your needs and add it to all source files of your project. If you don't have a license just remove the given license text.
+  \item Think of the prerequisites to compile the project. Does the user need third party modules? Which Delphi version is at least necessary to run the example? 
+\end{enumerate}
+
+\section{Documentation}
+Documentation is a main part of the JWSCL and the language is simple english. There are two types of documentation:
+\begin{enumerate}
+	\item \textbf{Internal Comments} Internal comments are used to describe difficult or problematic source code parts. 
+
+	\item \textbf{Declaration C} Declaration comments are comments that describes a class, a method, a function, a constant or a simple type. This type of comment uses a particular syntax, called \textbf{JavaDoc}\footnote{http://java.sun.com/j2se/javadoc/writingdoccomments/index.html} and \textbf{XMLDoc}\footnote{http://msdn.microsoft.com/de-de/magazine/cc302121(en-us).aspx}.
+\end{enumerate}
+
+\subsection{Documentation Rules}
+\begin{itemize}
+	\item Document your code if it is problematic to understand
+	\item Use only "\verb#{#" and "\verb#}#" to document your code. It is also possible to use "//" to comment out only one or a few lines. In this way "(*" and "*)" can be used to comment out parts with nested comments temporarily.
+	\item Document all constants, functions, procedures, types, classes, protected, public and published methods and properties. It is not necessary to document private parts that are only helper methods or variables for properties (which are already documented).
+	\item Use \textit{XMLDoc} and/or \textit{JavaDoc} documentation style. The help creator \textit{Doc-O-Matic} is used to grab all documentation and to create a documentation file.\\
+More examples can be found at the \href{http://www.doc-o-matic.com/examplesourcecode.html}{Doc-O-Matic homepage}.
+Be aware that the JWSCL doc headers may differ from the given examples because they were translated from another (incompatible) comment style.
+\begin{lstlisting}  
+{
+<B>IsProcessInJob</B> returns whether a process is assigned to the job or not.
+@param hProcess defines any handle to the process that is tested for membership.
+@param Returns tre if the process is a member of the job; otherwise false.
+@return Returns true if the given process is assigned to the current job instance; otherwise false.
+raises
+  EJwsclWinCallFailedException: can be raised if the call to an winapi function failed.
+}
+function IsProcessInJob(hProcess : TJwProcessHandle) : Boolean;
+\end{lstlisting}
+
+\item Add all exceptions that can be raised into the documentation even if they are raised in used methods. In the last case you should list all used methods instead, so the user can get information which exception are raised in addition.
+
+\end{itemize}
+
+
+\section{Memory Leak/Problem Detection}
+Recall these rules
+\begin{enumerate}
+  \item Make always sure that there are no memory leaks whatsoever type. 
+  \item Also make sure that you don't overwrite foreign memory by ignoring boundaries of arrays and similar.
+\end{enumerate}
+
+For these rules you can use a memory checker of your choice. Possible managers are
+\begin{itemize}
+  \item MemCheck (http://v.mahon.free.fr/pro/freeware/memcheck)
+  \item FastMM (http://sourceforge.net/projects/fastmm)
+  \item EurekaLog (http://www.eurekalog.com)
+\end{itemize}
+
+\section{Implementation}
+
+\begin{itemize}
+	\item Don't use private declarations if there isn't a very good reason. First ask your tutor or Administrator. The reason is that derived classes should be allowed to acces the internal variables.
+	\item Try to stick to this class example :
+\begin{lstlisting}	
+type
+  {to be documented}
+  TJwMyClass = class(...)  //see Jw ?
+  protected    //we use protected, so derived classes can use it
+    fVariable : Integer; //see f the and big letter?
+
+    {you could add documentation here
+    but it is not necessary since it is described in property}
+    procedure SetVariable(const Value : Integer);
+  public
+    {to be documented}
+    constructor Create...
+    {to be documented}
+    destructor Destroy; override;
+
+    {to be documented}
+    property Variable : Integer read fVariable write SetVariable;
+  end;	
+\end{lstlisting}
+ 
+\item Always use \textbf{try/finally} to make sure that allocated memory is freed. The following listing shows the allocation of an untyped pointer and a class instance. Be aware of that there are two \textbf{try/finally} statements. This is necessary because the status of the second allocation is undefined at first and thus must not be freed.
+
+\begin{lstlisting}
+var 
+  Ptr : Pointer;
+  MyClass : TMyClass;
+begin
+  GetMem(Ptr, 100);
+  try
+    //call to functions which may raise exceptions
+    try
+      //call to functions which may raise exceptions
+      MyClass := TMyClass.Create;
+      //call to functions which may raise exceptions
+    finally
+      MyClass.Free;
+    end;
+  finally
+    FreeMem(Ptr);
+  end;
+end;
+\end{lstlisting}
+
+\item It is not necessary to set both variables (in the last listing) to nil because these variables are never used again. However if you are going to implement these variables globally, you should use instead the procedure \textbf{FreeAndNil} or set it to \textbf{nil} manually.
+
+\item Instead you can also use the \textit{TJwAutoPointer.Wrap} method which returns an \textit{IJwAutoPointer} interface. Such a "wrapped" pointer, handle or instance is automatically destroyed as soon it goes out of scope\footnote{A scope is an area where a variable can be access. If a wrapped variable is created on stack it will be removed as soon as the last "end;" statement of a method is reached. Furthermore a wrapped variable in a class is freed as soon as the instance is destroyed. And at last a globally defined wrapped variable is freed when the application exists.} and even if an exception forces it out of scope.
+
+The previous listing can be rearranged using TJwAutoPointer.
+\begin{lstlisting}
+var 
+  Ptr : Pointer;
+  MyClass : TMyClass;
+begin
+  GetMem(Ptr, 100);
+  TJwAutoPointer.Wrap(Ptr, ptGetMem);
+  
+  MyClass := TMyClass.Create;
+  TJwAutoPointer.Wrap(MyClass);
+  
+  //call to functions which may raise exceptions
+  raised Exception.Create(''); //test exception
+end; 
+\end{lstlisting}
+Both pointers are automatically destroyed if the instruction pointer reaches the \textbf{end;} statement. It even happens if an exception is raised.
+If you want wrap data which should live longer as the ones in the above example you have to store the interface returned by the method \textit{Wrap}.
+It is possible to access the data through the interface. Thus there is no need to use a second variable. However the interface only contains an untyped pointer, TObject and handle.
+
+\begin{lstlisting}
+type
+  TMyClass = class
+  protected
+    fMyPointer : IJWAutoPointer;
+    fMyClass : IJWAutoPointer;
+    
+    constructor Create;
+    procedure Foo;
+  end;
+ 
+constructor TMyClass.Create;
+var
+  Ptr : Pointer;
+  MyClass : TMyClass;
+begin
+  GetMem(Ptr, 100);
+  fMyPointer := TJwAutoPointer.Wrap(Ptr, ptGetMem);
+  
+  MyClass := TMyClass.Create;
+  fMyClass := TJwAutoPointer.Wrap(MyClass);
+end; 
+
+procedure TMyClass.Foo;
+var
+  Ptr : Pointer;
+  MyClass : TMyClass;
+begin
+  Ptr := fMyPointer.GetPointer;
+  MyClass := fMyClass.GetInstance;
+  
+  //do more
+end;
+\end{lstlisting}
+Of course you must be aware that typed pointers should not be converted to untyped pointers since it is hard to understand and difficult to find errors.
+
+\item Use the parameter directive \textbf{const} as often as possible. The directive improves speed and comprehensibility of parameters. The value of a constant parameter cannot be changed within the function and thus the compiler can create a call by reference instead of a call by value (which copies the the data). Of course it does not apply to the internal members of the parameter if the parameter is a class for instance. A user of the function can use the original data \textbf{without} the fear of changing it.
+\end{itemize}
+
+
+
+%\chapter{Some small hints}\label{hints}
+%
+%\section{References}\label{references}
+%Using the commands \verb#\label{name}# and \verb#\ref{name}# you are able
+%to use references in your document. Advantage: You do not need to think
+%about numerations, because \LaTeX\ is doing that for you.
+%
+%For example, in section \ref{dividing} on page \pageref{dividing} hints for
+%dividing large documents are given.
+%
+%Certainly, references do also work for tables, figures, formulas\ldots
+%
+%Please notice, that \LaTeX\ usually needs more than one run (mostly 2) to
+%resolve those references correctly.
+%
+%
+%\section{Dividing large Documents}\label{dividing}
+%You can divide your \LaTeX-Document into an arbitrary number of \TeX-Files
+%to avoid too big and therefore unhandy files (e.g. one file for every chapter).
+%
+%For this, you insert in your main file (this one) for every subfile
+%the command '\verb#\input{subfile}#'. This leads to the same behavior
+%as if the content of the subfile would be at the place of the \verb#\input#-Command.
+
+%% <== End of hints
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% BIBLIOGRAPHY AND OTHER LISTS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% A small distance to the other stuff in the table of contents (toc)
+%\addtocontents{toc}{\protect\vspace*{\baselineskip}}
+
+%% The Bibliography
+%% ==> You need a file 'literature.bib' for this.
+%% ==> You need to run BibTeX for this (Project | Properties... | Uses BibTeX)
+%\addcontentsline{toc}{chapter}{Bibliography} %'Bibliography' into toc
+%\nocite{*} %Even non-cited BibTeX-Entries will be shown.
+%\bibliographystyle{alpha} %Style of Bibliography: plain / apalike / amsalpha / ...
+%\bibliography{literature} %You need a file 'literature.bib' for this.
+
+%%% The List of Figures
+%\clearpage
+%\addcontentsline{toc}{chapter}{List of Figures}
+%\listoffigures
+%
+%%% The List of Tables
+%\clearpage
+%\addcontentsline{toc}{chapter}{List of Tables}
+%\listoftables
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% APPENDICES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\appendix
+%% ==> Write your text here or include other files.
+
+%\input{FileName} %You need a file 'FileName.tex' for this.
+
+
+\end{document}
+
