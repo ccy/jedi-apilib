@@ -39,9 +39,9 @@
 {                                                                                                  }
 {**************************************************************************************************}
 {                                                                                                  }
-{ Last modified: $Date:: 2009-08-26 08:58:58 +0200 (mer., 26 août 2009)                        $ }
-{ Revision:      $Rev:: 2973                                                                     $ }
-{ Author:        $Author:: outchy                                                                $ }
+{ Last modified: $Date:: 2009-09-19 14:01:43 +0200 (Sa, 19 Sep 2009)                             $ }
+{ Revision:      $Rev:: 12506                                                                    $ }
+{ Author:        $Author:: ahuser                                                                $ }
 {                                                                                                  }
 {**************************************************************************************************}
 
@@ -390,6 +390,7 @@
   SUPPORTS_CLASS_FIELDS          Compiler supports class fields (D9.NET, D10+)
   SUPPORTS_CLASS_HELPERS         Compiler supports class helpers (D9.NET, D10+)
   SUPPORTS_CLASS_OPERATORS       Compiler supports class operators (D9.NET, D10+)
+  SUPPORTS_CLASS_CTORDTORS       Compiler supports class contructors/destructors (D14+)
   SUPPORTS_STRICT                Compiler supports strict keyword (D9.NET, D10+)
   SUPPORTS_STATIC                Compiler supports static keyword (D9.NET, D10+)
   SUPPORTS_FINAL                 Compiler supports final keyword (D9.NET, D10+)
@@ -417,6 +418,7 @@
   HAS_UNIT_DATEUTILS             Unit DateUtils exists (D6+/BCB6+/FPC)
   HAS_UNIT_CONTNRS               Unit contnrs exists (D6+/BCB6+/FPC)
   HAS_UNIT_HTTPPROD              Unit HTTPProd exists (D9+)
+  HAS_UNIT_GIFIMG                Unit GifImg exists (D11+)
   HAS_UNIT_ANSISTRINGS           Unit AnsiStrings exists (D12+)
   HAS_UNIT_PNGIMAGE              Unit PngImage exists (D12+)
   XPLATFORM_RTL                  The RTL supports crossplatform function names (e.g. RaiseLastOSError) (D6+/BCB6+/FPC)
@@ -441,6 +443,7 @@
   IOCHECKS_ON            Compiling in the I+ state (I/O checking enabled)
   WRITEABLECONST_ON      Compiling in the J+ state (typed constants can be modified)
   LOCALSYMBOLS           Compiling in the L+ state (local symbol generation)
+  LOCALSYMBOLS_ON        Alias of LOCALSYMBOLS
   TYPEINFO_ON            Compiling in the M+ state (RTTI generation on)
   OPTIMIZATION_ON        Compiling in the O+ state (code optimization on)
   OPENSTRINGS_ON         Compiling in the P+ state (variable string parameters are openstrings)
@@ -1151,6 +1154,10 @@
   {$ENDIF  CLR}
 {$ENDIF COMPILER12_UP}
 
+{$IFDEF COMPILER14_UP}
+  {$DEFINE SUPPORTS_CLASS_CTORDTORS}
+{$ENDIF COMPILER14_UP}
+
 {$IFDEF RTL130_UP}
   {$DEFINE HAS_UNIT_CONTNRS}
 {$ENDIF RTL130_UP}
@@ -1170,6 +1177,10 @@
 {$IFDEF RTL170_UP}
   {$DEFINE HAS_UNIT_HTTPPROD}
 {$ENDIF RTL170_UP}
+
+{$IFDEF RTL185_UP}
+  {$DEFINE HAS_UNIT_GIFIMG}
+{$ENDIF RTL185_UP}
 
 {$IFDEF RTL200_UP}
   {$DEFINE HAS_UNIT_ANSISTRINGS}
@@ -1224,7 +1235,7 @@
 {$IFDEF COMPILER2_UP}
   {$IFOPT J+} {$DEFINE WRITEABLECONST_ON} {$ENDIF}
 {$ENDIF}
-{$IFOPT L+} {$DEFINE LOCALSYMBOLS} {$ENDIF}
+{$IFOPT L+} {$DEFINE LOCALSYMBOLS} {$DEFINE LOCALSYMBOLS_ON} {$ENDIF}
 {$IFOPT M+} {$DEFINE TYPEINFO_ON} {$ENDIF}
 {$IFOPT O+} {$DEFINE OPTIMIZATION_ON} {$ENDIF}
 {$IFOPT P+} {$DEFINE OPENSTRINGS_ON} {$ENDIF}
