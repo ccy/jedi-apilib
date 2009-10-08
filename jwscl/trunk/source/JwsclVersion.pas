@@ -913,21 +913,25 @@ class function TJwWindowsVersion.IsUACEnabled: Boolean;
 var R : TRegistry;
 begin
   R := TRegistry.Create;
-  R.RootKey := HKEY_LOCAL_MACHINE;
-  if R.OpenKeyReadOnly('SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System') then
-  begin
-    result := R.ReadInteger('EnableLUA') = 1;
-  end
-  else
-   raise EJwsclWinCallFailedException.CreateFmtWinCall(
-        RsWinCallFailed,
-        'IsUACEnabled',                                //sSourceProc
-        ClassName,                                //sSourceClass
-        RSUnVersion,                          //sSourceFile
-        0,                                           //iSourceLine
-        True,                                  //bShowLastError
-        'OpenKeyReadOnly',                   //sWinCall
-        ['OpenKeyReadOnly']);                                  //const Args: array of const
+  try
+	R.RootKey := HKEY_LOCAL_MACHINE;
+	if R.OpenKeyReadOnly('SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System') then
+	begin
+	  result := R.ReadInteger('EnableLUA') = 1;
+	end
+	else
+	  raise EJwsclWinCallFailedException.CreateFmtWinCall(
+		RsWinCallFailed,
+		'IsUACEnabled',                                //sSourceProc
+		ClassName,                                //sSourceClass
+		RSUnVersion,                          //sSourceFile
+		0,                                           //iSourceLine
+		True,                                  //bShowLastError
+		'OpenKeyReadOnly',                   //sWinCall
+		['OpenKeyReadOnly']);                                  //const Args: array of const
+  finally
+    R.Free;
+  end;
 end;
 
 class function TJwWindowsVersion.GetNativeProcessorArchitecture : Cardinal;
