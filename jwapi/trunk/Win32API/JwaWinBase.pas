@@ -6349,11 +6349,11 @@ Marco
 }
 function InterlockedExchangePointer(var Target: PVOID; Value: PVOID): PVOID;
 begin
-{$ifdef CPU64}
+{$ifdef WIN64}
   Result := PVOID(InterlockedExchange64(LONGLONG(Target), LONGLONG(Value)));
 {$else}
   Result := PVOID(InterlockedExchange(LONG(Target), LONG(Value)));
-{$endif CPU64}
+{$endif WIN64}
 end;
 
 {added tweak from
@@ -6362,13 +6362,13 @@ by Marco
 }
 function InterlockedCompareExchangePointer(var Destination: PVOID; Exchange, Comperand: PVOID): PVOID;
 begin
-{$ifdef CPU64}
+{$ifdef WIN64}
   Result := PVOID(InterlockedCompareExchange64(LONGLONG(Destination),
               LONGLONG(Exchange), LONGLONG(Comperand)));
-{$else CPU64}
+{$else}
   Result := PVOID(InterlockedCompareExchange(LONG(Destination),
     LONG(Exchange), LONG(Comperand)));
-{$endif CPU64}
+{$endif WIN64}
 end;
 
 function UnlockResource(hResData: HANDLE): BOOL;
