@@ -310,6 +310,7 @@ const
     'If you need to retrieve maximum allowed rights you should call the other AccessCheck method with parameter '+
     'GrantedAccess present.';
 
+  RsInvalidPathPatternForGetFileInheritanceSource = 'The path "%0:s" is invalid. UNC paths are not supported. A pathname must look like X:[\Path]* ';
 
 
 //unit JwsclSid.pas
@@ -325,6 +326,8 @@ const
     's"';
   RsSidSubAuthorityOutOfBound = 'Sub authority (%d) index out of bounds.';
   RsSidAlreadyInList = 'SID already in list';
+  RsInvalidSidStructure = 'The given PSidAndAttributesArray structure was not created by Create_PSID_Array.';
+
   RsSidListGetText = 'Class : %0:s\r\nCount : %1:d';
   RsAccountNameUseLabel = 'AccountNameUse: ';
   RsSidAccountDomainNameLabel = 'AccountDomainName: ';
@@ -344,6 +347,7 @@ const
   RsSidTextString    = '%0:s %1:s (%2:s) [%3:s]';
   RsInvalidSidAuthorityValue = 'The identifier authority value must not be larger than $FFFFFFFFFFFF.';
   RsInvalidDomainSid = 'The given SID (%0:s) does not match "S-1-5-21-xx-yy-zz" pattern.';
+
 
 
 //Unit JwsclToken.pas
@@ -366,7 +370,7 @@ const
   RsTokenRemovePrivilegeDenied = 'A set of privilege without an assigned tok' +
     'en cannot be removed. Use instead the user functions.';
   RsTokenRemovePrivilegeDeniedByPrivilege = 'To remove a privilege the token' +
-    ' must held the privilege SeTcbPrivilege.';
+    ' must hold the privilege SeTcbPrivilege.';
   RsTokenInvalidPrivilegePointer = 'Given Privilege set was not created by C' +
     'reate_PLUID_AND_ATTRIBUTES.';
   RsTokenPrivlegeNotInList = 'Could not remove privilege because it is not i' +
@@ -439,7 +443,8 @@ const
     '%s.';
   RsPrivilegeLuidText = 'hi: 0x%0:x, lo: 0x%1:x (0x%2:x)';
   RsTokenInvalidClass = 'The token instance "%s" is not a TJwSecurityToken.';
-  RsProcessNotFound = 'The process "%0:s" could not be found.';  
+  RsProcessNotFound = 'The process "%0:s" could not be found.';
+  RsInvalidRestrictedSids = 'All attributes of the restricted SIDs must be zero.';
 
 //Unit JwsclVersion.pas
 
@@ -578,6 +583,7 @@ const
   RsInvalidIndex = 'The given index %0:d is invalid for this call.';
 
   RsUnimplementedFeature = 'The feature "%s" is not yet implemented.';
+
 
 // jwsclProcess.pas
 

@@ -1833,7 +1833,7 @@ type
         EJwsclInvalidObjectException: will be raised if the object could not be accessed or found.
         EJwsclInvalidParameterException: will be raised if aSecurityInfo is not [siDaclSecurityInformation] or [siSaclSecurityInformation]
         EJwsclPrivilegeNotFoundException: will be raised if aSecurityInfo is [siSaclSecurityInformation] and the current thread does cannot access audit information, because the privilege could not be activated.
-        EJwsclUnsupportedException: will be raised if the path does not have the pattern: X:[\folder]* or is a relative path. UNC paths are not supported.
+        EJwsclInvalidPathException: will be raised if the path does not have the pattern: X:[\folder]* or is a relative path. UNC paths are not supported.
        Remarks
          This functions emulates the GetInheritanceSource function available in
          Windows XP and newer. Since the inheritance functionality of NTFS
@@ -7303,7 +7303,7 @@ begin
      ((Length(PathName) >= 2) and (PathName[1] = '\') and (PathName[2] = '\'))
      then
   begin
-    raise EJwsclUnsupportedException.CreateFmtEx(
+    raise EJwsclInvalidPathException.CreateFmtEx(
         RsInvalidPathPatternForGetFileInheritanceSource, 'GetFileInheritanceSource', ClassName, RsUNSecureObjects, 0, False, [PathName]);
   end;
   
