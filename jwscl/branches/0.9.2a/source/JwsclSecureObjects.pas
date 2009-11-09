@@ -6859,36 +6859,24 @@ class function TJwSecureFileObject.GetFileInheritanceSource(
   const OnGetNamedSecurityInfo : TJwOnGetNamedSecurityInfo = nil;
   const Data : Pointer = nil): TJwInheritedFromArray;
 
-  function GetParent(PathName: TJwString; bStop: boolean = False): TJwString;
-  var //[Hint] l,l2,
+  function GetParent(PathName: TJwString): TJwString;
+  var
     len,
     p1,
     i : integer;
-//    s: TJwString;
   begin
     Result := '';
- {
-    i := Length(PathName);
-    while (i > 0) do
-    begin
-      if (i < Length(PathName)) and ((PathName[i] = '\') or
-        (PathName[i] = '/') or (PathName[i] = ':')) then
-        break;
-
-      Result := PathName[i] + Result;
-
-      Dec(i);
-    end;
-    for i2 := 1 to i do
-      S := S + PathName[i2];
-
-    if bStop then
-      Result := GetParent(s)
-    else
-      Result :=  s;    }
     len := Length(PathName);
+
+    //prevents stack overflow for the caller
+    if Len <= 3 then
+    begin
+      result := '';
+      exit;
+    end;
+
     p1 := 0;
-    for i := len-1 downto 1 do
+    for i := len-1 downto 1 do //ignore last char - usually a \
     begin
       if PathName[i] = '\' then
       begin
@@ -7001,6 +6989,20 @@ class function TJwSecureFileObject.GetFileInheritanceSource(
       SD.DACLGenericRemoved := true;
     end;
 
+    {Remove all inheritance flags from the ACEs 
+     if current Path is the root path.
+     This can happen if a folder is set as a root drive
+     with subst.
+    }
+    if Length(PathName) <= 3 then
+    begin
+      SD.Control := SD.Control + [sdcDaclProtected];
+      for I := 0 to SD.DACL.Count - 1 do
+      begin
+        SD.DACL.Items[i].Flags := SD.DACL.Items[i].Flags - [afInheritedAce];
+      end;
+    end;
+
 //    ShowMessage(PreviousInhACL.GetTextMap({nil));//}TJwSecurityFileFolderMapping));
 //    ShowMessage(SD.DACL.GetTextMap({nil));//}TJwSecurityFileFolderMapping));
 
@@ -7046,9 +7048,9 @@ class function TJwSecureFileObject.GetFileInheritanceSource(
          Exclude(Flags2, afInheritedAce);
                                                  }
 
-        if //(Flags1 = Flags2) and
+        if //the previous ACE is inherited
         (afInheritedAce in PreviousInhACL[i].Flags) and
-          //root ACE is inherited
+          //the current root ACE is not inherited
           not (afInheritedAce in SD.DACL[ps].Flags) and
           //current ACE is explicit
           not (PreviousInhACL[i].Ignore) then
@@ -7056,6 +7058,7 @@ class function TJwSecureFileObject.GetFileInheritanceSource(
         begin
           UpdateInheritedArrayElement(pInhArray, ps, Level, PathName, SD.DACL[ps].SID);
 
+          //This ACE has its inheritance, so don't touch it anymore
           PreviousInhACL[i].Ignore := True; //Ignore this ACE next time
         end
         else
@@ -7069,6 +7072,9 @@ class function TJwSecureFileObject.GetFileInheritanceSource(
       end;
     end;
 
+    PathName := GetParent(PathName);
+   
+                        
     //Stop if this SD is protected.
     if not (sdcDaclProtected in SD.Control) then
     for i := 0 to PreviousInhACL.Count - 1 do
@@ -7076,7 +7082,6 @@ class function TJwSecureFileObject.GetFileInheritanceSource(
       if (afInheritedAce in PreviousInhACL[i].Flags) and
         not PreviousInhACL[i].Ignore then
       begin
-        PathName := GetParent(PathName);
 
         {If sPathName is something like C:
          GetParent returns an empty string: there are no more parents.
@@ -7138,9 +7143,10 @@ begin
 
   end;
 
+   
   //we need absolute path
   sPathName := ExpandFileName(PathName);
-  //TODO: UNC???
+
 
   SetLength(Result, 0);
   try
@@ -7180,7 +7186,7 @@ begin
           sPathName := GetParent(sPathName);
 
           {sPathName can be c:}
-          if Length(PathName) >= 3 then
+          if Length(sPathName) >= 3 then
             UpdateObjectInheritedDACL(sPathName, SD.DACL, Result, 1);
 
         finally
