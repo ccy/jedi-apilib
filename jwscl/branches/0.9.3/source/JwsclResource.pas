@@ -310,6 +310,7 @@ const
     'If you need to retrieve maximum allowed rights you should call the other AccessCheck method with parameter '+
     'GrantedAccess present.';
 
+  RsInvalidPathPatternForGetFileInheritanceSource = 'The path "%0:s" is invalid. UNC paths are not supported. A pathname must look like X:[\Path]* ';
 
 
 //unit JwsclSid.pas
@@ -366,7 +367,7 @@ const
   RsTokenRemovePrivilegeDenied = 'A set of privilege without an assigned tok' +
     'en cannot be removed. Use instead the user functions.';
   RsTokenRemovePrivilegeDeniedByPrivilege = 'To remove a privilege the token' +
-    ' must held the privilege SeTcbPrivilege.';
+    ' must hold the privilege SeTcbPrivilege.';
   RsTokenInvalidPrivilegePointer = 'Given Privilege set was not created by C' +
     'reate_PLUID_AND_ATTRIBUTES.';
   RsTokenPrivlegeNotInList = 'Could not remove privilege because it is not i' +
