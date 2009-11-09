@@ -1833,7 +1833,7 @@ type
         EJwsclInvalidObjectException: will be raised if the object could not be accessed or found.
         EJwsclInvalidParameterException: will be raised if aSecurityInfo is not [siDaclSecurityInformation] or [siSaclSecurityInformation]
         EJwsclPrivilegeNotFoundException: will be raised if aSecurityInfo is [siSaclSecurityInformation] and the current thread does cannot access audit information, because the privilege could not be activated.
-
+        EJwsclUnsupportedException: will be raised if the path does not have the pattern: X:[\folder]* or is a relative path. UNC paths are not supported.
        Remarks
          This functions emulates the GetInheritanceSource function available in
          Windows XP and newer. Since the inheritance functionality of NTFS
@@ -7133,6 +7133,20 @@ class function TJwSecureFileObject.GetFileInheritanceSource(
       SD.DACLGenericRemoved := true;
     end;
 
+    {Remove all inheritance flags from the ACEs 
+     if current Path is the root path.
+     This can happen if a folder is set as a root drive
+     with subst.
+    }
+    if Length(PathName) <= 3 then
+    begin
+      SD.Control := SD.Control + [sdcDaclProtected];
+      for I := 0 to SD.DACL.Count - 1 do
+      begin
+        SD.DACL.Items[i].Flags := SD.DACL.Items[i].Flags - [afInheritedAce];
+      end;
+    end;
+
 //    ShowMessage(PreviousInhACL.GetTextMap({nil));//}TJwSecurityFileFolderMapping));
 //    ShowMessage(SD.DACL.GetTextMap({nil));//}TJwSecurityFileFolderMapping));
 
@@ -7157,11 +7171,6 @@ class function TJwSecureFileObject.GetFileInheritanceSource(
         Their (inherited) access masks can have less bits set than their parents.
         So we check using eactSEAccessMask (smaller equal)
       }
-   {   IncFlags := [efInherited];
-      if Container then
-        Include(ExclusionFlags, efLeaf)
-      else
-        Include(ExclusionFlags, ef)   }
 
       ps := SD.DACL.FindEqualACE(PreviousInhACL[i], [eactSameSid,
         eactSameAccessMask, eactSEAccessMask, eactSameType, eactSameFlags, eactGEFlags], -1, [],[efExplicit], true);
@@ -7215,6 +7224,9 @@ class function TJwSecureFileObject.GetFileInheritanceSource(
       end;
     end;
 
+    PathName := GetParent(PathName);
+   
+                        
     //Stop if this SD is protected.
     if not (sdcDaclProtected in SD.Control) then
     for i := 0 to PreviousInhACL.Count - 1 do
@@ -7222,7 +7234,6 @@ class function TJwSecureFileObject.GetFileInheritanceSource(
       if (afInheritedAce in PreviousInhACL[i].Flags) and
         not PreviousInhACL[i].Ignore then
       begin
-        PathName := GetParent(PathName);
 
         {If sPathName is something like C:
          GetParent returns an empty string: there are no more parents.
@@ -7284,9 +7295,18 @@ begin
 
   end;
 
+   
   //we need absolute path
   sPathName := ExpandFileName(PathName);
-  //TODO: UNC???
+  
+  if (Length(PathName) < 2) or
+     ((Length(PathName) >= 2) and (PathName[1] = '\') and (PathName[2] = '\'))
+     then
+  begin
+    raise EJwsclUnsupportedException.CreateFmtEx(
+        RsInvalidPathPatternForGetFileInheritanceSource, 'GetFileInheritanceSource', ClassName, RsUNSecureObjects, 0, False, [PathName]);
+  end;
+  
 
   SetLength(Result, 0);
   try
