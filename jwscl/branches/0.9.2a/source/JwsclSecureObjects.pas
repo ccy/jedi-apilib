@@ -5687,7 +5687,7 @@ begin
 
   Result := inherited GetInheritanceSource(pObjectNameTemp,
     SE_FILE_OBJECT, aSecurityInfo, bIsDirectory, GUIDs, ACL,
-    TJwSecurityFileMapping, FN_OBJECT_MGR_FUNCTS);
+    TJwSecurityFileFolderMapping, FN_OBJECT_MGR_FUNCTS);
 end;
 
 

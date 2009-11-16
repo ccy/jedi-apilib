@@ -128,6 +128,8 @@ const
   cOSXP64    = 9;  //The system is a XP 64 bit version
   cOsVista   = 10; //The system is a Vista
   cOsWin2008 = 11; //The system is a 2008 Server (tested with RC)
+  cOsWin7    = 12; //The system is a Win7
+  //cOsWinXXX  = cOsWin7; //use this to set proper name for this OS!
 
   {<B>sOSVerString</B> contains the windows version as text}
   sOSVerString: array[-1..15] of TJwString =
@@ -144,7 +146,7 @@ const
     'Windows XP 64 Edition',
     'Windows Vista',
     'Windows 2008',
-    '',
+    'Windows 7',
     '',
     '',
     ''
@@ -1578,6 +1580,33 @@ procedure JwInitLocalizedMappings(PrimaryLanguage,
   SubLanguage : Word; Inst : HINST = 0);
 
 
+const
+  {
+  <B>ERROR_CANCELLED</B>
+  The user has canceled the UAC prompt.
+  }
+  E_USER_CANCELED_OPERATION = HRESULT($800704C7);//
+
+  {
+  <B>ERROR_CANCELLED</B>
+  The user has canceled the UAC prompt.
+  Integer version. Contains only code part of HRESULT.
+  }
+  E_USER_CANCELED_OPERATIONint = 1223;//
+
+  {
+  <B>E_CLASS_IS_NOT_SETUP</B>
+  The requested COM class has not been setup to be used for elevation.
+  }
+  E_CLASS_IS_NOT_SETUP = HRESULT($80080017);
+
+  {
+  <B>E_CLASS_IS_NOT_SETUPint</B>
+  The requested COM class has not been setup to be used for elevation.
+  Integer version. Contains only code part of HRESULT.
+  }
+  E_CLASS_IS_NOT_SETUPint = 23;
+
 {$ENDIF SL_IMPLEMENTATION_SECTION}
 
 {$IFNDEF SL_OMIT_SECTIONS}
@@ -1740,7 +1769,6 @@ begin
     IgnoreEJwsclResourceNotFound,//const UseDefaultOnError : Boolean = true;
     Inst//ModuleInstance : HINST = 0
   );
-
 
 
 

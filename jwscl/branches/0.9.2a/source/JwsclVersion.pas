@@ -225,6 +225,19 @@ type
     }
     function IsWindowsVista(bOrHigher: boolean = False): boolean;
 
+    {<B>IsWindowsBeta</B> checks if the system has the version given in the function name.
+     @param bOrHigher defines if the return value should also be <B>true</B> if the system
+     is better/higher than the requested system version.
+     @return <B>IsWindowsVista</B> returns <B>true</B> if the system is the requested version (or higher if bOrHigher is true);
+     otherwise <B>false</B>.
+     If bOrHigher is <B>true</B> the return value is the result of
+     <B>true</B> if (bOrHigher and (GetWindowsType > iVer)) is true;
+     <B>false</B> if GetWindowsType < (requested version)
+
+    }
+    function IsWindows7(bOrHigher: boolean = False): boolean;
+
+
     {<B>Server</B> is the servername as returned by Windows Api}
     property Server: TJwString read FServer;
   end;
@@ -343,7 +356,7 @@ type
 
       {<B>IsWindowsXP</B> checks if the system has the version given in the function name.
        @param bOrHigher defines if the return value should also be <B>true</B> if the system
-              is better/higher than the requested system version. 
+              is better/higher than the requested system version.
        @return <B>IsWindowsXP</B> returns <B>true</B> if the system is the requested version (or higher if bOrHigher is true);
                otherwise <B>false</B>.
                If bOrHigher is <B>true</B> the return value is the result of
@@ -357,10 +370,10 @@ type
 
       {<B>IsWindowsVista</B> checks if the system has the version given in the function name.
 
-       Actually the parameter bOrHigher has no meaning in this function!
+       Currenty the parameter bOrHigher has no meaning in this function!
 
        @param bOrHigher defines if the return value should also be <B>true</B> if the system
-              is better/higher than the requested system version. 
+              is better/higher than the requested system version.
        @return <B>IsWindowsVista</B> returns <B>true</B> if the system is the requested version (or higher if bOrHigher is true);
                otherwise <B>false</B>.
                If bOrHigher is <B>true</B> the return value is the result of
@@ -373,7 +386,7 @@ type
 
       {<B>IsWindows2008</B> checks if the system has the version given in the function name.
 
-       Actually the parameter bOrHigher has no meaning in this function!
+       Currently the parameter bOrHigher has no meaning in this function!
 
        @param bOrHigher defines if the return value should also be <B>true</B> if the system
               is better/higher than the requested system version. 
@@ -387,17 +400,21 @@ type
     class function IsWindows2008(bOrHigher: boolean = False): boolean;
       virtual;
 
+    class function IsWindows7(bOrHigher: Boolean = False): Boolean; virtual;
+
+
       {<B>IsServer</B> checks if the system is a server version
        @return Returns true if the system is a server; otherwise false (Workstation). }
     class function IsServer: boolean; virtual;
 
 
       {<B>CheckWindowsVersion</B> raises an EJwsclUnsupportedWindowsVersionException exception if
-       the actual windows version does not correspond to the required one in the parameters.
+       the current windows version does not correspond to the required one in the parameters.
 
-       @param iWinVer contains a cOsXXXXX onstant that is defined in JwsclConstants.
-              If iWinVer is not between the bounds of sOSVerString the value iWinVer will be set to -1 without an error. 
-       @param bOrHigher If true the exception will only be raised if the actual system version
+       @param iWinVer contains a cOsXXXXX constant that is defined in JwsclConstants.
+              If iWinVer is not between the bounds of sOSVerString the windows version will be checked though, but on
+			  exception the supplied cOsXXXX constant will be presented as "Unknown System".
+       @param bOrHigher If true the exception will only be raised if the current system version
                is smaller than the given on in iWinVer; otherwise the system version must be exactly the given one in iWinVer 
        @param SourceProc contains the caller method name to be displayed in the exception message 
        @param SourceClass contains the caller class name to be displayed in the exception message 
@@ -409,10 +426,20 @@ type
                 ((fWindowsType = iWinVer) or
                 (bOrHigher and (fWindowsType > iWinVer)))  
        }
-    class procedure CheckWindowsVersion(iWinVer: integer;
+    class procedure CheckWindowsVersion(const iWinVer: integer;
       bOrHigher: boolean; SourceProc, SourceClass, SourceFile: TJwString;
       SourcePos: Cardinal); virtual;
 
+    {<B>IsTerminalServiceRunning</B> checks the status of the terminal service.
+
+     Return
+        Returns true if the terminal service is running; otherwise false.
+     Remarks
+        On Windows 7 (Workstation) the function returns in most cases false because
+        of a changed Windows TS architecture.
+        Even if TS is not running you can safely call any WTS function. So
+        you just need to check for Windows 7 and ignore the result of IsTerminalServiceRunning.
+    }
     class function IsTerminalServiceRunning : Boolean;
 
     // <B>GetNativeProcessorArchitecture</B> returns processor architecture of the current Windows version
@@ -584,9 +611,9 @@ begin
     NetApiBufferFree(ServerInfoPtr);
   end
   else begin
-    raise EJwsclWinCallFailedException.CreateFmtEx('',
-      'NetServerGetInfo', ClassName, RsUNVersion, 0, nStatus,
-          [FServer]);
+    raise EJwsclWinCallFailedException.CreateFmtEx(
+      RsWinCallFailedWithNTStatus+#13#10+'Server: %2:s', 'DisableAllPrivileges', ClassName,
+      RsUNVersion, 0, True, ['NetServerGetInfo', nStatus,FServer]);
   end;
 end;
 
@@ -620,6 +647,10 @@ begin
   else if (FMajorVersion = 6) and (FMinorVersion = 0) then
   begin
     Result := cOsVista;
+  end
+  else if (FMajorVersion = 6) and (FMinorVersion = 1) then
+  begin
+    Result := cOsWin7;
   end
   else
   begin
@@ -655,6 +686,14 @@ begin
   Result := (FWindowsType = iVer) or (bOrHigher and (FWindowsType > iVer));
 end;
 
+function TJwServerInfo.IsWindows7(bOrHigher: Boolean = False): Boolean;
+const
+  iVer = cOsWin7;
+begin
+  Result := (FWindowsType = iVer) or (bOrHigher and (FWindowsType > iVer));
+end;
+
+
 function TJwServerInfo.IsWindows2008(bOrHigher: Boolean = False): Boolean;
 const
   iVer = cOsWin2008;
@@ -664,7 +703,7 @@ end;
 
 
 
-class procedure TJwWindowsVersion.CheckWindowsVersion(iWinVer: integer;
+class procedure TJwWindowsVersion.CheckWindowsVersion(const iWinVer: integer;
   bOrHigher: boolean; SourceProc, SourceClass, SourceFile: TJwString;
   SourcePos: Cardinal);
 var
@@ -672,9 +711,9 @@ var
 
 begin
   if (iWinVer < low(sOSVerString)) or (iWinVer > high(sOSVerString)) then
-    iWinVer := -1;
-
-  sWinVer := sOSVerString[iWinVer];
+    sWinVer := RsUnknownSuppliedOS
+  else
+    sWinVer := sOSVerString[iWinVer];
 
   try
     sActWinVer := sOSVerString[fWindowsType];
@@ -825,8 +864,10 @@ begin
           Result := cOsVista
         else if (majorVer = 6) and (minorVer = 0) and (fIsServer) then
           Result := cOsWin2008
-        else if (majorVer = 6) and (minorVer = 0) then
-          Result := cOsVista
+        else if (majorVer = 6) and (minorVer = 1) then
+          Result := cOsWin7
+        else if (majorVer = 6) and (minorVer = 1) then
+          Result := cOsWin7
         else
           Result := cOsUnknown;
       end;
@@ -908,6 +949,12 @@ begin
       result := not RunningInsideWOW64
     else
       result := false;
+end;
+class function TJwWindowsVersion.IsWindows7(bOrHigher: Boolean): Boolean;
+const
+  iVer = cOsWin7;
+begin
+  Result := (FWindowsType = iVer) or (bOrHigher and (FWindowsType > iVer));
 end;
 
 {$ENDIF SL_INTERFACE_SECTION}
