@@ -523,6 +523,10 @@ const
 //
   RsInvalidObjectTypeList = 'The given array of ObjectType is invalid around index %0:d. ';
 
+//Unit JwsclKnownSid.pas
+
+  RsInvalidLevelSIDPrefix = 'The given SID "%s" is not a integrity label.';
+
 //Unit JwsclComUtils.pas
 
 //

@@ -723,7 +723,7 @@ end;
 
 function JwCreateToString(const Values : array of const) : String;
   function GetValue(I : Integer; const Values : array of const) : String;
-  const B : Array[boolean] of ShortString = ('true','false');
+  const B : Array[boolean] of ShortString = ('false','true');
   begin    
     case Values[i].VType of
       vtInteger : result := IntToStr(Values[i].VInteger);

@@ -84,12 +84,48 @@ type
     function IsStandardSID: boolean;  override;
   end;
 
+  TJwIntegrityLevelSID = class(TJwSecurityKnownSID, IComparable)
+  private
+    fMandatoryPolicy: TJwTokenMandatoryPolicies;
+  protected
+    fLabelType: TJwIntegrityLabelType;
+    fLevel: Cardinal;
+    fIsStandard : Boolean;
+
+    constructor Create(const Level : Cardinal; IsStandardSID : Boolean); overload;
+  public
+    constructor Create(const Level : Cardinal); overload;
+    constructor Create(const IL : TJwIntegrityLevelSID); overload;
+    constructor Create(const SecurityID: TJwSecurityId); overload;
+    constructor Create(const SIDString: TJwString); overload;
+
+
+    class function GetIL(const Level : Cardinal) : TJwIntegrityLevelSID; virtual;
+    class function GetEffectiveIL() : TJwIntegrityLevelSID; virtual;
+
+    function CreateIncrement(Increment : Integer; AsStandardSID : Boolean = True) : TJwIntegrityLevelSID; virtual;
+
+    function IsStandardSID: boolean;  override;
+
+    function CompareTo(Obj: TObject): Integer; virtual;
+
+    function IsEqual(IL : TJwIntegrityLevelSID; CompareLevel : Boolean = false) : Boolean; virtual;
+    function IsHigherThan(IL : TJwIntegrityLevelSID; CompareLevel : Boolean = false) : Boolean; virtual;
+    function IsLowerThan(IL : TJwIntegrityLevelSID; CompareLevel : Boolean = false) : Boolean; virtual;
+
+    property LabelType : TJwIntegrityLabelType read fLabelType;
+    property Level : Cardinal read fLevel;
+    property MandatoryPolicy : TJwTokenMandatoryPolicies read fMandatoryPolicy;
+  end;
+
+
 
 const JwLowIL = 'S-1-16-4096';
       JwMediumIL = 'S-1-16-8192';
       JwHighIL = 'S-1-16-12288';
       JwSystemIL = 'S-1-16-16384';
       JwProtectedProcessIL = 'S-1-16-20480';
+      JwIntegrityLevel = 'S-1-16-%u';
 var
    JwIntegrityLabelSID : array[TJwIntegrityLabelType] of TJwSecurityKnownSID;
     {<B>JwPrincipalSid</B> defines the current user SID that started the process.
@@ -174,9 +210,9 @@ var
      </code>
     }
   JwLocalSystemSID,
-    {<B>JwPrincipalSid</B> defines the group that allows remote interaction with the machine
+    {<B>JwRemoteInteractiveLogonSID</B> defines the group that allows remote interaction with the machine
      You need to call JwInitWellknownSIDs before accessing this variable!
-    
+
     Use:
      <code lang="Delphi">
       SD : TJwSecurityDescriptor;
@@ -187,7 +223,26 @@ var
      </code>
     }
   JwRemoteInteractiveLogonSID,
-    {<B>JwPrincipalSid</B> defines the NULL Logon SID
+
+    {<B>JwRestrictedCodeSID</B> defines the group that diminishes write access of XP process.
+     You need to call JwInitWellknownSIDs before accessing this variable!
+
+
+     Remarks:
+       Used in Windows XP and is obsolte in Windows Vista.
+    }
+  JwRestrictedCodeSID,
+
+    {<B>JwWriteRestrictedSID</B> defines the write restricted SID
+     You need to call JwInitWellknownSIDs before accessing this variable!
+
+     Remarks:
+      New in Windows Vista: http://blogs.technet.com/voy/archive/2007/04/01/write-restricted-token.aspx
+      This object is nil on older than Windows Vista.
+    }
+  JwWriteRestrictedSID,
+
+    {<B>JwNullSID</B> defines the NULL Logon SID
      You need to call JwInitWellknownSIDs before accessing this variable!
 
      Use:
@@ -705,7 +760,7 @@ begin
   end;
 end;
 
-var KnownSids : array[1..75] of AnsiString =
+var KnownSids : array[1..76] of AnsiString =
      ('S-1-0-0',
       'S-1-1-0',
       'S-1-2-0',
@@ -734,6 +789,7 @@ var KnownSids : array[1..75] of AnsiString =
       'S-1-5-20',
       'S-1-5-21',
       'S-1-5-32',
+      'S-1-5-33',
       'S-1-5-1000',
       'S-1-5-64-10',
       'S-1-5-64-14',
@@ -976,6 +1032,14 @@ begin
     JwLocalSystemSID := TJwSecurityKnownSID.Create('S-1-5-18');
   if not Assigned(JwRemoteInteractiveLogonSID) then
     JwRemoteInteractiveLogonSID := TJwSecurityKnownSID.Create('S-1-5-14');
+
+  if not Assigned(JwWriteRestrictedSID) and
+    TJwWindowsVersion.IsWindowsVista(true) then
+    JwWriteRestrictedSID := TJwSecurityKnownSID.Create('S-1-5-33');
+
+  if not Assigned(JwRestrictedCodeSID) then
+    JwRestrictedCodeSID := TJwSecurityKnownSID.Create('S-1-5-12');
+
   if not Assigned(JwNullSID) then
     JwNullSID := TJwSecurityKnownSID.Create('S-1-0-0');
   if not Assigned(JwWorldSID) then
@@ -1024,6 +1088,7 @@ begin
   FreeAndNil(JwPowerUsersSID);
   FreeAndNil(JwLocalSystemSID);
   FreeAndNil(JwRemoteInteractiveLogonSID);
+  FreeAndNil(JwRestrictedCodeSID);
   FreeAndNil(JwNullSID);
   FreeAndNil(JwWorldSID);
   FreeAndNil(JwLocalGroupSID);
@@ -1031,6 +1096,10 @@ begin
   FreeAndNil(JwLocalServiceSID);
   FreeAndNil(JwSecurityProcessUserSID);
   FreeAndNil(JwPrincipalSid);
+
+  FreeAndNil(JwRestrictedCodeSID);
+  FreeAndNil(JwPrincipalSid);
+
   //  FreeAndNil(fSecurityCurrentThreadUserSID);
 
   for ilts := low(TJwIntegrityLabelType) to high(TJwIntegrityLabelType) do
@@ -1084,9 +1153,183 @@ begin
       MethodName, ClassName, FileName, 0, false, [Errors]);
 end;
 
+
+constructor TJwIntegrityLevelSID.Create(const Level: Cardinal; IsStandardSID: Boolean);
+const
+  LevelTypes : array[TJwIntegrityLabelType] of Cardinal =
+    (0,  //
+    4096, //iltLow
+    8192,  //iltMedium
+    12288, //iltHigh
+    16384, //iltSystem
+    20480); //iltProtected
+
+begin
+  Create(Format(JwIntegrityLevel, [Level]));
+  fLevel := Level;
+  fIsStandard := IsStandardSID;
+
+  fLabelType := iltLow;
+  while (fLabelType < High(LevelTypes)) and
+    (Level >= LevelTypes[fLabelType]) and ((Level >= LevelTypes[TJwIntegrityLabelType(ord(fLabelType)+1)])
+    )  do
+    Inc(fLabelType);
+end;
+
+function TJwIntegrityLevelSID.CompareTo(Obj: TObject): Integer;
+begin
+  result := (Obj as TJwIntegrityLevelSID).Level - Level;
+end;
+
+constructor TJwIntegrityLevelSID.Create(const Level: Cardinal);
+begin
+  Create(Level, false);
+end;
+
+
+constructor TJwIntegrityLevelSID.Create(const IL: TJwIntegrityLevelSID);
+begin
+  JwRaiseOnNilParameter(IL, 'IL', 'Create', ClassName, RsUNKnownSid);
+
+  Create(IL.Level);
+end;
+
+var IntegrityLevelSIDs : TStringList = nil;
+
+class function TJwIntegrityLevelSID.GetEffectiveIL: TJwIntegrityLevelSID;
+var
+  Token : TJwSecurityToken;
+  Level : TJwSecurityId;
+begin
+  Token := TJwSecurityToken.CreateTokenEffective(TOKEN_READ or TOKEN_QUERY);
+  try
+    Level := Token.TokenIntegrityLevel;
+    try
+      result := TJwIntegrityLevelSID.Create(Level);
+      result.fMandatoryPolicy := Token.MandatoryPolicy;
+    finally
+      Level.Free;
+    end;
+  finally
+    Token.Free;
+  end;
+end;
+
+class function TJwIntegrityLevelSID.GetIL(const Level: Cardinal): TJwIntegrityLevelSID;
+var
+  Str : String;
+  I : Integer;
+begin
+  if not Assigned(IntegrityLevelSIDs) then
+  begin
+    IntegrityLevelSIDs := TStringList.Create;
+    IntegrityLevelSIDs.OwnsObjects := true;
+    IntegrityLevelSIDs.Sorted := true;
+  end;
+
+  Str := Format(JwIntegrityLevel, [Cardinal(Level)]);
+  if IntegrityLevelSIDs.Find(Str, I) then
+  begin
+    Result := IntegrityLevelSIDs.Objects[I] as TJwIntegrityLevelSID;
+  end
+  else
+  begin
+    result := TJwIntegrityLevelSID.Create(Level, True);
+    IntegrityLevelSIDs.AddObject(Str, result);
+  end;
+end;
+
+constructor TJwIntegrityLevelSID.Create(const SecurityID: TJwSecurityId);
+var
+  Prefix : TJwSecurityId;
+  Level : Integer;
+begin
+  JwRaiseOnNilParameter(SecurityID, 'ILSID', 'Create', ClassName, RsUNKnownSid);
+
+  Prefix := TJwSecurityId.Create(JwLowIL);
+  try
+    if not SecurityID.EqualPrefixSid(Prefix) then
+      raise EJwsclInvalidKnownSIDException.CreateFmtEx(
+          RsInvalidLevelSIDPrefix, 'CreateNewToken', ClassName, RsUNKnownSid,
+          0, True, [SecurityID.StringSID]);
+  finally
+    Prefix.Free;
+  end;
+
+  Level := SecurityID.SubAuthority[SecurityID.SubAuthorityCount-1];
+  Create(Level);
+end;
+
+
+constructor TJwIntegrityLevelSID.Create(const SIDString: TJwString);
+var
+  SID : TJwSecurityId;
+begin
+  SID := TJwSecurityId.Create(SIDString);
+  try
+    Create(SID);
+  finally
+    SID.Free;
+  end;
+end;
+
+function TJwIntegrityLevelSID.CreateIncrement(Increment: Integer; AsStandardSID: Boolean): TJwIntegrityLevelSID;
+{$WARNINGS off}
+begin
+  if (Increment < 0) and (Level < -Increment) then
+    Increment := -Integer(Level)
+  else
+  if (Increment > 0) and (Int64(Level+Increment) >= Cardinal(-1)) then
+    Increment := Cardinal(-1) - Level;
+
+  if AsStandardSID then
+    result := TJwIntegrityLevelSID.GetIL(Cardinal(Level + Increment))
+  else
+    result := TJwIntegrityLevelSID.Create(Cardinal(Level + Increment));
+{$WARNINGS on}
+end;
+
+function TJwIntegrityLevelSID.IsEqual(IL: TJwIntegrityLevelSID; CompareLevel: Boolean): Boolean;
+begin
+  if CompareLevel then
+  begin
+    result := IL.Level = Level;
+  end
+  else
+  begin
+    result := IL.LabelType = LabelType;
+  end;
+end;
+
+function TJwIntegrityLevelSID.IsHigherThan(IL: TJwIntegrityLevelSID; CompareLevel: Boolean): Boolean;
+begin
+  if CompareLevel then
+  begin
+    result := Level > IL.Level;
+  end
+  else
+  begin
+    result := Ord(LabelType) > Ord(IL.LabelType);
+  end;
+end;
+
+function TJwIntegrityLevelSID.IsLowerThan(IL: TJwIntegrityLevelSID; CompareLevel: Boolean): Boolean;
+begin
+  result := not IsHigherThan(IL, CompareLevel) and not IsEqual(IL, CompareLevel);
+end;
+
+function TJwIntegrityLevelSID.IsStandardSID: boolean;
+begin
+  result := fIsStandard;
+end;
+
 {$ENDIF SL_INTERFACE_SECTION}
 
 {$IFNDEF SL_OMIT_SECTIONS}
+{ TJwIntegrityLevelSID }
+
+
+
 initialization
 {$ENDIF SL_OMIT_SECTIONS}
 
@@ -1117,6 +1360,7 @@ finalization
   OnFinalization := True;
   DoneWellKnownSIDs;
   JwDoneMapping;
+  FreeAndNil(IntegrityLevelSIDs);
 {$ENDIF SL_FINALIZATION_SECTION}
 
 {$IFNDEF SL_OMIT_SECTIONS}

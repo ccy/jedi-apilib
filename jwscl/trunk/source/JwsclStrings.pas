@@ -93,24 +93,25 @@ const
   {<B>TJwCharSize</B> defines the size of an char in an ansi- or unicode compilation. }
   TJwCharSize = SizeOf(TJwChar);
 
+
 { JwCompareString compare two TJwString values using ANSICODE or UNICODE settings
   depending on the UNICODE compiler directive. The comparison is done using the
   locale user setting.
-  
-  
-  
-  
+
+
+
+
   Parameters
   S1 :          Receives the first string.
   S2 :          Receives the second string.
   IgnoreCase :  If set to to true the strings will be compared ignoring case
                 sensitivity.
-  
-  
-  
+
+
+
   Returns
   The function has the following results:
-  
+
   <table 15c%>
   Value   \Description
   ------  -------------------------------------------------------------------------
@@ -119,14 +120,15 @@ const
            are identical.
   1       S2 is less in lexical value than S1.
   </table>
-  
-  
-  
-  
-  
+
+
+
+
+
   See Also
   <extlink http://msdn.microsoft.com/en-us/library/ms647476.aspx>CompareString
   Function (MSDN)</extlink>                                                         }
+
 function JwCompareString(const S1, S2: TJwString;
   const IgnoreCase: boolean = False): integer;
 
@@ -334,6 +336,7 @@ begin
     end;
   end;
 end;
+
 
 function JwCompareString(const S1, S2: TJwString;
   const IgnoreCase: boolean = False): integer;

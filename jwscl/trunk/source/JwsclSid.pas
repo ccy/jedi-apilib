@@ -83,10 +83,23 @@ type
 
 
      {
-     COM: Also available as com method.
+      Creates a new Security ID list from a SidAndAttributesArray. You need to supply the count
+      of array members.
+
+      @param SidAndAttributesArray The SID attribute array. Must not be nil.
+      @param Count The number of members in the array. This count is not checked.
+
      }
-    constructor Create(SidAndAttributesArray : PSidAndAttributesArray);
-      overload;
+    constructor Create(SidAndAttributesArray : PSidAndAttributesArray; Count : Cardinal); overload;
+
+    {
+       Creates a new Security ID list from a SidAndAttributesArray created by Create_PSID_Array.
+
+       @param SidAndAttributesArray The SID attribute array. Must not be nil.
+     raises
+      EJwsclInvalidSidStructureException: will be raised if the array was not created by Create_PSID_Array.
+    }
+    constructor Create(SidAndAttributesArray : PSidAndAttributesArray); overload;
 
       {<B>Create</B> creates an empty list.
       @param ownSIDs defines whether the SIDs are freed on the end of the list instance (true) or not 
@@ -162,7 +175,11 @@ type
 
       {<B>Free_PSID_Array</B> frees a "SID and Attributes" structures created by Create_PSID_Array.
        @param sids contains the "SID and Attributes" structures to be freed. If nil nothing happens.
-             The parameter will be nil afterwards. 
+             The parameter will be nil afterwards.
+
+       Exceptions
+        EJwsclInvalidSidStructureException This exception will be raised if the given structure
+          was not created by Create_PSID_Array
       }
     class procedure Free_PSID_Array(var sids: PSidAndAttributesArray); virtual;
 
@@ -171,6 +188,16 @@ type
       }
     class procedure Free_PTOKEN_GROUPS(var sids: PTOKEN_GROUPS); virtual;
 
+      {<B>PSID_Array_Count</B> returns then umber of Sids in a structure
+       created by Create_PSID_Array.
+
+      Exceptions
+        EJwsclInvalidSidStructureException This exception will be raised if the given structure
+          was not created by Create_PSID_Array
+      }
+
+    class function PSID_Array_Count(const sids: PSidAndAttributesArray) : Integer;
+
       {<B>GetText</B> returns a string that contains for each list entry (SID)
        a text that contains domain, account name and humand readable SID structure.
        The form is "[domain@]name (S-1-XXXXXX)" where [] is optional.
@@ -178,6 +205,7 @@ type
       }
     function GetText(ignoreExceptions: boolean = False): TJwString;
 
+    procedure Assign(Source : TJwSecurityIdList); reintroduce; virtual;
   public
       {<B>Items[Index</B> gives the possibility to access every SID in the list.
        However the entries cannot be reset.
@@ -2069,6 +2097,30 @@ begin
   end;
 end;
 
+procedure TJwSecurityIdList.Assign(Source: TJwSecurityIdList);
+var
+  i: integer;
+  aSID: TJwSecurityId;
+   SidAndAttributesArray: PSidAndAttributesArray;
+begin
+  SidAndAttributesArray := Source.Create_PSID_Array;
+  try
+    if SidAndAttributesArray = nil then
+      Exit;
+
+    Clear;
+
+    for i := 0 to PSID_Array_Count(SidAndAttributesArray) - 1 do
+    begin
+      aSID := TJwSecurityId.Create(SidAndAttributesArray^[i].Sid);
+      aSID.Attributes := SidAndAttributesArray^[i].Attributes;
+      Add(aSID);
+    end;
+  finally
+    Free_PSID_Array(SidAndAttributesArray);
+  end;
+end;
+
 constructor TJwSecurityIdList.Create(ownSIDs: boolean);
 begin
   inherited Create(ownSIDs);
@@ -2076,17 +2128,17 @@ end;
 
 
 constructor TJwSecurityIdList.Create(
-  SidAndAttributesArray: PSidAndAttributesArray);
+  SidAndAttributesArray: PSidAndAttributesArray; Count : Cardinal);
 var
-  i: integer;
   aSID: TJwSecurityId;
+  i : Integer;
 begin
   inherited Create(true);
 
   if SidAndAttributesArray = nil then
     Exit;
 
-  for i := 0 to Length(SidAndAttributesArray^) - 1 do
+  for i := 0 to Count - 1 do
   begin
     aSID := TJwSecurityId.Create(SidAndAttributesArray^[i].Sid);
     aSID.Attributes := SidAndAttributesArray^[i].Attributes;
@@ -2094,22 +2146,14 @@ begin
   end;
 end;
 
-
-function TJwSecurityIdList.Create_PSID_Array(): PSidAndAttributesArray;
-var
-  i: integer;
+constructor TJwSecurityIdList.Create(
+  SidAndAttributesArray: PSidAndAttributesArray);
 begin
-  //Result := PSidAndAttributesArray(GlobalAlloc(GMEM_FIXED or GMEM_ZEROINIT,sizeof(TSidAndAttributes) * Count));
-  GetMem(Result, sizeof(TSidAndAttributes) * Count);
-  //Getmem is compatible to FastMM4
-  //FillChar(Result^,sizeof(TSidAndAttributes) * Count,0);
-
-  for i := 0 to Count - 1 do
-  begin
-    Result[i].Sid := Self.Items[i].CreateCopyOfSID;
-    Result[i].Attributes := Self.Items[i].Attributes;
-  end;
+  Create(SidAndAttributesArray, PSID_Array_Count(SidAndAttributesArray));
 end;
+
+
+
 
 function TJwSecurityIdList.Create_PTOKEN_GROUPS(): PTOKEN_GROUPS;
 var
@@ -2143,20 +2187,88 @@ begin
   Sids := nil;
 end;
 
+type
+  TSidAndAttributesArrayTopRecord = packed record
+    Header,
+    Count : Integer;
+  end;
+
+  PSidAndAttributesArrayRecord = ^TSidAndAttributesArrayRecord;
+  TSidAndAttributesArrayRecord = packed record
+    Top : TSidAndAttributesArrayTopRecord;
+    Sids : TSidAndAttributesArray;
+  end;
+
+function TJwSecurityIdList.Create_PSID_Array(): PSidAndAttributesArray;
+var
+  i: integer;
+  Rec : PSidAndAttributesArrayRecord;
+begin
+  //Result := PSidAndAttributesArray(GlobalAlloc(GMEM_FIXED or GMEM_ZEROINIT,sizeof(TSidAndAttributes) * Count));
+  GetMem(Rec, sizeof(TSidAndAttributesArrayRecord) + sizeof(TSidAndAttributes) * Count);
+  //Getmem is compatible to FastMM4
+
+  //add an invisible count to the attribute array
+  Rec^.Top.Header := 1234567890;
+  Rec^.Top.Count := Count;
+  Result := @Rec^.Sids;
+
+  for i := 0 to Count - 1 do
+  begin
+    Result[i].Sid := Self.Items[i].CreateCopyOfSID;
+    Result[i].Attributes := Self.Items[i].Attributes;
+  end;
+end;
+
+class function TJwSecurityIdList.PSID_Array_Count(const sids: PSidAndAttributesArray) : Integer;
+var
+  P : Pointer;
+  Rec : PSidAndAttributesArrayRecord;
+begin
+  result := 0;
+  if Sids = nil then
+    Exit;
+
+  P := Pointer(sids);
+  Dec(INT_PTR(P), sizeof(TSidAndAttributesArrayTopRecord));
+  Rec := PSidAndAttributesArrayRecord(P);
+
+  if Rec^.Top.Header <> 1234567890 then
+  begin
+    raise EJwsclInvalidSidStructureException.CreateFmtEx(RsInvalidSidStructure,
+      'PSID_Array_Count', ClassName, RsUNSid, 0, True, []);
+  end;
+
+  result := Rec^.Top.Count;
+end;
+
 class procedure TJwSecurityIdList.Free_PSID_Array(var sids: PSidAndAttributesArray);
 var
   i: integer;
+  P : Pointer;
+  Rec : PSidAndAttributesArrayRecord;
 begin
   if Sids = nil then
     Exit;
-  for i := 0 to High(sids^) do
+
+  P := Pointer(sids);
+  Dec(INT_PTR(P), sizeof(TSidAndAttributesArrayTopRecord));
+  Rec := PSidAndAttributesArrayRecord(P);
+
+  if Rec^.Top.Header <> 1234567890 then
   begin
-    TJwSecurityId.FreeSID(sids[i].Sid);
+    raise EJwsclInvalidSidStructureException.CreateFmtEx(RsInvalidSidStructure,
+      'Free_PSID_Array', ClassName, RsUNSid, 0, True, []);
+  end;
+
+  for i := 0 to Rec^.Top.Count-1 do
+  begin
+    TJwSecurityId.FreeSID(Rec^.Sids[i].Sid);
   end;
 
   //GlobalFree(HGLOBAL(Sids));
   //FillChar(sids^,sizeof(sids^),0);
-  FreeMem(sids);
+  FreeMem(Rec);
   Sids := nil;
 end;
 

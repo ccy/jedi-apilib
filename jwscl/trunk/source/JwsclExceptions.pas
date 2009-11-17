@@ -678,6 +678,10 @@ type
   EJwsclUnsupportedException = class(EJwsclElevateProcessException)
     {[2B2288BC-7905-46F2-0130-A0183067E63D]};
 
+  //<B>EJwsclDuplicateListEntryException</B> is raised if a SID was already added to a list
+  EJwsclInvalidSidStructureException = class(EJwsclSecurityException)
+    {[2B2288BC-7905-46F2-0131-A0183067E63D]};
+
 
   JwGeneralExceptionClass = class of Exception;
 
