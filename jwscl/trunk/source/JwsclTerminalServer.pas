@@ -4093,6 +4093,7 @@ function TJwWTSSession.GetClientAddress: TJwString;
 var
   ClientAddressPtr: PWtsClientAddress;
 begin
+  result := '';
   GetSessionInfoPtr(WTSClientAddress, Pointer(ClientAddressPtr));
   if ClientAddressPtr <> nil then
   begin
@@ -4105,13 +4106,15 @@ begin
           ClientAddressPtr^.Address[3], ClientAddressPtr^.Address[4],
           ClientAddressPtr^.Address[5]]);
       AF_INET6:
-        Result := 'IPv6 address not yet supported';
+        Result := RsTypeInet6;
       AF_IPX:
-        Result := 'IPX is no longer supported';
+        Result := RsTypeIPX;
       AF_NETBIOS:
-        Result := 'NETBIOS is not supported';
+        Result := RsTypeNETBIOS;
       AF_UNSPEC:
-        Result := '';
+        Result := RsTypeUnspecified;
+      else
+        Result := RsTypeInvalid;
     end;
 
     // Cleanup
