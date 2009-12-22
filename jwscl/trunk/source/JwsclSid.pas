@@ -41,6 +41,7 @@ Portions created by Christian Wimmer are Copyright (C) Christian Wimmer. All rig
 
 }
 {$IFNDEF SL_OMIT_SECTIONS}
+
 unit JwsclSid;
 {$INCLUDE ..\includes\Jwscl.inc}
 // Last modified: $Date: 2007-09-10 10:00:00 +0100 $
@@ -51,7 +52,7 @@ uses
   SysUtils, Contnrs, Classes,
   JwaWindows, JwsclUtils, JwsclResource,
   JwsclTypes, JwsclExceptions, JwsclEnumerations,
-  JwsclVersion, JwsclConstants, 
+  JwsclVersion, JwsclConstants,
   JwsclStrings; //JwsclStrings, must be at the end of uses list!!!
 {$ENDIF SL_OMIT_SECTIONS}
 
@@ -1616,7 +1617,10 @@ begin
       LocalFree(HLOCAL(pDomainName));
 
       if fDbgDisableException then
+      begin
+        result := '';
         Exit;
+      end;
 
       raise EJwsclWinCallFailedException.CreateFmtEx(
         RsWinCallFailed, 'GetAccountSidString',
@@ -1909,6 +1913,7 @@ function TJwSecurityId.GetWellKnownSid: boolean;
 begin
   Result := JwaWindows.IsWellKnownSid(fSID, JwaWindows.TWellKnownSidType(GetWellKnownSidType));
 end;
+
 
 function TJwSecurityId.CreateCopyOfSID: PSID;
 var

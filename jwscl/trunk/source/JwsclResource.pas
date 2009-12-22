@@ -446,6 +446,13 @@ const
   RsProcessNotFound = 'The process "%0:s" could not be found.';
   RsInvalidRestrictedSids = 'All attributes of the restricted SIDs must be zero.';
 
+//Unit JwsclTerminalServer.pas
+
+  RsTypeInet6 = 'IPv6 address not yet supported';
+  RsTypeIPX = 'IPX is no longer supported';
+  RsTypeNETBIOS = 'NETBIOS is not supported';
+  RsTypeUnspecified = 'Address family is not specifed.';
+  RsTypeInvalid = 'Unsupported address family type.';
 //Unit JwsclVersion.pas
 
 //

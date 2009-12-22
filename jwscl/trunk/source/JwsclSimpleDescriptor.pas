@@ -71,6 +71,8 @@ type
   protected
     fSD : TJwSecurityDescriptor;
     fSA : PSecurityAttributes;
+    fInheritHandle,
+    fRelativeSD : Boolean;
     function GetSA : LPSECURITY_ATTRIBUTES;
 
     function GetOwner : TJwSecurityId;
@@ -93,6 +95,7 @@ type
     {<B>Allow</B> adds a new allow access control entry to the DACL
      using an username and an access mask.
      @param Sid defines a user through a TJwSecurityID instance. Must not be nil.
+        The SID object is duplicated internally.
      @param Access defines the access mask that defines the user's access to the object.
     }
     procedure Allow(const SID : TJwSecurityID; const Access : TJwAccessMask = GENERIC_ALL); overload;
@@ -139,6 +142,13 @@ type
     constructor Create;
     destructor Destroy; override;
 
+    {Used in the SecurityAttributes property to set the InheritHandle member of the structure}
+    property InheritHandle : Boolean read fInheritHandle write fInheritHandle;
+
+    {Used in the SecurityAttributes property to create a relative security descriptor (true) otherwise
+     an aboluste sd (false).}
+    property RelativeSD : Boolean read fRelativeSD write fRelativeSD;
+
     {<B>SecurityAttributes</B> returns a security attribute structure that must not
      be freed. Each call of this property generates a new
      pointer to a data structure. The previous structure is freed and thus made invalid.}
@@ -147,6 +157,8 @@ type
     {<B>Owner</B> returns the internal representation of the owner of the security descriptor.
      The property returns nil if the owner was not set previously.}
     property Owner : TJwSecurityId read GetOwner;
+
+
 
     {Returns a the internal presentation of a JWSCL security descriptor class.
     It can be used with other JWSCL methods. Do not free it!}
@@ -179,9 +191,16 @@ begin
 end;
 
 procedure TJwSimpleDescriptor.Allow(const SID: TJwSecurityID; const Access : TJwAccessMask = GENERIC_ALL);
+var S : TJwSecurityId;
 begin
   CheckDACL;
-  fSD.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil, [], Access, Sid, false))
+  S := TJwSecurityId.Create(SID);
+  try
+    fSD.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil, [], Access, S, True))
+  except
+    S.Free;
+    raise;
+  end;
 end;
 
 procedure TJwSimpleDescriptor.CheckDACL;
@@ -208,6 +227,9 @@ begin
 
   fSD.OwnOwner := True;
   fSD.OwnDACL := True;
+
+  fInheritHandle := false;
+  fRelativeSD := false;
 end;
 
 procedure TJwSimpleDescriptor.Deny(const UserName: TJwString; const Access : TJwAccessMask = GENERIC_ALL);
@@ -253,7 +275,7 @@ end;
 function TJwSimpleDescriptor.GetSA: LPSECURITY_ATTRIBUTES;
 begin
   TJwSecurityDescriptor.Free_SA(fSA);
-  fSA := fSD.Create_SA();
+  fSA := fSD.Create_SA(fInheritHandle, fRelativeSD);
   result := LPSECURITY_ATTRIBUTES(fSA);
 end;
 

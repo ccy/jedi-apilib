@@ -54,6 +54,10 @@ uses SysUtils, Classes,
 
 {$IFNDEF SL_IMPLEMENTATION_SECTION}
 type
+  {TJwSecurityKnownSID is used by JWSCL to distinguish
+   predefined SID classes that should not be freed by JWSCL.
+   e.g. JwLocalServiceSID
+  }
   TJwSecurityKnownSID = class(TJwSecurityId)
   public
      (*<B>Free</B> frees a known security instance.
@@ -84,6 +88,11 @@ type
     function IsStandardSID: boolean;  override;
   end;
 
+  {TJwIntegrityLevelSID provides methods to use fine grained integrity levels.
+   
+   This class is subject to change and to be investigated 
+	and therefore should not be used!!
+  }
   TJwIntegrityLevelSID = class(TJwSecurityKnownSID, IComparable)
   private
     fMandatoryPolicy: TJwTokenMandatoryPolicies;
