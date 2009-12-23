@@ -391,7 +391,8 @@ type
      end;
     </code>
     }
-    constructor Create;
+    constructor Create; overload;
+    constructor Create(const Server: String); overload;
     {@exclude}
     destructor Destroy; override;
 
@@ -537,12 +538,12 @@ type
 
     {<B>EnumerateServers</B> enumerates all Terminal Servers in the specified domain.
 	 The result will be stored in <B>readonly</B>  property Servers.
-	 	 
-	 
+
+
      @Param ADomain name of the Domain to be queried, if empty string is
      specified the current domain is queried
      @returns If the function fails you can use GetLastError to get extended
-     error information 
+     error information
      Remarks
   This functions enumerates all Terminal Servers that
      advertise themselves on the network. By default only Terminal Servers in
@@ -553,25 +554,25 @@ type
      "TSAdvertise" = REG_DWORD:1
      </code>
 	 <B>Changing this value may be an security issue. Do not alter it without
-	  the consent of the user!</B> 
-	 <B>Only use the values 0 and 1. Do not use any other values!</B> 
-	 
-	 
-     
-     
+	  the consent of the user!</B>
+	 <B>Only use the values 0 and 1. Do not use any other values!</B>
+
+
+
+
      Please note that enumerating Terminal Servers in large environments might
      take some time (especially over slow WAN links). Therefore this function
      runs in a seperate thread and signals the OnServersEnumerated Event.
      The enumerated servers can be retreived by reading the Servers property.
-     
+
      If the TJwTerminalServer Instance is destroyed and the enumeration thread
      is still busy, the TJwTerminalServer will wait max. 1 second for the thread
      to finish and then terminates it.
-	 
+
 	 <B>This method is not threadsafe! Do not call or use the instance from
 	  several threads without locking mechanism</B>
 
-	 <B>Check for a nil property value Servers</B> 
+	 <B>Check for a nil property value Servers</B>
     }
     function EnumerateServers(const ADomain: TJwString):Boolean;
 
@@ -637,6 +638,7 @@ type
     {@exclude}
     property IdleProcessName: TJwString read GetIdleProcessName;
 
+    class function IsValidServerHandle(const hServer: THandle): Boolean;
     {The <B>LastEventFlag</B> property can be used to see the Last Session Event that occured.
      This is usefull if you are listening on multiple event types.
      @seealso(OnSessionEvent)
@@ -763,7 +765,7 @@ type
     {@exclude}
     property ServerHandle: THandle read FServerHandle;
 
-    {<B>Servers</B> contains the list of Enumerated Terminal Servers. 
+    {<B>Servers</B> contains the list of Enumerated Terminal Servers.
 	 <B>May be nil!</B> 
      @seealso(EnumerateServers)
      }
@@ -876,7 +878,7 @@ type
      @Returns If the server was found a TJwTerminalServer instance is returned.
      Always check if it's not nil! 
     }
-    function FindByServer(const ServerName: WideString;
+    function FindByServer(const ServerName: TJwString;
       const IgnoreCase: boolean = False): TJwTerminalServer;
 
     {@Returns the index of the TerminalServer object in the TerminalServerList. 
@@ -1136,7 +1138,7 @@ type
     }
     constructor Create(const Owner: TJwWTSSessionList;
       const SessionId: TJwSessionId; const WinStationName: TJwString;
-      const ConnectState: TWtsConnectStateClass);
+      const ConnectState: TWtsConnectStateClass); overload;
 
     {The <B>Destroy</B> destructor disposes the Session object.
 
@@ -1183,7 +1185,7 @@ type
     property ClientDirectory: TJwString read FClientDirectory;
 
     {<B>ClientHardwareId</B> returns a client-specific hardware identifier
-     
+
      Remarks
   Console sessions always returns empty value.
      }
@@ -1268,7 +1270,7 @@ type
      Note that if you connect to another session your existing session will be
      disconnected.
     }
-    function Connect(const Password: WideString): Boolean;
+    function Connect(const Password: TJwString): Boolean;
     {<B>ConnectState</B> returns the connection state of the session. Which can be one of the
      following values:
      <table 33c%>
@@ -1561,7 +1563,7 @@ type
       65536     RDP Listener
       65537     ICA Listener
      </table> 
-      
+
       Remarks
  
       <B>Console Sessions</B> 
@@ -2431,7 +2433,7 @@ type
     public
       {
       Raises
-        EJwsclNILParameterException: will be raised if AOwner is nil. 
+        EJwsclNILParameterException: will be raised if AOwner is nil.
       }
       constructor Create(const AOwner: TJwTerminalServer);
       property TotalSessionsCreated: Integer index TERMSRV_TOTAL_SESSIONS read GetCounterValue;
@@ -2449,8 +2451,6 @@ type
       property LoadIndicatorData: TWinStationLoadIndicatorData read GetLoadIndicatorData;
       procedure UpdateCounters;
   end;
-
-
 
   { This class is used by TJwWTSSessionList to provide extended enumeration of
     session using Delphi 2005 and newer "for in" syntax.                       }
@@ -2534,7 +2534,12 @@ begin
   FPhysicalMemory := -1;
 end;
 
-//function RpcCancelThread(ThreadHandle: HANDLE): RPC_STATUS; stdcall; external 'rpcrt4.dll';
+constructor TJwTerminalServer.Create(const Server: String);
+begin
+  TJwTerminalServer.Create;
+  FServer := Server;
+end;
+
 
 destructor TJwTerminalServer.Destroy;
 var
@@ -2587,8 +2592,10 @@ begin
     // wait for the thread to finish
 
     // Wait a while, see if thread terminates
-    OutputDebugString('WAITING FOR THREAD TO END.....................');
+{$IFDEF DEBUG}
+    OutputDebugString('Waiting for TJwTerminalServerEventThread to End...');
     dwResult := WaitForSingleObject(ThreadHandle, 500);
+{$ENDIF}
 
     if dwResult = WAIT_TIMEOUT then
     begin
@@ -2598,11 +2605,9 @@ begin
       //
       // WORKAROUND: Kill the thread...
 {$IFDEF DEBUG}
-      OutputDebugString('Terminating TJwWTSEnumServersThread thread because WTSWAIT did not return');
+      OutputDebugString('Terminating TJwTerminalServerEventThread thread because WTSWAIT did not return');
 {$ENDIF}
       TerminateThread(ThreadHandle, 0);
-//      i := RpcCancelThread(FTerminalServerEventThread.Handle);
-//      OutputDebugString(PChar(Format('result=%d', [i])));
     end;
 
     // Free Memory
@@ -2782,6 +2787,35 @@ begin
   end;
 end;
 
+class function TJwTerminalServer.IsValidServerHandle(const hServer: THandle): Boolean;
+var
+  Username: Pointer;
+  dwSize: DWORD;
+  LastError: DWORD;
+begin
+  { save LastError }
+  LastError := GetLastError();
+
+  { All Windows < Vista return 0 on Invalid handle }
+  Result := hServer <> 0;
+
+  { No need to continue if it's already invalid... }
+  if not Result then
+    Exit;
+
+  { For Windows >= Vista we need to make a query to be sure
+    A non valid connection will fail on WTSQuerySessionInformation and will
+    return LastError RPC_S_SERVER_UNAVAILABLE }
+  if (TJwWindowsVersion.IsWindowsVista(True)) or
+    (TJwWindowsVersion.IsWindows2008(True)) then
+  begin
+    Username := nil;
+    dwSize := 0;
+    Result := not (not (WTSQuerySessionInformation(hServer, 0, WTSUsername, Username, dwSize)) and (GetLastError() = RPC_S_SERVER_UNAVAILABLE));
+    SetLastError(LastError);
+  end;
+end;
+
 procedure TJwTerminalServer.OnEnumServersThreadTerminate(Sender: TObject);
 begin
   // nil it!
@@ -2871,9 +2905,6 @@ begin
   // server is under stress...
     ((not Result) and (LastError = 1783) and (Count > 0) and (ProcessInfoPtr <>  nil)) then Result := True;
 
-  // Ignore Error 997 Overlapped I/O in progress which somtimes happens but
-  // seems to return correct results...
-//  if (not Result) and (LastError = 997) and (Count > 0) then Result := True;
 
   try
     if Result then
@@ -3167,6 +3198,7 @@ begin
   end;
 end;
 
+
 procedure TJwTerminalServer.Connect;
 begin
   if not FConnected then
@@ -3180,13 +3212,19 @@ begin
     begin
       FServerHandle :=
 {$IFDEF UNICODE}
-      WTSOpenServerW(PWideChar(WideString(FServer)));
+      WTSOpenServerW(PWideChar(FServer));
 {$ELSE}
       WTSOpenServerA(PAnsiChar(FServer));
 {$ENDIF}
       // If WTSOpenServer fails the return value is 0
-      // Workaround for (possible) bug, see comments in IsConnectionValid function
-      if (FServerHandle = 0) {or (not IsConnectionValid(FServer)) }then
+
+      { Starting from Windows Vista/Server 2008 there is a strange behaviour
+        I consider it a bug but Microsoft considered it as a documentation bug...
+
+        If you call WTSOpenServer to a non existing server a valid handle is
+        returned, so an additional check is necessary that actually tries to
+        get some info from the remote server is needed }
+      if not IsValidServerHandle(FServerHandle) then
       begin
         // Mark handle as invalid
         FServerHandle := INVALID_HANDLE_VALUE;
@@ -3849,15 +3887,15 @@ begin
   end;
 end;
 
-function TJwTerminalServerList.FindByServer(const ServerName: WideString; const IgnoreCase: boolean = False): TJwTerminalServer;
+function TJwTerminalServerList.FindByServer(const ServerName: TJwString;
+  const IgnoreCase: boolean = False): TJwTerminalServer;
 var
   i: Integer;
 begin
   Result := nil;
   for i := 0 to Count-1 do
   begin
-    //if Items[i].Server = AServer then
-    if JwCompareString(Items[i].Server,ServerName,IgnoreCase) = 0 then
+    if JwCompareString(Items[i].Server, ServerName, IgnoreCase) = 0 then
     begin
       Result := Items[i];
       Break;
@@ -4137,11 +4175,6 @@ begin
   end;
 end;
 
-{constructor TJwWTSSession.CreateEmpty;
-begin
-  inherited Create;
-end;}
-
 constructor TJwWTSSession.Create(const Owner: TJwWTSSessionList;
   const SessionId: TJwSessionId; const WinStationName: TJwString;
   const ConnectState: TWtsConnectStateClass);
@@ -4181,20 +4214,20 @@ begin
   // This function queries Terminal Server for the real remote ip address
   // and port (as opposed to WTSClientAddress which retreives the client's
   // local ip address
-  tempStr := WideString(FRemoteAddress);
-  WinStationGetRemoteIPAddress(GetServerHandle, SessionId, {WideString}tempStr,
+  tempStr := FRemoteAddress;
+  WinStationGetRemoteIPAddress(GetServerHandle, SessionId, tempStr,
     FRemotePort);
 
-  FRemoteAddress := WideString(tempStr);
+  FRemoteAddress := tempStr;
 
   FToken := nil;
   FUserSid := nil;
 end;
 
-function TJwWTSSession.Connect(const Password: WideString): Boolean;
+function TJwWTSSession.Connect(const Password: TJwString): Boolean;
 begin
   Result := WinStationConnectW(Owner.Owner.FServerHandle, WTS_CURRENT_SESSION,
-    FSessionId, PWideChar(WideString(Password)), False);
+    FSessionId, {$IFDEF UNICODE}PWideChar(Password){$ELSE}PWideChar(WideString(Password){$ENDIF}, False);
   if not Result then raise EJwsclWinCallFailedException.CreateFmtWinCall(RsWinCallFailed,
       'Connect', ClassName, RsUNTerminalServer, 0, True,
           'WinStationConnectW', ['WinStationConnectW']);
@@ -4324,8 +4357,8 @@ function TJwWTSSession.Shadow(const Hotkey: Cardinal = VK_MULTIPLY;
 begin
   // This function only exists in Unicode...
   Result := WinStationShadow(GetServerHandle,
-    PWideChar(WideString(GetServer)), FSessionId, HotKey,
-    HKModifier);
+    {$IFDEF UNICODE}PWideChar(GetServer){$ELSE}PWideChar(WideString(GetServer)){$ENDIF},
+    FSessionId, HotKey, HKModifier);
 end;
 
 constructor TJwWTSProcess.Create(const Owner: TJwWTSProcessList;
