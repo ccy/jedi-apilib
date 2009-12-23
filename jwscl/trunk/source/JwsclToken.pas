@@ -3653,7 +3653,7 @@ begin
     TSRunning := true;
   end
   else
-    TSRunning := TJwWindowsVersion.IsWindows7 or //On Win7 WTS calls are always valid
+    TSRunning := TJwWindowsVersion.IsWindows7(True) or //On Win7 WTS calls are always valid
       TJwWindowsVersion.IsTerminalServiceRunning;
 
   if (not TSRunning) then
