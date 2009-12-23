@@ -1699,7 +1699,7 @@ begin
 end;
 {$ENDIF DYNAMIC_LINK}
 
-function IsWindows7Beta: boolean;
+function IsWindows61OrHigher: boolean;
 var VersionInfo: TOSVersionInfoEx;
 begin
   // Zero Memory and set structure size
@@ -1707,10 +1707,9 @@ begin
   VersionInfo.dwOSVersionInfoSize := SizeOf(VersionInfo);
   GetVersionEx(@VersionInfo);
   // Are we running Vista RTM?
-  Result := (VersionInfo.dwMajorVersion = 6) and
-    (VersionInfo.dwMinorVersion = 1) and
-    (VersionInfo.wProductType = VER_NT_WORKSTATION) and
-    (VersionInfo.dwBuildNumber = 7000);
+  Result := (VersionInfo.dwMajorVersion >= 6) and
+    (VersionInfo.dwMinorVersion >= 1) and
+    (VersionInfo.wProductType = VER_NT_WORKSTATION);
 end;
 
 // This function is not exported
@@ -1781,7 +1780,7 @@ begin
   ZeroMemory(lpBuffer, cchDest * SizeOf(WCHAR));
 
  // Are we running Vista?
-  if IsVistaRTM or IsWindows7Beta then
+  if IsVistaRTM or IsWindows61OrHigher then
   begin
     // Vista version
     Result := DateTimeStringVistaRTM(DateTime, lpBuffer, cchDest);
@@ -1837,7 +1836,7 @@ begin
   ZeroMemory(lpElapsedTime, cchDest * SizeOf(WCHAR));
 
  // Are we running Vista?
-  if IsVistaRTM or IsWindows7Beta then
+  if IsVistaRTM or IsWindows61OrHigher then
   begin
     hr := ElapsedTimeStringVistaRTM(DiffTime, bShowSeconds, lpElapsedTime,
       cchDest);
