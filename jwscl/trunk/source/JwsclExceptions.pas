@@ -682,6 +682,10 @@ type
   EJwsclInvalidSidStructureException = class(EJwsclSecurityException)
     {[2B2288BC-7905-46F2-0131-A0183067E63D]};
 
+  EJwsclComException = class(EJwsclSecurityException)
+      {[2B2288BC-7905-46F2-0132-A0183067E63D]};
+
+
 
   JwGeneralExceptionClass = class of Exception;
 
@@ -1040,6 +1044,7 @@ begin
   fsSourceClass := sSourceClass;
   fsSourceFile := sSourceFile;
   fiSourceLine := fiSourceLine;
+  sLastError := '';
 
   ZeroMemory(@fGuid, sizeof(fGuid));
 

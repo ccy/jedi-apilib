@@ -1554,6 +1554,35 @@ type
 {.$ENDIF DELPHI2009_UP}
   end;
 
+  TJwComAuthenticationLevel = (
+    calInvalid = 0,
+    calNone,//RPC_C_AUTHN_LEVEL_NONE
+    calConnect,//RPC_C_AUTHN_LEVEL_CONNECT
+    calCall,//RPC_C_AUTHN_LEVEL_CALL
+    calPkt,//RPC_C_AUTHN_LEVEL_PKT
+    calPktIntegrity,//RPC_C_AUTHN_LEVEL_PKT_INTEGRITY
+    calPktPrivacy//RPC_C_AUTHN_LEVEL_PKT_PRIVACY
+    );
+
+  TJwComAppIdRegFlag = (
+  	crfActivateServerInDesktop, //1 APPIDREGFLAGS_ACTIVATE_IUSERVER_INDESKTOP
+    crfSecureServerProcess, //2 APPIDREGFLAGS_SECURE_SERVER_PROCESS_SD_AND_BIND
+    crfSetServerToIdentifyLevel //4 APPIDREGFLAGS_ISSUE_ACTIVATION_RPC_AT_IDENTIFY
+  );
+  TJwComAppIdRegFlags = set of TJwComAppIdRegFlag;
+
+  TJwSaferLevelId = (
+    sliInvalid = 0,
+    sliDisallowed,  //SAFER_LEVELID_DISALLOWED
+    sliFullyTrusted //SAFE_LEVELID_FULLYTRUSTED
+  );
+
+  TJwComImpersonationLevel = (
+  	cilAnonymous,//RPC_C_IMP_LEVEL_ANONYMOUS
+    cilIdentify,//RPC_C_IMP_LEVEL_IDENTIFY
+  	cilImpersonate,//RPC_C_IMP_LEVEL_IMPERSONATE
+  	cilDelegate//RPC_C_IMP_LEVEL_DELEGATE
+  );
 
 {IJwBase_Equals implements IJwBase.Equals and always returns false.}
 function IJwBase_Equals(Obj: TObject): Boolean;

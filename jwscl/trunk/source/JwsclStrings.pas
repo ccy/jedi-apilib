@@ -168,9 +168,20 @@ function LoadLocalizedStringArray(const Index : TResourceIndexArray; LanguageId 
  Instance : HInst) : TResourceTStringArray;}
 
 
-{<B>JwCreateUnicodeString</B>Returns a pointer to an Initialized counted
-Unicode string}
-function JwCreateUnicodeString(const NewString: WideString): PUnicodeString;
+{<B>JwCreateUnicodeString</B>Returns a pointer to an initialized unicode string
+@param NewString
+@param AbsoluteStr Defines whether the new unicode string is a continues block of memory (FALSE)
+    or the string pointer of PUnicodeString points to a source string.
+}
+function JwCreateUnicodeString(const NewString: WideString; AbsoluteStr : boolean = true): PUnicodeString;
+
+{
+<B>JwCreateUnicodeStringSelfRelativ</B>Returns a pointer to an initialized unicode string.
+
+The new unicode string is a continues block of memory that has an empty string with StrLen count of chars.
+}
+function JwCreateUnicodeStringSelfRelative(const StrLen: Cardinal): PUnicodeString;
+
 {<B>JwCreateUnicodeString</B>Initializes a counted Unicode string}
 function JwCreateTUnicodeString(const NewString: WideString): TUnicodeString;
 
@@ -225,10 +236,31 @@ begin
 {$ENDIF DEBUG}
 end;
 
-function JwCreateUnicodeString(const NewString: WideString): PUnicodeString;
+function JwCreateUnicodeStringSelfRelative(const StrLen: Cardinal): PUnicodeString;
+var Size : Cardinal;
 begin
-  Result := nil; //removes compiler warning "undefined result"
-  RtlInitUnicodeString(Result, PWideChar(NewString));
+  Size := sizeof(TUnicodeString) + (StrLen+2) * sizeof(WideChar);
+  GetMem(result, Size);
+  ZeroMemory(result, Size);
+  result.Length := StrLen;
+  result.MaximumLength := result.Length + 2;
+end;
+
+function JwCreateUnicodeString(const NewString: WideString; AbsoluteStr : boolean): PUnicodeString;
+begin
+  if not AbsoluteStr then
+  begin
+    GetMem(result, sizeof(TUnicodeString) + (Length(NewString)+2) * sizeof(WideChar));
+    result.Length := Length(NewString);
+    result.MaximumLength := result.Length + 2;
+    CopyMemory(@result.Buffer, @NewString[1], result.Length * sizeof(WideChar));
+  end
+  else
+  begin
+    GetMem(Result, sizeof(TUnicodeString));
+    ZeroMemory(Result, sizeof(TUnicodeString));
+    RtlInitUnicodeString(Result, PWideChar(NewString));
+  end;
 end;
 
 function JwCreateTUnicodeString(const NewString: WideString): TUnicodeString;

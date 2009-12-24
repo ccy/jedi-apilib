@@ -60,6 +60,8 @@ type
    to delphi enumeration types and vice versa.
    There is no need to create an instance of it.}
   TJwEnumMap = class
+  private
+    //class function ConvertSecurityControl(const Control: TSecurityDescriptorControl): TJwSecurityDescriptorControlSet; static;
   public
     class function ConvertInheritFlags(
       const FlagSet: TJwInheritFlagSet): Cardinal; overload; virtual;
@@ -217,8 +219,31 @@ type
     class function ConvertSecurityCapabilityMessage(
       const FlagBits: Cardinal): TJwSecurityCapabilities; overload;
 
+    class function ConvertComAppIdRegFlags(
+      const FlagSet: TJwComAppIdRegFlags): Cardinal; overload;
+    class function ConvertComAppIdRegFlags(
+      const FlagBits: Cardinal): TJwComAppIdRegFlags; overload;
+
   end;
 
+//Single values to be converted
+const
+  JwComAuthenticationLevel : array[TJwComAuthenticationLevel] of Cardinal = (
+      0,
+      RPC_C_AUTHN_LEVEL_NONE,
+      RPC_C_AUTHN_LEVEL_CONNECT,
+      RPC_C_AUTHN_LEVEL_CALL,
+      RPC_C_AUTHN_LEVEL_PKT,
+      RPC_C_AUTHN_LEVEL_PKT_INTEGRITY,
+      RPC_C_AUTHN_LEVEL_PKT_PRIVACY
+   );
+
+  JwComImpersonationLevel : array[TJwComImpersonationLevel] of Cardinal = (
+  	RPC_C_IMP_LEVEL_ANONYMOUS,
+    RPC_C_IMP_LEVEL_IDENTIFY,
+  	RPC_C_IMP_LEVEL_IMPERSONATE,
+  	RPC_C_IMP_LEVEL_DELEGATE
+  );
 
 {$ENDIF SL_IMPLEMENTATION_SECTION}
 
@@ -565,7 +590,11 @@ const
       SECPKG_FLAG_DELEGATION
    );
 
-
+   JwComAppIdRegFlags : array[TJwComAppIdRegFlag] of Cardinal =(
+  	$1, //APPIDREGFLAGS_ACTIVATE_IUSERVER_INDESKTOP
+    $2, //APPIDREGFLAGS_SECURE_SERVER_PROCESS_SD_AND_BIND
+    $4 //APPIDREGFLAGS_ISSUE_ACTIVATION_RPC_AT_IDENTIFY
+  );
 
 
 { TJwEnumMap }
@@ -699,6 +728,8 @@ begin
       Include(result, I);
   end;
 end;
+
+
 
 class function TJwEnumMap.ConvertFlags(
   FlagSet: TJwSecurityDialogFlags): Cardinal;
@@ -972,6 +1003,28 @@ begin
   begin
     if I in FlagSet then
       result := result or CSPCreationFlagValues[I];
+  end;
+end;
+
+class function TJwEnumMap.ConvertComAppIdRegFlags(const FlagSet: TJwComAppIdRegFlags): Cardinal;
+var I : TJwComAppIdRegFlag;
+begin
+  result := 0;
+  for I := Low(TJwComAppIdRegFlag) to High(TJwComAppIdRegFlag) do
+  begin
+    if I in FlagSet then
+      result := result or JwComAppIdRegFlags[I];
+  end;
+end;
+
+class function TJwEnumMap.ConvertComAppIdRegFlags(const FlagBits: Cardinal): TJwComAppIdRegFlags;
+var I : TJwComAppIdRegFlag;
+begin
+  result := [];
+  for I := Low(TJwComAppIdRegFlag) to High(TJwComAppIdRegFlag) do
+  begin
+    if (FlagBits and JwComAppIdRegFlags[I]) = JwComAppIdRegFlags[I] then
+      Include(result, I);
   end;
 end;
 
@@ -1261,8 +1314,6 @@ begin
       result := result or JwSecurityCapabilities[I];
   end;
 end;
-
-
 
 
 

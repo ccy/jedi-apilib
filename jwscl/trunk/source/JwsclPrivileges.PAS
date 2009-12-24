@@ -188,12 +188,6 @@ begin
 end;
 
 
-procedure Test;
-var P : IJwPrivilegeScope;
-begin
-  P := JwGetPrivilegeScope([SE_SHUTDOWN_NAME, SE_TCB_NAME, SE_SECURITY_NAME]);
-  if P = nil then;
-end;
 
 
 initialization
