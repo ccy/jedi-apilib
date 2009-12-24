@@ -2536,7 +2536,7 @@ end;
 
 constructor TJwTerminalServer.Create(const Server: String);
 begin
-  TJwTerminalServer.Create;
+  Create;
   FServer := Server;
 end;
 
@@ -2558,7 +2558,7 @@ begin
 
     ThreadHandle := FEnumServersThread.Handle;
     // Wait a while, see if thread terminates
-    if WaitForSingleObject(ThreadHandle, 500) = WAIT_TIMEOUT then
+    if WaitForSingleObject(ThreadHandle, 1000) = WAIT_TIMEOUT then
     begin
       // it didn't, so kill it (we don't want the user to wait forever)!
       // TSAdmin does it the same way...
@@ -2594,7 +2594,7 @@ begin
     // Wait a while, see if thread terminates
 {$IFDEF DEBUG}
     OutputDebugString('Waiting for TJwTerminalServerEventThread to End...');
-    dwResult := WaitForSingleObject(ThreadHandle, 500);
+    dwResult := WaitForSingleObject(ThreadHandle, 1500);
 {$ENDIF}
 
     if dwResult = WAIT_TIMEOUT then
@@ -2769,7 +2769,8 @@ function TJwTerminalServer.GetWinStationName(const SessionId: DWORD): TJwString;
 const
   BufferOverrunGuardFactor = 2;
 var
-  WinStationName: array[0..WINSTATIONNAME_LENGTH*BufferOverrunGuardFactor+1] of WChar;
+  WinStationName: array[0..WINSTATIONNAME_LENGTH-1*BufferOverrunGuardFactor+1] of WChar;
+  pwConnectState: PWideChar;
 begin
   Result := '';
   // Only use Unicode version since Ansi version doesn't seem to work on Vista
@@ -2783,19 +2784,17 @@ begin
   begin
     // Confirm to TSAdmin behaviour and list sessionname as (Idle)
     // (we use StrConnectState api to localise)
-    Result := '(' + JwPWideCharToJwString(StrConnectState(WTSIdle, False)) + ')';
+    pwConnectState := StrConnectState(WTSIdle, False);
+    Result := Format('(%s)', [pwConnectState]);
+    LocalFree(Cardinal(pwConnectState));
   end;
 end;
 
 class function TJwTerminalServer.IsValidServerHandle(const hServer: THandle): Boolean;
 var
-  Username: Pointer;
   dwSize: DWORD;
-  LastError: DWORD;
+  WinStaInfo: WINSTATIONINFORMATIONW;
 begin
-  { save LastError }
-  LastError := GetLastError();
-
   { All Windows < Vista return 0 on Invalid handle }
   Result := hServer <> 0;
 
@@ -2809,10 +2808,11 @@ begin
   if (TJwWindowsVersion.IsWindowsVista(True)) or
     (TJwWindowsVersion.IsWindows2008(True)) then
   begin
-    Username := nil;
-    dwSize := 0;
-    Result := not (not (WTSQuerySessionInformation(hServer, 0, WTSUsername, Username, dwSize)) and (GetLastError() = RPC_S_SERVER_UNAVAILABLE));
-    SetLastError(LastError);
+    Result := WinStationQueryInformationW(hServer, 65536, WinStationInformation,
+      @WinStaInfo, sizeof(WinStaInfo), dwSize) or (GetLastError() <> RPC_S_SERVER_UNAVAILABLE);
+{$IFDEF DEBUG}
+  OutputDebugString(PChar(Format('sizeof=%d dwSize=%d', [sizeof(WinStaInfo), dwSize])));
+{$ENDIF}
   end;
 end;
 
@@ -2983,7 +2983,8 @@ begin
               FProcessAge := (DiffTime.wDays * SECONDS_PER_DAY) +
                 (DiffTime.wHours * SECONDS_PER_HOUR) +
                 (DiffTime.wMinutes * SECONDS_PER_MINUTE);
-              FProcessAgeStr := JwPWideCharToJwString(lpBuffer);
+//              FProcessAgeStr := JwPWideCharToJwString(lpBuffer);
+              FProcessAgeStr := lpBuffer;
             finally
               // Free mem
               FreeMem(lpBuffer);
@@ -3090,6 +3091,8 @@ begin
     Connect;
   end;
 
+  SessionInfoPtr := nil;
+
   // Clear the sessionslist
   FSessions.Clear;
   pCount := 0;
@@ -3116,23 +3119,43 @@ begin
       'EnumerateSessions', ClassName, RsUNTerminalServer, 0, True,
           'WTSEnumerateSessions', ['WTSEnumerateSessions']);
   end;
-
+{$IFDEF DEBUG}
+  OutputDebugString(PChar(Format('WTSEnumerateSession lasterror=%d', [LastError])));
+{$ENDIF}
   // Add all sessions to the SessionList
   for i := 0 to pCount - 1 do
   begin
+{$IFDEF DEBUG}
+//    OutputDebugString(PChar(Format('Adding SessionId %d', [SessionInfoPtr^[i].SessionId])));
+{$ENDIF}
+
     ASession := TJwWTSSession.Create(FSessions, SessionInfoPtr^[i].SessionId,
-      GetWinStationName(SessionInfoPtr^[i].SessionId),
-      TWtsConnectStateClass(SessionInfoPtr^[i].State));
+      SessionInfoPtr^[i].pWinStationName,
+//      GetWinStationName(SessionInfoPtr^[i].SessionId),
+//      TWtsConnectStateClass(SessionInfoPtr^[i].State));
+      SessionInfoPtr^[i].State);
     FSessions.Add(ASession);
   end;
-
   // After enumerating we create an event thread to listen for session changes
   if Res and (FTerminalServerEventThread = nil) then
   begin
-    FTerminalServerEventThread := TJwWTSEventThread.Create(False, Self);
+    // Only create the thread if at least one Event is Assiged
+    if (Assigned(FOnSessionEvent)) or
+      (Assigned(FOnSessionStateChange)) or
+      (Assigned(FOnSessionCreate)) or
+      (Assigned(FOnSessionDelete)) or
+      (Assigned(FOnSessionDisconnect)) or
+      (Assigned(FOnSessionConnect)) or
+      (Assigned(FOnSessionLogon)) or
+      (Assigned(FOnSessionLogoff)) or
+      (Assigned(FOnLicenseStateChange)) or
+      (Assigned(FOnWinStationRename)) then
+    begin
+      FTerminalServerEventThread := TJwWTSEventThread.Create(False, Self);
+    end;
   end;
 
-  if pCount > 0 then
+  if (pCount > 0) and (SessionInfoPtr <> nil) then
   begin
     WTSFreeMemory(SessionInfoPtr);
   end;
@@ -3612,6 +3635,10 @@ begin
       raise EJwsclWinCallFailedException.CreateFmtWinCall(RsWinCallFailed,
        'UpdateShadowInformation', ClassName, RsUNTerminalServer, 0, True,
        'WinStationQueryInformationW', ['WinStationQueryInformationW']);}
+{$IFDEF DEBUG}
+  OutputDebugString(PChar(Format('sizeof=%d dwSize=%d', [sizeof(FWinstationShadowInformation), ReturnedLength])));
+{$ENDIF}
+
   end
   else
     if not WinStationSetInformationW(FOwner.GetServerHandle, FOwner.SessionId,
@@ -3728,7 +3755,8 @@ begin
       // taskmgr.exe.mui with same id
       if LoadStringW(hModule, 10005, lpBuffer, nBufferMax) > 0 then
       begin
-        FIdleProcessName := JwPWideCharToJwString(lpBuffer);
+//        FIdleProcessName := JwPWideCharToJwString(lpBuffer);
+        FIdleProcessName := lpBuffer;
       end;
       // Cleanup
       FreeMem(lpBuffer);
@@ -4026,7 +4054,8 @@ begin
     WinStationWd, @WinStationDriver, SizeOf(WinStationDriver),
     dwReturnLength) then
   begin
-    FWdName := JwPWideCharToJwString(WinStationDriver.WdName);
+//    FWdName := JwPWideCharToJwString(WinStationDriver.WdName);
+    FWdName := WinStationDriver.WdName;
     FWdFlag := WinStationDriver.WdFlag;
   end;
 end;
@@ -4042,7 +4071,7 @@ begin
   // ZeroMemory
   ZeroMemory(@WinStationInfo, SizeOf(WinStationInfo));
   lpBuffer := nil;
-  // WinStationInformation = 8
+
   if WinStationQueryInformationW(GetServerHandle, FSessionId,
     WinStationInformation, @WinStationInfo, SizeOf(WinStationInfo),
     dwReturnLength) then
@@ -4055,7 +4084,7 @@ begin
       try
         // Format LogonTime string
         DateTimeStringSafe(@WinStationInfo.LogonTime, lpBuffer, MAX_PATH);
-        FLogonTimeStr := JwPWideCharToJwString(lpBuffer);
+        FLogonTimeStr := lpBuffer;
       finally
         FreeMem(lpBuffer);
         lpBuffer := nil;
@@ -4109,7 +4138,8 @@ begin
       DiffTimeString(FileTime(WinStationInfo.LastInputTime), FileTime(WinStationInfo.CurrentTime),
         lpBuffer);
       try
-        FIdleTimeStr := JwPWideCharToJwString(lpBuffer);
+//        FIdleTimeStr := JwPWideCharToJwString(lpBuffer);
+        FIdleTimeStr := lpBuffer;
       finally
         // We free the memory DiffTimeString has allocated for us
         FreeMem(lpBuffer);
@@ -4180,6 +4210,7 @@ constructor TJwWTSSession.Create(const Owner: TJwWTSSessionList;
   const ConnectState: TWtsConnectStateClass);
 var
   tempStr : WideString;
+  pwConnectState: PWideChar;
 begin
   JwRaiseOnNilMemoryBlock(Owner, 'Create', ClassName, RsUNTerminalServer);
   JwRaiseOnNilMemoryBlock(Owner.Owner, 'Create', ClassName, RsUNTerminalServer);
@@ -4191,7 +4222,11 @@ begin
   FSessionId := SessionId;
   FShadow := TJwWTSSessionShadow.Create(Self);
   FConnectState := ConnectState;
-  FConnectStateStr := JwPWideCharToJwString(StrConnectState(FConnectState, False));
+  pwConnectState := StrConnectState(FConnectState, False);
+  LocalFree(Cardinal(pwConnectState));
+  //  FConnectStateStr := StrConnectState(FConnectState, False);
+//  FCOnnectStateStr := 'test';
+//  FConnectStateStr := JwPWideCharToJwString(StrConnectState(FConnectState, False));
   FWinStationName := WinStationName;
   FApplicationName := GetSessionInfoStr(WTSApplicationName);
   FClientAddress := GetClientAddress;
