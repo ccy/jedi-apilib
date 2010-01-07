@@ -1,4 +1,4 @@
-{ Description
+Ôªø{ Description
   Project JEDI Windows Security Code Library (JWSCL)
   
   This unit provides access to Terminal Server api functions through it's key
@@ -125,19 +125,20 @@ type
       * EnumerateServers enumerates all Terminal Servers in a domain.
       * Shutdown Shuts down and optionally restarts the specified
     Terminal Server.
-    
+
     <b>TJwTerminalServer</b> also offers Events to monitor Terminal Server activity
     such as OnSessionConnect, OnSessionCreate, OnSessionLogon and OnSessionLogoff.
-    
+
     The schema below shows the relations between TJwTerminalServer, the
     TJwWTSSessionList with TJwWTSSessions and the TJwWTSProcessList with
     TjwWTSSessions.
-    
+
     <image TJwTerminalServer-Hierarchy>
                                                                                      }
   TJwTerminalServer = class(TObject)
   private
     function GetSessionStatistics: TJwWTSSessionStatistics;
+    function GetSession(Index: DWORD): TJwWTSSession;
   protected
     CachedUser: TCachedUser;
     {@exclude}
@@ -766,16 +767,18 @@ type
     property ServerHandle: THandle read FServerHandle;
 
     {<B>Servers</B> contains the list of Enumerated Terminal Servers.
-	 <B>May be nil!</B> 
+	 <B>May be nil!</B>
      @seealso(EnumerateServers)
      }
     property Servers: TStringList read GetServers;
+
+    property Session[Index: DWORD]: TJwWTSSession read GetSession;
 
     {<B>Sessions</B> contains a TJwWTSSessionList of which each item contains a
      TJwWTSSession. This sessionlist contains all enumerated sessions
      and their properties such as Username, Connection State, Idle Time and so
      on.
-     
+
      Remarks
   The Sessionlist is filled by calling the EnumerateSessions
      function.
@@ -902,7 +905,7 @@ type
      and if OwnsObjects is true (default) frees the TerminalServer.
      @returns The value returned is the index of the object in the Items array
      before it was removed. If the specified object is not found on the list,
-     Remove returns ñ1. 
+     Remove returns ‚Äì1. 
     }
     function Remove(ATerminalServer: TJwTerminalServer): Integer;
   end;
@@ -1123,7 +1126,7 @@ type
     {@exclude}
     function GetUserSid: TJwSecurityID;
   private
-  published
+  public
     {The <B>Create</B> constructor creates a TJwWTSSession instance and allocates memory for it
      @Param Owner Specifies the TJwTerminalServer instance that owns the session
      @Param SessionId The Session Identifier
@@ -1139,6 +1142,8 @@ type
     constructor Create(const Owner: TJwWTSSessionList;
       const SessionId: TJwSessionId; const WinStationName: TJwString;
       const ConnectState: TWtsConnectStateClass); overload;
+
+    constructor Create(const Owner: TJwWTSSessionList; const SessionId: TJwSessionId); overload;
 
     {The <B>Destroy</B> destructor disposes the Session object.
 
@@ -1168,7 +1173,7 @@ type
     property ClientAddress: TJwString read FClientAddress;
 
     {<B>ClientBuildNumber</B> returns the version number of the Terminal Server Client
-     
+
      Remarks
   Console sessions always returns empty value.
      See Also
@@ -1178,7 +1183,7 @@ type
      property ClientBuildNumber: DWORD read FClientBuildNumber write FClientBuildNumber;
 
     {<B>ClientDirectory</B> returns the version number of the Terminal Server Client
-     
+
      Remarks
   Console sessions always returns empty value.
      }
@@ -1584,7 +1589,7 @@ type
       noninteractive. In Windows Vista, only system processes and services run
       in Session 0. The first user logs on to Session 1, and subsequent users
       log on to subsequent sessions. This means that services never run in the
-      same session as usersí applications and are therefore protected from
+      same session as users‚Äô applications and are therefore protected from
       attacks that originate in application code.
       
       <B>Listener Sessions</B> 
@@ -1938,7 +1943,7 @@ type
      OwnsObjects is true (default) frees the Session.
      @returns The value returned is the index of the object in the Items array
      before it was removed. If the specified object is not found on the list,
-     Remove returns ñ1. 
+     Remove returns ‚Äì1. 
     }
     function Remove(ASession: TJwWTSSession): Integer;
   end;
@@ -2348,7 +2353,7 @@ type
      OwnsObjects is true (default) frees the Session.
      @returns The value returned is the index of the object in the Items array
      before it was removed. If the specified object is not found on the list,
-     Remove returns ñ1.
+     Remove returns ‚Äì1.
     }
     function Remove(AProcess: TJwWTSProcess): Integer;
     property CommitSizeTotal: Int64 read FCommitSizeTotal;
@@ -2594,8 +2599,8 @@ begin
     // Wait a while, see if thread terminates
 {$IFDEF DEBUG}
     OutputDebugString('Waiting for TJwTerminalServerEventThread to End...');
-    dwResult := WaitForSingleObject(ThreadHandle, 1500);
 {$ENDIF}
+    dwResult := WaitForSingleObject(ThreadHandle, 1500);
 
     if dwResult = WAIT_TIMEOUT then
     begin
@@ -2627,7 +2632,7 @@ end;
 {
 The following table lists the events that trigger the different flags.
 Events are listed across the top and the flags are listed down the
-left column. An ìXî indicates that the event triggers the flag.
+left column. An ‚ÄúX‚Äù indicates that the event triggers the flag.
 +-------------+------+------+------+-------+----------+-----+------+-------+
 | EventFlag   |Create|Delete|Rename|Connect|Disconnect|Logon|Logoff|License|
 +-------------+------+------+------+-------+----------+-----+------+-------+
@@ -3059,6 +3064,17 @@ begin
   Result := FServers;
 end;
 
+
+function TJwTerminalServer.GetSession(Index: DWORD): TJwWTSSession;
+begin
+  Sessions.Clear;
+
+  if not Connected then
+    Connect;
+
+  Result := TJwWTSSession.Create(Sessions, Index);
+end;
+
 function TJwTerminalServer.GetSessionStatistics: TJwWTSSessionStatistics;
 begin
   if not Assigned(FSessionStatistics) then
@@ -3121,9 +3137,8 @@ begin
   begin
 
     ASession := TJwWTSSession.Create(FSessions, SessionInfoPtr^[i].SessionId,
-      SessionInfoPtr^[i].pWinStationName,
-//      GetWinStationName(SessionInfoPtr^[i].SessionId),
-//      TWtsConnectStateClass(SessionInfoPtr^[i].State));
+//      SessionInfoPtr^[i].pWinStationName,
+      GetWinStationName(SessionInfoPtr^[i].SessionId),
       SessionInfoPtr^[i].State);
     FSessions.Add(ASession);
   end;
@@ -4190,6 +4205,8 @@ begin
   end;
 end;
 
+
+
 constructor TJwWTSSession.Create(const Owner: TJwWTSSessionList;
   const SessionId: TJwSessionId; const WinStationName: TJwString;
   const ConnectState: TWtsConnectStateClass);
@@ -4252,6 +4269,31 @@ begin
       'Connect', ClassName, RsUNTerminalServer, 0, True,
           'WinStationConnectW', ['WinStationConnectW']);
 
+end;
+
+constructor TJwWTSSession.Create(const Owner: TJwWTSSessionList;
+  const SessionId: TJwSessionId);
+var
+  TS: TJwTerminalServer;
+  WinStaInfo: WINSTATIONINFORMATIONW;
+  dwSize: DWORD;
+begin
+  TS := Owner.Owner;
+  TS.GetWinStationName(SessionId);
+
+  // Get the Session Connect State
+  if not WinStationQueryInformationW(TS.ServerHandle, SessionId,
+    WinStationInformation, @WinStaInfo, sizeof(WinStaInfo), dwSize) then
+  begin
+    raise EJwsclWinCallFailedException.CreateFmtWinCall(RsWinCallFailed,
+      'TJwWTSSession.Create', ClassName, RsUNTerminalServer, 0, True,
+          'WinStationQueryInformationW', ['WinStationQueryInformationW']);
+  end;
+
+  Create(Owner, SessionId, TS.GetWinStationName(SessionId),
+    _WTS_CONNECTSTATE_CLASS(WinStaInfo.ConnectState));
+
+  TS := nil;
 end;
 
 destructor TJwWTSSession.Destroy;
