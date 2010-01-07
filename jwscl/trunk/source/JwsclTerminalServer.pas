@@ -2810,9 +2810,6 @@ begin
   begin
     Result := WinStationQueryInformationW(hServer, 65536, WinStationInformation,
       @WinStaInfo, sizeof(WinStaInfo), dwSize) or (GetLastError() <> RPC_S_SERVER_UNAVAILABLE);
-{$IFDEF DEBUG}
-  OutputDebugString(PChar(Format('sizeof=%d dwSize=%d', [sizeof(WinStaInfo), dwSize])));
-{$ENDIF}
   end;
 end;
 
@@ -3119,15 +3116,9 @@ begin
       'EnumerateSessions', ClassName, RsUNTerminalServer, 0, True,
           'WTSEnumerateSessions', ['WTSEnumerateSessions']);
   end;
-{$IFDEF DEBUG}
-  OutputDebugString(PChar(Format('WTSEnumerateSession lasterror=%d', [LastError])));
-{$ENDIF}
   // Add all sessions to the SessionList
   for i := 0 to pCount - 1 do
   begin
-{$IFDEF DEBUG}
-//    OutputDebugString(PChar(Format('Adding SessionId %d', [SessionInfoPtr^[i].SessionId])));
-{$ENDIF}
 
     ASession := TJwWTSSession.Create(FSessions, SessionInfoPtr^[i].SessionId,
       SessionInfoPtr^[i].pWinStationName,
@@ -3257,9 +3248,6 @@ begin
         raise EJwsclTerminalServerConnectException.CreateFmtWinCall(RsWinCallFailed,
           'WTSOpenServer', ClassName, RsUNTerminalServer, 0, True,
           'WTSOpenServer', ['WTSOpenServer', FServer]);
-{        raise EJwsclWinCallFailedException.CreateFmtWinCall(RsWinCallFailed,
-          'WTSOpenServer', ClassName, RsUNTerminalServer, 0, True,
-          'WTSOpenServer', ['WTSOpenServer', FServer]);}
       end
       else
       begin
@@ -3635,9 +3623,6 @@ begin
       raise EJwsclWinCallFailedException.CreateFmtWinCall(RsWinCallFailed,
        'UpdateShadowInformation', ClassName, RsUNTerminalServer, 0, True,
        'WinStationQueryInformationW', ['WinStationQueryInformationW']);}
-{$IFDEF DEBUG}
-  OutputDebugString(PChar(Format('sizeof=%d dwSize=%d', [sizeof(FWinstationShadowInformation), ReturnedLength])));
-{$ENDIF}
 
   end
   else
