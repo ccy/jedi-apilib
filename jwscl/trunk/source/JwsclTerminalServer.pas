@@ -1,4 +1,4 @@
-Ôªø{ Description
+{ Description
   Project JEDI Windows Security Code Library (JWSCL)
   
   This unit provides access to Terminal Server api functions through it's key
@@ -93,7 +93,7 @@ type
   { The <b>CachedUsername</b> record is use internally in the <link TJwTerminalServer.CachedGetUserFromSessionId@DWORD, CachedGetUserFromSessionId>
     function.                                                                                                                                       }
   TCachedUser = record
-    SessionId: DWORD;
+    SessionId: TJwSessionId;
     Username: TJwString;
   end;
 
@@ -138,7 +138,7 @@ type
   TJwTerminalServer = class(TObject)
   private
     function GetSessionStatistics: TJwWTSSessionStatistics;
-    function GetSession(Index: DWORD): TJwWTSSession;
+    function GetSession(SessionId: TJwSessionId): TJwWTSSession;
   protected
     CachedUser: TCachedUser;
     {@exclude}
@@ -648,7 +648,7 @@ type
 
     {The <B>OnServersEnumerated</B> event signals that the Server Enumeration thread has finished.
      The Enumerated Servers can be read through the Servers property.
-     
+
      Example:
      <code lang="Delphi">
      procedure TMainForm.OnEnumerateServersDone(Sender: TObject);
@@ -772,7 +772,7 @@ type
      }
     property Servers: TStringList read GetServers;
 
-    property Session[Index: DWORD]: TJwWTSSession read GetSession;
+    property Session[SessionId: TJwSessionId]: TJwWTSSession read GetSession;
 
     {<B>Sessions</B> contains a TJwWTSSessionList of which each item contains a
      TJwWTSSession. This sessionlist contains all enumerated sessions
@@ -905,7 +905,7 @@ type
      and if OwnsObjects is true (default) frees the TerminalServer.
      @returns The value returned is the index of the object in the Items array
      before it was removed. If the specified object is not found on the list,
-     Remove returns ‚Äì1. 
+     Remove returns ñ1. 
     }
     function Remove(ATerminalServer: TJwTerminalServer): Integer;
   end;
@@ -1589,7 +1589,7 @@ type
       noninteractive. In Windows Vista, only system processes and services run
       in Session 0. The first user logs on to Session 1, and subsequent users
       log on to subsequent sessions. This means that services never run in the
-      same session as users‚Äô applications and are therefore protected from
+      same session as usersí applications and are therefore protected from
       attacks that originate in application code.
       
       <B>Listener Sessions</B> 
@@ -1943,7 +1943,7 @@ type
      OwnsObjects is true (default) frees the Session.
      @returns The value returned is the index of the object in the Items array
      before it was removed. If the specified object is not found on the list,
-     Remove returns ‚Äì1. 
+     Remove returns ñ1. 
     }
     function Remove(ASession: TJwWTSSession): Integer;
   end;
@@ -2353,7 +2353,7 @@ type
      OwnsObjects is true (default) frees the Session.
      @returns The value returned is the index of the object in the Items array
      before it was removed. If the specified object is not found on the list,
-     Remove returns ‚Äì1.
+     Remove returns ñ1.
     }
     function Remove(AProcess: TJwWTSProcess): Integer;
     property CommitSizeTotal: Int64 read FCommitSizeTotal;
@@ -2632,7 +2632,7 @@ end;
 {
 The following table lists the events that trigger the different flags.
 Events are listed across the top and the flags are listed down the
-left column. An ‚ÄúX‚Äù indicates that the event triggers the flag.
+left column. An ìXî indicates that the event triggers the flag.
 +-------------+------+------+------+-------+----------+-----+------+-------+
 | EventFlag   |Create|Delete|Rename|Connect|Disconnect|Logon|Logoff|License|
 +-------------+------+------+------+-------+----------+-----+------+-------+
@@ -3065,14 +3065,16 @@ begin
 end;
 
 
-function TJwTerminalServer.GetSession(Index: DWORD): TJwWTSSession;
+function TJwTerminalServer.GetSession(SessionId: TJwSessionId): TJwWTSSession;
 begin
   Sessions.Clear;
 
   if not Connected then
     Connect;
 
-  Result := TJwWTSSession.Create(Sessions, Index);
+  Result := TJwWTSSession.Create(Sessions, SessionId);
+
+  Sessions.Add(Result);
 end;
 
 function TJwTerminalServer.GetSessionStatistics: TJwWTSSessionStatistics;
