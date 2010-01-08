@@ -138,7 +138,6 @@ type
   TJwTerminalServer = class(TObject)
   private
     function GetSessionStatistics: TJwWTSSessionStatistics;
-    function GetSession(SessionId: TJwSessionId): TJwWTSSession;
   protected
     CachedUser: TCachedUser;
     {@exclude}
@@ -772,7 +771,8 @@ type
      }
     property Servers: TStringList read GetServers;
 
-    property Session[SessionId: TJwSessionId]: TJwWTSSession read GetSession;
+    function Session(const SessionId: TJwSessionId = WTS_CURRENT_SESSION): TJwWTSSession;
+//    property Session[SessionId: TJwSessionId]: TJwWTSSession read GetSession;
 
     {<B>Sessions</B> contains a TJwWTSSessionList of which each item contains a
      TJwWTSSession. This sessionlist contains all enumerated sessions
@@ -3065,7 +3065,7 @@ begin
 end;
 
 
-function TJwTerminalServer.GetSession(SessionId: TJwSessionId): TJwWTSSession;
+function TJwTerminalServer.Session(const SessionId: TJwSessionId = WTS_CURRENT_SESSION): TJwWTSSession;
 begin
   Sessions.Clear;
 
