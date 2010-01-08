@@ -80,7 +80,7 @@ type
 
 
   //<B>TJwSessionId</B> is the type of a Terminal Server Session Identifier
-  TJwSessionId = DWORD;
+  TJwSessionId = type DWORD;
   //<B>TJwState</B> is the type of a Terminal Server Session State
   TJwState = DWORD;
   //<B>TJwProcessId</B> is the type of a Terminal Server Process Identifier
