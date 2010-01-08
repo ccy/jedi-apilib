@@ -204,7 +204,7 @@ This routine does the same like:
 aJwString := TJWString(TJwPChar(aPWideChar));
 </code>
 }
-function JwPWideCharToJwString(const APWideChar: PWideChar): TJwString;
+//function JwPWideCharToJwString(const APWideChar: PWideChar): TJwString;
 
 {<B>JwOutputDebugString</B> calls API OutputDebugString but works with TJwString}
 procedure JwOutputDebugString(const Value : TJwString; const Args : array of const);
@@ -411,10 +411,10 @@ begin
   FillChar(aString, sizeof(aString), 0);
 end;
 
-function JwPWideCharToJwString(const APWideChar: PWideChar): TJwString;
+{function JwPWideCharToJwString(const APWideChar: PWideChar): TJwString;
 begin
   Result := APWideChar;
-end;
+end;}
 
 function LoadLocalizedString(const Index : Cardinal; const PrimaryLanguageId, SubLanguageId : Word;
  Instance : HInst = 0) : TJwString;

@@ -416,7 +416,7 @@ BOOL WINAPI TerminateJobObject(HANDLE hJob, UINT uExitCode);
   TJwOnNewJobObject = procedure (Sender : TJwJobObjectSessionList;
       ProcessHandle : TJwProcessHandle;
       ProcessSessionID,
-      CurrentSessionID : Cardinal;
+      CurrentSessionID : TJwSessionId;
       var NewJobObject : TJwJobObject) of object;
 
   {<B>TJwJobObjectSessionList</B> manages a list of job objects threadsafe.
@@ -599,7 +599,7 @@ mostly debugging purposes. If this parameter is nil, no events are logged
 
 raises
  EJwsclProcessIdNotAvailable:  will be raised if no token could be found
-for the given SessionID 
+for the given SessionID
  EJwsclNilPointer: will be raised if JwInitWellKnownSIDs was not called before
 }
 procedure JwCreateProcessInSession(
@@ -607,7 +607,7 @@ procedure JwCreateProcessInSession(
   const CommandLine : TJwString;
   const CurrentDirectory : TJwString;
 
-  const SessionID : DWORD;
+  const SessionID : TJwSessionId;
   const CreationFlags : DWORD;
   const Desktop: TJwString;
 
@@ -864,7 +864,7 @@ begin
   if TJwWindowsVersion.IsWindowsVista(true) and
      TJwWindowsVersion.IsWindows2008(true) then
   begin
-    if ProcessIdToSessionId(ProcessID, result) then
+    if ProcessIdToSessionId(ProcessID, DWORD(result)) then
       raise EJwsclWinCallFailedException.CreateFmtWinCall(
           '',
           'JwProcessIdToSessionId',                                //sSourceProc
@@ -1633,7 +1633,7 @@ procedure JwCreateProcessInSession(
   const CommandLine : TJwString;
   const CurrentDirectory : TJwString;
 
-  const SessionID : DWORD;
+  const SessionID : TJwSessionId;
   const CreationFlags : DWORD;
   const Desktop: TJwString;
 
