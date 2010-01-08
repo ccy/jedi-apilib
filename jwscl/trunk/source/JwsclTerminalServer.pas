@@ -3067,14 +3067,12 @@ end;
 
 function TJwTerminalServer.Session(const SessionId: TJwSessionId = WTS_CURRENT_SESSION): TJwWTSSession;
 begin
-  Sessions.Clear;
+  Result := nil;
 
   if not Connected then
     Connect;
 
   Result := TJwWTSSession.Create(Sessions, SessionId);
-
-  Sessions.Add(Result);
 end;
 
 function TJwTerminalServer.GetSessionStatistics: TJwWTSSessionStatistics;
@@ -4303,6 +4301,8 @@ begin
   FreeAndNil(FShadow);
   FreeAndNil(FToken);
   FreeAndNil(FUserSid);
+
+  inherited Destroy;
 end;
 
 function TJwWTSSession.GetToken : TJwSecurityToken;
