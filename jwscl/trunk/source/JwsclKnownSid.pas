@@ -1096,6 +1096,7 @@ begin
   FreeAndNil(JwGuestsSID);
   FreeAndNil(JwPowerUsersSID);
   FreeAndNil(JwLocalSystemSID);
+  FreeAndNil(JwWriteRestrictedSID);
   FreeAndNil(JwRemoteInteractiveLogonSID);
   FreeAndNil(JwRestrictedCodeSID);
   FreeAndNil(JwNullSID);
