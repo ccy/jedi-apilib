@@ -1819,6 +1819,7 @@ type
     }
     function Add(ASession: TJwWTSSession): Integer;
 
+    property Data: Integer read FData write FData;
     {<B>FindBySessionId</B> loops through the @Classname and returns the Session associated
      with the requested SessionId.
      @Param SessionId The Session Identifier 
@@ -1832,8 +1833,8 @@ type
     {<B>FindByUsername</B> loops through the @Classname and returns the first Session associated
      with the requested Username which is compared case insensitive.
      @Param Username The windows username 
-     @Returns TJwWTSSession 
-     
+     @Returns TJwWTSSession
+
      Remarks
   If the Username was not found return value will be @nil.
     }
@@ -1843,7 +1844,7 @@ type
     {(<B>GetEnumerator</B> returns an enumerator that can be used to iterate through
      the image list collection with Delphi's for in loop (Delphi 2005 and
      higher).
-     
+
      <code lang="Delphi">
      var
        ATerminalServer: TJwTerminalServer;
@@ -1889,7 +1890,7 @@ type
     function GetEnumerator: TJwSessionsEnumerator;
 
 
-    {@Returns the index of the Session object in the SessionList. 
+    {@Returns the index of the Session object in the SessionList.
     }
     function IndexOf(ASession: TJwWTSSession): Integer;
 
@@ -1943,17 +1944,17 @@ type
      OwnsObjects is true (default) frees the Session.
      @returns The value returned is the index of the object in the Items array
      before it was removed. If the specified object is not found on the list,
-     Remove returns –1. 
+     Remove returns –1.
     }
     function Remove(ASession: TJwWTSSession): Integer;
   end;
 
   {<B>TJwWTSProcess</B> is the class that encapsulates a process that is running on
-   a Terminal Server. 
+   a Terminal Server.
 
    A process is uniquely identified by the Process Id (PID) in combination with
    it's Creation Time (the OS reused PID's).
-   
+
    A <B>TJwWTSProcess</B> is owned by a TJwWTSProcessList.
    }
   TJwWTSProcess = class(TObject)
@@ -4225,7 +4226,7 @@ begin
   FShadow := TJwWTSSessionShadow.Create(Self);
   FConnectState := ConnectState;
   pwConnectState := StrConnectState(FConnectState, False);
-  LocalFree(Cardinal(pwConnectState));
+//  LocalFree(Cardinal(pwConnectState));
   //  FConnectStateStr := StrConnectState(FConnectState, False);
 //  FCOnnectStateStr := 'test';
 //  FConnectStateStr := JwPWideCharToJwString(StrConnectState(FConnectState, False));
