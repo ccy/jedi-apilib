@@ -39,13 +39,54 @@ TODO:
 CoCreateInstance and Integrity Levels
 http://msdn.microsoft.com/en-us/ms679687%28VS.85%29.aspx
 2. Implement CoCreateInstanceEx with impersonation
+3. impl. LegacySecureReferences (S390)
+4. impl LegacyMutualAuthentication
+5. add feature to read appido from HKEY_LOCAL_MACHINE\SOFTWARE\Classes\AppID, inst. HKCRK
+6. add dllsurrogate to reg class
+7. String -> TJwString
+
+9. RunAs für Services usw (Vista kein pass, < : leeres pass)
+10. Test dllsurrgotate with several com servers in dllhost.exe
+
+
+Thinks to know:
+
+1. Call to CreateComObject/CoCreateInstance fails with EOleSysError "Failed to start server".
+An out of process COM server (usually) uses the identity given by the caller's process token.
+However if you impersonate the current thread and then call CoCreateInstance or CreateComObject, the server is created
+using the given thread token. In some circumstances this may fail with an error "Failed to start server" and a Windows log event
+"Invalid parameter".
+This happened to me because I used LOGON32_LOGON_INTERACTIVE in a LogonUser call. Instead use LOGON32_LOGON_BATCH to solve this problem.
+
+2. What is cAuthSvc in CoInitializeSecurity
+cAuthSvc defines an array of by the server supported authentication services. It is an array of SOLE_AUTHENTICATION_SERVICE
+in where you define which authentication services your server supports. E.g. you can support e.g. RPC_C_AUTHN_GSS_KERBEROS and
+RPC_C_AUTHN_WINNT to allow users to be impersonated by the server. The dwAuthzSvc member is ignored by those two services.
+COM uses RPC_C_AUTHN_WINNT with all members left set to empty or 0. (WinVista)
+
+Here are some rules:
+1. You need to define an authentication service if you want to get information about the client. Using RPC_C_AUTHN_NONE
+will prevent you from calling ImpersonateClient or getting the client's context (CoGetClientContext).
+2. If you set the member pPrincipalName only the client running with the principal's identity can get a class from the server. The client can impersonate before
+it creates the class (CreateComObject/CoCreateInstance). Use an empty string to allow everyone to use this service.
+a) For WinNT/Kerberos authentication level, the pPrincipalName cannot be a group.
+b) The supplied credentials in pAuthList of CoInitializeSecurity are not used, at least on my Win2008 Server.
+
+3. Usually dwAuthnLevel defines two different things for Client and Server.
+ Server: It defines the lowest authentication level allowed to connect to the server. Lower levels are rejected.
+ Client: It defines the authentication level wished to be used by the client. If it is higher than the auth level set by the server,
+    the client's level is used. The higher the better.
+
+ However, on my Win2008 and RPC_C_AUTHN_WINNT, the highest available level (RPC_C_AUTHN_LEVEL_PKT_PRIVACY) was used by default.
+ Even if set a level too low in a call to CoInitializeSecurity, this high level was used. I could not make it smaller by setting a proxy
+ on the interface. Only RPC_C_AUTHN_LEVEL_NONE turns off all authentication.
+
 
 }
 unit JwsclComSecurity;
 
 {$INCLUDE ..\includes\Jwscl.inc}
 
-//TODO: String -> TJwString
 
 interface
 uses
@@ -102,14 +143,16 @@ type
       aitCertContext : (CertContext : TCertContext)
   end;
 
-
-  TJwComCustomSecurity = class
+  {TJwComCustomSecurity is the base class for the JWSCL COM security implementation.
+   Do not use it directly instead you can inherit from it to get access to the implementation.
+  }
+  TJwComCustomSecurity = class(TInterfacedObject{, IJwBase})
   protected
     fUpdating,
     fReadOnly : Boolean;
 
     fAuthenticationInfo: RPC_AUTH_IDENTITY_HANDLE;
-    fServerPrincipalName: String;
+    fServerPrincipalName: TJwString;
     fCapabilites: TJwComAuthenticationCapabilities;
     fAuthenticationLevel: TJwComAuthenticationLevel;
     fAuthorizationService: TJwComAuthorizationService;
@@ -124,7 +167,7 @@ type
     function GetAuthorizationService: TJwComAuthorizationService;
     function GetImpersionationLevel: TJwComImpersonationLevel;
     function GetReadOnlyProperties: Boolean;
-    function GetServerPrincipalName: String;
+    function GetServerPrincipalName: TJwString;
     procedure SetAuthenticationInfo(const Value: RPC_AUTH_IDENTITY_HANDLE);
     procedure SetAuthenticationLevel(const Value: TJwComAuthenticationLevel);
     procedure SetAuthenticationService(const Value: TJwComAuthenticationService);
@@ -132,11 +175,14 @@ type
     procedure SetCapabilites(const Value: TJwComAuthenticationCapabilities);
     procedure SetImpersonationLevel(const Value: TJwComImpersonationLevel);
     procedure SetReadOnlyProperties(const Value: Boolean);
-    procedure SetServerPrincipalName(const Value: String);
+    procedure SetServerPrincipalName(const Value: TJwString);
+    function GetCapabilites: TJwComAuthenticationCapabilities;
 
 
 
   protected
+    {BeginUpdate is used
+    }
     procedure BeginUpdate; virtual;
     procedure EndUpdate; virtual;
 
@@ -161,13 +207,13 @@ type
     //http://msdn.microsoft.com/en-us/library/ms692656%28VS.85%29.aspx
     property AuthenticationService : TJwComAuthenticationService read GetAuthenticationService write SetAuthenticationService;
     property AuthorizationService : TJwComAuthorizationService read GetAuthorizationService write SetAuthorizationService;
-    property ServerPrincipalName : String read GetServerPrincipalName write SetServerPrincipalName;
+    property ServerPrincipalName : TJwString read GetServerPrincipalName write SetServerPrincipalName;
     property AuthenticationLevel : TJwComAuthenticationLevel read GetAuthenticationLevel write SetAuthenticationLevel;
 
     //http://msdn.microsoft.com/en-us/library/ms693790(VS.85).aspx
     property ImpersionationLevel : TJwComImpersonationLevel read GetImpersionationLevel write SetImpersonationLevel;
     property AuthenticationInfo : RPC_AUTH_IDENTITY_HANDLE read GetAuthenticationInfo write SetAuthenticationInfo;
-    property Capabilites  : TJwComAuthenticationCapabilities read fCapabilites write SetCapabilites;
+    property Capabilites  : TJwComAuthenticationCapabilities read GetCapabilites write SetCapabilites;
   end;
 
   TJwComClientSecurity = class(TJwComCustomSecurity)
@@ -188,7 +234,7 @@ type
         {__in}      pProxy : IUnknown;
         {__in}      dwAuthnSvc : TJwComAuthenticationService;
         {__in}      dwAuthzSvc : TJwComAuthorizationService;
-        {__in_opt}  pServerPrincName : String;
+        {__in_opt}  pServerPrincName : TJwString;
         {__in}      AuthnLevel : TJwComAuthenticationLevel;
         {__in}      dwImpLevel : TJwComImpersonationLevel;
         {__in_opt}  pAuthInfo : Pointer;
@@ -199,7 +245,7 @@ type
         {__in}       pProxy : IUnknown;
         {__out_opt}  out pwAuthnSvc : TJwComAuthenticationService;
         {__out_opt}  out pAuthzSvc : TJwComAuthorizationService;
-        {__out_opt}  out pServerPrincName : String;
+        {__out_opt}  out pServerPrincName : TJwString;
         {__out_opt}  out pAuthnLevel : TJwComAuthenticationLevel;
         {__out_opt}  out pImpLevel : TJwComImpersonationLevel;
         {__out_opt}  out pAuthInfo : RPC_AUTH_IDENTITY_HANDLE;
@@ -241,8 +287,12 @@ type
     }
     procedure SetWinNTIdentity(const Value: TJwComWinNTIdentity);
 
+    class function GetAuthenticationServices : TJwAuthenticationServiceInformationArray;
+
     property Proxy : IInterface read fProxy;
 
+    {
+    }
     property WinNTIdentity : TJwComWinNTIdentity read fWinNTIdentity;
 
     property ReadOnlyProperties;
@@ -261,6 +311,9 @@ type
 
   end;
 
+  {TJwAuthenticationInfo wraps an array of authentication information
+   to be used by TJwComProcessSecurity.
+  }
   TJwAuthenticationInfo = class
   protected
     fAuthenticationService : TJwComAuthenticationService;
@@ -298,12 +351,13 @@ type
       const AuthenticationInfo : TJwComWinNTIdentity;
       const AutoDestroy : boolean = false); overload;
 
-    {
+    {Creates a WinNT authentication information structure.
+
     }
     constructor CreateWinNT(
-      const UserName  : String;
-      const Domain    : String;
-      const Password  : string;
+      const UserName  : TJwString;
+      const Domain    : TJwString;
+      const Password  : TJwString;
       const AuthorizationService : TJwComAuthorizationService); overload;
 
     destructor Destroy; override;
@@ -341,7 +395,7 @@ type
   end;
 
   {TJwComProcessSecurity provides wrapper methods for CoInitializeSecurity.
-   They can bei used by a COM server or client. Some of them are only
+   They can be used by a COM server or client. Some of them are only
    for either servers or clients.
 
    For an application that is COM server and client, use the Initialize method with
@@ -474,8 +528,6 @@ type
     }
     class procedure Initialize(
           AppID : TGUID;
-          AuthenticationLevel : TJwComAuthenticationLevel;
-          ImpersonationLevel : TJwComImpersonationLevel;
           Capabilities : TJwComAuthenticationCapabilities); overload; virtual;
 
 
@@ -570,16 +622,36 @@ type
        EJwsclComException CoInitializeSecurity reported an error.
     }
     class procedure Initialize(
-          const Domain, UserName, Password: String;
+          const Domain, UserName, Password: TJwString;
           const AuthorizationService: TJwComAuthorizationService;
           const AuthenticationLevel: TJwComAuthenticationLevel;
           const ImpersonationLevel: TJwComImpersonationLevel;
           const Capabilities: TJwComAuthenticationCapabilities); overload; virtual;
 
+    {CreateTightServerSecurityOptions returns settings for a COM server that shall running
+     tight security settings.
+
+    Parameters
+      SecurityDescriptor A variable that receives a tight security descriptor. The function returns
+        a new class instance that must be freed. This value must be a variable set to the constant JwDefaultComSD
+        to work this way. Otherwise the variable will not be changed. In this way you can create your own
+        SD before calling this function or leave it to COM to set the default descriptor (use NIL).
+        Be aware that this security descriptor only has access for SYSTEM and Local Administrators. You need
+        to add further accounts to allow other users to connect.
+
+    Remarks
+      The procedure uses the values from JwTightCOMSecuritySettings. You can change them to use "customized"
+      security.
+    }
+    class procedure CreateTightServerSecurityOptions(
+          var SecurityDescriptor : TJwSecurityDescriptor;
+          out AuthenticationLevel : TJwComAuthenticationLevel;
+          out ImpersonationLevel : TJwComImpersonationLevel;
+          out Capabilities : TJwComAuthenticationCapabilities);
   end;
 
 
-  TServerImpersonationType = (
+  TJwServerImpersonationType = (
     //impersonate on creation, revert on destroying
     sitAutoImpersonation,
     //impersonate on creation, but do not revert
@@ -587,20 +659,21 @@ type
     //do not impersonate at all
     sitNoImpersonation);
 
-
+  {TJwComWinNTIdentity wraps the record TSecWinNTAuthIdentityExW.
+  }
   TJwComWinNTIdentity = class
   private
-    function GetDomain: String;
+    function GetDomain: TJwString;
     function GetFlags: DWORD;
-    function GetPackageList: String;
-    function GetPassword: String;
-    function GetUser: String;
+    function GetPackageList: TJwString;
+    function GetPassword: TJwString;
+    function GetUser: TJwString;
     function GetVersion: DWORD;
-    procedure SetDomain(const Value: String);
+    procedure SetDomain(const Value: TJwString);
     procedure SetFlags(const Value: DWORD);
-    procedure SetPackageList(const Value: String);
-    procedure SetPassword(const Value: String);
-    procedure SetUser(const Value: String);
+    procedure SetPackageList(const Value: TJwString);
+    procedure SetPassword(const Value: TJwString);
+    procedure SetUser(const Value: TJwString);
     procedure SetVersion(const Value: DWORD);
     function GetData: PSecWinNTAuthIdentityW;
     function GetDataEx: PSecWinNTAuthIdentityExW;
@@ -611,38 +684,157 @@ type
 
     procedure CheckReadonly(const PropertyName : String);
   public
+    {Creates a new TSecWinNTAuthIdentityXXW structure (XX is optional)
+     All values are zeroed and writeable.
+    }
     constructor Create; overload;
+
+    {
+    Parameters
+      Identity:
+        An existing TSecWinNTAuthIdentityExW structured which members are copied into internal structures.
+      ReadOnly:
+        A one time value that allows or disallows to write to the properties.
+        If this parameter is set to true every write access to a properties throws the exception
+        EJwsclReadOnlyPropertyException.
+    }
     constructor Create(const Identity : TSecWinNTAuthIdentityExW; ReadOnly : Boolean = false); overload;
+
+    {
+    Parameters
+      Identity:
+        An existing TSecWinNTAuthIdentityW structured which members are copied into internal structures.
+      ReadOnly:
+        A one time value that allows or disallows to write to the properties.
+        If this parameter is set to true every write access to a properties throws the exception
+        EJwsclReadOnlyPropertyException.
+    }
     constructor Create(const Identity : TSecWinNTAuthIdentityW; ReadOnly : Boolean = false); overload;
 
-    constructor Create(const Domain, UserName, Password : string); overload;
+    {Creates a new internal TSecWinNTAuthIdentityW structure initialized with the given parameters.
+    }
+    constructor Create(const Domain, UserName, Password : TJwString); overload;
 
     destructor Destroy; override;
 
+    {
+  SEC_WINNT_AUTH_IDENTITY_VERSION;
+    }
     property Version  : DWORD read GetVersion write SetVersion;
-    property User     : String read GetUser write SetUser;
-    property Domain   : String read GetDomain write SetDomain;
-    property Password : String read GetPassword write SetPassword;
+    {
+    }
+    property User     : TJwString read GetUser write SetUser;
+    {
+    }
+    property Domain   : TJwString read GetDomain write SetDomain;
+    {
+    }
+    property Password : TJwString read GetPassword write SetPassword;
+    {
+    Only valid values are
+      SEC_WINNT_AUTH_IDENTITY_UNICODE and SEC_WINNT_AUTH_IDENTITY_ANSI
+    }
     property Flags    : DWORD read GetFlags write SetFlags;
-    property PackageList : String read GetPackageList write SetPackageList;
+    {
+    }
+    property PackageList : TJwString read GetPackageList write SetPackageList;
 
+    //The parameter supplied to the constructors Create. If set to true all properties cannot be changed.
     property ReadOnly : Boolean read fReadOnly;
 
+    //A pointer to an internal structure to be used by WinAPI functions directly
     property AuthorizationInfoEx : PSecWinNTAuthIdentityExW read GetDataEx;
+
+    //A pointer to an internal structure to be used by WinAPI functions directly
     property AuthorizationInfo : PSecWinNTAuthIdentityW read GetData;
+  end;
+
+  {IJwComServerSecurity is implemented by TJwComServerSecurity.
+   It is returned by TJwComServerSecurity.GetServerSecurity
+
+   You can use Delphi's interface management to get information about a client
+   and do impersonation without bothering about reverting or destroying the instance.
+
+   For more information on the methods see the documentation of TJwComServerSecurity.
+  }
+  IJwComServerSecurity = interface
+    procedure AccessCheck(
+        const DesiredAccess : DWORD;
+        const SecurityDescriptor : TJwSecurityDescriptor;
+        const GenericMapping: TJwSecurityGenericMappingClass;
+        out AccessGranted : Boolean;
+        out GrantedAccessMask : DWORD
+        );
+
+    procedure AccessCheckCached(
+        var CacheResult : TAuthZAccessCheckResultHandle;
+
+        const DesiredAccess : DWORD;
+        const SecurityDescriptor : TJwSecurityDescriptor;
+        const GenericMapping: TJwSecurityGenericMappingClass;
+        out AccessGranted : Boolean;
+        out GrantedAccessMask : DWORD
+        );
+
+    procedure ImpersonateClient;
+
+    {Removes the thread token.
+
+    Exceptions
+      EJwsclWinCallFailedException CoRevertToSelf failed.
+    }
+    procedure RevertToSelf;
+
+    function GetWinNTIdentity: TJwComWinNTIdentity;
+    function GetUserName: TJwString;
+    function GetAuthenticationInfo: RPC_AUTH_IDENTITY_HANDLE;
+    function GetAuthenticationLevel: TJwComAuthenticationLevel;
+    function GetAuthenticationService: TJwComAuthenticationService;
+    function GetAuthorizationService: TJwComAuthorizationService;
+    function GetImpersionationLevel: TJwComImpersonationLevel;
+    function GetReadOnlyProperties: Boolean;
+    procedure SetAuthenticationInfo(const Value: RPC_AUTH_IDENTITY_HANDLE);
+    procedure SetAuthenticationLevel(const Value: TJwComAuthenticationLevel);
+    procedure SetAuthenticationService(const Value: TJwComAuthenticationService);
+    procedure SetAuthorizationService(const Value: TJwComAuthorizationService);
+    procedure SetCapabilites(const Value: TJwComAuthenticationCapabilities);
+    procedure SetImpersonationLevel(const Value: TJwComImpersonationLevel);
+    function GetCapabilites: TJwComAuthenticationCapabilities;
+    procedure SetAuthContext(const Value: TJwAuthContext);
+    procedure SetAuthManager(const Value: TJwAuthResourceManager);
+    function GetAuthManager: TJwAuthResourceManager;
+    function GetAuthContext: TJwAuthContext;
+
+    property WinNTIdentity : TJwComWinNTIdentity read GetWinNTIdentity;
+    property UserName : TJwString read GetUserName;
+
+    property AuthenticationService : TJwComAuthenticationService read GetAuthenticationService write SetAuthenticationService;
+    property AuthorizationService : TJwComAuthorizationService read GetAuthorizationService write SetAuthorizationService;
+    property AuthenticationLevel : TJwComAuthenticationLevel read GetAuthenticationLevel write SetAuthenticationLevel;
+
+    property AuthenticationInfo : RPC_AUTH_IDENTITY_HANDLE read GetAuthenticationInfo write SetAuthenticationInfo;
+    property Capabilites  : TJwComAuthenticationCapabilities read GetCapabilites write SetCapabilites;
+
+
+    property AuthManager : TJwAuthResourceManager read GetAuthManager write SetAuthManager;
+    property AuthContext : TJwAuthContext read GetAuthContext write SetAuthContext;
+
   end;
 
   {TJwComServerSecurity provides functionality
   for a server to query client information, to impersonate
   and to do access checks.
   }
-  TJwComServerSecurity = class(TJwComCustomSecurity)
+  TJwComServerSecurity = class(TJwComCustomSecurity, IJwComServerSecurity)
   protected
     function GetToken: TJwSecurityToken;
-    function GetUserName: String;
+    function GetUserName: TJwString;
   private
     procedure SetAuthContext(const Value: TJwAuthContext);
     procedure SetAuthManager(const Value: TJwAuthResourceManager);
+    function GetWinNTIdentity: TJwComWinNTIdentity;
+    function GetAuthManager: TJwAuthResourceManager;
+    function GetAuthContext: TJwAuthContext;
 
   protected
     fAuthManager : TJwAuthResourceManager;
@@ -651,48 +843,95 @@ type
     fToken : TJwSecurityToken;
     fWinNTIdentity : TJwComWinNTIdentity;
 
-     //server
+    fImpersonationType : TJwServerImpersonationType;
+
+    {Wraps the API function with same name.
+     Used by server only.
+    }
     class procedure CoQueryClientBlanket(
         {__out_opt}  out pwAuthnSvc : TJwComAuthenticationService;
         {__out_opt}  out pAuthzSvc : TJwComAuthorizationService;
-        {__out_opt}  out pServerPrincName : String;
+        {__out_opt}  out pServerPrincName : TJwString;
         {__out_opt}  out pAuthnLevel : TJwComAuthenticationLevel;
         {__out_opt}  out pImpLevel : TJwComImpersonationLevel;
                      out pPrivs : RPC_AUTHZ_HANDLE;
         {__out_opt}  var pCapabilites : TJwComAuthenticationCapabilities
     ); virtual;
-  published
 
   public
     {Creates a COM server instance.
 
+    Parameters
+      ImpersonationType:
+
      Remarks
        All properties are read only. Trying to set a value raises EJwsclReadOnlyPropertyException.
     }
-    constructor Create(const ImpersonationType : TServerImpersonationType = sitAutoImpersonation);
+    constructor Create(const ImpersonationType : TJwServerImpersonationType = sitAutoImpersonation);
     destructor Destroy; override;
 
-    {
+    class function GetServerSecurity(const ImpersonationType : TJwServerImpersonationType = sitAutoImpersonation) : IJwComServerSecurity;
 
+    {AccessCheck does a one time AccessCheck using the current client's identity.
+
+    Parameters
+       DesiredAccess:
+          Receives the access mask set by a client to get access.
+       SecurityDescriptor:
+          A security descriptor assigned to the secured object.
+       GenericMapping:
+          A mapping class that maps generic access rights to specific ones.
+          It is used by the AccessCheck function to convert generic access rights in
+           the security descriptor. Can be nil.
+
+       AccessGranted:
+          Returns whether access is granted (true) or not (false). This value is only
+          valid if no exception is thrown.
+       GrantedAccessMask:
+          Returns the amount of access rights granted. This value is only
+          valid if no exception is thrown.
     }
     procedure AccessCheck(
-        Flags : Cardinal;
         const DesiredAccess : DWORD;
         const SecurityDescriptor : TJwSecurityDescriptor;
         const GenericMapping: TJwSecurityGenericMappingClass;
         out AccessGranted : Boolean;
         out GrantedAccessMask : DWORD
-        ); virtual;
+        );
 
+    {AccessCheck does a cached AccessCheck using the current client's identity.
+
+
+    Parameters
+       CacheResult:
+          Receives the value from the first AccessCheck made.
+          The first time parameter CacheResult must be a variable with value zero or INVALID_HANDLE_VALUE.
+          The handle must be freed by the WinAPI call AuthzFreeHandle .
+       DesiredAccess:
+          Receives the access mask set by a client to get access.
+       SecurityDescriptor:
+          A security descriptor assigned to the secured object.
+       GenericMapping:
+          A mapping class that maps generic access rights to specific ones.
+          It is used by the AccessCheck function to convert generic access rights in
+           the security descriptor. Can be nil.
+
+       AccessGranted:
+          Returns whether access is granted (true) or not (false). This value is only
+          valid if no exception is thrown.
+       GrantedAccessMask:
+          Returns the amount of access rights granted. This value is only
+          valid if no exception is thrown.
+    }
     procedure AccessCheckCached(
         var CacheResult : TAuthZAccessCheckResultHandle;
-        Flags : Cardinal;
+
         const DesiredAccess : DWORD;
         const SecurityDescriptor : TJwSecurityDescriptor;
         const GenericMapping: TJwSecurityGenericMappingClass;
         out AccessGranted : Boolean;
         out GrantedAccessMask : DWORD
-        ); virtual;
+        );
 
 
     {Impersonates the current thread and removes any previous thread token.
@@ -705,14 +944,14 @@ type
      Exceptions
       EJwsclWinCallFailedException CoImpersonateClient failed.
     }
-    class procedure ImpersonateClient;
+    procedure ImpersonateClient;
 
     {Removes the thread token.
 
     Exceptions
       EJwsclWinCallFailedException CoRevertToSelf failed.
     }
-    class procedure RevertToSelf;
+    procedure RevertToSelf;
 
     {Returns true if the current thread has a token assigned (is impersonating);
      otherwise false.
@@ -720,21 +959,21 @@ type
      The function does not distuingish between a client token connected to the server
      and any other assigned token.
     }
-    class function IsImpersonating : Boolean;
+    function IsImpersonating : Boolean;
 
     {WinNTIdentity contains the user's identity if the property AuthenticationService
      is asWinNT or asGSSKerberos; otherwise it is nil.
 
      This instance is cached by the class and must not be freed.
     }
-    property WinNTIdentity : TJwComWinNTIdentity read fWinNTIdentity;
+    property WinNTIdentity : TJwComWinNTIdentity read GetWinNTIdentity;
 
     {Returns the user's name connected to the server.
      Either it uses the current thread token or it impersonates the user
      if no thread token is available.
      If ImpersonationLevel is cilAnonymous the return value is an empty string.
     }
-    property UserName : String read GetUserName;
+    property UserName : TJwString read GetUserName;
 
     {Returns the client token.
 
@@ -764,7 +1003,7 @@ type
 
      Do not free the instance and then call AccessCheckCached.
     }
-    property AuthManager : TJwAuthResourceManager read fAuthManager write SetAuthManager;
+    property AuthManager : TJwAuthResourceManager read GetAuthManager write SetAuthManager;
 
     {The authentication context used by AccessCheck.
     This value is nil if AccessCheck wasn't called yet.
@@ -775,7 +1014,7 @@ type
 
      Do not free the instance and then call AccessCheckCached.
     }
-    property AuthContext : TJwAuthContext read fAuthContext write SetAuthContext;
+    property AuthContext : TJwAuthContext read GetAuthContext write SetAuthContext;
   end;
 
   {TJwComRegistrySecurity provides functionality to retrieve
@@ -793,24 +1032,26 @@ type
     function GetLaunchPermission: TJwSecurityDescriptor;
     function GetLoadUserProfile: Boolean;
     function GetRunAs: TJwSecurityID;
-    function GetServiceParameters: String;
+    function GetServiceParameters: TJwString;
     function GetSRPTrustLevel: TJwSaferLevelId;
     procedure SetAccessPermission(const Value: TJwSecurityDescriptor);
     procedure SetAuthenticationLevel(const Value: TJwComAuthenticationLevel);
     procedure SetLaunchPermission(const Value: TJwSecurityDescriptor);
     procedure SetLoadUserProfile(const Value: Boolean);
     procedure SetRunAs(const Value: TJwSecurityID);
-    procedure SetServiceParameters(const Value: String);
+    procedure SetServiceParameters(const Value: TJwString);
     procedure SetSRPTrustLevel(const Value: TJwSaferLevelId);
     function GetAppIdRegFlags: TJwComAppIdRegFlags;
     procedure SetAppIdRegFlags(const Value: TJwComAppIdRegFlags);
-    function GetRunAsString: String;
-    procedure SetRunAsString(const Value: String);
+    function GetRunAsString: TJwString;
+    procedure SetRunAsString(const Value: TJwString);
+    function GetROTFlags: TJwComRotFlags;
+    procedure SetROTFlags(const Value: TJwComRotFlags);
   protected
     fLaunchPermission : TJwSecurityDescriptor;
     fAccessPermission : TJwSecurityDescriptor;
     fRunAs : TJwSecurityID;
-    fServiceParameters : String;
+    fServiceParameters : TJwString;
     fAuthenticationLevel : TJwComAuthenticationLevel;
     fAppIdRegFlags : TJwComAppIdRegFlags;
     fSRPTrustLevel : TJwSaferLevelId;
@@ -822,9 +1063,9 @@ type
     procedure CheckReadonly(const PropertyName : String);
 
     //Reads a self relative SD from registry
-    class function ReadSD(Reg : TRegistry; const KeyName : string; var Default :TJwSecurityDescriptor) : TJwSecurityDescriptor;
+    class function ReadSD(Reg : TRegistry; const KeyName : TJwString; var Default :TJwSecurityDescriptor) : TJwSecurityDescriptor;
     //Writes a self relative SD to registry
-    class procedure WriteSD(Reg : TRegistry; const KeyName : string; const SD : TJwSecurityDescriptor; DoDelete : Boolean);
+    class procedure WriteSD(Reg : TRegistry; const KeyName : TJwString; const SD : TJwSecurityDescriptor; DoDelete : Boolean);
 
 
 
@@ -832,8 +1073,8 @@ type
     {Create opens the AppID of a specific COM application.
 
     Parameter
-      AppID GUID of the app.
-      ReadOnly Defines whether all properties are read only (true) or not (false).
+      AppID: GUID of the app.
+      ReadOnly: Defines whether all properties are read only (true) or not (false).
         If ReadOnly is true EJwsclReadOnlyPropertyException will be raised on every property write call.
 
     Remarks
@@ -865,12 +1106,13 @@ type
     }
     class function IsDCOMEnabled : Boolean; virtual;
 
-    {Returns the legacy authentication level.}
+    {Returns the default legacy authentication level.}
     class function GetLegacyAuthenticationLevel : TJwComAuthenticationLevel; virtual;
 
-    {Returns the legacy impersonation level.}
+    {Returns the default legacy impersonation level.}
     class function GetLegacyImpersonationLevel : TJwComImpersonationLevel; virtual;
 
+    class function GetGlobalAuthenticationServices : TJwSecurityPackageInformationArray;
 
     //properties
 
@@ -890,12 +1132,12 @@ type
     {Sets or gets the RunAs registry value as a string. If this value does not exist the return value is empty.
     The key value is deleted if the property is set to empty.
     }
-    property RunAsString : String read GetRunAsString write SetRunAsString;
+    property RunAsString : TJwString read GetRunAsString write SetRunAsString;
 
     {Sets or gets the service parameters that are delivered to the service on startup.
     The key value is deleted if the property is set to empty.
     }
-    property ServiceParameters : String read GetServiceParameters write SetServiceParameters;
+    property ServiceParameters : TJwString read GetServiceParameters write SetServiceParameters;
 
     {Sets or gets the Authentication level.  If this key is not available the default value (GetLegacyAuthenticationLevel) is returned.
      The key value is deleted if the property is set to empty.
@@ -916,13 +1158,69 @@ type
     }
     property LoadUserProfile : Boolean read GetLoadUserProfile write SetLoadUserProfile;
 
+    {Sets or get the value for running object table (ROT) flags.
+    If this key is not available the value false is returned.
+    }
+    property ROTFlags : TJwComRotFlags read GetROTFlags write SetROTFlags;
+
     //Returns the GUID supplied to Create
     property AppID : TGuid read fAppID;
   end;
 
 
+  TJwTrustee = record
+  end;
+
+  TJwServerAccessControl = class;
+
+  TJwIsAccessAllowed = procedure (const Sender : TJwServerAccessControl;
+      const DesiredAccess : DWORD;
+      const TrusteeName : TJwString; const TrusteeSID : TJwSecurityId;
+      const AProperty : TJwString; const Trustee : PTrusteeW;
+      var AccessGranted : Boolean;
+      var ErrorCode : HRESULT) of object;
+
+
+ { TJwServerAccessControl = class(TInterfacedObject, IAccessControl)
+  protected
+    fSD : TJwSecurityDescriptor;
+    fIsAccessAllowed : TJwIsAccessAllowed;
+  public
+    function GrantAccessRights(pAccessList: PACTRL_ACCESSW): HRESULT; stdcall;
+    function SetAccessRights(pAccessList: PACTRL_ACCESSW): HRESULT; stdcall;
+    function SetOwner(pOwner: PTRUSTEEW; pGroup: PTRUSTEEW): HRESULT; stdcall;
+    function RevokeAccessRights(lpProperty: LPWSTR; cTrustees: ULONG; prgTrustees: PTRUSTEEW): HRESULT; stdcall;
+    function GetAllAccessRights(lpProperty: LPWSTR; var ppAccessList: PACTRL_ACCESSW_ALLOCATE_ALL_NODES; var ppOwner, ppGroup: PTRUSTEEW): HRESULT; stdcall;
+    function IsAccessAllowed(pTrustee: PTRUSTEEW; lpProperty: LPWSTR; AccessRights: ACCESS_RIGHTS; var pfAccessAllowed: BOOL): HRESULT; stdcall;
+
+    constructor Create(const SD : TJwSecurityDescriptor);
+    destructor Destroy; override;
+
+    procedure JwGrantAccessRights(const AccessList: TJwDAccessControlList); virtual;
+    procedure JwSetAccessRights(const AccessList: TJwDAccessControlList); virtual;
+    procedure JwSetOwner(Owner, Group : TJwSecurityID); virtual;
+    procedure JwRevokeAccessRights(const AProperty: TJwString; cTrustees: ULONG; prgTrustees: PTRUSTEEW): HRESULT; stdcall;
+    procedure JwGetAllAccessRights(const AProperty: TJwString; var ppAccessList: PACTRL_ACCESSW_ALLOCATE_ALL_NODES; var ppOwner, ppGroup: PTRUSTEEW): HRESULT; stdcall;
+    procedure JwIsAccessAllowed(pTrustee: PTRUSTEEW; lpProperty: LPWSTR; AccessRights: ACCESS_RIGHTS; var pfAccessAllowed: BOOL): HRESULT; stdcall;
+
+
+    property SecurityDescriptor : TJwSecurityDescriptor read fSD;
+    property OnIsAccessAllowed : TJwIsAccessAllowed read fIsAccessAllowed write fIsAccessAllowed;
+  end;  }
+
+  {TJwCOMSecuritySettings is used by JwTightCOMSecuritySettings
+  to set default COM security settings.
+  }
+  TJwCOMSecuritySettings = record
+    {A security descriptor string in the SDDL format}
+    SDDL : TJwString;
+    AuthenticationLevel: TJwComAuthenticationLevel;
+    ImpersonationLevel: TJwComImpersonationLevel;
+    Capabilities : TJwComAuthenticationCapabilities;
+  end;
+
 var
-  JwKnownComHostProcesses : array[1..1] of String =
+  JwKnownComHostProcesses : array[1..1] of TJwString =
     ('dllhost.exe'
      //'ComServerTest2.exe'
      );
@@ -936,6 +1234,50 @@ var
      host more than one COM server and a call to CoInitializeSecurity will create problems.
   }
   JwIgnoreHostProcessesInServer : boolean = false;
+
+const
+  {Used by TJwComProcessSecurity.CreateTightServerSecurityOptions
+   to create a default SD class using SDDL from JwTightCOMSecuritySettings.
+  }
+  JwDefaultComSD = TJwSecurityDescriptor(-1);
+
+
+
+
+
+const
+  {Used by TJwComProcessSecurity.CreateTightServerSecurityOptions
+   to set a tight security setting for a COM server.
+
+   Allows SYSTEM and LocalAdministrator full access to the server.
+
+   http://alt.pluralsight.com/wiki/default.aspx/Keith.GuideBook/WhatIsCoInitializeSecurity.html
+
+   Owner: Local Administrator
+   Group: Builtin Administrators
+   DACL:
+      1.
+      ACE-Type: Allow
+      AccessMask : 0x1FFFFFF (0000 000 1 11111111 1111111111111111)
+      SID: Local System
+      2.
+      ACE-Type: Allow
+      AccessMask : 0x1FFFFFF (0000 000 1 11111111 1111111111111111)
+      SID: Builtin Administrators
+
+   acDisableActivateAsActivator
+     Do not start the server as the activator so it will be spawn into the caller's logon session.
+   acNoCustomMarshal
+     Do not load unnecessary DLLs.
+   acDynamicCloaking
+     Use thread token on outgoing COM calls.
+  }
+  JwTightCOMSecuritySettings : TJwCOMSecuritySettings = (
+    SDDL: 'O:LAG:BAD:(A;;0x1FFFFFF;;;SY)(A;;0x1FFFFFF;;;BA)';
+    AuthenticationLevel: calPktPrivacy;
+    ImpersonationLevel: cilIdentify;
+    Capabilities : [acDisableActivateAsActivator, acNoCustomMarshal, acDynamicCloaking];
+   );
 
 
 implementation
@@ -965,6 +1307,7 @@ var
   hRes : HRESULT;
 begin
   ZeroMemory(@AuthIdent, sizeof(AuthIdent));
+
 
  { AuthIdent.Version := SEC_WINNT_AUTH_IDENTITY_VERSION;
   AuthIdent.Length := SizeOf(AuthIdent);               }
@@ -1054,10 +1397,47 @@ begin
     raise EJwsclWinCallFailedException.CreateFmtEx('', 'CoCopyProxy', ClassName, 'JwsclComSecurity.pas', 0, ResultCode(hr), []);
 end;
 
+class function TJwComClientSecurity.GetAuthenticationServices: TJwAuthenticationServiceInformationArray;
+var
+  Status : HRESULT;
+  Count : Cardinal;
+  PackI,
+  Packages : PSOLE_AUTHENTICATION_SERVICE;
+  I: Integer;
+begin
+  Status := CoQueryAuthenticationServices(
+      Count,//__out  DWORD *pcAuthSvc,
+      Packages//__out  SOLE_AUTHENTICATION_SERVICE **asAuthSvc
+    );
+  if Status <> S_OK then
+  begin
+    SetLastError(status);
+    raise EJwsclWinCallFailedException.CreateFmtEx('CoQueryAuthenticationServices failed with result %d.',
+        'GetGlobalAuthenticationServices', ClassName, 'JwsclComSecurity.pas', 0, Status, [Status]);
+  end;
+
+  try
+    SetLength(result, Count);
+    PackI := Packages;
+
+    for I := 0 to Count - 1 do
+    begin
+      result[i].AuthenticationService := TJwComAuthenticationService(PackI.dwAuthnSvc);
+      result[i].AuthorizationService := TJwComAuthorizationService(PackI.dwAuthzSvc);
+      result[i].PrincipalName := TJwString(PWideChar(PackI.pPrincipalName));
+      result[i].Result := PackI.hr;
+
+      Inc(PackI);
+    end;
+  finally
+    CoTaskMemFree(Packages);
+  end;
+end;
+
 class procedure TJwComClientSecurity.CoQueryProxyBlanket({__in}       pProxy : IUnknown;
         {__out_opt}  out pwAuthnSvc : TJwComAuthenticationService;
         {__out_opt}  out pAuthzSvc : TJwComAuthorizationService;
-        {__out_opt}  out pServerPrincName : String;
+        {__out_opt}  out pServerPrincName : TJwString;
         {__out_opt}  out pAuthnLevel : TJwComAuthenticationLevel;
         {__out_opt}  out pImpLevel : TJwComImpersonationLevel;
         {__out_opt}  out pAuthInfo : RPC_AUTH_IDENTITY_HANDLE;
@@ -1085,7 +1465,7 @@ begin
     raise EJwsclWinCallFailedException.CreateFmtEx('', 'CoQueryProxyBlanket', ClassName, 'JwsclComSecurity.pas', 0, ResultCode(hr), []);
   end;
 
-  pServerPrincName := String(WideString(S));
+  pServerPrincName := TJwString(WideString(S));
   CoTaskMemFree(S);
 
   pCapabilites := TJwEnumMap.ConvertComAuthenticationCapabilities(iCapabilites);
@@ -1095,7 +1475,7 @@ class procedure TJwComClientSecurity.CoSetProxyBlanket(
         {__in}      pProxy : IUnknown;
         {__in}      dwAuthnSvc : TJwComAuthenticationService;
         {__in}      dwAuthzSvc : TJwComAuthorizationService;
-        {__in_opt}  pServerPrincName : String;
+        {__in_opt}  pServerPrincName : TJwString;
         {__in}      AuthnLevel : TJwComAuthenticationLevel;
         {__in}      dwImpLevel : TJwComImpersonationLevel;
         {__in_opt}  pAuthInfo : Pointer;
@@ -1205,16 +1585,16 @@ end;
 
 { TJwComServerSecurity }
 
-procedure TJwComServerSecurity.AccessCheck(Flags: Cardinal; const DesiredAccess: DWORD; const SecurityDescriptor: TJwSecurityDescriptor;
+procedure TJwComServerSecurity.AccessCheck(const DesiredAccess: DWORD; const SecurityDescriptor: TJwSecurityDescriptor;
   const GenericMapping: TJwSecurityGenericMappingClass; out AccessGranted: Boolean; out GrantedAccessMask: DWORD);
 var
   CacheResult: TAuthZAccessCheckResultHandle;
 begin
   CacheResult := INVALID_HANDLE_VALUE;
-  Self.AccessCheckCached(CacheResult, Flags, DesiredAccess, SecurityDescriptor, GenericMapping, AccessGranted, GrantedAccessMask);
+  Self.AccessCheckCached(CacheResult, DesiredAccess, SecurityDescriptor, GenericMapping, AccessGranted, GrantedAccessMask);
 end;
 
-procedure TJwComServerSecurity.AccessCheckCached(var CacheResult: TAuthZAccessCheckResultHandle; Flags: Cardinal; const DesiredAccess: DWORD;
+procedure TJwComServerSecurity.AccessCheckCached(var CacheResult: TAuthZAccessCheckResultHandle; const DesiredAccess: DWORD;
   const SecurityDescriptor: TJwSecurityDescriptor; const GenericMapping: TJwSecurityGenericMappingClass; out AccessGranted: Boolean;
   out GrantedAccessMask: DWORD);
 
@@ -1246,11 +1626,11 @@ begin
   try
     if (CacheResult = 0) or (CacheResult = INVALID_HANDLE_VALUE) then
     begin
-      fAuthContext.AccessCheck(Flags, Request, 0, SecurityDescriptor, nil, GenericMapping, Reply, CacheResult);
+      fAuthContext.AccessCheck(0, Request, 0, SecurityDescriptor, nil, GenericMapping, Reply, CacheResult);
     end
     else
     begin
-      fAuthContext.AccessCheckCached(CacheResult, Flags, Request, 0, Reply);
+      fAuthContext.AccessCheckCached(CacheResult, 0, Request, 0, Reply);
     end;
 
     AccessGranted := Reply.ErrorByType[0] = reSuccess;
@@ -1265,7 +1645,7 @@ end;
 class procedure TJwComServerSecurity.CoQueryClientBlanket(
         {__out_opt}  out pwAuthnSvc : TJwComAuthenticationService;
         {__out_opt}  out pAuthzSvc : TJwComAuthorizationService;
-        {__out_opt}  out pServerPrincName : String;
+        {__out_opt}  out pServerPrincName : TJwString;
         {__out_opt}  out pAuthnLevel : TJwComAuthenticationLevel;
         {__out_opt}  out pImpLevel : TJwComImpersonationLevel;
                      out pPrivs : RPC_AUTHZ_HANDLE;
@@ -1294,11 +1674,11 @@ begin
 
   pCapabilites := TJwEnumMap.ConvertComAuthenticationCapabilities(iCapabilites);
 
-  pServerPrincName := String(WideString(S));
+  pServerPrincName := TJwString(WideString(S));
   CoTaskMemFree(S);
 end;
 
-constructor TJwComServerSecurity.Create(const ImpersonationType: TServerImpersonationType);
+constructor TJwComServerSecurity.Create(const ImpersonationType: TJwServerImpersonationType);
 //var
   //p : IServerSecurity;
   //hr : HRESULT;
@@ -1309,6 +1689,8 @@ begin
   begin
     raise EJwsclInvalidTokenHandle.CreateFmtEx('The call cannot be made with an impersonated token. Revert to self first.', 'Create', ClassName, 'JwsclComSecurity.pas', 0, false, []);
   end;
+
+  fImpersonationType := ImpersonationType;;
 
   (*
   //this is one way to obtain the client,
@@ -1326,7 +1708,7 @@ begin
   hr := p.QueryBlanket(
         @DWORD(fAuthenticationService),//{__out_opt}  out pwAuthnSvc : DWORD;
         @DWORD(fAuthorizationService),//{__out_opt}  out pAuthzSvc : DWORD;
-        @pServerPrincipalName,//{__out_opt}  out pServerPrincName : String;
+        @pServerPrincipalName,//{__out_opt}  out pServerPrincName : TJwString;
         @DWORD(fAuthenticationLevel),//{__out_opt}  out pAuthnLevel : TJwComAuthenticationLevel;
         @DWORD(fImpersonationLevel),//{__out_opt}  out pImpLevel : TJwComImpersonationLevel;
         fAuthenticationInfo,//             out pPrivs : RPC_AUTHZ_HANDLE;
@@ -1340,14 +1722,14 @@ begin
 
   //SiMain.LogPWideChar('User', PSecWinNTAuthIdentityW(@fAuthenticationInfo)^.User);
 
-  fServerPrincipalName := String(pServerPrincipalName);
+  fServerPrincipalName := TJwString(pServerPrincipalName);
   CoTaskMemFree(pServerPrincipalName);
   *)
 
   CoQueryClientBlanket(
         fAuthenticationService,//{__out_opt}  out pwAuthnSvc : DWORD;
         fAuthorizationService,//{__out_opt}  out pAuthzSvc : DWORD;
-        fServerPrincipalName,//{__out_opt}  out pServerPrincName : String;
+        fServerPrincipalName,//{__out_opt}  out pServerPrincName : TJwString;
         fAuthenticationLevel,//{__out_opt}  out pAuthnLevel : TJwComAuthenticationLevel;
         fImpersonationLevel,//{__out_opt}  out pImpLevel : TJwComImpersonationLevel;
         fAuthenticationInfo,//             out pPrivs : RPC_AUTHZ_HANDLE;
@@ -1382,6 +1764,15 @@ begin
     SiMain.LogString('Domain', fWinNTIdentity.Domain);
     SiMain.LogString('Password', fWinNTIdentity.Password); }
   end;
+
+  case fImpersonationType of
+    //impersonate on creation, revert on destroying
+    sitAutoImpersonation,
+    //impersonate on creation, but do not revert
+    sitOnlyImpersonation : ImpersonateClient;
+    //do not impersonate at all
+    sitNoImpersonation : ;
+  end;
 end;
 
 destructor TJwComServerSecurity.Destroy;
@@ -1392,11 +1783,34 @@ begin
   FreeAndNil(fAuthManager);
   FreeAndNil(fAuthContext);
 
-  //RevertToSelf;
+
+  case fImpersonationType of
+    //impersonate on creation, revert on destroying
+    sitAutoImpersonation : RevertToSelf;
+    //impersonate on creation, but do not revert
+    sitOnlyImpersonation : ;
+    //do not impersonate at all
+    sitNoImpersonation : ;
+  end;
 
   inherited;
 end;
 
+
+function TJwComServerSecurity.GetAuthContext: TJwAuthContext;
+begin
+  result := fAuthContext;
+end;
+
+function TJwComServerSecurity.GetAuthManager: TJwAuthResourceManager;
+begin
+  result := fAuthManager;
+end;
+
+class function TJwComServerSecurity.GetServerSecurity(const ImpersonationType: TJwServerImpersonationType): IJwComServerSecurity;
+begin
+  result := Create(ImpersonationType);
+end;
 
 function TJwComServerSecurity.GetToken: TJwSecurityToken;
 begin
@@ -1419,7 +1833,7 @@ begin
   result := fToken;
 end;
 
-function TJwComServerSecurity.GetUserName: String;
+function TJwComServerSecurity.GetUserName: TJwString;
 var
   Token : TJwSecurityToken;
   IsImpersonating : Boolean;
@@ -1446,7 +1860,12 @@ begin
   end;
 end;
 
-class procedure TJwComServerSecurity.ImpersonateClient;
+function TJwComServerSecurity.GetWinNTIdentity: TJwComWinNTIdentity;
+begin
+  result := fWinNTIdentity;
+end;
+
+procedure TJwComServerSecurity.ImpersonateClient;
 var
   hr : HRESULT;
 begin
@@ -1458,7 +1877,7 @@ begin
   end;
 end;
 
-class function TJwComServerSecurity.IsImpersonating: Boolean;
+function TJwComServerSecurity.IsImpersonating: Boolean;
 {var
    Token : TJwSecurityToken;     }
 begin
@@ -1474,7 +1893,7 @@ begin
   end;  }
 end;
 
-class procedure TJwComServerSecurity.RevertToSelf;
+procedure TJwComServerSecurity.RevertToSelf;
 var h : HRESULT;
 begin
   h := CoRevertToSelf();
@@ -1633,6 +2052,49 @@ begin
   end;
 end;
 
+class function TJwComRegistrySecurity.GetGlobalAuthenticationServices: TJwSecurityPackageInformationArray;
+var
+  status : SECURITY_STATUS;
+  Count : Cardinal;
+  PackI,
+  Packages : {$IFDEF UNICODE}PSecPkgInfoW;{$ELSE}PSecPkgInfoA;{$ENDIF}
+  I: Integer;
+begin
+{$IFDEF UNICODE}
+  status := EnumerateSecurityPackagesW(
+{$ELSE}
+  status := EnumerateSecurityPackagesA(
+{$ENDIF}
+    Count,//__in  PULONG pcPackages,
+    Packages//__in  PSecPkgInfo *ppPackageInfo
+    );
+  if status <> SEC_E_OK then
+  begin
+    SetLastError(status);
+    raise EJwsclWinCallFailedException.CreateFmtEx('EnumerateSecurityPackages failed with result %d.',
+        'GetGlobalAuthenticationServices', ClassName, 'JwsclComSecurity.pas', 0, status, [status]);
+  end;
+
+  try
+    SetLength(result, Count);
+    PackI := Packages;
+
+    for I := 0 to Count - 1 do
+    begin
+      result[i].Capabilities := TJwEnumMap.ConvertSecurityPackageCapabilities(PackI.fCapabilities);
+      result[i].Version := PackI.wVersion;
+      result[i].RPCID := PackI.wRPCID;
+      result[i].MaxToken := PackI.cbMaxToken;
+      result[i].Name := TJwString(TJwPChar(PackI.Name));
+      result[i].Comment := TJwString(TJwPChar(PackI.Comment));
+
+      Inc(PackI);
+    end;
+  finally
+    FreeContextBuffer(Packages);
+  end;
+end;
+
 function TJwComRegistrySecurity.GetLaunchPermission: TJwSecurityDescriptor;
 begin
   if Reg.ValueExists(KEY_LAUNCH_PERMISSION) then
@@ -1659,8 +2121,22 @@ begin
   end;
 end;
 
+function TJwComRegistrySecurity.GetROTFlags: TJwComRotFlags;
+var Value : DWORD;
+begin
+  if Reg.ValueExists('ROTFlags') then
+  begin
+    Value := Reg.ReadInteger('ROTFlags');
+    result := TJwEnumMap.ConvertComRotFlags(Value);
+  end
+  else
+  begin
+    result := [];
+  end;
+end;
+
 function TJwComRegistrySecurity.GetRunAs: TJwSecurityID;
-var Value : string;
+var Value : TJwString;
 begin
   if Reg.ValueExists('RunAs') then
   begin
@@ -1673,7 +2149,7 @@ begin
   end;
 end;
 
-function TJwComRegistrySecurity.GetRunAsString: String;
+function TJwComRegistrySecurity.GetRunAsString: TJwString;
 begin
   if Reg.ValueExists('RunAs') then
   begin
@@ -1685,7 +2161,7 @@ begin
   end;
 end;
 
-function TJwComRegistrySecurity.GetServiceParameters: String;
+function TJwComRegistrySecurity.GetServiceParameters: TJwString;
 begin
   if Reg.ValueExists('ServiceParameters') then
   begin
@@ -1712,7 +2188,7 @@ end;
 class function TJwComRegistrySecurity.IsDCOMEnabled: Boolean;
 var
   Reg : TRegistry;
-  Value : String;
+  Value : TJwString;
 begin
   Reg := TRegistry.Create;
   Reg.RootKey := HKEY_LOCAL_MACHINE;
@@ -1774,7 +2250,7 @@ begin
   end;
 end;
 
-class function TJwComRegistrySecurity.ReadSD(Reg : TRegistry; const KeyName: string; var Default : TJwSecurityDescriptor): TJwSecurityDescriptor;
+class function TJwComRegistrySecurity.ReadSD(Reg : TRegistry; const KeyName: TJwString; var Default : TJwSecurityDescriptor): TJwSecurityDescriptor;
 var
   Size : Integer;
   Buf  : Pointer;
@@ -1800,7 +2276,7 @@ begin
   result := Default;
 end;
 
-class procedure TJwComRegistrySecurity.WriteSD(Reg: TRegistry; const KeyName: string; const SD: TJwSecurityDescriptor; DoDelete: Boolean);
+class procedure TJwComRegistrySecurity.WriteSD(Reg: TRegistry; const KeyName: TJwString; const SD: TJwSecurityDescriptor; DoDelete: Boolean);
 var
   Size : Cardinal;
   PSD : PSecurityDescriptor;
@@ -1872,8 +2348,23 @@ begin
   Reg.WriteBool('LoadUserProfile', Value);
 end;
 
+procedure TJwComRegistrySecurity.SetROTFlags(const Value: TJwComRotFlags);
+begin
+  CheckReadonly('ROTFlags');
+
+  if (Value = []) or ([rfNone] = Value) then
+  begin
+    Reg.DeleteValue('ROTFlags');
+  end
+  else
+  begin
+    Reg.WriteInteger('ROTFlags', TJwEnumMap.ConvertComRotFlags(Value));
+  end;
+end;
+
+
 procedure TJwComRegistrySecurity.SetRunAs(const Value: TJwSecurityID);
-var Domain, Name : string;
+var Domain, Name : TJwString;
 begin
   CheckReadonly('RunAs');
 
@@ -1892,7 +2383,7 @@ begin
   end
 end;
 
-procedure TJwComRegistrySecurity.SetRunAsString(const Value: String);
+procedure TJwComRegistrySecurity.SetRunAsString(const Value: TJwString);
 begin
   CheckReadonly('RunAsString');
 
@@ -1907,7 +2398,7 @@ begin
   end;
 end;
 
-procedure TJwComRegistrySecurity.SetServiceParameters(const Value: String);
+procedure TJwComRegistrySecurity.SetServiceParameters(const Value: TJwString);
 begin
   CheckReadonly('ServiceParameters');
 
@@ -2163,7 +2654,7 @@ begin
   fReadOnly := Value;
 end;
 
-procedure TJwComCustomSecurity.SetServerPrincipalName(const Value: String);
+procedure TJwComCustomSecurity.SetServerPrincipalName(const Value: TJwString);
 begin
   CheckReadonly('SetServerPrincipalName');
 
@@ -2190,6 +2681,11 @@ begin
   result := fAuthorizationService;
 end;
 
+function TJwComCustomSecurity.GetCapabilites: TJwComAuthenticationCapabilities;
+begin
+  result := fCapabilites;
+end;
+
 function TJwComCustomSecurity.GetImpersionationLevel: TJwComImpersonationLevel;
 begin
   result := fImpersonationLevel;
@@ -2200,7 +2696,7 @@ begin
   result := fReadOnly;
 end;
 
-function TJwComCustomSecurity.GetServerPrincipalName: String;
+function TJwComCustomSecurity.GetServerPrincipalName: TJwString;
 begin
   result := fServerPrincipalName;
 end;
@@ -2430,8 +2926,24 @@ begin
 end;
 
 
+
+class procedure TJwComProcessSecurity.CreateTightServerSecurityOptions(var SecurityDescriptor: TJwSecurityDescriptor;
+  out AuthenticationLevel: TJwComAuthenticationLevel; out ImpersonationLevel: TJwComImpersonationLevel;
+  out Capabilities: TJwComAuthenticationCapabilities);
+begin
+  if (SecurityDescriptor = JwDefaultComSD) then
+  begin
+    SecurityDescriptor := TJwSecurityDescriptor.Create(JwTightCOMSecuritySettings.SDDL);
+    ShowMessage(SecurityDescriptor.Text);
+  end;
+
+  AuthenticationLevel := JwTightCOMSecuritySettings.AuthenticationLevel;
+  ImpersonationLevel := JwTightCOMSecuritySettings.ImpersonationLevel;
+  Capabilities := JwTightCOMSecuritySettings.Capabilities;
+end;
+
 class procedure TJwComProcessSecurity.Initialize(
-  const Domain, UserName, Password: String;
+  const Domain, UserName, Password: TJwString;
   const AuthorizationService: TJwComAuthorizationService;
   const AuthenticationLevel: TJwComAuthenticationLevel;
   const ImpersonationLevel: TJwComImpersonationLevel;
@@ -2479,8 +2991,7 @@ begin
           );
 end;
 
-class procedure TJwComProcessSecurity.Initialize(AppID: TGUID; AuthenticationLevel: TJwComAuthenticationLevel;
-  ImpersonationLevel: TJwComImpersonationLevel; Capabilities: TJwComAuthenticationCapabilities);
+class procedure TJwComProcessSecurity.Initialize(AppID: TGUID; Capabilities: TJwComAuthenticationCapabilities);
 var
   SecurityData : TJwSecurityInitializationData;
   AuthenticationList : TJwAuthenticationInfoList;
@@ -2494,8 +3005,8 @@ begin
   Initialize(
           @SecurityData,//SecurityData : PJwSecurityInitializationData;
           AuthenticationList,//var AuthenticationList : TJwAuthenticationInfoList;
-          AuthenticationLevel,//AuthenticationLevel: TJwComAuthenticationLevel;
-          ImpersonationLevel,//ImpersonationLevel : TJwComImpersonationLevel;
+          calNone,//AuthenticationLevel: TJwComAuthenticationLevel;
+          cilIdentify,//ImpersonationLevel : TJwComImpersonationLevel;
           Capabilities,//Capabilities : TJwComAuthenticationCapabilities;
           false, //const AutoDestroy : Boolean
           JwIgnoreHostProcessesInServer //IgnoreProcess
@@ -2599,17 +3110,17 @@ begin
 
   if fDataEx.Flags and SEC_WINNT_AUTH_IDENTITY_ANSI <> 0 then
   begin
-    Domain := String(WideString(PAnsiChar(Identity.Domain)));
-    PackageList := String(WideString(PAnsiChar(Identity.PackageList)));
-    Password := String(WideString(PAnsiChar(Identity.Password)));
-    User := String(WideString(PAnsiChar(Identity.User)));
+    Domain := TJwString(WideString(PAnsiChar(Identity.Domain)));
+    PackageList := TJwString(WideString(PAnsiChar(Identity.PackageList)));
+    Password := TJwString(WideString(PAnsiChar(Identity.Password)));
+    User := TJwString(WideString(PAnsiChar(Identity.User)));
   end
   else
   begin
-    Domain := String(WideString(Identity.Domain));
-    PackageList := String(WideString(Identity.PackageList));
-    Password := String(WideString(Identity.Password));
-    User := String(WideString(Identity.User));
+    Domain := TJwString(WideString(Identity.Domain));
+    PackageList := TJwString(WideString(Identity.PackageList));
+    Password := TJwString(WideString(Identity.Password));
+    User := TJwString(WideString(Identity.User));
   end;
 end;
 
@@ -2620,15 +3131,15 @@ begin
 
   if fDataEx.Flags and SEC_WINNT_AUTH_IDENTITY_ANSI <> 0 then
   begin
-    Domain := String(WideString(PAnsiChar(Identity.Domain)));
-    Password := String(WideString(PAnsiChar(Identity.Password)));
-    User := String(WideString(PAnsiChar(Identity.User)));
+    Domain := TJwString(WideString(PAnsiChar(Identity.Domain)));
+    Password := TJwString(WideString(PAnsiChar(Identity.Password)));
+    User := TJwString(WideString(PAnsiChar(Identity.User)));
   end
   else
   begin
-    Domain := String(WideString(Identity.Domain));
-    Password := String(WideString(Identity.Password));
-    User := String(WideString(Identity.User));
+    Domain := TJwString(WideString(Identity.Domain));
+    Password := TJwString(WideString(Identity.Password));
+    User := TJwString(WideString(Identity.User));
   end;
   PackageList := '';
 end;
@@ -2669,9 +3180,9 @@ begin
   result := @fDataEx;
 end;
 
-function TJwComWinNTIdentity.GetDomain: String;
+function TJwComWinNTIdentity.GetDomain: TJwString;
 begin
-  result := string(WideString(fDataEx.Domain));
+  result := TJwString(WideString(fDataEx.Domain));
 end;
 
 function TJwComWinNTIdentity.GetFlags: DWORD;
@@ -2679,19 +3190,19 @@ begin
   result := fDataEx.Flags;
 end;
 
-function TJwComWinNTIdentity.GetPackageList: String;
+function TJwComWinNTIdentity.GetPackageList: TJwString;
 begin
-  result := string(WideString(fDataEx.PackageList));
+  result := TJwString(WideString(fDataEx.PackageList));
 end;
 
-function TJwComWinNTIdentity.GetPassword: String;
+function TJwComWinNTIdentity.GetPassword: TJwString;
 begin
-  result := string(WideString(fDataEx.Password));
+  result := TJwString(WideString(fDataEx.Password));
 end;
 
-function TJwComWinNTIdentity.GetUser: String;
+function TJwComWinNTIdentity.GetUser: TJwString;
 begin
-  result := string(WideString(fDataEx.User));
+  result := TJwString(WideString(fDataEx.User));
 end;
 
 function TJwComWinNTIdentity.GetVersion: DWORD;
@@ -2699,7 +3210,7 @@ begin
   result := fDataEx.Version;
 end;
 
-procedure SetWideChar(var pch : PWideChar; out chLen : DWORD; S : string);
+procedure SetWideChar(var pch : PWideChar; out chLen : DWORD; S : WideString);
 var
   Size : Integer;
 begin
@@ -2724,10 +3235,11 @@ begin
   chLen := Length(S);
 end;
 
-procedure TJwComWinNTIdentity.SetDomain(const Value: String);
+
+procedure TJwComWinNTIdentity.SetDomain(const Value: TJwString);
 begin
   CheckReadonly('Domain');
-  SetWideChar(fDataEx.Domain, fDataEx.DomainLength, Value);
+  SetWideChar(fDataEx.Domain, fDataEx.DomainLength, WideString(Value));
 end;
 
 procedure TJwComWinNTIdentity.SetFlags(const Value: DWORD);
@@ -2736,22 +3248,22 @@ begin
   fDataEx.Flags := Value;
 end;
 
-procedure TJwComWinNTIdentity.SetPackageList(const Value: String);
+procedure TJwComWinNTIdentity.SetPackageList(const Value: TJwString);
 begin
   CheckReadonly('PackageList');
-  SetWideChar(fDataEx.PackageList, fDataEx.PackageListLength, Value);
+  SetWideChar(fDataEx.PackageList, fDataEx.PackageListLength, WideString(Value))
 end;
 
-procedure TJwComWinNTIdentity.SetPassword(const Value: String);
+procedure TJwComWinNTIdentity.SetPassword(const Value: TJwString);
 begin
   CheckReadonly('Password');
-  SetWideChar(fDataEx.Password, fDataEx.PasswordLength, Value);
+  SetWideChar(fDataEx.Password, fDataEx.PasswordLength, WideString(Value))
 end;
 
-procedure TJwComWinNTIdentity.SetUser(const Value: String);
+procedure TJwComWinNTIdentity.SetUser(const Value: TJwString);
 begin
   CheckReadonly('User');
-  SetWideChar(fDataEx.User, fDataEx.UserLength, Value);
+  SetWideChar(fDataEx.User, fDataEx.UserLength, WideString(Value))
 end;
 
 procedure TJwComWinNTIdentity.SetVersion(const Value: DWORD);
@@ -2760,7 +3272,7 @@ begin
   fDataEx.Version := Version;
 end;
 
-constructor TJwComWinNTIdentity.Create(const Domain, UserName, Password: string);
+constructor TJwComWinNTIdentity.Create(const Domain, UserName, Password: TJwString);
 begin
   Create;
 
@@ -2810,7 +3322,7 @@ begin
   fAutoDestroy := AutoDestroy;
 end;
 
-constructor TJwAuthenticationInfo.CreateWinNT(const UserName, Domain, Password: string; const AuthorizationService: TJwComAuthorizationService);
+constructor TJwAuthenticationInfo.CreateWinNT(const UserName, Domain, Password: TJwString; const AuthorizationService: TJwComAuthorizationService);
 begin
   fWinNTIdentity := TJwComWinNTIdentity.Create(Domain, UserName, Password);
   fAuthenticationInfo := Pointer(fWinNTIdentity.AuthorizationInfo);
@@ -2902,7 +3414,7 @@ implementation
 
 procedure SetUserImpersonateOnProxy(
      Proxy: IUnknown;  //-- Interface
-     const UserName, DomainName, Psword: String; //-- User Account
+     const UserName, DomainName, Psword: TJwString; //-- User Account
      AuthenicationService: DWORD = RPC_C_AUTHN_WINNT;
      AuthorizationService: DWORD = RPC_C_AUTHZ_DEFAULT;
      AuthenicationLevel: DWORD = RPC_C_AUTHN_LEVEL_CALL;
