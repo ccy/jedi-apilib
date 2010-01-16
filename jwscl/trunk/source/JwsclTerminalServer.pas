@@ -3196,9 +3196,9 @@ begin
     FEnumServersThread := TJwWTSEnumServersThread.Create(True, Self, ADomain);
     FEnumServersThread.OnTerminate := OnEnumServersThreadTerminate;
 {$IFDEF DELPHI2010_UP}
-    EnumServersThread.Start;
+    FEnumServersThread.Start;
 {$ELSE}
-    EnumServersThread.Resume;
+    FEnumServersThread.Resume;
 {$ENDIF}
     Result := True;
   end;
