@@ -1942,7 +1942,11 @@ begin
   fDataList := TJwIntTupleList.Create;
 
 
+{$IFDEF DELPHI2010_UP}
+  fThread.Start;
+{$ELSE}
   fThread.Resume;
+{$ENDIF}
 
   SetObjectAssociateCompletionPortInformation(Pointer(fIOUniqueID),
     fThread.IOHandle);
