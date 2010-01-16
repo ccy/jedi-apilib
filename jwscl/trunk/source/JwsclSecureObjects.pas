@@ -6899,7 +6899,12 @@ begin
                  *)
       aThread.fOnExecute := TreeFileObjectSetNamedSecurityInfo_Execute;
       aThread.pTag := Data;
+{$IFDEF DELPHI2010_UP}
+      aThread.Start;
+{$ELSE}
       aThread.Resume;
+{$ENDIF}
+
 
 
 
@@ -10106,7 +10111,11 @@ begin
 
       aThread.fOnExecute := TreeRegKeySetNamedSecurityInfo_Execute;
       aThread.pTag := Data;
+{$IFDEF DELPHI2010_UP}
+      aThread.Start;
+{$ELSE}
       aThread.Resume;
+{$ENDIF}
     end;
   end
   else
