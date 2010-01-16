@@ -3204,45 +3204,6 @@ begin
   end;
 end;
 
-{ this is a workaround for a bug in Vista
-  When opening a server connection with WTSOpenServer it is supposed to return
-  0 if the connection fails but instead it returns a handle to the localmachine.
-  This function tries to open the Ctx_WinStation_API_service Pipe
-}
-function IsConnectionValid(const Servername: String): Boolean;
-const
-  CtxWinStationAPIservice: TJwString = 'Ctx_WinStation_API_service';
-var
-  PipeName: TJwPChar;
-  PipeHandle: THandle;
-begin
-  // Pipename will be \\server\pipe\Ctx_WinStation_API_service
-  // Note that this pipe can be opened only remotely
-  PipeName := TJwPChar(Format('\\%s\pipe\%s', [Servername, CtxWinStationAPIservice]));
-
-  // Try to open the Named Pipe with least possible rights, if the call succeeds
-  // we trust the connection
-  PipeHandle := {$IFDEF UNICODE}CreateFileW{$ELSE}CreateFileA{$ENDIF}(
-    PipeName,       //__in      LPCTSTR lpFileName,
-    SYNCHRONIZE,    //__in      DWORD dwDesiredAccess,
-    0,              //__in      DWORD dwShareMode,
-    nil,            //__in_opt  LPSECURITY_ATTRIBUTES lpSecurityAttributes,
-    OPEN_EXISTING,  //__in      DWORD dwCreationDisposition,
-    0,              //__in      DWORD dwFlagsAndAttributes,
-    0               //__in_opt  HANDLE hTemplateFile
-  );
-
-  // Return False if PipeHandle = INVALID_HANDLE_VALUE
-  Result := PipeHandle <> INVALID_HANDLE_VALUE;
-
-  // Close the Handle
-  if PipeHandle <> INVALID_HANDLE_VALUE then
-  begin
-    CloseHandle(PipeHandle);
-  end;
-end;
-
-
 procedure TJwTerminalServer.Connect;
 begin
   if not FConnected then
@@ -4227,7 +4188,6 @@ constructor TJwWTSSession.Create(const Owner: TJwWTSSessionList;
   const ConnectState: TWtsConnectStateClass);
 var
   tempStr : WideString;
-  pwConnectState: PWideChar;
 begin
   JwRaiseOnNilMemoryBlock(Owner, 'Create', ClassName, RsUNTerminalServer);
   JwRaiseOnNilMemoryBlock(Owner.Owner, 'Create', ClassName, RsUNTerminalServer);
