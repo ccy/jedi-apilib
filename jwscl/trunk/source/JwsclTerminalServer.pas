@@ -1791,6 +1791,8 @@ type
   }
 
   TJwWTSSessionList = class(TObjectList)
+  private
+    FData: Integer;
   protected
     {@exclude}
     FOwner: TJwTerminalServer;
@@ -1800,6 +1802,7 @@ type
     procedure SetItem(Index: Integer; ASession: TJwWTSSession);
     {@exclude}
     procedure SetOwner(const Value: TJwTerminalServer);
+  published
   public
 
     {The <B>Destroy</B> destructor destroys the @Classname instance.
@@ -2214,6 +2217,7 @@ type
   }
   TJwWTSProcessList = class(TObjectList)
   private
+    FData: Integer;
   protected
     {@exclude}
     FOwner: TJwTerminalServer;
@@ -2241,6 +2245,8 @@ type
      @returns returns the index of the inserted object. 
     }
     function Add(AProcess: TJwWTSProcess): Integer;
+
+    property Data: Integer read FData write FData;
 
     function FindByPid(const PID: DWORD): TJwWTSProcess;
     {<B>GetEnumerator</B> returns an enumerator that can be used to iterate through
@@ -2429,6 +2435,7 @@ type
 
   TJwWTSSessionStatistics = class
   private
+    FData: Integer;
     function GetLoadIndicatorData: TWinStationLoadIndicatorData;
     protected
       FLoadIndicatorData: TWinStationLoadIndicatorData;
@@ -2442,6 +2449,7 @@ type
         EJwsclNILParameterException: will be raised if AOwner is nil.
       }
       constructor Create(const AOwner: TJwTerminalServer);
+      property Data: Integer read FData write FData;
       property TotalSessionsCreated: Integer index TERMSRV_TOTAL_SESSIONS read GetCounterValue;
       property TotalSessionsDisconnected: Integer index TERMSRV_DISC_SESSIONS read GetCounterValue;
       property TotalSessionsReconnected: Integer index TERMSRV_RECON_SESSIONS read GetCounterValue;
@@ -3078,6 +3086,8 @@ end;
 
 function TJwTerminalServer.GetSessionStatistics: TJwWTSSessionStatistics;
 begin
+  Result := nil;
+
   if not Assigned(FSessionStatistics) then
   begin
     FSessionStatistics := TJwWTSSessionStatistics.Create(Self);
@@ -3185,7 +3195,11 @@ begin
     // Create the thread
     FEnumServersThread := TJwWTSEnumServersThread.Create(True, Self, ADomain);
     FEnumServersThread.OnTerminate := OnEnumServersThreadTerminate;
-    FEnumServersThread.Resume;
+{$IFDEF DELPHI2010_UP}
+    EnumServersThread.Start;
+{$ELSE}
+    EnumServersThread.Resume;
+{$ENDIF}
     Result := True;
   end;
 end;
@@ -4225,7 +4239,7 @@ begin
   FSessionId := SessionId;
   FShadow := TJwWTSSessionShadow.Create(Self);
   FConnectState := ConnectState;
-  pwConnectState := StrConnectState(FConnectState, False);
+  FConnectStateStr := StrConnectState(FConnectState, False);
 //  LocalFree(Cardinal(pwConnectState));
   //  FConnectStateStr := StrConnectState(FConnectState, False);
 //  FCOnnectStateStr := 'test';
@@ -4293,8 +4307,6 @@ begin
 
   Create(Owner, SessionId, TS.GetWinStationName(SessionId),
     _WTS_CONNECTSTATE_CLASS(WinStaInfo.ConnectState));
-
-  TS := nil;
 end;
 
 destructor TJwWTSSession.Destroy;
