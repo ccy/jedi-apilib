@@ -220,7 +220,6 @@ type
     {@exclude}
     procedure OnInternalProcessFound(const Sender: TJwTerminalServer;
       var Process: TJwWTSProcess; var Cancel: Boolean; Data: Pointer); virtual;
-  published
   public
 
     {<B>Connect</B> sets up the connection with the Terminal Server specified in the
@@ -1802,7 +1801,6 @@ type
     procedure SetItem(Index: Integer; ASession: TJwWTSSession);
     {@exclude}
     procedure SetOwner(const Value: TJwTerminalServer);
-  published
   public
 
     {The <B>Destroy</B> destructor destroys the @Classname instance.
@@ -2035,7 +2033,6 @@ type
      @Param dwExitCode Specifies the exit code for the terminated process. 
     }
     function Terminate(const dwExitCode: DWORD): boolean; overload;
-  published
   public
    {<B>Owner</B> specifies the TJwTerminalServer instance that owns the session)
     }
@@ -2243,7 +2240,6 @@ type
     procedure SetItem(Index: Integer; AProcess: TJwWTSProcess);
     {@exclude}
     procedure SetOwner(const Value: TJwTerminalServer);
-  published
   public
     {<B>Add</B> adds a Process to the end of the Processlist
      @returns returns the index of the inserted object. 
@@ -2446,7 +2442,6 @@ type
       TSCounterArray: array[1..12] of TTSCounter;
       FOwner: TJwTerminalServer;
       function GetCounterValue(const CounterID: Integer): Integer;
-  published
     public
       {
       Raises
