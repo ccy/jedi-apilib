@@ -1961,6 +1961,8 @@ type
    A <B>TJwWTSProcess</B> is owned by a TJwWTSProcessList.
    }
   TJwWTSProcess = class(TObject)
+  private
+    FParentProcessId: TJwProcessId;
   protected
     {@exlude}
     FData: Integer;
@@ -2033,6 +2035,7 @@ type
      @Param dwExitCode Specifies the exit code for the terminated process. 
     }
     function Terminate(const dwExitCode: DWORD): boolean; overload;
+  published
   public
    {<B>Owner</B> specifies the TJwTerminalServer instance that owns the session)
     }
@@ -2094,6 +2097,7 @@ type
     }
     property ProcessCreateTimeStr: TJwString read FProcessCreateTimeStr;
 
+    property ParentProcessId: TJwProcessId read FParentProcessId;
     {<B>ProcessId</B> the Process Identifier or PID
     }
     property ProcessId: TJwProcessId read FProcessId;
@@ -2932,6 +2936,7 @@ begin
           Inc(FProcesses.FCommitSizeTotal, VirtualSize);
           Inc(FProcesses.FPagedPoolTotal, QuotaPagedPoolUsage);
           Inc(FProcesses.FNonPagedPoolTotal, QuotaNonPagedPoolUsage);
+
           // System Idle Process
           if UniqueProcessId = 0 then
           begin
@@ -2982,6 +2987,10 @@ begin
             UniqueProcessId, strProcessName, strUsername);
           with AProcess do
           begin
+
+            // Set Parent Process Id
+            FParentProcessId := InheritedFromUniqueProcessId;
+
             // Calculate Process Age
             CalculateElapsedTime(@CreateTime, DiffTime);
 
@@ -3544,6 +3553,7 @@ begin
     if Items[i].FProcessId = PID then
     begin
       Result := Items[i];
+      Break;
     end;
   end;
 end;
