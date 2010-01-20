@@ -101,6 +101,7 @@ const
   ntdll = 'ntdll.dll';
   ntdsapilib = 'ntdsapi.dll';
   ntdsbclilib = 'ntdsbclilib.dll';
+  ole32 = 'Ole32.dll';
   opengl32 = 'opengl32.dll';
   patchapi = 'mspatcha.dll';
   patchwiz = 'patchwiz.dll';

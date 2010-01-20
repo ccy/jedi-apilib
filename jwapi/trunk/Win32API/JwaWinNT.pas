@@ -9339,13 +9339,6 @@ uses JwaWinDLLNames;
 {$IFNDEF JWA_INTERFACESECTION}
 
 
-{$IFNDEF JWA_OMIT_SECTIONS}
-const
-  ntdll = 'ntdll.dll';
-  kernel32 = 'kernel32.dll';
-{$ENDIF JWA_OMIT_SECTIONS}
-
-
 function WT_SET_MAX_THREADPOOL_THREADS(var Flags: DWORD; Limit: DWORD): DWORD;
 begin
   Flags := Flags or (Limit shl 16);
@@ -9663,7 +9656,7 @@ var
 
 procedure RtlInitializeSListHead;
 begin
-  GetProcedureAddress(_RtlInitializeSListHead, 'ntdll.dll', 'RtlInitializeSListHead');
+  GetProcedureAddress(_RtlInitializeSListHead, ntdll, 'RtlInitializeSListHead');
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -9677,7 +9670,7 @@ var
 
 function RtlFirstEntrySList;
 begin
-  GetProcedureAddress(_RtlFirstEntrySList, 'ntdll.dll', 'RtlFirstEntrySList');
+  GetProcedureAddress(_RtlFirstEntrySList, ntdll, 'RtlFirstEntrySList');
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -9690,7 +9683,7 @@ var
 
 function RtlInterlockedPopEntrySList;
 begin
-  GetProcedureAddress(_RtlInterlockedPopEntrySList, 'ntdll.dll', 'RtlInterlockedPopEntrySList');
+  GetProcedureAddress(_RtlInterlockedPopEntrySList, ntdll, 'RtlInterlockedPopEntrySList');
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -9704,7 +9697,7 @@ var
 
 function RtlInterlockedPushEntrySList;
 begin
-  GetProcedureAddress(_RtlInterlockedPushEntrySList, 'ntdll.dll', 'RtlInterlockedPushEntrySList');
+  GetProcedureAddress(_RtlInterlockedPushEntrySList, ntdll, 'RtlInterlockedPushEntrySList');
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -9718,7 +9711,7 @@ var
 
 function RtlInterlockedFlushSList;
 begin
-  GetProcedureAddress(_RtlInterlockedFlushSList, 'ntdll.dll', 'RtlInterlockedFlushSList');
+  GetProcedureAddress(_RtlInterlockedFlushSList, ntdll, 'RtlInterlockedFlushSList');
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -9732,7 +9725,7 @@ var
 
 function RtlQueryDepthSList;
 begin
-  GetProcedureAddress(_RtlQueryDepthSList, 'ntdll.dll', 'RtlQueryDepthSList');
+  GetProcedureAddress(_RtlQueryDepthSList, ntdll, 'RtlQueryDepthSList');
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -9747,16 +9740,16 @@ procedure RtlCaptureContext; external ntdll name 'RtlCaptureContext';
 function RtlCompareMemory; external ntdll name 'RtlCompareMemory';
 function VerSetConditionMask; external kernel32 name 'VerSetConditionMask';
 
-procedure RtlInitializeSListHead; external 'ntdll.dll' name 'RtlInitializeSListHead';
+procedure RtlInitializeSListHead; external ntdll name 'RtlInitializeSListHead';
 
-function RtlFirstEntrySList; external 'ntdll.dll' name 'RtlFirstEntrySList';
-function RtlInterlockedPopEntrySList; external 'ntdll.dll' name 'RtlInterlockedPopEntrySList';
+function RtlFirstEntrySList; external ntdll name 'RtlFirstEntrySList';
+function RtlInterlockedPopEntrySList; external ntdll name 'RtlInterlockedPopEntrySList';
 {$IFNDEF JWA_INCLUDEMODE}
-function RtlInterlockedPushEntrySList; external 'ntdll.dll' name 'RtlInterlockedPushEntrySList';
+function RtlInterlockedPushEntrySList; external ntdll name 'RtlInterlockedPushEntrySList';
 {$ENDIF JWA_INCLUDEMODE}
 
-function RtlInterlockedFlushSList; external 'ntdll.dll' name 'RtlInterlockedFlushSList';
-function RtlQueryDepthSList; external 'ntdll.dll' name 'RtlQueryDepthSList';
+function RtlInterlockedFlushSList; external ntdll name 'RtlInterlockedFlushSList';
+function RtlQueryDepthSList; external ntdll name 'RtlQueryDepthSList';
 
 {$IFDEF WINVISTA_UP}
 function AddMandatoryAce(pAcl: PACL; dwAceRevision, AceFlags, MandatoryPolicy: DWORD;
