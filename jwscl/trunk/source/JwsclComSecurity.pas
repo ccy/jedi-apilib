@@ -165,7 +165,7 @@ type
     function GetAuthenticationLevel: TJwComAuthenticationLevel;
     function GetAuthenticationService: TJwComAuthenticationService;
     function GetAuthorizationService: TJwComAuthorizationService;
-    function GetImpersionationLevel: TJwComImpersonationLevel;
+    function GetImpersonationLevel: TJwComImpersonationLevel;
     function GetReadOnlyProperties: Boolean;
     function GetServerPrincipalName: TJwString;
     procedure SetAuthenticationInfo(const Value: RPC_AUTH_IDENTITY_HANDLE);
@@ -211,7 +211,7 @@ type
     property AuthenticationLevel : TJwComAuthenticationLevel read GetAuthenticationLevel write SetAuthenticationLevel;
 
     //http://msdn.microsoft.com/en-us/library/ms693790(VS.85).aspx
-    property ImpersionationLevel : TJwComImpersonationLevel read GetImpersionationLevel write SetImpersonationLevel;
+    property ImpersonationLevel : TJwComImpersonationLevel read GetImpersonationLevel write SetImpersonationLevel;
     property AuthenticationInfo : RPC_AUTH_IDENTITY_HANDLE read GetAuthenticationInfo write SetAuthenticationInfo;
     property Capabilites  : TJwComAuthenticationCapabilities read GetCapabilites write SetCapabilites;
   end;
@@ -304,7 +304,7 @@ type
     property AuthenticationLevel;
 
     //http://msdn.microsoft.com/en-us/library/ms693790(VS.85).aspx
-    property ImpersionationLevel;
+    property ImpersonationLevel;
     property AuthenticationInfo;
     property Capabilites;
 
@@ -791,7 +791,7 @@ type
     function GetAuthenticationLevel: TJwComAuthenticationLevel;
     function GetAuthenticationService: TJwComAuthenticationService;
     function GetAuthorizationService: TJwComAuthorizationService;
-    function GetImpersionationLevel: TJwComImpersonationLevel;
+    function GetImpersonationLevel: TJwComImpersonationLevel;
     function GetReadOnlyProperties: Boolean;
     procedure SetAuthenticationInfo(const Value: RPC_AUTH_IDENTITY_HANDLE);
     procedure SetAuthenticationLevel(const Value: TJwComAuthenticationLevel);
@@ -989,7 +989,7 @@ type
     property AuthenticationService;
     property AuthorizationService;
     property AuthenticationLevel;
-    property ImpersionationLevel;
+    property ImpersonationLevel;
 
     property AuthenticationInfo;
     property Capabilites;
@@ -1180,11 +1180,23 @@ type
       var AccessGranted : Boolean;
       var ErrorCode : HRESULT) of object;
 
+  TJwFacilityType = 0..$7FF;
 
- { TJwServerAccessControl = class(TInterfacedObject, IAccessControl)
+  TJwServerAccessControl = class(TInterfacedObject, IAccessControl)
+  private
+    fFacilityCode: TJwFacilityType;
   protected
     fSD : TJwSecurityDescriptor;
     fIsAccessAllowed : TJwIsAccessAllowed;
+
+    fAuthManager : TJwAuthResourceManager;
+    fGenericMapping: TJwSecurityGenericMappingClass;
+    fCacheResult: TAuthZAccessCheckResultHandle;
+
+    function TrusteeToSid(const Trustee : PTrusteeW) : TJwSecurityId; virtual;
+    procedure CopyACLToObject(const pAccessList: PACTRL_ACCESSW; ACL : TJwSecurityAccessControlList); virtual;
+
+
   public
     function GrantAccessRights(pAccessList: PACTRL_ACCESSW): HRESULT; stdcall;
     function SetAccessRights(pAccessList: PACTRL_ACCESSW): HRESULT; stdcall;
@@ -1193,20 +1205,87 @@ type
     function GetAllAccessRights(lpProperty: LPWSTR; var ppAccessList: PACTRL_ACCESSW_ALLOCATE_ALL_NODES; var ppOwner, ppGroup: PTRUSTEEW): HRESULT; stdcall;
     function IsAccessAllowed(pTrustee: PTRUSTEEW; lpProperty: LPWSTR; AccessRights: ACCESS_RIGHTS; var pfAccessAllowed: BOOL): HRESULT; stdcall;
 
-    constructor Create(const SD : TJwSecurityDescriptor);
+  public
+    constructor Create; overload;
+    constructor Create(const SD : TJwSecurityDescriptor); overload;
     destructor Destroy; override;
 
+    {
+    Remarks:
+      The function is called by the interface method with the same name. Since the interface method returns a HRESULT value
+      this version must raise an EOleSysError and supply the return value to EOleSysError constructor (ErrorCode).
+      Use
+      <code>
+        raise EOleSysError.Create('text message', MAKE_HRESULT(1, FacilityCode, Win32_or_User_Code));
+      </pre>
+    }
     procedure JwGrantAccessRights(const AccessList: TJwDAccessControlList); virtual;
-    procedure JwSetAccessRights(const AccessList: TJwDAccessControlList); virtual;
-    procedure JwSetOwner(Owner, Group : TJwSecurityID); virtual;
-    procedure JwRevokeAccessRights(const AProperty: TJwString; cTrustees: ULONG; prgTrustees: PTRUSTEEW): HRESULT; stdcall;
-    procedure JwGetAllAccessRights(const AProperty: TJwString; var ppAccessList: PACTRL_ACCESSW_ALLOCATE_ALL_NODES; var ppOwner, ppGroup: PTRUSTEEW): HRESULT; stdcall;
-    procedure JwIsAccessAllowed(pTrustee: PTRUSTEEW; lpProperty: LPWSTR; AccessRights: ACCESS_RIGHTS; var pfAccessAllowed: BOOL): HRESULT; stdcall;
 
+    {
+    Remarks:
+      The function is called by the interface method with the same name. Since the interface method returns a HRESULT value
+      this version must raise an EOleSysError and supply the return value to EOleSysError constructor (ErrorCode).
+      Use
+      <code>
+        raise EOleSysError.Create('text message', MAKE_HRESULT(1, FacilityCode, Win32_or_User_Code));
+      </pre>
+    }
+    procedure JwSetAccessRights(const AccessList: TJwDAccessControlList); virtual;
+
+    {
+    Remarks:
+      The function is called by the interface method with the same name. Since the interface method returns a HRESULT value
+      this version must raise an EOleSysError and supply the return value to EOleSysError constructor (ErrorCode).
+      Use
+      <code>
+        raise EOleSysError.Create('text message', MAKE_HRESULT(1, FacilityCode, Win32_or_User_Code));
+      </pre>
+    }
+    procedure JwSetOwner(const Owner, Group : TJwSecurityID); virtual;
+
+    {
+    Remarks:
+      The function is called by the interface method with the same name. Since the interface method returns a HRESULT value
+      this version must raise an EOleSysError and supply the return value to EOleSysError constructor (ErrorCode).
+      Use
+      <code>
+        raise EOleSysError.Create('text message', MAKE_HRESULT(1, FacilityCode, Win32_or_User_Code));
+      </pre>
+    }
+    procedure JwRevokeAccessRights(const AProperty: TJwString; const SecurityIDList : TJwSecurityIdList); virtual;
+
+    {
+    Remarks:
+      The function is called by the interface method with the same name. Since the interface method returns a HRESULT value
+      this version must raise an EOleSysError and supply the return value to EOleSysError constructor (ErrorCode).
+      Use
+      <code>
+        raise EOleSysError.Create('text message', MAKE_HRESULT(1, FacilityCode, Win32_or_User_Code));
+      </pre>
+    }
+    procedure JwGetAllAccessRights(const AProperty: TJwString; out AccessList: TJwDAccessControlList; out Owner, Group : TJwSecurityID); virtual;
+
+    {
+    Remarks:
+      The function is called by the interface method with the same name. Since the interface method returns a HRESULT value
+      this version must raise an EOleSysError and supply the return value to EOleSysError constructor (ErrorCode).
+      Use
+      <code>
+        raise EOleSysError.Create('text message', MAKE_HRESULT(1, FacilityCode, Win32_or_User_Code));
+      </pre>
+    }
+    procedure JwIsAccessAllowed(const Trustee: TJwSecurityID; const AProperty: TJwString; const AccessRights: TJwAccessMask; var AccessAllowed: Boolean); virtual;
+
+    procedure InvalidateAccessCheckCacheResult;
 
     property SecurityDescriptor : TJwSecurityDescriptor read fSD;
     property OnIsAccessAllowed : TJwIsAccessAllowed read fIsAccessAllowed write fIsAccessAllowed;
-  end;  }
+
+    property GenericMapping: TJwSecurityGenericMappingClass read fGenericMapping write fGenericMapping;
+
+    {Defines the facility code used in the HRESULT value in the faciltiy part}
+    property FacilityCode : TJwFacilityType read fFacilityCode write fFacilityCode;
+  end;
 
   {TJwCOMSecuritySettings is used by JwTightCOMSecuritySettings
   to set default COM security settings.
@@ -1602,7 +1681,7 @@ var
   Request : TJwAuthZAccessRequest;
   Reply : TJwAuthZAccessReply;
 begin
-  if ImpersionationLevel < cilIdentify then
+  if ImpersonationLevel < cilIdentify then
   begin
     raise EJwsclNoThreadTokenAvailable.CreateFmtEx('The client does not have a token if ImpersionationLevel is cilAnonymous.',
       'GetToken', ClassName, 'JwsclComSecurity.pas', 0, false, []);
@@ -1814,7 +1893,7 @@ end;
 
 function TJwComServerSecurity.GetToken: TJwSecurityToken;
 begin
-  if ImpersionationLevel < cilIdentify then
+  if ImpersonationLevel < cilIdentify then
   begin
     raise EJwsclNoThreadTokenAvailable.CreateFmtEx('The client does not have a token if ImpersionationLevel is cilAnonymous.',
       'GetToken', ClassName, 'JwsclComSecurity.pas', 0, false, []);
@@ -1838,7 +1917,7 @@ var
   Token : TJwSecurityToken;
   IsImpersonating : Boolean;
 begin
-  if ImpersionationLevel < cilIdentify then
+  if ImpersonationLevel < cilIdentify then
   begin
     result := '';
     exit;
@@ -2686,7 +2765,7 @@ begin
   result := fCapabilites;
 end;
 
-function TJwComCustomSecurity.GetImpersionationLevel: TJwComImpersonationLevel;
+function TJwComCustomSecurity.GetImpersonationLevel: TJwComImpersonationLevel;
 begin
   result := fImpersonationLevel;
 end;
@@ -3350,6 +3429,715 @@ begin
 end;
 
 
+
+{ TJwServerAccessControl }
+
+constructor TJwServerAccessControl.Create(const SD: TJwSecurityDescriptor);
+begin
+  Create;
+  fSD := TJwSecurityDescriptor.Create(SD);
+  fSD.OwnDACL := true;
+
+  fSD.OwnOwner := false;
+  fSD.OwnPrimaryGroup := false;
+
+  fSD.Owner := TJwSecurityId.CreateWellKnownSid(WinNullSid);
+  fSD.PrimaryGroup := TJwSecurityId.CreateWellKnownSid(WinNullSid);
+
+  fSD.OwnOwner := true;
+  fSD.OwnPrimaryGroup := true;
+end;
+
+constructor TJwServerAccessControl.Create;
+begin
+  inherited;
+
+  FacilityCode := $FE;
+  fAuthManager := TJwAuthResourceManager.Create('', [], nil, nil);
+  fGenericMapping := TJwSecurityGenericMapping;
+  fCacheResult := 0;
+end;
+
+destructor TJwServerAccessControl.Destroy;
+begin
+  AuthzFreeContext(fCacheResult);
+  FreeAndNil(fSD);
+  FreeAndNil(fAuthManager);
+  inherited;
+end;
+
+procedure TJwServerAccessControl.InvalidateAccessCheckCacheResult;
+begin
+  AuthzFreeHandle(fCacheResult);
+  fCacheResult := 0;
+end;
+
+procedure TJwServerAccessControl.JwGetAllAccessRights(const AProperty: TJwString; out AccessList: TJwDAccessControlList; out Owner,
+  Group: TJwSecurityID);
+begin
+  if Assigned(fSD.DACL) then
+  begin
+    AccessList := TJwDAccessControlList.Create;
+    AccessList.Assign(fSD.DACL);
+  end
+  else
+    AccessList := nil;
+
+  if Assigned(fSD.Owner) then
+    Owner := TJwSecurityId.Create(fSD.Owner)
+  else
+    Owner := TJwSecurityId.CreateWellKnownSid(WinNullSid);
+
+  if Assigned(fSD.PrimaryGroup) then
+    Group := TJwSecurityId.Create(fSD.PrimaryGroup)
+  else
+    Group := TJwSecurityId.CreateWellKnownSid(WinNullSid);
+end;
+
+procedure TJwServerAccessControl.JwGrantAccessRights(const AccessList: TJwDAccessControlList);
+var
+  DenyEntryCount,
+  NewDenyCount : Integer;
+
+  I: Integer;
+  ACE : TJwDiscretionaryAccessControlEntry;
+begin
+  if Assigned(AccessList) then
+  begin
+    if not Assigned(fSD.DACL) then
+    begin
+      fSD.DACL := TJwDAccessControlList.Create();
+      fSD.DACL.Assign(AccessList);
+    end
+    else
+    begin
+      {
+      http://msdn.microsoft.com/en-us/library/ms694481%28VS.85%29.aspx
+      Following a merge, the access rights on an object are ordered as follows:
+
+       1. [New Access Denied]
+       2. [Old Access Denied]
+       3. [New Access Allowed]
+       4. [Old Access Allowed]
+
+      }
+      DenyEntryCount := 0;
+      for I := 0 to fSD.DACL.Count - 1 do
+      begin
+        if fSD.DACL[i] is TJwDiscretionaryAccessControlEntryDeny then
+          Inc(DenyEntryCount);
+      end;
+
+      NewDenyCount := 0;
+      for I := 0 to AccessList.Count - 1 do
+      begin
+        if AccessList[i] is TJwDiscretionaryAccessControlEntryDeny then
+        begin
+          ACE := TJwDiscretionaryAccessControlEntry(AccessList[i].ClassType).Create(AccessList[i]);
+
+          fSD.DACL.Insert(NewDenyCount, ACE);
+          Inc(DenyEntryCount);
+          Inc(NewDenyCount);
+        end
+        else
+        if AccessList[i] is TJwDiscretionaryAccessControlEntryAllow then
+        begin
+          ACE := TJwDiscretionaryAccessControlEntry(AccessList[i].ClassType).Create(AccessList[i]);
+          
+          //add allow ACE in original order of AccessList directly behind the deny entries
+          fSD.DACL.Insert(DenyEntryCount, ACE);
+          Inc(DenyEntryCount); //keeps original order of AccessList
+        end;
+      end;
+    end;
+  end;
+end;
+
+procedure TJwServerAccessControl.JwIsAccessAllowed(const Trustee: TJwSecurityID; const AProperty: TJwString;
+  const AccessRights: TJwAccessMask;
+  var AccessAllowed: Boolean);
+var
+  AuthContext : TJwAuthContext;
+  Request : TJwAuthZAccessRequest;
+  Reply : TJwAuthZAccessReply;
+
+begin
+  AccessAllowed := false;
+
+  if not Assigned(Trustee) then
+    Exit;
+
+  AuthContext := TJwAuthContext.CreateBySid(fAuthManager, [authZSF_ComputePrivileges], Trustee, 0, nil);
+  try
+    Request := TJwAuthZAccessRequest.Create(AccessRights,
+              JwNullSID, nil, nil, shOwned);
+
+    Reply := nil;
+    try
+      if (fCacheResult = 0) or (fCacheResult = INVALID_HANDLE_VALUE) then
+      begin
+        AuthContext.AccessCheck(0, Request, 0, SecurityDescriptor, nil, GenericMapping, Reply, fCacheResult);
+      end
+      else
+      begin
+        AuthContext.AccessCheckCached(fCacheResult, 0, Request, 0, Reply);
+      end;
+
+      AccessAllowed := Reply.ErrorByType[0] = reSuccess;
+    finally
+      FreeAndNil(Reply);
+      FreeAndNil(Request);
+    end;
+  finally
+    FreeAndNil(AuthContext);
+  end;
+end;
+
+procedure TJwServerAccessControl.JwRevokeAccessRights(const AProperty: TJwString; const SecurityIDList: TJwSecurityIdList);
+var
+  I, Idx: Integer;
+begin
+  if not Assigned(SecurityIDList) or
+    not Assigned(fSD.DACL) then
+    Exit;
+
+  for I := 0 to SecurityIDList.Count - 1 do
+  begin
+    Idx := fSD.DACL.FindSID(SecurityIDList[i]);
+    if Idx >= 0 then
+    begin
+      fSD.DACL.Delete(Idx);
+    end;
+  end;
+end;
+
+procedure TJwServerAccessControl.JwSetAccessRights(const AccessList: TJwDAccessControlList);
+begin
+  if Assigned(AccessList) then
+    fSD.DACL.Assign(AccessList)
+  else
+  begin
+    fSD.DACL := nil;
+  end;
+end;
+
+procedure TJwServerAccessControl.JwSetOwner(const Owner, Group: TJwSecurityID);
+begin
+  if Assigned(Owner) then
+    fSD.Owner := Owner;
+
+  if Assigned(Group) then
+    fSD.PrimaryGroup := Group;
+end;
+
+
+
+type
+  TPtrPointer = record
+    StartPtr,
+    OffsetPtr : Pointer;
+    Size : Cardinal;
+  end;
+
+function InitPtrData(var Target : TPtrPointer; const Size : Cardinal; const Offset : Cardinal = 0) : Pointer;
+begin
+  Target.StartPtr := CoTaskMemAlloc(Size);
+  Target.OffsetPtr := Pointer(DWORD_PTR(Target.StartPtr) + Offset);
+  Target.Size := Size;
+  result := Target.StartPtr;
+end;
+
+function SetPtrData(var Target : TPtrPointer; const Source : Pointer; const Size : Cardinal) : Pointer;
+begin
+  Assert((DWORD_PTR(Target.OffsetPtr) - DWORD_PTR(Target.StartPtr)) >  Target.Size, 'Memory block too small');
+
+  result := Target.OffsetPtr;
+  Target.OffsetPtr := Pointer(DWORD_PTR(Target.OffsetPtr) + Size);
+
+  CopyMemory(result, Source, Size);
+end;
+
+
+
+function TJwServerAccessControl.GetAllAccessRights(lpProperty: LPWSTR; var ppAccessList: PACTRL_ACCESSW_ALLOCATE_ALL_NODES; var ppOwner,
+  ppGroup: PTRUSTEEW): HRESULT;
+var
+  ACL : TJwDAccessControlList;
+  Owner, Group : TJwSecurityId;
+  SidLength,
+  PropertyCount,
+  I: Integer;
+  PtrPtr : TPtrPointer;
+
+  PropertyEntry : ACTRL_PROPERTY_ENTRYW;
+  AccessEntryList : ACTRL_ACCESS_ENTRY_LISTW;
+  AccessEntry : ACTRL_ACCESS_ENTRY;
+
+  AccessEntryArray : array of PACTRL_ACCESS_ENTRY;
+  SID : PSid;
+begin
+  result := S_OK;
+  try
+    JwGetAllAccessRights(TJwString(lpProperty), ACL, Owner, Group);
+
+    try
+      if Assigned(Owner) then
+      begin
+        ppOwner := InitPtrData(PtrPtr, sizeof(TRUSTEEW) + Owner.SIDLength, sizeof(TRUSTEEW));
+        ppOwner.MultipleTrusteeOperation := NO_MULTIPLE_TRUSTEE;
+        ppOwner.TrusteeForm := TRUSTEE_IS_SID;
+        ppOwner.TrusteeType := TRUSTEE_IS_USER;
+        ppOwner.ptstrName := PWideChar(SetPtrData(PtrPtr, Owner.SID, Owner.SIDLength));
+      end
+      else
+        ppOwner := nil;
+
+      if Assigned(Group) then
+      begin
+        ppGroup := InitPtrData(PtrPtr, sizeof(TRUSTEEW) + Group.SIDLength, sizeof(TRUSTEEW));
+        ppGroup.MultipleTrusteeOperation := NO_MULTIPLE_TRUSTEE;
+        ppGroup.TrusteeForm := TRUSTEE_IS_SID;
+        ppGroup.TrusteeType := TRUSTEE_IS_GROUP;
+        ppGroup.ptstrName := PWideChar(SetPtrData(PtrPtr, Group.SID, Group.SIDLength));
+      end
+      else
+        ppGroup := nil;
+
+      if not Assigned(ACL) then
+      begin
+        ppAccessList.cEntries := 0;
+        ppAccessList.pPropertyAccessList := nil;
+      end
+      else
+      begin
+        SidLength := 0;
+        //Check for supported access control entries
+        //and determine sum of all SID structures
+        for I := 0 to ACL.Count do
+        begin
+          if ACL.Items[I] is TJwDiscretionaryAccessControlEntryAllow then
+          else
+          if ACL.Items[I] is TJwDiscretionaryAccessControlEntryDeny then
+          else
+          begin
+            raise EOleSysError.Create(
+             'The ACL must only contain Allow and Deny ACEs.',
+              MAKE_HRESULT(1, FacilityCode, ERROR_INVALID_LIST_FORMAT), 0);
+          end;
+          Inc(SidLength, ACL.Items[I].SID.SIDLength);
+        end;
+
+        PropertyCount := 1; //we don't support properties
+
+        //Create structure with CoTaskMemAlloc
+        ppAccessList :=
+          InitPtrData(PtrPtr, $FF + //security space
+            (sizeof(ACTRL_PROPERTY_ENTRYW) + SizeOf(ACTRL_ACCESS_ENTRY_LIST)) * PropertyCount +  //Number of properties
+            sizeof(ACTRL_ACCESS_ENTRYW) * ACL.Count  //Number of Trustees (and therefore entries)
+            + SidLength //the sids size
+            , sizeof(_ACTRL_ALISTW{=PACTRL_ACCESSW_ALLOCATE_ALL_NODES^} //add this offset so the next data is stored behind the ppAccessList in the memory block
+          ));
+
+        ppAccessList.cEntries := PropertyCount;
+
+        //Init the property entry list - only one property list (no property) is supported
+        ZeroMemory(@PropertyEntry, sizeof(PropertyEntry));
+        ppAccessList.pPropertyAccessList :=
+          SetPtrData(PtrPtr, @PropertyEntry, sizeof(PropertyEntry));
+
+        //this is the ACL structure
+        ZeroMemory(@AccessEntryList, sizeof(AccessEntryList));
+        AccessEntryList.cEntries := ACL.Count;
+
+        //create the ACL memory and put it into the first (and only) property list.
+        ppAccessList.pPropertyAccessList.pAccessEntryList :=
+          SetPtrData(PtrPtr, @AccessEntryList, sizeof(AccessEntryList));
+
+        //first, setup all ACTRL_ACCESS_ENTRY structures into the memory block returned
+        //because the entries are allocated in a single line they are accessible as an array
+        SetLength(AccessEntryArray, ACL.Count);
+        for I := 0 to ACL.Count - 1 do
+        begin
+          ZeroMemory(@AccessEntry, sizeof(AccessEntry));
+
+          //store the pointer to each array member for later usage
+          AccessEntryArray[I] :=
+            SetPtrData(PtrPtr, @AccessEntry, sizeof(AccessEntry));
+          if i = 0 then //store the first array item
+            ppAccessList.pPropertyAccessList.pAccessEntryList.pAccessList := AccessEntryArray[0];
+        end;
+
+        //now init the access entries using the temp array AccessEntryArray
+        for I := Low(AccessEntryArray) to High(AccessEntryArray) do
+        begin
+          if ACL.Items[I] is TJwDiscretionaryAccessControlEntryAllow then
+             AccessEntryArray[I].fAccessFlags := ACTRL_ACCESS_ALLOWED
+          else
+          if ACL.Items[I] is TJwDiscretionaryAccessControlEntryDeny then
+             AccessEntryArray[I].fAccessFlags := ACTRL_ACCESS_DENIED;
+          //other ACE types are not supported (this is checked in the beginning)
+
+          //we access the access entries through the temp array
+          AccessEntryArray[I].Access := ACL.Items[I].AccessMask;
+          AccessEntryArray[I].Inheritance := NO_INHERITANCE;
+
+          ZeroMemory(@AccessEntryArray[I].Trustee, sizeof(AccessEntryArray[I].Trustee));
+          AccessEntryArray[I].Trustee.MultipleTrusteeOperation := NO_MULTIPLE_TRUSTEE;
+          AccessEntryArray[I].Trustee.TrusteeForm := TRUSTEE_IS_SID;
+          AccessEntryArray[I].Trustee.TrusteeType := TRUSTEE_IS_USER;
+
+          //store the SID structures into the memory block
+          SID :=
+            SetPtrData(PtrPtr, ACL[i].SID.SID, ACL[i].SID.SIDLength);
+
+          AccessEntryArray[I].Trustee.ptstrName := PWideChar(SID); //and set the value
+        end;
+
+      end;
+    finally
+      FreeAndNil(ACL);
+      FreeAndNil(Owner);
+      FreeAndNil(Group);
+    end;
+  except
+    on E : EOleSysError do
+    begin
+{$IFDEF DEBUG}
+      raise;
+{$ELSE}
+      Result := E.ErrorCode;
+{$ENDIF DEBUG}
+    end;
+    on e : Exception do
+    begin
+{$IFDEF DEBUG}
+      raise;
+{$ELSE}
+      result := E_UNEXPECTED;
+{$ENDIF DEBUG}
+    end;
+  end;
+end;
+
+procedure TJwServerAccessControl.CopyACLToObject(const pAccessList: PACTRL_ACCESSW; ACL : TJwSecurityAccessControlList);
+var
+  P : PACTRL_PROPERTY_ENTRYW;
+  I, I2: Integer;
+  pACE : PACTRL_ACCESS_ENTRYW;
+  ACEClass : TJwSecurityAccessControlEntryClass;
+  ACE : TJwSecurityAccessControlEntry;
+  SID : TJwSecurityId;
+begin
+  P := pAccessList.pPropertyAccessList;
+  for I := 0 to pAccessList.cEntries - 1 do
+  begin
+    pACE := P.pAccessEntryList.pAccessList;
+    for i2 := 0 to P.pAccessEntryList.cEntries - 1 do
+    begin
+      case pACE.fAccessFlags of
+        ACTRL_ACCESS_ALLOWED:
+           ACEClass := TJwDiscretionaryAccessControlEntryAllow;
+        ACTRL_ACCESS_DENIED:
+          ACEClass := TJwDiscretionaryAccessControlEntryDeny;
+      else
+        //ACTRL_AUDIT_SUCCESS,
+        //ACTRL_AUDIT_FAILURE :
+          ACEClass := nil;
+      end;
+
+      if Assigned(ACEClass) then
+      begin
+        SID := TrusteeToSid(@pACE.Trustee);
+
+        if Assigned(SID) then
+        begin
+          ACE := ACEClass.Create(nil, TJwEnumMap.ConvertAceFlags(pACE.Inheritance), pACE.Access, SID, True);
+          ACE.InheritProperty := TJwString(pACE.lpInheritProperty);
+
+          ACL.Add(ACE);
+        end;
+      end;
+
+      Inc(pACE);
+    end;
+
+    Inc(P);
+  end;
+end;
+{
+
+Return values:
+  E_INVALIDARG : pAccessList = nil
+
+}
+function TJwServerAccessControl.GrantAccessRights(pAccessList: PACTRL_ACCESSW): HRESULT;
+var
+  ACL : TJwDAccessControlList;
+begin
+  result := S_OK;
+
+  if pAccessList = nil then
+  begin
+    result := E_INVALIDARG;
+    exit;
+  end;
+
+  if pAccessList.pPropertyAccessList = nil then
+  begin
+    try
+      JwGrantAccessRights(nil);
+      Result := S_OK;
+    except
+      on E : Exception do
+        Result := E_FAIL;
+    end;
+    exit;
+  end;
+
+  try
+    ACL := TJwDAccessControlList.Create;
+    try
+      CopyACLToObject(pAccessList, ACL);
+
+      JwGrantAccessRights(ACL);
+    finally
+      FreeAndNil(ACL);
+    end;
+  except
+    on E : EOleSysError do
+    begin
+{$IFDEF DEBUG}
+      raise;
+{$ELSE}
+      Result := E.ErrorCode;
+{$ENDIF DEBUG}
+    end;
+    on e : Exception do
+    begin
+{$IFDEF DEBUG}
+      raise;
+{$ELSE}
+      result := E_UNEXPECTED;
+{$ENDIF DEBUG}
+    end;
+  end;
+end;
+
+function TJwServerAccessControl.IsAccessAllowed(pTrustee: PTRUSTEEW; lpProperty: LPWSTR; AccessRights: ACCESS_RIGHTS;
+  var pfAccessAllowed: BOOL): HRESULT;
+var
+  SID : TJwSecurityId;
+  b : Boolean;
+begin
+  result := S_OK;
+
+  pfAccessAllowed := false;
+
+  if pTrustee = nil then
+  begin
+    result := E_INVALIDARG;
+    exit;
+  end;
+
+  SID := TrusteeToSid(@pTrustee);
+  if not Assigned(SID) then
+  begin
+    result := MAKE_HRESULT(1, FacilityCode, ERROR_INVALID_SID);
+    exit;
+  end;
+
+  try
+    try
+      b := pfAccessAllowed;
+      JwIsAccessAllowed(SID, TJwString(lpProperty), AccessRights, b);
+      pfAccessAllowed := b;
+    finally
+      FreeAndNil(SID);
+    end;
+  except
+    on E : EOleSysError do
+    begin
+{$IFDEF DEBUG}
+      raise;
+{$ELSE}
+      Result := E.ErrorCode;
+{$ENDIF DEBUG}
+    end;
+    on e : Exception do
+    begin
+{$IFDEF DEBUG}
+      raise;
+{$ELSE}
+      result := E_UNEXPECTED;
+{$ENDIF DEBUG}
+    end;
+  end;
+end;
+
+function TJwServerAccessControl.RevokeAccessRights(lpProperty: LPWSTR; cTrustees: ULONG; prgTrustees: PTRUSTEEW): HRESULT;
+var
+  SID : TJwSecurityId;
+  SIDs : TJwSecurityIdList;
+  I: Integer;
+begin
+  result := S_OK;
+
+  if prgTrustees = nil then
+  begin
+    result := E_INVALIDARG;
+    exit;
+  end;
+
+  if cTrustees = 0 then
+    exit;
+
+  SIDs := TJwSecurityIdList.Create(true);
+  try
+    try
+      for I := 0 to cTrustees - 1 do
+      begin
+        SID := TrusteeToSid(@prgTrustees);
+
+        if Assigned(SID) then
+        begin
+          SIDs.Add(SID);
+        end
+        else
+        begin
+          result := MAKE_HRESULT(1, FacilityCode, ERROR_INVALID_SID);
+          exit;
+        end;
+      end;
+
+      JwRevokeAccessRights(TJwString(lpProperty), SIDs);
+    finally
+      FreeAndNil(SIDs);
+    end;
+except
+    on E : EOleSysError do
+    begin
+{$IFDEF DEBUG}
+      raise;
+{$ELSE}
+      Result := E.ErrorCode;
+{$ENDIF DEBUG}
+    end;
+    on e : Exception do
+    begin
+{$IFDEF DEBUG}
+      raise;
+{$ELSE}
+      result := E_UNEXPECTED;
+{$ENDIF DEBUG}
+    end;
+  end;
+end;
+
+function TJwServerAccessControl.SetAccessRights(pAccessList: PACTRL_ACCESSW): HRESULT;
+var
+  ACL : TJwDAccessControlList;
+begin
+  result := S_OK;
+
+  try
+    if pAccessList = nil then
+    begin
+      JwSetAccessRights(nil);
+    end
+    else
+    begin
+      fSD.DACL.Clear;
+      ACL := TJwDAccessControlList.Create;
+      try
+        CopyACLToObject({in}pAccessList, {"out"}ACL);
+
+        JwSetAccessRights(ACL);
+      finally
+        FreeAndNil(ACL);
+      end;
+    end;
+  except
+    on E : EOleSysError do
+    begin
+{$IFDEF DEBUG}
+      raise;
+{$ELSE}
+      Result := E.ErrorCode;
+{$ENDIF DEBUG}
+    end;
+    on e : Exception do
+    begin
+{$IFDEF DEBUG}
+      raise;
+{$ELSE}
+      result := E_UNEXPECTED;
+{$ENDIF DEBUG}
+    end;
+  end;
+end;
+
+function TJwServerAccessControl.SetOwner(pOwner, pGroup: PTRUSTEEW): HRESULT;
+var Owner, Group : TJwSecurityId;
+begin
+  if (pOwner = nil) and (pGroup = nil) then
+  begin
+    result := E_INVALIDARG;
+    exit;
+  end;
+
+  result := S_OK;
+  try
+    Owner := nil;
+    Group := nil;
+
+    if pOwner <> nil then
+    begin
+      Owner := TJwSecurityId.Create(pOwner^);
+    end;
+
+    if pGroup <> nil then
+    begin
+      Group := TJwSecurityId.Create(pGroup^);
+    end;
+
+    JwSetOwner(Owner, Group);
+  except
+    on E : EOleSysError do
+    begin
+{$IFDEF DEBUG}
+      raise;
+{$ELSE}
+      Result := E.ErrorCode;
+{$ENDIF DEBUG}
+    end;
+    on e : Exception do
+    begin
+{$IFDEF DEBUG}
+      raise;
+{$ELSE}
+      result := E_UNEXPECTED;
+{$ENDIF DEBUG}
+    end;
+  end;
+end;
+
+
+
+function TJwServerAccessControl.TrusteeToSid(const Trustee: PTrusteeW): TJwSecurityId;
+begin
+  if Trustee = nil then
+  begin
+    result := nil;
+    exit;
+  end;
+
+  try
+    result := TJwSecurityId.Create(Trustee^);
+  except
+    //on error we just return nil
+    result := nil;
+  end;
+end;
 
 initialization
   SaveInitProc := InitProc;
