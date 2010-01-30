@@ -31,4 +31,3 @@ begin
   else
     GUITestRunner.RunRegisteredTests;
 end.
-

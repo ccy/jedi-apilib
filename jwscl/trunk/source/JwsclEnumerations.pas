@@ -69,7 +69,7 @@ type
     class function ConvertInheritFlags(
       const FlagBits: Cardinal): TJwInheritFlagSet; overload; virtual;
 
-    
+
     class function ConvertSecurityInformation(
       const FlagSet: TJwSecurityInformationFlagSet): Cardinal;
       overload; virtual;
@@ -91,15 +91,15 @@ type
 
     {<B>ConvertAceFlags</B> converts a set of ACE flags to a bit combined Cardinal value.
      @param AceFlags receives the set of flags to be converted. It can be emtpy [].
-            See TJwAceFlags  for more information. 
-     @return The return value contains the set as a value. 
+            See TJwAceFlags  for more information.
+     @return The return value contains the set as a value.
     }
     class function ConvertAceFlags(const AceFlags: TJwAceFlags): Cardinal; overload; virtual;
 
     {<B>ConvertAceFlags</B> converts a cardianl value to set of ACE flags.
      @param AceFlags receives the value to be converted to a set of flags.
-            Unknown bits are ignored in the result.  
-     @return The return value contains the set of ace flags. See TJwAceFlags  for more information. 
+            Unknown bits are ignored in the result.
+     @return The return value contains the set of ace flags. See TJwAceFlags  for more information.
     }
     class function ConvertAceFlags(
       const AceFlags: Cardinal): TJwAceFlags; overload; virtual;
@@ -396,7 +396,7 @@ const
   CryptProtectFlag : Array[TJwCryptProtectFlag] of Cardinal = (
     CRYPTPROTECT_LOCAL_MACHINE//cfLocalMachine
     ,CRYPTPROTECT_UI_FORBIDDEN//cfUiFobidden
-    //Vista only 
+    //Vista only
    { ,CRYPTPROTECT_AUDIT//cfAudit
     CRYPTPROTECT_VERIFY_PROTECTION//cfVerifyProtection }
   );

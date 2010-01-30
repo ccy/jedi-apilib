@@ -309,7 +309,7 @@ begin
   fInternalObject.Log(TJwLogType(LogType), LogMessage);
 end;
 
-procedure TJwLogClientImpl.Memory(LogType: JwEnumMemoryType; const MemType: WideString; 
+procedure TJwLogClientImpl.Memory(LogType: JwEnumMemoryType; const MemType: WideString;
   const LogMessage: WideString);
 begin
   fInternalObject.Memory(JwsclLogging.TJwMemoryType(LogType), TJwstring(MemType), TJwstring(LogMessage));

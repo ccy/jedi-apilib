@@ -16,12 +16,12 @@ Software distributed under the License is distributed on an "AS IS" basis, WITHO
 ANY KIND, either express or implied. See the License for the specific language governing rights
 and limitations under the License.
 
-Alternatively, the contents of this file may be used under the terms of the  
-GNU Lesser General Public License (the  "LGPL License"), in which case the   
-provisions of the LGPL License are applicable instead of those above.        
-If you wish to allow use of your version of this file only under the terms   
-of the LGPL License and not to allow others to use your version of this file 
-under the MPL, indicate your decision by deleting  the provisions above and  
+Alternatively, the contents of this file may be used under the terms of the
+GNU Lesser General Public License (the  "LGPL License"), in which case the
+provisions of the LGPL License are applicable instead of those above.
+If you wish to allow use of your version of this file only under the terms
+of the LGPL License and not to allow others to use your version of this file
+under the MPL, indicate your decision by deleting  the provisions above and
 replace  them with the notice and other provisions required by the LGPL
 License.  If you do not delete the provisions above, a recipient may use
 your version of this file under either the MPL or the LGPL License.
@@ -47,7 +47,7 @@ unit JwsclSecurityDialogs;
 interface
 
 uses
-  SysUtils, Classes, 
+  SysUtils, Classes,
   JwaWindows, ActiveX,
   JwsclResource,
   JwsclTypes, JwsclExceptions, JwsclSid, JwsclAcl, JwsclToken,
@@ -103,9 +103,9 @@ type
              If the AncestorName is empty the ACL editor automatically sets the display string to
                1. inherited from superior object (if the ACE contains afInheritedAce in its flags)
                2. not inherited (if the ACE does not contain afInheritedAce)
-              
+
       @return The function must return S_OK if the inheritance source could be retrieved. Otherwise
-            S_FALSE. 
+            S_FALSE.
       }
   TJwOnGetInheriteSource = function(Sender: TJwSecurityDescriptorDialog;
     const Info: TJwSecurityInformationFlagSet;
@@ -121,13 +121,13 @@ type
       @param sServerName defines the name of the server.
       @param SD defines the security descriptor that is used to check against the permissions
       @param ObjectTypeList defines a list of objects types that are used for the check.
-              It can be ignored to use default object type list. 
+              It can be ignored to use default object type list.
       @param GrantedAccessList defines an array of granted access. It is automatically set to count of 1
             if the call to GetEffectiveRightsFromAcl was sucessfull. However it can be changed.
             If the size of the array is zero the effective permissions are not display. Instead an error message
-            is shown 
+            is shown
       @return The return value defines the sucess of the operation. If it is set to any other value than S_OK
-            the effective permissions are not shown in the ACL editor. 
+            the effective permissions are not shown in the ACL editor.
      }
   TJwOnGetEffectivePermissions = function(Sender: TJwSecurityDescriptorDialog;
     const GuidObjectType: TGUID;
@@ -146,7 +146,7 @@ type
       @param ACL defines the access control list which must be checked.
       @param IsCanonical defines the result of the process that checks the ACL. Set it to true if the order of the ACL is correct,
               otherwise false. If it set to false the ACL editor shows a message that informs the user about the incorrect order.
-              The ACL is automatically checked for correct order and the result value is predefined in IsCanonical. 
+              The ACL is automatically checked for correct order and the result value is predefined in IsCanonical.
       }
   TOnJwIsDaclCanonical = procedure(Sender: TJwSecurityDescriptorDialog;
     const ACL: TJwSecurityAccessControlList; var IsCanonical: boolean) of object;
@@ -156,10 +156,10 @@ type
       the parameter SD is used instead. If it is nil the property SecurityDescriptor is used.
 
       @param Sender Contains the dialog instance that called this callback message.
-      @param Information defines a set of security information flags that have to be stored in the security descriptor 
-      @param bDefault TBD 
+      @param Information defines a set of security information flags that have to be stored in the security descriptor
+      @param bDefault TBD
       @param SD defines a security descriptor that provides information for the ACL editor. It can be nil to use
-              the property SecurityDescriptor of Sender is used 
+              the property SecurityDescriptor of Sender is used
 
       }
   TJwOnGetSecurity = procedure(Sender: TJwSecurityDescriptorDialog;
@@ -178,7 +178,7 @@ type
       @param ParamW Contains additional information about the message.
       @param ParamL Contains additional information about the message.
       @param ProcessDefaultProc defines whether message is forwarded to the default window proc (true) or not (false).
-      @return The return value is used to return the status of the window message. The return value is only used if ProcessDefaultProc is false. 
+      @return The return value is used to return the status of the window message. The return value is only used if ProcessDefaultProc is false.
      }
   TJwOnWindowProcCallBack = function(Sender: TJwSecurityDescriptorDialog;
     PageType: TJwSecurityPageType;
@@ -271,7 +271,7 @@ type
     function GetCanonicalFormatEtc(const formatetc: TFormatEtc;
       out formatetcOut: TFormatEtc): HResult; stdcall;
 
-      
+
     function SetData(const formatetc: TFormatEtc;
       var medium: TStgMedium; fRelease: BOOL): HResult; stdcall;
 
@@ -296,17 +296,17 @@ type
       @param Sender Sender contains the TJwSecurityDescriptorDialog implementation.
       @param SecurityType contains information which part of the SD is changed.
       @param SecurityDialogFlags contains information about flags, states and checkboxes states
-              in the dialog that are set 
+              in the dialog that are set
       @param SecurityResetTypes defines what parts the SD must be recursively assigned to the objects.
       @param Settings contains the SD control bits of the parameter NewSecurityDescriptor.
       @param NewSecurityDescriptor is the security descriptor which contains the security information
-               that was changed in the dialog 
+               that was changed in the dialog
       @param MergedSecurityDescriptor contains the merged security information from
-              NewSecurityDescriptor and the property SecurityDescriptor 
+              NewSecurityDescriptor and the property SecurityDescriptor
       @param bSuccess Defines whether the security information could be set. Its default value is false.
             If true, the property SecurityDescriptor is to MergedSecurityDescriptor and the ACL editor updates its data.
             If false the ACL editor resets its data.
-             
+
 
       }
   TJwOnSetSecurity = procedure(Sender: TJwSecurityDescriptorDialog;
@@ -344,7 +344,7 @@ type
   end;
 
 
-  
+
 
      {<B>TJwSecurityDescriptorDialog</B> is a easy to use class to show a security ACL editor.
       It is generic, so many types of secure objects can be shown (not only files).
@@ -694,7 +694,7 @@ var
   ipSDSize: Cardinal;
   pSD: PSECURITY_DESCRIPTOR;
 
-  
+
   aSD: TJwSecurityDescriptor;
 begin
 {  result := S_FALSE; //!!!!!
@@ -1453,7 +1453,7 @@ procedure TJwSecurityDescriptorDialog.SetInheritTypeList(aList: TJwInheritTypeLi
 {.$UNDEF DELPHI6_UP}
 {$IFNDEF DELPHI6_UP}
 var
-   i : Integer;         
+   i : Integer;
    G : TGuid;
 {$ENDIF DELPHI6_UP}
 begin
@@ -1520,7 +1520,7 @@ begin
     if (Assigned(SD.DACL)) then
     begin
       UserSID := TJwSecurityId.Create(pUserSid);
-       
+
       pDACL := SD.DACL.Create_PACL;
       aTrustee := UserSID.Trustee;
 
@@ -1541,7 +1541,7 @@ begin
         // since this error makes GetEffectiveRightsFromAcl fail
         // This function calls LookupAccountSid which fails with
         // lasterror 1332 (sid name cannot be resolved)
-    
+
         tempDACL := TJwDAccessControlList.Create;
           TJwAutoPointer.Wrap(tempDACL); //auto destroy
         tempDACL.Assign(SD.DACL);
@@ -1713,8 +1713,8 @@ begin
         (Cardinal(ACL.Count) + 1) * sizeof(TInheritedFromW) +
         iSize * SizeOf(WideChar)));
 
-      //lots of pointer hacking frome here on!   
-      //string block    
+      //lots of pointer hacking frome here on!
+      //string block
       DataPtr := Pointer(DWORD_PTR(ppInheritArray) +
         Cardinal(ACL.Count) * sizeof(TInheritedFromW));
 

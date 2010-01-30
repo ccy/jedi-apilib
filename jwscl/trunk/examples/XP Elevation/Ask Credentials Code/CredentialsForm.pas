@@ -79,7 +79,7 @@ type
 
     function GetUserPicture(): TBitmap;
     procedure OnGetImage;
-    function IsPasswordCacheAvailable : Boolean; 
+    function IsPasswordCacheAvailable : Boolean;
   public
     destructor Destroy; override;
 
@@ -400,7 +400,7 @@ begin
   JvGradient_UnsignedApp.Visible := not Signed;
   JvLabel_SignedApp.Visible := Signed;
   JvLabel_UnsignedApp.Visible := not Signed;
-  
+
 end;
 
 procedure TFormCredentials.CenterInMonitor(const i : Integer);
@@ -434,7 +434,7 @@ begin
     Flags := Flags or CLIENT_CACHECREDS
   else
     Flags := Flags and not CLIENT_CACHECREDS;
-  
+
 end;
 
 destructor TFormCredentials.Destroy;

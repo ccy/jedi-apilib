@@ -59,7 +59,7 @@ var
 begin
   Data := TStringList.Create;
 
-  
+
   if ExceptionType is EJwsclSecurityException then
   begin
     JE := ExceptionType as EJwsclSecurityException;
@@ -71,7 +71,7 @@ begin
 	Data.Values[SCOCLASSNAME] := CoClassName;
     Data.Values[SCOSOURCEFILE] := CoUnitName;
     Data.Values[SCOSOURCELINE] := '0';
-    
+
 
     Data.Values[SJWMETHODNAME] := JE.SourceProc;
     Data.Values[SJWSOURCEFILE] := JE.SourceFile;
@@ -103,7 +103,7 @@ begin
 
   Description := Data.CommaText;
   Data.Free;
-  
+
   raise EOleSysError.Create(Description, E_FAIL, -1);
 end;
 

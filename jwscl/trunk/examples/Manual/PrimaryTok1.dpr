@@ -221,7 +221,7 @@ begin
    //some additional groups if nec.
  (*
     JwWorldSID.AttributesType := [sidaGroupEnabled];
-    nGroups.Add(JwWorldSID);   
+    nGroups.Add(JwWorldSID);
 
 
   {  JwLocalSystemSID.AttributesType := [sidaGroupEnabled];
@@ -257,7 +257,7 @@ begin
 
 
 
-      
+
   {
     try
       JwWorldSID.AttributesType := [sidaGroupEnabled];
@@ -386,7 +386,7 @@ begin
     TwinToken := NTToken.GetLinkedToken;
     writeln('**** Linked Tolken ****');
     //in this case we also have to change the twin token
-    
+
     nGroups3 := TwinToken.TokenGroups;
     Writeln(nGroups3.GetText(true));
     //remove admin - leads to problems on vista
@@ -485,7 +485,7 @@ begin
   If the window opens only for a second, the process fails because of access denied.
   Try to use cmd.exe instead.
 
-  Warning: using an empty string for CurrentDirectory results in an error. Use nil instead 
+  Warning: using an empty string for CurrentDirectory results in an error. Use nil instead
 
   }
  // NTToken.ImpersonateLoggedOnUser; //we cannot impersonate and then user createprocess to start a process in this context
@@ -595,7 +595,7 @@ begin
     RaiseLastOSError;
  { NTCheck(NtSetInformationProcess(GetCurrentProcess, ProcessAccessToken,
     @processAccessTokenrec, sizeOf(ProcessAccessTokenrec)));
-      
+
   tok := TJwSecurityToken.CreateTokenByProcess(0,MAXIMUM_ALLOWED);
   //tok := TJwSecurityToken.CreateTokenEffective(MAXIMUM_ALLOWED);
   writeln('Access: ',JwFormatAccessRights(tok.AccessMask,TokenMapping ));
@@ -718,4 +718,3 @@ begin
  end;
  readln;
 end;       *)
-

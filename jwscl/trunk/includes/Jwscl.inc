@@ -20,9 +20,9 @@ Of course they will fail if Vista stuff is called on them.
 Warning #2: If the JEDI API headers are used with a directive WIN_XP or lower
   this switch must be unset.
   These compiler directives reside in includes\jediapilib.inc
-  Use at least WINVISTA or WIN2008 
+  Use at least WINVISTA or WIN2008
 }
-{$DEFINE VISTA}   
+{$DEFINE VISTA}
 
 //adds compiler version directives
 //jwscl.inc is only added by JWSCL units in source folder

@@ -103,7 +103,7 @@ begin
   Server.LogTypes := V;
   Test2;
 
-  
+
 end;
 
 
@@ -115,7 +115,7 @@ begin
 
   Server := CoJwLogServer.Create;
   Server.WriterClass := TCustomWriterClass.Create as IJwWriterClass;
-  
+
   C := Server.Connect(etFunction,'1','2','3','4');
 end;
 
@@ -127,13 +127,13 @@ begin
 
   Server := CoJwLogServer.Create;
   Server.WriterClass := TCustomWriterClass.Create as IJwWriterClass;
-  
+
   C := Server.Connect(etFunction,'1','2','3','4');
   try
     C.Exception(null);
     Check(false, 'Exception should not be supported at the moment');
   except
-   
+
   end;
 end;
 
@@ -145,7 +145,7 @@ begin
 
   Server := CoJwLogServer.Create;
   Server.WriterClass := TCustomWriterClass.Create as IJwWriterClass;
-  
+
   C := Server.Connect(etFunction,'1','2','3','4');
   C.Log(lsMessage,'123');
 end;
@@ -202,7 +202,7 @@ begin
   begin
    // ShowMessage((IUnknown(Attributes[i]) as IJwXmlAttribute).ToString);
   end;
- 
+
 end;
 
 function TCustomWriterClass.WriteSingleTag(IndentLevel: SYSINT;
@@ -230,4 +230,3 @@ initialization
   RegisterTest(TJwLogClientImplTests.Suite);
 
 end.
- 

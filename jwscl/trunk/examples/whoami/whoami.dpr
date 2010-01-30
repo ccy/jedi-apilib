@@ -1,5 +1,5 @@
 {
-Whoami is a command line application that outputs 
+Whoami is a command line application that outputs
 information about the current user.
 
 Version: 0.5
@@ -11,7 +11,7 @@ This example may raises lots of exceptions in the Delphi IDE but should work
 fine when started from the Windows Explorer or command line.
 Raising exceptions in the Delphi is normal because even catched exception
 will be displayed in the Delphi IDE. You can change this behaviour in
-Tools-Debugger options-> Language exceptions 
+Tools-Debugger options-> Language exceptions
 
 Known bugs:
 This example will not work on Windows XP Sp1 due to a unsupported
@@ -158,7 +158,7 @@ begin
   {Should change Code Page to display characters correctly.
    if not SetConsoleOutputCP(xxx) then
     RaiseLastOSError;}
-    
+
   { TODO -oUser -cConsole Main : Hier Code einfügen }
   try
     Token := TJwSecurityToken.CreateTokenEffective(TOKEN_ALL_ACCESS);//TOKEN_QUERY or TOKEN_READ);

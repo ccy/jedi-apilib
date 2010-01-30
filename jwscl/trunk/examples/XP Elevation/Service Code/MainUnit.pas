@@ -66,7 +66,7 @@ type
 
 const MessageboxCaption= 'XP Elevation';
 
-      
+
 
 var
     XPService: TXPService;
@@ -221,7 +221,7 @@ begin
   Log := uLogging.LogServer.Connect(etMethod,ClassName,
           'ServiceExecute','MainUnit.pas','');
 
-  
+
   try
     try
       fThreadsStoppedEvent   := CreateEvent(nil, true, false, nil);
@@ -245,7 +245,7 @@ begin
           Descr.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil,[],GENERIC_ALL,JwLocalSystemSID,false));
           Descr.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil,[],GENERIC_ALL,JwAdministratorsSID,false));
           //Descr.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil,[],GENERIC_ALL,JwWorldSID,false));
-{$ENDIF}          
+{$ENDIF}
           SecAttr:=Descr.Create_SA(false);
 
           Pipe := CreateNamedPipe('\\.\pipe\XPElevationPipe', PIPE_ACCESS_INBOUND or FILE_FLAG_OVERLAPPED, PIPE_WAIT, PIPE_UNLIMITED_INSTANCES, 0, 0, 0, LPSECURITY_ATTRIBUTES(SecAttr));
@@ -262,7 +262,7 @@ begin
         try
           UnloadProfThread := TUnloadProfThread.Create;
           fJobs := TJwJobObjectSessionList.Create(OnNewJobObject);
-          
+
           repeat
             ConnectNamedPipe(Pipe, @OvLapped);
 
@@ -305,7 +305,7 @@ begin
 
           //signal server shutdown
           SetEvent(fServiceStopEvent);
-            
+
           {Wait for all threads to be stopped or timeout
           }
           WaitForSingleObject(ThreadsStopEvent, 60 * 1000);

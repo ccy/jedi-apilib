@@ -92,5 +92,3 @@ begin
     GUITestRunner.RunRegisteredTests;
 {$ENDIF}
 end.
- 
-

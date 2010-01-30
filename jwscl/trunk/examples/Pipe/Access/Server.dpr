@@ -15,7 +15,7 @@ uses
   jwsclStrings;
 
 type TMessage = record
-       Data : array[0..1023] of Char; 
+       Data : array[0..1023] of Char;
      end;
 
 var PipeHandle : THandle;
@@ -96,7 +96,7 @@ begin
       //throws exception if fails
       TJwSecurityToken.ImpersonateNamedPipeClient(PipeHandle);
       //we are in context of user now
-      
+
       try
         if JwCheckAdministratorAccess then
         begin
@@ -110,7 +110,7 @@ begin
         end;
 
         WriteFile(PipeHandle, @lpData,sizeof(lpData), @iWritten, nil);
-        
+
       finally
         TJwSecurityToken.RevertToSelf;
       end;
@@ -123,4 +123,3 @@ begin
   writeln('Hit enter...');
   readln;
 end.
- 

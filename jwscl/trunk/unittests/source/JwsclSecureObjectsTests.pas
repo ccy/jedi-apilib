@@ -244,7 +244,7 @@ type
   protected
 
 //    procedure SetUp; override;
-//    procedure TearDown; override;                                                                         
+//    procedure TearDown; override;
 
   published
 
@@ -552,7 +552,7 @@ end;
 
 procedure TSecureFileObjectTests.Test_Destroy;
 begin
-  //see Text_CreateX 
+  //see Text_CreateX
 end;
 
 procedure TSecureFileObjectTests.Test_GetDACL;
@@ -763,7 +763,7 @@ begin
   aDACL1.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil,[],
         (*
         do not use GENERIC_ALL, because some flags are discareded and
-        so the written and read access mask would differ. 
+        so the written and read access mask would differ.
         *)
                 FILE_ALL_ACCESS,
                 JwSecurityCurrentThreadUserSID,true));//we are responsible to free
@@ -873,7 +873,7 @@ begin
     CheckFALSE(pDACL = @aDACL2);
   finally
     fSecureFileObjects.Free;
-  end;                      
+  end;
 
 end;
 
@@ -909,7 +909,7 @@ begin
     CheckFALSE(v1 = @v2);
   finally
     fSecureFileObjects.Free;
-  end;                      
+  end;
 
 
 end;
@@ -1042,7 +1042,7 @@ var HasSACL: Boolean;
     SD : TJwSecurityDescriptor;
     x : TJwSecurityInformationFlagSet;
     threadUser : TJwSecurityId;
-begin 
+begin
   fFileNames[1] := GetSecurityFileNameTemp(HasSACL);
 
   fSecureFileObjects[1] := TJwSecureFileObject.Create(fFileNames[1]);
@@ -1302,7 +1302,7 @@ try
     CheckEquals(0, AccessMask);
 
     clientToken.Free;
-                        
+
 
   finally
     if Assigned(oldToken) then
@@ -1486,7 +1486,7 @@ var
   s : TJwString;
   p : Pointer;
 begin
-  
+
   DACL := TJwDAccessControlList.Create;
   DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil,[afContainerInheritAce],GENERIC_ALL,JwWorldSID, false));
 

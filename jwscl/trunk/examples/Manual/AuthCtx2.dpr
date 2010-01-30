@@ -57,7 +57,7 @@ begin
       nil//const DynamicGroupArgs: Pointer
       );
 
-  
+
   SD := TJwSecurityDescriptor.Create; //CreateDefaultByToken();
   SD.Owner := JwNullSID;
   SD.PrimaryGroup := JwNullSID;

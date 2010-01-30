@@ -1,14 +1,14 @@
 unit JWSCLComTests_TLB;
 
 // ************************************************************************ //
-// WARNUNG                                                                    
-// -------                                                                    
+// WARNUNG
+// -------
 // Die in dieser Datei deklarierten Typen wurden aus Daten einer Typbibliothek
-// generiert. Wenn diese Typbibliothek explizit oder indirekt (über eine     
-// andere Typbibliothek) reimportiert wird oder wenn die Anweisung            
-// 'Aktualisieren' im Typbibliotheks-Editor während des Bearbeitens der     
-// Typbibliothek aktiviert ist, wird der Inhalt dieser Datei neu generiert und 
-// alle manuell vorgenommenen Änderungen gehen verloren.                           
+// generiert. Wenn diese Typbibliothek explizit oder indirekt (über eine
+// andere Typbibliothek) reimportiert wird oder wenn die Anweisung
+// 'Aktualisieren' im Typbibliotheks-Editor während des Bearbeitens der
+// Typbibliothek aktiviert ist, wird der Inhalt dieser Datei neu generiert und
+// alle manuell vorgenommenen Änderungen gehen verloren.
 // ************************************************************************ //
 
 // PASTLWTR : 1.2
@@ -18,27 +18,27 @@ unit JWSCLComTests_TLB;
 // Typbib: P:\Eigene Dateien\Dezipaitor\Projekte\Delphi\7\jedi-api-lib\jwscl\trunk\COM\UnitTests\JWSCLComTests.tlb (1)
 // LIBID: {2B2A8966-CCBC-4251-9D94-335DADA66781}
 // LCID: 0
-// Hilfedatei: 
+// Hilfedatei:
 // Hilfe-String: JWSCLComTests Bibliothek
-// DepndLst: 
+// DepndLst:
 //   (1) v2.0 stdole, (C:\Windows\system32\stdole2.tlb)
 // ************************************************************************ //
-{$TYPEDADDRESS OFF} // Unit muß ohne Typüberprüfung für Zeiger compiliert werden. 
+{$TYPEDADDRESS OFF} // Unit muß ohne Typüberprüfung für Zeiger compiliert werden.
 {$WARN SYMBOL_PLATFORM OFF}
 {$WRITEABLECONST ON}
 {$VARPROPSETTER ON}
 interface
 
 uses Windows, ActiveX, Classes, Graphics, StdVCL, Variants;
-  
+
 
 // *********************************************************************//
-// In dieser Typbibliothek deklarierte GUIDS . Es werden folgende         
-// Präfixe verwendet:                                                     
-//   Typbibliotheken     : LIBID_xxxx                                     
-//   CoClasses           : CLASS_xxxx                                     
-//   DISPInterfaces      : DIID_xxxx                                      
-//   Nicht-DISP-Schnittstellen: IID_xxxx                                       
+// In dieser Typbibliothek deklarierte GUIDS . Es werden folgende
+// Präfixe verwendet:
+//   Typbibliotheken     : LIBID_xxxx
+//   CoClasses           : CLASS_xxxx
+//   DISPInterfaces      : DIID_xxxx
+//   Nicht-DISP-Schnittstellen: IID_xxxx
 // *********************************************************************//
 const
   // Haupt- und Nebenversionen der Typbibliothek

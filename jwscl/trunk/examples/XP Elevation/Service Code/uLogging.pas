@@ -130,7 +130,7 @@ begin
 
 
   if (Length(LogFilePath) > 0) and DirectoryExists(LogFilePath) then
-    LogFileNameLocation := LogFilePath  
+    LogFileNameLocation := LogFilePath
   else
     LogFileNameLocation := ExtractFilePath(ParamStr(0));
   LogFileNameLocation := IncludeTrailingBackslash(LogFileNameLocation);

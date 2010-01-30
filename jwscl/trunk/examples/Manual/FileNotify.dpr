@@ -38,7 +38,7 @@ begin
                           FILE_LIST_DIRECTORY or GENERIC_READ,
                           FILE_SHARE_READ or FILE_SHARE_WRITE or FILE_SHARE_DELETE, nil,
                           OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS,0);
-                         
+
   hNotifity := FindFirstChangeNotification(PChar(MyPath),                    //Verzeichnis
                                            cardinal(false),                               //unterverzeichnisse überwachen
                                            FILE_NOTIFY_CHANGE_FILE_NAME or

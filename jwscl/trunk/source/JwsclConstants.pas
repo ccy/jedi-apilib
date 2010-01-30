@@ -16,7 +16,7 @@ Software distributed under the License is distributed on an "AS IS" basis, WITHO
 ANY KIND, either express or implied. See the License for the specific language governing rights
 and limitations under the License.
 
-Alternatively, the contents of this file may be used under the terms of the  
+Alternatively, the contents of this file may be used under the terms of the
 GNU Lesser General Public License (the  "LGPL License"), in which case the
 provisions of the LGPL License are applicable instead of those above.
 If you wish to allow use of your version of this file only under the terms
@@ -179,7 +179,7 @@ const
     (Luid: (LowPart: 0; HighPart: 0); Attributes: 0);
 
 
- 
+
 const
   JwSecurityInformationAllFlags =
     [siOwnerSecurityInformation,
@@ -264,7 +264,7 @@ var
     Flags: SI_ACCESS_SPECIFIC),
     (Right: SYNCHRONIZE; Name: 'SYNCHRONIZE';
     Flags: SI_ACCESS_SPECIFIC)
-    );           
+    );
 
 
   FileGenericMapping: TGenericMapping =
@@ -1483,7 +1483,7 @@ const
     RsAttributeHumanString13,//'pad3',
     RsAttributeHumanString14,//'pad4',
     RsAttributeHumanString15//'pad5'
-    );    
+    );
 
 
 
@@ -1511,7 +1511,7 @@ const
   IgnoreEJwsclResourceNotFound = true;
 
   {These values defines the first resource string for the given
-  mapping resource strings. 
+  mapping resource strings.
   }
 
   //
@@ -1570,9 +1570,9 @@ const
   JwInitLocalizedMappings(LANG_NEUTRAL, SUBLANG_SYS_DEFAULT);
   JwInitLocalizedMappings(0,0);
 
-@param PrimaryLanguage defines the primary language id 
-@param SubLanguage defines the primary language id 
-@param Inst defines the resource source 
+@param PrimaryLanguage defines the primary language id
+@param SubLanguage defines the primary language id
+@param Inst defines the resource source
 
 }
 procedure JwInitLocalizedMappings(PrimaryLanguage,

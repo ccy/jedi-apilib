@@ -26,7 +26,7 @@ function CreateSidAndAttributesStream(const Sid : PSid; const Attributes : DWORD
 implementation
 {$IFDEF SM_JCLDEBUG}
 uses jclDebug;
-{$ENDIF}         
+{$ENDIF}
 
 function CreateSidAndAttributesStream(const Sid : PSid; const Attributes : DWORD) : IStream;
 var S : TMemoryStream;
@@ -155,7 +155,7 @@ var Err : IErrorInfo;
 begin
   if Succeeded(res) then
     exit;
-    
+
   if Res = E_EXCEPTION then
   begin
     OleCheck(GetErrorInfo(0,Err));

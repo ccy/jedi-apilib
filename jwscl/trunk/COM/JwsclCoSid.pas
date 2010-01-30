@@ -102,7 +102,7 @@ var i1, i2 : Integer;
 begin
   i1 := VarArrayHighBound(V,Dim);
   i2 := VarArrayLowBound(V,Dim);
-  result := abs(abs(i1) - abs(i2))+1;  
+  result := abs(abs(i1) - abs(i2))+1;
 end;
 
 { TJwCoSid }
@@ -318,7 +318,7 @@ begin
       begin
         ASSERT(VarType(Ident.Value[i]) = varByte);
         Ident.Value[i] := PByteArray(IdentBuf)^[i];
-      end;    
+      end;
 
       SetLength(Auth, VarArrayLength(Authorities));
       for i := Low(Auth) to High(Auth) do
@@ -422,7 +422,7 @@ begin
     finally
       if Sid <> nil then
         FreeMem(Sid);
-    end;   
+    end;
   except
     on E : Exception do
       JwTrapAndReRaiseException('InitByStream', ClassName, 'JwsclCoSid', E);

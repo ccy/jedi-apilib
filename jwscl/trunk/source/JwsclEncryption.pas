@@ -1,5 +1,5 @@
 { Project JEDI Windows Security Code Library (JWSCL)
-  
+
   Currently the Windows Vista Crypt API is not supported by this unit. The direct
   memory encryption is simulated.
   Author
@@ -9,11 +9,11 @@
   The contents of this file are subject to the Mozilla Public License Version 1.1
   (the "License"); you may not use this file except in compliance with the
   \License. You may obtain a copy of the License at http://www.mozilla.org/MPL/
-  
+
   Software distributed under the License is distributed on an "AS IS" basis,
   WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for the
   specific language governing rights and limitations under the License.
-  
+
   Alternatively, the contents of this file may be used under the terms of the GNU
   Lesser General Public License (the "LGPL License"), in which case the provisions
   of the LGPL License are applicable instead of those above. If you wish to allow
@@ -23,11 +23,11 @@
   and other provisions required by the LGPL License. If you do not delete the
   provisions above, a recipient may use your version of this file under either the
   MPL or the LGPL License.
-  
+
   For more information about the LGPL: http://www.gnu.org/copyleft/lesser.html
   Note
   The Original Code is JwsclEncryption.pas.
-  
+
   The Initial Developer of the Original Code is Christian Wimmer. Portions created
   by Christian Wimmer are Copyright (C) Christian Wimmer. All rights reserved.
   Portions created by Philip Dittmann are Copyright (C) Philip Dittmann. All
@@ -73,7 +73,7 @@ type
     class procedure CryptUnProtectMemory(Data: Pointer; Size : Cardinal; Flags :
             TJwProtectMemoryFlagSet); virtual;
 
-   
+
 
 
   end;
@@ -84,23 +84,23 @@ type
     {<B>EncryptMemory</B> encrypts and protects a block of memory.
      If the necessary memory is not big enough it automatically increases
      the memory.
-     @param P Defines a pointer which must be encrypted. 
+     @param P Defines a pointer which must be encrypted.
      @param Size Defines how much data of P must be encrypted. Do specify exactly
       the amount of allocated memory of P. Otherwise the memory which is beyond
-      the given Size can become overwritten by the encrypted data. 
+      the given Size can become overwritten by the encrypted data.
      @param Flags Defines who can decrypt the new data.
-        
+
           # pmSameProcess - defines that only the process which created
             the encrypted data can decrypt it
           # pmCrossProcess - defines that other processes on the same
-            computer can decrypt the data 
-          # pmSameLogon - defines only the same use can decrypt the data 
-         
+            computer can decrypt the data
+          # pmSameLogon - defines only the same use can decrypt the data
+
      @param MemoryType defines which type of memory manager created P.
-       Currently only mtGetMem is supported. 
+       Currently only mtGetMem is supported.
      raises
- EjwsclCryptUnsupportedException:  if MemoryType is not mtGetMem. 
-      EjwsclCryptApiException: if an underlying API function failed. 
+ EjwsclCryptUnsupportedException:  if MemoryType is not mtGetMem.
+      EjwsclCryptApiException: if an underlying API function failed.
     }
     class procedure EncryptMemory(var P : Pointer;
       var Size : Cardinal; const Flags : TJwProtectMemoryFlagSet;
@@ -110,18 +110,18 @@ type
      The function also checks whether the given data was changed.
      The decrypted memor block will be resized to its original size.
 
-     @param P Defines a pointer which must be decrypted. 
+     @param P Defines a pointer which must be decrypted.
      @param Size Defines how much data of P must be decrypted. Do specify exactly
       the amount of allocated memory of P. Otherwise the memory which is beyond
       the given Size can become overwritten by the encrypted data.
       The function changes the parameter value to the new size of the memory block.
-       
-     @param Flags Must be the same value of Flags specified in a previous call to EncryptMemory.  
+
+     @param Flags Must be the same value of Flags specified in a previous call to EncryptMemory.
      @param MemoryType defines which type of memory manager created P.
-       Currently only mtGetMem is supported. 
+       Currently only mtGetMem is supported.
      raises
- EjwsclCryptUnsupportedException:  if MemoryType is not mtGetMem. 
-      EjwsclCryptApiException: if an underlying API function failed. 
+ EjwsclCryptUnsupportedException:  if MemoryType is not mtGetMem.
+      EjwsclCryptApiException: if an underlying API function failed.
     }
     class procedure DecryptMemory(var P : Pointer;
       var Size : Cardinal; const Flags : TJwProtectMemoryFlagSet;
@@ -133,23 +133,23 @@ type
   public
     {<B>EncryptPointerWithPrompt</B> encrypts and protects a memory block.
      To decrypt the data use DecryptPointerWithPrompt.
-     @param P Defines a pointer which must be encrypted. 
+     @param P Defines a pointer which must be encrypted.
      @param Size Defines how much data of P must be encrypted. Do specify exactly
       the amount of allocated memory of P. Otherwise the memory which is beyond
-      the given Size can become overwritten by the encrypted data. 
+      the given Size can become overwritten by the encrypted data.
      @param Description Defines a string that describes the data. Can be empty.
      @param Entropy Defines additional data to be used to encrypt the data.
       The same Entropy must be specified to the decryption method DecryptPointerWithPrompt.
-      Can be nil to use no entropy. 
+      Can be nil to use no entropy.
      @param LocalMachineOnly Set to true so the data can only be decrypted on the
-       same computer; otherwise false. 
+       same computer; otherwise false.
      @param NoUi defines whether a dialog pops up where the user can change
        encryption security and set a password. To do so set the parameter to false.
-       For none user interface apps or remote applications use true. 
+       For none user interface apps or remote applications use true.
      @param PromptFlags defines additional flags for UI dialog. This parameter
-       applies only if NoUi is false. 
+       applies only if NoUi is false.
      @param Prompt defines a text to be displayed in the prompt dialog. This parameter
-       applies only if NoUi is false. 
+       applies only if NoUi is false.
      @param Data [out]. This parameter receives the encrypted data.
        The data can be freed using FreeMem on its Data member .
      raises
@@ -169,15 +169,15 @@ type
       out Data : TJwGetMemBlob);
 
     {<B>EncryptPointer</B> is like EncryptPointerWithPrompt but does not use a user interface.
-     @param P Defines a pointer which must be encrypted. 
+     @param P Defines a pointer which must be encrypted.
      @param Size Defines how much data of P must be encrypted. Do specify exactly
       the amount of allocated memory of P. Otherwise the memory which is beyond
-      the given Size can become overwritten by the encrypted data. 
+      the given Size can become overwritten by the encrypted data.
      @param Entropy Defines additional data to be used to encrypt the data.
       The same Entropy must be specified to the decryption method DecryptPointerWithPrompt.
-      Can be nil to use no entropy. 
+      Can be nil to use no entropy.
      @param LocalMachineOnly Set to true so the data can only be decrypted on the
-       same computer; otherwise false. 
+       same computer; otherwise false.
       @param Data [out]. This parameter receives the encrypted data.
        The data can be freed using FreeMem on its Data member .
      raises
@@ -191,25 +191,25 @@ type
     {<B>DecryptPointerWithPrompt</B> decrypts a memory block that was created by EncryptPointerWithPrompt.
      The data is also checked for manipulation.
 
-     @param P Defines a pointer which must be decrypted. 
+     @param P Defines a pointer which must be decrypted.
      @param Size Defines how much data of P must be decrypted. Do specify exactly
       the amount of allocated memory of P. Otherwise the memory which is beyond
       the given Size can become overwritten by the encrypted data.
-      
+
      @param Entropy Defines additional data to be used to decrypt the data.
       The same Entropy must be specified to the encryption method EncryptPointerWithPrompt.
-      Can be nil to use no entropy. 
+      Can be nil to use no entropy.
      @param NoUi defines whether a dialog pops up where the user can change
        encryption security and set a password. To do so set the parameter to false.
-       For none user interface apps or remote applications use true. 
+       For none user interface apps or remote applications use true.
      @param PromptFlags defines additional flags for UI dialog. This parameter
-       applies only if NoUi is false. 
+       applies only if NoUi is false.
      @param Prompt defines a text to be displayed in the prompt dialog. This parameter
-       applies only if NoUi is false. 
+       applies only if NoUi is false.
      @param Data [out]. This parameter receives the decrypted data.
        The data can be freed using FreeMem on its Data member .
      raises
- EjwsclCryptApiException:  if an underlying API function failed. 
+ EjwsclCryptApiException:  if an underlying API function failed.
 
      }
     class procedure DecryptPointerWithPrompt(const P : Pointer; const Size : Cardinal;
@@ -222,13 +222,13 @@ type
 
      {<B>DecryptPointer</B> is like DecryptPointerWithPrompt but does not use a user interface.
       The data is also checked for manipulation.
-     @param P Defines a pointer which must be decrypted. 
+     @param P Defines a pointer which must be decrypted.
      @param Size Defines how much data of P must be decrypted. Do specify exactly
       the amount of allocated memory of P. Otherwise the memory which is beyond
-      the given Size can become overwritten by the decrypted data. 
+      the given Size can become overwritten by the decrypted data.
      @param Entropy Defines additional data to be used to decrypt the data.
       The same Entropy must be specified to the encryption method EncryptPointerWithPrompt.
-      Can be nil to use no entropy. 
+      Can be nil to use no entropy.
       @param Data [out]. This parameter receives the decrypted data.
        The data can be freed using FreeMem on its Data member .
      raises
@@ -247,9 +247,9 @@ type
      must be called to let it work.
 
      @param Size defines how big the generated size of random data block will be.
-       If the Size is 0 the size will be incremented to 512 bytes. 
+       If the Size is 0 the size will be incremented to 512 bytes.
      @return Returns a data block which contains random data. The block
-      can be freed by FreeMem or using FreeRandomData 
+      can be freed by FreeMem or using FreeRandomData
      }
     class function GetStandardRandomData(const Size : Cardinal = 0) : TDataBlob; virtual;
 
@@ -266,22 +266,22 @@ type
      The parameter Data will be set to nil.}
     class procedure FreeRandomData(var Data : PDataBlob); overload; virtual;
 
-    
+
   end;
 
 {<B>JwEncryptString</B> encrypts and protects a string.
-@param S defines a string that must be encrypted. 
-@param Description Defines a string that describes the data. Can be empty. 
+@param S defines a string that must be encrypted.
+@param Description Defines a string that describes the data. Can be empty.
 @param Prompt defines a whether a encryption prompt is displayed to confirm
   the decryption by the user.
 @param LocalMachineOnly Set to true so the data can only be decrypted on the
- same computer; otherwise false. 
+ same computer; otherwise false.
 @param Entropy Defines additional data to be used to encrypt the data.
 The same Entropy must be specified to the decryption method DecryptPointerWithPrompt.
-Can be nil to use no entropy. 
-@return Returns a new string that contains the encrypted data. 
+Can be nil to use no entropy.
+@return Returns a new string that contains the encrypted data.
 raises
- EjwsclCryptApiException:  if an underlying API function failed. 
+ EjwsclCryptApiException:  if an underlying API function failed.
 }
 function JwEncryptString(const S : TJwString;
   const Description : TJwString = '';
@@ -291,15 +291,15 @@ function JwEncryptString(const S : TJwString;
   : TJwString;
 
 {<B>JwDecryptString</B> decrypts a string and checks for manipulation.
-@param S defines a string that must be decrypted. 
+@param S defines a string that must be decrypted.
 @param Prompt defines a whether a encryption prompt is displayed to confirm
   the decryption by the user.
 @param Entropy Defines additional data to be used to encrypt the data.
 The same Entropy must be specified to the decryption method DecryptPointerWithPrompt.
-Can be nil to use no entropy. 
-@return Returns the decrypted string. 
+Can be nil to use no entropy.
+@return Returns the decrypted string.
 raises
- EjwsclCryptApiException:  if an underlying API function failed. 
+ EjwsclCryptApiException:  if an underlying API function failed.
 }
 function JwDecryptString(const S : TJwString;
   const Prompt : Boolean = false;
@@ -654,7 +654,7 @@ begin
   Data := nil;
 end;
 
-class function TJwRandomDataGenerator.GetData(const Size : Cardinal = 0) : TDataBlob; 
+class function TJwRandomDataGenerator.GetData(const Size : Cardinal = 0) : TDataBlob;
 begin
   result := GetStandardRandomData(size);
 end;

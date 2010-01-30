@@ -23,7 +23,7 @@ type
 
   TJwLogServerImpl = class(TAutoObject, JWSCLCom_TLB.IJwLogServer)
   protected
-    fInternalObject : JwsclLogging.IJwLogServer;  
+    fInternalObject : JwsclLogging.IJwLogServer;
   protected
     function Get_WriterClass: JWSCLCom_TLB.IJwWriterClass; safecall;
     procedure Set_WriterClass(const Value: JWSCLCom_TLB.IJwWriterClass); safecall;

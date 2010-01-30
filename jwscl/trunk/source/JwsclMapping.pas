@@ -16,11 +16,11 @@ Software distributed under the License is distributed on an "AS IS" basis, WITHO
 ANY KIND, either express or implied. See the License for the specific language governing rights
 and limitations under the License.
 
-Alternatively, the contents of this file may be used under the terms of the  
-GNU Lesser General Public License (the  "LGPL License"), in which case the   
-provisions of the LGPL License are applicable instead of those above.        
-If you wish to allow use of your version of this file only under the terms   
-of the LGPL License and not to allow others to use your version of this file 
+Alternatively, the contents of this file may be used under the terms of the
+GNU Lesser General Public License (the  "LGPL License"), in which case the
+provisions of the LGPL License are applicable instead of those above.
+If you wish to allow use of your version of this file only under the terms
+of the LGPL License and not to allow others to use your version of this file
 under the MPL, indicate your decision by deleting  the provisions above and
 replace  them with the notice and other provisions required by the LGPL
 License.  If you do not delete the provisions above, a recipient may use
@@ -86,9 +86,9 @@ type
   public
     {<B>GetBitMappingString</B> returns an description of a specific bit value given in Idx.
      This function only supports one bit per call.
-     @param Idx Defines a bit position between 0 and 31 
+     @param Idx Defines a bit position between 0 and 31
      @return Returns the name and description of the given bit or an empty string
-       if the bit is invalid. 
+       if the bit is invalid.
      }
     class function GetBitMappingString(Idx: Cardinal): TJwString; virtual;
 
@@ -544,7 +544,7 @@ begin
 
     //iPos := 4;
     //iStart := iPos;
-  end;         
+  end;
 
 
   for i := iStart to high(Maps) do

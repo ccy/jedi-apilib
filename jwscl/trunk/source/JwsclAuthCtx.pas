@@ -3,7 +3,7 @@ Description
 
 This unit provides access to the MS AuthZ technology API.
 The main reason is to do AccessCheck without needing a token.
-           
+
 Project JEDI Windows Security Code Library (JWSCL)
 
 Author
@@ -18,17 +18,17 @@ Software distributed under the License is distributed on an "AS IS" basis, WITHO
 ANY KIND, either express or implied. See the License for the specific language governing rights
 and limitations under the License.
 
-Alternatively, the contents of this file may be used under the terms of the  
-GNU Lesser General Public License (the  "LGPL License"), in which case the   
-provisions of the LGPL License are applicable instead of those above.        
-If you wish to allow use of your version of this file only under the terms   
-of the LGPL License and not to allow others to use your version of this file 
-under the MPL, indicate your decision by deleting  the provisions above and  
-replace  them with the notice and other provisions required by the LGPL      
-License.  If you do not delete the provisions above, a recipient may use     
+Alternatively, the contents of this file may be used under the terms of the
+GNU Lesser General Public License (the  "LGPL License"), in which case the
+provisions of the LGPL License are applicable instead of those above.
+If you wish to allow use of your version of this file only under the terms
+of the LGPL License and not to allow others to use your version of this file
+under the MPL, indicate your decision by deleting  the provisions above and
+replace  them with the notice and other provisions required by the LGPL
+License.  If you do not delete the provisions above, a recipient may use
 your version of this file under either the MPL or the LGPL License.
-                                                                             
-For more information about the LGPL: http://www.gnu.org/copyleft/lesser.html 
+
+For more information about the LGPL: http://www.gnu.org/copyleft/lesser.html
 
 Note
 
@@ -59,8 +59,8 @@ unit JwsclAuthCtx;
 interface
 
 uses
-  SysUtils, 
-  jwaWindows, 
+  SysUtils,
+  jwaWindows,
   JwsclResource, JwsclUtils,
 
   JwsclTypes, JwsclExceptions, JwsclMapping, JwsclACL, JwsclToken,
@@ -75,18 +75,18 @@ type
 
   {<B>TJwOnAuthzAccessCheckCallback</B> is called every time TJwAuthContext.AccessCheck finds
    a callback access control entry in an ACL.
-   @param AuthzClientContext contains the handle to the context 
-   @param Ace contains the access control entry 
+   @param AuthzClientContext contains the handle to the context
+   @param Ace contains the access control entry
    @param Contains an used defined pointer supplied to
-     parameter TJwAuthZAccessRequest(Request).fData 
+     parameter TJwAuthZAccessRequest(Request).fData
    @param AceApplicable defines whether the ACE is used for AccessCheck (true)
-     or not (false) 
+     or not (false)
 
    raises
  EJwsclSecurityException:  The callee can raise any exception derived from
     EJwsclSecurityException. The LastError value will be
     used to indicate an error to the caller. The function Accesscheck will
-    usually stop executing and return this error. 
+    usually stop executing and return this error.
   }
   TJwOnAuthzAccessCheckCallback = procedure(
     AuthzClientContext : TAuthZClientContextHandle;
@@ -97,12 +97,12 @@ type
   {<B>TJwOnAuthzComputeGroupsCallback</B> is called to add more groups to the authentication
    context. It is used in the creation of TJwAuthResourceManager.
 
-   @param AuthzClientContext contains the handle to the context 
+   @param AuthzClientContext contains the handle to the context
    @param Args is a used defined pointer that is supplied to one
-    of the constructors of TJwAuthContext 
+    of the constructors of TJwAuthContext
    @param SidAttrArray defines a list of Sids to be used
       as additional group Sids. The instance is already created with
-      no members. 
+      no members.
       )
    @param Sids contains a list of Sids and its Attributes to be used as
        new groups in the security context. (like TokenGroups in a token).
@@ -114,38 +114,38 @@ type
        the call to a WinAPI function wil fail with INVALID_PARAMETERS (87).
 
        Origin: http://msdn2.microsoft.com/en-us/library/aa375798.aspx
-       
+
         # SE_GROUP_ENABLED - adds a group to the security context.
-              It will be treated as if the User has entered a group. 
+              It will be treated as if the User has entered a group.
         # SE_GROUP_USE_FOR_DENY_ONLY - adds a group to the security context,
           but this group is only used for deny check. All positive ACE for
           this group in a DACL are ignored. Only Deny ACEs are recognized
-          and can turn off other positive ACEs of other groups. 
-        
-        
+          and can turn off other positive ACEs of other groups.
+
+
     @param RestrictedSids receives a list of Sids and its Attributes to be used as
        new deny only groups in the security context. (like TokenGroups in a token).
        The list will initialized but empty and can be filled by the callee.
-       
+
        The attributes (AttributesType) must be set
         to SE_GROUP_ENABLED (sidaGroupOwner) or
         SE_GROUP_USE_FOR_DENY_ONLY (sidaGroupUseForDenyOnly); otherwise
        the call to a WinAPI function wil fail with INVALID_PARAMETERS (87).
 
        Origin: http://msdn2.microsoft.com/en-us/library/aa375798.aspx
-       
+
         # SE_GROUP_ENABLED - (probably) the same as parameter SID and
-            attribute SE_GROUP_USE_FOR_DENY_ONLY. 
+            attribute SE_GROUP_USE_FOR_DENY_ONLY.
         # SE_GROUP_USE_FOR_DENY_ONLY - Results alway in Access Denied.
             However do not rely on me - maybe somebody with
-            internal knowledge can comment it. 
-       
-     
+            internal knowledge can comment it.
+
+
    raises
  EJwsclSecurityException:  The callee can raise any exception derived from
     EJwsclSecurityException. The LastError value will be
     used to indicate an error to the caller. The function Accesscheck will
-    usually stop executing and return this error. 
+    usually stop executing and return this error.
   }
   TJwOnAuthzComputeGroupsCallback = procedure(
     AuthzClientContext : TAuthZClientContextHandle;
@@ -167,11 +167,11 @@ type
   public
     {<B>Create</B> creates a new request instance.
      @param DesiredAccess defines which access rights are checked. Can be
-       MAXIMUM_ALLOWED to get highest possible access. 
+       MAXIMUM_ALLOWED to get highest possible access.
      @param PrincipalSelfSid defines a SID that is used to replace a principle self sid
      found in an inherited ACE. A principle self SID (S-1-5-10)
      in a ACE will be replaced by this property SID.
-      
+
      @param ObjectTypeArray defines an array of object properties.
         The Level of the objects must comply to some rules.
       <code lang="Delphi">
@@ -183,10 +183,10 @@ type
       sequence start: a_0 = 0
       </code>
       See also http://msdn2.microsoft.com/en-us/library/aa374917(VS.85).aspx
-        
+
      @param Data defines user data that is supplied to the request in
-        the OptionalData member, 
-     @param Shared is not used. 
+        the OptionalData member,
+     @param Shared is not used.
     }
     constructor Create(
       DesiredAccess    : TJwAccessMask;
@@ -239,14 +239,14 @@ type
      result of the access check.
      Values are from
       http://msdn2.microsoft.com/en-us/library/aa376321(VS.85).aspx
-     
-     # ERROR_SUCCESS  All the access bits, not including MAXIMUM_ALLOWED, are granted and the GrantedAccessMask member is not zero. 
-     # ERROR_PRIVILEGE_NOT_HELD DesiredAccess includes ACCESS_SYSTEM_SECURITY and the client does not have SeSecurityPrivilege. 
+
+     # ERROR_SUCCESS  All the access bits, not including MAXIMUM_ALLOWED, are granted and the GrantedAccessMask member is not zero.
+     # ERROR_PRIVILEGE_NOT_HELD DesiredAccess includes ACCESS_SYSTEM_SECURITY and the client does not have SeSecurityPrivilege.
      # ERROR_ACCESS_DENIED Includes each of the following:
 		* The requested bits are not granted.
 		* MaximumAllowed bit is on and granted access is zero.
-		* DesiredAccess is zero. 
-      
+		* DesiredAccess is zero.
+
      }
     property Error : TJwCardinalArray read fError;
 
@@ -294,19 +294,19 @@ type
     {<B>Create</B> create a resource manager instance that is used to create
      one or more instances of TJwAuthContext.
 
-     @param Name defines a user defined name of the manager 
+     @param Name defines a user defined name of the manager
      @param Flags defines a set of options how to create the manager.
             If the set is empty the default value is [authRM_NoAudit].
 
-            See TJwAuthZResourceManagerFlags  for more information 
+            See TJwAuthZResourceManagerFlags  for more information
      @param OnAuthzComputeGroupsCallback defines a callback function
        that is called to retrieve more groups for an access check.
        Groups allocated in this method callback should be freed in OnAuthzFreeGroupsCallback.
        However the constructor does not enforce it.
-        
+
      @param OnAuthzAccessCheckCallback is called everytime TJwAuthContext.AccessCheck
         encounters a callback ACE.
-        Hint: Be aware that JWSCL does not provide callback access control entries at this time. 
+        Hint: Be aware that JWSCL does not provide callback access control entries at this time.
      }
     constructor Create(
       const Name : WideString;
@@ -367,8 +367,8 @@ type
     fCallbackData : PJwCallbackData;
   public
     {<B>GetInformationFromContext</B> returns information about a context.
-     @param InfoClass See http://msdn2.microsoft.com/en-us/library/aa376323(VS.85).aspx 
-     @return Returns a pointer to the information. Must be freed by Freemem 
+     @param InfoClass See http://msdn2.microsoft.com/en-us/library/aa376323(VS.85).aspx
+     @return Returns a pointer to the information. Must be freed by Freemem
      }
     function GetInformationFromContext(
       InfoClass : AUTHZ_CONTEXT_INFORMATION_CLASS) : Pointer;
@@ -380,21 +380,21 @@ type
 
     {<B>CreateByContext</B> creates an authentication context from a token.
 
-     @param Flags not used. 
+     @param Flags not used.
      @param Token A token that is used for initializing the context. The token
-        must be opened with TOKEN_QUERY. 
-     @param ExpirationTime Time for which the access check must remain valid. 
+        must be opened with TOKEN_QUERY.
+     @param ExpirationTime Time for which the access check must remain valid.
      @param DynamicGroupArgs is a used defined pointer that is passed to
-        a call to TJwAuthResourceManager.OnAuthzComputeGroupsCallback 
+        a call to TJwAuthResourceManager.OnAuthzComputeGroupsCallback
      raises
  EJwsclWinCallFailedException:  will be raised if a call to
       AuthzInitializeContextFromAuthzContext failed.
       If GetLastError returns ERROR_INVALID_BLOCK, the reason is because
        a callback data block (TJwCallbackData) is invalid. This can only
        happen if someone changed the internal instance data.
-       
+
       EJwsclNILParameterException: will be raised if parameter ResourceManager or
-      Sid is nil 
+      Sid is nil
     }
     constructor CreateByContext(
       const AuthContext : TJwAuthContext;
@@ -405,22 +405,22 @@ type
 
     {<B>CreateByToken</B> creates an authentication context from a token.
 
-     @param ResourceManager defines a resource manager instance. Must not be nil. 
-     @param Flags not used. 
+     @param ResourceManager defines a resource manager instance. Must not be nil.
+     @param Flags not used.
      @param Token A token that is used for initializing the context. The token
-        must be opened with TOKEN_QUERY. 
-     @param ExpirationTime not used 
+        must be opened with TOKEN_QUERY.
+     @param ExpirationTime not used
      @param DynamicGroupArgs is a used defined pointer that is passed to
-        a call to TJwAuthResourceManager.OnAuthzComputeGroupsCallback 
+        a call to TJwAuthResourceManager.OnAuthzComputeGroupsCallback
      raises
  EJwsclWinCallFailedException:  will be raised if a call to
       AuthzInitializeContextFromToken failed.
       If GetLastError returns ERROR_INVALID_BLOCK, the reason is because
        a callback data block (TJwCallbackData) is invalid. This can only
        happen if someone changed the internal instance data.
-       
+
       EJwsclNILParameterException: will be raised if parameter ResourceManager or
-      Sid is nil 
+      Sid is nil
     }
     constructor CreateByToken(
       const ResourceManager : TJwAuthResourceManager;
@@ -432,23 +432,23 @@ type
 
     {<B>CreateBySid</B> creates an authentication context from a Sid.
 
-     @param ResourceManager defines a resource manager instance. Must not be nil. 
+     @param ResourceManager defines a resource manager instance. Must not be nil.
      @param Flags defines options how the context is created.
             See flags parameter on
-            http://msdn2.microsoft.com/en-us/library/aa376309.aspx for more information 
-     @param Sid Defines the user who is used to perform the access check with 
-     @param ExpirationTime not used 
+            http://msdn2.microsoft.com/en-us/library/aa376309.aspx for more information
+     @param Sid Defines the user who is used to perform the access check with
+     @param ExpirationTime not used
      @param DynamicGroupArgs is a used defined pointer that is passed to
-        a call to TJwAuthResourceManager.OnAuthzComputeGroupsCallback 
+        a call to TJwAuthResourceManager.OnAuthzComputeGroupsCallback
      raises
  EJwsclWinCallFailedException:  will be raised if a call to
       AuthzInitializeContextFromSid failed.
       If GetLastError returns ERROR_INVALID_BLOCK, the reason is because
        a callback data block (TJwCallbackData) is invalid. This can only
        happen if someone changed the internal instance data.
-       
+
       EJwsclNILParameterException: will be raised if parameter ResourceManager or
-      Sid is nil 
+      Sid is nil
     }
     constructor CreateBySid(
       const ResourceManager : TJwAuthResourceManager;
@@ -463,7 +463,7 @@ type
      This function can also add additional positive and negative Sids to
      the context.
 
-     @param ResourceManager defines a resource manager instance. Must not be nil. 
+     @param ResourceManager defines a resource manager instance. Must not be nil.
      @param Sids receives a list of Sids and its Attributes to be used as
        new groups in the security context. (like TokenGroups in a token).
 
@@ -473,15 +473,15 @@ type
        the call to a WinAPI function wil fail with INVALID_PARAMETERS (87).
 
        Origin: http://msdn2.microsoft.com/en-us/library/aa375798.aspx
-       
+
         # SE_GROUP_ENABLED - adds a group to the security context.
-              It will be treated as if the User has entered a group. 
+              It will be treated as if the User has entered a group.
         # SE_GROUP_USE_FOR_DENY_ONLY - adds a group to the security context,
           but this group is only used for deny check. All positive ACE for
           this group in a DACL are ignored. Only Deny ACEs are recognized
-          and can turn off other positive ACEs of other groups. 
-        
-        
+          and can turn off other positive ACEs of other groups.
+
+
      @param RestrictedSids receives a list of Sids and its Attributes to be used as
        new deny only groups in the security context. (like TokenGroups in a token).
 
@@ -491,14 +491,14 @@ type
        the call to a WinAPI function wil fail with INVALID_PARAMETERS (87).
 
        Origin: http://msdn2.microsoft.com/en-us/library/aa375798.aspx
-       
+
         # SE_GROUP_ENABLED - (probably) the same as parameter SID and
-            attribute SE_GROUP_USE_FOR_DENY_ONLY. 
+            attribute SE_GROUP_USE_FOR_DENY_ONLY.
         # SE_GROUP_USE_FOR_DENY_ONLY - Results alway in Access Denied.
             However do not rely on me - maybe somebody with
-            internal knowledge can comment it. 
-       
-      
+            internal knowledge can comment it.
+
+
     }
     constructor CreateAndAddSids(
       const AuthContext : TJwAuthContext;
@@ -516,8 +516,8 @@ type
     { <b>AccessCheck</b> does an access check of an authentication context. The
       context contains Sids, restricted sids, several security descriptors, auditing
       information and the user herself.
-      
-      
+
+
       Parameters
       Flags :                            from
                                          http\://msdn2.microsoft.com/en\-us/library/aa375788.aspx
@@ -539,10 +539,10 @@ type
                                          raised and Request.Shared is shOwned.<p />
       AuditInfo :                        Receives audit information handle. If this
                                          handle is zero the static audit information is
-                                         read from resource manager 
+                                         read from resource manager
       SecurityDescriptor :               defines the primary SD which is used to perfom
                                          access checking. The owner and group must not
-                                         be nil; otherwise the call will fail 
+                                         be nil; otherwise the call will fail
       OptionalSecurityDescriptorArray :  defines additional security descriptor which
                                          are used for the access check. They are simply
                                          added at the end of the primary security
@@ -551,7 +551,7 @@ type
                                          security descriptors may be useless if a
                                          positive ACE could be found in the primary
                                          security descriptor.<p />
-      Reply :                            receives the results of the access check 
+      Reply :                            receives the results of the access check
       AuthzHandle :                      A handle to the cached results of the access
                                          check. The handle must be freed by the WinAPI call AuthzFreeHandle .
       Exceptions
@@ -580,31 +580,31 @@ type
      @param Flags from http://msdn2.microsoft.com/en-us/library/aa375788.aspx
         A DWORD value that specifies how the security descriptor is copied.
         This parameter can be one of the following values.
-        
-          # Value 	Meaning 
+
+          # Value 	Meaning
           # 0   If pAuthzHandle is not NULL, a deep copy of the
-            security descriptor is copied to the handle referenced by pAuthzHandle. 
+            security descriptor is copied to the handle referenced by pAuthzHandle.
         # AUTHZ_ACCESS_CHECK_NO_DEEP_COPY_SD 1
           A deep copy of the security descriptor is not performed. The caller
           can use the handle for AccessCheckCached .
 
           The AccessCheck function sets this handle to a security
           descriptor that must remain valid during subsequent calls
-          to AccessCheckCached. 
-     
-      
+          to AccessCheckCached.
+
+
      @param Request receives a class that contains information about the
       access check procedure. This instance is automatically freed
       if no exception was raised and Request.Shared is shOwned.
-       
+
      @param AuditInfo Receives audit information handle. If this handle is zero
-       the static audit information is read from resource manager 
-     @param Reply receives the results of the access check 
+       the static audit information is read from resource manager
+     @param Reply receives the results of the access check
 
      raises
- EJwsclWinCallFailedException:  if a call to AuthzAccessCheck failed. 
+ EJwsclWinCallFailedException:  if a call to AuthzAccessCheck failed.
       EJwsclNILParameterException: will be raised if parameter Request,
-      SecurityDescriptor or Request.PrincipalSelfSid is nil 
+      SecurityDescriptor or Request.PrincipalSelfSid is nil
     }
     procedure AccessCheckCached(
       const AccessCheckHandle : TAuthZAccessCheckResultHandle;
@@ -667,7 +667,7 @@ begin
   P := PSidAndAttributesArray(pSidAttrArray);
   TJwSecurityIdList.Free_PSID_Array(P);
 end;
- 
+
 function OnInternalAuthzComputeGroupsCallback2(
       hAuthzClientContext : AUTHZ_CLIENT_CONTEXT_HANDLE;
       Args : Pointer;
@@ -814,13 +814,13 @@ begin
       ClassName, RsUNAuthZCtx);
   JwRaiseOnNilParameter(Token, 'Token', 'CreateByToken',
       ClassName, RsUNAuthZCtx);
-      
+
   GetMem(fCallbackData, sizeof(TJwCallbackData));
   fCallbackData.Hd := HEADERMAGIC;
   fCallbackData.Context  := Self;
   fCallbackData.RM := ResourceManager;
   fCallbackData.UserData := DynamicGroupArgs;
-  
+
   ZeroMemory(@luid, sizeof(TLuid));
 
   fDynamicGroupArgs := DynamicGroupArgs;
@@ -954,7 +954,7 @@ begin
     raise EJwsclNILParameterException.CreateFmtEx(
       RsNilParameter, 'CreateByContext',
       ClassName, RsUNAuthZCtx, 0, False, ['AuthContext']);
-      
+
   fAuthResourceManager := AuthContext.AuthResourceManager;
   fDynamicGroupArgs := AuthContext.fDynamicGroupArgs;
 
@@ -1255,7 +1255,7 @@ begin
         FreeMem(pReply.GrantedAccessMask);
         FreeMem(pReply.SaclEvaluationResults);
         FreeMem(pReply.Error);
-    
+
         TJwSecurityDescriptor.Free_SD(pSD);
 
 
@@ -1320,7 +1320,7 @@ begin
   if pRequest.ObjectTypeListLength = 0 then
     pReply.ResultListLength := 1;
 
-  //create arrays  
+  //create arrays
   GetMem(pReply.GrantedAccessMask,
     (pReply.ResultListLength) * sizeof(ACCESS_MASK));
   ZeroMemory(pReply.GrantedAccessMask, (pReply.ResultListLength) * sizeof(ACCESS_MASK));
@@ -1407,7 +1407,7 @@ begin
 {$ELSE}
   fOnAuthzAccessCheckCallback := OnAuthzAccessCheckCallback;
 {$ENDIF}
-  
+
 
   if not AuthzInitializeResourceManager(
     TJwEnumMap.ConvertAuthZResourceManager(Flags),//__in   DWORD flags,

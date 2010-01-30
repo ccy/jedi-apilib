@@ -81,7 +81,7 @@ end;
 
 function TJwEnumSet.State(EnumConst: Integer): WordBool;
 begin
-  result := fBits and EnumConst = EnumConst; 
+  result := fBits and EnumConst = EnumConst;
 end;
 
 function IsInBorders(const V : PTypeInfo; Value : Integer) : Boolean;

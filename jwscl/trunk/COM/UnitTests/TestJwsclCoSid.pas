@@ -4,7 +4,7 @@ unit TestJwsclCoSid;
   Delphi DUnit Testfall
   ----------------------
   Diese Unit enthält ein Codegerüst einer Testfallklasse, das vom Testfall-Experten
-  erzeugt wurde. Ändern Sie den erzeugten Code, damit die Methoden aus der 
+  erzeugt wurde. Ändern Sie den erzeugten Code, damit die Methoden aus der
   getesteten Unit korrekt eingerichtet und aufgerufen werden.
 
 }
@@ -23,7 +23,7 @@ uses
 
 type
   // Testmethoden für Klasse TJwSid
-  
+
   TestTJwSid = class(TTestCase)
   private
     FJwSid: IJwSid;
@@ -91,7 +91,7 @@ function CreateSidAndAttributesStream(const Sid : PSid; const Attributes : DWORD
 
 implementation
 {$IFDEF SM_JCLDEBUG}
-uses jclDebug;       
+uses jclDebug;
 {$ENDIF}
 
 
@@ -496,4 +496,3 @@ initialization
   RegisterTest(TestTJwSid.Suite);
   RegisterTest(TestTJwSidList.Suite);
 end.
-

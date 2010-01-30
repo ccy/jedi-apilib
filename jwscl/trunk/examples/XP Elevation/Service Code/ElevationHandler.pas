@@ -16,7 +16,7 @@ type
     UserProfile : TJwProfileInfo;
   end;
 
-  
+
   TElevationHandler = class(TObject)
   private
 
@@ -91,7 +91,7 @@ const TIMEOUT = {$IFNDEF DEBUG}3000;{$ELSE}INFINITE;{$ENDIF}
 var
   StartInfo: STARTUPINFOW;
   ProcInfo: PROCESS_INFORMATION;
-    
+
   Desc: TJwSecurityDescriptor;
   SecAttr: LPSECURITY_ATTRIBUTES;
   CredApp: String;
@@ -158,7 +158,7 @@ begin
 
       TJwSecurityDescriptor.Free_SA(PSecurityAttributes(SecAttr));
       FreeAndNil(Desc);
-      
+
       raise;
     end;
   end;
@@ -348,7 +348,7 @@ var Password,
     Source: TTokenSource; ProfBuffer: PMSV1_0_INTERACTIVE_PROFILE; ProfBufferLen: Cardinal;
     Token, NewToken: TJwSecurityToken; TokenLuid: TLUID; QuotaLimits: QUOTA_LIMITS; SubStatus: integer;
 
-    ProfInfo: PROFILEINFO; AddGroups: TJwSecurityIDList; 
+    ProfInfo: PROFILEINFO; AddGroups: TJwSecurityIDList;
 
     EnvirBlock: Pointer;
     StartInfo: STARTUPINFOW;
@@ -389,7 +389,7 @@ begin
           Log.Log('Elevation of user '+SID.AccountName['']+' for application '+ApplicationPath+' not allowed.');
 
           abort;
-        end; 
+        end;
         Username := SID.AccountName[''];
         try //4.
           Domain := SID.GetAccountDomainName('');
@@ -483,7 +483,7 @@ begin
           Invars.AdditionalGroups := TJwSecurityIdList.Create;
           Sid.AttributesType := [sidaGroupMandatory,sidaGroupEnabled];
           Invars.AdditionalGroups.Add(Sid);
-          
+
           InVars.SourceName := 'XPElevation';
           InVars.SessionID := Token.TokenSessionId;
           InVars.UseSessionID := true;
@@ -495,14 +495,14 @@ begin
           ZeroMemory(@InVars.Parameters, sizeof(InVars.Parameters));
           InVars.Parameters.lpApplicationName := ApplicationPath;
           InVars.Parameters.lpCommandLine := '';
-          InVars.Parameters.dwCreationFlags := CREATE_NEW_CONSOLE or 
+          InVars.Parameters.dwCreationFlags := CREATE_NEW_CONSOLE or
               CREATE_SUSPENDED or CREATE_UNICODE_ENVIRONMENT or CREATE_BREAKAWAY_FROM_JOB;
           InVars.Parameters.lpCurrentDirectory := ''; {TODO: }
-          
+
           try //7.
             try
               JwCreateProcessAsAdminUser(
-                 UserName,//const UserName, 
+                 UserName,//const UserName,
                  Domain,//Domain,
                  Password,//Password : TJwString;
                  InVars,//const InVars : TJwCreateProcessInfo;
@@ -515,21 +515,21 @@ begin
                 ServerPipe.SendServerResult(ERROR_SUCCESS,0);
               except
               end;
-            
+
               //save user profile for later unloading
               New(UserData);
               UserData.UserToken   := OutVars.UserToken;
               UserData.UserProfile := OutVars.ProfInfo;
               try
-                fJobs.AssignProcessToJob(OutVars.ProcessInfo.hProcess, 
+                fJobs.AssignProcessToJob(OutVars.ProcessInfo.hProcess,
                   Pointer(UserData));
               except
                 //TODO: oops job assignment failed
               end;
             finally
-              //free process handles 
+              //free process handles
               FreeAndNil(InVars.AdditionalGroups);
-              
+
               FreeAndNil(OutVars.LinkedToken);
               FreeAndNil(OutVars.LSA);
               LsaFreeReturnBuffer(OutVars.ProfBuffer);
@@ -539,8 +539,8 @@ begin
               CloseHandle(OutVars.ProcessInfo.hThread);
             end;
 
-            
-            
+
+
           except //7.
             on E1 : EJwsclWinCallFailedException do
             begin
@@ -557,7 +557,7 @@ begin
               Log.Exception(E3);
               ServerPipe.SendServerResult(ERROR_CREATEPROCESSASUSER_FAILED, E3.LastError);
             end;
-          
+
             on E : Exception do
             begin
               Log.Exception(E);
@@ -566,10 +566,10 @@ begin
 
           end;
         finally //6a.
-      
+
         end;
       finally  //5.
-        
+
       end;
     finally //2.
       FreeAndNil(Token);

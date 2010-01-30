@@ -71,11 +71,11 @@ type
   public
       {<B>Create</B> creates a list of SIDs that are provided in a TOKEN_GROUPS structure.
        The SIDs are copied.
-       @param ownSIDs defines whether the SIDs are freed on the end of the list instance (true) or not 
-       @param token_groups contains a list of SIDs to be copied into new instances 
+       @param ownSIDs defines whether the SIDs are freed on the end of the list instance (true) or not
+       @param token_groups contains a list of SIDs to be copied into new instances
 
        raises
- EJwsclWinCallFailedException:  will be raised if a call to CopySID failed 
+ EJwsclWinCallFailedException:  will be raised if a call to CopySID failed
 
        COM: Also available as com method.
       }
@@ -103,26 +103,26 @@ type
     constructor Create(SidAndAttributesArray : PSidAndAttributesArray); overload;
 
       {<B>Create</B> creates an empty list.
-      @param ownSIDs defines whether the SIDs are freed on the end of the list instance (true) or not 
+      @param ownSIDs defines whether the SIDs are freed on the end of the list instance (true) or not
 
       COM: Also available as com method.
       }
     constructor Create(ownSIDs: boolean); overload;
 
       {<B>Add</B> adds a SID instance to end end of the list
-       @return <B>Add</B> returns the index in the list where the SID was added 
+       @return <B>Add</B> returns the index in the list where the SID was added
        raises
  EJwsclDuplicateListEntryException:  will be raised if the given SID is already in list }
     function Add(AObject: TJwSecurityId): integer;
 
       {<B>First</B> returns the first SID from the list.
-       @return The first SID or if the list is empty <B>First</B> returns nil. 
+       @return The first SID or if the list is empty <B>First</B> returns nil.
        }
     function First: TJwSecurityId;
 
       {<B>IndexOf</B> returns the list index of a SID from the list.
        The SID instance is searched not the ID. To find an equal SID use FindSid.
-       @return Index of list. If the SID is not in list the return value is -1. 
+       @return Index of list. If the SID is not in list the return value is -1.
        }
     function IndexOf(AObject: TJwSecurityId): integer;
 
@@ -140,7 +140,7 @@ type
 
       {<B>Insert</B> inserts a SID into the list.
        @param Index defines a list index where the SID is to be inserted .
-              If the Index is not between 0 and Count-1 an exception will be raised. 
+              If the Index is not between 0 and Count-1 an exception will be raised.
        }
     procedure Insert(Index: integer; AObject: TJwSecurityId);
 
@@ -153,7 +153,7 @@ type
        the SID will also be freed.
        The special SIDs in JwsclKnownSids will not be freed but removed from list!
 
-       @param aObject contains the SID to be removed 
+       @param aObject contains the SID to be removed
        @return <B>Remove</B> returns the index of the SID in the list before it was removed. If
                  the SID could not be found the return value is -1.  }
     function Remove(AObject: TJwSecurityId): integer; reintroduce;
@@ -273,15 +273,15 @@ type
        The size of allocated memory is always the maximum possible size of a
         SID. The constant SECURITY_MAX_SID_SIZE is used.
        The data must be freed by FreeSID .
-       @return <B>NewSID</B> returns a pointer to the newly created SID 
+       @return <B>NewSID</B> returns a pointer to the newly created SID
        raises
- EJwsclNotEnoughMemory:  will be raised if not enough memory is available 
+ EJwsclNotEnoughMemory:  will be raised if not enough memory is available
        }
     class function NewSID: PSID;
 
       {<B>FreeSID</B> frees a SID allocated by NewSID .
        @param SID contains the sid memory to be freed. If the variable is nil nothing will happen.
-              The parameter will be nil after a succesfull call 
+              The parameter will be nil after a succesfull call
        }
     class procedure FreeSID(var SID: PSID);
 
@@ -295,7 +295,7 @@ type
         Otherwise the value is always WinNullSid;
 
        @return Returns the well known sid type. The following types are available :
-    
+
     #  WinNullSid,
     #  WinWorldSid,
     #  WinLocalSid,
@@ -357,7 +357,7 @@ type
     #  WinBuiltinPerfLoggingUsersSid,
     #  WinBuiltinAuthorizationAccessSid,
     #  WinBuiltinTerminalServerLicenseServersSid
-    
+
 
       }
     function GetWellKnownSidType: TWellKnownSidType;
@@ -396,7 +396,7 @@ type
         This function simulates the WINAPI function GetWindowsAccountDomainSid
         and is therefore also available on Windows 2000.
 
-       @return <B>GetWindowsAccountDomainSid</B> returns the sid domain of the sid instance 
+       @return <B>GetWindowsAccountDomainSid</B> returns the sid domain of the sid instance
        raises
          EJwsclWinCallFailedException:  if the call to a winapi function failed
          EJwsclInvalidSIDException: This exception is raised if the given SID instance
@@ -416,7 +416,7 @@ type
         EJwsclNILParameterException:  if parameter aSID is nil
         EJwsclInvalidSIDException: This exception is raised if the given SID instance
           does not match the pattern "S-1-5-21-xx-yy-zz..."
-        EJwsclSecurityException: See CheckSID  for more exceptions 
+        EJwsclSecurityException: See CheckSID  for more exceptions
 
        }
     class function GetWindowsAccountDomainSid(aSID: TJwSecurityId): TJwSecurityId;
@@ -428,8 +428,8 @@ type
        This function simulates the WINAPI function GetWindowsAccountDomainSid
         and is therefore also available on Windows 2000.
 
-       @param pSid1 the SID to be compared with the current sid instance 
-       @return If the SID prefixes are equal, the return value is true; otherwise false 
+       @param pSid1 the SID to be compared with the current sid instance
+       @return If the SID prefixes are equal, the return value is true; otherwise false
        raises
          EJwsclNILParameterException:  if parameter pSID1 is nil
          EJwsclInvalidSIDException: This exception is raised if the given SID instance
@@ -438,30 +438,30 @@ type
       }
     function EqualPrefixSid(pSid1: TJwSecurityId): boolean;virtual;
       {<B>EqualSid</B> tests two security-identifier (SID) values for equality.
-       @param pSid1 the SID to be compared with the current sid instance 
-       @return If the SID prefixes are equal, the return value is true; otherwise false 
+       @param pSid1 the SID to be compared with the current sid instance
+       @return If the SID prefixes are equal, the return value is true; otherwise false
        raises
- EJwsclNILParameterException:  if parameter pSID1 is nil 
-        EJwsclWinCallFailedException: if the call to a winapi function failed 
+ EJwsclNILParameterException:  if parameter pSID1 is nil
+        EJwsclWinCallFailedException: if the call to a winapi function failed
       }
     function EqualSid(pSid1: TJwSecurityId): boolean;virtual;
 
       {<B>EqualDomainSid</B> determines whether two SIDs are from the same domain.
-       @param pSid1 the SID to be compared with the current sid instance 
-       @return If the SID domains are equal, the return value is true; otherwise false 
+       @param pSid1 the SID to be compared with the current sid instance
+       @return If the SID domains are equal, the return value is true; otherwise false
        raises
- EJwsclNILParameterException:  if parameter pSID1 is nil 
-        EJwsclWinCallFailedException: if the call to a winapi function failed 
+ EJwsclNILParameterException:  if parameter pSID1 is nil
+        EJwsclWinCallFailedException: if the call to a winapi function failed
       }
     function EqualDomainSid(pSid1: TJwSecurityId): boolean; virtual;
 
     class function SplitAccountString(const Str: TJwString; out Domain, User: TJwString): Boolean;
 
       {<B>GetAccountSidString</B> gets the domain and acount name of the SID. It also returns the type of Sid Name.
-       @param SystemName contains the target computer name. It can be null to use the local system. 
-       @param DomainName [out] gets the domain name of this SID 
+       @param SystemName contains the target computer name. It can be null to use the local system.
+       @param DomainName [out] gets the domain name of this SID
        @param SidNameUse [out] gets the SID use type. It will be one of the following constant :
-          
+
             #  SidTypeUser           = 1;
             #  SidTypeGroup          = 2;
             #  SidTypeDomain         = 3;
@@ -481,8 +481,8 @@ type
 
        @return <B>GetAccountSidString</B> returns the account name associated by this SID.
        raises
- EJwsclWinCallFailedException:  if the call to a winapi function failed 
-        EJwsclSecurityException: See CheckSID  for more exceptions 
+ EJwsclWinCallFailedException:  if the call to a winapi function failed
+        EJwsclSecurityException: See CheckSID  for more exceptions
        }
     function GetAccountSidString(const SystemName: TJwString;
       out DomainName: TJwString; out SidNameUse: TSidNameUse): TJwString; virtual;
@@ -500,7 +500,7 @@ type
       {<B>GetAccountDomainName</B> returns the domain account name of the SID on the computer given in SystemName.
        For more information see the see also section.
        raises
- EJwsclWinCallFailedException:  if the call to a winapi function failed 
+ EJwsclWinCallFailedException:  if the call to a winapi function failed
        @Seealso(GetAccountSidString);
        }
     function GetAccountDomainName(SystemName: TJwString): TJwString; virtual;
@@ -508,7 +508,7 @@ type
       {<B>GetAccountNameUse</B> returns the account name use of the SID on the computer given in SystemName.
        For more information see the see also section.
        raises
- EJwsclWinCallFailedException:  if the call to a winapi function failed 
+ EJwsclWinCallFailedException:  if the call to a winapi function failed
        @Seealso(GetAccountSidString);
        }
     function GetAccountNameUse(SystemName: TJwString): TSidNameUse; virtual;
@@ -525,9 +525,9 @@ type
          1. PSID_AND_ATTRIBUTES
          2. PSID
 
-       @param attributes contains a value for the attribute componente of the SID and Attributes structure. 
+       @param attributes contains a value for the attribute componente of the SID and Attributes structure.
        raises
- EJwsclNotEnoughMemory:  will be raised if not enough memory is available 
+ EJwsclNotEnoughMemory:  will be raised if not enough memory is available
        }
     function Create_PSID_AND_ATTRIBUTES(attributes: Cardinal = 0):
       PSID_AND_ATTRIBUTES; virtual;
@@ -535,7 +535,7 @@ type
       {<B>Free_PSID_AND_ATTRIBUTES</B> frees the memory allocated by Create_PSID_AND_ATTRIBUTES.
 
        @param sids contains the PSID_AND_ATTRIBUTES structure to be freed.
-            If sids is nil nothing happens. If the memory could be freed successfully the parameter sids will be set to nil 
+            If sids is nil nothing happens. If the memory could be freed successfully the parameter sids will be set to nil
        )
       }
     procedure Free_PSID_AND_ATTRIBUTES(var sids: PSID_AND_ATTRIBUTES);
@@ -548,13 +548,13 @@ type
  EJwsclInvalidSIDException:  if the property SID is nil OR
                 if the SID structure is invalid due to a call to MSDN function IsValidSid (http://msdn2.microsoft.com/en-us/library/aa379151.aspx).
                   The IsValidSid function validates a security identifier (SID) by verifying that the revision number is within a known range, and that the number of subauthorities is less than the maximum.
-                  
+
       }
     procedure CheckSID; {$IFDEF DELPHI2005_UP}inline;{$ENDIF}
 
       {<B>GetText</B> creates a text that contains domain, account name and humand readable SID structure.
        The form is "[domain@]name (S-1-XXXXXX)" where [] is optional.
-       @param ignoreExceptions if set to true ignores exceptions that are thrown 
+       @param ignoreExceptions if set to true ignores exceptions that are thrown
        @return Returns the string value
       }
     function GetText(ignoreExceptions: boolean = False): TJwString; virtual;
@@ -569,9 +569,9 @@ type
         The given SID must be a correct SID.
         The resulted SID will be checked by CheckSID .
 
-        @param SecurityID receives a SID instance to be copied 
+        @param SecurityID receives a SID instance to be copied
         raises
- EJwsclSecurityException:  See CheckSID  for exceptions description 
+ EJwsclSecurityException:  See CheckSID  for exceptions description
 
         COM: Also available as com method.
 
@@ -581,10 +581,10 @@ type
        {<B>Create</B> copies the given SID structure into a newly created instance.
         The resulted SID will be checked by CheckSID .
 
-        @param SID receives a SID structure to be copied 
+        @param SID receives a SID structure to be copied
         raises
- EJwsclWinCallFailedException:  will be raised if a call to CopySID failed 
-         EJwsclSecurityException: See CheckSID  for exceptions description 
+ EJwsclWinCallFailedException:  will be raised if a call to CopySID failed
+         EJwsclSecurityException: See CheckSID  for exceptions description
 
         COM: Also available as com method.
        }
@@ -595,10 +595,10 @@ type
         The component attributes will be ignored.
         The resulted SID will be checked by CheckSID .
 
-        @param SID receives a TSidAndAttributes structure to be copied 
+        @param SID receives a TSidAndAttributes structure to be copied
         raises
- EJwsclWinCallFailedException:  will be raised if a call to CopySID failed 
-         EJwsclSecurityException: See CheckSID  for exceptions description 
+ EJwsclWinCallFailedException:  will be raised if a call to CopySID failed
+         EJwsclSecurityException: See CheckSID  for exceptions description
 
         COM: Also available as com method.
        }
@@ -609,9 +609,9 @@ type
         The component attributes will be ignored.
         The resulted SID will be checked by CheckSID .
 
-       
+
         raises
- EJwsclWinCallFailedException:  will be raised if a call to AllocateAndInitializeSid failed 
+ EJwsclWinCallFailedException:  will be raised if a call to AllocateAndInitializeSid failed
          EJwsclSecurityException: See CheckSID  for exceptions description  }
 
     constructor Create(const Authorities: TJwSubAuthorityArray;
@@ -624,12 +624,12 @@ type
 
         This constructor calls Create(const Authorities : TJwSubAuthorityArray; Identifier: TSidIdentifierAuthority);
         @param Authorities contains an array of authorities values copied into the authority structure of the SID.
-         It can be an array of Cardinal values. However only the first 8 values are used. 
+         It can be an array of Cardinal values. However only the first 8 values are used.
         @param Identifier contains a TSidIdentifierAuthority structure to be copied into the new SID instance.
-              Authorities must contain 8 subauthority values. 
+              Authorities must contain 8 subauthority values.
 
         raises
- EJwsclWinCallFailedException:  will be raised if a call to AllocateAndInitializeSid failed 
+ EJwsclWinCallFailedException:  will be raised if a call to AllocateAndInitializeSid failed
          EJwsclSecurityException: See CheckSID  for exceptions description  }
 
     constructor Create(const Authorities: array of Cardinal;
@@ -641,10 +641,10 @@ type
         COM: Also available as com method.
 
 
-        @param WellKnownSidType contains the sid type that is to be created 
+        @param WellKnownSidType contains the sid type that is to be created
         @param DomainSid contains the domain SID where the new SID is associated. It can be nil to use the local computer.
                The domain SID. This value is required for the following WellKnownSidType values. This parameter is ignored for any other WellKnownSidType values.
-               
+
                #  WinAccountAdministratorSid
                #  WinAccountGuestSid
                #  WinAccountKrbtgtSid
@@ -660,8 +660,8 @@ type
                #  WinAccountRasAndIasServersSid
 
         raises
- EJwsclWinCallFailedException:  will be raised if a call to CreateWellKnownSid failed 
-         EJwsclSecurityException: See CheckSID  for exceptions description 
+ EJwsclWinCallFailedException:  will be raised if a call to CreateWellKnownSid failed
+         EJwsclSecurityException: See CheckSID  for exceptions description
        }
     constructor CreateWellKnownSid(WellKnownSidType: TWellKnownSidType;
       DomainSid: TJwSecurityId = nil); overload;
@@ -670,10 +670,10 @@ type
         The resulted SID will be checked by CheckSID .
 
         @param SIDString must be in form "S-1-III-SSS[-SSS]^7".
-               Where I = identifier authority and S = subautority (from 1 to 8) 
+               Where I = identifier authority and S = subautority (from 1 to 8)
         raises
- EJwsclWinCallFailedException:  will be raised if a call to ConvertStringSidToSid failed 
-         EJwsclSecurityException: See CheckSID  for exceptions description 
+ EJwsclWinCallFailedException:  will be raised if a call to ConvertStringSidToSid failed
+         EJwsclSecurityException: See CheckSID  for exceptions description
 
         COM: Also available as com method.
        }
@@ -682,11 +682,11 @@ type
        {<B>Create</B> creates a SID instance from a user and domain account.
         The resulted SID will be checked by CheckSID .
 
-        @param SystemName can be a computer or domain name. Can also be empty so the local computer will be used. 
-        @param AccountName contains the user account name to be converted into a SID 
+        @param SystemName can be a computer or domain name. Can also be empty so the local computer will be used.
+        @param AccountName contains the user account name to be converted into a SID
         raises
  EJwsclWinCallFailedException:  will be raised if a call to ConvertStringSidToSid failed
-         EJwsclSecurityException: See CheckSID  for exceptions description 
+         EJwsclSecurityException: See CheckSID  for exceptions description
 
         COM: Also available as com method.
        }
@@ -721,7 +721,7 @@ type
     class function SidAuthToInt(const Value : TSidIdentifierAuthority) : Int64;
 
     {<B>IntToSidAuth</B> converts a value into a sid identifier structure.
-     @param Value defines a value that is to be converted. 
+     @param Value defines a value that is to be converted.
      raises
  EJwsclInvalidSidAuthorityValue:  will be raised if the given value
        is greater than $FFFFFFFFFFFF ((2^48) -1) }
@@ -1395,7 +1395,7 @@ begin
       RsSidCallFailedCreateSIDString,
       'Create(const SIDString : TJwString)', ClassName, RsUNSid, 0, True,
       [AnsiString(SIDString)]);
-         
+
   {
    WARNING:
      I changed the memory allocation to GetMem so Memory Leak Finders (like FastMM4) can work.
@@ -1425,7 +1425,7 @@ var
   tempSID: PSID;
 begin
   fCachedSystemName := SystemName;
-  
+
   SidNameUse := SidTypeInvalid;
 
   iSidSize := SECURITY_MAX_SID_SIZE;
@@ -1732,7 +1732,7 @@ var
 begin
   CheckSID;
 
-  
+
 
 {$IFDEF JWSCL_SIDCACHE}
   ASSERT(JwSidNameCache <> nil, 'Sid Cache was enabled but JwInitSidNameCache was not called before.');

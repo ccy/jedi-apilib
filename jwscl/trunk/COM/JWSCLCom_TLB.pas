@@ -1,14 +1,14 @@
 unit JWSCLCom_TLB;
 
 // ************************************************************************ //
-// WARNUNG                                                                    
-// -------                                                                    
+// WARNUNG
+// -------
 // Die in dieser Datei deklarierten Typen wurden aus Daten einer Typbibliothek
-// generiert. Wenn diese Typbibliothek explizit oder indirekt (über eine     
-// andere Typbibliothek) reimportiert wird oder wenn die Anweisung            
-// 'Aktualisieren' im Typbibliotheks-Editor während des Bearbeitens der     
-// Typbibliothek aktiviert ist, wird der Inhalt dieser Datei neu generiert und 
-// alle manuell vorgenommenen Änderungen gehen verloren.                           
+// generiert. Wenn diese Typbibliothek explizit oder indirekt (über eine
+// andere Typbibliothek) reimportiert wird oder wenn die Anweisung
+// 'Aktualisieren' im Typbibliotheks-Editor während des Bearbeitens der
+// Typbibliothek aktiviert ist, wird der Inhalt dieser Datei neu generiert und
+// alle manuell vorgenommenen Änderungen gehen verloren.
 // ************************************************************************ //
 
 // PASTLWTR : 1.2
@@ -18,28 +18,28 @@ unit JWSCLCom_TLB;
 // Typbib: P:\Eigene Dateien\Dezipaitor\Projekte\Delphi\7\jedi-api-lib\jwscl\trunk\COM\JWSCLCom.tlb (1)
 // LIBID: {9EBCE2EF-4E69-4AC3-AA7F-F021E119E8BB}
 // LCID: 0
-// Hilfedatei: 
+// Hilfedatei:
 // Hilfe-String: JWSCLCom Library
-// DepndLst: 
+// DepndLst:
 //   (1) v2.0 stdole, (C:\Windows\system32\stdole2.tlb)
 //   (2) v4.0 StdVCL, (C:\Windows\system32\stdvcl40.dll)
 // ************************************************************************ //
-{$TYPEDADDRESS OFF} // Unit muß ohne Typüberprüfung für Zeiger compiliert werden. 
+{$TYPEDADDRESS OFF} // Unit muß ohne Typüberprüfung für Zeiger compiliert werden.
 {$WARN SYMBOL_PLATFORM OFF}
 {$WRITEABLECONST ON}
 {$VARPROPSETTER ON}
 interface
 
 uses Windows, ActiveX, Classes, Graphics, StdVCL, Variants;
-  
+
 
 // *********************************************************************//
-// In dieser Typbibliothek deklarierte GUIDS . Es werden folgende         
-// Präfixe verwendet:                                                     
-//   Typbibliotheken     : LIBID_xxxx                                     
-//   CoClasses           : CLASS_xxxx                                     
-//   DISPInterfaces      : DIID_xxxx                                      
-//   Nicht-DISP-Schnittstellen: IID_xxxx                                       
+// In dieser Typbibliothek deklarierte GUIDS . Es werden folgende
+// Präfixe verwendet:
+//   Typbibliotheken     : LIBID_xxxx
+//   CoClasses           : CLASS_xxxx
+//   DISPInterfaces      : DIID_xxxx
+//   Nicht-DISP-Schnittstellen: IID_xxxx
 // *********************************************************************//
 const
   // Haupt- und Nebenversionen der Typbibliothek
@@ -245,7 +245,7 @@ const
   CLASS_JwAccessControlEntry: TGUID = '{CF1746A5-59C0-417D-8D07-C83EA21F81D4}';
 
 // *********************************************************************//
-// Deklaration von in der Typbibliothek definierten Enumerationen         
+// Deklaration von in der Typbibliothek definierten Enumerationen
 // *********************************************************************//
 // Konstanten für enum JwCoFacilities
 type
@@ -857,7 +857,7 @@ const
 type
 
 // *********************************************************************//
-// Forward-Deklaration von in der Typbibliothek definierten Typen         
+// Forward-Deklaration von in der Typbibliothek definierten Typen
 // *********************************************************************//
   IJwSid = interface;
   IJwSidDisp = dispinterface;
@@ -1060,9 +1060,9 @@ type
   IJwListFindCallbackDisp = dispinterface;
 
 // *********************************************************************//
-// Deklaration von in der Typbibliothek definierten CoClasses             
-// (HINWEIS: Hier wird jede CoClass zu ihrer Standardschnittstelle        
-// zugewiesen)                                                            
+// Deklaration von in der Typbibliothek definierten CoClasses
+// (HINWEIS: Hier wird jede CoClass zu ihrer Standardschnittstelle
+// zugewiesen)
 // *********************************************************************//
   JwSid = IJwSid;
   JwSidList = IJwSidList;
@@ -1161,14 +1161,14 @@ type
   JwAccessControlEntry = IJwAccessControlEntry;
 
 
-// *********************************************************************// 
-// Deklaration von  Strukturen, Unions und Aliasen.                        
-// *********************************************************************// 
+// *********************************************************************//
+// Deklaration von  Strukturen, Unions und Aliasen.
+// *********************************************************************//
   PWideString1 = ^WideString; {*}
 
-  PCoSid = PChar; 
-  PCoSidAndAttributes = PChar; 
-  PCoTokenGroups = PChar; 
+  PCoSid = PChar;
+  PCoSidAndAttributes = PChar;
+  PCoTokenGroups = PChar;
 
   TGenericMapping = packed record
     GenericRead: LongWord;
@@ -1177,42 +1177,42 @@ type
     GenericAll: LongWord;
   end;
 
-  JwTokenHandle = LongWord; 
-  JwAccessMask = LongWord; 
-  JwThreadHandle = LongWord; 
-  JwProcessHandle = LongWord; 
-  JwLastError = LongWord; 
-  JwTokenAccessMask = LongWord; 
-  JwCSPHandle = LongWord; 
-  JwHandle = LongWord; 
-  JwKeyHandle = JwHandle; 
-  JwSessionID = JwHandle; 
-  JwState = JwHandle; 
-  JwProcessID = JwHandle; 
-  JwBitMask = LongWord; 
-  JwAceTypes = JwBitMask; 
-  JwEqualAceTypes = JwBitMask; 
-  JwSecurityInforationFlags = JwBitMask; 
-  JwExtDWORD = Int64; 
-  JwTempResetEnumSet = JwBitMask; 
-  JwSecurityDescriptorControls = JwBitMask; 
-  JwSecurityDialogFlags = JwBitMask; 
-  JwDesktopFlags = JwBitMask; 
-  JwSIDAttributes = JwBitMask; 
-  JwSecurityObjectInformationSet = JwBitMask; 
-  JwGetAccessCheckTypes = JwBitMask; 
-  JwInheritFlags = JwBitMask; 
-  JwCredentialFlags = JwBitMask; 
-  JwCryptProtectFlags = JwBitMask; 
-  JwCryptProtectOnPromptFlags = JwBitMask; 
-  JwProtectMemoryFlags = JwBitMask; 
-  JwCSPCreationFlags = JwBitMask; 
-  JwKeyFlagSet = JwBitMask; 
-  JwMandatoryPolicies = JwBitMask; 
-  JwAuthZSIDContextFlags = JwBitMask; 
-  IJwObjectTypeArray = IJwObjectTypeList; 
-  JwTokenMandatoryPolicies = JwBitMask; 
-  JwWellIKnownSidTypeSet = JwBitMask; 
+  JwTokenHandle = LongWord;
+  JwAccessMask = LongWord;
+  JwThreadHandle = LongWord;
+  JwProcessHandle = LongWord;
+  JwLastError = LongWord;
+  JwTokenAccessMask = LongWord;
+  JwCSPHandle = LongWord;
+  JwHandle = LongWord;
+  JwKeyHandle = JwHandle;
+  JwSessionID = JwHandle;
+  JwState = JwHandle;
+  JwProcessID = JwHandle;
+  JwBitMask = LongWord;
+  JwAceTypes = JwBitMask;
+  JwEqualAceTypes = JwBitMask;
+  JwSecurityInforationFlags = JwBitMask;
+  JwExtDWORD = Int64;
+  JwTempResetEnumSet = JwBitMask;
+  JwSecurityDescriptorControls = JwBitMask;
+  JwSecurityDialogFlags = JwBitMask;
+  JwDesktopFlags = JwBitMask;
+  JwSIDAttributes = JwBitMask;
+  JwSecurityObjectInformationSet = JwBitMask;
+  JwGetAccessCheckTypes = JwBitMask;
+  JwInheritFlags = JwBitMask;
+  JwCredentialFlags = JwBitMask;
+  JwCryptProtectFlags = JwBitMask;
+  JwCryptProtectOnPromptFlags = JwBitMask;
+  JwProtectMemoryFlags = JwBitMask;
+  JwCSPCreationFlags = JwBitMask;
+  JwKeyFlagSet = JwBitMask;
+  JwMandatoryPolicies = JwBitMask;
+  JwAuthZSIDContextFlags = JwBitMask;
+  IJwObjectTypeArray = IJwObjectTypeList;
+  JwTokenMandatoryPolicies = JwBitMask;
+  JwWellIKnownSidTypeSet = JwBitMask;
 
 // *********************************************************************//
 // Schnittstelle: IJwSid
@@ -1343,9 +1343,9 @@ type
 // *********************************************************************//
   IJwAccessControlList = interface(IDispatch)
     ['{41FB5FBD-E101-4A32-94AB-BD463E1536BE}']
-    procedure AddAllowAce(const Sid: IJwSid; Mask: LongWord; Flags: LongWord; ObjectType: TGUID; 
+    procedure AddAllowAce(const Sid: IJwSid; Mask: LongWord; Flags: LongWord; ObjectType: TGUID;
                           InheritedObjectType: TGUID); safecall;
-    procedure AddDenyAce(const Sid: IJwSid; Mask: LongWord; Flags: LongWord; ObjectType: TGUID; 
+    procedure AddDenyAce(const Sid: IJwSid; Mask: LongWord; Flags: LongWord; ObjectType: TGUID;
                          InheritedObjectType: TGUID); safecall;
     procedure Item; safecall;
     function Get__NewEnum: IJwAccessControlEntry; safecall;
@@ -1369,9 +1369,9 @@ type
 // *********************************************************************//
   IJwAccessControlListDisp = dispinterface
     ['{41FB5FBD-E101-4A32-94AB-BD463E1536BE}']
-    procedure AddAllowAce(const Sid: IJwSid; Mask: LongWord; Flags: LongWord; 
+    procedure AddAllowAce(const Sid: IJwSid; Mask: LongWord; Flags: LongWord;
                           ObjectType: {??TGUID}OleVariant; InheritedObjectType: {??TGUID}OleVariant); dispid 201;
-    procedure AddDenyAce(const Sid: IJwSid; Mask: LongWord; Flags: LongWord; 
+    procedure AddDenyAce(const Sid: IJwSid; Mask: LongWord; Flags: LongWord;
                          ObjectType: {??TGUID}OleVariant; InheritedObjectType: {??TGUID}OleVariant); dispid 202;
     procedure Item; dispid 203;
     property _NewEnum: IJwAccessControlEntry readonly dispid -4;
@@ -1534,12 +1534,12 @@ type
     procedure InitByDuplicateToken(const Token: IJwToken; DesiredAccess: LongWord); safecall;
     procedure InitWTSQueryUserToken(SessionID: LongWord); safecall;
     procedure InitWTSQueryUserTokenEx(Server: LongWord; SessionID: LongWord); safecall;
-    procedure InitByCompatibilityQueryUserToken(DesiredAccess: LongWord; 
+    procedure InitByCompatibilityQueryUserToken(DesiredAccess: LongWord;
                                                 const ProcessName: WideString); safecall;
-    procedure InitRestricted(const PreviousToken: IJwToken; AccessMask: LongWord; Flags: LongWord; 
-                             const SidsToDisable: IJwSidList; const PrivilegesToDisable: IUnknown; 
+    procedure InitRestricted(const PreviousToken: IJwToken; AccessMask: LongWord; Flags: LongWord;
+                             const SidsToDisable: IJwSidList; const PrivilegesToDisable: IUnknown;
                              const RestrictedSids: IJwSidList); safecall;
-    procedure InitLogonUser(const Name: WideString; const Domain: WideString; 
+    procedure InitLogonUser(const Name: WideString; const Domain: WideString;
                             const Password: WideString; LogonType: LongWord; LogonProvider: LongWord); safecall;
     procedure ConvertToImpersonatedToken(ImpLevel: LongWord; DesiredAccess: LongWord); safecall;
     procedure ConvertToPrimaryToken(DesiredAccess: LongWord); safecall;
@@ -1599,12 +1599,12 @@ type
     procedure InitByDuplicateToken(const Token: IJwToken; DesiredAccess: LongWord); dispid 219;
     procedure InitWTSQueryUserToken(SessionID: LongWord); dispid 220;
     procedure InitWTSQueryUserTokenEx(Server: LongWord; SessionID: LongWord); dispid 221;
-    procedure InitByCompatibilityQueryUserToken(DesiredAccess: LongWord; 
+    procedure InitByCompatibilityQueryUserToken(DesiredAccess: LongWord;
                                                 const ProcessName: WideString); dispid 222;
-    procedure InitRestricted(const PreviousToken: IJwToken; AccessMask: LongWord; Flags: LongWord; 
-                             const SidsToDisable: IJwSidList; const PrivilegesToDisable: IUnknown; 
+    procedure InitRestricted(const PreviousToken: IJwToken; AccessMask: LongWord; Flags: LongWord;
+                             const SidsToDisable: IJwSidList; const PrivilegesToDisable: IUnknown;
                              const RestrictedSids: IJwSidList); dispid 223;
-    procedure InitLogonUser(const Name: WideString; const Domain: WideString; 
+    procedure InitLogonUser(const Name: WideString; const Domain: WideString;
                             const Password: WideString; LogonType: LongWord; LogonProvider: LongWord); dispid 224;
     procedure ConvertToImpersonatedToken(ImpLevel: LongWord; DesiredAccess: LongWord); dispid 225;
     procedure ConvertToPrimaryToken(DesiredAccess: LongWord); dispid 226;
@@ -2184,8 +2184,8 @@ type
     procedure Set_WriterClass(const Value: IJwWriterClass); safecall;
     function Get_LogTypes: OleVariant; safecall;
     procedure Set_LogTypes(Value: OleVariant); safecall;
-    function Connect(EnterType: JwEnumEnterType; const ClassName: WideString; 
-                     const MethodName: WideString; const FileName: WideString; 
+    function Connect(EnterType: JwEnumEnterType; const ClassName: WideString;
+                     const MethodName: WideString; const FileName: WideString;
                      const LogMessage: WideString): IJwLogClient; safecall;
     property WriterClass: IJwWriterClass read Get_WriterClass write Set_WriterClass;
     property LogTypes: OleVariant read Get_LogTypes write Set_LogTypes;
@@ -2200,8 +2200,8 @@ type
     ['{213E956A-7BF3-4007-8191-1D743C818435}']
     property WriterClass: IJwWriterClass dispid 201;
     property LogTypes: OleVariant dispid 202;
-    function Connect(EnterType: JwEnumEnterType; const ClassName: WideString; 
-                     const MethodName: WideString; const FileName: WideString; 
+    function Connect(EnterType: JwEnumEnterType; const ClassName: WideString;
+                     const MethodName: WideString; const FileName: WideString;
                      const LogMessage: WideString): IJwLogClient; dispid 203;
   end;
 
@@ -2212,9 +2212,9 @@ type
 // *********************************************************************//
   IJwWriterClass = interface(IUnknown)
     ['{E225CFE1-FCAB-4109-8D64-B845D0C8FDD5}']
-    function WriteSingleTag(IndentLevel: SYSINT; const TagName: WideString; 
+    function WriteSingleTag(IndentLevel: SYSINT; const TagName: WideString;
                             const Value: WideString; Attributes: OleVariant): WideString; safecall;
-    function StartWriteMultipleTags(IndentLevel: SYSINT; const TagName: WideString; 
+    function StartWriteMultipleTags(IndentLevel: SYSINT; const TagName: WideString;
                                     Attributes: OleVariant): WideString; safecall;
     function EndWriteMultipleTags: WideString; safecall;
     procedure Done; safecall;
@@ -2228,9 +2228,9 @@ type
 // *********************************************************************//
   IJwWriterClassDisp = dispinterface
     ['{E225CFE1-FCAB-4109-8D64-B845D0C8FDD5}']
-    function WriteSingleTag(IndentLevel: SYSINT; const TagName: WideString; 
+    function WriteSingleTag(IndentLevel: SYSINT; const TagName: WideString;
                             const Value: WideString; Attributes: OleVariant): WideString; dispid 201;
-    function StartWriteMultipleTags(IndentLevel: SYSINT; const TagName: WideString; 
+    function StartWriteMultipleTags(IndentLevel: SYSINT; const TagName: WideString;
                                     Attributes: OleVariant): WideString; dispid 202;
     function EndWriteMultipleTags: WideString; dispid 203;
     procedure Done; dispid 204;
@@ -2245,9 +2245,9 @@ type
   IJwLogClient = interface(IDispatch)
     ['{742092DA-9FD9-420A-84AF-56D6EA8508D4}']
     procedure Log(LogType: JwEnumLogType; const LogMessage: WideString); safecall;
-    procedure Signal(LogType: JwEnumSignalType; const Source: WideString; const Target: WideString; 
+    procedure Signal(LogType: JwEnumSignalType; const Source: WideString; const Target: WideString;
                      const LogMessage: WideString); safecall;
-    procedure Memory(LogType: JwEnumMemoryType; const MemType: WideString; 
+    procedure Memory(LogType: JwEnumMemoryType; const MemType: WideString;
                      const LogMessage: WideString); safecall;
     procedure Exception(Exception: OleVariant); safecall;
   end;
@@ -2260,9 +2260,9 @@ type
   IJwLogClientDisp = dispinterface
     ['{742092DA-9FD9-420A-84AF-56D6EA8508D4}']
     procedure Log(LogType: JwEnumLogType; const LogMessage: WideString); dispid 201;
-    procedure Signal(LogType: JwEnumSignalType; const Source: WideString; const Target: WideString; 
+    procedure Signal(LogType: JwEnumSignalType; const Source: WideString; const Target: WideString;
                      const LogMessage: WideString); dispid 202;
-    procedure Memory(LogType: JwEnumMemoryType; const MemType: WideString; 
+    procedure Memory(LogType: JwEnumMemoryType; const MemType: WideString;
                      const LogMessage: WideString); dispid 203;
     procedure Exception(Exception: OleVariant); dispid 204;
   end;
@@ -3588,16 +3588,16 @@ type
   IJwListFindCallbackDisp = dispinterface
     ['{2E6FC382-A38A-4429-9364-8E29ED56C132}']
     function OnIterateGeneric(Index: Integer; Data: OleVariant; UserData: {??PChar}OleVariant): WordBool; dispid 201;
-    function OnIteratePtr(Index: Integer; Data: {??PChar}OleVariant; Size: LongWord; 
+    function OnIteratePtr(Index: Integer; Data: {??PChar}OleVariant; Size: LongWord;
                           UserData: {??PChar}OleVariant): WordBool; dispid 202;
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwSid stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwSid stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwSid, dargestellt von
-// CoClass JwSid, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwSid, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwSid = class
     class function Create: IJwSid;
@@ -3605,11 +3605,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwSidList stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwSidList stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwSidList, dargestellt von
-// CoClass JwSidList, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwSidList, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwSidList = class
     class function Create: IJwSidList;
@@ -3617,11 +3617,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwAccessControlList stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwAccessControlList stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwAccessControlList, dargestellt von
-// CoClass JwAccessControlList, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwAccessControlList, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwAccessControlList = class
     class function Create: IJwAccessControlList;
@@ -3629,11 +3629,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwSecurityDescriptor stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwSecurityDescriptor stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwSecurityDescriptor, dargestellt von
-// CoClass JwSecurityDescriptor, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwSecurityDescriptor, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwSecurityDescriptor = class
     class function Create: IJwSecurityDescriptor;
@@ -3641,11 +3641,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwToken stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwToken stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwToken, dargestellt von
-// CoClass JwToken, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwToken, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwToken = class
     class function Create: IJwToken;
@@ -3653,11 +3653,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwPrivilegeList stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwPrivilegeList stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwPrivilegeList, dargestellt von
-// CoClass JwPrivilegeList, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwPrivilegeList, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwPrivilegeList = class
     class function Create: IJwPrivilegeList;
@@ -3665,11 +3665,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwWindowsVersion stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwWindowsVersion stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwWindowsVersion, dargestellt von
-// CoClass JwWindowsVersion, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwWindowsVersion, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwWindowsVersion = class
     class function Create: IJwWindowsVersion;
@@ -3677,11 +3677,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwGenericMapping stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwGenericMapping stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwGenericMapping, dargestellt von
-// CoClass JwGenericMapping, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwGenericMapping, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwGenericMapping = class
     class function Create: IJwGenericMapping;
@@ -3689,11 +3689,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwFileFolderMapping stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwFileFolderMapping stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwFileFolderMapping, dargestellt von
-// CoClass JwFileFolderMapping, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwFileFolderMapping, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwFileFolderMapping = class
     class function Create: IJwFileFolderMapping;
@@ -3701,11 +3701,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwFileMapping stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwFileMapping stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwFileMapping, dargestellt von
-// CoClass JwFileMapping, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwFileMapping, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwFileMapping = class
     class function Create: IJwFileMapping;
@@ -3713,11 +3713,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwRegistryMapping stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwRegistryMapping stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwRegistryMapping, dargestellt von
-// CoClass JwRegistryMapping, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwRegistryMapping, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwRegistryMapping = class
     class function Create: IJwRegistryMapping;
@@ -3725,11 +3725,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwWinStationMapping stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwWinStationMapping stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwWinStationMapping, dargestellt von
-// CoClass JwWinStationMapping, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwWinStationMapping, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwWinStationMapping = class
     class function Create: IJwWinStationMapping;
@@ -3737,11 +3737,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwDesktopMapping stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwDesktopMapping stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwDesktopMapping, dargestellt von
-// CoClass JwDesktopMapping, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwDesktopMapping, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwDesktopMapping = class
     class function Create: IJwDesktopMapping;
@@ -3749,11 +3749,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwServiceMapping stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwServiceMapping stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwServiceMapping, dargestellt von
-// CoClass JwServiceMapping, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwServiceMapping, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwServiceMapping = class
     class function Create: IJwServiceMapping;
@@ -3761,11 +3761,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwServiceMappingManager stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwServiceMappingManager stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwServiceManagerMapping, dargestellt von
-// CoClass JwServiceMappingManager, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwServiceMappingManager, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwServiceMappingManager = class
     class function Create: IJwServiceManagerMapping;
@@ -3773,11 +3773,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwPrinterMapping stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwPrinterMapping stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwPrinterMapping, dargestellt von
-// CoClass JwPrinterMapping, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwPrinterMapping, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwPrinterMapping = class
     class function Create: IJwPrinterMapping;
@@ -3785,11 +3785,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwShareMapping stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwShareMapping stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwShareMapping, dargestellt von
-// CoClass JwShareMapping, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwShareMapping, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwShareMapping = class
     class function Create: IJwShareMapping;
@@ -3797,11 +3797,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwProcessMapping stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwProcessMapping stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwProcessMapping, dargestellt von
-// CoClass JwProcessMapping, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwProcessMapping, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwProcessMapping = class
     class function Create: IJwProcessMapping;
@@ -3809,11 +3809,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwThreadMapping stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwThreadMapping stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwThreadMapping, dargestellt von
-// CoClass JwThreadMapping, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwThreadMapping, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwThreadMapping = class
     class function Create: IJwThreadMapping;
@@ -3821,11 +3821,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwJobMapping stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwJobMapping stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwJobMapping, dargestellt von
-// CoClass JwJobMapping, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwJobMapping, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwJobMapping = class
     class function Create: IJwJobMapping;
@@ -3833,11 +3833,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwSemaphoreMapping stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwSemaphoreMapping stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwSemaphoreMapping, dargestellt von
-// CoClass JwSemaphoreMapping, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwSemaphoreMapping, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwSemaphoreMapping = class
     class function Create: IJwSemaphoreMapping;
@@ -3845,11 +3845,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwEventMapping stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwEventMapping stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwEventMapping, dargestellt von
-// CoClass JwEventMapping, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwEventMapping, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwEventMapping = class
     class function Create: IJwEventMapping;
@@ -3857,11 +3857,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwMutexMapping stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwMutexMapping stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwMutexMapping, dargestellt von
-// CoClass JwMutexMapping, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwMutexMapping, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwMutexMapping = class
     class function Create: IJwMutexMapping;
@@ -3869,11 +3869,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwFileMapMapping stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwFileMapMapping stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwFileMapMapping, dargestellt von
-// CoClass JwFileMapMapping, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwFileMapMapping, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwFileMapMapping = class
     class function Create: IJwFileMapMapping;
@@ -3881,11 +3881,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwTimerMapping stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwTimerMapping stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwTimerMapping, dargestellt von
-// CoClass JwTimerMapping, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwTimerMapping, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwTimerMapping = class
     class function Create: IJwTimerMapping;
@@ -3893,11 +3893,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwTokenMapping stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwTokenMapping stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwTokenMapping, dargestellt von
-// CoClass JwTokenMapping, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwTokenMapping, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwTokenMapping = class
     class function Create: IJwTokenMapping;
@@ -3905,11 +3905,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwPipeMapping stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwPipeMapping stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwPipeMapping, dargestellt von
-// CoClass JwPipeMapping, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwPipeMapping, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwPipeMapping = class
     class function Create: IJwPipeMapping;
@@ -3917,11 +3917,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwLogServer stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwLogServer stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwLogServer, dargestellt von
-// CoClass JwLogServer, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwLogServer, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwLogServer = class
     class function Create: IJwLogServer;
@@ -3929,11 +3929,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwLogClient stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwLogClient stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwLogClient, dargestellt von
-// CoClass JwLogClient, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwLogClient, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwLogClient = class
     class function Create: IJwLogClient;
@@ -3941,11 +3941,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoTestInt stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoTestInt stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle ITestInt, dargestellt von
-// CoClass TestInt, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass TestInt, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoTestInt = class
     class function Create: ITestInt;
@@ -3953,11 +3953,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwXMLAttribute stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwXMLAttribute stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwXMLAttribute, dargestellt von
-// CoClass JwXMLAttribute, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwXMLAttribute, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwXMLAttribute = class
     class function Create: IJwXMLAttribute;
@@ -3965,11 +3965,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwEventType stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwEventType stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwEventType, dargestellt von
-// CoClass JwEventType, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwEventType, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwEventType = class
     class function Create: IJwEventType;
@@ -3977,11 +3977,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwEncryptionApi stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwEncryptionApi stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwEncryptionApi, dargestellt von
-// CoClass JwEncryptionApi, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwEncryptionApi, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwEncryptionApi = class
     class function Create: IJwEncryptionApi;
@@ -3989,11 +3989,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwEncryptMemory stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwEncryptMemory stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwEncryptMemory, dargestellt von
-// CoClass JwEncryptMemory, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwEncryptMemory, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwEncryptMemory = class
     class function Create: IJwEncryptMemory;
@@ -4001,11 +4001,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwEncryptData stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwEncryptData stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwEncryptData, dargestellt von
-// CoClass JwEncryptData, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwEncryptData, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwEncryptData = class
     class function Create: IJwEncryptData;
@@ -4013,11 +4013,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwRandomDataGenerator stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwRandomDataGenerator stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwRandomDataGenerator, dargestellt von
-// CoClass JwRandomDataGenerator, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwRandomDataGenerator, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwRandomDataGenerator = class
     class function Create: IJwRandomDataGenerator;
@@ -4025,11 +4025,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwWindowStation stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwWindowStation stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwWindowStation, dargestellt von
-// CoClass JwWindowStation, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwWindowStation, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwWindowStation = class
     class function Create: IJwWindowStation;
@@ -4037,11 +4037,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwWindowStations stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwWindowStations stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwWindowStations, dargestellt von
-// CoClass JwWindowStations, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwWindowStations, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwWindowStations = class
     class function Create: IJwWindowStations;
@@ -4049,11 +4049,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwDesktop stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwDesktop stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwDesktop, dargestellt von
-// CoClass JwDesktop, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwDesktop, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwDesktop = class
     class function Create: IJwDesktop;
@@ -4061,11 +4061,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwDesktops stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwDesktops stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwDesktops, dargestellt von
-// CoClass JwDesktops, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwDesktops, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwDesktops = class
     class function Create: IJwDesktops;
@@ -4073,11 +4073,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwCredentialsPrompt stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwCredentialsPrompt stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwCredentialsPrompt, dargestellt von
-// CoClass JwCredentialsPrompt, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwCredentialsPrompt, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwCredentialsPrompt = class
     class function Create: IJwCredentialsPrompt;
@@ -4085,11 +4085,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwCredentialsTools stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwCredentialsTools stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwCredentialsTools, dargestellt von
-// CoClass JwCredentialsTools, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwCredentialsTools, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwCredentialsTools = class
     class function Create: IJwCredentialsTools;
@@ -4097,11 +4097,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwCryptProvider stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwCryptProvider stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwCryptProvider, dargestellt von
-// CoClass JwCryptProvider, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwCryptProvider, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwCryptProvider = class
     class function Create: IJwCryptProvider;
@@ -4109,11 +4109,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwHash stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwHash stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwHash, dargestellt von
-// CoClass JwHash, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwHash, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwHash = class
     class function Create: IJwHash;
@@ -4121,11 +4121,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwCryptKey stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwCryptKey stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwCryptKey, dargestellt von
-// CoClass JwCryptKey, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwCryptKey, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwCryptKey = class
     class function Create: IJwCryptKey;
@@ -4133,11 +4133,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwImpersonation stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwImpersonation stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwImpersonation, dargestellt von
-// CoClass JwImpersonation, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwImpersonation, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwImpersonation = class
     class function Create: IJwImpersonation;
@@ -4145,11 +4145,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwKnownSIDs stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwKnownSIDs stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwKnownSIDs, dargestellt von
-// CoClass JwKnownSIDs, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwKnownSIDs, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwKnownSIDs = class
     class function Create: IJwKnownSIDs;
@@ -4157,11 +4157,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwThreadUserSid stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwThreadUserSid stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwThreadUserSid, dargestellt von
-// CoClass JwThreadUserSid, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwThreadUserSid, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwThreadUserSid = class
     class function Create: IJwThreadUserSid;
@@ -4169,11 +4169,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwLSA stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwLSA stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwLSA, dargestellt von
-// CoClass JwLSA, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwLSA, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwLSA = class
     class function Create: IJwLSA;
@@ -4181,11 +4181,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwLSALogonSession stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwLSALogonSession stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwLSALogonSession, dargestellt von
-// CoClass JwLSALogonSession, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwLSALogonSession, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwLSALogonSession = class
     class function Create: IJwLSALogonSession;
@@ -4193,11 +4193,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwLSALogonSessionData stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwLSALogonSessionData stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwLSALogonSessionData, dargestellt von
-// CoClass JwLSALogonSessionData, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwLSALogonSessionData, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwLSALogonSessionData = class
     class function Create: IJwLSALogonSessionData;
@@ -4205,11 +4205,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwPrivilegeScope stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwPrivilegeScope stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwPrivilegeScope, dargestellt von
-// CoClass JwPrivilegeScope, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwPrivilegeScope, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwPrivilegeScope = class
     class function Create: IJwPrivilegeScope;
@@ -4217,11 +4217,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwProcessUtils stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwProcessUtils stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwProcessUtils, dargestellt von
-// CoClass JwProcessUtils, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwProcessUtils, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwProcessUtils = class
     class function Create: IJwProcessUtils;
@@ -4229,11 +4229,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwSecureRegistryKey stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwSecureRegistryKey stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwSecureRegistryKey, dargestellt von
-// CoClass JwSecureRegistryKey, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwSecureRegistryKey, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwSecureRegistryKey = class
     class function Create: IJwSecureRegistryKey;
@@ -4241,11 +4241,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwSecureFileObject stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwSecureFileObject stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwSecureFileObject, dargestellt von
-// CoClass JwSecureFileObject, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwSecureFileObject, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwSecureFileObject = class
     class function Create: IJwSecureFileObject;
@@ -4253,11 +4253,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwSecureBaseClass stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwSecureBaseClass stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwSecureBaseClass, dargestellt von
-// CoClass JwSecureBaseClass, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwSecureBaseClass, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwSecureBaseClass = class
     class function Create: IJwSecureBaseClass;
@@ -4265,11 +4265,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwProgressCallback stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwProgressCallback stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwProgressCallback, dargestellt von
-// CoClass JwProgressCallback, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwProgressCallback, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwProgressCallback = class
     class function Create: IJwProgressCallback;
@@ -4277,11 +4277,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwAuthZAccessRequest stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwAuthZAccessRequest stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwAuthZAccessRequest, dargestellt von
-// CoClass JwAuthZAccessRequest, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwAuthZAccessRequest, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwAuthZAccessRequest = class
     class function Create: IJwAuthZAccessRequest;
@@ -4289,11 +4289,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwAuthZAccessReply stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwAuthZAccessReply stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwAuthZAccessReply, dargestellt von
-// CoClass JwAuthZAccessReply, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwAuthZAccessReply, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwAuthZAccessReply = class
     class function Create: IJwAuthZAccessReply;
@@ -4301,11 +4301,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwAuthResourceManager stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwAuthResourceManager stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwAuthResourceManager, dargestellt von
-// CoClass JwAuthResourceManager, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwAuthResourceManager, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwAuthResourceManager = class
     class function Create: IJwAuthResourceManager;
@@ -4313,11 +4313,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwAuthContext stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwAuthContext stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwAuthContext, dargestellt von
-// CoClass JwAuthContext, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwAuthContext, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwAuthContext = class
     class function Create: IJwAuthContext;
@@ -4325,11 +4325,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwTerminalServer stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwTerminalServer stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwTerminalServer, dargestellt von
-// CoClass JwTerminalServer, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwTerminalServer, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwTerminalServer = class
     class function Create: IJwTerminalServer;
@@ -4337,11 +4337,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwTerminalServerList stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwTerminalServerList stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwTerminalServerList, dargestellt von
-// CoClass JwTerminalServerList, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwTerminalServerList, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwTerminalServerList = class
     class function Create: IJwTerminalServerList;
@@ -4349,11 +4349,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwWTSSession stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwWTSSession stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwWTSSession, dargestellt von
-// CoClass JwWTSSession, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwWTSSession, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwWTSSession = class
     class function Create: IJwWTSSession;
@@ -4361,11 +4361,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwWTSSessionList stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwWTSSessionList stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwWTSSessionList, dargestellt von
-// CoClass JwWTSSessionList, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwWTSSessionList, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwWTSSessionList = class
     class function Create: IJwWTSSessionList;
@@ -4373,11 +4373,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwWTSProcess stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwWTSProcess stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwWTSProcess, dargestellt von
-// CoClass JwWTSProcess, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwWTSProcess, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwWTSProcess = class
     class function Create: IJwWTSProcess;
@@ -4385,11 +4385,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwWTSProcessList stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwWTSProcessList stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwWTSProcessList, dargestellt von
-// CoClass JwWTSProcessList, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwWTSProcessList, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwWTSProcessList = class
     class function Create: IJwWTSProcessList;
@@ -4397,11 +4397,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwWTSSessionShadow stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwWTSSessionShadow stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwWTSSessionShadow, dargestellt von
-// CoClass JwWTSSessionShadow, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwWTSSessionShadow, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwWTSSessionShadow = class
     class function Create: IJwWTSSessionShadow;
@@ -4409,11 +4409,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwInheritTypeList stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwInheritTypeList stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwInheritTypeList, dargestellt von
-// CoClass JwInheritTypeList, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwInheritTypeList, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwInheritTypeList = class
     class function Create: IJwInheritTypeList;
@@ -4421,11 +4421,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwUtils stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwUtils stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwUtils, dargestellt von
-// CoClass JwUtils, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwUtils, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwUtils = class
     class function Create: IJwUtils;
@@ -4433,11 +4433,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwElevationClassFactory stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwElevationClassFactory stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwElevationClassFactory, dargestellt von
-// CoClass JwElevationClassFactory, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwElevationClassFactory, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwElevationClassFactory = class
     class function Create: IJwElevationClassFactory;
@@ -4445,11 +4445,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwExplicitAccessArray stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwExplicitAccessArray stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwExplicitAccessArray, dargestellt von
-// CoClass JwExplicitAccessArray, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwExplicitAccessArray, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwExplicitAccessArray = class
     class function Create: IJwExplicitAccessArray;
@@ -4457,11 +4457,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwExplicitAccess stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwExplicitAccess stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwExplicitAccess, dargestellt von
-// CoClass JwExplicitAccess, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwExplicitAccess, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwExplicitAccess = class
     class function Create: IJwExplicitAccess;
@@ -4469,11 +4469,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwGuidArray stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwGuidArray stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwGuidArray, dargestellt von
-// CoClass JwGuidArray, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwGuidArray, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwGuidArray = class
     class function Create: IJwGuidArray;
@@ -4481,11 +4481,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwInheritedFromRecord stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwInheritedFromRecord stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwInheritedFromRecord, dargestellt von
-// CoClass JwInheritedFromRecord, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwInheritedFromRecord, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwInheritedFromRecord = class
     class function Create: IJwInheritedFromRecord;
@@ -4493,11 +4493,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwInheritedFromArray stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwInheritedFromArray stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwInheritedFromArray, dargestellt von
-// CoClass JwInheritedFromArray, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwInheritedFromArray, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwInheritedFromArray = class
     class function Create: IJwInheritedFromArray;
@@ -4505,11 +4505,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwRootTuple stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwRootTuple stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwRootTuple, dargestellt von
-// CoClass JwRootTuple, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwRootTuple, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwRootTuple = class
     class function Create: IJwRootTuple;
@@ -4517,11 +4517,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwKeyRootTupleArray stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwKeyRootTupleArray stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwKeyRootTupleArray, dargestellt von
-// CoClass JwKeyRootTupleArray, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwKeyRootTupleArray, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwKeyRootTupleArray = class
     class function Create: IJwKeyRootTupleArray;
@@ -4529,11 +4529,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwAccessMaskArray stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwAccessMaskArray stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwAccessMaskArray, dargestellt von
-// CoClass JwAccessMaskArray, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwAccessMaskArray, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwAccessMaskArray = class
     class function Create: IJwAccessMaskArray;
@@ -4541,11 +4541,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwObjectTypeList stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwObjectTypeList stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwObjectTypeList, dargestellt von
-// CoClass JwObjectTypeList, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwObjectTypeList, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwObjectTypeList = class
     class function Create: IJwObjectTypeList;
@@ -4553,11 +4553,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwObjectTypeListArray stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwObjectTypeListArray stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwObjectTypeListArray, dargestellt von
-// CoClass JwObjectTypeListArray, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwObjectTypeListArray, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwObjectTypeListArray = class
     class function Create: IJwObjectTypeListArray;
@@ -4565,11 +4565,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwSIDInfoData stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwSIDInfoData stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwSIDInfoData, dargestellt von
-// CoClass JwSIDInfoData, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwSIDInfoData, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwSIDInfoData = class
     class function Create: IJwSIDInfoData;
@@ -4577,11 +4577,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwSIDInfoDataArray stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwSIDInfoDataArray stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwSIDInfoDataArray, dargestellt von
-// CoClass JwSIDInfoDataArray, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwSIDInfoDataArray, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwSIDInfoDataArray = class
     class function Create: IJwSIDInfoDataArray;
@@ -4589,11 +4589,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwSiAccessArray stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwSiAccessArray stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwSiAccessArray, dargestellt von
-// CoClass JwSiAccessArray, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwSiAccessArray, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwSiAccessArray = class
     class function Create: IJwSiAccessArray;
@@ -4601,11 +4601,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwSiAccess stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwSiAccess stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwSiAccess, dargestellt von
-// CoClass JwSiAccess, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwSiAccess, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwSiAccess = class
     class function Create: IJwSiAccess;
@@ -4613,11 +4613,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwStringArray stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwStringArray stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwStringArray, dargestellt von
-// CoClass JwStringArray, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwStringArray, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwStringArray = class
     class function Create: IJwStringArray;
@@ -4625,11 +4625,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwEnumProviderArray stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwEnumProviderArray stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwEnumProviderArray, dargestellt von
-// CoClass JwEnumProviderArray, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwEnumProviderArray, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwEnumProviderArray = class
     class function Create: IJwEnumProviderArray;
@@ -4637,11 +4637,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwEnumAlgorithmsEntry stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwEnumAlgorithmsEntry stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwEnumAlgorithmsEntry, dargestellt von
-// CoClass JwEnumAlgorithmsEntry, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwEnumAlgorithmsEntry, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwEnumAlgorithmsEntry = class
     class function Create: IJwEnumAlgorithmsEntry;
@@ -4649,11 +4649,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwEnumAlgorithms stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwEnumAlgorithms stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwEnumAlgorithms, dargestellt von
-// CoClass JwEnumAlgorithms, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwEnumAlgorithms, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwEnumAlgorithms = class
     class function Create: IJwEnumAlgorithms;
@@ -4661,11 +4661,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwEnumProviderEntry stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwEnumProviderEntry stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwEnumProviderEntry, dargestellt von
-// CoClass JwEnumProviderEntry, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwEnumProviderEntry, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwEnumProviderEntry = class
     class function Create: IJwEnumProviderEntry;
@@ -4673,11 +4673,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwReplyErrorArray stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwReplyErrorArray stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwReplyErrorArray, dargestellt von
-// CoClass JwReplyErrorArray, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwReplyErrorArray, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwReplyErrorArray = class
     class function Create: IJwReplyErrorArray;
@@ -4685,11 +4685,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwPointerList stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwPointerList stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwPointerList, dargestellt von
-// CoClass JwPointerList, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwPointerList, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwPointerList = class
     class function Create: IJwPointerList;
@@ -4697,11 +4697,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwGenericList stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwGenericList stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwGenericList, dargestellt von
-// CoClass JwGenericList, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwGenericList, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwGenericList = class
     class function Create: IJwGenericList;
@@ -4709,11 +4709,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwEnumSet stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwEnumSet stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwEnumSet, dargestellt von
-// CoClass JwEnumSet, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwEnumSet, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwEnumSet = class
     class function Create: IJwEnumSet;
@@ -4721,11 +4721,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwAccessControlEntry stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwAccessControlEntry stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwAccessControlEntry, dargestellt von
-// CoClass JwAccessControlEntry, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwAccessControlEntry, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwAccessControlEntry = class
     class function Create: IJwAccessControlEntry;

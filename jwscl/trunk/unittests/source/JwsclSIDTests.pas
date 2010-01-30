@@ -101,7 +101,7 @@ implementation
 
 uses SysUtils, JwsclExceptions;
 
-{$I Compilers.inc}  
+{$I Compilers.inc}
 
 
 { TSecurityIDTests }
@@ -200,7 +200,7 @@ var hToken : HANDLE;
     pOwner : PTokenOwner;
 
 begin
-  
+
  pOwner := GetProcessTokenOwner(hToken);
  try
 
@@ -211,7 +211,7 @@ begin
     on E1 : Exception do
       CheckIs(E1,EJwsclNILParameterException,'EJwsclNILParameterException must be raised.');
   end;
-              
+
 
   fSIDs[1] := TJwSecurityId.Create(pOwner.Owner);
   CheckNotNull(fSIDs[1],'Could not create SID class');
@@ -524,7 +524,7 @@ begin
       on E : Exception do
         CheckIs(E,EJwsclNILParameterException,'');
     end;
-          
+
 
     try
       fSIDs[2] := TJwSecurityId.GetWindowsAccountDomainSid(fSIDs[1]);
@@ -536,7 +536,7 @@ begin
           CheckNull(E1,'Test omitted because a domain not found.'#13#10+E1.MEssage);
 
         end;
-      
+
       on E: EJwsclInvalidSIDException do
       begin
         Enabled := false;
@@ -553,7 +553,7 @@ begin
    FreeMem(pOwner);
    CloseHandle(hToken);
   end;
-    
+
 end;
 
 procedure TSecurityIDTests.Test_GetWindowsAccountDomainSid;
@@ -917,7 +917,7 @@ end;
 procedure TSecurityIDListTests.TestCreate_PSID_Array;
 var sids : PSidAndAttributesArray;
 begin
-  
+
   fSIDList[1] := TJwSecurityIdList.Create(true);
   fSIDList[1].Add(
       TJwSecurityId.CreateWellKnownSid(WinBuiltinAdministratorsSid,nil));
@@ -938,7 +938,7 @@ procedure TSecurityIDListTests.TestFree_PSID_Array;
 var sids : PSidAndAttributesArray;
 begin
 
-  
+
   fSIDList[1] := TJwSecurityIdList.Create(true);
   fSIDList[1].Add(
       TJwSecurityId.CreateWellKnownSid(WinBuiltinAdministratorsSid,nil));
@@ -1080,4 +1080,3 @@ initialization
     TKnownSidTests.Suite);
 
 end.
-

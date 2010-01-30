@@ -51,7 +51,7 @@ begin
 
   Prompt := TJwCredentialsPrompt.Create;
   Prompt.UserName := 'Administrator';
-  Prompt.Password := '123'; 
+  Prompt.Password := '123';
   Prompt.Caption := 'Impersonation demonstration';
   Prompt.MessageText := 'Enter a account name and passwort to impersonate that user.';
   Prompt.Flags := [cfFlagsDoNotPersist];

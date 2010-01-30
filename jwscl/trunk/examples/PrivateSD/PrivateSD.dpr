@@ -2,8 +2,8 @@ program PrivateSD;
 
 uses
 {$IFDEF FASTMM}
-  FastMM4,   
-{$ENDIF}  
+  FastMM4,
+{$ENDIF}
   Forms,
   MainForm in 'MainForm.pas' {FormMain};
 

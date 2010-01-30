@@ -16,15 +16,15 @@ Software distributed under the License is distributed on an "AS IS" basis, WITHO
 ANY KIND, either express or implied. See the License for the specific language governing rights
 and limitations under the License.
 
-Alternatively, the contents of this file may be used under the terms of the  
-GNU Lesser General Public License (the  "LGPL License"), in which case the   
-provisions of the LGPL License are applicable instead of those above.        
-If you wish to allow use of your version of this file only under the terms   
-of the LGPL License and not to allow others to use your version of this file 
-under the MPL, indicate your decision by deleting  the provisions above and  
-replace  them with the notice and other provisions required by the LGPL      
-License.  If you do not delete the provisions above, a recipient may use     
-your version of this file under either the MPL or the LGPL License.          
+Alternatively, the contents of this file may be used under the terms of the
+GNU Lesser General Public License (the  "LGPL License"), in which case the
+provisions of the LGPL License are applicable instead of those above.
+If you wish to allow use of your version of this file only under the terms
+of the LGPL License and not to allow others to use your version of this file
+under the MPL, indicate your decision by deleting  the provisions above and
+replace  them with the notice and other provisions required by the LGPL
+License.  If you do not delete the provisions above, a recipient may use
+your version of this file under either the MPL or the LGPL License.
 
 For more information about the LGPL: http://www.gnu.org/copyleft/lesser.html
 
@@ -78,9 +78,9 @@ type
   public
     {<B>GetObjectInformation</B> retrieves information about the private objec
      @param ObjectInformationSet contains information which
-     information must be returned. 
+     information must be returned.
      @return Defines a structure which contains information about the private
-       object 
+       object
     }
     function GetObjectInformation(const ObjectInformationSet :
             TJwSecurityObjectInformationFlagSet): TJwSecurityObjectInformation;
@@ -89,10 +89,10 @@ type
      the current private object. This is used by GetPrivateInheritanceSource and
      other inheritance methods)
      @param Parent received a pointer to the parent private object. Return nil
-      if no parent exists - e.g. it is on top of a tree structure. 
+      if no parent exists - e.g. it is on top of a tree structure.
      @return Return S_OK if the parameter Parent is valid or the current object
       has no parent.
-      Return E_NOTIMPL if the private object does not support tree structures. 
+      Return E_NOTIMPL if the private object does not support tree structures.
      }
     function GetParent(out Parent : IJwPrivateSecurityInformation) : HRESULT;
 
@@ -102,11 +102,11 @@ type
      set or get and SetSecurityDescriptor and SetSecurityDescriptor wants
      to know whether the process should be checked vor validity.
      @param AccessCheckType defines whether the access check shall be performed
-      for a get or set operation. 
+      for a get or set operation.
      @return If the function returns true an access check will prevent unauthorized
      change or retrieving of security information.
      If the function returns false no access check will be done and the user
-     should do access check. 
+     should do access check.
 
      }
     function GetUseAccessCheck(const AccessCheckType : TJwGetAccessCheckType) : Boolean;
@@ -122,12 +122,12 @@ type
      @param SecurityInformation This parameter contains the security descriptor
       parts which must be copied into the new descriptor. Only the given
       descriptor parts should be retrieved. No more or less.
-       
+
      @param SecurityDescriptor Contains a security descriptor that must be adapted.
       The descriptor is already created and contains empty parts. Do not Free it!
       This method should only change the requested security parts
       in SecurityDescriptor defined by SecurityInformation!
-       
+
     }
 
     procedure GetSecurity(const SecurityInformation :
@@ -144,10 +144,10 @@ type
 
      @param SecurityInformation This parameter contains the security descriptor
       parts which must be copied into the private descriptor. Only the given
-      descriptor parts should be set. No more or less. 
+      descriptor parts should be set. No more or less.
      @param SecurityDescriptor Contains a security descriptor that only contains
       parts which are defined in SecurityInformation. Do not free the
-       the descriptor! 
+       the descriptor!
      )
     }
 
@@ -160,12 +160,12 @@ type
      rights are mapped to your private access rights.
 
      @param GenericMap receives a classname (not instance) which describes how
-       to map generic access rights 
-     @return 
-              # Return S_OK if the call succeeded. 
-              # Return E_NOTIMPL to use TJwSecurityGenericMapping as standard map. 
-              # Any other result will raise EJwsclInvalidObjectException 
-             
+       to map generic access rights
+     @return
+              # Return S_OK if the call succeeded.
+              # Return E_NOTIMPL to use TJwSecurityGenericMapping as standard map.
+              # Any other result will raise EJwsclInvalidObjectException
+
     }
     function MapGenericMask(out GenericMap : TJwSecurityGenericMappingClass) : HRESULT;
   public

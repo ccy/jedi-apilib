@@ -273,7 +273,7 @@ begin
         SetLength(Sessions, P.Session);
 
       SetLength(Sessions[P.Session], high(Sessions[P.Session])+1);
-    
+
       //create copy of this entry
       Sessions[P.Session, high(Sessions[P.Session])+1] := PProcessEntry(fList[i])^;
 
@@ -303,7 +303,7 @@ begin
             Sessions[i,i2].Error := GetLastError;
         end;
 
-        //send new process handles 
+        //send new process handles
         OnCloseAppsPostPrep(Self,i, Sessions[i]);
       end;
     end;
@@ -488,7 +488,7 @@ begin
   if fHandle = 0 then
     RaiseLastOSError;
 
-  //true means, the mutex is set to unsignled  
+  //true means, the mutex is set to unsignled
   fMutex := TMutexEx.Create(nil, true, PWideChar(Name+'_WriteEvent'));
 end;
 
@@ -697,7 +697,7 @@ begin
                           FILE_MAP_ALL_ACCESS, // read/write permission
                           0,
                           0,
-                          MAP_SIZE);      
+                          MAP_SIZE);
 
     //we use a custom stream implementation to act on the memory
     Stream := TPointMemoryStream.Create;

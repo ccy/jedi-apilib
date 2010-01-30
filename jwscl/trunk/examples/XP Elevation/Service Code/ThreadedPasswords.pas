@@ -15,7 +15,7 @@ type
     SizeDomain,
     SizePass : Cardinal;
     Data : Pointer;
-    SizeData : Cardinal;  
+    SizeData : Cardinal;
   end;
 
 
@@ -133,7 +133,7 @@ begin
     FreePassEntry(P);
     L.Items[Index] := nil;
     L.Delete(Index);
-  finally 
+  finally
     UnlockList;
   end;
 end;

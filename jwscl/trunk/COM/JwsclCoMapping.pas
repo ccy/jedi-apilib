@@ -197,7 +197,7 @@ initialization
   TAutoObjectFactory.Create(ComServer, TJwRegistryMappingImpl, CLASS_JwRegistryMapping,
     ciMultiInstance, tmApartment);
   TAutoObjectFactory.Create(ComServer, TJwWinStationMappingImpl, CLASS_JwWinStationMapping,
-    ciMultiInstance, tmApartment);   
+    ciMultiInstance, tmApartment);
   TAutoObjectFactory.Create(ComServer, TJwDesktopMappingImpl, CLASS_JwDesktopMapping,
     ciMultiInstance, tmApartment);
   TAutoObjectFactory.Create(ComServer, TJwFileFolderMappingImpl, CLASS_JwFileFolderMapping,

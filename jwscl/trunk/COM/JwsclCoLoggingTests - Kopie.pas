@@ -43,7 +43,7 @@ begin
   Server := CoJwLogServer.Create;
   Test2;
 
-  
+
 end;
 
 
@@ -53,4 +53,3 @@ initialization
   RegisterTest(TJwLogClientImplTests.Suite);
 
 end.
- 

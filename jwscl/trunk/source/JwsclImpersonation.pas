@@ -17,15 +17,15 @@ Software distributed under the License is distributed on an "AS IS" basis, WITHO
 ANY KIND, either express or implied. See the License for the specific language governing rights
 and limitations under the License.
 
-Alternatively, the contents of this file may be used under the terms of the  
-GNU Lesser General Public License (the  "LGPL License"), in which case the   
-provisions of the LGPL License are applicable instead of those above.        
-If you wish to allow use of your version of this file only under the terms   
-of the LGPL License and not to allow others to use your version of this file 
-under the MPL, indicate your decision by deleting  the provisions above and  
-replace  them with the notice and other provisions required by the LGPL      
-License.  If you do not delete the provisions above, a recipient may use     
-your version of this file under either the MPL or the LGPL License.          
+Alternatively, the contents of this file may be used under the terms of the
+GNU Lesser General Public License (the  "LGPL License"), in which case the
+provisions of the LGPL License are applicable instead of those above.
+If you wish to allow use of your version of this file only under the terms
+of the LGPL License and not to allow others to use your version of this file
+under the MPL, indicate your decision by deleting  the provisions above and
+replace  them with the notice and other provisions required by the LGPL
+License.  If you do not delete the provisions above, a recipient may use
+your version of this file under either the MPL or the LGPL License.
 
 For more information about the LGPL: http://www.gnu.org/copyleft/lesser.html
 
@@ -62,7 +62,7 @@ type {<B>IJwImpersonation</B> defines an interface for TJwImpersonation. }
      {<B>TJwImpersonation</B> provides methods to impersonate a logged on client.
       Do not use this class instead use JwImpersonateLoggedOnUser, JwImpersonateLoggedOnUser or
       JwImpersonateLoggedOnUser.
-	  
+
 	  Remarks
        This class is intended only for use in services and fails without the TCB privilege.
      }
@@ -74,7 +74,7 @@ type {<B>IJwImpersonation</B> defines an interface for TJwImpersonation. }
      public
        constructor Create(const LogonSessionLuid : TLuid); overload;
        constructor Create(const LogonSessionId : ULONG); overload;
-	   
+
        {<B>Create</B> creates a new instance and impersonates the user logged onto
        the console session (typically 0 in xp and 1 in vista).
 
@@ -89,7 +89,7 @@ type {<B>IJwImpersonation</B> defines an interface for TJwImpersonation. }
            In this way any user explorer process can be returned - not only the
            console user. To avoid this problem call this constructor
            using true as parameter. Only apply FALSE if the current system
-           does not support multiple users (like Win2000 Workstation) 
+           does not support multiple users (like Win2000 Workstation)
        }
        constructor Create(const UseWTSCall : Boolean = false); overload;
 
@@ -118,10 +118,10 @@ function JwImpersonateLoggedOnUser: IJwImpersonation; overload;
 {<B>JwImpersonateLoggedOnUser</B> impersonates the current logged on user and returns an interface pointer to the
 token. It's automatically freed and reverted to self if it runs out of scope.
 
-@param LogonSessionId defines the user's logon session id. 
+@param LogonSessionId defines the user's logon session id.
 
 Remarks
-  This function is intended only for use in services. It impersonates the user working in the 
+  This function is intended only for use in services. It impersonates the user working in the
   given session.
 }
 function JwImpersonateLoggedOnUser(const LogonSessionId : ULONG) : IJwImpersonation; overload;
@@ -129,7 +129,7 @@ function JwImpersonateLoggedOnUser(const LogonSessionId : ULONG) : IJwImpersonat
 {<B>JwImpersonateLoggedOnUser</B> impersonates the current logged on user and returns an interface pointer to the
 token. It's automatically freed and reverted to self if it runs out of scope.
 
-@param LogonSessionLuid defines the session luid to be impersonated. 
+@param LogonSessionLuid defines the session luid to be impersonated.
 
 }
 function JwImpersonateLoggedOnUser(const LogonSessionLuid : TLuid) : IJwImpersonation; overload;
@@ -150,7 +150,7 @@ begin
   except
     on E : EJwsclSecurityException do
       result := TJwImpersonation.Create(false);
-  end;  
+  end;
 end;
 function JwImpersonateLoggedOnUser(const LogonSessionId : ULONG) : IJwImpersonation;
 begin
@@ -208,7 +208,7 @@ destructor TJwImpersonation.Destroy;
 begin
   if Assigned(fToken) then
     fToken.RevertToSelf;
-   
+
   FreeAndNil(fToken);
   inherited;
 end;

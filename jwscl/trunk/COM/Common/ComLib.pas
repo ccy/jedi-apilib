@@ -83,7 +83,7 @@ type
        end;
 
     4) You can use the Attach/Detach methods to attach to different enumerations
-       at runtime. 
+       at runtime.
   }
   TDispNewEnum = dispinterface
     ['{97079E31-6957-11D2-9154-0000B4552A26}']  // dummy
@@ -352,7 +352,7 @@ const
   RPC_C_AUTHZ_NONE = 0;
   RPC_C_AUTHZ_NAME = 1;
   RPC_C_AUTHZ_DCE = 2;
-  
+
 const
   CLSID_DCOMAccessControl: TGUID = '{0000031D-0000-0000-C000-000000000046}';
 
@@ -1346,7 +1346,7 @@ begin
   FSinks := TList.Create;
 
   if (cf = nil) then Exit;
-  
+
   {$IFNDEF D3}
   if (Simple) then
   begin
@@ -1432,7 +1432,7 @@ begin
 end;
 
 function TVariantCollection.GetIDsOfNames (const IID: TGUID; Names: Pointer;
-  NameCount, LocaleID: Integer; DispIDs: Pointer): HResult; 
+  NameCount, LocaleID: Integer; DispIDs: Pointer): HResult;
 begin
   Result := E_NOTIMPL;
 end;

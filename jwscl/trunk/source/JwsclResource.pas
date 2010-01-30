@@ -16,17 +16,17 @@ Software distributed under the License is distributed on an "AS IS" basis, WITHO
 ANY KIND, either express or implied. See the License for the specific language governing rights
 and limitations under the License.
 
-Alternatively, the contents of this file may be used under the terms of the  
-GNU Lesser General Public License (the  "LGPL License"), in which case the   
-provisions of the LGPL License are applicable instead of those above.        
-If you wish to allow use of your version of this file only under the terms   
-of the LGPL License and not to allow others to use your version of this file 
-under the MPL, indicate your decision by deleting  the provisions above and  
-replace  them with the notice and other provisions required by the LGPL      
-License.  If you do not delete the provisions above, a recipient may use     
-your version of this file under either the MPL or the LGPL License.          
-                                                                             
-For more information about the LGPL: http://www.gnu.org/copyleft/lesser.html 
+Alternatively, the contents of this file may be used under the terms of the
+GNU Lesser General Public License (the  "LGPL License"), in which case the
+provisions of the LGPL License are applicable instead of those above.
+If you wish to allow use of your version of this file only under the terms
+of the LGPL License and not to allow others to use your version of this file
+under the MPL, indicate your decision by deleting  the provisions above and
+replace  them with the notice and other provisions required by the LGPL
+License.  If you do not delete the provisions above, a recipient may use
+your version of this file under either the MPL or the LGPL License.
+
+For more information about the LGPL: http://www.gnu.org/copyleft/lesser.html
 Note
 
 The Original Code is JwsclResource.pas.
@@ -179,7 +179,7 @@ const
    RsAceTypeStringAudit = 'Audit';
    RsAceMandatory = 'Mandatory';
    RsAceAllowObject = 'Allow object';
-   RsAceDenyObject = 'Deny object'; 
+   RsAceDenyObject = 'Deny object';
    RsAceAllowCallbackObject = 'Allow callback object';
    RsAceDenyCallbackObject = 'Deny callback object';
    RsAceAuditCallback = 'Audit callback';
@@ -304,7 +304,7 @@ const
 
   RsPrivilegeLabelBug = 'To obtain the integrity level from a named service object you need to '+
     ' apply siSaclSecurityInformation and the privilege SE_SECURITY_NAME.';
-    
+
   RsUnimplementedSACLInheritance = 'Inheritance of SACL.';
   RsInvalidParameterAccessCheck = 'The parameter DesiredAccess must not contain MAXIMUM_ALLOWED for this method. '+
     'If you need to retrieve maximum allowed rights you should call the other AccessCheck method with parameter '+
@@ -434,7 +434,7 @@ const
     'he token access mask!\r\nyour  mask: \r\ntoken mask: \r\n%0:s (%1:s)\r\%2' +
     ':s\r\nCheckTokenAccessType called by %3:s'+#13#10+
     'Token access rights:\r%4:s\rYour requested rights:\r%5:s';
-	
+
   RsTokenStatisticsText = 'TokenID: %0:s\r\AuthenticationId: %1:s\r\nExpirat' +
     'ionTime: %2:s\r\nToken type: %3:d\r\nImpersonation level: 0x%4:x\r\nDynam' +
     'ic charged: 0x%5:x\r\nDynamic available: 0x%6:x\r\nGroup count: %7:d\r\nP' +
@@ -493,7 +493,7 @@ const
 //Unit JwsclUtils.pas
 
 //
-  RsInvalidLocalPointer  = 'Given pointer was not created by JwLocalAllocMem.'; 
+  RsInvalidLocalPointer  = 'Given pointer was not created by JwLocalAllocMem.';
   RsInvalidGlobalPointer = 'Given pointer was not created by JwGlobalAllocMem.';
   RsInvalidClassType = 'The given class type %0:s is invalid. Should be %1:s or derivates.';
 
@@ -621,7 +621,7 @@ const
   RsUNCryptProvider      = 'JwsclCryptProvider.pas';
   RsUNDescriptor         = 'JwsclDescriptor.pas';
   RsUNDesktops           = 'JwsclDesktops.pas';
-  RsUNElevation          = 'JwsclElevation.pas'; 
+  RsUNElevation          = 'JwsclElevation.pas';
   RsUNExceptions         = 'JwsclExceptions.pas';
   RsUNFirewall           = 'JwsclFirewall.pas';
   RsUNImpersonation      = 'JwsclImpersonation.pas';

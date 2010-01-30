@@ -16,11 +16,11 @@ Software distributed under the License is distributed on an "AS IS" basis, WITHO
 ANY KIND, either express or implied. See the License for the specific language governing rights
 and limitations under the License.
 
-Alternatively, the contents of this file may be used under the terms of the  
+Alternatively, the contents of this file may be used under the terms of the
 GNU Lesser General Public License (the  "LGPL License"), in which case the
-provisions of the LGPL License are applicable instead of those above.        
-If you wish to allow use of your version of this file only under the terms   
-of the LGPL License and not to allow others to use your version of this file 
+provisions of the LGPL License are applicable instead of those above.
+If you wish to allow use of your version of this file only under the terms
+of the LGPL License and not to allow others to use your version of this file
 under the MPL, indicate your decision by deleting  the provisions above and
 replace  them with the notice and other provisions required by the LGPL
 License.  If you do not delete the provisions above, a recipient may use
@@ -522,7 +522,7 @@ type
 
 const
   {<B>JwKeyRootTupleArray</B> defines a connection between root key handle and string
-   DO NOT LOCALIZE!! 
+   DO NOT LOCALIZE!!
   }
   JwKeyRootTupleArray: TJwKeyRootTupleArray =
     (
@@ -559,7 +559,7 @@ type
      >0: use relative index (relative of first start index)
      <0: use absolute index (-index)
     }
-    StringId : Integer; 
+    StringId : Integer;
   end;
 
   {<B>TJwSecurityDialogFlag</B> defines the flags of the TJwSecurityDescriptorDialog .}
@@ -658,7 +658,7 @@ type
  {TCreationFlags defines how a TDesktop object is to be created}
   TJwDesktopCreationFlag = (
     //<B>	dcfOpen)</B> creates a new desktop with the given flags
-    dcfCreate, 
+    dcfCreate,
 	//<B>	dcfOpen)</B> opens an existing desktop with the given flags)
 	dcfOpen);
 
@@ -668,7 +668,7 @@ type
    {TJwSecurityDesktopFlag is used when creating a new desktop.}
   TJwSecurityDesktopFlag  = (
    //Do not use the flag!
-   dfPad0, 
+   dfPad0,
    //dfAllowOtherAccountHook Use this flag, if you want to allow other applications to create hooks in your desktop
    dfAllowOtherAccountHook);
 
@@ -700,7 +700,7 @@ type
     sidaPad3,
     sidaPad4,
     sidaPad5
-    );           
+    );
   TJwSidAttributeSet = set of TJwSidAttribute;
 
   TJwSidAttributesStringArray = array[TJwSidAttribute] of TJwString;
@@ -1110,7 +1110,7 @@ type
     reAccessDenied,
     {The result value was not recognized. You must use the property  TJwAuthZAccessReply.Error to get more information.}
     reUnknown);
-	
+
   {<b>TJwReplyErrorEnumArray</b> defines an dynamic array of TJwReplyErrorEnum.
   It is used by TJwAuthZAccessReply to save each return value of TJwAuthContext.AccessCheck}
   TJwReplyErrorEnumArray = array of TJwReplyErrorEnum;
@@ -1122,13 +1122,13 @@ type
 
   {<b>TJwSecurityDescriptor.CreateDefaultByToken</b> is used by TJwRequestedTokenType.CreateDefaultByToken
   This types defines which token should be used for the new security descriptor.
-  }   
+  }
   TJwRequestedTokenType = (
     {The token of the thread will be used if any; otherwise the process token.}
-    rttAuto, 
+    rttAuto,
 	{The process token is forced to be use.See TJwSecurityToken.CreateTokenByProcess for more information }
-	rttTokenPrimary, 
-	{The thread token is forced to be used. 
+	rttTokenPrimary,
+	{The thread token is forced to be used.
      See TJwSecurityToken.CreateTokenByThread for more information.}
 	rttTokenImpersonation);
 
@@ -1160,7 +1160,7 @@ type
 
   TWellKnownSidTypeSet = set of TWellKnownSidType;
 
-  {<b>TJwProfileMember</b> is used by TJwSecurityToken.LoadUserProfile 
+  {<b>TJwProfileMember</b> is used by TJwSecurityToken.LoadUserProfile
    and influences the behavior of the functions.
    Please retrieve their meaning from the LoadUserProfile MSDN page or TJwProfileInfo}
   TJwProfileMember = (
@@ -1224,7 +1224,7 @@ type
     {The pointer was allocated using CoTaskMemAlloc}
     ptCOMPointer);
 
-    
+
   {<b>TJwJobLimit</b> is used by TJwJobObject class to set or get job user interface limits.
   Read the MSDN doc on JOBOBJECT_BASIC_LIMIT_INFORMATION member LimitFlags.}
   TJwJobLimit = (
@@ -1477,7 +1477,7 @@ type
       * SuRun is not available
       * UAC is not supported by OS
       * epfNoUi is set in parameter ElevationProcessFlags so no dialog box is shown.
-    
+
     It receives user credential to be used by CreateProcess.
     Parameters
     Abort :              Set abort to true if you like to abort the elevation
@@ -1505,14 +1505,14 @@ type
                          CreateProcess. The cb member (size) is ignored.<p />
     Remarks
     Any exception thrown in this function is returned by the <link JwElevateProcess@TJwString@TJwString@TJwString@HWND@TJwElevationProcessFlags@TJwOnElevationGetCredentials, JwElevateProcess Function>.
-    
+
     The exception EjwsclCryptApiException will be raised if the encrypted password
     could not be decrypted.
     See Also
     <link JwElevateProcess@TJwString@TJwString@TJwString@HWND@TJwElevationProcessFlags@TJwOnElevationGetCredentials, JwElevateProcess Function>
     Example
     This examples shows how to encrypt a password for OnElevationGetCredentials:
-    
+
     <code lang="delphi">
     procedure TForm1.OnElevationGetCredentials(var Abort: Boolean;
      var UserName, Password: TJwString; var EncryptedPassword: Boolean;
@@ -1521,18 +1521,18 @@ type
     begin
      //set default username
      YourCredentialPrompt.UserName := UserName;
-    
+
      //run login dialog
      Abort := not YourCredentialPrompt.Execute;
      if Abort then
      exit;
-    
+
      UserName := YourCredentialPrompt.UserName;
-    
+
      //secure password in memory -
      //no prompt and on local machine only
      Password := JwEncryptString(YourCredentialPrompt.Password, '', false,true);
-    
+
      //the password is encrypted
      EncryptedPassword := True;
     end;
@@ -1737,4 +1737,3 @@ end;
 initialization
 
 end.
-

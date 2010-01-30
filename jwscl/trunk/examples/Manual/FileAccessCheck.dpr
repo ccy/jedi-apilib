@@ -69,7 +69,7 @@ end;
 begin
   Writeln('This program checks access to file or folder: ', ParamStr(1));
   writeln;
-  
+
   try
     writeln('Full access allowed? ',CheckAccessToFile(GENERIC_ALL,ParamStr(1)));
   except

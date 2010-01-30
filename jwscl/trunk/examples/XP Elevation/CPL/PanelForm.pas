@@ -138,7 +138,7 @@ procedure TPanel.FormActivate(Sender: TObject);
 begin
   if not CheckRegistryKeys then
     exit;
-    
+
   UpdateList;
 
   if not FirstActivation then
@@ -172,7 +172,7 @@ begin
       exit;
     end;
   finally
-    secKey.Free; 
+    secKey.Free;
   end;
 end;
 
@@ -198,7 +198,7 @@ begin
     end;
   finally
     Reg.Free;
-  end;       
+  end;
 end;
 
 end.

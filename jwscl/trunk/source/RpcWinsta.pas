@@ -46,7 +46,7 @@ function RpcWinStationFUSCanRemoteUserDisconnect(IcaApiHandle : THandle; var fun
  domainName : PWideChar; domainNameLength : DWORD; userName : PWideChar; userNameLength : DWORD): Boolean;
   stdcall;
 
-// function can be also used to open a new handle to the local server, if needed, which needs to be closed. 
+// function can be also used to open a new handle to the local server, if needed, which needs to be closed.
 function WinStationCloseServer(var ServerHandle : THandle) : DWORD;
 function WinStationOpenServer(ServerName : WideString) : THandle;
 function WinStationGetLocalServerHandle : THandle; // returns a auto open local handle. Do not close it!!!

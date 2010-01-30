@@ -109,7 +109,7 @@ begin
   OleCheck(WabOpen(AddrBook, WabObject, @WP, 0));
 
   MailUser := nil;
-  
+
 
 //      'TestBenutzer', MailUser));
 

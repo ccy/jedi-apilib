@@ -20,7 +20,7 @@ exports
   DllRegisterServer,
   DllUnregisterServer;
 
-{$R *.TLB} 
+{$R *.TLB}
 {$R *.RES}
 
 begin

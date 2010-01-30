@@ -13,7 +13,7 @@ uses
   JwsclStrings; //JwsclStrings, must be at the end of uses list!!!;
 
 
-  
+
 
 type
   TForm1 = class(TForm)

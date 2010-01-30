@@ -1,5 +1,5 @@
 // Uncomment the following directive to create a console application
-// or leave commented to create a GUI application... 
+// or leave commented to create a GUI application...
 // {$APPTYPE CONSOLE}
 
 program TerminalServerTests;
@@ -29,4 +29,3 @@ begin
 {$ENDIF}
 
 end.
-

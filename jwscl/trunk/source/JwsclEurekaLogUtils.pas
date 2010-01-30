@@ -16,17 +16,17 @@ Software distributed under the License is distributed on an "AS IS" basis, WITHO
 ANY KIND, either express or implied. See the License for the specific language governing rights
 and limitations under the License.
 
-Alternatively, the contents of this file may be used under the terms of the  
-GNU Lesser General Public License (the  "LGPL License"), in which case the   
-provisions of the LGPL License are applicable instead of those above.        
-If you wish to allow use of your version of this file only under the terms   
-of the LGPL License and not to allow others to use your version of this file 
-under the MPL, indicate your decision by deleting  the provisions above and  
-replace  them with the notice and other provisions required by the LGPL      
-License.  If you do not delete the provisions above, a recipient may use     
-your version of this file under either the MPL or the LGPL License.          
-                                                                             
-For more information about the LGPL: http://www.gnu.org/copyleft/lesser.html 
+Alternatively, the contents of this file may be used under the terms of the
+GNU Lesser General Public License (the  "LGPL License"), in which case the
+provisions of the LGPL License are applicable instead of those above.
+If you wish to allow use of your version of this file only under the terms
+of the LGPL License and not to allow others to use your version of this file
+under the MPL, indicate your decision by deleting  the provisions above and
+replace  them with the notice and other provisions required by the LGPL
+License.  If you do not delete the provisions above, a recipient may use
+your version of this file under either the MPL or the LGPL License.
+
+For more information about the LGPL: http://www.gnu.org/copyleft/lesser.html
 
 Note
 The Original Code is JwsclEurekaLogUtils.pas.
@@ -61,15 +61,15 @@ type
        to the Eurekalog component you want to use so this class is
        automatically freed. This class does not anything of the
        Eurekalog component.
-       
-       
+
+
        Parameters
        AOwner :           Set the owner of this class. If the owner
                           is freed this class instance will also be
                           freed; otherwise the creator have to free
-                          it. 
+                          it.
        ApplicationName :  Name of this application. Must not be empty
-       
+
        Exceptions
        EJwsclInvalidParameterException :  This exception will be
                                           raised if parameter ApplicationName
@@ -107,7 +107,7 @@ end;
 {$ENDIF DEBUG}
 
 constructor TJwEurekaLogNotify.Create(AOwner: TComponent;
-  const ApplicationName : String); 
+  const ApplicationName : String);
 begin
   inherited Create(AOwner);
   if Length(ApplicationName) = 0 then
@@ -204,7 +204,7 @@ begin
       AddField('Info_ProductName',ProductName);
       AppName := ProductName;
       AddField('Info_ProductVersion',ProductVersion);
-      AddField('ApplicationName',AppName);      
+      AddField('ApplicationName',AppName);
       Free;
     end;
   except
@@ -215,4 +215,3 @@ end;
 
 
 end.
- 

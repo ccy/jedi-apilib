@@ -34,7 +34,7 @@ type
     procedure TestRemoveInheritanceFlow;
     procedure TestRestoreInheritanceFlow;
     procedure TestTakeOwnerShip;
-    procedure TestAccessCheck; 
+    procedure TestAccessCheck;
     procedure TestTreeFileObjectSetNamedSecurityInfo;
   end;
 
@@ -79,7 +79,7 @@ type
     constructor CreateParented(const Name : TJwString;
       Parent : TSecurePrivateObject;
       const UseDefault : Boolean = false;
-      const DefaultSecurityDescriptor: TJwSecurityDescriptor = nil); overload; 
+      const DefaultSecurityDescriptor: TJwSecurityDescriptor = nil); overload;
 
     destructor Destroy; override;
 
@@ -110,7 +110,7 @@ var i : Integer;
 begin
   inherited;
 
-  //create secure object with default SD (from token) 
+  //create secure object with default SD (from token)
   PrivObj[0,1] := TSecurePrivateObject.Create('Level 1 [Container]- ProcessSID', true);
   PrivObj[0,1].fSecurityDescriptor.DACL.Clear; //clear default DACL
   PrivObj[0,1].fSecurityDescriptor.DACL.Add(
@@ -167,7 +167,7 @@ begin
       JwAdministratorsSID, false));
 
   PrivObj[4,1] := TSecurePrivateObject.Create('Level 1.4 [Object]- inherited');
-  PrivObj[0,1].Add(PrivObj[4,1]); 
+  PrivObj[0,1].Add(PrivObj[4,1]);
 end;
 
 procedure TJwSecurePrivateObjectTests.TearDown;
@@ -463,7 +463,7 @@ function TSecurePrivateObject.GetInheritFlags(const FlagsType : TJwGetInheritFla
 begin
   result := fInheritFlags;
   if FlagsType = giftCreatePrivate then
-    Include(result,ifAvoidOwnerCheck); 
+    Include(result,ifAvoidOwnerCheck);
 end;
 
 function TSecurePrivateObject.GetIsDirectoryObject: Boolean;

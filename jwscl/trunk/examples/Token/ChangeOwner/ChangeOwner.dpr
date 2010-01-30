@@ -66,7 +66,7 @@ begin
 {$IFDEF FPC}
   Application.Initialize;  //LCL needs initialization
 {$ENDIF}
-  
+
   FileName := ParamStr(1);
 
   if not FileExists(FileName) then
@@ -145,7 +145,7 @@ begin
     exit;
   end;
 
-  
+
   ShowUserName('Logged on user');
 
   //we need it only if we dont have WRITE_OWNER and WRITE_DAC rights to the file

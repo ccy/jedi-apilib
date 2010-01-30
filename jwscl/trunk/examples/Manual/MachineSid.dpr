@@ -17,5 +17,5 @@ begin
   except
     on E : Exception do
       Writeln(E.Message);
-  end; 
+  end;
 end.

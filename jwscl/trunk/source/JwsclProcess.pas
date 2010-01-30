@@ -17,17 +17,17 @@ Software distributed under the License is distributed on an "AS IS" basis, WITHO
 ANY KIND, either express or implied. See the License for the specific language governing rights
 and limitations under the License.
 
-Alternatively, the contents of this file may be used under the terms of the  
-GNU Lesser General Public License (the  "LGPL License"), in which case the   
-provisions of the LGPL License are applicable instead of those above.        
-If you wish to allow use of your version of this file only under the terms   
-of the LGPL License and not to allow others to use your version of this file 
-under the MPL, indicate your decision by deleting  the provisions above and  
-replace  them with the notice and other provisions required by the LGPL      
-License.  If you do not delete the provisions above, a recipient may use     
-your version of this file under either the MPL or the LGPL License.          
+Alternatively, the contents of this file may be used under the terms of the
+GNU Lesser General Public License (the  "LGPL License"), in which case the
+provisions of the LGPL License are applicable instead of those above.
+If you wish to allow use of your version of this file only under the terms
+of the LGPL License and not to allow others to use your version of this file
+under the MPL, indicate your decision by deleting  the provisions above and
+replace  them with the notice and other provisions required by the LGPL
+License.  If you do not delete the provisions above, a recipient may use
+your version of this file under either the MPL or the LGPL License.
 
-For more information about the LGPL: http://www.gnu.org/copyleft/lesser.html 
+For more information about the LGPL: http://www.gnu.org/copyleft/lesser.html
 
 Note
 The Original Code is JwsclProcess.pas.
@@ -217,21 +217,21 @@ BOOL WINAPI TerminateJobObject(HANDLE hJob, UINT uExitCode);
       const ErrorIfAlreadyExists : Boolean;
       const SecurityAttributes : TJwSecurityDescriptor); overload;
 
-    {<B>Create</B> creates a new job object using an existing completition port.}  
+    {<B>Create</B> creates a new job object using an existing completition port.}
     constructor Create(const Name : TJwString;
       const ErrorIfAlreadyExists : Boolean;
       const SecurityAttributes : TJwSecurityDescriptor;
       CompletionKey : Integer; CompletionPort : THandle); overload;
 
     {<B>Create</B> creates a new job object using an existing job object
-    @param Name defines the name of the existing job object 
-    @param DesiredAccess defines the desired access to open the job object 
+    @param Name defines the name of the existing job object
+    @param DesiredAccess defines the desired access to open the job object
     @param InheritHandles defines whether processes created by this process
         will inherit the handle. Otherwise, the processes do not inherit this handle.
     @param CompletionKey defines an existing completion key to be assigned or
-     used by the opened object. It is used for notifications. 
+     used by the opened object. It is used for notifications.
     @param CompletionPort defines an existing completion handle to be assigned or
-     used by the opened object. It is used for notifications. 
+     used by the opened object. It is used for notifications.
 
     }
     constructor Create(const Name : TJwString; const DesiredAccess : TJwAccessMask;
@@ -242,7 +242,7 @@ BOOL WINAPI TerminateJobObject(HANDLE hJob, UINT uExitCode);
     {<B>IsProcessInJob</B> returns whether a process is assigned to the job.
     @param hProcess defines any handle to the process that is tested for membership.
     @param Returns tre if the process is a member of the job; otherwise false.
-    @return Returns true if the given process is assigned to the current job instance; otherwise false. 
+    @return Returns true if the given process is assigned to the current job instance; otherwise false.
     raises
  EJwsclWinCallFailedException:  can be raised if the call to an winapi function failed.
 
@@ -254,14 +254,14 @@ BOOL WINAPI TerminateJobObject(HANDLE hJob, UINT uExitCode);
     assigned to a job. The process can be created with the flag CREATE_BREAKAWAY_FROM_JOB
     to be reassignable.
     raises
- EJwsclWinCallFailedException:  can be raised if the call to an winapi function failed. 
+ EJwsclWinCallFailedException:  can be raised if the call to an winapi function failed.
     }
     procedure AssignProcessToJobObject(hProcess : TJwProcessHandle; Data : Pointer);
 
     {<B>TerminateJobObject</B> terminates all processes in the job with a predefined
      exit code.
     raises
- EJwsclWinCallFailedException:  can be raised if the call to an winapi function failed. 
+ EJwsclWinCallFailedException:  can be raised if the call to an winapi function failed.
     }
     procedure TerminateJobObject(const ExitCode : DWORD);
 
@@ -271,9 +271,9 @@ BOOL WINAPI TerminateJobObject(HANDLE hJob, UINT uExitCode);
        and restarted. If true the thread is shutdown and a new thread is created.
        However the IO port is not replaced. In fact there is no way to reassign a new
        port to the existing job object. If the parameter Force is set to false,
-       the thread is only reset if it is not running. 
+       the thread is only reset if it is not running.
     raises
- EJwsclWinCallFailedException:  can be raised if the call to an winapi function failed. 
+ EJwsclWinCallFailedException:  can be raised if the call to an winapi function failed.
     }
     procedure ResetIOThread(const Force : Boolean);
 
@@ -380,7 +380,7 @@ BOOL WINAPI TerminateJobObject(HANDLE hJob, UINT uExitCode);
           do sth with Job.JobObject[x]
         finally
           Job.Lock.EndWrite;
-        end;                                                                    
+        end;
     </code>
     }
     property Lock : TMultiReadExclusiveWriteSynchronizer read fLock;
@@ -399,19 +399,19 @@ BOOL WINAPI TerminateJobObject(HANDLE hJob, UINT uExitCode);
   The callback event must create a new job object and return it
    through parameter NewJobObject. The return value must not be nil.
   The new job object does not need to have a name.
-  @param Sender defines the job object list instance that calls this event 
+  @param Sender defines the job object list instance that calls this event
   @param ProcessHandle defines the process to be assigned to the job
   @param ProcessSessionID defines the session id that the given process
-   belongs to 
+   belongs to
   @param CurrentSessionID defines a session index. The event method can
    be called several times for one call of AssignProcessToJob. This happens
    when the job list contains a lot less job objects than the process session ID.
    E.g. if the job object list contains no
     jobs (Count = 0) and a job with session ID 2 is to be assigned, the
     event method is called 3 times (session 0,1,2) and the process
-    is assigned to the job object with index 2.  
+    is assigned to the job object with index 2.
   @param NewJobObject receives a valid instance of a job object.
-    Must not be nil; otherwise AssignProcessToJob will fail. 
+    Must not be nil; otherwise AssignProcessToJob will fail.
   }
   TJwOnNewJobObject = procedure (Sender : TJwJobObjectSessionList;
       ProcessHandle : TJwProcessHandle;
@@ -441,12 +441,12 @@ BOOL WINAPI TerminateJobObject(HANDLE hJob, UINT uExitCode);
     {<B>Create</B> creates a new instance of @Classname.
      @param NewJobObjectEvent defines an event that is called in
        AssignProcessToJob. It must not be nil; otherwise EJwsclNILParameterException
-       will be raised 
+       will be raised
       raises EJwsclNILParameterException will be raised if parameter NewJobObjectEvent
-       is nil 
+       is nil
     }
     constructor Create(const NewJobObjectEvent: TJwOnNewJobObject);
-    
+
     destructor Destroy; override;
 
     {<B>Clear</B> removes all job objects in the list.
@@ -469,12 +469,12 @@ BOOL WINAPI TerminateJobObject(HANDLE hJob, UINT uExitCode);
 
     The assignment is threadsafe to avoid complication with other methods.
 
-    @param Process defines a process handle to be added to an job object 
+    @param Process defines a process handle to be added to an job object
     raises
- EJwsclMissingEvent:  will be raised if event OnNewJobObject is nil 
+ EJwsclMissingEvent:  will be raised if event OnNewJobObject is nil
      EJwsclInvalidParameterException: will be raised if the job object
-      pointer returned by OnNewJobObject is nil 
-     EJwsclWinCallFailedException: can be raised if the call to an winapi function failed. 
+      pointer returned by OnNewJobObject is nil
+     EJwsclWinCallFailedException: can be raised if the call to an winapi function failed.
     }
     procedure AssignProcessToJob(Process : TJwProcessHandle; Data : Pointer); overload; virtual;
 
@@ -489,14 +489,14 @@ BOOL WINAPI TerminateJobObject(HANDLE hJob, UINT uExitCode);
 
     The assignment is threadsafe to avoid complication with other methods.
 
-    @param Process defines a process handle to be added to an job object 
+    @param Process defines a process handle to be added to an job object
     @param JobObjectIndex returns the session ID (or job object index) of the
-      process wherein it was assigned to 
+      process wherein it was assigned to
     raises
- EJwsclMissingEvent:  will be raised if event OnNewJobObject is nil 
+ EJwsclMissingEvent:  will be raised if event OnNewJobObject is nil
      EJwsclInvalidParameterException: will be raised if the job object
-      pointer returned by OnNewJobObject is nil 
-     EJwsclWinCallFailedException: can be raised if the call to an winapi function failed. 
+      pointer returned by OnNewJobObject is nil
+     EJwsclWinCallFailedException: can be raised if the call to an winapi function failed.
     }
     procedure AssignProcessToJob(Process : TJwProcessHandle; Data : Pointer; out JobObjectIndex : Cardinal); overload; virtual;
 
@@ -522,7 +522,7 @@ BOOL WINAPI TerminateJobObject(HANDLE hJob, UINT uExitCode);
     {<B>TerminateJobsOnFree</B> defines whether all or no processes in all job objects
      should be terminated. This property has no read value because
      it just goes through all job objects and sets TJwJobObject.TerminateOnDestroy
-     to the given value. 
+     to the given value.
     }
     property TerminateJobsOnFree : Boolean write SetTerminateJobsOnFree;
 
@@ -575,14 +575,14 @@ token. Otherwise the CreateProcessAsUser function fails with bad error explanati
 (like "A call to an OS function failed").
 However the procedure won't stop you from doing this!
 
-@param ApplicationName defines the application to be run in the session 
-@param CommandLine defines the parameters for the application 
-@param CurrentDirectory defines the start folder of the app.  
-@param SessionID defines the target session where the new application is to be started. 
+@param ApplicationName defines the application to be run in the session
+@param CommandLine defines the parameters for the application
+@param CurrentDirectory defines the start folder of the app.
+@param SessionID defines the target session where the new application is to be started.
 @param CreationFlags defines creation flags that are delivered to CreateProcess parameter with
- same name 
+ same name
 @param Desktop defines the target windowstation and desktop name. If empty
-the default target is "winsta0\default" 
+the default target is "winsta0\default"
 @param StartupInfo defines startup info delivered to to CreateProcess parameter with
  same name. Don't forget to initialize the structure first before calling this procedure.
 <code lang="delphi>
@@ -591,11 +591,11 @@ ZeroMemory(@StartupInfo, sizeof(StartupInfo));
 @param WaitForProcess defines whether the procedure should wait for the process to end
 and clean up all allocated resources or just return to the caller. In last case
 the caller is responsible to free the returned token, the environment block and
-the users profile 
+the users profile
 @param Output contains returned data in case parameter WaitForProcess is false.
-The caller is responsible to free the contained member allocation 
+The caller is responsible to free the contained member allocation
 @param LogServer receives a log server instance. It is used to log events for
-mostly debugging purposes. If this parameter is nil, no events are logged   
+mostly debugging purposes. If this parameter is nil, no events are logged
 
 raises
  EJwsclProcessIdNotAvailable:  will be raised if no token could be found
@@ -625,12 +625,12 @@ whether the given process should be used to return the token.
 @param OnProcessFound is a callback method that is called each time a process
 was found. The callback function determines whether the process should be used
 to return the token. If the process cannot be used to retrieve the token, <B>JwGetTokenFromProcess</B>
-will continue enumerating 
+will continue enumerating
 @param LogServer receives a logging instance where log events are logged to.
  Can be nil if no logging is used
-@param Data may contain user defined data to be assigned to a call to OnProcessFound 
+@param Data may contain user defined data to be assigned to a call to OnProcessFound
 @return <B>JwGetTokenFromProcess</B> returns the primary token of a process. If no process could be used
-to get a token the return value is nil. 
+to get a token the return value is nil.
 
 raises
  EJwsclNILParameterException:  will be raised if parameter OnProcessFound is nil
@@ -827,13 +827,13 @@ Remarks
  This procedure needs JwInitWellKnownSIDs to be called.
 <B>JwCreateProcessAsAdminUser</B> can only run within a SYSTEM account and with TCB privilege available.
 
-<B>BETA: This function has not been tested thoroughly!</B>  
+<B>BETA: This function has not been tested thoroughly!</B>
 
 @param LogServer receives a logging instance where log events are logged to.
- Can be nil if no logging is used 
+ Can be nil if no logging is used
 raises
- EJwsclNilPointer:  will be raised if JwInitWellKnownSIDs was not called before 
- EJwsclPrivilegeException: will be raised if the TCB privilege is not available 
+ EJwsclNilPointer:  will be raised if JwInitWellKnownSIDs was not called before
+ EJwsclPrivilegeException: will be raised if the TCB privilege is not available
 }
 
 procedure JwCreateProcessAsAdminUser(
@@ -1018,14 +1018,14 @@ begin
       else
       // ...otherwise
       // Either use the callers token from InVars.LogonToken
-      // or get the token from a specified SessionID. 
+      // or get the token from a specified SessionID.
       //
       begin
         //
         // The user did not provide use with a token
         // so we must get the logon sid ourselves.
         //
-        if not Assigned(InVars.LogonToken) then 
+        if not Assigned(InVars.LogonToken) then
         try //3.
           Log.Log('Checking Windows Version...');
 
@@ -1161,7 +1161,7 @@ begin
           Sid := TJwSecurityId.Create(InVars.AdditionalGroups[i]);
 
           //
-          // we do not want a foreign logon ID to be in it 
+          // we do not want a foreign logon ID to be in it
           //
           if (sidaGroupLogonId in Sid.AttributesType) then
             Sid.AttributesType := Sid.AttributesType - [sidaGroupLogonId];
@@ -1267,9 +1267,9 @@ begin
         lpThreadAttr := nil;
 
         //
-        // Copy variables to memory for CreateProcessAsUserX 
+        // Copy variables to memory for CreateProcessAsUserX
         //  CreateProcessAsUser behaves different for
-        //    nil and empty strings. 
+        //    nil and empty strings.
 
         if Length(InVars.Parameters.lpApplicationName) > 0 then
           AppName := TJwPChar(InVars.Parameters.lpApplicationName);
@@ -1326,7 +1326,7 @@ begin
             Inc(i);
           end;
         until (GetLastError() <> ERROR_PIPE_NOT_CONNECTED);
-        
+
         if not CPAUResult then
         begin
           Log.Log('Call to CreateProcessAsUser succeeded. Returning.');
@@ -1433,7 +1433,7 @@ begin
       //don't bother about the problem
       Cancel := false;
     end;
-  end;      
+  end;
 end;
 
 
@@ -1483,7 +1483,7 @@ function JwGetTokenFromProcess (const OnProcessFound : TJwOnProcessFound; LogSer
         if not Assigned(SrvProcess) then
           SrvProcess := TJwWTSProcess.Create(Srv.Processes, WTS_CURRENT_SESSION,
             ProcEntry.th32ProcessID, TJwString(ProcEntry.szExeFile), '');
-                          
+
         Inc(result);
         Srv.Processes.Add(SrvProcess);
 
@@ -1557,20 +1557,20 @@ begin
 
           try
             Succ := true;
-            
+
             Log.Log(lsMessage,'call CreateDuplicateExistingToken');
             {
               Get token by process handle and duplicate it
-              
+
               TSrv.Processes[i].Token may be nil if the token could not be retrieved.
               That may happen for processes in other session or constrained tokens (adapted DACL).
               We skip it into the except branch!
-            }            
+            }
             result := TJwSecurityToken.CreateDuplicateExistingToken(TSrv.Processes[i].Token.TokenHandle,
                 TOKEN_ASSIGN_PRIMARY or
                 TOKEN_QUERY or TOKEN_IMPERSONATE or TOKEN_DUPLICATE or TOKEN_READ);
 
-            
+
           except
             On E : Exception do
             begin
@@ -1620,7 +1620,7 @@ begin
     end;
 
     if ProcessID = 0 then
-      Log.Log(lsMessage,'Could not find any process ID.');         
+      Log.Log(lsMessage,'Could not find any process ID.');
   finally
     TSrv.Free;
 //    Log.Log(lsMessage,'Exiting CreateTokenByProcessAndSession.');
@@ -1741,7 +1741,7 @@ begin
         except
           on E : Exception do
           begin
-            Log.Exception(E); 
+            Log.Exception(E);
 
             raise;
           end;
@@ -2537,7 +2537,7 @@ end;
 function TJwJobObject.IsProcessInJob(hProcess : TJwProcessHandle) : Boolean;
 var LB : LongBool;
 begin
-  LB := false; 
+  LB := false;
   if not JwaWindows.IsProcessInJob(hProcess, fHandle, LB) then
      raise EJwsclWinCallFailedException.CreateFmtWinCall(
         '',
@@ -2639,7 +2639,7 @@ begin
   begin
     fThread := TJwInternalJobObjectIOCompletitionThread.Create(Self, false,IOJOBNAME+Name);
   end
-  else 
+  else
   begin
     if not Force and not fThread.Terminated then
       exit;
@@ -2657,7 +2657,7 @@ begin
       FreeAndNil(fThread);
     except
     end;
-    
+
     fThread := TJwInternalJobObjectIOCompletitionThread.CreateWithIOPort(Self, IOPort,false,IOJOBNAME+Name);
   end;
 end;
@@ -2724,12 +2724,12 @@ var
   L : DWORD;
   //ID : DWORD;
   Data : Pointer;
-  
+
 const ERROR_ABANDONED_WAIT_0 = 735;
 
 begin
   inherited; //sets thread name
-  
+
   fRemainPort := false;
   pOV := nil;
   ReturnValue := 0;

@@ -73,10 +73,10 @@ type
   public
     { Create creates a new TJwsclFirewall instance and connects to the firewall
       manager COM interface.
-      
-      
-      
-      
+
+
+
+
       Exceptions
       EJwsclFirewallProfileInitException :  This exception is raised if the connection
                                             to the firewall COM interface failed. The
@@ -102,7 +102,7 @@ type
     procedure DeleteFromWinFirewall(const ApplicationFilename: TJwString); virtual;
 
     {<B>AddTcpPortToFirewall</B> Adds a rule for a single tcp port to the firewall.
-     @param ProtocollName gives a description of the opened port (e.g. "FTP-Server") 
+     @param ProtocollName gives a description of the opened port (e.g. "FTP-Server")
      @param ProtocollPort defines the port of the protocol
      @param SubnetOnly defines if the rule affects only the pc's subnet or not
      @param PortRemoteAddresses defines which Remoteadress and port should be allowed
@@ -361,7 +361,7 @@ procedure TJwsclFirewall.AddToWinFirewall(const ApplicationFilename,
   NameOnExceptionList: TJwString; const EnableRule: Boolean);
 var
   App: INetFwAuthorizedApplication;
-begin                
+begin
   if GetFirewallState
     and GetExceptionsAllowed then
   begin
@@ -418,7 +418,7 @@ begin
 
     Port.Name := ProtocollName;
     Port.Protocol := NET_FW_IP_PROTOCOL_TCP;
-	  
+
     Port.Port := ProtocollPort;
     if SubnetOnly then
       Port.Scope := NET_FW_SCOPE_LOCAL_SUBNET
@@ -463,7 +463,7 @@ begin
           'AddUdpPortToFirewall', ClassName, RsUNFirewall,
           0, false, []);
   end;
-          
+
   try
     Port := CoNetFwOpenPort.Create;
 
@@ -476,7 +476,7 @@ begin
       Port.Scope := NET_FW_SCOPE_ALL;
     Port.RemoteAddresses := PortRemoteAddresses;
     Port.Enabled := True;
-    
+
 
     try
       FProfile.GloballyOpenPorts.Add(Port);
@@ -530,4 +530,3 @@ begin
 end;
 
 end.
-

@@ -153,7 +153,7 @@ begin
   Log := uLogging.LogServer.Connect(etThread, '','Service Execute','RunAsSysService.pas','Entering service main thread');
 
 
-                             
+
   CmdLine := '';
   for iP := 0 to _ParamCount-1  do
   begin
@@ -241,7 +241,7 @@ begin
       on e: Exception do
       begin
         Log.Log(lsError, 'Could not start process:'+E.Message);
-        Log.Exception(E);                                      
+        Log.Exception(E);
       end;
     end;
 

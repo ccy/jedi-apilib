@@ -57,7 +57,7 @@ begin
 end;
 
 procedure TJwSimpleDescriptorTests.TestAllow;
-begin   
+begin
   try
     SD.Allow('Jeder');
     CheckEquals(1, SD.SecurityDescriptor.DACL.Count);
@@ -177,7 +177,7 @@ begin
     CheckNotNull(SD2.DACL);
     CheckEquals(2, SD2.DACL.Count);
   finally
-    SD2.Free; 
+    SD2.Free;
   end;
 
 

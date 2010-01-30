@@ -32,7 +32,7 @@ begin
 
 // Impersonate the client.
 
-   ImpersonateNamedPipeClient(hNamedPipe);   
+   ImpersonateNamedPipeClient(hNamedPipe);
 
 // Get an impersonation token with the client's security context.
 

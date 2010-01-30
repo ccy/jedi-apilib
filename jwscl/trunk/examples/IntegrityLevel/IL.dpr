@@ -24,7 +24,7 @@ begin
   Path := ParamStr(1);
   if not FileExists(Path) and not DirectoryExists(Path) then
     exit;
-    
+
 
 
   IsDir := not FileExists(Path) and DirectoryExists(Path);

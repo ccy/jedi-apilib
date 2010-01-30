@@ -23,7 +23,7 @@ type
 var
   frmMessage: TfrmMessage;
 
-procedure ShowMessageForm(Text : String);  
+procedure ShowMessageForm(Text : String);
 
 implementation
 

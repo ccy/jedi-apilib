@@ -29,17 +29,17 @@ program UnitTests;
 uses
 {$IFDEF FASTMM4}
   FastMm4,
-{$ENDIF FASTMM4}  
+{$ENDIF FASTMM4}
   //JEDI API LIB
   jwaWindows,
   JwaVista,
-  
+
   //VCL
   SysUtils,
   Dialogs,
   Forms,
   Classes,
-  Windows, //only for TKeyboardState 
+  Windows, //only for TKeyboardState
 
   //DUNIT
   TestFramework,
@@ -115,5 +115,3 @@ begin
     GUITestRunner.RunRegisteredTests;
 {$ENDIF}
 end.
- 
-

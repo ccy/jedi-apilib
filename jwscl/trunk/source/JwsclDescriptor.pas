@@ -1,6 +1,6 @@
 { Description
   Project JEDI Windows Security Code Library (JWSCL)
-  
+
   Contains access control classes that are used by the units of JWSCL
   Author
   Christian Wimmer
@@ -8,11 +8,11 @@
   The contents of this file are subject to the Mozilla Public License Version 1.1
   (the "License"); you may not use this file except in compliance with the
   \License. You may obtain a copy of the License at http://www.mozilla.org/MPL/
-  
+
   Software distributed under the License is distributed on an "AS IS" basis,
   WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for the
   specific language governing rights and limitations under the License.
-  
+
   Alternatively, the contents of this file may be used under the terms of the GNU
   Lesser General Public License (the "LGPL License"), in which case the provisions
   of the LGPL License are applicable instead of those above. If you wish to allow
@@ -22,20 +22,20 @@
   and other provisions required by the LGPL License. If you do not delete the
   provisions above, a recipient may use your version of this file under either the
   MPL or the LGPL License.
-  
+
   For more information about the LGPL: http://www.gnu.org/copyleft/lesser.html
   Note
   The Original Code is JwsclDescriptor.pas.
-  
+
   The Initial Developer of the Original Code is Christian Wimmer. Portions created
   by Christian Wimmer are Copyright (C) Christian Wimmer. All rights reserved.
-  
-  
+
+
   Link List
   \Links Secure object types:
   http://msdn2.microsoft.com/en-us/library/aa379593.aspx
-  
-  
+
+
                                                                                    }
 {$IFNDEF SL_OMIT_SECTIONS}
 unit JwsclDescriptor;
@@ -47,7 +47,7 @@ interface
 uses SysUtils, Classes,
   JwaWindows, JwsclResource, JwsclMapping,
   JwsclTypes, JwsclExceptions, JwsclSid, JwsclAcl,
-  JwsclVersion, JwsclConstants,  
+  JwsclVersion, JwsclConstants,
   JwsclStrings; //JwsclStrings, must be at the end of uses list!!!
 
 {$ENDIF SL_OMIT_SECTIONS}
@@ -57,7 +57,7 @@ type
    {<B>TJwHashCodeMethod</B> defines a callback method for calculating a hash value.
      Its used by  TJwSecurityDescriptor.OnHashCodeMethod .
    @param val Contains a pointer to data which is used to calculate the hash
-   @param size Contains the size of the data in val. 
+   @param size Contains the size of the data in val.
    @return Returns the hash value
    }
   TJwHashCodeMethod = function(val: Pointer; size: integer): int64 of object;
@@ -158,10 +158,10 @@ type
     {<B>CreatePrivateObjectSecurity</B> combines a parent and a creator security descriptor into a new security descriptor.
      For detailed information see MSDN http://msdn2.microsoft.com/en-us/library/aa446581.aspx
 
-     @param ObjectType A Pointer to a GUID that defines the type. Set to nil if it does not exist. 
-     @param GenericMap Defines the generic map class which maps generic access rights to specific access rights. 
+     @param ObjectType A Pointer to a GUID that defines the type. Set to nil if it does not exist.
+     @param GenericMap Defines the generic map class which maps generic access rights to specific access rights.
      @param Token defines the token instance which is used to check for access. Can be nil to use
-          process or thread token. 
+          process or thread token.
 
      }
     constructor CreatePrivateObjectSecurity(
@@ -177,7 +177,7 @@ type
     {<B>Create</B> creates a new security descriptor and copies the defines members
      of a default security descriptor.
      @param SecurityInformationSet defines which members are copied from
-       the default security descriptor 
+       the default security descriptor
     }
     constructor Create(const SecurityInformationSet : TJwSecurityInformationFlagSet;
       SecurityDescriptor: TJwSecurityDescriptor);
@@ -186,25 +186,25 @@ type
     {<B>CreateDefaultByToken</B> creates a default security descriptor. It will contain the same
     elements as if a securable object (like mutex) is created without a SD.
     @param DefaultToken defines a user defined token to be used. It must be of type
-            TJwSecurityToken. (because of unit dependings it cannot be the correct type) 
+            TJwSecurityToken. (because of unit dependings it cannot be the correct type)
     @param RequestedTokenType defines which token should be used for the new SD.
            If parameter DefaultToken is not nil, RequestedTokenType will be ignored.
-          The following values are possible.  
-          
+          The following values are possible.
+
             # rttAuto The token of the thread will be used if any; otherwise
-                  the process token. 
+                  the process token.
             # rttTokenPrimary The process token is forced to use.
-                    See TJwSecurityToken.CreateTokenByProcess for more information 
+                    See TJwSecurityToken.CreateTokenByProcess for more information
             # rttTokenImpersonation The thread token is forced to be used.
                   The token is opened against the process rights.
-                    See TJwSecurityToken.CreateTokenByThread for more information 
-          
-      
+                    See TJwSecurityToken.CreateTokenByThread for more information
+
+
     raises
  EJwsclInvalidParameterException:  will be raised if parameter DefaultToken
-        is not of type TJwSecurityToken. 
+        is not of type TJwSecurityToken.
      EJwsclNoThreadTokenAvailable: will be raised if parameter RequestedTokenType
-       defines rttTokenImpersonation and no thread token is available 
+       defines rttTokenImpersonation and no thread token is available
     }
     constructor CreateDefaultByToken(const DefaultToken : TObject = nil;
         const RequestedTokenType: TJwRequestedTokenType = rttAuto);
@@ -239,12 +239,12 @@ type
 
        {<B>Destroy</B> destroys the instance and its properties if necessary.
 
-       
+
         #  Owner will be freed if OwnOwner is true
         #  PrimaryGroup will be freed if OwnPrimaryGroup is true
         #  DACL will always be freed. The ACEs will be freed if DACL.ownObjects is true.
         #  AuditACL/SACL will alway be freed. The ACEs will be freed if DACL.ownObjects is true.
-        
+
 
        }
     destructor Destroy; override;
@@ -407,14 +407,14 @@ type
         The method uses a magic header to check for position errors in a stream.
 
 
-        # Bytes         |  Value 
-        # 1..5 (5)      |  SD_MAGIC_HEADER (byte array) 
-        # 6..9 (4)      |  SD size (Cardinal) 
-        # 10..17 (8)    |  hash value (Cardinal) 
+        # Bytes         |  Value
+        # 1..5 (5)      |  SD_MAGIC_HEADER (byte array)
+        # 6..9 (4)      |  SD size (Cardinal)
+        # 10..17 (8)    |  hash value (Cardinal)
         # 18..18 (1)    |  hash value in use (byte) true if 255 otherwise false.
-               == SD_HEADER_SIZE 
-        # 19..sd (size) |  security descriptor data 
-    
+               == SD_HEADER_SIZE
+        # 19..sd (size) |  security descriptor data
+
 
 
        }
@@ -451,9 +451,9 @@ type
 
     {<B>ReplaceDescriptorElements</B> replaces the security descriptor elements given in SecurityInformationSet with
      the ones in SecurityDescriptor.
-     @param SecurityInformationSet Contains the members of the SD to be replaced. 
+     @param SecurityInformationSet Contains the members of the SD to be replaced.
      @param SecurityDescriptor defines the SD which is used to copy the members into
-        the instance. 
+        the instance.
     }
     procedure ReplaceDescriptorElements(const SecurityInformationSet :
       TJwSecurityInformationFlagSet;
@@ -465,16 +465,16 @@ type
      If parameter Token is not nil and SecurityInformation contains siSaclSecurityInformation
      you must explicit activate SE_SECURITY_NAME privilege.
 
-     @param GenericMap Defines the generic map class which maps generic access rights to specific access rights. 
+     @param GenericMap Defines the generic map class which maps generic access rights to specific access rights.
      @param Token defines the token instance which is used to check for access. Can be nil to use
-          process or thread token. 
+          process or thread token.
 
      raises
  EJwsclNILParameterException:  will be raised if ModificationDescriptor is nil
       EJwsclInvalidParameterException: will be raisef if the type of parameter Token
-      is not a TJwSecurityToken class 
+      is not a TJwSecurityToken class
       EJwsclSACLAccessDenied: will be raised if SecurityInformation contains siSaclSecurityInformation,
-      Token is nil and the current token does not hold SE_SECURITY_NAME privilege 
+      Token is nil and the current token does not hold SE_SECURITY_NAME privilege
 
      }
     procedure SetPrivateObjectSecurity(
@@ -600,7 +600,7 @@ type
        {<B>AuditACL</B> gets the auditing access control list.
         It returns the internal auditing access control list so do not call Free.
         If the audit ACL is set, it copies the SACL into a new structure, so
-         the original list is not touched. 
+         the original list is not touched.
        }
     property AuditACL: TJwSAccessControlList Read GetSACL Write SetSACL;
 
@@ -734,7 +734,7 @@ type
 (*       {<B>Text</B> creates a security string descriptor.
         You can set flags to define which information is placed in the newly created string.
         The following flags can be combined with OR:
-        
+
          #  OWNER_SECURITY_INFORMATION
          #  GROUP_SECURITY_INFORMATION
          #  DACL_SECURITY_INFORMATION
@@ -782,7 +782,7 @@ const       {<B>SD_MAGIC_LENGTH</B> is the size of the magic header length in a 
       }
   SD_MAGIC_HEADER : array[0..SD_MAGIC_LENGTH-1] of AnsiChar = (#3,#4,'S','D','H');
 
-      {<B>SD_HEADER_SIZE</B> is the size of the header written into a stream by TJwSecurityDescriptor.SaveToStream 
+      {<B>SD_HEADER_SIZE</B> is the size of the header written into a stream by TJwSecurityDescriptor.SaveToStream
        and TJwSecurityDescriptor.LoadFromStream }
   SD_HEADER_SIZE = 19;
 
@@ -928,7 +928,7 @@ end;
 constructor TJwSecurityDescriptor.CreateDefaultByToken(
   const DefaultToken : TObject = nil;
   const RequestedTokenType: TJwRequestedTokenType = rttAuto);
-  
+
 var OwnToken : Boolean;
     Token : TJwSecurityToken;
 begin
@@ -1498,7 +1498,7 @@ begin
   begin
     //[Hint] result := nil;
     pSD := Create_SD(False);
-    //pSD^.Control := pSD^.Control or SE_SELF_RELATIVE; 
+    //pSD^.Control := pSD^.Control or SE_SELF_RELATIVE;
 
 
   (*  if not MakeAbsoluteSD(pSD,nil,ipSDSize,
@@ -1528,7 +1528,7 @@ begin
           RsUNDescriptor, 0, True,
            ['MakeSelfRelativeSD']);
       end;
-      result^.Control := result^.Control or SE_SELF_RELATIVE; 
+      result^.Control := result^.Control or SE_SELF_RELATIVE;
 
 
     end
@@ -1550,7 +1550,7 @@ begin
 //    result := PSecurityDescriptor(LocalAlloc(LMEM_FIXED or LMEM_ZEROINIT,sizeof(jwaWindows.TSecurityDescriptor)));
     GetMem(Result, sizeof(jwaWindows.TSecurityDescriptor));
 
-    //Result.Control := RMControl; Warning: GetRMControl not implemented!! 
+    //Result.Control := RMControl; Warning: GetRMControl not implemented!!
     {result <> nil}
     if not InitializeSecurityDescriptor(
       Result, SECURITY_DESCRIPTOR_REVISION) then
@@ -1713,7 +1713,7 @@ begin
   result.Control := Result.Control or SE_DACL_AUTO_INHERITed;
   }
  // Control2 := TJwEnumMap.ConvertSecurityControl(result^.Control);
-   
+
 
 
   {result <> nil
@@ -2074,7 +2074,7 @@ begin
 
       if isHashed and Assigned(OnHashCodeMethod) and (iCHash <> iRHash) then
       begin
-        //the deallocation is done in the finally branch!! 
+        //the deallocation is done in the finally branch!!
         //SD.Free;  do not uncomment!
         //FreeMem(pSD); do not uncomment!
         // SD = nil
@@ -2214,7 +2214,7 @@ var ObjectSD,
 
 begin
   result := nil;
-  
+
   ObjectSD := Self.Create_SD(SDSize, true);
 
   ReturnLen := 0;
@@ -2263,7 +2263,7 @@ var ModSD,
     TokenHandle : TJwTokenHandle;
     SD : TJwSecurityDescriptor;
     SDSize : Cardinal;
-   
+
 
     PrivScope : IJwPrivilegeScope;
     aMapping: JwaWindows.TGenericMapping;
@@ -2347,7 +2347,7 @@ begin
       SEF_DEFAULT_OWNER_FROM_PARENT or SEF_DEFAULT_GROUP_FROM_PARENT or
       $1000, //SEF_AVOID_OWNER_RESTRICTION,
 
-      
+
       aMapping,//__in          PGENERIC_MAPPING GenericMapping,
       TokenHandle//__in_opt      HANDLE Token
       ) then
@@ -2436,7 +2436,7 @@ end.
     aOwnerSID      := nil;
     aGroupSID      := nil;
     iDACL          := 0;
-    iSACL          := 0;      
+    iSACL          := 0;
 
 
     //create owner trustee
@@ -2485,13 +2485,13 @@ end.
       if iSACL > 0 then
         aPAuditACL := {$IFDEF UNICODE}PExplicitAccessW{$ELSE}PExplicitAccessA{$ENDIF}(aAccessArray);
 
-   
+
     end;
-    
+
 
     iNewSDSize := 0;
     pSD := nil;
-    
+
    (* iError :=
     {$IFDEF UNICODE}BuildSecurityDescriptorW{$ELSE}BuildSecurityDescriptorA{$ENDIF}
      (aPOwnerTrustee,aPGroupTrustee,
@@ -2501,7 +2501,7 @@ end.
       iNewSDSize, pSD);
 
 
- 
+
     if iError <> ERROR_SUCCESS then
       raise EJwsclWinCallFailedException.CreateFmtEx('Call to BuildSecurityDescriptor failed. NTError: %d', 'Create_SD',ClassName,RsUNDescriptor, 0,true,[iError]);
 

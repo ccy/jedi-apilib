@@ -264,7 +264,7 @@ begin
 
 end;
 
-procedure TJwPointerList.InsertData(Index: Integer; Data: PChar; 
+procedure TJwPointerList.InsertData(Index: Integer; Data: PChar;
   Size: LongWord);
 begin
   fLock.BeginWrite;
@@ -349,7 +349,7 @@ begin
   finally
     fLock.EndWrite;
   end;
-    
+
 end;
 
 

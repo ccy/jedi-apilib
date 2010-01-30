@@ -42,7 +42,7 @@ begin
   Maps := TJwSecurityGenericMapping.MapAccessMaskToString(GENERIC_ALL);
   {$IFDEF COMPILER_5}CheckEqualsWideString{$ELSE}CheckEquals{$ENDIF}('Bit 29 [Generic] or Bit 0 [Specific]',Maps);
 
-(* We cannot test these strings because they depend on the language. 
+(* We cannot test these strings because they depend on the language.
   {TJwSecurityFileMapping}
   Maps := TJwSecurityFileMapping.MapAccessMaskToString(TJwSecurityFileMapping.Map(GENERIC_READ));
   {$IFDEF COMPILER_5}CheckEqualsWideString{$ELSE}CheckEquals{$ENDIF}('STANDARD_RIGHTS_READ or FILE_READ_DATA or FILE_READ_ATTRIBUTES or FILE_READ_EA or SYNCHRONIZE',Maps);
@@ -88,4 +88,3 @@ initialization
     TSecurityMappingTests.Suite);
 
 end.
- 

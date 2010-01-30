@@ -332,7 +332,7 @@ begin
         AppName := nil;
         CmdLine := nil;
         CurrentDirectory := nil;
-        
+
         if Length(InVars.Parameters.lpApplicationName) > 0 then
           AppName := TJwPChar(InVars.Parameters.lpApplicationName);
 
@@ -419,7 +419,7 @@ begin
   //AssignFile(f,'E:\Proggen\Borland\Delphi7\Projects\UACAware\_service.txt');
   AssignFile(f,'C:\Windows\_service.txt');
   rewrite(f);
-  
+
   ZeroMemory(@InVars,sizeof(InVars));
 
   InVars.DebugOutput := true;
@@ -469,7 +469,7 @@ begin
      OutVars//OutVars : TCreateProcessOut
      );
 
-   
+
      //Auf Beendigung warten
     WaitForSingleObject(OutVars.ProcessInfo.hProcess, INFINITE);
 

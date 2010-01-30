@@ -103,7 +103,7 @@ begin
   Update;
   Application.ProcessMessages;
 
-  if pInvokeSetting = pis_ProgressInvokeEveryObject then      
+  if pInvokeSetting = pis_ProgressInvokeEveryObject then
   begin
     if bCancel then
       pInvokeSetting := pis_ProgressCancelOperation;

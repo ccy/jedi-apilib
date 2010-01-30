@@ -81,13 +81,13 @@ type
      @param defines a list of privileges to be enabled.
      @param SetType defines whether the privileges should be enabled or disabled.
       Define pst_EnableIfAvail if you dont want to raise an exception if the
-      privlege does not exist. 
+      privlege does not exist.
      raises
  EJwsclPrivilegeException:  will be raised if the privilege is not available and query is pst_Enable,
         otherwise the return value is false. If query is pst_EnableIfAvail the return is false, if the privilege could not be enabled.
         In this case no exception is raised.
         If an exception is raised all privileges enabled to this point are
-        disabled 
+        disabled
     }
     constructor Create(const Privileges : array of TJwString; const SetType : TJwPrivilegeSetType);
     destructor Destroy; override;
@@ -121,14 +121,14 @@ type
      @param defines a list of privileges to be enabled.
      @param SetType defines whether the privileges should be enabled or disabled.
       Define pst_EnableIfAvail if you dont want to raise an exception if the
-      privlege does not exist. 
+      privlege does not exist.
      raises
  EJwsclPrivilegeException:  will be raised if the privilege is not available and query is pst_Enable,
         otherwise the return value is false. If query is pst_EnableIfAvail the return is false, if the privilege could not be enabled.
         In this case no exception is raised.
         If an exception is raised all privileges enabled to this point are
-        disabled 
-    
+        disabled
+
   }
   function JwGetPrivilegeScope(const Privileges : array of TJwString;
     const SetType : TJwPrivilegeSetType = pst_Enable) : IJwPrivilegeScope;

@@ -103,7 +103,7 @@ try
   //create our own logon id
   //this logon ID must be registered first! (don't know how yet)
   //AllocateLocallyUniqueId(AuthenticationId);
-  
+
   //get any logon session we want
   {if not GetSession(UserToken, AuthenticationId) then
     exit;}
@@ -119,8 +119,8 @@ try
 
   //get default token groups
   UserGroups := UserToken.TokenGroups;
-  
-  
+
+
   //add terminal server user (just for testing)
   Sid := TJwSecurityId.Create('S-1-5-13');
   Sid.AttributesType := [sidaGroupMandatory];
@@ -200,5 +200,5 @@ except
   on e  : exception do
     showmessage(e.Message);
 end;
-  
+
 end.

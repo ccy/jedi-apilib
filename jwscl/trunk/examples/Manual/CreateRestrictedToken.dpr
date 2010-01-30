@@ -62,7 +62,7 @@ begin
 
   finally
     Privs.Free;
-    RestrToken.Free;   
+    RestrToken.Free;
     Sids.free;
   end;
 end.

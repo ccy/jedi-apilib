@@ -113,7 +113,7 @@ begin
       ListItem := MainListView.Items.Add;
       ListItem.Data := TChildData(GetData(Node).Childs[i]);
       ListItem.Caption := GetData(ListItem).Name;
-    end; 
+    end;
   end;
 end;
 

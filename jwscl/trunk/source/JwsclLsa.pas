@@ -49,7 +49,7 @@ uses SysUtils,
   JwsclResource,
   JwsclSid, JwsclToken,
   JwsclTypes, JwsclExceptions,
-  JwsclVersion, JwsclConstants, 
+  JwsclVersion, JwsclConstants,
   JwsclStrings; //JwsclStrings, must be at the end of uses list!!!
 {$ENDIF SL_OMIT_SECTIONS}
 
@@ -75,20 +75,20 @@ type
     constructor Create(const LogonProcessName: AnsiString);
 
     {<B>CreateUntrusted</B> creates a new instance of TJwSecurityLsa and
-	 creates an untrusted connection to LSA 
-	 
+	 creates an untrusted connection to LSA
+
 	 @raises
 	  EJwsclWinCallFailedException: This exception will be raised
 	    if the call to LsaConnectUntrusted failed.
-	}	
+	}
   	constructor CreateUntrusted;
 
     destructor Destroy; override;
 
     {<B>LsaLogonUser</B> creates a new authentication token where
 	even token groups can be adapted.
-	
-	@param anAuthenticationInformation Use JwCreate_MSV1_0_INTERACTIVE_LOGON for 
+
+	@param anAuthenticationInformation Use JwCreate_MSV1_0_INTERACTIVE_LOGON for
 		interactive logondata)
 
 	}
@@ -392,7 +392,7 @@ begin
 
   Result.MessageType := MessageType;
   p := PWCHAR(Result);
-//WARNING: possible 3gb Adress Space problem when p is converted to integer   
+//WARNING: possible 3gb Adress Space problem when p is converted to integer
   Inc(p, cbHeader);
 
   pDom  := p;

@@ -17,9 +17,9 @@ Software distributed under the License is distributed on an "AS IS" basis, WITHO
 ANY KIND, either express or implied. See the License for the specific language governing rights
 and limitations under the License.
 
-Alternatively, the contents of this file may be used under the terms of the  
-GNU Lesser General Public License (the  "LGPL License"), in which case the   
-provisions of the LGPL License are applicable instead of those above.        
+Alternatively, the contents of this file may be used under the terms of the
+GNU Lesser General Public License (the  "LGPL License"), in which case the
+provisions of the LGPL License are applicable instead of those above.
 If you wish to allow use of your version of this file only under the terms
 of the LGPL License and not to allow others to use your version of this file
 under the MPL, indicate your decision by deleting  the provisions above and
@@ -103,7 +103,7 @@ type
      When the returned auto pointer interface goes out of scope the
      given instance will be destroyed.
     @param Instance defines the class instance that will be automatically
-     destroyed 
+     destroyed
     @return Returns an auto pointer interface that is resposible for
       auto destruction. }
     class function Wrap(const Instance  : TObject) : IJwAutoPointer; overload;
@@ -111,14 +111,14 @@ type
     {<B>Wrap</B> wraps an existing pointer for auto desctruction.
      When the returned auto pointer interface goes out of scope the
      given pointer will be destroyed.
-     @param Ptr Defines a pointer that is automatically destroyed. 
+     @param Ptr Defines a pointer that is automatically destroyed.
      @param Size Defines the size of the pointer data. If size is
         not zero, the memory will be overwritten with zeroes before
-        it is freed. 
+        it is freed.
      @param PointerType Defines the pointer type. It is used to call
-      the appropriate free function. 
+      the appropriate free function.
      @return Returns an auto pointer interface that is resposible for
-      auto destruction. 
+      auto destruction.
      }
     class function Wrap(const Ptr : Pointer;
         Size : Cardinal;
@@ -133,9 +133,9 @@ type
      creates the given class with a default constructor (no parameters).
      Use instead Wrap if you cannot use standard constructor or
       your class does not support a standard constructor.
-     @param ClassReference defines the class type which is to be created 
+     @param ClassReference defines the class type which is to be created
      @return Returns an auto pointer interface that is resposible for
-      auto destruction. 
+      auto destruction.
      }
     class function CreateInstance(
       const ClassReference : TClass) : IJwAutoPointer; overload;
@@ -144,11 +144,11 @@ type
      creates the given component class.
      Use instead Wrap if you cannot use standard component constructor or
       your class does not support a standard component constructor.
-     @param ClassReference defines the class type which is to be created 
+     @param ClassReference defines the class type which is to be created
      @param Owner defines the component owner which is applied to the
-      component constructor. 
+      component constructor.
      @return Returns an auto pointer interface that is resposible for
-      auto destruction. 
+      auto destruction.
      }
     class function CreateInstance(
       const ClassReference : TComponentClass;
@@ -156,20 +156,20 @@ type
 
     {<B>CreateNewPointer</B> creates a new pointer or wraps an existing one.
      The following pointer types are created automatically :
-      
-        # ptGetMem 
-        # ptLocalAlloc 
-      
+
+        # ptGetMem
+        # ptLocalAlloc
+
      The following pointer types are tunneled through and must
      be created by the caller:
-      
-        # ptNew  
-      
+
+        # ptNew
+
      The following pointer types are not supported and raises EJwsclInvalidPointerType
-      
-        # ptUnknown 
-        # ptClass 
-      
+
+        # ptUnknown
+        # ptClass
+
 
      }
     class function CreateNewPointer(
@@ -213,17 +213,17 @@ type
     fAutoPointer : TJwAutoPointerImpl;
     { The f<b>LeaveFlag</b> field defines whether the entered section is released when
       the instance is destroyed (false) or not (true).
-      
+
       It is for future use only and thus has no public access.                         }
     fLeaveFlag : Boolean;
   public
     { <b>Create</b> creates a new TJwAutoLock instance and enters the a thread safe
       section defined by parameter AutoPointer. If this section was already entered by
       another thread, the constructor is blocked until released. There is no timeout!
-      
 
-      
-      
+
+
+
       Parameters
       AutoPointer :  This parameter defines an auto pointer implementation that holds
                      the thread section for exclusive access to the resource.          }
@@ -239,8 +239,8 @@ type
 
     { <b>UnLock</b> releases the section lock previously gained by creating the
       instance.
-      
-      
+
+
       See Also
         * Create                                                                }
     procedure UnLock;
@@ -291,7 +291,7 @@ begin
     raise EJwsclInvalidHandle.CreateFmtEx(
       RsInvalidWrapHandle, 'Wrap', ClassName, RsUNComUtils,
       0, ShowLastError, []);
-  
+
   result := Wrap(Pointer(Handle), Cardinal(-1), ptHandle);
 end;
 

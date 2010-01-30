@@ -166,7 +166,7 @@ begin
       JwWorldSID));       }
 
 
-  
+
   ShowACLEditor;
 
   //do not free SD because its freed by Desk

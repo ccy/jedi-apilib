@@ -101,7 +101,7 @@ begin
     fButtons[i].PopupMenu := PopupMenuMain;
     fButtons[i].DropDownMenu := PopupMenuMain;
     fButtons[i].Tag := i;
-   
+
     fButtons[i].Visible := true;
   end;
 

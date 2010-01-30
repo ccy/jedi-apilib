@@ -17,13 +17,13 @@ ANY KIND, either express or implied. See the License for the specific language g
 and limitations under the License.
 
 Alternatively, the contents of this file may be used under the terms of the
-GNU Lesser General Public License (the  "LGPL License"), in which case the   
-provisions of the LGPL License are applicable instead of those above.        
-If you wish to allow use of your version of this file only under the terms   
-of the LGPL License and not to allow others to use your version of this file 
-under the MPL, indicate your decision by deleting  the provisions above and  
-replace  them with the notice and other provisions required by the LGPL      
-License.  If you do not delete the provisions above, a recipient may use     
+GNU Lesser General Public License (the  "LGPL License"), in which case the
+provisions of the LGPL License are applicable instead of those above.
+If you wish to allow use of your version of this file only under the terms
+of the LGPL License and not to allow others to use your version of this file
+under the MPL, indicate your decision by deleting  the provisions above and
+replace  them with the notice and other provisions required by the LGPL
+License.  If you do not delete the provisions above, a recipient may use
 your version of this file under either the MPL or the LGPL License.
 
 For more information about the LGPL: http://www.gnu.org/copyleft/lesser.html
@@ -95,8 +95,8 @@ type
   public
     {<B>Create</B> create a thread instance.
      @param CreateSuspended defines whether the thread is created
-      and commenced immediately (false) or suspended (true). 
-     @param Name defines the thread's name 
+      and commenced immediately (false) or suspended (true).
+     @param Name defines the thread's name
      }
     constructor Create(const CreateSuspended: Boolean; const Name: TJwString);
     destructor Destroy; override;
@@ -249,38 +249,38 @@ parameter StartStringId. Changing this value and the resource strings
 will lead to EJwsclResourceNotFound exception.
 
 @param MappingRecord @italic([in,out]) receives an array of TJwRightsMapping which
-  string member Name is replaced by the resource string. 
+  string member Name is replaced by the resource string.
 
 @param StartStringId defines the starting position of the index counting.
  It must be an absolute resource string index, which context contains a number
- that defines the count of array elements. 
+ that defines the count of array elements.
 
 @param PrimaryLanguageId defines the primary language id.
 use PRIMARYLANGID(GetUserDefaultUILanguage), SUBLANGID(GetUserDefaultUILanguage)
-to get user language. 
+to get user language.
 
-@param SubLanguageId defines the sub language id. 
+@param SubLanguageId defines the sub language id.
 
 @param UseDefaultOnError defines whether EJwsclResourceNotFound is thrown if a
 resource index is invalid (could not be found in resource) (false) or not (true).
 If UseDefaultOnError is true the function does the following.
 
-1. Try to load resource string at index given by member StringId 
-2. if fails : try to load resource string ignoring member StringId 
-3. if fails : leave the text member Name to default value 
- 
+1. Try to load resource string at index given by member StringId
+2. if fails : try to load resource string ignoring member StringId
+3. if fails : leave the text member Name to default value
+
 
 @param ModuleInstance defines where the resource strings can be found. It is simply
 put through to LoadString function. It can be an instance of a dll file which
-contains localized versions of the strings. 
+contains localized versions of the strings.
 
 raises
  EJwsclResourceInitFailed:  is raised if the given value in parameter
-StartStringId could not be found in the string resource 
+StartStringId could not be found in the string resource
 
  EJwsclResourceUnequalCount: is raised if the count of the members of
 the given array (MappingRecord) is not equal to the number given in the resource
-string at index StartStringId. 
+string at index StartStringId.
 
  EJwsclResourceNotFound: is raised if UseDefaultOnError is false and
 a given resource index of a member of the array of TJwRightsMapping could not
@@ -301,14 +301,14 @@ Objs[i .Level = a_i
         { a_i +1        | a_i - a_(i-1) = 1 AND a_i < 4
 a_i+1 = { a_i - t       | a_i - t AND t >= 0
         { ERROR_INVALID_PARAMETER | else
-</pre> 
+</pre>
 
 sequence start: a_0 = 0
 
-@param Objs contains the object list 
+@param Objs contains the object list
 @return Returns true if the object type list is correct; otherwise false.
       It returns false if Objs is nil or does not contain any element.
-      It also returns false if any GUID member is nil. 
+      It also returns false if any GUID member is nil.
 }
 function JwCheckArray(const Objs : TJwObjectTypeArray) : Boolean; overload;
 
@@ -321,15 +321,15 @@ Objs[i .Level = a_i
         { a_i +1        | a_i - a_(i-1) = 1 AND a_i < 4
 a_i+1 = { a_i - t       | a_i - t AND t >= 0
         { ERROR_INVALID_PARAMETER | else
-</pre> 
+</pre>
 
 sequence start: a_0 = 0
 
-@param Objs contains the object list 
-@param Index returns the index where an error occured. 
+@param Objs contains the object list
+@param Index returns the index where an error occured.
 @return Returns true if the object type list is correct; otherwise false.
       It returns false if Objs is nil or does not contain any element.
-      It also returns false if any GUID member is nil. 
+      It also returns false if any GUID member is nil.
 }
 function JwCheckArray(const Objs : TJwObjectTypeArray; out Index : Integer) : Boolean; overload;
 
@@ -372,7 +372,7 @@ identifier for a thread.
 
 @param Name defines an name for the thread. This Name is converted to ansicode internally.
 @param ThreadID defines which thread is named. A value of Cardinal(-1)  uses
-  the current thread 
+  the current thread
 }
 procedure JwSetThreadName(const Name: TJwString; const ThreadID : Cardinal = Cardinal(-1));
 
@@ -391,7 +391,7 @@ procedure JwFreeThreadName;
  This function only returns the name of the current thread. It cannot be used
  with different threads than the current one.
 
-<B>Precondition:</B> 
+<B>Precondition:</B>
  JwSetThreadName must be called with a value of Cardinal(-1) for parameter ThreadID.
 }
 function JwGetThreadName : WideString;
@@ -400,7 +400,7 @@ function JwGetThreadName : WideString;
 function JwIsHandleValid(const Handle : THandle) : Boolean;
 
 {<B>JwCheckBitMask</B> Checks if (Bitmask and Check) = Check}
-function JwCheckBitMask(const Bitmask: Integer; const Check: Integer): Boolean; 
+function JwCheckBitMask(const Bitmask: Integer; const Check: Integer): Boolean;
 
 {<B>JwMsgWaitForMultipleObjects</B> encapsulates MsgWaitForMultipleObjects using an open array
 parameter. The function should be used to make sure that window messages are processed. In this way
@@ -410,7 +410,7 @@ windows are responsible. This function returns if such a message is received.
   or use set operators "[" and "]" containing a comma separated list of handle variables.
 @param bWaitAll Set to true to let the function wait for all given handles until it returns; otherwise it returns
   as soon as at least one handle state is signaled.
-@param dwMilliseconds Defines a timeout interval that exits the function when elapsed. Set to constant INFINITE (-1) 
+@param dwMilliseconds Defines a timeout interval that exits the function when elapsed. Set to constant INFINITE (-1)
   to ignore timeouts.
 @param dwWakeMask See MsgWaitForMultipleObjects (http://msdn.microsoft.com/en-us/library/ms684242.aspx) in MSDN for more information.
 
@@ -429,7 +429,7 @@ parameter.
   or use set operators "[" and "]" containing a comma separated list of handle variables.
 @param bWaitAll Set to true to let the function wait for all given handles until it returns; otherwise it returns
   as soon as at least one handle state is signaled.
-@param dwMilliseconds Defines a timeout interval that exits the function when elapsed. Set to constant INFINITE (-1) 
+@param dwMilliseconds Defines a timeout interval that exits the function when elapsed. Set to constant INFINITE (-1)
   to ignore timeouts.
 
 @return Returns a status code. See WaitForMultipleObjects (http://msdn.microsoft.com/en-us/library/aa931008.aspx) in MSDN for more information.
@@ -523,7 +523,7 @@ raise
   EJwsclFileMappingException see TJwFileStreamEx.Create for more information.
   EJwsclSecurityException There can be other exceptions raised by TJwHash.Create, TJwHash.HashData
     and TJwHash.RetrieveHash.
-  
+
 remarks
   * This function uses TJwFileStreamEx for getting hash in the fastest way possible.
   * This function uses SHA hashing.
@@ -531,9 +531,9 @@ remarks
 }
 function JwCompareFileHash(const FilePath : WideString;
   const OriginalHash : TJwFileHashData) : Boolean;
-  
-{<B>JwCreateFileHash</B> creates a hash from a given file and returns 
-the hash. 
+
+{<B>JwCreateFileHash</B> creates a hash from a given file and returns
+the hash.
 
 @param FilePath Defines a path to a file that is used to calculate a hash.
 @return The return value is a record that holds the hash data. The returned pointer member "hash" in
@@ -543,7 +543,7 @@ raise
   EJwsclFileMappingException see TJwFileStreamEx.Create for more information.
   EJwsclSecurityException There can be other exceptions raised by TJwHash.Create, TJwHash.HashData
     and TJwHash.RetrieveHash.
-	
+
 remarks
   * This function uses TJwFileStreamEx for getting hash in the fastest way possible.
   * This function uses SHA hashing.
@@ -656,23 +656,23 @@ Remarks
 function JwCreateToString(const Values : array of const) : String;
 
 { <b>JwZeroPassword</b> erases securely a UNICODE or ANSICODE string.
-  
-  
-  
+
+
+
 
   Parameters
   S :  Defines the string to be erased securely. The returned string will have a
        length of 0.
-  
-  
-  
+
+
+
   Remarks
   JwZeroPassword writes random data over all characters of the string. In a second
   step it zeroes all characters and sets the length of the string to zero (0).
-  
+
   This function works with UNICODE and ANSICODE.
-  
-  
+
+
                                                                                    }
 procedure JwZeroPassword(var S : TJwString);
 
@@ -724,7 +724,7 @@ end;
 function JwCreateToString(const Values : array of const) : String;
   function GetValue(I : Integer; const Values : array of const) : String;
   const B : Array[boolean] of ShortString = ('false','true');
-  begin    
+  begin
     case Values[i].VType of
       vtInteger : result := IntToStr(Values[i].VInteger);
       vtBoolean : result := String(B[Values[i].VBoolean]);
@@ -867,7 +867,7 @@ begin
   raise EJwsclVistaFeaturesDisabled.CreateFmtEx(
       RsVistaFeaturesDisabled, MethodName,
       ClassName, FileName, 0, False, []);
-{$ENDIF VISTA}      
+{$ENDIF VISTA}
 end;
 
 
@@ -961,7 +961,7 @@ begin
       // TJwFileHashData is freed by TJwHash.FreeBuffer
       // Change this memory manager when TJwHash is changed.
           GetMem(result.Hash, result.Size);
-		  
+
           ZeroMemory(result.Hash, result.Size);
           try
             result.Size := Reg.ReadBinaryData(HashName,result.Hash^,result.Size);
@@ -1175,7 +1175,7 @@ begin
   raise EJwsclUnimplemented.CreateFmtEx(
     'This function is not implemented.',
     '', '', '', 0, false, []);
-{$ENDIF DEBUG}    
+{$ENDIF DEBUG}
 end;
 
 procedure LocalizeMapping(var MappingRecord : array of TJwRightsMapping;
@@ -1239,7 +1239,7 @@ begin
   for i := ArrayLo to ArrayHi do
   begin
     bSuccess := true;
-    
+
     if MappingRecord[i].StringId > 0 then
     begin
       Id := MappingRecord[i].StringId;
@@ -1350,7 +1350,7 @@ type
      TMemTuple = record
        GetMemPointer : Pointer;
        case MemType : Boolean of
-         true : (LocalData : HLOCAL);              
+         true : (LocalData : HLOCAL);
          false: (GlobalData : HGLOBAL);
       end;
 var InternalMemArray : TList {=nil};
@@ -1480,11 +1480,11 @@ begin
     FreeMem(PMemTuple(InternalMemArray[Index]));
     InternalMemArray.Delete(Index);
 
-    GlobalUnlock(hMem);                
+    GlobalUnlock(hMem);
     result := GlobalFree(hMem);
   end;
 {$ELSE}
-  result := GlobalFree(hMem);          
+  result := GlobalFree(hMem);
 {$ENDIF FullDebugMode}
   hMem := 0;
 end;

@@ -604,7 +604,7 @@ begin
 
   CheckTrue(SecurityDescriptors[2].SACL[0].SID.EqualSid(SecurityDescriptors[1].SACL[0].SID));
   CheckTrue(SecurityDescriptors[2].SACL[1].SID.EqualSid(SecurityDescriptors[1].SACL[1].SID));
-                                                                      
+
 end;
 
 (*
@@ -1056,7 +1056,7 @@ begin
   SecurityDescriptors[2] := TJwSecurityDescriptor.Create();
   SecurityDescriptors[2].Owner := JwPowerUsersSID;//JwSecurityProcessUserSID;
   SecurityDescriptors[2].OwnOwner := false; //do not free a standard SID !!
-  
+
   SecurityDescriptors[2].PrimaryGroup := JwUsersSID;//JwSecurityProcessUserSID;
   SecurityDescriptors[2].OwnPrimaryGroup := false; //do not free a standard SID !!
 

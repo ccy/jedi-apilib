@@ -16,16 +16,16 @@ Software distributed under the License is distributed on an "AS IS" basis, WITHO
 ANY KIND, either express or implied. See the License for the specific language governing rights
 and limitations under the License.
 
-Alternatively, the contents of this file may be used under the terms of the  
-GNU Lesser General Public License (the  "LGPL License"), in which case the   
-provisions of the LGPL License are applicable instead of those above.        
-If you wish to allow use of your version of this file only under the terms   
-of the LGPL License and not to allow others to use your version of this file 
-under the MPL, indicate your decision by deleting  the provisions above and  
-replace  them with the notice and other provisions required by the LGPL      
-License.  If you do not delete the provisions above, a recipient may use     
-your version of this file under either the MPL or the LGPL License.          
-                                                                             
+Alternatively, the contents of this file may be used under the terms of the
+GNU Lesser General Public License (the  "LGPL License"), in which case the
+provisions of the LGPL License are applicable instead of those above.
+If you wish to allow use of your version of this file only under the terms
+of the LGPL License and not to allow others to use your version of this file
+under the MPL, indicate your decision by deleting  the provisions above and
+replace  them with the notice and other provisions required by the LGPL
+License.  If you do not delete the provisions above, a recipient may use
+your version of this file under either the MPL or the LGPL License.
+
 For more information about the LGPL: http://www.gnu.org/copyleft/lesser.html
 
 Note
@@ -61,7 +61,7 @@ type
     {<B>Create</B> registers a com object.
      Every com object that must be elevated must be registered by this constructor.
 
-    @param ResourceId defines a resource id as a string 
+    @param ResourceId defines a resource id as a string
     @param DisableProcessIsolation defines whether the elevated com process
      should be isolated (true) or not. }
     constructor Create(
@@ -78,7 +78,7 @@ type
     Every com object that must be elevated must be registered by this constructor.
 
     @param ResourceId defines a delphi resource id.
-      This id must be created by "resourcestring". Use <i>ResourcestringName</i> as parameter input 
+      This id must be created by "resourcestring". Use <i>ResourcestringName</i> as parameter input
     @param DisableProcessIsolation defines whether the elevated com process
      should be isolated (true) or not. }
     constructor Create(
@@ -113,15 +113,15 @@ The executable which call this function must contain a manifest that defines
 This function needs CoInitialize to be called.
 This function only works on Windows Vista and newer OS versions.
 
-@param MonikerSequence defines a string that contains information how to use the moniker 
+@param MonikerSequence defines a string that contains information how to use the moniker
 @param ParentWindowHandle defines the window handle that is used to display the elevation dialog.
  If this parameter is 0 or the window is has not the input the elevation dialog
  will not be shown but a new task is displayed it the taskbar. Otherwise the elevation dialog
- will be shown direclty. 
-@param ClassId defines a guid that describes a registered com object 
+ will be shown direclty.
+@param ClassId defines a guid that describes a registered com object
 @param IID defines the requested com object to be returned
-@param ObjectInterface returns the requested and elevated com object 
-@return Returns a COM result code. If the call was successfull the return value is S_OK 
+@param ObjectInterface returns the requested and elevated com object
+@return Returns a COM result code. If the call was successfull the return value is S_OK
 }
 function JwCoCreateInstanceAsEx(
   const MonikerSequence : WideString;
@@ -147,11 +147,11 @@ This function only works on Windows Vista and newer OS versions.
 @param ParentWindowHandle defines the window handle that is used to display the elevation dialog.
  If this parameter is 0 or the window is has not the input the elevation dialog
  will not be shown but a new task is displayed it the taskbar. Otherwise the elevation dialog
- will be shown direclty. 
-@param ClassId defines a guid that describes a registered com object 
-@param IID defines the requested com object to be returned 
+ will be shown direclty.
+@param ClassId defines a guid that describes a registered com object
+@param IID defines the requested com object to be returned
 @param ObjectInterface returns the requested and elevated com object
-@return Returns a COM result code. If the call was successfull the return value is S_OK 
+@return Returns a COM result code. If the call was successfull the return value is S_OK
 }
 function JwCoCreateInstanceAsAdmin(
   const ParentWindowHandle: HWND;
@@ -178,11 +178,11 @@ This function only works on Windows Vista and newer OS versions.
 @param ParentWindowHandle defines the window handle that is used to display the elevation dialog.
  If this parameter is 0 or the window is has not the input the elevation dialog
  will not be shown but a new task is displayed it the taskbar. Otherwise the elevation dialog
- will be shown direclty. 
-@param ClassId defines a guid that describes a registered com object 
-@param IID defines the requested com object to be returned 
-@param ObjectInterface returns the requested and elevated com object 
-@return Returns a COM result code. If the call was successfull the return value is S_OK 
+ will be shown direclty.
+@param ClassId defines a guid that describes a registered com object
+@param IID defines the requested com object to be returned
+@param ObjectInterface returns the requested and elevated com object
+@return Returns a COM result code. If the call was successfull the return value is S_OK
 }
 function JwCoCreateInstanceAsHighest(
   const ParentWindowHandle: HWND;
@@ -209,11 +209,11 @@ This function only works on Windows Vista and newer OS versions.
 @param ParentWindowHandle defines the window handle that is used to display the elevation dialog.
  If this parameter is 0 or the window is has not the input the elevation dialog
  will not be shown but a new task is displayed it the taskbar. Otherwise the elevation dialog
- will be shown direclty. 
-@param ClassId defines a guid that describes a registered com object 
+ will be shown direclty.
+@param ClassId defines a guid that describes a registered com object
 @param IID defines the requested com object to be returned
-@param ObjectInterface returns the requested and elevated com object 
-@return Returns a COM result code. If the call was successfull the return value is S_OK 
+@param ObjectInterface returns the requested and elevated com object
+@return Returns a COM result code. If the call was successfull the return value is S_OK
 }
 function JwCoGetClassFactoyAsAdmin(
   const ParentWindowHandle: HWND;
@@ -232,7 +232,7 @@ This function only works on Windows Vista and newer OS versions.
 The function returns before the new application has started therfore the app
 can fail. If ShellExecute determines an error the return value is 0 and
 an exception is raised.
- 
+
 raises
  EJwsclWinCallFailedException:  will be raised if a call to ShellExecuteEx failed
  EJwsclUnsupportedWindowsVersionException will be raised if the flag
@@ -250,7 +250,7 @@ function JwShellExecute(const hWnd: HWND; FileName, Parameters,
   function can use another method that receives the username and password from a
   generated even method (OnElevationGetCredentials). In this case the process is
   started using Windows Secondary Logon Service.
-  
+
   The return value is a process handle, in case of SuRun zero, or zero if it
   closed automatically.
   Parameters
@@ -277,7 +277,7 @@ function JwShellExecute(const hWnd: HWND; FileName, Parameters,
                                See <link TJwOnElevationGetCredentials>
   Returns
   The return value is a processID of the newly created process.
-  
+
   If the process is started by SuRun the returned value can be 0 although the
   process was elevated successfully. SuRun 1.2.0.5 and older don't support PIDs.
   In this case zero (0) is returned. If there was an error getting the PID the
@@ -346,7 +346,7 @@ function JwShellExecute(const hWnd: HWND; FileName, Parameters,
           parameter OnElevationGetCredentials is called
     3. In all other cases it uses Secondary Logon Process and thus event parameter
        OnElevationGetCredentials is called
-  
+
   JwElevateProcess does not fall back to Secondary Logon Process if UAC is enabled
   but fails.                                                                          }
 
@@ -529,7 +529,7 @@ var
   SuRunStatus : TJwSuRunStatus; //Current SuRun status information. Is it active?
 
   {GetProcessID exists since Windows XP1
-  To support all windows version we use the old fashion style 
+  To support all windows version we use the old fashion style
   }
   function GetProcessID(const Handle : THandle) : TJwProcessId;
   var P : TProcessBasicInformation;
@@ -664,7 +664,7 @@ var
                       true,'SuRun',[]);
             end;
           end;
-        end;                        
+        end;
     end;
   end;
 
@@ -700,7 +700,7 @@ var
       abort status
       username + password
       environment for createprocess
-      startupinfoW for createprocess 
+      startupinfoW for createprocess
     }
     if Assigned(OnElevationGetCredentials) then
       OnElevationGetCredentials(Abort, UserName, Password,
@@ -720,13 +720,13 @@ var
     else
       CmdLine := nil;
 
-    //setup directory  
+    //setup directory
     if Length(Directory) > 0 then
       CurDir := PWideChar(WideString(Directory))
     else
       CurDir := nil;
 
-    //prevent size change from event  
+    //prevent size change from event
     lpStartupInfo.cb := sizeof(lpStartupInfo);
 
     Flags := CREATE_NEW_CONSOLE;
@@ -867,7 +867,7 @@ begin
     shExecInfo.fMask := SEE_MASK_NOCLOSEPROCESS;
     if sefNoUi in Flags then
       shExecInfo.fMask := shExecInfo.fMask or SEE_MASK_FLAG_NO_UI;
-    
+
     shExecInfo.hwnd := hWnd;
 
 
@@ -968,7 +968,7 @@ begin
 end;
 
 function JwCoCreateInstanceAsAdmin(
-  const ParentWindowHandle: HWND;           
+  const ParentWindowHandle: HWND;
   const ClassId: TGUID;
   const IID: TGUID;
  out ObjectInterface) : HRESULT;

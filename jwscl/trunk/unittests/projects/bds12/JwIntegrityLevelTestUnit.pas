@@ -4,7 +4,7 @@ unit JwIntegrityLevelTestUnit;
   Delphi DUnit Testfall
   ----------------------
   Diese Unit enthält ein Codegerüst einer Testfallklasse, das vom Testfall-Experten
-  erzeugt wurde. Ändern Sie den erzeugten Code, damit die Methoden aus der 
+  erzeugt wurde. Ändern Sie den erzeugten Code, damit die Methoden aus der
   getesteten Unit korrekt eingerichtet und aufgerufen werden.
 
 }
@@ -112,4 +112,3 @@ initialization
   // Alle Testfälle beim Test-Runner registrieren
   RegisterTest(TTestJwIntegrityLevel.Suite);
 end.
-

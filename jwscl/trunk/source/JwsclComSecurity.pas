@@ -3553,7 +3553,7 @@ begin
         if AccessList[i] is TJwDiscretionaryAccessControlEntryAllow then
         begin
           ACE := TJwDiscretionaryAccessControlEntry(AccessList[i].ClassType).Create(AccessList[i]);
-          
+
           //add allow ACE in original order of AccessList directly behind the deny entries
           fSD.DACL.Insert(DenyEntryCount, ACE);
           Inc(DenyEntryCount); //keeps original order of AccessList

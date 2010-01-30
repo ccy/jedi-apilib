@@ -66,7 +66,7 @@ begin
   FD.ResetTemp();
   Writeln(FD.DACL.GetTextMap(TJwSecurityFileFolderMapping));
   FD.Free;
-  
+
 
   DeleteFile(PChar(Name));
   readln;

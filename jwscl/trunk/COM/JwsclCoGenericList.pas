@@ -53,7 +53,7 @@ begin
     end;
   finally
     fLock.EndWrite;
-  end;    
+  end;
 end;
 
 destructor TJwGenericList.Destroy;

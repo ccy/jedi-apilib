@@ -48,7 +48,7 @@ uses SysUtils, Classes,
   JwsclResource,
   JwsclSid, JwsclToken, JwsclUtils,
   JwsclTypes, JwsclExceptions,
-  JwsclVersion, JwsclConstants, 
+  JwsclVersion, JwsclConstants,
   JwsclStrings; //JwsclStrings, must be at the end of uses list!!!
 {$ENDIF SL_OMIT_SECTIONS}
 
@@ -89,8 +89,8 @@ type
   end;
 
   {TJwIntegrityLevelSID provides methods to use fine grained integrity levels.
-   
-   This class is subject to change and to be investigated 
+
+   This class is subject to change and to be investigated
 	and therefore should not be used!!
   }
   TJwIntegrityLevelSID = class(TJwSecurityKnownSID, IComparable)
@@ -184,7 +184,7 @@ var
   JwAdministratorsSID,
     {<B>JwPrincipalSid</B> defines the local user group
      You need to call JwInitWellknownSIDs before accessing this variable!
-    
+
      Use:
      <code lang="Delphi">
       SD : TJwSecurityDescriptor;
@@ -210,7 +210,7 @@ var
   JwPowerUsersSID,
     {<B>JwPrincipalSid</B> defines the local guest group
      You need to call JwInitWellknownSIDs before accessing this variable!
-    
+
      Use:
      <code lang="Delphi">
       SD : TJwSecurityDescriptor;
@@ -380,7 +380,7 @@ This function is useful if a new user must have access to the given windows stat
  so she can create windows. One do not have to add the new user to the window station DACL.
 This does not work if the user is not logged on as an interactive user.
 
-@param hWinStation defines the window station that is used. If 0 the window station "WinSta0" is used. 
+@param hWinStation defines the window station that is used. If 0 the window station "WinSta0" is used.
 @return The logon SID.
 raises
  EJwsclWinCallFailedException:  will be raised if a call to GetUserObjectInformation failed.
@@ -390,21 +390,21 @@ function JwGetLogonSID(const hWinStation: HWINSTA{TWindowStation} = 0)
 
 function JwGetLogonSID(aToken: TJwSecurityToken): TJwSecurityId; overload;
 
- 
+
 {<B>JwGetMachineSid</B> returns a local or remote machine's SID.
 Warning: This function may need some time on remote machines.
 
 @param ComputerOrDNS defines a DNS or NetBIOS name of the remote server.
-      If empty the local machine is used 
-@return Returns an instance of TJwSecurityId which presents the machine 
+      If empty the local machine is used
+@return Returns an instance of TJwSecurityId which presents the machine
 raises
  EJwsclAccessDenied:  is raised if retrieving of the machine sid is denied.
- This usually occurs if a remote system could not authenticate the local one. 
+ This usually occurs if a remote system could not authenticate the local one.
  EJwsclInvalidComputer: is called if the system in parameter ComputerOrDNS
- could not be resolved. 
- EJwsclWinCallFailedException: is raised if a call to NetUserEnum failed. 
+ could not be resolved.
+ EJwsclWinCallFailedException: is raised if a call to NetUserEnum failed.
  EJwsclNILParameterException: is raied if data returned by NetUserEnum
-  is nil. 
+  is nil.
 }
 function JwGetMachineSid(const ComputerOrDNS : WideString = '') : TJwSecurityId;
 
@@ -423,7 +423,7 @@ JwKnownSid for additional known SIDs. It calls JwInitWellKnownSIDs automatically
 
 @param Sids defines a set of SIDs of type TWellKnownSidType that ought to be
   initialized. The function can be called several times with more or the same
-   parameter values. 
+   parameter values.
 }
 procedure JwInitWellKnownSIDsEx(const Sids : TWellKnownSidTypeSet);
 procedure JwInitWellKnownSIDsExAll();
@@ -490,11 +490,11 @@ procedure JwInitMapping;
 JwInitMapping must be called before.
 
 @param Name defines the name of the Sid to be used.
-The name can be used for retrieving the Sid. It is case insensitive. 
-@param Sid defines the Sid instance that represents the name. Can not be nil 
+The name can be used for retrieving the Sid. It is case insensitive.
+@param Sid defines the Sid instance that represents the name. Can not be nil
 raises
  EJwsclNILParameterException:  will be raised if Sid is nil or
- JwInitMapping was not called 
+ JwInitMapping was not called
 }
 procedure JwAddMapSid(const Name : TJwString; const Sid : TJwSecurityID);
 
@@ -506,9 +506,9 @@ the same.
 JwInitMapping must be called before.
 
 @param Name defines the Sid name which is to be retrieved.
- It is case insensitive. 
+ It is case insensitive.
 raises
- EJwsclNILParameterException:  will be raised if JwInitMapping was not called 
+ EJwsclNILParameterException:  will be raised if JwInitMapping was not called
 }
 function JwSidMap(const Name : TJwString) : TJwSecurityID;
 
@@ -600,11 +600,11 @@ begin
    and call it recursively is also not a good idea
    because if many errors occur stack can become low of memory.
    So if we jump out of loop in case of exception
-   we can simply jump back to next loop item. 
+   we can simply jump back to next loop item.
   }
   while i <= high(JwSidMapDef) do
   begin
-    //this outer loop isn't usually often called 
+    //this outer loop isn't usually often called
     try
       while i <= high(JwSidMapDef) do
       begin
@@ -770,7 +770,7 @@ begin
       if Length(Arr) >= 5 then
         //strip the RID (last member)
         SetLength(Arr, High(Arr));
-        
+
       result := TJwSecurityId.Create(Arr,Ident);
       //also copy cached system name
       result.CachedSystemName := SID.CachedSystemName;
@@ -873,7 +873,7 @@ begin
   except
     On E : Exception do
     begin
-{$IFDEF JWSCL_DEBUG_INFO}    
+{$IFDEF JWSCL_DEBUG_INFO}
       JwOutputDebugString('%s. Security id: %s ',[E.Message,KnownSids[Idx]]);
 {$ENDIF JWSCL_DEBUG_INFO}
       SID := nil;
@@ -969,7 +969,7 @@ var
   s: TJwSecurityId;
 begin
   fIsStandard := false;
-  
+
   token := TJwSecurityToken.CreateTokenEffective(TOKEN_ALL_ACCESS);
   S := nil;
   try

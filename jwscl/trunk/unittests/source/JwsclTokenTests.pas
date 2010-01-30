@@ -284,7 +284,7 @@ begin
 
       priv.Enabled := true;
       CheckEquals(true,priv.Enabled);
- 
+
       priv.Enabled := true;
       CheckEquals(true,priv.Enabled);
 
@@ -457,7 +457,7 @@ begin
 
   {do not call
    token2.Free;
-   otherwise the privileges of the token.Tokenhandle are invalid. 
+   otherwise the privileges of the token.Tokenhandle are invalid.
   }
 //           stimmt was net
   try
@@ -680,7 +680,7 @@ end;
 procedure TSecurityTokenTests.TestPrivilegeCheck;
 var Token : TJwSecurityToken;
     Privs : TJwPrivilegeSet;
-    bRes : Boolean; 
+    bRes : Boolean;
 begin
   Privs := TJwPrivilegeSet.Create;
   Token := TJwSecurityToken.CreateTokenEffective(TOKEN_READ or TOKEN_QUERY);
@@ -720,7 +720,7 @@ begin
   try
     Token1 := TJwSecurityToken.CreateTokenByProcess(0,TOKEN_ALL_ACCESS); //TOKEN_READ or TOKEN_DUPLICATE or TOKEN_WRITE);
     CheckEquals(Integer(TokenPrimary),Integer(Token1.TokenType));
-  
+
     Token1.ConvertToImpersonatedToken(SECURITY_MAX_IMPERSONATION_LEVEL,TOKEN_ALL_ACCESS);
 
     try
@@ -730,7 +730,7 @@ begin
     end;
 
     CheckEquals(Integer(TokenImpersonation),Integer(Token1.TokenType));
-  
+
     Token1.SetThreadToken(0);
 
 

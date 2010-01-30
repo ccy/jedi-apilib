@@ -1,14 +1,14 @@
 unit RunElCOM_TLB;
 
 // ************************************************************************ //
-// WARNUNG                                                                    
-// -------                                                                    
+// WARNUNG
+// -------
 // Die in dieser Datei deklarierten Typen wurden aus Daten einer Typbibliothek
-// generiert. Wenn diese Typbibliothek explizit oder indirekt (über eine     
-// andere Typbibliothek) reimportiert wird oder wenn die Anweisung            
-// 'Aktualisieren' im Typbibliotheks-Editor während des Bearbeitens der     
-// Typbibliothek aktiviert ist, wird der Inhalt dieser Datei neu generiert und 
-// alle manuell vorgenommenen Änderungen gehen verloren.                           
+// generiert. Wenn diese Typbibliothek explizit oder indirekt (über eine
+// andere Typbibliothek) reimportiert wird oder wenn die Anweisung
+// 'Aktualisieren' im Typbibliotheks-Editor während des Bearbeitens der
+// Typbibliothek aktiviert ist, wird der Inhalt dieser Datei neu generiert und
+// alle manuell vorgenommenen Änderungen gehen verloren.
 // ************************************************************************ //
 
 // PASTLWTR : 1.2
@@ -18,27 +18,27 @@ unit RunElCOM_TLB;
 // Typbib: P:\Eigene Dateien\Dezipaitor\Projekte\Delphi\7\jedi-api-lib\jwscl\trunk\examples\runel\RunElCOM.tlb (1)
 // LIBID: {623BD86A-B280-4727-8C48-F030AB87097C}
 // LCID: 0
-// Hilfedatei: 
+// Hilfedatei:
 // Hilfe-String: RunElCOM Bibliothek
-// DepndLst: 
+// DepndLst:
 //   (1) v2.0 stdole, (C:\Windows\system32\stdole2.tlb)
 // ************************************************************************ //
-{$TYPEDADDRESS OFF} // Unit muß ohne Typüberprüfung für Zeiger compiliert werden. 
+{$TYPEDADDRESS OFF} // Unit muß ohne Typüberprüfung für Zeiger compiliert werden.
 {$WARN SYMBOL_PLATFORM OFF}
 {$WRITEABLECONST ON}
 {$VARPROPSETTER ON}
 interface
 
 uses Windows, ActiveX, Classes, Graphics, StdVCL, Variants;
-  
+
 
 // *********************************************************************//
-// In dieser Typbibliothek deklarierte GUIDS . Es werden folgende         
-// Präfixe verwendet:                                                     
-//   Typbibliotheken     : LIBID_xxxx                                     
-//   CoClasses           : CLASS_xxxx                                     
-//   DISPInterfaces      : DIID_xxxx                                      
-//   Nicht-DISP-Schnittstellen: IID_xxxx                                       
+// In dieser Typbibliothek deklarierte GUIDS . Es werden folgende
+// Präfixe verwendet:
+//   Typbibliotheken     : LIBID_xxxx
+//   CoClasses           : CLASS_xxxx
+//   DISPInterfaces      : DIID_xxxx
+//   Nicht-DISP-Schnittstellen: IID_xxxx
 // *********************************************************************//
 const
   // Haupt- und Nebenversionen der Typbibliothek
@@ -52,14 +52,14 @@ const
 type
 
 // *********************************************************************//
-// Forward-Deklaration von in der Typbibliothek definierten Typen         
+// Forward-Deklaration von in der Typbibliothek definierten Typen
 // *********************************************************************//
   IJwRunElevated = interface;
 
 // *********************************************************************//
-// Deklaration von in der Typbibliothek definierten CoClasses             
-// (HINWEIS: Hier wird jede CoClass zu ihrer Standardschnittstelle        
-// zugewiesen)                                                            
+// Deklaration von in der Typbibliothek definierten CoClasses
+// (HINWEIS: Hier wird jede CoClass zu ihrer Standardschnittstelle
+// zugewiesen)
 // *********************************************************************//
   JwRunElevated = IJwRunElevated;
 
@@ -71,17 +71,17 @@ type
 // *********************************************************************//
   IJwRunElevated = interface(IUnknown)
     ['{F8B12C3A-2076-4262-B512-008D55DEC603}']
-    function RunAppElevated(AppName: PWideChar; Parameter: PWideChar; Dir: PWideChar; 
-                            ClientProcessID: LongWord; out NewThreadHandle: LongWord; 
+    function RunAppElevated(AppName: PWideChar; Parameter: PWideChar; Dir: PWideChar;
+                            ClientProcessID: LongWord; out NewThreadHandle: LongWord;
                             out NewProcessHandle: LongWord; out ResultValue: LongWord): HResult; stdcall;
   end;
 
 // *********************************************************************//
-// Die Klasse CoJwRunElevated stellt die Methoden Create und CreateRemote zur      
+// Die Klasse CoJwRunElevated stellt die Methoden Create und CreateRemote zur
 // Verfügung, um Instanzen der Standardschnittstelle IJwRunElevated, dargestellt von
-// CoClass JwRunElevated, zu erzeugen. Diese Funktionen können                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// möchte, die von dieser Typbibliothek dargestellt werden.               
+// CoClass JwRunElevated, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// möchte, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoJwRunElevated = class
     class function Create: IJwRunElevated;

@@ -16,7 +16,7 @@ uses
   JwsclResource, JwsclUtils, JwsclTypes;
 type
   // Testmethoden für Klasse EJwsclSecurityException
-  
+
   TestEJwsclSecurityException = class(TTestCase)
   private
     FEJwsclSecurityException: EJwsclSecurityException;
@@ -156,4 +156,3 @@ initialization
   // Alle Testfälle beim Test-Runner registrieren
   RegisterTest(TestEJwsclSecurityException.Suite);
 end.
-

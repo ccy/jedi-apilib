@@ -20,4 +20,3 @@ begin
 
   Writeln(obj.StringSid);
 end.
- 

@@ -197,7 +197,7 @@ begin
 
     You should use a better suited dialog!
     I also hope that Password string in dialog is also freed correctly. Well
-    it is just a demo nonetheless! 
+    it is just a demo nonetheless!
     }
     AllowLogin := False;
     Exit;

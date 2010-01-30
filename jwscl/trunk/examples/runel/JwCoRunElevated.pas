@@ -10,7 +10,7 @@ uses
 type
   TJwRunElevated = class(TTypedComObject, IJwRunElevated)
   protected
-    function RunAppElevated(AppName: PWideChar; Parameter: PWideChar; Dir: PWideChar; 
+    function RunAppElevated(AppName: PWideChar; Parameter: PWideChar; Dir: PWideChar;
                             ClientProcessID: LongWord; out NewThreadHandle: LongWord;
                             out NewProcessHandle: LongWord; out ResultValue: LongWord): HResult;  stdcall;
     {IJwRunElevated-Methoden hier deklarieren}

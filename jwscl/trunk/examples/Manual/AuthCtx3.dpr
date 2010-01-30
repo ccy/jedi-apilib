@@ -141,7 +141,7 @@ begin
   ZeroMemory(@ObjectTypeArray[3], sizeof(ObjectTypeArray[3]));
   ObjectTypeArray[3].Level := ACCESS_PROPERTY_GUID;
   ObjectTypeArray[3].ObjectType := @GUID_1;
-  
+
 
   Request := TJwAuthZAccessRequest.Create(
     MAXIMUM_ALLOWED,//FILE_READ_EA,//DesiredAccess: TJwAccessMask;

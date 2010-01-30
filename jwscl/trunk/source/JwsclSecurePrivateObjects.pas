@@ -19,17 +19,17 @@ Software distributed under the License is distributed on an "AS IS" basis, WITHO
 ANY KIND, either express or implied. See the License for the specific language governing rights
 and limitations under the License.
 
-Alternatively, the contents of this file may be used under the terms of the  
-GNU Lesser General Public License (the  "LGPL License"), in which case the   
-provisions of the LGPL License are applicable instead of those above.        
-If you wish to allow use of your version of this file only under the terms   
-of the LGPL License and not to allow others to use your version of this file 
-under the MPL, indicate your decision by deleting  the provisions above and  
+Alternatively, the contents of this file may be used under the terms of the
+GNU Lesser General Public License (the  "LGPL License"), in which case the
+provisions of the LGPL License are applicable instead of those above.
+If you wish to allow use of your version of this file only under the terms
+of the LGPL License and not to allow others to use your version of this file
+under the MPL, indicate your decision by deleting  the provisions above and
 replace  them with the notice and other provisions required by the LGPL
-License.  If you do not delete the provisions above, a recipient may use     
-your version of this file under either the MPL or the LGPL License.          
+License.  If you do not delete the provisions above, a recipient may use
+your version of this file under either the MPL or the LGPL License.
 
-For more information about the LGPL: http://www.gnu.org/copyleft/lesser.html 
+For more information about the LGPL: http://www.gnu.org/copyleft/lesser.html
 Note
 
 The Original Code is JwsclSecurePrivateObjects.pas.
@@ -66,9 +66,9 @@ type
 
     {<B>GetObjectInformation</B> retrieves information about the private objec
      @param ObjectInformationSet contains information which
-     information must be returned. 
+     information must be returned.
      @return Defines a structure which contains information about the private
-       object 
+       object
     }
     function GetObjectInformation(const ObjectInformationSet :
             TJwSecurityObjectInformationFlagSet): TJwSecurityObjectInformation;
@@ -77,10 +77,10 @@ type
      the current private object. This is used by GetPrivateInheritanceSource and
      other inheritance methods)
      @param Parent received a pointer to the parent private object. Return nil
-      if no parent exists - e.g. it is on top of a tree structure. 
+      if no parent exists - e.g. it is on top of a tree structure.
      @return Return S_OK if the parameter Parent is valid or the current object
       has no parent.
-      Return E_NOTIMPL if the private object does not support tree structures. 
+      Return E_NOTIMPL if the private object does not support tree structures.
      }
     function GetParent(out Parent : IJwPrivateSecurityInformation) : HRESULT;
 
@@ -94,7 +94,7 @@ type
      @return If the function returns true an access check will prevent unauthorized
      change or retrieving of security information.
      If the function returns false no access check will be done and the user
-     should do access check. 
+     should do access check.
 
      }
     function GetUseAccessCheck(const AccessCheckType : TJwGetAccessCheckType) : Boolean;
@@ -110,7 +110,7 @@ type
      @param SecurityInformation This parameter contains the security descriptor
       parts which must be copied into the new descriptor. Only the given
       descriptor parts should be retrieved. No more or less.
-       
+
      @param SecurityDescriptor Contains a security descriptor that must be adapted.
       The descriptor is already created and contains empty parts. Do not Free it!
       This method should only change the requested security parts
@@ -132,7 +132,7 @@ type
 
      @param SecurityInformation This parameter contains the security descriptor
       parts which must be copied into the private descriptor. Only the given
-      descriptor parts should be set. No more or less. 
+      descriptor parts should be set. No more or less.
      @param SecurityDescriptor Contains a security descriptor that only contains
       parts which are defined in SecurityInformation. Do not free the
        the descriptor!
@@ -148,12 +148,12 @@ type
      rights are mapped to your private access rights.
 
      @param GenericMap receives a classname (not instance) which describes how
-       to map generic access rights 
-     @return 
+       to map generic access rights
+     @return
               # Return S_OK if the call succeeded.
-              # Return E_NOTIMPL to use TJwSecurityGenericMapping as standard map. 
-              # Any other result will raise EJwsclInvalidObjectException 
-             
+              # Return E_NOTIMPL to use TJwSecurityGenericMapping as standard map.
+              # Any other result will raise EJwsclInvalidObjectException
+
     }
     function MapGenericMask(out GenericMap : TJwSecurityGenericMappingClass) : HRESULT;
   end;
@@ -182,7 +182,7 @@ type
             TJwSecurityInformationFlagSet; var SecurityDescriptor :
             TJwSecurityDescriptor); virtual;
 
-    {This method implements IJwPrivateSecurityInformation.GetSecurity 
+    {This method implements IJwPrivateSecurityInformation.GetSecurity
 
      <B>SetSecurity</B> changes the internal security descriptor (fSecurityDescriptor ).
      It adapts it to the given security information in the parameters.
@@ -198,13 +198,13 @@ type
 
      @param SecurityInformation This parameter contains the security descriptor
       parts which must be copied into the private descriptor. Only the given
-      descriptor parts should be set. No more or less. 
+      descriptor parts should be set. No more or less.
      @param SecurityDescriptor Contains a security descriptor that only contains
       parts which are defined in SecurityInformation. Do not free the
-       the descriptor! 
+       the descriptor!
      raises
  EJwsclInvalidObjectException:  will be raised if owner or group
-      of the internal security descriptor (fSecurityDescriptor ) are nil. 
+      of the internal security descriptor (fSecurityDescriptor ) are nil.
     }
     procedure SetSecurity(const SecurityInformation :
             TJwSecurityInformationFlagSet; const SecurityDescriptor :
@@ -227,14 +227,14 @@ type
      @param DefaultSecurityDescriptor defines a default security descriptor that will
        be used by this object. If this parameter is nil the security information of the current token
        will be used.
-       Read warning in description! 
+       Read warning in description!
      }
     constructor Create(const DefaultSecurityDescriptor : TJwSecurityDescriptor = nil); overload;
 
     {<B>CreateInherited</B> creates a secure object that inherits all security information from its parent.
 
      @param EJwsclInvalidParentDescriptor will be raised if the secure object does not have
-        a parent or does not support inheritance. It simply calls GetParent to determine it. 
+        a parent or does not support inheritance. It simply calls GetParent to determine it.
     }
     constructor CreateInherited; overload;
 
@@ -258,18 +258,18 @@ type
       @param SecurityObject Defines a secure object which security information is requested. Must not be nil
       @param SecurityInformationSet Defines which security information is requested.
               If it contains siSaclSecurityInformation the caller must have enabled the privilege SE_SECURITY_NAME
-              if automatic access check is activated. 
-      @return Returns the requested security information in a security descriptor. 
+              if automatic access check is activated.
+      @return Returns the requested security information in a security descriptor.
       raises
  EJwsclAccessDenied:  will be raised if a requested security information is denied in the requested
             secure object or one of its parents. This behavior can be changed by the secure object individually.
-            See the documentation of the secure object how access checks are done. 
+            See the documentation of the secure object how access checks are done.
        Exception: Any exception that is raised in a method of implementation of IJwPrivateSecurityInformation will be
             redirected to the caller of <B>GetSecurityDescriptor</B>. There is no guarantee that 100% of allocated memory is freed correctly. However
-            the design is made to accomplish this goal. 
+            the design is made to accomplish this goal.
        EJwsclInvalidOwnerSIDException: will be raised if owner or group of the secure object is nil.
               Set the owner to JwNullSID if not exists. In this case the access will be denied if the DACL
-              does not allow it. 
+              does not allow it.
      }
 
      class function GetSecurityDescriptor(const SecurityObject :
@@ -381,7 +381,7 @@ begin
         RsAccessDenied,
         'GetSecurityDescriptor', ClassName, RsUNSecurePrivateObjects,
         0, False, []);
-    end; 
+    end;
   end;
 end;
 

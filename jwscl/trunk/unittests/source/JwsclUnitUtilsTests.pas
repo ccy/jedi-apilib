@@ -120,4 +120,3 @@ initialization
   // Alle Testfälle beim Test-Runner registrieren
   RegisterTest(TestUnitUtils.Suite);
 end.
-

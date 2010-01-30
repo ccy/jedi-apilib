@@ -15,7 +15,7 @@ uses
   jwsclStrings;
 
 type TMessage = record
-       Data : array[0..1023] of Char; 
+       Data : array[0..1023] of Char;
      end;
 
 var PipeHandle : THandle;

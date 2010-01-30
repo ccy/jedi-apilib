@@ -145,7 +145,7 @@ const
   JwExceptionMappingCount = 135;
 
   JwExceptionMapping : array[0..JwExceptionMappingCount] of TJwExceptionMapping =
-   //Catch this Exception so we always have a correct value. 
+   //Catch this Exception so we always have a correct value.
    ((Name: 'Exception';
     ID: '{138EDC0B-B10B-4FA3-BB5D-DFDABBEBDDA4}';
     ExcPtr : Exception),

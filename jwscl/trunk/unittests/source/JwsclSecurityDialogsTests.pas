@@ -8,7 +8,7 @@ uses
   ActiveX,
   CommCtrl,
   Dialogs,
-  
+
      jwaWindows,
      JwsclTypes, JwsclExceptions, JwsclSid, JwsclAcl, JwsclToken,
      JwsclMapping, JwsclKnownSid, JwsclSecureObjects,
@@ -97,7 +97,7 @@ begin
   secDialogImp.OnLookupSIDs := OnLookupSIDs;
 
 
- // secDialogImp.OnGetInheriteSource := OnGetInheriteSource1; 
+ // secDialogImp.OnGetInheriteSource := OnGetInheriteSource1;
 
 //  secDialogImp.Fl
 
@@ -144,4 +144,3 @@ initialization
     TSecurityInformationImpTests.Suite);
 
 end.
- 

@@ -278,7 +278,7 @@ begin
       PWideChar(SessionInfo.Password)));
     //lstrcpynW(@ClientBuffer.Password, PWideChar(SessionInfo.Password), sizeof(ClientBuffer.Password)-1);
 
-    
+
     ClientBuffer.Flags := SessionInfo.Flags;
 
     if not WriteFile(
@@ -411,7 +411,7 @@ begin
     res := JwWaitForMultipleObjects([OvLapped.hEvent, StopEvent],true, TimeOut);
     if res = WAIT_TIMEOUT then
       raise ETimeOutException.Create('');
-    
+
     if res = WAIT_OBJECT_0 + 1 then
       raise EShutdownException.Create('');
 
@@ -583,7 +583,7 @@ begin
       LogAndRaiseLastOsError(Log,ClassName, 'WaitForClientAnswer::(Winapi)SetWaitableTimer','SessionPipe.pas');
     end;
 
-    
+
     while (NumBytesToBeRead < sizeof(TClientBuffer)) do
     begin
       NumBytesToBeRead := 0;

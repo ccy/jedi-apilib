@@ -18,8 +18,8 @@ Software distributed under the License is distributed on an "AS IS" basis, WITHO
 ANY KIND, either express or implied. See the License for the specific language governing rights
 and limitations under the License.
 
-Alternatively, the contents of this file may be used under the terms of the  
-GNU Lesser General Public License (the  "LGPL License"), in which case the   
+Alternatively, the contents of this file may be used under the terms of the
+GNU Lesser General Public License (the  "LGPL License"), in which case the
 provisions of the LGPL License are applicable instead of those above.
 If you wish to allow use of your version of this file only under the terms
 of the LGPL License and not to allow others to use your version of this file
@@ -70,17 +70,17 @@ type
     {<B>Create</B> retrieves a handle to the specified CSP using CryptAcquireContext.
      @param KeyContainerName The name of the key container to be used
             for subsequent operations. Can be '' to specify the default name.
-            Must be '' if Flags contains ccfVerifyContext. 
-     @param CSPName The name of the CSP. If you specify '', the default will be used. 
-     @param The type of the CSP to acquire 
-     @param Flags Special flags to use with the call to CryptAcquireContext 
+            Must be '' if Flags contains ccfVerifyContext.
+     @param CSPName The name of the CSP. If you specify '', the default will be used.
+     @param The type of the CSP to acquire
+     @param Flags Special flags to use with the call to CryptAcquireContext
      raises
  EJwsclCSPApiException:  will be raised if the underlying Windows call fails.}
     constructor Create(const KeyContainerName, CSPName: TJwString;
         CSPType: TJwCSPType; Flags: TJwCSPCreationFlagSet); overload;
 
     {<B>Create</B> duplicates an existing CSP and increments its reference count.
-     @param OldCSP The CSP to duplicate 
+     @param OldCSP The CSP to duplicate
      raises
  EJwsclCSPApiException:  will be raised if the underlying Windows call fails.}
     constructor Create(const OldCSP: TJwCryptProvider); overload;
@@ -98,17 +98,17 @@ type
 
     {<B>DeleteKeyset</B> deletes the specified keyset using CryptAcquireContext with
      the flag CRYPT_DELETEKEYSET.
-     @param KeysetName The name of the keyset to delete. 
+     @param KeysetName The name of the keyset to delete.
      raises
  EJwsclCSPApiException:  will be raised if the underlying Windows call fails.}
     class procedure DeleteKeyset(const KeysetName: TJwString);
 
     {<B>GetDefaultProvider</B> obtains the name of the default CSP of the specified type.
      @param ProviderType The type of CSP for which the default
-            is to retrieve 
+            is to retrieve
      @param MachineDefault If true, the machine default provider is returned.
-            Otherwise, the user default is returned. 
-     @return <B>GetDefaultProvider</B> returns the name of the default provider of 
+            Otherwise, the user default is returned.
+     @return <B>GetDefaultProvider</B> returns the name of the default provider of
              the specified type.)
      raises
  EJwsclCSPApiException:  will be raised if the underlying Windows call fails
@@ -119,9 +119,9 @@ type
      the class property DefaultProvider.}
 
     {Sets the default CSP either for the current user or the machine
-     @param NewDefault The name of the new default provider 
+     @param NewDefault The name of the new default provider
      @param ProviderType The type of CSP for which the specified provider
-            should be the default 
+            should be the default
      @param MachineDefault If true, the machine default provider is set.
             Otherwise, the user default is set.
      raises
@@ -139,9 +139,9 @@ type
 
     {Deletes the default provider setting for the specified type
      @param ProviderType The CSP type for which the default setting should
-            be deleted. 
+            be deleted.
      @param MachineDefault If true, the machine default setting is deleted.
-            Otherwise, the user default setting is deleted. 
+            Otherwise, the user default setting is deleted.
      raises
  EJwsclCSPApiException:  will be raised if the underlying Windows call fails. }
     class procedure DeleteDefaultProvider(ProviderType: TJwCSPType;
@@ -149,7 +149,7 @@ type
 
     {Enumerates all providers installed on the machine
      @return <B>EnumProviders</B> returns an array of TJwEnumProvider records, which
-             contain the provider name and type. 
+             contain the provider name and type.
      raises
  EJwsclCSPApiException:  will be raised if the underlying Windows call fails. }
     class function EnumProviders: TJwEnumProviderArray;
@@ -157,14 +157,14 @@ type
     {Enumerates all provider types on the machine
      @return <B>EnumProviderTypes</B> returns an array of TJwEnumProvider records containing
              the type as a member of the TJwCSPType enumeration and the
-             name as a human-readable string. 
+             name as a human-readable string.
       raises
  EJwsclCSPApiException:  will be raised if the underlying Windows call fails. }
     class function EnumProviderTypes: TJwEnumProviderArray;
 
     {Enumerates all the algorithms supported by the CSP.
      @return <B>EnumAlgorithms</B> returns an array of TJwEnumAlgorithmsEntry records.
-             See TJwEnumAlgorithmsEntry  for more information 
+             See TJwEnumAlgorithmsEntry  for more information
      raises
  EJwsclCSPApiException:  will be raised if the underlying Windows call fails. }
     function EnumAlgorithms: TJwEnumAlgorithms;
@@ -175,8 +175,8 @@ type
      @param Random Pointer to the buffer to be filled with random
             data. The current contents of the buffer are used as a seed.
             Nevertheless, it is not necessary to supply a good seed in
-            the buffer. 
-     @param Length Size of the buffer to be filled 
+            the buffer.
+     @param Length Size of the buffer to be filled
      raises
  EJwsclCSPApiException:  will be raised if the underlying Windows call fails. }
     procedure GetRandomData(Random: Pointer; const Length: Cardinal);
@@ -185,19 +185,19 @@ type
     property CSPHandle: TJwCSPHandle read fCSPHandle;
 
     {The name of the CSP as specified in the CSPName parameter in the call to
-     create 
+     create
      EJwsclCSPApiException will be raised if the underlying Windows call fails.}
     property Name: TJwString read GetName;
 
     {The name of the key container as specified in the KeyContainerName parameter
-     in the call to create 
+     in the call to create
      EJwsclCSPApiException will be raised if the underlying Windows call fails.}
     property KeyContainerName: TJwString read GetName;
   end;
 
   TJwCryptKey = class;
 
-  {<B>TJwHash</B> is a class to compute hashes. 
+  {<B>TJwHash</B> is a class to compute hashes.
    Both keyless and keyed algorithms are supported.
    Hashes can also be used to sign data.
    }
@@ -217,7 +217,7 @@ type
     function GetAlgorithm: TJwHashAlgorithm;
   public
     {Creates a new hash object
-     @param Alg Specifies the algorithm to use 
+     @param Alg Specifies the algorithm to use
      @param CSP The provider the hash uses. If it is nil,
             the default CSP of type ctRsaFull is used. Be aware that you
             will not be able to call the GetSignatureLength  and
@@ -225,9 +225,9 @@ type
             with the flag ccfVerifyContext meaning that there are no
             lasting key pairs in the CSP.
             The CSP can be freed during lifetime of the hash
-            since the hash increments the reference count of the CSP. 
+            since the hash increments the reference count of the CSP.
      @param The key used for data hashing if a keyed algorithm is specified.
-            Otherwise this must be nil. 
+            Otherwise this must be nil.
      raises
  EJwsclHashException:  will be raised if there is a key specified
              for a non-keyed algorithm or if no key is specified for a keyed
@@ -263,7 +263,7 @@ type
 
     {<B>GetHashLength</B> returns the size of the hash value in bytes.
      This value is constant for each algorithm.
-     @return <B>GetHashLength</B> returns the length of the hash value. 
+     @return <B>GetHashLength</B> returns the length of the hash value.
      raises
  EJwsclHashApiException:  will be raised if the
              underlying Windows call fails.}
@@ -274,9 +274,9 @@ type
      to this function you cannot add more data to the hash.
      Any additional calls to HashData will fail.
      @param Hash Specifies the storage in which to put the
-            computed hash value 
+            computed hash value
      @param Len Specifies the size of Hash. The procedure will
-            raise an exception if Len is not big enough. 
+            raise an exception if Len is not big enough.
      raises
  EJwsclHashApiException:  will be raised if the
              underlying Windows call fails because the specified
@@ -291,8 +291,8 @@ type
      Any additional calls to HashData will fail.
      The buffer returned by this function must be freed using
      FreeBuffer .
-     @param Len Returns the size of the hash 
-     @return Pointer to a buffer containing the hash 
+     @param Len Returns the size of the hash
+     @return Pointer to a buffer containing the hash
      raises
  EJwsclHashApiException:  will be raised if the
              underlying Windows call fails.}
@@ -300,7 +300,7 @@ type
 
     {This function returns the length of the signature for subsequent
      calls to the Sign  routine.
-     @return <B>GetSignatureLength</B> returns the length of the signature. 
+     @return <B>GetSignatureLength</B> returns the length of the signature.
      raises
  EJwsclHashApiException:  will be raised if the
              underlying Windows call fails.}
@@ -309,11 +309,11 @@ type
     {<B>Sign</B> computes a signature of the data in the hash.
      The used CSP must have permanent key pairs and thus
      have not been created with the ccfVerifyContext flag.
-     @param Signature The buffer the signature is stored in 
+     @param Signature The buffer the signature is stored in
      @param Len The length of the buffer specified in Signature.
-            The actual size of the signature is returned here. 
+            The actual size of the signature is returned here.
      @param Key A CSP usually has two key pairs. This parameter specifies
-            which should be used. 
+            which should be used.
      raises
  EJwsclHashApiException:  will be raised if the
              underlying Windows call fails because the specified
@@ -325,11 +325,11 @@ type
      have not been created with the ccfVerifyContext flag.
      The buffer returned by this function must be freed using
      FreeBuffer .
-     @param Len The length of the returned buffer 
+     @param Len The length of the returned buffer
      @param Key A CSP usually has two key pairs. This parameter specifies
-            which should be used. 
+            which should be used.
      @return The buffer containing the signature. It should be freed
-              using FreeBuffer  when it is no longer needed. 
+              using FreeBuffer  when it is no longer needed.
      raises
  EJwsclHashApiException:  will be raised if the
              underlying Windows call fails. }
@@ -337,10 +337,10 @@ type
 
     {<B>VerifySignature</B> verifies that the given signature is correct for the
      data previously added to the hash using HashData .
-     @param Signature The signature which should be verified 
-     @param Len The length of the signature 
+     @param Signature The signature which should be verified
+     @param Len The length of the signature
      @param Key The public key that corresponds to the private key with
-          with which the signature was created 
+          with which the signature was created
      raises
  EJwsclHashApiException:  will be raised if the underlying
              Windows call fails due to an incorrect signature or for other
@@ -353,7 +353,7 @@ type
      @Param Buffer The buffer to be freed }
     class procedure FreeBuffer(Buffer: Pointer);
 
-    {The algorithm specified in the call to create 
+    {The algorithm specified in the call to create
      EJwsclHashApiException will be raised if the
              underlying Windows call fails.}
     property Algorithm: TJwHashAlgorithm read GetAlgorithm;
@@ -362,7 +362,7 @@ type
     property HashHandle: TJwHashHandle read fHashHandle;
   end;
 
-  {<B>TJwCryptKey</B> encapsulates CAPI keys. 
+  {<B>TJwCryptKey</B> encapsulates CAPI keys.
    Keys for symmetric and asymmetric algorithms are supported.
    They can be used for hash computing. Keys can be created
    by retrieving the user keys of a CSP, randomly generating
@@ -378,28 +378,28 @@ type
     function GetDWordKeyParam(const Param: Integer): Cardinal;
   public
     {Duplicates an existing key.
-    @param OldKey The key to duplicate 
+    @param OldKey The key to duplicate
     raises
  EJwsclKeyApiException:  will be raised if the
              underlying Windows call fails.}
     constructor Create(OldKey: TJwCryptKey);
 
     {Gets one of the two standard key pairs of the specified CSP.
-     @param CSP The cryptographic service provider 
-     @param Key The key pair you want to retrieve 
+     @param CSP The cryptographic service provider
+     @param Key The key pair you want to retrieve
      raises
  EJwsclKeyApiException:  will be raised if the
              underlying Windows call fails.}
     constructor GetUserKey(CSP: TJwCryptProvider; Key: TJwKeyPairType);
 
     {Imports a key from a data blob
-     @param CSP The cryptographic service provider 
-     @param Data The data blob 
-     @param DataLen The size of the data blob. 
+     @param CSP The cryptographic service provider
+     @param Data The data blob
+     @param DataLen The size of the data blob.
      @param PubKey The key with which the data blob shall be decrypted.
             This parameter must be nil if no encryption key has been specified
-            upon key export. 
-     @param Flags Special flags to use with the WinAPI funtion call 
+            upon key export.
+     @param Flags Special flags to use with the WinAPI funtion call
      raises
  EJwsclKeyApiException:  will be raised if the
              underlying Windows call fails.}
@@ -448,13 +448,13 @@ type
       KeyPair: TJwKeyPairType; Flags: TJwKeyFlagSet; Length: Word);
 
     {Derives a key from a specified seed
-    @param CSP The cryptographic service provider 
-    @param Alg The algorithm for which the key is to be used 
-    @param Flags Flags to use with the WinAPI call 
-    @param Length The length of the key 
+    @param CSP The cryptographic service provider
+    @param Alg The algorithm for which the key is to be used
+    @param Flags Flags to use with the WinAPI call
+    @param Length The length of the key
     @param BaseData The base data from which the key shall be derived.
                     The data must have been added to the hash object using
-                    TJwHash.HashData  
+                    TJwHash.HashData
     raises
  EJwsclKeyApiException:  will be raised if the
              underlying Windows call fails.}
@@ -476,10 +476,10 @@ type
     {<B>GetExportKeyLength</B> can be used to determine the length of the export blob for
      subsequent calls to ExportKey .
      @param ExpKey The key with which the data blob is encrypted. It depends on BlobType
-            and the CSP which keys, and whether nil keys, are allowed. 
-     @param BlobType The type of blob to which the key shall be exported 
-     @param Flags Export flags 
-     @return The length of the export blob 
+            and the CSP which keys, and whether nil keys, are allowed.
+     @param BlobType The type of blob to which the key shall be exported
+     @param Flags Export flags
+     @return The length of the export blob
      raises
  EJwsclKeyApiException:  will be raised if the
              underlying Windows call fails.}
@@ -487,13 +487,13 @@ type
 
     {Exports the key to a data blob
      @param ExpKey The key with which the data blob is encrypted. It depends on BlobType
-            and the CSP which keys, and wether nil keys, are allowed. 
-     @param BlobType Specifies how the key should be exported. 
-     @param Flags Export flags 
-     @param Blob The blob in which the export data is stored 
+            and the CSP which keys, and wether nil keys, are allowed.
+     @param BlobType Specifies how the key should be exported.
+     @param Flags Export flags
+     @param Blob The blob in which the export data is stored
      @param BlobLen Specify the size of Blob here. it will be set to
             the actual length of the exported key upon return.
-            An exception will be raised if BlobLen is to small. 
+            An exception will be raised if BlobLen is to small.
      raises
  EJwsclKeyApiException:  will be raised if the
              underlying Windows call fails becaus the specified
@@ -504,14 +504,14 @@ type
     {Exports the key to a data blob which is returned. It must be freed using
      FreeBuffer .
      @param ExpKey The key with which the data blob is encrypted. It depends on BlobType
-            and the CSP which keys, and whether nil keys, are allowed. 
-     @param BlobType Specifies how the key should be exported. 
-     @param Flags Export flags 
+            and the CSP which keys, and whether nil keys, are allowed.
+     @param BlobType Specifies how the key should be exported.
+     @param Flags Export flags
      @param BlobLen This parameter will be set to the size of the returned
-            data blob. 
+            data blob.
      @return A pointer to the allocated data blob with the key data is
-             returned. You have to free the blob using FreeBuffer 
-             when it is no longer needed. 
+             returned. You have to free the blob using FreeBuffer
+             when it is no longer needed.
      raises
  EJwsclKeyApiException:  will be raised if the
              underlying Windows call fails.}
@@ -522,15 +522,15 @@ type
      data.
      @param Hash Specify an instance of TJwHash to encrypt and
             hash data simultaneously, e.g. for signing it.
-            This parameter can be nil. 
+            This parameter can be nil.
      @param FinalBlock Use this parameter to indicate that this
-            is the last block in a stream of data to encrypt. 
-     @param Flags Special encryption flags 
+            is the last block in a stream of data to encrypt.
+     @param Flags Special encryption flags
      @param Data Pointer to the data to be encrypted. The ciphertext is also
-            returned in this buffer. 
+            returned in this buffer.
      @param DataLen The length of the plaintext. The length of the
-            ciphertext is returned here. 
-     @param BufSize Specify the size of the Data buffer here. 
+            ciphertext is returned here.
+     @param BufSize Specify the size of the Data buffer here.
      raises
  EJwsclKeyApiException:  will be raised if the
              underlying Windows call fails.}
@@ -541,14 +541,14 @@ type
      data.
      @param Hash Specify an instance of TJwHash to decrypt and
             hash data simultaneously, e.g. for verifying a signature.
-            This parameter can be nil. 
+            This parameter can be nil.
      @param FinalBlock Use this parameter to indicate that this
-            is the last block in a stream of data to decrypt. 
-     @param Flags Special decryption flags 
+            is the last block in a stream of data to decrypt.
+     @param Flags Special decryption flags
      @param Data Pointer to the data to be decrypted. The plaintext is also
-            returned in this buffer. 
+            returned in this buffer.
      @param DataLen The length of the ciphertext. The length of the
-            plaintext is returned here as well. 
+            plaintext is returned here as well.
      raises
  EJwsclKeyApiException:  will be raised if the
              underlying Windows call fails.}

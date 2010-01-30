@@ -2,7 +2,7 @@
 Description
 Project JEDI Windows Security Code Library (JWSCL)
 
-Contains types that are used by the units of JWSCL 
+Contains types that are used by the units of JWSCL
 
 Author
 Christian Wimmer
@@ -17,17 +17,17 @@ Software distributed under the License is distributed on an "AS IS" basis, WITHO
 ANY KIND, either express or implied. See the License for the specific language governing rights
 and limitations under the License.
 
-Alternatively, the contents of this file may be used under the terms of the  
-GNU Lesser General Public License (the  "LGPL License"), in which case the   
-provisions of the LGPL License are applicable instead of those above.        
-If you wish to allow use of your version of this file only under the terms   
-of the LGPL License and not to allow others to use your version of this file 
-under the MPL, indicate your decision by deleting  the provisions above and  
-replace  them with the notice and other provisions required by the LGPL      
-License.  If you do not delete the provisions above, a recipient may use     
-your version of this file under either the MPL or the LGPL License.          
-                                                                             
-For more information about the LGPL: http://www.gnu.org/copyleft/lesser.html 
+Alternatively, the contents of this file may be used under the terms of the
+GNU Lesser General Public License (the  "LGPL License"), in which case the
+provisions of the LGPL License are applicable instead of those above.
+If you wish to allow use of your version of this file only under the terms
+of the LGPL License and not to allow others to use your version of this file
+under the MPL, indicate your decision by deleting  the provisions above and
+replace  them with the notice and other provisions required by the LGPL
+License.  If you do not delete the provisions above, a recipient may use
+your version of this file under either the MPL or the LGPL License.
+
+For more information about the LGPL: http://www.gnu.org/copyleft/lesser.html
 
 Note
 
@@ -44,7 +44,7 @@ unit JwsclVersion;
 
 interface
 
-uses SysUtils, 
+uses SysUtils,
   JwsclUtils, JwsclResource,
   jwaWindows, JwsclConstants, JwsclExceptions, JwsclTypes,
   JwsclStrings;
@@ -88,8 +88,8 @@ type
      for it.
      @param Server the servername for which you would like to retreive
      information. If Servername is empty string the local machine will be
-     queried. 
-     
+     queried.
+
      Example:
      <code lang="Delphi">
      var
@@ -120,8 +120,8 @@ type
 
     {<B>GetWindowsType</B> returns a constant that defines the windows version the process is running.
      @return The return value can be one of these constants defined in JwsclConstants
-     Currently these items are supported 
-     
+     Currently these items are supported
+
        #  Spacing(Compact)
        #  cOsUnknown = The system is unknown
        #  cOsWinNT   = running on Windows NT
@@ -135,7 +135,7 @@ type
     }
     function GetWindowsType: Integer;
 
-    {<B>IsServer</B> checks if the system is a server version. 
+    {<B>IsServer</B> checks if the system is a server version.
      <B>IsServer</B> returns <B>true</B> if the system is a Server; otherwise <B>false</B> (Workstation).
     }
 
@@ -143,11 +143,11 @@ type
 
     {<B>IsTerminalServer</B> checks if the system is a Terminal Server. A server is considered to
      be a Terminal Server if it meets one of the following conditions:
-     
-     # The Terminal Server is in application mode 
-     # The Terminal Server is advertising itsself on the network 
-     
-     
+
+     # The Terminal Server is in application mode
+     # The Terminal Server is advertising itsself on the network
+
+
      <B>IsTerminalServer</B> returns <B>true</B> if the system is a Terminal Server in application mode
      ; otherwise <B>false</B>.
      See Also
@@ -157,31 +157,31 @@ type
 
     {<B>IsWindows2000</B> checks if the system has the version given in the function name.
      @param bOrHigher defines if the return value should also be <B>true</B> if the system
-     is better/higher than the requested system version. 
+     is better/higher than the requested system version.
      @returns <B>IsWindows2000</B> returns <B>true</B> if the system is the requested version (or higher if bOrHigher is true);
      otherwise <B>false</B>.
      If bOrHigher is <B>true</B> the return value is the result of
      <B>true</B> if (bOrHigher and (GetWindowsType > iVer)) is true;
      <B>false</B> if GetWindowsType < (requested version)
-      
+
     }
     function IsWindows2000(bOrHigher: boolean = False): boolean;
 
     {<B>IsWindows2003</B> checks if the system has the version given in the function name.
      @param bOrHigher defines if the return value should also be <B>true</B> if the system
-     is better/higher than the requested system version. 
+     is better/higher than the requested system version.
      @return <B>IsWindows2003</B> returns <B>true</B> if the system is the requested version (or higher if bOrHigher is true);
      otherwise <B>false</B>.
      If bOrHigher is <B>true</B> the return value is the result of
      <B>true</B> if (bOrHigher and (GetWindowsType > iVer)) is true;
      <B>false</B> if GetWindowsType < (requested version)
-      
+
     }
     function IsWindows2003(bOrHigher: boolean = False): boolean;
 
     {<B>IsWindowsXP</B> checks if the system has the version given in the function name.
      @param bOrHigher defines if the return value should also be <B>true</B> if the system
-     is better/higher than the requested system version. 
+     is better/higher than the requested system version.
      @return <B>IsWindowsXP</B> returns <B>true</B> if the system is the requested version (or higher if bOrHigher is true);
      otherwise <B>false</B>.
      If bOrHigher is <B>true</B> the return value is the result of
@@ -193,26 +193,26 @@ type
 
     {<B>IsWindows2008</B> checks if the system has the version given in the function name.
      @param bOrHigher defines if the return value should also be <B>true</B> if the system
-     is better/higher than the requested system version. 
+     is better/higher than the requested system version.
      @return <B>IsWindows2008</B> returns <B>true</B> if the system is the requested version (or higher if bOrHigher is true);
      otherwise <B>false</B>.
      If bOrHigher is <B>true</B> the return value is the result of
      <B>true</B> if (bOrHigher and (GetWindowsType > iVer)) is true;
      <B>false</B> if GetWindowsType < (requested version)
-      
+
     }
     function IsWindows2008(bOrHigher: boolean = False): boolean;
 
 
     {<B>IsWindowsVista</B> checks if the system has the version given in the function name.
      @param bOrHigher defines if the return value should also be <B>true</B> if the system
-     is better/higher than the requested system version. 
+     is better/higher than the requested system version.
      @return <B>IsWindowsVista</B> returns <B>true</B> if the system is the requested version (or higher if bOrHigher is true);
      otherwise <B>false</B>.
      If bOrHigher is <B>true</B> the return value is the result of
      <B>true</B> if (bOrHigher and (GetWindowsType > iVer)) is true;
      <B>false</B> if GetWindowsType < (requested version)
-      
+
     }
     function IsWindowsVista(bOrHigher: boolean = False): boolean;
 
@@ -244,7 +244,7 @@ type
       {<B>GetWindowsType</B> returns a constant that defines the windows version the process is running.
        @return The return value can be one of these constants defined in JwsclConstants
         Currently these items are supported
-        
+
          #  cOsUnknown = The system is unknown
          #  cOsWin95   = running on Windows 95
          #  cOsWin98   = running on Windows 98
@@ -258,7 +258,7 @@ type
          #  cOSXP64    = running on Windows XP 64 Edition (not supported at the moment)
          #  cOsVista   = running on Windows Vista
          #  cOsWin2008 = running on Windows 2008 (tested on rc)
-          
+
        }
 
     class function GetWindowsType: integer; virtual;
@@ -268,19 +268,19 @@ type
     class procedure ResetCachedWindowsType; virtual;
       {<B>IsWindows95</B> checks if the system has the version given in the function name.
        @param bOrHigher defines if the return value should also be <B>true</B> if the system
-              is better/higher than the requested system version. 
+              is better/higher than the requested system version.
        @return <B>IsWindows95</B> returns <B>true</B> if the system is the requested version (or higher if bOrHigher is true);
                otherwise <B>false</B>.
                If bOrHigher is <B>true</B> the return value is the result of
                 <B>true</B> if (bOrHigher and (GetWindowsType > iVer)) is true;
                 <B>false</B> if GetWindowsType < (requested version)
-                
+
        }
     class function IsWindows95(bOrHigher: boolean = False): boolean;
       virtual;
       {<B>IsWindows98</B> checks if the system has the version given in the function name.
        @param bOrHigher defines if the return value should also be <B>true</B> if the system
-              is better/higher than the requested system version. 
+              is better/higher than the requested system version.
        @return <B>IsWindows98</B> returns <B>true</B> if the system is the requested version (or higher if bOrHigher is true);
                otherwise <B>false</B>.
                If bOrHigher is <B>true</B> the return value is the result of
@@ -294,13 +294,13 @@ type
 
       {<B>IsWindowsME</B> checks if the system has the version given in the function name.
        @param bOrHigher defines if the return value should also be <B>true</B> if the system
-              is better/higher than the requested system version. 
+              is better/higher than the requested system version.
        @return <B>IsWindowsME</B> returns <B>true</B> if the system is the requested version (or higher if bOrHigher is true);
                otherwise <B>false</B>.
                If bOrHigher is <B>true</B> the return value is the result of
                 <B>true</B> if (bOrHigher and (GetWindowsType > iVer)) is true;
                 <B>false</B> if GetWindowsType < (requested version)
-                
+
        }
 
     class function IsWindowsME(bOrHigher: boolean = False): boolean;
@@ -308,13 +308,13 @@ type
 
             {<B>IsWindows2000</B> checks if the system has the version given in the function name.
        @param bOrHigher defines if the return value should also be <B>true</B> if the system
-              is better/higher than the requested system version. 
+              is better/higher than the requested system version.
        @return <B>IsWindows2000</B> returns <B>true</B> if the system is the requested version (or higher if bOrHigher is true);
                otherwise <B>false</B>.
                If bOrHigher is <B>true</B> the return value is the result of
                 <B>true</B> if (bOrHigher and (GetWindowsType > iVer)) is true;
                 <B>false</B> if GetWindowsType < (requested version)
-                
+
        }
     class function IsWindows2000(bOrHigher: boolean = False): boolean;
       virtual;
@@ -322,13 +322,13 @@ type
 
       {<B>IsWindows2003</B> checks if the system has the version given in the function name.
        @param bOrHigher defines if the return value should also be <B>true</B> if the system
-              is better/higher than the requested system version. 
+              is better/higher than the requested system version.
        @return <B>IsWindows2003</B> returns <B>true</B> if the system is the requested version (or higher if bOrHigher is true);
                otherwise <B>false</B>.
                If bOrHigher is <B>true</B> the return value is the result of
                 <B>true</B> if (bOrHigher and (GetWindowsType > iVer)) is true;
                 <B>false</B> if GetWindowsType < (requested version)
-                
+
        }
     class function IsWindows2003(bOrHigher: boolean = False): boolean;
       virtual;
@@ -336,13 +336,13 @@ type
 
       {<B>IsWindows2003R2</B> checks if the system has the version given in the function name.
        @param bOrHigher defines if the return value should also be <B>true</B> if the system
-              is better/higher than the requested system version. 
+              is better/higher than the requested system version.
        @return <B>IsWindows2003R2</B> returns <B>true</B> if the system is the requested version (or higher if bOrHigher is true);
                otherwise <B>false</B>.
                If bOrHigher is <B>true</B> the return value is the result of
                 <B>true</B> if (bOrHigher and (GetWindowsType > iVer)) is true;
                 <B>false</B> if GetWindowsType < (requested version)
-                
+
        }
     class function IsWindows2003R2(bOrHigher: boolean = False): boolean;
       virtual;
@@ -356,7 +356,7 @@ type
                If bOrHigher is <B>true</B> the return value is the result of
                 <B>true</B> if (bOrHigher and (GetWindowsType > iVer)) is true;
                 <B>false</B> if GetWindowsType < (requested version)
-                
+
        }
     class function IsWindowsXP(bOrHigher: boolean = False): boolean;
       virtual;
@@ -373,7 +373,7 @@ type
                If bOrHigher is <B>true</B> the return value is the result of
                 <B>true</B> if (bOrHigher and (GetWindowsType > iVer)) is true;
                 <B>false</B> if GetWindowsType < (requested version)
-                
+
        }
     class function IsWindowsVista(bOrHigher: boolean = False): boolean;
       virtual;
@@ -383,13 +383,13 @@ type
        Currently the parameter bOrHigher has no meaning in this function!
 
        @param bOrHigher defines if the return value should also be <B>true</B> if the system
-              is better/higher than the requested system version. 
+              is better/higher than the requested system version.
        @return <B>IsWindows2008</B> returns <B>true</B> if the system is the requested version (or higher if bOrHigher is true);
                otherwise <B>false</B>.
                If bOrHigher is <B>true</B> the return value is the result of
                 <B>true</B> if (bOrHigher and (GetWindowsType > iVer)) is true;
                 <B>false</B> if GetWindowsType < (requested version)
-                
+
        }
     class function IsWindows2008(bOrHigher: boolean = False): boolean;
       virtual;
@@ -409,16 +409,16 @@ type
               If iWinVer is not between the bounds of sOSVerString the windows version will be checked though, but on
 			  exception the supplied cOsXXXX constant will be presented as "Unknown System".
        @param bOrHigher If true the exception will only be raised if the current system version
-               is smaller than the given on in iWinVer; otherwise the system version must be exactly the given one in iWinVer 
-       @param SourceProc contains the caller method name to be displayed in the exception message 
-       @param SourceClass contains the caller class name to be displayed in the exception message 
-       @param SourceFile contains the caller file name to be displayed in the exception message 
-       @param SourcePos contains the caller source position to be displayed in the exception message 
+               is smaller than the given on in iWinVer; otherwise the system version must be exactly the given one in iWinVer
+       @param SourceProc contains the caller method name to be displayed in the exception message
+       @param SourceClass contains the caller class name to be displayed in the exception message
+       @param SourceFile contains the caller file name to be displayed in the exception message
+       @param SourcePos contains the caller source position to be displayed in the exception message
 
        raises
  EJwsclUnsupportedWindowsVersionException:  will be raised if the following expression is false :
                 ((fWindowsType = iWinVer) or
-                (bOrHigher and (fWindowsType > iWinVer)))  
+                (bOrHigher and (fWindowsType > iWinVer)))
        }
     class procedure CheckWindowsVersion(const iWinVer: integer;
       bOrHigher: boolean; SourceProc, SourceClass, SourceFile: TJwString;
@@ -456,11 +456,11 @@ type
 	 param ProcessHandle Defines the process to be checked for 64 bit. If this parameter is zero
 	   the current process is used instead.
 	 return Returns true if the given process is a 64bit process.
-	 
+
 	 raises
 	   EJwsclWinCallFailedException This exception will be raised if the process handle has not the following rights
 	       XP/2003 : ROCESS_QUERY_INFORMATION
-	       Vista: ROCESS_QUERY_INFORMATION and PROCESS_QUERY_LIMITED_INFORMATION 
+	       Vista: ROCESS_QUERY_INFORMATION and PROCESS_QUERY_LIMITED_INFORMATION
 	}
     class function IsProcess64(ProcessHandle : DWORD = 0) : boolean;
   end;
@@ -978,7 +978,7 @@ var
 begin
   if ProcessHandle = 0 then
     ProcessHandle := GetCurrentProcess();
-	
+
   // If we are on a 64 bit Windows but NOT inside WOW64 we are running natively
   if IsWindows64 then
   begin
@@ -1023,7 +1023,7 @@ begin
       Srv.Free;
     end;
   except
-    fIsServer := False;  
+    fIsServer := False;
   end;
 end;
 
