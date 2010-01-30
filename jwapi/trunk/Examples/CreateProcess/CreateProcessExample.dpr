@@ -22,7 +22,7 @@
 { The code has surely some errors that need to be fixed. In such a case	   	   }
 { you can contact the author(s) through the JEDI API hompage, the mailinglist  }
 { or via the article link.													   }
-{ 																			   }	 	 		
+{ 																			   }
 {******************************************************************************}
 program CreateProcessExample;
 
@@ -51,7 +51,7 @@ procedure StartApp(const App, Parameters, CurDir : String);
 var
   StartupInfo: TStartupInfo;
   ProcInfo : TProcessInformation;
-  pEnv : Pointer; 
+  pEnv : Pointer;
 
   pCurDir,
   pCmdLine : PChar;
@@ -103,4 +103,3 @@ end;
 begin
   StartApp(WindowsDirectory+'\explorer.exe','/separate','');
 end.
- 

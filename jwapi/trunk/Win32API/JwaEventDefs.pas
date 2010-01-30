@@ -71,7 +71,7 @@ interface
 type
 //
 // EVENT_DESCRIPTOR describes and categorizes an event.
-// 
+//
   _EVENT_DESCRIPTOR = record
     Id : USHORT;
     Version : UCHAR;
@@ -170,7 +170,7 @@ type
   PEVENT_HEADER_EXTENDED_DATA_ITEM = ^EVENT_HEADER_EXTENDED_DATA_ITEM;
 
   TEventHeaderExtendedDataItem = EVENT_HEADER_EXTENDED_DATA_ITEM;
-  PEventHeaderExtendedDataItem = ^TEventHeaderExtendedDataItem;  
+  PEventHeaderExtendedDataItem = ^TEventHeaderExtendedDataItem;
 
   _EVENT_RECORD = record
     EventHeader : EVENT_HEADER;            // Event header

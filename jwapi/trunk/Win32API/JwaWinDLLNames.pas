@@ -146,11 +146,11 @@ const
   wsock32 = 'wsock32.dll';
   wtsapi = 'wtsapi32.dll';
   {The list is sorted alphabetically!}
-  
 
 
-  
-  
+
+
+
 
 {$ENDIF JWA_IMPLEMENTATIONSECTION}
 
@@ -172,7 +172,3 @@ implementation
 {$IFNDEF JWA_OMIT_SECTIONS}
 end.
 {$ENDIF JWA_OMIT_SECTIONS}
-
-
-
-

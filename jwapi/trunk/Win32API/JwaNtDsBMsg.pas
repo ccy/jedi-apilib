@@ -324,7 +324,7 @@ const
 
   hrAlreadyListening = HRESULT(RPC_S_ALREADY_LISTENING);
   {$EXTERNALSYM hrAlreadyListening}
-  
+
 //
 // ERRORS
 //

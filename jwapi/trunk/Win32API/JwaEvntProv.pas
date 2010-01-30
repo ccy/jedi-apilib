@@ -40,7 +40,7 @@
 {******************************************************************************}
 
 {$IFNDEF JWA_OMIT_SECTIONS}
-unit JwaEvntProv; 
+unit JwaEvntProv;
 {$IFDEF BCB1_UP}
 This unit does not support Borland C++ yet!
 {$ENDIF BCB1_UP}
@@ -85,7 +85,7 @@ type
 //
 // EVENT_DATA_DESCRIPTOR is used to pass in user data items
 // in events.
-// 
+//
   _EVENT_DATA_DESCRIPTOR = record
     Ptr  : ULONGLONG;        // Pointer to data
     Size : ULONG;       // Size of data in bytes

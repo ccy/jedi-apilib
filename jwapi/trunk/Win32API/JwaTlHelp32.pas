@@ -713,7 +713,7 @@ function Process32FirstA; external kernel32 name 'Process32First';
 function Process32Next; external kernel32 name 'Process32NextW';
 {$ELSE}
 function Process32Next; external kernel32 name 'Process32Next';
-{$ENDIF}                            
+{$ENDIF}
 function Process32NextW; external kernel32 name 'Process32NextW';
 function Process32NextA; external kernel32 name 'Process32Next'; //ANSI
 

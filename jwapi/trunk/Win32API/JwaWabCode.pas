@@ -52,7 +52,7 @@ uses
   Windows, ActiveX;
 
 {$I ..\Includes\JediAPILib.inc}
- 
+
 
 {$ALIGN ON}
 {$MINENUMSIZE 4}

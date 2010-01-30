@@ -1088,4 +1088,3 @@ function NetWkstaTransportEnum; external netapi32 name 'NetWkstaTransportEnum';
 {$IFNDEF JWA_OMIT_SECTIONS_LM}
 end.
 {$ENDIF JWA_OMIT_SECTIONS_LM}
-

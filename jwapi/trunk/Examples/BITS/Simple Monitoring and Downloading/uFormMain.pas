@@ -122,7 +122,7 @@ end;
 procedure TForm1.FormCreate(Sender: TObject);
 var
   Res : HRESULT;
-begin         
+begin
   Res := CoCreateInstance(CLSID_BackgroundCopyManager,
                         nil,
                         CLSCTX_LOCAL_SERVER,
@@ -234,7 +234,7 @@ begin
       Item.SubItems[1] := GUIDToString(JobID);
 
     Job := nil;
- 
+
   end;
 end;
 

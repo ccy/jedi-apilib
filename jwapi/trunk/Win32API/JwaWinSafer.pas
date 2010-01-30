@@ -277,7 +277,7 @@ type
     // with multiple DWORDs, each representing the LevelIds that
     // are defined within this scope.
     //
-    
+
     SaferPolicyLevelList,
 
     //
@@ -286,7 +286,7 @@ type
     // be used by any policy enforcement environment.
     // Corresponding data element is a DWORD holding a Boolean value.
     //
-    
+
     SaferPolicyEnableTransparentEnforcement,
 
     //
@@ -298,20 +298,20 @@ type
     // GetInfo API will return FALSE and GetLastError will
     // return ERROR_NOT_FOUND.
     //
-    
+
     SaferPolicyDefaultLevel,
 
     //
     // Returns whether Code Identities or Default Level within the
     // user scope can be considered during identification.
     //
-    
+
     SaferPolicyEvaluateUserScope,
-    
+
     //
     // Control Flags for for safer policy scope.
     //
-    
+
     SaferPolicyScopeFlags);
   {$EXTERNALSYM _SAFER_POLICY_INFO_CLASS}
   SAFER_POLICY_INFO_CLASS = _SAFER_POLICY_INFO_CLASS;
@@ -327,7 +327,7 @@ type
     soicFillter0,
     SaferObjectLevelId,               // get: DWORD
     SaferObjectScopeId,                   // get: DWORD
-    SaferObjectFriendlyName,              // get/set: LPCWSTR 
+    SaferObjectFriendlyName,              // get/set: LPCWSTR
     SaferObjectDescription,               // get/set: LPCWSTR
     SaferObjectBuiltin,                   // get: DWORD boolean
     SaferObjectDisallowed,                // get: DWORD boolean
@@ -343,7 +343,7 @@ type
     // To enumerate all identities, call GetInfo with
     //      SaferObjectAllIdentificationGuids.
     //
-    
+
     SaferObjectAllIdentificationGuids,    // get: SAFER_IDENTIFICATION_GUIDS
 
     //
@@ -358,7 +358,7 @@ type
     //      SaferObjectSingleIdentification with the
     //      header.dwIdentificationType set to 0.
     //
-    
+
     SaferObjectSingleIdentification,      // get/set: SAFER_IDENTIFICATION_*
 
     SaferObjectExtendedError);            // get: DWORD dwError

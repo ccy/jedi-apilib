@@ -292,7 +292,7 @@ begin
         vst.NodeHeight[Node] := 40;
         Include(InitialStates, ivsHasChildren);
       end;
-      1,3,7,8,10,11: 
+      1,3,7,8,10,11:
       begin
         vst.NodeHeight[Node] := 120;
         Include(InitialStates, ivsMultiline);
@@ -342,7 +342,7 @@ case Column of
   0: TargetCanvas.Font.Style := [fsBold];
   4:
    begin
-{ kburl underline and blue }   	
+{ kburl underline and blue }
      TargetCanvas.Font.Style := [fsUnderline];
      TargetCanvas.Font.Color := clBlue;
     end;
@@ -485,7 +485,7 @@ var
   Data2  : TOPwuaData;
 begin
 { lets see if the msrvcseverity is critical, important or moderate
-  draw the icon depending on the severity state in column 2... 
+  draw the icon depending on the severity state in column 2...
 remember on vista msseverity seems never to be filled, no idea whats the reason for this yet  }
   case Kind of
     ikNormal, ikSelected:
@@ -532,14 +532,14 @@ end;
 procedure TwuaMain.vstHeaderClick(Sender: TVTHeader; Column: TColumnIndex;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
-{ Headerclick for sorting, ascending / descending... 
+{ Headerclick for sorting, ascending / descending...
 needs to be adjusted! }
   if Button=mbLeft then
   begin
     if Column = vst.Header.SortColumn then
       vst.Header.SortDirection := TSortdirection(1-ord(vst.Header.SortDirection))
     else
-      vst.Header.SortColumn:=Column;  
+      vst.Header.SortColumn:=Column;
   end;
 end;
 
@@ -565,7 +565,7 @@ begin
   vst.IterateSubtree(nil, FilterCallback ,nil);
 end;
 
-{ setup for the marquee progressbar 
+{ setup for the marquee progressbar
 maybe its better to build a new component for this...}
 
 procedure TMarqueeProgress.SetMarquee(ssProgressbar: TProgressbar; ssStart: Boolean; ssSpeed: Integer);
@@ -679,14 +679,14 @@ begin
   else
     Data.Free;
 end;
-          
+
 procedure TwuaMain.btnDownloadClick(Sender: TObject);
   var
     I : Integer;
 begin
   if updSession <> nil then
     exit;
-    
+
   UpdDownloader := updSession.CreateUpdateDownloader;
   UpdDownloader.ClientApplicationID := '{49F4962F-C39E-4B1D-A43B-B66743D42348}';
   UpdDownloader.IsForced := false;

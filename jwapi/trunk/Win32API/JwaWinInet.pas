@@ -64,8 +64,8 @@ uses
 {$ENDIF JWA_OMIT_SECTIONS}
 
 {$IFNDEF JWA_IMPLEMENTATIONSECTION}
-// 
-// internet types 
+//
+// internet types
 //
 type
 
@@ -82,30 +82,30 @@ type
   TInternetPort = INTERNET_PORT;
 
 
-// 
-// Internet APIs 
 //
- 
-// manifests 
+// Internet APIs
+//
+
+// manifests
 
 const
   {EXTERNALSYM INTERNET_INVALID_PORT_NUMBER}
-  INTERNET_INVALID_PORT_NUMBER    = 0;          // use the protocol-specific default 
- 
+  INTERNET_INVALID_PORT_NUMBER    = 0;          // use the protocol-specific default
+
   {EXTERNALSYM INTERNET_DEFAULT_FTP_PORT}
   INTERNET_DEFAULT_FTP_PORT       = 21;         // default for FTP servers
   {EXTERNALSYM INTERNET_DEFAULT_GOPHER_PORT}
-  INTERNET_DEFAULT_GOPHER_PORT    = 70;         //    "     "  gopher " 
+  INTERNET_DEFAULT_GOPHER_PORT    = 70;         //    "     "  gopher "
   {EXTERNALSYM INTERNET_DEFAULT_HTTP_PORT}
-  INTERNET_DEFAULT_HTTP_PORT      = 80;         //    "     "  HTTP   " 
+  INTERNET_DEFAULT_HTTP_PORT      = 80;         //    "     "  HTTP   "
   {EXTERNALSYM INTERNET_DEFAULT_HTTPS_PORT}
-  INTERNET_DEFAULT_HTTPS_PORT     = 443;        //    "     "  HTTPS  " 
+  INTERNET_DEFAULT_HTTPS_PORT     = 443;        //    "     "  HTTPS  "
   {$EXTERNALSYM INTERNET_DEFAULT_SOCKS_PORT}
-  INTERNET_DEFAULT_SOCKS_PORT     = 1080;       // default for SOCKS firewall servers. 
+  INTERNET_DEFAULT_SOCKS_PORT     = 1080;       // default for SOCKS firewall servers.
 
-// 
-// maximum field lengths (arbitrary) 
-// 
+//
+// maximum field lengths (arbitrary)
+//
   {$EXTERNALSYM INTERNET_MAX_HOST_NAME_LENGTH}
   INTERNET_MAX_HOST_NAME_LENGTH   = 256;
   {$EXTERNALSYM INTERNET_MAX_USER_NAME_LENGTH}
@@ -119,15 +119,15 @@ const
 {$ENDIF JWA_INCLUDEMODE}
 
   {$EXTERNALSYM INTERNET_MAX_PORT_NUMBER_LENGTH}
-  INTERNET_MAX_PORT_NUMBER_LENGTH = 5;          // INTERNET_PORT is unsigned short 
+  INTERNET_MAX_PORT_NUMBER_LENGTH = 5;          // INTERNET_PORT is unsigned short
   {$EXTERNALSYM INTERNET_MAX_PORT_NUMBER_VALUE}
-  INTERNET_MAX_PORT_NUMBER_VALUE  = 65535;      // maximum unsigned short value 
+  INTERNET_MAX_PORT_NUMBER_VALUE  = 65535;      // maximum unsigned short value
   {$EXTERNALSYM INTERNET_MAX_PATH_LENGTH}
   INTERNET_MAX_PATH_LENGTH        = 2048;
   {$EXTERNALSYM INTERNET_MAX_SCHEME_LENGTH}
-  INTERNET_MAX_SCHEME_LENGTH      = 32;         // longest protocol name length 
+  INTERNET_MAX_SCHEME_LENGTH      = 32;         // longest protocol name length
   {$EXTERNALSYM INTERNET_MAX_URL_LENGTH}
-  INTERNET_MAX_URL_LENGTH         = INTERNET_MAX_SCHEME_LENGTH + 
+  INTERNET_MAX_URL_LENGTH         = INTERNET_MAX_SCHEME_LENGTH +
                                     Length('://') + 1 +
                                     INTERNET_MAX_PATH_LENGTH;
 
@@ -1447,27 +1447,27 @@ const
   {$EXTERNALSYM MAX_GOPHER_SELECTOR_TEXT}
   MAX_GOPHER_SELECTOR_TEXT    = 256;
   {$EXTERNALSYM MAX_GOPHER_HOST_NAME}
-  MAX_GOPHER_HOST_NAME        = INTERNET_MAX_HOST_NAME_LENGTH; 
+  MAX_GOPHER_HOST_NAME        = INTERNET_MAX_HOST_NAME_LENGTH;
   {$EXTERNALSYM MAX_GOPHER_LOCATOR_LENGTH}
   MAX_GOPHER_LOCATOR_LENGTH   = 1 + MAX_GOPHER_DISPLAY_TEXT +
                                 1 + MAX_GOPHER_SELECTOR_TEXT +
-                                1 + MAX_GOPHER_HOST_NAME +  
+                                1 + MAX_GOPHER_HOST_NAME +
                                 1 + INTERNET_MAX_PORT_NUMBER_LENGTH +
                                 1 + 1 + 2;
- 
-// structures/types 
- 
-// GOPHER_FIND_DATA - returns the results of a GopherFindFirstFile()/
-// InternetFindNextFile() request 
 
-type 
+// structures/types
+
+// GOPHER_FIND_DATA - returns the results of a GopherFindFirstFile()/
+// InternetFindNextFile() request
+
+type
   PGopherFindDataA = ^TGopherFindDataA;
   PGopherFindDataW = ^TGopherFindDataW;
   PGopherFindData = PGopherFindDataA;
   {$EXTERNALSYM GOPHER_FIND_DATAA}
   GOPHER_FIND_DATAA = record // not packed!
     DisplayString: packed array [0..MAX_GOPHER_DISPLAY_TEXT] of AnsiChar;
-    GopherType: DWORD;   // GOPHER_TYPE_, if known 
+    GopherType: DWORD;   // GOPHER_TYPE_, if known
     SizeLow: DWORD;
     SizeHigh: DWORD;
     LastModificationTime: TFileTime;
@@ -1476,7 +1476,7 @@ type
   {$EXTERNALSYM GOPHER_FIND_DATAW}
   GOPHER_FIND_DATAW = record // not packed!
     DisplayString: packed array [0..MAX_GOPHER_DISPLAY_TEXT] of WideChar;
-    GopherType: DWORD;   // GOPHER_TYPE_, if known 
+    GopherType: DWORD;   // GOPHER_TYPE_, if known
     SizeLow: DWORD;
     SizeHigh: DWORD;
     LastModificationTime: TFileTime;
@@ -1488,7 +1488,7 @@ type
   TGopherFindDataW = GOPHER_FIND_DATAW;
   TGopherFindData = TGopherFindDataA;
 
-// manifests for GopherType 
+// manifests for GopherType
 const
   {$EXTERNALSYM GOPHER_TYPE_TEXT_FILE}
   GOPHER_TYPE_TEXT_FILE       = $00000001;
@@ -1538,8 +1538,8 @@ const
   GOPHER_TYPE_ASK             = $40000000;
   {$EXTERNALSYM GOPHER_TYPE_GOPHER_PLUS}
   GOPHER_TYPE_GOPHER_PLUS     = $80000000;
- 
-// gopher type macros 
+
+// gopher type macros
 
 {$EXTERNALSYM IS_GOPHER_FILE}
 function IS_GOPHER_FILE(AType: DWORD): BOOL;
@@ -1567,8 +1567,8 @@ function IS_GOPHER_TYPE_KNOWN(AType: DWORD): BOOL;
 // GOPHER_TYPE_FILE_MASK - use this to determine if a locator identifies a
 // (known) file type
 
-const 
-  GOPHER_TYPE_FILE_MASK = GOPHER_TYPE_TEXT_FILE or 
+const
+  GOPHER_TYPE_FILE_MASK = GOPHER_TYPE_TEXT_FILE or
                           GOPHER_TYPE_MAC_BINHEX or
                           GOPHER_TYPE_DOS_ARCHIVE or
                           GOPHER_TYPE_UNIX_UUENCODED or
@@ -1601,7 +1601,7 @@ type
     DateAndTime: TFileTime;
   end;
   TGopherModDateAttributeType = GOPHER_MOD_DATE_ATTRIBUTE_TYPE;
- 
+
   PGopherTtlAttributeType = ^TGopherTtlAttributeType;
   {$EXTERNALSYM GOPHER_TTL_ATTRIBUTE_TYPE}
   GOPHER_TTL_ATTRIBUTE_TYPE = record
@@ -1609,16 +1609,16 @@ type
   end;
   TGopherTtlAttributeType = GOPHER_TTL_ATTRIBUTE_TYPE;
 
-  PGopherScoreAttributeType = ^TGopherScoreAttributeType; 
+  PGopherScoreAttributeType = ^TGopherScoreAttributeType;
   {$EXTERNALSYM GOPHER_SCORE_ATTRIBUTE_TYPE}
   GOPHER_SCORE_ATTRIBUTE_TYPE = record
     Score: Integer;
   end;
   TGopherScoreAttributeType = GOPHER_SCORE_ATTRIBUTE_TYPE;
-  
+
   PGopherScoreRangeAttributeType = ^TGopherScoreRangeAttributeType;
   {$EXTERNALSYM GOPHER_SCORE_RANGE_ATTRIBUTE_TYPE}
-  GOPHER_SCORE_RANGE_ATTRIBUTE_TYPE = record 
+  GOPHER_SCORE_RANGE_ATTRIBUTE_TYPE = record
     LowerBound: Integer;
     UpperBound: Integer;
   end;
@@ -1636,15 +1636,15 @@ type
   GOPHER_ORGANIZATION_ATTRIBUTE_TYPE = record
     Organization: LPCTSTR;
   end;
-  TGopherOrganizationAttributeType = GOPHER_ORGANIZATION_ATTRIBUTE_TYPE; 
+  TGopherOrganizationAttributeType = GOPHER_ORGANIZATION_ATTRIBUTE_TYPE;
 
   PGopherLocationAttributeType = ^TGopherLocationAttributeType;
   {$EXTERNALSYM GOPHER_LOCATION_ATTRIBUTE_TYPE}
   GOPHER_LOCATION_ATTRIBUTE_TYPE = record
     Location: LPCTSTR;
   end;
-  TGopherLocationAttributeType = GOPHER_LOCATION_ATTRIBUTE_TYPE; 
- 
+  TGopherLocationAttributeType = GOPHER_LOCATION_ATTRIBUTE_TYPE;
+
   PGopherGeographicalLocationAttributeType = ^TGopherGeographicalLocationAttributeType;
   {$EXTERNALSYM GOPHER_GEOGRAPHICAL_LOCATION_ATTRIBUTE_TYPE}
   GOPHER_GEOGRAPHICAL_LOCATION_ATTRIBUTE_TYPE = record
@@ -1656,13 +1656,13 @@ type
     SecondsEast: Integer;
   end;
   TGopherGeographicalLocationAttributeType = GOPHER_GEOGRAPHICAL_LOCATION_ATTRIBUTE_TYPE;
- 
+
   PGopherTimeZoneAttributeType = ^TGopherTimeZoneAttributeType;
   {$EXTERNALSYM GOPHER_TIMEZONE_ATTRIBUTE_TYPE}
   GOPHER_TIMEZONE_ATTRIBUTE_TYPE = record
     Zone: Integer;
   end;
-  TGopherTimeZoneAttributeType = GOPHER_TIMEZONE_ATTRIBUTE_TYPE; 
+  TGopherTimeZoneAttributeType = GOPHER_TIMEZONE_ATTRIBUTE_TYPE;
 
   PGopherProviderAttributeType = ^TGopherProviderAttributeType;
   {$EXTERNALSYM GOPHER_PROVIDER_ATTRIBUTE_TYPE}
@@ -1670,7 +1670,7 @@ type
     Provider: LPCTSTR;
   end;
   TGopherProviderAttributeType = GOPHER_PROVIDER_ATTRIBUTE_TYPE;
- 
+
   PGopherVersionAttributeType = ^TGopherVersionAttributeType;
   {$EXTERNALSYM GOPHER_VERSION_ATTRIBUTE_TYPE}
   GOPHER_VERSION_ATTRIBUTE_TYPE = record
@@ -1684,7 +1684,7 @@ type
     ShortAbstract: LPCTSTR;
     AbstractFile: LPCTSTR;
   end;
-  TGopherAbstractAttributeType = GOPHER_ABSTRACT_ATTRIBUTE_TYPE; 
+  TGopherAbstractAttributeType = GOPHER_ABSTRACT_ATTRIBUTE_TYPE;
 
   PGopherViewAttributeType = ^TGopherViewAttributeType;
   {$EXTERNALSYM GOPHER_VIEW_ATTRIBUTE_TYPE}
@@ -1693,14 +1693,14 @@ type
     Language: LPCTSTR;
     Size: DWORD;
   end;
-  TGopherViewAttributeType = GOPHER_VIEW_ATTRIBUTE_TYPE; 
+  TGopherViewAttributeType = GOPHER_VIEW_ATTRIBUTE_TYPE;
 
-  PGopherVeronicaAttributeType = ^TGopherVeronicaAttributeType; 
+  PGopherVeronicaAttributeType = ^TGopherVeronicaAttributeType;
   {$EXTERNALSYM GOPHER_VERONICA_ATTRIBUTE_TYPE}
   GOPHER_VERONICA_ATTRIBUTE_TYPE = record
     TreeWalk: BOOL;
   end;
-  TGopherVeronicaAttributeType = GOPHER_VERONICA_ATTRIBUTE_TYPE; 
+  TGopherVeronicaAttributeType = GOPHER_VERONICA_ATTRIBUTE_TYPE;
 
   PGopherAskAttributeType = ^TGopherAskAttributeType;
   {$EXTERNALSYM GOPHER_ASK_ATTRIBUTE_TYPE}
@@ -1708,11 +1708,11 @@ type
     QuestionType: LPCTSTR;
     QuestionText: LPCTSTR;
   end;
-  TGopherAskAttributeType = GOPHER_ASK_ATTRIBUTE_TYPE; 
- 
-  // GOPHER_UNKNOWN_ATTRIBUTE_TYPE - this is returned if we retrieve an attribute 
+  TGopherAskAttributeType = GOPHER_ASK_ATTRIBUTE_TYPE;
+
+  // GOPHER_UNKNOWN_ATTRIBUTE_TYPE - this is returned if we retrieve an attribute
   // that is not specified in the current gopher/gopher+ documentation. It is up
-  // to the application to parse the information 
+  // to the application to parse the information
 
   PGopherUnknownAttributeType = ^TGopherUnknownAttributeType;
   GOPHER_UNKNOWN_ATTRIBUTE_TYPE = record
@@ -1766,103 +1766,103 @@ const
   {$EXTERNALSYM GOPHER_ADMIN_CATEGORY}
   GOPHER_ADMIN_CATEGORY       = '+ADMIN';
   {$EXTERNALSYM GOPHER_VIEWS_CATEGORY}
-  GOPHER_VIEWS_CATEGORY       = '+VIEWS'; 
+  GOPHER_VIEWS_CATEGORY       = '+VIEWS';
   {$EXTERNALSYM GOPHER_ABSTRACT_CATEGORY}
-  GOPHER_ABSTRACT_CATEGORY    = '+ABSTRACT'; 
+  GOPHER_ABSTRACT_CATEGORY    = '+ABSTRACT';
   {$EXTERNALSYM GOPHER_VERONICA_CATEGORY}
-  GOPHER_VERONICA_CATEGORY    = '+VERONICA'; 
- 
-// known gopher attributes. These are the attribute names as defined in the 
-// gopher+ protocol document 
- 
+  GOPHER_VERONICA_CATEGORY    = '+VERONICA';
+
+// known gopher attributes. These are the attribute names as defined in the
+// gopher+ protocol document
+
   {$EXTERNALSYM GOPHER_ADMIN_ATTRIBUTE}
-  GOPHER_ADMIN_ATTRIBUTE      = 'Admin'; 
+  GOPHER_ADMIN_ATTRIBUTE      = 'Admin';
   {$EXTERNALSYM GOPHER_MOD_DATE_ATTRIBUTE}
-  GOPHER_MOD_DATE_ATTRIBUTE   = 'Mod-Date'; 
+  GOPHER_MOD_DATE_ATTRIBUTE   = 'Mod-Date';
   {$EXTERNALSYM GOPHER_TTL_ATTRIBUTE}
-  GOPHER_TTL_ATTRIBUTE        = 'TTL'; 
+  GOPHER_TTL_ATTRIBUTE        = 'TTL';
   {$EXTERNALSYM GOPHER_SCORE_ATTRIBUTE}
   GOPHER_SCORE_ATTRIBUTE      = 'Score';
   {$EXTERNALSYM GOPHER_RANGE_ATTRIBUTE}
-  GOPHER_RANGE_ATTRIBUTE      = 'Score-range'; 
+  GOPHER_RANGE_ATTRIBUTE      = 'Score-range';
   {$EXTERNALSYM GOPHER_SITE_ATTRIBUTE}
   GOPHER_SITE_ATTRIBUTE       = 'Site';
   {$EXTERNALSYM GOPHER_ORG_ATTRIBUTE}
-  GOPHER_ORG_ATTRIBUTE        = 'Org'; 
+  GOPHER_ORG_ATTRIBUTE        = 'Org';
   {$EXTERNALSYM GOPHER_LOCATION_ATTRIBUTE}
-  GOPHER_LOCATION_ATTRIBUTE   = 'Loc'; 
+  GOPHER_LOCATION_ATTRIBUTE   = 'Loc';
   {$EXTERNALSYM GOPHER_GEOG_ATTRIBUTE}
-  GOPHER_GEOG_ATTRIBUTE       = 'Geog'; 
+  GOPHER_GEOG_ATTRIBUTE       = 'Geog';
   {$EXTERNALSYM GOPHER_TIMEZONE_ATTRIBUTE}
-  GOPHER_TIMEZONE_ATTRIBUTE   = 'TZ'; 
+  GOPHER_TIMEZONE_ATTRIBUTE   = 'TZ';
   {$EXTERNALSYM GOPHER_PROVIDER_ATTRIBUTE}
   GOPHER_PROVIDER_ATTRIBUTE   = 'Provider';
   {$EXTERNALSYM GOPHER_VERSION_ATTRIBUTE}
-  GOPHER_VERSION_ATTRIBUTE    = 'Version'; 
+  GOPHER_VERSION_ATTRIBUTE    = 'Version';
   {$EXTERNALSYM GOPHER_ABSTRACT_ATTRIBUTE}
-  GOPHER_ABSTRACT_ATTRIBUTE   = 'Abstract'; 
+  GOPHER_ABSTRACT_ATTRIBUTE   = 'Abstract';
   {$EXTERNALSYM GOPHER_VIEW_ATTRIBUTE}
-  GOPHER_VIEW_ATTRIBUTE       = 'View'; 
+  GOPHER_VIEW_ATTRIBUTE       = 'View';
   {$EXTERNALSYM GOPHER_TREEWALK_ATTRIBUTE}
-  GOPHER_TREEWALK_ATTRIBUTE   = 'treewalk'; 
- 
-// identifiers for attribute strings 
- 
+  GOPHER_TREEWALK_ATTRIBUTE   = 'treewalk';
+
+// identifiers for attribute strings
+
   {$EXTERNALSYM GOPHER_ATTRIBUTE_ID_BASE}
   GOPHER_ATTRIBUTE_ID_BASE        = $ABCCCC00;
   {$EXTERNALSYM GOPHER_CATEGORY_ID_ALL}
-  GOPHER_CATEGORY_ID_ALL          = GOPHER_ATTRIBUTE_ID_BASE + 1; 
+  GOPHER_CATEGORY_ID_ALL          = GOPHER_ATTRIBUTE_ID_BASE + 1;
   {$EXTERNALSYM GOPHER_CATEGORY_ID_INFO}
-  GOPHER_CATEGORY_ID_INFO         = GOPHER_ATTRIBUTE_ID_BASE + 2; 
+  GOPHER_CATEGORY_ID_INFO         = GOPHER_ATTRIBUTE_ID_BASE + 2;
   {$EXTERNALSYM GOPHER_CATEGORY_ID_ADMIN}
-  GOPHER_CATEGORY_ID_ADMIN        = GOPHER_ATTRIBUTE_ID_BASE + 3; 
+  GOPHER_CATEGORY_ID_ADMIN        = GOPHER_ATTRIBUTE_ID_BASE + 3;
   {$EXTERNALSYM GOPHER_CATEGORY_ID_VIEWS}
   GOPHER_CATEGORY_ID_VIEWS        = GOPHER_ATTRIBUTE_ID_BASE + 4;
   {$EXTERNALSYM GOPHER_CATEGORY_ID_ABSTRACT}
-  GOPHER_CATEGORY_ID_ABSTRACT     = GOPHER_ATTRIBUTE_ID_BASE + 5; 
+  GOPHER_CATEGORY_ID_ABSTRACT     = GOPHER_ATTRIBUTE_ID_BASE + 5;
   {$EXTERNALSYM GOPHER_CATEGORY_ID_VERONICA}
-  GOPHER_CATEGORY_ID_VERONICA     = GOPHER_ATTRIBUTE_ID_BASE + 6; 
+  GOPHER_CATEGORY_ID_VERONICA     = GOPHER_ATTRIBUTE_ID_BASE + 6;
   {$EXTERNALSYM GOPHER_CATEGORY_ID_ASK}
-  GOPHER_CATEGORY_ID_ASK          = GOPHER_ATTRIBUTE_ID_BASE + 7; 
+  GOPHER_CATEGORY_ID_ASK          = GOPHER_ATTRIBUTE_ID_BASE + 7;
   {$EXTERNALSYM GOPHER_CATEGORY_ID_UNKNOWN}
-  GOPHER_CATEGORY_ID_UNKNOWN      = GOPHER_ATTRIBUTE_ID_BASE + 8; 
+  GOPHER_CATEGORY_ID_UNKNOWN      = GOPHER_ATTRIBUTE_ID_BASE + 8;
   {$EXTERNALSYM GOPHER_ATTRIBUTE_ID_ALL}
-  GOPHER_ATTRIBUTE_ID_ALL         = GOPHER_ATTRIBUTE_ID_BASE + 9; 
+  GOPHER_ATTRIBUTE_ID_ALL         = GOPHER_ATTRIBUTE_ID_BASE + 9;
   {$EXTERNALSYM GOPHER_ATTRIBUTE_ID_ADMIN}
-  GOPHER_ATTRIBUTE_ID_ADMIN       = GOPHER_ATTRIBUTE_ID_BASE + 10; 
+  GOPHER_ATTRIBUTE_ID_ADMIN       = GOPHER_ATTRIBUTE_ID_BASE + 10;
   {$EXTERNALSYM GOPHER_ATTRIBUTE_ID_MOD_DATE}
-  GOPHER_ATTRIBUTE_ID_MOD_DATE    = GOPHER_ATTRIBUTE_ID_BASE + 11; 
+  GOPHER_ATTRIBUTE_ID_MOD_DATE    = GOPHER_ATTRIBUTE_ID_BASE + 11;
   {$EXTERNALSYM GOPHER_ATTRIBUTE_ID_TTL}
-  GOPHER_ATTRIBUTE_ID_TTL         = GOPHER_ATTRIBUTE_ID_BASE + 12; 
+  GOPHER_ATTRIBUTE_ID_TTL         = GOPHER_ATTRIBUTE_ID_BASE + 12;
   {$EXTERNALSYM GOPHER_ATTRIBUTE_ID_SCORE}
-  GOPHER_ATTRIBUTE_ID_SCORE       = GOPHER_ATTRIBUTE_ID_BASE + 13; 
+  GOPHER_ATTRIBUTE_ID_SCORE       = GOPHER_ATTRIBUTE_ID_BASE + 13;
   {$EXTERNALSYM GOPHER_ATTRIBUTE_ID_RANGE}
-  GOPHER_ATTRIBUTE_ID_RANGE       = GOPHER_ATTRIBUTE_ID_BASE + 14; 
+  GOPHER_ATTRIBUTE_ID_RANGE       = GOPHER_ATTRIBUTE_ID_BASE + 14;
   {$EXTERNALSYM GOPHER_ATTRIBUTE_ID_SITE}
-  GOPHER_ATTRIBUTE_ID_SITE        = GOPHER_ATTRIBUTE_ID_BASE + 15; 
+  GOPHER_ATTRIBUTE_ID_SITE        = GOPHER_ATTRIBUTE_ID_BASE + 15;
   {$EXTERNALSYM GOPHER_ATTRIBUTE_ID_ORG}
-  GOPHER_ATTRIBUTE_ID_ORG         = GOPHER_ATTRIBUTE_ID_BASE + 16; 
+  GOPHER_ATTRIBUTE_ID_ORG         = GOPHER_ATTRIBUTE_ID_BASE + 16;
   {$EXTERNALSYM GOPHER_ATTRIBUTE_ID_LOCATION}
-  GOPHER_ATTRIBUTE_ID_LOCATION    = GOPHER_ATTRIBUTE_ID_BASE + 17; 
+  GOPHER_ATTRIBUTE_ID_LOCATION    = GOPHER_ATTRIBUTE_ID_BASE + 17;
   {$EXTERNALSYM GOPHER_ATTRIBUTE_ID_GEOG}
   GOPHER_ATTRIBUTE_ID_GEOG        = GOPHER_ATTRIBUTE_ID_BASE + 18;
   {$EXTERNALSYM GOPHER_ATTRIBUTE_ID_TIMEZONE}
-  GOPHER_ATTRIBUTE_ID_TIMEZONE    = GOPHER_ATTRIBUTE_ID_BASE + 19; 
+  GOPHER_ATTRIBUTE_ID_TIMEZONE    = GOPHER_ATTRIBUTE_ID_BASE + 19;
   {$EXTERNALSYM GOPHER_ATTRIBUTE_ID_PROVIDER}
-  GOPHER_ATTRIBUTE_ID_PROVIDER    = GOPHER_ATTRIBUTE_ID_BASE + 20; 
+  GOPHER_ATTRIBUTE_ID_PROVIDER    = GOPHER_ATTRIBUTE_ID_BASE + 20;
   {$EXTERNALSYM GOPHER_ATTRIBUTE_ID_VERSION}
-  GOPHER_ATTRIBUTE_ID_VERSION     = GOPHER_ATTRIBUTE_ID_BASE + 21; 
+  GOPHER_ATTRIBUTE_ID_VERSION     = GOPHER_ATTRIBUTE_ID_BASE + 21;
   {$EXTERNALSYM GOPHER_ATTRIBUTE_ID_ABSTRACT}
-  GOPHER_ATTRIBUTE_ID_ABSTRACT    = GOPHER_ATTRIBUTE_ID_BASE + 22; 
+  GOPHER_ATTRIBUTE_ID_ABSTRACT    = GOPHER_ATTRIBUTE_ID_BASE + 22;
   {$EXTERNALSYM GOPHER_ATTRIBUTE_ID_VIEW}
-  GOPHER_ATTRIBUTE_ID_VIEW        = GOPHER_ATTRIBUTE_ID_BASE + 23; 
+  GOPHER_ATTRIBUTE_ID_VIEW        = GOPHER_ATTRIBUTE_ID_BASE + 23;
   {$EXTERNALSYM GOPHER_ATTRIBUTE_ID_TREEWALK}
-  GOPHER_ATTRIBUTE_ID_TREEWALK    = GOPHER_ATTRIBUTE_ID_BASE + 24; 
+  GOPHER_ATTRIBUTE_ID_TREEWALK    = GOPHER_ATTRIBUTE_ID_BASE + 24;
   {$EXTERNALSYM GOPHER_ATTRIBUTE_ID_UNKNOWN}
   GOPHER_ATTRIBUTE_ID_UNKNOWN     = GOPHER_ATTRIBUTE_ID_BASE + 25;
- 
-// prototypes 
- 
+
+// prototypes
+
 {$EXTERNALSYM GopherCreateLocatorA}
 function GopherCreateLocatorA(lpszHost: PAnsiChar; nServerPort: TInternetPort;
   lpszDisplayString, lpszSelectorString: PAnsiChar; dwGopherType: DWORD;
@@ -1910,8 +1910,8 @@ type
   {$EXTERNALSYM GOPHER_ATTRIBUTE_ENUMERATOR}
   GOPHER_ATTRIBUTE_ENUMERATOR = function(lpAttributeInfo: PGopherAttributeType;
     dwError: DWORD): BOOL stdcall;
-  TGopherAttributeEnumerator = GOPHER_ATTRIBUTE_ENUMERATOR;  
- 
+  TGopherAttributeEnumerator = GOPHER_ATTRIBUTE_ENUMERATOR;
+
 {$EXTERNALSYM GopherGetAttributeA}
 function GopherGetAttributeA(hConnect: HINTERNET; lpszLocator,
   lpszAttributeName: PAnsiChar; lpBuffer: PByte; dwBufferLength: DWORD;
@@ -1929,15 +1929,15 @@ function GopherGetAttribute(hConnect: HINTERNET; lpszLocator,
   TGopherAttributeEnumerator; dwContext: DWORD): BOOL; stdcall;
 
 //
-// HTTP 
+// HTTP
 //
- 
-// manifests 
+
+// manifests
 
 const
- 
-// the default major/minor HTTP version numbers 
- 
+
+// the default major/minor HTTP version numbers
+
   {$EXTERNALSYM HTTP_MAJOR_VERSION}
   HTTP_MAJOR_VERSION      = 1;
   {$EXTERNALSYM HTTP_MINOR_VERSION}

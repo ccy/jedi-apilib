@@ -1,14 +1,14 @@
 unit rdpencomapi_TLB;
 
 // ************************************************************************ //
-// WARNING                                                                    
-// -------                                                                    
-// The types declared in this file were generated from data read from a       
-// Type Library. If this type library is explicitly or indirectly (via        
-// another type library referring to this type library) re-imported, or the   
-// 'Refresh' command of the Type Library Editor activated while editing the   
-// Type Library, the contents of this file will be regenerated and all        
-// manual modifications will be lost.                                         
+// WARNING
+// -------
+// The types declared in this file were generated from data read from a
+// Type Library. If this type library is explicitly or indirectly (via
+// another type library referring to this type library) re-imported, or the
+// 'Refresh' command of the Type Library Editor activated while editing the
+// Type Library, the contents of this file will be regenerated and all
+// manual modifications will be lost.
 // ************************************************************************ //
 
 // $Rev: 8291 $
@@ -18,26 +18,26 @@ unit rdpencomapi_TLB;
 // Type Lib: \Microsoft SDKs\Windows\v6.0\Lib\rdpencomapi.tlb (1)
 // LIBID: {CC802D05-AE07-4C15-B496-DB9D22AA0A84}
 // LCID: 0
-// Helpfile: 
-// HelpString: 
-// DepndLst: 
+// Helpfile:
+// HelpString:
+// DepndLst:
 //   (1) v2.0 stdole, (C:\Windows\system32\stdole2.tlb)
 // ************************************************************************ //
-{$TYPEDADDRESS OFF} // Unit must be compiled without type-checked pointers. 
+{$TYPEDADDRESS OFF} // Unit must be compiled without type-checked pointers.
 {$WARN SYMBOL_PLATFORM OFF}
 {$WRITEABLECONST ON}
 {$VARPROPSETTER ON}
 interface
 
 uses Windows, ActiveX, Classes, Graphics, OleCtrls, StdVCL, Variants;
-  
+
 
 // *********************************************************************//
-// GUIDS declared in the TypeLibrary. Following prefixes are used:        
-//   Type Libraries     : LIBID_xxxx                                      
-//   CoClasses          : CLASS_xxxx                                      
-//   DISPInterfaces     : DIID_xxxx                                       
-//   Non-DISP interfaces: IID_xxxx                                        
+// GUIDS declared in the TypeLibrary. Following prefixes are used:
+//   Type Libraries     : LIBID_xxxx
+//   CoClasses          : CLASS_xxxx
+//   DISPInterfaces     : DIID_xxxx
+//   Non-DISP interfaces: IID_xxxx
 // *********************************************************************//
 const
   // TypeLibrary Major and minor versions
@@ -79,7 +79,7 @@ const
   CLASS_RDPSRAPITcpConnectionInfo: TGUID = '{BE49DB3F-EBB6-4278-8CE0-D5455833EAEE}';
 
 // *********************************************************************//
-// Declaration of Enumerations defined in Type Library                    
+// Declaration of Enumerations defined in Type Library
 // *********************************************************************//
 // Constants for enum __MIDL___MIDL_itf_rdpencomapi_0000_0001_0001
 type
@@ -156,7 +156,7 @@ const
 type
 
 // *********************************************************************//
-// Forward declaration of types defined in TypeLibrary                    
+// Forward declaration of types defined in TypeLibrary
 // *********************************************************************//
   _IRDPSessionEvents = dispinterface;
   IRDPSRAPIApplication = interface;
@@ -193,8 +193,8 @@ type
   IRDPSRAPIViewerDisp = dispinterface;
 
 // *********************************************************************//
-// Declaration of CoClasses defined in Type Library                       
-// (NOTE: Here we map each CoClass to its Default Interface)              
+// Declaration of CoClasses defined in Type Library
+// (NOTE: Here we map each CoClass to its Default Interface)
 // *********************************************************************//
   RDPViewer = IRDPSRAPIViewer;
   RDPSession = IRDPSRAPISharingSession;
@@ -213,18 +213,18 @@ type
 
 
 // *********************************************************************//
-// Declaration of structures, unions and aliases.                         
+// Declaration of structures, unions and aliases.
 // *********************************************************************//
 
-  CTRL_LEVEL = __MIDL___MIDL_itf_rdpencomapi_0000_0001_0001; 
-  ATTENDEE_DISCONNECT_REASON = __MIDL___MIDL_itf_rdpencomapi_0000_0001_0002; 
-  CHANNEL_PRIORITY = __MIDL___MIDL_itf_rdpencomapi_0000_0001_0003; 
-  CHANNEL_FLAGS = __MIDL___MIDL_itf_rdpencomapi_0000_0001_0004; 
-  CHANNEL_ACCESS_ENUM = __MIDL___MIDL_itf_rdpencomapi_0000_0001_0005; 
-  RDPENCOMAPI_CONSTANTS = __MIDL___MIDL_itf_rdpencomapi_0000_0001_0006; 
-  RDPENCOMAPI_ATTENDEE_FLAGS = __MIDL___MIDL_itf_rdpencomapi_0000_0001_0007; 
-  RDPSRAPI_WND_FLAGS = __MIDL___MIDL_itf_rdpencomapi_0000_0001_0008; 
-  RDPSRAPI_APP_FLAGS = __MIDL___MIDL_itf_rdpencomapi_0000_0001_0009; 
+  CTRL_LEVEL = __MIDL___MIDL_itf_rdpencomapi_0000_0001_0001;
+  ATTENDEE_DISCONNECT_REASON = __MIDL___MIDL_itf_rdpencomapi_0000_0001_0002;
+  CHANNEL_PRIORITY = __MIDL___MIDL_itf_rdpencomapi_0000_0001_0003;
+  CHANNEL_FLAGS = __MIDL___MIDL_itf_rdpencomapi_0000_0001_0004;
+  CHANNEL_ACCESS_ENUM = __MIDL___MIDL_itf_rdpencomapi_0000_0001_0005;
+  RDPENCOMAPI_CONSTANTS = __MIDL___MIDL_itf_rdpencomapi_0000_0001_0006;
+  RDPENCOMAPI_ATTENDEE_FLAGS = __MIDL___MIDL_itf_rdpencomapi_0000_0001_0007;
+  RDPSRAPI_WND_FLAGS = __MIDL___MIDL_itf_rdpencomapi_0000_0001_0008;
+  RDPSRAPI_APP_FLAGS = __MIDL___MIDL_itf_rdpencomapi_0000_0001_0009;
 
 // *********************************************************************//
 // DispIntf:  _IRDPSessionEvents
@@ -250,7 +250,7 @@ type
     procedure OnControlLevelChangeRequest(const pAttendee: IDispatch; RequestedLevel: CTRL_LEVEL); dispid 309;
     procedure OnGraphicsStreamPaused; dispid 310;
     procedure OnGraphicsStreamResumed; dispid 311;
-    procedure OnChannelDataReceived(const pChannel: IUnknown; lAttendeeId: Integer; 
+    procedure OnChannelDataReceived(const pChannel: IUnknown; lAttendeeId: Integer;
                                     const bstrData: WideString); dispid 314;
     procedure OnChannelDataSent(const pChannel: IUnknown; lAttendeeId: Integer; BytesSent: Integer); dispid 315;
     procedure OnSharedRectChanged(left: Integer; top: Integer; right: Integer; bottom: Integer); dispid 323;
@@ -448,8 +448,8 @@ type
     function Get__NewEnum(out retval: IUnknown): HResult; stdcall;
     function Get_Item(Item: OleVariant; out ppInvitation: IRDPSRAPIInvitation): HResult; stdcall;
     function Get_Count(out pRetVal: Integer): HResult; stdcall;
-    function CreateInvitation(const bstrAuthString: WideString; const bstrGroupName: WideString; 
-                              const bstrPassword: WideString; AttendeeLimit: Integer; 
+    function CreateInvitation(const bstrAuthString: WideString; const bstrGroupName: WideString;
+                              const bstrPassword: WideString; AttendeeLimit: Integer;
                               out ppInvitation: IRDPSRAPIInvitation): HResult; stdcall;
   end;
 
@@ -463,7 +463,7 @@ type
     property _NewEnum: IUnknown readonly dispid -4;
     property Item[Item: OleVariant]: IRDPSRAPIInvitation readonly dispid 0; default;
     property Count: Integer readonly dispid 244;
-    function CreateInvitation(const bstrAuthString: WideString; const bstrGroupName: WideString; 
+    function CreateInvitation(const bstrAuthString: WideString; const bstrGroupName: WideString;
                               const bstrPassword: WideString; AttendeeLimit: Integer): IRDPSRAPIInvitation; dispid 107;
   end;
 
@@ -611,7 +611,7 @@ type
     ['{0D11C661-5D0D-4EE4-89DF-2166AE1FDFED}']
     function Get__NewEnum(out retval: IUnknown): HResult; stdcall;
     function Get_Item(Item: OleVariant; out pChannel: IRDPSRAPIVirtualChannel): HResult; stdcall;
-    function CreateVirtualChannel(const bstrChannelName: WideString; Priority: CHANNEL_PRIORITY; 
+    function CreateVirtualChannel(const bstrChannelName: WideString; Priority: CHANNEL_PRIORITY;
                                   ChannelFlags: LongWord; out ppChannel: IRDPSRAPIVirtualChannel): HResult; stdcall;
   end;
 
@@ -624,7 +624,7 @@ type
     ['{0D11C661-5D0D-4EE4-89DF-2166AE1FDFED}']
     property _NewEnum: IUnknown readonly dispid -4;
     property Item[Item: OleVariant]: IRDPSRAPIVirtualChannel readonly dispid 0; default;
-    function CreateVirtualChannel(const bstrChannelName: WideString; Priority: CHANNEL_PRIORITY; 
+    function CreateVirtualChannel(const bstrChannelName: WideString; Priority: CHANNEL_PRIORITY;
                                   ChannelFlags: LongWord): IRDPSRAPIVirtualChannel; dispid 109;
   end;
 
@@ -648,7 +648,7 @@ type
     function Resume: HResult; stdcall;
     function ConnectToClient(const bstrConnectionString: WideString): HResult; stdcall;
     function SetDesktopSharedRect(left: Integer; top: Integer; right: Integer; bottom: Integer): HResult; stdcall;
-    function GetDesktopSharedRect(out pleft: Integer; out ptop: Integer; out pright: Integer; 
+    function GetDesktopSharedRect(out pleft: Integer; out ptop: Integer; out pright: Integer;
                                   out pbottom: Integer): HResult; stdcall;
   end;
 
@@ -671,7 +671,7 @@ type
     procedure Resume; dispid 113;
     procedure ConnectToClient(const bstrConnectionString: WideString); dispid 117;
     procedure SetDesktopSharedRect(left: Integer; top: Integer; right: Integer; bottom: Integer); dispid 102;
-    procedure GetDesktopSharedRect(out pleft: Integer; out ptop: Integer; out pright: Integer; 
+    procedure GetDesktopSharedRect(out pleft: Integer; out ptop: Integer; out pright: Integer;
                                    out pbottom: Integer); dispid 103;
   end;
 
@@ -682,7 +682,7 @@ type
 // *********************************************************************//
   IRDPSRAPIViewer = interface(IDispatch)
     ['{C6BFCD38-8CE9-404D-8AE8-F31D00C65CB5}']
-    function Connect(const bstrConnectionString: WideString; const bstrName: WideString; 
+    function Connect(const bstrConnectionString: WideString; const bstrName: WideString;
                      const bstrPassword: WideString): HResult; stdcall;
     function Disconnect: HResult; stdcall;
     function Get_Attendees(out ppVal: IRDPSRAPIAttendeeManager): HResult; stdcall;
@@ -696,9 +696,9 @@ type
     function Get_DisconnectedText(out pbstrDisconnectedText: WideString): HResult; stdcall;
     function RequestColorDepthChange(Bpp: Integer): HResult; stdcall;
     function Get_Properties(out ppVal: IRDPSRAPISessionProperties): HResult; stdcall;
-    function StartReverseConnectListener(const bstrConnectionString: WideString; 
-                                         const bstrUserName: WideString; 
-                                         const bstrPassword: WideString; 
+    function StartReverseConnectListener(const bstrConnectionString: WideString;
+                                         const bstrUserName: WideString;
+                                         const bstrPassword: WideString;
                                          out pbstrReverseConnectString: WideString): HResult; stdcall;
   end;
 
@@ -709,7 +709,7 @@ type
 // *********************************************************************//
   IRDPSRAPIViewerDisp = dispinterface
     ['{C6BFCD38-8CE9-404D-8AE8-F31D00C65CB5}']
-    procedure Connect(const bstrConnectionString: WideString; const bstrName: WideString; 
+    procedure Connect(const bstrConnectionString: WideString; const bstrName: WideString;
                       const bstrPassword: WideString); dispid 104;
     procedure Disconnect; dispid 105;
     property Attendees: IRDPSRAPIAttendeeManager readonly dispid 203;
@@ -721,8 +721,8 @@ type
     property DisconnectedText: WideString dispid 237;
     procedure RequestColorDepthChange(Bpp: Integer); dispid 115;
     property Properties: IRDPSRAPISessionProperties readonly dispid 202;
-    function StartReverseConnectListener(const bstrConnectionString: WideString; 
-                                         const bstrUserName: WideString; 
+    function StartReverseConnectListener(const bstrConnectionString: WideString;
+                                         const bstrUserName: WideString;
                                          const bstrPassword: WideString): WideString; dispid 116;
   end;
 
@@ -730,7 +730,7 @@ type
 // *********************************************************************//
 // OLE Control Proxy class declaration
 // Control Name     : TRDPViewer
-// Help String      : 
+// Help String      :
 // Default Interface: IRDPSRAPIViewer
 // Def. Intf. DISP? : No
 // Event   Interface: _IRDPSessionEvents
@@ -739,7 +739,7 @@ type
   TRDPViewerOnAttendeeConnected = procedure(ASender: TObject; const pAttendee: IDispatch) of object;
   TRDPViewerOnAttendeeDisconnected = procedure(ASender: TObject; const pDisconnectInfo: IDispatch) of object;
   TRDPViewerOnAttendeeUpdate = procedure(ASender: TObject; const pAttendee: IDispatch) of object;
-  TRDPViewerOnConnectionTerminated = procedure(ASender: TObject; discReason: Integer; 
+  TRDPViewerOnConnectionTerminated = procedure(ASender: TObject; discReason: Integer;
                                                                  ExtendedInfo: Integer) of object;
   TRDPViewerOnError = procedure(ASender: TObject; ErrorInfo: OleVariant) of object;
   TRDPViewerOnApplicationOpen = procedure(ASender: TObject; const pApplication: IDispatch) of object;
@@ -748,18 +748,18 @@ type
   TRDPViewerOnWindowOpen = procedure(ASender: TObject; const pWindow: IDispatch) of object;
   TRDPViewerOnWindowClose = procedure(ASender: TObject; const pWindow: IDispatch) of object;
   TRDPViewerOnWindowUpdate = procedure(ASender: TObject; const pWindow: IDispatch) of object;
-  TRDPViewerOnControlLevelChangeRequest = procedure(ASender: TObject; const pAttendee: IDispatch; 
+  TRDPViewerOnControlLevelChangeRequest = procedure(ASender: TObject; const pAttendee: IDispatch;
                                                                       RequestedLevel: CTRL_LEVEL) of object;
-  TRDPViewerOnChannelDataReceived = procedure(ASender: TObject; const pChannel: IUnknown; 
-                                                                lAttendeeId: Integer; 
+  TRDPViewerOnChannelDataReceived = procedure(ASender: TObject; const pChannel: IUnknown;
+                                                                lAttendeeId: Integer;
                                                                 const bstrData: WideString) of object;
-  TRDPViewerOnChannelDataSent = procedure(ASender: TObject; const pChannel: IUnknown; 
+  TRDPViewerOnChannelDataSent = procedure(ASender: TObject; const pChannel: IUnknown;
                                                             lAttendeeId: Integer; BytesSent: Integer) of object;
-  TRDPViewerOnSharedRectChanged = procedure(ASender: TObject; left: Integer; top: Integer; 
+  TRDPViewerOnSharedRectChanged = procedure(ASender: TObject; left: Integer; top: Integer;
                                                               right: Integer; bottom: Integer) of object;
   TRDPViewerOnFocusReleased = procedure(ASender: TObject; iDirection: SYSINT) of object;
-  TRDPViewerOnSharedDesktopSettingsChanged = procedure(ASender: TObject; width: Integer; 
-                                                                         height: Integer; 
+  TRDPViewerOnSharedDesktopSettingsChanged = procedure(ASender: TObject; width: Integer;
+                                                                         height: Integer;
                                                                          colordepth: Integer) of object;
 
   TRDPViewer = class(TOleControl)
@@ -799,14 +799,14 @@ type
     function Get_DisconnectedText(out pbstrDisconnectedText: WideString): HResult;
     function Get_Properties(out ppVal: IRDPSRAPISessionProperties): HResult;
   public
-    function Connect(const bstrConnectionString: WideString; const bstrName: WideString; 
+    function Connect(const bstrConnectionString: WideString; const bstrName: WideString;
                      const bstrPassword: WideString): HResult;
     function Disconnect: HResult;
     function RequestControl(CtrlLevel: CTRL_LEVEL): HResult;
     function RequestColorDepthChange(Bpp: Integer): HResult;
-    function StartReverseConnectListener(const bstrConnectionString: WideString; 
-                                         const bstrUserName: WideString; 
-                                         const bstrPassword: WideString; 
+    function StartReverseConnectListener(const bstrConnectionString: WideString;
+                                         const bstrUserName: WideString;
+                                         const bstrPassword: WideString;
                                          out pbstrReverseConnectString: WideString): HResult;
     property  ControlInterface: IRDPSRAPIViewer read GetControlInterface;
     property  DefaultInterface: IRDPSRAPIViewer read GetControlInterface;
@@ -852,11 +852,11 @@ type
   end;
 
 // *********************************************************************//
-// The Class CoRDPSession provides a Create and CreateRemote method to          
-// create instances of the default interface IRDPSRAPISharingSession exposed by              
-// the CoClass RDPSession. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoRDPSession provides a Create and CreateRemote method to
+// create instances of the default interface IRDPSRAPISharingSession exposed by
+// the CoClass RDPSession. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoRDPSession = class
     class function Create: IRDPSRAPISharingSession;
@@ -864,11 +864,11 @@ type
   end;
 
 // *********************************************************************//
-// The Class CoRDPSRAPISessionProperties provides a Create and CreateRemote method to          
-// create instances of the default interface IRDPSRAPISessionProperties exposed by              
-// the CoClass RDPSRAPISessionProperties. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoRDPSRAPISessionProperties provides a Create and CreateRemote method to
+// create instances of the default interface IRDPSRAPISessionProperties exposed by
+// the CoClass RDPSRAPISessionProperties. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoRDPSRAPISessionProperties = class
     class function Create: IRDPSRAPISessionProperties;
@@ -876,11 +876,11 @@ type
   end;
 
 // *********************************************************************//
-// The Class CoRDPSRAPIInvitationManager provides a Create and CreateRemote method to          
-// create instances of the default interface IRDPSRAPIInvitationManager exposed by              
-// the CoClass RDPSRAPIInvitationManager. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoRDPSRAPIInvitationManager provides a Create and CreateRemote method to
+// create instances of the default interface IRDPSRAPIInvitationManager exposed by
+// the CoClass RDPSRAPIInvitationManager. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoRDPSRAPIInvitationManager = class
     class function Create: IRDPSRAPIInvitationManager;
@@ -888,11 +888,11 @@ type
   end;
 
 // *********************************************************************//
-// The Class CoRDPSRAPIInvitation provides a Create and CreateRemote method to          
-// create instances of the default interface IRDPSRAPIInvitation exposed by              
-// the CoClass RDPSRAPIInvitation. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoRDPSRAPIInvitation provides a Create and CreateRemote method to
+// create instances of the default interface IRDPSRAPIInvitation exposed by
+// the CoClass RDPSRAPIInvitation. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoRDPSRAPIInvitation = class
     class function Create: IRDPSRAPIInvitation;
@@ -900,11 +900,11 @@ type
   end;
 
 // *********************************************************************//
-// The Class CoRDPSRAPIAttendeeManager provides a Create and CreateRemote method to          
-// create instances of the default interface IRDPSRAPIAttendeeManager exposed by              
-// the CoClass RDPSRAPIAttendeeManager. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoRDPSRAPIAttendeeManager provides a Create and CreateRemote method to
+// create instances of the default interface IRDPSRAPIAttendeeManager exposed by
+// the CoClass RDPSRAPIAttendeeManager. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoRDPSRAPIAttendeeManager = class
     class function Create: IRDPSRAPIAttendeeManager;
@@ -912,11 +912,11 @@ type
   end;
 
 // *********************************************************************//
-// The Class CoRDPSRAPIAttendee provides a Create and CreateRemote method to          
-// create instances of the default interface IRDPSRAPIAttendee exposed by              
-// the CoClass RDPSRAPIAttendee. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoRDPSRAPIAttendee provides a Create and CreateRemote method to
+// create instances of the default interface IRDPSRAPIAttendee exposed by
+// the CoClass RDPSRAPIAttendee. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoRDPSRAPIAttendee = class
     class function Create: IRDPSRAPIAttendee;
@@ -924,11 +924,11 @@ type
   end;
 
 // *********************************************************************//
-// The Class CoRDPSRAPIAttendeeDisconnectInfo provides a Create and CreateRemote method to          
-// create instances of the default interface IRDPSRAPIAttendeeDisconnectInfo exposed by              
-// the CoClass RDPSRAPIAttendeeDisconnectInfo. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoRDPSRAPIAttendeeDisconnectInfo provides a Create and CreateRemote method to
+// create instances of the default interface IRDPSRAPIAttendeeDisconnectInfo exposed by
+// the CoClass RDPSRAPIAttendeeDisconnectInfo. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoRDPSRAPIAttendeeDisconnectInfo = class
     class function Create: IRDPSRAPIAttendeeDisconnectInfo;
@@ -936,11 +936,11 @@ type
   end;
 
 // *********************************************************************//
-// The Class CoRDPSRAPIApplicationFilter provides a Create and CreateRemote method to          
-// create instances of the default interface IRDPSRAPIApplicationFilter exposed by              
-// the CoClass RDPSRAPIApplicationFilter. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoRDPSRAPIApplicationFilter provides a Create and CreateRemote method to
+// create instances of the default interface IRDPSRAPIApplicationFilter exposed by
+// the CoClass RDPSRAPIApplicationFilter. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoRDPSRAPIApplicationFilter = class
     class function Create: IRDPSRAPIApplicationFilter;
@@ -948,11 +948,11 @@ type
   end;
 
 // *********************************************************************//
-// The Class CoRDPSRAPIApplicationList provides a Create and CreateRemote method to          
-// create instances of the default interface IRDPSRAPIApplicationList exposed by              
-// the CoClass RDPSRAPIApplicationList. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoRDPSRAPIApplicationList provides a Create and CreateRemote method to
+// create instances of the default interface IRDPSRAPIApplicationList exposed by
+// the CoClass RDPSRAPIApplicationList. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoRDPSRAPIApplicationList = class
     class function Create: IRDPSRAPIApplicationList;
@@ -960,11 +960,11 @@ type
   end;
 
 // *********************************************************************//
-// The Class CoRDPSRAPIApplication provides a Create and CreateRemote method to          
-// create instances of the default interface IRDPSRAPIApplication exposed by              
-// the CoClass RDPSRAPIApplication. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoRDPSRAPIApplication provides a Create and CreateRemote method to
+// create instances of the default interface IRDPSRAPIApplication exposed by
+// the CoClass RDPSRAPIApplication. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoRDPSRAPIApplication = class
     class function Create: IRDPSRAPIApplication;
@@ -972,11 +972,11 @@ type
   end;
 
 // *********************************************************************//
-// The Class CoRDPSRAPIWindowList provides a Create and CreateRemote method to          
-// create instances of the default interface IRDPSRAPIWindowList exposed by              
-// the CoClass RDPSRAPIWindowList. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoRDPSRAPIWindowList provides a Create and CreateRemote method to
+// create instances of the default interface IRDPSRAPIWindowList exposed by
+// the CoClass RDPSRAPIWindowList. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoRDPSRAPIWindowList = class
     class function Create: IRDPSRAPIWindowList;
@@ -984,11 +984,11 @@ type
   end;
 
 // *********************************************************************//
-// The Class CoRDPSRAPIWindow provides a Create and CreateRemote method to          
-// create instances of the default interface IRDPSRAPIWindow exposed by              
-// the CoClass RDPSRAPIWindow. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoRDPSRAPIWindow provides a Create and CreateRemote method to
+// create instances of the default interface IRDPSRAPIWindow exposed by
+// the CoClass RDPSRAPIWindow. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoRDPSRAPIWindow = class
     class function Create: IRDPSRAPIWindow;
@@ -996,11 +996,11 @@ type
   end;
 
 // *********************************************************************//
-// The Class CoRDPSRAPITcpConnectionInfo provides a Create and CreateRemote method to          
-// create instances of the default interface IRDPSRAPITcpConnectionInfo exposed by              
-// the CoClass RDPSRAPITcpConnectionInfo. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoRDPSRAPITcpConnectionInfo provides a Create and CreateRemote method to
+// create instances of the default interface IRDPSRAPITcpConnectionInfo exposed by
+// the CoClass RDPSRAPITcpConnectionInfo. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoRDPSRAPITcpConnectionInfo = class
     class function Create: IRDPSRAPITcpConnectionInfo;
@@ -1096,7 +1096,7 @@ begin
     Result := DefaultInterface.Get_Properties(ppVal);
 end;
 
-function TRDPViewer.Connect(const bstrConnectionString: WideString; const bstrName: WideString; 
+function TRDPViewer.Connect(const bstrConnectionString: WideString; const bstrName: WideString;
                             const bstrPassword: WideString): HResult;
 begin
   Result := DefaultInterface.Connect(bstrConnectionString, bstrName, bstrPassword);
@@ -1117,12 +1117,12 @@ begin
   Result := DefaultInterface.RequestColorDepthChange(Bpp);
 end;
 
-function TRDPViewer.StartReverseConnectListener(const bstrConnectionString: WideString; 
-                                                const bstrUserName: WideString; 
-                                                const bstrPassword: WideString; 
+function TRDPViewer.StartReverseConnectListener(const bstrConnectionString: WideString;
+                                                const bstrUserName: WideString;
+                                                const bstrPassword: WideString;
                                                 out pbstrReverseConnectString: WideString): HResult;
 begin
-  Result := DefaultInterface.StartReverseConnectListener(bstrConnectionString, bstrUserName, 
+  Result := DefaultInterface.StartReverseConnectListener(bstrConnectionString, bstrUserName,
                                                          bstrPassword, pbstrReverseConnectString);
 end;
 

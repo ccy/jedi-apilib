@@ -1,14 +1,14 @@
 unit COMAdmin_TLB;
 
 // ************************************************************************ //
-// WARNING                                                                    
-// -------                                                                    
-// The types declared in this file were generated from data read from a       
-// Type Library. If this type library is explicitly or indirectly (via        
-// another type library referring to this type library) re-imported, or the   
-// 'Refresh' command of the Type Library Editor activated while editing the   
-// Type Library, the contents of this file will be regenerated and all        
-// manual modifications will be lost.                                         
+// WARNING
+// -------
+// The types declared in this file were generated from data read from a
+// Type Library. If this type library is explicitly or indirectly (via
+// another type library referring to this type library) re-imported, or the
+// 'Refresh' command of the Type Library Editor activated while editing the
+// Type Library, the contents of this file will be regenerated and all
+// manual modifications will be lost.
 // ************************************************************************ //
 
 // $Rev: 8291 $
@@ -18,38 +18,38 @@ unit COMAdmin_TLB;
 // Type Lib: C:\Windows\system32\Com\comadmin.dll (1)
 // LIBID: {F618C513-DFB8-11D1-A2CF-00805FC79235}
 // LCID: 0
-// Helpfile: 
+// Helpfile:
 // HelpString: COM + 1.0 Admin Type Library
-// DepndLst: 
+// DepndLst:
 //   (1) v2.0 stdole, (C:\Windows\system32\stdole2.tlb)
 // Errors:
 //   Error creating palette bitmap of (TCOMAdminCatalog) : Server C:\Windows\system32\Com\comadmin.dll contains no icons
 // ************************************************************************ //
 // *************************************************************************//
-// NOTE:                                                                      
-// Items guarded by $IFDEF_LIVE_SERVER_AT_DESIGN_TIME are used by properties  
-// which return objects that may need to be explicitly created via a function 
-// call prior to any access via the property. These items have been disabled  
-// in order to prevent accidental use from within the object inspector. You   
-// may enable them by defining LIVE_SERVER_AT_DESIGN_TIME or by selectively   
-// removing them from the $IFDEF blocks. However, such items must still be    
-// programmatically created via a method of the appropriate CoClass before    
-// they can be used.                                                          
-{$TYPEDADDRESS OFF} // Unit must be compiled without type-checked pointers. 
+// NOTE:
+// Items guarded by $IFDEF_LIVE_SERVER_AT_DESIGN_TIME are used by properties
+// which return objects that may need to be explicitly created via a function
+// call prior to any access via the property. These items have been disabled
+// in order to prevent accidental use from within the object inspector. You
+// may enable them by defining LIVE_SERVER_AT_DESIGN_TIME or by selectively
+// removing them from the $IFDEF blocks. However, such items must still be
+// programmatically created via a method of the appropriate CoClass before
+// they can be used.
+{$TYPEDADDRESS OFF} // Unit must be compiled without type-checked pointers.
 {$WARN SYMBOL_PLATFORM OFF}
 {$WRITEABLECONST ON}
 {$VARPROPSETTER ON}
 interface
 
 uses Windows, ActiveX, Classes, Graphics, OleServer, StdVCL, Variants;
-  
+
 
 // *********************************************************************//
-// GUIDS declared in the TypeLibrary. Following prefixes are used:        
-//   Type Libraries     : LIBID_xxxx                                      
-//   CoClasses          : CLASS_xxxx                                      
-//   DISPInterfaces     : DIID_xxxx                                       
-//   Non-DISP interfaces: IID_xxxx                                        
+// GUIDS declared in the TypeLibrary. Following prefixes are used:
+//   Type Libraries     : LIBID_xxxx
+//   CoClasses          : CLASS_xxxx
+//   DISPInterfaces     : DIID_xxxx
+//   Non-DISP interfaces: IID_xxxx
 // *********************************************************************//
 const
   // TypeLibrary Major and minor versions
@@ -67,7 +67,7 @@ const
   CLASS_COMAdminCatalogCollection: TGUID = '{F618C516-DFB8-11D1-A2CF-00805FC79235}';
 
 // *********************************************************************//
-// Declaration of Enumerations defined in Type Library                    
+// Declaration of Enumerations defined in Type Library
 // *********************************************************************//
 // Constants for enum COMAdminInUse
 type
@@ -372,7 +372,7 @@ const
 type
 
 // *********************************************************************//
-// Forward declaration of types defined in TypeLibrary                    
+// Forward declaration of types defined in TypeLibrary
 // *********************************************************************//
   ICOMAdminCatalog = interface;
   ICOMAdminCatalogDisp = dispinterface;
@@ -384,8 +384,8 @@ type
   ICatalogCollectionDisp = dispinterface;
 
 // *********************************************************************//
-// Declaration of CoClasses defined in Type Library                       
-// (NOTE: Here we map each CoClass to its Default Interface)              
+// Declaration of CoClasses defined in Type Library
+// (NOTE: Here we map each CoClass to its Default Interface)
 // *********************************************************************//
   COMAdminCatalog = ICOMAdminCatalog2;
   COMAdminCatalogObject = ICatalogObject;
@@ -393,7 +393,7 @@ type
 
 
 // *********************************************************************//
-// Declaration of structures, unions and aliases.                         
+// Declaration of structures, unions and aliases.
 // *********************************************************************//
   POleVariant1 = ^OleVariant; {*}
   PPSafeArray1 = ^PSafeArray; {*}
@@ -411,48 +411,48 @@ type
     function Get_MajorVersion: Integer; safecall;
     function Get_MinorVersion: Integer; safecall;
     function GetCollectionByQuery(const bstrCollName: WideString; var ppsaVarQuery: PSafeArray): IDispatch; safecall;
-    procedure ImportComponent(const bstrApplIDOrName: WideString; 
+    procedure ImportComponent(const bstrApplIDOrName: WideString;
                               const bstrCLSIDOrProgID: WideString); safecall;
-    procedure InstallComponent(const bstrApplIDOrName: WideString; const bstrDLL: WideString; 
+    procedure InstallComponent(const bstrApplIDOrName: WideString; const bstrDLL: WideString;
                                const bstrTLB: WideString; const bstrPSDLL: WideString); safecall;
     procedure ShutdownApplication(const bstrApplIDOrName: WideString); safecall;
-    procedure ExportApplication(const bstrApplIDOrName: WideString; 
+    procedure ExportApplication(const bstrApplIDOrName: WideString;
                                 const bstrApplicationFile: WideString; lOptions: Integer); safecall;
-    procedure InstallApplication(const bstrApplicationFile: WideString; 
-                                 const bstrDestinationDirectory: WideString; lOptions: Integer; 
-                                 const bstrUserId: WideString; const bstrPassword: WideString; 
+    procedure InstallApplication(const bstrApplicationFile: WideString;
+                                 const bstrDestinationDirectory: WideString; lOptions: Integer;
+                                 const bstrUserId: WideString; const bstrPassword: WideString;
                                  const bstrRSN: WideString); safecall;
     procedure StopRouter; safecall;
     procedure RefreshRouter; safecall;
     procedure StartRouter; safecall;
     procedure Reserved1; safecall;
     procedure Reserved2; safecall;
-    procedure InstallMultipleComponents(const bstrApplIDOrName: WideString; 
-                                        var ppsaVarFileNames: PSafeArray; 
+    procedure InstallMultipleComponents(const bstrApplIDOrName: WideString;
+                                        var ppsaVarFileNames: PSafeArray;
                                         var ppsaVarCLSIDs: PSafeArray); safecall;
-    procedure GetMultipleComponentsInfo(const bstrApplIDOrName: WideString; 
-                                        var ppsaVarFileNames: PSafeArray; 
-                                        out ppsaVarCLSIDs: PSafeArray; 
-                                        out ppsaVarClassNames: PSafeArray; 
-                                        out ppsaVarFileFlags: PSafeArray; 
+    procedure GetMultipleComponentsInfo(const bstrApplIDOrName: WideString;
+                                        var ppsaVarFileNames: PSafeArray;
+                                        out ppsaVarCLSIDs: PSafeArray;
+                                        out ppsaVarClassNames: PSafeArray;
+                                        out ppsaVarFileFlags: PSafeArray;
                                         out ppsaVarComponentFlags: PSafeArray); safecall;
     procedure RefreshComponents; safecall;
     procedure BackupREGDB(const bstrBackupFilePath: WideString); safecall;
     procedure RestoreREGDB(const bstrBackupFilePath: WideString); safecall;
-    procedure QueryApplicationFile(const bstrApplicationFile: WideString; 
-                                   out pbstrApplicationName: WideString; 
-                                   out pbstrApplicationDescription: WideString; 
-                                   out pbHasUsers: WordBool; out pbIsProxy: WordBool; 
+    procedure QueryApplicationFile(const bstrApplicationFile: WideString;
+                                   out pbstrApplicationName: WideString;
+                                   out pbstrApplicationDescription: WideString;
+                                   out pbHasUsers: WordBool; out pbIsProxy: WordBool;
                                    out ppsaVarFileNames: PSafeArray); safecall;
     procedure StartApplication(const bstrApplIDOrName: WideString); safecall;
     function ServiceCheck(lService: Integer): Integer; safecall;
-    procedure InstallMultipleEventClasses(const bstrApplIDOrName: WideString; 
-                                          var ppsaVarFileNames: PSafeArray; 
+    procedure InstallMultipleEventClasses(const bstrApplIDOrName: WideString;
+                                          var ppsaVarFileNames: PSafeArray;
                                           var ppsaVarCLSIDs: PSafeArray); safecall;
-    procedure InstallEventClass(const bstrApplIDOrName: WideString; const bstrDLL: WideString; 
+    procedure InstallEventClass(const bstrApplIDOrName: WideString; const bstrDLL: WideString;
                                 const bstrTLB: WideString; const bstrPSDLL: WideString); safecall;
-    procedure GetEventClassesForIID(const bstrIID: WideString; out ppsaVarCLSIDs: PSafeArray; 
-                                    out ppsaVarProgIDs: PSafeArray; 
+    procedure GetEventClassesForIID(const bstrIID: WideString; out ppsaVarCLSIDs: PSafeArray;
+                                    out ppsaVarProgIDs: PSafeArray;
                                     out ppsaVarDescriptions: PSafeArray); safecall;
     property MajorVersion: Integer read Get_MajorVersion;
     property MinorVersion: Integer read Get_MinorVersion;
@@ -469,51 +469,51 @@ type
     function Connect(const bstrCatalogServerName: WideString): IDispatch; dispid 2;
     property MajorVersion: Integer readonly dispid 3;
     property MinorVersion: Integer readonly dispid 4;
-    function GetCollectionByQuery(const bstrCollName: WideString; 
+    function GetCollectionByQuery(const bstrCollName: WideString;
                                   var ppsaVarQuery: {??PSafeArray}OleVariant): IDispatch; dispid 5;
-    procedure ImportComponent(const bstrApplIDOrName: WideString; 
+    procedure ImportComponent(const bstrApplIDOrName: WideString;
                               const bstrCLSIDOrProgID: WideString); dispid 6;
-    procedure InstallComponent(const bstrApplIDOrName: WideString; const bstrDLL: WideString; 
+    procedure InstallComponent(const bstrApplIDOrName: WideString; const bstrDLL: WideString;
                                const bstrTLB: WideString; const bstrPSDLL: WideString); dispid 7;
     procedure ShutdownApplication(const bstrApplIDOrName: WideString); dispid 8;
-    procedure ExportApplication(const bstrApplIDOrName: WideString; 
+    procedure ExportApplication(const bstrApplIDOrName: WideString;
                                 const bstrApplicationFile: WideString; lOptions: Integer); dispid 9;
-    procedure InstallApplication(const bstrApplicationFile: WideString; 
-                                 const bstrDestinationDirectory: WideString; lOptions: Integer; 
-                                 const bstrUserId: WideString; const bstrPassword: WideString; 
+    procedure InstallApplication(const bstrApplicationFile: WideString;
+                                 const bstrDestinationDirectory: WideString; lOptions: Integer;
+                                 const bstrUserId: WideString; const bstrPassword: WideString;
                                  const bstrRSN: WideString); dispid 10;
     procedure StopRouter; dispid 11;
     procedure RefreshRouter; dispid 12;
     procedure StartRouter; dispid 13;
     procedure Reserved1; dispid 14;
     procedure Reserved2; dispid 15;
-    procedure InstallMultipleComponents(const bstrApplIDOrName: WideString; 
-                                        var ppsaVarFileNames: {??PSafeArray}OleVariant; 
+    procedure InstallMultipleComponents(const bstrApplIDOrName: WideString;
+                                        var ppsaVarFileNames: {??PSafeArray}OleVariant;
                                         var ppsaVarCLSIDs: {??PSafeArray}OleVariant); dispid 16;
-    procedure GetMultipleComponentsInfo(const bstrApplIDOrName: WideString; 
-                                        var ppsaVarFileNames: {??PSafeArray}OleVariant; 
-                                        out ppsaVarCLSIDs: {??PSafeArray}OleVariant; 
-                                        out ppsaVarClassNames: {??PSafeArray}OleVariant; 
-                                        out ppsaVarFileFlags: {??PSafeArray}OleVariant; 
+    procedure GetMultipleComponentsInfo(const bstrApplIDOrName: WideString;
+                                        var ppsaVarFileNames: {??PSafeArray}OleVariant;
+                                        out ppsaVarCLSIDs: {??PSafeArray}OleVariant;
+                                        out ppsaVarClassNames: {??PSafeArray}OleVariant;
+                                        out ppsaVarFileFlags: {??PSafeArray}OleVariant;
                                         out ppsaVarComponentFlags: {??PSafeArray}OleVariant); dispid 17;
     procedure RefreshComponents; dispid 18;
     procedure BackupREGDB(const bstrBackupFilePath: WideString); dispid 19;
     procedure RestoreREGDB(const bstrBackupFilePath: WideString); dispid 20;
-    procedure QueryApplicationFile(const bstrApplicationFile: WideString; 
-                                   out pbstrApplicationName: WideString; 
-                                   out pbstrApplicationDescription: WideString; 
-                                   out pbHasUsers: WordBool; out pbIsProxy: WordBool; 
+    procedure QueryApplicationFile(const bstrApplicationFile: WideString;
+                                   out pbstrApplicationName: WideString;
+                                   out pbstrApplicationDescription: WideString;
+                                   out pbHasUsers: WordBool; out pbIsProxy: WordBool;
                                    out ppsaVarFileNames: {??PSafeArray}OleVariant); dispid 21;
     procedure StartApplication(const bstrApplIDOrName: WideString); dispid 22;
     function ServiceCheck(lService: Integer): Integer; dispid 23;
-    procedure InstallMultipleEventClasses(const bstrApplIDOrName: WideString; 
-                                          var ppsaVarFileNames: {??PSafeArray}OleVariant; 
+    procedure InstallMultipleEventClasses(const bstrApplIDOrName: WideString;
+                                          var ppsaVarFileNames: {??PSafeArray}OleVariant;
                                           var ppsaVarCLSIDs: {??PSafeArray}OleVariant); dispid 24;
-    procedure InstallEventClass(const bstrApplIDOrName: WideString; const bstrDLL: WideString; 
+    procedure InstallEventClass(const bstrApplIDOrName: WideString; const bstrDLL: WideString;
                                 const bstrTLB: WideString; const bstrPSDLL: WideString); dispid 25;
-    procedure GetEventClassesForIID(const bstrIID: WideString; 
-                                    out ppsaVarCLSIDs: {??PSafeArray}OleVariant; 
-                                    out ppsaVarProgIDs: {??PSafeArray}OleVariant; 
+    procedure GetEventClassesForIID(const bstrIID: WideString;
+                                    out ppsaVarCLSIDs: {??PSafeArray}OleVariant;
+                                    out ppsaVarProgIDs: {??PSafeArray}OleVariant;
                                     out ppsaVarDescriptions: {??PSafeArray}OleVariant); dispid 26;
   end;
 
@@ -524,24 +524,24 @@ type
 // *********************************************************************//
   ICOMAdminCatalog2 = interface(ICOMAdminCatalog)
     ['{790C6E0B-9194-4CC9-9426-A48A63185696}']
-    function GetCollectionByQuery2(const bstrCollectionName: WideString; 
+    function GetCollectionByQuery2(const bstrCollectionName: WideString;
                                    var pVarQueryStrings: OleVariant): IDispatch; safecall;
     function GetApplicationInstanceIDFromProcessID(lProcessID: Integer): WideString; safecall;
     procedure ShutdownApplicationInstances(var pVarApplicationInstanceID: OleVariant); safecall;
     procedure PauseApplicationInstances(var pVarApplicationInstanceID: OleVariant); safecall;
     procedure ResumeApplicationInstances(var pVarApplicationInstanceID: OleVariant); safecall;
-    procedure RecycleApplicationInstances(var pVarApplicationInstanceID: OleVariant; 
+    procedure RecycleApplicationInstances(var pVarApplicationInstanceID: OleVariant;
                                           lReasonCode: Integer); safecall;
     function AreApplicationInstancesPaused(var pVarApplicationInstanceID: OleVariant): WordBool; safecall;
-    function DumpApplicationInstance(const bstrApplicationInstanceID: WideString; 
+    function DumpApplicationInstance(const bstrApplicationInstanceID: WideString;
                                      const bstrDirectory: WideString; lMaxImages: Integer): WideString; safecall;
     function Get_IsApplicationInstanceDumpSupported: WordBool; safecall;
-    procedure CreateServiceForApplication(const bstrApplicationIDOrName: WideString; 
-                                          const bstrServiceName: WideString; 
-                                          const bstrStartType: WideString; 
-                                          const bstrErrorControl: WideString; 
-                                          const bstrDependencies: WideString; 
-                                          const bstrRunAs: WideString; 
+    procedure CreateServiceForApplication(const bstrApplicationIDOrName: WideString;
+                                          const bstrServiceName: WideString;
+                                          const bstrStartType: WideString;
+                                          const bstrErrorControl: WideString;
+                                          const bstrDependencies: WideString;
+                                          const bstrRunAs: WideString;
                                           const bstrPassword: WideString; bDesktopOk: WordBool); safecall;
     procedure DeleteServiceForApplication(const bstrApplicationIDOrName: WideString); safecall;
     function GetPartitionID(const bstrApplicationIDOrName: WideString): WideString; safecall;
@@ -551,33 +551,33 @@ type
     function Get_CurrentPartitionName: WideString; safecall;
     function Get_GlobalPartitionID: WideString; safecall;
     procedure FlushPartitionCache; safecall;
-    procedure CopyApplications(const bstrSourcePartitionIDOrName: WideString; 
-                               var pVarApplicationID: OleVariant; 
+    procedure CopyApplications(const bstrSourcePartitionIDOrName: WideString;
+                               var pVarApplicationID: OleVariant;
                                const bstrDestinationPartitionIDOrName: WideString); safecall;
-    procedure CopyComponents(const bstrSourceApplicationIDOrName: WideString; 
-                             var pVarCLSIDOrProgID: OleVariant; 
+    procedure CopyComponents(const bstrSourceApplicationIDOrName: WideString;
+                             var pVarCLSIDOrProgID: OleVariant;
                              const bstrDestinationApplicationIDOrName: WideString); safecall;
-    procedure MoveComponents(const bstrSourceApplicationIDOrName: WideString; 
-                             var pVarCLSIDOrProgID: OleVariant; 
+    procedure MoveComponents(const bstrSourceApplicationIDOrName: WideString;
+                             var pVarCLSIDOrProgID: OleVariant;
                              const bstrDestinationApplicationIDOrName: WideString); safecall;
-    procedure AliasComponent(const bstrSrcApplicationIDOrName: WideString; 
-                             const bstrCLSIDOrProgID: WideString; 
-                             const bstrDestApplicationIDOrName: WideString; 
+    procedure AliasComponent(const bstrSrcApplicationIDOrName: WideString;
+                             const bstrCLSIDOrProgID: WideString;
+                             const bstrDestApplicationIDOrName: WideString;
                              const bstrNewProgId: WideString; const bstrNewClsid: WideString); safecall;
     function IsSafeToDelete(const bstrDllName: WideString): COMAdminInUse; safecall;
-    procedure ImportUnconfiguredComponents(const bstrApplicationIDOrName: WideString; 
-                                           var pVarCLSIDOrProgID: OleVariant; 
+    procedure ImportUnconfiguredComponents(const bstrApplicationIDOrName: WideString;
+                                           var pVarCLSIDOrProgID: OleVariant;
                                            var pVarComponentType: OleVariant); safecall;
-    procedure PromoteUnconfiguredComponents(const bstrApplicationIDOrName: WideString; 
-                                            var pVarCLSIDOrProgID: OleVariant; 
+    procedure PromoteUnconfiguredComponents(const bstrApplicationIDOrName: WideString;
+                                            var pVarCLSIDOrProgID: OleVariant;
                                             var pVarComponentType: OleVariant); safecall;
-    procedure ImportComponents(const bstrApplicationIDOrName: WideString; 
+    procedure ImportComponents(const bstrApplicationIDOrName: WideString;
                                var pVarCLSIDOrProgID: OleVariant; var pVarComponentType: OleVariant); safecall;
     function Get_Is64BitCatalogServer: WordBool; safecall;
-    procedure ExportPartition(const bstrPartitionIDOrName: WideString; 
+    procedure ExportPartition(const bstrPartitionIDOrName: WideString;
                               const bstrPartitionFileName: WideString; lOptions: Integer); safecall;
-    procedure InstallPartition(const bstrFileName: WideString; const bstrDestDirectory: WideString; 
-                               lOptions: Integer; const bstrUserId: WideString; 
+    procedure InstallPartition(const bstrFileName: WideString; const bstrDestDirectory: WideString;
+                               lOptions: Integer; const bstrUserId: WideString;
                                const bstrPassword: WideString; const bstrRSN: WideString); safecall;
     function QueryApplicationFile2(const bstrApplicationFile: WideString): IDispatch; safecall;
     function GetComponentVersionCount(const bstrCLSIDOrProgID: WideString): Integer; safecall;
@@ -596,24 +596,24 @@ type
 // *********************************************************************//
   ICOMAdminCatalog2Disp = dispinterface
     ['{790C6E0B-9194-4CC9-9426-A48A63185696}']
-    function GetCollectionByQuery2(const bstrCollectionName: WideString; 
+    function GetCollectionByQuery2(const bstrCollectionName: WideString;
                                    var pVarQueryStrings: OleVariant): IDispatch; dispid 27;
     function GetApplicationInstanceIDFromProcessID(lProcessID: Integer): WideString; dispid 28;
     procedure ShutdownApplicationInstances(var pVarApplicationInstanceID: OleVariant); dispid 29;
     procedure PauseApplicationInstances(var pVarApplicationInstanceID: OleVariant); dispid 30;
     procedure ResumeApplicationInstances(var pVarApplicationInstanceID: OleVariant); dispid 31;
-    procedure RecycleApplicationInstances(var pVarApplicationInstanceID: OleVariant; 
+    procedure RecycleApplicationInstances(var pVarApplicationInstanceID: OleVariant;
                                           lReasonCode: Integer); dispid 32;
     function AreApplicationInstancesPaused(var pVarApplicationInstanceID: OleVariant): WordBool; dispid 33;
-    function DumpApplicationInstance(const bstrApplicationInstanceID: WideString; 
+    function DumpApplicationInstance(const bstrApplicationInstanceID: WideString;
                                      const bstrDirectory: WideString; lMaxImages: Integer): WideString; dispid 34;
     property IsApplicationInstanceDumpSupported: WordBool readonly dispid 35;
-    procedure CreateServiceForApplication(const bstrApplicationIDOrName: WideString; 
-                                          const bstrServiceName: WideString; 
-                                          const bstrStartType: WideString; 
-                                          const bstrErrorControl: WideString; 
-                                          const bstrDependencies: WideString; 
-                                          const bstrRunAs: WideString; 
+    procedure CreateServiceForApplication(const bstrApplicationIDOrName: WideString;
+                                          const bstrServiceName: WideString;
+                                          const bstrStartType: WideString;
+                                          const bstrErrorControl: WideString;
+                                          const bstrDependencies: WideString;
+                                          const bstrRunAs: WideString;
                                           const bstrPassword: WideString; bDesktopOk: WordBool); dispid 36;
     procedure DeleteServiceForApplication(const bstrApplicationIDOrName: WideString); dispid 37;
     function GetPartitionID(const bstrApplicationIDOrName: WideString): WideString; dispid 38;
@@ -623,33 +623,33 @@ type
     property CurrentPartitionName: WideString readonly dispid 42;
     property GlobalPartitionID: WideString readonly dispid 43;
     procedure FlushPartitionCache; dispid 44;
-    procedure CopyApplications(const bstrSourcePartitionIDOrName: WideString; 
-                               var pVarApplicationID: OleVariant; 
+    procedure CopyApplications(const bstrSourcePartitionIDOrName: WideString;
+                               var pVarApplicationID: OleVariant;
                                const bstrDestinationPartitionIDOrName: WideString); dispid 45;
-    procedure CopyComponents(const bstrSourceApplicationIDOrName: WideString; 
-                             var pVarCLSIDOrProgID: OleVariant; 
+    procedure CopyComponents(const bstrSourceApplicationIDOrName: WideString;
+                             var pVarCLSIDOrProgID: OleVariant;
                              const bstrDestinationApplicationIDOrName: WideString); dispid 46;
-    procedure MoveComponents(const bstrSourceApplicationIDOrName: WideString; 
-                             var pVarCLSIDOrProgID: OleVariant; 
+    procedure MoveComponents(const bstrSourceApplicationIDOrName: WideString;
+                             var pVarCLSIDOrProgID: OleVariant;
                              const bstrDestinationApplicationIDOrName: WideString); dispid 47;
-    procedure AliasComponent(const bstrSrcApplicationIDOrName: WideString; 
-                             const bstrCLSIDOrProgID: WideString; 
-                             const bstrDestApplicationIDOrName: WideString; 
+    procedure AliasComponent(const bstrSrcApplicationIDOrName: WideString;
+                             const bstrCLSIDOrProgID: WideString;
+                             const bstrDestApplicationIDOrName: WideString;
                              const bstrNewProgId: WideString; const bstrNewClsid: WideString); dispid 48;
     function IsSafeToDelete(const bstrDllName: WideString): COMAdminInUse; dispid 49;
-    procedure ImportUnconfiguredComponents(const bstrApplicationIDOrName: WideString; 
-                                           var pVarCLSIDOrProgID: OleVariant; 
+    procedure ImportUnconfiguredComponents(const bstrApplicationIDOrName: WideString;
+                                           var pVarCLSIDOrProgID: OleVariant;
                                            var pVarComponentType: OleVariant); dispid 50;
-    procedure PromoteUnconfiguredComponents(const bstrApplicationIDOrName: WideString; 
-                                            var pVarCLSIDOrProgID: OleVariant; 
+    procedure PromoteUnconfiguredComponents(const bstrApplicationIDOrName: WideString;
+                                            var pVarCLSIDOrProgID: OleVariant;
                                             var pVarComponentType: OleVariant); dispid 51;
-    procedure ImportComponents(const bstrApplicationIDOrName: WideString; 
+    procedure ImportComponents(const bstrApplicationIDOrName: WideString;
                                var pVarCLSIDOrProgID: OleVariant; var pVarComponentType: OleVariant); dispid 52;
     property Is64BitCatalogServer: WordBool readonly dispid 53;
-    procedure ExportPartition(const bstrPartitionIDOrName: WideString; 
+    procedure ExportPartition(const bstrPartitionIDOrName: WideString;
                               const bstrPartitionFileName: WideString; lOptions: Integer); dispid 54;
-    procedure InstallPartition(const bstrFileName: WideString; const bstrDestDirectory: WideString; 
-                               lOptions: Integer; const bstrUserId: WideString; 
+    procedure InstallPartition(const bstrFileName: WideString; const bstrDestDirectory: WideString;
+                               lOptions: Integer; const bstrUserId: WideString;
                                const bstrPassword: WideString; const bstrRSN: WideString); dispid 55;
     function QueryApplicationFile2(const bstrApplicationFile: WideString): IDispatch; dispid 56;
     function GetComponentVersionCount(const bstrCLSIDOrProgID: WideString): Integer; dispid 57;
@@ -657,51 +657,51 @@ type
     function Connect(const bstrCatalogServerName: WideString): IDispatch; dispid 2;
     property MajorVersion: Integer readonly dispid 3;
     property MinorVersion: Integer readonly dispid 4;
-    function GetCollectionByQuery(const bstrCollName: WideString; 
+    function GetCollectionByQuery(const bstrCollName: WideString;
                                   var ppsaVarQuery: {??PSafeArray}OleVariant): IDispatch; dispid 5;
-    procedure ImportComponent(const bstrApplIDOrName: WideString; 
+    procedure ImportComponent(const bstrApplIDOrName: WideString;
                               const bstrCLSIDOrProgID: WideString); dispid 6;
-    procedure InstallComponent(const bstrApplIDOrName: WideString; const bstrDLL: WideString; 
+    procedure InstallComponent(const bstrApplIDOrName: WideString; const bstrDLL: WideString;
                                const bstrTLB: WideString; const bstrPSDLL: WideString); dispid 7;
     procedure ShutdownApplication(const bstrApplIDOrName: WideString); dispid 8;
-    procedure ExportApplication(const bstrApplIDOrName: WideString; 
+    procedure ExportApplication(const bstrApplIDOrName: WideString;
                                 const bstrApplicationFile: WideString; lOptions: Integer); dispid 9;
-    procedure InstallApplication(const bstrApplicationFile: WideString; 
-                                 const bstrDestinationDirectory: WideString; lOptions: Integer; 
-                                 const bstrUserId: WideString; const bstrPassword: WideString; 
+    procedure InstallApplication(const bstrApplicationFile: WideString;
+                                 const bstrDestinationDirectory: WideString; lOptions: Integer;
+                                 const bstrUserId: WideString; const bstrPassword: WideString;
                                  const bstrRSN: WideString); dispid 10;
     procedure StopRouter; dispid 11;
     procedure RefreshRouter; dispid 12;
     procedure StartRouter; dispid 13;
     procedure Reserved1; dispid 14;
     procedure Reserved2; dispid 15;
-    procedure InstallMultipleComponents(const bstrApplIDOrName: WideString; 
-                                        var ppsaVarFileNames: {??PSafeArray}OleVariant; 
+    procedure InstallMultipleComponents(const bstrApplIDOrName: WideString;
+                                        var ppsaVarFileNames: {??PSafeArray}OleVariant;
                                         var ppsaVarCLSIDs: {??PSafeArray}OleVariant); dispid 16;
-    procedure GetMultipleComponentsInfo(const bstrApplIDOrName: WideString; 
-                                        var ppsaVarFileNames: {??PSafeArray}OleVariant; 
-                                        out ppsaVarCLSIDs: {??PSafeArray}OleVariant; 
-                                        out ppsaVarClassNames: {??PSafeArray}OleVariant; 
-                                        out ppsaVarFileFlags: {??PSafeArray}OleVariant; 
+    procedure GetMultipleComponentsInfo(const bstrApplIDOrName: WideString;
+                                        var ppsaVarFileNames: {??PSafeArray}OleVariant;
+                                        out ppsaVarCLSIDs: {??PSafeArray}OleVariant;
+                                        out ppsaVarClassNames: {??PSafeArray}OleVariant;
+                                        out ppsaVarFileFlags: {??PSafeArray}OleVariant;
                                         out ppsaVarComponentFlags: {??PSafeArray}OleVariant); dispid 17;
     procedure RefreshComponents; dispid 18;
     procedure BackupREGDB(const bstrBackupFilePath: WideString); dispid 19;
     procedure RestoreREGDB(const bstrBackupFilePath: WideString); dispid 20;
-    procedure QueryApplicationFile(const bstrApplicationFile: WideString; 
-                                   out pbstrApplicationName: WideString; 
-                                   out pbstrApplicationDescription: WideString; 
-                                   out pbHasUsers: WordBool; out pbIsProxy: WordBool; 
+    procedure QueryApplicationFile(const bstrApplicationFile: WideString;
+                                   out pbstrApplicationName: WideString;
+                                   out pbstrApplicationDescription: WideString;
+                                   out pbHasUsers: WordBool; out pbIsProxy: WordBool;
                                    out ppsaVarFileNames: {??PSafeArray}OleVariant); dispid 21;
     procedure StartApplication(const bstrApplIDOrName: WideString); dispid 22;
     function ServiceCheck(lService: Integer): Integer; dispid 23;
-    procedure InstallMultipleEventClasses(const bstrApplIDOrName: WideString; 
-                                          var ppsaVarFileNames: {??PSafeArray}OleVariant; 
+    procedure InstallMultipleEventClasses(const bstrApplIDOrName: WideString;
+                                          var ppsaVarFileNames: {??PSafeArray}OleVariant;
                                           var ppsaVarCLSIDs: {??PSafeArray}OleVariant); dispid 24;
-    procedure InstallEventClass(const bstrApplIDOrName: WideString; const bstrDLL: WideString; 
+    procedure InstallEventClass(const bstrApplIDOrName: WideString; const bstrDLL: WideString;
                                 const bstrTLB: WideString; const bstrPSDLL: WideString); dispid 25;
-    procedure GetEventClassesForIID(const bstrIID: WideString; 
-                                    out ppsaVarCLSIDs: {??PSafeArray}OleVariant; 
-                                    out ppsaVarProgIDs: {??PSafeArray}OleVariant; 
+    procedure GetEventClassesForIID(const bstrIID: WideString;
+                                    out ppsaVarCLSIDs: {??PSafeArray}OleVariant;
+                                    out ppsaVarProgIDs: {??PSafeArray}OleVariant;
                                     out ppsaVarDescriptions: {??PSafeArray}OleVariant); dispid 26;
   end;
 
@@ -799,11 +799,11 @@ type
   end;
 
 // *********************************************************************//
-// The Class CoCOMAdminCatalog provides a Create and CreateRemote method to          
-// create instances of the default interface ICOMAdminCatalog2 exposed by              
-// the CoClass COMAdminCatalog. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoCOMAdminCatalog provides a Create and CreateRemote method to
+// create instances of the default interface ICOMAdminCatalog2 exposed by
+// the CoClass COMAdminCatalog. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoCOMAdminCatalog = class
     class function Create: ICOMAdminCatalog2;
@@ -817,7 +817,7 @@ type
 // Help String      : COM Admin Class
 // Default Interface: ICOMAdminCatalog2
 // Def. Intf. DISP? : No
-// Event   Interface: 
+// Event   Interface:
 // TypeFlags        : (2) CanCreate
 // *********************************************************************//
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
@@ -850,103 +850,103 @@ type
     function GetCollection(const bstrCollName: WideString): IDispatch;
     function Connect1(const bstrCatalogServerName: WideString): IDispatch;
     function GetCollectionByQuery(const bstrCollName: WideString; var ppsaVarQuery: PSafeArray): IDispatch;
-    procedure ImportComponent(const bstrApplIDOrName: WideString; 
+    procedure ImportComponent(const bstrApplIDOrName: WideString;
                               const bstrCLSIDOrProgID: WideString);
-    procedure InstallComponent(const bstrApplIDOrName: WideString; const bstrDLL: WideString; 
+    procedure InstallComponent(const bstrApplIDOrName: WideString; const bstrDLL: WideString;
                                const bstrTLB: WideString; const bstrPSDLL: WideString);
     procedure ShutdownApplication(const bstrApplIDOrName: WideString);
-    procedure ExportApplication(const bstrApplIDOrName: WideString; 
+    procedure ExportApplication(const bstrApplIDOrName: WideString;
                                 const bstrApplicationFile: WideString; lOptions: Integer);
-    procedure InstallApplication(const bstrApplicationFile: WideString; 
-                                 const bstrDestinationDirectory: WideString; lOptions: Integer; 
-                                 const bstrUserId: WideString; const bstrPassword: WideString; 
+    procedure InstallApplication(const bstrApplicationFile: WideString;
+                                 const bstrDestinationDirectory: WideString; lOptions: Integer;
+                                 const bstrUserId: WideString; const bstrPassword: WideString;
                                  const bstrRSN: WideString);
     procedure StopRouter;
     procedure RefreshRouter;
     procedure StartRouter;
     procedure Reserved1;
     procedure Reserved2;
-    procedure InstallMultipleComponents(const bstrApplIDOrName: WideString; 
-                                        var ppsaVarFileNames: PSafeArray; 
+    procedure InstallMultipleComponents(const bstrApplIDOrName: WideString;
+                                        var ppsaVarFileNames: PSafeArray;
                                         var ppsaVarCLSIDs: PSafeArray);
-    procedure GetMultipleComponentsInfo(const bstrApplIDOrName: WideString; 
-                                        var ppsaVarFileNames: PSafeArray; 
-                                        out ppsaVarCLSIDs: PSafeArray; 
-                                        out ppsaVarClassNames: PSafeArray; 
-                                        out ppsaVarFileFlags: PSafeArray; 
+    procedure GetMultipleComponentsInfo(const bstrApplIDOrName: WideString;
+                                        var ppsaVarFileNames: PSafeArray;
+                                        out ppsaVarCLSIDs: PSafeArray;
+                                        out ppsaVarClassNames: PSafeArray;
+                                        out ppsaVarFileFlags: PSafeArray;
                                         out ppsaVarComponentFlags: PSafeArray);
     procedure RefreshComponents;
     procedure BackupREGDB(const bstrBackupFilePath: WideString);
     procedure RestoreREGDB(const bstrBackupFilePath: WideString);
-    procedure QueryApplicationFile(const bstrApplicationFile: WideString; 
-                                   out pbstrApplicationName: WideString; 
-                                   out pbstrApplicationDescription: WideString; 
-                                   out pbHasUsers: WordBool; out pbIsProxy: WordBool; 
+    procedure QueryApplicationFile(const bstrApplicationFile: WideString;
+                                   out pbstrApplicationName: WideString;
+                                   out pbstrApplicationDescription: WideString;
+                                   out pbHasUsers: WordBool; out pbIsProxy: WordBool;
                                    out ppsaVarFileNames: PSafeArray);
     procedure StartApplication(const bstrApplIDOrName: WideString);
     function ServiceCheck(lService: Integer): Integer;
-    procedure InstallMultipleEventClasses(const bstrApplIDOrName: WideString; 
-                                          var ppsaVarFileNames: PSafeArray; 
+    procedure InstallMultipleEventClasses(const bstrApplIDOrName: WideString;
+                                          var ppsaVarFileNames: PSafeArray;
                                           var ppsaVarCLSIDs: PSafeArray);
-    procedure InstallEventClass(const bstrApplIDOrName: WideString; const bstrDLL: WideString; 
+    procedure InstallEventClass(const bstrApplIDOrName: WideString; const bstrDLL: WideString;
                                 const bstrTLB: WideString; const bstrPSDLL: WideString);
-    procedure GetEventClassesForIID(const bstrIID: WideString; out ppsaVarCLSIDs: PSafeArray; 
-                                    out ppsaVarProgIDs: PSafeArray; 
+    procedure GetEventClassesForIID(const bstrIID: WideString; out ppsaVarCLSIDs: PSafeArray;
+                                    out ppsaVarProgIDs: PSafeArray;
                                     out ppsaVarDescriptions: PSafeArray);
-    function GetCollectionByQuery2(const bstrCollectionName: WideString; 
+    function GetCollectionByQuery2(const bstrCollectionName: WideString;
                                    var pVarQueryStrings: OleVariant): IDispatch;
     function GetApplicationInstanceIDFromProcessID(lProcessID: Integer): WideString;
     procedure ShutdownApplicationInstances(var pVarApplicationInstanceID: OleVariant);
     procedure PauseApplicationInstances(var pVarApplicationInstanceID: OleVariant);
     procedure ResumeApplicationInstances(var pVarApplicationInstanceID: OleVariant);
-    procedure RecycleApplicationInstances(var pVarApplicationInstanceID: OleVariant; 
+    procedure RecycleApplicationInstances(var pVarApplicationInstanceID: OleVariant;
                                           lReasonCode: Integer);
     function AreApplicationInstancesPaused(var pVarApplicationInstanceID: OleVariant): WordBool;
-    function DumpApplicationInstance(const bstrApplicationInstanceID: WideString; 
+    function DumpApplicationInstance(const bstrApplicationInstanceID: WideString;
                                      const bstrDirectory: WideString; lMaxImages: Integer): WideString;
-    procedure CreateServiceForApplication(const bstrApplicationIDOrName: WideString; 
-                                          const bstrServiceName: WideString; 
-                                          const bstrStartType: WideString; 
-                                          const bstrErrorControl: WideString; 
-                                          const bstrDependencies: WideString; 
-                                          const bstrRunAs: WideString; 
+    procedure CreateServiceForApplication(const bstrApplicationIDOrName: WideString;
+                                          const bstrServiceName: WideString;
+                                          const bstrStartType: WideString;
+                                          const bstrErrorControl: WideString;
+                                          const bstrDependencies: WideString;
+                                          const bstrRunAs: WideString;
                                           const bstrPassword: WideString; bDesktopOk: WordBool);
     procedure DeleteServiceForApplication(const bstrApplicationIDOrName: WideString);
     function GetPartitionID(const bstrApplicationIDOrName: WideString): WideString;
     function GetPartitionName(const bstrApplicationIDOrName: WideString): WideString;
     procedure FlushPartitionCache;
-    procedure CopyApplications(const bstrSourcePartitionIDOrName: WideString; 
-                               var pVarApplicationID: OleVariant; 
+    procedure CopyApplications(const bstrSourcePartitionIDOrName: WideString;
+                               var pVarApplicationID: OleVariant;
                                const bstrDestinationPartitionIDOrName: WideString);
-    procedure CopyComponents(const bstrSourceApplicationIDOrName: WideString; 
-                             var pVarCLSIDOrProgID: OleVariant; 
+    procedure CopyComponents(const bstrSourceApplicationIDOrName: WideString;
+                             var pVarCLSIDOrProgID: OleVariant;
                              const bstrDestinationApplicationIDOrName: WideString);
-    procedure MoveComponents(const bstrSourceApplicationIDOrName: WideString; 
-                             var pVarCLSIDOrProgID: OleVariant; 
+    procedure MoveComponents(const bstrSourceApplicationIDOrName: WideString;
+                             var pVarCLSIDOrProgID: OleVariant;
                              const bstrDestinationApplicationIDOrName: WideString);
-    procedure AliasComponent(const bstrSrcApplicationIDOrName: WideString; 
-                             const bstrCLSIDOrProgID: WideString; 
-                             const bstrDestApplicationIDOrName: WideString; 
+    procedure AliasComponent(const bstrSrcApplicationIDOrName: WideString;
+                             const bstrCLSIDOrProgID: WideString;
+                             const bstrDestApplicationIDOrName: WideString;
                              const bstrNewProgId: WideString; const bstrNewClsid: WideString);
     function IsSafeToDelete(const bstrDllName: WideString): COMAdminInUse;
-    procedure ImportUnconfiguredComponents(const bstrApplicationIDOrName: WideString; 
+    procedure ImportUnconfiguredComponents(const bstrApplicationIDOrName: WideString;
                                            var pVarCLSIDOrProgID: OleVariant); overload;
-    procedure ImportUnconfiguredComponents(const bstrApplicationIDOrName: WideString; 
-                                           var pVarCLSIDOrProgID: OleVariant; 
+    procedure ImportUnconfiguredComponents(const bstrApplicationIDOrName: WideString;
+                                           var pVarCLSIDOrProgID: OleVariant;
                                            var pVarComponentType: OleVariant); overload;
-    procedure PromoteUnconfiguredComponents(const bstrApplicationIDOrName: WideString; 
+    procedure PromoteUnconfiguredComponents(const bstrApplicationIDOrName: WideString;
                                             var pVarCLSIDOrProgID: OleVariant); overload;
-    procedure PromoteUnconfiguredComponents(const bstrApplicationIDOrName: WideString; 
-                                            var pVarCLSIDOrProgID: OleVariant; 
+    procedure PromoteUnconfiguredComponents(const bstrApplicationIDOrName: WideString;
+                                            var pVarCLSIDOrProgID: OleVariant;
                                             var pVarComponentType: OleVariant); overload;
-    procedure ImportComponents(const bstrApplicationIDOrName: WideString; 
+    procedure ImportComponents(const bstrApplicationIDOrName: WideString;
                                var pVarCLSIDOrProgID: OleVariant); overload;
-    procedure ImportComponents(const bstrApplicationIDOrName: WideString; 
+    procedure ImportComponents(const bstrApplicationIDOrName: WideString;
                                var pVarCLSIDOrProgID: OleVariant; var pVarComponentType: OleVariant); overload;
-    procedure ExportPartition(const bstrPartitionIDOrName: WideString; 
+    procedure ExportPartition(const bstrPartitionIDOrName: WideString;
                               const bstrPartitionFileName: WideString; lOptions: Integer);
-    procedure InstallPartition(const bstrFileName: WideString; const bstrDestDirectory: WideString; 
-                               lOptions: Integer; const bstrUserId: WideString; 
+    procedure InstallPartition(const bstrFileName: WideString; const bstrDestDirectory: WideString;
+                               lOptions: Integer; const bstrUserId: WideString;
                                const bstrPassword: WideString; const bstrRSN: WideString);
     function QueryApplicationFile2(const bstrApplicationFile: WideString): IDispatch;
     function GetComponentVersionCount(const bstrCLSIDOrProgID: WideString): Integer;
@@ -994,11 +994,11 @@ type
 
 
 // *********************************************************************//
-// The Class CoCOMAdminCatalogObject provides a Create and CreateRemote method to          
-// create instances of the default interface ICatalogObject exposed by              
-// the CoClass COMAdminCatalogObject. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoCOMAdminCatalogObject provides a Create and CreateRemote method to
+// create instances of the default interface ICatalogObject exposed by
+// the CoClass COMAdminCatalogObject. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoCOMAdminCatalogObject = class
     class function Create: ICatalogObject;
@@ -1006,11 +1006,11 @@ type
   end;
 
 // *********************************************************************//
-// The Class CoCOMAdminCatalogCollection provides a Create and CreateRemote method to          
-// create instances of the default interface ICatalogCollection exposed by              
-// the CoClass COMAdminCatalogCollection. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoCOMAdminCatalogCollection provides a Create and CreateRemote method to
+// create instances of the default interface ICatalogCollection exposed by
+// the CoClass COMAdminCatalogCollection. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoCOMAdminCatalogCollection = class
     class function Create: ICatalogCollection;
@@ -1162,20 +1162,20 @@ begin
   Result := DefaultInterface.Connect(bstrCatalogServerName);
 end;
 
-function TCOMAdminCatalog.GetCollectionByQuery(const bstrCollName: WideString; 
+function TCOMAdminCatalog.GetCollectionByQuery(const bstrCollName: WideString;
                                                var ppsaVarQuery: PSafeArray): IDispatch;
 begin
   Result := DefaultInterface.GetCollectionByQuery(bstrCollName, ppsaVarQuery);
 end;
 
-procedure TCOMAdminCatalog.ImportComponent(const bstrApplIDOrName: WideString; 
+procedure TCOMAdminCatalog.ImportComponent(const bstrApplIDOrName: WideString;
                                            const bstrCLSIDOrProgID: WideString);
 begin
   DefaultInterface.ImportComponent(bstrApplIDOrName, bstrCLSIDOrProgID);
 end;
 
-procedure TCOMAdminCatalog.InstallComponent(const bstrApplIDOrName: WideString; 
-                                            const bstrDLL: WideString; const bstrTLB: WideString; 
+procedure TCOMAdminCatalog.InstallComponent(const bstrApplIDOrName: WideString;
+                                            const bstrDLL: WideString; const bstrTLB: WideString;
                                             const bstrPSDLL: WideString);
 begin
   DefaultInterface.InstallComponent(bstrApplIDOrName, bstrDLL, bstrTLB, bstrPSDLL);
@@ -1186,20 +1186,20 @@ begin
   DefaultInterface.ShutdownApplication(bstrApplIDOrName);
 end;
 
-procedure TCOMAdminCatalog.ExportApplication(const bstrApplIDOrName: WideString; 
-                                             const bstrApplicationFile: WideString; 
+procedure TCOMAdminCatalog.ExportApplication(const bstrApplIDOrName: WideString;
+                                             const bstrApplicationFile: WideString;
                                              lOptions: Integer);
 begin
   DefaultInterface.ExportApplication(bstrApplIDOrName, bstrApplicationFile, lOptions);
 end;
 
-procedure TCOMAdminCatalog.InstallApplication(const bstrApplicationFile: WideString; 
-                                              const bstrDestinationDirectory: WideString; 
-                                              lOptions: Integer; const bstrUserId: WideString; 
-                                              const bstrPassword: WideString; 
+procedure TCOMAdminCatalog.InstallApplication(const bstrApplicationFile: WideString;
+                                              const bstrDestinationDirectory: WideString;
+                                              lOptions: Integer; const bstrUserId: WideString;
+                                              const bstrPassword: WideString;
                                               const bstrRSN: WideString);
 begin
-  DefaultInterface.InstallApplication(bstrApplicationFile, bstrDestinationDirectory, lOptions, 
+  DefaultInterface.InstallApplication(bstrApplicationFile, bstrDestinationDirectory, lOptions,
                                       bstrUserId, bstrPassword, bstrRSN);
 end;
 
@@ -1228,22 +1228,22 @@ begin
   DefaultInterface.Reserved2;
 end;
 
-procedure TCOMAdminCatalog.InstallMultipleComponents(const bstrApplIDOrName: WideString; 
-                                                     var ppsaVarFileNames: PSafeArray; 
+procedure TCOMAdminCatalog.InstallMultipleComponents(const bstrApplIDOrName: WideString;
+                                                     var ppsaVarFileNames: PSafeArray;
                                                      var ppsaVarCLSIDs: PSafeArray);
 begin
   DefaultInterface.InstallMultipleComponents(bstrApplIDOrName, ppsaVarFileNames, ppsaVarCLSIDs);
 end;
 
-procedure TCOMAdminCatalog.GetMultipleComponentsInfo(const bstrApplIDOrName: WideString; 
-                                                     var ppsaVarFileNames: PSafeArray; 
-                                                     out ppsaVarCLSIDs: PSafeArray; 
-                                                     out ppsaVarClassNames: PSafeArray; 
-                                                     out ppsaVarFileFlags: PSafeArray; 
+procedure TCOMAdminCatalog.GetMultipleComponentsInfo(const bstrApplIDOrName: WideString;
+                                                     var ppsaVarFileNames: PSafeArray;
+                                                     out ppsaVarCLSIDs: PSafeArray;
+                                                     out ppsaVarClassNames: PSafeArray;
+                                                     out ppsaVarFileFlags: PSafeArray;
                                                      out ppsaVarComponentFlags: PSafeArray);
 begin
-  DefaultInterface.GetMultipleComponentsInfo(bstrApplIDOrName, ppsaVarFileNames, ppsaVarCLSIDs, 
-                                             ppsaVarClassNames, ppsaVarFileFlags, 
+  DefaultInterface.GetMultipleComponentsInfo(bstrApplIDOrName, ppsaVarFileNames, ppsaVarCLSIDs,
+                                             ppsaVarClassNames, ppsaVarFileFlags,
                                              ppsaVarComponentFlags);
 end;
 
@@ -1262,14 +1262,14 @@ begin
   DefaultInterface.RestoreREGDB(bstrBackupFilePath);
 end;
 
-procedure TCOMAdminCatalog.QueryApplicationFile(const bstrApplicationFile: WideString; 
-                                                out pbstrApplicationName: WideString; 
-                                                out pbstrApplicationDescription: WideString; 
-                                                out pbHasUsers: WordBool; out pbIsProxy: WordBool; 
+procedure TCOMAdminCatalog.QueryApplicationFile(const bstrApplicationFile: WideString;
+                                                out pbstrApplicationName: WideString;
+                                                out pbstrApplicationDescription: WideString;
+                                                out pbHasUsers: WordBool; out pbIsProxy: WordBool;
                                                 out ppsaVarFileNames: PSafeArray);
 begin
-  DefaultInterface.QueryApplicationFile(bstrApplicationFile, pbstrApplicationName, 
-                                        pbstrApplicationDescription, pbHasUsers, pbIsProxy, 
+  DefaultInterface.QueryApplicationFile(bstrApplicationFile, pbstrApplicationName,
+                                        pbstrApplicationDescription, pbHasUsers, pbIsProxy,
                                         ppsaVarFileNames);
 end;
 
@@ -1283,29 +1283,29 @@ begin
   Result := DefaultInterface.ServiceCheck(lService);
 end;
 
-procedure TCOMAdminCatalog.InstallMultipleEventClasses(const bstrApplIDOrName: WideString; 
-                                                       var ppsaVarFileNames: PSafeArray; 
+procedure TCOMAdminCatalog.InstallMultipleEventClasses(const bstrApplIDOrName: WideString;
+                                                       var ppsaVarFileNames: PSafeArray;
                                                        var ppsaVarCLSIDs: PSafeArray);
 begin
   DefaultInterface.InstallMultipleEventClasses(bstrApplIDOrName, ppsaVarFileNames, ppsaVarCLSIDs);
 end;
 
-procedure TCOMAdminCatalog.InstallEventClass(const bstrApplIDOrName: WideString; 
-                                             const bstrDLL: WideString; const bstrTLB: WideString; 
+procedure TCOMAdminCatalog.InstallEventClass(const bstrApplIDOrName: WideString;
+                                             const bstrDLL: WideString; const bstrTLB: WideString;
                                              const bstrPSDLL: WideString);
 begin
   DefaultInterface.InstallEventClass(bstrApplIDOrName, bstrDLL, bstrTLB, bstrPSDLL);
 end;
 
-procedure TCOMAdminCatalog.GetEventClassesForIID(const bstrIID: WideString; 
-                                                 out ppsaVarCLSIDs: PSafeArray; 
-                                                 out ppsaVarProgIDs: PSafeArray; 
+procedure TCOMAdminCatalog.GetEventClassesForIID(const bstrIID: WideString;
+                                                 out ppsaVarCLSIDs: PSafeArray;
+                                                 out ppsaVarProgIDs: PSafeArray;
                                                  out ppsaVarDescriptions: PSafeArray);
 begin
   DefaultInterface.GetEventClassesForIID(bstrIID, ppsaVarCLSIDs, ppsaVarProgIDs, ppsaVarDescriptions);
 end;
 
-function TCOMAdminCatalog.GetCollectionByQuery2(const bstrCollectionName: WideString; 
+function TCOMAdminCatalog.GetCollectionByQuery2(const bstrCollectionName: WideString;
                                                 var pVarQueryStrings: OleVariant): IDispatch;
 begin
   Result := DefaultInterface.GetCollectionByQuery2(bstrCollectionName, pVarQueryStrings);
@@ -1331,7 +1331,7 @@ begin
   DefaultInterface.ResumeApplicationInstances(pVarApplicationInstanceID);
 end;
 
-procedure TCOMAdminCatalog.RecycleApplicationInstances(var pVarApplicationInstanceID: OleVariant; 
+procedure TCOMAdminCatalog.RecycleApplicationInstances(var pVarApplicationInstanceID: OleVariant;
                                                        lReasonCode: Integer);
 begin
   DefaultInterface.RecycleApplicationInstances(pVarApplicationInstanceID, lReasonCode);
@@ -1342,25 +1342,25 @@ begin
   Result := DefaultInterface.AreApplicationInstancesPaused(pVarApplicationInstanceID);
 end;
 
-function TCOMAdminCatalog.DumpApplicationInstance(const bstrApplicationInstanceID: WideString; 
-                                                  const bstrDirectory: WideString; 
+function TCOMAdminCatalog.DumpApplicationInstance(const bstrApplicationInstanceID: WideString;
+                                                  const bstrDirectory: WideString;
                                                   lMaxImages: Integer): WideString;
 begin
-  Result := DefaultInterface.DumpApplicationInstance(bstrApplicationInstanceID, bstrDirectory, 
+  Result := DefaultInterface.DumpApplicationInstance(bstrApplicationInstanceID, bstrDirectory,
                                                      lMaxImages);
 end;
 
-procedure TCOMAdminCatalog.CreateServiceForApplication(const bstrApplicationIDOrName: WideString; 
-                                                       const bstrServiceName: WideString; 
-                                                       const bstrStartType: WideString; 
-                                                       const bstrErrorControl: WideString; 
-                                                       const bstrDependencies: WideString; 
-                                                       const bstrRunAs: WideString; 
-                                                       const bstrPassword: WideString; 
+procedure TCOMAdminCatalog.CreateServiceForApplication(const bstrApplicationIDOrName: WideString;
+                                                       const bstrServiceName: WideString;
+                                                       const bstrStartType: WideString;
+                                                       const bstrErrorControl: WideString;
+                                                       const bstrDependencies: WideString;
+                                                       const bstrRunAs: WideString;
+                                                       const bstrPassword: WideString;
                                                        bDesktopOk: WordBool);
 begin
-  DefaultInterface.CreateServiceForApplication(bstrApplicationIDOrName, bstrServiceName, 
-                                               bstrStartType, bstrErrorControl, bstrDependencies, 
+  DefaultInterface.CreateServiceForApplication(bstrApplicationIDOrName, bstrServiceName,
+                                               bstrStartType, bstrErrorControl, bstrDependencies,
                                                bstrRunAs, bstrPassword, bDesktopOk);
 end;
 
@@ -1384,37 +1384,37 @@ begin
   DefaultInterface.FlushPartitionCache;
 end;
 
-procedure TCOMAdminCatalog.CopyApplications(const bstrSourcePartitionIDOrName: WideString; 
-                                            var pVarApplicationID: OleVariant; 
+procedure TCOMAdminCatalog.CopyApplications(const bstrSourcePartitionIDOrName: WideString;
+                                            var pVarApplicationID: OleVariant;
                                             const bstrDestinationPartitionIDOrName: WideString);
 begin
-  DefaultInterface.CopyApplications(bstrSourcePartitionIDOrName, pVarApplicationID, 
+  DefaultInterface.CopyApplications(bstrSourcePartitionIDOrName, pVarApplicationID,
                                     bstrDestinationPartitionIDOrName);
 end;
 
-procedure TCOMAdminCatalog.CopyComponents(const bstrSourceApplicationIDOrName: WideString; 
-                                          var pVarCLSIDOrProgID: OleVariant; 
+procedure TCOMAdminCatalog.CopyComponents(const bstrSourceApplicationIDOrName: WideString;
+                                          var pVarCLSIDOrProgID: OleVariant;
                                           const bstrDestinationApplicationIDOrName: WideString);
 begin
-  DefaultInterface.CopyComponents(bstrSourceApplicationIDOrName, pVarCLSIDOrProgID, 
+  DefaultInterface.CopyComponents(bstrSourceApplicationIDOrName, pVarCLSIDOrProgID,
                                   bstrDestinationApplicationIDOrName);
 end;
 
-procedure TCOMAdminCatalog.MoveComponents(const bstrSourceApplicationIDOrName: WideString; 
-                                          var pVarCLSIDOrProgID: OleVariant; 
+procedure TCOMAdminCatalog.MoveComponents(const bstrSourceApplicationIDOrName: WideString;
+                                          var pVarCLSIDOrProgID: OleVariant;
                                           const bstrDestinationApplicationIDOrName: WideString);
 begin
-  DefaultInterface.MoveComponents(bstrSourceApplicationIDOrName, pVarCLSIDOrProgID, 
+  DefaultInterface.MoveComponents(bstrSourceApplicationIDOrName, pVarCLSIDOrProgID,
                                   bstrDestinationApplicationIDOrName);
 end;
 
-procedure TCOMAdminCatalog.AliasComponent(const bstrSrcApplicationIDOrName: WideString; 
-                                          const bstrCLSIDOrProgID: WideString; 
-                                          const bstrDestApplicationIDOrName: WideString; 
-                                          const bstrNewProgId: WideString; 
+procedure TCOMAdminCatalog.AliasComponent(const bstrSrcApplicationIDOrName: WideString;
+                                          const bstrCLSIDOrProgID: WideString;
+                                          const bstrDestApplicationIDOrName: WideString;
+                                          const bstrNewProgId: WideString;
                                           const bstrNewClsid: WideString);
 begin
-  DefaultInterface.AliasComponent(bstrSrcApplicationIDOrName, bstrCLSIDOrProgID, 
+  DefaultInterface.AliasComponent(bstrSrcApplicationIDOrName, bstrCLSIDOrProgID,
                                   bstrDestApplicationIDOrName, bstrNewProgId, bstrNewClsid);
 end;
 
@@ -1423,63 +1423,63 @@ begin
   Result := DefaultInterface.IsSafeToDelete(bstrDllName);
 end;
 
-procedure TCOMAdminCatalog.ImportUnconfiguredComponents(const bstrApplicationIDOrName: WideString; 
+procedure TCOMAdminCatalog.ImportUnconfiguredComponents(const bstrApplicationIDOrName: WideString;
                                                         var pVarCLSIDOrProgID: OleVariant);
 begin
-  DefaultInterface.ImportUnconfiguredComponents(bstrApplicationIDOrName, pVarCLSIDOrProgID, 
+  DefaultInterface.ImportUnconfiguredComponents(bstrApplicationIDOrName, pVarCLSIDOrProgID,
                                                 EmptyParam);
 end;
 
-procedure TCOMAdminCatalog.ImportUnconfiguredComponents(const bstrApplicationIDOrName: WideString; 
-                                                        var pVarCLSIDOrProgID: OleVariant; 
+procedure TCOMAdminCatalog.ImportUnconfiguredComponents(const bstrApplicationIDOrName: WideString;
+                                                        var pVarCLSIDOrProgID: OleVariant;
                                                         var pVarComponentType: OleVariant);
 begin
-  DefaultInterface.ImportUnconfiguredComponents(bstrApplicationIDOrName, pVarCLSIDOrProgID, 
+  DefaultInterface.ImportUnconfiguredComponents(bstrApplicationIDOrName, pVarCLSIDOrProgID,
                                                 pVarComponentType);
 end;
 
-procedure TCOMAdminCatalog.PromoteUnconfiguredComponents(const bstrApplicationIDOrName: WideString; 
+procedure TCOMAdminCatalog.PromoteUnconfiguredComponents(const bstrApplicationIDOrName: WideString;
                                                          var pVarCLSIDOrProgID: OleVariant);
 begin
-  DefaultInterface.PromoteUnconfiguredComponents(bstrApplicationIDOrName, pVarCLSIDOrProgID, 
+  DefaultInterface.PromoteUnconfiguredComponents(bstrApplicationIDOrName, pVarCLSIDOrProgID,
                                                  EmptyParam);
 end;
 
-procedure TCOMAdminCatalog.PromoteUnconfiguredComponents(const bstrApplicationIDOrName: WideString; 
-                                                         var pVarCLSIDOrProgID: OleVariant; 
+procedure TCOMAdminCatalog.PromoteUnconfiguredComponents(const bstrApplicationIDOrName: WideString;
+                                                         var pVarCLSIDOrProgID: OleVariant;
                                                          var pVarComponentType: OleVariant);
 begin
-  DefaultInterface.PromoteUnconfiguredComponents(bstrApplicationIDOrName, pVarCLSIDOrProgID, 
+  DefaultInterface.PromoteUnconfiguredComponents(bstrApplicationIDOrName, pVarCLSIDOrProgID,
                                                  pVarComponentType);
 end;
 
-procedure TCOMAdminCatalog.ImportComponents(const bstrApplicationIDOrName: WideString; 
+procedure TCOMAdminCatalog.ImportComponents(const bstrApplicationIDOrName: WideString;
                                             var pVarCLSIDOrProgID: OleVariant);
 begin
   DefaultInterface.ImportComponents(bstrApplicationIDOrName, pVarCLSIDOrProgID, EmptyParam);
 end;
 
-procedure TCOMAdminCatalog.ImportComponents(const bstrApplicationIDOrName: WideString; 
-                                            var pVarCLSIDOrProgID: OleVariant; 
+procedure TCOMAdminCatalog.ImportComponents(const bstrApplicationIDOrName: WideString;
+                                            var pVarCLSIDOrProgID: OleVariant;
                                             var pVarComponentType: OleVariant);
 begin
   DefaultInterface.ImportComponents(bstrApplicationIDOrName, pVarCLSIDOrProgID, pVarComponentType);
 end;
 
-procedure TCOMAdminCatalog.ExportPartition(const bstrPartitionIDOrName: WideString; 
-                                           const bstrPartitionFileName: WideString; 
+procedure TCOMAdminCatalog.ExportPartition(const bstrPartitionIDOrName: WideString;
+                                           const bstrPartitionFileName: WideString;
                                            lOptions: Integer);
 begin
   DefaultInterface.ExportPartition(bstrPartitionIDOrName, bstrPartitionFileName, lOptions);
 end;
 
-procedure TCOMAdminCatalog.InstallPartition(const bstrFileName: WideString; 
-                                            const bstrDestDirectory: WideString; lOptions: Integer; 
-                                            const bstrUserId: WideString; 
-                                            const bstrPassword: WideString; 
+procedure TCOMAdminCatalog.InstallPartition(const bstrFileName: WideString;
+                                            const bstrDestDirectory: WideString; lOptions: Integer;
+                                            const bstrUserId: WideString;
+                                            const bstrPassword: WideString;
                                             const bstrRSN: WideString);
 begin
-  DefaultInterface.InstallPartition(bstrFileName, bstrDestDirectory, lOptions, bstrUserId, 
+  DefaultInterface.InstallPartition(bstrFileName, bstrDestDirectory, lOptions, bstrUserId,
                                     bstrPassword, bstrRSN);
 end;
 

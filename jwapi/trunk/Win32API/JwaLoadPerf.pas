@@ -406,4 +406,3 @@ function RestorePerfRegistryFromFileW; external loadperflib name 'RestorePerfReg
 {$IFNDEF JWA_OMIT_SECTIONS}
 end.
 {$ENDIF JWA_OMIT_SECTIONS}
-

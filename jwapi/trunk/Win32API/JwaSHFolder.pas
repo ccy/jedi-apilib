@@ -47,7 +47,7 @@ unit JwaSHFolder;
 
 interface
 
-uses 
+uses
   JwaWinBase, JwaWinType;
 
 // functions to get shell special folders/

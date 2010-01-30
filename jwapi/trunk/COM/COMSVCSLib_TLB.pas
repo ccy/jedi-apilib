@@ -1,14 +1,14 @@
 unit COMSVCSLib_TLB;
 
 // ************************************************************************ //
-// WARNING                                                                    
-// -------                                                                    
-// The types declared in this file were generated from data read from a       
-// Type Library. If this type library is explicitly or indirectly (via        
-// another type library referring to this type library) re-imported, or the   
-// 'Refresh' command of the Type Library Editor activated while editing the   
-// Type Library, the contents of this file will be regenerated and all        
-// manual modifications will be lost.                                         
+// WARNING
+// -------
+// The types declared in this file were generated from data read from a
+// Type Library. If this type library is explicitly or indirectly (via
+// another type library referring to this type library) re-imported, or the
+// 'Refresh' command of the Type Library Editor activated while editing the
+// Type Library, the contents of this file will be regenerated and all
+// manual modifications will be lost.
 // ************************************************************************ //
 
 // $Rev: 8291 $
@@ -20,7 +20,7 @@ unit COMSVCSLib_TLB;
 // LCID: 0
 // Helpfile: C:\Windows\system32\cossdk.chm
 // HelpString: COM+ Services Type Library
-// DepndLst: 
+// DepndLst:
 //   (1) v2.0 stdole, (C:\Windows\system32\stdole2.tlb)
 // Errors:
 //   Hint: Member 'Property' of 'ISharedPropertyGroup' changed to 'Property_'
@@ -44,30 +44,30 @@ unit COMSVCSLib_TLB;
 //   Error creating palette bitmap of (TClrAssemblyLocator) : Server C:\Windows\system32\comsvcs.dll contains no icons
 // ************************************************************************ //
 // *************************************************************************//
-// NOTE:                                                                      
-// Items guarded by $IFDEF_LIVE_SERVER_AT_DESIGN_TIME are used by properties  
-// which return objects that may need to be explicitly created via a function 
-// call prior to any access via the property. These items have been disabled  
-// in order to prevent accidental use from within the object inspector. You   
-// may enable them by defining LIVE_SERVER_AT_DESIGN_TIME or by selectively   
-// removing them from the $IFDEF blocks. However, such items must still be    
-// programmatically created via a method of the appropriate CoClass before    
-// they can be used.                                                          
-{$TYPEDADDRESS OFF} // Unit must be compiled without type-checked pointers. 
+// NOTE:
+// Items guarded by $IFDEF_LIVE_SERVER_AT_DESIGN_TIME are used by properties
+// which return objects that may need to be explicitly created via a function
+// call prior to any access via the property. These items have been disabled
+// in order to prevent accidental use from within the object inspector. You
+// may enable them by defining LIVE_SERVER_AT_DESIGN_TIME or by selectively
+// removing them from the $IFDEF blocks. However, such items must still be
+// programmatically created via a method of the appropriate CoClass before
+// they can be used.
+{$TYPEDADDRESS OFF} // Unit must be compiled without type-checked pointers.
 {$WARN SYMBOL_PLATFORM OFF}
 {$WRITEABLECONST ON}
 {$VARPROPSETTER ON}
 interface
 
 uses Windows, ActiveX, Classes, Graphics, OleServer, StdVCL, Variants;
-  
+
 
 // *********************************************************************//
-// GUIDS declared in the TypeLibrary. Following prefixes are used:        
-//   Type Libraries     : LIBID_xxxx                                      
-//   CoClasses          : CLASS_xxxx                                      
-//   DISPInterfaces     : DIID_xxxx                                       
-//   Non-DISP interfaces: IID_xxxx                                        
+// GUIDS declared in the TypeLibrary. Following prefixes are used:
+//   Type Libraries     : LIBID_xxxx
+//   CoClasses          : CLASS_xxxx
+//   DISPInterfaces     : DIID_xxxx
+//   Non-DISP interfaces: IID_xxxx
 // *********************************************************************//
 const
   // TypeLibrary Major and minor versions
@@ -221,7 +221,7 @@ const
   CLASS_ClrAssemblyLocator: TGUID = '{458AA3B5-265A-4B75-BC05-9BEA4630CF18}';
 
 // *********************************************************************//
-// Declaration of Enumerations defined in Type Library                    
+// Declaration of Enumerations defined in Type Library
 // *********************************************************************//
 // Constants for enum tagTransactionVote
 type
@@ -406,7 +406,7 @@ const
 type
 
 // *********************************************************************//
-// Forward declaration of types defined in TypeLibrary                    
+// Forward declaration of types defined in TypeLibrary
 // *********************************************************************//
   ISecurityCertificateColl = interface;
   ISecurityCertificateCollDisp = dispinterface;
@@ -543,8 +543,8 @@ type
   IAssemblyLocator = interface;
 
 // *********************************************************************//
-// Declaration of CoClasses defined in Type Library                       
-// (NOTE: Here we map each CoClass to its Default Interface)              
+// Declaration of CoClasses defined in Type Library
+// (NOTE: Here we map each CoClass to its Default Interface)
 // *********************************************************************//
   SecurityCertificate = ISecurityCertificateColl;
   SecurityIdentity = ISecurityIdentityColl;
@@ -582,7 +582,7 @@ type
 
 
 // *********************************************************************//
-// Declaration of structures, unions and aliases.                         
+// Declaration of structures, unions and aliases.
 // *********************************************************************//
   POleVariant1 = ^OleVariant; {*}
   PUserType1 = ^TGUID; {*}
@@ -611,7 +611,7 @@ type
     blobUserData: tagBLOB;
   end;
 
-  Error_Constants = __MIDL___MIDL_itf_autosvcs_0000_0129_0001; 
+  Error_Constants = __MIDL___MIDL_itf_autosvcs_0000_0129_0001;
 
   BOID = packed record
     rgb: array[0..15] of Byte;
@@ -627,8 +627,8 @@ type
     grfRMSupportedRetaining: LongWord;
   end;
 
-  LockModes = __MIDL___MIDL_itf_autosvcs_0000_0129_0002; 
-  ReleaseModes = __MIDL___MIDL_itf_autosvcs_0000_0129_0003; 
+  LockModes = __MIDL___MIDL_itf_autosvcs_0000_0129_0002;
+  ReleaseModes = __MIDL___MIDL_itf_autosvcs_0000_0129_0003;
 
   __MIDL___MIDL_itf_autosvcs_0000_0015_0001 = packed record
     cbSize: LongWord;
@@ -640,8 +640,8 @@ type
     sMachineName: PWideChar;
   end;
 
-  COMSVCSEVENTINFO = __MIDL___MIDL_itf_autosvcs_0000_0015_0001; 
-  ULONG_PTR = LongWord; 
+  COMSVCSEVENTINFO = __MIDL___MIDL_itf_autosvcs_0000_0015_0001;
+  ULONG_PTR = LongWord;
 
   _RECYCLE_INFO = packed record
     guidCombaseProcessIdentifier: TGUID;
@@ -651,7 +651,7 @@ type
     dwRecycleExpirationTimeout: LongWord;
   end;
 
-  RECYCLE_INFO = _RECYCLE_INFO; 
+  RECYCLE_INFO = _RECYCLE_INFO;
 
   CAppStatistics = packed record
     m_cTotalCalls: LongWord;
@@ -660,7 +660,7 @@ type
     m_cCallsPerSecond: LongWord;
   end;
 
-  APPSTATISTICS = CAppStatistics; 
+  APPSTATISTICS = CAppStatistics;
 
   CCLSIDData2 = packed record
     m_clsid: TGUID;
@@ -678,7 +678,7 @@ type
     m_cCallsFailed: LongWord;
   end;
 
-  CLSIDDATA2 = CCLSIDData2; 
+  CLSIDDATA2 = CCLSIDData2;
 
   CAppData = packed record
     m_idApp: LongWord;
@@ -687,7 +687,7 @@ type
     m_AppStatistics: CAppStatistics;
   end;
 
-  appData = CAppData; 
+  appData = CAppData;
 
   CCLSIDData = packed record
     m_clsid: TGUID;
@@ -700,7 +700,7 @@ type
     m_cCallsFailed: LongWord;
   end;
 
-  CLSIDDATA = CCLSIDData; 
+  CLSIDDATA = CCLSIDData;
 
   _LARGE_INTEGER = packed record
     QuadPart: Int64;
@@ -1081,7 +1081,7 @@ type
   ICrmLogControl = interface(IUnknown)
     ['{A0E174B3-D26E-11D2-8F84-00805FC7BCD9}']
     function Get_TransactionUOW(out pVal: WideString): HResult; stdcall;
-    function RegisterCompensator(lpcwstrProgIdCompensator: PWideChar; 
+    function RegisterCompensator(lpcwstrProgIdCompensator: PWideChar;
                                  lpcwstrDescription: PWideChar; lCrmRegFlags: Integer): HResult; stdcall;
     function WriteLogRecordVariants(var pLogRecord: OleVariant): HResult; stdcall;
     function ForceLog: HResult; stdcall;
@@ -1144,7 +1144,7 @@ type
 // *********************************************************************//
   ICheckSxsConfig = interface(IUnknown)
     ['{0FF5A96F-11FC-47D1-BAA6-25DD347E7242}']
-    function IsSameSxsConfig(wszSxsName: PWideChar; wszSxsDirectory: PWideChar; 
+    function IsSameSxsConfig(wszSxsName: PWideChar; wszSxsDirectory: PWideChar;
                              wszSxsAppName: PWideChar): HResult; stdcall;
   end;
 
@@ -1403,7 +1403,7 @@ type
 // *********************************************************************//
   ICreateWithTipTransactionEx = interface(IUnknown)
     ['{455ACF59-5345-11D2-99CF-00C04F797BC9}']
-    function CreateInstance(const bstrTipUrl: WideString; var rclsid: TGUID; var riid: TGUID; 
+    function CreateInstance(const bstrTipUrl: WideString; var rclsid: TGUID; var riid: TGUID;
                             out pObject: Pointer): HResult; stdcall;
   end;
 
@@ -1414,7 +1414,7 @@ type
 // *********************************************************************//
   ICreateWithTransactionEx = interface(IUnknown)
     ['{455ACF57-5345-11D2-99CF-00C04F797BC9}']
-    function CreateInstance(const pTransaction: ITransaction; var rclsid: TGUID; var riid: TGUID; 
+    function CreateInstance(const pTransaction: ITransaction; var rclsid: TGUID; var riid: TGUID;
                             out pObject: Pointer): HResult; stdcall;
   end;
 
@@ -1512,7 +1512,7 @@ type
 // *********************************************************************//
   IServiceTrackerConfig = interface(IUnknown)
     ['{6C3A3E1D-0BA6-4036-B76F-D0404DB816C9}']
-    function TrackerConfig(TrackerConfig: tagCSC_TrackerConfig; szTrackerAppName: PWideChar; 
+    function TrackerConfig(TrackerConfig: tagCSC_TrackerConfig; szTrackerAppName: PWideChar;
                            szTrackerCtxName: PWideChar): HResult; stdcall;
   end;
 
@@ -1638,7 +1638,7 @@ type
 // *********************************************************************//
   ISharedPropertyGroupManager = interface(IDispatch)
     ['{2A005C0D-A5DE-11CF-9E66-00AA00A3F464}']
-    function CreatePropertyGroup(const name: WideString; var dwIsoMode: Integer; 
+    function CreatePropertyGroup(const name: WideString; var dwIsoMode: Integer;
                                  var dwRelMode: Integer; out fExists: WordBool): ISharedPropertyGroup; safecall;
     function Get_Group(const name: WideString): ISharedPropertyGroup; safecall;
     function Get__NewEnum: IUnknown; safecall;
@@ -1653,7 +1653,7 @@ type
 // *********************************************************************//
   ISharedPropertyGroupManagerDisp = dispinterface
     ['{2A005C0D-A5DE-11CF-9E66-00AA00A3F464}']
-    function CreatePropertyGroup(const name: WideString; var dwIsoMode: Integer; 
+    function CreatePropertyGroup(const name: WideString; var dwIsoMode: Integer;
                                  var dwRelMode: Integer; out fExists: WordBool): ISharedPropertyGroup; dispid 1;
     property Group[const name: WideString]: ISharedPropertyGroup readonly dispid 2;
     property _NewEnum: IUnknown readonly dispid -4;
@@ -1775,25 +1775,25 @@ type
 // *********************************************************************//
   IComThreadEvents = interface(IUnknown)
     ['{683130A5-2E50-11D2-98A5-00C04F8EE1C4}']
-    function OnThreadStart(var pinfo: COMSVCSEVENTINFO; ThreadID: Largeuint; dwThread: LongWord; 
+    function OnThreadStart(var pinfo: COMSVCSEVENTINFO; ThreadID: Largeuint; dwThread: LongWord;
                            dwTheadCnt: LongWord): HResult; stdcall;
-    function OnThreadTerminate(var pinfo: COMSVCSEVENTINFO; ThreadID: Largeuint; 
+    function OnThreadTerminate(var pinfo: COMSVCSEVENTINFO; ThreadID: Largeuint;
                                dwThread: LongWord; dwTheadCnt: LongWord): HResult; stdcall;
-    function OnThreadBindToApartment(var pinfo: COMSVCSEVENTINFO; ThreadID: Largeuint; 
+    function OnThreadBindToApartment(var pinfo: COMSVCSEVENTINFO; ThreadID: Largeuint;
                                      AptID: Largeuint; dwActCnt: LongWord; dwLowCnt: LongWord): HResult; stdcall;
-    function OnThreadUnBind(var pinfo: COMSVCSEVENTINFO; ThreadID: Largeuint; AptID: Largeuint; 
+    function OnThreadUnBind(var pinfo: COMSVCSEVENTINFO; ThreadID: Largeuint; AptID: Largeuint;
                             dwActCnt: LongWord): HResult; stdcall;
-    function OnThreadWorkEnque(var pinfo: COMSVCSEVENTINFO; ThreadID: Largeuint; 
+    function OnThreadWorkEnque(var pinfo: COMSVCSEVENTINFO; ThreadID: Largeuint;
                                MsgWorkID: Largeuint; QueueLen: LongWord): HResult; stdcall;
-    function OnThreadWorkPrivate(var pinfo: COMSVCSEVENTINFO; ThreadID: Largeuint; 
+    function OnThreadWorkPrivate(var pinfo: COMSVCSEVENTINFO; ThreadID: Largeuint;
                                  MsgWorkID: Largeuint): HResult; stdcall;
-    function OnThreadWorkPublic(var pinfo: COMSVCSEVENTINFO; ThreadID: Largeuint; 
+    function OnThreadWorkPublic(var pinfo: COMSVCSEVENTINFO; ThreadID: Largeuint;
                                 MsgWorkID: Largeuint; QueueLen: LongWord): HResult; stdcall;
-    function OnThreadWorkRedirect(var pinfo: COMSVCSEVENTINFO; ThreadID: Largeuint; 
+    function OnThreadWorkRedirect(var pinfo: COMSVCSEVENTINFO; ThreadID: Largeuint;
                                   MsgWorkID: Largeuint; QueueLen: LongWord; ThreadNum: Largeuint): HResult; stdcall;
-    function OnThreadWorkReject(var pinfo: COMSVCSEVENTINFO; ThreadID: Largeuint; 
+    function OnThreadWorkReject(var pinfo: COMSVCSEVENTINFO; ThreadID: Largeuint;
                                 MsgWorkID: Largeuint; QueueLen: LongWord): HResult; stdcall;
-    function OnThreadAssignApartment(var pinfo: COMSVCSEVENTINFO; var guidActivity: TGUID; 
+    function OnThreadAssignApartment(var pinfo: COMSVCSEVENTINFO; var guidActivity: TGUID;
                                      AptID: Largeuint): HResult; stdcall;
     function OnThreadUnassignApartment(var pinfo: COMSVCSEVENTINFO; AptID: Largeuint): HResult; stdcall;
   end;
@@ -1827,7 +1827,7 @@ type
 // *********************************************************************//
   IComInstanceEvents = interface(IUnknown)
     ['{683130A7-2E50-11D2-98A5-00C04F8EE1C4}']
-    function OnObjectCreate(var pinfo: COMSVCSEVENTINFO; var guidActivity: TGUID; var clsid: TGUID; 
+    function OnObjectCreate(var pinfo: COMSVCSEVENTINFO; var guidActivity: TGUID; var clsid: TGUID;
                             var tsid: TGUID; CtxtID: Largeuint; ObjectID: Largeuint): HResult; stdcall;
     function OnObjectDestroy(var pinfo: COMSVCSEVENTINFO; CtxtID: Largeuint): HResult; stdcall;
   end;
@@ -1839,7 +1839,7 @@ type
 // *********************************************************************//
   IComTransactionEvents = interface(IUnknown)
     ['{683130A8-2E50-11D2-98A5-00C04F8EE1C4}']
-    function OnTransactionStart(var pinfo: COMSVCSEVENTINFO; var guidTx: TGUID; var tsid: TGUID; 
+    function OnTransactionStart(var pinfo: COMSVCSEVENTINFO; var guidTx: TGUID; var tsid: TGUID;
                                 fRoot: Integer): HResult; stdcall;
     function OnTransactionPrepare(var pinfo: COMSVCSEVENTINFO; var guidTx: TGUID; fVoteYes: Integer): HResult; stdcall;
     function OnTransactionAbort(var pinfo: COMSVCSEVENTINFO; var guidTx: TGUID): HResult; stdcall;
@@ -1853,11 +1853,11 @@ type
 // *********************************************************************//
   IComMethodEvents = interface(IUnknown)
     ['{683130A9-2E50-11D2-98A5-00C04F8EE1C4}']
-    function OnMethodCall(var pinfo: COMSVCSEVENTINFO; oid: Largeuint; var guidCid: TGUID; 
+    function OnMethodCall(var pinfo: COMSVCSEVENTINFO; oid: Largeuint; var guidCid: TGUID;
                           var guidRid: TGUID; iMeth: LongWord): HResult; stdcall;
-    function OnMethodReturn(var pinfo: COMSVCSEVENTINFO; oid: Largeuint; var guidCid: TGUID; 
+    function OnMethodReturn(var pinfo: COMSVCSEVENTINFO; oid: Largeuint; var guidCid: TGUID;
                             var guidRid: TGUID; iMeth: LongWord; hresult: HResult): HResult; stdcall;
-    function OnMethodException(var pinfo: COMSVCSEVENTINFO; oid: Largeuint; var guidCid: TGUID; 
+    function OnMethodException(var pinfo: COMSVCSEVENTINFO; oid: Largeuint; var guidCid: TGUID;
                                var guidRid: TGUID; iMeth: LongWord): HResult; stdcall;
   end;
 
@@ -1883,16 +1883,16 @@ type
 // *********************************************************************//
   IComResourceEvents = interface(IUnknown)
     ['{683130AB-2E50-11D2-98A5-00C04F8EE1C4}']
-    function OnResourceCreate(var pinfo: COMSVCSEVENTINFO; ObjectID: Largeuint; pszType: PWideChar; 
+    function OnResourceCreate(var pinfo: COMSVCSEVENTINFO; ObjectID: Largeuint; pszType: PWideChar;
                               resId: Largeuint; enlisted: Integer): HResult; stdcall;
-    function OnResourceAllocate(var pinfo: COMSVCSEVENTINFO; ObjectID: Largeuint; 
-                                pszType: PWideChar; resId: Largeuint; enlisted: Integer; 
+    function OnResourceAllocate(var pinfo: COMSVCSEVENTINFO; ObjectID: Largeuint;
+                                pszType: PWideChar; resId: Largeuint; enlisted: Integer;
                                 NumRated: LongWord; Rating: LongWord): HResult; stdcall;
-    function OnResourceRecycle(var pinfo: COMSVCSEVENTINFO; ObjectID: Largeuint; 
+    function OnResourceRecycle(var pinfo: COMSVCSEVENTINFO; ObjectID: Largeuint;
                                pszType: PWideChar; resId: Largeuint): HResult; stdcall;
-    function OnResourceDestroy(var pinfo: COMSVCSEVENTINFO; ObjectID: Largeuint; hr: HResult; 
+    function OnResourceDestroy(var pinfo: COMSVCSEVENTINFO; ObjectID: Largeuint; hr: HResult;
                                pszType: PWideChar; resId: Largeuint): HResult; stdcall;
-    function OnResourceTrack(var pinfo: COMSVCSEVENTINFO; ObjectID: Largeuint; pszType: PWideChar; 
+    function OnResourceTrack(var pinfo: COMSVCSEVENTINFO; ObjectID: Largeuint; pszType: PWideChar;
                              resId: Largeuint; enlisted: Integer): HResult; stdcall;
   end;
 
@@ -1903,14 +1903,14 @@ type
 // *********************************************************************//
   IComSecurityEvents = interface(IUnknown)
     ['{683130AC-2E50-11D2-98A5-00C04F8EE1C4}']
-    function OnAuthenticate(var pinfo: COMSVCSEVENTINFO; var guidActivity: TGUID; 
-                            ObjectID: Largeuint; var guidIID: TGUID; iMeth: LongWord; 
-                            cbByteOrig: LongWord; var pSidOriginalUser: Byte; cbByteCur: LongWord; 
+    function OnAuthenticate(var pinfo: COMSVCSEVENTINFO; var guidActivity: TGUID;
+                            ObjectID: Largeuint; var guidIID: TGUID; iMeth: LongWord;
+                            cbByteOrig: LongWord; var pSidOriginalUser: Byte; cbByteCur: LongWord;
                             var pSidCurrentUser: Byte; bCurrentUserInpersonatingInProc: Integer): HResult; stdcall;
-    function OnAuthenticateFail(var pinfo: COMSVCSEVENTINFO; var guidActivity: TGUID; 
-                                ObjectID: Largeuint; var guidIID: TGUID; iMeth: LongWord; 
-                                cbByteOrig: LongWord; var pSidOriginalUser: Byte; 
-                                cbByteCur: LongWord; var pSidCurrentUser: Byte; 
+    function OnAuthenticateFail(var pinfo: COMSVCSEVENTINFO; var guidActivity: TGUID;
+                                ObjectID: Largeuint; var guidIID: TGUID; iMeth: LongWord;
+                                cbByteOrig: LongWord; var pSidOriginalUser: Byte;
+                                cbByteCur: LongWord; var pSidCurrentUser: Byte;
                                 bCurrentUserInpersonatingInProc: Integer): HResult; stdcall;
   end;
 
@@ -1921,13 +1921,13 @@ type
 // *********************************************************************//
   IComObjectPoolEvents = interface(IUnknown)
     ['{683130AD-2E50-11D2-98A5-00C04F8EE1C4}']
-    function OnObjPoolPutObject(var pinfo: COMSVCSEVENTINFO; var guidObject: TGUID; 
+    function OnObjPoolPutObject(var pinfo: COMSVCSEVENTINFO; var guidObject: TGUID;
                                 nReason: SYSINT; dwAvailable: LongWord; oid: Largeuint): HResult; stdcall;
-    function OnObjPoolGetObject(var pinfo: COMSVCSEVENTINFO; var guidActivity: TGUID; 
+    function OnObjPoolGetObject(var pinfo: COMSVCSEVENTINFO; var guidActivity: TGUID;
                                 var guidObject: TGUID; dwAvailable: LongWord; oid: Largeuint): HResult; stdcall;
-    function OnObjPoolRecycleToTx(var pinfo: COMSVCSEVENTINFO; var guidActivity: TGUID; 
+    function OnObjPoolRecycleToTx(var pinfo: COMSVCSEVENTINFO; var guidActivity: TGUID;
                                   var guidObject: TGUID; var guidTx: TGUID; objid: Largeuint): HResult; stdcall;
-    function OnObjPoolGetFromTx(var pinfo: COMSVCSEVENTINFO; var guidActivity: TGUID; 
+    function OnObjPoolGetFromTx(var pinfo: COMSVCSEVENTINFO; var guidActivity: TGUID;
                                 var guidObject: TGUID; var guidTx: TGUID; objid: Largeuint): HResult; stdcall;
   end;
 
@@ -1938,16 +1938,16 @@ type
 // *********************************************************************//
   IComObjectPoolEvents2 = interface(IUnknown)
     ['{683130AE-2E50-11D2-98A5-00C04F8EE1C4}']
-    function OnObjPoolCreateObject(var pinfo: COMSVCSEVENTINFO; var guidObject: TGUID; 
+    function OnObjPoolCreateObject(var pinfo: COMSVCSEVENTINFO; var guidObject: TGUID;
                                    dwObjsCreated: LongWord; oid: Largeuint): HResult; stdcall;
-    function OnObjPoolDestroyObject(var pinfo: COMSVCSEVENTINFO; var guidObject: TGUID; 
+    function OnObjPoolDestroyObject(var pinfo: COMSVCSEVENTINFO; var guidObject: TGUID;
                                     dwObjsCreated: LongWord; oid: Largeuint): HResult; stdcall;
-    function OnObjPoolCreateDecision(var pinfo: COMSVCSEVENTINFO; dwThreadsWaiting: LongWord; 
-                                     dwAvail: LongWord; dwCreated: LongWord; dwMin: LongWord; 
+    function OnObjPoolCreateDecision(var pinfo: COMSVCSEVENTINFO; dwThreadsWaiting: LongWord;
+                                     dwAvail: LongWord; dwCreated: LongWord; dwMin: LongWord;
                                      dwMax: LongWord): HResult; stdcall;
-    function OnObjPoolTimeout(var pinfo: COMSVCSEVENTINFO; var guidObject: TGUID; 
+    function OnObjPoolTimeout(var pinfo: COMSVCSEVENTINFO; var guidObject: TGUID;
                               var guidActivity: TGUID; dwTimeout: LongWord): HResult; stdcall;
-    function OnObjPoolCreatePool(var pinfo: COMSVCSEVENTINFO; var guidObject: TGUID; 
+    function OnObjPoolCreatePool(var pinfo: COMSVCSEVENTINFO; var guidObject: TGUID;
                                  dwMin: LongWord; dwMax: LongWord; dwTimeout: LongWord): HResult; stdcall;
   end;
 
@@ -1958,7 +1958,7 @@ type
 // *********************************************************************//
   IComObjectConstructionEvents = interface(IUnknown)
     ['{683130AF-2E50-11D2-98A5-00C04F8EE1C4}']
-    function OnObjectConstruct(var pinfo: COMSVCSEVENTINFO; var guidObject: TGUID; 
+    function OnObjectConstruct(var pinfo: COMSVCSEVENTINFO; var guidObject: TGUID;
                                sConstructString: PWideChar; oid: Largeuint): HResult; stdcall;
   end;
 
@@ -1971,15 +1971,15 @@ type
     ['{683130B0-2E50-11D2-98A5-00C04F8EE1C4}']
     function OnActivityCreate(var pinfo: COMSVCSEVENTINFO; var guidActivity: TGUID): HResult; stdcall;
     function OnActivityDestroy(var pinfo: COMSVCSEVENTINFO; var guidActivity: TGUID): HResult; stdcall;
-    function OnActivityEnter(var pinfo: COMSVCSEVENTINFO; var guidCurrent: TGUID; 
+    function OnActivityEnter(var pinfo: COMSVCSEVENTINFO; var guidCurrent: TGUID;
                              var guidEntered: TGUID; dwThread: LongWord): HResult; stdcall;
-    function OnActivityTimeout(var pinfo: COMSVCSEVENTINFO; var guidCurrent: TGUID; 
+    function OnActivityTimeout(var pinfo: COMSVCSEVENTINFO; var guidCurrent: TGUID;
                                var guidEntered: TGUID; dwThread: LongWord; dwTimeout: LongWord): HResult; stdcall;
-    function OnActivityReenter(var pinfo: COMSVCSEVENTINFO; var guidCurrent: TGUID; 
+    function OnActivityReenter(var pinfo: COMSVCSEVENTINFO; var guidCurrent: TGUID;
                                dwThread: LongWord; dwCallDepth: LongWord): HResult; stdcall;
-    function OnActivityLeave(var pinfo: COMSVCSEVENTINFO; var guidCurrent: TGUID; 
+    function OnActivityLeave(var pinfo: COMSVCSEVENTINFO; var guidCurrent: TGUID;
                              var guidLeft: TGUID): HResult; stdcall;
-    function OnActivityLeaveSame(var pinfo: COMSVCSEVENTINFO; var guidCurrent: TGUID; 
+    function OnActivityLeaveSame(var pinfo: COMSVCSEVENTINFO; var guidCurrent: TGUID;
                                  dwCallDepth: LongWord): HResult; stdcall;
   end;
 
@@ -1990,7 +1990,7 @@ type
 // *********************************************************************//
   IComIdentityEvents = interface(IUnknown)
     ['{683130B1-2E50-11D2-98A5-00C04F8EE1C4}']
-    function OnIISRequestInfo(var pinfo: COMSVCSEVENTINFO; objid: Largeuint; 
+    function OnIISRequestInfo(var pinfo: COMSVCSEVENTINFO; objid: Largeuint;
                               pszClientIP: PWideChar; pszServerIP: PWideChar; pszURL: PWideChar): HResult; stdcall;
   end;
 
@@ -2001,18 +2001,18 @@ type
 // *********************************************************************//
   IComQCEvents = interface(IUnknown)
     ['{683130B2-2E50-11D2-98A5-00C04F8EE1C4}']
-    function OnQCRecord(var pinfo: COMSVCSEVENTINFO; objid: Largeuint; szQueue: PrivateAlias1; 
+    function OnQCRecord(var pinfo: COMSVCSEVENTINFO; objid: Largeuint; szQueue: PrivateAlias1;
                         var guidMsgId: TGUID; var guidWorkFlowId: TGUID; msmqhr: HResult): HResult; stdcall;
-    function OnQCQueueOpen(var pinfo: COMSVCSEVENTINFO; szQueue: PrivateAlias1; QueueID: Largeuint; 
+    function OnQCQueueOpen(var pinfo: COMSVCSEVENTINFO; szQueue: PrivateAlias1; QueueID: Largeuint;
                            hr: HResult): HResult; stdcall;
-    function OnQCReceive(var pinfo: COMSVCSEVENTINFO; QueueID: Largeuint; var guidMsgId: TGUID; 
+    function OnQCReceive(var pinfo: COMSVCSEVENTINFO; QueueID: Largeuint; var guidMsgId: TGUID;
                          var guidWorkFlowId: TGUID; hr: HResult): HResult; stdcall;
     function OnQCReceiveFail(var pinfo: COMSVCSEVENTINFO; QueueID: Largeuint; msmqhr: HResult): HResult; stdcall;
-    function OnQCMoveToReTryQueue(var pinfo: COMSVCSEVENTINFO; var guidMsgId: TGUID; 
+    function OnQCMoveToReTryQueue(var pinfo: COMSVCSEVENTINFO; var guidMsgId: TGUID;
                                   var guidWorkFlowId: TGUID; RetryIndex: LongWord): HResult; stdcall;
-    function OnQCMoveToDeadQueue(var pinfo: COMSVCSEVENTINFO; var guidMsgId: TGUID; 
+    function OnQCMoveToDeadQueue(var pinfo: COMSVCSEVENTINFO; var guidMsgId: TGUID;
                                  var guidWorkFlowId: TGUID): HResult; stdcall;
-    function OnQCPlayback(var pinfo: COMSVCSEVENTINFO; objid: Largeuint; var guidMsgId: TGUID; 
+    function OnQCPlayback(var pinfo: COMSVCSEVENTINFO; objid: Largeuint; var guidMsgId: TGUID;
                           var guidWorkFlowId: TGUID; hr: HResult): HResult; stdcall;
   end;
 
@@ -2023,7 +2023,7 @@ type
 // *********************************************************************//
   IComExceptionEvents = interface(IUnknown)
     ['{683130B3-2E50-11D2-98A5-00C04F8EE1C4}']
-    function OnExceptionUser(var pinfo: COMSVCSEVENTINFO; code: LongWord; address: Largeuint; 
+    function OnExceptionUser(var pinfo: COMSVCSEVENTINFO; code: LongWord; address: Largeuint;
                              pszStackTrace: PWideChar): HResult; stdcall;
   end;
 
@@ -2037,8 +2037,8 @@ type
     function OnCRMRecoveryStart(var pinfo: COMSVCSEVENTINFO; guidApp: TGUID): HResult; stdcall;
     function OnCRMRecoveryDone(var pinfo: COMSVCSEVENTINFO; guidApp: TGUID): HResult; stdcall;
     function OnCRMCheckpoint(var pinfo: COMSVCSEVENTINFO; guidApp: TGUID): HResult; stdcall;
-    function OnCRMBegin(var pinfo: COMSVCSEVENTINFO; guidClerkCLSID: TGUID; guidActivity: TGUID; 
-                        guidTx: TGUID; szProgIdCompensator: PrivateAlias1; 
+    function OnCRMBegin(var pinfo: COMSVCSEVENTINFO; guidClerkCLSID: TGUID; guidActivity: TGUID;
+                        guidTx: TGUID; szProgIdCompensator: PrivateAlias1;
                         szDescription: PrivateAlias1): HResult; stdcall;
     function OnCRMPrepare(var pinfo: COMSVCSEVENTINFO; guidClerkCLSID: TGUID): HResult; stdcall;
     function OnCRMCommit(var pinfo: COMSVCSEVENTINFO; guidClerkCLSID: TGUID): HResult; stdcall;
@@ -2046,13 +2046,13 @@ type
     function OnCRMIndoubt(var pinfo: COMSVCSEVENTINFO; guidClerkCLSID: TGUID): HResult; stdcall;
     function OnCRMDone(var pinfo: COMSVCSEVENTINFO; guidClerkCLSID: TGUID): HResult; stdcall;
     function OnCRMRelease(var pinfo: COMSVCSEVENTINFO; guidClerkCLSID: TGUID): HResult; stdcall;
-    function OnCRMAnalyze(var pinfo: COMSVCSEVENTINFO; guidClerkCLSID: TGUID; 
+    function OnCRMAnalyze(var pinfo: COMSVCSEVENTINFO; guidClerkCLSID: TGUID;
                           dwCrmRecordType: LongWord; dwRecordSize: LongWord): HResult; stdcall;
-    function OnCRMWrite(var pinfo: COMSVCSEVENTINFO; guidClerkCLSID: TGUID; fVariants: Integer; 
+    function OnCRMWrite(var pinfo: COMSVCSEVENTINFO; guidClerkCLSID: TGUID; fVariants: Integer;
                         dwRecordSize: LongWord): HResult; stdcall;
     function OnCRMForget(var pinfo: COMSVCSEVENTINFO; guidClerkCLSID: TGUID): HResult; stdcall;
     function OnCRMForce(var pinfo: COMSVCSEVENTINFO; guidClerkCLSID: TGUID): HResult; stdcall;
-    function OnCRMDeliver(var pinfo: COMSVCSEVENTINFO; guidClerkCLSID: TGUID; fVariants: Integer; 
+    function OnCRMDeliver(var pinfo: COMSVCSEVENTINFO; guidClerkCLSID: TGUID; fVariants: Integer;
                           dwRecordSize: LongWord): HResult; stdcall;
   end;
 
@@ -2063,12 +2063,12 @@ type
 // *********************************************************************//
   IComMethod2Events = interface(IUnknown)
     ['{FB388AAA-567D-4024-AF8E-6E93EE748573}']
-    function OnMethodCall2(var pinfo: COMSVCSEVENTINFO; oid: Largeuint; var guidCid: TGUID; 
+    function OnMethodCall2(var pinfo: COMSVCSEVENTINFO; oid: Largeuint; var guidCid: TGUID;
                            var guidRid: TGUID; dwThread: LongWord; iMeth: LongWord): HResult; stdcall;
-    function OnMethodReturn2(var pinfo: COMSVCSEVENTINFO; oid: Largeuint; var guidCid: TGUID; 
-                             var guidRid: TGUID; dwThread: LongWord; iMeth: LongWord; 
+    function OnMethodReturn2(var pinfo: COMSVCSEVENTINFO; oid: Largeuint; var guidCid: TGUID;
+                             var guidRid: TGUID; dwThread: LongWord; iMeth: LongWord;
                              hresult: HResult): HResult; stdcall;
-    function OnMethodException2(var pinfo: COMSVCSEVENTINFO; oid: Largeuint; var guidCid: TGUID; 
+    function OnMethodException2(var pinfo: COMSVCSEVENTINFO; oid: Largeuint; var guidCid: TGUID;
                                 var guidRid: TGUID; dwThread: LongWord; iMeth: LongWord): HResult; stdcall;
   end;
 
@@ -2093,7 +2093,7 @@ type
     function OnAppShutdown2(var pinfo: COMSVCSEVENTINFO; guidApp: TGUID): HResult; stdcall;
     function OnAppForceShutdown2(var pinfo: COMSVCSEVENTINFO; guidApp: TGUID): HResult; stdcall;
     function OnAppPaused2(var pinfo: COMSVCSEVENTINFO; guidApp: TGUID; bPaused: Integer): HResult; stdcall;
-    function OnAppRecycle2(var pinfo: COMSVCSEVENTINFO; guidApp: TGUID; guidProcess: TGUID; 
+    function OnAppRecycle2(var pinfo: COMSVCSEVENTINFO; guidApp: TGUID; guidProcess: TGUID;
                            lReason: Integer): HResult; stdcall;
   end;
 
@@ -2104,7 +2104,7 @@ type
 // *********************************************************************//
   IComTransaction2Events = interface(IUnknown)
     ['{A136F62A-2F94-4288-86E0-D8A1FA4C0299}']
-    function OnTransactionStart2(var pinfo: COMSVCSEVENTINFO; var guidTx: TGUID; var tsid: TGUID; 
+    function OnTransactionStart2(var pinfo: COMSVCSEVENTINFO; var guidTx: TGUID; var tsid: TGUID;
                                  fRoot: Integer; nIsolationLevel: SYSINT): HResult; stdcall;
     function OnTransactionPrepare2(var pinfo: COMSVCSEVENTINFO; var guidTx: TGUID; fVoteYes: Integer): HResult; stdcall;
     function OnTransactionAbort2(var pinfo: COMSVCSEVENTINFO; var guidTx: TGUID): HResult; stdcall;
@@ -2118,8 +2118,8 @@ type
 // *********************************************************************//
   IComInstance2Events = interface(IUnknown)
     ['{20E3BF07-B506-4AD5-A50C-D2CA5B9C158E}']
-    function OnObjectCreate2(var pinfo: COMSVCSEVENTINFO; var guidActivity: TGUID; 
-                             var clsid: TGUID; var tsid: TGUID; CtxtID: Largeuint; 
+    function OnObjectCreate2(var pinfo: COMSVCSEVENTINFO; var guidActivity: TGUID;
+                             var clsid: TGUID; var tsid: TGUID; CtxtID: Largeuint;
                              ObjectID: Largeuint; var guidPartition: TGUID): HResult; stdcall;
     function OnObjectDestroy2(var pinfo: COMSVCSEVENTINFO; CtxtID: Largeuint): HResult; stdcall;
   end;
@@ -2131,15 +2131,15 @@ type
 // *********************************************************************//
   IComObjectPool2Events = interface(IUnknown)
     ['{65BF6534-85EA-4F64-8CF4-3D974B2AB1CF}']
-    function OnObjPoolPutObject2(var pinfo: COMSVCSEVENTINFO; var guidObject: TGUID; 
+    function OnObjPoolPutObject2(var pinfo: COMSVCSEVENTINFO; var guidObject: TGUID;
                                  nReason: SYSINT; dwAvailable: LongWord; oid: Largeuint): HResult; stdcall;
-    function OnObjPoolGetObject2(var pinfo: COMSVCSEVENTINFO; var guidActivity: TGUID; 
-                                 var guidObject: TGUID; dwAvailable: LongWord; oid: Largeuint; 
+    function OnObjPoolGetObject2(var pinfo: COMSVCSEVENTINFO; var guidActivity: TGUID;
+                                 var guidObject: TGUID; dwAvailable: LongWord; oid: Largeuint;
                                  var guidPartition: TGUID): HResult; stdcall;
-    function OnObjPoolRecycleToTx2(var pinfo: COMSVCSEVENTINFO; var guidActivity: TGUID; 
+    function OnObjPoolRecycleToTx2(var pinfo: COMSVCSEVENTINFO; var guidActivity: TGUID;
                                    var guidObject: TGUID; var guidTx: TGUID; objid: Largeuint): HResult; stdcall;
-    function OnObjPoolGetFromTx2(var pinfo: COMSVCSEVENTINFO; var guidActivity: TGUID; 
-                                 var guidObject: TGUID; var guidTx: TGUID; objid: Largeuint; 
+    function OnObjPoolGetFromTx2(var pinfo: COMSVCSEVENTINFO; var guidActivity: TGUID;
+                                 var guidObject: TGUID; var guidTx: TGUID; objid: Largeuint;
                                  var guidPartition: TGUID): HResult; stdcall;
   end;
 
@@ -2150,8 +2150,8 @@ type
 // *********************************************************************//
   IComObjectConstruction2Events = interface(IUnknown)
     ['{4B5A7827-8DF2-45C0-8F6F-57EA1F856A9F}']
-    function OnObjectConstruct2(var pinfo: COMSVCSEVENTINFO; var guidObject: TGUID; 
-                                sConstructString: PWideChar; oid: Largeuint; 
+    function OnObjectConstruct2(var pinfo: COMSVCSEVENTINFO; var guidObject: TGUID;
+                                sConstructString: PWideChar; oid: Largeuint;
                                 var guidPartition: TGUID): HResult; stdcall;
   end;
 
@@ -2162,7 +2162,7 @@ type
 // *********************************************************************//
   IComLTxEvents = interface(IUnknown)
     ['{605CF82C-578E-4298-975D-82BABCD9E053}']
-    function OnLtxTransactionStart(var pinfo: COMSVCSEVENTINFO; guidLtx: TGUID; tsid: TGUID; 
+    function OnLtxTransactionStart(var pinfo: COMSVCSEVENTINFO; guidLtx: TGUID; tsid: TGUID;
                                    fRoot: Integer; nIsolationLevel: SYSINT): HResult; stdcall;
     function OnLtxTransactionPrepare(var pinfo: COMSVCSEVENTINFO; guidLtx: TGUID; fVote: Integer): HResult; stdcall;
     function OnLtxTransactionAbort(var pinfo: COMSVCSEVENTINFO; guidLtx: TGUID): HResult; stdcall;
@@ -2178,8 +2178,8 @@ type
   ISystemAppEventData = interface(IUnknown)
     ['{D6D48A3C-D5C5-49E7-8C74-99E4889ED52F}']
     function Startup: HResult; stdcall;
-    function OnDataChanged(dwPid: LongWord; dwMask: LongWord; dwNumberSinks: LongWord; 
-                           const bstrDwMethodMask: WideString; dwReason: LongWord; 
+    function OnDataChanged(dwPid: LongWord; dwMask: LongWord; dwNumberSinks: LongWord;
+                           const bstrDwMethodMask: WideString; dwReason: LongWord;
                            u64TraceHandle: Largeuint): HResult; stdcall;
   end;
 
@@ -2281,10 +2281,10 @@ type
 // *********************************************************************//
   IDispenserManager = interface(IUnknown)
     ['{5CB31E10-2B5F-11CF-BE10-00AA00A2FA25}']
-    function RegisterDispenser(const __MIDL__IDispenserManager0000: IDispenserDriver; 
-                               szDispenserName: PWideChar; 
+    function RegisterDispenser(const __MIDL__IDispenserManager0000: IDispenserDriver;
+                               szDispenserName: PWideChar;
                                out __MIDL__IDispenserManager0001: IHolder): HResult; stdcall;
-    function GetContext(out __MIDL__IDispenserManager0002: ULONG_PTR; 
+    function GetContext(out __MIDL__IDispenserManager0002: ULONG_PTR;
                         out __MIDL__IDispenserManager0003: ULONG_PTR): HResult; stdcall;
   end;
 
@@ -2305,9 +2305,9 @@ type
 // *********************************************************************//
   IDispenserDriver = interface(IUnknown)
     ['{208B3651-2B48-11CF-BE10-00AA00A2FA25}']
-    function CreateResource(ResTypId: ULONG_PTR; out pResId: ULONG_PTR; 
+    function CreateResource(ResTypId: ULONG_PTR; out pResId: ULONG_PTR;
                             out pSecsFreeBeforeDestroy: Integer): HResult; stdcall;
-    function RateResource(ResTypId: ULONG_PTR; resId: ULONG_PTR; 
+    function RateResource(ResTypId: ULONG_PTR; resId: ULONG_PTR;
                           fRequiresTransactionEnlistment: Integer; out pRating: LongWord): HResult; stdcall;
     function EnlistResource(resId: ULONG_PTR; TransId: ULONG_PTR): HResult; stdcall;
     function ResetResource(resId: ULONG_PTR): HResult; stdcall;
@@ -2349,9 +2349,9 @@ type
 // *********************************************************************//
   IEventServerTrace = interface(IDispatch)
     ['{9A9F12B8-80AF-47AB-A579-35EA57725370}']
-    procedure StartTraceGuid(const bstrguidEvent: WideString; const bstrguidFilter: WideString; 
+    procedure StartTraceGuid(const bstrguidEvent: WideString; const bstrguidFilter: WideString;
                              lPidFilter: Integer); safecall;
-    procedure StopTraceGuid(const bstrguidEvent: WideString; const bstrguidFilter: WideString; 
+    procedure StopTraceGuid(const bstrguidEvent: WideString; const bstrguidFilter: WideString;
                             lPidFilter: Integer); safecall;
     procedure EnumTraceGuid(out plCntGuids: Integer; out pbstrGuidList: WideString); safecall;
   end;
@@ -2363,9 +2363,9 @@ type
 // *********************************************************************//
   IEventServerTraceDisp = dispinterface
     ['{9A9F12B8-80AF-47AB-A579-35EA57725370}']
-    procedure StartTraceGuid(const bstrguidEvent: WideString; const bstrguidFilter: WideString; 
+    procedure StartTraceGuid(const bstrguidEvent: WideString; const bstrguidFilter: WideString;
                              lPidFilter: Integer); dispid 1;
-    procedure StopTraceGuid(const bstrguidEvent: WideString; const bstrguidFilter: WideString; 
+    procedure StopTraceGuid(const bstrguidEvent: WideString; const bstrguidFilter: WideString;
                             lPidFilter: Integer); dispid 2;
     procedure EnumTraceGuid(out plCntGuids: Integer; out pbstrGuidList: WideString); dispid 3;
   end;
@@ -2377,10 +2377,10 @@ type
 // *********************************************************************//
   IEventServer = interface(IUnknown)
     ['{F1CB0608-EC04-11D1-93AE-00AA00BA3258}']
-    function DispatchManyEvents(dwPid: LongWord; var appGuid: TGUID; dwEvents: LongWord; 
+    function DispatchManyEvents(dwPid: LongWord; var appGuid: TGUID; dwEvents: LongWord;
                                 cbSize: LongWord; var pBuf: Byte): HResult; stdcall;
     function DispatchOneEvent(dwPid: LongWord; var appGuid: TGUID; cbSize: LongWord; var pBuf: Byte): HResult; stdcall;
-    function AddProcess(dwPid: LongWord; var guidApp: TGUID; out pdwInitialEventMask: LongWord; 
+    function AddProcess(dwPid: LongWord; var guidApp: TGUID; out pdwInitialEventMask: LongWord;
                         out ppUnkCallfactory: IUnknown): HResult; stdcall;
     function RemoveProcess(dwPid: LongWord): HResult; stdcall;
     function GetCallFactoryObject(dwPid: LongWord; out ppUnkCallfactory: IUnknown): HResult; stdcall;
@@ -2393,12 +2393,12 @@ type
 // *********************************************************************//
   IEventServer2 = interface(IUnknown)
     ['{378F3CA7-BD24-481C-8DC3-5E5ECE1BCAD7}']
-    function AddProcess2(dwPid: LongWord; var guidApp: TGUID; var guidAppInstance: TGUID; 
-                         var guidPartition: TGUID; dwNumberSinks: LongWord; 
-                         out pdwInitialEventMask: LongWord; var pdwInitialMetMasks: LongWord; 
+    function AddProcess2(dwPid: LongWord; var guidApp: TGUID; var guidAppInstance: TGUID;
+                         var guidPartition: TGUID; dwNumberSinks: LongWord;
+                         out pdwInitialEventMask: LongWord; var pdwInitialMetMasks: LongWord;
                          out ppUnkCallfactory: IUnknown; out pTraceHandle: Largeuint): HResult; stdcall;
     function RemoveProcess2(dwPid: LongWord): HResult; stdcall;
-    function UpdateEventMasks(dwPid: LongWord; dwNumberSinks: LongWord; dwEventMasksIn: LongWord; 
+    function UpdateEventMasks(dwPid: LongWord; dwNumberSinks: LongWord; dwEventMasksIn: LongWord;
                               out pdwEventMaskOut: LongWord; var pdwMetMasksInOut: LongWord): HResult; stdcall;
   end;
 
@@ -2409,12 +2409,12 @@ type
 // *********************************************************************//
   IReceiveAppData = interface(IUnknown)
     ['{413DAFB0-BCF4-11D1-861D-0080C729264D}']
-    function Register(var pApplId: TGUID; var pguidApplPartitionId: TGUID; 
-                      var pApplInstanceId: TGUID; eAppType: tagCOMPLUS_APPTYPE; 
-                      pwszProcessName: PWideChar; const pUnkPackageObject: IUnknown; 
-                      dwAppProcessId: LongWord; dwState: LongWord; var pRecycleInfo: RECYCLE_INFO; 
+    function Register(var pApplId: TGUID; var pguidApplPartitionId: TGUID;
+                      var pApplInstanceId: TGUID; eAppType: tagCOMPLUS_APPTYPE;
+                      pwszProcessName: PWideChar; const pUnkPackageObject: IUnknown;
+                      dwAppProcessId: LongWord; dwState: LongWord; var pRecycleInfo: RECYCLE_INFO;
                       out pidApp: LongWord; out pPushRate: LongWord): HResult; stdcall;
-    function PushAppData(idApp: LongWord; appData: APPSTATISTICS; dwAppState: LongWord; 
+    function PushAppData(idApp: LongWord; appData: APPSTATISTICS; dwAppState: LongWord;
                          nCLSIDs: LongWord; var clsids: CLSIDDATA2): HResult; stdcall;
     function Unregister(idApp: LongWord): HResult; stdcall;
     function RecycleCallingProcess(idApp: LongWord; lReasonCode: Integer): HResult; stdcall;
@@ -2442,7 +2442,7 @@ type
   IProcessDump = interface(IDispatch)
     ['{23C9DD26-2355-4FE2-84DE-F779A238ADBD}']
     procedure IsSupported; safecall;
-    function DumpProcess(const bstrInstanceID: WideString; const bstrDirectory: WideString; 
+    function DumpProcess(const bstrInstanceID: WideString; const bstrDirectory: WideString;
                          dwMaxImages: LongWord): WideString; safecall;
   end;
 
@@ -2454,7 +2454,7 @@ type
   IProcessDumpDisp = dispinterface
     ['{23C9DD26-2355-4FE2-84DE-F779A238ADBD}']
     procedure IsSupported; dispid 1;
-    function DumpProcess(const bstrInstanceID: WideString; const bstrDirectory: WideString; 
+    function DumpProcess(const bstrInstanceID: WideString; const bstrDirectory: WideString;
                          dwMaxImages: LongWord): WideString; dispid 2;
   end;
 
@@ -2488,28 +2488,28 @@ type
 // *********************************************************************//
   IMoniker = interface(IPersistStream)
     ['{0000000F-0000-0000-C000-000000000046}']
-    function RemoteBindToObject(const pbc: IBindCtx; const pmkToLeft: IMoniker; 
+    function RemoteBindToObject(const pbc: IBindCtx; const pmkToLeft: IMoniker;
                                 var riidResult: TGUID; out ppvResult: IUnknown): HResult; stdcall;
-    function RemoteBindToStorage(const pbc: IBindCtx; const pmkToLeft: IMoniker; var riid: TGUID; 
+    function RemoteBindToStorage(const pbc: IBindCtx; const pmkToLeft: IMoniker; var riid: TGUID;
                                  out ppvObj: IUnknown): HResult; stdcall;
-    function Reduce(const pbc: IBindCtx; dwReduceHowFar: LongWord; var ppmkToLeft: IMoniker; 
+    function Reduce(const pbc: IBindCtx; dwReduceHowFar: LongWord; var ppmkToLeft: IMoniker;
                     out ppmkReduced: IMoniker): HResult; stdcall;
-    function ComposeWith(const pmkRight: IMoniker; fOnlyIfNotGeneric: Integer; 
+    function ComposeWith(const pmkRight: IMoniker; fOnlyIfNotGeneric: Integer;
                          out ppmkComposite: IMoniker): HResult; stdcall;
     function Enum(fForward: Integer; out ppenumMoniker: IEnumMoniker): HResult; stdcall;
     function IsEqual(const pmkOtherMoniker: IMoniker): HResult; stdcall;
     function Hash(out pdwHash: LongWord): HResult; stdcall;
-    function IsRunning(const pbc: IBindCtx; const pmkToLeft: IMoniker; 
+    function IsRunning(const pbc: IBindCtx; const pmkToLeft: IMoniker;
                        const pmkNewlyRunning: IMoniker): HResult; stdcall;
-    function GetTimeOfLastChange(const pbc: IBindCtx; const pmkToLeft: IMoniker; 
+    function GetTimeOfLastChange(const pbc: IBindCtx; const pmkToLeft: IMoniker;
                                  out pfiletime: _FILETIME): HResult; stdcall;
     function Inverse(out ppmk: IMoniker): HResult; stdcall;
     function CommonPrefixWith(const pmkOther: IMoniker; out ppmkPrefix: IMoniker): HResult; stdcall;
     function RelativePathTo(const pmkOther: IMoniker; out ppmkRelPath: IMoniker): HResult; stdcall;
-    function GetDisplayName(const pbc: IBindCtx; const pmkToLeft: IMoniker; 
+    function GetDisplayName(const pbc: IBindCtx; const pmkToLeft: IMoniker;
                             out ppszDisplayName: PWideChar): HResult; stdcall;
-    function ParseDisplayName(const pbc: IBindCtx; const pmkToLeft: IMoniker; 
-                              pszDisplayName: PWideChar; out pchEaten: LongWord; 
+    function ParseDisplayName(const pbc: IBindCtx; const pmkToLeft: IMoniker;
+                              pszDisplayName: PWideChar; out pchEaten: LongWord;
                               out ppmkOut: IMoniker): HResult; stdcall;
     function IsSystemMoniker(out pdwMksys: LongWord): HResult; stdcall;
   end;
@@ -2532,10 +2532,10 @@ type
 // *********************************************************************//
   IStream = interface(ISequentialStream)
     ['{0000000C-0000-0000-C000-000000000046}']
-    function RemoteSeek(dlibMove: _LARGE_INTEGER; dwOrigin: LongWord; 
+    function RemoteSeek(dlibMove: _LARGE_INTEGER; dwOrigin: LongWord;
                         out plibNewPosition: _ULARGE_INTEGER): HResult; stdcall;
     function SetSize(libNewSize: _ULARGE_INTEGER): HResult; stdcall;
-    function RemoteCopyTo(const pstm: IStream; cb: _ULARGE_INTEGER; out pcbRead: _ULARGE_INTEGER; 
+    function RemoteCopyTo(const pstm: IStream; cb: _ULARGE_INTEGER; out pcbRead: _ULARGE_INTEGER;
                           out pcbWritten: _ULARGE_INTEGER): HResult; stdcall;
     function Commit(grfCommitFlags: LongWord): HResult; stdcall;
     function Revert: HResult; stdcall;
@@ -2571,7 +2571,7 @@ type
 // *********************************************************************//
   IRunningObjectTable = interface(IUnknown)
     ['{00000010-0000-0000-C000-000000000046}']
-    function Register(grfFlags: LongWord; const punkObject: IUnknown; 
+    function Register(grfFlags: LongWord; const punkObject: IUnknown;
                       const pmkObjectName: IMoniker; out pdwRegister: LongWord): HResult; stdcall;
     function Revoke(dwRegister: LongWord): HResult; stdcall;
     function IsRunning(const pmkObjectName: IMoniker): HResult; stdcall;
@@ -2615,10 +2615,10 @@ type
   IAppDomainHelper = interface(IDispatch)
     ['{C7B67079-8255-42C6-9EC0-6994A3548780}']
     function pfnShutdownCB(var pv: Pointer): HResult; stdcall;
-    function Initialize(const pUnkAD: IUnknown; 
+    function Initialize(const pUnkAD: IUnknown;
                         const __MIDL__IAppDomainHelper0000: IAppDomainHelper; var pPool: Pointer): HResult; stdcall;
     function pfnCallbackCB(var pv: Pointer): HResult; stdcall;
-    function DoCallback(const pUnkAD: IUnknown; 
+    function DoCallback(const pUnkAD: IUnknown;
                         const __MIDL__IAppDomainHelper0001: IAppDomainHelper; var pPool: Pointer): HResult; stdcall;
   end;
 
@@ -2629,16 +2629,16 @@ type
 // *********************************************************************//
   IAssemblyLocator = interface(IDispatch)
     ['{391FFBB9-A8EE-432A-ABC8-BAA238DAB90F}']
-    function GetModules(const applicationDir: WideString; const applicationName: WideString; 
+    function GetModules(const applicationDir: WideString; const applicationName: WideString;
                         const assemblyName: WideString; out pModules: PSafeArray): HResult; stdcall;
   end;
 
 // *********************************************************************//
-// The Class CoSecurityCertificate provides a Create and CreateRemote method to          
-// create instances of the default interface ISecurityCertificateColl exposed by              
-// the CoClass SecurityCertificate. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoSecurityCertificate provides a Create and CreateRemote method to
+// create instances of the default interface ISecurityCertificateColl exposed by
+// the CoClass SecurityCertificate. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoSecurityCertificate = class
     class function Create: ISecurityCertificateColl;
@@ -2646,11 +2646,11 @@ type
   end;
 
 // *********************************************************************//
-// The Class CoSecurityIdentity provides a Create and CreateRemote method to          
-// create instances of the default interface ISecurityIdentityColl exposed by              
-// the CoClass SecurityIdentity. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoSecurityIdentity provides a Create and CreateRemote method to
+// create instances of the default interface ISecurityIdentityColl exposed by
+// the CoClass SecurityIdentity. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoSecurityIdentity = class
     class function Create: ISecurityIdentityColl;
@@ -2658,11 +2658,11 @@ type
   end;
 
 // *********************************************************************//
-// The Class CoSecurityCallers provides a Create and CreateRemote method to          
-// create instances of the default interface ISecurityCallersColl exposed by              
-// the CoClass SecurityCallers. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoSecurityCallers provides a Create and CreateRemote method to
+// create instances of the default interface ISecurityCallersColl exposed by
+// the CoClass SecurityCallers. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoSecurityCallers = class
     class function Create: ISecurityCallersColl;
@@ -2670,11 +2670,11 @@ type
   end;
 
 // *********************************************************************//
-// The Class CoSecurityCallContext provides a Create and CreateRemote method to          
-// create instances of the default interface ISecurityCallContext exposed by              
-// the CoClass SecurityCallContext. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoSecurityCallContext provides a Create and CreateRemote method to
+// create instances of the default interface ISecurityCallContext exposed by
+// the CoClass SecurityCallContext. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoSecurityCallContext = class
     class function Create: ISecurityCallContext;
@@ -2682,11 +2682,11 @@ type
   end;
 
 // *********************************************************************//
-// The Class CoGetSecurityCallContextAppObject provides a Create and CreateRemote method to          
-// create instances of the default interface IGetSecurityCallContext exposed by              
-// the CoClass GetSecurityCallContextAppObject. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoGetSecurityCallContextAppObject provides a Create and CreateRemote method to
+// create instances of the default interface IGetSecurityCallContext exposed by
+// the CoClass GetSecurityCallContextAppObject. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoGetSecurityCallContextAppObject = class
     class function Create: IGetSecurityCallContext;
@@ -2694,11 +2694,11 @@ type
   end;
 
 // *********************************************************************//
-// The Class CoDummy30040732 provides a Create and CreateRemote method to          
-// create instances of the default interface IObjectContext exposed by              
-// the CoClass Dummy30040732. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoDummy30040732 provides a Create and CreateRemote method to
+// create instances of the default interface IObjectContext exposed by
+// the CoClass Dummy30040732. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoDummy30040732 = class
     class function Create: IObjectContext;
@@ -2706,11 +2706,11 @@ type
   end;
 
 // *********************************************************************//
-// The Class CoAppServer provides a Create and CreateRemote method to          
-// create instances of the default interface IMTxAS exposed by              
-// the CoClass AppServer. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoAppServer provides a Create and CreateRemote method to
+// create instances of the default interface IMTxAS exposed by
+// the CoClass AppServer. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoAppServer = class
     class function Create: IMTxAS;
@@ -2718,11 +2718,11 @@ type
   end;
 
 // *********************************************************************//
-// The Class CoTransactionContext provides a Create and CreateRemote method to          
-// create instances of the default interface ITransactionContext exposed by              
-// the CoClass TransactionContext. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoTransactionContext provides a Create and CreateRemote method to
+// create instances of the default interface ITransactionContext exposed by
+// the CoClass TransactionContext. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoTransactionContext = class
     class function Create: ITransactionContext;
@@ -2736,7 +2736,7 @@ type
 // Help String      : Transaction Context Class
 // Default Interface: ITransactionContext
 // Def. Intf. DISP? : No
-// Event   Interface: 
+// Event   Interface:
 // TypeFlags        : (2) CanCreate
 // *********************************************************************//
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
@@ -2789,11 +2789,11 @@ type
 
 
 // *********************************************************************//
-// The Class CoTransactionContextEx provides a Create and CreateRemote method to          
-// create instances of the default interface ITransactionContextEx exposed by              
-// the CoClass TransactionContextEx. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoTransactionContextEx provides a Create and CreateRemote method to
+// create instances of the default interface ITransactionContextEx exposed by
+// the CoClass TransactionContextEx. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoTransactionContextEx = class
     class function Create: ITransactionContextEx;
@@ -2807,7 +2807,7 @@ type
 // Help String      : Transaction Context Extended Class
 // Default Interface: ITransactionContextEx
 // Def. Intf. DISP? : No
-// Event   Interface: 
+// Event   Interface:
 // TypeFlags        : (2) CanCreate
 // *********************************************************************//
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
@@ -2860,11 +2860,11 @@ type
 
 
 // *********************************************************************//
-// The Class CoByotServerEx provides a Create and CreateRemote method to          
-// create instances of the default interface ICreateWithTipTransactionEx exposed by              
-// the CoClass ByotServerEx. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoByotServerEx provides a Create and CreateRemote method to
+// create instances of the default interface ICreateWithTipTransactionEx exposed by
+// the CoClass ByotServerEx. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoByotServerEx = class
     class function Create: ICreateWithTipTransactionEx;
@@ -2872,11 +2872,11 @@ type
   end;
 
 // *********************************************************************//
-// The Class CoCServiceConfig provides a Create and CreateRemote method to          
-// create instances of the default interface IServiceInheritanceConfig exposed by              
-// the CoClass CServiceConfig. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoCServiceConfig provides a Create and CreateRemote method to
+// create instances of the default interface IServiceInheritanceConfig exposed by
+// the CoClass CServiceConfig. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoCServiceConfig = class
     class function Create: IServiceInheritanceConfig;
@@ -2890,7 +2890,7 @@ type
 // Help String      : CServiceConfig Class
 // Default Interface: IServiceInheritanceConfig
 // Def. Intf. DISP? : No
-// Event   Interface: 
+// Event   Interface:
 // TypeFlags        : (2) CanCreate
 // *********************************************************************//
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
@@ -2941,11 +2941,11 @@ type
 
 
 // *********************************************************************//
-// The Class CoServicePool provides a Create and CreateRemote method to          
-// create instances of the default interface IServicePool exposed by              
-// the CoClass ServicePool. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoServicePool provides a Create and CreateRemote method to
+// create instances of the default interface IServicePool exposed by
+// the CoClass ServicePool. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoServicePool = class
     class function Create: IServicePool;
@@ -2959,7 +2959,7 @@ type
 // Help String      : ServicePool Class
 // Default Interface: IServicePool
 // Def. Intf. DISP? : No
-// Event   Interface: 
+// Event   Interface:
 // TypeFlags        : (2) CanCreate
 // *********************************************************************//
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
@@ -3012,11 +3012,11 @@ type
 
 
 // *********************************************************************//
-// The Class CoServicePoolConfig provides a Create and CreateRemote method to          
-// create instances of the default interface IServicePoolConfig exposed by              
-// the CoClass ServicePoolConfig. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoServicePoolConfig provides a Create and CreateRemote method to
+// create instances of the default interface IServicePoolConfig exposed by
+// the CoClass ServicePoolConfig. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoServicePoolConfig = class
     class function Create: IServicePoolConfig;
@@ -3030,7 +3030,7 @@ type
 // Help String      : ServicePoolConfig Class
 // Default Interface: IServicePoolConfig
 // Def. Intf. DISP? : No
-// Event   Interface: 
+// Event   Interface:
 // TypeFlags        : (2) CanCreate
 // *********************************************************************//
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
@@ -3100,11 +3100,11 @@ type
 
 
 // *********************************************************************//
-// The Class CoSharedProperty provides a Create and CreateRemote method to          
-// create instances of the default interface ISharedProperty exposed by              
-// the CoClass SharedProperty. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoSharedProperty provides a Create and CreateRemote method to
+// create instances of the default interface ISharedProperty exposed by
+// the CoClass SharedProperty. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoSharedProperty = class
     class function Create: ISharedProperty;
@@ -3112,11 +3112,11 @@ type
   end;
 
 // *********************************************************************//
-// The Class CoSharedPropertyGroup provides a Create and CreateRemote method to          
-// create instances of the default interface ISharedPropertyGroup exposed by              
-// the CoClass SharedPropertyGroup. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoSharedPropertyGroup provides a Create and CreateRemote method to
+// create instances of the default interface ISharedPropertyGroup exposed by
+// the CoClass SharedPropertyGroup. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoSharedPropertyGroup = class
     class function Create: ISharedPropertyGroup;
@@ -3124,11 +3124,11 @@ type
   end;
 
 // *********************************************************************//
-// The Class CoSharedPropertyGroupManager provides a Create and CreateRemote method to          
-// create instances of the default interface ISharedPropertyGroupManager exposed by              
-// the CoClass SharedPropertyGroupManager. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoSharedPropertyGroupManager provides a Create and CreateRemote method to
+// create instances of the default interface ISharedPropertyGroupManager exposed by
+// the CoClass SharedPropertyGroupManager. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoSharedPropertyGroupManager = class
     class function Create: ISharedPropertyGroupManager;
@@ -3142,7 +3142,7 @@ type
 // Help String      : SharedPropertyGroupManager Class
 // Default Interface: ISharedPropertyGroupManager
 // Def. Intf. DISP? : No
-// Event   Interface: 
+// Event   Interface:
 // TypeFlags        : (2) CanCreate
 // *********************************************************************//
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
@@ -3165,7 +3165,7 @@ type
     procedure Connect; override;
     procedure ConnectTo(svrIntf: ISharedPropertyGroupManager);
     procedure Disconnect; override;
-    function CreatePropertyGroup(const name: WideString; var dwIsoMode: Integer; 
+    function CreatePropertyGroup(const name: WideString; var dwIsoMode: Integer;
                                  var dwRelMode: Integer; out fExists: WordBool): ISharedPropertyGroup;
     property DefaultInterface: ISharedPropertyGroupManager read GetDefaultInterface;
     property Group[const name: WideString]: ISharedPropertyGroup read Get_Group;
@@ -3197,11 +3197,11 @@ type
 
 
 // *********************************************************************//
-// The Class CoCOMEvents provides a Create and CreateRemote method to          
-// create instances of the default interface IMtsEvents exposed by              
-// the CoClass COMEvents. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoCOMEvents provides a Create and CreateRemote method to
+// create instances of the default interface IMtsEvents exposed by
+// the CoClass COMEvents. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoCOMEvents = class
     class function Create: IMtsEvents;
@@ -3215,7 +3215,7 @@ type
 // Help String      : MTSEvents Class
 // Default Interface: IMtsEvents
 // Def. Intf. DISP? : No
-// Event   Interface: 
+// Event   Interface:
 // TypeFlags        : (2) CanCreate
 // *********************************************************************//
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
@@ -3276,11 +3276,11 @@ type
 
 
 // *********************************************************************//
-// The Class CoCoMTSLocator provides a Create and CreateRemote method to          
-// create instances of the default interface IMTSLocator exposed by              
-// the CoClass CoMTSLocator. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoCoMTSLocator provides a Create and CreateRemote method to
+// create instances of the default interface IMTSLocator exposed by
+// the CoClass CoMTSLocator. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoCoMTSLocator = class
     class function Create: IMTSLocator;
@@ -3294,7 +3294,7 @@ type
 // Help String      : MTSLocator Class
 // Default Interface: IMTSLocator
 // Def. Intf. DISP? : No
-// Event   Interface: 
+// Event   Interface:
 // TypeFlags        : (2) CanCreate
 // *********************************************************************//
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
@@ -3345,11 +3345,11 @@ type
 
 
 // *********************************************************************//
-// The Class CoMtsGrp provides a Create and CreateRemote method to          
-// create instances of the default interface IMtsGrp exposed by              
-// the CoClass MtsGrp. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoMtsGrp provides a Create and CreateRemote method to
+// create instances of the default interface IMtsGrp exposed by
+// the CoClass MtsGrp. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoMtsGrp = class
     class function Create: IMtsGrp;
@@ -3363,7 +3363,7 @@ type
 // Help String      : MtxGrp Class
 // Default Interface: IMtsGrp
 // Def. Intf. DISP? : No
-// Event   Interface: 
+// Event   Interface:
 // TypeFlags        : (2) CanCreate
 // *********************************************************************//
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
@@ -3418,11 +3418,11 @@ type
 
 
 // *********************************************************************//
-// The Class CoComServiceEvents provides a Create and CreateRemote method to          
-// create instances of the default interface IComThreadEvents exposed by              
-// the CoClass ComServiceEvents. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoComServiceEvents provides a Create and CreateRemote method to
+// create instances of the default interface IComThreadEvents exposed by
+// the CoClass ComServiceEvents. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoComServiceEvents = class
     class function Create: IComThreadEvents;
@@ -3430,11 +3430,11 @@ type
   end;
 
 // *********************************************************************//
-// The Class CoComSystemAppEventData provides a Create and CreateRemote method to          
-// create instances of the default interface ISystemAppEventData exposed by              
-// the CoClass ComSystemAppEventData. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoComSystemAppEventData provides a Create and CreateRemote method to
+// create instances of the default interface ISystemAppEventData exposed by
+// the CoClass ComSystemAppEventData. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoComSystemAppEventData = class
     class function Create: ISystemAppEventData;
@@ -3442,11 +3442,11 @@ type
   end;
 
 // *********************************************************************//
-// The Class CoCRMClerk provides a Create and CreateRemote method to          
-// create instances of the default interface ICrmLogControl exposed by              
-// the CoClass CRMClerk. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoCRMClerk provides a Create and CreateRemote method to
+// create instances of the default interface ICrmLogControl exposed by
+// the CoClass CRMClerk. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoCRMClerk = class
     class function Create: ICrmLogControl;
@@ -3460,7 +3460,7 @@ type
 // Help String      : CRMClerk Class
 // Default Interface: ICrmLogControl
 // Def. Intf. DISP? : No
-// Event   Interface: 
+// Event   Interface:
 // TypeFlags        : (2) CanCreate
 // *********************************************************************//
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
@@ -3483,7 +3483,7 @@ type
     procedure Connect; override;
     procedure ConnectTo(svrIntf: ICrmLogControl);
     procedure Disconnect; override;
-    function RegisterCompensator(lpcwstrProgIdCompensator: PWideChar; 
+    function RegisterCompensator(lpcwstrProgIdCompensator: PWideChar;
                                  lpcwstrDescription: PWideChar; lCrmRegFlags: Integer): HResult;
     function WriteLogRecordVariants(var pLogRecord: OleVariant): HResult;
     function ForceLog: HResult;
@@ -3519,11 +3519,11 @@ type
 
 
 // *********************************************************************//
-// The Class CoCRMRecoveryClerk provides a Create and CreateRemote method to          
-// create instances of the default interface ICrmMonitor exposed by              
-// the CoClass CRMRecoveryClerk. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoCRMRecoveryClerk provides a Create and CreateRemote method to
+// create instances of the default interface ICrmMonitor exposed by
+// the CoClass CRMRecoveryClerk. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoCRMRecoveryClerk = class
     class function Create: ICrmMonitor;
@@ -3537,7 +3537,7 @@ type
 // Help String      : CRMRecoveryClerk Class
 // Default Interface: ICrmMonitor
 // Def. Intf. DISP? : No
-// Event   Interface: 
+// Event   Interface:
 // TypeFlags        : (2) CanCreate
 // *********************************************************************//
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
@@ -3589,11 +3589,11 @@ type
 
 
 // *********************************************************************//
-// The Class CoMessageMover provides a Create and CreateRemote method to          
-// create instances of the default interface IMessageMover exposed by              
-// the CoClass MessageMover. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoMessageMover provides a Create and CreateRemote method to
+// create instances of the default interface IMessageMover exposed by
+// the CoClass MessageMover. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoMessageMover = class
     class function Create: IMessageMover;
@@ -3607,7 +3607,7 @@ type
 // Help String      : QC MessageMover Class
 // Default Interface: IMessageMover
 // Def. Intf. DISP? : No
-// Event   Interface: 
+// Event   Interface:
 // TypeFlags        : (2) CanCreate
 // *********************************************************************//
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
@@ -3676,11 +3676,11 @@ type
 
 
 // *********************************************************************//
-// The Class CoDispenserManager provides a Create and CreateRemote method to          
-// create instances of the default interface IDispenserManager exposed by              
-// the CoClass DispenserManager. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoDispenserManager provides a Create and CreateRemote method to
+// create instances of the default interface IDispenserManager exposed by
+// the CoClass DispenserManager. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoDispenserManager = class
     class function Create: IDispenserManager;
@@ -3688,11 +3688,11 @@ type
   end;
 
 // *********************************************************************//
-// The Class CoPoolMgr provides a Create and CreateRemote method to          
-// create instances of the default interface IPoolManager exposed by              
-// the CoClass PoolMgr. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoPoolMgr provides a Create and CreateRemote method to
+// create instances of the default interface IPoolManager exposed by
+// the CoClass PoolMgr. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoPoolMgr = class
     class function Create: IPoolManager;
@@ -3703,10 +3703,10 @@ type
 // *********************************************************************//
 // OLE Server Proxy class declaration
 // Server Object    : TPoolMgr
-// Help String      : 
+// Help String      :
 // Default Interface: IPoolManager
 // Def. Intf. DISP? : No
-// Event   Interface: 
+// Event   Interface:
 // TypeFlags        : (2) CanCreate
 // *********************************************************************//
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
@@ -3757,11 +3757,11 @@ type
 
 
 // *********************************************************************//
-// The Class CoEventServer provides a Create and CreateRemote method to          
-// create instances of the default interface IEventServerTrace exposed by              
-// the CoClass EventServer. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoEventServer provides a Create and CreateRemote method to
+// create instances of the default interface IEventServerTrace exposed by
+// the CoClass EventServer. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoEventServer = class
     class function Create: IEventServerTrace;
@@ -3769,11 +3769,11 @@ type
   end;
 
 // *********************************************************************//
-// The Class CoTrackerServer provides a Create and CreateRemote method to          
-// create instances of the default interface IReceiveAppData exposed by              
-// the CoClass TrackerServer. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoTrackerServer provides a Create and CreateRemote method to
+// create instances of the default interface IReceiveAppData exposed by
+// the CoClass TrackerServer. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoTrackerServer = class
     class function Create: IReceiveAppData;
@@ -3781,11 +3781,11 @@ type
   end;
 
 // *********************************************************************//
-// The Class CoProcessDump provides a Create and CreateRemote method to          
-// create instances of the default interface IProcessDump exposed by              
-// the CoClass ProcessDump. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoProcessDump provides a Create and CreateRemote method to
+// create instances of the default interface IProcessDump exposed by
+// the CoClass ProcessDump. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoProcessDump = class
     class function Create: IProcessDump;
@@ -3793,11 +3793,11 @@ type
   end;
 
 // *********************************************************************//
-// The Class CoPartitionMoniker provides a Create and CreateRemote method to          
-// create instances of the default interface IMoniker exposed by              
-// the CoClass PartitionMoniker. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoPartitionMoniker provides a Create and CreateRemote method to
+// create instances of the default interface IMoniker exposed by
+// the CoClass PartitionMoniker. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoPartitionMoniker = class
     class function Create: IMoniker;
@@ -3808,10 +3808,10 @@ type
 // *********************************************************************//
 // OLE Server Proxy class declaration
 // Server Object    : TPartitionMoniker
-// Help String      : 
+// Help String      :
 // Default Interface: IMoniker
 // Def. Intf. DISP? : No
-// Event   Interface: 
+// Event   Interface:
 // TypeFlags        : (2) CanCreate
 // *********************************************************************//
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
@@ -3838,28 +3838,28 @@ type
     function Load(const pstm: IStream): HResult;
     function Save(const pstm: IStream; fClearDirty: Integer): HResult;
     function GetSizeMax(out pcbSize: _ULARGE_INTEGER): HResult;
-    function RemoteBindToObject(const pbc: IBindCtx; const pmkToLeft: IMoniker; 
+    function RemoteBindToObject(const pbc: IBindCtx; const pmkToLeft: IMoniker;
                                 var riidResult: TGUID; out ppvResult: IUnknown): HResult;
-    function RemoteBindToStorage(const pbc: IBindCtx; const pmkToLeft: IMoniker; var riid: TGUID; 
+    function RemoteBindToStorage(const pbc: IBindCtx; const pmkToLeft: IMoniker; var riid: TGUID;
                                  out ppvObj: IUnknown): HResult;
-    function Reduce(const pbc: IBindCtx; dwReduceHowFar: LongWord; var ppmkToLeft: IMoniker; 
+    function Reduce(const pbc: IBindCtx; dwReduceHowFar: LongWord; var ppmkToLeft: IMoniker;
                     out ppmkReduced: IMoniker): HResult;
-    function ComposeWith(const pmkRight: IMoniker; fOnlyIfNotGeneric: Integer; 
+    function ComposeWith(const pmkRight: IMoniker; fOnlyIfNotGeneric: Integer;
                          out ppmkComposite: IMoniker): HResult;
     function Enum(fForward: Integer; out ppenumMoniker: IEnumMoniker): HResult;
     function IsEqual(const pmkOtherMoniker: IMoniker): HResult;
     function Hash(out pdwHash: LongWord): HResult;
-    function IsRunning(const pbc: IBindCtx; const pmkToLeft: IMoniker; 
+    function IsRunning(const pbc: IBindCtx; const pmkToLeft: IMoniker;
                        const pmkNewlyRunning: IMoniker): HResult;
-    function GetTimeOfLastChange(const pbc: IBindCtx; const pmkToLeft: IMoniker; 
+    function GetTimeOfLastChange(const pbc: IBindCtx; const pmkToLeft: IMoniker;
                                  out pfiletime: _FILETIME): HResult;
     function Inverse(out ppmk: IMoniker): HResult;
     function CommonPrefixWith(const pmkOther: IMoniker; out ppmkPrefix: IMoniker): HResult;
     function RelativePathTo(const pmkOther: IMoniker; out ppmkRelPath: IMoniker): HResult;
-    function GetDisplayName(const pbc: IBindCtx; const pmkToLeft: IMoniker; 
+    function GetDisplayName(const pbc: IBindCtx; const pmkToLeft: IMoniker;
                             out ppszDisplayName: PWideChar): HResult;
-    function ParseDisplayName(const pbc: IBindCtx; const pmkToLeft: IMoniker; 
-                              pszDisplayName: PWideChar; out pchEaten: LongWord; 
+    function ParseDisplayName(const pbc: IBindCtx; const pmkToLeft: IMoniker;
+                              pszDisplayName: PWideChar; out pchEaten: LongWord;
                               out ppmkOut: IMoniker): HResult;
     function IsSystemMoniker(out pdwMksys: LongWord): HResult;
     property DefaultInterface: IMoniker read GetDefaultInterface;
@@ -3890,11 +3890,11 @@ type
 
 
 // *********************************************************************//
-// The Class CoSoapMoniker provides a Create and CreateRemote method to          
-// create instances of the default interface IMoniker exposed by              
-// the CoClass SoapMoniker. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoSoapMoniker provides a Create and CreateRemote method to
+// create instances of the default interface IMoniker exposed by
+// the CoClass SoapMoniker. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoSoapMoniker = class
     class function Create: IMoniker;
@@ -3905,10 +3905,10 @@ type
 // *********************************************************************//
 // OLE Server Proxy class declaration
 // Server Object    : TSoapMoniker
-// Help String      : 
+// Help String      :
 // Default Interface: IMoniker
 // Def. Intf. DISP? : No
-// Event   Interface: 
+// Event   Interface:
 // TypeFlags        : (2) CanCreate
 // *********************************************************************//
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
@@ -3935,28 +3935,28 @@ type
     function Load(const pstm: IStream): HResult;
     function Save(const pstm: IStream; fClearDirty: Integer): HResult;
     function GetSizeMax(out pcbSize: _ULARGE_INTEGER): HResult;
-    function RemoteBindToObject(const pbc: IBindCtx; const pmkToLeft: IMoniker; 
+    function RemoteBindToObject(const pbc: IBindCtx; const pmkToLeft: IMoniker;
                                 var riidResult: TGUID; out ppvResult: IUnknown): HResult;
-    function RemoteBindToStorage(const pbc: IBindCtx; const pmkToLeft: IMoniker; var riid: TGUID; 
+    function RemoteBindToStorage(const pbc: IBindCtx; const pmkToLeft: IMoniker; var riid: TGUID;
                                  out ppvObj: IUnknown): HResult;
-    function Reduce(const pbc: IBindCtx; dwReduceHowFar: LongWord; var ppmkToLeft: IMoniker; 
+    function Reduce(const pbc: IBindCtx; dwReduceHowFar: LongWord; var ppmkToLeft: IMoniker;
                     out ppmkReduced: IMoniker): HResult;
-    function ComposeWith(const pmkRight: IMoniker; fOnlyIfNotGeneric: Integer; 
+    function ComposeWith(const pmkRight: IMoniker; fOnlyIfNotGeneric: Integer;
                          out ppmkComposite: IMoniker): HResult;
     function Enum(fForward: Integer; out ppenumMoniker: IEnumMoniker): HResult;
     function IsEqual(const pmkOtherMoniker: IMoniker): HResult;
     function Hash(out pdwHash: LongWord): HResult;
-    function IsRunning(const pbc: IBindCtx; const pmkToLeft: IMoniker; 
+    function IsRunning(const pbc: IBindCtx; const pmkToLeft: IMoniker;
                        const pmkNewlyRunning: IMoniker): HResult;
-    function GetTimeOfLastChange(const pbc: IBindCtx; const pmkToLeft: IMoniker; 
+    function GetTimeOfLastChange(const pbc: IBindCtx; const pmkToLeft: IMoniker;
                                  out pfiletime: _FILETIME): HResult;
     function Inverse(out ppmk: IMoniker): HResult;
     function CommonPrefixWith(const pmkOther: IMoniker; out ppmkPrefix: IMoniker): HResult;
     function RelativePathTo(const pmkOther: IMoniker; out ppmkRelPath: IMoniker): HResult;
-    function GetDisplayName(const pbc: IBindCtx; const pmkToLeft: IMoniker; 
+    function GetDisplayName(const pbc: IBindCtx; const pmkToLeft: IMoniker;
                             out ppszDisplayName: PWideChar): HResult;
-    function ParseDisplayName(const pbc: IBindCtx; const pmkToLeft: IMoniker; 
-                              pszDisplayName: PWideChar; out pchEaten: LongWord; 
+    function ParseDisplayName(const pbc: IBindCtx; const pmkToLeft: IMoniker;
+                              pszDisplayName: PWideChar; out pchEaten: LongWord;
                               out ppmkOut: IMoniker): HResult;
     function IsSystemMoniker(out pdwMksys: LongWord): HResult;
     property DefaultInterface: IMoniker read GetDefaultInterface;
@@ -3987,11 +3987,11 @@ type
 
 
 // *********************************************************************//
-// The Class CoAppDomainHelper provides a Create and CreateRemote method to          
-// create instances of the default interface IAppDomainHelper exposed by              
-// the CoClass AppDomainHelper. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoAppDomainHelper provides a Create and CreateRemote method to
+// create instances of the default interface IAppDomainHelper exposed by
+// the CoClass AppDomainHelper. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoAppDomainHelper = class
     class function Create: IAppDomainHelper;
@@ -4002,10 +4002,10 @@ type
 // *********************************************************************//
 // OLE Server Proxy class declaration
 // Server Object    : TAppDomainHelper
-// Help String      : 
+// Help String      :
 // Default Interface: IAppDomainHelper
 // Def. Intf. DISP? : No
-// Event   Interface: 
+// Event   Interface:
 // TypeFlags        : (2) CanCreate
 // *********************************************************************//
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
@@ -4028,10 +4028,10 @@ type
     procedure ConnectTo(svrIntf: IAppDomainHelper);
     procedure Disconnect; override;
     function pfnShutdownCB(var pv: Pointer): HResult;
-    function Initialize(const pUnkAD: IUnknown; 
+    function Initialize(const pUnkAD: IUnknown;
                         const __MIDL__IAppDomainHelper0000: IAppDomainHelper; var pPool: Pointer): HResult;
     function pfnCallbackCB(var pv: Pointer): HResult;
-    function DoCallback(const pUnkAD: IUnknown; 
+    function DoCallback(const pUnkAD: IUnknown;
                         const __MIDL__IAppDomainHelper0001: IAppDomainHelper; var pPool: Pointer): HResult;
     property DefaultInterface: IAppDomainHelper read GetDefaultInterface;
   published
@@ -4061,11 +4061,11 @@ type
 
 
 // *********************************************************************//
-// The Class CoClrAssemblyLocator provides a Create and CreateRemote method to          
-// create instances of the default interface IAssemblyLocator exposed by              
-// the CoClass ClrAssemblyLocator. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoClrAssemblyLocator provides a Create and CreateRemote method to
+// create instances of the default interface IAssemblyLocator exposed by
+// the CoClass ClrAssemblyLocator. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoClrAssemblyLocator = class
     class function Create: IAssemblyLocator;
@@ -4076,10 +4076,10 @@ type
 // *********************************************************************//
 // OLE Server Proxy class declaration
 // Server Object    : TClrAssemblyLocator
-// Help String      : 
+// Help String      :
 // Default Interface: IAssemblyLocator
 // Def. Intf. DISP? : No
-// Event   Interface: 
+// Event   Interface:
 // TypeFlags        : (2) CanCreate
 // *********************************************************************//
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
@@ -4101,7 +4101,7 @@ type
     procedure Connect; override;
     procedure ConnectTo(svrIntf: IAssemblyLocator);
     procedure Disconnect; override;
-    function GetModules(const applicationDir: WideString; const applicationName: WideString; 
+    function GetModules(const applicationDir: WideString; const applicationName: WideString;
                         const assemblyName: WideString; out pModules: PSafeArray): HResult;
     property DefaultInterface: IAssemblyLocator read GetDefaultInterface;
   published
@@ -4396,7 +4396,7 @@ begin
 end;
 {$ENDIF}
 
-function TTransactionContextEx.CreateInstance(var rclsid: TGUID; var riid: TGUID; 
+function TTransactionContextEx.CreateInstance(var rclsid: TGUID; var riid: TGUID;
                                               out pObject: Pointer): HResult;
 begin
   Result := DefaultInterface.CreateInstance(rclsid, riid, pObject);
@@ -5035,9 +5035,9 @@ begin
     Result := DefaultInterface.Group[name];
 end;
 
-function TSharedPropertyGroupManager.CreatePropertyGroup(const name: WideString; 
-                                                         var dwIsoMode: Integer; 
-                                                         var dwRelMode: Integer; 
+function TSharedPropertyGroupManager.CreatePropertyGroup(const name: WideString;
+                                                         var dwIsoMode: Integer;
+                                                         var dwRelMode: Integer;
                                                          out fExists: WordBool): ISharedPropertyGroup;
 begin
   Result := DefaultInterface.CreatePropertyGroup(name, dwIsoMode, dwRelMode, fExists);
@@ -5506,10 +5506,10 @@ begin
     Result := DefaultInterface.Get_TransactionUOW(pVal);
 end;
 
-function TCRMClerk.RegisterCompensator(lpcwstrProgIdCompensator: PWideChar; 
+function TCRMClerk.RegisterCompensator(lpcwstrProgIdCompensator: PWideChar;
                                        lpcwstrDescription: PWideChar; lCrmRegFlags: Integer): HResult;
 begin
-  Result := DefaultInterface.RegisterCompensator(lpcwstrProgIdCompensator, lpcwstrDescription, 
+  Result := DefaultInterface.RegisterCompensator(lpcwstrProgIdCompensator, lpcwstrDescription,
                                                  lCrmRegFlags);
 end;
 
@@ -6080,25 +6080,25 @@ begin
   Result := DefaultInterface.GetSizeMax(pcbSize);
 end;
 
-function TPartitionMoniker.RemoteBindToObject(const pbc: IBindCtx; const pmkToLeft: IMoniker; 
+function TPartitionMoniker.RemoteBindToObject(const pbc: IBindCtx; const pmkToLeft: IMoniker;
                                               var riidResult: TGUID; out ppvResult: IUnknown): HResult;
 begin
   Result := DefaultInterface.RemoteBindToObject(pbc, pmkToLeft, riidResult, ppvResult);
 end;
 
-function TPartitionMoniker.RemoteBindToStorage(const pbc: IBindCtx; const pmkToLeft: IMoniker; 
+function TPartitionMoniker.RemoteBindToStorage(const pbc: IBindCtx; const pmkToLeft: IMoniker;
                                                var riid: TGUID; out ppvObj: IUnknown): HResult;
 begin
   Result := DefaultInterface.RemoteBindToStorage(pbc, pmkToLeft, riid, ppvObj);
 end;
 
-function TPartitionMoniker.Reduce(const pbc: IBindCtx; dwReduceHowFar: LongWord; 
+function TPartitionMoniker.Reduce(const pbc: IBindCtx; dwReduceHowFar: LongWord;
                                   var ppmkToLeft: IMoniker; out ppmkReduced: IMoniker): HResult;
 begin
   Result := DefaultInterface.Reduce(pbc, dwReduceHowFar, ppmkToLeft, ppmkReduced);
 end;
 
-function TPartitionMoniker.ComposeWith(const pmkRight: IMoniker; fOnlyIfNotGeneric: Integer; 
+function TPartitionMoniker.ComposeWith(const pmkRight: IMoniker; fOnlyIfNotGeneric: Integer;
                                        out ppmkComposite: IMoniker): HResult;
 begin
   Result := DefaultInterface.ComposeWith(pmkRight, fOnlyIfNotGeneric, ppmkComposite);
@@ -6119,13 +6119,13 @@ begin
   Result := DefaultInterface.Hash(pdwHash);
 end;
 
-function TPartitionMoniker.IsRunning(const pbc: IBindCtx; const pmkToLeft: IMoniker; 
+function TPartitionMoniker.IsRunning(const pbc: IBindCtx; const pmkToLeft: IMoniker;
                                      const pmkNewlyRunning: IMoniker): HResult;
 begin
   Result := DefaultInterface.IsRunning(pbc, pmkToLeft, pmkNewlyRunning);
 end;
 
-function TPartitionMoniker.GetTimeOfLastChange(const pbc: IBindCtx; const pmkToLeft: IMoniker; 
+function TPartitionMoniker.GetTimeOfLastChange(const pbc: IBindCtx; const pmkToLeft: IMoniker;
                                                out pfiletime: _FILETIME): HResult;
 begin
   Result := DefaultInterface.GetTimeOfLastChange(pbc, pmkToLeft, pfiletime);
@@ -6146,14 +6146,14 @@ begin
   Result := DefaultInterface.RelativePathTo(pmkOther, ppmkRelPath);
 end;
 
-function TPartitionMoniker.GetDisplayName(const pbc: IBindCtx; const pmkToLeft: IMoniker; 
+function TPartitionMoniker.GetDisplayName(const pbc: IBindCtx; const pmkToLeft: IMoniker;
                                           out ppszDisplayName: PWideChar): HResult;
 begin
   Result := DefaultInterface.GetDisplayName(pbc, pmkToLeft, ppszDisplayName);
 end;
 
-function TPartitionMoniker.ParseDisplayName(const pbc: IBindCtx; const pmkToLeft: IMoniker; 
-                                            pszDisplayName: PWideChar; out pchEaten: LongWord; 
+function TPartitionMoniker.ParseDisplayName(const pbc: IBindCtx; const pmkToLeft: IMoniker;
+                                            pszDisplayName: PWideChar; out pchEaten: LongWord;
                                             out ppmkOut: IMoniker): HResult;
 begin
   Result := DefaultInterface.ParseDisplayName(pbc, pmkToLeft, pszDisplayName, pchEaten, ppmkOut);
@@ -6281,25 +6281,25 @@ begin
   Result := DefaultInterface.GetSizeMax(pcbSize);
 end;
 
-function TSoapMoniker.RemoteBindToObject(const pbc: IBindCtx; const pmkToLeft: IMoniker; 
+function TSoapMoniker.RemoteBindToObject(const pbc: IBindCtx; const pmkToLeft: IMoniker;
                                          var riidResult: TGUID; out ppvResult: IUnknown): HResult;
 begin
   Result := DefaultInterface.RemoteBindToObject(pbc, pmkToLeft, riidResult, ppvResult);
 end;
 
-function TSoapMoniker.RemoteBindToStorage(const pbc: IBindCtx; const pmkToLeft: IMoniker; 
+function TSoapMoniker.RemoteBindToStorage(const pbc: IBindCtx; const pmkToLeft: IMoniker;
                                           var riid: TGUID; out ppvObj: IUnknown): HResult;
 begin
   Result := DefaultInterface.RemoteBindToStorage(pbc, pmkToLeft, riid, ppvObj);
 end;
 
-function TSoapMoniker.Reduce(const pbc: IBindCtx; dwReduceHowFar: LongWord; 
+function TSoapMoniker.Reduce(const pbc: IBindCtx; dwReduceHowFar: LongWord;
                              var ppmkToLeft: IMoniker; out ppmkReduced: IMoniker): HResult;
 begin
   Result := DefaultInterface.Reduce(pbc, dwReduceHowFar, ppmkToLeft, ppmkReduced);
 end;
 
-function TSoapMoniker.ComposeWith(const pmkRight: IMoniker; fOnlyIfNotGeneric: Integer; 
+function TSoapMoniker.ComposeWith(const pmkRight: IMoniker; fOnlyIfNotGeneric: Integer;
                                   out ppmkComposite: IMoniker): HResult;
 begin
   Result := DefaultInterface.ComposeWith(pmkRight, fOnlyIfNotGeneric, ppmkComposite);
@@ -6320,13 +6320,13 @@ begin
   Result := DefaultInterface.Hash(pdwHash);
 end;
 
-function TSoapMoniker.IsRunning(const pbc: IBindCtx; const pmkToLeft: IMoniker; 
+function TSoapMoniker.IsRunning(const pbc: IBindCtx; const pmkToLeft: IMoniker;
                                 const pmkNewlyRunning: IMoniker): HResult;
 begin
   Result := DefaultInterface.IsRunning(pbc, pmkToLeft, pmkNewlyRunning);
 end;
 
-function TSoapMoniker.GetTimeOfLastChange(const pbc: IBindCtx; const pmkToLeft: IMoniker; 
+function TSoapMoniker.GetTimeOfLastChange(const pbc: IBindCtx; const pmkToLeft: IMoniker;
                                           out pfiletime: _FILETIME): HResult;
 begin
   Result := DefaultInterface.GetTimeOfLastChange(pbc, pmkToLeft, pfiletime);
@@ -6347,14 +6347,14 @@ begin
   Result := DefaultInterface.RelativePathTo(pmkOther, ppmkRelPath);
 end;
 
-function TSoapMoniker.GetDisplayName(const pbc: IBindCtx; const pmkToLeft: IMoniker; 
+function TSoapMoniker.GetDisplayName(const pbc: IBindCtx; const pmkToLeft: IMoniker;
                                      out ppszDisplayName: PWideChar): HResult;
 begin
   Result := DefaultInterface.GetDisplayName(pbc, pmkToLeft, ppszDisplayName);
 end;
 
-function TSoapMoniker.ParseDisplayName(const pbc: IBindCtx; const pmkToLeft: IMoniker; 
-                                       pszDisplayName: PWideChar; out pchEaten: LongWord; 
+function TSoapMoniker.ParseDisplayName(const pbc: IBindCtx; const pmkToLeft: IMoniker;
+                                       pszDisplayName: PWideChar; out pchEaten: LongWord;
                                        out ppmkOut: IMoniker): HResult;
 begin
   Result := DefaultInterface.ParseDisplayName(pbc, pmkToLeft, pszDisplayName, pchEaten, ppmkOut);
@@ -6462,8 +6462,8 @@ begin
   Result := DefaultInterface.pfnShutdownCB(pv);
 end;
 
-function TAppDomainHelper.Initialize(const pUnkAD: IUnknown; 
-                                     const __MIDL__IAppDomainHelper0000: IAppDomainHelper; 
+function TAppDomainHelper.Initialize(const pUnkAD: IUnknown;
+                                     const __MIDL__IAppDomainHelper0000: IAppDomainHelper;
                                      var pPool: Pointer): HResult;
 begin
   Result := DefaultInterface.Initialize(pUnkAD, __MIDL__IAppDomainHelper0000, pPool);
@@ -6474,8 +6474,8 @@ begin
   Result := DefaultInterface.pfnCallbackCB(pv);
 end;
 
-function TAppDomainHelper.DoCallback(const pUnkAD: IUnknown; 
-                                     const __MIDL__IAppDomainHelper0001: IAppDomainHelper; 
+function TAppDomainHelper.DoCallback(const pUnkAD: IUnknown;
+                                     const __MIDL__IAppDomainHelper0001: IAppDomainHelper;
                                      var pPool: Pointer): HResult;
 begin
   Result := DefaultInterface.DoCallback(pUnkAD, __MIDL__IAppDomainHelper0001, pPool);
@@ -6573,8 +6573,8 @@ begin
 end;
 {$ENDIF}
 
-function TClrAssemblyLocator.GetModules(const applicationDir: WideString; 
-                                        const applicationName: WideString; 
+function TClrAssemblyLocator.GetModules(const applicationDir: WideString;
+                                        const applicationName: WideString;
                                         const assemblyName: WideString; out pModules: PSafeArray): HResult;
 begin
   Result := DefaultInterface.GetModules(applicationDir, applicationName, assemblyName, pModules);
@@ -6596,9 +6596,9 @@ end;
 
 procedure Register;
 begin
-  RegisterComponents(dtlServerPage, [TTransactionContext, TTransactionContextEx, TCServiceConfig, TServicePool, 
-    TServicePoolConfig, TSharedPropertyGroupManager, TCOMEvents, TCoMTSLocator, TMtsGrp, 
-    TCRMClerk, TCRMRecoveryClerk, TMessageMover, TPoolMgr, TPartitionMoniker, 
+  RegisterComponents(dtlServerPage, [TTransactionContext, TTransactionContextEx, TCServiceConfig, TServicePool,
+    TServicePoolConfig, TSharedPropertyGroupManager, TCOMEvents, TCoMTSLocator, TMtsGrp,
+    TCRMClerk, TCRMRecoveryClerk, TMessageMover, TPoolMgr, TPartitionMoniker,
     TSoapMoniker, TAppDomainHelper, TClrAssemblyLocator]);
 end;
 

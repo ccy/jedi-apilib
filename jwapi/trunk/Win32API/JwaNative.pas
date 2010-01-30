@@ -187,9 +187,9 @@ const
 {$IFNDEF JWA_IMPLEMENTATIONSECTION}
 
 
-  
+
 type
- 
+
   _CLIENT_ID = record
     UniqueProcess: HANDLE;
     UniqueThread: HANDLE;
@@ -458,7 +458,7 @@ type
   TFileNetworkOpenInformation = FILE_NETWORK_OPEN_INFORMATION;
   PFileNetworkOpenInformation = ^TFileNetworkOpenInformation;
 
-  
+
   _FILE_INFORMATION_CLASS = (
     FileFiller0,
     FileDirectoryInformation, // 1
@@ -3362,7 +3362,7 @@ type
    +0x0bc ImageSubsystemMinorVersion : Uint4B
    +0x0c0 ImageProcessAffinityMask : Uint4B
    +0x0c4 GdiHandleBuffer  : [34] Uint4B
-   +0x14c PostProcessInitRoutine : Ptr32     void 
+   +0x14c PostProcessInitRoutine : Ptr32     void
    +0x150 TlsExpansionBitmap : Ptr32 Void
    +0x154 TlsExpansionBitmapBits : [32] Uint4B
    +0x1d4 SessionId        : Uint4B
@@ -3384,7 +3384,7 @@ type
    +0x230 WerRegistrationData : Ptr32 Void
    +0x234 WerShipAssertPtr : Ptr32 Void
   *)
-  
+
   (* Windows Vista SP1
   ntdll!_PEB
    +0x000 InheritedAddressSpace : UChar
@@ -3557,7 +3557,7 @@ type
    +0x0bc ImageSubsystemMinorVersion : Uint4B
    +0x0c0 ActiveProcessAffinityMask : Uint4B
    +0x0c4 GdiHandleBuffer  : [34] Uint4B
-   +0x14c PostProcessInitRoutine : Ptr32     void 
+   +0x14c PostProcessInitRoutine : Ptr32     void
    +0x150 TlsExpansionBitmap : Ptr32 Void
    +0x154 TlsExpansionBitmapBits : [32] Uint4B
    +0x1d4 SessionId        : Uint4B
@@ -3600,7 +3600,7 @@ type
    +0x230 WerRegistrationData : Ptr32 Void
    +0x234 WerShipAssertPtr : Ptr32 Void
   *)
-  
+
 
   {$IFDEF WINNT4}
   _PEB = _PEB_W2K; // Exact layout for NT4 unknown
@@ -4581,7 +4581,7 @@ function  NtContinue(
 function  ZwContinue(Context: PCONTEXT; TestAlert: BOOLEAN): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
 
 // Returns STATUS_NOT_IMPLEMENTED. Only MS knows the intention behind this.
-// 
+//
 // !!!DO NOT USE!!!
 // Compatibility: NT4, W2K
 function  NtCreateChannel(
@@ -5153,7 +5153,7 @@ function  NtIsSystemResumeAutomatic(): BOOLEAN; stdcall; {$IFNDEF RTDL}external 
 function  ZwIsSystemResumeAutomatic(): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
 
 // Returns STATUS_NOT_IMPLEMENTED. Only MS knows the intention behind this.
-// 
+//
 // !!!DO NOT USE!!!
 // Compatibility: NT4, W2K
 function  NtListenChannel(
@@ -5313,7 +5313,7 @@ function  ZwNotifyChangeMultipleKeys(KeyHandle: HANDLE; Flags: ULONG; KeyObjectA
     WatchSubtree: BOOLEAN; Buffer: PVOID; BufferLength: ULONG; Asynchronous: BOOLEAN): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
 
 // Returns STATUS_NOT_IMPLEMENTED. Only MS knows the intention behind this.
-// 
+//
 // !!!DO NOT USE!!!
 // Compatibility: NT4, W2K
 function  NtOpenChannel(
@@ -5862,7 +5862,7 @@ function  NtQuerySystemEnvironmentValue(
   ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
 function  ZwQuerySystemEnvironmentValue(Name: PUNICODE_STRING; Value: PVOID; ValueLength: ULONG; ReturnLength: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
 
-{.$IFNDEF JWA_INCLUDEMODE} //do include since we dropped JwaWinternl 
+{.$IFNDEF JWA_INCLUDEMODE} //do include since we dropped JwaWinternl
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtQuerySystemInformation(
     SystemInformationClass : SYSTEM_INFORMATION_CLASS;
@@ -6098,7 +6098,7 @@ function  NtReplyWaitReplyPort(
 function  ZwReplyWaitReplyPort(PortHandle: HANDLE; ReplyMessage: PPORT_MESSAGE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
 
 // Returns STATUS_NOT_IMPLEMENTED. Only MS knows the intention behind this.
-// 
+//
 // !!!DO NOT USE!!!
 // Compatibility: NT4, W2K
 function  NtReplyWaitSendChannel(
@@ -6214,7 +6214,7 @@ function  ZwSecureConnectPort(PortHandle: PHANDLE; PortName: PUNICODE_STRING; Se
     ConnectData: PVOID; ConnectDataLength: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
 
 // Returns STATUS_NOT_IMPLEMENTED. Only MS knows the intention behind this.
-// 
+//
 // !!!DO NOT USE!!!
 // Compatibility: NT4, W2K
 function  NtSendWaitReplyChannel(
@@ -6226,7 +6226,7 @@ function  NtSendWaitReplyChannel(
 function  ZwSendWaitReplyChannel(x: PVOID; y: PVOID; z: PVOID; z2: PVOID): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
 
 // Returns STATUS_NOT_IMPLEMENTED. Only MS knows the intention behind this.
-// 
+//
 // !!!DO NOT USE!!!
 // Compatibility: NT4, W2K
 function  NtSetContextChannel(
@@ -8886,7 +8886,7 @@ asm
   {$ifdef cpux86_64}
     mov   RAX, GS:[48]
   {$endif cpux86_64}
-  
+
 end;
 
 // Own function to retrieve the process environment block (PEB) pointer
@@ -8932,7 +8932,7 @@ asm
     {$endif cpux86_64}
        bswap EAX	// .. but bswap EAX is also 64-bit!!! 0F C8 isn't.
   {$endif}
-   
+
 (*
 // Does the same but perhaps slower ...
                         // Source = $11223344
@@ -21815,4 +21815,3 @@ ZwWaitForProcessMutant [NT3]
 {$IFNDEF JWA_OMIT_SECTIONS}
 end.
 {$ENDIF JWA_OMIT_SECTIONS}
-

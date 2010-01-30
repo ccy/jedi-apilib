@@ -60,7 +60,7 @@ uses
   JwaWinType;
 {$ENDIF JWA_OMIT_SECTIONS}
 {$IFNDEF JWA_IMPLEMENTATIONSECTION}
-  
+
 function WSCWriteProviderOrder(lpwdCatalogEntryId: LPDWORD; dwNumberOfEntries: DWORD): Integer; stdcall;
 {$EXTERNALSYM WSCWriteProviderOrder}
 

@@ -83,7 +83,7 @@ begin
       Win32Check(WTSRegisterSessionNotification(Handle, Flags));
     end;
   finally
-    fRegState := not fRegState;  
+    fRegState := not fRegState;
   end;
 end;
 

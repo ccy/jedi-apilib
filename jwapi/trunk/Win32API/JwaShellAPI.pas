@@ -67,7 +67,7 @@ type
 
 {$IFNDEF JWA_INCLUDEMODE}
   PPWideChar = ^PWideChar;
-{$ENDIF JWA_INCLUDEMODE}  
+{$ENDIF JWA_INCLUDEMODE}
 
 {$EXTERNALSYM DragQueryFileA}
 function DragQueryFileA(hDrop: HDROP; iFile: UINT; lpszFile: PAnsiChar; cch: UINT): UINT; stdcall;
@@ -991,12 +991,12 @@ function SHInvokePrinterCommand(hwnd: HWND; uAction: UINT; lpBuf1, lpBuf2: PTSTR
 // identifers that are not currently loaded.  This is useful if an
 // overlay identifier did not load at shell startup but is needed
 // and can be loaded at a later time.  Identifiers already loaded
-// are not affected.  Overlay identifiers implement the 
+// are not affected.  Overlay identifiers implement the
 // IShellIconOverlayIdentifier interface.
 //
 // Returns:
 //      S_OK
-// 
+//
 {$EXTERNALSYM SHLoadNonloadedIconOverlayIdentifiers}
 function SHLoadNonloadedIconOverlayIdentifiers: HRESULT; stdcall;
 
@@ -1223,7 +1223,7 @@ function IsLFNDriveA; external Shell32 name 'IsLFNDriveA';
 function IsLFNDriveW; external Shell32 name 'IsLFNDriveW';
 function IsLFNDrive; external Shell32 name 'IsLFNDrive'+ AWSuffix;
 function SHTestTokenMembership; external Shell32 name 'SHTestTokenMembership';
-function SHGetImageList; external Shell32 name 'SHGetImageList';  
+function SHGetImageList; external Shell32 name 'SHGetImageList';
 function SHGetUnreadMailCountW; external Shell32 name 'SHGetUnreadMailCountW';
 function SHEnumerateUnreadMailAccountsW; external Shell32 name 'SHEnumerateUnreadMailAccountsW';
 function SHSetUnreadMailCountW; external Shell32 name 'SHSetUnreadMailCountW';

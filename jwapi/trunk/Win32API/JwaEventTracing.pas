@@ -80,7 +80,7 @@ const
   SystemTraceControlGuid 	: TGUID = '{9e814aad-3204-11d2-9a82-006008a86939}';
   EventTraceConfigGuid		: TGUID = '{01853a65-418f-4f36-aefc-dc0f1d2fd235}';
   DefaultTraceSecurityGuid  : TGUID = '{0811c1af-7a07-4a06-82ed-869455cdf713}';
-  
+
 const
 	KERNEL_LOGGER_NAMEW = WideString('NT Kernel Logger');
 	GLOBAL_LOGGER_NAMEW = WideString('GlobalLogger');
@@ -94,17 +94,17 @@ const
 
 	MAX_MOF_FIELDS = 16;  // Limit of USE_MOF_PTR fields
 
-  
+
 type
   TRACEHANDLE  = UINT64;
   PTRACEHANDLE = ^TRACEHANDLE;
 
 
 const
-	
+
 	//types for event data going to System Event Logger
 	SYSTEM_EVENT_TYPE = 1;
-	
+
 	//
 	// predefined generic event types ($00 to $09 reserved).
 	//
@@ -123,8 +123,8 @@ const
 	 EVENT_TRACE_TYPE_SUSPEND            = $08;  // Suspend event (WinEvent compatible)
 	 EVENT_TRACE_TYPE_WINEVT_SEND        = $09;  // Send Event (WinEvent compatible)
 	 EVENT_TRACE_TYPE_WINEVT_RECEIVE     = $F0;  // Receive Event (WinEvent compatible)
-		
-		
+
+
 	//
 	// Predefined Event Tracing Levels for Software/Debug Tracing
 	//
@@ -147,8 +147,8 @@ const
 	 TRACE_LEVEL_RESERVED6   = 6;
 	 TRACE_LEVEL_RESERVED7   = 7;
 	 TRACE_LEVEL_RESERVED8   = 8;
-	 TRACE_LEVEL_RESERVED9   = 9;	
-		
+	 TRACE_LEVEL_RESERVED9   = 9;
+
 
 	//
 	// Event types for Process & Threads
@@ -266,11 +266,11 @@ const
 	 EVENT_TRACE_FLAG_DBGPRINT           = $00040000;  // DbgPrint(ex) Calls
 
 	//
-	// Enable flags for Kernel Events on Vista and above 
+	// Enable flags for Kernel Events on Vista and above
 	//
 	 EVENT_TRACE_FLAG_PROCESS_COUNTERS   = $00000008;  // process perf counters
-	 EVENT_TRACE_FLAG_CSWITCH            = $00000010;  // context switches 
-	 EVENT_TRACE_FLAG_DPC                = $00000020;  // deffered procedure calls 
+	 EVENT_TRACE_FLAG_CSWITCH            = $00000010;  // context switches
+	 EVENT_TRACE_FLAG_DPC                = $00000020;  // deffered procedure calls
 	 EVENT_TRACE_FLAG_INTERRUPT          = $00000040;  // interrupts
 	 EVENT_TRACE_FLAG_SYSTEMCALL         = $00000080;  // system calls
 
@@ -328,7 +328,7 @@ const
 	 EVENT_TRACE_MODE_RESERVED           = $00100000;  // Reserved bit, used to signal Heap/Critsec tracing
 
 
-		
+
 
 	//
 	// ControlTrace Codes
@@ -386,7 +386,7 @@ const
 
 type
 //
-// Trace header for all legacy events. 
+// Trace header for all legacy events.
 //
 
   _EVENT_TRACE_HEADER = record        // overlays WNODE_HEADER
@@ -651,7 +651,7 @@ type
   PEVENT_TRACE_PROPERTIES = ^EVENT_TRACE_PROPERTIES;
 
   TEventTraceProperties = EVENT_TRACE_PROPERTIES;
-  PEventTraceProperties = ^TEventTraceProperties; 
+  PEventTraceProperties = ^TEventTraceProperties;
 
 
 // NOTE:
@@ -729,7 +729,7 @@ type
   PTraceEnableInfo = ^TTraceEnableInfo;
 
 //
-// Instance Information for Provider 
+// Instance Information for Provider
 // Used on Vista and above
 //
   _TRACE_PROVIDER_INSTANCE_INFO = record
@@ -1959,7 +1959,7 @@ begin
   end;
 end;
 
-var                                                   
+var
   _TraceMessageVa: Pointer;
 
 function TraceMessageVa;

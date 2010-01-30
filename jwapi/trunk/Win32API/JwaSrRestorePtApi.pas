@@ -320,4 +320,3 @@ function SRRemoveRestorePoint; external srclient name 'SRRemoveRestorePoint';
 {$IFNDEF JWA_OMIT_SECTIONS}
 end.
 {$ENDIF JWA_OMIT_SECTIONS}
-

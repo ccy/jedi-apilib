@@ -1,14 +1,14 @@
 unit CONTACT_TLB;
 
 // ************************************************************************ //
-// WARNING                                                                    
-// -------                                                                    
-// The types declared in this file were generated from data read from a       
-// Type Library. If this type library is explicitly or indirectly (via        
-// another type library referring to this type library) re-imported, or the   
-// 'Refresh' command of the Type Library Editor activated while editing the   
-// Type Library, the contents of this file will be regenerated and all        
-// manual modifications will be lost.                                         
+// WARNING
+// -------
+// The types declared in this file were generated from data read from a
+// Type Library. If this type library is explicitly or indirectly (via
+// another type library referring to this type library) re-imported, or the
+// 'Refresh' command of the Type Library Editor activated while editing the
+// Type Library, the contents of this file will be regenerated and all
+// manual modifications will be lost.
 // ************************************************************************ //
 
 // $Rev: 8291 $
@@ -18,39 +18,39 @@ unit CONTACT_TLB;
 // Type Lib: \Microsoft SDKs\Windows\v6.0\Include\icontact.tlb (1)
 // LIBID: {FFB3DF4D-F600-473E-92C1-CF9A1F4CCCC5}
 // LCID: 0
-// Helpfile: 
+// Helpfile:
 // HelpString: Microsoft Contact Objects
-// DepndLst: 
+// DepndLst:
 //   (1) v2.0 stdole, (C:\Windows\system32\stdole2.tlb)
 // Errors:
 //   Hint: TypeInfo 'CONTACT' changed to 'CONTACT_'
 //   Hint: Symbol 'type' renamed to 'type_'
 // ************************************************************************ //
 // *************************************************************************//
-// NOTE:                                                                      
-// Items guarded by $IFDEF_LIVE_SERVER_AT_DESIGN_TIME are used by properties  
-// which return objects that may need to be explicitly created via a function 
-// call prior to any access via the property. These items have been disabled  
-// in order to prevent accidental use from within the object inspector. You   
-// may enable them by defining LIVE_SERVER_AT_DESIGN_TIME or by selectively   
-// removing them from the $IFDEF blocks. However, such items must still be    
-// programmatically created via a method of the appropriate CoClass before    
-// they can be used.                                                          
-{$TYPEDADDRESS OFF} // Unit must be compiled without type-checked pointers. 
+// NOTE:
+// Items guarded by $IFDEF_LIVE_SERVER_AT_DESIGN_TIME are used by properties
+// which return objects that may need to be explicitly created via a function
+// call prior to any access via the property. These items have been disabled
+// in order to prevent accidental use from within the object inspector. You
+// may enable them by defining LIVE_SERVER_AT_DESIGN_TIME or by selectively
+// removing them from the $IFDEF blocks. However, such items must still be
+// programmatically created via a method of the appropriate CoClass before
+// they can be used.
+{$TYPEDADDRESS OFF} // Unit must be compiled without type-checked pointers.
 {$WARN SYMBOL_PLATFORM OFF}
 {$WRITEABLECONST ON}
 {$VARPROPSETTER ON}
 interface
 
 uses Windows, ActiveX, Classes, Graphics, OleServer, StdVCL, Variants;
-  
+
 
 // *********************************************************************//
-// GUIDS declared in the TypeLibrary. Following prefixes are used:        
-//   Type Libraries     : LIBID_xxxx                                      
-//   CoClasses          : CLASS_xxxx                                      
-//   DISPInterfaces     : DIID_xxxx                                       
-//   Non-DISP interfaces: IID_xxxx                                        
+// GUIDS declared in the TypeLibrary. Following prefixes are used:
+//   Type Libraries     : LIBID_xxxx
+//   CoClasses          : CLASS_xxxx
+//   DISPInterfaces     : DIID_xxxx
+//   Non-DISP interfaces: IID_xxxx
 // *********************************************************************//
 const
   // TypeLibrary Major and minor versions
@@ -71,7 +71,7 @@ const
 type
 
 // *********************************************************************//
-// Forward declaration of types defined in TypeLibrary                    
+// Forward declaration of types defined in TypeLibrary
 // *********************************************************************//
   IContact = interface;
   IContactProperties = interface;
@@ -82,15 +82,15 @@ type
   IContactCollection = interface;
 
 // *********************************************************************//
-// Declaration of CoClasses defined in Type Library                       
-// (NOTE: Here we map each CoClass to its Default Interface)              
+// Declaration of CoClasses defined in Type Library
+// (NOTE: Here we map each CoClass to its Default Interface)
 // *********************************************************************//
   CONTACT_ = IContact;
   ContactManager = IContactManager;
 
 
 // *********************************************************************//
-// Declaration of structures, unions and aliases.                         
+// Declaration of structures, unions and aliases.
 // *********************************************************************//
   PPWideChar1 = ^PWideChar; {*}
   PByte1 = ^Byte; {*}
@@ -130,7 +130,7 @@ type
 // *********************************************************************//
   IContact = interface(IUnknown)
     ['{F941B671-BDA7-4F77-884A-F46462F226A7}']
-    procedure GetContactID(pszContactID: PWideChar; cchContactID: LongWord; 
+    procedure GetContactID(pszContactID: PWideChar; cchContactID: LongWord;
                            var pdwcchContactIDRequired: LongWord); safecall;
     procedure GetPath(pszPath: PWideChar; cchPath: LongWord; var pdwcchPathRequired: LongWord); safecall;
     procedure CommitChanges(dwCommitFlags: LongWord); safecall;
@@ -145,29 +145,29 @@ type
 // *********************************************************************//
   IContactProperties = interface(IUnknown)
     ['{70DD27DD-5CBD-46E8-BEF0-23B6B346288F}']
-    procedure GetString(pszPropertyName: PWideChar; dwFlags: LongWord; pszValue: PWideChar; 
+    procedure GetString(pszPropertyName: PWideChar; dwFlags: LongWord; pszValue: PWideChar;
                         cchValue: LongWord; var pdwcchPropertyValueRequired: LongWord); safecall;
     procedure GetDate(pszPropertyName: PWideChar; dwFlags: LongWord; var pftDateTime: _FILETIME); safecall;
-    procedure GetBinary(pszPropertyName: PWideChar; dwFlags: LongWord; pszContentType: PWideChar; 
-                        cchContentType: LongWord; var pdwcchContentTypeRequired: LongWord; 
+    procedure GetBinary(pszPropertyName: PWideChar; dwFlags: LongWord; pszContentType: PWideChar;
+                        cchContentType: LongWord; var pdwcchContentTypeRequired: LongWord;
                         out ppStream: IStream); safecall;
-    procedure GetLabels(pszArrayElementName: PWideChar; dwFlags: LongWord; pszLabels: PWideChar; 
+    procedure GetLabels(pszArrayElementName: PWideChar; dwFlags: LongWord; pszLabels: PWideChar;
                         cchLabels: LongWord; var pdwcchLabelsRequired: LongWord); safecall;
     procedure SetString(pszPropertyName: PWideChar; dwFlags: LongWord; pszValue: PWideChar); safecall;
     procedure SetDate(pszPropertyName: PWideChar; dwFlags: LongWord; ftDateTime: _FILETIME); safecall;
-    procedure SetBinary(pszPropertyName: PWideChar; dwFlags: LongWord; pszContentType: PWideChar; 
+    procedure SetBinary(pszPropertyName: PWideChar; dwFlags: LongWord; pszContentType: PWideChar;
                         const pStream: IStream); safecall;
-    procedure SetLabels(pszArrayElementName: PWideChar; dwFlags: LongWord; dwLabelCount: LongWord; 
+    procedure SetLabels(pszArrayElementName: PWideChar; dwFlags: LongWord; dwLabelCount: LongWord;
                         var ppszLabels: PWideChar); safecall;
-    procedure CreateArrayNode(pszArrayName: PWideChar; dwFlags: LongWord; fAppend: Integer; 
-                              pszNewArrayElementName: PWideChar; cchNewArrayElementName: LongWord; 
+    procedure CreateArrayNode(pszArrayName: PWideChar; dwFlags: LongWord; fAppend: Integer;
+                              pszNewArrayElementName: PWideChar; cchNewArrayElementName: LongWord;
                               var pdwcchNewArrayElementNameRequired: LongWord); safecall;
     procedure DeleteProperty(pszPropertyName: PWideChar; dwFlags: LongWord); safecall;
     procedure DeleteArrayNode(pszArrayElementName: PWideChar; dwFlags: LongWord); safecall;
     procedure DeleteLabels(pszArrayElementName: PWideChar; dwFlags: LongWord); safecall;
-    procedure GetPropertyCollection(out ppPropertyCollection: IContactPropertyCollection; 
-                                    dwFlags: LongWord; pszMultiValueName: PWideChar; 
-                                    dwLabelCount: LongWord; var ppszLabels: PWideChar; 
+    procedure GetPropertyCollection(out ppPropertyCollection: IContactPropertyCollection;
+                                    dwFlags: LongWord; pszMultiValueName: PWideChar;
+                                    dwLabelCount: LongWord; var ppszLabels: PWideChar;
                                     fAnyLabelMatches: Integer); safecall;
   end;
 
@@ -189,10 +189,10 @@ type
 // *********************************************************************//
   IStream = interface(ISequentialStream)
     ['{0000000C-0000-0000-C000-000000000046}']
-    procedure RemoteSeek(dlibMove: _LARGE_INTEGER; dwOrigin: LongWord; 
+    procedure RemoteSeek(dlibMove: _LARGE_INTEGER; dwOrigin: LongWord;
                          out plibNewPosition: _ULARGE_INTEGER); safecall;
     procedure SetSize(libNewSize: _ULARGE_INTEGER); safecall;
-    procedure RemoteCopyTo(const pstm: IStream; cb: _ULARGE_INTEGER; out pcbRead: _ULARGE_INTEGER; 
+    procedure RemoteCopyTo(const pstm: IStream; cb: _ULARGE_INTEGER; out pcbRead: _ULARGE_INTEGER;
                            out pcbWritten: _ULARGE_INTEGER); safecall;
     procedure Commit(grfCommitFlags: LongWord); safecall;
     procedure Revert; safecall;
@@ -211,12 +211,12 @@ type
     ['{FFD3ADF8-FA64-4328-B1B6-2E0DB509CB3C}']
     procedure Reset; safecall;
     function Next : HRESULT; stdcall;
-    procedure GetPropertyName(pszPropertyName: PWideChar; cchPropertyName: LongWord; 
+    procedure GetPropertyName(pszPropertyName: PWideChar; cchPropertyName: LongWord;
                               var pdwcchPropertyNameRequired: LongWord); safecall;
     procedure GetPropertyType(var pdwType: LongWord); safecall;
     procedure GetPropertyVersion(var pdwVersion: LongWord); safecall;
     procedure GetPropertyModificationDate(var pftModificationDate: _FILETIME); safecall;
-    procedure GetPropertyArrayElementID(pszArrayElementID: PWideChar; cchArrayElementID: LongWord; 
+    procedure GetPropertyArrayElementID(pszArrayElementID: PWideChar; cchArrayElementID: LongWord;
                                         var pdwcchArrayElementIDRequired: LongWord); safecall;
   end;
 
@@ -248,11 +248,11 @@ type
   end;
 
 // *********************************************************************//
-// The Class CoCONTACT_ provides a Create and CreateRemote method to          
-// create instances of the default interface IContact exposed by              
-// the CoClass CONTACT_. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoCONTACT_ provides a Create and CreateRemote method to
+// create instances of the default interface IContact exposed by
+// the CoClass CONTACT_. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoCONTACT_ = class
     class function Create: IContact;
@@ -266,7 +266,7 @@ type
 // Help String      : Contact
 // Default Interface: IContact
 // Def. Intf. DISP? : No
-// Event   Interface: 
+// Event   Interface:
 // TypeFlags        : (2) CanCreate
 // *********************************************************************//
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
@@ -288,7 +288,7 @@ type
     procedure Connect; override;
     procedure ConnectTo(svrIntf: IContact);
     procedure Disconnect; override;
-    procedure GetContactID(pszContactID: PWideChar; cchContactID: LongWord; 
+    procedure GetContactID(pszContactID: PWideChar; cchContactID: LongWord;
                            var pdwcchContactIDRequired: LongWord);
     procedure GetPath(pszPath: PWideChar; cchPath: LongWord; var pdwcchPathRequired: LongWord);
     procedure CommitChanges(dwCommitFlags: LongWord);
@@ -322,11 +322,11 @@ type
 
 
 // *********************************************************************//
-// The Class CoContactManager provides a Create and CreateRemote method to          
-// create instances of the default interface IContactManager exposed by              
-// the CoClass ContactManager. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoContactManager provides a Create and CreateRemote method to
+// create instances of the default interface IContactManager exposed by
+// the CoClass ContactManager. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoContactManager = class
     class function Create: IContactManager;
@@ -340,7 +340,7 @@ type
 // Help String      : ContactManager
 // Default Interface: IContactManager
 // Def. Intf. DISP? : No
-// Event   Interface: 
+// Event   Interface:
 // TypeFlags        : (2) CanCreate
 // *********************************************************************//
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
@@ -484,7 +484,7 @@ begin
 end;
 {$ENDIF}
 
-procedure TCONTACT_.GetContactID(pszContactID: PWideChar; cchContactID: LongWord; 
+procedure TCONTACT_.GetContactID(pszContactID: PWideChar; cchContactID: LongWord;
                                  var pdwcchContactIDRequired: LongWord);
 begin
   DefaultInterface.GetContactID(pszContactID, cchContactID, pdwcchContactIDRequired);

@@ -97,7 +97,7 @@ const
 
 {$IFNDEF JWA_INCLUDEMODE}
   WINSTATIONNAME_LENGTH = 32;
-{$ENDIF JWA_INCLUDEMODE}  
+{$ENDIF JWA_INCLUDEMODE}
 
 
 
@@ -111,8 +111,8 @@ type
 
 type
   _FLOWCONTROLCLASS = (
-    FlowControl_None, 
-    FlowControl_Hardware, 
+    FlowControl_None,
+    FlowControl_Hardware,
     FlowControl_Software  );
   FLOWCONTROLCLASS = _FLOWCONTROLCLASS;
   TFlowControlClass = _FLOWCONTROLCLASS;
@@ -130,7 +130,7 @@ type
     State_Down {= 8},
     State_Init {= 9 } );
   WINSTATIONSTATECLASS = _WINSTATIONSTATECLASS;
-  TWinStationStateClass = _WINSTATIONSTATECLASS;    
+  TWinStationStateClass = _WINSTATIONSTATECLASS;
 
 type
   NASISPECIFICNAMEW = Array[0..NASISPECIFICNAME_LENGTH] of WCHAR;
@@ -420,14 +420,14 @@ type
 
 type
   _SHADOWCLASS = (
-    Shadow_Disable, 
-    Shadow_EnableInputNotify, 
-    Shadow_EnableInputNoNotify, 
-    Shadow_EnableNoInputNotify, 
+    Shadow_Disable,
+    Shadow_EnableInputNotify,
+    Shadow_EnableInputNoNotify,
+    Shadow_EnableNoInputNotify,
     Shadow_EnableNoInputNoNotify );
   SHADOWCLASS = _SHADOWCLASS;
   TShadowClass = _SHADOWCLASS;
-  
+
 {+// }
 {-* Callback options }
 {= }
@@ -515,7 +515,7 @@ type
   	  fPolicyTSMachineErrorInvalidProfile,
       fFallbackPrintDriverType0,  // ULONG   FallbackPrintDriverType: 3;
       fFallbackPrintDriverType1,
-      fFallbackPrintDriverType2,	
+      fFallbackPrintDriverType2,
   	  fDisableTerminalServerTooltip,
 {$IFDEF DELPHI6_UP}
       _PolicyTsMachineFlags1Align = al96bit // align the bitset on 3 ULONG's
@@ -1061,7 +1061,7 @@ type
     Type_: ASYNCCONNECTCLASS;
     ConnectConfigFlags: Set Of (
       fEnableBreakDisconnect,
-{$IFDEF DELPHI6}      
+{$IFDEF DELPHI6}
       _ConnectConfigFlagsAlign = al32Bit
 {$ELSE}
     _ConnectConfigFlagsAlign1,
@@ -1258,7 +1258,7 @@ type
     SpecificName: NASISPECIFICNAMEW;
     UserName: NASIUSERNAMEW;
     PassWord: NASIPASSWORDW;
-    SessionName: NASISESSIONNAMEW;   // Error in winsta.h NASISESIONNAMEW 
+    SessionName: NASISESSIONNAMEW;   // Error in winsta.h NASISESIONNAMEW
     FileServer: NASIFILESERVERW;
     GlobalSession: BOOLEAN;
   end {_NASICONFIGW};
@@ -2044,7 +2044,7 @@ type
 
 type
   _SHADOWSTATECLASS = (
-    State_NoShadow, 
+    State_NoShadow,
     State_Shadowing,
     State_Shadowed );
   SHADOWSTATECLASS = _SHADOWSTATECLASS;
@@ -2182,7 +2182,7 @@ const
 {$IFNDEF JWA_INCLUDEMODE}
   IDTIMEOUT = 32000;
   IDASYNC = 32001;
-{$ENDIF JWA_INCLUDEMODE}  
+{$ENDIF JWA_INCLUDEMODE}
   WSD_LOGOFF = $00000001;
   WSD_SHUTDOWN = $00000002;
   WSD_REBOOT = $00000004;
@@ -2200,7 +2200,7 @@ const
   WTS_SESSION_LOCK = $7;
   WTS_SESSION_UNLOCK = $8;
   WTS_SESSION_REMOTE_CONTROL = $9;
-{$ENDIF JWA_INCLUDEMODE}  
+{$ENDIF JWA_INCLUDEMODE}
 
 
 // We cannot convert the CREATE_MASK macro below to Delphi

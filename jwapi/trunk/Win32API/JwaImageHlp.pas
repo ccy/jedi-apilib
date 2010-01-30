@@ -952,7 +952,7 @@ type
   PIMAGEHLP_SYMBOL64_PACKAGE = ^IMAGEHLP_SYMBOL64_PACKAGE;
   {$EXTERNALSYM PIMAGEHLP_SYMBOL64_PACKAGE}
   TImageHlpSymbol64Package = IMAGEHLP_SYMBOL64_PACKAGE;
-  PImageHlpSymbol64Package = PIMAGEHLP_SYMBOL64_PACKAGE;  
+  PImageHlpSymbol64Package = PIMAGEHLP_SYMBOL64_PACKAGE;
 
 //#if !defined(_IMAGEHLP_SOURCE_) && defined(_IMAGEHLP64)
 //
@@ -1231,7 +1231,7 @@ type
     TimeDateStamp: DWORD; // date/time stamp from pe header
     FileName: array [0..MAX_PATH - 1] of AnsiChar; // symbols file or image name
     Reparse: ByteBool; // load failure reparse
-    hFile: HANDLE; // file handle, if passed    
+    hFile: HANDLE; // file handle, if passed
   end;
   {$EXTERNALSYM _IMAGEHLP_DEFERRED_SYMBOL_LOAD}
   IMAGEHLP_DEFERRED_SYMBOL_LOAD = _IMAGEHLP_DEFERRED_SYMBOL_LOAD;
@@ -1857,7 +1857,7 @@ type
   PMinidumpHeader = PMINIDUMP_HEADER;
 
 //
-// The MINIDUMP_HEADER field StreamDirectoryRva points to 
+// The MINIDUMP_HEADER field StreamDirectoryRva points to
 // an array of MINIDUMP_DIRECTORY structures.
 //
 
@@ -2029,7 +2029,7 @@ type
         SuiteMask: USHORT;
         Reserved2: USHORT);
     end;
-    
+
     //
     // CPU information is obtained from one of two places.
     //
@@ -2058,7 +2058,7 @@ type
 
 //
 // The minidump thread contains standard thread
-// information plus an RVA to the memory for this 
+// information plus an RVA to the memory for this
 // thread and an RVA to the CONTEXT structure for
 // this thread.
 //

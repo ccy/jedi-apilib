@@ -1086,7 +1086,7 @@ const
   SRRF_NOEXPAND           = $10000000;  // do not automatically expand environment strings if value is of type REG_EXPAND_SZ
   {$EXTERNALSYM SRRF_ZEROONFAILURE}
   SRRF_ZEROONFAILURE      = $20000000;  // if pvData is not NULL, set content to all zeros on failure
-  
+
 // Function:
 //
 //  SHRegGetValue()
@@ -1955,7 +1955,7 @@ function IsInternetESCEnabled: BOOL stdcall;
 //stOrM!------------------------------------------------------------------------------------------------------------------------------------------------
 
 const
-  MB_TIMEDOUT = 32000; 
+  MB_TIMEDOUT = 32000;
 
 function MessageBoxTimeOut(
       hWnd: HWND; lpText: PTSTR; lpCaption: PTSTR;
@@ -8558,7 +8558,7 @@ end;
 //------------------------------------------------------------------------------------------------------------------------------------------stOrM!
 
 {$ENDIF DYNAMIC_LINK}
-                
+
 {$ENDIF JWA_INTERFACESECTION}
 
 {$IFNDEF JWA_OMIT_SECTIONS}

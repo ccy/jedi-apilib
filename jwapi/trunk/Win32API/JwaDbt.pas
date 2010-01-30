@@ -668,7 +668,7 @@ type
   PDevBroadcastUserDefined = PDEV_BROADCAST_USERDEFINED;
 
 // (rom) added own message type for WM_DEVICECHANGE
-// see Messages.pas TWMNoParams ff. 
+// see Messages.pas TWMNoParams ff.
 
 type
   TWMDeviceChange = record
@@ -691,4 +691,3 @@ implementation
 {$IFNDEF JWA_OMIT_SECTIONS}
 end.
 {$ENDIF JWA_OMIT_SECTIONS}
-

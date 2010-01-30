@@ -878,7 +878,7 @@ const
   {$EXTERNALSYM WBEMMOF_E_ERROR_INVALID_INCLUDE_FILE}
   WBEMMOF_E_INVALID_DELETECLASS_SYNTAX = DWORD($80044031);
   {$EXTERNALSYM WBEMMOF_E_INVALID_DELETECLASS_SYNTAX}
-  
+
 //const
 //EXTERN_C const IID LIBID_WbemClient_v1;
 
@@ -920,7 +920,7 @@ const
 
 type
   // forward declarations
-  
+
   IWbemQualifierSet = interface;
   IWbemContext = interface;
   IWbemCallResult = interface;

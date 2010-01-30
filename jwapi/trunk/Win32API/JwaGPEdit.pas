@@ -659,7 +659,7 @@ type
     //
 
     function GetPropertySheetPages(var hPages: PHPROPSHEETPAGE; var uPageCount: UINT): HRESULT; stdcall;
-    
+
   end;
   {$EXTERNALSYM IGroupPolicyObject}
 
@@ -968,4 +968,3 @@ function ExportRSoPData; external gpeditlib name 'ExportRSoPData';
 {$IFNDEF JWA_OMIT_SECTIONS}
 end.
 {$ENDIF JWA_OMIT_SECTIONS}
-

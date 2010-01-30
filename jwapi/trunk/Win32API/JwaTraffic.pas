@@ -378,7 +378,7 @@ const
 
 //
 // This structure is used to associate a friendly name with the flow
-// 
+//
 
 type
   LPQOS_FRIENDLY_NAME = ^QOS_FRIENDLY_NAME;
@@ -394,12 +394,12 @@ type
   PQosFriendlyName = LPQOS_FRIENDLY_NAME;
 
 //
-// This structure may carry an 802.1 TrafficClass parameter which 
-// has been provided to the host by a layer 2 network, for example, 
+// This structure may carry an 802.1 TrafficClass parameter which
+// has been provided to the host by a layer 2 network, for example,
 // in an 802.1 extended RSVP RESV message. If this object is obtained
 // from the network, hosts will stamp the MAC headers of corresponding
 // transmitted packets, with the value in the object. Otherwise, hosts
-// may select a value based on the standard Intserv mapping of 
+// may select a value based on the standard Intserv mapping of
 // ServiceType to 802.1 TrafficClass.
 //
 //
@@ -417,11 +417,11 @@ type
   PQosTrafficClass = LPQOS_TRAFFIC_CLASS;
 
 //
-// This structure may carry an DSField parameter which  has been provided to 
-// the host by a layer 3 network, for example, in an extended RSVP RESV message. 
+// This structure may carry an DSField parameter which  has been provided to
+// the host by a layer 3 network, for example, in an extended RSVP RESV message.
 // If this object is obtained from the network, hosts will stamp the DS Field on the
 // IP header of transmitted packets, with the value in the object. Otherwise, hosts
-// may select a value based on the standard Intserv mapping of ServiceType to DS Field 
+// may select a value based on the standard Intserv mapping of ServiceType to DS Field
 //
 
   LPQOS_DS_CLASS = ^QOS_DS_CLASS;
@@ -439,7 +439,7 @@ type
 //
 // This structure is used to create DiffServ Flows. This creates flows in the packet scheduler
 // and allows it to classify to packets based on a particular DS field. This structure takes
-// a variable length array of QOS_DIFFSERV_RULE, where each DS field is specified by a 
+// a variable length array of QOS_DIFFSERV_RULE, where each DS field is specified by a
 // QOS_DIFFSERV_RULE
 //
   LPQOS_DIFFSERV = ^QOS_DIFFSERV;
@@ -456,7 +456,7 @@ type
   PQosDiffserv = LPQOS_DIFFSERV;
 
 //
-// The rule for a Diffserv DS codepoint. 
+// The rule for a Diffserv DS codepoint.
 //
 
   LPQOS_DIFFSERV_RULE = ^QOS_DIFFSERV_RULE;
@@ -474,9 +474,9 @@ type
   TQosDiffservRule = QOS_DIFFSERV_RULE;
   PQosDiffservRule = LPQOS_DIFFSERV_RULE;
 
-// 
+//
 // This structure is passed to indicate that the IP Precedence and UserPriority mappings for the flow
-// have to be set to the system defaults for TCP traffic. If this object is passed, 
+// have to be set to the system defaults for TCP traffic. If this object is passed,
 // the ServiceType ==> DSField mapping, ServiceType ==> UserPriorityMapping, QOS_OBJECT_DS_CLASS
 // and QOS_OBJECT_TRAFFIC_CLASS will be ignored.
 //

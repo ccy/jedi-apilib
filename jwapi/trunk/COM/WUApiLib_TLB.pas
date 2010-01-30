@@ -1,14 +1,14 @@
 unit WUApiLib_TLB;
 
 // ************************************************************************ //
-// WARNING                                                                    
-// -------                                                                    
-// The types declared in this file were generated from data read from a       
-// Type Library. If this type library is explicitly or indirectly (via        
-// another type library referring to this type library) re-imported, or the   
-// 'Refresh' command of the Type Library Editor activated while editing the   
-// Type Library, the contents of this file will be regenerated and all        
-// manual modifications will be lost.                                         
+// WARNING
+// -------
+// The types declared in this file were generated from data read from a
+// Type Library. If this type library is explicitly or indirectly (via
+// another type library referring to this type library) re-imported, or the
+// 'Refresh' command of the Type Library Editor activated while editing the
+// Type Library, the contents of this file will be regenerated and all
+// manual modifications will be lost.
 // ************************************************************************ //
 
 // $Rev: 8291 $
@@ -18,9 +18,9 @@ unit WUApiLib_TLB;
 // Type Lib: C:\Windows\system32\wuapi.dll (1)
 // LIBID: {B596CC9F-56E5-419E-A622-E01BB457431E}
 // LCID: 0
-// Helpfile: 
+// Helpfile:
 // HelpString: WUAPI 2.0 Type Library
-// DepndLst: 
+// DepndLst:
 //   (1) v2.0 stdole, (C:\Windows\system32\stdole2.tlb)
 // Errors:
 //   Hint: Member 'NotificationLevel' of 'IAutomaticUpdatesSettings' changed to 'NotificationLevel1'
@@ -36,30 +36,30 @@ unit WUApiLib_TLB;
 //   Hint: Symbol 'Type' renamed to 'type_'
 // ************************************************************************ //
 // *************************************************************************//
-// NOTE:                                                                      
-// Items guarded by $IFDEF_LIVE_SERVER_AT_DESIGN_TIME are used by properties  
-// which return objects that may need to be explicitly created via a function 
-// call prior to any access via the property. These items have been disabled  
-// in order to prevent accidental use from within the object inspector. You   
-// may enable them by defining LIVE_SERVER_AT_DESIGN_TIME or by selectively   
-// removing them from the $IFDEF blocks. However, such items must still be    
-// programmatically created via a method of the appropriate CoClass before    
-// they can be used.                                                          
-{$TYPEDADDRESS OFF} // Unit must be compiled without type-checked pointers. 
+// NOTE:
+// Items guarded by $IFDEF_LIVE_SERVER_AT_DESIGN_TIME are used by properties
+// which return objects that may need to be explicitly created via a function
+// call prior to any access via the property. These items have been disabled
+// in order to prevent accidental use from within the object inspector. You
+// may enable them by defining LIVE_SERVER_AT_DESIGN_TIME or by selectively
+// removing them from the $IFDEF blocks. However, such items must still be
+// programmatically created via a method of the appropriate CoClass before
+// they can be used.
+{$TYPEDADDRESS OFF} // Unit must be compiled without type-checked pointers.
 {$WARN SYMBOL_PLATFORM OFF}
 {$WRITEABLECONST ON}
 {$VARPROPSETTER ON}
 interface
 
 uses Windows, ActiveX, Classes, Graphics, OleServer, StdVCL, Variants;
-  
+
 
 // *********************************************************************//
-// GUIDS declared in the TypeLibrary. Following prefixes are used:        
-//   Type Libraries     : LIBID_xxxx                                      
-//   CoClasses          : CLASS_xxxx                                      
-//   DISPInterfaces     : DIID_xxxx                                       
-//   Non-DISP interfaces: IID_xxxx                                        
+// GUIDS declared in the TypeLibrary. Following prefixes are used:
+//   Type Libraries     : LIBID_xxxx
+//   CoClasses          : CLASS_xxxx
+//   DISPInterfaces     : DIID_xxxx
+//   Non-DISP interfaces: IID_xxxx
 // *********************************************************************//
 const
   // TypeLibrary Major and minor versions
@@ -146,7 +146,7 @@ const
   CLASS_UpdateServiceManager: TGUID = '{F8D253D9-89A4-4DAA-87B6-1168369F0B21}';
 
 // *********************************************************************//
-// Declaration of Enumerations defined in Type Library                    
+// Declaration of Enumerations defined in Type Library
 // *********************************************************************//
 // Constants for enum tagUpdateLockdownOption
 type
@@ -300,7 +300,7 @@ const
 type
 
 // *********************************************************************//
-// Forward declaration of types defined in TypeLibrary                    
+// Forward declaration of types defined in TypeLibrary
 // *********************************************************************//
   IUpdateLockdown = interface;
   IUpdateException = interface;
@@ -428,8 +428,8 @@ type
   IUpdateService2Disp = dispinterface;
 
 // *********************************************************************//
-// Declaration of CoClasses defined in Type Library                       
-// (NOTE: Here we map each CoClass to its Default Interface)              
+// Declaration of CoClasses defined in Type Library
+// (NOTE: Here we map each CoClass to its Default Interface)
 // *********************************************************************//
   StringCollection = IStringCollection;
   UpdateSearcher = IUpdateSearcher2;
@@ -445,27 +445,27 @@ type
 
 
 // *********************************************************************//
-// Declaration of structures, unions and aliases.                         
+// Declaration of structures, unions and aliases.
 // *********************************************************************//
-  wireHWND = ^_RemotableHandle; 
+  wireHWND = ^_RemotableHandle;
 
-  UpdateLockdownOption = tagUpdateLockdownOption; 
-  AddServiceFlag = tagAddServiceFlag; 
-  UpdateServiceOption = tagUpdateServiceOption; 
-  UpdateExceptionContext = tagUpdateExceptionContext; 
-  AutomaticUpdatesNotificationLevel = tagAutomaticUpdatesNotificationLevel; 
-  AutomaticUpdatesScheduledInstallationDay = tagAutomaticUpdatesScheduledInstallationDay; 
-  AutomaticUpdatesUserType = tagAutomaticUpdatesUserType; 
-  AutomaticUpdatesPermissionType = tagAutomaticUpdatesPermissionType; 
-  InstallationImpact = tagInstallationImpact; 
-  InstallationRebootBehavior = tagInstallationRebootBehavior; 
-  UpdateType = tagUpdateType; 
-  DeploymentAction = tagDeploymentAction; 
-  DownloadPriority = tagDownloadPriority; 
-  OperationResultCode = tagOperationResultCode; 
-  DownloadPhase = tagDownloadPhase; 
-  UpdateOperation = tagUpdateOperation; 
-  ServerSelection = tagServerSelection; 
+  UpdateLockdownOption = tagUpdateLockdownOption;
+  AddServiceFlag = tagAddServiceFlag;
+  UpdateServiceOption = tagUpdateServiceOption;
+  UpdateExceptionContext = tagUpdateExceptionContext;
+  AutomaticUpdatesNotificationLevel = tagAutomaticUpdatesNotificationLevel;
+  AutomaticUpdatesScheduledInstallationDay = tagAutomaticUpdatesScheduledInstallationDay;
+  AutomaticUpdatesUserType = tagAutomaticUpdatesUserType;
+  AutomaticUpdatesPermissionType = tagAutomaticUpdatesPermissionType;
+  InstallationImpact = tagInstallationImpact;
+  InstallationRebootBehavior = tagInstallationRebootBehavior;
+  UpdateType = tagUpdateType;
+  DeploymentAction = tagDeploymentAction;
+  DownloadPriority = tagDownloadPriority;
+  OperationResultCode = tagOperationResultCode;
+  DownloadPhase = tagDownloadPhase;
+  UpdateOperation = tagUpdateOperation;
+  ServerSelection = tagServerSelection;
 
   __MIDL_IWinTypes_0009 = record
     case Integer of
@@ -478,7 +478,7 @@ type
     u: __MIDL_IWinTypes_0009;
   end;
 
-  UpdateServiceRegistrationState = tagUpdateServiceRegistrationState; 
+  UpdateServiceRegistrationState = tagUpdateServiceRegistrationState;
 
 // *********************************************************************//
 // Interface: IUpdateLockdown
@@ -590,7 +590,7 @@ type
     ['{6ABC136A-C3CA-4384-8171-CB2B1E59B8DC}']
     function Get_IncludeRecommendedUpdates: WordBool; safecall;
     procedure Set_IncludeRecommendedUpdates1(retval: WordBool); safecall;
-    function CheckPermission(userType: AutomaticUpdatesUserType; 
+    function CheckPermission(userType: AutomaticUpdatesUserType;
                              permissionType: AutomaticUpdatesPermissionType): WordBool; safecall;
     property IncludeRecommendedUpdates: WordBool read Get_IncludeRecommendedUpdates write Set_IncludeRecommendedUpdates1;
   end;
@@ -603,7 +603,7 @@ type
   IAutomaticUpdatesSettings2Disp = dispinterface
     ['{6ABC136A-C3CA-4384-8171-CB2B1E59B8DC}']
     property IncludeRecommendedUpdates: WordBool dispid 1610809345;
-    function CheckPermission(userType: AutomaticUpdatesUserType; 
+    function CheckPermission(userType: AutomaticUpdatesUserType;
                              permissionType: AutomaticUpdatesPermissionType): WordBool; dispid 1610809346;
     property NotificationLevel: AutomaticUpdatesNotificationLevel dispid 1610743809;
     property ReadOnly: WordBool readonly dispid 1610743810;
@@ -1498,7 +1498,7 @@ type
 // *********************************************************************//
   IDownloadCompletedCallback = interface(IUnknown)
     ['{77254866-9F5B-4C8E-B9E2-C77A8530D64B}']
-    function Invoke(const downloadJob: IDownloadJob; 
+    function Invoke(const downloadJob: IDownloadJob;
                     const callbackArgs: IDownloadCompletedCallbackArgs): HResult; stdcall;
   end;
 
@@ -1628,7 +1628,7 @@ type
 // *********************************************************************//
   IDownloadProgressChangedCallback = interface(IUnknown)
     ['{8C3F1CDD-6173-4591-AEBD-A56A53CA77C1}']
-    function Invoke(const downloadJob: IDownloadJob; 
+    function Invoke(const downloadJob: IDownloadJob;
                     const callbackArgs: IDownloadProgressChangedCallbackArgs): HResult; stdcall;
   end;
 
@@ -1660,7 +1660,7 @@ type
 // *********************************************************************//
   IInstallationCompletedCallback = interface(IUnknown)
     ['{45F4F6F3-D602-4F98-9A8A-3EFA152AD2D3}']
-    function Invoke(const installationJob: IInstallationJob; 
+    function Invoke(const installationJob: IInstallationJob;
                     const callbackArgs: IInstallationCompletedCallbackArgs): HResult; stdcall;
   end;
 
@@ -1778,7 +1778,7 @@ type
 // *********************************************************************//
   IInstallationProgressChangedCallback = interface(IUnknown)
     ['{E01402D5-F8DA-43BA-A012-38894BD048F1}']
-    function Invoke(const installationJob: IInstallationJob; 
+    function Invoke(const installationJob: IInstallationJob;
                     const callbackArgs: IInstallationProgressChangedCallbackArgs): HResult; stdcall;
   end;
 
@@ -2110,7 +2110,7 @@ type
     procedure Set_UserName(const retval: WideString); safecall;
     procedure SetPassword(const value: WideString); safecall;
     procedure PromptForCredentials(const parentWindow: IUnknown; const Title: WideString); safecall;
-    procedure PromptForCredentialsFromHwnd(var parentWindow: _RemotableHandle; 
+    procedure PromptForCredentialsFromHwnd(var parentWindow: _RemotableHandle;
                                            const Title: WideString); safecall;
     function Get_AutoDetect: WordBool; safecall;
     procedure Set_AutoDetect(retval: WordBool); safecall;
@@ -2136,7 +2136,7 @@ type
     property UserName: WideString dispid 1610743813;
     procedure SetPassword(const value: WideString); dispid 1610743814;
     procedure PromptForCredentials(const parentWindow: IUnknown; const Title: WideString); dispid 1610743815;
-    procedure PromptForCredentialsFromHwnd(var parentWindow: {??_RemotableHandle}OleVariant; 
+    procedure PromptForCredentialsFromHwnd(var parentWindow: {??_RemotableHandle}OleVariant;
                                            const Title: WideString); dispid 1610743816;
     property AutoDetect: WordBool dispid 1610743817;
   end;
@@ -2286,7 +2286,7 @@ type
     procedure Set_Priority(retval: DownloadPriority); safecall;
     function Get_Updates: IUpdateCollection; safecall;
     procedure Set_Updates(const retval: IUpdateCollection); safecall;
-    function BeginDownload(const onProgressChanged: IUnknown; const onCompleted: IUnknown; 
+    function BeginDownload(const onProgressChanged: IUnknown; const onCompleted: IUnknown;
                            state: OleVariant): IDownloadJob; safecall;
     function Download: IDownloadResult; safecall;
     function EndDownload(const value: IDownloadJob): IDownloadResult; safecall;
@@ -2307,7 +2307,7 @@ type
     property IsForced: WordBool dispid 1610743810;
     property Priority: DownloadPriority dispid 1610743811;
     property Updates: IUpdateCollection dispid 1610743812;
-    function BeginDownload(const onProgressChanged: IUnknown; const onCompleted: IUnknown; 
+    function BeginDownload(const onProgressChanged: IUnknown; const onCompleted: IUnknown;
                            state: OleVariant): IDownloadJob; dispid 1610743813;
     function Download: IDownloadResult; dispid 1610743814;
     function EndDownload(const value: IDownloadJob): IDownloadResult; dispid 1610743815;
@@ -2356,9 +2356,9 @@ type
     function Get_parentWindow: IUnknown; safecall;
     function Get_Updates: IUpdateCollection; safecall;
     procedure Set_Updates(const retval: IUpdateCollection); safecall;
-    function BeginInstall(const onProgressChanged: IUnknown; const onCompleted: IUnknown; 
+    function BeginInstall(const onProgressChanged: IUnknown; const onCompleted: IUnknown;
                           state: OleVariant): IInstallationJob; safecall;
-    function BeginUninstall(const onProgressChanged: IUnknown; const onCompleted: IUnknown; 
+    function BeginUninstall(const onProgressChanged: IUnknown; const onCompleted: IUnknown;
                             state: OleVariant): IInstallationJob; safecall;
     function EndInstall(const value: IInstallationJob): IInstallationResult; safecall;
     function EndUninstall(const value: IInstallationJob): IInstallationResult; safecall;
@@ -2391,9 +2391,9 @@ type
     property ParentHwnd: {??wireHWND}OleVariant dispid 1610743811;
     property parentWindow: IUnknown dispid 1610743812;
     property Updates: IUpdateCollection dispid 1610743813;
-    function BeginInstall(const onProgressChanged: IUnknown; const onCompleted: IUnknown; 
+    function BeginInstall(const onProgressChanged: IUnknown; const onCompleted: IUnknown;
                           state: OleVariant): IInstallationJob; dispid 1610743814;
-    function BeginUninstall(const onProgressChanged: IUnknown; const onCompleted: IUnknown; 
+    function BeginUninstall(const onProgressChanged: IUnknown; const onCompleted: IUnknown;
                             state: OleVariant): IInstallationJob; dispid 1610743815;
     function EndInstall(const value: IInstallationJob): IInstallationResult; dispid 1610743816;
     function EndUninstall(const value: IInstallationJob): IInstallationResult; dispid 1610743817;
@@ -2430,9 +2430,9 @@ type
     property ParentHwnd: {??wireHWND}OleVariant dispid 1610743811;
     property parentWindow: IUnknown dispid 1610743812;
     property Updates: IUpdateCollection dispid 1610743813;
-    function BeginInstall(const onProgressChanged: IUnknown; const onCompleted: IUnknown; 
+    function BeginInstall(const onProgressChanged: IUnknown; const onCompleted: IUnknown;
                           state: OleVariant): IInstallationJob; dispid 1610743814;
-    function BeginUninstall(const onProgressChanged: IUnknown; const onCompleted: IUnknown; 
+    function BeginUninstall(const onProgressChanged: IUnknown; const onCompleted: IUnknown;
                             state: OleVariant): IInstallationJob; dispid 1610743815;
     function EndInstall(const value: IInstallationJob): IInstallationResult; dispid 1610743816;
     function EndUninstall(const value: IInstallationJob): IInstallationResult; dispid 1610743817;
@@ -2577,7 +2577,7 @@ type
     procedure RegisterServiceWithAU(const ServiceID: WideString); safecall;
     procedure RemoveService(const ServiceID: WideString); safecall;
     procedure UnregisterServiceWithAU(const ServiceID: WideString); safecall;
-    function AddScanPackageService(const serviceName: WideString; 
+    function AddScanPackageService(const serviceName: WideString;
                                    const scanFileLocation: WideString; flags: Integer): IUpdateService; safecall;
     procedure SetOption(const optionName: WideString; optionValue: OleVariant); safecall;
     property Services: IUpdateServiceCollection read Get_Services;
@@ -2595,7 +2595,7 @@ type
     procedure RegisterServiceWithAU(const ServiceID: WideString); dispid 1610743811;
     procedure RemoveService(const ServiceID: WideString); dispid 1610743812;
     procedure UnregisterServiceWithAU(const ServiceID: WideString); dispid 1610743813;
-    function AddScanPackageService(const serviceName: WideString; 
+    function AddScanPackageService(const serviceName: WideString;
                                    const scanFileLocation: WideString; flags: Integer): IUpdateService; dispid 1610743814;
     procedure SetOption(const optionName: WideString; optionValue: OleVariant); dispid 1610678279;
   end;
@@ -2610,7 +2610,7 @@ type
     function Get_ClientApplicationID: WideString; safecall;
     procedure Set_ClientApplicationID(const retval: WideString); safecall;
     function QueryServiceRegistration(const ServiceID: WideString): IUpdateServiceRegistration; safecall;
-    function AddService2(const ServiceID: WideString; flags: Integer; 
+    function AddService2(const ServiceID: WideString; flags: Integer;
                          const authorizationCabPath: WideString): IUpdateServiceRegistration; safecall;
     property ClientApplicationID: WideString read Get_ClientApplicationID write Set_ClientApplicationID;
   end;
@@ -2624,14 +2624,14 @@ type
     ['{0BB8531D-7E8D-424F-986C-A0B8F60A3E7B}']
     property ClientApplicationID: WideString dispid 1610809345;
     function QueryServiceRegistration(const ServiceID: WideString): IUpdateServiceRegistration; dispid 1610809346;
-    function AddService2(const ServiceID: WideString; flags: Integer; 
+    function AddService2(const ServiceID: WideString; flags: Integer;
                          const authorizationCabPath: WideString): IUpdateServiceRegistration; dispid 1610809347;
     property Services: IUpdateServiceCollection readonly dispid 1610743809;
     function AddService(const ServiceID: WideString; const authorizationCabPath: WideString): IUpdateService; dispid 1610743810;
     procedure RegisterServiceWithAU(const ServiceID: WideString); dispid 1610743811;
     procedure RemoveService(const ServiceID: WideString); dispid 1610743812;
     procedure UnregisterServiceWithAU(const ServiceID: WideString); dispid 1610743813;
-    function AddScanPackageService(const serviceName: WideString; 
+    function AddScanPackageService(const serviceName: WideString;
                                    const scanFileLocation: WideString; flags: Integer): IUpdateService; dispid 1610743814;
     procedure SetOption(const optionName: WideString; optionValue: OleVariant); dispid 1610678279;
   end;
@@ -2785,11 +2785,11 @@ type
   end;
 
 // *********************************************************************//
-// The Class CoStringCollection provides a Create and CreateRemote method to          
-// create instances of the default interface IStringCollection exposed by              
-// the CoClass StringCollection. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoStringCollection provides a Create and CreateRemote method to
+// create instances of the default interface IStringCollection exposed by
+// the CoClass StringCollection. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoStringCollection = class
     class function Create: IStringCollection;
@@ -2803,7 +2803,7 @@ type
 // Help String      : StringCollection Class
 // Default Interface: IStringCollection
 // Def. Intf. DISP? : No
-// Event   Interface: 
+// Event   Interface:
 // TypeFlags        : (2) CanCreate
 // *********************************************************************//
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
@@ -2872,11 +2872,11 @@ type
 
 
 // *********************************************************************//
-// The Class CoUpdateSearcher provides a Create and CreateRemote method to          
-// create instances of the default interface IUpdateSearcher2 exposed by              
-// the CoClass UpdateSearcher. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoUpdateSearcher provides a Create and CreateRemote method to
+// create instances of the default interface IUpdateSearcher2 exposed by
+// the CoClass UpdateSearcher. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoUpdateSearcher = class
     class function Create: IUpdateSearcher2;
@@ -2890,7 +2890,7 @@ type
 // Help String      : UpdateSearcher Class
 // Default Interface: IUpdateSearcher2
 // Def. Intf. DISP? : No
-// Event   Interface: 
+// Event   Interface:
 // TypeFlags        : (2) CanCreate
 // *********************************************************************//
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
@@ -2946,11 +2946,11 @@ type
 
 
 // *********************************************************************//
-// The Class CoWebProxy provides a Create and CreateRemote method to          
-// create instances of the default interface IWebProxy exposed by              
-// the CoClass WebProxy. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoWebProxy provides a Create and CreateRemote method to
+// create instances of the default interface IWebProxy exposed by
+// the CoClass WebProxy. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoWebProxy = class
     class function Create: IWebProxy;
@@ -2964,7 +2964,7 @@ type
 // Help String      : WebProxy Class
 // Default Interface: IWebProxy
 // Def. Intf. DISP? : No
-// Event   Interface: 
+// Event   Interface:
 // TypeFlags        : (2) CanCreate
 // *********************************************************************//
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
@@ -3049,11 +3049,11 @@ type
 
 
 // *********************************************************************//
-// The Class CoSystemInformation provides a Create and CreateRemote method to          
-// create instances of the default interface ISystemInformation exposed by              
-// the CoClass SystemInformation. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoSystemInformation provides a Create and CreateRemote method to
+// create instances of the default interface ISystemInformation exposed by
+// the CoClass SystemInformation. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoSystemInformation = class
     class function Create: ISystemInformation;
@@ -3067,7 +3067,7 @@ type
 // Help String      : SystemInformation Class
 // Default Interface: ISystemInformation
 // Def. Intf. DISP? : No
-// Event   Interface: 
+// Event   Interface:
 // TypeFlags        : (2) CanCreate
 // *********************************************************************//
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
@@ -3123,11 +3123,11 @@ type
 
 
 // *********************************************************************//
-// The Class CoWindowsUpdateAgentInfo provides a Create and CreateRemote method to          
-// create instances of the default interface IWindowsUpdateAgentInfo exposed by              
-// the CoClass WindowsUpdateAgentInfo. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoWindowsUpdateAgentInfo provides a Create and CreateRemote method to
+// create instances of the default interface IWindowsUpdateAgentInfo exposed by
+// the CoClass WindowsUpdateAgentInfo. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoWindowsUpdateAgentInfo = class
     class function Create: IWindowsUpdateAgentInfo;
@@ -3141,7 +3141,7 @@ type
 // Help String      : WindowsUpdateAgentInfo Class
 // Default Interface: IWindowsUpdateAgentInfo
 // Def. Intf. DISP? : No
-// Event   Interface: 
+// Event   Interface:
 // TypeFlags        : (2) CanCreate
 // *********************************************************************//
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
@@ -3192,11 +3192,11 @@ type
 
 
 // *********************************************************************//
-// The Class CoAutomaticUpdates provides a Create and CreateRemote method to          
-// create instances of the default interface IAutomaticUpdates2 exposed by              
-// the CoClass AutomaticUpdates. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoAutomaticUpdates provides a Create and CreateRemote method to
+// create instances of the default interface IAutomaticUpdates2 exposed by
+// the CoClass AutomaticUpdates. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoAutomaticUpdates = class
     class function Create: IAutomaticUpdates2;
@@ -3210,7 +3210,7 @@ type
 // Help String      : AutomaticUpdates Class
 // Default Interface: IAutomaticUpdates2
 // Def. Intf. DISP? : No
-// Event   Interface: 
+// Event   Interface:
 // TypeFlags        : (2) CanCreate
 // *********************************************************************//
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
@@ -3263,11 +3263,11 @@ type
 
 
 // *********************************************************************//
-// The Class CoUpdateCollection provides a Create and CreateRemote method to          
-// create instances of the default interface IUpdateCollection exposed by              
-// the CoClass UpdateCollection. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoUpdateCollection provides a Create and CreateRemote method to
+// create instances of the default interface IUpdateCollection exposed by
+// the CoClass UpdateCollection. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoUpdateCollection = class
     class function Create: IUpdateCollection;
@@ -3281,7 +3281,7 @@ type
 // Help String      : UpdateCollection Class
 // Default Interface: IUpdateCollection
 // Def. Intf. DISP? : No
-// Event   Interface: 
+// Event   Interface:
 // TypeFlags        : (2) CanCreate
 // *********************************************************************//
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
@@ -3350,11 +3350,11 @@ type
 
 
 // *********************************************************************//
-// The Class CoUpdateDownloader provides a Create and CreateRemote method to          
-// create instances of the default interface IUpdateDownloader exposed by              
-// the CoClass UpdateDownloader. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoUpdateDownloader provides a Create and CreateRemote method to
+// create instances of the default interface IUpdateDownloader exposed by
+// the CoClass UpdateDownloader. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoUpdateDownloader = class
     class function Create: IUpdateDownloader;
@@ -3368,7 +3368,7 @@ type
 // Help String      : UpdateDownloader Class
 // Default Interface: IUpdateDownloader
 // Def. Intf. DISP? : No
-// Event   Interface: 
+// Event   Interface:
 // TypeFlags        : (2) CanCreate
 // *********************************************************************//
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
@@ -3398,7 +3398,7 @@ type
     procedure Connect; override;
     procedure ConnectTo(svrIntf: IUpdateDownloader);
     procedure Disconnect; override;
-    function BeginDownload(const onProgressChanged: IUnknown; const onCompleted: IUnknown; 
+    function BeginDownload(const onProgressChanged: IUnknown; const onCompleted: IUnknown;
                            state: OleVariant): IDownloadJob;
     function Download: IDownloadResult;
     function EndDownload(const value: IDownloadJob): IDownloadResult;
@@ -3446,11 +3446,11 @@ type
 
 
 // *********************************************************************//
-// The Class CoUpdateInstaller provides a Create and CreateRemote method to          
-// create instances of the default interface IUpdateInstaller2 exposed by              
-// the CoClass UpdateInstaller. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoUpdateInstaller provides a Create and CreateRemote method to
+// create instances of the default interface IUpdateInstaller2 exposed by
+// the CoClass UpdateInstaller. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoUpdateInstaller = class
     class function Create: IUpdateInstaller2;
@@ -3464,7 +3464,7 @@ type
 // Help String      : UpdateInstaller Class
 // Default Interface: IUpdateInstaller2
 // Def. Intf. DISP? : No
-// Event   Interface: 
+// Event   Interface:
 // TypeFlags        : (2) CanCreate
 // *********************************************************************//
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
@@ -3520,11 +3520,11 @@ type
 
 
 // *********************************************************************//
-// The Class CoUpdateSession provides a Create and CreateRemote method to          
-// create instances of the default interface IUpdateSession3 exposed by              
-// the CoClass UpdateSession. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoUpdateSession provides a Create and CreateRemote method to
+// create instances of the default interface IUpdateSession3 exposed by
+// the CoClass UpdateSession. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoUpdateSession = class
     class function Create: IUpdateSession3;
@@ -3538,7 +3538,7 @@ type
 // Help String      : UpdateSession Class
 // Default Interface: IUpdateSession3
 // Def. Intf. DISP? : No
-// Event   Interface: 
+// Event   Interface:
 // TypeFlags        : (2) CanCreate
 // *********************************************************************//
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
@@ -3590,11 +3590,11 @@ type
 
 
 // *********************************************************************//
-// The Class CoUpdateServiceManager provides a Create and CreateRemote method to          
-// create instances of the default interface IUpdateServiceManager2 exposed by              
-// the CoClass UpdateServiceManager. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoUpdateServiceManager provides a Create and CreateRemote method to
+// create instances of the default interface IUpdateServiceManager2 exposed by
+// the CoClass UpdateServiceManager. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoUpdateServiceManager = class
     class function Create: IUpdateServiceManager2;
@@ -3608,7 +3608,7 @@ type
 // Help String      : UpdateServiceManager Class
 // Default Interface: IUpdateServiceManager2
 // Def. Intf. DISP? : No
-// Event   Interface: 
+// Event   Interface:
 // TypeFlags        : (2) CanCreate
 // *********************************************************************//
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
@@ -3633,7 +3633,7 @@ type
     procedure ConnectTo(svrIntf: IUpdateServiceManager2);
     procedure Disconnect; override;
     function QueryServiceRegistration(const ServiceID: WideString): IUpdateServiceRegistration;
-    function AddService2(const ServiceID: WideString; flags: Integer; 
+    function AddService2(const ServiceID: WideString; flags: Integer;
                          const authorizationCabPath: WideString): IUpdateServiceRegistration;
     property DefaultInterface: IUpdateServiceManager2 read GetDefaultInterface;
     property ClientApplicationID: WideString read Get_ClientApplicationID write Set_ClientApplicationID;
@@ -4806,7 +4806,7 @@ begin
   DefaultInterface.Set_Updates(retval);
 end;
 
-function TUpdateDownloader.BeginDownload(const onProgressChanged: IUnknown; 
+function TUpdateDownloader.BeginDownload(const onProgressChanged: IUnknown;
                                          const onCompleted: IUnknown; state: OleVariant): IDownloadJob;
 begin
   Result := DefaultInterface.BeginDownload(onProgressChanged, onCompleted, state);
@@ -5195,7 +5195,7 @@ begin
   Result := DefaultInterface.QueryServiceRegistration(ServiceID);
 end;
 
-function TUpdateServiceManager.AddService2(const ServiceID: WideString; flags: Integer; 
+function TUpdateServiceManager.AddService2(const ServiceID: WideString; flags: Integer;
                                            const authorizationCabPath: WideString): IUpdateServiceRegistration;
 begin
   Result := DefaultInterface.AddService2(ServiceID, flags, authorizationCabPath);
@@ -5233,8 +5233,8 @@ end;
 
 procedure Register;
 begin
-  RegisterComponents(dtlServerPage, [TStringCollection, TUpdateSearcher, TWebProxy, TSystemInformation, 
-    TWindowsUpdateAgentInfo, TAutomaticUpdates, TUpdateCollection, TUpdateDownloader, TUpdateInstaller, 
+  RegisterComponents(dtlServerPage, [TStringCollection, TUpdateSearcher, TWebProxy, TSystemInformation,
+    TWindowsUpdateAgentInfo, TAutomaticUpdates, TUpdateCollection, TUpdateDownloader, TUpdateInstaller,
     TUpdateSession, TUpdateServiceManager]);
 end;
 

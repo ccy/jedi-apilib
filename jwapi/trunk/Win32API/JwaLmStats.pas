@@ -260,4 +260,3 @@ function NetStatisticsGet; external netapi32 name 'NetStatisticsGet';
 {$IFNDEF JWA_OMIT_SECTIONS_LM}
 end.
 {$ENDIF JWA_OMIT_SECTIONS_LM}
-

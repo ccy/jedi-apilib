@@ -52,7 +52,7 @@ unit JwaShAppMgr;
 
 interface
 
-uses 
+uses
  JwaWinBase, JwaWinType;
 
 {$IFDEF DELPHI6_UP}
@@ -447,7 +447,7 @@ type
       out ppepa: IEnumPublishedApps): HResult; stdcall;
   end;
 
-  
+
 {$ENDIF JWA_IMPLEMENTATIONSECTION}
 
 {$IFNDEF JWA_OMIT_SECTIONS}

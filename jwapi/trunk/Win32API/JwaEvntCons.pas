@@ -41,7 +41,7 @@
 
 
 {$IFNDEF JWA_OMIT_SECTIONS}
-unit JwaEvntCons; 
+unit JwaEvntCons;
 {$IFDEF BCB1_UP}
 This unit does not support Borland C++ yet!
 {$ENDIF BCB1_UP}
@@ -105,7 +105,7 @@ type
   PEVENT_EXTENDED_ITEM_TS_ID = ^EVENT_EXTENDED_ITEM_TS_ID;
 
   TEventExtendedItemTSID = EVENT_EXTENDED_ITEM_TS_ID;
-  PEventExtendedItemTSID = ^TEventExtendedItemTSID; 
+  PEventExtendedItemTSID = ^TEventExtendedItemTSID;
 
 const
   EVENT_HEADER_PROPERTY_XML               = $0001;

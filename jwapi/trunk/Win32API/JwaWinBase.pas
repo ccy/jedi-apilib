@@ -451,7 +451,7 @@ type
   LPCRITICAL_SECTION_DEBUG = PRTL_CRITICAL_SECTION_DEBUG;
   {$EXTERNALSYM LPCRITICAL_SECTION_DEBUG}
   TCriticalSectionDebug = CRITICAL_SECTION_DEBUG;
-  PCriticalSectionDebug = PCRITICAL_SECTION_DEBUG;  
+  PCriticalSectionDebug = PCRITICAL_SECTION_DEBUG;
 
   LPLDT_ENTRY = PLDT_ENTRY;
   {$EXTERNALSYM LPLDT_ENTRY}
@@ -3208,7 +3208,7 @@ type
   function PROC_THREAD_ATTRIBUTE_PARENT_PROCESS : DWORD;
   {Macro function}
   function PROC_THREAD_ATTRIBUTE_EXTENDED_FLAGS : DWORD;
-  {Macro function}  
+  {Macro function}
   function PROC_THREAD_ATTRIBUTE_HANDLE_LIST : DWORD;
 
 type
@@ -6084,7 +6084,7 @@ type
   {$EXTERNALSYM PCACTCTX_SECTION_KEYED_DATA_ASSEMBLY_METADATA}
   TActCtxSectionKeyedDataAssemblyMetadata = ACTCTX_SECTION_KEYED_DATA_ASSEMBLY_METADATA;
   PActCtxSectionKeyedDataAssemblyMetadata = PACTCTX_SECTION_KEYED_DATA_ASSEMBLY_METADATA;
-  
+
   tagACTCTX_SECTION_KEYED_DATA = record
     cbSize: ULONG;
     ulDataFormatVersion: ULONG;
@@ -6185,7 +6185,7 @@ const
 //
 // String are placed after the structs.
 //
-  
+
 function QueryActCtxW(dwFlags: DWORD; hActCtx: HANDLE; pvSubInstance: PVOID;
   ulInfoClass: ULONG; pvBuffer: PVOID; cbBuffer: SIZE_T;
   pcbWrittenOrRequired: PSIZE_T): BOOL; stdcall;
@@ -6475,7 +6475,7 @@ begin
   result := CreateMutexW(lpMutexAttributes, bInitialOwner, lpName);
 {$ELSE}
   result := CreateMutexA(lpMutexAttributes, bInitialOwner, lpName);
-{$ENDIF UNICODE}  
+{$ENDIF UNICODE}
 end;
 
 {$IFDEF DYNAMIC_LINK}

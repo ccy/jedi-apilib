@@ -98,7 +98,7 @@ type
   LPFNPSPCALLBACK = function(hwnd: HWND; uMsg: UINT; ppsp: Pointer{LPPROPSHEETPAGEA}): UINT; stdcall;
   {$EXTERNALSYM LPFNPSPCALLBACK}
   {$ENDIF UNICODE}
-  
+
 const
   PSP_DEFAULT               = $00000000;
   {$EXTERNALSYM PSP_DEFAULT}
@@ -476,7 +476,7 @@ type
   LPPSHNOTIFY = ^PSHNOTIFY;
   {$EXTERNALSYM LPPSHNOTIFY}
   TPSHNotify = PSHNOTIFY;
-  PPSHNotify = LPPSHNOTIFY;  
+  PPSHNotify = LPPSHNOTIFY;
 
 const
   PSN_FIRST              = ULONG(0-200);

@@ -8,7 +8,7 @@ uses
   Messages, Variants, Classes, Controls, Forms,
   Dialogs, StdCtrls, Windows,
 {$IFDEF JWAWINDOWS}
-  JwaWindows; 
+  JwaWindows;
 {$ELSE}
   JwaWinUser, JwaShLWAPI;
 {$ENDIF}

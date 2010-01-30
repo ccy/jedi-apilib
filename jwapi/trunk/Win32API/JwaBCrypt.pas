@@ -55,7 +55,7 @@ interface
 uses
   JwaWinType, JwaNtStatus, JwaWinBase, JwaWinCrypt;
 
- 
+
 {$ENDIF JWA_OMIT_SECTIONS}
 
 {$IFNDEF JWA_IMPLEMENTATIONSECTION}
@@ -76,7 +76,7 @@ const
 //
 // For BCRYPT_KDF_HASH and BCRYPT_KDF_HMAC operations, there may be an arbitrary
 // number of KDF_SECRET_PREPEND and KDF_SECRET_APPEND buffertypes in the
-// parameter list.  The BufferTypes are processed in order of appearence 
+// parameter list.  The BufferTypes are processed in order of appearence
 // within the parameter list.
 //
   {$EXTERNALSYM KDF_HASH_ALGORITHM}
@@ -418,7 +418,7 @@ const
   {$EXTERNALSYM BCRYPT_ECDSA_PRIVATE_P521_MAGIC}
   BCRYPT_ECDSA_PRIVATE_P521_MAGIC = $36534345;  // ECS6
 
-type  
+type
   PBCryptECCKeyBlob = ^TBCryptECCKeyBlob;
   {$EXTERNALSYM _BCRYPT_ECCKEY_BLOB}
   _BCRYPT_ECCKEY_BLOB = record
@@ -1241,7 +1241,7 @@ function BCryptEnumProviders; external bcryptdll name 'BCryptEnumProviders';
 function BCryptGetProperty; external bcryptdll name 'BCryptGetProperty';
 function BCryptSetProperty; external bcryptdll name 'BCryptSetProperty';
 function BCryptCloseAlgorithmProvider; external bcryptdll name 'BCryptCloseAlgorithmProvider';
-procedure BCryptFreeBuffer; external bcryptdll name 'BCryptFreeBuffer'; 
+procedure BCryptFreeBuffer; external bcryptdll name 'BCryptFreeBuffer';
 function BCryptGenerateSymmetricKey; external bcryptdll name 'BCryptGenerateSymmetricKey';
 function BCryptGenerateKeyPair; external bcryptdll name 'BCryptGenerateKeyPair';
 function BCryptEncrypt; external bcryptdll name 'BCryptEncrypt';
@@ -1931,4 +1931,3 @@ end;
 
 end.
 {$ENDIF JWA_OMIT_SECTIONS}
-

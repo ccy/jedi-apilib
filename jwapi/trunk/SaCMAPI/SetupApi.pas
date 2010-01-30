@@ -50,7 +50,7 @@ interface
 {$IFDEF JWA_INCLUDEMODE}
  {$IFNDEF JWA_INCLUDE_SHELLAPI}
    Error: You need to add JWA_INCLUDE_SHELLAPI to your compiler conditions
-   (in project options) to make this unit work. 
+   (in project options) to make this unit work.
  {$ENDIF JWA_INCLUDE_SHELLAPI}
 {$ENDIF JWA_INCLUDEMODE}
 
@@ -5062,7 +5062,7 @@ function SetupDiGetCustomDeviceProperty(DeviceInfoSet: HDEVINFO;
   const DeviceInfoData: TSPDevInfoData; CustomPropertyName: PAnsiChar;
   Flags: DWORD; PropertyRegDataType: PDWORD; PropertyBuffer: PBYTE;
   PropertyBufferSize: DWORD; RequiredSize: PDWORD): BOOL; stdcall;
-  
+
 {$ENDIF WINXP_UP}
 
 {$ELSE}
@@ -8672,4 +8672,3 @@ function SetupDiGetCustomDeviceProperty; external SetupApiModuleName name 'Setup
 {$IFNDEF JWA_OMIT_SECTIONS}
 end.
 {$ENDIF JWA_OMIT_SECTIONS}
-

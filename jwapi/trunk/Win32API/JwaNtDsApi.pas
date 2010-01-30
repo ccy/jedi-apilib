@@ -398,7 +398,7 @@ type
 // Allow the Bind to use delegate service level, so that you can
 // do ntdsapi operations that require delegation, such as
 // DsAddSidHistory, and DsReplicaSyncAll().  Most operations do
-// not require DELEGATE so this flag should only be specified 
+// not require DELEGATE so this flag should only be specified
 // if you need it, because if you bind to a rogue server with
 // the DELEGATE flag, you'll allow the rogue server to use your
 // credentials to connect back to a non-rogue server and perform
@@ -971,10 +971,10 @@ type
 //      obtained via DsGetDcName (i.e. Field with the same name in a
 //      DOMAIN_CONTROLLER_INFO struct on return from DsGetDcName call.)
 //      The client is bound to the domain controller at this name.
-//      
+//
 //      Mutual authentication will be performed using an SPN of
 //      LDAP/DomainControllerName provided DomainControllerName
-//      is not a NETBIOS name or IP address - i.e. it must be a 
+//      is not a NETBIOS name or IP address - i.e. it must be a
 //      DNS host name.
 //
 // DomainControllerName(value), DnsDomainName(value)
@@ -989,7 +989,7 @@ type
 // DomainControllerName(NULL), DnsDomainName(NULL)
 //
 //      DsBind will attempt to find to a global catalog and fail if one
-//      can not be found.  
+//      can not be found.
 //
 //      Mutual authentication will be performed using an SPN of
 //      GC/DnsHostName/ForestName where DnsHostName and ForestName
@@ -1620,7 +1620,7 @@ function DsReplicaModify(hDS: HANDLE; NameContext: LPCTSTR; pUuidSourceDsa: LPUU
 //          Network address of DSA for which the reference should be added
 //          or deleted.
 //      pUuidDsaDest (UUID *)
-//          objectGuid of the DSA object for which the reference should be 
+//          objectGuid of the DSA object for which the reference should be
 //          added or deleted.
 //      ulOptions (ULONG)
 //          Bitwise OR of zero or more of the following:
@@ -2199,10 +2199,10 @@ type
   PDsDomainControllerInfo2 = PDsDomainControllerInfo2A;
   {$ENDIF UNICODE}
 
-// The following APIs strictly find domain controller account objects 
+// The following APIs strictly find domain controller account objects
 // in the DS and return information associated with them.  As such, they
 // may return entries which correspond to domain controllers long since
-// decommissioned, etc. and there is no guarantee that there exists a 
+// decommissioned, etc. and there is no guarantee that there exists a
 // physical domain controller at all.  Use DsGetDcName (dsgetdc.h) to find
 // live domain controllers for a domain.
 
@@ -2402,7 +2402,7 @@ type
   DS_REPL_NEIGHBORW_BLOB = _DS_REPL_NEIGHBORW_BLOB;
   {$EXTERNALSYM DS_REPL_NEIGHBORW_BLOB}
   TDsReplNeighborwBlob = DS_REPL_NEIGHBORW_BLOB;
-  PDsReplNeighborwBlob = ^DS_REPL_NEIGHBORW_BLOB;  
+  PDsReplNeighborwBlob = ^DS_REPL_NEIGHBORW_BLOB;
 
   _DS_REPL_NEIGHBORSW = record
     cNumNeighbors: DWORD;
@@ -2460,7 +2460,7 @@ type
   DS_REPL_CURSOR_BLOB = _DS_REPL_CURSOR_BLOB;
   {$EXTERNALSYM DS_REPL_CURSOR_BLOB}
   TDsReplCursorBlob = DS_REPL_CURSOR_BLOB;
-  PDsReplCursorBlob = ^DS_REPL_CURSOR_BLOB;  
+  PDsReplCursorBlob = ^DS_REPL_CURSOR_BLOB;
 
   _DS_REPL_CURSORS = record
     cNumCursors: DWORD;
@@ -2495,7 +2495,7 @@ type
   DS_REPL_CURSORS_3W = _DS_REPL_CURSORS_3W;
   {$EXTERNALSYM DS_REPL_CURSORS_3W}
   TDsReplCursors3W = DS_REPL_CURSORS_3W;
-  PDsReplCursors3W = ^DS_REPL_CURSORS_3W;  
+  PDsReplCursors3W = ^DS_REPL_CURSORS_3W;
 
   _DS_REPL_ATTR_META_DATA = record
     pszAttributeName: LPWSTR;
@@ -2541,7 +2541,7 @@ type
   DS_REPL_ATTR_META_DATA_BLOB = _DS_REPL_ATTR_META_DATA_BLOB;
   {$EXTERNALSYM DS_REPL_ATTR_META_DATA_BLOB}
   TDsReplAttrMetaDataBlob = DS_REPL_ATTR_META_DATA_BLOB;
-  PDsReplAttrMetaDataBlob = ^DS_REPL_ATTR_META_DATA_BLOB;  
+  PDsReplAttrMetaDataBlob = ^DS_REPL_ATTR_META_DATA_BLOB;
 
   _DS_REPL_OBJ_META_DATA = record
     cNumEntries: DWORD;
@@ -2563,7 +2563,7 @@ type
   DS_REPL_OBJ_META_DATA_2 = _DS_REPL_OBJ_META_DATA_2;
   {$EXTERNALSYM DS_REPL_OBJ_META_DATA_2}
   TDsReplObjMetaData2 = DS_REPL_OBJ_META_DATA_2;
-  PDsReplObjMetaData2 = ^DS_REPL_OBJ_META_DATA_2;  
+  PDsReplObjMetaData2 = ^DS_REPL_OBJ_META_DATA_2;
 
   _DS_REPL_KCC_DSA_FAILUREW = record
     pszDsaDN: LPWSTR;
@@ -2591,7 +2591,7 @@ type
   DS_REPL_KCC_DSA_FAILUREW_BLOB = _DS_REPL_KCC_DSA_FAILUREW_BLOB;
   {$EXTERNALSYM DS_REPL_KCC_DSA_FAILUREW_BLOB}
   TDsReplKccDsaFailureWBlob = DS_REPL_KCC_DSA_FAILUREW_BLOB;
-  PDsReplKccDsaFailureWBlob = ^DS_REPL_KCC_DSA_FAILUREW_BLOB;  
+  PDsReplKccDsaFailureWBlob = ^DS_REPL_KCC_DSA_FAILUREW_BLOB;
 
   _DS_REPL_KCC_DSA_FAILURESW = record
     cNumEntries: DWORD;
@@ -2686,7 +2686,7 @@ type
   DS_REPL_VALUE_META_DATA = _DS_REPL_VALUE_META_DATA;
   {$EXTERNALSYM DS_REPL_VALUE_META_DATA}
   TDsReplValueMetaData = DS_REPL_VALUE_META_DATA;
-  PDsReplValueMetaData = ^DS_REPL_VALUE_META_DATA;  
+  PDsReplValueMetaData = ^DS_REPL_VALUE_META_DATA;
 
   _DS_REPL_VALUE_META_DATA_2 = record
     pszAttributeName: LPWSTR;
@@ -2729,7 +2729,7 @@ type
   {$EXTERNALSYM DS_REPL_VALUE_META_DATA_BLOB}
   TDsReplValueMetaDataBlob = DS_REPL_VALUE_META_DATA_BLOB;
   PsReplValueMetaDataBlob =  ^DS_REPL_VALUE_META_DATA_BLOB;
-  
+
   _DS_REPL_ATTR_VALUE_META_DATA = record
     cNumEntries: DWORD;
     dwEnumerationContext: DWORD;
@@ -2750,7 +2750,7 @@ type
   DS_REPL_ATTR_VALUE_META_DATA_2 = _DS_REPL_ATTR_VALUE_META_DATA_2;
   {$EXTERNALSYM DS_REPL_ATTR_VALUE_META_DATA_2}
   TDsReplAttrValueMetaData2 = DS_REPL_ATTR_VALUE_META_DATA_2;
-  PDsReplAttrValueMetaData2 = ^DS_REPL_ATTR_VALUE_META_DATA_2;  
+  PDsReplAttrValueMetaData2 = ^DS_REPL_ATTR_VALUE_META_DATA_2;
 
   _DS_REPL_QUEUE_STATISTICSW = record
     ftimeCurrentOpStarted: FILETIME;
@@ -2765,7 +2765,7 @@ type
   DS_REPL_QUEUE_STATISTICSW = _DS_REPL_QUEUE_STATISTICSW;
   {$EXTERNALSYM DS_REPL_QUEUE_STATISTICSW}
   TDsReplQueueStatisticsW = DS_REPL_QUEUE_STATISTICSW;
-  PDsReplQueueStatisticsW = ^DS_REPL_QUEUE_STATISTICSW;  
+  PDsReplQueueStatisticsW = ^DS_REPL_QUEUE_STATISTICSW;
 
 // Fields can be added only to the end of this structure.
 
@@ -5265,4 +5265,3 @@ function DsIsMangledDn; external ntdsapilib name 'DsIsMangledDn' + AWSuffix;
 {$IFNDEF JWA_OMIT_SECTIONS}
 end.
 {$ENDIF JWA_OMIT_SECTIONS}
-

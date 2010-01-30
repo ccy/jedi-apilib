@@ -1,14 +1,14 @@
 unit SensEvents_TLB;
 
 // ************************************************************************ //
-// WARNING                                                                    
-// -------                                                                    
-// The types declared in this file were generated from data read from a       
-// Type Library. If this type library is explicitly or indirectly (via        
-// another type library referring to this type library) re-imported, or the   
-// 'Refresh' command of the Type Library Editor activated while editing the   
-// Type Library, the contents of this file will be regenerated and all        
-// manual modifications will be lost.                                         
+// WARNING
+// -------
+// The types declared in this file were generated from data read from a
+// Type Library. If this type library is explicitly or indirectly (via
+// another type library referring to this type library) re-imported, or the
+// 'Refresh' command of the Type Library Editor activated while editing the
+// Type Library, the contents of this file will be regenerated and all
+// manual modifications will be lost.
 // ************************************************************************ //
 
 // PASTLWTR : 1.2
@@ -19,34 +19,34 @@ unit SensEvents_TLB;
 // LCID: 0
 // Helpfile:
 // HelpString: SENS Events Type Library
-// DepndLst: 
+// DepndLst:
 //   (1) v2.0 stdole, (C:\Windows\system32\stdole2.tlb)
 // ************************************************************************ //
-// *************************************************************************//              
-// NOTE:                                                                      
-// Items guarded by $IFDEF_LIVE_SERVER_AT_DESIGN_TIME are used by properties  
-// which return objects that may need to be explicitly created via a function 
-// call prior to any access via the property. These items have been disabled  
-// in order to prevent accidental use from within the object inspector. You   
-// may enable them by defining LIVE_SERVER_AT_DESIGN_TIME or by selectively   
-// removing them from the $IFDEF blocks. However, such items must still be    
-// programmatically created via a method of the appropriate CoClass before    
+// *************************************************************************//
+// NOTE:
+// Items guarded by $IFDEF_LIVE_SERVER_AT_DESIGN_TIME are used by properties
+// which return objects that may need to be explicitly created via a function
+// call prior to any access via the property. These items have been disabled
+// in order to prevent accidental use from within the object inspector. You
+// may enable them by defining LIVE_SERVER_AT_DESIGN_TIME or by selectively
+// removing them from the $IFDEF blocks. However, such items must still be
+// programmatically created via a method of the appropriate CoClass before
 // they can be used.
-{$TYPEDADDRESS OFF} 
+{$TYPEDADDRESS OFF}
 {$WARN SYMBOL_PLATFORM OFF}
 {$WRITEABLECONST ON}
 {$VARPROPSETTER ON}
 interface
 
 uses Windows, ActiveX, Classes, Graphics, OleServer, StdVCL, Variants;
-  
+
 
 // *********************************************************************//
-// GUIDS declared in the TypeLibrary. Following prefixes are used:        
-//   Type Libraries     : LIBID_xxxx                                      
-//   CoClasses          : CLASS_xxxx                                      
-//   DISPInterfaces     : DIID_xxxx                                       
-//   Non-DISP interfaces: IID_xxxx                                        
+// GUIDS declared in the TypeLibrary. Following prefixes are used:
+//   Type Libraries     : LIBID_xxxx
+//   CoClasses          : CLASS_xxxx
+//   DISPInterfaces     : DIID_xxxx
+//   Non-DISP interfaces: IID_xxxx
 // *********************************************************************//
 const
   // TypeLibrary Major and minor versions
@@ -63,7 +63,7 @@ const
 type
 
 // *********************************************************************//
-// Forward declaration of types defined in TypeLibrary                    
+// Forward declaration of types defined in TypeLibrary
 // *********************************************************************//
   ISensNetwork = interface;
   ISensNetworkDisp = dispinterface;
@@ -75,15 +75,15 @@ type
   ISensLogon2Disp = dispinterface;
 
 // *********************************************************************//
-// Deklaration von in der Typbibliothek definierten CoClasses             
-// (HINWEIS: Hier wird jede CoClass zu ihrer Standardschnittstelle        
-// zugewiesen)                                                            
+// Deklaration von in der Typbibliothek definierten CoClasses
+// (HINWEIS: Hier wird jede CoClass zu ihrer Standardschnittstelle
+// zugewiesen)
 // *********************************************************************//
 
 
 // *********************************************************************//
-// Declaration of CoClasses defined in Type Library                       
-// (NOTE: Here we map each CoClass to its Default Interface)              
+// Declaration of CoClasses defined in Type Library
+// (NOTE: Here we map each CoClass to its Default Interface)
 // *********************************************************************//
   PUserType1 = ^SENS_QOCINFO; {*}
 
@@ -102,14 +102,14 @@ type
 // *********************************************************************//
   ISensNetwork = interface(IDispatch)
     ['{D597BAB1-5B9F-11D1-8DD2-00AA004ABD5E}']
-    procedure ConnectionMade(const bstrConnection: WideString; ulType: LongWord; 
+    procedure ConnectionMade(const bstrConnection: WideString; ulType: LongWord;
                              var lpQOCInfo: SENS_QOCINFO); safecall;
     procedure ConnectionMadeNoQOCInfo(const bstrConnection: WideString; ulType: LongWord); safecall;
     procedure ConnectionLost(const bstrConnection: WideString; ulType: LongWord); safecall;
-    procedure DestinationReachable(const bstrDestination: WideString; 
-                                   const bstrConnection: WideString; ulType: LongWord; 
+    procedure DestinationReachable(const bstrDestination: WideString;
+                                   const bstrConnection: WideString; ulType: LongWord;
                                    var lpQOCInfo: SENS_QOCINFO); safecall;
-    procedure DestinationReachableNoQOCInfo(const bstrDestination: WideString; 
+    procedure DestinationReachableNoQOCInfo(const bstrDestination: WideString;
                                             const bstrConnection: WideString; ulType: LongWord); safecall;
   end;
 
@@ -120,14 +120,14 @@ type
 // *********************************************************************//
   ISensNetworkDisp = dispinterface
     ['{D597BAB1-5B9F-11D1-8DD2-00AA004ABD5E}']
-    procedure ConnectionMade(const bstrConnection: WideString; ulType: LongWord; 
+    procedure ConnectionMade(const bstrConnection: WideString; ulType: LongWord;
                              var lpQOCInfo: {??SENS_QOCINFO}OleVariant); dispid 1;
     procedure ConnectionMadeNoQOCInfo(const bstrConnection: WideString; ulType: LongWord); dispid 2;
     procedure ConnectionLost(const bstrConnection: WideString; ulType: LongWord); dispid 3;
-    procedure DestinationReachable(const bstrDestination: WideString; 
-                                   const bstrConnection: WideString; ulType: LongWord; 
+    procedure DestinationReachable(const bstrDestination: WideString;
+                                   const bstrConnection: WideString; ulType: LongWord;
                                    var lpQOCInfo: {??SENS_QOCINFO}OleVariant); dispid 4;
-    procedure DestinationReachableNoQOCInfo(const bstrDestination: WideString; 
+    procedure DestinationReachableNoQOCInfo(const bstrDestination: WideString;
                                             const bstrConnection: WideString; ulType: LongWord); dispid 5;
   end;
 

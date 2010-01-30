@@ -110,7 +110,7 @@ const
 // already published interface we can't modify the interface.
   MAPI_UNICODE                        = $80000000;
   {$EXTERNALSYM MAPI_UNICODE}
-{$ENDIF JWA_INCLUDEMODE}  
+{$ENDIF JWA_INCLUDEMODE}
 
 
 { WABObject_GetMe returned parameter }

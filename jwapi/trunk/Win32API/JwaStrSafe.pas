@@ -2004,7 +2004,7 @@ function StringCbCatNEx(
     {__deref_opt_out_bcount(pcbRemaining^)}ppszDestEnd : PSTRSAFE_LPTSTR;
     {__out_opt}pcchRemaining : PSize_t;
     {__in}dwFlags : Cardinal) : HRESULT; stdcall;
- 
+
 {++
 
 STDAPI
@@ -2241,7 +2241,7 @@ begin
     MOV     ESP, EBP
     POP     EBP
     JMP     [_StringCbCopy]
-  end; 
+  end;
 end;
 
 
@@ -2261,9 +2261,9 @@ begin
     MOV     ESP, EBP
     POP     EBP
     JMP     [_StringCchCopyEx]
-  end; 
+  end;
 end;
-	
+
 
 var _StringCbCopyEx : Pointer;
 function StringCbCopyEx(
@@ -2283,9 +2283,9 @@ begin
     JMP     [_StringCbCopyEx]
   end;
 end;
-	
-	
-var _StringCchCopyN : Pointer;	
+
+
+var _StringCchCopyN : Pointer;
 function StringCchCopyN(
     {__out_ecount(cchDest)} pszDest : STRSAFE_LPTSTR;
     {__in}cchDest : size_t;
@@ -2299,10 +2299,10 @@ begin
     MOV     ESP, EBP
     POP     EBP
     JMP     [_StringCchCopyN]
-  end; 
+  end;
 end;
-	
-var _StringCbCopyN : Pointer;		
+
+var _StringCbCopyN : Pointer;
 function StringCbCopyN(
     {__out_bcount(cbDest)} pszDest : STRSAFE_LPTSTR;
     {__in}cchDest : size_t;
@@ -2375,15 +2375,15 @@ begin
     MOV     ESP, EBP
     POP     EBP
     JMP     [_StringCchCat]
-  end; 
-end;	
+  end;
+end;
 
 
-var _StringCbCat : Pointer;		
+var _StringCbCat : Pointer;
 function StringCbCat(
     {__inout_bcount(cbDest)} pszDest : STRSAFE_LPTSTR;
     {__in}cbDest : size_t;
-    {__in}const pszSrc : STRSAFE_LPCTSTR) : HRESULT; stdcall;	
+    {__in}const pszSrc : STRSAFE_LPCTSTR) : HRESULT; stdcall;
 begin
   result := ERROR_SEVERITY_SUCCESS;
   _StringCbCat :=
@@ -2392,9 +2392,9 @@ begin
     MOV     ESP, EBP
     POP     EBP
     JMP     [_StringCbCat]
-  end; 
-end;	
-	
+  end;
+end;
+
 
 var _StringCchCatEx : Pointer;
 function StringCchCatEx(
@@ -2414,9 +2414,9 @@ begin
     JMP     [_StringCchCatEx]
   end;
 end;
-	
-	
-var _StringCbCatEx : Pointer;		
+
+
+var _StringCbCatEx : Pointer;
 function StringCbCatEx(
     {__inout_bcount(cbDest)} pszDest : STRSAFE_LPTSTR;
     {__in}cchDest : size_t;
@@ -2432,11 +2432,11 @@ begin
     MOV     ESP, EBP
     POP     EBP
     JMP     [_StringCbCatEx]
-  end; 
-end;	
-	
+  end;
+end;
 
-var _StringCchCatN : Pointer;		
+
+var _StringCchCatN : Pointer;
 function StringCchCatN(
     {__inout_ecount(cchDest)} pszDest : STRSAFE_LPTSTR;
     {__in}cchDest : size_t;
@@ -2450,11 +2450,11 @@ begin
     MOV     ESP, EBP
     POP     EBP
     JMP     [_StringCchCatN]
-  end; 
-end;	
-	
-	
-var _StringCbCatN : Pointer;		
+  end;
+end;
+
+
+var _StringCbCatN : Pointer;
 function StringCbCatN(
     {__inout_bcount(cbDest)} pszDest : STRSAFE_LPTSTR;
     {__in}cchDest : size_t;
@@ -2468,11 +2468,11 @@ begin
     MOV     ESP, EBP
     POP     EBP
     JMP     [_StringCbCatN]
-  end; 
-end;	
-	
-	
-var _StringCchCatNEx : Pointer;		
+  end;
+end;
+
+
+var _StringCchCatNEx : Pointer;
 function StringCchCatNEx(
     {__inout_ecount(cchDest)} pszDest : STRSAFE_LPTSTR;
     {__in}cchDest : size_t;
@@ -2489,12 +2489,12 @@ begin
     MOV     ESP, EBP
     POP     EBP
     JMP     [_StringCchCatNEx]
-  end; 
-end;	
-	
-	
-	
-	
+  end;
+end;
+
+
+
+
 var _StringCbCatNEx : Pointer;
 function StringCbCatNEx(
     {__inout_bcount(cbDest)} pszDest : STRSAFE_LPTSTR;
@@ -2512,8 +2512,8 @@ begin
     MOV     ESP, EBP
     POP     EBP
     JMP     [_StringCbCatNEx]
-  end; 
-end;	
+  end;
+end;
 
 var _StringCchLength : Pointer;
 function StringCchLength(
@@ -2529,7 +2529,7 @@ begin
     POP     EBP
     JMP     [_StringCchLength]
   end;
-end;	
+end;
 
 
 

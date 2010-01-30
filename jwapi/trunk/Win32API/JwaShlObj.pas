@@ -872,7 +872,7 @@ const
   CLSID_FileTypes: TGUID = (
     D1:$B091E540; D2:$83E3; D3:$11CF; D4:($A7,$13,$00,$20,$AF,$D7,$97,$62));
 
-{$IFNDEF JWA_INCLUDEMODE}    
+{$IFNDEF JWA_INCLUDEMODE}
   {$EXTERNALSYM CLSID_ActiveDesktop}
   CLSID_ActiveDesktop: TGUID = (
     D1:$75048700; D2:$EF1F; D3:$11D0; D4:($98,$88,$00,$60,$97,$DE,$AC,$F9));
@@ -890,7 +890,7 @@ const
   IID_IADesktopP2: TGUID = (
     D1:$B22754E2; D2:$4574; D3:$11D1; D4:($98,$88,$00,$60,$97,$DE,$AC,$F9));
 
-{$IFNDEF JWA_INCLUDEMODE}    
+{$IFNDEF JWA_INCLUDEMODE}
   {$EXTERNALSYM IID_ISynchronizedCallBack}
   IID_ISynchronizedCallBack: TGUID = (
     D1:$74C26041; D2:$70D1; D3:$11D1; D4:($B7,$5A,$00,$A0,$C9,$05,$64,$FE));
@@ -1123,7 +1123,7 @@ const
   {$EXTERNALSYM PSGUID_AUDIO}
   PSGUID_AUDIO: TGUID = '{64440490-4c8b-11d1-8b70-080036b11a03}';
 
-{$IFNDEF JWA_INCLUDEMODE}  
+{$IFNDEF JWA_INCLUDEMODE}
 //  FMTID_AudioSummaryInformation property identifiers
   {$EXTERNALSYM PIDASI_FORMAT}
   PIDASI_FORMAT           = $00000002; // VT_BSTR
@@ -1200,7 +1200,7 @@ const
 // FMTID_ImageSummaryInformation,, see propidl.h PID_ values for this
   PSGUID_IMAGESUMMARYINFORMATION: TGUID = '{6444048f-4c8b-11d1-8b70-080036b11a03}';
 
-{$IFNDEF JWA_INCLUDEMODE}  
+{$IFNDEF JWA_INCLUDEMODE}
   {$EXTERNALSYM IID_IEnumExtraSearch}
   IID_IEnumExtraSearch: TGUID = (
     D1:$0E700BE1; D2:$9DB6; D3:$11D1; D4:($A1,$CE,$00,$C0,$4F,$D7,$5D,$13));
@@ -1266,7 +1266,7 @@ const
   CLSID_NewMenu: TGUID = (
     D1:$d969a300; D2:$e7ff; D3:$11d0; D4:($a9,$3b,$00,$a0,$c9,$0f,$27,$19));
 
-{$IFNDEF JWA_INCLUDEMODE}    
+{$IFNDEF JWA_INCLUDEMODE}
 // BHIDs for IShellItem::BindToHandler()
 // BHID_LocalCopyHelper is #defined as CLSID_LocalCopyHelper, but the latter is
 // not defined anywhere.
@@ -1467,9 +1467,9 @@ type
 //
 //-------------------------------------------------------------------------
 //
-//  uType indicate which union member to use 
+//  uType indicate which union member to use
 //    STRRET_WSTR    Use STRRET.pOleStr     must be freed by caller of GetDisplayNameOf
-//    STRRET_OFFSET  Use STRRET.uOffset     Offset into SHITEMID for ANSI string 
+//    STRRET_OFFSET  Use STRRET.uOffset     Offset into SHITEMID for ANSI string
 //    STRRET_CSTR    Use STRRET.cStr        ANSI Buffer
 //
   {$EXTERNALSYM tagSTRRET_TYPE}
@@ -3166,7 +3166,7 @@ type
 const
   // The wizard was launch explicitly by the user, not on demand by the key manager
   {$EXTERNALSYM PPW_LAUNCHEDBYUSER}
-  PPW_LAUNCHEDBYUSER = $00000001;      
+  PPW_LAUNCHEDBYUSER = $00000001;
 
 const
   {$EXTERNALSYM IID_IModalWindow}
@@ -5117,7 +5117,7 @@ type
 {$IFNDEF JWA_INCLUDEMODE}
   {$EXTERNALSYM FILEOP_FLAGS}
   FILEOP_FLAGS = Word;
-{$ENDIF JWA_INCLUDEMODE}  
+{$ENDIF JWA_INCLUDEMODE}
   TFileOpFlags = Word;
 
 
@@ -5144,7 +5144,7 @@ type
 {$IFNDEF JWA_INCLUDEMODE}
   {$EXTERNALSYM PRINTEROP_FLAGS}
   PRINTEROP_FLAGS = UINT;
-{$ENDIF JWA_INCLUDEMODE}  
+{$ENDIF JWA_INCLUDEMODE}
   TPrinterOpFlags = UINT;
 
   {$EXTERNALSYM ICopyHookA}
@@ -5515,7 +5515,7 @@ const
 {$IFNDEF JWA_INCLUDEMODE}
   {$EXTERNALSYM CSIDL_PERSONAL}
   CSIDL_PERSONAL                  = $0005;        // My Documents
-{$ENDIF JWA_INCLUDEMODE}  
+{$ENDIF JWA_INCLUDEMODE}
   {$EXTERNALSYM CSIDL_FAVORITES}
   CSIDL_FAVORITES                 = $0006;        // <user name>\Favorites
   {$EXTERNALSYM CSIDL_STARTUP}
@@ -5533,7 +5533,7 @@ const
 {$IFNDEF JWA_INCLUDEMODE}
   {$EXTERNALSYM CSIDL_MYMUSIC}
   CSIDL_MYMUSIC                   = $000D;        // "My Music" folder
-{$ENDIF JWA_INCLUDEMODE}  
+{$ENDIF JWA_INCLUDEMODE}
   {$EXTERNALSYM CSIDL_MYVIDEO}
   CSIDL_MYVIDEO                   = $000E;        // "My Videos" folder
   CSIDL_DESKTOPDIRECTORY          = $0010;        // <user name>\Desktop
@@ -5558,13 +5558,13 @@ const
 {$IFNDEF JWA_INCLUDEMODE}
   {$EXTERNALSYM CSIDL_APPDATA}
   CSIDL_APPDATA                   = $001A;        // <user name>\Application Data
-{$ENDIF JWA_INCLUDEMODE}  
+{$ENDIF JWA_INCLUDEMODE}
   {$EXTERNALSYM CSIDL_PRINTHOOD}
   CSIDL_PRINTHOOD                 = $001B;        // <user name>\PrintHood
 {$IFNDEF JWA_INCLUDEMODE}
   {$EXTERNALSYM CSIDL_LOCAL_APPDATA}
   CSIDL_LOCAL_APPDATA             = $001C;        // <user name>\Local Settings\Applicaiton Data (non roaming)
-{$ENDIF JWA_INCLUDEMODE}  
+{$ENDIF JWA_INCLUDEMODE}
 
   {$EXTERNALSYM CSIDL_ALTSTARTUP}
   CSIDL_ALTSTARTUP                = $001D;        // non localized startup
@@ -5590,7 +5590,7 @@ const
   CSIDL_PROGRAM_FILES             = $0026;        // C:\Program Files
   {$EXTERNALSYM CSIDL_MYPICTURES}
   CSIDL_MYPICTURES                = $0027;        // C:\Program Files\My Pictures
-{$ENDIF JWA_INCLUDEMODE}    
+{$ENDIF JWA_INCLUDEMODE}
 
   {$EXTERNALSYM CSIDL_PROFILE}
   CSIDL_PROFILE                   = $0028;        // USERPROFILE
@@ -5602,7 +5602,7 @@ const
 {$IFNDEF JWA_INCLUDEMODE}
   {$EXTERNALSYM CSIDL_PROGRAM_FILES_COMMON}
   CSIDL_PROGRAM_FILES_COMMON      = $002B;        // C:\Program Files\Common
-{$ENDIF JWA_INCLUDEMODE}  
+{$ENDIF JWA_INCLUDEMODE}
 
   {$EXTERNALSYM CSIDL_PROGRAM_FILES_COMMONX86}
   CSIDL_PROGRAM_FILES_COMMONX86   = $002C;        // x86 Program Files\Common on RISC
@@ -5617,7 +5617,7 @@ const
   {$EXTERNALSYM CSIDL_ADMINTOOLS}
   CSIDL_ADMINTOOLS                = $0030;        // <user name>\Start Menu\Programs\Administrative Tools
 {$ENDIF JWA_INCLUDEMODE}
-  
+
   {$EXTERNALSYM CSIDL_CONNECTIONS}
   CSIDL_CONNECTIONS               = $0031;        // Network and Dial-up Connections
   {$EXTERNALSYM CSIDL_COMMON_MUSIC}
@@ -5632,7 +5632,7 @@ const
 
   {$EXTERNALSYM CSIDL_RESOURCES_LOCALIZED}
   CSIDL_RESOURCES_LOCALIZED       = $0039;        // Localized Resource Direcotry
-{$ENDIF JWA_INCLUDEMODE}    
+{$ENDIF JWA_INCLUDEMODE}
 
   {$EXTERNALSYM CSIDL_COMMON_OEM_LINKS}
   CSIDL_COMMON_OEM_LINKS          = $003A;        // Links to All Users OEM specific apps
@@ -5831,7 +5831,7 @@ type
   {$EXTERNALSYM BFFCALLBACK}
   BFFCALLBACK = function(hwnd: HWND; uMsg: UINT; lParam: LPARAM; lpData: LPARAM): Integer stdcall;
   TBFFCallback = BFFCALLBACK;
-{$ENDIF JWA_INCLUDEMODE}  
+{$ENDIF JWA_INCLUDEMODE}
 
 //#include <pshpack8.h>
 
@@ -6025,7 +6025,7 @@ const
   {$EXTERNALSYM STR_FILE_SYS_BIND_DATA}
   STR_FILE_SYS_BIND_DATA = 'File System Bind Data';
 
-type                                               
+type
   {$EXTERNALSYM IFileSystemBindData}
   IFileSystemBindData = interface(IUnknown)
   ['{01e18d10-4d8b-11d2-855d-006008059367}']
@@ -6233,7 +6233,7 @@ const
   PDTIMER_RESET         = $00000001;       // Reset the timer so the progress will be calculated from now until the first ::SetProgress() is called so
                                            // those this time will correspond to the values passed to ::SetProgress().  Only do this before ::SetProgress() is called.
 
-type                                           
+type
   {$EXTERNALSYM IProgressDialog}
   IProgressDialog = interface(IUnknown)
   ['{EBBC7C04-315E-11D2-B62F-006097DF5BD4}']
@@ -8601,7 +8601,7 @@ type
     function OnSetTitle(pvTitle: PVARIANTARG): HResult; stdcall;
   end;
 
-const  
+const
   {$EXTERNALSYM VALIDATEUNC_NOUI}
   VALIDATEUNC_NOUI        = $0002;      // don't bring up UI
   {$EXTERNALSYM VALIDATEUNC_CONNECT}
@@ -9599,7 +9599,7 @@ function SHCreateFileExtractIconW(pszFile: PWideChar; dwFileAttributes: DWORD;
   {$EXTERNALSYM SHCreateFileExtractIcon}
 function SHCreateFileExtractIcon(pszFile: PTSTR; dwFileAttributes: DWORD;
     const riid: TIID; out ppv): HResult; stdcall;
-    
+
 {$EXTERNALSYM SHLimitInputEdit}
 function SHLimitInputEdit(hwndEdit: HWND; psf: IShellFolder): HResult; stdcall;
 

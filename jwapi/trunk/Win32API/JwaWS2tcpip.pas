@@ -347,7 +347,7 @@ type
   end;
   {$EXTERNALSYM sockaddr_gen}
   TSockAddrGen = sockaddr_gen;
-  PSockAddrGen = ^sockaddr_gen;  
+  PSockAddrGen = ^sockaddr_gen;
 
 // Structure to keep interface specific information
 

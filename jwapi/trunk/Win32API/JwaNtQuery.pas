@@ -789,4 +789,3 @@ function CIRestrictionToFullTree; external querylib name 'CIRestrictionToFullTre
 {$IFNDEF JWA_OMIT_SECTIONS}
 end.
 {$ENDIF JWA_OMIT_SECTIONS}
-

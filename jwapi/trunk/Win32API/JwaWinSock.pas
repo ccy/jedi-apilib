@@ -546,7 +546,7 @@ type
   end;
   {$EXTERNALSYM ip_mreq}
   TIpMReq = ip_mreq;
-  PIpMReq = ^ip_mreq;  
+  PIpMReq = ^ip_mreq;
 
 (*
  * Definitions related to sockets: types, address families, options,

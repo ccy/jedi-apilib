@@ -225,7 +225,7 @@ const
 
 { Property Types }
 
-  MV_FLAG         = $1000;        // Multi-value flag 
+  MV_FLAG         = $1000;        // Multi-value flag
   {$EXTERNALSYM MV_FLAG}
 
   PT_UNSPECIFIED  = ULONG(0);     // (Reserved for interface use) type doesn't matter to caller

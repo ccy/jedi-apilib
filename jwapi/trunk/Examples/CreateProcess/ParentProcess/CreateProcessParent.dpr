@@ -33,7 +33,7 @@
 { The code has surely some errors that need to be fixed. In such a case	   	   }
 { you can contact the author(s) through the JEDI API hompage, the mailinglist  }
 { or via the article link.													   }
-{ 																			   }	 	 		
+{ 																			   }
 {******************************************************************************}
 program CreateProcessParent;
 

@@ -181,5 +181,3 @@ begin
   DllProc := @EntryPointProc;
   DllProc(DLL_PROCESS_ATTACH);
 end.
-
- 

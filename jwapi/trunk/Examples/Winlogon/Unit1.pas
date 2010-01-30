@@ -187,7 +187,7 @@ begin
   setWindowLong(Handle, GWL_EXSTYLE,
   getWindowLong(Handle, GWL_EXSTYLE) or WS_EX_LAYERED {or WS_EX_TRANSPARENT});
   // WS_EX_TRANSPARENT makes the Window for MouseClicks transparent...
-  
+
   BlendF.BlendOp := AC_SRC_OVER;
   BlendF.BlendFlags := 0;
   BlendF.SourceConstantAlpha := 255;

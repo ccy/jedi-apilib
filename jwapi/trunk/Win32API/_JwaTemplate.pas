@@ -39,7 +39,7 @@
 This unit is a template! Adapt it for new JEDI API units. Don't override it.
 
 {$IFNDEF JWA_OMIT_SECTIONS}
-unit Jwa_UnitName; 
+unit Jwa_UnitName;
 
 {$HPPEMIT ''}
 {$HPPEMIT '#include "xxxx.h"'}
@@ -54,7 +54,7 @@ interface
 {$IFDEF JWA_WINDOWS}
   uses JwaWindows;
 {$ELSE}
-  uses <unit list>;  
+  uses <unit list>;
 {$ENDIF JWA_WINDOWS}
 
 

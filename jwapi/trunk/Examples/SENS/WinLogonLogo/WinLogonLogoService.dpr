@@ -37,8 +37,8 @@ begin
     SENSTestService.ServiceExecute(nil);
     SENSTestService.ServiceShutdown(nil);
     SENSTestService.ServiceDestroy(nil);
-  end;  
+  end;
 {$ELSE}
   Application.Run;
-{$ENDIF LIVE_DEBUG}  
+{$ENDIF LIVE_DEBUG}
 end.

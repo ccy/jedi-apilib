@@ -1,14 +1,14 @@
 unit NetFwTypeLib_TLB;
 
 // ************************************************************************ //
-// WARNING                                                                    
-// -------                                                                    
-// The types declared in this file were generated from data read from a       
-// Type Library. If this type library is explicitly or indirectly (via        
-// another type library referring to this type library) re-imported, or the   
-// 'Refresh' command of the Type Library Editor activated while editing the   
-// Type Library, the contents of this file will be regenerated and all        
-// manual modifications will be lost.                                         
+// WARNING
+// -------
+// The types declared in this file were generated from data read from a
+// Type Library. If this type library is explicitly or indirectly (via
+// another type library referring to this type library) re-imported, or the
+// 'Refresh' command of the Type Library Editor activated while editing the
+// Type Library, the contents of this file will be regenerated and all
+// manual modifications will be lost.
 // ************************************************************************ //
 
 // $Rev: 8291 $
@@ -18,8 +18,8 @@ unit NetFwTypeLib_TLB;
 // Type Lib: netfw.tlb (1)
 // LIBID: {DB4F3345-3EF8-45ED-B976-25A6D3B81B71}
 // LCID: 0
-// Helpfile: 
-// HelpString: 
+// Helpfile:
+// HelpString:
 // DepndLst:
 //   (1) v2.0 stdole, (C:\Windows\system32\stdole2.tlb)
 // Errors:
@@ -35,16 +35,16 @@ unit NetFwTypeLib_TLB;
 //   Error creating palette bitmap of (TNetFwMgr) : Server C:\Windows\system32\FirewallAPI.dll contains no icons
 // ************************************************************************ //
 // *************************************************************************//
-// NOTE:                                                                      
-// Items guarded by $IFDEF_LIVE_SERVER_AT_DESIGN_TIME are used by properties  
-// which return objects that may need to be explicitly created via a function 
-// call prior to any access via the property. These items have been disabled  
-// in order to prevent accidental use from within the object inspector. You   
-// may enable them by defining LIVE_SERVER_AT_DESIGN_TIME or by selectively   
-// removing them from the $IFDEF blocks. However, such items must still be    
-// programmatically created via a method of the appropriate CoClass before    
-// they can be used.                                                          
-{$TYPEDADDRESS OFF} // Unit must be compiled without type-checked pointers. 
+// NOTE:
+// Items guarded by $IFDEF_LIVE_SERVER_AT_DESIGN_TIME are used by properties
+// which return objects that may need to be explicitly created via a function
+// call prior to any access via the property. These items have been disabled
+// in order to prevent accidental use from within the object inspector. You
+// may enable them by defining LIVE_SERVER_AT_DESIGN_TIME or by selectively
+// removing them from the $IFDEF blocks. However, such items must still be
+// programmatically created via a method of the appropriate CoClass before
+// they can be used.
+{$TYPEDADDRESS OFF} // Unit must be compiled without type-checked pointers.
 {$IFDEF DELPHI6_UP}
 {$WARN SYMBOL_PLATFORM OFF}
 {$VARPROPSETTER ON}
@@ -53,14 +53,14 @@ unit NetFwTypeLib_TLB;
 interface
 
 uses Windows, ActiveX, Classes, Graphics, OleServer, StdVCL{, Variants};
-  
+
 
 // *********************************************************************//
-// GUIDS declared in the TypeLibrary. Following prefixes are used:        
-//   Type Libraries     : LIBID_xxxx                                      
-//   CoClasses          : CLASS_xxxx                                      
-//   DISPInterfaces     : DIID_xxxx                                       
-//   Non-DISP interfaces: IID_xxxx                                        
+// GUIDS declared in the TypeLibrary. Following prefixes are used:
+//   Type Libraries     : LIBID_xxxx
+//   CoClasses          : CLASS_xxxx
+//   DISPInterfaces     : DIID_xxxx
+//   Non-DISP interfaces: IID_xxxx
 // *********************************************************************//
 const
   // TypeLibrary Major and minor versions
@@ -91,7 +91,7 @@ const
   CLASS_NetFwMgr: TGUID = '{304CE942-6E39-40D8-943A-B913C40C9CD4}';
 
 // *********************************************************************//
-// Declaration of Enumerations defined in Type Library                    
+// Declaration of Enumerations defined in Type Library
 // *********************************************************************//
 // Constants for enum NET_FW_IP_VERSION_
 type
@@ -174,7 +174,7 @@ const
 type
 
 // *********************************************************************//
-// Forward declaration of types defined in TypeLibrary                    
+// Forward declaration of types defined in TypeLibrary
 // *********************************************************************//
   INetFwRemoteAdminSettings = interface;
   INetFwRemoteAdminSettingsDisp = dispinterface;
@@ -208,8 +208,8 @@ type
   INetFwMgrDisp = dispinterface;
 
 // *********************************************************************//
-// Declaration of CoClasses defined in Type Library                       
-// (NOTE: Here we map each CoClass to its Default Interface)              
+// Declaration of CoClasses defined in Type Library
+// (NOTE: Here we map each CoClass to its Default Interface)
 // *********************************************************************//
   NetFwRule = INetFwRule;
   NetFwOpenPort = INetFwOpenPort;
@@ -540,7 +540,7 @@ type
 // *********************************************************************//
   INetFwServiceRestriction = interface(IDispatch)
     ['{8267BBE3-F890-491C-B7B6-2DB1EF0E5D2B}']
-    procedure RestrictService(const serviceName: WideString; const appName: WideString; 
+    procedure RestrictService(const serviceName: WideString; const appName: WideString;
                               RestrictService: WordBool; serviceSidRestricted: WordBool); safecall;
     function ServiceRestricted(const serviceName: WideString; const appName: WideString): WordBool; safecall;
     function Get_Rules: INetFwRules; safecall;
@@ -554,7 +554,7 @@ type
 // *********************************************************************//
   INetFwServiceRestrictionDisp = dispinterface
     ['{8267BBE3-F890-491C-B7B6-2DB1EF0E5D2B}']
-    procedure RestrictService(const serviceName: WideString; const appName: WideString; 
+    procedure RestrictService(const serviceName: WideString; const appName: WideString;
                               RestrictService: WordBool; serviceSidRestricted: WordBool); dispid 1;
     function ServiceRestricted(const serviceName: WideString; const appName: WideString): WordBool; dispid 2;
     property Rules: INetFwRules readonly dispid 3;
@@ -772,11 +772,11 @@ type
     function Get_NotificationsDisabled(profileType: NET_FW_PROFILE_TYPE2_): WordBool; safecall;
     procedure Set_NotificationsDisabled(profileType: NET_FW_PROFILE_TYPE2_; disabled: WordBool); safecall;
     function Get_UnicastResponsesToMulticastBroadcastDisabled(profileType: NET_FW_PROFILE_TYPE2_): WordBool; safecall;
-    procedure Set_UnicastResponsesToMulticastBroadcastDisabled(profileType: NET_FW_PROFILE_TYPE2_; 
+    procedure Set_UnicastResponsesToMulticastBroadcastDisabled(profileType: NET_FW_PROFILE_TYPE2_;
                                                                disabled: WordBool); safecall;
     function Get_Rules: INetFwRules; safecall;
     function Get_ServiceRestriction: INetFwServiceRestriction; safecall;
-    procedure EnableRuleGroup(profileTypesBitmask: Integer; const group: WideString; 
+    procedure EnableRuleGroup(profileTypesBitmask: Integer; const group: WideString;
                               enable: WordBool); safecall;
     function IsRuleGroupEnabled(profileTypesBitmask: Integer; const group: WideString): WordBool; safecall;
     procedure RestoreLocalFirewallDefaults; safecall;
@@ -815,7 +815,7 @@ type
     property UnicastResponsesToMulticastBroadcastDisabled[profileType: NET_FW_PROFILE_TYPE2_]: WordBool dispid 6;
     property Rules: INetFwRules readonly dispid 7;
     property ServiceRestriction: INetFwServiceRestriction readonly dispid 8;
-    procedure EnableRuleGroup(profileTypesBitmask: Integer; const group: WideString; 
+    procedure EnableRuleGroup(profileTypesBitmask: Integer; const group: WideString;
                               enable: WordBool); dispid 9;
     function IsRuleGroupEnabled(profileTypesBitmask: Integer; const group: WideString): WordBool; dispid 10;
     procedure RestoreLocalFirewallDefaults; dispid 11;
@@ -835,11 +835,11 @@ type
     function Get_LocalPolicy: INetFwPolicy; safecall;
     function Get_CurrentProfileType: NET_FW_PROFILE_TYPE_; safecall;
     procedure RestoreDefaults; safecall;
-    procedure IsPortAllowed(const imageFileName: WideString; IpVersion: NET_FW_IP_VERSION_; 
-                            portNumber: Integer; const localAddress: WideString; 
-                            ipProtocol: NET_FW_IP_PROTOCOL_; out allowed: OleVariant; 
+    procedure IsPortAllowed(const imageFileName: WideString; IpVersion: NET_FW_IP_VERSION_;
+                            portNumber: Integer; const localAddress: WideString;
+                            ipProtocol: NET_FW_IP_PROTOCOL_; out allowed: OleVariant;
                             out restricted: OleVariant); safecall;
-    procedure IsIcmpTypeAllowed(IpVersion: NET_FW_IP_VERSION_; const localAddress: WideString; 
+    procedure IsIcmpTypeAllowed(IpVersion: NET_FW_IP_VERSION_; const localAddress: WideString;
                                 Type_: Byte; out allowed: OleVariant; out restricted: OleVariant); safecall;
     property LocalPolicy: INetFwPolicy read Get_LocalPolicy;
     property CurrentProfileType: NET_FW_PROFILE_TYPE_ read Get_CurrentProfileType;
@@ -855,20 +855,20 @@ type
     property LocalPolicy: INetFwPolicy readonly dispid 1;
     property CurrentProfileType: NET_FW_PROFILE_TYPE_ readonly dispid 2;
     procedure RestoreDefaults; dispid 3;
-    procedure IsPortAllowed(const imageFileName: WideString; IpVersion: NET_FW_IP_VERSION_; 
-                            portNumber: Integer; const localAddress: WideString; 
-                            ipProtocol: NET_FW_IP_PROTOCOL_; out allowed: OleVariant; 
+    procedure IsPortAllowed(const imageFileName: WideString; IpVersion: NET_FW_IP_VERSION_;
+                            portNumber: Integer; const localAddress: WideString;
+                            ipProtocol: NET_FW_IP_PROTOCOL_; out allowed: OleVariant;
                             out restricted: OleVariant); dispid 4;
-    procedure IsIcmpTypeAllowed(IpVersion: NET_FW_IP_VERSION_; const localAddress: WideString; 
+    procedure IsIcmpTypeAllowed(IpVersion: NET_FW_IP_VERSION_; const localAddress: WideString;
                                 Type_: Byte; out allowed: OleVariant; out restricted: OleVariant); dispid 5;
   end;
 
 // *********************************************************************//
-// The Class CoNetFwRule provides a Create and CreateRemote method to          
-// create instances of the default interface INetFwRule exposed by              
-// the CoClass NetFwRule. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoNetFwRule provides a Create and CreateRemote method to
+// create instances of the default interface INetFwRule exposed by
+// the CoClass NetFwRule. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoNetFwRule = class
     class function Create: INetFwRule;
@@ -879,10 +879,10 @@ type
 // *********************************************************************//
 // OLE Server Proxy class declaration
 // Server Object    : TNetFwRule
-// Help String      : 
+// Help String      :
 // Default Interface: INetFwRule
 // Def. Intf. DISP? : No
-// Event   Interface: 
+// Event   Interface:
 // TypeFlags        : (2) CanCreate
 // *********************************************************************//
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
@@ -1039,11 +1039,11 @@ type
 
 
 // *********************************************************************//
-// The Class CoNetFwOpenPort provides a Create and CreateRemote method to          
-// create instances of the default interface INetFwOpenPort exposed by              
-// the CoClass NetFwOpenPort. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoNetFwOpenPort provides a Create and CreateRemote method to
+// create instances of the default interface INetFwOpenPort exposed by
+// the CoClass NetFwOpenPort. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoNetFwOpenPort = class
     class function Create: INetFwOpenPort;
@@ -1054,10 +1054,10 @@ type
 // *********************************************************************//
 // OLE Server Proxy class declaration
 // Server Object    : TNetFwOpenPort
-// Help String      : 
+// Help String      :
 // Default Interface: INetFwOpenPort
 // Def. Intf. DISP? : No
-// Event   Interface: 
+// Event   Interface:
 // TypeFlags        : (2) CanCreate
 // *********************************************************************//
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
@@ -1152,11 +1152,11 @@ type
 
 
 // *********************************************************************//
-// The Class CoNetFwAuthorizedApplication provides a Create and CreateRemote method to          
-// create instances of the default interface INetFwAuthorizedApplication exposed by              
-// the CoClass NetFwAuthorizedApplication. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoNetFwAuthorizedApplication provides a Create and CreateRemote method to
+// create instances of the default interface INetFwAuthorizedApplication exposed by
+// the CoClass NetFwAuthorizedApplication. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoNetFwAuthorizedApplication = class
     class function Create: INetFwAuthorizedApplication;
@@ -1167,10 +1167,10 @@ type
 // *********************************************************************//
 // OLE Server Proxy class declaration
 // Server Object    : TNetFwAuthorizedApplication
-// Help String      : 
+// Help String      :
 // Default Interface: INetFwAuthorizedApplication
 // Def. Intf. DISP? : No
-// Event   Interface: 
+// Event   Interface:
 // TypeFlags        : (2) CanCreate
 // *********************************************************************//
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
@@ -1256,11 +1256,11 @@ type
 
 
 // *********************************************************************//
-// The Class CoNetFwPolicy2 provides a Create and CreateRemote method to          
-// create instances of the default interface INetFwPolicy2 exposed by              
-// the CoClass NetFwPolicy2. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoNetFwPolicy2 provides a Create and CreateRemote method to
+// create instances of the default interface INetFwPolicy2 exposed by
+// the CoClass NetFwPolicy2. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoNetFwPolicy2 = class
     class function Create: INetFwPolicy2;
@@ -1271,10 +1271,10 @@ type
 // *********************************************************************//
 // OLE Server Proxy class declaration
 // Server Object    : TNetFwPolicy2
-// Help String      : 
+// Help String      :
 // Default Interface: INetFwPolicy2
 // Def. Intf. DISP? : No
-// Event   Interface: 
+// Event   Interface:
 // TypeFlags        : (2) CanCreate
 // *********************************************************************//
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
@@ -1300,7 +1300,7 @@ type
     function Get_NotificationsDisabled(profileType: NET_FW_PROFILE_TYPE2_): WordBool;
     procedure Set_NotificationsDisabled(profileType: NET_FW_PROFILE_TYPE2_; disabled: WordBool);
     function Get_UnicastResponsesToMulticastBroadcastDisabled(profileType: NET_FW_PROFILE_TYPE2_): WordBool;
-    procedure Set_UnicastResponsesToMulticastBroadcastDisabled(profileType: NET_FW_PROFILE_TYPE2_; 
+    procedure Set_UnicastResponsesToMulticastBroadcastDisabled(profileType: NET_FW_PROFILE_TYPE2_;
                                                                disabled: WordBool);
     function Get_Rules: INetFwRules;
     function Get_ServiceRestriction: INetFwServiceRestriction;
@@ -1316,7 +1316,7 @@ type
     procedure Connect; override;
     procedure ConnectTo(svrIntf: INetFwPolicy2);
     procedure Disconnect; override;
-    procedure EnableRuleGroup(profileTypesBitmask: Integer; const group: WideString; 
+    procedure EnableRuleGroup(profileTypesBitmask: Integer; const group: WideString;
                               enable: WordBool);
     function IsRuleGroupEnabled(profileTypesBitmask: Integer; const group: WideString): WordBool;
     procedure RestoreLocalFirewallDefaults;
@@ -1362,7 +1362,7 @@ type
     function Get_NotificationsDisabled(profileType: NET_FW_PROFILE_TYPE2_): WordBool;
     procedure Set_NotificationsDisabled(profileType: NET_FW_PROFILE_TYPE2_; disabled: WordBool);
     function Get_UnicastResponsesToMulticastBroadcastDisabled(profileType: NET_FW_PROFILE_TYPE2_): WordBool;
-    procedure Set_UnicastResponsesToMulticastBroadcastDisabled(profileType: NET_FW_PROFILE_TYPE2_; 
+    procedure Set_UnicastResponsesToMulticastBroadcastDisabled(profileType: NET_FW_PROFILE_TYPE2_;
                                                                disabled: WordBool);
     function Get_Rules: INetFwRules;
     function Get_ServiceRestriction: INetFwServiceRestriction;
@@ -1380,11 +1380,11 @@ type
 
 
 // *********************************************************************//
-// The Class CoNetFwMgr provides a Create and CreateRemote method to          
-// create instances of the default interface INetFwMgr exposed by              
-// the CoClass NetFwMgr. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoNetFwMgr provides a Create and CreateRemote method to
+// create instances of the default interface INetFwMgr exposed by
+// the CoClass NetFwMgr. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoNetFwMgr = class
     class function Create: INetFwMgr;
@@ -1395,10 +1395,10 @@ type
 // *********************************************************************//
 // OLE Server Proxy class declaration
 // Server Object    : TNetFwMgr
-// Help String      : 
+// Help String      :
 // Default Interface: INetFwMgr
 // Def. Intf. DISP? : No
-// Event   Interface: 
+// Event   Interface:
 // TypeFlags        : (2) CanCreate
 // *********************************************************************//
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
@@ -1423,11 +1423,11 @@ type
     procedure ConnectTo(svrIntf: INetFwMgr);
     procedure Disconnect; override;
     procedure RestoreDefaults;
-    procedure IsPortAllowed(const imageFileName: WideString; IpVersion: NET_FW_IP_VERSION_; 
-                            portNumber: Integer; const localAddress: WideString; 
-                            ipProtocol: NET_FW_IP_PROTOCOL_; out allowed: OleVariant; 
+    procedure IsPortAllowed(const imageFileName: WideString; IpVersion: NET_FW_IP_VERSION_;
+                            portNumber: Integer; const localAddress: WideString;
+                            ipProtocol: NET_FW_IP_PROTOCOL_; out allowed: OleVariant;
                             out restricted: OleVariant);
-    procedure IsIcmpTypeAllowed(IpVersion: NET_FW_IP_VERSION_; const localAddress: WideString; 
+    procedure IsIcmpTypeAllowed(IpVersion: NET_FW_IP_VERSION_; const localAddress: WideString;
                                 Type_: Byte; out allowed: OleVariant; out restricted: OleVariant);
     property DefaultInterface: INetFwMgr read GetDefaultInterface;
     property LocalPolicy: INetFwPolicy read Get_LocalPolicy;
@@ -2676,7 +2676,7 @@ begin
   Result := InterfaceVariant.ExcludedInterfaces[profileType];
 end;
 
-procedure TNetFwPolicy2.Set_ExcludedInterfaces(profileType: NET_FW_PROFILE_TYPE2_; 
+procedure TNetFwPolicy2.Set_ExcludedInterfaces(profileType: NET_FW_PROFILE_TYPE2_;
                                                Interfaces: OleVariant);
 begin
   DefaultInterface.ExcludedInterfaces[profileType] := Interfaces;
@@ -2687,7 +2687,7 @@ begin
     Result := DefaultInterface.BlockAllInboundTraffic[profileType];
 end;
 
-procedure TNetFwPolicy2.Set_BlockAllInboundTraffic(profileType: NET_FW_PROFILE_TYPE2_; 
+procedure TNetFwPolicy2.Set_BlockAllInboundTraffic(profileType: NET_FW_PROFILE_TYPE2_;
                                                    Block: WordBool);
 begin
   DefaultInterface.BlockAllInboundTraffic[profileType] := Block;
@@ -2698,7 +2698,7 @@ begin
     Result := DefaultInterface.NotificationsDisabled[profileType];
 end;
 
-procedure TNetFwPolicy2.Set_NotificationsDisabled(profileType: NET_FW_PROFILE_TYPE2_; 
+procedure TNetFwPolicy2.Set_NotificationsDisabled(profileType: NET_FW_PROFILE_TYPE2_;
                                                   disabled: WordBool);
 begin
   DefaultInterface.NotificationsDisabled[profileType] := disabled;
@@ -2709,7 +2709,7 @@ begin
     Result := DefaultInterface.UnicastResponsesToMulticastBroadcastDisabled[profileType];
 end;
 
-procedure TNetFwPolicy2.Set_UnicastResponsesToMulticastBroadcastDisabled(profileType: NET_FW_PROFILE_TYPE2_; 
+procedure TNetFwPolicy2.Set_UnicastResponsesToMulticastBroadcastDisabled(profileType: NET_FW_PROFILE_TYPE2_;
                                                                          disabled: WordBool);
 begin
   DefaultInterface.UnicastResponsesToMulticastBroadcastDisabled[profileType] := disabled;
@@ -2730,7 +2730,7 @@ begin
     Result := DefaultInterface.DefaultInboundAction[profileType];
 end;
 
-procedure TNetFwPolicy2.Set_DefaultInboundAction(profileType: NET_FW_PROFILE_TYPE2_; 
+procedure TNetFwPolicy2.Set_DefaultInboundAction(profileType: NET_FW_PROFILE_TYPE2_;
                                                  Action: NET_FW_ACTION_);
 begin
   DefaultInterface.DefaultInboundAction[profileType] := Action;
@@ -2741,7 +2741,7 @@ begin
     Result := DefaultInterface.DefaultOutboundAction[profileType];
 end;
 
-procedure TNetFwPolicy2.Set_DefaultOutboundAction(profileType: NET_FW_PROFILE_TYPE2_; 
+procedure TNetFwPolicy2.Set_DefaultOutboundAction(profileType: NET_FW_PROFILE_TYPE2_;
                                                   Action: NET_FW_ACTION_);
 begin
   DefaultInterface.DefaultOutboundAction[profileType] := Action;
@@ -2757,7 +2757,7 @@ begin
     Result := DefaultInterface.LocalPolicyModifyState;
 end;
 
-procedure TNetFwPolicy2.EnableRuleGroup(profileTypesBitmask: Integer; const group: WideString; 
+procedure TNetFwPolicy2.EnableRuleGroup(profileTypesBitmask: Integer; const group: WideString;
                                         enable: WordBool);
 begin
   DefaultInterface.EnableRuleGroup(profileTypesBitmask, group, enable);
@@ -2795,7 +2795,7 @@ begin
     Result := DefaultInterface.FirewallEnabled[profileType];
 end;
 
-procedure TNetFwPolicy2Properties.Set_FirewallEnabled(profileType: NET_FW_PROFILE_TYPE2_; 
+procedure TNetFwPolicy2Properties.Set_FirewallEnabled(profileType: NET_FW_PROFILE_TYPE2_;
                                                       Enabled: WordBool);
 begin
   DefaultInterface.FirewallEnabled[profileType] := Enabled;
@@ -2809,7 +2809,7 @@ begin
   Result := InterfaceVariant.ExcludedInterfaces[profileType];
 end;
 
-procedure TNetFwPolicy2Properties.Set_ExcludedInterfaces(profileType: NET_FW_PROFILE_TYPE2_; 
+procedure TNetFwPolicy2Properties.Set_ExcludedInterfaces(profileType: NET_FW_PROFILE_TYPE2_;
                                                          Interfaces: OleVariant);
 begin
   DefaultInterface.ExcludedInterfaces[profileType] := Interfaces;
@@ -2820,7 +2820,7 @@ begin
     Result := DefaultInterface.BlockAllInboundTraffic[profileType];
 end;
 
-procedure TNetFwPolicy2Properties.Set_BlockAllInboundTraffic(profileType: NET_FW_PROFILE_TYPE2_; 
+procedure TNetFwPolicy2Properties.Set_BlockAllInboundTraffic(profileType: NET_FW_PROFILE_TYPE2_;
                                                              Block: WordBool);
 begin
   DefaultInterface.BlockAllInboundTraffic[profileType] := Block;
@@ -2831,7 +2831,7 @@ begin
     Result := DefaultInterface.NotificationsDisabled[profileType];
 end;
 
-procedure TNetFwPolicy2Properties.Set_NotificationsDisabled(profileType: NET_FW_PROFILE_TYPE2_; 
+procedure TNetFwPolicy2Properties.Set_NotificationsDisabled(profileType: NET_FW_PROFILE_TYPE2_;
                                                             disabled: WordBool);
 begin
   DefaultInterface.NotificationsDisabled[profileType] := disabled;
@@ -2842,7 +2842,7 @@ begin
     Result := DefaultInterface.UnicastResponsesToMulticastBroadcastDisabled[profileType];
 end;
 
-procedure TNetFwPolicy2Properties.Set_UnicastResponsesToMulticastBroadcastDisabled(profileType: NET_FW_PROFILE_TYPE2_; 
+procedure TNetFwPolicy2Properties.Set_UnicastResponsesToMulticastBroadcastDisabled(profileType: NET_FW_PROFILE_TYPE2_;
                                                                                    disabled: WordBool);
 begin
   DefaultInterface.UnicastResponsesToMulticastBroadcastDisabled[profileType] := disabled;
@@ -2863,7 +2863,7 @@ begin
     Result := DefaultInterface.DefaultInboundAction[profileType];
 end;
 
-procedure TNetFwPolicy2Properties.Set_DefaultInboundAction(profileType: NET_FW_PROFILE_TYPE2_; 
+procedure TNetFwPolicy2Properties.Set_DefaultInboundAction(profileType: NET_FW_PROFILE_TYPE2_;
                                                            Action: NET_FW_ACTION_);
 begin
   DefaultInterface.DefaultInboundAction[profileType] := Action;
@@ -2874,7 +2874,7 @@ begin
     Result := DefaultInterface.DefaultOutboundAction[profileType];
 end;
 
-procedure TNetFwPolicy2Properties.Set_DefaultOutboundAction(profileType: NET_FW_PROFILE_TYPE2_; 
+procedure TNetFwPolicy2Properties.Set_DefaultOutboundAction(profileType: NET_FW_PROFILE_TYPE2_;
                                                             Action: NET_FW_ACTION_);
 begin
   DefaultInterface.DefaultOutboundAction[profileType] := Action;
@@ -2985,17 +2985,17 @@ begin
   DefaultInterface.RestoreDefaults;
 end;
 
-procedure TNetFwMgr.IsPortAllowed(const imageFileName: WideString; IpVersion: NET_FW_IP_VERSION_; 
-                                  portNumber: Integer; const localAddress: WideString; 
-                                  ipProtocol: NET_FW_IP_PROTOCOL_; out allowed: OleVariant; 
+procedure TNetFwMgr.IsPortAllowed(const imageFileName: WideString; IpVersion: NET_FW_IP_VERSION_;
+                                  portNumber: Integer; const localAddress: WideString;
+                                  ipProtocol: NET_FW_IP_PROTOCOL_; out allowed: OleVariant;
                                   out restricted: OleVariant);
 begin
-  DefaultInterface.IsPortAllowed(imageFileName, IpVersion, portNumber, localAddress, ipProtocol, 
+  DefaultInterface.IsPortAllowed(imageFileName, IpVersion, portNumber, localAddress, ipProtocol,
                                  allowed, restricted);
 end;
 
-procedure TNetFwMgr.IsIcmpTypeAllowed(IpVersion: NET_FW_IP_VERSION_; 
-                                      const localAddress: WideString; Type_: Byte; 
+procedure TNetFwMgr.IsIcmpTypeAllowed(IpVersion: NET_FW_IP_VERSION_;
+                                      const localAddress: WideString; Type_: Byte;
                                       out allowed: OleVariant; out restricted: OleVariant);
 begin
   DefaultInterface.IsIcmpTypeAllowed(IpVersion, localAddress, Type_, allowed, restricted);
@@ -3027,7 +3027,7 @@ end;
 
 procedure Register;
 begin
-  RegisterComponents(dtlServerPage, [TNetFwRule, TNetFwOpenPort, TNetFwAuthorizedApplication, TNetFwPolicy2, 
+  RegisterComponents(dtlServerPage, [TNetFwRule, TNetFwOpenPort, TNetFwAuthorizedApplication, TNetFwPolicy2,
     TNetFwMgr]);
 end;
 

@@ -1,14 +1,14 @@
-ï»¿unit SearchAPILib_TLB;
+unit SearchAPILib_TLB;
 
 // ************************************************************************ //
-// WARNUNG                                                                    
-// -------                                                                    
+// WARNUNG
+// -------
 // Die in dieser Datei deklarierten Typen wurden aus Daten einer Typbibliothek
-// generiert. Wenn diese Typbibliothek explizit oder indirekt (Ã¼ber eine     
-// andere Typbibliothek) reimportiert wird oder wenn der Befehl            
-// 'Aktualisieren' im Typbibliotheks-Editor wÃ¤hrend des Bearbeitens der     
-// Typbibliothek aktiviert ist, wird der Inhalt dieser Datei neu generiert und 
-// alle manuell vorgenommenen Ã„nderungen gehen verloren.                                        
+// generiert. Wenn diese Typbibliothek explizit oder indirekt (über eine
+// andere Typbibliothek) reimportiert wird oder wenn der Befehl
+// 'Aktualisieren' im Typbibliotheks-Editor während des Bearbeitens der
+// Typbibliothek aktiviert ist, wird der Inhalt dieser Datei neu generiert und
+// alle manuell vorgenommenen Änderungen gehen verloren.
 // ************************************************************************ //
 
 // $Rev: 17252 $
@@ -18,13 +18,13 @@
 // Typbib.: E:\Proggen\Microsoft SDKs\Windows\v6.0\Lib\SearchAPI.tlb (1)
 // LIBID: {00000000-0000-0000-0000-000000000000}
 // LCID: 0
-// Hilfedatei: 
-// Hilfe-String: 
-// Liste der AbhÃ¤ng.: 
+// Hilfedatei:
+// Hilfe-String:
+// Liste der Abhäng.:
 //   (1) v2.0 stdole, (C:\Windows\system32\stdole2.tlb)
 // Fehler//   Hinweis: Symbol 'type' umbenannt in 'type_'
 // ************************************************************************ //
-{$TYPEDADDRESS OFF} // Unit muss ohne TypÃ¼berprÃ¼fung fÃ¼r Zeiger compiliert werden. 
+{$TYPEDADDRESS OFF} // Unit muss ohne Typüberprüfung für Zeiger compiliert werden.
 
 {$WARN SYMBOL_PLATFORM OFF}
 {$WRITEABLECONST ON}
@@ -33,13 +33,13 @@
 interface
 
 uses Windows, ActiveX, Classes, Graphics, OleServer, StdVCL, Variants;
-  
+
 // *********************************************************************//
-// In der Typbibliothek deklarierte GUIDS. Die folgenden PrÃ¤fixe werden verwendet:        
-//   Typbibliotheken      : LIBID_xxxx                                      
-//   CoClasses            : CLASS_xxxx                                      
-//   DISPInterfaces       : DIID_xxxx                                       
-//   Nicht-DISP-Interfaces: IID_xxxx                                        
+// In der Typbibliothek deklarierte GUIDS. Die folgenden Präfixe werden verwendet:
+//   Typbibliotheken      : LIBID_xxxx
+//   CoClasses            : CLASS_xxxx
+//   DISPInterfaces       : DIID_xxxx
+//   Nicht-DISP-Interfaces: IID_xxxx
 // *********************************************************************//
 const
   // Haupt- und Nebenversionen der Typbibliothek  SearchAPILibMajorVersion = 1;
@@ -80,10 +80,10 @@ const
   CLASS_CSearchPersistentItemsChangedSink: TGUID = '{D0F268B5-EA7A-4B35-BF2F-E1A091B80D51}';
 
 // *********************************************************************//
-// Deklaration von in der Typbibliothek definierten  AufzÃ¤hlungen                    
+// Deklaration von in der Typbibliothek definierten  Aufzählungen
 // *********************************************************************//
 
-// Konstanten fÃ¼r enum tagTYPEKIND
+// Konstanten für enum tagTYPEKIND
 type
   tagTYPEKIND = TOleEnum;
 const
@@ -97,7 +97,7 @@ const
   TKIND_UNION = $00000007;
   TKIND_MAX = $00000008;
 
-// Konstanten fÃ¼r enum tagDESCKIND
+// Konstanten für enum tagDESCKIND
 type
   tagDESCKIND = TOleEnum;
 const
@@ -108,7 +108,7 @@ const
   DESCKIND_IMPLICITAPPOBJ = $00000004;
   DESCKIND_MAX = $00000005;
 
-// Konstanten fÃ¼r enum tagFUNCKIND
+// Konstanten für enum tagFUNCKIND
 type
   tagFUNCKIND = TOleEnum;
 const
@@ -118,7 +118,7 @@ const
   FUNC_STATIC = $00000003;
   FUNC_DISPATCH = $00000004;
 
-// Konstanten fÃ¼r enum tagINVOKEKIND
+// Konstanten für enum tagINVOKEKIND
 type
   tagINVOKEKIND = TOleEnum;
 const
@@ -127,7 +127,7 @@ const
   INVOKE_PROPERTYPUT = $00000004;
   INVOKE_PROPERTYPUTREF = $00000008;
 
-// Konstanten fÃ¼r enum tagCALLCONV
+// Konstanten für enum tagCALLCONV
 type
   tagCALLCONV = TOleEnum;
 const
@@ -143,7 +143,7 @@ const
   CC_MPWPASCAL = $00000008;
   CC_MAX = $00000009;
 
-// Konstanten fÃ¼r enum tagVARKIND
+// Konstanten für enum tagVARKIND
 type
   tagVARKIND = TOleEnum;
 const
@@ -152,7 +152,7 @@ const
   VAR_CONST = $00000002;
   VAR_DISPATCH = $00000003;
 
-// Konstanten fÃ¼r enum tagSYSKIND
+// Konstanten für enum tagSYSKIND
 type
   tagSYSKIND = TOleEnum;
 const
@@ -161,7 +161,7 @@ const
   SYS_MAC = $00000002;
   SYS_WIN64 = $00000003;
 
-// Konstanten fÃ¼r enum _PROXY_ACCESS
+// Konstanten für enum _PROXY_ACCESS
 type
   _PROXY_ACCESS = TOleEnum;
 const
@@ -169,7 +169,7 @@ const
   PROXY_ACCESS_DIRECT = $00000001;
   PROXY_ACCESS_PROXY = $00000002;
 
-// Konstanten fÃ¼r enum _CatalogStatus
+// Konstanten für enum _CatalogStatus
 type
   _CatalogStatus = TOleEnum;
 const
@@ -181,7 +181,7 @@ const
   CATALOG_STATUS_PROCESSING_NOTIFICATIONS = $00000005;
   CATALOG_STATUS_SHUTTING_DOWN = $00000006;
 
-// Konstanten fÃ¼r enum _CatalogPausedReason
+// Konstanten für enum _CatalogPausedReason
 type
   _CatalogPausedReason = TOleEnum;
 const
@@ -197,7 +197,7 @@ const
   CATALOG_PAUSED_REASON_EXTERNAL = $00000009;
   CATALOG_PAUSED_REASON_UPGRADING = $0000000A;
 
-// Konstanten fÃ¼r enum _SEARCH_KIND_OF_CHANGE
+// Konstanten für enum _SEARCH_KIND_OF_CHANGE
 type
   _SEARCH_KIND_OF_CHANGE = TOleEnum;
 const
@@ -209,14 +209,14 @@ const
   SEARCH_CHANGE_SEMANTICS_SHALLOW = $00080000;
   SEARCH_CHANGE_SEMANTICS_UPDATE_SECURITY = $00400000;
 
-// Konstanten fÃ¼r enum _SEARCH_NOTIFICATION_PRIORITY
+// Konstanten für enum _SEARCH_NOTIFICATION_PRIORITY
 type
   _SEARCH_NOTIFICATION_PRIORITY = TOleEnum;
 const
   SEARCH_NORMAL_PRIORITY = $00000000;
   SEARCH_HIGH_PRIORITY = $00000001;
 
-// Konstanten fÃ¼r enum _SEARCH_INDEXING_PHASE
+// Konstanten für enum _SEARCH_INDEXING_PHASE
 type
   _SEARCH_INDEXING_PHASE = TOleEnum;
 const
@@ -224,7 +224,7 @@ const
   SEARCH_INDEXING_PHASE_QUERYABLE = $00000001;
   SEARCH_INDEXING_PHASE_PERSISTED = $00000002;
 
-// Konstanten fÃ¼r enum _SEARCH_TERM_EXPANSION
+// Konstanten für enum _SEARCH_TERM_EXPANSION
 type
   _SEARCH_TERM_EXPANSION = TOleEnum;
 const
@@ -232,7 +232,7 @@ const
   SEARCH_TERM_PREFIX_ALL = $00000001;
   SEARCH_TERM_STEM_ALL = $00000002;
 
-// Konstanten fÃ¼r enum _SEARCH_QUERY_SYNTAX
+// Konstanten für enum _SEARCH_QUERY_SYNTAX
 type
   _SEARCH_QUERY_SYNTAX = TOleEnum;
 const
@@ -240,7 +240,7 @@ const
   SEARCH_ADVANCED_QUERY_SYNTAX = $00000001;
   SEARCH_NATURAL_QUERY_SYNTAX = $00000002;
 
-// Konstanten fÃ¼r enum _AUTH_TYPE
+// Konstanten für enum _AUTH_TYPE
 type
   _AUTH_TYPE = TOleEnum;
 const
@@ -248,7 +248,7 @@ const
   eAUTH_TYPE_NTLM = $00000001;
   eAUTH_TYPE_BASIC = $00000002;
 
-// Konstanten fÃ¼r enum __MIDL___MIDL_itf_searchapi_0000_0012_0001
+// Konstanten für enum __MIDL___MIDL_itf_searchapi_0000_0012_0001
 type
   __MIDL___MIDL_itf_searchapi_0000_0012_0001 = TOleEnum;
 const
@@ -259,7 +259,7 @@ const
 
 type
 // *********************************************************************//
-// Forward-Deklaration von in der Typbibliothek definierten Typen                    
+// Forward-Deklaration von in der Typbibliothek definierten Typen
 // *********************************************************************//
 
   ISearchManager = interface;
@@ -285,8 +285,8 @@ type
   ISearchItemsChangedSink = interface;
 
 // *********************************************************************//
-// Deklaration von in der Typbibliothek definierten CoClasses             
-// (HINWEIS: Hier wird jede CoClass ihrem Standard-Interface zugewiesen)              
+// Deklaration von in der Typbibliothek definierten CoClasses
+// (HINWEIS: Hier wird jede CoClass ihrem Standard-Interface zugewiesen)
 // *********************************************************************//
 
 
@@ -303,10 +303,10 @@ type
 
 
 // *********************************************************************//
-// Deklaration von  Strukturen, Unions und Aliasen.                         
+// Deklaration von  Strukturen, Unions und Aliasen.
 // *********************************************************************//
-  wirePSAFEARRAY = ^PUserType4; 
-  wireSNB = ^tagRemSNB; 
+  wirePSAFEARRAY = ^PUserType4;
+  wireSNB = ^tagRemSNB;
   PUserType5 = ^_FLAGGED_WORD_BLOB; {*}
   PUserType6 = ^_wireVARIANT; {*}
   PUserType13 = ^_wireBRECORD; {*}
@@ -453,14 +453,14 @@ type
     lLbound: Integer;
   end;
 
-  ULONG_PTR = LongWord; 
+  ULONG_PTR = LongWord;
 
   tagIDLDESC = record
     dwReserved: ULONG_PTR;
     wIDLFlags: Word;
   end;
 
-  DWORD = LongWord; 
+  DWORD = LongWord;
 
 {$ALIGN 8}
   tagPARAMDESCEX = record
@@ -762,7 +762,7 @@ type
     __MIDL____MIDL_itf_searchapi_0001_01290001: __MIDL___MIDL_itf_searchapi_0001_0129_0001;
   end;
 
-  CLUSION_REASON = __MIDL___MIDL_itf_searchapi_0000_0012_0001; 
+  CLUSION_REASON = __MIDL___MIDL_itf_searchapi_0000_0012_0001;
 
 {$ALIGN 8}
   _SEARCH_COLUMN_PROPERTIES = record
@@ -903,7 +903,7 @@ type
     function SetParameter(pszName: PWideChar; var pValue: tag_inner_PROPVARIANT): HResult; stdcall;
     function Get_ProxyName(out ppszProxyName: PWideChar): HResult; stdcall;
     function Get_BypassList(out ppszBypassList: PWideChar): HResult; stdcall;
-    function SetProxy(sUseProxy: _PROXY_ACCESS; fLocalByPassProxy: Integer; dwPortNumber: LongWord; 
+    function SetProxy(sUseProxy: _PROXY_ACCESS; fLocalByPassProxy: Integer; dwPortNumber: LongWord;
                       pszProxyName: PWideChar; pszByPassList: PWideChar): HResult; stdcall;
     function GetCatalog(pszCatalog: PWideChar; out ppCatalogManager: ISearchCatalogManager): HResult; stdcall;
     function Get_UserAgent(out ppszUserAgent: PWideChar): HResult; stdcall;
@@ -931,10 +931,10 @@ type
 // *********************************************************************//
   IStream = interface(ISequentialStream)
     ['{0000000C-0000-0000-C000-000000000046}']
-    function RemoteSeek(dlibMove: _LARGE_INTEGER; dwOrigin: LongWord; 
+    function RemoteSeek(dlibMove: _LARGE_INTEGER; dwOrigin: LongWord;
                         out plibNewPosition: _ULARGE_INTEGER): HResult; stdcall;
     function SetSize(libNewSize: _ULARGE_INTEGER): HResult; stdcall;
-    function RemoteCopyTo(const pstm: IStream; cb: _ULARGE_INTEGER; out pcbRead: _ULARGE_INTEGER; 
+    function RemoteCopyTo(const pstm: IStream; cb: _ULARGE_INTEGER; out pcbRead: _ULARGE_INTEGER;
                           out pcbWritten: _ULARGE_INTEGER): HResult; stdcall;
     function Commit(grfCommitFlags: LongWord): HResult; stdcall;
     function Revert: HResult; stdcall;
@@ -951,25 +951,25 @@ type
 // *********************************************************************//
   IStorage = interface(IUnknown)
     ['{0000000B-0000-0000-C000-000000000046}']
-    function CreateStream(pwcsName: PWideChar; grfMode: LongWord; reserved1: LongWord; 
+    function CreateStream(pwcsName: PWideChar; grfMode: LongWord; reserved1: LongWord;
                           reserved2: LongWord; out ppstm: IStream): HResult; stdcall;
-    function RemoteOpenStream(pwcsName: PWideChar; cbReserved1: LongWord; var reserved1: Byte; 
+    function RemoteOpenStream(pwcsName: PWideChar; cbReserved1: LongWord; var reserved1: Byte;
                               grfMode: LongWord; reserved2: LongWord; out ppstm: IStream): HResult; stdcall;
-    function CreateStorage(pwcsName: PWideChar; grfMode: LongWord; reserved1: LongWord; 
+    function CreateStorage(pwcsName: PWideChar; grfMode: LongWord; reserved1: LongWord;
                            reserved2: LongWord; out ppstg: IStorage): HResult; stdcall;
-    function OpenStorage(pwcsName: PWideChar; const pstgPriority: IStorage; grfMode: LongWord; 
+    function OpenStorage(pwcsName: PWideChar; const pstgPriority: IStorage; grfMode: LongWord;
                          var snbExclude: tagRemSNB; reserved: LongWord; out ppstg: IStorage): HResult; stdcall;
-    function RemoteCopyTo(ciidExclude: LongWord; var rgiidExclude: TGUID; 
+    function RemoteCopyTo(ciidExclude: LongWord; var rgiidExclude: TGUID;
                           var snbExclude: tagRemSNB; const pstgDest: IStorage): HResult; stdcall;
-    function MoveElementTo(pwcsName: PWideChar; const pstgDest: IStorage; pwcsNewName: PWideChar; 
+    function MoveElementTo(pwcsName: PWideChar; const pstgDest: IStorage; pwcsNewName: PWideChar;
                            grfFlags: LongWord): HResult; stdcall;
     function Commit(grfCommitFlags: LongWord): HResult; stdcall;
     function Revert: HResult; stdcall;
-    function RemoteEnumElements(reserved1: LongWord; cbReserved2: LongWord; var reserved2: Byte; 
+    function RemoteEnumElements(reserved1: LongWord; cbReserved2: LongWord; var reserved2: Byte;
                                 reserved3: LongWord; out ppenum: IEnumSTATSTG): HResult; stdcall;
     function DestroyElement(pwcsName: PWideChar): HResult; stdcall;
     function RenameElement(pwcsOldName: PWideChar; pwcsNewName: PWideChar): HResult; stdcall;
-    function SetElementTimes(pwcsName: PWideChar; var pctime: _FILETIME; var patime: _FILETIME; 
+    function SetElementTimes(pwcsName: PWideChar; var pctime: _FILETIME; var patime: _FILETIME;
                              var pmtime: _FILETIME): HResult; stdcall;
     function SetClass(var clsid: TGUID): HResult; stdcall;
     function SetStateBits(grfStateBits: LongWord; grfMask: LongWord): HResult; stdcall;
@@ -1004,11 +1004,11 @@ type
     function GetSize(out pcbSize: LongWord): HResult; stdcall;
     function GetTypeInfo(out ppTypeInfo: ITypeInfo): HResult; stdcall;
     function GetField(var pvData: Pointer; szFieldName: PWideChar; out pvarField: OleVariant): HResult; stdcall;
-    function GetFieldNoCopy(var pvData: Pointer; szFieldName: PWideChar; out pvarField: OleVariant; 
+    function GetFieldNoCopy(var pvData: Pointer; szFieldName: PWideChar; out pvarField: OleVariant;
                             out ppvDataCArray: Pointer): HResult; stdcall;
-    function PutField(wFlags: LongWord; var pvData: Pointer; szFieldName: PWideChar; 
+    function PutField(wFlags: LongWord; var pvData: Pointer; szFieldName: PWideChar;
                       var pvarField: OleVariant): HResult; stdcall;
-    function PutFieldNoCopy(wFlags: LongWord; var pvData: Pointer; szFieldName: PWideChar; 
+    function PutFieldNoCopy(wFlags: LongWord; var pvData: Pointer; szFieldName: PWideChar;
                             var pvarField: OleVariant): HResult; stdcall;
     function GetFieldNames(var pcNames: LongWord; out rgBstrNames: WideString): HResult; stdcall;
     function IsMatchingType(const pRecordInfo: IRecordInfo): Integer; stdcall;
@@ -1028,17 +1028,17 @@ type
     function GetTypeComp(out ppTComp: ITypeComp): HResult; stdcall;
     function RemoteGetFuncDesc(index: SYSUINT; out ppFuncDesc: PUserType8; out pDummy: DWORD): HResult; stdcall;
     function RemoteGetVarDesc(index: SYSUINT; out ppVarDesc: PUserType9; out pDummy: DWORD): HResult; stdcall;
-    function RemoteGetNames(memid: Integer; out rgBstrNames: WideString; cMaxNames: SYSUINT; 
+    function RemoteGetNames(memid: Integer; out rgBstrNames: WideString; cMaxNames: SYSUINT;
                             out pcNames: SYSUINT): HResult; stdcall;
     function GetRefTypeOfImplType(index: SYSUINT; out pRefType: LongWord): HResult; stdcall;
     function GetImplTypeFlags(index: SYSUINT; out pImplTypeFlags: SYSINT): HResult; stdcall;
     function LocalGetIDsOfNames: HResult; stdcall;
     function LocalInvoke: HResult; stdcall;
-    function RemoteGetDocumentation(memid: Integer; refPtrFlags: LongWord; 
-                                    out pbstrName: WideString; out pBstrDocString: WideString; 
+    function RemoteGetDocumentation(memid: Integer; refPtrFlags: LongWord;
+                                    out pbstrName: WideString; out pBstrDocString: WideString;
                                     out pdwHelpContext: LongWord; out pBstrHelpFile: WideString): HResult; stdcall;
-    function RemoteGetDllEntry(memid: Integer; invkind: tagINVOKEKIND; refPtrFlags: LongWord; 
-                               out pBstrDllName: WideString; out pbstrName: WideString; 
+    function RemoteGetDllEntry(memid: Integer; invkind: tagINVOKEKIND; refPtrFlags: LongWord;
+                               out pBstrDllName: WideString; out pbstrName: WideString;
                                out pwOrdinal: Word): HResult; stdcall;
     function GetRefTypeInfo(hreftype: LongWord; out ppTInfo: ITypeInfo): HResult; stdcall;
     function LocalAddressOfMember: HResult; stdcall;
@@ -1057,9 +1057,9 @@ type
 // *********************************************************************//
   ITypeComp = interface(IUnknown)
     ['{00020403-0000-0000-C000-000000000046}']
-    function RemoteBind(szName: PWideChar; lHashVal: LongWord; wFlags: Word; 
-                        out ppTInfo: ITypeInfo; out pDescKind: tagDESCKIND; 
-                        out ppFuncDesc: PUserType8; out ppVarDesc: PUserType9; 
+    function RemoteBind(szName: PWideChar; lHashVal: LongWord; wFlags: Word;
+                        out ppTInfo: ITypeInfo; out pDescKind: tagDESCKIND;
+                        out ppFuncDesc: PUserType8; out ppVarDesc: PUserType9;
                         out ppTypeComp: ITypeComp; out pDummy: DWORD): HResult; stdcall;
     function RemoteBindType(szName: PWideChar; lHashVal: LongWord; out ppTInfo: ITypeInfo): HResult; stdcall;
   end;
@@ -1077,12 +1077,12 @@ type
     function GetTypeInfoOfGuid(var guid: TGUID; out ppTInfo: ITypeInfo): HResult; stdcall;
     function RemoteGetLibAttr(out ppTLibAttr: PUserType12; out pDummy: DWORD): HResult; stdcall;
     function GetTypeComp(out ppTComp: ITypeComp): HResult; stdcall;
-    function RemoteGetDocumentation(index: SYSINT; refPtrFlags: LongWord; 
-                                    out pbstrName: WideString; out pBstrDocString: WideString; 
+    function RemoteGetDocumentation(index: SYSINT; refPtrFlags: LongWord;
+                                    out pbstrName: WideString; out pBstrDocString: WideString;
                                     out pdwHelpContext: LongWord; out pBstrHelpFile: WideString): HResult; stdcall;
-    function RemoteIsName(szNameBuf: PWideChar; lHashVal: LongWord; out pfName: Integer; 
+    function RemoteIsName(szNameBuf: PWideChar; lHashVal: LongWord; out pfName: Integer;
                           out pBstrLibName: WideString): HResult; stdcall;
-    function RemoteFindName(szNameBuf: PWideChar; lHashVal: LongWord; out ppTInfo: ITypeInfo; 
+    function RemoteFindName(szNameBuf: PWideChar; lHashVal: LongWord; out ppTInfo: ITypeInfo;
                             out rgMemId: Integer; var pcFound: Word; out pBstrLibName: WideString): HResult; stdcall;
     function LocalReleaseTLibAttr: HResult; stdcall;
   end;
@@ -1107,18 +1107,18 @@ type
     function Set_DataTimeout(pdwDataTimeout: LongWord): HResult; stdcall;
     function Get_DataTimeout(out pdwDataTimeout: LongWord): HResult; stdcall;
     function NumberOfItems(out plCount: Integer): HResult; stdcall;
-    function NumberOfItemsToIndex(out plIncrementalCount: Integer; 
+    function NumberOfItemsToIndex(out plIncrementalCount: Integer;
                                   out plNotificationQueue: Integer; out plHighPriorityQueue: Integer): HResult; stdcall;
     function URLBeingIndexed(out pszUrl: PWideChar): HResult; stdcall;
     function GetURLIndexingState(pszUrl: PWideChar; out pdwState: LongWord): HResult; stdcall;
     function GetPersistentItemsChangedSink(out ppISearchPersistentItemsChangedSink: ISearchPersistentItemsChangedSink): HResult; stdcall;
-    function RegisterViewForNotification(pszView: PWideChar; 
-                                         const pViewChangedSink: ISearchViewChangedSink; 
+    function RegisterViewForNotification(pszView: PWideChar;
+                                         const pViewChangedSink: ISearchViewChangedSink;
                                          out pdwCookie: LongWord): HResult; stdcall;
-    function GetItemsChangedSink(const pISearchNotifyInlineSite: ISearchNotifyInlineSite; 
-                                 var riid: TGUID; out ppv: Pointer; 
-                                 out pGUIDCatalogResetSignature: TGUID; 
-                                 out pGUIDCheckPointSignature: TGUID; 
+    function GetItemsChangedSink(const pISearchNotifyInlineSite: ISearchNotifyInlineSite;
+                                 var riid: TGUID; out ppv: Pointer;
+                                 out pGUIDCatalogResetSignature: TGUID;
+                                 out pGUIDCheckPointSignature: TGUID;
                                  out pdwLastCheckPointNumber: LongWord): HResult; stdcall;
     function UnregisterViewForNotification(dwCookie: LongWord): HResult; stdcall;
     function SetExtensionClusion(pszExtension: PWideChar; fExclude: Integer): HResult; stdcall;
@@ -1138,8 +1138,8 @@ type
     ['{A2FFDF9B-4758-4F84-B729-DF81A1A0612F}']
     function StartedMonitoringScope(pszUrl: PWideChar): HResult; stdcall;
     function StoppedMonitoringScope(pszUrl: PWideChar): HResult; stdcall;
-    function OnItemsChanged(dwNumberOfChanges: LongWord; 
-                            var DataChangeEntries: _SEARCH_ITEM_PERSISTENT_CHANGE; 
+    function OnItemsChanged(dwNumberOfChanges: LongWord;
+                            var DataChangeEntries: _SEARCH_ITEM_PERSISTENT_CHANGE;
                             out hrCompletionCodes: HResult): HResult; stdcall;
   end;
 
@@ -1160,10 +1160,10 @@ type
 // *********************************************************************//
   ISearchNotifyInlineSite = interface(IUnknown)
     ['{B5702E61-E75C-4B64-82A1-6CB4F832FCCF}']
-    function OnItemIndexedStatusChange(sipStatus: _SEARCH_INDEXING_PHASE; dwNumEntries: LongWord; 
+    function OnItemIndexedStatusChange(sipStatus: _SEARCH_INDEXING_PHASE; dwNumEntries: LongWord;
                                        var rgItemStatusEntries: _SEARCH_ITEM_INDEXING_STATUS): HResult; stdcall;
-    function OnCatalogStatusChange(var guidCatalogResetSignature: TGUID; 
-                                   var guidCheckPointSignature: TGUID; 
+    function OnCatalogStatusChange(var guidCatalogResetSignature: TGUID;
+                                   var guidCheckPointSignature: TGUID;
                                    dwLastCheckPointNumber: LongWord): HResult; stdcall;
   end;
 
@@ -1205,8 +1205,8 @@ type
     function Set_QuerySorting(ppszSorting: PWideChar): HResult; stdcall;
     function Get_QuerySorting(out ppszSorting: PWideChar): HResult; stdcall;
     function GenerateSQLFromUserQuery(pszQuery: PWideChar; out ppszSQL: PWideChar): HResult; stdcall;
-    function WriteProperties(itemID: Integer; dwNumberOfColumns: LongWord; 
-                             var pColumns: _tagpropertykey; var pValues: _SEARCH_COLUMN_PROPERTIES; 
+    function WriteProperties(itemID: Integer; dwNumberOfColumns: LongWord;
+                             var pColumns: _tagpropertykey; var pValues: _SEARCH_COLUMN_PROPERTIES;
                              var pftGatherModifiedTime: _FILETIME): HResult; stdcall;
     function Set_QueryMaxResults(pcMaxResults: Integer): HResult; stdcall;
     function Get_QueryMaxResults(out pcMaxResults: Integer): HResult; stdcall;
@@ -1223,16 +1223,16 @@ type
     function AddRoot(const pSearchRoot: ISearchRoot): HResult; stdcall;
     function RemoveRoot(pszUrl: PWideChar): HResult; stdcall;
     function EnumerateRoots(out ppSearchRoots: IEnumSearchRoots): HResult; stdcall;
-    function AddHierarchicalScope(pszUrl: PWideChar; fInclude: Integer; fDefault: Integer; 
+    function AddHierarchicalScope(pszUrl: PWideChar; fInclude: Integer; fDefault: Integer;
                                   fOverrideChildren: Integer): HResult; stdcall;
-    function AddUserScopeRule(pszUrl: PWideChar; fInclude: Integer; fOverrideChildren: Integer; 
+    function AddUserScopeRule(pszUrl: PWideChar; fInclude: Integer; fOverrideChildren: Integer;
                               fFollowFlags: LongWord): HResult; stdcall;
     function RemoveScopeRule(pszRule: PWideChar): HResult; stdcall;
     function EnumerateScopeRules(out ppSearchScopeRules: IEnumSearchScopeRules): HResult; stdcall;
     function HasParentScopeRule(pszUrl: PWideChar; out pfHasParentRule: Integer): HResult; stdcall;
     function HasChildScopeRule(pszUrl: PWideChar; out pfHasChildRule: Integer): HResult; stdcall;
     function IncludedInCrawlScope(pszUrl: PWideChar; out pfIsIncluded: Integer): HResult; stdcall;
-    function IncludedInCrawlScopeEx(pszUrl: PWideChar; out pfIsIncluded: Integer; 
+    function IncludedInCrawlScopeEx(pszUrl: PWideChar; out pfIsIncluded: Integer;
                                     out pReason: CLUSION_REASON): HResult; stdcall;
     function RevertToDefaultScopes: HResult; stdcall;
     function SaveAll: HResult; stdcall;
@@ -1319,17 +1319,17 @@ type
     ['{AB310581-AC80-11D1-8DF3-00C04FB6EF58}']
     function StartedMonitoringScope(pszUrl: PWideChar): HResult; stdcall;
     function StoppedMonitoringScope(pszUrl: PWideChar): HResult; stdcall;
-    function OnItemsChanged(dwNumberOfChanges: LongWord; 
-                            var rgDataChangeEntries: _SEARCH_ITEM_CHANGE; out rgdwDocIds: LongWord; 
+    function OnItemsChanged(dwNumberOfChanges: LongWord;
+                            var rgDataChangeEntries: _SEARCH_ITEM_CHANGE; out rgdwDocIds: LongWord;
                             out rghrCompletionCodes: HResult): HResult; stdcall;
   end;
 
 // *********************************************************************//
-// Die Klasse CoCSearchManager stellt die Methoden Create und CreateRemote zur      
-// VerfÃ¼gung, um Instanzen des Standard-Interface ISearchManager, dargestellt 
-// von CoClass CSearchManager, zu erzeugen. Diese Funktionen kÃ¶nnen                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// will, die von dieser Typbibliothek dargestellt werden.                                            
+// Die Klasse CoCSearchManager stellt die Methoden Create und CreateRemote zur
+// Verfügung, um Instanzen des Standard-Interface ISearchManager, dargestellt
+// von CoClass CSearchManager, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// will, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
 
   CoCSearchManager = class
@@ -1338,11 +1338,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoCSearchCatalogManager stellt die Methoden Create und CreateRemote zur      
-// VerfÃ¼gung, um Instanzen des Standard-Interface ISearchCatalogManager, dargestellt 
-// von CoClass CSearchCatalogManager, zu erzeugen. Diese Funktionen kÃ¶nnen                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// will, die von dieser Typbibliothek dargestellt werden.                                            
+// Die Klasse CoCSearchCatalogManager stellt die Methoden Create und CreateRemote zur
+// Verfügung, um Instanzen des Standard-Interface ISearchCatalogManager, dargestellt
+// von CoClass CSearchCatalogManager, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// will, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
 
   CoCSearchCatalogManager = class
@@ -1351,11 +1351,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoCSearchQueryHelper stellt die Methoden Create und CreateRemote zur      
-// VerfÃ¼gung, um Instanzen des Standard-Interface ISearchQueryHelper, dargestellt 
-// von CoClass CSearchQueryHelper, zu erzeugen. Diese Funktionen kÃ¶nnen                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// will, die von dieser Typbibliothek dargestellt werden.                                            
+// Die Klasse CoCSearchQueryHelper stellt die Methoden Create und CreateRemote zur
+// Verfügung, um Instanzen des Standard-Interface ISearchQueryHelper, dargestellt
+// von CoClass CSearchQueryHelper, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// will, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
 
   CoCSearchQueryHelper = class
@@ -1364,11 +1364,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoCSearchItemsChangedSink stellt die Methoden Create und CreateRemote zur      
-// VerfÃ¼gung, um Instanzen des Standard-Interface ISearchItemsChangedSink, dargestellt 
-// von CoClass CSearchItemsChangedSink, zu erzeugen. Diese Funktionen kÃ¶nnen                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// will, die von dieser Typbibliothek dargestellt werden.                                            
+// Die Klasse CoCSearchItemsChangedSink stellt die Methoden Create und CreateRemote zur
+// Verfügung, um Instanzen des Standard-Interface ISearchItemsChangedSink, dargestellt
+// von CoClass CSearchItemsChangedSink, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// will, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
 
   CoCSearchItemsChangedSink = class
@@ -1377,11 +1377,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoCSearchCrawlScopeManager stellt die Methoden Create und CreateRemote zur      
-// VerfÃ¼gung, um Instanzen des Standard-Interface ISearchCrawlScopeManager, dargestellt 
-// von CoClass CSearchCrawlScopeManager, zu erzeugen. Diese Funktionen kÃ¶nnen                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// will, die von dieser Typbibliothek dargestellt werden.                                            
+// Die Klasse CoCSearchCrawlScopeManager stellt die Methoden Create und CreateRemote zur
+// Verfügung, um Instanzen des Standard-Interface ISearchCrawlScopeManager, dargestellt
+// von CoClass CSearchCrawlScopeManager, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// will, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
 
   CoCSearchCrawlScopeManager = class
@@ -1390,11 +1390,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoCEnumSearchRoots stellt die Methoden Create und CreateRemote zur      
-// VerfÃ¼gung, um Instanzen des Standard-Interface IEnumSearchRoots, dargestellt 
-// von CoClass CEnumSearchRoots, zu erzeugen. Diese Funktionen kÃ¶nnen                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// will, die von dieser Typbibliothek dargestellt werden.                                            
+// Die Klasse CoCEnumSearchRoots stellt die Methoden Create und CreateRemote zur
+// Verfügung, um Instanzen des Standard-Interface IEnumSearchRoots, dargestellt
+// von CoClass CEnumSearchRoots, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// will, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
 
   CoCEnumSearchRoots = class
@@ -1403,11 +1403,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoCEnumSearchScopeRules stellt die Methoden Create und CreateRemote zur      
-// VerfÃ¼gung, um Instanzen des Standard-Interface IEnumSearchScopeRules, dargestellt 
-// von CoClass CEnumSearchScopeRules, zu erzeugen. Diese Funktionen kÃ¶nnen                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// will, die von dieser Typbibliothek dargestellt werden.                                            
+// Die Klasse CoCEnumSearchScopeRules stellt die Methoden Create und CreateRemote zur
+// Verfügung, um Instanzen des Standard-Interface IEnumSearchScopeRules, dargestellt
+// von CoClass CEnumSearchScopeRules, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// will, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
 
   CoCEnumSearchScopeRules = class
@@ -1416,11 +1416,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoCSearchRoot stellt die Methoden Create und CreateRemote zur      
-// VerfÃ¼gung, um Instanzen des Standard-Interface ISearchRoot, dargestellt 
-// von CoClass CSearchRoot, zu erzeugen. Diese Funktionen kÃ¶nnen                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// will, die von dieser Typbibliothek dargestellt werden.                                            
+// Die Klasse CoCSearchRoot stellt die Methoden Create und CreateRemote zur
+// Verfügung, um Instanzen des Standard-Interface ISearchRoot, dargestellt
+// von CoClass CSearchRoot, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// will, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
 
   CoCSearchRoot = class
@@ -1429,11 +1429,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoCSearchScopeRule stellt die Methoden Create und CreateRemote zur      
-// VerfÃ¼gung, um Instanzen des Standard-Interface ISearchScopeRule, dargestellt 
-// von CoClass CSearchScopeRule, zu erzeugen. Diese Funktionen kÃ¶nnen                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// will, die von dieser Typbibliothek dargestellt werden.                                            
+// Die Klasse CoCSearchScopeRule stellt die Methoden Create und CreateRemote zur
+// Verfügung, um Instanzen des Standard-Interface ISearchScopeRule, dargestellt
+// von CoClass CSearchScopeRule, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// will, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
 
   CoCSearchScopeRule = class
@@ -1442,11 +1442,11 @@ type
   end;
 
 // *********************************************************************//
-// Die Klasse CoCSearchPersistentItemsChangedSink stellt die Methoden Create und CreateRemote zur      
-// VerfÃ¼gung, um Instanzen des Standard-Interface ISearchPersistentItemsChangedSink, dargestellt 
-// von CoClass CSearchPersistentItemsChangedSink, zu erzeugen. Diese Funktionen kÃ¶nnen                     
-// von einem Client verwendet werden, der die CoClasses automatisieren    
-// will, die von dieser Typbibliothek dargestellt werden.                                            
+// Die Klasse CoCSearchPersistentItemsChangedSink stellt die Methoden Create und CreateRemote zur
+// Verfügung, um Instanzen des Standard-Interface ISearchPersistentItemsChangedSink, dargestellt
+// von CoClass CSearchPersistentItemsChangedSink, zu erzeugen. Diese Funktionen können
+// von einem Client verwendet werden, der die CoClasses automatisieren
+// will, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
 
   CoCSearchPersistentItemsChangedSink = class

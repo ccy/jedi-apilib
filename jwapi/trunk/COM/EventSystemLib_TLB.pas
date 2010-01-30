@@ -1,14 +1,14 @@
 unit EventSystemLib_TLB;
 
 // ************************************************************************ //
-// WARNING                                                                    
-// -------                                                                    
-// The types declared in this file were generated from data read from a       
-// Type Library. If this type library is explicitly or indirectly (via        
-// another type library referring to this type library) re-imported, or the   
-// 'Refresh' command of the Type Library Editor activated while editing the   
-// Type Library, the contents of this file will be regenerated and all        
-// manual modifications will be lost.                                         
+// WARNING
+// -------
+// The types declared in this file were generated from data read from a
+// Type Library. If this type library is explicitly or indirectly (via
+// another type library referring to this type library) re-imported, or the
+// 'Refresh' command of the Type Library Editor activated while editing the
+// Type Library, the contents of this file will be regenerated and all
+// manual modifications will be lost.
 // ************************************************************************ //
 
 // $Rev: 8291 $
@@ -24,30 +24,30 @@ unit EventSystemLib_TLB;
 //   (1) v2.0 stdole, (C:\Windows\system32\stdole2.tlb)
 // ************************************************************************ //
 // *************************************************************************//
-// NOTE:                                                                      
-// Items guarded by $IFDEF_LIVE_SERVER_AT_DESIGN_TIME are used by properties  
-// which return objects that may need to be explicitly created via a function 
-// call prior to any access via the property. These items have been disabled  
-// in order to prevent accidental use from within the object inspector. You   
-// may enable them by defining LIVE_SERVER_AT_DESIGN_TIME or by selectively   
-// removing them from the $IFDEF blocks. However, such items must still be    
-// programmatically created via a method of the appropriate CoClass before    
-// they can be used.                                                          
-{$TYPEDADDRESS OFF} // Unit must be compiled without type-checked pointers. 
+// NOTE:
+// Items guarded by $IFDEF_LIVE_SERVER_AT_DESIGN_TIME are used by properties
+// which return objects that may need to be explicitly created via a function
+// call prior to any access via the property. These items have been disabled
+// in order to prevent accidental use from within the object inspector. You
+// may enable them by defining LIVE_SERVER_AT_DESIGN_TIME or by selectively
+// removing them from the $IFDEF blocks. However, such items must still be
+// programmatically created via a method of the appropriate CoClass before
+// they can be used.
+{$TYPEDADDRESS OFF} // Unit must be compiled without type-checked pointers.
 {$WARN SYMBOL_PLATFORM OFF}
 {$WRITEABLECONST ON}
 {$VARPROPSETTER ON}
 interface
 
 uses Windows, ActiveX, Classes, Graphics, OleServer, StdVCL, Variants;
-  
+
 
 // *********************************************************************//
-// GUIDS declared in the TypeLibrary. Following prefixes are used:        
-//   Type Libraries     : LIBID_xxxx                                      
-//   CoClasses          : CLASS_xxxx                                      
-//   DISPInterfaces     : DIID_xxxx                                       
-//   Non-DISP interfaces: IID_xxxx                                        
+// GUIDS declared in the TypeLibrary. Following prefixes are used:
+//   Type Libraries     : LIBID_xxxx
+//   CoClasses          : CLASS_xxxx
+//   DISPInterfaces     : DIID_xxxx
+//   Non-DISP interfaces: IID_xxxx
 // *********************************************************************//
 const
   // TypeLibrary Major and minor versions
@@ -72,7 +72,7 @@ const
   CLASS_EventObjectChange2: TGUID = '{BB07BACD-CD56-4E63-A8FF-CBF0355FB9F4}';
 
 // *********************************************************************//
-// Declaration of Enumerations defined in Type Library                    
+// Declaration of Enumerations defined in Type Library
 // *********************************************************************//
 // Constants for enum __MIDL_IEventObjectChange_0001
 type
@@ -85,7 +85,7 @@ const
 type
 
 // *********************************************************************//
-// Forward declaration of types defined in TypeLibrary                    
+// Forward declaration of types defined in TypeLibrary
 // *********************************************************************//
   IEventSystem = interface;
   IEventSystemDisp = dispinterface;
@@ -102,8 +102,8 @@ type
   IEventObjectChange2 = interface;
 
 // *********************************************************************//
-// Declaration of CoClasses defined in Type Library                       
-// (NOTE: Here we map each CoClass to its Default Interface)              
+// Declaration of CoClasses defined in Type Library
+// (NOTE: Here we map each CoClass to its Default Interface)
 // *********************************************************************//
   CEventSystem = IEventSystem;
   CEventPublisher = IEventPublisher;
@@ -114,12 +114,12 @@ type
 
 
 // *********************************************************************//
-// Declaration of structures, unions and aliases.                         
+// Declaration of structures, unions and aliases.
 // *********************************************************************//
   POleVariant1 = ^OleVariant; {*}
   PUserType1 = ^COMEVENTSYSCHANGEINFO; {*}
 
-  EOC_ChangeType = __MIDL_IEventObjectChange_0001; 
+  EOC_ChangeType = __MIDL_IEventObjectChange_0001;
 
   __MIDL___MIDL_itf_EventSys_0000_0009_0001 = packed record
     cbSize: LongWord;
@@ -130,7 +130,7 @@ type
     reserved: array[0..9] of TGUID;
   end;
 
-  COMEVENTSYSCHANGEINFO = __MIDL___MIDL_itf_EventSys_0000_0009_0001; 
+  COMEVENTSYSCHANGEINFO = __MIDL___MIDL_itf_EventSys_0000_0009_0001;
 
 // *********************************************************************//
 // Interface: IEventSystem
@@ -141,7 +141,7 @@ type
     ['{4E14FB9F-2E22-11D1-9964-00C04FBBB345}']
     function Query(const progID: WideString; const queryCriteria: WideString; out errorIndex: SYSINT): IUnknown; safecall;
     procedure Store(const progID: WideString; const pInterface: IUnknown); safecall;
-    procedure Remove(const progID: WideString; const queryCriteria: WideString; 
+    procedure Remove(const progID: WideString; const queryCriteria: WideString;
                      out errorIndex: SYSINT); safecall;
     function Get_EventObjectChangeEventClassID: WideString; safecall;
     function QueryS(const progID: WideString; const queryCriteria: WideString): IUnknown; safecall;
@@ -158,7 +158,7 @@ type
     ['{4E14FB9F-2E22-11D1-9964-00C04FBBB345}']
     function Query(const progID: WideString; const queryCriteria: WideString; out errorIndex: SYSINT): IUnknown; dispid 1;
     procedure Store(const progID: WideString; const pInterface: IUnknown); dispid 2;
-    procedure Remove(const progID: WideString; const queryCriteria: WideString; 
+    procedure Remove(const progID: WideString; const queryCriteria: WideString;
                      out errorIndex: SYSINT); dispid 3;
     property EventObjectChangeEventClassID: WideString readonly dispid 4;
     function QueryS(const progID: WideString; const queryCriteria: WideString): IUnknown; dispid 5;
@@ -340,7 +340,7 @@ type
     procedure RemovePublisherProperty(const bstrPropertyName: WideString); safecall;
     function GetPublisherPropertyCollection: IEventObjectCollection; safecall;
     function GetSubscriberProperty(const bstrPropertyName: WideString): OleVariant; safecall;
-    procedure PutSubscriberProperty(const bstrPropertyName: WideString; 
+    procedure PutSubscriberProperty(const bstrPropertyName: WideString;
                                     var propertyValue: OleVariant); safecall;
     procedure RemoveSubscriberProperty(const bstrPropertyName: WideString); safecall;
     function GetSubscriberPropertyCollection: IEventObjectCollection; safecall;
@@ -385,7 +385,7 @@ type
     procedure RemovePublisherProperty(const bstrPropertyName: WideString); dispid 15;
     function GetPublisherPropertyCollection: IEventObjectCollection; dispid 16;
     function GetSubscriberProperty(const bstrPropertyName: WideString): OleVariant; dispid 17;
-    procedure PutSubscriberProperty(const bstrPropertyName: WideString; 
+    procedure PutSubscriberProperty(const bstrPropertyName: WideString;
                                     var propertyValue: OleVariant); dispid 18;
     procedure RemoveSubscriberProperty(const bstrPropertyName: WideString); dispid 19;
     function GetSubscriberPropertyCollection: IEventObjectCollection; dispid 20;
@@ -416,11 +416,11 @@ type
   end;
 
 // *********************************************************************//
-// The Class CoCEventSystem provides a Create and CreateRemote method to          
-// create instances of the default interface IEventSystem exposed by              
-// the CoClass CEventSystem. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoCEventSystem provides a Create and CreateRemote method to
+// create instances of the default interface IEventSystem exposed by
+// the CoClass CEventSystem. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoCEventSystem = class
     class function Create: IEventSystem;
@@ -434,7 +434,7 @@ type
 // Help String      : CEventSystem Class
 // Default Interface: IEventSystem
 // Def. Intf. DISP? : No
-// Event   Interface: 
+// Event   Interface:
 // TypeFlags        : (2) CanCreate
 // *********************************************************************//
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
@@ -459,7 +459,7 @@ type
     procedure Disconnect; override;
     function Query(const progID: WideString; const queryCriteria: WideString; out errorIndex: SYSINT): IUnknown;
     procedure Store(const progID: WideString; const pInterface: IUnknown);
-    procedure Remove(const progID: WideString; const queryCriteria: WideString; 
+    procedure Remove(const progID: WideString; const queryCriteria: WideString;
                      out errorIndex: SYSINT);
     function QueryS(const progID: WideString; const queryCriteria: WideString): IUnknown;
     procedure RemoveS(const progID: WideString; const queryCriteria: WideString);
@@ -493,11 +493,11 @@ type
 
 
 // *********************************************************************//
-// The Class CoCEventPublisher provides a Create and CreateRemote method to          
-// create instances of the default interface IEventPublisher exposed by              
-// the CoClass CEventPublisher. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoCEventPublisher provides a Create and CreateRemote method to
+// create instances of the default interface IEventPublisher exposed by
+// the CoClass CEventPublisher. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoCEventPublisher = class
     class function Create: IEventPublisher;
@@ -508,10 +508,10 @@ type
 // *********************************************************************//
 // OLE Server Proxy class declaration
 // Server Object    : TCEventPublisher
-// Help String      : 
+// Help String      :
 // Default Interface: IEventPublisher
 // Def. Intf. DISP? : No
-// Event   Interface: 
+// Event   Interface:
 // TypeFlags        : (2) CanCreate
 // *********************************************************************//
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
@@ -595,11 +595,11 @@ type
 
 
 // *********************************************************************//
-// The Class CoCEventClass provides a Create and CreateRemote method to          
-// create instances of the default interface IEventClass exposed by              
-// the CoClass CEventClass. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoCEventClass provides a Create and CreateRemote method to
+// create instances of the default interface IEventClass exposed by
+// the CoClass CEventClass. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoCEventClass = class
     class function Create: IEventClass;
@@ -610,10 +610,10 @@ type
 // *********************************************************************//
 // OLE Server Proxy class declaration
 // Server Object    : TCEventClass
-// Help String      : 
+// Help String      :
 // Default Interface: IEventClass
 // Def. Intf. DISP? : No
-// Event   Interface: 
+// Event   Interface:
 // TypeFlags        : (2) CanCreate
 // *********************************************************************//
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
@@ -705,11 +705,11 @@ type
 
 
 // *********************************************************************//
-// The Class CoCEventSubscription provides a Create and CreateRemote method to          
-// create instances of the default interface IEventSubscription exposed by              
-// the CoClass CEventSubscription. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoCEventSubscription provides a Create and CreateRemote method to
+// create instances of the default interface IEventSubscription exposed by
+// the CoClass CEventSubscription. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoCEventSubscription = class
     class function Create: IEventSubscription;
@@ -720,10 +720,10 @@ type
 // *********************************************************************//
 // OLE Server Proxy class declaration
 // Server Object    : TCEventSubscription
-// Help String      : 
+// Help String      :
 // Default Interface: IEventSubscription
 // Def. Intf. DISP? : No
-// Event   Interface: 
+// Event   Interface:
 // TypeFlags        : (2) CanCreate
 // *********************************************************************//
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
@@ -776,7 +776,7 @@ type
     procedure RemovePublisherProperty(const bstrPropertyName: WideString);
     function GetPublisherPropertyCollection: IEventObjectCollection;
     function GetSubscriberProperty(const bstrPropertyName: WideString): OleVariant;
-    procedure PutSubscriberProperty(const bstrPropertyName: WideString; 
+    procedure PutSubscriberProperty(const bstrPropertyName: WideString;
                                     var propertyValue: OleVariant);
     procedure RemoveSubscriberProperty(const bstrPropertyName: WideString);
     function GetSubscriberPropertyCollection: IEventObjectCollection;
@@ -859,11 +859,11 @@ type
 
 
 // *********************************************************************//
-// The Class CoEventObjectChange provides a Create and CreateRemote method to          
-// create instances of the default interface IEventObjectChange exposed by              
-// the CoClass EventObjectChange. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoEventObjectChange provides a Create and CreateRemote method to
+// create instances of the default interface IEventObjectChange exposed by
+// the CoClass EventObjectChange. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoEventObjectChange = class
     class function Create: IEventObjectChange;
@@ -874,10 +874,10 @@ type
 // *********************************************************************//
 // OLE Server Proxy class declaration
 // Server Object    : TEventObjectChange
-// Help String      : 
+// Help String      :
 // Default Interface: IEventObjectChange
 // Def. Intf. DISP? : No
-// Event   Interface: 
+// Event   Interface:
 // TypeFlags        : (2) CanCreate
 // *********************************************************************//
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
@@ -930,11 +930,11 @@ type
 
 
 // *********************************************************************//
-// The Class CoEventObjectChange2 provides a Create and CreateRemote method to          
-// create instances of the default interface IEventObjectChange2 exposed by              
-// the CoClass EventObjectChange2. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoEventObjectChange2 provides a Create and CreateRemote method to
+// create instances of the default interface IEventObjectChange2 exposed by
+// the CoClass EventObjectChange2. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoEventObjectChange2 = class
     class function Create: IEventObjectChange2;
@@ -945,10 +945,10 @@ type
 // *********************************************************************//
 // OLE Server Proxy class declaration
 // Server Object    : TEventObjectChange2
-// Help String      : 
+// Help String      :
 // Default Interface: IEventObjectChange2
 // Def. Intf. DISP? : No
-// Event   Interface: 
+// Event   Interface:
 // TypeFlags        : (2) CanCreate
 // *********************************************************************//
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
@@ -1093,7 +1093,7 @@ begin
     Result := DefaultInterface.EventObjectChangeEventClassID;
 end;
 
-function TCEventSystem.Query(const progID: WideString; const queryCriteria: WideString; 
+function TCEventSystem.Query(const progID: WideString; const queryCriteria: WideString;
                              out errorIndex: SYSINT): IUnknown;
 begin
   Result := DefaultInterface.Query(progID, queryCriteria, errorIndex);
@@ -1104,7 +1104,7 @@ begin
   DefaultInterface.Store(progID, pInterface);
 end;
 
-procedure TCEventSystem.Remove(const progID: WideString; const queryCriteria: WideString; 
+procedure TCEventSystem.Remove(const progID: WideString; const queryCriteria: WideString;
                                out errorIndex: SYSINT);
 begin
   DefaultInterface.Remove(progID, queryCriteria, errorIndex);
@@ -1302,7 +1302,7 @@ begin
   Result := DefaultInterface.GetDefaultProperty(bstrPropertyName);
 end;
 
-procedure TCEventPublisher.PutDefaultProperty(const bstrPropertyName: WideString; 
+procedure TCEventPublisher.PutDefaultProperty(const bstrPropertyName: WideString;
                                               var propertyValue: OleVariant);
 begin
   DefaultInterface.PutDefaultProperty(bstrPropertyName, propertyValue);
@@ -2001,7 +2001,7 @@ begin
   Result := DefaultInterface.GetPublisherProperty(bstrPropertyName);
 end;
 
-procedure TCEventSubscription.PutPublisherProperty(const bstrPropertyName: WideString; 
+procedure TCEventSubscription.PutPublisherProperty(const bstrPropertyName: WideString;
                                                    var propertyValue: OleVariant);
 begin
   DefaultInterface.PutPublisherProperty(bstrPropertyName, propertyValue);
@@ -2022,7 +2022,7 @@ begin
   Result := DefaultInterface.GetSubscriberProperty(bstrPropertyName);
 end;
 
-procedure TCEventSubscription.PutSubscriberProperty(const bstrPropertyName: WideString; 
+procedure TCEventSubscription.PutSubscriberProperty(const bstrPropertyName: WideString;
                                                     var propertyValue: OleVariant);
 begin
   DefaultInterface.PutSubscriberProperty(bstrPropertyName, propertyValue);
@@ -2320,19 +2320,19 @@ begin
 end;
 {$ENDIF}
 
-function TEventObjectChange.ChangedSubscription(changeType: EOC_ChangeType; 
+function TEventObjectChange.ChangedSubscription(changeType: EOC_ChangeType;
                                                 const bstrSubscriptionID: WideString): HResult;
 begin
   Result := DefaultInterface.ChangedSubscription(changeType, bstrSubscriptionID);
 end;
 
-function TEventObjectChange.ChangedEventClass(changeType: EOC_ChangeType; 
+function TEventObjectChange.ChangedEventClass(changeType: EOC_ChangeType;
                                               const bstrEventClassID: WideString): HResult;
 begin
   Result := DefaultInterface.ChangedEventClass(changeType, bstrEventClassID);
 end;
 
-function TEventObjectChange.ChangedPublisher(changeType: EOC_ChangeType; 
+function TEventObjectChange.ChangedPublisher(changeType: EOC_ChangeType;
                                              const bstrPublisherID: WideString): HResult;
 begin
   Result := DefaultInterface.ChangedPublisher(changeType, bstrPublisherID);
@@ -2456,7 +2456,7 @@ end;
 
 procedure Register;
 begin
-  RegisterComponents(dtlServerPage, [TCEventSystem, TCEventPublisher, TCEventClass, TCEventSubscription, 
+  RegisterComponents(dtlServerPage, [TCEventSystem, TCEventPublisher, TCEventClass, TCEventSubscription,
     TEventObjectChange, TEventObjectChange2]);
 end;
 

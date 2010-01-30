@@ -1330,7 +1330,7 @@ type
   {$EXTERNALSYM NLS_FUNCTION}
   TSysNlsFunction = SYSNLS_FUNCTION;
   TNlsFunction = NLS_FUNCTION;
- 
+
 //
 //  NLS version structure.
 //

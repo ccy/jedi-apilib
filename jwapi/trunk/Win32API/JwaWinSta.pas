@@ -675,7 +675,7 @@ type
   end {_TSHARE_CACHE};
   TSHARE_CACHE = _TSHARE_CACHE;
   PTSHARE_CACHE = ^_TSHARE_CACHE;
-  
+
   CACHE_STATISTICS = packed record
     ProtocolType: USHORT;
     case Length: USHORT of
@@ -683,7 +683,7 @@ type
       2: (TShareCacheStats: TSHARE_CACHE);
       3: (Reserved: Array[0..19] of ULONG);
   end {CACHE_STATISTICS};
-  
+
   _PROTOCOLSTATUS = packed record
     Output: PROTOCOLCOUNTERS;
     Input: PROTOCOLCOUNTERS;
@@ -1847,7 +1847,7 @@ begin
     else begin
       Result := 0;
     end;
-   
+
   end
   else begin
     Result := ElapsedTimeString(DiffTime, bShowSeconds, lpElapsedTime);
@@ -2024,4 +2024,3 @@ end;
 {$IFNDEF JWA_OMIT_SECTIONS}
 end.
 {$ENDIF JWA_OMIT_SECTIONS}
-

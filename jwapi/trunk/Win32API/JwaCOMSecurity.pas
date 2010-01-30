@@ -35,7 +35,7 @@
 { For more information about the LGPL: http://www.gnu.org/copyleft/lesser.html }
 {                                                                              }
 { This unit declares some COM interfaces and Co-functions for                  }
-{ JwsclComSecurity.pas. Some of these declarations are already declared in     }         
+{ JwsclComSecurity.pas. Some of these declarations are already declared in     }
 { e.g. JwaActiveX.pas                                                          }
 { Currently this unit must not be added to JwaWindows.pas                      }
 { TODO:                                                                        }

@@ -67,7 +67,7 @@ begin
      Application.CreateForm(TForm1, Form1);
      Application.OnIdle := OnIdle;
 
-     Priority := tpLowest; //don't let the thread steal others time 
+     Priority := tpLowest; //don't let the thread steal others time
      Application.Run;
   end;
   finally

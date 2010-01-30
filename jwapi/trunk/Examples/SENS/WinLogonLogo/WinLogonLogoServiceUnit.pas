@@ -251,7 +251,7 @@ begin
 {$IFNDEF LIVE_DEBUG}
     {
     By default start our app on every console session it finds.
-    So the logo is even shown if the service restarts in every users logon desktop. 
+    So the logo is even shown if the service restarts in every users logon desktop.
     }
     RunDefaultAppsISessions;
 {$ENDIF LIVE_DEBUG}

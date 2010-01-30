@@ -70,7 +70,7 @@ uses
 type
   ALG_ID = Cardinal;
   {$EXTERNALSYM ALG_ID}
-{$ENDIF JWA_INCLUDEMODE}  
+{$ENDIF JWA_INCLUDEMODE}
 
 //
 //  Encoded Certificate

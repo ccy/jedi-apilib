@@ -68,7 +68,7 @@ const
   {$EXTERNALSYM DWM_BB_BLURREGION}
   DWM_BB_TRANSITIONONMAXIMIZED  = $00000004;  // fTransitionOnMaximized has been specified
   {$EXTERNALSYM DWM_BB_TRANSITIONONMAXIMIZED}
-  
+
 type
   _DWM_BLURBEHIND = record
     dwFlags                 : DWORD;
@@ -162,14 +162,14 @@ type
     cbSize : UINT32;
 
     // Data on DWM composition overall
-    
+
     // Monitor refresh rate
     rateRefresh : UNSIGNED_RATIO;
 
     // Actual period
     qpcRefreshPeriod : QPC_TIME;
 
-    // composition rate     
+    // composition rate
     rateCompose : UNSIGNED_RATIO;
 
     // QPC time at a VSync interupt
@@ -181,7 +181,7 @@ type
     cRefresh : DWM_FRAME_COUNT;
 
     // DX refresh count at the last Vsync Interupt
-    // DX refresh count is a 32bit number with zero 
+    // DX refresh count is a 32bit number with zero
     // being the first refresh after the card was initialized
     // DX increments a counter when ever a VSync ISR is processed
     // It is possible for DX to miss VSyncs
@@ -190,7 +190,7 @@ type
     // because the DX will rollover and may miss VSync interupts
     cDXRefresh : UINT;
 
-    // QPC time at a compose time.  
+    // QPC time at a compose time.
     qpcCompose : QPC_TIME;
 
     // Frame number that was composed at qpcCompose
@@ -225,8 +225,8 @@ type
     // Number of frames the DWM presented late
     // AKA Glitches
     cFramesLate : DWM_FRAME_COUNT;
-    
-    // the number of composition frames that 
+
+    // the number of composition frames that
     // have been issued but not confirmed completed
     cFramesOutstanding : UINT;
 
@@ -254,7 +254,7 @@ type
 
     // Pending frames:
     // The application has been submitted to DX but not completed by the GPU
- 
+
     // ID of the the last frame marked pending (starts at 0)
     cFramePending : DWM_FRAME_COUNT;
 
@@ -276,17 +276,17 @@ type
     // number of rendered frames that were never
     // displayed because composition occured too late
     cFramesDropped : DWM_FRAME_COUNT;
-    
-    // number of times an old frame was composed 
+
+    // number of times an old frame was composed
     // when a new frame should have been used
     // but was not available
     cFramesMissed : DWM_FRAME_COUNT;
-    
+
     // the refresh at which the next frame is
     // scheduled to be displayed
     cRefreshNextDisplayed : DWM_FRAME_COUNT;
 
-    // the refresh at which the next DX present is 
+    // the refresh at which the next DX present is
     // scheduled to be displayed
     cRefreshNextPresented : DWM_FRAME_COUNT;
 
@@ -294,7 +294,7 @@ type
     // for this HWND that have been displayed by the DWM
     // since DwmSetPresentParameters was called
     cRefreshesDisplayed : DWM_FRAME_COUNT;
-	
+
     // The total number of refreshes worth of content
     // that have been presented by the application
     // since DwmSetPresentParameters was called
@@ -311,7 +311,7 @@ type
     // to the DWM.
     // If Queueing is used the full buffer
     // is transfered on each present.
-    // If not queuing it is possible only 
+    // If not queuing it is possible only
     // a dirty region is updated
     cPixelsReceived : ULONGLONG;
 
@@ -322,9 +322,9 @@ type
     cPixelsDrawn : ULONGLONG;
 
     // The number of buffers in the flipchain
-    // that are empty.   An application can 
+    // that are empty.   An application can
     // present that number of times and guarantee
-    // it won't be blocked waiting for a buffer to 
+    // it won't be blocked waiting for a buffer to
     // become empty to present to
     cBuffersEmpty : DWM_FRAME_COUNT;
   end;

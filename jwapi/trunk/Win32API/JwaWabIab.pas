@@ -52,7 +52,7 @@ uses
   Windows, ActiveX, JwaWabDefs;
 
 {$I ..\Includes\JediAPILib.inc}
- 
+
 
 {$ALIGN ON}
 {$MINENUMSIZE 4}

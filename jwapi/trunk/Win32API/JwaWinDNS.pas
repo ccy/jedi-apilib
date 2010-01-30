@@ -80,7 +80,7 @@ type
 {$ENDIF JWA_INCLUDEMODE}
 
 //
-//  Define QWORD -- not yet defined globally 
+//  Define QWORD -- not yet defined globally
 //
 
 type
@@ -167,7 +167,7 @@ type
 //  IP6 string max is 45 bytes
 //      - 6 WORDs in colon+hex (5 chars)
 //      - last DWORD as IP4 (15 chars)
-//  
+//
 
 const
   IP6_ADDRESS_STRING_LENGTH        = 47;

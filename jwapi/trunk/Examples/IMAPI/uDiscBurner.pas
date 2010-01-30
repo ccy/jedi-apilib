@@ -1,5 +1,5 @@
 {----------------------------------------------------------------------------- }
-{ Unit uDisBurner: Implements the Image Mastering API (IMAPI) with object      }	
+{ Unit uDisBurner: Implements the Image Mastering API (IMAPI) with object      }
 {                                                                              }
 { Author(s): Benjamin Schwarze												   }
 { Creation date: 18 July 2009 					   				   			   }
@@ -401,7 +401,7 @@ var
   mt, mf : Integer;
 begin
   Result := [];
-  
+
   EDiscBurnerException.Check(FDiscRecorder.OpenExclusive);
   try
     EDiscBurnerException.Check(FDiscRecorder.QueryMediaType(mt, mf));
@@ -493,7 +493,7 @@ var
 begin
   p := nil;
   EDiscBurnerException.Check(FDiscRecorder.GetPath(p));
-  Result := P;  
+  Result := P;
 end;
 
 function TDiscRecorder.GetProductID: String;
@@ -593,7 +593,7 @@ begin
   R := nil;
 
   EDiscBurnerException.Check(FDiscRecorder.GetDisplayNames(V, P, R));
-  
+
   FVendor := V;
   FProductID := P;
   Frevision := R;
@@ -700,7 +700,7 @@ begin
   Result := IndexByGUID(TDiscRecorder.GUIDFromDiscRecorder(Item));
 end;
 
-function TDiscRecorderList.IndexOf(Item: TDiscRecorder): Integer; 
+function TDiscRecorderList.IndexOf(Item: TDiscRecorder): Integer;
 begin
   Result := inherited IndexOf(Item);
 end;
@@ -1044,7 +1044,7 @@ begin
     fs.Free;
 
     Stream := nil;
-    
+
     if Assigned(Buffer) then
       FreeMem(Buffer, DEFAULT_BUFFER_SIZE);
   end;
@@ -1100,10 +1100,10 @@ begin
   if Assigned(FDiscMaster) then
     FDiscMaster.Close;
 
-  
+
   inherited;
 end;
-  
+
 procedure TDiscMaster.DoAddObjectToCache(AObject: String);
 begin
   if Assigned(FOnAddObjectToCache) then
@@ -1121,7 +1121,7 @@ begin
   else
   if IsEqualGUID(fmt, IID_IJolietDiscMaster) then
     Result := fJoliet;
-end;                
+end;
 
 function TDiscMaster.GetActiveRecorder: IDiscRecorder;
 begin

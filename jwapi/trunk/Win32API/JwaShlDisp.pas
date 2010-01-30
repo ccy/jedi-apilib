@@ -13,7 +13,7 @@
 { Adapted for JEDI API Library by Christian Wimmer                             }
 {                                                                              }
 { Obtained through: Joint Endeavour of Delphi Innovators (Project JEDI)        }
-{ The original code is: shldisp.h, released 2005.                 			   }	
+{ The original code is: shldisp.h, released 2005.                 			   }
 {                                                                              }
 { You may retrieve the latest version of this file at the Project JEDI         }
 { APILIB home page, located at http://jedi-apilib.sourceforge.net              }
@@ -787,7 +787,7 @@ type
     function InOperation(out pfInAsyncOp: BOOL): HResult; stdcall;
     function EndOperation(hResult: HResult; pbcReserved: IBindCtx; dwEffects: DWORD): HResult; stdcall;
   end;
-  
+
 {$ENDIF JWA_IMPLEMENTATIONSECTION}
 
 {$IFNDEF JWA_OMIT_SECTIONS}

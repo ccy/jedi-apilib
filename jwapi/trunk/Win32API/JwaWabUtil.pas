@@ -799,10 +799,10 @@ uses
 
 const
   mapi32 = 'mapi32.dll';
-{$ENDIF JWA_OMIT_SECTIONS}  
+{$ENDIF JWA_OMIT_SECTIONS}
 
 
-{$IFNDEF JWA_INTERFACESECTION}  
+{$IFNDEF JWA_INTERFACESECTION}
 
 function SzFindCh(lpsz: LPCTSTR; ch: Byte): LPCTSTR;
 begin

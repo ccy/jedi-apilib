@@ -102,7 +102,7 @@ function NetServerTransportAdd(servername: LMSTR; level: DWORD; bufptr: LPBYTE):
 
 function NetServerTransportAddEx(servername: LMSTR; level: DWORD; bufptr: LPBYTE): NET_API_STATUS; stdcall;
 {$EXTERNALSYM NetServerTransportAddEx}
-     
+
 function NetServerTransportDel(servername: LMSTR; level: DWORD; bufptr: LPBYTE): NET_API_STATUS; stdcall;
 {$EXTERNALSYM NetServerTransportDel}
 
