@@ -423,7 +423,7 @@ type
     pvProvData: Pointer;
   end;
   CRYPT_PROVIDER_PRIVDATA = _CRYPT_PROVIDER_PRIVDATA;
-  
+
 
   _PROVDATA_SIP = packed record
     cbStruct: DWORD;
