@@ -90,27 +90,7 @@ type
 
 {$DEFINE REVISED_ERROR_LOG_STRUCT}
 
-  _HLOG = record
-     time: DWORD;
-     last_flags: DWORD;
-     offset: DWORD;
-     rec_offset: DWORD;
-  end;
-  {$EXTERNALSYM _HLOG}
-  HLOG = _HLOG;
-  {$EXTERNALSYM HLOG}
-  PHLOG = ^HLOG;
-  {$EXTERNALSYM PHLOG}
-  LPHLOG = ^HLOG;
-  {$EXTERNALSYM LPHLOG}
-
-const
-  LOGFLAGS_FORWARD   = 0;
-  {$EXTERNALSYM LOGFLAGS_FORWARD}
-  LOGFLAGS_BACKWARD  = $1;
-  {$EXTERNALSYM LOGFLAGS_BACKWARD}
-  LOGFLAGS_SEEK      = $2;
-  {$EXTERNALSYM LOGFLAGS_SEEK}
+{$INCLUDE ..\Includes\JediLMHLOG.inc}
 
 //
 // Function Prototypes - ErrorLog
