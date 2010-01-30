@@ -55,12 +55,12 @@ type
    It creates a new type. But we need just renamed types.
   }
 
-  {$IFDEF UNICODE}
-  {<B>TJwString</B> defines an unicode string type if compiler directive UNICODE is defined; otherwise ansicod
+{$IFDEF UNICODE}
+  {<B>TJwString</B> defines an unicode string type if compiler directive UNICODE is defined; otherwise ansicode
   Delphi 2009 uses the more efficient UnicodeString type.
 
   However this type must not be used for COM Methods! A cast to WideString is necessary before!
-  
+
   If you get an error here for <= Delphi2007 you must make sure that
   you're using an updated version of jedi.inc (included by jwscl.inc)
   that supports the DELPHI2009_UP switch!
@@ -70,14 +70,14 @@ type
   TJwPChar  = PWideChar;
   //<B>TJwChar</B> defines an unicode wide char type if compiler directive UNICODE is defined; otherwise ansicode
   TJwChar   = WideChar;
-  {$ELSE}
+{$ELSE}
   //<B>TJwString</B> defines an ansicode string type if compiler directive UNICODE is not defined; otherwise unicode
   TJwString = AnsiString;
   //<B>TJwPChar</B> defines an ansicode pointer to ansi char type if compiler directive UNICODE is not defined; otherwise unicode
   TJwPChar  = PAnsiChar;
   //<B>TJwChar</B> defines an ansicode char type if compiler directive UNICODE is not defined; otherwise unicode
   TJwChar   = AnsiChar;
-  {$ENDIF UNICODE}
+{$ENDIF UNICODE}
 
   {<B>TJwTJwStringArray</B> defines an dynamic array of TJwString.
    It can be either ansi or unicode strings}

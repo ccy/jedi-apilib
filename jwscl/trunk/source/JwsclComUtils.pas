@@ -55,7 +55,7 @@ unit JwsclComUtils;
 interface
 
 uses
-  JwaWindows, Classes, JwsclTypes, JwsclResource ,Jwsclexceptions;
+  JwaWindows, ActiveX, Classes, JwsclTypes, JwsclResource ,Jwsclexceptions;
 {$ENDIF SL_OMIT_SECTIONS}
 
 {$IFNDEF SL_IMPLEMENTATION_SECTION}
@@ -126,6 +126,8 @@ type
 
     class function Wrap(const Handle : THandle; const
        ShowLastError : Boolean = false) : IJwAutoPointer; overload;
+
+    class function WrapCOM(const Ptr : Pointer) : IJwAutoPointer;
 
     {<B>CreateInstance</B> creates a new auto pointer class instance and also
      creates the given class with a default constructor (no parameters).
@@ -293,6 +295,11 @@ begin
   result := Wrap(Pointer(Handle), Cardinal(-1), ptHandle);
 end;
 
+class function TJwAutoPointer.WrapCOM(const Ptr: Pointer): IJwAutoPointer;
+begin
+  result := Wrap(Ptr, 0, ptCOMPointer);
+end;
+
 class function TJwAutoPointer.Wrap(const Ptr: Pointer;
   Size : Cardinal;
   PointerType: TJwPointerType): IJwAutoPointer;
@@ -332,7 +339,8 @@ begin
       ptGetMem : FreeMem(fPointer);
       ptLocalAlloc : LocalFree(HLOCAL(fPointer));
       ptNew : Dispose(fPointer);
-      ptHandle : CloseHandle(fHandle); 
+      ptHandle : CloseHandle(fHandle);
+      ptCOMPointer : CoTaskMemFree(fPointer);
     end;
 
     fPointer := nil;

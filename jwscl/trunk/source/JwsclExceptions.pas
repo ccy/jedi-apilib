@@ -89,6 +89,8 @@ type
   Remarks
     You can define JwOnFormatExceptionMessage to format the exception message.
   @GUID(138EDC0B-B10B-4FA3-BB5D-DFDABBEBDDA4)
+
+
   }
   EJwsclSecurityException = class(Exception)
   {[2B2288BC-7905-46F2-0001-A0183067E63D]}
@@ -279,7 +281,11 @@ type
 
 
 
-  //<B>EJwsclWinCallFailedException</B> is raised if a call to a windows API function failed. For more information see the LastError property
+  {<B>EJwsclWinCallFailedException</B> is raised if a call to a windows API function failed. For more information see the LastError property
+
+   Remarks
+      Windows API errors can be found in the property LastError. Use it to distinguish between different error types.
+  }
   EJwsclWinCallFailedException = class(EJwsclSecurityException)
     {[2B2288BC-7905-46F2-1020-A0183067E63D]};
 
@@ -684,6 +690,11 @@ type
 
   EJwsclComException = class(EJwsclSecurityException)
       {[2B2288BC-7905-46F2-0132-A0183067E63D]};
+
+  EJwsclCoInitializeNotCalledException = class(EJwsclComException)
+        {[2B2288BC-7905-46F2-0133-A0183067E63D]};
+  EJwsclDuplicateComInitCallException = class(EJwsclComException)
+        {[2B2288BC-7905-46F2-0134-A0183067E63D]};
 
 
 

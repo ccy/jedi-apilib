@@ -1210,6 +1210,8 @@ type
     constructor Create(const SD : TJwSecurityDescriptor); overload;
     destructor Destroy; override;
 
+    class function CreateCOMImplementation : IAccessControl; virtual;
+
     {
     Remarks:
       The function is called by the interface method with the same name. Since the interface method returns a HRESULT value
@@ -3435,27 +3437,35 @@ end;
 constructor TJwServerAccessControl.Create(const SD: TJwSecurityDescriptor);
 begin
   Create;
-  fSD := TJwSecurityDescriptor.Create(SD);
-  fSD.OwnDACL := true;
 
-  fSD.OwnOwner := false;
-  fSD.OwnPrimaryGroup := false;
+  fSD.Assign(SD);
+end;
 
-  fSD.Owner := TJwSecurityId.CreateWellKnownSid(WinNullSid);
-  fSD.PrimaryGroup := TJwSecurityId.CreateWellKnownSid(WinNullSid);
 
-  fSD.OwnOwner := true;
-  fSD.OwnPrimaryGroup := true;
+class function TJwServerAccessControl.CreateCOMImplementation: IAccessControl;
+begin
+  OleCheck(HelperCreateAccessControl(Result));
 end;
 
 constructor TJwServerAccessControl.Create;
 begin
   inherited;
 
+  JwCheckInitKnownSid([JwSecurityProcessUserSID], ['JwSecurityProcessUserSID'], 'Create', ClassName, 'JwsclComSecurity.pas');
+
   FacilityCode := $FE;
   fAuthManager := TJwAuthResourceManager.Create('', [], nil, nil);
   fGenericMapping := TJwSecurityGenericMapping;
   fCacheResult := 0;
+
+  fSD := TJwSecurityDescriptor.Create();
+  fSD.OwnDACL := true;
+
+  fSD.OwnOwner := true;
+  fSD.OwnPrimaryGroup := true;
+
+  fSD.Owner := JwSecurityProcessUserSID; //Standard SIDs are never freed
+  fSD.PrimaryGroup := JwNullSID;
 end;
 
 destructor TJwServerAccessControl.Destroy;
@@ -3486,12 +3496,12 @@ begin
   if Assigned(fSD.Owner) then
     Owner := TJwSecurityId.Create(fSD.Owner)
   else
-    Owner := TJwSecurityId.CreateWellKnownSid(WinNullSid);
+    Owner := nil;
 
   if Assigned(fSD.PrimaryGroup) then
     Group := TJwSecurityId.Create(fSD.PrimaryGroup)
   else
-    Group := TJwSecurityId.CreateWellKnownSid(WinNullSid);
+    Group := nil;
 end;
 
 procedure TJwServerAccessControl.JwGrantAccessRights(const AccessList: TJwDAccessControlList);
@@ -3634,8 +3644,11 @@ end;
 
 type
   TPtrPointer = record
+    //Pointer to beginning of data
     StartPtr,
+    //Current pointer in data
     OffsetPtr : Pointer;
+    //Size of available allocated memory
     Size : Cardinal;
   end;
 
@@ -3649,7 +3662,7 @@ end;
 
 function SetPtrData(var Target : TPtrPointer; const Source : Pointer; const Size : Cardinal) : Pointer;
 begin
-  Assert((DWORD_PTR(Target.OffsetPtr) - DWORD_PTR(Target.StartPtr)) >  Target.Size, 'Memory block too small');
+  Assert((DWORD_PTR(Target.OffsetPtr) - DWORD_PTR(Target.StartPtr)) <=  Target.Size, 'Memory block too small');
 
   result := Target.OffsetPtr;
   Target.OffsetPtr := Pointer(DWORD_PTR(Target.OffsetPtr) + Size);
@@ -3678,6 +3691,7 @@ var
 begin
   result := S_OK;
   try
+    //Retrieve data
     JwGetAllAccessRights(TJwString(lpProperty), ACL, Owner, Group);
 
     try
@@ -3713,7 +3727,7 @@ begin
         SidLength := 0;
         //Check for supported access control entries
         //and determine sum of all SID structures
-        for I := 0 to ACL.Count do
+        for I := 0 to ACL.Count - 1 do
         begin
           if ACL.Items[I] is TJwDiscretionaryAccessControlEntryAllow then
           else
@@ -3888,8 +3902,22 @@ begin
       JwGrantAccessRights(nil);
       Result := S_OK;
     except
+      on E : EOleSysError do
+      begin
+{$IFDEF DEBUG}
+        raise;
+{$ELSE}
+        Result := E.ErrorCode;
+{$ENDIF DEBUG}
+      end;
       on E : Exception do
+      begin
+{$IFDEF DEBUG}
+        raise;
+{$ELSE}
         Result := E_FAIL;
+{$ENDIF DEBUG}
+      end;
     end;
     exit;
   end;

@@ -53,6 +53,7 @@ uses
 type
 {$IFDEF DELPHI6_UP}
  {$ALIGN 4}  //warning do not remove. WinApi relies on that!
+ {$MINENUMSIZE 4}
 {$ELSE}
  {$A+} //[warning] D5 uses 4 byte alignment
  {$MINENUMSIZE 4}
@@ -1219,7 +1220,9 @@ type
     {The pointer is a handle. Use GetHandle method.}
     ptHandle,
     {The pointer is a class. Use Instance property instead.}
-    ptClass);
+    ptClass,
+    {The pointer was allocated using CoTaskMemAlloc}
+    ptCOMPointer);
 
     
   {<b>TJwJobLimit</b> is used by TJwJobObject class to set or get job user interface limits.
@@ -1555,7 +1558,8 @@ type
   end;
 
   TJwComAuthenticationLevel = (
-    calInvalid = 0,
+    calInvalid = -1,
+    calDefault = 0,
     calNone,//RPC_C_AUTHN_LEVEL_NONE
     calConnect,//RPC_C_AUTHN_LEVEL_CONNECT
     calCall,//RPC_C_AUTHN_LEVEL_CALL
@@ -1567,7 +1571,7 @@ type
   TJwComAppIdRegFlag = (
   	crfActivateServerInDesktop, //1 APPIDREGFLAGS_ACTIVATE_IUSERVER_INDESKTOP
     crfSecureServerProcess, //2 APPIDREGFLAGS_SECURE_SERVER_PROCESS_SD_AND_BIND
-    crfSetServerToIdentifyLevel //4 APPIDREGFLAGS_ISSUE_ACTIVATION_RPC_AT_IDENTIFY
+    crfSetServerToIdentifyLevel  //4 APPIDREGFLAGS_ISSUE_ACTIVATION_RPC_AT_IDENTIFY
   );
   TJwComAppIdRegFlags = set of TJwComAppIdRegFlag;
 
@@ -1578,11 +1582,124 @@ type
   );
 
   TJwComImpersonationLevel = (
+    cilDefault = 0, //RPC_C_IMP_LEVEL_DEFAULT
   	cilAnonymous,//RPC_C_IMP_LEVEL_ANONYMOUS
     cilIdentify,//RPC_C_IMP_LEVEL_IDENTIFY
   	cilImpersonate,//RPC_C_IMP_LEVEL_IMPERSONATE
   	cilDelegate//RPC_C_IMP_LEVEL_DELEGATE
   );
+
+  TJwComAuthenticationCapability = (
+      acNone = 0,
+      acMutualAuth,
+      acStaticCloaking,
+      acDynamicCloaking,
+      acAnyAuthority,
+      acMakeFullsic,
+      acDefault,
+      acSecureRefs,
+      acAccessControl,
+      acAppId,
+      acDynamic,
+      acRequireFullsic,
+      acImpersonate,
+      acNoCustomMarshal,
+      acDisableActivateAsActivator
+  );
+  TJwComAuthenticationCapabilities = set of TJwComAuthenticationCapability;
+
+{$WARNINGS OFF}
+  TJwComAuthenticationService = (
+    asNone = 0,//RPC_C_AUTHN_NONE
+    asDCEPrivate,//RPC_C_AUTHN_DCE_PRIVATE
+    asDCEPublic,//RPC_C_AUTHN_DCE_PUBLIC
+    asDECPublic = 4,//RPC_C_AUTHN_DEC_PUBLIC
+    asGSSNegotiate = 9,//RPC_C_AUTHN_GSS_NEGOTIATE
+    asWinNT,//RPC_C_AUTHN_WINNT
+    asGSSSchannel = 14,//RPC_C_AUTHN_GSS_SCHANNEL
+    asGSSKerberos = 16,//RPC_C_AUTHN_GSS_KERBEROS
+    asDPA,//RPC_C_AUTHN_DPA
+    asMSN,//RPC_C_AUTHN_MSN
+    asKernel = 20,//RPC_C_AUTHN_KERNEL
+    asDigest,//RPC_C_AUTHN_DIGEST
+    asNegoExtender = 30,//RPC_C_AUTHN_NEGO_EXTENDER
+    asPKU2U,//RPC_C_AUTHN_PKU2U
+    asMQ = 100,//RPC_C_AUTHN_MQ
+    asDefault = $FFFFFFFF//RPC_C_AUTHN_DEFAULT
+  );
+
+  TJwComAuthorizationService = (
+   azsNone = 0,
+   azsName,
+   azsDCE,
+   azsDefault = $FFFFFFFF
+  );
+
+{$WARNINGS ON}
+
+  TJwComRotFlag = (
+    rfNone,
+    rfAllowAnyClient
+  );
+
+  TJwComRotFlags = set of TJwComRotFlag;
+
+  TJwAuthenticationServiceInformation = record
+    AuthenticationService : TJwCOMAuthenticationService;
+    AuthorizationService : TJwComAuthorizationService;
+    PrincipalName : TJwString;
+    Result : HRESULT;
+  end;
+
+  TJwAuthenticationServiceInformationArray = array of TJwAuthenticationServiceInformation;
+
+  TJwSecurityPackageCapability = (
+    spcIntegrity,//SECPKG_FLAG_INTEGRITY         = $00000001; // Supports integrity on messages
+    spcPrivacy,//SECPKG_FLAG_PRIVACY           = $00000002; // Supports privacy (confidentiality)
+    spcTokenOnly,//SECPKG_FLAG_TOKEN_ONLY        = $00000004; // Only security token needed
+    spcDatagram,//SECPKG_FLAG_DATAGRAM          = $00000008; // Datagram RPC support
+    spcConnection,//SECPKG_FLAG_CONNECTION        = $00000010; // Connection oriented RPC support
+    spcMultiRequired,//SECPKG_FLAG_MULTI_REQUIRED    = $00000020; // Full 3-leg required for re-auth.
+    spcClientOnly,//SECPKG_FLAG_CLIENT_ONLY       = $00000040; // Server side functionality not available
+    spcExtendedError,//SECPKG_FLAG_EXTENDED_ERROR    = $00000080; // Supports extended error msgs
+    spcImpersonation,//SECPKG_FLAG_IMPERSONATION     = $00000100; // Supports impersonation
+    spcAcceptWin32Name,//SECPKG_FLAG_ACCEPT_WIN32_NAME = $00000200; // Accepts Win32 names
+    spcStream,//SECPKG_FLAG_STREAM            = $00000400; // Supports stream semantics
+    spcNegotiable,//SECPKG_FLAG_NEGOTIABLE        = $00000800; // Can be used by the negotiate package
+    spcGSSCompatible,//SECPKG_FLAG_GSS_COMPATIBLE    = $00001000; // GSS Compatibility Available
+    spcLogon,//SECPKG_FLAG_LOGON             = $00002000; // Supports common LsaLogonUser
+    spcASCIIBuffers,//SECPKG_FLAG_ASCII_BUFFERS     = $00004000; // Token Buffers are in ASCII
+    spcFragment,//SECPKG_FLAG_FRAGMENT          = $00008000; // Package can fragment to fit
+    spcMutualAuth,//SECPKG_FLAG_MUTUAL_AUTH       = $00010000; // Package can perform mutual authentication
+    spcDelegation,//SECPKG_FLAG_DELEGATION        = $00020000; // Package can delegate
+    spcNone//SECPKG_ID_NONE = $FFFF;
+  );
+
+  TJwSecurityPackageCapabilities = set of TJwSecurityPackageCapability;
+
+  TJwSecurityPackageInformation = record
+    Capabilities : TJwSecurityPackageCapabilities;
+    RPCID,
+    Version : Word;
+    MaxToken : Cardinal;
+    Name,
+    Comment : TJwString;
+  end;
+
+  {Defines an array of security provide packages.
+   Used by
+     TJwComRegistrySecurity.GetGlobalAuthenticationServices
+  }
+  TJwSecurityPackageInformationArray = array of TJwSecurityPackageInformation;
+
+  TJwValidObjectType = (
+    otType,
+    otTypeGuid,
+    otTypeInheritedGuid,
+    otTypeInheritedName
+  );
+
+  TJwValidObjectTypes = set of TJwValidObjectType;
 
 {IJwBase_Equals implements IJwBase.Equals and always returns false.}
 function IJwBase_Equals(Obj: TObject): Boolean;

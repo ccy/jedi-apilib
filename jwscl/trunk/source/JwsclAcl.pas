@@ -68,8 +68,18 @@ type
   TJwSecurityAccessControlEntry = class;
   TJwAuditAccessControlEntry    = class;
   TJwSystemMandatoryAccessControlEntry = class;
+  TJwSecurityAccessControlList = class;
 
   TJwSecurityAccessControlEntryClass = class of TJwSecurityAccessControlEntry;
+
+
+  TJwSecurityACLPropertyArrayItem = record
+    PropertyName : TJwString;
+    ACL : TJwSecurityAccessControlList;
+    FreeObject : Boolean;
+  end;
+
+  TJwSecurityACLPropertyArray = array of TJwSecurityACLPropertyArrayItem;
 
   {<B>TJwSecurityAccessControlList</B> provides methods for an access control list.
    Do not make instances of this class. Instead use
@@ -180,7 +190,7 @@ type
  EJwsclNILParameterException:  will be raised if aObject is nil 
       EJwsclInvalidACEException: will be raised if the classtype of this list instance is not the same of aObject 
      }
-    procedure AddACEs(AclInstance: TJwSecurityAccessControlList; KeepOriginalOrder : Boolean = true); virtual;
+    procedure AddACEs(AclInstance: TJwSecurityAccessControlList; KeepOriginalOrder : Boolean = false); virtual;
 
     {<B>Add</B> adds an ACE instance to into the list. The ACE property ListOwner will be set to this list.
 
@@ -241,7 +251,7 @@ type
        also can fail on some combination with deny entries!
 
      @param User defines a trustee that is used to get effective access rights 
-     @return <B>GetEffectiveRights</B> returns the rights which are granted to User 
+     @return <B>GetEffectiveRights</B> returns the rights which are granted to User
      raises
  EJwsclWinCallFailedException:  will be raised if a call to
        GetEffectiveRightsFromAcl failed 
@@ -279,7 +289,7 @@ type
 
     {<B>Insert</B> inserts a ACE into the list.
      @param Index List index where the ACE shall be inserted before.
-            If the Index is not between 0 and Count-1 an exception will be raised. 
+            If the Index is not between 0 and Count an exception will be raised.
      }
     procedure Insert(Index: integer; AccessEntry: TJwSecurityAccessControlEntry);
 
@@ -358,7 +368,7 @@ type
      @param EqualAceTypeSet defines the ACE comparision done by FindEqualACE.
             By default all ACE members must be equal to return a positive result 
      @return Returns true if both ACL are equal; otherwise False. It also
-          returns false if AccessControlListInstance is nil 
+          returns false if AccessControlListInstance is nil
     }
     function IsEqual(const AccessControlListInstance: TJwSecurityAccessControlList;
                      const EqualAceTypeSet: TJwEqualAceTypeSet = JwAllEqualAceTypes): boolean;
@@ -388,6 +398,7 @@ type
              Valid values are 0 to Count -1 .
      }
     procedure Delete(const Index: integer); reintroduce; virtual; 
+
 
     property Items[Index: integer]: TJwSecurityAccessControlEntry Read GetItem;
       default;
@@ -436,7 +447,7 @@ type
     {<B>Create</B> creates a new access control list from an explicit access array.
 
      raises
- EJwsclNILParameterException:  will be raised if parameter Accesses is nil 
+ EJwsclNILParameterException:  will be raised if parameter Accesses is nil
       EJwsclWinCallFailedException: will be raised if the call to SetEntriesInAcl failed. 
      }
     constructor Create(const Accesses : TJwExplicitAccessArray); overload;
@@ -605,6 +616,7 @@ type
     fObjectType,
     fInheritedObjectType : TGuid;
 
+
     procedure SetListOwner(ListOwner: TJwSecurityAccessControlList);
     procedure SetFlags(FlagSet: TJwAceFlags);
     procedure SetAccessMask(anAccessMask: TJwAccessMask);
@@ -631,7 +643,7 @@ type
     @param anAccessMask retrieves the access mask like GENERIC_ALL 
     @param aSID retrieves the ACE to be allowed or denied. It cannot be nil 
     @param ownSID defines whether the SID given in parameter aSID should be freed automatically.
-            If this SID is a well known SID from unit JwsclKnownSid this parameter is ignored 
+            If this SID is a well known SID from unit JwsclKnownSid this parameter is ignored
 
     }
     constructor Create(const aListOwner: TJwSecurityAccessControlList;
@@ -654,9 +666,9 @@ type
     @param AccessMask retrieves the access mask like GENERIC_ALL 
     @param SID retrieves the ACE to be allowed or denied. It can be nil 
     @param Revision Defines the revision level of the ACE. Can be one of the revision levels:
-          ACL_REVISION, ACL_REVISION1, ACL_REVISION2, ACL_REVISION3, ACL_REVISION4 or ACL_REVISION_DS 
+          ACL_REVISION, ACL_REVISION1, ACL_REVISION2, ACL_REVISION3, ACL_REVISION4 or ACL_REVISION_DS
     @param ownSID defines whether the SID given in parameter aSID should be freed automatically.
-            If this SID is a well known SID from unit JwsclKnownSid this parameter is ignored 
+            If this SID is a well known SID from unit JwsclKnownSid this parameter is ignored
 
     }
     constructor Create(const ListOwner: TJwSecurityAccessControlList;
@@ -689,7 +701,7 @@ type
        # ACCESS_ALLOWED_CALLBACK_OBJECT_ACE returns class type TJwDiscretionaryAccessControlEntryCallbackObjectAllow 
 
        # ACCESS_DENIED_ACE returns class type TJwDiscretionaryAccessControlEntryDeny 
-       # ACCESS_DENIED_CALLBACK_ACE returns class type TJwDiscretionaryAccessControlEntryCallbackDeny 
+       # ACCESS_DENIED_CALLBACK_ACE returns class type TJwDiscretionaryAccessControlEntryCallbackDeny
        # ACCESS_DENIED_OBJECT_ACE returns class type TJwDiscretionaryAccessControlEntryObjectDeny 
        # ACCESS_DENIED_CALLBACK_OBJECT_ACE returns class type TJwDiscretionaryAccessControlEntryCallbackObjectDeny 
 
@@ -702,7 +714,7 @@ type
      
      Other types will raise an exception EJwsclInvalidACEException.
      
-    @return Returns a derived class of TJwSecurityAccessControlEntry 
+    @return Returns a derived class of TJwSecurityAccessControlEntry
     raises
  EJwsclNILParameterException:  if parameter AccessEntryPointer is nil 
      EJwsclInvalidACEException: will be raised if parameter
@@ -722,7 +734,7 @@ type
        # ACCESS_ALLOWED_CALLBACK_OBJECT_ACE returns class type TJwDiscretionaryAccessControlEntryCallbackObjectAllow 
 
        # ACCESS_DENIED_ACE returns class type TJwDiscretionaryAccessControlEntryDeny 
-       # ACCESS_DENIED_CALLBACK_ACE returns class type TJwDiscretionaryAccessControlEntryCallbackDeny 
+       # ACCESS_DENIED_CALLBACK_ACE returns class type TJwDiscretionaryAccessControlEntryCallbackDeny
        # ACCESS_DENIED_OBJECT_ACE returns class type TJwDiscretionaryAccessControlEntryObjectDeny 
        # ACCESS_DENIED_CALLBACK_OBJECT_ACE returns class type TJwDiscretionaryAccessControlEntryCallbackObjectDeny 
 
@@ -735,7 +747,7 @@ type
      
      Other types will raise an exception EJwsclInvalidACEException.
      
-    @return Returns a derived class of TJwSecurityAccessControlEntry 
+    @return Returns a derived class of TJwSecurityAccessControlEntry
     raises
  EJwsclNILParameterException:  if parameter AccessEntryPointer is nil 
      EJwsclInvalidACEException: will be raised if parameter
@@ -753,9 +765,9 @@ type
        # ACCESS_ALLOWED_ACE returns class type TJwDiscretionaryAccessControlEntryAllow 
        # ACCESS_ALLOWED_CALLBACK_ACE returns class type TJwDiscretionaryAccessControlEntryCallbackAllow 
        # ACCESS_ALLOWED_OBJECT_ACE returns class type TJwDiscretionaryAccessControlEntryObjectAllow 
-       # ACCESS_ALLOWED_CALLBACK_OBJECT_ACE returns class type TJwDiscretionaryAccessControlEntryCallbackObjectAllow 
+       # ACCESS_ALLOWED_CALLBACK_OBJECT_ACE returns class type TJwDiscretionaryAccessControlEntryCallbackObjectAllow
 
-       # ACCESS_DENIED_ACE returns class type TJwDiscretionaryAccessControlEntryDeny 
+       # ACCESS_DENIED_ACE returns class type TJwDiscretionaryAccessControlEntryDeny
        # ACCESS_DENIED_CALLBACK_ACE returns class type TJwDiscretionaryAccessControlEntryCallbackDeny 
        # ACCESS_DENIED_OBJECT_ACE returns class type TJwDiscretionaryAccessControlEntryObjectDeny 
        # ACCESS_DENIED_CALLBACK_OBJECT_ACE returns class type TJwDiscretionaryAccessControlEntryCallbackObjectDeny 
@@ -768,7 +780,7 @@ type
        # SYSTEM_MANDATORY_LABEL_ACE returns class type TJwSystemMandatoryAccessControlEntry 
      
      
-    @return Returns a derived class of TJwSecurityAccessControlEntry 
+    @return Returns a derived class of TJwSecurityAccessControlEntry
     raises
  EJwsclNILParameterException:  if parameter AccessEntryPointer is nil 
      EJwsclInvalidACEException: will be raised if parameter
@@ -786,9 +798,9 @@ type
     class function CreateACE(const AccessEntryPointer: PAccessDeniedAce):
       TJwSecurityAccessControlEntry; overload;
 
-  
+
     {<B>CreateACE</B> creates an with 0 initialized ACE and returns the corresponding class.
-    @param anACEType receives an TJwAceType  type. 
+    @param anACEType receives an TJwAceType  type.
     @return The return value is one of the listed class types
 
      
@@ -801,7 +813,7 @@ type
 
       # actAllow - TJwDiscretionaryAccessControlEntryAllow 
       # actAllowCallback - TJwDiscretionaryAccessControlEntryCallbackAllow 
-      # actAllowObject - TJwDiscretionaryAccessControlEntryObjectAllow 
+      # actAllowObject - TJwDiscretionaryAccessControlEntryObjectAllow
       # actAllowCallbackObject - TJwDiscretionaryAccessControlEntryCallbackObjectAllow 
       # actDeny - TJwDiscretionaryAccessControlEntryDeny 
       # actDenyCallback - TJwDiscretionaryAccessControlEntryCallbackDeny 
@@ -826,7 +838,7 @@ type
   public
     {<B>Destroy</B> destroys an ACE.
      raises
- EJwsclReadOnlyPropertyException:  will be raised if the ACE is in a list (ListOwner is not nil) 
+ EJwsclReadOnlyPropertyException:  will be raised if the ACE is in a list (ListOwner is not nil)
      }
     destructor Destroy; override;
 
@@ -834,9 +846,11 @@ type
      Instead use Remove of TJwSecurityAccessControlList .
 
      raises
- EJwsclInvalidACEException:  will be raised if the ACE is not in the list of ListOwner  
+ EJwsclInvalidACEException:  will be raised if the ACE is not in the list of ListOwner
     }
     procedure Free;
+  private
+    fInheritProperty: TJwString;
   protected
 
     {<B>Create_AllowACE</B> creates a memory block filled with an ACE structure.
@@ -850,9 +864,9 @@ type
       # actMandatory 
       # actAllow 
       # actAllowCallback 
-      # actDeny 
+      # actDeny
       # actDenyCallback 
-     
+
      raises
  EJwsclInvalidACEException:  will be raised if the ACE type of
       the instance is not supported 
@@ -865,9 +879,9 @@ type
      It must be freed by Free_PACE.
 
      The following types (value of property AceType) are supported:
-     
+
       # actAudit 
-      # actAuditCallback 
+      # actAuditCallback
       # actMandatory 
       # actAllow 
       # actAllowCallback 
@@ -900,7 +914,7 @@ type
       # actDeny - ACCESS_DENIED_ACE 
       # actDenyCallback - ACCESS_DENIED_CALLBACK_ACE 
       # actDenyObject - ACCESS_DENIED_OBJECT_ACE 
-      # actDenyCallbackObject - ACCESS_DENIED_CALLBACK_OBJECT_ACE 
+      # actDenyCallbackObject - ACCESS_DENIED_CALLBACK_OBJECT_ACE
      
      @param Size returns the memory size of the newly allocated block in bytes.
      @return The return value is a pointer to a ACE Winapi structure. The supported
@@ -918,7 +932,7 @@ type
 
      The following types are supported:
      
-      # actAudit 
+      # actAudit
       # actAuditCallback 
       # actAuditObject 
       # actAuditCallbackObject 
@@ -982,9 +996,9 @@ type
             # actAllow 
             # actAllowCallback 
             # actAllowObject 
-            # actAllowCallbackObject 
+            # actAllowCallbackObject
             # actDeny 
-            # actDenyCallback 
+            # actDenyCallback
             # actDenyObject 
             # actDenyCallbackObject 
            
@@ -1081,8 +1095,8 @@ type
      It returns a combination of these flags if parameter...
       
        # ACE_OBJECT_TYPE_PRESENT ...ObjectType is not a NULL GUID 
-       # ACE_INHERITED_OBJECT_TYPE_PRESENT ...InheritedObjectType is not a NULL GUID 
-      
+       # ACE_INHERITED_OBJECT_TYPE_PRESENT ...InheritedObjectType is not a NULL GUID
+
     }
     property ObjectFlags : Cardinal read GetObjectFlags;
 
@@ -1103,18 +1117,20 @@ type
 
      {<B>InheritedObjectType</B> contains the object or property specific guid.
      It is only of use if the instance of this ACE is an object of one of these types
-      
-        # TJwAuditAccessControlEntryObject 
-        # TJwAuditAccessControlEntryCallbackObject 
-        # TJwDiscretionaryAccessControlEntryObjectAllow 
-        # TJwDiscretionaryAccessControlEntryCallbackObjectAllow 
-        # TJwDiscretionaryAccessControlEntryObjectDeny 
-        # TJwDiscretionaryAccessControlEntryCallbackObjectDeny 
-      
+
+        # TJwAuditAccessControlEntryObject
+        # TJwAuditAccessControlEntryCallbackObject
+        # TJwDiscretionaryAccessControlEntryObjectAllow
+        # TJwDiscretionaryAccessControlEntryCallbackObjectAllow
+        # TJwDiscretionaryAccessControlEntryObjectDeny
+        # TJwDiscretionaryAccessControlEntryCallbackObjectDeny
+
 
       See also http://msdn2.microsoft.com/en-us/library/aa374917(VS.85).aspx
      }
     property InheritedObjectType : TGuid read fInheritedObjectType write fInheritedObjectType;
+
+    property InheritProperty : TJwString read fInheritProperty write fInheritProperty;
   end;
 
   {<B>TJwDiscretionaryAccessControlEntry</B> defines a discretionary access control entry.
@@ -1230,7 +1246,7 @@ type
      
      raises
  EJwsclInvalidACEException:  will be raised if the ACE type of
-      the instance is not supported 
+      the instance is not supported
      }
     function Create_AllowACE: PAccessAllowedAce; overload;
 
@@ -1966,6 +1982,7 @@ begin
 end;
 
 
+
 constructor TJwSAccessControlList.Create;
 begin
   inherited;
@@ -2176,7 +2193,7 @@ end;
 
 
 procedure TJwSecurityAccessControlList.AddACEs(
-  AclInstance: TJwSecurityAccessControlList; KeepOriginalOrder : Boolean = true);
+  AclInstance: TJwSecurityAccessControlList; KeepOriginalOrder : Boolean);
 var
   i: integer;
   E: TJwSecurityAccessControlEntry;
@@ -3060,13 +3077,14 @@ constructor TJwSecurityAccessControlEntry.Create(
   ownSID: boolean = True);
 begin
   JwRaiseOnNilParameter(aSid,'aSID','Create',ClassName,RsUNACL);
-  
+
   fListOwner := nil;
 
   fFlags := aFlags;
   fAccessMask := anAccessMask;
   fSID := aSID;
   fRevision := ACL_REVISION;
+  InheritProperty := '';
 
   if Assigned(aSID) and (aSID.IsStandardSID) then
     ownSID := False;
@@ -3104,6 +3122,7 @@ begin
 
   ObjectType    := NULL_GUID;
   InheritedObjectType := NULL_GUID;
+  InheritProperty := '';
 end;
 
 

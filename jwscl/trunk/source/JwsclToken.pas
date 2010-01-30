@@ -580,6 +580,8 @@ type
            console user. To avoid this problem call this constructor
            using true as parameter. Only apply FALSE if the current system
            does not support multiple users (like Win2000 Workstation)
+
+           This function sets implicitly the TOKEN_DUPLICATE access right.
        }
 
     constructor CreateCompatibilityQueryUserToken(
@@ -679,7 +681,31 @@ type
       const PrivilegesToDelete: TJwPrivilegeSet;
       const RestrictedSids: TJwSecurityIdList); overload; virtual;
 
-    {TBD}
+    {
+    Please refer to the MSDN documentation :
+      http://msdn.microsoft.com/en-us/library/aa378184%28VS.85%29.aspx
+    Parameters
+      dwLogonType
+          LOGON32_LOGON_INTERACTIVE
+
+          LOGON32_LOGON_BATCH
+          LOGON32_LOGON_NETWORK
+          LOGON32_LOGON_NETWORK_CLEARTEXT
+          LOGON32_LOGON_NEW_CREDENTIALS
+          LOGON32_LOGON_SERVICE
+          LOGON32_LOGON_UNLOCK
+
+      dwLogonProvider
+        LOGON32_PROVIDER_DEFAULT
+        LOGON32_PROVIDER_WINNT50
+        LOGON32_PROVIDER_WINNT40
+
+    Remarks
+       LOGON32_LOGON_INTERACTIVE cannot be used in all cases if the token is used by a COM client to impersonate
+       a COM call.
+       You should use LOGON32_LOGON_BATCH if you need to create a COM server with the identity of the logon user token;
+       otherwise the server may fail to start. (An out of process COM server is started if the first class is created.)
+    }
     constructor CreateLogonUser(sUsername: TJwString;
     // string that specifies the user name
       sDomain: TJwString;  // string that specifies the domain or server
@@ -3608,7 +3634,7 @@ begin
 
     try
       //Copy token handle to a primary one
-      Self.CreateDuplicateExistingToken(TokenOrig.TokenHandle, DesiredAccess);
+      Self.CreateDuplicateExistingToken(TokenOrig.TokenHandle, DesiredAccess or TOKEN_DUPLICATE);
     finally
       FreeAndNil(TokenOrig);
     end;

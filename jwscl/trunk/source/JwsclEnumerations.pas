@@ -49,6 +49,9 @@ interface
 uses
   SysUtils,
   jwaWindows,
+  //********** WARNING: DO NOT COMMIT THIS FILE until JwaCOMSecurity is integrated
+  JwaCOMSecurity,
+  //**********
   JwsclTypes,
   JwsclConstants
   ;
@@ -60,8 +63,6 @@ type
    to delphi enumeration types and vice versa.
    There is no need to create an instance of it.}
   TJwEnumMap = class
-  private
-    //class function ConvertSecurityControl(const Control: TSecurityDescriptorControl): TJwSecurityDescriptorControlSet; static;
   public
     class function ConvertInheritFlags(
       const FlagSet: TJwInheritFlagSet): Cardinal; overload; virtual;
@@ -224,12 +225,28 @@ type
     class function ConvertComAppIdRegFlags(
       const FlagBits: Cardinal): TJwComAppIdRegFlags; overload;
 
+    class function ConvertComAuthenticationCapabilities(
+      const FlagSet: TJwComAuthenticationCapabilities): Cardinal; overload;
+    class function ConvertComAuthenticationCapabilities(
+      const FlagBits: Cardinal): TJwComAuthenticationCapabilities; overload;
+
+    class function ConvertComRotFlags(
+      const FlagSet: TJwComRotFlags): Cardinal; overload;
+    class function ConvertComRotFlags(
+      const FlagBits: Cardinal): TJwComRotFlags; overload;
+
+    class function ConvertSecurityPackageCapabilities(
+      const FlagSet: TJwSecurityPackageCapabilities): Cardinal; overload;
+    class function ConvertSecurityPackageCapabilities(
+      const FlagBits: Cardinal): TJwSecurityPackageCapabilities; overload;
+
   end;
 
 //Single values to be converted
 const
   JwComAuthenticationLevel : array[TJwComAuthenticationLevel] of Cardinal = (
-      0,
+      DWORD(-1),
+      RPC_C_AUTHN_LEVEL_DEFAULT,
       RPC_C_AUTHN_LEVEL_NONE,
       RPC_C_AUTHN_LEVEL_CONNECT,
       RPC_C_AUTHN_LEVEL_CALL,
@@ -239,6 +256,7 @@ const
    );
 
   JwComImpersonationLevel : array[TJwComImpersonationLevel] of Cardinal = (
+    RPC_C_IMP_LEVEL_DEFAULT,
   	RPC_C_IMP_LEVEL_ANONYMOUS,
     RPC_C_IMP_LEVEL_IDENTIFY,
   	RPC_C_IMP_LEVEL_IMPERSONATE,
@@ -597,6 +615,54 @@ const
   );
 
 
+  JwComAuthenticationCapabilities : array[TJwComAuthenticationCapability] of EOLE_AUTHENTICATION_CAPABILITIES = (
+      EOAC_NONE                ,{= 0,}
+      EOAC_MUTUAL_AUTH         ,{= 0x1,}
+      EOAC_STATIC_CLOAKING     ,{= 0x20,}
+      EOAC_DYNAMIC_CLOAKING    ,{= 0x40,}
+      EOAC_ANY_AUTHORITY       ,{= 0x80,}
+      EOAC_MAKE_FULLSIC        ,{= 0x100,}
+      EOAC_DEFAULT             ,{= 0x800,}
+      EOAC_SECURE_REFS         ,{= 0x2,}
+      EOAC_ACCESS_CONTROL      ,{= 0x4,}
+      EOAC_APPID               ,{= 0x8,}
+      EOAC_DYNAMIC             ,{= 0x10,}
+      EOAC_REQUIRE_FULLSIC     ,{= 0x200,}
+      EOAC_AUTO_IMPERSONATE    ,{= 0x400,}
+      EOAC_NO_CUSTOM_MARSHAL   ,{= 0x2000,}
+      EOAC_DISABLE_AAA         {}
+  );
+
+  JwComRotFlags : array[TJwComRotFlag] of Cardinal =
+   (0,
+    $1//ROTREGFLAGS_ALLOWANYCLIENT //0x1
+   );
+
+
+  JwSecurityPackageCapability : array[TJwSecurityPackageCapability] of Cardinal = (
+    {spcIntegrity}SECPKG_FLAG_INTEGRITY        // = $00000001; // Supports integrity on messages
+    {spcPrivacy},SECPKG_FLAG_PRIVACY          // = $00000002; // Supports privacy (confidentiality)
+    {spcTokenOnly},SECPKG_FLAG_TOKEN_ONLY       // = $00000004; // Only security token needed
+    {spcDatagram},SECPKG_FLAG_DATAGRAM         // = $00000008; // Datagram RPC support
+    {spcConnection},SECPKG_FLAG_CONNECTION       // = $00000010; // Connection oriented RPC support
+    {spcMultiRequired},SECPKG_FLAG_MULTI_REQUIRED   // = $00000020; // Full 3-leg required for re-auth.
+    {spcClientOnly},SECPKG_FLAG_CLIENT_ONLY      // = $00000040; // Server side functionality not available
+    {spcExtendedError},SECPKG_FLAG_EXTENDED_ERROR   // = $00000080; // Supports extended error msgs
+    {spcImpersonation},SECPKG_FLAG_IMPERSONATION    // = $00000100; // Supports impersonation
+    {spcAcceptWin32Name},SECPKG_FLAG_ACCEPT_WIN32_NAME// = $00000200; // Accepts Win32 names
+    {spcStream},SECPKG_FLAG_STREAM           // = $00000400; // Supports stream semantics
+    {spcNegotiable},SECPKG_FLAG_NEGOTIABLE       // = $00000800; // Can be used by the negotiate package
+    {spcGSSCompatible},SECPKG_FLAG_GSS_COMPATIBLE   // = $00001000; // GSS Compatibility Available
+    {spcLogon},SECPKG_FLAG_LOGON            // = $00002000; // Supports common LsaLogonUser
+    {spcASCIIBuffers},SECPKG_FLAG_ASCII_BUFFERS    // = $00004000; // Token Buffers are in ASCII
+    {spcFragment},SECPKG_FLAG_FRAGMENT         // = $00008000; // Package can fragment to fit
+    {spcMutualAuth},SECPKG_FLAG_MUTUAL_AUTH      // = $00010000; // Package can perform mutual authentication
+    {spcDelegation},SECPKG_FLAG_DELEGATION       // = $00020000; // Package can delegate
+    {spcNone},SECPKG_ID_NONE// = $FFFF;
+  );
+
+
+
 { TJwEnumMap }
 
 class function TJwEnumMap.ConvertMandatoryPolicyFlags(
@@ -704,6 +770,30 @@ begin
       Include(result, I);
   end;
 end;
+
+class function TJwEnumMap.ConvertSecurityPackageCapabilities(const FlagSet: TJwSecurityPackageCapabilities): Cardinal;
+var I : TJwSecurityPackageCapability;
+begin
+  result := 0;
+  for I := Low(TJwSecurityPackageCapability) to High(TJwSecurityPackageCapability) do
+  begin
+    if I in FlagSet then
+      result := result or JwSecurityPackageCapability[I];
+  end;
+end;
+
+class function TJwEnumMap.ConvertSecurityPackageCapabilities(const FlagBits: Cardinal): TJwSecurityPackageCapabilities;
+var I : TJwSecurityPackageCapability;
+begin
+  result := [];
+  for I := Low(TJwSecurityPackageCapability) to High(TJwSecurityPackageCapability) do
+  begin
+    if (FlagBits and JwSecurityPackageCapability[I]) = JwSecurityPackageCapability[I] then
+      Include(result, I);
+  end;
+end;
+
+
 
 class function TJwEnumMap.ConvertSecurityControl(
   const ControlSet: TJwSecurityDescriptorControlSet): jwaWindows.TSecurityDescriptorControl;
@@ -1003,6 +1093,56 @@ begin
   begin
     if I in FlagSet then
       result := result or CSPCreationFlagValues[I];
+  end;
+end;
+
+class function TJwEnumMap.ConvertComAuthenticationCapabilities(const FlagSet: TJwComAuthenticationCapabilities): Cardinal;
+var I : TJwComAuthenticationCapability;
+begin
+  result := Cardinal(EOAC_NONE);
+  for I := Low(TJwComAuthenticationCapability) to High(TJwComAuthenticationCapability) do
+  begin
+    if I in FlagSet then
+      result := result or Cardinal(JwComAuthenticationCapabilities[I]);
+  end;
+end;
+
+class function TJwEnumMap.ConvertComAuthenticationCapabilities
+  (const FlagBits: Cardinal): TJwComAuthenticationCapabilities;
+var I : TJwComAuthenticationCapability;
+begin
+  result := [];
+
+  if FlagBits <> Cardinal(EOAC_NONE) then
+  begin
+    for I := Low(TJwComAuthenticationCapability) to High(TJwComAuthenticationCapability) do
+    begin
+      if (FlagBits and Cardinal(JwComAuthenticationCapabilities[I])) = Cardinal(JwComAuthenticationCapabilities[I]) then
+        Include(result, I);
+    end;
+  end;
+end;
+
+
+class function TJwEnumMap.ConvertComRotFlags(const FlagSet: TJwComRotFlags): Cardinal;
+var I : TJwComRotFlag;
+begin
+  result := 0;
+  for I := Low(TJwComRotFlag) to High(TJwComRotFlag) do
+  begin
+    if I in FlagSet then
+      result := result or JwComRotFlags[I];
+  end;
+end;
+
+class function TJwEnumMap.ConvertComRotFlags(const FlagBits: Cardinal): TJwComRotFlags;
+var I : TJwComRotFlag;
+begin
+  result := [];
+  for I := Low(TJwComRotFlag) to High(TJwComRotFlag) do
+  begin
+    if (FlagBits and JwComRotFlags[I]) = JwComRotFlags[I] then
+      Include(result, I);
   end;
 end;
 

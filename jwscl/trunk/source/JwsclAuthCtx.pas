@@ -553,7 +553,7 @@ type
                                          security descriptor.<p />
       Reply :                            receives the results of the access check 
       AuthzHandle :                      A handle to the cached results of the access
-                                         check.
+                                         check. The handle must be freed by the WinAPI call AuthzFreeHandle .
       Exceptions
       EJwsclWinCallFailedException :  if a call to AuthzAccessCheck failed.
       EJwsclNILParameterException :   will be raised if parameter Request,
@@ -575,7 +575,8 @@ type
      several security descriptors, auditing information and the user herself.
 
      @param AccessCheckHandle receives an handle that was previously retrieved
-       by a call to AccessCheck 
+       by a call to AccessCheck.
+       The handle must be freed by the WinAPI call AuthzFreeHandle .
      @param Flags from http://msdn2.microsoft.com/en-us/library/aa375788.aspx
         A DWORD value that specifies how the security descriptor is copied.
         This parameter can be one of the following values.

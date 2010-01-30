@@ -1393,7 +1393,7 @@ end;
 
 procedure TJwSecurityDescriptor.SetDACL(anACL: TJwDAccessControlList);
 begin
-  //if we have a nil fdACL class we must create one
+  //if we have a nil fDACL class we must create one
   if not Assigned(fDACL) and
      Assigned(anACL) then
   begin

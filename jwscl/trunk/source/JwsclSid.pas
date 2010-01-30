@@ -241,6 +241,13 @@ type
 
     fAttributes: Cardinal;
 
+    fObjectTypeGuid,
+    fInheritedObjectTypeGuid,
+    fGUID : TGUID;
+
+    fObjectType : TSeObjectType;
+    fInheritedObjectTypeName : TJwString;
+
 {$IFDEF JWSCL_DEBUG_INFO}
     {<B>fDbgData</B> contains the values of the properties of the instance for debugging purposes.
      It is only used if DEBUG is defined.
@@ -253,6 +260,7 @@ type
        It is used for debugging purposes (hiding internal exceptions) only.
       }
     fDbgDisableException: boolean;
+    fValidObjectTypes: TJwValidObjectTypes;
 
 {$IFDEF JWSCL_DEBUG_INFO}
       {<B>UpdateDbgData</B> updates the variable fDbgData  for debugging purposes.
@@ -447,6 +455,8 @@ type
       }
     function EqualDomainSid(pSid1: TJwSecurityId): boolean; virtual;
 
+    class function SplitAccountString(const Str: TJwString; out Domain, User: TJwString): Boolean;
+
       {<B>GetAccountSidString</B> gets the domain and acount name of the SID. It also returns the type of Sid Name.
        @param SystemName contains the target computer name. It can be null to use the local system. 
        @param DomainName [out] gets the domain name of this SID 
@@ -480,7 +490,7 @@ type
       {<B>GetAccountName</B> returns the account name of the SID on the computer given in SystemName.
        For more information see the see also section.
        raises
- EJwsclWinCallFailedException:  if the call to a winapi function failed 
+ EJwsclWinCallFailedException:  if the call to a winapi function failed
        @Seealso(GetAccountSidString);
        }
     function GetAccountName(SystemName: TJwString): TJwString; virtual;
@@ -648,7 +658,7 @@ type
                #  WinAccountEnterpriseAdminsSid
                #  WinAccountPolicyAdminsSid
                #  WinAccountRasAndIasServersSid
-                
+
         raises
  EJwsclWinCallFailedException:  will be raised if a call to CreateWellKnownSid failed 
          EJwsclSecurityException: See CheckSID  for exceptions description 
@@ -675,12 +685,26 @@ type
         @param SystemName can be a computer or domain name. Can also be empty so the local computer will be used. 
         @param AccountName contains the user account name to be converted into a SID 
         raises
- EJwsclWinCallFailedException:  will be raised if a call to ConvertStringSidToSid failed 
+ EJwsclWinCallFailedException:  will be raised if a call to ConvertStringSidToSid failed
          EJwsclSecurityException: See CheckSID  for exceptions description 
 
         COM: Also available as com method.
        }
     constructor Create(const SystemName, AccountName: TJwString); overload;
+
+    {Create creates a TJwSecurityId instance using a given unicode trustee structure.
+
+    Remarks
+      The trustee structure must be the unicode version.
+
+    Exceptions
+      EJwsclInvalidSidStructureException The member TrusteeForm is not
+          TRUSTEE_IS_SID, TRUSTEE_IS_NAME, TRUSTEE_IS_OBJECTS_AND_SID or TRUSTEE_IS_OBJECTS_AND_NAME
+      EJwsclInvalidParameterException This exception is thrown if trustee type is TRUSTEE_IS_NAME or
+        TRUSTEE_IS_OBJECTS_AND_NAME and the trustee name could not be resolved to a domain and username.
+        (SplitAccountString failed)
+    }
+    constructor Create(const Trustee : TRUSTEE_W); overload;
 
 
     function GetAttributesType: TJwSidAttributeSet; virtual;
@@ -876,6 +900,25 @@ type
 
     property Trustee: TTrusteeEx Read GetTrustee;
 
+    {
+    Defines which properties are valid - if set.
+    otType : ObjectType is valid
+    otTypeGuid : ObjectTypeGuid  is valid
+    otTypeInheritedGuid : InheritedObjectTypeGuid is valid
+    otTypeInheritedName : InheritedObjectTypeName is valid
+    }
+    property ValidObjectTypes : TJwValidObjectTypes read fValidObjectTypes write fValidObjectTypes;
+
+    property ObjectTypeGuid : TGUID read fObjectTypeGuid write fObjectTypeGuid;
+    property InheritedObjectTypeGuid : TGUID read fInheritedObjectTypeGuid write fInheritedObjectTypeGuid;
+
+    property ObjectType : TSeObjectType read fObjectType write fObjectType;
+    property InheritedObjectTypeName : TJwString read fInheritedObjectTypeName write fInheritedObjectTypeName;
+
+
+    property GUID : TGUID read fGUID write fGUID;
+
+
    {<B>CachedSystemName</B> contains the system or domain name that was supplied when the instance
     was created.
     It is simply cached for later retrieving and can be used
@@ -891,6 +934,9 @@ type
      returns the same value as property StringSID.}
     property CachedSidString : TJwString read fCachedSidString;
   end;
+
+
+
 
 
 {Threadvar}
@@ -977,6 +1023,123 @@ begin
   fWellKnownSidType := WinNullSid;
   fCachedSystemName := '';
   fCachedSidString := '';
+  fGUID := NULL_GUID;
+  fObjectTypeGuid := NULL_GUID;
+  fInheritedObjectTypeGuid := NULL_GUID;
+  fObjectType := SE_UNKNOWN_OBJECT_TYPE;
+  fInheritedObjectTypeName := '';;
+  fValidObjectTypes := [];
+end;
+
+
+constructor TJwSecurityId.Create(const Trustee: TRUSTEE_W);
+var Domain, User : TJwString;
+begin
+  JwRaiseOnNilMemoryBlock(Trustee.ptstrName, 'Create(TRUSTEE_W)', ClassName, RsUNSid );
+
+  case Trustee.TrusteeForm of
+    TRUSTEE_IS_SID :
+      begin
+        Create(PSID(Trustee.ptstrName));
+      end;
+    TRUSTEE_IS_NAME :
+      begin
+        if SplitAccountString(Trustee.ptstrName, Domain, User) then
+        begin
+          Create(Domain, User);
+        end
+        else
+        begin
+          raise EJwsclInvalidParameterException.CreateFmtEx(
+            'The string %s could not be converted to a SID.', 'Create',
+            ClassName, RsUNSid, 0, false, [TJwString(Trustee.ptstrName)]);
+        end;
+      end;
+    TRUSTEE_IS_OBJECTS_AND_SID  :
+      begin
+        Create(PSID(PObjectsAndNameW(Trustee.ptstrName).ptstrName));
+        ValidObjectTypes := [];
+
+        if (PObjectsAndSid(Trustee.ptstrName).ObjectsPresent and ACE_OBJECT_TYPE_PRESENT <> 0) then
+        begin
+          ObjectTypeGuid := PObjectsAndSid(Trustee.ptstrName).ObjectTypeGuid;
+          ValidObjectTypes := ValidObjectTypes + [otTypeGuid];
+        end;
+
+        if (PObjectsAndSid(Trustee.ptstrName).ObjectsPresent and ACE_INHERITED_OBJECT_TYPE_PRESENT <> 0) then
+        begin
+          InheritedObjectTypeGuid := PObjectsAndSid(Trustee.ptstrName).InheritedObjectTypeGuid;
+          ValidObjectTypes := ValidObjectTypes + [otTypeGuid];
+        end;
+      end;
+    TRUSTEE_IS_OBJECTS_AND_NAME :
+      begin
+        if SplitAccountString(TJwString(PObjectsAndNameW(Trustee.ptstrName).ptstrName), Domain, User) then
+        begin
+          Create(PSID(Trustee.ptstrName));
+
+          if (PObjectsAndNameW(Trustee.ptstrName).ObjectsPresent and ACE_OBJECT_TYPE_PRESENT <> 0) then
+          begin
+            ObjectType := PObjectsAndNameW(Trustee.ptstrName).ObjectType;
+            ValidObjectTypes := ValidObjectTypes + [otTypeInheritedName];
+          end;
+
+          if (PObjectsAndNameW(Trustee.ptstrName).ObjectsPresent and ACE_INHERITED_OBJECT_TYPE_PRESENT <> 0) then
+          begin
+            InheritedObjectTypeName := TJwString(PObjectsAndNameW(Trustee.ptstrName).InheritedObjectTypeName);
+            ValidObjectTypes := ValidObjectTypes + [otTypeInheritedName];
+          end;
+        end
+        else
+        begin
+          raise EJwsclInvalidParameterException.CreateFmtEx(
+            'The string %s could not be converted to a SID.', 'Create',
+            ClassName, RsUNSid, 0, false, [TJwString(PObjectsAndNameW(Trustee.ptstrName).ptstrName)]);
+        end;
+      end;
+    else
+    begin
+      raise EJwsclInvalidSidStructureException.CreateFmtEx(
+            'The trustee type is invalid.', 'Create',
+            ClassName, RsUNSid, 0, false, []);
+    //TRUSTEE_BAD_FORM,
+    end;
+  end;
+end;
+
+class function TJwSecurityId.SplitAccountString(const Str: TJwString; out Domain, User: TJwString): Boolean;
+var
+  i : Integer;
+  Len : DWORD;
+  SampStr : PWideChar;
+  SamStr : TJwString;
+begin
+  result := false;
+  if not TranslateNameW(PWideChar(WideString(Str)), NameUnknown, NameSamCompatible, nil, Len) then
+    exit;
+
+  Inc(Len, 2);
+  GetMem(SampStr, Len * sizeof(WideChar));
+  try
+    if not TranslateNameW(PWideChar(WideString(Str)), NameUnknown, NameSamCompatible, SampStr, Len) then
+      exit;
+
+    SamStr := TJwString(SampStr);
+
+    i := Pos('\', SamStr);
+    if i > 0 then
+    begin
+      Domain := Copy(SamStr, 1, i);
+    end
+    else
+      i := 0;
+
+    User := Copy(SamStr, i+1,  Length(SamStr));
+
+    result := true;
+  finally
+    FreeMem(SampStr);
+  end;
 end;
 
 constructor TJwSecurityId.Create(const SID: PSID);
@@ -2430,6 +2593,8 @@ begin
   JwClearSidNameCache;
   FreeAndNil(JwSidNameCache);
 end;
+
+
 
 initialization
 {$IFDEF JWSCL_SIDCACHE}

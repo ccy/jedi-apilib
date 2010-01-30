@@ -137,6 +137,21 @@ const JwLowIL = 'S-1-16-4096';
       JwIntegrityLevel = 'S-1-16-%u';
 var
    JwIntegrityLabelSID : array[TJwIntegrityLabelType] of TJwSecurityKnownSID;
+
+    {<B>JwAuthenticatedUserSID</B> defines the current user SID that started the process.
+     You need to call JwInitWellknownSIDs before accessing this variable!
+     Use:
+     <code lang="Delphi">
+      SD : TJwSecurityDescriptor;
+      ...
+      SD.OwnOwner := false;
+      SD.Owner := JwAuthenticatedUserSID;
+      ...
+      SD.DACL.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil,[],FILE_EXECUTE,JwAuthenticatedUserSID, false)); //see?: false
+    </code>
+    }
+  JwAuthenticatedUserSID,
+
     {<B>JwPrincipalSid</B> defines the current user SID that started the process.
      You need to call JwInitWellknownSIDs before accessing this variable!
      Use:
@@ -1046,6 +1061,11 @@ begin
     TJwWindowsVersion.IsWindowsVista(true) then
     JwWriteRestrictedSID := TJwSecurityKnownSID.Create('S-1-5-33');
 
+
+
+  if not Assigned(JwAuthenticatedUserSID) then
+    JwAuthenticatedUserSID := TJwSecurityKnownSID.Create('S-1-5-11');
+
   if not Assigned(JwRestrictedCodeSID) then
     JwRestrictedCodeSID := TJwSecurityKnownSID.Create('S-1-5-12');
 
@@ -1061,6 +1081,7 @@ begin
     JwLocalServiceSID := TJwSecurityKnownSID.Create('S-1-5-19');
   if not Assigned(JwPrincipalSid) then
     JwPrincipalSid := TJwSecurityKnownSID.Create('S-1-5-10');
+
 
 
 
@@ -1091,6 +1112,8 @@ var ilts : TJwIntegrityLabelType;
 begin
   JwInitWellKnownSidStatus := false;
 
+
+  FreeAndNil(JwAuthenticatedUserSID);
   FreeAndNil(JwAdministratorsSID);
   FreeAndNil(JwUsersSID);
   FreeAndNil(JwGuestsSID);
