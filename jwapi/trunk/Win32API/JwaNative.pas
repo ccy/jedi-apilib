@@ -44,7 +44,7 @@
 {** Caution is recommended, USE AT YOUR OWN RISK.                            **}
 {**                                                                          **}
 {******************************************************************************}
-{** About the Native API						     **                                          }
+{** About the Native API                                                     **}
 {******************************************************************************}
 {**                                                                          **}
 {** The functions herein are usually referred to as the NT Native API.       **}
@@ -85,11 +85,11 @@
 {** The Native API is split into a user mode component (mainly NTDLL.DLL)    **}
 {** and a kernel mode component (mainly NTOSKRNL.EXE). While a large part of **}
 {** the Native API is available both from usermode and kernelmode, some      **}
-{** functions are exclusive to either mode. This unit only deals with 	     **}
+{** functions are exclusive to either mode. This unit only deals with        **}
 {** functions that are available to usermode code.                           **}
 {**                                                                          **}
 {** Note that the functions prefixed with "Nt" and "Zw" usually appear in    **}
-{** pairs, though not always! For details see http://assarbad.net    			**}
+{** pairs, though not always! For details see http://assarbad.net            **}
 {**                                                                          **}
 {** Most of the Native API is undocumented. However, Microsoft recently      **}
 {** started to document a subset of the API in "winternl.h" in the Platform  **}
@@ -8930,7 +8930,7 @@ asm
     {$ifdef cpux86_64}
        mov   ECX, EAX
     {$endif cpux86_64}
-       bswap EAX	// .. but bswap EAX is also 64-bit!!! 0F C8 isn't.
+       bswap EAX        // .. but bswap EAX is also 64-bit!!! 0F C8 isn't.
   {$endif}
 
 (*
