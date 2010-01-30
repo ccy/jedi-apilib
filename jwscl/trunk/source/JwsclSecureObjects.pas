@@ -6130,16 +6130,12 @@ type
     stdcall;
 
 
-var
-  _Wow64FsRedirection_Critical: CRITICAL_SECTION;
-
 
 procedure Wow64FsRedirection(disable: boolean);
 var
   _Wow64RevertWow64FsRedirection:  TWow64RevertWow64FsRedirection;
   _Wow64DisableWow64FsRedirection: TWow64DisableWow64FsRedirection;
 begin
-  //EnterCriticalSection(_Wow64FsRedirection_Critical);
   _Wow64RevertWow64FsRedirection  := nil;
   _Wow64DisableWow64FsRedirection := nil;
 
@@ -6162,8 +6158,6 @@ begin
       //0
     end;
   end;
-
-  //LeaveCriticalSection(_Wow64FsRedirection_Critical);
 end;
 
 
@@ -10252,7 +10246,6 @@ end;
 initialization
 {$ENDIF SL_OMIT_SECTIONS}
 {$IFNDEF SL_INITIALIZATION_SECTION}
-  InitializeCriticalSection(_Wow64FsRedirection_Critical);
 {$ENDIF SL_INITIALIZATION_SECTION}
 
 //  CacheList := TStringList.Create;
@@ -10261,7 +10254,6 @@ initialization
 finalization
 {$ENDIF SL_OMIT_SECTIONS}
 {$IFNDEF SL_FINALIZATION_SECTION}
-  DeleteCriticalSection(_Wow64FsRedirection_Critical);
 {$ENDIF SL_FINALIZATION_SECTION}
 
 
