@@ -168,7 +168,7 @@
 unit JwaNative;
 
 interface
-{$INCLUDE jediapilib.inc}
+{$INCLUDE ..\Includes\JediAPILib.inc}
 
 uses
   JwaWinType, JwaWinNT, JwaWinBase, JwaNtStatus, JwaBitFields;
