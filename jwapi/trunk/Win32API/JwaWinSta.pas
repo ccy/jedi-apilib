@@ -378,18 +378,18 @@ type
   PWinStationClientW = PWINSTATION_CLIENTW;}
 
   TWinStationClientFlags = Set Of (
-	  fTextOnly,                                         //: 1
- 	  fDisableCtrlAltDel,                                //: 1
- 	  fMouse,                                            //: 1
- 	  fDoubleClickDetect,                                //: 1
- 	  fINetClient,                                       //: 1
- 	  fWinStationClientPromptForPassword,                //: 1
- 	  fMaximizeShell,                                    //: 1
- 	  fEnableWindowsKey,                                 //: 1
- 	  fRemoteConsoleAudio,                               //: 1
- 	  fWinStationClientPasswordIsScPin,                  //: 1
- 	  fNoAudioPlayback,                                  //: 1
- 	  fUsingSavedCreds,                                  //: 1
+    fTextOnly,                                         //: 1
+    fDisableCtrlAltDel,                                //: 1
+    fMouse,                                            //: 1
+    fDoubleClickDetect,                                //: 1
+    fINetClient,                                       //: 1
+    fWinStationClientPromptForPassword,                //: 1
+    fMaximizeShell,                                    //: 1
+    fEnableWindowsKey,                                 //: 1
+    fRemoteConsoleAudio,                               //: 1
+    fWinStationClientPasswordIsScPin,                  //: 1
+    fNoAudioPlayback,                                  //: 1
+    fUsingSavedCreds,                                  //: 1
 {$IFDEF DELPHI6_UP}
     _TWinStationClientFlagsAlign = al32Bit
 {$ELSE}
@@ -921,7 +921,7 @@ function WinStationBroadcastSystemMessage(hServer: HANDLE;
   _lParam: LPARAM; pResponse: LONGINT): LONGINT; stdcall;
 
 function WinStationCallBack(hServer:HANDLE; SessionId: DWORD;
-	pPhoneNumber: LPWSTR): BOOL; stdcall;
+  pPhoneNumber: LPWSTR): BOOL; stdcall;
 
 procedure WinStationCloseServer(hServer: HANDLE); stdcall;
 

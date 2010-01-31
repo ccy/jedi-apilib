@@ -73,7 +73,7 @@ type
   TCallRelease = CALLERRELEASE;
 
   ITableData = interface(IUnknown)
-    function HrGetView(lpSSortOrderSet: PSSortOrderSet;	lpfCallerRelease: PCallRelease;
+    function HrGetView(lpSSortOrderSet: PSSortOrderSet; lpfCallerRelease: PCallRelease;
       ulCallerData: ULONG; out lppMAPITable: IMAPITable): HResult; stdcall;
     function HrModifyRow(lpSRow: PSRow): HResult; stdcall;
     function HrDeleteRow(lpSPropValue: PSPropValue): HResult; stdcall;
@@ -364,15 +364,15 @@ const
 
   IRCNULL  = Word($0000);
   {$EXTERNALSYM IRCNULL}
-  FIRCPFN  = Word($0001);	// change function pointer
+  FIRCPFN  = Word($0001); // change function pointer
   {$EXTERNALSYM FIRCPFN}
-  FIRCPV   = Word($0002);	// change parameter block
+  FIRCPV   = Word($0002); // change parameter block
   {$EXTERNALSYM FIRCPV}
-  FIRCPRI  = Word($0004);	// change priority
+  FIRCPRI  = Word($0004); // change priority
   {$EXTERNALSYM FIRCPRI}
-  FIRCCSEC = Word($0008);	// change time
+  FIRCCSEC = Word($0008); // change time
   {$EXTERNALSYM FIRCCSEC}
-  FIRCIRO  = Word($0010);	// change routine options
+  FIRCIRO  = Word($0010); // change routine options
   {$EXTERNALSYM FIRCIRO}
 
 {*
@@ -577,10 +577,10 @@ type
     ulCtlFlags: ULONG;  // DT_REQUIRED, etc.
     lpbNotif: Pointer;  // pointer to notification data
     cbNotif: ULONG;     // count of bytes of notification data
-    lpszFilter: LPTSTR;	// character filter for edit/combobox
+    lpszFilter: LPTSTR; // character filter for edit/combobox
     ulItemID: ULONG;    // to validate parallel dlg template entry
     case Integer of
-      -1: (lpv: Pointer;);			// Initialize this to avoid warnings
+      -1: (lpv: Pointer;);      // Initialize this to avoid warnings
       DTCT_LABEL: (lplabel: PDTblLabel;);
       DTCT_EDIT: (lpedit: PDTblEdit;);
       DTCT_LBX: (lplbx: PDTblLbx;);
@@ -735,9 +735,9 @@ procedure WrapStoreEntryID(ulFlags: ULONG; lpszDLLName: LPTSTR; cbOrigEntry: ULO
 
 { RTF Sync Utilities }
 const
-  RTF_SYNC_RTF_CHANGED	= $00000001;
+  RTF_SYNC_RTF_CHANGED  = $00000001;
   {$EXTERNALSYM RTF_SYNC_RTF_CHANGED}
-  RTF_SYNC_BODY_CHANGED	= $00000002;
+  RTF_SYNC_BODY_CHANGED = $00000002;
   {$EXTERNALSYM RTF_SYNC_BODY_CHANGED}
 
 function RTFSync(lpMessage: IMessage; ulFlags: ULONG; var lpfMessageUpdated: Boolean): HResult; stdcall;

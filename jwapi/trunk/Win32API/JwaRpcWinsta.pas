@@ -443,80 +443,80 @@ type
 type
   _POLICY_TS_MACHINE = record
     PolicyTsMachineFlags1: Set Of (
-  	  fPolicyDisableClip,
-  	  fPolicyDisableCam,
-  	  fPolicyDisableCcm,
-  	  fPolicyDisableLPT,
-  	  fPolicyDisableCpm,
-  	  fPolicyPromptForPassword,
-  	  fPolicyMaxInstanceCount,
-  	  fPolicyMinEncryptionLevel,
-  	  fPolicyFipsEnabled,
-  	  fPolicyDisableAutoReconnect,
-  	  fPolicyWFProfilePat,
-  	  fPolicyWFHomeDir,
-  	  fPolicyWFHomeDirDriv,
-  	  fPolicyDenyTSConnections,
-  	  fPolicyTempFoldersPerSession,
-  	  fPolicyDeleteTempFoldersOnExit,
-  	  fPolicyColorDepth,
-  	  fPolicySessionDirectoryActive,
-  	  fPolicySessionDirectoryLocation,
-  	  fPolicySessionDirectoryClusterName,
-  	  fPolicySessionDirectoryAdditionalParams,
-  	  fPolicySessionDirectoryExposeServerIP,
-  	  fPolicyPreventLicenseUpgrade,
-  	  fPolicySecureLicensing,
-  	  fPolicyWritableTSCCPermissionsTAB,
-  	  fPolicyDisableCdm,
-  	  fPolicyForceClientLptDef,
-  	  fPolicyShadow,
-  	  fPolicyResetBroken,
-  	  fPolicyReconnectSame,
-  	  fPolicyMaxSessionTime,
-  	  fPolicyMaxDisconnectionTime,
-  	  fPolicyMaxIdleTime,
-	    fPolicyInitialProgram,
-  	  fPolicySingleSessionPerUser,
-  	  fPolicyDisableWallpaper,
-  	  fPolicyKeepAlive  ,
-  	  fPolicyEnableTimeZoneRedirection,
-  	  fPolicyDisableForcibleLogoff,
-  	  fPolicyLicensingMode,
-  	  fPolicyExplicitLSDiscover,
-  	  fPolicyDisableTerminalServerTooltip,
-  	  fPolicyTsMachineDisableClip,
-  	  fPolicyTsMachineDisableCam,
-  	  fPolicyTsMachineDisableCcm,
-  	  fPolicyTsMachineDisableLPT,
-  	  fPolicyTsMachineDisableCpm,
-  	  fPolicyTsMachinePromptForPassword,
-      PolicyTSMachineColorDepth0,    //	ULONG ColorDepth: 3;
+      fPolicyDisableClip,
+      fPolicyDisableCam,
+      fPolicyDisableCcm,
+      fPolicyDisableLPT,
+      fPolicyDisableCpm,
+      fPolicyPromptForPassword,
+      fPolicyMaxInstanceCount,
+      fPolicyMinEncryptionLevel,
+      fPolicyFipsEnabled,
+      fPolicyDisableAutoReconnect,
+      fPolicyWFProfilePat,
+      fPolicyWFHomeDir,
+      fPolicyWFHomeDirDriv,
+      fPolicyDenyTSConnections,
+      fPolicyTempFoldersPerSession,
+      fPolicyDeleteTempFoldersOnExit,
+      fPolicyColorDepth,
+      fPolicySessionDirectoryActive,
+      fPolicySessionDirectoryLocation,
+      fPolicySessionDirectoryClusterName,
+      fPolicySessionDirectoryAdditionalParams,
+      fPolicySessionDirectoryExposeServerIP,
+      fPolicyPreventLicenseUpgrade,
+      fPolicySecureLicensing,
+      fPolicyWritableTSCCPermissionsTAB,
+      fPolicyDisableCdm,
+      fPolicyForceClientLptDef,
+      fPolicyShadow,
+      fPolicyResetBroken,
+      fPolicyReconnectSame,
+      fPolicyMaxSessionTime,
+      fPolicyMaxDisconnectionTime,
+      fPolicyMaxIdleTime,
+      fPolicyInitialProgram,
+      fPolicySingleSessionPerUser,
+      fPolicyDisableWallpaper,
+      fPolicyKeepAlive  ,
+      fPolicyEnableTimeZoneRedirection,
+      fPolicyDisableForcibleLogoff,
+      fPolicyLicensingMode,
+      fPolicyExplicitLSDiscover,
+      fPolicyDisableTerminalServerTooltip,
+      fPolicyTsMachineDisableClip,
+      fPolicyTsMachineDisableCam,
+      fPolicyTsMachineDisableCcm,
+      fPolicyTsMachineDisableLPT,
+      fPolicyTsMachineDisableCpm,
+      fPolicyTsMachinePromptForPassword,
+      PolicyTSMachineColorDepth0,    // ULONG ColorDepth: 3;
       PolicyTSMachineColorDepth1,
       PolicyTSMachineColorDepth2,
-  	  fDenyTSConnections,
-  	  fTempFoldersPerSession,
-  	  fDeleteTempFoldersOnExit,
-  	  fWritableTSCCPermissionsTAB,
-  	  fDisableCdm,
-  	  fPolicyTSMachineForceClientLptDef,
-  	  fPolicyTSMachineResetBroken,
-  	  fPolicyTSMachineReconnectSame,
-  	  fSingleSessionPerUser,
-  	  fDisableWallpaper,
-  	  fKeepAliveEnable,
-  	  fPreventLicenseUpgrade,
-  	  fSecureLicensing,
-  	  fEnableTimeZoneRedirection,
-  	  fTSPolicyMachineDisableAutoReconnect,
-  	  fDisableForcibleLogoff,
-  	  fPolicyEncryptRPCTraffic,
-  	  fEncryptRPCTraffic,
-  	  fPolicyTSMachineErrorInvalidProfile,
+      fDenyTSConnections,
+      fTempFoldersPerSession,
+      fDeleteTempFoldersOnExit,
+      fWritableTSCCPermissionsTAB,
+      fDisableCdm,
+      fPolicyTSMachineForceClientLptDef,
+      fPolicyTSMachineResetBroken,
+      fPolicyTSMachineReconnectSame,
+      fSingleSessionPerUser,
+      fDisableWallpaper,
+      fKeepAliveEnable,
+      fPreventLicenseUpgrade,
+      fSecureLicensing,
+      fEnableTimeZoneRedirection,
+      fTSPolicyMachineDisableAutoReconnect,
+      fDisableForcibleLogoff,
+      fPolicyEncryptRPCTraffic,
+      fEncryptRPCTraffic,
+      fPolicyTSMachineErrorInvalidProfile,
       fFallbackPrintDriverType0,  // ULONG   FallbackPrintDriverType: 3;
       fFallbackPrintDriverType1,
       fFallbackPrintDriverType2,
-  	  fDisableTerminalServerTooltip,
+      fDisableTerminalServerTooltip,
 {$IFDEF DELPHI6_UP}
       _PolicyTsMachineFlags1Align = al96bit // align the bitset on 3 ULONG's
 {$ELSE}
@@ -620,10 +620,10 @@ type
 
 
 {$ENDIF}
- 	  );
-	  bSecurityLayer: Boolean;
-	  PolicyTsMachineFlag2: Set Of (
-		  fPolicySecurityLayer,
+    );
+    bSecurityLayer: Boolean;
+    PolicyTsMachineFlag2: Set Of (
+      fPolicySecurityLayer,
 {$IFDEF DELPHI6_UP}
       _PolicyTsMachineFlags2Align = al32bit // align the bitset on ULONG
 {$ELSE}
@@ -661,14 +661,14 @@ type
       _PolicyTsMachineFlags2Align32
 
 {$ENDIF}
-	  );
-	  bUserAuthentication: Boolean;
-	  PolicyTsMachineFlags3: Set Of (
-		  fPolicyUserAuthentication,
-  		fPolicyTurnOffSingleAppMode,
-  		fTurnOffSingleAppMode,
-  		fDisablePNPPolicyIsEnforced,
-  		fDisablePNPPolicyValue,
+    );
+    bUserAuthentication: Boolean;
+    PolicyTsMachineFlags3: Set Of (
+      fPolicyUserAuthentication,
+      fPolicyTurnOffSingleAppMode,
+      fTurnOffSingleAppMode,
+      fDisablePNPPolicyIsEnforced,
+      fDisablePNPPolicyValue,
 {$IFDEF DELPHI6_UP}
       _PolicyTsMachineFlags3Align = al32bit // align the bitset on ULONG
 {$ELSE}
@@ -739,49 +739,49 @@ type
 type
   TUserConfigFlags = Set Of(
     fInheritAutoLogon,                                //: 1
-  	fInheritResetBroken,                              //: 1
-  	fInheritReconnectSame,                            //: 1
-  	fInheritInitialProgram,                           //: 1
-  	fInheritCallback,                                 //: 1
-  	fInheritCallbackNumber,                           //: 1
-  	fInheritShadow,                                   //: 1
-  	fInheritMaxSessionTime,                           //: 1
-  	fInheritMaxDisconnectionTime,                     //: 1
-  	fInheritMaxIdleTime,                              //: 1
-  	fInheritAutoClient,                               //: 1
-  	fInheritSecurity,                                 //: 1
-  	fUserConfigPromptForPassword,                     //: 1
-  	fUserConfigResetBroken,                           //: 1
-  	fUserConfigReconnectSame,                         //: 1
-  	fLogonDisabled,                                   //: 1
-  	fWallPaperDisabled,                               //: 1
-  	fAutoClientDrives,                                //: 1
-  	fAutoClientLpts,                                  //: 1
-  	fUserConfigForceClientLptDef,                     //: 1
-  	fRequireEncryption,                               //: 1
-  	fDisableEncryption,                               //: 1
-  	fUnused1,                                         //: 1
-  	fHomeDirectoryMapRoot,                            //: 1
-  	fUseDefaultGina,                                  //: 1
-  	fCursorBlinkDisabled,                             //: 1
-  	fPublishedApp,                                    //: 1
-  	fHideTitleBar,                                    //: 1
-  	fMaximize,                                        //: 1
-  	fUserConfigDisableCpm,                            //: 1
-  	fUserConfigDisableCdm,                            //: 1
-  	fUserConfigDisableCcm,                            //: 1
-  	fUserConfigDisableLPT,                            //: 1
-  	fUserConfigDisableClip,                           //: 1
-  	fDisableExe,                                      //: 1
-  	fUserConfigfDisableCam,                           //: 1
-  	fUserConfigDisableAutoReconnect,                  //: 1
-  	UserConfigColorDepth0,                            //: 3
-  	UserConfigColorDepth1,
-  	UserConfigColorDepth2,
-  	fInheritColorDepth,                               //: 1
-  	fUserConfigErrorInvalidProfile,                   //: 1
-  	fPasswordIsScPin,                                 //: 1
-  	fDisablePNPRedir,                                 //: 1
+    fInheritResetBroken,                              //: 1
+    fInheritReconnectSame,                            //: 1
+    fInheritInitialProgram,                           //: 1
+    fInheritCallback,                                 //: 1
+    fInheritCallbackNumber,                           //: 1
+    fInheritShadow,                                   //: 1
+    fInheritMaxSessionTime,                           //: 1
+    fInheritMaxDisconnectionTime,                     //: 1
+    fInheritMaxIdleTime,                              //: 1
+    fInheritAutoClient,                               //: 1
+    fInheritSecurity,                                 //: 1
+    fUserConfigPromptForPassword,                     //: 1
+    fUserConfigResetBroken,                           //: 1
+    fUserConfigReconnectSame,                         //: 1
+    fLogonDisabled,                                   //: 1
+    fWallPaperDisabled,                               //: 1
+    fAutoClientDrives,                                //: 1
+    fAutoClientLpts,                                  //: 1
+    fUserConfigForceClientLptDef,                     //: 1
+    fRequireEncryption,                               //: 1
+    fDisableEncryption,                               //: 1
+    fUnused1,                                         //: 1
+    fHomeDirectoryMapRoot,                            //: 1
+    fUseDefaultGina,                                  //: 1
+    fCursorBlinkDisabled,                             //: 1
+    fPublishedApp,                                    //: 1
+    fHideTitleBar,                                    //: 1
+    fMaximize,                                        //: 1
+    fUserConfigDisableCpm,                            //: 1
+    fUserConfigDisableCdm,                            //: 1
+    fUserConfigDisableCcm,                            //: 1
+    fUserConfigDisableLPT,                            //: 1
+    fUserConfigDisableClip,                           //: 1
+    fDisableExe,                                      //: 1
+    fUserConfigfDisableCam,                           //: 1
+    fUserConfigDisableAutoReconnect,                  //: 1
+    UserConfigColorDepth0,                            //: 3
+    UserConfigColorDepth1,
+    UserConfigColorDepth2,
+    fInheritColorDepth,                               //: 1
+    fUserConfigErrorInvalidProfile,                   //: 1
+    fPasswordIsScPin,                                 //: 1
+    fDisablePNPRedir,                                 //: 1
 {$IFDEF DELPHI6_UP}
     _TUserConfigFlagsAlign = al64Bit
 {$ELSE}
@@ -994,10 +994,10 @@ type
 type
   _FLOWCONTROLCONFIG = record
     FlowControlFlags: Set Of (
-  	  fEnableSoftwareTx,                                 //: 1
-  	  fEnableSoftwareRx,                                 //: 1
-  	  fEnableDTR,                                        //: 1
-  	  fEnableRTS,                                        //: 1
+      fEnableSoftwareTx,                                 //: 1
+      fEnableSoftwareRx,                                 //: 1
+      fEnableDTR,                                        //: 1
+      fEnableRTS,                                        //: 1
 {$IFDEF DELPHI6_UP}
       _FlowControlFlagsAlign = al32Bit
 {$ELSE}
@@ -1705,18 +1705,18 @@ type
 {-* WinStation client data structure }
 {= }
   TWinStationClientFlags = Set Of (
-	  fTextOnly,                                         //: 1
- 	  fDisableCtrlAltDel,                                //: 1
- 	  fMouse,                                            //: 1
- 	  fDoubleClickDetect,                                //: 1
- 	  fINetClient,                                       //: 1
- 	  fWinStationClientPromptForPassword,                //: 1
- 	  fMaximizeShell,                                    //: 1
- 	  fEnableWindowsKey,                                 //: 1
- 	  fRemoteConsoleAudio,                               //: 1
- 	  fWinStationClientPasswordIsScPin,                  //: 1
- 	  fNoAudioPlayback,                                  //: 1
- 	  fUsingSavedCreds,                                  //: 1
+    fTextOnly,                                         //: 1
+    fDisableCtrlAltDel,                                //: 1
+    fMouse,                                            //: 1
+    fDoubleClickDetect,                                //: 1
+    fINetClient,                                       //: 1
+    fWinStationClientPromptForPassword,                //: 1
+    fMaximizeShell,                                    //: 1
+    fEnableWindowsKey,                                 //: 1
+    fRemoteConsoleAudio,                               //: 1
+    fWinStationClientPasswordIsScPin,                  //: 1
+    fNoAudioPlayback,                                  //: 1
+    fUsingSavedCreds,                                  //: 1
 {$IFDEF DELPHI6_UP}
     _TWinStationClientFlagsAlign = al32Bit
 {$ELSE}
