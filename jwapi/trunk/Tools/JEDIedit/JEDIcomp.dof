@@ -45,7 +45,7 @@ OutputDir=
 UnitOutputDir=dcu
 PackageDLLOutputDir=
 PackageDCPOutputDir=
-SearchPath=H:\Conrad\Projects\jedi-work\jwapi\Win32API;H:\Conrad\Projects\jedi-work\jwapi\Win32API\jwaWindows;H:\Conrad\Projects\jedi-work\jwapi\Common
+SearchPath=..\jedi-apilib\jwapi\trunk\Win32API;..\jedi-apilib\jwapi\trunk\Win32API\jwaWindows;..\jedi-apilib\jwapi\trunk\Common
 Packages=vcl;rtl;vclx;dbrtl;vcldb;bdertl;vcldbx;VclSmp;vclie;adortl;ibxpress;dsnap;cds;bdecds;qrpt;teeui;teedb;tee;dss;teeqr;dsnapcrba;dsnapcon;vclshlctrls;inetdb;inet;nmfast;dbexpress;dbxcds;dclOffice2k;visualclx;visualdbclx;xmlrtl;inetdbbde;inetdbxpress;webdsnap;CheckInOutVCL;websnap;soaprtl
 Conditionals=
 DebugSourceDirs=
@@ -86,14 +86,3 @@ ProductName=
 ProductVersion=1.0.0.0
 Comments=
 [Excluded Packages]
-c:\program files\borland\delphi6\Bin\dclwebsnap60.bpl=Borland WebSnap Components
-[HistoryLists\hlUnitAliases]
-Count=1
-Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
-[HistoryLists\hlSearchPath]
-Count=2
-Item0=H:\Conrad\Projects\jedi-work\jwapi\Win32API;H:\Conrad\Projects\jedi-work\jwapi\Win32API\jwaWindows;H:\Conrad\Projects\jedi-work\jwapi\Common
-Item1=H:\Conrad\Projects\jedi-work\jwapi\Win32API;H:\Conrad\Projects\jedi-work\jwapi\Win32API\jwaWindows
-[HistoryLists\hlUnitOutputDirectory]
-Count=1
-Item0=dcu

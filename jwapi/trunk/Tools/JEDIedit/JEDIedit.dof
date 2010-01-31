@@ -86,14 +86,3 @@ ProductName=
 ProductVersion=1.0.0.0
 Comments=
 [Excluded Packages]
-c:\program files\borland\delphi6\Bin\dclwebsnap60.bpl=Borland WebSnap Components
-[HistoryLists\hlUnitAliases]
-Count=1
-Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
-[HistoryLists\hlSearchPath]
-Count=2
-Item0=H:\Conrad\Projects\jedi-work\jwapi\Win32API;H:\Conrad\Projects\jedi-work\jwapi\Win32API\jwaWindows;H:\Conrad\Projects\jedi-work\jwapi\Common
-Item1=H:\Conrad\Projects\jedi-work\jwapi\Win32API;H:\Conrad\Projects\jedi-work\jwapi\Win32API\jwaWindows
-[HistoryLists\hlUnitOutputDirectory]
-Count=1
-Item0=dcu
