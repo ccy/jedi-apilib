@@ -1,23 +1,23 @@
 {******************************************************************************}
-{ JEDI example DiscBurner - IMAPI-Implementation													   }
-{ http://jedi-apilib.sourceforge.net										   }
-{ 																			   }
+{ JEDI example DiscBurner - IMAPI-Implementation                               }
+{ http://jedi-apilib.sourceforge.net                                           }
+{                                                                              }
 { Obtained through: Joint Endeavour of Delphi Innovators (Project JEDI)        }
-{ 																			   }
-{ Author(s): Benjamin Schwarze												   }
-{ Creation date: 18 july 2009 					   				   }
-{ Last modification date:	 												   }
-{ 																			   }
-{ Description: Shows how to burn a cd with IMAP and unit uDiscBurner	   }
-{ 																			   }
-{ 																			   }
-{ Preparations: JWA, CD-Recorder						   }
-{ 																			   }
+{                                                                              }
+{ Author(s): Benjamin Schwarze                                                 }
+{ Creation date: 18 july 2009                                                  }
+{ Last modification date:                                                      }
+{                                                                              }
+{ Description: Shows how to burn a cd with IMAP and unit uDiscBurner           }
+{                                                                              }
+{                                                                              }
+{ Preparations: JWA, CD-Recorder                                               }
+{                                                                              }
 { Article link:  http://blog.delphi-jedi.net/2009/07/18/im-burning-baby        }
-{ 																			   }
-{ Version history: 1.0 First Version										   }
-{ 																			   }
-{ Written in Delphi: 2009													   }
+{                                                                              }
+{ Version history: 1.0 First Version                                           }
+{                                                                              }
+{ Written in Delphi: 2009                                                      }
 {******************************************************************************}
 
 unit uFormMain;

@@ -9,13 +9,13 @@
 { Copyright (C) 1995-2000 Microsoft Corporation.                               }
 { All Rights Reserved.                                                         }
 {                                                                              }
-{ The original file is: wabnot.h, released 31 Jan 2000.            			   }
-{ The original Pascal code is: WabNot.pas, released 15 Mar 2000.   			   }
+{ The original file is: wabnot.h, released 31 Jan 2000.                        }
+{ The original Pascal code is: WabNot.pas, released 15 Mar 2000.               }
 { The initial developer of the Pascal code is Petr Vones                       }
 { (petr.v@mujmail.cz).                                                         }
 {                                                                              }
-{ Portions created by Petr Vones are                               	           }
-{ Copyright (C) 2000 Petr Vones                                    			   }
+{ Portions created by Petr Vones are                                           }
+{ Copyright (C) 2000 Petr Vones                                                }
 { Obtained through: Joint Endeavour of Delphi Innovators (Project JEDI)        }
 {                                                                              }
 { You may retrieve the latest version of this file at the Project JEDI         }
@@ -75,13 +75,13 @@ type
   TNotifyKey = NOTIFKEY;
 
 (*!!!
-#define CbNewNOTIFKEY(_cb)		(offsetof(NOTIFKEY,ab) + (_cb))
-#define CbNOTIFKEY(_lpkey)		(offsetof(NOTIFKEY,ab) + (_lpkey)->cb)
+#define CbNewNOTIFKEY(_cb)      (offsetof(NOTIFKEY,ab) + (_cb))
+#define CbNOTIFKEY(_lpkey)      (offsetof(NOTIFKEY,ab) + (_lpkey)->cb)
 #define SizedNOTIFKEY(_cb, _name) \
-	struct _NOTIFKEY_ ## _name \
+    struct _NOTIFKEY_ ## _name \
 { \
-	ULONG		cb; \
-	BYTE		ab[_cb]; \
+    ULONG       cb; \
+    BYTE        ab[_cb]; \
 } _name
 *)
 
@@ -140,18 +140,18 @@ const
   {$EXTERNALSYM STGSTRM_CREATE}
 
 { For GetOneOffTable() }
-//****** MAPI_UNICODE			((ULONG) 0x80000000) */
+//****** MAPI_UNICODE               ((ULONG) 0x80000000) */
 
 { For CreateOneOff() }
-//****** MAPI_UNICODE			((ULONG) 0x80000000) */
-//****** MAPI_SEND_NO_RICH_INFO	((ULONG) 0x00010000) */
+//****** MAPI_UNICODE               ((ULONG) 0x80000000) */
+//****** MAPI_SEND_NO_RICH_INFO     ((ULONG) 0x00010000) */
 
 { For ReadReceipt() }
   MAPI_NON_READ = ULONG($00000001);
   {$EXTERNALSYM MAPI_NON_READ}
 
 { For DoConfigPropSheet() }
-//****** MAPI_UNICODE			((ULONG) 0x80000000) */
+//****** MAPI_UNICODE               ((ULONG) 0x80000000) */
 {$ENDIF JWA_IMPLEMENTATIONSECTION}
 
 {$IFNDEF JWA_OMIT_SECTIONS}

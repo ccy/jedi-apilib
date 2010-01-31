@@ -1,39 +1,38 @@
 {******************************************************************************}
-{ JEDI "Set Parent Process" Example Project											   }
-{ http://jedi-apilib.sourceforge.net										   }
-{ 																			   }
+{ JEDI "Set Parent Process" Example Project                                    }
+{ http://jedi-apilib.sourceforge.net                                           }
+{                                                                              }
 { Obtained through: Joint Endeavour of Delphi Innovators (Project JEDI)        }
-{ 																			   }
-{ Author(s): Christian Wimmer												   }
-{ Creation date: 24th October 2008 					   				   			   }
-{ Last modification date: 24th October 2008										   }
-{ 																			   }
-{ Description: This examples demonstrates how to use CreateProcess and  		   }
-{ 	reset the parent process of the new process.													   }
-{ 	The new process will have the given process as its parent. 	    		   }
-{ 	The parent process ID is read from command line.						   }
-{ 																			   }
-{ 	The following necessary functions	are used:																	   }
-{ 	* InitializeProcThreadAttributeList																		   }
-{ 	* UpdateProcThreadAttribute																		   }
-{ 	* DeleteProcThreadAttributeList																		   }
-{ 	* CreateProcess																		   }
-
-{ 																			   }
-{ Preparations: JWA must be ready to use.       							   }
-{ 	It only works on Windows VISTA.																	   }
-{ 																			   }
-{ Todo: Not written for unicode! Needs some $IFDEF UNICODE					   }
-{ 																			   }
-{ Version history: 24th October 2008 initial release				     		   }
-{ 																			   }
+{                                                                              }
+{ Author(s): Christian Wimmer                                                  }
+{ Creation date: 24th October 2008                                             }
+{ Last modification date: 24th October 2008                                    }
+{                                                                              }
+{ Description: This examples demonstrates how to use CreateProcess and         }
+{   reset the parent process of the new process.                               }
+{   The new process will have the given process as its parent.                 }
+{   The parent process ID is read from command line.                           }
+{                                                                              }
+{   The following necessary functions are used:                                }
+{   * InitializeProcThreadAttributeList                                        }
+{   * UpdateProcThreadAttribute                                                }
+{   * DeleteProcThreadAttributeList                                            }
+{   * CreateProcess                                                            }
+{                                                                              }
+{ Preparations: JWA must be ready to use.                                      }
+{   It only works on Windows VISTA.                                            }
+{                                                                              }
+{ Todo: Not written for unicode! Needs some $IFDEF UNICODE                     }
+{                                                                              }
+{ Version history: 24th October 2008 initial release                           }
+{                                                                              }
 { No license. Use this example with no warranty at all and on your own risk.   }
-{ This example is just for learning purposes and should not be used in 		   }
-{ productive environments.													   }
-{ The code has surely some errors that need to be fixed. In such a case	   	   }
+{ This example is just for learning purposes and should not be used in         }
+{ productive environments.                                                     }
+{ The code has surely some errors that need to be fixed. In such a case        }
 { you can contact the author(s) through the JEDI API hompage, the mailinglist  }
-{ or via the article link.													   }
-{ 																			   }
+{ or via the article link.                                                     }
+{                                                                              }
 {******************************************************************************}
 program CreateProcessParent;
 

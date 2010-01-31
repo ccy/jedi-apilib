@@ -395,19 +395,19 @@ type
 
   _SERVICE_DELAYED_AUTO_START_INFO = record
     {WARNING:
-	The C struct uses a BOOL which is in fact an Integer.
-	You can't use true and false here without casting to Integer first:
-	  fDelayedAutostart := Integer(true);
-	Using Boolean or BOOL does not work since the record must be 4 bytes in size,
-	otherwise random data behind the first byte is also interpreted by the functions.
+    The C struct uses a BOOL which is in fact an Integer.
+    You can't use true and false here without casting to Integer first:
+      fDelayedAutostart := Integer(true);
+    Using Boolean or BOOL does not work since the record must be 4 bytes in size,
+    otherwise random data behind the first byte is also interpreted by the functions.
 
-	BOOL defines true as -1 and not 1. ChangeServiceConfig2 uses this record
-	and refuses to work if -1 is supplied.
+    BOOL defines true as -1 and not 1. ChangeServiceConfig2 uses this record
+    and refuses to work if -1 is supplied.
 
-	See also BOOL declaration in JwaWinType.pas for more information.
+    See also BOOL declaration in JwaWinType.pas for more information.
 
-	CW@2008
-	}
+    CW@2008
+    }
     fDelayedAutostart : Integer;
   end;
   {$EXTERNALSYM _SERVICE_DELAYED_AUTO_START_INFO}

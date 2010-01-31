@@ -5,16 +5,16 @@
 { Portions created by Microsoft are Copyright (C) 1995-2005 Microsoft          }
 { Corporation. All Rights Reserved.                                            }
 {                                                                              }
-{ The initial developer of the original translation is Rudy Velthuis		   }
+{ The initial developer of the original translation is Rudy Velthuis           }
 {                                                                              }
 { Portions created by Rudy Velthuis are Copyright (C) 2005-2008                }
-{ All Rights Reserved.                                      				   }
+{ All Rights Reserved.                                                         }
 {                                                                              }
 { Adapted for JEDI API Library by Christian Wimmer                             }
 {                                                                              }
 { Obtained through: Joint Endeavour of Delphi Innovators (Project JEDI)        }
-{ The original code is: shlobj.h, shlguid.h, shobjidl.h           			   }
-{                       isguid.h, exdisp.h, shtypes.h             			   }
+{ The original code is: shlobj.h, shlguid.h, shobjidl.h                        }
+{                       isguid.h, exdisp.h, shtypes.h                          }
 {                                                                              }
 { You may retrieve the latest version of this file at the Project JEDI         }
 { APILIB home page, located at http://jedi-apilib.sourceforge.net              }

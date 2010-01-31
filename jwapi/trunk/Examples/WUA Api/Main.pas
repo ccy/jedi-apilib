@@ -1,40 +1,40 @@
 {******************************************************************************}
-{ JEDI API example Windows Update Api             			                       }
-{ http://jedi-apilib.sourceforge.net					                                 }
-{ 									                                                           }
-{ Obtained through: Joint Endeavour of Delphi Innovators (Project JEDI)        }
-{ 									                                                           }
-{ Author(s): stOrM!, Christian Wimmer   			                                 }
-{ Creation date: 16th June 2008 				 	                                     }
-{ Last modification date:	18th June 2008 			                                 }
-{ 									                                                           }
-{ Description: Demonstrates how to use the Windows Update Api through COM      }
-{    searches, download and installs Windows Updates to your machine 	         }
-{ 	            						                                                   }
-{ Preparations: JwaWindows, JwaVersions, VirtualStringTreeView                 }
-{			                                                                         }
-{ Article link:   							                                               }
+{ JEDI API example Windows Update Api                                          }
+{ http://jedi-apilib.sourceforge.net                                           }
 {                                                                              }
-{                                                                 	           }
-{ Version history: 16/06/2008 first release        			                       }
-{ 									                                                           }
+{ Obtained through: Joint Endeavour of Delphi Innovators (Project JEDI)        }
+{                                                                              }
+{ Author(s): stOrM!, Christian Wimmer                                          }
+{ Creation date: 16th June 2008                                                }
+{ Last modification date:   18th June 2008                                     }
+{                                                                              }
+{ Description: Demonstrates how to use the Windows Update Api through COM      }
+{    searches, download and installs Windows Updates to your machine           }
+{                                                                              }
+{ Preparations: JwaWindows, JwaVersions, VirtualStringTreeView                 }
+{                                                                              }
+{ Article link:                                                                }
+{                                                                              }
+{                                                                              }
+{ Version history: 16/06/2008 first release                                    }
+{                                                                              }
 { No license. Use this example with no warranty at all and on your own risk.   }
-{ This example is just for learning purposes and should not be used in 	       }
-{ productive environments.						                                         }
-{ The code has surely some errors that need to be fixed. In such a case	       }
+{ This example is just for learning purposes and should not be used in         }
+{ productive environments.                                                     }
+{ The code has surely some errors that need to be fixed. In such a case        }
 { you can contact the author(s) through the JEDI API hompage, the mailinglist  }
-{ or via the article link.						                                         }
-{ 									                                                           }
+{ or via the article link.                                                     }
+{                                                                              }
 { Be aware that third party components used by this example may have other     }
 { licenses. Please see the corresponding component what they are.              }
 { You have to download them manually.                                          }
-{ 									                                                           }
+{                                                                              }
 { The JEDI API Logo is copyrighted and must not be used without permission     }
-{ 									                                                           }
+{                                                                              }
 { External components:                                                         }
 {   VirtualStringTreeView components:                                          }
 {    http://www.soft-gems.net/supplement/download.php?ID=28                    }
-{ 	                                                                           }
+{                                                                              }
 {******************************************************************************}
 unit Main;
 

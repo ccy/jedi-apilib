@@ -1,11 +1,11 @@
 {----------------------------------------------------------------------------- }
 { Unit uDisBurner: Implements the Image Mastering API (IMAPI) with object      }
 {                                                                              }
-{ Author(s): Benjamin Schwarze												   }
-{ Creation date: 18 July 2009 					   				   			   }
-{ Last modification date: 20. July 2009										   }
+{ Author(s): Benjamin Schwarze                                                 }
+{ Creation date: 18 July 2009                                                  }
+{ Last modification date: 20. July 2009                                        }
 {                                                                              }
-{ Tested with: D2006, D2009													   }
+{ Tested with: D2006, D2009                                                    }
 {                                                                              }
 { The contents of this file are used with permission, subject to the Mozilla   }
 { Public License Version 1.1 (the "License"); you may not use this file except }

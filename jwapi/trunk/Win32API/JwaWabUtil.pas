@@ -9,13 +9,13 @@
 { Copyright (C) 1995-2000 Microsoft Corporation.                               }
 { All Rights Reserved.                                                         }
 {                                                                              }
-{ The original file is: wabutil.h, released 31 Jan 2000.           			   }
-{ The original Pascal code is: WabUtil.pas, released 31 Mar 2000.  			   }
+{ The original file is: wabutil.h, released 31 Jan 2000.                       }
+{ The original Pascal code is: WabUtil.pas, released 31 Mar 2000.              }
 { The initial developer of the Pascal code is Petr Vones                       }
 { (petr.v@mujmail.cz).                                                         }
 {                                                                              }
-{ Portions created by Petr Vones are                               	           }
-{ Copyright (C) 2000 Petr Vones                                    			   }
+{ Portions created by Petr Vones are                                           }
+{ Copyright (C) 2000 Petr Vones                                                }
 { Obtained through: Joint Endeavour of Delphi Innovators (Project JEDI)        }
 {                                                                              }
 { You may retrieve the latest version of this file at the Project JEDI         }
@@ -91,27 +91,27 @@ type
 
 { Entry Point for in memory ITable }
 
-{*	CreateTable()
- *		Creates the internal memory structures and object handle
- *		to bring a new table into existence.
+{*  CreateTable()
+ *      Creates the internal memory structures and object handle
+ *      to bring a new table into existence.
  *
- *	lpInterface
- *		Interface ID of the TableData object (IID_IMAPITableData)
+ *  lpInterface
+ *      Interface ID of the TableData object (IID_IMAPITableData)
  *
- *	lpAllocateBuffer, lpAllocateMore, and lpFreeBuffer
- *		Function addresses are provided by the caller so that
- *		this DLL allocates/frees memory appropriately.
- *	lpvReserved
- *		Reserved.  Should be NULL.
- *	ulTableType
- *		TBLTYPE_DYNAMIC, etc.  Visible to the calling application
- *		as part of the GetStatus return data on its views
- *	ulPropTagIndexColumn
- *		Index column for use when changing the data
- *	lpSPropTagArrayColumns
- *		Column proptags for the minimum set of columns in the table
- *	lppTableData
- *		Address of the pointer which will receive the TableData object
+ *  lpAllocateBuffer, lpAllocateMore, and lpFreeBuffer
+ *      Function addresses are provided by the caller so that
+ *      this DLL allocates/frees memory appropriately.
+ *  lpvReserved
+ *      Reserved.  Should be NULL.
+ *  ulTableType
+ *      TBLTYPE_DYNAMIC, etc.  Visible to the calling application
+ *      as part of the GetStatus return data on its views
+ *  ulPropTagIndexColumn
+ *      Index column for use when changing the data
+ *  lpSPropTagArrayColumns
+ *      Column proptags for the minimum set of columns in the table
+ *  lppTableData
+ *      Address of the pointer which will receive the TableData object
  *}
 
 function CreateTable(lpInterface: PCIID; lpAllocateBuffer: PAllocateBuffer;
@@ -121,112 +121,112 @@ function CreateTable(lpInterface: PCIID; lpAllocateBuffer: PAllocateBuffer;
 {$EXTERNALSYM CreateTable}
 
 
-{*	HrGetView()
- *		This function obtains a new view on the underlying data
- *		which supports the IMAPITable interface.  All rows and columns
- *		of the underlying table data are initially visible
- *	lpSSortOrderSet
- *		if specified, results in the view being sorted
- *	lpfCallerRelease
- *		pointer to a routine to be called when the view is released, or
- *		NULL.
- *	ulCallerData
- *		arbitrary data the caller wants saved with this view and returned in
- *		the Release callback.
+{*  HrGetView()
+ *      This function obtains a new view on the underlying data
+ *      which supports the IMAPITable interface.  All rows and columns
+ *      of the underlying table data are initially visible
+ *  lpSSortOrderSet
+ *      if specified, results in the view being sorted
+ *  lpfCallerRelease
+ *      pointer to a routine to be called when the view is released, or
+ *      NULL.
+ *  ulCallerData
+ *      arbitrary data the caller wants saved with this view and returned in
+ *      the Release callback.
  *}
 
-{*	HrModifyRows()
- *		Add or modify a set of rows in the table data
- *	ulFlags
- *		Must be zero
- *	lpSRowSet
- *		Each row in the row set contains all the properties for one row
- *		in the table.  One of the properties must be the index column.  Any
- *		row in the table with the same value for its index column is
- *		replaced, or if there is no current row with that value the
- *		row is added.
- *		Each row in LPSRowSet MUST have a unique Index column!
- *		If any views are open, the view is updated as well.
- *		The properties do not have to be in the same order as the
- *		columns in the current table
+{*  HrModifyRows()
+ *      Add or modify a set of rows in the table data
+ *  ulFlags
+ *      Must be zero
+ *  lpSRowSet
+ *      Each row in the row set contains all the properties for one row
+ *      in the table.  One of the properties must be the index column.  Any
+ *      row in the table with the same value for its index column is
+ *      replaced, or if there is no current row with that value the
+ *      row is added.
+ *      Each row in LPSRowSet MUST have a unique Index column!
+ *      If any views are open, the view is updated as well.
+ *      The properties do not have to be in the same order as the
+ *      columns in the current table
  *}
 
-{*	HrModifyRow()
- *		Add or modify one row in the table
- *	lpSRow
- *		This row contains all the properties for one row in the table.
- *		One of the properties must be the index column.	 Any row in
- *		the table with the same value for its index column is
- *		replaced, or if there is no current row with that value the
- *		row is added
- *		If any views are open, the view is updated as well.
- *		The properties do not have to be in the same order as the
- *		columns in the current table
+{*  HrModifyRow()
+ *      Add or modify one row in the table
+ *  lpSRow
+ *      This row contains all the properties for one row in the table.
+ *      One of the properties must be the index column.  Any row in
+ *      the table with the same value for its index column is
+ *      replaced, or if there is no current row with that value the
+ *      row is added
+ *      If any views are open, the view is updated as well.
+ *      The properties do not have to be in the same order as the
+ *      columns in the current table
  *}
 
-{*	HrDeleteRows()
- *		Delete a row in the table.
- *	ulFlags
- *		TAD_ALL_ROWS - Causes all rows in the table to be deleted
- *					   lpSRowSet is ignored in this case.
- *	lpSRowSet
- *		Each row in the row set contains all the properties for one row
- *		in the table.  One of the properties must be the index column.  Any
- *		row in the table with the same value for its index column is
- *		deleted.
- *		Each row in LPSRowSet MUST have a unique Index column!
- *		If any views are open, the view is updated as well.
- *		The properties do not have to be in the same order as the
- *		columns in the current table
+{*  HrDeleteRows()
+ *      Delete a row in the table.
+ *  ulFlags
+ *      TAD_ALL_ROWS - Causes all rows in the table to be deleted
+ *                     lpSRowSet is ignored in this case.
+ *  lpSRowSet
+ *      Each row in the row set contains all the properties for one row
+ *      in the table.  One of the properties must be the index column.  Any
+ *      row in the table with the same value for its index column is
+ *      deleted.
+ *      Each row in LPSRowSet MUST have a unique Index column!
+ *      If any views are open, the view is updated as well.
+ *      The properties do not have to be in the same order as the
+ *      columns in the current table
  *}
 
 const
   TAD_ALL_ROWS = 1;
   {$EXTERNALSYM TAD_ALL_ROWS}
 
-{*	HrDeleteRow()
- *		Delete a row in the table.
- *	lpSPropValue
- *		This property value specifies the row which has this value
- *		for its index column
+{*  HrDeleteRow()
+ *      Delete a row in the table.
+ *  lpSPropValue
+ *      This property value specifies the row which has this value
+ *      for its index column
  *}
 
-{*	HrQueryRow()
- *		Returns the values of a specified row in the table
- *	lpSPropValue
- *		This property value specifies the row which has this value
- *		for its index column
- *	lppSRow
- *		Address of where to return a pointer to an SRow
- *	lpuliRow
- *	  Address of where to return the row number. This can be NULL
- *	  if the row number is not required.
+{*  HrQueryRow()
+ *      Returns the values of a specified row in the table
+ *  lpSPropValue
+ *      This property value specifies the row which has this value
+ *      for its index column
+ *  lppSRow
+ *      Address of where to return a pointer to an SRow
+ *  lpuliRow
+ *      Address of where to return the row number. This can be NULL
+ *      if the row number is not required.
  *
  *}
 
-{*	HrEnumRow()
- *		Returns the values of a specific (numbered) row in the table
- *	ulRowNumber
- *		Indicates row number 0 to n-1
- *	lppSRow
- *		Address of where to return a pointer to a SRow
+{*  HrEnumRow()
+ *      Returns the values of a specific (numbered) row in the table
+ *  ulRowNumber
+ *      Indicates row number 0 to n-1
+ *  lppSRow
+ *      Address of where to return a pointer to a SRow
  *}
 
-{*	HrInsertRow()
- *		Inserts a row into the table.
- *	uliRow
- *		The row number before which this row will be inserted into the table.
- *		Row numbers can be from 0 to n where o to n-1 result in row insertion
- *	  a row number of n results in the row being appended to the table.
- *	lpSRow
- *		This row contains all the properties for one row in the table.
- *		One of the properties must be the index column.	 Any row in
- *		the table with the same value for its index column is
- *		replaced, or if there is no current row with that value the
- *		row is added
- *		If any views are open, the view is updated as well.
- *		The properties do not have to be in the same order as the
- *		columns in the current table
+{*  HrInsertRow()
+ *      Inserts a row into the table.
+ *  uliRow
+ *      The row number before which this row will be inserted into the table.
+ *      Row numbers can be from 0 to n where o to n-1 result in row insertion
+ *      a row number of n results in the row being appended to the table.
+ *  lpSRow
+ *      This row contains all the properties for one row in the table.
+ *      One of the properties must be the index column.  Any row in
+ *      the table with the same value for its index column is
+ *      replaced, or if there is no current row with that value the
+ *      row is added
+ *      If any views are open, the view is updated as well.
+ *      The properties do not have to be in the same order as the
+ *      columns in the current table
  *}
 
 
@@ -248,20 +248,20 @@ type
 { Entry Point for in memory IMAPIProp }
 
 
-{*	CreateIProp()
- *		Creates the internal memory structures and object handle
- *		to bring a new property interface into existance.
+{*  CreateIProp()
+ *      Creates the internal memory structures and object handle
+ *      to bring a new property interface into existance.
  *
- *	lpInterface
- *		Interface ID of the TableData object (IID_IMAPIPropData)
+ *  lpInterface
+ *      Interface ID of the TableData object (IID_IMAPIPropData)
  *
- *	lpAllocateBuffer, lpAllocateMore, and lpFreeBuffer
- *		Function addresses are provided by the caller so that
- *		this DLL allocates/frees memory appropriately.
- *	lppPropData
- *		Address of the pointer which will receive the IPropData object
- *	lpvReserved
- *		Reserved.  Should be NULL.
+ *  lpAllocateBuffer, lpAllocateMore, and lpFreeBuffer
+ *      Function addresses are provided by the caller so that
+ *      this DLL allocates/frees memory appropriately.
+ *  lppPropData
+ *      Address of the pointer which will receive the IPropData object
+ *  lpvReserved
+ *      Reserved.  Should be NULL.
  *}
 
 type
@@ -282,28 +282,28 @@ const
   {$EXTERNALSYM IPROP_DIRTY}
 
 {*
- -	HrSetPropAccess
- -
- *	Sets access right attributes on a per-property basis.  By default,
- *	all properties are read/write.
+ *  HrSetPropAccess
+ *
+ *  Sets access right attributes on a per-property basis.  By default,
+ *  all properties are read/write.
  *}
 
 {*
- -	HrSetObjAccess
- -
- *	Sets access rights for the object itself.  By default, the object has
- *	read/write access.
+ *  HrSetObjAccess
+ *
+ *  Sets access rights for the object itself.  By default, the object has
+ *  read/write access.
  *}
 
 { Idle time scheduler }
 
 {*
- *	PRI
+ *  PRI
  *
- *	Priority of an idle task.
- *	The idle engine sorts tasks by priority, and the one with the higher
- *	value runs first. Within a priority level, the functions are called
- *	round-robin.
+ *  Priority of an idle task.
+ *  The idle engine sorts tasks by priority, and the one with the higher
+ *  value runs first. Within a priority level, the functions are called
+ *  round-robin.
  *}
 
   PRILOWEST  = -32768;
@@ -314,30 +314,30 @@ const
   {$EXTERNALSYM PRIUSER}
 
 {*
- *	IRO
+ *  IRO
  *
- *	Idle routine options.  This is a combined bit mask consisting of
- *	individual firo's.	Listed below are the possible bit flags.
+ *  Idle routine options.  This is a combined bit mask consisting of
+ *  individual firo's.  Listed below are the possible bit flags.
  *
- *		FIROWAIT and FIROINTERVAL are mutually exclusive.
- *		If neither of the flags are specified, the default action
- *		is to ignore the time parameter of the idle function and
- *		call it as often as possible if firoPerBlock is not set;
- *		otherwise call it one time only during the idle block
- *		once the time constraint has been set. FIROINTERVAL
- *		is also incompatible with FIROPERBLOCK.
+ *  FIROWAIT and FIROINTERVAL are mutually exclusive.
+ *  If neither of the flags are specified, the default action
+ *  is to ignore the time parameter of the idle function and
+ *  call it as often as possible if firoPerBlock is not set;
+ *  otherwise call it one time only during the idle block
+ *  once the time constraint has been set. FIROINTERVAL
+ *  is also incompatible with FIROPERBLOCK.
  *
- *		FIROWAIT		- time given is minimum idle time before calling
- *						  for the first time in the block of idle time,
- *						  afterwhich call as often as possible.
- *		FIROINTERVAL	- time given is minimum interval between each
- *						  successive call
- *		FIROPERBLOCK	- called only once per contiguous block of idle
- *						  time
- *		FIRODISABLED	- initially disabled when registered, the
- *						  default is to enable the function when registered.
- *		FIROONCEONLY	- called only one time by the scheduler and then
- *						  deregistered automatically.
+ *      FIROWAIT        - time given is minimum idle time before calling
+ *                        for the first time in the block of idle time,
+ *                        afterwhich call as often as possible.
+ *      FIROINTERVAL    - time given is minimum interval between each
+ *                        successive call
+ *      FIROPERBLOCK    - called only once per contiguous block of idle
+ *                        time
+ *      FIRODISABLED    - initially disabled when registered, the
+ *                        default is to enable the function when registered.
+ *      FIROONCEONLY    - called only one time by the scheduler and then
+ *                        deregistered automatically.
  *}
 
   IRONULL       = Word($0000);
@@ -354,11 +354,11 @@ const
   {$EXTERNALSYM FIROONCEONLY}
 
 {*
- *	IRC
+ *  IRC
  *
- *	Idle routine change options. This is a combined bit mask consisting
- *	of individual firc's; each one identifies an aspect of the idle task
- *	that can be changed.
+ *  Idle routine change options. This is a combined bit mask consisting
+ *  of individual firc's; each one identifies an aspect of the idle task
+ *  that can be changed.
  *
  *}
 
@@ -376,8 +376,8 @@ const
   {$EXTERNALSYM FIRCIRO}
 
 {*
- *	Type definition for idle functions.	 An idle function takes one
- *	parameter, an PV, and returns a BOOL value.
+ *  Type definition for idle functions.  An idle function takes one
+ *  parameter, an PV, and returns a BOOL value.
  *}
 
 type
@@ -387,9 +387,9 @@ type
   TFnIdle = FNIDLE;
 
 {*
- *	FTG
+ *  FTG
  *
- *	Function Tag.  Used to identify a registered idle function.
+ *  Function Tag.  Used to identify a registered idle function.
  *
  *}
 
@@ -401,14 +401,14 @@ const
   {$EXTERNALSYM FTGNULL}
 
 {*
- -	MAPIInitIdle/MAPIDeinitIdle
- -
- *	Purpose:
- *		Initialises the idle engine
- *		If the initialisation succeded, returns 0, else returns -1
+ *  MAPIInitIdle/MAPIDeinitIdle
  *
- *	Arguments:
- *		lpvReserved		Reserved, must be NULL.
+ *  Purpose:
+ *      Initialises the idle engine
+ *      If the initialisation succeded, returns 0, else returns -1
+ *
+ *  Arguments:
+ *      lpvReserved     Reserved, must be NULL.
  *}
 
 function MAPIInitIdle(lpvReserved: Pointer): LongInt; stdcall;
@@ -417,14 +417,14 @@ procedure MAPIDeinitIdle; stdcall;
 {$EXTERNALSYM MAPIDeinitIdle}
 
 {*
- *	FtgRegisterIdleRoutine
+ *  FtgRegisterIdleRoutine
  *
- *		Registers the function pfn of type PFNIDLE, i.e., (BOOL (*)(LPVOID))
- *		as an idle function.
+ *      Registers the function pfn of type PFNIDLE, i.e., (BOOL (*)(LPVOID))
+ *      as an idle function.
  *
- *		The idle function will be called with the parameter pv by the
- *		idle engine. The function has initial priority priIdle,
- *		associated time csecIdle, and options iroIdle.
+ *      The idle function will be called with the parameter pv by the
+ *      idle engine. The function has initial priority priIdle,
+ *      associated time csecIdle, and options iroIdle.
  *}
 
 function FtgRegisterIdleRoutine(lpfnIdle: PFnIdle; lpvIdleParam: Pointer;
@@ -432,32 +432,32 @@ function FtgRegisterIdleRoutine(lpfnIdle: PFnIdle; lpvIdleParam: Pointer;
 {$EXTERNALSYM FtgRegisterIdleRoutine}
 
 {*
- *	DeregisterIdleRoutine
+ *  DeregisterIdleRoutine
  *
- *		Removes the given routine from the list of idle routines.
- *		The routine will not be called again.  It is the responsibility
- *		of the caller to clean up any data structures pointed to by the
- *		pvIdleParam parameter; this routine does not free the block.
+ *      Removes the given routine from the list of idle routines.
+ *      The routine will not be called again.  It is the responsibility
+ *      of the caller to clean up any data structures pointed to by the
+ *      pvIdleParam parameter; this routine does not free the block.
  *}
 
 procedure DeregisterIdleRoutine(ftg: FTG); stdcall;
 {$EXTERNALSYM DeregisterIdleRoutine}
 
 {*
- *	EnableIdleRoutine
+ *  EnableIdleRoutine
  *
- *		Enables or disables an idle routine.
+ *      Enables or disables an idle routine.
  *}
 
 procedure EnableIdleRoutine(ftg: FTG; fEnable: BOOL); stdcall;
 {$EXTERNALSYM EnableIdleRoutine}
 
 {*
- *	ChangeIdleRoutine
+ *  ChangeIdleRoutine
  *
- *		Changes some or all of the characteristics of the given idle
- *		function. The changes to make are indicated with flags in the
- *		ircIdle parameter.
+ *      Changes some or all of the characteristics of the given idle
+ *      function. The changes to make are indicated with flags in the
+ *      ircIdle parameter.
  *}
 
 procedure ChangeIdleRoutine(ftg: FTG; lpfnIdle: PFnIdle; lpvIdleParam: Pointer;
@@ -472,8 +472,8 @@ function MAPIGetDefaultMalloc: IMalloc; stdcall;
 { StreamOnFile (SOF) }
 
 {*
- *	Methods and #define's for implementing an OLE 2.0 storage stream
- *	(as defined in the OLE 2.0 specs) on top of a system file.
+ *  Methods and #define's for implementing an OLE 2.0 storage stream
+ *  (as defined in the OLE 2.0 specs) on top of a system file.
  *}
 
 const
@@ -489,9 +489,9 @@ function OpenStreamOnFile(lpAllocateBuffer: PAllocateBuffer;
 { Property interface utilities }
 
 {*
- *	Copies a single SPropValue from Src to Dest.  Handles all the various
- *	types of properties and will link its allocations given the master
- *	allocation object and an allocate more function.
+ *  Copies a single SPropValue from Src to Dest.  Handles all the various
+ *  types of properties and will link its allocations given the master
+ *  allocation object and an allocate more function.
  *}
 
 function PropCopyMore(lpSPropValueDest, lpSPropValueSrc: PSPropValue;
@@ -499,8 +499,8 @@ function PropCopyMore(lpSPropValueDest, lpSPropValueSrc: PSPropValue;
 {$EXTERNALSYM PropCopyMore}
 
 {*
- *	Returns the size in bytes of structure at lpSPropValue, including the
- *	Value.
+ *  Returns the size in bytes of structure at lpSPropValue, including the
+ *  Value.
  *}
 
 function UlPropSize(lpSPropValue: PSPropValue): ULONG; stdcall;
@@ -536,8 +536,8 @@ function HrAddColumnsEx(lptbl: IMAPITable; lpproptagColumnsNew: PSPropTagArray;
 { Notification utilities }
 
 {*
- *	Function that creates an advise sink object given a notification
- *	callback function and context.
+ *  Function that creates an advise sink object given a notification
+ *  callback function and context.
  *}
 
 procedure HrAllocAdviseSink(lpfnCallback: TNotifyCallback; lpvContext: Pointer;
@@ -545,9 +545,9 @@ procedure HrAllocAdviseSink(lpfnCallback: TNotifyCallback; lpvContext: Pointer;
 {$EXTERNALSYM HrAllocAdviseSink}
 
 {*
- *	Wraps an existing advise sink with another one which guarantees
- *	that the original advise sink will be called in the thread on
- *	which it was created.
+ *  Wraps an existing advise sink with another one which guarantees
+ *  that the original advise sink will be called in the thread on
+ *  which it was created.
  *}
 
 procedure HrThisThreadAdviseSink(lpAdviseSink: IMAPIAdviseSink;
@@ -555,9 +555,9 @@ procedure HrThisThreadAdviseSink(lpAdviseSink: IMAPIAdviseSink;
 {$EXTERNALSYM HrThisThreadAdviseSink}
 
 {*
- *	Allows a client and/or provider to force notifications
- *	which are currently queued in the MAPI notification engine
- *	to be dispatched without doing a message dispatch.
+ *  Allows a client and/or provider to force notifications
+ *  which are currently queued in the MAPI notification engine
+ *  to be dispatched without doing a message dispatch.
  *}
 
 function HrDispatchNotifications(ulFlags: ULONG): HResult; stdcall;
@@ -566,8 +566,8 @@ function HrDispatchNotifications(ulFlags: ULONG): HResult; stdcall;
 { Service Provider Utilities }
 
 {*
- *	Structures and utility function for building a display table
- *	from resources.
+ *  Structures and utility function for building a display table
+ *  from resources.
  *}
 
 type
@@ -618,10 +618,10 @@ procedure BuildDisplayTable(lpAllocateBuffer: PAllocateBuffer;
 { MAPI structure validation/copy utilities }
 
 {*
- *	Validate, copy, and adjust pointers in MAPI structures:
- *		notification
- *		property value array
- *		option data
+ *  Validate, copy, and adjust pointers in MAPI structures:
+ *      notification
+ *      property value array
+ *      option data
  *}
 
 function ScCountNotifications(cNotifications: Integer;
@@ -745,8 +745,8 @@ function RTFSync(lpMessage: IMessage; ulFlags: ULONG; var lpfMessageUpdated: Boo
 
 { Flags for WrapCompressedRTFStream() }
 
-//****** MAPI_MODIFY				((ULONG) 0x00000001) mapidefs.h */
-//****** STORE_UNCOMPRESSED_RTF	((ULONG) 0x00008000) mapidefs.h */
+//****** MAPI_MODIFY                ((ULONG) 0x00000001) mapidefs.h */
+//****** STORE_UNCOMPRESSED_RTF     ((ULONG) 0x00008000) mapidefs.h */
 
 function WrapCompressedRTFStream(lpCompressedRTFStream: IStream; ulFlags: ULONG;
   out lpUncompressedRTFStream: IStream): HResult; stdcall;

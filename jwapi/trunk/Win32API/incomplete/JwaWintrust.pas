@@ -564,7 +564,7 @@ type
 // WOB #1251526 -- macro must check whether _all_ bytes of the member
 // lie within the struct size specified
 //#define WVT_ISINSTRUCT(structtypedef, structpassedsize, member) \
-//	((WVT_OFFSETOF(structtypedef, member) + sizeof(((structtypedef *) 0)->member) <= structpassedsize) ? TRUE : FALSE)
+//  ((WVT_OFFSETOF(structtypedef, member) + sizeof(((structtypedef *) 0)->member) <= structpassedsize) ? TRUE : FALSE)
 
 
 //#define WVT_IS_CBSTRUCT_GT_MEMBEROFFSET(structtypedef, structpassedsize, member) \

@@ -1,28 +1,29 @@
 {******************************************************************************}
-{ JEDI API example <name> 													   }
-{ http://jedi-apilib.sourceforge.net										   }
-{ 																			   }
+{ JEDI API example <name>                                                      }
+{ http://jedi-apilib.sourceforge.net                                           }
+{                                                                              }
 { Obtained through: Joint Endeavour of Delphi Innovators (Project JEDI)        }
-{ 																			   }
-{ Author(s): Benjamin Schwarze														   }
-{ Creation date: 29th April 2008 					   				   }
-{ Last modification date:	5th June 2008												   }
-{ 																			   }
-{ Description: It demonstrates monitoring active jobs, adding new jobs and }
-{ 						 accessing the finale files													   }
-{ 																			   }
-{ Preparations: JWA must be ready to use.							   }
-{ 																			   }
-{ Article link: http://blog.delphi-jedi.net/2008/04/30/bits-part-2-downloading-files/							   }
-{ 																			   }
-{ Version history: 29th April 2008											   }
-{ 																			   }
+{                                                                              }
+{ Author(s): Benjamin Schwarze                                                 }
+{ Creation date: 29th April 2008                                               }
+{ Last modification date:   5th June 2008                                      }
+{                                                                              }
+{ Description: It demonstrates monitoring active jobs, adding new jobs and     }
+{                        accessing the finale files                            }
+{                                                                              }
+{ Preparations: JWA must be ready to use.                                      }
+{                                                                              }
+{ Article link:                                                                }
+{       http://blog.delphi-jedi.net/2008/04/30/bits-part-2-downloading-files/  }
+{                                                                              }
+{ Version history: 29th April 2008                                             }
+{                                                                              }
 { No license. Use this example with no warranty at all and on your own risk.   }
-{ This example is just for learning purposes and should not be used in 		   }
-{ productive environments.													   }
-{ The code has surely some errors that need to be fixed. In such a case	   	   }
+{ This example is just for learning purposes and should not be used in         }
+{ productive environments.                                                     }
+{ The code has surely some errors that need to be fixed. In such a case        }
 { you can contact the author(s) through the JEDI API hompage, the mailinglist  }
-{ or via the article link.													   }
+{ or via the article link.                                                     }
 {******************************************************************************}
 
 unit uFormMain;
