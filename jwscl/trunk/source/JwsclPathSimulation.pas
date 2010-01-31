@@ -33,9 +33,14 @@ The Original Code is JwsclPathSimulation.pas.
 The Initial Developer of the Original Code is Christian Wimmer.
 Portions created by Christian Wimmer are Copyright (C) Christian Wimmer. All rights reserved.
 
-
+Requirement: Delphi 2009 or newer
 }
 unit JwsclPathSimulation;
+{$INCLUDE ..\includes\Jwscl.inc}
+
+{$IFNDEF DELPHI2009_UP}
+ERROR: This file is only for Delphi 2009 and newer                           
+{$ENDIF}
 
 interface
 uses

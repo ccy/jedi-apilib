@@ -44,6 +44,7 @@ function WideSameText(const S1, S2: WideString): Boolean;
 {Calls RaiseLastWin32Error internally.}
 {@exclude}
 procedure RaiseLastOSError;
+
 {$ENDIF DELPHI5}
 
 {@exclude}
@@ -51,6 +52,13 @@ procedure CheckThreadError(ErrCode: Integer); overload;
 {@exclude}
 procedure CheckThreadError(Err: Boolean); overload;
 {$ENDIF DELPHI7_UP}
+
+{$IFNDEF DELPHI7}
+type
+  IComparable = interface
+    function CompareTo(Obj: TObject): Integer;
+  end;
+{$ENDIF DELPHI7}
 
 implementation
 

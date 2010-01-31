@@ -46,6 +46,7 @@ interface
 uses SysUtils, Classes,
   jwaWindows,
   JwsclResource,
+  D5Impl,
   JwsclSid, JwsclToken, JwsclUtils,
   JwsclTypes, JwsclExceptions,
   JwsclVersion, JwsclConstants,
@@ -102,6 +103,8 @@ type
     fIsStandard : Boolean;
 
     constructor Create(const Level : Cardinal; IsStandardSID : Boolean); overload;
+
+    class procedure FreeIntegrityLevelSIDs;
   public
     constructor Create(const Level : Cardinal); overload;
     constructor Create(const IL : TJwIntegrityLevelSID); overload;
@@ -1322,6 +1325,21 @@ begin
 {$WARNINGS on}
 end;
 
+class procedure TJwIntegrityLevelSID.FreeIntegrityLevelSIDs;
+var i : Integer;
+begin
+  if not Assigned(IntegrityLevelSIDs) then
+    exit;
+
+  for I := 0 to IntegrityLevelSIDs.Count - 1 do
+  begin
+    IntegrityLevelSIDs.Objects[I].Free;
+    IntegrityLevelSIDs.Objects[I] := nil;
+  end;
+
+  FreeAndNil(IntegrityLevelSIDs);
+end;
+
 function TJwIntegrityLevelSID.IsEqual(IL: TJwIntegrityLevelSID; CompareLevel: Boolean): Boolean;
 begin
   if CompareLevel then
@@ -1393,7 +1411,8 @@ finalization
   OnFinalization := True;
   DoneWellKnownSIDs;
   JwDoneMapping;
-  FreeAndNil(IntegrityLevelSIDs);
+  TJwIntegrityLevelSID.FreeIntegrityLevelSIDs;
+
 {$ENDIF SL_FINALIZATION_SECTION}
 
 {$IFNDEF SL_OMIT_SECTIONS}

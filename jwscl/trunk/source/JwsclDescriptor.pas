@@ -1518,7 +1518,7 @@ begin
       (GetLastError() = ERROR_INSUFFICIENT_BUFFER) then
     begin
       GetMem(Result, ipSDSize);
-      //result := PSecurityDescriptor(LocalAlloc(LMEM_FIXED or LMEM_ZEROINIT,sizeof(jwaWindows.TJwSecurityDescriptor)));
+
       if not MakeSelfRelativeSD(pSD, Result, ipSDSize) then
       begin
         FreeMem(Result);
@@ -1529,8 +1529,6 @@ begin
            ['MakeSelfRelativeSD']);
       end;
       result^.Control := result^.Control or SE_SELF_RELATIVE;
-
-
     end
     else
     begin
@@ -1675,7 +1673,6 @@ begin
 
 
   Result.Control := TJwEnumMap.ConvertSecurityControl(Control);
-//  Result.Control := 0;
 
   Result.Control := Result.Control or SE_DACL_PRESENT;
 
@@ -1712,9 +1709,6 @@ begin
 
   result.Control := Result.Control or SE_DACL_AUTO_INHERITed;
   }
- // Control2 := TJwEnumMap.ConvertSecurityControl(result^.Control);
-
-
 
   {result <> nil
   aDACL <> nil or aDACL = nil
