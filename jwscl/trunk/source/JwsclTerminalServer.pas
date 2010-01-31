@@ -4244,7 +4244,7 @@ end;
 function TJwWTSSession.Connect(const Password: TJwString): Boolean;
 begin
   Result := WinStationConnectW(Owner.Owner.FServerHandle, WTS_CURRENT_SESSION,
-    FSessionId, {$IFDEF UNICODE}PWideChar(Password){$ELSE}PWideChar(WideString(Password){$ENDIF}, False);
+    FSessionId, {$IFDEF UNICODE}PWideChar(Password){$ELSE}PWideChar(WideString(Password)){$ENDIF}, False);
   if not Result then raise EJwsclWinCallFailedException.CreateFmtWinCall(RsWinCallFailed,
       'Connect', ClassName, RsUNTerminalServer, 0, True,
           'WinStationConnectW', ['WinStationConnectW']);
