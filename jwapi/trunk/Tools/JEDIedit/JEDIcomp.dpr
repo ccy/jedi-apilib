@@ -3,7 +3,6 @@ program JEDIcomp;
 {$APPTYPE CONSOLE}
 
 uses
-  SysUtils,
   JwaAccCtrl,
   JwaAclApi,
   JwaAclUI,
@@ -261,7 +260,49 @@ uses
   JwaWSvns,
   JwaWtsApi32,
   JwaZMOUSE,
-  JwaWindows;
+  JwaWindows,
+  D5impl,
+  JwsclAccounts,
+  JwsclAcl,
+  JwsclAuthCtx,
+  JwsclCertificates,
+  JwsclComSecurity,
+  JwsclComUtils,
+  JwsclConstants,
+  JwsclCredentials,
+  JwsclCryptProvider,
+  JwsclDescriptor,
+  JwsclDesktops,
+  JwsclElevation,
+  JwsclEncryption,
+  JwsclEnumerations,
+//  JwsclEurekaLogUtils,  // Requires EurekaLog
+  JwsclExceptions,
+  JwsclFirewall,
+  JwsclImpersonation,
+  JwsclKnownSid,
+  JwsclLogging,
+  JwsclLsa,
+  JwsclMapping,
+//  JwsclPathSimulation,  // Delphi 2009 and newer
+  JwsclPrivileges,
+  JwsclProcess,
+  JwsclResource,
+  JwsclSecureObjects,
+  JwsclSecurePrivateObjects,
+  JwsclSecureUserObjects,
+  JwsclSecurityDialogs,
+  JwsclSid,
+  JwsclSimpleDescriptor,
+  JwsclStreams,
+  JwsclStrings,
+  JwsclTerminalServer,
+  JwsclToken,
+  JwsclTypes,
+  JwsclUtils,
+  JwsclVersion,
+  JwsclWinStations,
+  RpcWinsta;
 
 begin
   { TODO -oUser -cConsole Main : Insert code here }
