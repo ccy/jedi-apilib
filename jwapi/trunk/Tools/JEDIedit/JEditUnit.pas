@@ -177,8 +177,19 @@ begin
   FileEdit := TFileEdit.Create;
   FileList := TFileList.Create;
   try
-    FileList.AddFiles( 'jwapi', True );
-    FileList.AddFiles( 'jwscl', True );
+    if DirectoryExists( '..\jedi-apilib' ) then
+    begin
+      // Parallel universe path
+      FileList.AddFiles( '..\jedi-apilib\jwapi\trunk', True );
+      FileList.AddFiles( '..\jedi-apilib\jwscl\trunk', True );
+    end
+    else
+    if DirectoryExists( '..\..\..\..\..\jedi-apilib' ) then
+    begin
+      // Within same tree path
+      FileList.AddFiles( '..\..\..\..\..\jedi-apilib\jwapi\trunk', True );
+      FileList.AddFiles( '..\..\..\..\..\jedi-apilib\jwscl\trunk', True );
+    end;
     FileList.Sort;
 
     for Index := 0 to FileList.Count - 1 do
