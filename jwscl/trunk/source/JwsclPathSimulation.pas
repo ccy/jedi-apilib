@@ -39,7 +39,7 @@ unit JwsclPathSimulation;
 {$INCLUDE ..\includes\Jwscl.inc}
 
 {$IFNDEF DELPHI2009_UP}
-ERROR: This file is only for Delphi 2009 and newer                           
+ERROR: This file is only for Delphi 2009 and newer
 {$ENDIF}
 
 interface
