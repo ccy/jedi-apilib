@@ -20,6 +20,8 @@ uses
 const
   FileRootPathList = 'JEDIeditRoot.txt';
   FileExcludesList = 'JEDIeditSkip.txt';
+  FileIncludesList = 'JEDIeditAdds.txt';
+  FileExtensonList = 'JEDIeditExts.txt';
 
 {==============================================================================}
 
@@ -171,7 +173,6 @@ procedure TFileList.AddFiles( const Path: string; const Recursive: Boolean );
 
   var
     SearchRec: TSearchRec;
-    FileExtension: string;
 
 begin
   if FindFirst( Path + AnyFile, faAnyFile, SearchRec ) = 0 then
@@ -191,14 +192,7 @@ begin
       end
       else
       begin
-        FileExtension := ExtractFileExt( SearchRec.Name );
-
-        if SameText( FileExtension, '.pas' )
-        or SameText( FileExtension, '.inc' )
-        or SameText( FileExtension, '.dpr' ) then
-        begin
-          Add( Path + PathSep + SearchRec.Name );
-        end;
+        Add( Path + PathSep + SearchRec.Name );
       end;
 
     until FindNext( SearchRec ) <> 0;
@@ -214,9 +208,16 @@ function RunProgram: Integer;
   var
     FileEdit: TFileEdit;
     FileList: TFileList;
-    RootPathList, ExcludesList: TStringList;
-    FileName, RootPath, TabLines: string;
+    RootPathList, ExcludesList, IncludesList, ExtensonList: TStringList;
+    FileExtn, FileName, RootPath, TabLines: string;
     Compare, Index, Jadex: Integer;
+
+  procedure InitializeStringList( StringList: TStringList );
+  begin
+    StringList.Duplicates := dupIgnore;
+    StringList.CaseSensitive := False;
+    StringList.Sorted := True;
+  end;
 
 begin
   Result := 0;
@@ -225,11 +226,11 @@ begin
   FileList := TFileList.Create;
   RootPathList := TStringList.Create;
   ExcludesList := TStringList.Create;
+  IncludesList := TStringList.Create;
+  ExtensonList := TStringList.Create;
   try
     // Prepare FileList
-    FileList.Duplicates := dupIgnore;
-    FileList.CaseSensitive := False;
-    FileList.Sorted := True;
+    InitializeStringList( FileList );
 
     // Prepare RootPathList
     if FileExists( FileRootPathList ) then
@@ -244,9 +245,7 @@ begin
     end;
 
     // Prepare ExcludesList
-    ExcludesList.Duplicates := dupIgnore;
-    ExcludesList.CaseSensitive := False;
-    ExcludesList.Sorted := True;
+    InitializeStringList( ExcludesList );
     if FileExists( FileExcludesList ) then
     begin
       ExcludesList.LoadFromFile( FileExcludesList );
@@ -257,6 +256,33 @@ begin
       ExcludesList.Add( 'jwscl\trunk\examples' );
       ExcludesList.Add( 'jwscl\trunk\unittests' );
       ExcludesList.SaveToFile( FileExcludesList );
+    end;
+
+    // Prepare IncludesList
+    InitializeStringList( IncludesList );
+    if FileExists( FileIncludesList ) then
+    begin
+      IncludesList.LoadFromFile( FileIncludesList );
+    end
+    else
+    begin
+      IncludesList.Add( 'jwapi\trunk' );
+      IncludesList.Add( 'jwscl\trunk' );
+      IncludesList.SaveToFile( FileIncludesList );
+    end;
+
+    // Prepare ExtensonList
+    InitializeStringList( ExtensonList );
+    if FileExists( FileExtensonList ) then
+    begin
+      ExtensonList.LoadFromFile( FileExtensonList );
+    end
+    else
+    begin
+      ExtensonList.Add( 'dpr' );
+      ExtensonList.Add( 'inc' );
+      ExtensonList.Add( 'pas' );
+      ExtensonList.SaveToFile( FileExtensonList );
     end;
 
     // Locate first valid RootPathList entry
@@ -277,8 +303,11 @@ begin
     begin
       RootPath := IncludeTrailingPathDelimiter( RootPath );
 
-      FileList.AddFiles( RootPath + 'jwapi\trunk', True );
-      FileList.AddFiles( RootPath + 'jwscl\trunk', True );
+      // Enumerate IncludesList entries
+      for Index := 0 to IncludesList.Count - 1 do
+      begin
+        FileList.AddFiles( RootPath + IncludesList.Strings[ Index ], True );
+      end;
 
       // Remove ExcludesList entries
       Index := 0; Jadex := 0;
@@ -303,6 +332,24 @@ begin
         begin
           // ExcludesList = FileList
           FileList.Delete( Jadex );
+        end;
+      end;
+
+      // Keep ExtensonList entries
+      Index := 0;
+      while Index < FileList.Count do
+      begin
+        FileExtn := Copy( ExtractFileExt( FileList.Strings[ Index ] ), 2, MaxInt );
+
+        if ExtensonList.IndexOf( FileExtn ) >= 0 then
+        begin
+          // FileExtn present, retain
+          Inc( Index );
+        end
+        else
+        begin
+          // FileExtn absent, discard
+          FileList.Delete( Index );
         end;
       end;
     end;
@@ -331,6 +378,8 @@ begin
     end;
 
   finally
+    FreeAndNil( ExtensonList );
+    FreeAndNil( IncludesList );
     FreeAndNil( ExcludesList );
     FreeAndNil( RootPathList );
     FreeAndNil( FileList );
