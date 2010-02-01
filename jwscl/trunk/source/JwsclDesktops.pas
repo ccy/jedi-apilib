@@ -323,8 +323,8 @@ type
     Do not use this function, it is used for internal purposes.
 
     raises
- EJwsclOpenDesktopException:  with an error description if the desktop could not be opened
-	 EJwsclDesktopException: if the desktop is already opened by this instance. }
+      EJwsclOpenDesktopException:  with an error description if the desktop could not be opened
+      EJwsclDesktopException: if the desktop is already opened by this instance. }
     function OpenInputDesktop(const DesktopFlags: TJwSecurityDesktopFlags;
       const doInherit: boolean;
       const aDesiredAccess: ACCESS_MASK): HDESK;
@@ -602,8 +602,8 @@ type
 {$IFDEF DELPHI7_UP}
      {<B>GetDesktopHeapSize</B> returns the maximum heap size of the desktop heap.
       This function is only available on Delphi 7 or higher.
-	  @return Returns the heap size in bytes
-	  raises
+    @return Returns the heap size in bytes
+    raises
  If:  an error occurs EJwsclDesktopException will be raised }
      class function GetDesktopHeapSize : Cardinal; virtual;
 {$ENDIF}

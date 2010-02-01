@@ -2448,7 +2448,7 @@ begin
     if Assigned(Items[i].SID) and (Items[i].SID.SID <> nil) then
     begin
       {//make sure AddAceToList does the same as this one:
-      	bResult := AddAccessAllowedAceEx(result, Items[i].Revision, TJwEnumMap.ConvertAceFlags(
+        bResult := AddAccessAllowedAceEx(result, Items[i].Revision, TJwEnumMap.ConvertAceFlags(
           Items[i].Flags), Items[i].AccessMask, Items[i].SID.Sid);}
       bResult := AddAceToList(Result, Items[i], iSize);
 

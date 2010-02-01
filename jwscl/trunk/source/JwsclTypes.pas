@@ -657,10 +657,10 @@ type
 
  {TCreationFlags defines how a TDesktop object is to be created}
   TJwDesktopCreationFlag = (
-    //<B>	dcfOpen)</B> creates a new desktop with the given flags
+    //<B>dcfOpen)</B> creates a new desktop with the given flags
     dcfCreate,
-	//<B>	dcfOpen)</B> opens an existing desktop with the given flags)
-	dcfOpen);
+    //<B>dcfOpen)</B> opens an existing desktop with the given flags)
+    dcfOpen);
 
 
 
@@ -1126,11 +1126,11 @@ type
   TJwRequestedTokenType = (
     {The token of the thread will be used if any; otherwise the process token.}
     rttAuto,
-	{The process token is forced to be use.See TJwSecurityToken.CreateTokenByProcess for more information }
-	rttTokenPrimary,
-	{The thread token is forced to be used.
-     See TJwSecurityToken.CreateTokenByThread for more information.}
-	rttTokenImpersonation);
+    {The process token is forced to be use.See TJwSecurityToken.CreateTokenByProcess for more information }
+    rttTokenPrimary,
+    {The thread token is forced to be used.
+      See TJwSecurityToken.CreateTokenByThread for more information.}
+    rttTokenImpersonation);
 
   {<b>TJwTokenMandatoryPolicy</b> is used by TJwSecurityToken.MandatoryPolicy and
   defines how mandatory policy is enforced for the token.}
@@ -1165,19 +1165,19 @@ type
    Please retrieve their meaning from the LoadUserProfile MSDN page or TJwProfileInfo}
   TJwProfileMember = (
     {If this enum constant is set, the flags parameter for WinAPI function LoadUserProfile
-	will just contain PI_NOUI. Otherwise the flags from ProfileInfo.Flags will be used.	}
+    will just contain PI_NOUI. Otherwise the flags from ProfileInfo.Flags will be used. }
     pmFlags,
-	{If this enum constant is set the username from the current username of the token instance is used to
+    {If this enum constant is set the username from the current username of the token instance is used to
     initialize call the profile. Otherwise the ProfileInfo.UserName member is used.}
     pmUserName,
-	{If this enum constant is set the roaming user's profile path is detected and used. Otherwise
-	the ProfileInfo.ProfilePath member is used.}
+    {If this enum constant is set the roaming user's profile path is detected and used. Otherwise
+    the ProfileInfo.ProfilePath member is used.}
     pmProfilePath,
-	{If this enum constant is set the member ProfileInfo.DefaultPath is ignored.}
+    {If this enum constant is set the member ProfileInfo.DefaultPath is ignored.}
     pmDefaultPath,
-	{If this enum constant is set the member ProfileInfo.ServerName is ignored.}
+    {If this enum constant is set the member ProfileInfo.ServerName is ignored.}
     pmServerName,
-	{If this enum constant is set the member ProfileInfo.PolicyPath is ignored.}
+    {If this enum constant is set the member ProfileInfo.PolicyPath is ignored.}
     pmPolicyPath
   );
 
@@ -1359,9 +1359,9 @@ type
   }
   TJwFileHashData = record
     {<B>Hash</B> defines a dynamic memory block that contains
-	a hash. The pointer must be freed by TJwHash.FreeBuffer (unit JwsclCryptProvider.pas).
-	}
-  	Hash : Pointer;
+    a hash. The pointer must be freed by TJwHash.FreeBuffer (unit JwsclCryptProvider.pas).
+    }
+    Hash : Pointer;
     Size : Cardinal;
   end;
 
@@ -1569,7 +1569,7 @@ type
     );
 
   TJwComAppIdRegFlag = (
-  	crfActivateServerInDesktop, //1 APPIDREGFLAGS_ACTIVATE_IUSERVER_INDESKTOP
+    crfActivateServerInDesktop, //1 APPIDREGFLAGS_ACTIVATE_IUSERVER_INDESKTOP
     crfSecureServerProcess, //2 APPIDREGFLAGS_SECURE_SERVER_PROCESS_SD_AND_BIND
     crfSetServerToIdentifyLevel  //4 APPIDREGFLAGS_ISSUE_ACTIVATION_RPC_AT_IDENTIFY
   );
@@ -1583,10 +1583,10 @@ type
 
   TJwComImpersonationLevel = (
     cilDefault = 0, //RPC_C_IMP_LEVEL_DEFAULT
-  	cilAnonymous,//RPC_C_IMP_LEVEL_ANONYMOUS
+    cilAnonymous,//RPC_C_IMP_LEVEL_ANONYMOUS
     cilIdentify,//RPC_C_IMP_LEVEL_IDENTIFY
-  	cilImpersonate,//RPC_C_IMP_LEVEL_IMPERSONATE
-  	cilDelegate//RPC_C_IMP_LEVEL_DELEGATE
+    cilImpersonate,//RPC_C_IMP_LEVEL_IMPERSONATE
+    cilDelegate//RPC_C_IMP_LEVEL_DELEGATE
   );
 
   TJwComAuthenticationCapability = (

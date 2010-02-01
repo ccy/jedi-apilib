@@ -63,35 +63,35 @@ type
     fLsaHandle: THandle;
   public
     {<B>Create</B> creates a new instance of TJwSecurityLsa and
-	registers the current process as a logon process.
-	This call needs TCB privilege!
-   @param LogonProcessName This parameter receives a name in ansi format that
-     does not exceed 127 characters.
+        registers the current process as a logon process.
+        This call needs TCB privilege!
+    @param LogonProcessName This parameter receives a name in ansi format that
+        does not exceed 127 characters.
 
-	@raises
-	  EJwsclWinCallFailedException: This exception will be raised
-	    if the call to LsaRegisterLogonProcess failed.
-	}
+    @raises
+        EJwsclWinCallFailedException: This exception will be raised
+        if the call to LsaRegisterLogonProcess failed.
+    }
     constructor Create(const LogonProcessName: AnsiString);
 
     {<B>CreateUntrusted</B> creates a new instance of TJwSecurityLsa and
-	 creates an untrusted connection to LSA
+        creates an untrusted connection to LSA
 
-	 @raises
-	  EJwsclWinCallFailedException: This exception will be raised
-	    if the call to LsaConnectUntrusted failed.
-	}
-  	constructor CreateUntrusted;
+    @raises
+        EJwsclWinCallFailedException: This exception will be raised
+        if the call to LsaConnectUntrusted failed.
+    }
+    constructor CreateUntrusted;
 
     destructor Destroy; override;
 
     {<B>LsaLogonUser</B> creates a new authentication token where
-	even token groups can be adapted.
+        even token groups can be adapted.
 
-	@param anAuthenticationInformation Use JwCreate_MSV1_0_INTERACTIVE_LOGON for
-		interactive logondata)
+    @param anAuthenticationInformation Use JwCreate_MSV1_0_INTERACTIVE_LOGON for
+        interactive logondata)
 
-	}
+    }
     procedure LsaLogonUser(
       const anOriginName: AnsiString;
       aLogonType: SECURITY_LOGON_TYPE;

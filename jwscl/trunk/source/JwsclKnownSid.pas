@@ -92,7 +92,7 @@ type
   {TJwIntegrityLevelSID provides methods to use fine grained integrity levels.
 
    This class is subject to change and to be investigated
-	and therefore should not be used!!
+   and therefore should not be used!!
   }
   TJwIntegrityLevelSID = class(TJwSecurityKnownSID, IComparable)
   private

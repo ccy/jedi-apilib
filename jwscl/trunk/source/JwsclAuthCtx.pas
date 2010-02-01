@@ -243,9 +243,9 @@ type
      # ERROR_SUCCESS  All the access bits, not including MAXIMUM_ALLOWED, are granted and the GrantedAccessMask member is not zero.
      # ERROR_PRIVILEGE_NOT_HELD DesiredAccess includes ACCESS_SYSTEM_SECURITY and the client does not have SeSecurityPrivilege.
      # ERROR_ACCESS_DENIED Includes each of the following:
-		* The requested bits are not granted.
-		* MaximumAllowed bit is on and granted access is zero.
-		* DesiredAccess is zero.
+        * The requested bits are not granted.
+        * MaximumAllowed bit is on and granted access is zero.
+        * DesiredAccess is zero.
 
      }
     property Error : TJwCardinalArray read fError;
@@ -581,7 +581,7 @@ type
         A DWORD value that specifies how the security descriptor is copied.
         This parameter can be one of the following values.
 
-          # Value 	Meaning
+          # Value   Meaning
           # 0   If pAuthzHandle is not NULL, a deep copy of the
             security descriptor is copied to the handle referenced by pAuthzHandle.
         # AUTHZ_ACCESS_CHECK_NO_DEEP_COPY_SD 1

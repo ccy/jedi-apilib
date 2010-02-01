@@ -68,7 +68,7 @@ begin
     Data.Values[SJWCLASSNAME] := JE.SourceClass;
     Data.Values[SJWMESSAGE] := JE.Message;
     Data.Values[SCOMETHODNAME] := CoMethodName;
-	Data.Values[SCOCLASSNAME] := CoClassName;
+    Data.Values[SCOCLASSNAME] := CoClassName;
     Data.Values[SCOSOURCEFILE] := CoUnitName;
     Data.Values[SCOSOURCELINE] := '0';
 

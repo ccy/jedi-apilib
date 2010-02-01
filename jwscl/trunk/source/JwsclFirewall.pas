@@ -367,24 +367,24 @@ begin
   begin
     try
       App := CoNetFwAuthorizedApplication.Create;
-	  //Create throws OleException if anything goes wrong
+      //Create throws OleException if anything goes wrong
 
-	  App.ProcessImageFileName := ApplicationFilename;
-	  App.Name := NameOnExceptionList;
-	  App.Scope := NET_FW_SCOPE_ALL;
-	  App.IpVersion := NET_FW_IP_VERSION_ANY;
-	  App.Enabled := EnableRule;
+      App.ProcessImageFileName := ApplicationFilename;
+      App.Name := NameOnExceptionList;
+      App.Scope := NET_FW_SCOPE_ALL;
+      App.IpVersion := NET_FW_IP_VERSION_ANY;
+      App.Enabled := EnableRule;
 
-	  try
-	    FProfile.AuthorizedApplications.Add(App);
-	  except
-	    on e: EOleSysError do
-	    begin
-	  	  SetLastError(E.ErrorCode);
-		  raise EJwsclFirewallAddRuleException.CreateFmtEx(e.Message,
-			'AddToWinFirewall', ClassName, RsUNFirewall,
-			0, True, []);
-		end;
+      try
+        FProfile.AuthorizedApplications.Add(App);
+      except
+        on e: EOleSysError do
+        begin
+          SetLastError(E.ErrorCode);
+          raise EJwsclFirewallAddRuleException.CreateFmtEx(e.Message,
+          'AddToWinFirewall', ClassName, RsUNFirewall,
+          0, True, []);
+        end;
       end;
     finally
       App := nil;

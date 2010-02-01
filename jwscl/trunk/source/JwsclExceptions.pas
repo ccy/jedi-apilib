@@ -587,59 +587,59 @@ type
   EJwsclGenericFirewallException = class(EJwsclSecurityException)
     {[2B2288BC-7905-46F2-0101-A0183067E63D]};
 
-	  EJwsclFirewallInitException = class(EJwsclGenericFirewallException)
-      {[2B2288BC-7905-46F2-0102-A0183067E63D]};
+  EJwsclFirewallInitException = class(EJwsclGenericFirewallException)
+    {[2B2288BC-7905-46F2-0102-A0183067E63D]};
 
-	  EJwsclFirewallProfileInitException = class(EJwsclGenericFirewallException)
-      {[2B2288BC-7905-46F2-0103-A0183067E63D]};
+  EJwsclFirewallProfileInitException = class(EJwsclGenericFirewallException)
+    {[2B2288BC-7905-46F2-0103-A0183067E63D]};
 
-	  EJwsclSetFWStateException = class(EJwsclGenericFirewallException)
-      {[2B2288BC-7905-46F2-0104-A0183067E63D]};
+  EJwsclSetFWStateException = class(EJwsclGenericFirewallException)
+    {[2B2288BC-7905-46F2-0104-A0183067E63D]};
 
-	  EJwsclGetFWStateException = class(EJwsclGenericFirewallException)
-      {[2B2288BC-7905-46F2-0105-A0183067E63D]};
+  EJwsclGetFWStateException = class(EJwsclGenericFirewallException)
+    {[2B2288BC-7905-46F2-0105-A0183067E63D]};
 
-	  EJwsclGetFWExceptionsAllowedException = class(EJwsclGenericFirewallException)
-      {[2B2288BC-7905-46F2-0106-A0183067E63D]};
+  EJwsclGetFWExceptionsAllowedException = class(EJwsclGenericFirewallException)
+    {[2B2288BC-7905-46F2-0106-A0183067E63D]};
 
-	  EJwsclSetFWExceptionsAllowedException = class(EJwsclGenericFirewallException)
-      {[2B2288BC-7905-46F2-0107-A0183067E63D]};
+  EJwsclSetFWExceptionsAllowedException = class(EJwsclGenericFirewallException)
+    {[2B2288BC-7905-46F2-0107-A0183067E63D]};
 
-	  EJwsclGetIncomingPingAllowedException = class(EJwsclGenericFirewallException)
-      {[2B2288BC-7905-46F2-0108-A0183067E63D]};
+  EJwsclGetIncomingPingAllowedException = class(EJwsclGenericFirewallException)
+    {[2B2288BC-7905-46F2-0108-A0183067E63D]};
 
-	  EJwsclSetIncomingPingAllowedException = class(EJwsclGenericFirewallException)
-      {[2B2288BC-7905-46F2-0109-A0183067E63D]};
+  EJwsclSetIncomingPingAllowedException = class(EJwsclGenericFirewallException)
+    {[2B2288BC-7905-46F2-0109-A0183067E63D]};
 
-	  EJwsclGetRemoteAdminAllowedException = class(EJwsclGenericFirewallException)
-      {[2B2288BC-7905-46F2-0110-A0183067E63D]};
+  EJwsclGetRemoteAdminAllowedException = class(EJwsclGenericFirewallException)
+    {[2B2288BC-7905-46F2-0110-A0183067E63D]};
 
-	  EJwsclSetRemoteAdminAllowedException = class(EJwsclGenericFirewallException)
-      {[2B2288BC-7905-46F2-0111-A0183067E63D]};
+  EJwsclSetRemoteAdminAllowedException = class(EJwsclGenericFirewallException)
+    {[2B2288BC-7905-46F2-0111-A0183067E63D]};
 
-	  EJwsclGetRemoteAdminAdressException = class(EJwsclGenericFirewallException)
-      {[2B2288BC-7905-46F2-0112-A0183067E63D]};
+  EJwsclGetRemoteAdminAdressException = class(EJwsclGenericFirewallException)
+    {[2B2288BC-7905-46F2-0112-A0183067E63D]};
 
-	  EJwsclSetRemoteAdminAdressException = class(EJwsclGenericFirewallException)
-      {[2B2288BC-7905-46F2-0113-A0183067E63D]};
+  EJwsclSetRemoteAdminAdressException = class(EJwsclGenericFirewallException)
+    {[2B2288BC-7905-46F2-0113-A0183067E63D]};
 
-	  EJwsclFirewallAddRuleException = class(EJwsclGenericFirewallException)
-      {[2B2288BC-7905-46F2-0114-A0183067E63D]};
+  EJwsclFirewallAddRuleException = class(EJwsclGenericFirewallException)
+    {[2B2288BC-7905-46F2-0114-A0183067E63D]};
 
-	  EJwsclAddTcpPortToFirewallException = class(EJwsclGenericFirewallException)
-      {[2B2288BC-7905-46F2-0115-A0183067E63D]};
+  EJwsclAddTcpPortToFirewallException = class(EJwsclGenericFirewallException)
+    {[2B2288BC-7905-46F2-0115-A0183067E63D]};
 
-	  EJwsclAddUdpPortToFirewallException = class(EJwsclGenericFirewallException)
-      {[2B2288BC-7905-46F2-0116-A0183067E63D]};
+  EJwsclAddUdpPortToFirewallException = class(EJwsclGenericFirewallException)
+    {[2B2288BC-7905-46F2-0116-A0183067E63D]};
 
-	  EJwsclFirewallDelRuleException = class(EJwsclGenericFirewallException)
-      {[2B2288BC-7905-46F2-0117-A0183067E63D]};
+  EJwsclFirewallDelRuleException = class(EJwsclGenericFirewallException)
+    {[2B2288BC-7905-46F2-0117-A0183067E63D]};
 
-	  EJwsclFirewallInactiveException = class(EJwsclGenericFirewallException)
-      {[2B2288BC-7905-46F2-0118-A0183067E63D]};
+  EJwsclFirewallInactiveException = class(EJwsclGenericFirewallException)
+    {[2B2288BC-7905-46F2-0118-A0183067E63D]};
 
-	  EJwsclFirewallNoExceptionsException = class(EJwsclGenericFirewallException)
-      {[2B2288BC-7905-46F2-0119-A0183067E63D]};
+  EJwsclFirewallNoExceptionsException = class(EJwsclGenericFirewallException)
+    {[2B2288BC-7905-46F2-0119-A0183067E63D]};
 
 
 

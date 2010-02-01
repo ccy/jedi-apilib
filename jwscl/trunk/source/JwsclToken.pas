@@ -409,12 +409,12 @@ type
         {CreateTokenByThread creates a new class instance and opens a thread token if available; otherwise it fails.
 
         @param aThreadHandle Receives a thread handle which is used to get
-				the process token. The handle can be zero (0) to use the current
-				process handle of the caller
+            the process token. The handle can be zero (0) to use the current
+            process handle of the caller
         @param aDesiredAccess Receives the desired access for this token. The access types can be get
-			from the following list. Access flags must be concatenated with or operator.
-			If you want to use DuplicateToken or creating an impersonated token (by ConvertToImpersonatedToken) you must specific TOKEN_DUPLICATE.
-			See CreateTokenByProcess for a list of access rights.
+            from the following list. Access flags must be concatenated with or operator.
+            If you want to use DuplicateToken or creating an impersonated token (by ConvertToImpersonatedToken) you must specific TOKEN_DUPLICATE.
+            See CreateTokenByProcess for a list of access rights.
         @param anOpenAsSelf Indicates whether the access check is to be made against the security context of the thread calling the CreateTokenByThread function or against the
                                 security context of the process for the calling thread
 
@@ -1264,8 +1264,8 @@ type
          A write call on a Windows 2000 is ignored!
          A write call on needs the SE_TCB_NAME privilege.
 
-		 To set the SessionID in an existing token you need to create a duplicate first and
-		 set the ID of the duplicated token. Use CreateDuplicateExistingToken for this reason.
+         To set the SessionID in an existing token you need to create a duplicate first and
+         set the ID of the duplicated token. Use CreateDuplicateExistingToken for this reason.
 
          See
          http://msdn2.microsoft.com/en-us/library/aa379591.aspx
@@ -1614,7 +1614,7 @@ type
 
        {<B>GetText</B> creates a string that contains a privilege in a human
         readable form :
-		 <pre>
+         <pre>
          LUID       : <luid> #13#10
          Name       : <name> #13#10
          DisplayName : <descr> #13#10
@@ -3960,7 +3960,7 @@ begin
     fTokenHandle := hNewTokenHandle;
 
 
-  	fAccessMask := RetrieveSpecificAccessRights(aDesiredAccess);
+    fAccessMask := RetrieveSpecificAccessRights(aDesiredAccess);
   end
   else
     raise EJwsclTokenImpersonationException.CreateFmtEx(
@@ -5022,9 +5022,9 @@ begin
     else
       fAccessMask := AccessMask;
   except
-	//if GetMaximumAllowed does not have the READ_CONTROL flag
-	//we may fail here, so just set access mask to zero
-	//many people don't even read it.
+    //if GetMaximumAllowed does not have the READ_CONTROL flag
+    //we may fail here, so just set access mask to zero
+    //many people don't even read it.
     fAccessMask := 0;
   end;
 end;

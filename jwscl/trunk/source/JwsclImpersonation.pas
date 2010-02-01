@@ -63,7 +63,7 @@ type {<B>IJwImpersonation</B> defines an interface for TJwImpersonation. }
       Do not use this class instead use JwImpersonateLoggedOnUser, JwImpersonateLoggedOnUser or
       JwImpersonateLoggedOnUser.
 
-	  Remarks
+      Remarks
        This class is intended only for use in services and fails without the TCB privilege.
      }
      TJwImpersonation = class(TInterfacedObject, IJwImpersonation)

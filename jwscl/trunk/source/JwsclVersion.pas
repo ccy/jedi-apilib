@@ -407,7 +407,7 @@ type
 
        @param iWinVer contains a cOsXXXXX constant that is defined in JwsclConstants.
               If iWinVer is not between the bounds of sOSVerString the windows version will be checked though, but on
-			  exception the supplied cOsXXXX constant will be presented as "Unknown System".
+              exception the supplied cOsXXXX constant will be presented as "Unknown System".
        @param bOrHigher If true the exception will only be raised if the current system version
                is smaller than the given on in iWinVer; otherwise the system version must be exactly the given one in iWinVer
        @param SourceProc contains the caller method name to be displayed in the exception message
@@ -453,15 +453,15 @@ type
 
 
     {<B>IsProcess64</B> checks if a process is 64 bit.
-	 param ProcessHandle Defines the process to be checked for 64 bit. If this parameter is zero
-	   the current process is used instead.
-	 return Returns true if the given process is a 64bit process.
+     param ProcessHandle Defines the process to be checked for 64 bit. If this parameter is zero
+     the current process is used instead.
+     return Returns true if the given process is a 64bit process.
 
-	 raises
-	   EJwsclWinCallFailedException This exception will be raised if the process handle has not the following rights
-	       XP/2003 : ROCESS_QUERY_INFORMATION
-	       Vista: ROCESS_QUERY_INFORMATION and PROCESS_QUERY_LIMITED_INFORMATION
-	}
+     raises
+       EJwsclWinCallFailedException This exception will be raised if the process handle has not the following rights
+         XP/2003 : ROCESS_QUERY_INFORMATION
+         Vista: ROCESS_QUERY_INFORMATION and PROCESS_QUERY_LIMITED_INFORMATION
+    }
     class function IsProcess64(ProcessHandle : DWORD = 0) : boolean;
   end;
 
@@ -984,8 +984,8 @@ begin
   begin
     if IsWow64Process(ProcessHandle, RunningInsideWOW64) then
       result := not RunningInsideWOW64
-	else
-	   raise EJwsclWinCallFailedException.CreateFmtWinCall(
+    else
+      raise EJwsclWinCallFailedException.CreateFmtWinCall(
         RsWinCallFailed,
         'IsProcess64',                                //sSourceProc
         ClassName,                                //sSourceClass

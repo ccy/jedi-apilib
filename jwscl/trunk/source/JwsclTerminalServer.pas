@@ -536,25 +536,25 @@ type
 
 
     {<B>EnumerateServers</B> enumerates all Terminal Servers in the specified domain.
-	 The result will be stored in <B>readonly</B>  property Servers.
+     The result will be stored in <B>readonly</B>  property Servers.
 
 
      @Param ADomain name of the Domain to be queried, if empty string is
-     specified the current domain is queried
+        specified the current domain is queried
      @returns If the function fails you can use GetLastError to get extended
-     error information
+        error information
      Remarks
-  This functions enumerates all Terminal Servers that
-     advertise themselves on the network. By default only Terminal Servers in
-     Application Mode advertise themselves. You can override this behaviour by
-     modifying the following registry key:
+        This functions enumerates all Terminal Servers that
+        advertise themselves on the network. By default only Terminal Servers in
+        Application Mode advertise themselves. You can override this behaviour by
+        modifying the following registry key:
      <code lang="Delphi">
      HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server
      "TSAdvertise" = REG_DWORD:1
      </code>
-	 <B>Changing this value may be an security issue. Do not alter it without
-	  the consent of the user!</B>
-	 <B>Only use the values 0 and 1. Do not use any other values!</B>
+     <B>Changing this value may be an security issue. Do not alter it without
+        the consent of the user!</B>
+     <B>Only use the values 0 and 1. Do not use any other values!</B>
 
 
 
@@ -568,10 +568,10 @@ type
      is still busy, the TJwTerminalServer will wait max. 1 second for the thread
      to finish and then terminates it.
 
-	 <B>This method is not threadsafe! Do not call or use the instance from
-	  several threads without locking mechanism</B>
+    <B>This method is not threadsafe! Do not call or use the instance from
+        several threads without locking mechanism</B>
 
-	 <B>Check for a nil property value Servers</B>
+    <B>Check for a nil property value Servers</B>
     }
     function EnumerateServers(const ADomain: TJwString):Boolean;
 
@@ -620,7 +620,7 @@ type
      end;
     </code>
 
-	 <B>Check for a nil property value Sessions</B>
+    <B>Check for a nil property value Sessions</B>
     }
     function EnumerateSessions: boolean;
 
@@ -765,7 +765,7 @@ type
     property ServerHandle: THandle read FServerHandle;
 
     {<B>Servers</B> contains the list of Enumerated Terminal Servers.
-	 <B>May be nil!</B>
+     <B>May be nil!</B>
      @seealso(EnumerateServers)
      }
     property Servers: TStringList read GetServers;
@@ -1621,7 +1621,7 @@ type
      press to stop remote control of the session. The virtual modifier is used
      with the Hotkey parameter. The value can be:
      <table 33c%>
-      Value  		   Meaning
+      Value            Meaning
       ------------  ----------------
       MOD_SHIFT     The SHIFT key
       MOD_CONTROL   The CTRL key
@@ -1719,7 +1719,7 @@ type
      </table>
      Known Citrix values:
      <table 40c%>
-     Version  								   Value
+     Version                                       Value
      --------------------------------------  -------------------
      Citrix Presentation Server 4            Citrix ICA 3.0
       )
