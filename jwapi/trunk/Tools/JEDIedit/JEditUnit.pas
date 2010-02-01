@@ -13,15 +13,24 @@ function RunProgram: Integer;
 implementation
 
 uses
-  Classes, SysUtils;
+  Classes, IniFiles, SysUtils;
 
 {==============================================================================}
 
 const
-  FileRootPathList = 'JEDIeditRoot.txt';
-  FileExcludesList = 'JEDIeditSkip.txt';
-  FileIncludesList = 'JEDIeditAdds.txt';
-  FileExtensonList = 'JEDIeditExts.txt';
+  FileJEDITeditIni = 'JEDIedit.ini';
+
+  IniSectionDefault = 'Default';
+
+  IniKeyRootPathList = 'RootPaths';
+  IniKeyExcludesList = 'Excludes';
+  IniKeyIncludesList = 'Includes';
+  IniKeyExtensonList = 'Extensions';
+
+  IniKeyRootPathListDefault = '"..\jedi-apilib","..\..\..\..\..\jedi-apilib"';
+  IniKeyExcludesListDefault = '"jwapi\trunk\Examples","jwscl\trunk\examples","jwscl\trunk\unittests"';
+  IniKeyIncludesListDefault = '"jwapi\trunk","jwscl\trunk"';
+  IniKeyExtensonListDefault = '"dpr","inc","pas"';
 
 {==============================================================================}
 
@@ -165,6 +174,9 @@ type
     FindData: TWin32FindData;
   end;
 }
+
+{$WARN SYMBOL_PLATFORM OFF}
+
 procedure TFileList.AddFiles( const Path: string; const Recursive: Boolean );
 
   const
@@ -201,6 +213,8 @@ begin
   end;
 end;
 
+{$WARN SYMBOL_PLATFORM ON}
+
 {==============================================================================}
 
 function RunProgram: Integer;
@@ -211,6 +225,8 @@ function RunProgram: Integer;
     RootPathList, ExcludesList, IncludesList, ExtensonList: TStringList;
     FileExtn, FileName, RootPath, TabLines: string;
     Compare, Index, Jadex: Integer;
+    IniFile: TMemIniFile;
+    SaveIniFile: Boolean;
 
   procedure InitializeStringList( StringList: TStringList );
   begin
@@ -228,62 +244,73 @@ begin
   ExcludesList := TStringList.Create;
   IncludesList := TStringList.Create;
   ExtensonList := TStringList.Create;
+  IniFile := TMemIniFile.Create( FileJEDITeditIni );
   try
+    // Prepare IniFile
+    SaveIniFile := False;
+    if not IniFile.ValueExists( IniSectionDefault, IniKeyRootPathList ) then
+    begin
+      IniFile.WriteString(  IniSectionDefault,
+                            IniKeyRootPathList,
+                            IniKeyRootPathListDefault
+                            );
+      SaveIniFile := True;
+    end;
+    if not IniFile.ValueExists( IniSectionDefault, IniKeyExtensonList ) then
+    begin
+      IniFile.WriteString(  IniSectionDefault,
+                            IniKeyExtensonList,
+                            IniKeyExtensonListDefault
+                            );
+      SaveIniFile := True;
+    end;
+    if not IniFile.ValueExists( IniSectionDefault, IniKeyIncludesList ) then
+    begin
+      IniFile.WriteString(  IniSectionDefault,
+                            IniKeyIncludesList,
+                            IniKeyIncludesListDefault
+                            );
+      SaveIniFile := True;
+    end;
+    if not IniFile.ValueExists( IniSectionDefault, IniKeyExcludesList ) then
+    begin
+      IniFile.WriteString(  IniSectionDefault,
+                            IniKeyExcludesList,
+                            IniKeyExcludesListDefault
+                            );
+      SaveIniFile := True;
+    end;
+    if SaveIniFile then IniFile.UpdateFile;
+
     // Prepare FileList
     InitializeStringList( FileList );
 
     // Prepare RootPathList
-    if FileExists( FileRootPathList ) then
-    begin
-      RootPathList.LoadFromFile( FileRootPathList );
-    end
-    else
-    begin
-      RootPathList.Add( '..\jedi-apilib' );
-      RootPathList.Add( '..\..\..\..\..\jedi-apilib' );
-      RootPathList.SaveToFile( FileRootPathList );
-    end;
+    RootPathList.DelimitedText := IniFile.ReadString( IniSectionDefault,
+                                                      IniKeyRootPathList,
+                                                      IniKeyRootPathListDefault
+                                                      );
 
     // Prepare ExcludesList
     InitializeStringList( ExcludesList );
-    if FileExists( FileExcludesList ) then
-    begin
-      ExcludesList.LoadFromFile( FileExcludesList );
-    end
-    else
-    begin
-      ExcludesList.Add( 'jwapi\trunk\Examples' );
-      ExcludesList.Add( 'jwscl\trunk\examples' );
-      ExcludesList.Add( 'jwscl\trunk\unittests' );
-      ExcludesList.SaveToFile( FileExcludesList );
-    end;
+    ExcludesList.DelimitedText := IniFile.ReadString( IniSectionDefault,
+                                                      IniKeyExcludesList,
+                                                      IniKeyExcludesListDefault
+                                                      );
 
     // Prepare IncludesList
     InitializeStringList( IncludesList );
-    if FileExists( FileIncludesList ) then
-    begin
-      IncludesList.LoadFromFile( FileIncludesList );
-    end
-    else
-    begin
-      IncludesList.Add( 'jwapi\trunk' );
-      IncludesList.Add( 'jwscl\trunk' );
-      IncludesList.SaveToFile( FileIncludesList );
-    end;
+    IncludesList.DelimitedText := IniFile.ReadString( IniSectionDefault,
+                                                      IniKeyIncludesList,
+                                                      IniKeyIncludesListDefault
+                                                      );
 
     // Prepare ExtensonList
     InitializeStringList( ExtensonList );
-    if FileExists( FileExtensonList ) then
-    begin
-      ExtensonList.LoadFromFile( FileExtensonList );
-    end
-    else
-    begin
-      ExtensonList.Add( 'dpr' );
-      ExtensonList.Add( 'inc' );
-      ExtensonList.Add( 'pas' );
-      ExtensonList.SaveToFile( FileExtensonList );
-    end;
+    ExtensonList.DelimitedText := IniFile.ReadString( IniSectionDefault,
+                                                      IniKeyExtensonList,
+                                                      IniKeyExtensonListDefault
+                                                      );
 
     // Locate first valid RootPathList entry
     RootPath := ''; Index := 0;
@@ -378,6 +405,7 @@ begin
     end;
 
   finally
+    FreeAndNil( IniFile );
     FreeAndNil( ExtensonList );
     FreeAndNil( IncludesList );
     FreeAndNil( ExcludesList );
