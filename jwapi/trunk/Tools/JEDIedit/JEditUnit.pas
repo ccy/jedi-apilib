@@ -18,6 +18,9 @@ uses
 {==============================================================================}
 
 const
+  CharSpace = ' ';
+  CharTab = #9;
+
   FileJEDITeditIni = 'JEDIedit.ini';
 
   IniSectionDefault = 'Default';
@@ -26,11 +29,15 @@ const
   IniKeyExcludesList = 'Excludes';
   IniKeyIncludesList = 'Includes';
   IniKeyExtensonList = 'Extensions';
+  IniKeyTabReplace = 'TabReplace';
+  IniKeyTabSpacing = 'TabSpacing';
 
   IniKeyRootPathListDefault = '"..\jedi-apilib","..\..\..\..\..\jedi-apilib"';
   IniKeyExcludesListDefault = '"jwapi\trunk\Examples","jwscl\trunk\examples","jwscl\trunk\unittests"';
   IniKeyIncludesListDefault = '"jwapi\trunk","jwscl\trunk"';
   IniKeyExtensonListDefault = '"dpr","inc","pas"';
+  IniKeyTabReplaceDefault = True;
+  IniKeyTabSpacingDefault = 2;
 
 {==============================================================================}
 
@@ -40,7 +47,6 @@ function RightTrim( var Trimmed: Boolean; const Arg: string ): string;
     Index, Limit: Integer;
 
 begin
-  Trimmed := False;
   Result := Arg;
 
   Index := Length( Arg );
@@ -53,9 +59,48 @@ end;
 
 {==============================================================================}
 
+function ReplaceTabs( var Replaced: Boolean;
+                      const Arg: string;
+                      const TabSpacing: Integer
+                      ): string;
+
+  var
+    Index: Integer;
+    Source: string;
+
+begin
+  Replaced := False;
+  Result := '';
+  Source := Arg;
+
+  Index := Pos( CharTab, Source );
+  while Index > 0 do
+  begin
+    Result := Result + Copy( Source, 1, Index - 1 );
+    Delete( Source, 1, Index );
+
+    Result := Result
+            +  StringOfChar(  CharSpace,
+                              TabSpacing - Length( Result ) mod TabSpacing
+                              )
+            ;
+
+    Replaced := True;
+
+    Index := Pos( CharTab, Source );
+  end;
+
+  Result := Result + Source;
+end;
+
+{==============================================================================}
+
 type
   TFileEdit = class( TStringList )
   public
+    function EditTabs(  const FileName: string;
+                        const TabSpacing: Integer
+                        ): Boolean;
     function EditWhiteSpace( const FileName: string ): Boolean;
     function FindTabs( const FileName: string ): string;
 
@@ -70,6 +115,43 @@ type
   end;
 
 {==============================================================================}
+
+function TFileEdit.EditTabs(  const FileName: string;
+                              const TabSpacing: Integer
+                              ): Boolean;
+
+  var
+    Index: Integer;
+    Replaced: Boolean;
+
+begin
+  Result := False;
+  try
+    try
+      LoadFromFile( FileName );
+
+      // Edit all lines containing tabs
+      Index := 0;
+      while Index < Count do
+      begin
+        Strings[ Index ] := ReplaceTabs( Replaced, Strings[ Index ], TabSpacing );
+        Result := Result or Replaced;
+        Inc( Index );
+      end;
+
+      if Result then
+      begin
+        SaveToFile( FileName );
+      end;
+
+    except
+    end;
+  finally
+    Clear;
+  end;
+end;
+
+{------------------------------------------------------------------------------}
 
 function TFileEdit.EditWhiteSpace( const FileName: string ): Boolean;
 
@@ -139,7 +221,7 @@ begin
       Index := 0;
       while Index < Count do
       begin
-        if Pos( #9, Strings[ Index ] ) > 0 then
+        if Pos( CharTab, Strings[ Index ] ) > 0 then
         begin
           Result := Result + IntToStr( Index + 1 ) + ',';
         end;
@@ -224,9 +306,9 @@ function RunProgram: Integer;
     FileList: TFileList;
     RootPathList, ExcludesList, IncludesList, ExtensonList: TStringList;
     FileExtn, FileName, RootPath, TabLines: string;
-    Compare, Index, Jadex: Integer;
+    Compare, Index, Jadex, TabSpacing: Integer;
     IniFile: TMemIniFile;
-    SaveIniFile: Boolean;
+    SaveIniFile, TabReplace: Boolean;
 
   procedure InitializeStringList( StringList: TStringList );
   begin
@@ -280,6 +362,22 @@ begin
                             );
       SaveIniFile := True;
     end;
+    if not IniFile.ValueExists( IniSectionDefault, IniKeyTabReplace ) then
+    begin
+      IniFile.WriteBool(  IniSectionDefault,
+                          IniKeyTabReplace,
+                          IniKeyTabReplaceDefault
+                          );
+      SaveIniFile := True;
+    end;
+    if not IniFile.ValueExists( IniSectionDefault, IniKeyTabSpacing ) then
+    begin
+      IniFile.WriteInteger( IniSectionDefault,
+                            IniKeyTabSpacing,
+                            IniKeyTabSpacingDefault
+                            );
+      SaveIniFile := True;
+    end;
     if SaveIniFile then IniFile.UpdateFile;
 
     // Prepare FileList
@@ -311,6 +409,16 @@ begin
                                                       IniKeyExtensonList,
                                                       IniKeyExtensonListDefault
                                                       );
+
+    // Prepare TabReplace and TabSpacing
+    TabReplace := IniFile.ReadBool( IniSectionDefault,
+                                    IniKeyTabReplace,
+                                    IniKeyTabReplaceDefault
+                                    );
+    TabSpacing := IniFile.ReadInteger(  IniSectionDefault,
+                                        IniKeyTabSpacing,
+                                        IniKeyTabSpacingDefault
+                                        );
 
     // Locate first valid RootPathList entry
     RootPath := ''; Index := 0;
@@ -392,15 +500,31 @@ begin
       end;
     end;
 
-    // Report where tabs exist
-    for Index := 0 to FileList.Count - 1 do
+    if TabReplace then
     begin
-      FileName := FileList.Strings[ Index ];
-      TabLines := FileEdit.FindTabs( FileName );
-
-      if Length( TabLines ) > 0 then
+      // Replace tabs
+      for Index := 0 to FileList.Count - 1 do
       begin
-        WriteLn( 'Tabs: ', FileName, ', lines ', TabLines );
+        FileName := FileList.Strings[ Index ];
+
+        if FileEdit.EditTabs( FileName, TabSpacing ) then
+        begin
+          WriteLn( 'Tabs: ', FileName );
+        end;
+      end;
+    end
+    else
+    begin
+      // Report where tabs exist
+      for Index := 0 to FileList.Count - 1 do
+      begin
+        FileName := FileList.Strings[ Index ];
+        TabLines := FileEdit.FindTabs( FileName );
+
+        if Length( TabLines ) > 0 then
+        begin
+          WriteLn( 'Tabs: ', FileName, ', lines ', TabLines );
+        end;
       end;
     end;
 
