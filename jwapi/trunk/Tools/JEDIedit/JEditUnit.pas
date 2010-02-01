@@ -17,6 +17,12 @@ uses
 
 {==============================================================================}
 
+const
+  FileRootPathList = 'JEDIeditRoot.txt';
+  FileExcludesList = 'JEDIeditSkip.txt';
+
+{==============================================================================}
+
 function RightTrim( var Trimmed: Boolean; const Arg: string ): string;
 
   var
@@ -39,7 +45,8 @@ end;
 type
   TFileEdit = class( TStringList )
   public
-    function EditFile( const FileName: string ): Boolean;
+    function EditWhiteSpace( const FileName: string ): Boolean;
+    function FindTabs( const FileName: string ): string;
 
   end;
 
@@ -53,7 +60,7 @@ type
 
 {==============================================================================}
 
-function TFileEdit.EditFile( const FileName: string ): Boolean;
+function TFileEdit.EditWhiteSpace( const FileName: string ): Boolean;
 
   var
     Index: Integer;
@@ -95,6 +102,45 @@ begin
       if Result then
       begin
         SaveToFile( FileName );
+      end;
+
+    except
+    end;
+  finally
+    Clear;
+  end;
+end;
+
+{------------------------------------------------------------------------------}
+
+function TFileEdit.FindTabs( const FileName: string ): string;
+
+  var
+    Index: Integer;
+
+begin
+  Result := '';
+  try
+    try
+      LoadFromFile( FileName );
+
+      // Find all lines containing a tab
+      Index := 0;
+      while Index < Count do
+      begin
+        if Pos( #9, Strings[ Index ] ) > 0 then
+        begin
+          Result := Result + IntToStr( Index + 1 ) + ',';
+        end;
+
+        Inc( Index );
+      end;
+
+      // Discard trailing comma (if any)
+      Index := Length( Result );
+      if Index > 0 then
+      begin
+        SetLength( Result, Index - 1 );
       end;
 
     except
@@ -168,41 +214,125 @@ function RunProgram: Integer;
   var
     FileEdit: TFileEdit;
     FileList: TFileList;
-    FileName: string;
-    Index: Integer;
+    RootPathList, ExcludesList: TStringList;
+    FileName, RootPath, TabLines: string;
+    Compare, Index, Jadex: Integer;
 
 begin
   Result := 0;
 
   FileEdit := TFileEdit.Create;
   FileList := TFileList.Create;
+  RootPathList := TStringList.Create;
+  ExcludesList := TStringList.Create;
   try
-    if DirectoryExists( '..\jedi-apilib' ) then
+    // Prepare FileList
+    FileList.Duplicates := dupIgnore;
+    FileList.CaseSensitive := False;
+    FileList.Sorted := True;
+
+    // Prepare RootPathList
+    if FileExists( FileRootPathList ) then
     begin
-      // Parallel universe path
-      FileList.AddFiles( '..\jedi-apilib\jwapi\trunk', True );
-      FileList.AddFiles( '..\jedi-apilib\jwscl\trunk', True );
+      RootPathList.LoadFromFile( FileRootPathList );
     end
     else
-    if DirectoryExists( '..\..\..\..\..\jedi-apilib' ) then
     begin
-      // Within same tree path
-      FileList.AddFiles( '..\..\..\..\..\jedi-apilib\jwapi\trunk', True );
-      FileList.AddFiles( '..\..\..\..\..\jedi-apilib\jwscl\trunk', True );
+      RootPathList.Add( '..\jedi-apilib' );
+      RootPathList.Add( '..\..\..\..\..\jedi-apilib' );
+      RootPathList.SaveToFile( FileRootPathList );
     end;
-    FileList.Sort;
 
+    // Prepare ExcludesList
+    ExcludesList.Duplicates := dupIgnore;
+    ExcludesList.CaseSensitive := False;
+    ExcludesList.Sorted := True;
+    if FileExists( FileExcludesList ) then
+    begin
+      ExcludesList.LoadFromFile( FileExcludesList );
+    end
+    else
+    begin
+      ExcludesList.Add( 'jwapi\trunk\Examples' );
+      ExcludesList.Add( 'jwscl\trunk\examples' );
+      ExcludesList.Add( 'jwscl\trunk\unittests' );
+      ExcludesList.SaveToFile( FileExcludesList );
+    end;
+
+    // Locate first valid RootPathList entry
+    RootPath := ''; Index := 0;
+    while ( Length( RootPath ) <= 0 ) and ( Index < RootPathList.Count ) do
+    begin
+      FileName := RootPathList.Strings[ Index ];
+      if DirectoryExists( FileName ) then
+      begin
+        RootPath := FileName;
+      end;
+
+      Inc( Index );
+    end;
+
+    // Enumerate valid RootPathList entry
+    if DirectoryExists( RootPath ) then
+    begin
+      RootPath := IncludeTrailingPathDelimiter( RootPath );
+
+      FileList.AddFiles( RootPath + 'jwapi\trunk', True );
+      FileList.AddFiles( RootPath + 'jwscl\trunk', True );
+
+      // Remove ExcludesList entries
+      Index := 0; Jadex := 0;
+      while ( Index < ExcludesList.Count ) and ( Jadex < FileList.Count ) do
+      begin
+        FileName := IncludeTrailingPathDelimiter( RootPath + ExcludesList.Strings[ Index ] );
+
+        Compare := CompareText( FileName, Copy( FileList.Strings[ Jadex ], 1, Length( FileName ) ) );
+
+        if Compare < 0 then
+        begin
+          // ExcludesList < FileList
+          Inc( Index );
+        end
+        else
+        if Compare > 0 then
+        begin
+          // ExcludesList > FileList
+          Inc( Jadex );
+        end
+        else
+        begin
+          // ExcludesList = FileList
+          FileList.Delete( Jadex );
+        end;
+      end;
+    end;
+
+    // Remove extra white space
     for Index := 0 to FileList.Count - 1 do
     begin
       FileName := FileList.Strings[ Index ];
 
-      if FileEdit.EditFile( FileName ) then
+      if FileEdit.EditWhiteSpace( FileName ) then
       begin
-        WriteLn( FileName );
+        WriteLn( 'Edit: ', FileName );
+      end;
+    end;
+
+    // Report where tabs exist
+    for Index := 0 to FileList.Count - 1 do
+    begin
+      FileName := FileList.Strings[ Index ];
+      TabLines := FileEdit.FindTabs( FileName );
+
+      if Length( TabLines ) > 0 then
+      begin
+        WriteLn( 'Tabs: ', FileName, ', lines ', TabLines );
       end;
     end;
 
   finally
+    FreeAndNil( ExcludesList );
+    FreeAndNil( RootPathList );
     FreeAndNil( FileList );
     FreeAndNil( FileEdit );
   end;
