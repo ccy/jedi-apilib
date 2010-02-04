@@ -119,10 +119,18 @@ type
 type
   TFileList = class( TStringList )
   public
+    BackupOption: Boolean;
+
     procedure AddFiles( const Path: string;
                         const Recursive: Boolean;
                         const SkipDirsList: TStringList
                         );
+
+    function Backup( const Index: Integer ): Boolean;
+  end;
+
+  TFileRecord = class( TObject )
+    EditCount: Integer;
   end;
 
 {------------------------------------------------------------------------------}
@@ -130,6 +138,7 @@ type
 type
   TProgramOptionId =
     (
+      optBackupFile,
       optDirectories,
       optExtensions,
       optExtensionsError,
@@ -148,6 +157,7 @@ type
   TProgramOptionUsed = set of TProgramOptionId;
 
   TProgramOptions = record
+    BackupFile,
     Recursive,
     TabReplace,
     TabReports: Boolean;
@@ -177,27 +187,18 @@ function TFileEdit.EditTabs(  const FileName: string;
 begin
   Result := False;
   try
-    try
-      LoadFromFile( FileName );
+    LoadFromFile( FileName );
 
-      // Edit all lines containing tabs
-      Index := 0;
-      while Index < Count do
-      begin
-        Strings[ Index ] := ReplaceTabs( Replaced, Strings[ Index ], TabSpacing );
-        Result := Result or Replaced;
-        Inc( Index );
-      end;
-
-      if Result then
-      begin
-        SaveToFile( FileName );
-      end;
-
-    except
+    // Edit all lines containing tabs
+    Index := 0;
+    while Index < Count do
+    begin
+      Strings[ Index ] := ReplaceTabs( Replaced, Strings[ Index ], TabSpacing );
+      Result := Result or Replaced;
+      Inc( Index );
     end;
-  finally
-    Clear;
+
+  except
   end;
 end;
 
@@ -212,45 +213,36 @@ function TFileEdit.EditWhiteSpace( const FileName: string ): Boolean;
 begin
   Result := False;
   try
-    try
-      LoadFromFile( FileName );
+    LoadFromFile( FileName );
 
-      // Right Trim all lines
-      Index := 0;
-      while Index < Count do
-      begin
-        Strings[ Index ] := RightTrim( Trimmed, Strings[ Index ] );
-        Result := Result or Trimmed;
-        Inc( Index );
-      end;
-
-      // Discard leading blank lines
-      Index := 0;
-      while ( Index < Count ) and ( Length( Strings[ Index ] ) = 0 ) do
-      begin
-        Delete( Index );
-        Result := True;
-        // Delete( Index ) decrements Count; omit Inc( Index );
-      end;
-
-      // Discard trailing blank lines
-      Index := Count - 1;
-      while ( Index >= 0 ) and ( Length( Strings[ Index ] ) = 0 ) do
-      begin
-        Delete( Index );
-        Result := True;
-        Dec( Index );
-      end;
-
-      if Result then
-      begin
-        SaveToFile( FileName );
-      end;
-
-    except
+    // Right Trim all lines
+    Index := 0;
+    while Index < Count do
+    begin
+      Strings[ Index ] := RightTrim( Trimmed, Strings[ Index ] );
+      Result := Result or Trimmed;
+      Inc( Index );
     end;
-  finally
-    Clear;
+
+    // Discard leading blank lines
+    Index := 0;
+    while ( Index < Count ) and ( Length( Strings[ Index ] ) = 0 ) do
+    begin
+      Delete( Index );
+      Result := True;
+      // Delete( Index ) decrements Count; omit Inc( Index );
+    end;
+
+    // Discard trailing blank lines
+    Index := Count - 1;
+    while ( Index >= 0 ) and ( Length( Strings[ Index ] ) = 0 ) do
+    begin
+      Delete( Index );
+      Result := True;
+      Dec( Index );
+    end;
+
+  except
   end;
 end;
 
@@ -350,6 +342,36 @@ end;
 
 {$WARN SYMBOL_PLATFORM ON}
 
+{------------------------------------------------------------------------------}
+
+function TFileList.Backup( const Index: Integer ): Boolean;
+
+  var
+    FileBack, FileExtn, FileName: string;
+
+begin
+  Result := True;
+  with Objects[ Index ] as TFileRecord do
+  begin
+    EditCount := EditCount + 1;
+
+    if not BackupOption or ( EditCount > 1 ) then Exit;
+  end;
+
+  FileName := Strings[ Index ];
+  FileExtn := '.~' + Copy( ExtractFileExt( FileName ), 2, MaxInt );
+  FileBack := ChangeFileExt( FileName, FileExtn );
+
+  if FileExists( FileBack ) then
+  begin
+    Result := DeleteFile( FileBack ) and RenameFile( FileName, FileBack );
+  end
+  else
+  begin
+    Result := RenameFile( FileName, FileBack );
+  end;
+end;
+
 {==============================================================================}
 
 function RunProgram: Integer;
@@ -382,6 +404,7 @@ begin
 
   {----------------------------------------------------------------------------}
 
+  Option.BackupFile := False;
   Option.Recursive := False;
   Option.TabReplace := IniKeyTabReplaceDefault;
   Option.TabReports := IniKeyTabReportsDefault;
@@ -398,6 +421,14 @@ begin
     Inc( Index );
     Argument := ParamStr( Index );
 
+    if ( CompareText( Argument, '--backup-file' ) = 0 )
+    or ( CompareText( Argument, '-b' ) = 0 )
+    or ( CompareText( Argument, '/b' ) = 0 ) then
+    begin
+      Option.OptionUsed := Option.OptionUsed + [ optBackupFile ];
+      Option.BackupFile := True;
+    end
+    else
     if ( CompareText( Argument, '--directories' ) = 0 )
     or ( CompareText( Argument, '-d' ) = 0 )
     or ( CompareText( Argument, '/d' ) = 0 ) then
@@ -620,6 +651,7 @@ begin
 
     // Prepare FileList
     InitializeStringList( FileList );
+    FileList.BackupOption := Option.BackupFile;
 
     // Prepare RootPathList
     if optRootPaths in Option.OptionUsed then
@@ -779,6 +811,7 @@ begin
       if ExtensonList.IndexOf( FileExtn ) >= 0 then
       begin
         // FileExtn present, retain
+        FileList.Objects[ Index ] := TFileRecord.Create;
         Inc( Index );
       end
       else
@@ -796,8 +829,9 @@ begin
     begin
       FileName := FileList.Strings[ Index ];
 
-      if FileEdit.EditWhiteSpace( FileName ) then
+      if FileEdit.EditWhiteSpace( FileName ) and FileList.Backup( Index ) then
       begin
+        FileEdit.SaveToFile( FileName );
         WriteLn( 'Edit: ', FileName );
         Inc( EditedTrim );
       end;
@@ -813,8 +847,10 @@ begin
       begin
         FileName := FileList.Strings[ Index ];
 
-        if FileEdit.EditTabs( FileName, Option.TabSpacing ) then
+        if FileEdit.EditTabs( FileName, Option.TabSpacing )
+        and FileList.Backup( Index ) then
         begin
+          FileEdit.SaveToFile( FileName );
           WriteLn( 'Tabs: ', FileName );
           Inc( EditedTabs );
         end;
