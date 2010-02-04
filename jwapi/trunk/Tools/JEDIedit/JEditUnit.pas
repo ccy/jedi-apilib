@@ -29,6 +29,7 @@ const
   IniKeyExcludesList = 'Excludes';
   IniKeyIncludesList = 'Includes';
   IniKeyExtensonList = 'Extensions';
+  IniKeySkipDirsList = 'SkipDirs';
   IniKeyTabReplace = 'TabReplace';
   IniKeyTabSpacing = 'TabSpacing';
 
@@ -36,8 +37,12 @@ const
   IniKeyExcludesListDefault = '"jwapi\trunk\Examples","jwscl\trunk\examples","jwscl\trunk\unittests"';
   IniKeyIncludesListDefault = '"jwapi\trunk","jwscl\trunk"';
   IniKeyExtensonListDefault = '"dpr","inc","pas"';
+  IniKeySkipDirsDefault = '"CVS",".svn"';
   IniKeyTabReplaceDefault = True;
   IniKeyTabSpacingDefault = 2;
+
+  MessageInit = 'Greetings Earthling! Take me to your Leader.';
+  MessageFini = 'Files: count %d, trim %d, tabs %d.';
 
 {==============================================================================}
 
@@ -111,7 +116,10 @@ type
 type
   TFileList = class( TStringList )
   public
-    procedure AddFiles( const Path: string; const Recursive: Boolean );
+    procedure AddFiles( const Path: string;
+                        const Recursive: Boolean;
+                        const SkipDirsList: TStringList
+                        );
   end;
 
 {==============================================================================}
@@ -259,7 +267,10 @@ type
 
 {$WARN SYMBOL_PLATFORM OFF}
 
-procedure TFileList.AddFiles( const Path: string; const Recursive: Boolean );
+procedure TFileList.AddFiles( const Path: string;
+                              const Recursive: Boolean;
+                              const SkipDirsList: TStringList
+                              );
 
   const
     PathSep = '\';
@@ -274,9 +285,9 @@ begin
     repeat
       if ( ( SearchRec.Attr and faDirectory ) <> 0 ) and Recursive then
       begin
-        if ( SearchRec.Name <> '.' ) and ( SearchRec.Name <> '..' ) then
+        if ( SkipDirsList.IndexOf( SearchRec.Name ) < 0 ) then
         begin
-          AddFiles( Path + PathSep + SearchRec.Name, Recursive );
+          AddFiles( Path + PathSep + SearchRec.Name, Recursive, SkipDirsList );
         end;
       end
       else
@@ -304,9 +315,13 @@ function RunProgram: Integer;
   var
     FileEdit: TFileEdit;
     FileList: TFileList;
-    RootPathList, ExcludesList, IncludesList, ExtensonList: TStringList;
+    RootPathList,
+    ExcludesList,
+    IncludesList,
+    ExtensonList,
+    SkipDirsList: TStringList;
     FileExtn, FileName, RootPath, TabLines: string;
-    Compare, Index, Jadex, TabSpacing: Integer;
+    Compare, EditedTabs, EditedTrim, Index, Jadex, TabSpacing: Integer;
     IniFile: TMemIniFile;
     SaveIniFile, TabReplace: Boolean;
 
@@ -326,8 +341,14 @@ begin
   ExcludesList := TStringList.Create;
   IncludesList := TStringList.Create;
   ExtensonList := TStringList.Create;
+  SkipDirsList := TStringList.Create;
   IniFile := TMemIniFile.Create( FileJEDITeditIni );
   try
+    WriteLn( MessageInit );
+
+    EditedTabs := 0;
+    EditedTrim := 0;
+
     // Prepare IniFile
     SaveIniFile := False;
     if not IniFile.ValueExists( IniSectionDefault, IniKeyRootPathList ) then
@@ -359,6 +380,14 @@ begin
       IniFile.WriteString(  IniSectionDefault,
                             IniKeyExcludesList,
                             IniKeyExcludesListDefault
+                            );
+      SaveIniFile := True;
+    end;
+    if not IniFile.ValueExists( IniSectionDefault, IniKeySkipDirsList ) then
+    begin
+      IniFile.WriteString(  IniSectionDefault,
+                            IniKeySkipDirsList,
+                            IniKeySkipDirsDefault
                             );
       SaveIniFile := True;
     end;
@@ -410,6 +439,15 @@ begin
                                                       IniKeyExtensonListDefault
                                                       );
 
+    // Prepare SkipDirsList
+    InitializeStringList( SkipDirsList );
+    SkipDirsList.DelimitedText := IniFile.ReadString( IniSectionDefault,
+                                                      IniKeySkipDirsList,
+                                                      IniKeySkipDirsDefault
+                                                      );
+    SkipDirsList.Add( '.' );
+    SkipDirsList.Add( '..' );
+
     // Prepare TabReplace and TabSpacing
     TabReplace := IniFile.ReadBool( IniSectionDefault,
                                     IniKeyTabReplace,
@@ -441,7 +479,7 @@ begin
       // Enumerate IncludesList entries
       for Index := 0 to IncludesList.Count - 1 do
       begin
-        FileList.AddFiles( RootPath + IncludesList.Strings[ Index ], True );
+        FileList.AddFiles( RootPath + IncludesList.Strings[ Index ], True, SkipDirsList );
       end;
 
       // Remove ExcludesList entries
@@ -497,6 +535,7 @@ begin
       if FileEdit.EditWhiteSpace( FileName ) then
       begin
         WriteLn( 'Edit: ', FileName );
+        Inc( EditedTrim );
       end;
     end;
 
@@ -510,6 +549,7 @@ begin
         if FileEdit.EditTabs( FileName, TabSpacing ) then
         begin
           WriteLn( 'Tabs: ', FileName );
+          Inc( EditedTabs );
         end;
       end;
     end
@@ -524,12 +564,16 @@ begin
         if Length( TabLines ) > 0 then
         begin
           WriteLn( 'Tabs: ', FileName, ', lines ', TabLines );
+          Inc( EditedTabs );
         end;
       end;
     end;
 
+    WriteLn( Format( MessageFini, [ FileList.Count, EditedTrim, EditedTabs ] ) );
+
   finally
     FreeAndNil( IniFile );
+    FreeAndNil( SkipDirsList );
     FreeAndNil( ExtensonList );
     FreeAndNil( IncludesList );
     FreeAndNil( ExcludesList );
