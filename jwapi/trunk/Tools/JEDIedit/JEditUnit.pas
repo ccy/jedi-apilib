@@ -31,6 +31,7 @@ const
   IniKeyExtensonList = 'Extensions';
   IniKeySkipDirsList = 'SkipDirs';
   IniKeyTabReplace = 'TabReplace';
+  IniKeyTabReports = 'TabReports';
   IniKeyTabSpacing = 'TabSpacing';
 
   IniKeyRootPathListDefault = '"..\jedi-apilib","..\..\..\..\..\jedi-apilib"';
@@ -39,10 +40,12 @@ const
   IniKeyExtensonListDefault = '"dpr","inc","pas"';
   IniKeySkipDirsDefault = '"CVS",".svn"';
   IniKeyTabReplaceDefault = True;
+  IniKeyTabReportsDefault = not IniKeyTabReplaceDefault;
   IniKeyTabSpacingDefault = 2;
 
   MessageInit = 'Greetings Earthling! Take me to your Leader.';
-  MessageFini = 'Files: count %d, trim %d, tabs %d.';
+  MessageFile = 'File not found: %s.';
+  MessageFini = 'Files: count %d, trim %d, tabs %d %d.';
 
 {==============================================================================}
 
@@ -120,6 +123,45 @@ type
                         const Recursive: Boolean;
                         const SkipDirsList: TStringList
                         );
+  end;
+
+{------------------------------------------------------------------------------}
+
+type
+  TProgramOptionId =
+    (
+      optDirectories,
+      optExtensions,
+      optExtensionsError,
+      optIniFileName,
+      optIniFileNameError,
+      optIniFileSection,
+      optIniFileSectionError,
+      optRootPaths,
+      optRootPathsError,
+      optTabReplace,
+      optTabReports,
+      optTabSpacing,
+      optTabSpacingError
+    );
+
+  TProgramOptionUsed = set of TProgramOptionId;
+
+  TProgramOptions = record
+    Recursive,
+    TabReplace,
+    TabReports: Boolean;
+
+    TabSpacing: Integer;
+
+    RootPaths,
+    Extensions,
+    IniFileName,
+    IniSectionName: string;
+
+    FilesPaths: array of string;
+
+    OptionUsed: TProgramOptionUsed;
   end;
 
 {==============================================================================}
@@ -320,10 +362,11 @@ function RunProgram: Integer;
     IncludesList,
     ExtensonList,
     SkipDirsList: TStringList;
-    FileExtn, FileName, RootPath, TabLines: string;
-    Compare, EditedTabs, EditedTrim, Index, Jadex, TabSpacing: Integer;
+    Argument, FileExtn, FileName, RootPath, TabLines: string;
+    Compare, EditedTabs, EditedTrim, FinderTabs, Index, Jadex: Integer;
     IniFile: TMemIniFile;
-    SaveIniFile, TabReplace: Boolean;
+    SaveIniFile: Boolean;
+    Option: TProgramOptions;
 
   procedure InitializeStringList( StringList: TStringList );
   begin
@@ -335,6 +378,162 @@ function RunProgram: Integer;
 begin
   Result := 0;
 
+  WriteLn( MessageInit );
+
+  {----------------------------------------------------------------------------}
+
+  Option.Recursive := False;
+  Option.TabReplace := IniKeyTabReplaceDefault;
+  Option.TabReports := IniKeyTabReportsDefault;
+  Option.TabSpacing := IniKeyTabSpacingDefault;
+  Option.RootPaths := IniKeyRootPathListDefault;
+  Option.Extensions := IniKeyExtensonListDefault;
+  Option.IniFileName := FileJEDITeditIni;
+  Option.IniSectionName := IniSectionDefault;
+
+  // Command line arguments
+  Index := 0; Jadex := 0;
+  while Index < ParamCount do
+  begin
+    Inc( Index );
+    Argument := ParamStr( Index );
+
+    if ( CompareText( Argument, '--directories' ) = 0 )
+    or ( CompareText( Argument, '-d' ) = 0 )
+    or ( CompareText( Argument, '/d' ) = 0 ) then
+    begin
+      Option.OptionUsed := Option.OptionUsed + [ optDirectories ];
+      Option.Recursive := True;
+    end
+    else
+    if ( CompareText( Argument, '--extensions' ) = 0 )
+    or ( CompareText( Argument, '-e' ) = 0 )
+    or ( CompareText( Argument, '/e' ) = 0 ) then
+    begin
+      Inc( Index );
+      if Index < ParamCount then
+      begin
+        Option.OptionUsed := Option.OptionUsed + [ optExtensions ];
+        Option.Extensions := ParamStr( Index );
+      end
+      else
+      begin
+        Option.OptionUsed := Option.OptionUsed + [ optExtensionsError ];
+      end;
+    end
+    else
+    if ( CompareText( Argument, '--ini-file' ) = 0 )
+    or ( CompareText( Argument, '-i' ) = 0 )
+    or ( CompareText( Argument, '/i' ) = 0 ) then
+    begin
+      Inc( Index );
+      if Index < ParamCount then
+      begin
+        Option.OptionUsed := Option.OptionUsed + [ optIniFileName ];
+        Option.IniFileName := ParamStr( Index );
+      end
+      else
+      begin
+        Option.OptionUsed := Option.OptionUsed + [ optIniFileNameError ];
+      end;
+    end
+    else
+    if ( CompareText( Argument, '--ini-section' ) = 0 )
+    or ( CompareText( Argument, '-j' ) = 0 )
+    or ( CompareText( Argument, '/j' ) = 0 ) then
+    begin
+      Inc( Index );
+      if Index < ParamCount then
+      begin
+        Option.OptionUsed := Option.OptionUsed + [ optIniFileSection ];
+        Option.IniSectionName := ParamStr( Index );
+      end
+      else
+      begin
+        Option.OptionUsed := Option.OptionUsed + [ optIniFileSectionError ];
+      end;
+    end
+    else
+    if ( CompareText( Argument, '--root-paths' ) = 0 )
+    or ( CompareText( Argument, '-r' ) = 0 )
+    or ( CompareText( Argument, '/r' ) = 0 ) then
+    begin
+      Inc( Index );
+      if Index < ParamCount then
+      begin
+        Option.OptionUsed := Option.OptionUsed + [ optRootPaths ];
+        Option.RootPaths := ParamStr( Index );
+      end
+      else
+      begin
+        Option.OptionUsed := Option.OptionUsed + [ optRootPathsError ];
+      end;
+    end
+    else
+    if ( CompareText( Argument, '--tab-replace' ) = 0 )
+    or ( CompareText( Argument, '-t' ) = 0 )
+    or ( CompareText( Argument, '/t' ) = 0 ) then
+    begin
+      Option.OptionUsed := Option.OptionUsed + [ optTabReplace ];
+      Option.TabReplace := True;
+    end
+    else
+    if ( CompareText( Argument, '--tab-report' ) = 0 )
+    or ( CompareText( Argument, '-u' ) = 0 )
+    or ( CompareText( Argument, '/u' ) = 0 ) then
+    begin
+      Option.OptionUsed := Option.OptionUsed + [ optTabReports ];
+      Option.TabReports := True;
+    end
+    else
+    if ( CompareText( Argument, '--tab-spacing' ) = 0 )
+    or ( CompareText( Argument, '-v' ) = 0 )
+    or ( CompareText( Argument, '/v' ) = 0 ) then
+    begin
+      Inc( Index );
+      if Index < ParamCount then
+      begin
+        Option.TabSpacing := StrToIntDef( ParamStr( Index ), 0 );
+        if Option.TabSpacing > 0 then
+        begin
+          Option.OptionUsed := Option.OptionUsed + [ optTabSpacing ];
+        end
+        else
+        begin
+          Option.OptionUsed := Option.OptionUsed + [ optTabSpacingError ];
+        end;
+      end
+      else
+      begin
+        Option.OptionUsed := Option.OptionUsed + [ optTabSpacingError ];
+      end;
+    end
+    else
+    if DirectoryExists( Argument ) or FileExists( Argument ) then
+    begin
+      SetLength( Option.FilesPaths, Jadex + 1 );
+      Option.FilesPaths[ Jadex ] := Argument;
+      Inc( Jadex );
+    end
+    else
+    begin
+      WriteLn( Format( MessageFile, [ Argument ] ) );
+    end;
+  end;
+  if optExtensionsError     in Option.OptionUsed then WriteLn( 'optExtensionsError' );
+  if optIniFileNameError    in Option.OptionUsed then WriteLn( 'optIniFileNameError' );
+  if optIniFileSectionError in Option.OptionUsed then WriteLn( 'optIniFileSectionError' );
+  if optRootPathsError      in Option.OptionUsed then WriteLn( 'optRootPathsError' );
+  if optTabSpacingError     in Option.OptionUsed then WriteLn( 'optTabSpacingError' );
+  if  [ optExtensionsError,
+        optIniFileNameError,
+        optIniFileSectionError,
+        optRootPathsError,
+        optTabSpacingError
+      ] * Option.OptionUsed <> [ ] then Exit;
+
+  {----------------------------------------------------------------------------}
+
   FileEdit := TFileEdit.Create;
   FileList := TFileList.Create;
   RootPathList := TStringList.Create;
@@ -342,192 +541,257 @@ begin
   IncludesList := TStringList.Create;
   ExtensonList := TStringList.Create;
   SkipDirsList := TStringList.Create;
-  IniFile := TMemIniFile.Create( FileJEDITeditIni );
-  try
-    WriteLn( MessageInit );
+  IniFile := TMemIniFile.Create( Option.IniFileName );
 
-    EditedTabs := 0;
-    EditedTrim := 0;
+  {----------------------------------------------------------------------------}
+
+  try
+    {--------------------------------------------------------------------------}
 
     // Prepare IniFile
     SaveIniFile := False;
-    if not IniFile.ValueExists( IniSectionDefault, IniKeyRootPathList ) then
+    if not IniFile.ValueExists( Option.IniSectionName, IniKeyRootPathList ) then
     begin
-      IniFile.WriteString(  IniSectionDefault,
+      IniFile.WriteString(  Option.IniSectionName,
                             IniKeyRootPathList,
-                            IniKeyRootPathListDefault
+                            Option.RootPaths
                             );
       SaveIniFile := True;
     end;
-    if not IniFile.ValueExists( IniSectionDefault, IniKeyExtensonList ) then
+    if not IniFile.ValueExists( Option.IniSectionName, IniKeyExtensonList ) then
     begin
-      IniFile.WriteString(  IniSectionDefault,
+      IniFile.WriteString(  Option.IniSectionName,
                             IniKeyExtensonList,
-                            IniKeyExtensonListDefault
+                            Option.Extensions
                             );
       SaveIniFile := True;
     end;
-    if not IniFile.ValueExists( IniSectionDefault, IniKeyIncludesList ) then
+    if not IniFile.ValueExists( Option.IniSectionName, IniKeyIncludesList ) then
     begin
-      IniFile.WriteString(  IniSectionDefault,
+      IniFile.WriteString(  Option.IniSectionName,
                             IniKeyIncludesList,
                             IniKeyIncludesListDefault
                             );
       SaveIniFile := True;
     end;
-    if not IniFile.ValueExists( IniSectionDefault, IniKeyExcludesList ) then
+    if not IniFile.ValueExists( Option.IniSectionName, IniKeyExcludesList ) then
     begin
-      IniFile.WriteString(  IniSectionDefault,
+      IniFile.WriteString(  Option.IniSectionName,
                             IniKeyExcludesList,
                             IniKeyExcludesListDefault
                             );
       SaveIniFile := True;
     end;
-    if not IniFile.ValueExists( IniSectionDefault, IniKeySkipDirsList ) then
+    if not IniFile.ValueExists( Option.IniSectionName, IniKeySkipDirsList ) then
     begin
-      IniFile.WriteString(  IniSectionDefault,
+      IniFile.WriteString(  Option.IniSectionName,
                             IniKeySkipDirsList,
                             IniKeySkipDirsDefault
                             );
       SaveIniFile := True;
     end;
-    if not IniFile.ValueExists( IniSectionDefault, IniKeyTabReplace ) then
+    if not IniFile.ValueExists( Option.IniSectionName, IniKeyTabReplace ) then
     begin
-      IniFile.WriteBool(  IniSectionDefault,
+      IniFile.WriteBool(  Option.IniSectionName,
                           IniKeyTabReplace,
-                          IniKeyTabReplaceDefault
+                          Option.TabReplace
                           );
       SaveIniFile := True;
     end;
-    if not IniFile.ValueExists( IniSectionDefault, IniKeyTabSpacing ) then
+    if not IniFile.ValueExists( Option.IniSectionName, IniKeyTabReports ) then
     begin
-      IniFile.WriteInteger( IniSectionDefault,
+      IniFile.WriteBool(  Option.IniSectionName,
+                          IniKeyTabReports,
+                          Option.TabReports
+                          );
+      SaveIniFile := True;
+    end;
+    if not IniFile.ValueExists( Option.IniSectionName, IniKeyTabSpacing ) then
+    begin
+      IniFile.WriteInteger( Option.IniSectionName,
                             IniKeyTabSpacing,
-                            IniKeyTabSpacingDefault
+                            Option.TabSpacing
                             );
       SaveIniFile := True;
     end;
     if SaveIniFile then IniFile.UpdateFile;
 
+    {--------------------------------------------------------------------------}
+
     // Prepare FileList
     InitializeStringList( FileList );
 
     // Prepare RootPathList
-    RootPathList.DelimitedText := IniFile.ReadString( IniSectionDefault,
-                                                      IniKeyRootPathList,
-                                                      IniKeyRootPathListDefault
-                                                      );
+    if optRootPaths in Option.OptionUsed then
+    begin
+      RootPathList.DelimitedText := Option.RootPaths;
+    end
+    else
+    begin
+      RootPathList.DelimitedText := IniFile.ReadString( Option.IniSectionName,
+                                                        IniKeyRootPathList,
+                                                        Option.RootPaths
+                                                        );
+    end;
 
     // Prepare ExcludesList
     InitializeStringList( ExcludesList );
-    ExcludesList.DelimitedText := IniFile.ReadString( IniSectionDefault,
+    ExcludesList.DelimitedText := IniFile.ReadString( Option.IniSectionName,
                                                       IniKeyExcludesList,
                                                       IniKeyExcludesListDefault
                                                       );
 
     // Prepare IncludesList
     InitializeStringList( IncludesList );
-    IncludesList.DelimitedText := IniFile.ReadString( IniSectionDefault,
+    IncludesList.DelimitedText := IniFile.ReadString( Option.IniSectionName,
                                                       IniKeyIncludesList,
                                                       IniKeyIncludesListDefault
                                                       );
 
     // Prepare ExtensonList
     InitializeStringList( ExtensonList );
-    ExtensonList.DelimitedText := IniFile.ReadString( IniSectionDefault,
-                                                      IniKeyExtensonList,
-                                                      IniKeyExtensonListDefault
-                                                      );
+    if optExtensions in Option.OptionUsed then
+    begin
+      ExtensonList.DelimitedText := Option.Extensions;
+    end
+    else
+    begin
+      ExtensonList.DelimitedText := IniFile.ReadString( Option.IniSectionName,
+                                                        IniKeyExtensonList,
+                                                        IniKeyExtensonListDefault
+                                                        );
+    end;
 
     // Prepare SkipDirsList
     InitializeStringList( SkipDirsList );
-    SkipDirsList.DelimitedText := IniFile.ReadString( IniSectionDefault,
+    SkipDirsList.DelimitedText := IniFile.ReadString( Option.IniSectionName,
                                                       IniKeySkipDirsList,
                                                       IniKeySkipDirsDefault
                                                       );
     SkipDirsList.Add( '.' );
     SkipDirsList.Add( '..' );
 
-    // Prepare TabReplace and TabSpacing
-    TabReplace := IniFile.ReadBool( IniSectionDefault,
-                                    IniKeyTabReplace,
-                                    IniKeyTabReplaceDefault
-                                    );
-    TabSpacing := IniFile.ReadInteger(  IniSectionDefault,
-                                        IniKeyTabSpacing,
-                                        IniKeyTabSpacingDefault
-                                        );
+    {--------------------------------------------------------------------------}
 
-    // Locate first valid RootPathList entry
-    RootPath := ''; Index := 0;
-    while ( Length( RootPath ) <= 0 ) and ( Index < RootPathList.Count ) do
+    // Prepare TabReplace, TabReports and TabSpacing
+    if not ( optTabReplace in Option.OptionUsed ) then
     begin
-      FileName := RootPathList.Strings[ Index ];
-      if DirectoryExists( FileName ) then
-      begin
-        RootPath := FileName;
-      end;
-
-      Inc( Index );
+      Option.TabReplace := IniFile.ReadBool(  Option.IniSectionName,
+                                              IniKeyTabReplace,
+                                              Option.TabReplace
+                                              );
+    end;
+    if not ( optTabReports in Option.OptionUsed ) then
+    begin
+      Option.TabReports := IniFile.ReadBool(  Option.IniSectionName,
+                                              IniKeyTabReports,
+                                              Option.TabReports
+                                              );
+    end;
+    if not ( optTabSpacing in Option.OptionUsed ) then
+    begin
+      Option.TabSpacing := IniFile.ReadInteger( Option.IniSectionName,
+                                                IniKeyTabSpacing,
+                                                Option.TabSpacing
+                                                );
     end;
 
-    // Enumerate valid RootPathList entry
-    if DirectoryExists( RootPath ) then
+    {--------------------------------------------------------------------------}
+
+    Jadex := Length( Option.FilesPaths );
+    if Jadex > 0 then
     begin
-      RootPath := IncludeTrailingPathDelimiter( RootPath );
-
-      // Enumerate IncludesList entries
-      for Index := 0 to IncludesList.Count - 1 do
+      Dec( Jadex );
+      for Index := 0 to Jadex do
       begin
-        FileList.AddFiles( RootPath + IncludesList.Strings[ Index ], True, SkipDirsList );
-      end;
-
-      // Remove ExcludesList entries
-      Index := 0; Jadex := 0;
-      while ( Index < ExcludesList.Count ) and ( Jadex < FileList.Count ) do
-      begin
-        FileName := IncludeTrailingPathDelimiter( RootPath + ExcludesList.Strings[ Index ] );
-
-        Compare := CompareText( FileName, Copy( FileList.Strings[ Jadex ], 1, Length( FileName ) ) );
-
-        if Compare < 0 then
+        FileName := Option.FilesPaths[ Index ];
+        if DirectoryExists( FileName ) then
         begin
-          // ExcludesList < FileList
-          Inc( Index );
-        end
-        else
-        if Compare > 0 then
-        begin
-          // ExcludesList > FileList
-          Inc( Jadex );
+          FileList.AddFiles( FileName, Option.Recursive, SkipDirsList );
         end
         else
         begin
-          // ExcludesList = FileList
-          FileList.Delete( Jadex );
+          FileList.Add( FileName );
         end;
       end;
-
-      // Keep ExtensonList entries
-      Index := 0;
-      while Index < FileList.Count do
+    end
+    else
+    begin
+      // Locate first valid RootPathList entry
+      RootPath := ''; Index := 0;
+      while ( Length( RootPath ) <= 0 ) and ( Index < RootPathList.Count ) do
       begin
-        FileExtn := Copy( ExtractFileExt( FileList.Strings[ Index ] ), 2, MaxInt );
+        FileName := RootPathList.Strings[ Index ];
+        if DirectoryExists( FileName ) then
+        begin
+          RootPath := FileName;
+        end;
 
-        if ExtensonList.IndexOf( FileExtn ) >= 0 then
+        Inc( Index );
+      end;
+
+      // Enumerate valid RootPathList entry
+      if DirectoryExists( RootPath ) then
+      begin
+        RootPath := IncludeTrailingPathDelimiter( RootPath );
+
+        // Enumerate IncludesList entries
+        for Index := 0 to IncludesList.Count - 1 do
         begin
-          // FileExtn present, retain
-          Inc( Index );
-        end
-        else
+          // INI File selection is always recursive
+          FileList.AddFiles( RootPath + IncludesList.Strings[ Index ], True, SkipDirsList );
+        end;
+
+        // Remove ExcludesList entries
+        Index := 0; Jadex := 0;
+        while ( Index < ExcludesList.Count ) and ( Jadex < FileList.Count ) do
         begin
-          // FileExtn absent, discard
-          FileList.Delete( Index );
+          FileName := IncludeTrailingPathDelimiter( RootPath + ExcludesList.Strings[ Index ] );
+
+          Compare := CompareText( FileName, Copy( FileList.Strings[ Jadex ], 1, Length( FileName ) ) );
+
+          if Compare < 0 then
+          begin
+            // ExcludesList < FileList
+            Inc( Index );
+          end
+          else
+          if Compare > 0 then
+          begin
+            // ExcludesList > FileList
+            Inc( Jadex );
+          end
+          else
+          begin
+            // ExcludesList = FileList
+            FileList.Delete( Jadex );
+          end;
         end;
       end;
     end;
+
+    // Keep ExtensonList entries
+    Index := 0;
+    while Index < FileList.Count do
+    begin
+      FileExtn := Copy( ExtractFileExt( FileList.Strings[ Index ] ), 2, MaxInt );
+
+      if ExtensonList.IndexOf( FileExtn ) >= 0 then
+      begin
+        // FileExtn present, retain
+        Inc( Index );
+      end
+      else
+      begin
+        // FileExtn absent, discard
+        FileList.Delete( Index );
+      end;
+    end;
+
+    {--------------------------------------------------------------------------}
 
     // Remove extra white space
+    EditedTrim := 0;
     for Index := 0 to FileList.Count - 1 do
     begin
       FileName := FileList.Strings[ Index ];
@@ -539,23 +803,30 @@ begin
       end;
     end;
 
-    if TabReplace then
+    {--------------------------------------------------------------------------}
+
+    // Replace tabs
+    EditedTabs := 0;
+    if Option.TabReplace then
     begin
-      // Replace tabs
       for Index := 0 to FileList.Count - 1 do
       begin
         FileName := FileList.Strings[ Index ];
 
-        if FileEdit.EditTabs( FileName, TabSpacing ) then
+        if FileEdit.EditTabs( FileName, Option.TabSpacing ) then
         begin
           WriteLn( 'Tabs: ', FileName );
           Inc( EditedTabs );
         end;
       end;
-    end
-    else
+    end;
+
+    {--------------------------------------------------------------------------}
+
+    // Report where tabs exist
+    FinderTabs := 0;
+    if Option.TabReports then
     begin
-      // Report where tabs exist
       for Index := 0 to FileList.Count - 1 do
       begin
         FileName := FileList.Strings[ Index ];
@@ -564,12 +835,16 @@ begin
         if Length( TabLines ) > 0 then
         begin
           WriteLn( 'Tabs: ', FileName, ', lines ', TabLines );
-          Inc( EditedTabs );
+          Inc( FinderTabs );
         end;
       end;
     end;
 
-    WriteLn( Format( MessageFini, [ FileList.Count, EditedTrim, EditedTabs ] ) );
+    {--------------------------------------------------------------------------}
+
+    WriteLn( Format( MessageFini, [ FileList.Count, EditedTrim, EditedTabs, FinderTabs ] ) );
+
+    {--------------------------------------------------------------------------}
 
   finally
     FreeAndNil( IniFile );
@@ -581,6 +856,9 @@ begin
     FreeAndNil( FileList );
     FreeAndNil( FileEdit );
   end;
+
+  {----------------------------------------------------------------------------}
+
 end;
 
 {==============================================================================}
