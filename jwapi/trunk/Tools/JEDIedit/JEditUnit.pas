@@ -151,7 +151,8 @@ type
       optTabReplace,
       optTabReports,
       optTabSpacing,
-      optTabSpacingError
+      optTabSpacingError,
+      optYesPrompt
     );
 
   TProgramOptionUsed = set of TProgramOptionId;
@@ -160,7 +161,8 @@ type
     BackupFile,
     Recursive,
     TabReplace,
-    TabReports: Boolean;
+    TabReports,
+    YesPrompt: Boolean;
 
     TabSpacing: Integer;
 
@@ -397,6 +399,24 @@ function RunProgram: Integer;
     StringList.Sorted := True;
   end;
 
+  function SaveChangeYes: Boolean;
+
+    var
+      InputText: string;
+
+  begin
+    if Option.YesPrompt then
+    begin
+      Write( ' changed, save? [y] ' )
+      ReadLn( InputText );
+      Result := ( Length( InputText ) = 0 ) or ( CompareText( InputText[ 1 ], 'y' ) = 0 );
+    end
+    else
+    begin
+      Result := True;
+    end;
+  end;
+
 begin
   Result := 0;
 
@@ -406,6 +426,7 @@ begin
 
   Option.BackupFile := False;
   Option.Recursive := False;
+  Option.YesPrompt := False;
   Option.TabReplace := IniKeyTabReplaceDefault;
   Option.TabReports := IniKeyTabReportsDefault;
   Option.TabSpacing := IniKeyTabSpacingDefault;
@@ -415,11 +436,11 @@ begin
   Option.IniSectionName := IniSectionDefault;
 
   // Command line arguments
-  Index := 0; Jadex := 0;
-  while Index < ParamCount do
+  Index := 1; Jadex := 0;
+  while Index <= ParamCount do
   begin
-    Inc( Index );
     Argument := ParamStr( Index );
+    Inc( Index );
 
     if ( CompareText( Argument, '--backup-file' ) = 0 )
     or ( CompareText( Argument, '-b' ) = 0 )
@@ -441,11 +462,11 @@ begin
     or ( CompareText( Argument, '-e' ) = 0 )
     or ( CompareText( Argument, '/e' ) = 0 ) then
     begin
-      Inc( Index );
-      if Index < ParamCount then
+      if Index <= ParamCount then
       begin
         Option.OptionUsed := Option.OptionUsed + [ optExtensions ];
         Option.Extensions := ParamStr( Index );
+        Inc( Index );
       end
       else
       begin
@@ -457,11 +478,11 @@ begin
     or ( CompareText( Argument, '-i' ) = 0 )
     or ( CompareText( Argument, '/i' ) = 0 ) then
     begin
-      Inc( Index );
-      if Index < ParamCount then
+      if Index <= ParamCount then
       begin
         Option.OptionUsed := Option.OptionUsed + [ optIniFileName ];
         Option.IniFileName := ParamStr( Index );
+        Inc( Index );
       end
       else
       begin
@@ -473,11 +494,11 @@ begin
     or ( CompareText( Argument, '-j' ) = 0 )
     or ( CompareText( Argument, '/j' ) = 0 ) then
     begin
-      Inc( Index );
-      if Index < ParamCount then
+      if Index <= ParamCount then
       begin
         Option.OptionUsed := Option.OptionUsed + [ optIniFileSection ];
         Option.IniSectionName := ParamStr( Index );
+        Inc( Index );
       end
       else
       begin
@@ -489,11 +510,11 @@ begin
     or ( CompareText( Argument, '-r' ) = 0 )
     or ( CompareText( Argument, '/r' ) = 0 ) then
     begin
-      Inc( Index );
-      if Index < ParamCount then
+      if Index <= ParamCount then
       begin
         Option.OptionUsed := Option.OptionUsed + [ optRootPaths ];
         Option.RootPaths := ParamStr( Index );
+        Inc( Index );
       end
       else
       begin
@@ -521,10 +542,10 @@ begin
     or ( CompareText( Argument, '-v' ) = 0 )
     or ( CompareText( Argument, '/v' ) = 0 ) then
     begin
-      Inc( Index );
-      if Index < ParamCount then
+      if Index <= ParamCount then
       begin
         Option.TabSpacing := StrToIntDef( ParamStr( Index ), 0 );
+        Inc( Index );
         if Option.TabSpacing > 0 then
         begin
           Option.OptionUsed := Option.OptionUsed + [ optTabSpacing ];
@@ -538,6 +559,14 @@ begin
       begin
         Option.OptionUsed := Option.OptionUsed + [ optTabSpacingError ];
       end;
+    end
+    else
+    if ( CompareText( Argument, '--yes-prompt' ) = 0 )
+    or ( CompareText( Argument, '-y' ) = 0 )
+    or ( CompareText( Argument, '/y' ) = 0 ) then
+    begin
+      Option.OptionUsed := Option.OptionUsed + [ optYesPrompt ];
+      Option.YesPrompt := True;
     end
     else
     if DirectoryExists( Argument ) or FileExists( Argument ) then
@@ -829,10 +858,14 @@ begin
     begin
       FileName := FileList.Strings[ Index ];
 
-      if FileEdit.EditWhiteSpace( FileName ) and FileList.Backup( Index ) then
+      if FileEdit.EditWhiteSpace( FileName ) then
       begin
-        FileEdit.SaveToFile( FileName );
-        WriteLn( 'Edit: ', FileName );
+        Write( 'Edit: ', FileName );
+        if SaveChangeYes and FileList.Backup( Index ) then
+        begin
+          FileEdit.SaveToFile( FileName );
+        end;
+        WriteLn;
         Inc( EditedTrim );
       end;
     end;
@@ -852,6 +885,17 @@ begin
         begin
           FileEdit.SaveToFile( FileName );
           WriteLn( 'Tabs: ', FileName );
+          Inc( EditedTabs );
+        end;
+
+        if FileEdit.EditTabs( FileName, Option.TabSpacing ) then
+        begin
+          Write( 'Tabs: ', FileName );
+          if SaveChangeYes and FileList.Backup( Index ) then
+          begin
+            FileEdit.SaveToFile( FileName );
+          end;
+          WriteLn;
           Inc( EditedTabs );
         end;
       end;
