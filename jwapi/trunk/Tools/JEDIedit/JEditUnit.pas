@@ -407,7 +407,7 @@ function RunProgram: Integer;
   begin
     if Option.YesPrompt then
     begin
-      Write( ' changed, save? [y] ' )
+      Write( ' changed, save? [y] ' );
       ReadLn( InputText );
       Result := ( Length( InputText ) = 0 ) or ( CompareText( InputText[ 1 ], 'y' ) = 0 );
     end
@@ -523,6 +523,8 @@ begin
     end
     else
     if ( CompareText( Argument, '--tab-replace' ) = 0 )
+    or ( CompareText( Argument, '-t+' ) = 0 )
+    or ( CompareText( Argument, '/t+' ) = 0 )
     or ( CompareText( Argument, '-t' ) = 0 )
     or ( CompareText( Argument, '/t' ) = 0 ) then
     begin
@@ -530,12 +532,30 @@ begin
       Option.TabReplace := True;
     end
     else
+    if ( CompareText( Argument, '--no-tab-replace' ) = 0 )
+    or ( CompareText( Argument, '-t-' ) = 0 )
+    or ( CompareText( Argument, '/t-' ) = 0 ) then
+    begin
+      Option.OptionUsed := Option.OptionUsed + [ optTabReplace ];
+      Option.TabReplace := False;
+    end
+    else
     if ( CompareText( Argument, '--tab-report' ) = 0 )
+    or ( CompareText( Argument, '-u+' ) = 0 )
+    or ( CompareText( Argument, '/u+' ) = 0 )
     or ( CompareText( Argument, '-u' ) = 0 )
     or ( CompareText( Argument, '/u' ) = 0 ) then
     begin
       Option.OptionUsed := Option.OptionUsed + [ optTabReports ];
       Option.TabReports := True;
+    end
+    else
+    if ( CompareText( Argument, '--no-tab-report' ) = 0 )
+    or ( CompareText( Argument, '-u-' ) = 0 )
+    or ( CompareText( Argument, '/u-' ) = 0 ) then
+    begin
+      Option.OptionUsed := Option.OptionUsed + [ optTabReports ];
+      Option.TabReports := False;
     end
     else
     if ( CompareText( Argument, '--tab-spacing' ) = 0 )
