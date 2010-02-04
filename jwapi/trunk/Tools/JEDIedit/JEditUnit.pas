@@ -884,9 +884,9 @@ begin
         if SaveChangeYes and FileList.Backup( Index ) then
         begin
           FileEdit.SaveToFile( FileName );
+          Inc( EditedTrim );
         end;
         WriteLn;
-        Inc( EditedTrim );
       end;
     end;
 
@@ -900,13 +900,6 @@ begin
       begin
         FileName := FileList.Strings[ Index ];
 
-        if FileEdit.EditTabs( FileName, Option.TabSpacing )
-        and FileList.Backup( Index ) then
-        begin
-          FileEdit.SaveToFile( FileName );
-          WriteLn( 'Tabs: ', FileName );
-          Inc( EditedTabs );
-        end;
 
         if FileEdit.EditTabs( FileName, Option.TabSpacing ) then
         begin
@@ -914,9 +907,9 @@ begin
           if SaveChangeYes and FileList.Backup( Index ) then
           begin
             FileEdit.SaveToFile( FileName );
+            Inc( EditedTabs );
           end;
           WriteLn;
-          Inc( EditedTabs );
         end;
       end;
     end;
