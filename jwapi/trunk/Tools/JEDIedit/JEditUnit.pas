@@ -47,6 +47,74 @@ const
   MessageFile = 'File not found: %s.';
   MessageFini = 'Files: count %d, trim %d, tabs %d %d.';
 
+type
+  MessageHelpRange = 0..60;
+const
+  MessageHelp: array [ MessageHelpRange ] of string =
+    (
+      '',
+      'JEDIedit (option|file|directory)*',
+      '',
+      '   --backup-file           Enables file backups, for example:',
+      '   -b                      file Unit.pas becomes Unit.~pas and',
+      '   /b                      modfied file content becomes Unit.pas.',
+      '',
+      '   --directories           Enables fully recursive directory search.',
+      '   -d',
+      '   /d',
+      '',
+      '   --extensions exts       File extensions to select where "exts" can be:',
+      '   -e exts                     pas',
+      '   /e exts                     dpr,inc,pas',
+      '                               "pas"',
+      '                               "dpr,inc,pas"',
+      '',
+      '   --ini-file filename     Reads INI filename instead of JEDIedit.ini and',
+      '   -i filename             may be used alone or combined with --ini-section.',
+      '   /i filename',
+      '',
+      '   --ini-section thisone   Reads INI section thisone instead of Default and',
+      '   -j thisone              may be used alone or combined with --ini-file.',
+      '   /k thisone',
+      '',
+      '   --root-paths pathlist   Replace INI file RootPaths value where pathlist is',
+      '   -r pathlist             comma seperated possibly enclosed in double quotes',
+      '   /r pathlist             and one path is sufficient.  This value is ignored',
+      '                           when file or directories appear on command line.',
+      '',
+      '   --tab-replace           Enables Tab Replacement feature.',
+      '   -t+',
+      '   /t+',
+      '   -t',
+      '   /t',
+      '',
+      '   --no-tab-replace        Disables Tab Replacement feature.',
+      '   -t-',
+      '   /t-',
+      '',
+      '   --tab-report            Enables Tab Reporting feature.',
+      '   -t+',
+      '   /t+',
+      '   -t',
+      '   /t',
+      '',
+      '   --no-tab-report         Disables Tab Reporting feature.',
+      '   -t-',
+      '   /t-',
+      '',
+      '   --tab-spacing number    Tab Replacement feature spaces tabbed text number',
+      '   -v number               columns apart.',
+      '   /v number',
+      '',
+      '   --yes-prompt            Prompt for yes confirmation prior to saving changed',
+      '   -y                      files; pressing Enter key alone or any text begining',
+      '   /y                      with letter Y or y followed by Enter key saves changes.',
+      '',
+      '   --help                  Display this help message.',
+      '   -?',
+      '   /?'
+    );
+
 {==============================================================================}
 
 function RightTrim( var Trimmed: Boolean; const Arg: string ): string;
@@ -146,6 +214,7 @@ type
       optIniFileNameError,
       optIniFileSection,
       optIniFileSectionError,
+      optMessageHelp,
       optRootPaths,
       optRootPathsError,
       optTabReplace,
@@ -378,19 +447,12 @@ end;
 
 function RunProgram: Integer;
 
-  var
-    FileEdit: TFileEdit;
-    FileList: TFileList;
-    RootPathList,
-    ExcludesList,
-    IncludesList,
-    ExtensonList,
-    SkipDirsList: TStringList;
-    Argument, FileExtn, FileName, RootPath, TabLines: string;
-    Compare, EditedTabs, EditedTrim, FinderTabs, Index, Jadex: Integer;
-    IniFile: TMemIniFile;
-    SaveIniFile: Boolean;
+  {----------------------------------------------------------------------------}
+
+  var // 1 of 2 (see below)
     Option: TProgramOptions;
+
+  {----------------------------------------------------------------------------}
 
   procedure InitializeStringList( StringList: TStringList );
   begin
@@ -399,11 +461,11 @@ function RunProgram: Integer;
     StringList.Sorted := True;
   end;
 
-  function SaveChangeYes: Boolean;
+  {----------------------------------------------------------------------------}
 
+  function SaveChangeYes: Boolean;
     var
       InputText: string;
-
   begin
     if Option.YesPrompt then
     begin
@@ -416,6 +478,63 @@ function RunProgram: Integer;
       Result := True;
     end;
   end;
+
+  {----------------------------------------------------------------------------}
+
+  procedure ShowMessageHelp;
+    var
+      Index: Integer;
+  begin
+    for Index := Low( MessageHelpRange ) to High( MessageHelpRange ) do
+    begin
+      WriteLn( MessageHelp[ Index ] );
+    end;
+  end;
+
+  {----------------------------------------------------------------------------}
+
+  procedure ShowOptionError( const OptionId: TProgramOptionId );
+  begin
+    WriteLn;
+    Write( 'Bad ' );
+
+    case OptionId of
+    optExtensionsError:
+      Write( '--extensions' );
+
+    optIniFileNameError:
+      Write( '--ini-file' );
+
+    optIniFileSectionError:
+      Write( '--ini-section' );
+
+    optRootPathsError:
+      Write( '--root-paths' );
+
+    optTabSpacingError:
+      Write( '--tab-spacing' );
+
+    end;
+
+    WriteLn( ' option.' );
+  end;
+
+  {----------------------------------------------------------------------------}
+
+  var // 2 of 2 (see above)
+    FileEdit: TFileEdit;
+    FileList: TFileList;
+    RootPathList,
+    ExcludesList,
+    IncludesList,
+    ExtensonList,
+    SkipDirsList: TStringList;
+    Argument, FileExtn, FileName, RootPath, TabLines: string;
+    Compare, EditedTabs, EditedTrim, FinderTabs, Index, Jadex: Integer;
+    IniFile: TMemIniFile;
+    BadFilePath, SaveIniFile: Boolean;
+
+  {----------------------------------------------------------------------------}
 
 begin
   Result := 0;
@@ -436,6 +555,7 @@ begin
   Option.IniSectionName := IniSectionDefault;
 
   // Command line arguments
+  BadFilePath := False;
   Index := 1; Jadex := 0;
   while Index <= ParamCount do
   begin
@@ -472,6 +592,13 @@ begin
       begin
         Option.OptionUsed := Option.OptionUsed + [ optExtensionsError ];
       end;
+    end
+    else
+    if ( CompareText( Argument, '--help' ) = 0 )
+    or ( CompareText( Argument, '-?' ) = 0 )
+    or ( CompareText( Argument, '/?' ) = 0 ) then
+    begin
+      Option.OptionUsed := Option.OptionUsed + [ optMessageHelp ];
     end
     else
     if ( CompareText( Argument, '--ini-file' ) = 0 )
@@ -597,20 +724,29 @@ begin
     end
     else
     begin
-      WriteLn( Format( MessageFile, [ Argument ] ) );
+      Option.OptionUsed := Option.OptionUsed + [ optMessageHelp ];
+      WriteLn;
+      Write( Format( MessageFile, [ Argument ] ) );
+      BadFilePath := True;
     end;
   end;
-  if optExtensionsError     in Option.OptionUsed then WriteLn( 'optExtensionsError' );
-  if optIniFileNameError    in Option.OptionUsed then WriteLn( 'optIniFileNameError' );
-  if optIniFileSectionError in Option.OptionUsed then WriteLn( 'optIniFileSectionError' );
-  if optRootPathsError      in Option.OptionUsed then WriteLn( 'optRootPathsError' );
-  if optTabSpacingError     in Option.OptionUsed then WriteLn( 'optTabSpacingError' );
+  if BadFilePath then WriteLn;
+  if optExtensionsError     in Option.OptionUsed then ShowOptionError( optExtensionsError );
+  if optIniFileNameError    in Option.OptionUsed then ShowOptionError( optIniFileNameError );
+  if optIniFileSectionError in Option.OptionUsed then ShowOptionError( optIniFileSectionError );
+  if optRootPathsError      in Option.OptionUsed then ShowOptionError( optRootPathsError );
+  if optTabSpacingError     in Option.OptionUsed then ShowOptionError( optTabSpacingError );
   if  [ optExtensionsError,
         optIniFileNameError,
         optIniFileSectionError,
         optRootPathsError,
-        optTabSpacingError
-      ] * Option.OptionUsed <> [ ] then Exit;
+        optTabSpacingError,
+        optMessageHelp
+      ] * Option.OptionUsed <> [ ] then
+  begin
+    ShowMessageHelp;
+    Exit;
+  end;
 
   {----------------------------------------------------------------------------}
 
