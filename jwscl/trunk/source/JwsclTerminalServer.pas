@@ -3080,8 +3080,6 @@ end;
 
 function TJwTerminalServer.Session(const SessionId: TJwSessionId = WTS_CURRENT_SESSION): TJwWTSSession;
 begin
-  Result := nil;
-
   if not Connected then
     Connect;
 
@@ -3090,8 +3088,6 @@ end;
 
 function TJwTerminalServer.GetSessionStatistics: TJwWTSSessionStatistics;
 begin
-  Result := nil;
-
   if not Assigned(FSessionStatistics) then
   begin
     FSessionStatistics := TJwWTSSessionStatistics.Create(Self);

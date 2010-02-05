@@ -92,15 +92,13 @@ interface
 uses
   ActiveX,
   JwaWinNT, //only TEMP
+  //only temp
+  JwaCOMSecurity,
 
   JwaWindows,      //JEDI API unit
 
-  //temp
-  ComSvcs,
   ComObj,
-  //
 
-  JwaCOMSecurity,
 
   //more custom units here
   Classes,
@@ -430,6 +428,31 @@ type
        AutoDestroy Set to true to free the AuthenticationList.
     Remarks
       Use this call only for a COM Server that is also a COM client.
+
+      If you intend to use this function (effectively CoInitializeSecurity) in a service provided by VCL (TService)
+      you need to call it in a different way:
+        1. Application.DelayInitialize := true;
+      or
+        2. Use the demonstration code in your application as demonstrated at the end of this file:
+        <pre lang="delphi">
+          var
+            SaveInitProc: Pointer = nil;
+
+          procedure InitComServer;
+          begin
+            //In a service, add code to CoInitializeSecurity here
+
+            if SaveInitProc <> nil then TProcedure(SaveInitProc);
+          end;
+
+          initialization
+            SaveInitProc := InitProc;
+            InitProc := @InitComServer;
+        </pre>
+        In this way the call to CoInitializeSecurity is made before VCL inits COM.
+
+      For more information see
+        http://blog.delphi-jedi.net/2009/12/16/windows-2003-server-requires-startservicectrldispatcher/
 
      Exceptions
        EJwsclInvalidParameterException This exception will be raised if :
@@ -1172,19 +1195,59 @@ type
 
   TJwServerAccessControl = class;
 
+  {This method is a callback method used by property TJwServerAccessControl.OnIsAccessAllowed
+   @param Sender  This parameter defines which instance of TJwServerAccessControl is calling the method.
+   @param DesiredAccess Defines the access requested by the caller of the AccessCheck function.
+   @param TrusteeName Defines the name trustee who is used to make the request.
+   @param TrusteeSID Defines the trustee as a TJwSecurityID class who is used to make the request.
+   @param AProperty Defines a property supplied to the TJwServerAccessControl.JwIsAccessAllowed.
+   @param Trustee Not used. Always nil.
+   @param AccessGranted Receives the previous result of the access check. Set to true to grant access; otherwise
+    access will be denied.
+   @param ErrorCode Defines an error code that is returned to any caller. Actually an error code of < 0 will
+      raise an EOleSysError exception with a generic message. You can raise your own EOleSysError exception to return
+      any HRESULT value to a COM caller. In this way you can see your custom made error message (good for debugging).
+      However, if you use other exception classes COM callers will receive the HRESULT error E_UNEXPECTED.
+  }
   TJwIsAccessAllowed = procedure (const Sender : TJwServerAccessControl;
       const DesiredAccess : DWORD;
-      const TrusteeName : TJwString; const TrusteeSID : TJwSecurityId;
-      const AProperty : TJwString; const Trustee : PTrusteeW;
+      const TrusteeName : TJwString;
+      const TrusteeSID : TJwSecurityId;
+      const AProperty : TJwString;
+      const Trustee : PTrusteeW;
       var AccessGranted : Boolean;
       var ErrorCode : HRESULT) of object;
 
   TJwFacilityType = 0..$7FF;
 
+  {Defines the used method to load from or save to a stream a security descriptor.
+  }
+  TJwPersistStreamType = (
+
+    pstPlain,
+    pstJwscl,
+    pstIAccessControl
+  );
+
+  {TJwServerAccessControl provides an implementation of
+    IAccessControl, IPersist and IPersistStream.
+   It implements the COM IAccessControl interface to support a security descriptor for
+     server interfaces. It supports Owner, Group (in contrast to the MS implementation of IAccessControl)
+      and DACL.
+   This object also supports streaming through IPersistStream.
+
+   Remarks
+    All COM methods (the methods inherited by the interfaces) are exception proof. I.e. an arbitrary exception
+    is resolved to the error value E_UNEXPECTED. However, the exception EOleSysError can be used to return any
+    other COM error.
+    On the other hand, in debug mode these COM methods raise an exception rather than returning a HRESULT value.
+    It is easier to find an error by an exception than a quiet return value.
+  }
   TJwServerAccessControl = class(TInterfacedObject, IAccessControl, IPersist, IPersistStream)
-  private
-    fUsePlainDescriptorPersistData: Boolean;
   protected
+    fPersistStreamType: TJwPersistStreamType;
+    fStrictACLVerify: Boolean;
+
     fFacilityCode: TJwFacilityType;
     fCriticalSection : TCriticalSection;
     fPersistClassID: TGUID;
@@ -1200,15 +1263,50 @@ type
     fIsDirty : Boolean;
 
     function TrusteeToSid(const Trustee : PTrusteeW) : TJwSecurityId; virtual;
-    procedure CopyACLToObject(const pAccessList: PACTRL_ACCESSW; ACL : TJwSecurityAccessControlList); virtual;
+    procedure CopyACLToObject(const pAccessList: PACTRL_ACCESSW;var ACL : TJwDAccessControlList); virtual;
 
-
+    //trustee check for strict validation
+    function IsValidTrustee(const Trustee : PTrusteeW) : Boolean;
   public
+    {
+    This method is affected by property StrictACLVerify when set to True.
+    }
     function GrantAccessRights(pAccessList: PACTRL_ACCESSW): HRESULT; stdcall;
+
+    {
+    This method is affected by property StrictACLVerify when set to True.
+    }
     function SetAccessRights(pAccessList: PACTRL_ACCESSW): HRESULT; stdcall;
+
+    {
+    This method is affected by property StrictACLVerify when set to True.
+    }
     function SetOwner(pOwner: PTRUSTEEW; pGroup: PTRUSTEEW): HRESULT; stdcall;
+
+    {
+    This method is affected by property StrictACLVerify when set to True.
+    }
     function RevokeAccessRights(lpProperty: LPWSTR; cTrustees: ULONG; prgTrustees: PTRUSTEEW): HRESULT; stdcall;
-    function GetAllAccessRights(lpProperty: LPWSTR; var ppAccessList: PACTRL_ACCESSW_ALLOCATE_ALL_NODES; var ppOwner, ppGroup: PTRUSTEEW): HRESULT; stdcall;
+
+    {Returns all access rights, owner and group of the object.
+
+    This method is affected by property StrictACLVerify when set to True.
+    On the other hand if StrictACLVerify is false the function can produce incompatible results to IAccessControl.
+
+    If SD.DACL is nil the result is incompatible with IAccessControl.
+    }
+    function GetAllAccessRights(lpProperty: LPWSTR; var ppAccessList: PACTRL_ACCESSW_ALLOCATE_ALL_NODES;
+       var ppOwner, ppGroup: PTRUSTEEW): HRESULT; stdcall;
+
+    {Frees the parameters returned by GetAllAccessRights}
+    class procedure FreeAccessRights(var AccessList : PACTRL_ACCESSW_ALLOCATE_ALL_NODES; var Owner, Group : PTrusteeW);
+
+    {
+    This method is affected by property StrictACLVerify when set to True.
+
+
+    In case of StrictACLVerify is true pTrustee must be a user or group SID.
+    }
     function IsAccessAllowed(pTrustee: PTRUSTEEW; lpProperty: LPWSTR; AccessRights: ACCESS_RIGHTS; var pfAccessAllowed: BOOL): HRESULT; stdcall;
 
     function GetClassID(out classID: TCLSID): HRESULT; stdcall;
@@ -1222,9 +1320,12 @@ type
     constructor Create(const SD : TJwSecurityDescriptor); overload;
     destructor Destroy; override;
 
+    {CreateCOMImplementation returns an instance of a IAccessControl interface implemented by MS.
+    }
     class function CreateCOMImplementation : IAccessControl; virtual;
 
-    {
+    {Adds an access list to the DACL of the security descriptor.
+
     Remarks:
       The function is called by the interface method with the same name. Since the interface method returns a HRESULT value
       this version must raise an EOleSysError and supply the return value to EOleSysError constructor (ErrorCode).
@@ -1235,7 +1336,8 @@ type
     }
     procedure JwGrantAccessRights(const AccessList: TJwDAccessControlList); virtual;
 
-    {
+    {Replaces the DACL of the security descriptor with the given access list.
+
     Remarks:
       The function is called by the interface method with the same name. Since the interface method returns a HRESULT value
       this version must raise an EOleSysError and supply the return value to EOleSysError constructor (ErrorCode).
@@ -1246,8 +1348,12 @@ type
     }
     procedure JwSetAccessRights(const AccessList: TJwDAccessControlList); virtual;
 
-    {
+    {Replaces the owner and/or group of the security descriptor.
+
+
     Remarks:
+      If a parameter is nil it will be ignored.
+
       The function is called by the interface method with the same name. Since the interface method returns a HRESULT value
       this version must raise an EOleSysError and supply the return value to EOleSysError constructor (ErrorCode).
       Use
@@ -1258,6 +1364,8 @@ type
     procedure JwSetOwner(const Owner, Group : TJwSecurityID); virtual;
 
     {
+    JwRevokeAccessRights removes all given access entries from the DACL.
+
     Remarks:
       The function is called by the interface method with the same name. Since the interface method returns a HRESULT value
       this version must raise an EOleSysError and supply the return value to EOleSysError constructor (ErrorCode).
@@ -1290,23 +1398,125 @@ type
     }
     procedure JwIsAccessAllowed(const Trustee: TJwSecurityID; const AProperty: TJwString; const AccessRights: TJwAccessMask; var AccessAllowed: Boolean); virtual;
 
-    procedure InvalidateAccessCheckCacheResult;
+
+    {Resets the AccessControl instance.
+     * It removes the DACL and creates a new one with no access at all.
+     * It sets owner and group to NULL SID.
+     * Sets dirty flag to false
+    }
+    procedure Clear;
+
+    procedure SaveToStream(const Stream : TStream); virtual;
+    procedure LoadFromStream(const Stream : TStream); virtual;
+
 
     property SecurityDescriptor : TJwSecurityDescriptor read fSD;
+
+    {OnIsAccessAllowed defines a method that is called after JwIsAccessAllowed made an AccessCheck (result isn't important).
+     It can be used to overwrite the actual result of the method JwIsAccessAllowed to use dynamic access checking (e.g.
+     always return true in debug mode)
+     See TJwIsAccessAllowed for more information
+    }
     property OnIsAccessAllowed : TJwIsAccessAllowed read fIsAccessAllowed write fIsAccessAllowed;
 
     property GenericMapping: TJwSecurityGenericMappingClass read fGenericMapping write fGenericMapping;
 
-    {Defines the facility code used in the HRESULT value in the faciltiy part}
+    {Defines the facility code used in the HRESULT value in the faciltiy part.
+     By default the value is $FE.
+
+     You can change the value to create your own custom code that is returned in case of errors as HRESULT.
+    }
     property FacilityCode : TJwFacilityType read fFacilityCode write fFacilityCode;
 
+    {PersistClassID is returned by GetClassID.
+     It defines a registered COM class that provides the streaming methods for this object.
+     A NULL_GUID defines that there is no class available. In this case the GetClassID
+     returns E_FAIL.
+
+     You can register this class (TJwServerAccessControl) as an official COM object. To do so
+     you need to provide the class in a COM dll that is registered properly.
+    }
     property PersistClassID : TGUID read fPersistClassID write fPersistClassID;
 
+    {SupportIPersistStream defines whether this object can be stored into and loaded from a stream.
+     If this value is false all stream COM methods returns E_NOTIMPL and streaming is not supported.
+    }
     property SupportIPersistStream : Boolean read fSupportIPersistStream write fSupportIPersistStream;
 
+    {This flag defines whether the object was changed in respect to the last save method call.
+     Default value is false.
+     This property is used by the interface method IsDirty
+    }
     property Dirty : Boolean read fIsDirty write fIsDirty;
 
-    property UsePlainDescriptorPersistData : Boolean read fUsePlainDescriptorPersistData write fUsePlainDescriptorPersistData;
+    {PersistStreamType defines how the security descriptor is stored into the stream.
+     If this value is true a flat memory model of the security descriptor is directly stored into the stream.
+     On the other hand if this value is false the LoadFromStream and SaveToStream of TJwSecurityDescriptor
+     will be used.
+
+     Remarks
+       if PersistStreamType is true the stream layout is the following:
+       <pre>
+         [0..3]      size of descriptor
+         [4..[size]] realtive security descriptor (as in memory representation)
+       </pre>
+
+      Be aware that this stream implementation is propably no compatible with the IAccessControl implementation of MS.
+    }
+    property PersistStreamType : TJwPersistStreamType read fPersistStreamType write fPersistStreamType;
+
+    {This property applies strict compatibility to the implementation of IAccessControl of MS.
+     Default value is false.
+
+     The following methods are made compatible:
+      * SetOwner
+      ** Returns MAKE_HRESULT(1, FacilityCode, ERROR_INVALID_PARAMETER) if a trustee is not compatible to implementation of IAccessControl.
+      ** Owner and Group is still supported (Implementation of IAccessControl does not support owner and group)
+
+      * SetAccessRights
+      ** This method fails with
+      *** MAKE_HRESULT(1, FacilityCode, ERROR_INVALID_ACCESS) if the Access member is not COM_RIGHTS_EXECUTE or 0.
+      *** MAKE_HRESULT(1, FacilityCode, ERROR_INVALID_PARAMETER) if any other value is not conform to IAccessControl implementation.
+      *** E_INVALIDARG if pAccessList is not compatible to IAccessControl implementation.
+
+      * GrantAccessRights
+      ** Same as SetAccessRights
+
+      * RevokeAccessRights
+      ** Trustee check
+
+      * GetAllAccessRights
+      **  This method converts the internal security descriptor (TJwSecurityDescriptor) into a compatible version and returns it.
+      ** Owner and Group is still supported (Implementation of IAccessControl always returns nil)
+
+      All methods which receives a trustee validates them:
+       MAKE_HRESULT(1, FacilityCode, ERROR_INVALID_PARAMETER) if trustee is not conform to IAccessControl implementation.
+
+      Reversed IAccessControl Requirements:
+      <pre>
+        1. ACTRL_Access.cEntries = 1
+        2. ACTRL_Access.pPropertyAccessList <> nil
+        3. ACTRL_PROPERTY_ENTRY.lpProperty = nil
+        4. ACTRL_PROPERTY_ENTRY.fListFlags = 0
+        5. ACTRL_ACCESS_ENTRY_LIST.pAccessEntryList <> nil
+
+        6. (ACTRL_ACCESS_ENTRY_LIST.cEntries <> 0) or
+           (ACTRL_ACCESS_ENTRY_LIST.pAccessList <> nil)
+
+        7. ACTRL_ACCESS_ENTRY.Access = 1 or 0
+        8. ACTRL_ACCESS_ENTRY.ProvSpecificAccess = 0
+        9. ACTRL_ACCESS_ENTRY.Inheritance = 0
+        10. ACTRL_ACCESS_ENTRY.lpInheritProperty = 0
+        11. ACTRL_ACCESS_ENTRY.fAccessFlags = 1 or 2
+
+        12. TRUSTEE.pMultipleTrustee = nil
+        13. TRUSTEE.MultipleTrusteeOperation = 0
+        14. TRUSTEE.TrusteeForm = 0 or 1
+        15. TRUSTEE.TrusteeType = 1 or 2
+        16  TRUSTEE.ptstrName <> nil
+      </pre>
+    }
+    property StrictACLVerify : Boolean read fStrictACLVerify write fStrictACLVerify;
   end;
 
   {TJwCOMSecuritySettings is used by JwTightCOMSecuritySettings
@@ -1727,7 +1937,7 @@ begin
   try
     if (CacheResult = 0) or (CacheResult = INVALID_HANDLE_VALUE) then
     begin
-      fAuthContext.AccessCheck(0, Request, 0, SecurityDescriptor, nil, GenericMapping, Reply, CacheResult);
+      fAuthContext.AccessCheck(0, Request, 0, SecurityDescriptor, nil, GenericMapping, Reply, nil);
     end
     else
     begin
@@ -2881,7 +3091,6 @@ class procedure TJwComProcessSecurity.Initialize(
     Manager : TJwAuthResourceManager;
     Auth : TJwAuthContext;
     Reply : TJwAuthZAccessReply;
-    Handle : TAuthZAccessCheckResultHandle;
     Request : TJwAuthZAccessRequest;
   begin
     if Assigned(SecurityDescriptor) then
@@ -2899,7 +3108,7 @@ class procedure TJwComProcessSecurity.Initialize(
               COM_RIGHTS_ACTIVATE_REMOTE,
               JwNullSID, nil, nil, shOwned);
           try
-            Auth.AccessCheck(0, Request, 0, SecurityDescriptor, nil, nil, Reply, Handle);
+            Auth.AccessCheck(0, Request, 0, SecurityDescriptor, nil, nil, Reply, nil);
 
             try
               if Reply.ErrorByType[0] <> reSuccess then
@@ -3382,15 +3591,7 @@ begin
   Self.Password := Password;
 end;
 
-var
-  SaveInitProc: Pointer = nil;
 
-procedure InitComServer;
-begin
-  //In a service, add code to CoInitializeSecurity here
-
-  if SaveInitProc <> nil then TProcedure(SaveInitProc);
-end;
 
 
 { TJwAuthenticationInfo }
@@ -3442,8 +3643,6 @@ begin
     else
     begin
       CoTaskMemFree(fAuthenticationInfo);
-
-
       fAuthenticationInfo := nil;
     end;
   end;
@@ -3484,30 +3683,37 @@ begin
   fSD.OwnOwner := true;
   fSD.OwnPrimaryGroup := true;
 
+  //true means, a private copy is made from these class instances
   fSD.Owner := JwSecurityProcessUserSID; //Standard SIDs are never freed
   fSD.PrimaryGroup := JwNullSID;
 
   fSupportIPersistStream := True;
+  fIsDirty := False;
+  fStrictACLVerify := true;
 
   fPersistClassID := NULL_GUID;
+  fCacheResult := 0;
 
   fCriticalSection := TCriticalSection.Create;
 end;
 
 destructor TJwServerAccessControl.Destroy;
 begin
-  AuthzFreeContext(fCacheResult);
+
   FreeAndNil(fSD);
   FreeAndNil(fAuthManager);
   FreeAndNil(fCriticalSection);
   inherited;
 end;
 
-procedure TJwServerAccessControl.InvalidateAccessCheckCacheResult;
+class procedure TJwServerAccessControl.FreeAccessRights(var AccessList: PACTRL_ACCESSW_ALLOCATE_ALL_NODES; var Owner, Group: PTrusteeW);
 begin
-  AuthzFreeHandle(fCacheResult);
-  fCacheResult := 0;
+  CoTaskMemFree(AccessList);
+  CoTaskMemFree(Owner);
+  CoTaskMemFree(Group);
 end;
+
+
 
 procedure TJwServerAccessControl.JwGetAllAccessRights(const AProperty: TJwString; out AccessList: TJwDAccessControlList; out Owner,
   Group: TJwSecurityID);
@@ -3537,7 +3743,7 @@ var
   NewDenyCount : Integer;
 
   I: Integer;
-  ACE : TJwDiscretionaryAccessControlEntry;
+  ACE : TJwSecurityAccessControlEntry;
 begin
   if Assigned(AccessList) then
   begin
@@ -3568,18 +3774,19 @@ begin
       NewDenyCount := 0;
       for I := 0 to AccessList.Count - 1 do
       begin
+        ACE := AccessList[i].ClassType.Create as TJwSecurityAccessControlEntry;
+        ACE.Assign(AccessList[i]);
+
         if AccessList[i] is TJwDiscretionaryAccessControlEntryDeny then
         begin
-          ACE := TJwDiscretionaryAccessControlEntry(AccessList[i].ClassType).Create(AccessList[i]);
-
           fSD.DACL.Insert(NewDenyCount, ACE);
+
           Inc(DenyEntryCount);
           Inc(NewDenyCount);
         end
         else
         if AccessList[i] is TJwDiscretionaryAccessControlEntryAllow then
         begin
-          ACE := TJwDiscretionaryAccessControlEntry(AccessList[i].ClassType).Create(AccessList[i]);
 
           //add allow ACE in original order of AccessList directly behind the deny entries
           fSD.DACL.Insert(DenyEntryCount, ACE);
@@ -3597,7 +3804,7 @@ var
   AuthContext : TJwAuthContext;
   Request : TJwAuthZAccessRequest;
   Reply : TJwAuthZAccessReply;
-
+  ErrorCode : HRESULT;
 begin
   AccessAllowed := false;
 
@@ -3605,25 +3812,42 @@ begin
     Exit;
 
   AuthContext := TJwAuthContext.CreateBySid(fAuthManager, [authZSF_ComputePrivileges], Trustee, 0, nil);
+
   try
     Request := TJwAuthZAccessRequest.Create(AccessRights,
               JwNullSID, nil, nil, shOwned);
 
     Reply := nil;
     try
-      if (fCacheResult = 0) or (fCacheResult = INVALID_HANDLE_VALUE) then
-      begin
-        AuthContext.AccessCheck(0, Request, 0, SecurityDescriptor, nil, GenericMapping, Reply, fCacheResult);
-      end
-      else
-      begin
-        AuthContext.AccessCheckCached(fCacheResult, 0, Request, 0, Reply);
-      end;
+      AuthContext.AccessCheck(0, Request, 0, SecurityDescriptor, nil, GenericMapping, Reply, nil);
+
 
       AccessAllowed := Reply.ErrorByType[0] = reSuccess;
+
+      //Use another way to do access check
+      //This is more dynamic
+      if Assigned(OnIsAccessAllowed) then
+      begin
+        ErrorCode := 0;
+        OnIsAccessAllowed(
+          Self,//const Sender : TJwServerAccessControl;
+          AccessRights,//const DesiredAccess : DWORD;
+          Trustee.GetCachedUserFromSid, //const TrusteeName : TJwString;
+          Trustee, // const TrusteeSID : TJwSecurityId;
+          AProperty,//const AProperty : TJwString;
+          nil,  //const Trustee : PTrusteeW;
+          AccessAllowed, //var AccessGranted : Boolean;
+          ErrorCode //var ErrorCode : HRESULT) of object;
+        );
+        if Failed(ErrorCode) then
+          raise EOleSysError.Create(Format('Method assigned to OnIsAccessAllowed failed with %d',[ErrorCode]), ErrorCode, 0);
+
+      end;
     finally
+
       FreeAndNil(Reply);
       FreeAndNil(Request);
+
     end;
   finally
     FreeAndNil(AuthContext);
@@ -3640,11 +3864,14 @@ begin
 
   for I := 0 to SecurityIDList.Count - 1 do
   begin
-    Idx := fSD.DACL.FindSID(SecurityIDList[i]);
-    if Idx >= 0 then
-    begin
-      fSD.DACL.Delete(Idx);
-    end;
+    repeat
+      Idx := fSD.DACL.FindSID(SecurityIDList[i]);
+
+      if Idx >= 0 then
+      begin
+        fSD.DACL.Delete(Idx);
+      end;
+    until Idx < 0;
   end;
 end;
 
@@ -3679,6 +3906,7 @@ type
     Size : Cardinal;
   end;
 
+//create a memory block
 function InitPtrData(var Target : TPtrPointer; const Size : Cardinal; const Offset : Cardinal = 0) : Pointer;
 begin
   Target.StartPtr := CoTaskMemAlloc(Size);
@@ -3687,6 +3915,7 @@ begin
   result := Target.StartPtr;
 end;
 
+//copies data into a memory block
 function SetPtrData(var Target : TPtrPointer; const Source : Pointer; const Size : Cardinal) : Pointer;
 begin
   Assert((DWORD_PTR(Target.OffsetPtr) - DWORD_PTR(Target.StartPtr)) <=  Target.Size, 'Memory block too small');
@@ -3696,6 +3925,7 @@ begin
 
   CopyMemory(result, Source, Size);
 end;
+
 
 
 
@@ -3716,10 +3946,11 @@ var
   AccessEntryArray : array of PACTRL_ACCESS_ENTRYW;
   SID : PSid;
 begin
-  fCriticalSection.Enter;
   try
-    result := S_OK;
+    fCriticalSection.Enter;
     try
+      result := S_OK;
+
       //Retrieve data
       JwGetAllAccessRights(TJwString(lpProperty), ACL, Owner, Group);
 
@@ -3746,10 +3977,29 @@ begin
         else
           ppGroup := nil;
 
+        //grant everyone access
         if not Assigned(ACL) then
         begin
-          ppAccessList.cEntries := 0;
-          ppAccessList.pPropertyAccessList := nil;
+          if StrictACLVerify then
+            PropertyCount := 1 //IAccessControl does only support 1. Do not modify!
+          else
+            PropertyCount := 1; //we don't support properties
+
+          //Create structure with CoTaskMemAlloc
+          ppAccessList :=
+            InitPtrData(PtrPtr, $FF + //security space
+              (sizeof(ACTRL_PROPERTY_ENTRYW) + SizeOf(ACTRL_ACCESS_ENTRY_LIST)) * PropertyCount //Number of properties
+              , sizeof(_ACTRL_ALISTW{=PACTRL_ACCESSW_ALLOCATE_ALL_NODES^} //add this offset so the next data is stored behind the ppAccessList in the memory block
+            ));
+
+          ppAccessList.cEntries := PropertyCount;
+
+           //Init the property entry list - only one property list (no property) is supported
+          ZeroMemory(@PropertyEntry, sizeof(PropertyEntry));
+          ppAccessList.pPropertyAccessList :=
+            SetPtrData(PtrPtr, @PropertyEntry, sizeof(PropertyEntry));
+
+
         end
         else
         begin
@@ -3820,14 +4070,30 @@ begin
                AccessEntryArray[I].fAccessFlags := ACTRL_ACCESS_DENIED;
             //other ACE types are not supported (this is checked in the beginning)
 
-            //we access the access entries through the temp array
-            AccessEntryArray[I].Access := ACL.Items[I].AccessMask;
+            //Convert the ACL access mask to IAccessControl compatible value
+            if StrictACLVerify then
+            begin
+              //IAccessControl only allows bit 0 to be used (set by COM_RIGHTS_EXECUTE).
+              AccessEntryArray[I].Access := ACL.Items[I].AccessMask and COM_RIGHTS_EXECUTE;
+            end
+            else
+            begin
+              //we access the access entries through the temp array
+              AccessEntryArray[I].Access := ACL.Items[I].AccessMask;
+            end;
             AccessEntryArray[I].Inheritance := NO_INHERITANCE;
 
             ZeroMemory(@AccessEntryArray[I].Trustee, sizeof(AccessEntryArray[I].Trustee));
             AccessEntryArray[I].Trustee.MultipleTrusteeOperation := NO_MULTIPLE_TRUSTEE;
             AccessEntryArray[I].Trustee.TrusteeForm := TRUSTEE_IS_SID;
             AccessEntryArray[I].Trustee.TrusteeType := TRUSTEE_IS_USER;
+
+            //Defined by MS IAccessControl
+            //AccessEntryArray[I].ProvSpecificAccess := 0;
+            //AccessEntryArray[I].Inheritance := NO_INHERITANCE;
+            //AccessEntryArray[I].lpInheritProperty := nil;
+
+
 
             //store the SID structures into the memory block
             SID :=
@@ -3842,26 +4108,26 @@ begin
         FreeAndNil(Owner);
         FreeAndNil(Group);
       end;
-    except
-      on E : EOleSysError do
-      begin
-  {$IFDEF DEBUG}
-        raise;
-  {$ELSE}
-        Result := E.ErrorCode;
-  {$ENDIF DEBUG}
-      end;
-      on e : Exception do
-      begin
-  {$IFDEF DEBUG}
-        raise;
-  {$ELSE}
-        result := E_UNEXPECTED;
-  {$ENDIF DEBUG}
-      end;
+    finally
+      fCriticalSection.Leave;
     end;
-  finally
-    fCriticalSection.Leave;
+  except
+    on E : EOleSysError do
+    begin
+  {$IFDEF DEBUG}
+      raise;
+  {$ELSE}
+      Result := E.ErrorCode;
+  {$ENDIF DEBUG}
+    end;
+    on e : Exception do
+    begin
+  {$IFDEF DEBUG}
+      raise;
+  {$ELSE}
+      result := E_UNEXPECTED;
+  {$ENDIF DEBUG}
+    end;
   end;
 end;
 
@@ -3881,7 +4147,33 @@ end;
 
 
 
-procedure TJwServerAccessControl.CopyACLToObject(const pAccessList: PACTRL_ACCESSW; ACL : TJwSecurityAccessControlList);
+
+procedure TJwServerAccessControl.Clear;
+begin
+  fCriticalSection.Enter;
+
+  try
+    if Assigned(fSD.DACL) then
+    begin
+      fSD.DACL.Clear;
+    end
+    else
+    begin
+      fSD.DACL := TJwDAccessControlList.Create;
+      fSD.DACL.OwnsObjects := true;
+    end;
+
+    fSD.Owner := JwNullSID;
+    fSD.PrimaryGroup := JwNullSID;
+
+    Dirty := False;
+
+  finally
+    fCriticalSection.Leave;
+  end;
+end;
+
+procedure TJwServerAccessControl.CopyACLToObject(const pAccessList: PACTRL_ACCESSW; var ACL : TJwDAccessControlList);
 var
   P : PACTRL_PROPERTY_ENTRYW;
   I, I2: Integer;
@@ -3891,11 +4183,40 @@ var
   SID : TJwSecurityId;
 begin
   P := pAccessList.pPropertyAccessList;
+
+  if P.pAccessEntryList = nil then //grant access to everybody
+  begin
+    FreeAndNil(ACL);
+    exit;
+  end;
+
   for I := 0 to pAccessList.cEntries - 1 do
   begin
     pACE := P.pAccessEntryList.pAccessList;
+
+    if pACE = nil then
+      break;
+
     for i2 := 0 to P.pAccessEntryList.cEntries - 1 do
     begin
+      if StrictACLVerify then
+      begin
+        if pACE.Access and $FFFFFFFE <> 0 then
+        begin
+          raise EOleSysError.Create(
+               Format('The member Access of AccessEntry (PACTRL_ACCESS_ENTRYW) #%d is not conform to implementation of IAccessControl. Only COM_RIGHTS_EXECUTE is valid.', [i]),
+                MAKE_HRESULT(1, FacilityCode, ERROR_INVALID_ACCESS), 0);
+        end;
+
+        if not IsValidTrustee(@pACE.Trustee) then
+        begin
+          begin
+            raise EOleSysError.Create(Format('The member Trustee of AccessEntry (PACTRL_ACCESS_ENTRYW) #%d is not compatible/valid to IAccessControl. ', [i]),
+               MAKE_HRESULT(1, FacilityCode, ERROR_INVALID_PARAMETER), 0);
+          end;
+        end;
+      end;
+
       case pACE.fAccessFlags of
         ACTRL_ACCESS_ALLOWED:
            ACEClass := TJwDiscretionaryAccessControlEntryAllow;
@@ -3936,73 +4257,69 @@ function TJwServerAccessControl.GrantAccessRights(pAccessList: PACTRL_ACCESSW): 
 var
   ACL : TJwDAccessControlList;
 begin
-  fCriticalSection.Enter;
   try
-    result := S_OK;
+    fCriticalSection.Enter;
+    try
+      result := S_OK;
 
-    if pAccessList = nil then
-    begin
-      result := E_INVALIDARG;
-      exit;
-    end;
+      if StrictACLVerify and (
+         (pAccessList = nil) or
+         (pAccessList.pPropertyAccessList = nil) or
+         (pAccessList.cEntries = 0) or
+         (pAccessList.pPropertyAccessList.lpProperty <> nil) or
+         (pAccessList.pPropertyAccessList.fListFlags <> 0)) then
+      begin
+        raise EOleSysError.Create('The parameter pAccessList or one of its member is not valid.',
+             MAKE_HRESULT(1, FacilityCode, ERROR_INVALID_PARAMETER), 0);
+      end;
 
-    if pAccessList.pPropertyAccessList = nil then
-    begin
-      try
+      if (pAccessList = nil) or (pAccessList.pPropertyAccessList = nil) then
+      begin
+        result := E_INVALIDARG;
+        exit;
+      end;
+
+      //grant access to everyone
+      if pAccessList.pPropertyAccessList.pAccessEntryList = nil then
+      begin
         JwGrantAccessRights(nil);
         fIsDirty := true;
         Result := S_OK;
-      except
-        on E : EOleSysError do
-        begin
-  {$IFDEF DEBUG}
-          raise;
-  {$ELSE}
-          Result := E.ErrorCode;
-  {$ENDIF DEBUG}
-        end;
-        on E : Exception do
-        begin
-  {$IFDEF DEBUG}
-          raise;
-  {$ELSE}
-          Result := E_FAIL;
-  {$ENDIF DEBUG}
-        end;
-      end;
-      exit;
-    end;
 
-    try
+        exit;
+      end;
+
       ACL := TJwDAccessControlList.Create;
       try
         CopyACLToObject(pAccessList, ACL);
 
         JwGrantAccessRights(ACL);
+
         fIsDirty := true;
+        Result := S_OK;
       finally
         FreeAndNil(ACL);
       end;
-    except
-      on E : EOleSysError do
-      begin
-  {$IFDEF DEBUG}
-        raise;
-  {$ELSE}
-        Result := E.ErrorCode;
-  {$ENDIF DEBUG}
-      end;
-      on e : Exception do
-      begin
-  {$IFDEF DEBUG}
-        raise;
-  {$ELSE}
-        result := E_UNEXPECTED;
-  {$ENDIF DEBUG}
-      end;
+    finally
+      fCriticalSection.Leave;
     end;
-  finally
-    fCriticalSection.Leave;
+  except
+    on E : EOleSysError do
+    begin
+{$IFDEF DEBUG}
+      raise;
+{$ELSE}
+      Result := E.ErrorCode;
+{$ENDIF DEBUG}
+    end;
+    on e : Exception do
+    begin
+{$IFDEF DEBUG}
+      raise;
+{$ELSE}
+      result := E_UNEXPECTED;
+{$ENDIF DEBUG}
+    end;
   end;
 end;
 
@@ -4012,26 +4329,35 @@ var
   SID : TJwSecurityId;
   b : Boolean;
 begin
-  fCriticalSection.Enter;
   try
-    result := S_OK;
-
-    pfAccessAllowed := false;
-
-    if pTrustee = nil then
-    begin
-      result := E_INVALIDARG;
-      exit;
-    end;
-
-    SID := TrusteeToSid(@pTrustee);
-    if not Assigned(SID) then
-    begin
-      result := MAKE_HRESULT(1, FacilityCode, ERROR_INVALID_SID);
-      exit;
-    end;
-
+    fCriticalSection.Enter;
     try
+      result := S_OK;
+
+      pfAccessAllowed := false;
+
+      if StrictACLVerify and
+         not IsValidTrustee(pTrustee) then
+      begin
+        begin
+          raise EOleSysError.Create('The member parameter pTrustee is not compatible/valid to implementation of IAccessControl. (StrictACLVerify is true)',
+             MAKE_HRESULT(1, FacilityCode, ERROR_INVALID_PARAMETER), 0);
+        end;
+      end;
+
+      if pTrustee = nil then
+      begin
+        result := E_INVALIDARG;
+        exit;
+      end;
+
+      SID := TrusteeToSid(pTrustee);
+      if not Assigned(SID) then
+      begin
+        result := MAKE_HRESULT(1, FacilityCode, ERROR_INVALID_SID);
+        exit;
+      end;
+
       try
         b := pfAccessAllowed;
         JwIsAccessAllowed(SID, TJwString(lpProperty), AccessRights, b);
@@ -4039,26 +4365,27 @@ begin
       finally
         FreeAndNil(SID);
       end;
-    except
-      on E : EOleSysError do
-      begin
-  {$IFDEF DEBUG}
-        raise;
-  {$ELSE}
-        Result := E.ErrorCode;
-  {$ENDIF DEBUG}
-      end;
-      on e : Exception do
-      begin
-  {$IFDEF DEBUG}
-        raise;
-  {$ELSE}
-        result := E_UNEXPECTED;
-  {$ENDIF DEBUG}
-      end;
+    finally
+      fCriticalSection.Leave;
     end;
-  finally
-    fCriticalSection.Leave;
+
+  except
+    on E : EOleSysError do
+    begin
+{$IFDEF DEBUG}
+      raise;
+{$ELSE}
+      Result := E.ErrorCode;
+{$ENDIF DEBUG}
+    end;
+    on e : Exception do
+    begin
+{$IFDEF DEBUG}
+      raise;
+{$ELSE}
+      result := E_UNEXPECTED;
+{$ENDIF DEBUG}
+    end;
   end;
 end;
 
@@ -4072,6 +4399,15 @@ begin
   fCriticalSection.Enter;
   try
     result := S_OK;
+
+    if StrictACLVerify and
+       not IsValidTrustee(prgTrustees) then
+    begin
+      begin
+        raise EOleSysError.Create('The member parameter prgTrustees is not compatible/valid to implementation of IAccessControl. ',
+           MAKE_HRESULT(1, FacilityCode, ERROR_INVALID_PARAMETER), 0);
+      end;
+    end;
 
     if prgTrustees = nil then
     begin
@@ -4087,7 +4423,13 @@ begin
       try
         for I := 0 to cTrustees - 1 do
         begin
-          SID := TrusteeToSid(@prgTrustees);
+          if StrictACLVerify and not IsValidTrustee(prgTrustees) then
+          begin
+            raise EOleSysError.Create(Format('The member Trustee of AccessEntry (PACTRL_ACCESS_ENTRYW) #%d is not compatible/valid to IAccessControl. ', [i]),
+                 MAKE_HRESULT(1, FacilityCode, ERROR_INVALID_PARAMETER), 0);
+          end;
+
+          SID := TrusteeToSid(prgTrustees);
 
           if Assigned(SID) then
           begin
@@ -4105,30 +4447,28 @@ begin
       finally
         FreeAndNil(SIDs);
       end;
-  except
-      on E : EOleSysError do
-      begin
-  {$IFDEF DEBUG}
-        raise;
-  {$ELSE}
-        Result := E.ErrorCode;
-  {$ENDIF DEBUG}
-      end;
-      on e : Exception do
-      begin
-  {$IFDEF DEBUG}
-        raise;
-  {$ELSE}
-        result := E_UNEXPECTED;
-  {$ENDIF DEBUG}
-      end;
+    finally
+      fCriticalSection.Leave;
     end;
-  finally
-    fCriticalSection.Leave;
+  except
+    on E : EOleSysError do
+    begin
+{$IFDEF DEBUG}
+      raise;
+{$ELSE}
+      Result := E.ErrorCode;
+{$ENDIF DEBUG}
+    end;
+    on e : Exception do
+    begin
+{$IFDEF DEBUG}
+      raise;
+{$ELSE}
+      result := E_UNEXPECTED;
+{$ENDIF DEBUG}
+    end;
   end;
 end;
-
-
 
 function TJwServerAccessControl.SetAccessRights(pAccessList: PACTRL_ACCESSW): HRESULT;
 var
@@ -4138,15 +4478,34 @@ begin
   try
     result := S_OK;
 
+    if StrictACLVerify and (
+       (pAccessList = nil) or
+       (pAccessList.pPropertyAccessList = nil) or
+       (pAccessList.cEntries = 0) or
+       (pAccessList.pPropertyAccessList.lpProperty <> nil) or
+       (pAccessList.pPropertyAccessList.fListFlags <> 0)) then
+    begin
+      raise EOleSysError.Create('The parameter pAccessList or one of its member is not valid.',
+           MAKE_HRESULT(1, FacilityCode, ERROR_INVALID_PARAMETER), 0);
+    end;
+
+    if (pAccessList = nil) or (pAccessList.pPropertyAccessList = nil) then
+    begin
+      result := E_INVALIDARG;
+      exit;
+    end;
+
     try
       //Grant full access to everyone
-      if pAccessList = nil then
+      if pAccessList.pPropertyAccessList = nil then
       begin
         JwSetAccessRights(nil);
       end
       else
       begin
-        fSD.DACL.Clear;
+        if Assigned(fSD.DACL) then
+          fSD.DACL.Clear;
+
         ACL := TJwDAccessControlList.Create;
         try
           CopyACLToObject({in}pAccessList, {"out"}ACL);
@@ -4157,26 +4516,26 @@ begin
           FreeAndNil(ACL);
         end;
       end;
-    except
-      on E : EOleSysError do
-      begin
-  {$IFDEF DEBUG}
-        raise;
-  {$ELSE}
-        Result := E.ErrorCode;
-  {$ENDIF DEBUG}
-      end;
-      on e : Exception do
-      begin
-  {$IFDEF DEBUG}
-        raise;
-  {$ELSE}
-        result := E_UNEXPECTED;
-  {$ENDIF DEBUG}
-      end;
+    finally
+      fCriticalSection.Leave;
     end;
-  finally
-    fCriticalSection.Leave;
+  except
+    on E : EOleSysError do
+    begin
+{$IFDEF DEBUG}
+      raise;
+{$ELSE}
+      Result := E.ErrorCode;
+{$ENDIF DEBUG}
+    end;
+    on e : Exception do
+    begin
+{$IFDEF DEBUG}
+      raise;
+{$ELSE}
+      result := E_UNEXPECTED;
+{$ENDIF DEBUG}
+    end;
   end;
 end;
 
@@ -4195,6 +4554,17 @@ begin
       Owner := nil;
       Group := nil;
 
+      if StrictACLVerify and
+         (not IsValidTrustee(pOwner) or
+          not IsValidTrustee(pGroup)
+         ) then
+      begin
+        begin
+          raise EOleSysError.Create('Either pOwner or pGroup Trustee is not compatible/valid to MS implementation of IAccessControl. ',
+             MAKE_HRESULT(1, FacilityCode, ERROR_INVALID_PARAMETER), 0);
+        end;
+      end;
+
       if pOwner <> nil then
       begin
         Owner := TJwSecurityId.Create(pOwner^);
@@ -4207,26 +4577,26 @@ begin
 
       JwSetOwner(Owner, Group);
       fIsDirty := true;
-    except
-      on E : EOleSysError do
-      begin
-  {$IFDEF DEBUG}
-        raise;
-  {$ELSE}
-        Result := E.ErrorCode;
-  {$ENDIF DEBUG}
-      end;
-      on e : Exception do
-      begin
-  {$IFDEF DEBUG}
-        raise;
-  {$ELSE}
-        result := E_UNEXPECTED;
-  {$ENDIF DEBUG}
-      end;
+    finally
+      fCriticalSection.Enter;
     end;
-  finally
-    fCriticalSection.Enter;
+  except
+    on E : EOleSysError do
+    begin
+{$IFDEF DEBUG}
+      raise;
+{$ELSE}
+      Result := E.ErrorCode;
+{$ENDIF DEBUG}
+    end;
+    on e : Exception do
+    begin
+{$IFDEF DEBUG}
+      raise;
+{$ELSE}
+      result := E_UNEXPECTED;
+{$ENDIF DEBUG}
+    end;
   end;
 end;
 
@@ -4251,14 +4621,45 @@ end;
 const
   MAX_SECURITY_DESCRIPTOR_SIZE = 2 * $10000 {MAX_ACL_SIZE} + $FFF {2* SID + Header + security space};
 
+type
+  TMagicHeaderRecord = packed record
+    Header : array[0..SD_MAGIC_LENGTH-1] of Byte;
+    Size : Cardinal;
+    Hash : Int64;
+    HashUsed : Byte;
+  end;
+
 function TJwServerAccessControl.Load(const stm: IStream): HRESULT;
+  procedure ValidateSD(const SD : TJwSecurityDescriptor);
+  begin
+    if Assigned(SD.DACL) then
+    begin
+      if not SD.DACL.IsValid then
+      begin
+        raise EOleSysError.Create('The DACL read from stream is invalid.',
+           MakeResult(1, FacilityCode, ERROR_INVALID_ACL), 0);
+      end;
+    end;
+  end;
 var
+  b : Boolean;
   cSize,
   cRead : Cardinal;
   pSD : PSecurityDescriptor;
   Mem : TMemoryStream;
+
   SD : TJwSecurityDescriptor;
+  JwHeader : TMagicHeaderRecord;
+
+  Stream : IPersistStream;
+  IA : IAccessControl;
+  PA : PACTRL_ACCESSW_ALLOCATE_ALL_NODES;
+  pO, pG : PTRUSTEEW;
+const
+  SIZE_LENGTH = sizeof(Cardinal);
 begin
+  Result := E_FAIL;
+
   if not fSupportIPersistStream then
   begin
     result := E_NOTIMPL;
@@ -4271,79 +4672,184 @@ begin
     exit;
   end;
 
-  if UsePlainDescriptorPersistData then
-  begin
-    result := stm.Read(@cSize, SizeOf(cSize), @cRead);
+  try
+    fCriticalSection.Enter;
 
-    if Succeeded(result) then
-    begin
-      //size of descriptor is invalid
-      if (cSize < sizeof(TSecurityDescriptor)) or
-         (cSize > MAX_SECURITY_DESCRIPTOR_SIZE) then
-      begin
-        result := MakeResult(1, FacilityCode, ERROR_INVALID_BLOCK_LENGTH);
-        exit;
-      end;
-
-      Result := stm.Read(pSD, cSize, @cRead);
-      if Succeeded(Result) then
-      begin
-        if not IsValidSecurityDescriptor(pSD) then
+    try
+      case PersistStreamType of
+        pstIAccessControl:
         begin
-          result := MakeResult(1, FacilityCode, ERROR_INVALID_SECURITY_DESCR);
+          IA := CreateCOMImplementation;
+
+          Stream := IA as IPersistStream;
+          OleCheck(Stream.Load(stm));
+
+          OleCheck(IA.GetAllAccessRights(nil, PA, pO, pG));
+          try
+            OleCheck(Self.SetAccessRights(PA));
+
+            Self.SetOwner(pO, pG); //ignore result since pO = pG = nil
+
+            result := S_OK;
+          finally
+            CoTaskMemFree(PA);
+            CoTaskMemFree(pO);
+            CoTaskMemFree(pG);
+          end;
+
+          result := S_OK;
           exit;
         end;
+        pstPlain:
+          begin
+            result := stm.Read(@cSize, SizeOf(cSize), @cRead);
 
-        fCriticalSection.Enter;
-        try
-          SD := TJwSecurityDescriptor.Create(pSD);
-          FreeAndNil(fSD);
-          fSD := SD;
-        finally
-          fCriticalSection.Leave;
-        end;
-      end;
-    end;
-  end
-  else
-  begin
-    result := stm.Read(@cSize, sizeof(Cardinal), nil);
+            if Succeeded(result) then
+            begin
+              //size of descriptor is invalid
+              //If the stream wasn't written compatible
+              //Then it is highly possible that the read value is out of bounds
+              if (cSize < sizeof(TSecurityDescriptor)) or
+                 (cSize > MAX_SECURITY_DESCRIPTOR_SIZE) then
+              begin
+                raise EOleSysError.Create(Format('The stream size of the security descriptor is invalid. '+
+                  'The size %d read from stream is either too big (%d) or too small (%d).', [cSize, MAX_SECURITY_DESCRIPTOR_SIZE, sizeof(TSecurityDescriptor)]),
+                  MakeResult(1, FacilityCode, ERROR_INVALID_BLOCK_LENGTH), 0);
+              end;
 
-    if (cSize < sizeof(TSecurityDescriptor)) or
-       (cSize > MAX_SECURITY_DESCRIPTOR_SIZE) then
-    begin
-      result := MakeResult(1, FacilityCode, ERROR_INVALID_BLOCK_LENGTH);
-      exit;
-    end;
+              GetMem(pSD, cSize);
+              try
+                Result := stm.Read(pSD, cSize, @cRead);
 
-    Mem := TMemoryStream.Create;
-    try
-      Mem.SetSize(cSize);
-      result := stm.Read(Mem.Memory, cSize, nil);
+                if Succeeded(Result) then
+                begin
+                  if not IsValidSecurityDescriptor(pSD) then
+                  begin
+                    raise EOleSysError.Create('The security descriptor read from stream is invalid.',
+                      MakeResult(1, FacilityCode, ERROR_INVALID_SECURITY_DESCR), 0);
+                  end;
 
-      if Succeeded(result) then
-      begin
-        Mem.Position := 0;
-        try
-          fCriticalSection.Enter;
-          try
-            SD := TJwSecurityDescriptor.Create(Mem);
-            FreeAndNil(fSD);
-            //juh
-            fSD := SD;
-          finally
-            fCriticalSection.Leave;
+                  SD := TJwSecurityDescriptor.Create(pSD);
+                  try
+                    ValidateSD(SD);
+                  except
+                    FreeAndNil(SD);
+                    raise;
+                  end;
+
+                  FreeAndNil(fSD);
+                  fSD := SD;
+
+                  result := S_OK;
+
+                end;
+              finally
+                FreeMem(pSD);
+              end;
+            end;
           end;
-        finally
-          SD.Free;
-        end;
+        pstJwscl:
+          begin
+            Assert(sizeof(TMagicHeaderRecord) <> SD_HEADER_SIZE, 'Size of TMagicHeaderRecord and SD_HEADER_SIZE differs.');
+
+            {We need to read the MAGIC header written by JWSCL
+             Then we get the size of the SD.
+             Furthermore we read the SD data ([size] bytes) and write it into the memory stream
+             behind the header and sd size.
+            }
+
+            result := stm.Read(@JwHeader, SD_HEADER_SIZE, nil);
+
+            if Succeeded(result) then
+            begin
+              if (JwHeader.Size < sizeof(TSecurityDescriptor)) or
+                 (JwHeader.Size > MAX_SECURITY_DESCRIPTOR_SIZE) then
+              begin
+                raise EOleSysError.Create(Format('The stream size of the security descriptor is invalid. '+
+                  'The size %d read from stream is either too big (%d) or too small (%d).', [JwHeader.Size, MAX_SECURITY_DESCRIPTOR_SIZE, sizeof(TSecurityDescriptor)]),
+                  MakeResult(1, FacilityCode, ERROR_INVALID_BLOCK_LENGTH), 0);
+              end;
+
+              Mem := TMemoryStream.Create;
+              try
+
+                Mem.SetSize(JwHeader.Size + SD_HEADER_SIZE);
+
+                b := Mem.Write(JwHeader, SD_HEADER_SIZE) = SD_HEADER_SIZE;
+
+                if not b then
+                begin
+                  raise EOleSysError.Create('The stream data could not be copied to internal memory.',
+                      MakeResult(1, FacilityCode, ERROR_WRITE_FAULT), 0);
+                end;
+
+                {Reading the data from the stream to the memory of TMemoryStream.
+                 We put it behind the first DWORD because this value contains the size of the
+                 security descriptor used by TJwSecurityDescriptor
+
+                 [0..4]       MAGIC HEADER
+                 [5..8]       SD size
+                 [9..18]      Misc header data
+                 [19..cSize]  security descriptor
+
+                 See TJwSecurityDescriptor.SaveToStream
+                 }
+                result := stm.Read(Pointer(DWORD_PTR(Mem.Memory) + SD_HEADER_SIZE), JwHeader.Size - SD_HEADER_SIZE, nil);
+
+                if Succeeded(result) then
+                begin
+                  Mem.Position := 0;
+
+                  SD := TJwSecurityDescriptor.Create(Mem);
+                  try
+                    ValidateSD(SD);
+                  except
+                    FreeAndNil(SD);
+                    raise;
+                  end;
+
+                  FreeAndNil(fSD);
+                  fSD := SD;
+
+                  result := S_OK;
+                end;
+              finally
+                Mem.Free;
+              end;
+            end;
+          end;
       end;
-
     finally
-      Mem.Free;
+      fCriticalSection.Leave;
+    end;
 
+
+  except
+    on E : EOleSysError do
+    begin
+{$IFDEF DEBUG}
+      raise;
+{$ELSE}
+      Result := E.ErrorCode;
+{$ENDIF DEBUG}
+    end;
+    on e : Exception do
+    begin
+{$IFDEF DEBUG}
+      raise;
+{$ELSE}
+      result := E_UNEXPECTED;
+{$ENDIF DEBUG}
     end;
   end;
+end;
+
+procedure TJwServerAccessControl.LoadFromStream(const Stream: TStream);
+var Mem : IStream;
+begin
+  Mem := TStreamAdapter.Create(Stream, soReference) as IStream;
+
+  OleCheck(Load(Mem));
 end;
 
 function TJwServerAccessControl.Save(const stm: IStream; fClearDirty: BOOL): HRESULT;
@@ -4352,6 +4858,12 @@ var
   cWritten : Cardinal;
   pSD : PSecurityDescriptor;
   Mem : TMemoryStream;
+
+  Stream : IPersistStream;
+  IA : IAccessControl;
+  PA : PACTRL_ACCESSW_ALLOCATE_ALL_NODES;
+  pO, pG : PTRUSTEEW;
+
 begin
   if not fSupportIPersistStream then
   begin
@@ -4365,47 +4877,100 @@ begin
     exit;
   end;
 
-
-
   result := S_OK;
-
-  if UsePlainDescriptorPersistData then
-  begin
+  try
+    fCriticalSection.Enter;
     try
-      pSD := fSD.Create_SD(cSize, True);
-    except
-  {$IFDEF DEBUG}
-      raise;
-  {$ELSE}
-      result := STG_E_CANTSAVE;
-  {$ENDIF DEBUG}
-    end;
 
-    if Succeeded(result) then
-    begin
-      try
-        result := stm.Write(@cSize, sizeof(cSize), nil);
-        if Succeeded(result) then
-          result := stm.Write(pSD, cSize, nil);
-      finally
-        TJwSecurityDescriptor.Free_SD(pSD);
+      case PersistStreamType of
+        pstIAccessControl:
+        begin
+          OleCheck(Self.GetAllAccessRights(nil, PA, pO, pG));
+          try
+            IA := CreateCOMImplementation;
+            OleCheck(IA.SetAccessRights(PA));
+            IA.SetOwner(pO, pG);   //ignore result because it is not implemented currently
+
+            Stream := IA as IPersistStream;
+            OleCheck(Stream.Save(stm, fClearDirty));
+
+          finally
+            CoTaskMemFree(PA);
+            CoTaskMemFree(pO);
+            CoTaskMemFree(pG);
+          end;
+
+          result := S_OK;
+          exit;
+        end;
+        pstPlain:
+          begin
+            try
+              pSD := fSD.Create_SD(cSize, True);
+            except
+          {$IFDEF DEBUG}
+              raise;
+          {$ELSE}
+              result := STG_E_CANTSAVE;
+          {$ENDIF DEBUG}
+            end;
+
+            if Succeeded(result) then
+            begin
+              try
+                result := stm.Write(@cSize, sizeof(cSize), nil);
+                if Succeeded(result) then
+                  result := stm.Write(pSD, cSize, nil);
+              finally
+                TJwSecurityDescriptor.Free_SD(pSD);
+              end;
+            end;
+          end;
+        pstJwscl:
+          begin
+            Mem := TMemoryStream.Create;
+            try
+              fSD.SaveToStream(Mem);
+              Mem.Position := 0;
+              result := stm.Write(Mem.Memory, Mem.Size, @cWritten);
+            finally
+              Mem.Free;
+            end;
+          end;
       end;
-    end;
-  end
-  else
-  begin
-    Mem := TMemoryStream.Create;
-    try
-      fSD.SaveToStream(Mem);
-      Mem.Position := 0;
-      result := stm.Write(Mem.Memory, Mem.Size, @cWritten);
+
+      if Succeeded(result) and fClearDirty then
+        fIsDirty := false;
     finally
-      Mem.Free;
+      fCriticalSection.Leave;
+    end;
+
+  except
+    on E : EOleSysError do
+    begin
+{$IFDEF DEBUG}
+      raise;
+{$ELSE}
+      Result := E.ErrorCode;
+{$ENDIF DEBUG}
+    end;
+    on e : Exception do
+    begin
+{$IFDEF DEBUG}
+      raise;
+{$ELSE}
+      result := E_UNEXPECTED;
+{$ENDIF DEBUG}
     end;
   end;
+end;
 
-  if Succeeded(result) and fClearDirty then
-    fIsDirty := false;
+procedure TJwServerAccessControl.SaveToStream(const Stream: TStream);
+var Mem : IStream;
+begin
+  Mem := TStreamAdapter.Create(Stream, soReference) as IStream;
+
+  OleCheck(Save(Mem, false));
 end;
 
 function TJwServerAccessControl.IsDirty: HRESULT;
@@ -4426,10 +4991,33 @@ begin
   end;
 end;
 
+
+
+function TJwServerAccessControl.IsValidTrustee(const Trustee: PTrusteeW): Boolean;
+begin
+  Result := false;
+  if Trustee = nil then
+    exit;
+
+  result :=
+     (Trustee.pMultipleTrustee = nil) and
+     (Trustee.MultipleTrusteeOperation = NO_MULTIPLE_TRUSTEE) and
+     ((Trustee.TrusteeForm = TRUSTEE_IS_SID) or (Trustee.TrusteeForm = TRUSTEE_IS_NAME)) and
+     ((Trustee.TrusteeType = TRUSTEE_IS_USER) or (Trustee.TrusteeType = TRUSTEE_IS_GROUP))
+     ;
+end;
+
 function TJwServerAccessControl.GetSizeMax(out cbSize: Largeint): HRESULT;
 var
   pSD : PSecurityDescriptor;
   Mem : TMemoryStream;
+  cSize : Cardinal;
+
+  Stream : IPersistStream;
+  IA : IAccessControl;
+  PA : PACTRL_ACCESSW_ALLOCATE_ALL_NODES;
+  pO, pG : PTRUSTEEW;
+
 begin
   if not fSupportIPersistStream then
   begin
@@ -4438,156 +5026,86 @@ begin
     exit;
   end;
 
-  if UsePlainDescriptorPersistData then
-  begin
-    //TODO: 1
-    //pSD := fSD.Create_SD(cbSize, True);
-    try
-      {...}
-    finally
-      TJwSecurityDescriptor.Free_SD(pSD);
+  result := S_OK;
+
+  try
+    case PersistStreamType of
+      pstIAccessControl:
+        begin
+          OleCheck(Self.GetAllAccessRights(nil, PA, pO, pG));
+          try
+            IA := CreateCOMImplementation;
+            OleCheck(IA.SetAccessRights(PA));
+            IA.SetOwner(pO, pG); //ignore result because it is not implemented currently
+
+            Stream := IA as IPersistStream;
+            OleCheck(Stream.GetSizeMax(cbSize));
+          finally
+            CoTaskMemFree(PA);
+            CoTaskMemFree(pO);
+            CoTaskMemFree(pG);
+          end;
+
+          result := S_OK;
+          exit;
+        end;
+      pstJwscl:
+        begin
+          pSD := fSD.Create_SD(cSize, True);
+          try
+            cbSize := cSize;
+            {...}
+          finally
+            TJwSecurityDescriptor.Free_SD(pSD);
+          end;
+        end;
+
+      pstPlain:
+        begin
+          Mem := TMemoryStream.Create;
+          try
+            fSD.SaveToStream(Mem);
+            cbSize := Mem.Size;
+          finally
+            Mem.Free;
+          end;
+        end;
     end;
-  end
-  else
-  begin
-    Mem := TMemoryStream.Create;
-    try
-      fSD.SaveToStream(Mem);
-      cbSize := Mem.Size;
-    finally
-      Mem.Free;
+  except
+    on E : EOleSysError do
+    begin
+{$IFDEF DEBUG}
+      raise;
+{$ELSE}
+      Result := E.ErrorCode;
+{$ENDIF DEBUG}
+    end;
+    on e : Exception do
+    begin
+{$IFDEF DEBUG}
+      raise;
+{$ELSE}
+      result := E_UNEXPECTED;
+{$ENDIF DEBUG}
     end;
   end;
 end;
 
+{WARNING: ONLY FOR DEMONSTRATION PURPOSES}
+var
+  SaveInitProc: Pointer = nil;
+
+procedure InitComServer; {WARNING: ONLY FOR DEMONSTRATION PURPOSES}
+begin
+  //In a service, add code to CoInitializeSecurity here
+
+  if SaveInitProc <> nil then TProcedure(SaveInitProc);
+end;
 
 initialization
   SaveInitProc := InitProc;
-  //InitProc := @InitComServer;
+  //InitProc := @InitComServer; {WARNING: ONLY FOR DEMONSTRATION PURPOSES}
 
 end.
 
-(*
 
-   What we want to do
------------------------
-  When it comes to COM and client security, and the authentication level details used on interface call, you can be sure than sooner or later you'll need to specify the authentication information at runtime, or on a specific call to an interface.
-
-  Usually you set up authentication/authorization/impersonation levels using the Dcomcnfg application provided. How ever, when you require these to be altered or wish to cloak or impersonate an alternate user on calls to a proxy so the server recongnises the alternate user as the callee rather than your natural login account, or the application user account ( i.e service user account).
-
-   Finding out how..
----------------------
-  Well to find out how to do this is really not very easy..
-very differcult to find examples, people asking how to do it.. people responding where to maybe find out how...
-  msdn is definately the best resourse for information on low level security side of COM and authentication documentation on this subject, but finding full examples which work, or all the syntax/constants/data types that's required is always lacking when it comes to msdn library documentation.
-
-   So for all those who have been looking for this answer.
-
-
-   How it's done.
-------------------
-  There are a few ways to setup this information, you can set it globally
-to your process using the call CoInitializeSecurity(). But I am going to explain how to use the CoSetProxyBlanket() which can set this information on a specific interface (proxy) which is far more flexible.
-
-  CoSetProxyBlanket is a wrapper that simply uses the IClientSecurity interface provided by the proxy and calls the SetBlanket method of the interface.
-
-  I will give you a quick code example of this here and provide you with an attachment which contains all the contants, data types, and a the wrapper function to cater for all the options.
-
-  Enjoy.....
-
-const
-  RPC_C_AUTHN_WINNT           = 10;
-  RPC_C_AUTHZ_DEFAULT         = $ffffffff;
-  RPC_C_AUTHN_LEVEL_CALL      = 3;
-  RPC_C_IMP_LEVEL_IMPERSONATE = 3;
-  EOAC_NONE                   = $0;
-
-type
-   (* The Auth Identity Structure *)
-  PCoAuthIdentity = ^TCoAuthIdentity;
-  _CoAuthIdentity = packed record
-      User           : PChar;
-      UserLength     : DWORD;
-      Domain         : PChar;
-      DomainLength   : DWORD;
-      Password       : PChar;
-      PasswordLength : DWORD;
-      Flags          : DWORD;
-  end;
-  TCoAuthIdentity = _CoAuthIdentity;
-
-implementation
-
-(* Procedure to demonstrate the use of the CoSetProxyBlanket call
-       and how to use it to impersonate another user when calling
-       an interface. *)
-
-procedure SetUserImpersonateOnProxy(
-     Proxy: IUnknown;  //-- Interface
-     const UserName, DomainName, Psword: TJwString; //-- User Account
-     AuthenicationService: DWORD = RPC_C_AUTHN_WINNT;
-     AuthorizationService: DWORD = RPC_C_AUTHZ_DEFAULT;
-     AuthenicationLevel: DWORD = RPC_C_AUTHN_LEVEL_CALL;
-     ImpersonationLevel: DWORD = RPC_C_IMP_LEVEL_IMPERSONATE;
-     CapabiltiesFlag: DWORD = EOAC_NONE
-                                    );
-var
-    AuthIdent: TCoAuthIdentity;
-    iResult: Integer;
-begin
-(* Populate an Auth Identity structure with the User Account Details *)
-    ZeroMemory(@AuthIdent, 0);
-    with AuthIdent do begin
-        User := pChar(UserName);
-        UserLength := length(UserName);
-        Domain := pChar(DomainName);
-        DomainLength := length(DomainName);
-        Password := pChar(Psword);
-        PasswordLength := length(Psword);
-        Flags := SEC_WINNT_AUTH_IDENTITY_ANSI;
-    end;
-
-    iResult := CoSetProxyBlanket(Proxy,
-          (* Authentication Service is the service which will be used
-             for authentication i.e WinNT NTLM KERBEROS etc.. this rarely
-             needs to be changed unless Delegation level of impersonation
-             is required and this is only possible with Windows 2000 and
-             Kerberos Authentication Service *)
-                                 AuthenicationService,
-                                 AuthorizationService,
-                                 0,
-          (* Authentication level should be CALL or PKT as this is the
-             level when authentication will take place.. On each CALL. *)
-                                 AuthenicationLevel,
-          (* Impersonation Level regards to the servers rights to
-             impersonate as the authenticated user. *)
-                                 ImpersonationLevel,
-                                 @AuthIdent,
-                                 CapabiltiesFlag);
-    case iResult of
-        S_OK: (* Success *) ;
-        E_INVALIDARG : Raise Exception.Create('Invalid Arguments.');
-        E_OUTOFMEMORY : OutOfMemoryError;
-        else
-           Raise Exception.Create('Failed to blanket proxy')
-    end;
-end;
-
-
--------------
-
-var
-    Intf: IMyFooServer;
-begin
-    Intf := CoMyFooServer.Create;
-    try
-       SetUserImpersonateOnProxy(Intf, 'AUser', 'DELPHIDOMAIN', 'FooBar');
-         (* Interface will authenticate the user AUser as the
-             Callee on each call to the Server. *)
-       Intf.CallMethodAsAUser(Blah);
-    finally
-       Intf := NIL;
-    end;
-end;
-
-*)

@@ -318,8 +318,9 @@ type
            # eactSameFlags The Flags are compared and must be equal
            # eactSameAccessMask The AccessMasks are compared and must be equal
            # eactSameType The ACE type (deny, allow) are compared and must be equal
-
-     @param iPos defines the start position for the search in the ACL list starting from zero (0).
+     @param StartIndex defines the start position for the search in the ACL list starting from zero (0).
+     @param Inclusion Is currently not used.
+     @param Exclusion Is currently not used.
 
      @return Returns the position of the found ACE in the list starting from 0.
              If the value iPos is out of bounds, or the ACE could not be found the return value is -1
@@ -399,6 +400,12 @@ type
      }
     procedure Delete(const Index: integer); reintroduce; virtual;
 
+    {Checks whether the ACL is valid.
+    E.g. contains no entries with nil SID.
+
+    @return Returns true if the ACL is valid; otherwise false.
+    }
+    function IsValid : Boolean; virtual;
 
     property Items[Index: integer]: TJwSecurityAccessControlEntry Read GetItem;
       default;
@@ -2882,63 +2889,69 @@ begin
 
     B := True;
 
-    if (eactSameSid in EqualAceTypeSet) then
-      B := B and ACEi.SID.EqualSid(AccessEntry.SID);
-
-    if (eactSameFlags in EqualAceTypeSet) then
+    if Assigned(ACEi.SID) then  //ignore invalid ACE
     begin
-      if (eactGEFlags in EqualAceTypeSet) then
-        B := B and (ACEi.Flags >= AccessEntry.Flags)
-      else if (eactSEFlags in EqualAceTypeSet) then
-        B := B and (ACEi.Flags <= AccessEntry.Flags)
-      else
-        B := B and (ACEi.Flags = AccessEntry.Flags);
-    end;
+      if (eactSameSid in EqualAceTypeSet) then
+        B := B and ACEi.SID.EqualSid(AccessEntry.SID);
 
-    if (eactSameAccessMask in EqualAceTypeSet) then
-    begin
-      {Instead of 100% equality we just check whether
-       AccessEntry.AccessMask is part of ACEi.AccessMask.
+      if (eactSameFlags in EqualAceTypeSet) then
+      begin
+        if (eactGEFlags in EqualAceTypeSet) then
+          B := B and (ACEi.Flags >= AccessEntry.Flags)
+        else if (eactSEFlags in EqualAceTypeSet) then
+          B := B and (ACEi.Flags <= AccessEntry.Flags)
+        else
+          B := B and (ACEi.Flags = AccessEntry.Flags);
+      end;
 
-       SE:                        TRUE   FALSE
-       ACEi.AccessMask        = 100101   010101
-       AccessEntry.AccessMask = 000101   110111
-                                ---------------
-                                000101   010101
-       So if the and operation returns the same flags as AccessEntry.AccessMask contains,
-       we have a true result.
+      if (eactSameAccessMask in EqualAceTypeSet) then
+      begin
+        {Instead of 100% equality we just check whether
+         AccessEntry.AccessMask is part of ACEi.AccessMask.
 
+         SE:                        TRUE   FALSE
+         ACEi.AccessMask        = 100101   010101
+         AccessEntry.AccessMask = 000101   110111
+                                  ---------------
+                                  000101   010101
+         So if the and operation returns the same flags as AccessEntry.AccessMask contains,
+         we have a true result.
+
+        }
+
+        //and the other way around
+        if (eactSEAccessMask in EqualAceTypeSet) then
+        begin
+          //B := B and (ACEi.AccessMask and AccessEntry.AccessMask = AccessEntry.AccessMask) // Untermenge Element Obermenge
+          //           Obermenge           Untermenge
+          B := B and ((ACEi.AccessMask and AccessEntry.AccessMask) = ACEi.AccessMask); // Obermenge Element Untermenge
+  (*
+  {$IFDEF JWSCL_DEBUG_INFO}
+          OutputDebugStringA(PAnsiChar(AnsiString(Format('Compating: Acei:AE: %s:%s = %s',
+            [#13#10+JwAccesMaskToBits(ACEi.AccessMask),#13#10+JwAccesMaskToBits(AccessEntry.AccessMask), BoolToStr(B,true)]))));
+  {$ENDIF JWSCL_DEBUG_INFO}*)
+        end
+        else
+          B := B and (ACEi.AccessMask = AccessEntry.AccessMask);
+      end;
+
+      if (eactSameType in EqualAceTypeSet) then
+        B := B and (ACEi.AceType = AccessEntry.AceType);
+
+      {
+      Do not use.
+      if B and (ifContainer in Inclusion) then
+        B := B and (afContainerInheritAce in ACEi.Flags);
+
+      if B and (ifLeaf in Inclusion) then
+        B := B and (afObjectInheritAce in ACEi.Flags);
       }
 
-      //and the other way around
-      if (eactSEAccessMask in EqualAceTypeSet) then
+      if B then
       begin
-        //B := B and (ACEi.AccessMask and AccessEntry.AccessMask = AccessEntry.AccessMask) // Untermenge Element Obermenge
-        //           Obermenge           Untermenge
-        B := B and ((ACEi.AccessMask and AccessEntry.AccessMask) = ACEi.AccessMask); // Obermenge Element Untermenge
-(*
-{$IFDEF JWSCL_DEBUG_INFO}
-        OutputDebugStringA(PAnsiChar(AnsiString(Format('Compating: Acei:AE: %s:%s = %s',
-          [#13#10+JwAccesMaskToBits(ACEi.AccessMask),#13#10+JwAccesMaskToBits(AccessEntry.AccessMask), BoolToStr(B,true)]))));
-{$ENDIF JWSCL_DEBUG_INFO}*)
-      end
-      else
-        B := B and (ACEi.AccessMask = AccessEntry.AccessMask);
-    end;
-
-    if (eactSameType in EqualAceTypeSet) then
-      B := B and (ACEi.AceType = AccessEntry.AceType);
-
-    if B and (ifContainer in Inclusion) then
-      B := B and (afContainerInheritAce in ACEi.Flags);
-
-    if B and (ifLeaf in Inclusion) then
-      B := B and (afObjectInheritAce in ACEi.Flags);
-
-    if B then
-    begin
-      Result := i;
-      Exit;
+        Result := i;
+        Exit;
+      end;
     end;
 
     if Reverse then
@@ -3117,7 +3130,7 @@ constructor TJwSecurityAccessControlEntry.Create(
   const AccessEntry: TJwSecurityAccessControlEntry);
 begin
   inherited Create;
-  Assign(AccessEntry);
+  Self.Assign(AccessEntry);
   ownSid := True;
 
   ObjectType    := NULL_GUID;
@@ -4095,41 +4108,62 @@ begin
     exit;
 
   tempACL1 := TJwSecurityAccessControlList(Self.ClassType.Create);
-  tempACL1.Assign(Self);
-  tempACL1.MergeElements;
+  tempACL1.OwnsObjects := true;
 
-  if tempACL1 is TJwDAccessControlList then
-   (tempACL1 as TJwDAccessControlList).MakeCanonical;
+  try
+    tempACL1.Assign(Self);
+    tempACL1.MergeElements;
 
-  tempACL2 :=  TJwSecurityAccessControlList(Self.ClassType.Create);
-  tempACL2.Assign(AccessControlListInstance);
-  tempACL2.MergeElements;
+    if tempACL1 is TJwDAccessControlList then
+     (tempACL1 as TJwDAccessControlList).MakeCanonical;
 
-  if tempACL1 is TJwDAccessControlList then
-    (tempACL2 as TJwDAccessControlList).MakeCanonical;
+    tempACL2 :=  TJwSecurityAccessControlList(Self.ClassType.Create);
+    tempACL2.OwnsObjects := true;
+    try
+      tempACL2.Assign(AccessControlListInstance);
+      tempACL2.MergeElements;
 
-  if tempACL1.Count <> tempACL2.Count then
-  begin
-    tempACL1.Free;
-    tempACL2.Free;
-    Exit;
-  end;
+      if tempACL1 is TJwDAccessControlList then
+        (tempACL2 as TJwDAccessControlList).MakeCanonical;
 
-  for i := 0 to tempACL1.Count - 1 do
-  begin
-    iPos := tempACL1.FindEqualACE(tempACL2.Items[i], EqualAceTypeSet, i - 1);
-    if iPos <> i then
-    begin
-      tempACL1.Free;
-      tempACL2.Free;
-      Exit;
+      if tempACL1.Count <> tempACL2.Count then
+      begin
+        Exit;
+      end;
+
+      for i := 0 to tempACL1.Count - 1 do
+      begin
+        iPos := tempACL1.FindEqualACE(tempACL2.Items[i], EqualAceTypeSet, i - 1);
+        if iPos <> i then
+        begin
+          Exit;
+        end;
+      end;
+
+      Result := True;
+    finally
+      FreeAndNil(tempACL2);
     end;
+
+  finally
+    FreeAndNil(tempACL1);
   end;
+end;
 
-  Result := True;
+function TJwSecurityAccessControlList.IsValid: Boolean;
+var i : Integer;
+begin
+  result := false;
+  for I := 0 to Count - 1 do
+  begin
+    if not Assigned(Items[I].fSID) then
+    begin
+      exit;
+    end;
 
-  tempACL1.Free;
-  tempACL2.Free;
+    //TODO: add more checks. Which one?
+  end;
+  result := true;
 end;
 
 function TJwSecurityAccessControlList.IsCanonical: boolean;
@@ -4211,21 +4245,34 @@ var
   OldOwns : Boolean;
 begin
   ACL := TJwDAccessControlList.Create;
+  ACL.OwnsObjects := false; //make sure the ACE are not freed on removing
+  try
+    OldOwns := OwnsObjects;
+    OwnsObjects := false;
+    try
+      for i := Count - 1 downto 0 do
+      begin
+        ACE := Items[i];
+        //detach from old list
+        Self.Remove(i);
 
-  OldOwns := OwnsObjects;
-  OwnsObjects := false;
-  for i := Count - 1 downto 0 do
-  begin
-    ACE := Items[i];
-    //detach from old list
-    Remove(i);
+        ACL.Add(ACE); //rearrange ACE in ACL
+      end;
+    finally
+      OwnsObjects := OldOwns;
+    end;
 
-    ACL.Add(ACE); //rearrange ACE in ACL
+    for i := ACL.Count - 1 downto 0 do
+    begin
+      ACE := ACL.Items[i];
+      ACL.Remove(i);
+      Self.Add(ACE);
+    end;
+
+
+  finally
+    ACL.Free;
   end;
-  OwnsObjects := OldOwns;
-
-  Assign(ACL);
-  ACL.Free;
 end;
 
 

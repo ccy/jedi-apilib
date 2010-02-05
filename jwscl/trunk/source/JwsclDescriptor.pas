@@ -410,7 +410,7 @@ type
         # Bytes         |  Value
         # 1..5 (5)      |  SD_MAGIC_HEADER (byte array)
         # 6..9 (4)      |  SD size (Cardinal)
-        # 10..17 (8)    |  hash value (Cardinal)
+        # 10..17 (8)    |  hash value (Int64)
         # 18..18 (1)    |  hash value in use (byte) true if 255 otherwise false.
                == SD_HEADER_SIZE
         # 19..sd (size) |  security descriptor data

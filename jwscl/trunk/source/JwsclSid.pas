@@ -898,6 +898,11 @@ type
     property AttributesType: TJwSidAttributeSet
       Read GetAttributesType Write SetAttributesType;
 
+    {Returns the trustee using a SID structure.
+
+     Remarks
+      The SID embedded into the trustee is a reference to the SID property of this instance.
+    }
     property Trustee: TTrusteeEx Read GetTrustee;
 
     {
