@@ -37,7 +37,6 @@ uses
   JwsclTypes,
   JwsclUtils,
   JwsclVersion,
-  JwsclPathSimulation,
   JwsclWinStations;
 
 begin
