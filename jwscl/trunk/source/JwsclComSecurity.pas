@@ -2,10 +2,10 @@
 Description
 Project JEDI Windows Security Code Library (JWSCL)
 
-<Description here>
+This unit provides classes and methods to support COM security initialization.
 
 Author
-<Author name>
+Christian Wimmer
 
 License
 The contents of this file are subject to the Mozilla Public License Version 1.1 (the "License");
@@ -29,9 +29,9 @@ your version of this file under either the MPL or the LGPL License.
 For more information about the LGPL: http://www.gnu.org/copyleft/lesser.html
 
 Note
-The Original Code is Jwscl<UnitName>.pas.
+The Original Code is JwsclCOM.pas.
 
-The Initial Developer of the Original Code is <Author Name>
+The Initial Developer of the Original Code is Christian Wimmer.
 
 
 TODO:
@@ -49,7 +49,7 @@ http://msdn.microsoft.com/en-us/ms679687%28VS.85%29.aspx
 10. Test dllsurrgotate with several com servers in dllhost.exe
 
 
-Things to know:
+Issues to know:
 
 1. Call to CreateComObject/CoCreateInstance fails with EOleSysError "Failed to start server".
 An out of process COM server (usually) uses the identity given by the caller's process token.
@@ -128,9 +128,11 @@ uses
 
 
 type
-  TJwAuthInfoType = (aitUnknown, aitWinNTAuthIdentity, aitWinNTAuthIdentityEx, aitCertContext);
   TJwComCustomSecurity = class;
   TJwComWinNTIdentity = class;
+  TJwServerAccessControl = class;
+
+  TJwAuthInfoType = (aitUnknown, aitWinNTAuthIdentity, aitWinNTAuthIdentityEx, aitCertContext);
 
   PJwAuthInfo = ^TJwAuthInfo;
   TJwAuthInfo = record
@@ -178,9 +180,11 @@ type
 
 
   protected
-    {BeginUpdate is used
+    {BeginUpdate is used to start a property update sequence.
     }
     procedure BeginUpdate; virtual;
+    {EndUpdate is used to end a property update sequence.
+    }
     procedure EndUpdate; virtual;
 
     procedure CheckReadonly(const PropertyName : String);
@@ -213,6 +217,16 @@ type
     property Capabilites  : TJwComAuthenticationCapabilities read GetCapabilites write SetCapabilites;
   end;
 
+  {TJwComClientSecurity provides methods to set or get a proxy blanket on an interface.
+
+   Remarks
+    A proxy blanket contains security information how a COM method call is done. It sets
+    authentication information, encryption and impersonation.
+
+   This class can be used to
+    * change security blanket on an interface
+    * make a copy of the security blanket.
+  }
   TJwComClientSecurity = class(TJwComCustomSecurity)
   private
     fWinNTIdentity: TJwComWinNTIdentity;
@@ -251,14 +265,56 @@ type
 
 
   public
+    {Create retrieves a proxy blanket of an interface.
+
+    @param ProxyInterface The interface used to retrieve the blanket.
+    @param MakeCopy If set to true the a proxy blanket is exclusively used for the given interface (instance);
+              ohterwise the blanket is retrieved for all interface types.
+              In case of true the copy of the interface is stored into the Proxy property.
+
+    Remarks
+      If you intend to change any property value on a proxy only temporarily you can make a copy of it
+      by setting MakeCopy to true. In this case a copy of the blanket is made (property Proxy) and used.
+      The original blanket is not touched though.
+    }
     constructor Create(const ProxyInterface : IInterface; MakeCopy : Boolean); overload;
+
+    {Not implemented}
     constructor Create(const Proxy : TJwComClientSecurity); overload;//private kopie von einstellungen
 
     destructor Destroy; override;
 
+    {BeginUpdate starts an updated sequence of one or more properties.
+
+     If you intend to change a property you need to call BeginUpdate prior to EndUpdate.
+
+      <code lang="delphi">
+      BeginUpdate;
+      ... change any property ...
+      EndUpdate;
+     </code>
+    }
     procedure BeginUpdate; override;
+
+    {EndUpdate stores the current instance property values into the proxy blanket.
+
+     Remarks
+     <code lang="delphi">
+      BeginUpdate;
+      ... change any property ...
+      EndUpdate;
+     </code>
+
+     This function calls method CoSetProxyBlanket.
+
+     Raises
+      EJwsclWinCallFailedException If a call to CoSetProxyBlanket failed.
+    }
     procedure EndUpdate; override;
 
+    {UpdateProxyInfo queries the security information from the proxy blanket
+    and updates the instance properties.
+    }
     procedure UpdateProxyInfo;
 
     {
@@ -288,7 +344,7 @@ type
 
     property Proxy : IInterface read fProxy;
 
-    {
+    {Contains the windows identity structure set by SetWinNTIdentity.
     }
     property WinNTIdentity : TJwComWinNTIdentity read fWinNTIdentity;
 
@@ -309,7 +365,7 @@ type
   end;
 
   {TJwAuthenticationInfo wraps an array of authentication information
-   to be used by TJwComProcessSecurity.
+   to be used by TJwComProcessSecurity.Initialize
   }
   TJwAuthenticationInfo = class
   protected
@@ -1190,11 +1246,6 @@ type
   end;
 
 
-  TJwTrustee = record
-  end;
-
-  TJwServerAccessControl = class;
-
   {This method is a callback method used by property TJwServerAccessControl.OnIsAccessAllowed
    @param Sender  This parameter defines which instance of TJwServerAccessControl is calling the method.
    @param DesiredAccess Defines the access requested by the caller of the AccessCheck function.
@@ -1218,9 +1269,12 @@ type
       var AccessGranted : Boolean;
       var ErrorCode : HRESULT) of object;
 
+  {Possible values for a Facility value}
   TJwFacilityType = 0..$7FF;
 
   {Defines the used method to load from or save to a stream a security descriptor.
+
+  See TJwServerAccessControl.PersistStreamType for more information
   }
   TJwPersistStreamType = (
 
@@ -1366,7 +1420,11 @@ type
     {
     JwRevokeAccessRights removes all given access entries from the DACL.
 
+
     Remarks:
+      All supplied SIDs are removed from the DACL. If a single SID is used several times in the DACL
+      all occurences are removed.
+
       The function is called by the interface method with the same name. Since the interface method returns a HRESULT value
       this version must raise an EOleSysError and supply the return value to EOleSysError constructor (ErrorCode).
       Use
@@ -1376,7 +1434,13 @@ type
     }
     procedure JwRevokeAccessRights(const AProperty: TJwString; const SecurityIDList : TJwSecurityIdList); virtual;
 
-    {
+    {JwGetAllAccessRights returns a copy of the DACL, owner and group of the security descriptor.
+     The return values are compatible with MS IAccessControl.
+     Use CoTaskMemFree to free these values.
+     <code lang="delphi">
+      CoTaskMemFree(AccessList)
+     </code>
+
     Remarks:
       The function is called by the interface method with the same name. Since the interface method returns a HRESULT value
       this version must raise an EOleSysError and supply the return value to EOleSysError constructor (ErrorCode).
@@ -1387,8 +1451,12 @@ type
     }
     procedure JwGetAllAccessRights(const AProperty: TJwString; out AccessList: TJwDAccessControlList; out Owner, Group : TJwSecurityID); virtual;
 
-    {
+    {JwIsAccessAllowed determines whether the given trustee has access to the resource considering the security descriptor.
+
+
     Remarks:
+      This function can be hooked by using property OnIsAccessAllowed.
+
       The function is called by the interface method with the same name. Since the interface method returns a HRESULT value
       this version must raise an EOleSysError and supply the return value to EOleSysError constructor (ErrorCode).
       Use
@@ -1406,11 +1474,38 @@ type
     }
     procedure Clear;
 
+    {Stores the current security descriptor to stream.
+     Remarks
+       This function is only compatible to interface method Save if PersistStreamType is pstJwscl.
+       However SupportIPersistStream is ignored.
+     }
     procedure SaveToStream(const Stream : TStream); virtual;
+
+    {Reads a security descriptor from a stream.
+     Remarks
+       This function is only compatible to interface method Load if PersistStreamType is pstJwscl.
+       However SupportIPersistStream is ignored.
+     }
     procedure LoadFromStream(const Stream : TStream); virtual;
 
+    {This property defines the internal security descriptor used to do access managment.
+     The class must not be freed.
 
+     If you intend to write or read from this class you need to do it thread safe since
+     COM can access it from any thread.
+     <code lang="delphi">
+       fIA.CriticalSection.Enter;
+       try
+       finally
+         fIA.CriticalSection.Leave;
+       end;
+     </code>
+    }
     property SecurityDescriptor : TJwSecurityDescriptor read fSD;
+
+    {This property offers a critical section to access the property SecurityDescriptor.
+     Do not free it.}
+    property CriticalSection : TCriticalSection read fCriticalSection;
 
     {OnIsAccessAllowed defines a method that is called after JwIsAccessAllowed made an AccessCheck (result isn't important).
      It can be used to overwrite the actual result of the method JwIsAccessAllowed to use dynamic access checking (e.g.
@@ -1419,6 +1514,24 @@ type
     }
     property OnIsAccessAllowed : TJwIsAccessAllowed read fIsAccessAllowed write fIsAccessAllowed;
 
+    {GenericMapping defines a mapping from generic access rights to specific access rights.
+     You can define how to map such generic rights to specific rights.
+
+     Remarks
+       This mapping will be used to replace possible generic rights in a desired access mask (supplied to (Jw)IsAccessAllowed) and
+        security descriptor (more specific: the AccessMask property of all ACEs) before it is applied to AccessCheck.
+       If you do not intend to use generic access rights in a desired access mask and security descriptor
+       you can set this value to nil. However, AccessCheck will fail if such a generic access right is found because
+       the generic access bits are not touched.
+
+       By default this value uses TJwNullMapping which maps all generic rights to 0. I.e. it prevents
+       access to a resource if the desired access mask only contains generic access rights (So only specific access
+       rights take effect).
+       On the other hand, generic access rights have no effect in the DACL. They do not grant any access since they are 0.
+
+       COM does not use generic access rights and thus does not define such a generic mapping. In fact
+       it currently only supports COM_RIGHTS_EXECUTE (being more precisely: the implementation of IAccessControl does support it).
+    }
     property GenericMapping: TJwSecurityGenericMappingClass read fGenericMapping write fGenericMapping;
 
     {Defines the facility code used in the HRESULT value in the faciltiy part.
@@ -1455,11 +1568,14 @@ type
      will be used.
 
      Remarks
-       if PersistStreamType is true the stream layout is the following:
+       if PersistStreamType is pstPlain the stream layout is the following:
        <pre>
          [0..3]      size of descriptor
          [4..[size]] realtive security descriptor (as in memory representation)
        </pre>
+       To get the layout in case of pstJWSCL check TJwSecurityDescriptor.SaveToStream
+
+       The layout in case of pstIAccessControl is unknown.
 
       Be aware that this stream implementation is propably no compatible with the IAccessControl implementation of MS.
     }
@@ -1677,8 +1793,7 @@ begin
   begin
     CoCopyProxy(ProxyInterface, fProxy);
 
-    BeginUpdate;
-    EndUpdate;
+    UpdateProxyInfo;
   end
   else
   begin
@@ -3674,7 +3789,7 @@ begin
 
   FacilityCode := $FE;
   fAuthManager := TJwAuthResourceManager.Create('', [], nil, nil);
-  fGenericMapping := TJwSecurityGenericMapping;
+  fGenericMapping := TJwNullMapping; //prevents access when using generic access rights
   fCacheResult := 0;
 
   fSD := TJwSecurityDescriptor.Create();
@@ -3862,7 +3977,7 @@ begin
     not Assigned(fSD.DACL) then
     Exit;
 
-  for I := 0 to SecurityIDList.Count - 1 do
+  for I := SecurityIDList.Count - 1 downto 0 do
   begin
     repeat
       Idx := fSD.DACL.FindSID(SecurityIDList[i]);
@@ -4845,11 +4960,8 @@ begin
 end;
 
 procedure TJwServerAccessControl.LoadFromStream(const Stream: TStream);
-var Mem : IStream;
 begin
-  Mem := TStreamAdapter.Create(Stream, soReference) as IStream;
-
-  OleCheck(Load(Mem));
+  SecurityDescriptor.LoadFromStream(Stream);
 end;
 
 function TJwServerAccessControl.Save(const stm: IStream; fClearDirty: BOOL): HRESULT;
@@ -4966,11 +5078,8 @@ begin
 end;
 
 procedure TJwServerAccessControl.SaveToStream(const Stream: TStream);
-var Mem : IStream;
 begin
-  Mem := TStreamAdapter.Create(Stream, soReference) as IStream;
-
-  OleCheck(Save(Mem, false));
+  SecurityDescriptor.SaveToStream(Stream);
 end;
 
 function TJwServerAccessControl.IsDirty: HRESULT;
