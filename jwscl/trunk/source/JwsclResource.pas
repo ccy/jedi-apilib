@@ -226,6 +226,7 @@ const
 
 //Unit JwsclMapping.pas
 
+  RsUnapplicableGetAccessName = 'The GetAccessNames method is not applicable for TJwNullMapping and therefore not defined.';
 //
   RsStringOr = 'or';
   RsMappingNotAGenericMask = 'The specified AccessMask is not one of the gen' +

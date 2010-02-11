@@ -85,7 +85,7 @@ type
 
   TJwWideStringArray = array of WideString;
 
-  TJwWideString = WideString;
+  TJwWideString = {$IFDEF DELPHI2009_UP}UnicodeString;{$ELSE}WideString;{$ENDIF DELPHI2009_UP}
   TJwAnsiString = AnsiString;
 
 

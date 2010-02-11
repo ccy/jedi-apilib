@@ -217,6 +217,7 @@ const
 
 
 var
+
   FileMapping: array[1..22] of TJwRightsMapping =
     ((Right: STANDARD_RIGHTS_REQUIRED;
     Name: 'STANDARD_RIGHTS_REQUIRED'; Flags: 0),
@@ -1361,7 +1362,7 @@ var
     GenericAll: TOKEN_ALL_ACCESS;
     );
 
-var
+
   PipeMapping: array[1..16 - 2] of TJwRightsMapping =
     (
     (Right: STANDARD_RIGHTS_ALL; Name: 'STANDARD_RIGHTS_ALL';

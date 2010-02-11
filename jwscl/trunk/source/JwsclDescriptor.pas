@@ -415,7 +415,8 @@ type
                == SD_HEADER_SIZE
         # 19..sd (size) |  security descriptor data
 
-
+        Remarks
+          Do not depend on this layout since it can be changed depending on the magic header.
 
        }
     procedure SaveToStream(const Stream: TStream); virtual;

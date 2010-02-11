@@ -142,6 +142,18 @@ type
       out iCount: Cardinal): PSI_ACCESS; reintroduce; virtual;
   end;
 
+  {A null mapping defines a map from generic access rights to 0.}
+  TJwNullMapping = class(TJwSecurityGenericMapping)
+  public
+   {<B>GetMapping</B> returns the generic mapping for file objects.}
+    class function GetMapping: TGenericMapping; override;
+    class function MapAccessMaskToString(Access: TJwAccessMask): TJwString;
+      override;
+
+    class function GetAccessNames(out iCount: Cardinal): PSI_ACCESS;
+      override;
+  end;
+
   {<B>TJwSecurityFileMapping</B> defines a generic mapping for file access rights}
   TJwSecurityFileMapping = class(TJwSecurityGenericMapping)
   public
@@ -1066,11 +1078,32 @@ begin
   Result := TJwSecurityUserMapping.MapAccessMaskToString(Access, PipeMapping);
 end;
 
+{ TJwNullMapping }
 
+class function TJwNullMapping.GetAccessNames(out iCount: Cardinal): PSI_ACCESS;
+begin
+  raise EJwsclNotImplementedException.CreateFmtEx(
+        RsUnapplicableGetAccessName,
+        'GetAccessNames', ClassName, 'JwsclMapping.pas', 0, False, []);
+end;
+
+
+
+class function TJwNullMapping.GetMapping: TGenericMapping;
+begin
+  Result := TJwSecurityUserMapping.GetMapping(NullGenericMapping);
+end;
+
+class function TJwNullMapping.MapAccessMaskToString(Access: TJwAccessMask): TJwString;
+begin
+  result := '';
+end;
 
 {$ENDIF SL_INTERFACE_SECTION}
 
 
 {$IFNDEF SL_OMIT_SECTIONS}
+
+
 end.
 {$ENDIF SL_OMIT_SECTIONS}
