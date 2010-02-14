@@ -2004,7 +2004,7 @@ function JwGetPrivilegesText(
   const DisplayPrivileges: array of TJwString): TJwString;
   overload;
 
-{<B>JwIsMemberOfAdministratorsGroup</B> checks if the user is a member of the Administrators group
+{<B>JwIsMemberOfAdministratorsGroup</B> checks if the user is a direct member of the Administrators group
 and this group is enabled for access checking. Therefore if this group has the flag use-for-deny-only
 the returned value is false. This usually happens if the user is an Administrator in Windows Vista with
 activated UAC.
@@ -2012,24 +2012,26 @@ activated UAC.
 @return Returns true if the user is a member of the administrators group; otherwise false.
 
 Remarks
-This function uses the Windows API function CheckTokenMembership.
+This function uses the Windows API function CheckTokenMembership and thus only checks whether the user
+is a member of the administrator group. However it does not check if the user belongs to a group that
+is a member of the administrators group.
 
-JwIsMemberOfAdministratorsGroup is equal to JwCheckAdministratorAccess.
-
+If you just intend to check for any administrator use JwCheckAdministratorAccess instead.
 }
 function JwIsMemberOfAdministratorsGroup: boolean;
 
-{<B>JwCheckAdministratorAccess</B> checks if the user is a member of the Administrators group
-and this group is enabled for access checking. Therefore if this group has the flag use-for-deny-only
-the returned value is false. This usually happens if the user is an Administrator in Windows Vista with
-activated UAC.
+{<B>JwCheckAdministratorAccess</B> checks if the user has administrative rights.
 
 @return Returns true if the user has administrative access; otherwise false.
 
 Remarks
-This function mimics the Windows API function CheckTokenMembership.
+This function works also in Windows Vista and later if UAC is enabled. If the current process is not elevated
+the return value is false even if the token contains the administrators group (which is disabled then).
+This function detects a group membership in the administrator group which means that the user don't need
+to be in the administrators group directly instead a group can be a member of the administrators group.
 
-JwCheckAdministratorAccess is equal to JwIsMemberOfAdministratorsGroup.
+Source description
+Uses WinAPI AccessCheck.
 }
 function JwCheckAdministratorAccess: boolean;
 
