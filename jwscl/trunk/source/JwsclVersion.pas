@@ -66,8 +66,7 @@ type
   end;
 
 
-  { <b>TJwServerInfo</b> retrieves Windows Version information on a remote (or
-    local) client.                                                             }
+  { <b>TJwServerInfo</b> retrieves Windows Version information on a remote or local client. }
   TJwServerInfo = class(TObject)
   private
   protected

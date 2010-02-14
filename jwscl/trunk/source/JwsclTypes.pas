@@ -402,7 +402,7 @@ type
      It looks like <pre><SID account name>@<S-X-X...></pre> }
     SID:           WideString;
 
-    {<B>SIDString</B> defines the SID string in format <S-X-X...>}
+    { <b>SIDString</b> defines the SID string in format }
     SIDString,
     {<B>UserName</B> defines the user name of the SID. It can be empty
      if the name could not retrieved.}
@@ -865,19 +865,20 @@ type
     );
   TJwProtectMemoryFlagSet = set of TJwProtectMemoryFlag;
 
-  {<B>TJwCopyFlag</B> defines the mechanism how an instance
-   will be treated it added to a list.
-   If you use this flag you must also include this source (with comment)
-   on every implementation.
-   <code lang="Delphi">
-   (*this const declaration prevents changing the type TJwCopyFlag
-    without notice of this implementation. The compiler will
-    show an error and source code must be adapted.
-    This code will be removed by the optimizer
-    *)
-    const CopyFlagCheck : array[TJwCopyFlag] of byte = (0,1);
-   </code>
-  }
+  { <b>TJwCopyFlag</b> defines the mechanism how an instance will be treated if added to a list.
+    
+    
+    
+    If you use this flag you must also include this source (with comment) at every implementation.
+    <code lang="delphi">
+    (*
+     This const declaration prevents changing the type TJwCopyFlag
+     without notice of this implementation. The compiler will
+     show an error and source code must be adapted.
+     This code will be removed by the optimizer
+     \*)
+     const CopyFlagCheck : array[TJwCopyFlag] of byte = (0,1);
+    </code>                                                                                        }
   TJwCopyFlag =(
      //Copy the instance data into a newly created instance
      cfCopyInstance,

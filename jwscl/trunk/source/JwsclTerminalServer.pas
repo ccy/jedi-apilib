@@ -1962,7 +1962,7 @@ type
   private
     FParentProcessId: TJwProcessId;
   protected
-    {@exlude}
+    {@exclude}
     FData: Integer;
     {@exclude}
     FOwner: TJwWTSProcessList;

@@ -88,9 +88,7 @@ type
 
   Remarks
     You can define JwOnFormatExceptionMessage to format the exception message.
-  @GUID(138EDC0B-B10B-4FA3-BB5D-DFDABBEBDDA4)
-
-
+  
   }
   EJwsclSecurityException = class(Exception)
   {[2B2288BC-7905-46F2-0001-A0183067E63D]}

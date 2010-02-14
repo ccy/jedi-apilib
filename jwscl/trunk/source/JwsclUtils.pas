@@ -129,7 +129,7 @@ type
 
     {<B>Name</B> sets or gets the threads name.
      The name is retrieved from internal variable. Changing the thread's name
-     using foreign code does not affect this property.
+     using foreign code does not afect this property.
     }
     property Name: TJwString read FName write SetName;
 
@@ -162,28 +162,7 @@ type
     property Count : Cardinal read GetCount;
   end;
 
-  {TJwRegistry extends VCL TRegistry to support extended Registry support like
-   * Loading the registry hive of an impersonated user
 
-  }
-  TJwRegistry = class(TRegistry)
-  protected
-    function OpenCurrentUser(var Key: String) : Boolean;
-  public
-    {OpenCurrentUserKey opens the registry key of the currently impersonated user.
-
-    Remarks
-      If the current thread is not impersonated the function behaves like TRegistry.OpenKey
-    }
-    function OpenCurrentUserKey(const Key: string; CanCreate: Boolean): Boolean;
-
-    {OpenCurrentUserKeyReadOnly opens the registry key of the currently impersonated user readonly.
-
-    Remarks
-      If the current thread is not impersonated the function behaves like TRegistry.OpenCurrentUserKeyReadOnly
-    }
-    function OpenCurrentUserKeyReadOnly(const Key: String): Boolean;
-  end;
 
 {<B>JwGlobalFreeAndNil</B> calls GlobalFree on parameter hMem and sets it to zero (0).}
 procedure JwGlobalFreeAndNil(var hMem: HGLOBAL);
@@ -1817,50 +1796,6 @@ begin
 end;
 
 
-{ TJwRegistry }
-
-function TJwRegistry.OpenCurrentUser(var Key: String): Boolean;
-  function IsRelative(const Value: string): Boolean;
-  begin
-    Result := not ((Value <> '') and (Value[1] = '\'));
-  end;
-var
-  Relative: Boolean;
-  TempKey : HKEY;
-begin
-  result := true;
-
-  if TJwSecurityToken.HasThreadAToken then
-  begin
-    result := RegOpenCurrentUser(Access, TempKey) = ERROR_SUCCESS;
-
-    if result then
-    begin
-      CloseKey;
-      SetCurrentKey(TempKey);
-    end;
-
-    Relative := IsRelative(Key);
-    if not Relative then
-      System.Delete(Key, 1, 1);
-  end;
-end;
-
-function TJwRegistry.OpenCurrentUserKey(const Key: string; CanCreate: Boolean): Boolean;
-var S : String;
-begin
-  S := Key;
-  result := OpenCurrentUser(S);
-  result := result and OpenKey(S, CanCreate);
-end;
-
-function TJwRegistry.OpenCurrentUserKeyReadOnly(const Key: String): Boolean;
-var S : String;
-begin
-  S := Key;
-  result := OpenCurrentUser(S);
-  result := result and OpenKeyReadOnly(S);
-end;
 
 initialization
 

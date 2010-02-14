@@ -78,6 +78,7 @@ http://qc.codegear.com/wc/qcmain.aspx?d=57701
 
 
 const
+  {TAceTypeString maps different types of ace types to strings.}
   TAceTypeString : array[TJwAceType] of TJwString =
     (
     RsAceTypeStringAudit,//actAudit,

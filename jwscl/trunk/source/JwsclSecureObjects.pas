@@ -2123,48 +2123,36 @@ type
       }
     function GetGroup: TJwSecurityId; override;
 
-      {<B>SetDACL</B> sets the DACL of the file object.
-       You need WRITE_DACL rights to set the DACL or the curren token must be
-       the owner.
-
-       If you want to replace an existing DACL completly, you have to first
-       call SetDACL with a nil list-Parameter. This creates a NULL DACL (with everybody has access to it)
-       Afterwards you can set a new DACL to the file.
-       So nobody can hijack the file you should also open the file exclusively and do not use the SetNamedXXX methods.
-
-       <b>New</b><br/>
-         You can also use apProtected to remove inherited ACEs (replace an existing DACL completly).
-
-       The list is copied into the file object.
-
-       @param Protection defines which TJwSecurityInformationFlag Flag is used:
-
-          # apNone uses simply siDaclSecurityInformation to set DACL
-          # apProtected uses siProtectedDaclSecurityInformation to set a protected DACL
-          # apUnprotected uses siUnprotectedDaclSecurityInformation to set
-              an unprotected DACL and let flow the inheritance stream
-
-
-       }
+      { <b>SetDACL</b> sets the DACL of the file object. You need WRITE_DACL rights to set the DACL or the curren token must
+        be the owner.
+        
+        If you want to replace an existing DACL completly, you have to first call SetDACL with a nil list-Parameter. This
+        creates a NULL DACL (with everybody has access to it) Afterwards you can set a new DACL to the file. So nobody can
+        hijack the file you should also open the file exclusively and do not use the SetNamedXXX methods.
+        
+        <b>New</b> You can also use apProtected to remove inherited ACEs (replace an existing DACL completly).
+        
+        The list is copied into the file object.
+        Parameters
+        Protection :  defines which TJwSecurityInformationFlag Flag is used\:
+                      * apNone uses simply siDaclSecurityInformation to set DACL
+                      * apProtected uses siProtectedDaclSecurityInformation to set a protected DACL
+                      * apUnprotected uses siUnprotectedDaclSecurityInformation to set an unprotected DACL and let flow the
+                        inheritance stream                                                                                   }
     procedure SetDACL(const list: TJwDAccessControlList;
      const Protection : TJwACLProtectionState = apNone); overload; override;
-      {<B>SetSACL</B> sets the SACL of the file object.
-       You need to have SE_SECURITY_NAME privilege be enabled otherwise the call fails.
-
-       <b>New</b><br/>
-         You can also use apProtected to remove inherited ACEs (replace an existing SACL completly).
-
-       The list is copied into the file object.
-
-       @param Protection defines which TJwSecurityInformationFlag Flag is used:
-
-          # apNone uses simply siDaclSecurityInformation to set DACL
-          # apProtected uses siProtectedDaclSecurityInformation to set a protected DACL
-          # apUnprotected uses siUnprotectedDaclSecurityInformation to set
-              an unprotected DACL and let flow the inheritance stream
-
-
-       }
+      { <b>SetSACL</b> sets the SACL of the file object. You need to have SE_SECURITY_NAME privilege be enabled otherwise
+        the call fails.
+        
+        <b>New</b> You can also use apProtected to remove inherited ACEs (replace an existing SACL completly).
+        
+        The list is copied into the file object.
+        Parameters
+        Protection :  defines which TJwSecurityInformationFlag Flag is used\:
+                      * apNone uses simply siDaclSecurityInformation to set DACL
+                      * apProtected uses siProtectedDaclSecurityInformation to set a protected DACL
+                      * apUnprotected uses siUnprotectedDaclSecurityInformation to set an unprotected DACL and let flow the
+                        inheritance stream                                                                                  }
 
     procedure SetSACL(const list: TJwSAccessControlList;
       const Protection : TJwACLProtectionState = apNone); overload; override;
