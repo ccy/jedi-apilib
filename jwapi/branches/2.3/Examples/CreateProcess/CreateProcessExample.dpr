@@ -83,7 +83,7 @@ begin
     pEnv,//__in_opt     LPVOID lpEnvironment,
     pCurDir,//__in_opt     LPCTSTR lpCurrentDirectory,
     StartupInfo,//__in         LPSTARTUPINFO lpStartupInfo,
-    ProcInfo,//__out        LPPROCESS_INFORMATION lpProcessInformation
+    ProcInfo//__out        LPPROCESS_INFORMATION lpProcessInformation
   ) then
    raiseLastOsError;
   finally
