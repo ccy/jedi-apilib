@@ -1034,17 +1034,19 @@ begin
   fIsServer  := Server;
 end;
 
-{$ENDIF SL_INTERFACE_SECTION}
-
-{$IFNDEF SL_OMIT_SECTIONS}
-
-
 class function TJwWindowsVersion.IsWindows7(bOrHigher: Boolean): Boolean;
 const
   iVer = cOsWin7;
 begin
   Result := (FWindowsType = iVer) or (bOrHigher and (FWindowsType > iVer));
 end;
+
+{$ENDIF SL_INTERFACE_SECTION}
+
+{$IFNDEF SL_OMIT_SECTIONS}
+
+
+
 
 initialization
 {$ENDIF SL_OMIT_SECTIONS}

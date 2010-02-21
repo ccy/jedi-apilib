@@ -401,7 +401,7 @@ CValue_9=7872391
 
 [Configurations]
 Count=6
-Current=1
+Current=0
 Name0=Configuration 1
 Name1=Configuration 2
 Name2=Configuration 3
@@ -12501,11 +12501,22 @@ ID8=IJwComServerSecurity.GetAuthContext
 ID9=IJwComServerSecurity.GetAuthenticationInfo
 
 [Configurations\Configuration 1\Enabled Topics]
-Count=4
-ID0=!!FILES
-ID1=!!SYMREF
-ID2=TJwProcessEnumerator
-ID3=TJwWTSProcess.FData
+Count=15
+ID0=!!SYMREF
+ID1=TJwComCustomSecurity.AuthenticationInfo
+ID10=TJwComCustomSecurity.ImpersonationLevel
+ID11=TJwComCustomSecurity.ReadOnlyProperties
+ID12=TJwComCustomSecurity.ServerPrincipalName
+ID13=TJwProcessEnumerator
+ID14=TJwWTSProcess.FData
+ID2=TJwComCustomSecurity.AuthenticationLevel
+ID3=TJwComCustomSecurity.AuthenticationService
+ID4=TJwComCustomSecurity.AuthorizationService
+ID5=TJwComCustomSecurity.BeginUpdate
+ID6=TJwComCustomSecurity.Capabilites
+ID7=TJwComCustomSecurity.CheckReadonly@String
+ID8=TJwComCustomSecurity.CoInitializeSecurity@Pointer@LONG@PSOLE_AUTHENTICATION_SERVICE@TJwComAuthenticationLevel@TJwComImpersonationLevel@Pointer@TJwComAuthenticationCapabilities@Boolean
+ID9=TJwComCustomSecurity.EndUpdate
 
 [Configurations\Configuration 1\Export Symbols]
 Classes=1
@@ -25744,11 +25755,22 @@ ID8=IJwComServerSecurity.GetAuthContext
 ID9=IJwComServerSecurity.GetAuthenticationInfo
 
 [Configurations\Configuration 2\Enabled Topics]
-Count=4
-ID0=!!FILES
-ID1=!!SYMREF
-ID2=TJwProcessEnumerator
-ID3=TJwWTSProcess.FData
+Count=15
+ID0=!!SYMREF
+ID1=TJwComCustomSecurity.AuthenticationInfo
+ID10=TJwComCustomSecurity.ImpersonationLevel
+ID11=TJwComCustomSecurity.ReadOnlyProperties
+ID12=TJwComCustomSecurity.ServerPrincipalName
+ID13=TJwProcessEnumerator
+ID14=TJwWTSProcess.FData
+ID2=TJwComCustomSecurity.AuthenticationLevel
+ID3=TJwComCustomSecurity.AuthenticationService
+ID4=TJwComCustomSecurity.AuthorizationService
+ID5=TJwComCustomSecurity.BeginUpdate
+ID6=TJwComCustomSecurity.Capabilites
+ID7=TJwComCustomSecurity.CheckReadonly@String
+ID8=TJwComCustomSecurity.CoInitializeSecurity@Pointer@LONG@PSOLE_AUTHENTICATION_SERVICE@TJwComAuthenticationLevel@TJwComImpersonationLevel@Pointer@TJwComAuthenticationCapabilities@Boolean
+ID9=TJwComCustomSecurity.EndUpdate
 
 [Configurations\Configuration 2\Export Symbols]
 Classes=1
@@ -38955,11 +38977,22 @@ ID8=IJwComServerSecurity.GetAuthContext
 ID9=IJwComServerSecurity.GetAuthenticationInfo
 
 [Configurations\Configuration 3\Enabled Topics]
-Count=4
-ID0=!!FILES
-ID1=!!SYMREF
-ID2=TJwProcessEnumerator
-ID3=TJwWTSProcess.FData
+Count=15
+ID0=!!SYMREF
+ID1=TJwComCustomSecurity.AuthenticationInfo
+ID10=TJwComCustomSecurity.ImpersonationLevel
+ID11=TJwComCustomSecurity.ReadOnlyProperties
+ID12=TJwComCustomSecurity.ServerPrincipalName
+ID13=TJwProcessEnumerator
+ID14=TJwWTSProcess.FData
+ID2=TJwComCustomSecurity.AuthenticationLevel
+ID3=TJwComCustomSecurity.AuthenticationService
+ID4=TJwComCustomSecurity.AuthorizationService
+ID5=TJwComCustomSecurity.BeginUpdate
+ID6=TJwComCustomSecurity.Capabilites
+ID7=TJwComCustomSecurity.CheckReadonly@String
+ID8=TJwComCustomSecurity.CoInitializeSecurity@Pointer@LONG@PSOLE_AUTHENTICATION_SERVICE@TJwComAuthenticationLevel@TJwComImpersonationLevel@Pointer@TJwComAuthenticationCapabilities@Boolean
+ID9=TJwComCustomSecurity.EndUpdate
 
 [Configurations\Configuration 3\Export Symbols]
 Classes=1
@@ -49088,11 +49121,22 @@ ID8=IJwComServerSecurity.GetAuthContext
 ID9=IJwComServerSecurity.GetAuthenticationInfo
 
 [Configurations\Configuration 4\Enabled Topics]
-Count=4
-ID0=!!FILES
-ID1=!!SYMREF
-ID2=TJwProcessEnumerator
-ID3=TJwWTSProcess.FData
+Count=15
+ID0=!!SYMREF
+ID1=TJwComCustomSecurity.AuthenticationInfo
+ID10=TJwComCustomSecurity.ImpersonationLevel
+ID11=TJwComCustomSecurity.ReadOnlyProperties
+ID12=TJwComCustomSecurity.ServerPrincipalName
+ID13=TJwProcessEnumerator
+ID14=TJwWTSProcess.FData
+ID2=TJwComCustomSecurity.AuthenticationLevel
+ID3=TJwComCustomSecurity.AuthenticationService
+ID4=TJwComCustomSecurity.AuthorizationService
+ID5=TJwComCustomSecurity.BeginUpdate
+ID6=TJwComCustomSecurity.Capabilites
+ID7=TJwComCustomSecurity.CheckReadonly@String
+ID8=TJwComCustomSecurity.CoInitializeSecurity@Pointer@LONG@PSOLE_AUTHENTICATION_SERVICE@TJwComAuthenticationLevel@TJwComImpersonationLevel@Pointer@TJwComAuthenticationCapabilities@Boolean
+ID9=TJwComCustomSecurity.EndUpdate
 
 [Configurations\Configuration 4\Export Symbols]
 Classes=1
@@ -54101,11 +54145,22 @@ ID8=IJwComServerSecurity.GetAuthContext
 ID9=IJwComServerSecurity.GetAuthenticationInfo
 
 [Configurations\Configuration 5\Enabled Topics]
-Count=4
-ID0=!!FILES
-ID1=!!SYMREF
-ID2=TJwProcessEnumerator
-ID3=TJwWTSProcess.FData
+Count=15
+ID0=!!SYMREF
+ID1=TJwComCustomSecurity.AuthenticationInfo
+ID10=TJwComCustomSecurity.ImpersonationLevel
+ID11=TJwComCustomSecurity.ReadOnlyProperties
+ID12=TJwComCustomSecurity.ServerPrincipalName
+ID13=TJwProcessEnumerator
+ID14=TJwWTSProcess.FData
+ID2=TJwComCustomSecurity.AuthenticationLevel
+ID3=TJwComCustomSecurity.AuthenticationService
+ID4=TJwComCustomSecurity.AuthorizationService
+ID5=TJwComCustomSecurity.BeginUpdate
+ID6=TJwComCustomSecurity.Capabilites
+ID7=TJwComCustomSecurity.CheckReadonly@String
+ID8=TJwComCustomSecurity.CoInitializeSecurity@Pointer@LONG@PSOLE_AUTHENTICATION_SERVICE@TJwComAuthenticationLevel@TJwComImpersonationLevel@Pointer@TJwComAuthenticationCapabilities@Boolean
+ID9=TJwComCustomSecurity.EndUpdate
 
 [Configurations\Configuration 5\Export Symbols]
 Classes=1
@@ -55383,11 +55438,22 @@ ID8=IJwComServerSecurity.GetAuthContext
 ID9=IJwComServerSecurity.GetAuthenticationInfo
 
 [Configurations\Configuration 6\Enabled Topics]
-Count=4
-ID0=!!FILES
-ID1=!!SYMREF
-ID2=TJwProcessEnumerator
-ID3=TJwWTSProcess.FData
+Count=15
+ID0=!!SYMREF
+ID1=TJwComCustomSecurity.AuthenticationInfo
+ID10=TJwComCustomSecurity.ImpersonationLevel
+ID11=TJwComCustomSecurity.ReadOnlyProperties
+ID12=TJwComCustomSecurity.ServerPrincipalName
+ID13=TJwProcessEnumerator
+ID14=TJwWTSProcess.FData
+ID2=TJwComCustomSecurity.AuthenticationLevel
+ID3=TJwComCustomSecurity.AuthenticationService
+ID4=TJwComCustomSecurity.AuthorizationService
+ID5=TJwComCustomSecurity.BeginUpdate
+ID6=TJwComCustomSecurity.Capabilites
+ID7=TJwComCustomSecurity.CheckReadonly@String
+ID8=TJwComCustomSecurity.CoInitializeSecurity@Pointer@LONG@PSOLE_AUTHENTICATION_SERVICE@TJwComAuthenticationLevel@TJwComImpersonationLevel@Pointer@TJwComAuthenticationCapabilities@Boolean
+ID9=TJwComCustomSecurity.EndUpdate
 
 [Configurations\Configuration 6\Export Symbols]
 Classes=1

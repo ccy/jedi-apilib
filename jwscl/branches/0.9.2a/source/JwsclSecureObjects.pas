@@ -3439,6 +3439,9 @@ var
 begin
   Token := nil;
   IsThreadToken := False;
+  GrantedAccess := 0;
+  PrivilegeSet := nil;
+  AccessStatus := false;
 
   if not Assigned(SecurityDescriptor) then
     raise EJwsclInvalidParameterException.CreateFmtEx(
