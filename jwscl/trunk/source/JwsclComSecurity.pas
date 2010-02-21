@@ -188,13 +188,16 @@ type
       pAuthList :      See the MSDN for more information.
       IgnoreProcess :  Set to false to validate the current process name; otherwise the validation isn't done. See Remarks
                        for more information.
-      Remarks
-      If parameter IgnoreProcess is set to false the method checks whether the current process can be found in the array
-      JwKnownComHostProcesses. If this check succeeds the exception EJwsclProcessNotFound is raised.
+
       Exceptions
       EJwsclProcessNotFound :                 The current process name was found in the list JwKnownComHostProcesses.
       EJwsclCoInitializeNotCalledException :  The CoInitializeSecurity failed because CoInitialize was not called at first.
-      EJwsclComException :                    CoInitializeSecurity failed of another reason.                                }
+      EJwsclComException :                    CoInitializeSecurity failed of another reason.
+
+      Remarks
+      If parameter IgnoreProcess is set to false the method checks whether the current process can be found in the array
+      JwKnownComHostProcesses. If this check succeeds the exception EJwsclProcessNotFound is raised.
+                    }
     class procedure CoInitializeSecurity(
         {__in_opt}  pSecDesc : {PSECURITY_DESCRIPTOR }Pointer;
         {__in}      cAuthSvc : LONG;

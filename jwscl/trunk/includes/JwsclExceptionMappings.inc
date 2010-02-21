@@ -1,7 +1,7 @@
 // !!! WARNING: Automatic generated file. DO NOT EDIT!!!!
 // use JwsclExceptionMaintain to create this file.
-// Creation date: 05.05.2009-23:27:13
-// Created 135 exception entries
+// Creation date: 21.02.2010-19:41:42
+// Created 139 exception entries
 //EJwsclSecurityException - 2B2288BC-7905-46F2-0001-A0183067E63D
 //EJwsclOpenThreadTokenException - 2B2288BC-7905-46F2-0002-A0183067E63D
 //EJwsclOpenProcessTokenException - 2B2288BC-7905-46F2-0003-A0183067E63D
@@ -137,15 +137,19 @@
 //EJwsclJwShellExecuteException - 2B2288BC-7905-46F2-0128-A0183067E63D
 //EJwsclPIDException - 2B2288BC-7905-46F2-0129-A0183067E63D
 //EJwsclUnsupportedException - 2B2288BC-7905-46F2-0130-A0183067E63D
+//EJwsclInvalidSidStructureException - 2B2288BC-7905-46F2-0131-A0183067E63D
+//EJwsclComException - 2B2288BC-7905-46F2-0132-A0183067E63D
+//EJwsclCoInitializeNotCalledException - 2B2288BC-7905-46F2-0133-A0183067E63D
+//EJwsclDuplicateComInitCallException - 2B2288BC-7905-46F2-0134-A0183067E63D
 //
 {$IFDEF JWSCL_EXCEPTION_MAPPINGS}
 {$UNDEF JWSCL_EXCEPTION_MAPPINGS}
 
 const
-  JwExceptionMappingCount = 135;
+  JwExceptionMappingCount = 139;
 
   JwExceptionMapping : array[0..JwExceptionMappingCount] of TJwExceptionMapping =
-   //Catch this Exception so we always have a correct value.
+   //Catch this Exception so we always have a correct value. 
    ((Name: 'Exception';
     ID: '{138EDC0B-B10B-4FA3-BB5D-DFDABBEBDDA4}';
     ExcPtr : Exception),
@@ -554,6 +558,18 @@ const
     ExcPtr : EJwsclPIDException),
    (Name: 'EJwsclUnsupportedException';
     ID: '{2B2288BC-7905-46F2-0130-A0183067E63D}';
-    ExcPtr : EJwsclUnsupportedException)
+    ExcPtr : EJwsclUnsupportedException),
+   (Name: 'EJwsclInvalidSidStructureException';
+    ID: '{2B2288BC-7905-46F2-0131-A0183067E63D}';
+    ExcPtr : EJwsclInvalidSidStructureException),
+   (Name: 'EJwsclComException';
+    ID: '{2B2288BC-7905-46F2-0132-A0183067E63D}';
+    ExcPtr : EJwsclComException),
+   (Name: 'EJwsclCoInitializeNotCalledException';
+    ID: '{2B2288BC-7905-46F2-0133-A0183067E63D}';
+    ExcPtr : EJwsclCoInitializeNotCalledException),
+   (Name: 'EJwsclDuplicateComInitCallException';
+    ID: '{2B2288BC-7905-46F2-0134-A0183067E63D}';
+    ExcPtr : EJwsclDuplicateComInitCallException)
   );
 {$ENDIF JWSCL_EXCEPTION_MAPPINGS}

@@ -8,7 +8,7 @@ program AclUnitTest;
 {.$APPTYPE CONSOLE}
 
 {Define one of these directive to use memory leak manager}
-{$DEFINE FASTMM4}
+{.$DEFINE FASTMM4}
 {.$UNDEF FASTMM4}
 
 {$IFDEF FASTMM4}
@@ -27,6 +27,7 @@ program AclUnitTest;
 
 
 uses
+  ExceptionLog,
 {$IFDEF FASTMM4}
   FastMm4,
 {$ENDIF FASTMM4}

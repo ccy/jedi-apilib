@@ -552,7 +552,7 @@ end;
 procedure TSecurityTokenTests.TestGetIntegrityLevel;
 var Token : TJwSecurityToken;
     RE : Cardinal;
-    IntLevel : TJwSecurityIdList;
+    IntLevel : TJwSecurityId;
 begin
   Token := TJwSecurityToken.CreateTokenEffective(TOKEN_READ or TOKEN_QUERY);
   try
@@ -570,8 +570,8 @@ end;
 
 procedure TSecurityTokenTests.TestGetLinkedToken;
 var Token, LinkedToken : TJwSecurityToken;
-    TokenGroups, LinkedTokenGroups,
-    IntLevel : TJwSecurityIdList;
+    TokenGroups, LinkedTokenGroups : TJwSecurityIdList;
+    IntLevel : TJwSecurityId;
     si : STARTUPINFO;
     pi : PROCESS_INFORMATION;
 begin

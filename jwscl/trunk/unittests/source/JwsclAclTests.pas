@@ -10,6 +10,7 @@ uses
   jwaWindows,
   jwaVista,
 
+  JwsclKnownSid,
   JwsclMapping,
   JwsclTypes,
   JwsclAcl,
@@ -76,6 +77,8 @@ type
 
     procedure Test_ChangeProperties;
     procedure Test_MandatoryLabel;
+
+    procedure Test_IsEqual;
   end;
 
 implementation
@@ -392,6 +395,28 @@ begin
   finally
     aSID.Free;
   end;
+end;
+
+procedure TJwSecurityAccessControlEntryTests.Test_IsEqual;
+var A1 , A2 : TJwSecurityAccessControlList;
+begin
+  //
+  A1 := TJwDAccessControlList.Create;
+  try
+    A1.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil, [], 0, JwAdministratorsSID));
+    A2 := TJwDAccessControlList.Create;
+    try
+      CheckFalse(A1.IsEqual(A2));
+
+      A2.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil, [], 0, JwAdministratorsSID));
+      CheckTrue(A1.IsEqual(A2));
+    finally
+      A2.Free;
+    end;
+  finally
+    A1.Free;
+  end;
+
 end;
 
 procedure TJwSecurityAccessControlEntryTests.TestGetTextMap;
@@ -1396,7 +1421,7 @@ begin
 end;
 
 initialization
-
+  JwInitWellKnownSIDs;
   TestFramework.RegisterTest('JwsclAclTests Suite',
     TJwSecurityAccessControlListTests.Suite);
   TestFramework.RegisterTest('JwsclAclTests Suite',

@@ -39,14 +39,26 @@ Warning #2: If the JEDI API headers are used with a directive WIN_XP or lower
 {$ENDIF}
 
 {$IFDEF DEBUG}
+//
+//Adds stack trace (using JCL) to JWSCL exceptions
 {.$DEFINE JWSCL_DEBUG_INFO}
 {$ENDIF DEBUG}
 
+//Use cache mechanism for
+// * TJwSecurityID.GetAccountSidString and property AccountName
 {$DEFINE JWSCL_USE_CACHES}
 
 {$IFDEF JWSCL_USE_CACHES}
   {$DEFINE JWSCL_SIDCACHE}
 {$ENDIF JWSCL_USE_CACHES}
+
+{$IFDEF DELPHI2010_UP}
+{$IFNDEF DEBUG}
+  //Remove RTTI information for all JWSCL classes
+  //D2010 adds it though
+  {$RTTI EXPLICIT METHODS([]) PROPERTIES([]) FIELDS([])}
+{$ENDIF DEBUG}
+{$ENDIF DELPHI2010_UP}
 
 {$IFDEF DEBUG}
   {.$WARNINGS OFF}

@@ -19,8 +19,7 @@ uses
   TestFramework,
   GUITestRunner,
   TextTestRunner,
-  JwsclFunctionGetFileInheritanceSourceTest in '..\..\source\JwsclFunctionGetFileInheritanceSourceTest.pas',
-  JwsclSecureObjects in '..\..\..\source\JwsclSecureObjects.pas';
+  JwsclFunctionGetFileInheritanceSourceTest in '..\..\source\JwsclFunctionGetFileInheritanceSourceTest.pas';
 
 {$R *.RES}
 

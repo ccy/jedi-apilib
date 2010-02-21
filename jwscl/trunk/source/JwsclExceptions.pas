@@ -42,6 +42,9 @@ Remarks
 
 Warning: Only use Delphi 7 syntax!
 
+TODO:
+  1. 
+
 }
 
 {$IFNDEF SL_OMIT_SECTIONS}
@@ -198,83 +201,83 @@ var
 
 type
   //<B>EJwsclOpenThreadTokenException</B> is raised if the thread token could not be opened
-  EJwsclOpenThreadTokenException = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0002-A0183067E63D]};
+  EJwsclOpenThreadTokenException = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0002-A0183067E63D]}
 
   //<B>EJwsclOpenProcessTokenException</B> is raised if the process token could not be opened
-  EJwsclOpenProcessTokenException = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0003-A0183067E63D]};
+  EJwsclOpenProcessTokenException = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0003-A0183067E63D]}
 
-  //<B>EJwsclSharedTokenException</B> is raised is not used.
-  EJwsclSharedTokenException = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F5-0003-A0183067E63D]};
+  { <b>EJwsclSharedTokenException</b> is raised regarding a token handle that is shared. }
+  EJwsclSharedTokenException = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F5-0003-A0183067E63D]}
 
   //<B>EJwsclTokenInformationException</B> is raised if token information could not be retrieved.
-  EJwsclTokenInformationException = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0004-A0183067E63D]};
+  EJwsclTokenInformationException = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0004-A0183067E63D]}
 
   //<B>EJwsclTokenImpersonationException</B> is raised if the token could not be converted to an impersonated token.
-  EJwsclTokenImpersonationException = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0005-A0183067E63D]};
+  EJwsclTokenImpersonationException = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0005-A0183067E63D]}
 
   //<B>EJwsclTokenPrimaryException</B> is raised if the requested primary token could not be retrieved. For more information see LastError.
-  EJwsclTokenPrimaryException = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0006-A0183067E63D]};
+  EJwsclTokenPrimaryException = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0006-A0183067E63D]}
 
-  EJwsclInvalidPrimaryToken = class(EJwsclTokenPrimaryException)
-    {[2B2288BC-7905-46F2-0007-A0183067E63D]};
+  EJwsclInvalidPrimaryToken = class(EJwsclTokenPrimaryException);
+    {[2B2288BC-7905-46F2-0007-A0183067E63D]}
 
 
   //<B>EJwsclInvalidOwnerException</B> is raised if the given owner is invalid say nil.
-  EJwsclInvalidOwnerException = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0008-A0183067E63D]};
+  EJwsclInvalidOwnerException = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0008-A0183067E63D]}
 
   //<B>EJwsclDuplicateTokenException</B> is raised if a call to DuplicateTokenEx failed
-  EJwsclDuplicateTokenException = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0009-A0183067E63D]};
+  EJwsclDuplicateTokenException = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0009-A0183067E63D]}
 
   //<B>EJwsclNoThreadTokenAvailable</B> is raised if the requested impersonated token could not be retrieved
-  EJwsclNoThreadTokenAvailable = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0010-A0183067E63D]};
+  EJwsclNoThreadTokenAvailable = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0010-A0183067E63D]}
 
   //<B>EJwsclInvalidTokenHandle</B> is raised if the handle of the token is invalid
-  EJwsclInvalidTokenHandle = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0011-A0183067E63D]};
+  EJwsclInvalidTokenHandle = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0011-A0183067E63D]}
 
   //<B>EJwsclNotEnoughMemory</B> is raised if a allocation function could not allocate a buffer in memory because of not enough memory
-  EJwsclNotEnoughMemory = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0012-A0183067E63D]};
+  EJwsclNotEnoughMemory = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0012-A0183067E63D]}
 
   //<B>EJwsclPrivilegeException</B> is raised if an errors occurs that includes a problem with a privilege
-  EJwsclPrivilegeException = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0013-A0183067E63D]};
+  EJwsclPrivilegeException = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0013-A0183067E63D]}
 
   //<B>EJwsclInvalidIndexPrivilegeException</B> is raised if the given index is out of bounds of the privileges list
-    EJwsclInvalidIndexPrivilegeException = class(EJwsclPrivilegeException)
-    {[2B2288BC-7905-46F2-0014-A0183067E63D]};
+    EJwsclInvalidIndexPrivilegeException = class(EJwsclPrivilegeException);
+    {[2B2288BC-7905-46F2-0014-A0183067E63D]}
 
   //<B>EJwsclPrivilegeNotFoundException</B> is raised if a given privilege was not found
-  EJwsclPrivilegeNotFoundException = class(EJwsclPrivilegeException)
-    {[2B2288BC-7905-46F2-0015-A0183067E63D]};
+  EJwsclPrivilegeNotFoundException = class(EJwsclPrivilegeException);
+    {[2B2288BC-7905-46F2-0015-A0183067E63D]}
 
   //<B>EJwsclPrivilegeCheckException</B> is raised if a given privilege was not found in the list of privileges of the token
-  EJwsclPrivilegeCheckException = class(EJwsclPrivilegeException)
-    {[2B2288BC-7905-46F2-0016-A0183067E63D]};
+  EJwsclPrivilegeCheckException = class(EJwsclPrivilegeException);
+    {[2B2288BC-7905-46F2-0016-A0183067E63D]}
 
   //<B>EJwsclAdjustPrivilegeException</B> is raised if the privileges of a token could not be changed
-  EJwsclAdjustPrivilegeException = class(EJwsclPrivilegeException)
-    {[2B2288BC-7905-46F2-0017-A0183067E63D]};
+  EJwsclAdjustPrivilegeException = class(EJwsclPrivilegeException);
+    {[2B2288BC-7905-46F2-0017-A0183067E63D]}
 
   //<B>EJwsclAccessTypeException</B> is raised if the desired access mask is not included in the token access mask!
-  EJwsclAccessTypeException = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0018-A0183067E63D]};
+  EJwsclAccessTypeException = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0018-A0183067E63D]}
 
   //<B>EJwsclNotImplementedException</B> is raised if the called method is not implemented yet.
-  EJwsclNotImplementedException = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0019-A0183067E63D]};
+  EJwsclNotImplementedException = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0019-A0183067E63D]}
   //<B>EJwsclUnsupportedWindowsVersionException</B> is raised if the called function is not supported under the running windows version
-  EJwsclUnsupportedWindowsVersionException =  class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0020-A0183067E63D]};
+  EJwsclUnsupportedWindowsVersionException =  class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0020-A0183067E63D]}
 
 
 
@@ -284,43 +287,43 @@ type
    Remarks
       Windows API errors can be found in the property LastError. Use it to distinguish between different error types.
   }
-  EJwsclWinCallFailedException = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-1020-A0183067E63D]};
+  EJwsclWinCallFailedException = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-1020-A0183067E63D]}
 
-  EJwsclProcessIdNotAvailable = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0021-A0183067E63D]};
+  EJwsclProcessIdNotAvailable = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0021-A0183067E63D]}
 
-  EJwsclInvalidObjectArrayException = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0022-A0183067E63D]};
+  EJwsclInvalidObjectArrayException = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0022-A0183067E63D]}
 
-  EJwsclInheritanceSourceNotSupportedException = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0023-A0183067E63D]};
+  EJwsclInheritanceSourceNotSupportedException = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0023-A0183067E63D]}
 
   //<B>EJwsclNILParameterException</B> is raised if a given parameter is nil which is invalid.
-  EJwsclNILParameterException = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0024-A0183067E63D]};
+  EJwsclNILParameterException = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0024-A0183067E63D]}
 
-  EJwsclEmptyACLException = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0025-A0183067E63D]};
+  EJwsclEmptyACLException = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0025-A0183067E63D]}
 
-  EJwsclInvalidMandatoryLevelException = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0026-A0183067E63D]};
+  EJwsclInvalidMandatoryLevelException = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0026-A0183067E63D]}
 
-  EJwsclInvalidSecurityListException = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0027-A0183067E63D]};
+  EJwsclInvalidSecurityListException = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0027-A0183067E63D]}
 
   //<B>EJwsclInvalidSIDException</B> is raised if a SID has an invalid structure
-  EJwsclInvalidSIDException = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0028-A0183067E63D]};
+  EJwsclInvalidSIDException = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0028-A0183067E63D]}
 
-    EJwsclInvalidOwnerSIDException = class(EJwsclInvalidSIDException)
-      {[2B2288BC-7905-46F2-0029-A0183067E63D]};
+    EJwsclInvalidOwnerSIDException = class(EJwsclInvalidSIDException);
+      {[2B2288BC-7905-46F2-0029-A0183067E63D]}
 
-    EJwsclInvalidGroupSIDException = class(EJwsclInvalidSIDException)
-      {[2B2288BC-7905-46F2-0030-A0183067E63D]};
+    EJwsclInvalidGroupSIDException = class(EJwsclInvalidSIDException);
+      {[2B2288BC-7905-46F2-0030-A0183067E63D]}
 
-  EJwsclInvalidComputer = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0031-A0183067E63D]};
+  EJwsclInvalidComputer = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0031-A0183067E63D]}
 
   {<B>EJwsclInvalidKnownSIDException</B> is raised if TJwSecurityId.CreateWellKnownSid fails}
   EJwsclInvalidKnownSIDException = class(EJwsclInvalidSIDException)
@@ -333,124 +336,124 @@ type
     property SidType : TWellKnownSidType read fSidType write fSidType;
   end;
 
-  EJwsclInvalidSidAuthorityValue = class(EJwsclInvalidSIDException)
-    {[2B2288BC-7905-46F2-0033-A0183067E63D]};
+  EJwsclInvalidSidAuthorityValue = class(EJwsclInvalidSIDException);
+    {[2B2288BC-7905-46F2-0033-A0183067E63D]}
 
 
   //<B>EJwsclIndexOutOfBoundsException</B> is raised if an given index is not within the bounds of a list
-  EJwsclIndexOutOfBoundsException = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0034-A0183067E63D]};
+  EJwsclIndexOutOfBoundsException = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0034-A0183067E63D]}
 
   //<B>EJwsclDuplicateListEntryException</B> is raised if a SID was already added to a list
-  EJwsclDuplicateListEntryException = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0035-A0183067E63D]};
+  EJwsclDuplicateListEntryException = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0035-A0183067E63D]}
 
-  EJwsclReadOnlyPropertyException = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0036-A0183067E63D]};
+  EJwsclReadOnlyPropertyException = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0036-A0183067E63D]}
 
-  EJwsclInvalidACEException = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0037-A0183067E63D]};
+  EJwsclInvalidACEException = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0037-A0183067E63D]}
 
-  EJwsclRevisionMismatchException = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0038-A0183067E63D]};
+  EJwsclRevisionMismatchException = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0038-A0183067E63D]}
 
-  EJwsclInvalidAceMismatch = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0039-A0183067E63D]};
+  EJwsclInvalidAceMismatch = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0039-A0183067E63D]}
 
-  EJwsclInvalidRevision = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0040-A0183067E63D]};
+  EJwsclInvalidRevision = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0040-A0183067E63D]}
 
-  EJwsclInvalidSecurityDescriptor = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0041-A0183067E63D]};
+  EJwsclInvalidSecurityDescriptor = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0041-A0183067E63D]}
 
-  EJwsclInvalidPathException = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0042-A0183067E63D]};
+  EJwsclInvalidPathException = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0042-A0183067E63D]}
 
-  EJwsclInvalidParameterException = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0043-A0183067E63D]};
+  EJwsclInvalidParameterException = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0043-A0183067E63D]}
 
-  EJwsclProcessNotFound = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0044-A0183067E63D]};
+  EJwsclProcessNotFound = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0044-A0183067E63D]}
 
-  EJwsclInvalidFlagsException = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0045-A0183067E63D]};
+  EJwsclInvalidFlagsException = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0045-A0183067E63D]}
 
-  EJwsclNoSuchLogonSession = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0046-A0183067E63D]};
+  EJwsclNoSuchLogonSession = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0046-A0183067E63D]}
 
-  EJwsclStreamException = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0047-A0183067E63D]};
+  EJwsclStreamException = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0047-A0183067E63D]}
 
-    EJwsclStreamSizeException = class(EJwsclStreamException)
-      {[2B2288BC-7905-46F2-0048-A0183067E63D]};
+    EJwsclStreamSizeException = class(EJwsclStreamException);
+      {[2B2288BC-7905-46F2-0048-A0183067E63D]}
 
-    EJwsclStreamInvalidMagicException = class(EJwsclStreamException)
-      {[2B2288BC-7905-46F2-0049-A0183067E63D]};
+    EJwsclStreamInvalidMagicException = class(EJwsclStreamException);
+      {[2B2288BC-7905-46F2-0049-A0183067E63D]}
 
-    EJwsclStreamHashException = class(EJwsclStreamException)
-      {[2B2288BC-7905-46F2-0050-A0183067E63D]};
+    EJwsclStreamHashException = class(EJwsclStreamException);
+      {[2B2288BC-7905-46F2-0050-A0183067E63D]}
 
   //EHashMismatch is raised in case of unequal hash data
-  EJwsclHashMismatch = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0051-A0183067E63D]};
+  EJwsclHashMismatch = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0051-A0183067E63D]}
 
 
-  EJwsclSecurityObjectException = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0052-A0183067E63D]};
+  EJwsclSecurityObjectException = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0052-A0183067E63D]}
 
-  EJwsclInvalidObjectException = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0053-A0183067E63D]};
+  EJwsclInvalidObjectException = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0053-A0183067E63D]}
 
-  EJwsclThreadException = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0054-A0183067E63D]};
+  EJwsclThreadException = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0054-A0183067E63D]}
 
-  EJwsclAdaptSecurityInfoException = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0055-A0183067E63D]};
+  EJwsclAdaptSecurityInfoException = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0055-A0183067E63D]}
 
-  EJwsclInvalidGenericAccessMask = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0056-A0183067E63D]};
+  EJwsclInvalidGenericAccessMask = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0056-A0183067E63D]}
 
-  EJwsclInvalidKeyPath = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0057-A0183067E63D]};
+  EJwsclInvalidKeyPath = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0057-A0183067E63D]}
 
-  EJwsclInvalidParentDescriptor = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0058-A0183067E63D]};
+  EJwsclInvalidParentDescriptor = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0058-A0183067E63D]}
 
-  ESetSecurityException = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0059-A0183067E63D]};
+  ESetSecurityException = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0059-A0183067E63D]}
 
-  ESetOwnerException = class(ESetSecurityException)
-    {[2B2288BC-7905-46F2-0060-A0183067E63D]};
+  ESetOwnerException = class(ESetSecurityException);
+    {[2B2288BC-7905-46F2-0060-A0183067E63D]}
 
-  EJwsclLSAException = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0061-A0183067E63D]};
+  EJwsclLSAException = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0061-A0183067E63D]}
 
-  EJwsclAccessDenied = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0062-A0183067E63D]};
+  EJwsclAccessDenied = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0062-A0183067E63D]}
 
-    EJwsclSACLAccessDenied = class(EJwsclAccessDenied)
-      {[2B2288BC-7905-46F2-0063-A0183067E63D]};
+    EJwsclSACLAccessDenied = class(EJwsclAccessDenied);
+      {[2B2288BC-7905-46F2-0063-A0183067E63D]}
 
           {
           EDesktopException is the general exception that is raised if an error occurred
           during desktop manipulation.
           }
-    EJwsclDesktopException = class(EJwsclSecurityException)
-      {[2B2288BC-7905-46F2-0064-A0183067E63D]};
+    EJwsclDesktopException = class(EJwsclSecurityException);
+      {[2B2288BC-7905-46F2-0064-A0183067E63D]}
 
           {EOpenDesktopException is raised if there was an error during opening a desktops.
           Possible cases are :
           1. Desktop does not exists
           }
-    EJwsclOpenDesktopException = class(EJwsclDesktopException)
-      {[2B2288BC-7905-46F2-0065-A0183067E63D]};
+    EJwsclOpenDesktopException = class(EJwsclDesktopException);
+      {[2B2288BC-7905-46F2-0065-A0183067E63D]}
 
           {ECreateDesktopException is raised if there was an error during creating a new desktop.
           Possible cases are :
           1. Desktop already exists
           2. Not enough rights}
-    EJwsclCreateDesktopException = class(EJwsclDesktopException)
-      {[2B2288BC-7905-46F2-1065-A0183067E63D]};
+    EJwsclCreateDesktopException = class(EJwsclDesktopException);
+      {[2B2288BC-7905-46F2-1065-A0183067E63D]}
 
           {ECloseDesktopException is raised if there was an error during closing a desktop.
           Possible cases are :
@@ -458,191 +461,191 @@ type
           2. not enough rights
           }
 
-    EJwsclCloseDesktopException = class(EJwsclDesktopException)
-      {[2B2288BC-7905-46F2-0066-A0183067E63D]};
+    EJwsclCloseDesktopException = class(EJwsclDesktopException);
+      {[2B2288BC-7905-46F2-0066-A0183067E63D]}
 
 
-  EJwsclWindowStationException = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0067-A0183067E63D]};
+  EJwsclWindowStationException = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0067-A0183067E63D]}
 
-  EJwsclOpenWindowStationException = class(EJwsclWindowStationException)
-    {[2B2288BC-7905-46F2-0068-A0183067E63D]};
+  EJwsclOpenWindowStationException = class(EJwsclWindowStationException);
+    {[2B2288BC-7905-46F2-0068-A0183067E63D]}
 
-  EJwsclUnsupportedACE = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0069-A0183067E63D]};
+  EJwsclUnsupportedACE = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0069-A0183067E63D]}
 
-  EJwsclFailedAddACE = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0070-A0183067E63D]};
+  EJwsclFailedAddACE = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0070-A0183067E63D]}
 
-  EJwsclResourceException = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0071-A0183067E63D]};
+  EJwsclResourceException = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0071-A0183067E63D]}
 
-  EJwsclResourceNotFound = class(EJwsclResourceException)
-    {[2B2288BC-7905-46F2-0072-A0183067E63D]};
+  EJwsclResourceNotFound = class(EJwsclResourceException);
+    {[2B2288BC-7905-46F2-0072-A0183067E63D]}
 
-  EJwsclResourceUnequalCount = class(EJwsclResourceException)
-    {[2B2288BC-7905-46F2-0073-A0183067E63D]};
+  EJwsclResourceUnequalCount = class(EJwsclResourceException);
+    {[2B2288BC-7905-46F2-0073-A0183067E63D]}
 
-  EJwsclResourceInitFailed = class(EJwsclResourceException)
-    {[2B2288BC-7905-46F2-0074-A0183067E63D]};
+  EJwsclResourceInitFailed = class(EJwsclResourceException);
+    {[2B2288BC-7905-46F2-0074-A0183067E63D]}
 
 
-  EJwsclOSError = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0075-A0183067E63D]};
+  EJwsclOSError = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0075-A0183067E63D]}
 
-  EJwsclCryptException = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0076-A0183067E63D]};
+  EJwsclCryptException = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0076-A0183067E63D]}
 
-  EJwsclCryptApiException = class(EjwsclCryptException)
-    {[2B2288BC-7905-46F2-0077-A0183067E63D]};
+  EJwsclCryptApiException = class(EjwsclCryptException);
+    {[2B2288BC-7905-46F2-0077-A0183067E63D]}
 
-  EJwsclCryptUnsupportedException = class(EjwsclCryptException)
-    {[2B2288BC-7905-46F2-0078-A0183067E63D]};
+  EJwsclCryptUnsupportedException = class(EjwsclCryptException);
+    {[2B2288BC-7905-46F2-0078-A0183067E63D]}
 
   //general exception for terminal server methods
-  EJwsclTerminalServerException = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0079-A0183067E63D]};
+  EJwsclTerminalServerException = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0079-A0183067E63D]}
 
   // Terminal Server Connection Exception
-  EJwsclTerminalServerConnectException = class(EJwsclTerminalServerException)
-    {[2B2288BC-7905-46F2-0080-A0183067E63D]};
+  EJwsclTerminalServerConnectException = class(EJwsclTerminalServerException);
+    {[2B2288BC-7905-46F2-0080-A0183067E63D]}
 
-  EJwsclTerminalServiceException =  class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0081-A0183067E63D]};
+  EJwsclTerminalServiceException =  class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0081-A0183067E63D]}
 
-  EJwsclTerminalServiceNecessary =  class(EJwsclTerminalServiceException)
-    {[2B2288BC-7905-46F2-0082-A0183067E63D]};
-
-  //general exception for terminal session methods
+  EJwsclTerminalServiceNecessary =  class(EJwsclTerminalServiceException);
+    {[2B2288BC-7905-46F2-0082-A0183067E63D]}
 
   //general exception for terminal session methods
-  EJwsclTerminalSessionException = class(EJwsclTerminalServerException)
-    {[2B2288BC-7905-46F2-1082-A0183067E63D]};
 
-  EJwsclCSPException = class(EJwsclCryptException)
-    {[2B2288BC-7905-46F2-0083-A0183067E63D]};
+  //general exception for terminal session methods
+  EJwsclTerminalSessionException = class(EJwsclTerminalServerException);
+    {[2B2288BC-7905-46F2-1082-A0183067E63D]}
 
-  EJwsclCSPApiException = class(EJwsclCSPException)
-    {[2B2288BC-7905-46F2-1013-A0183067E63D]};
+  EJwsclCSPException = class(EJwsclCryptException);
+    {[2B2288BC-7905-46F2-0083-A0183067E63D]}
 
-  EJwsclHashException = class(EJwsclCryptException)
-    {[2B2288BC-7905-46F2-0084-A0183067E63D]};
+  EJwsclCSPApiException = class(EJwsclCSPException);
+    {[2B2288BC-7905-46F2-1013-A0183067E63D]}
 
-  EJwsclHashApiException = class (EJwsclHashException)
-    {[2B2288BC-7905-46F2-0085-A0183067E63D]};
+  EJwsclHashException = class(EJwsclCryptException);
+    {[2B2288BC-7905-46F2-0084-A0183067E63D]}
 
-  EJwsclKeyException = class(EJwsclCryptException)
-    {[2B2288BC-7905-46F2-0086-A0183067E63D]};
+  EJwsclHashApiException = class (EJwsclHashException);
+    {[2B2288BC-7905-46F2-0085-A0183067E63D]}
 
-  EJwsclKeyApiException = class(EJwsclKeyException)
-    {[2B2288BC-7905-46F2-0087-A0183067E63D]};
+  EJwsclKeyException = class(EJwsclCryptException);
+    {[2B2288BC-7905-46F2-0086-A0183067E63D]}
+
+  EJwsclKeyApiException = class(EJwsclKeyException);
+    {[2B2288BC-7905-46F2-0087-A0183067E63D]}
 
   {<B>EJwsclInitWellKnownException</B> is raised if JwInitWellKnownSIDs was not called.}
-  EJwsclInitWellKnownException = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0088-A0183067E63D]};
+  EJwsclInitWellKnownException = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0088-A0183067E63D]}
 
   {<b>EJwsclUnimplemented</b>
   The called function isn't implemented yet.}
-  EJwsclUnimplemented = class(EJwsclSecurityException)
-    {[2B2288BC-7905-FFFF-0013-A0183067E63D]};
+  EJwsclUnimplemented = class(EJwsclSecurityException);
+    {[2B2288BC-7905-FFFF-0013-A0183067E63D]}
 
   {<b>EJwsclNilPointer</b>
   A given parameter or variable is nil but must not be nil.}
-  EJwsclNilPointer = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0089-A0183067E63D]};
+  EJwsclNilPointer = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0089-A0183067E63D]}
 
-  EJwsclCreateProcessFailed = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0090-A0183067E63D]};
+  EJwsclCreateProcessFailed = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0090-A0183067E63D]}
 
-  EJwsclInvalidPointerType = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0091-A0183067E63D]};
+  EJwsclInvalidPointerType = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0091-A0183067E63D]}
 
-  EJwsclMissingEvent = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0092-A0183067E63D]};
+  EJwsclMissingEvent = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0092-A0183067E63D]}
 
-  EJwsclInvalidSession = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0093-A0183067E63D]};
+  EJwsclInvalidSession = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0093-A0183067E63D]}
 
-  EJwsclInvalidIndex = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0094-A0183067E63D]};
+  EJwsclInvalidIndex = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0094-A0183067E63D]}
 
-  EJwsclInvalidHandle = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0095-A0183067E63D]};
+  EJwsclInvalidHandle = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0095-A0183067E63D]}
 
-  EJwsclClassTypeMismatch = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0096-A0183067E63D]};
+  EJwsclClassTypeMismatch = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0096-A0183067E63D]}
 
-  EJwsclEndOfStream = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0097-A0183067E63D]};
+  EJwsclEndOfStream = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0097-A0183067E63D]}
 
-  EJwsclInvalidRegistryPath = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0098-A0183067E63D]};
+  EJwsclInvalidRegistryPath = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0098-A0183067E63D]}
 
   {}
-  EJwsclEnumerateProcessFailed = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0099-A0183067E63D]};
+  EJwsclEnumerateProcessFailed = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0099-A0183067E63D]}
 
-  EJwsclGenericFirewallException = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0101-A0183067E63D]};
+  EJwsclGenericFirewallException = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0101-A0183067E63D]}
 
-  EJwsclFirewallInitException = class(EJwsclGenericFirewallException)
-    {[2B2288BC-7905-46F2-0102-A0183067E63D]};
+  EJwsclFirewallInitException = class(EJwsclGenericFirewallException);
+    {[2B2288BC-7905-46F2-0102-A0183067E63D]}
 
-  EJwsclFirewallProfileInitException = class(EJwsclGenericFirewallException)
-    {[2B2288BC-7905-46F2-0103-A0183067E63D]};
+  EJwsclFirewallProfileInitException = class(EJwsclGenericFirewallException);
+    {[2B2288BC-7905-46F2-0103-A0183067E63D]}
 
-  EJwsclSetFWStateException = class(EJwsclGenericFirewallException)
-    {[2B2288BC-7905-46F2-0104-A0183067E63D]};
+  EJwsclSetFWStateException = class(EJwsclGenericFirewallException);
+    {[2B2288BC-7905-46F2-0104-A0183067E63D]}
 
-  EJwsclGetFWStateException = class(EJwsclGenericFirewallException)
-    {[2B2288BC-7905-46F2-0105-A0183067E63D]};
+  EJwsclGetFWStateException = class(EJwsclGenericFirewallException);
+    {[2B2288BC-7905-46F2-0105-A0183067E63D]}
 
-  EJwsclGetFWExceptionsAllowedException = class(EJwsclGenericFirewallException)
-    {[2B2288BC-7905-46F2-0106-A0183067E63D]};
+  EJwsclGetFWExceptionsAllowedException = class(EJwsclGenericFirewallException);
+    {[2B2288BC-7905-46F2-0106-A0183067E63D]}
 
-  EJwsclSetFWExceptionsAllowedException = class(EJwsclGenericFirewallException)
-    {[2B2288BC-7905-46F2-0107-A0183067E63D]};
+  EJwsclSetFWExceptionsAllowedException = class(EJwsclGenericFirewallException);
+    {[2B2288BC-7905-46F2-0107-A0183067E63D]}
 
-  EJwsclGetIncomingPingAllowedException = class(EJwsclGenericFirewallException)
-    {[2B2288BC-7905-46F2-0108-A0183067E63D]};
+  EJwsclGetIncomingPingAllowedException = class(EJwsclGenericFirewallException);
+    {[2B2288BC-7905-46F2-0108-A0183067E63D]}
 
-  EJwsclSetIncomingPingAllowedException = class(EJwsclGenericFirewallException)
-    {[2B2288BC-7905-46F2-0109-A0183067E63D]};
+  EJwsclSetIncomingPingAllowedException = class(EJwsclGenericFirewallException);
+    {[2B2288BC-7905-46F2-0109-A0183067E63D]}
 
-  EJwsclGetRemoteAdminAllowedException = class(EJwsclGenericFirewallException)
-    {[2B2288BC-7905-46F2-0110-A0183067E63D]};
+  EJwsclGetRemoteAdminAllowedException = class(EJwsclGenericFirewallException);
+    {[2B2288BC-7905-46F2-0110-A0183067E63D]}
 
-  EJwsclSetRemoteAdminAllowedException = class(EJwsclGenericFirewallException)
-    {[2B2288BC-7905-46F2-0111-A0183067E63D]};
+  EJwsclSetRemoteAdminAllowedException = class(EJwsclGenericFirewallException);
+    {[2B2288BC-7905-46F2-0111-A0183067E63D]}
 
-  EJwsclGetRemoteAdminAdressException = class(EJwsclGenericFirewallException)
-    {[2B2288BC-7905-46F2-0112-A0183067E63D]};
+  EJwsclGetRemoteAdminAdressException = class(EJwsclGenericFirewallException);
+    {[2B2288BC-7905-46F2-0112-A0183067E63D]}
 
-  EJwsclSetRemoteAdminAdressException = class(EJwsclGenericFirewallException)
-    {[2B2288BC-7905-46F2-0113-A0183067E63D]};
+  EJwsclSetRemoteAdminAdressException = class(EJwsclGenericFirewallException);
+    {[2B2288BC-7905-46F2-0113-A0183067E63D]}
 
-  EJwsclFirewallAddRuleException = class(EJwsclGenericFirewallException)
-    {[2B2288BC-7905-46F2-0114-A0183067E63D]};
+  EJwsclFirewallAddRuleException = class(EJwsclGenericFirewallException);
+    {[2B2288BC-7905-46F2-0114-A0183067E63D]}
 
-  EJwsclAddTcpPortToFirewallException = class(EJwsclGenericFirewallException)
-    {[2B2288BC-7905-46F2-0115-A0183067E63D]};
+  EJwsclAddTcpPortToFirewallException = class(EJwsclGenericFirewallException);
+    {[2B2288BC-7905-46F2-0115-A0183067E63D]}
 
-  EJwsclAddUdpPortToFirewallException = class(EJwsclGenericFirewallException)
-    {[2B2288BC-7905-46F2-0116-A0183067E63D]};
+  EJwsclAddUdpPortToFirewallException = class(EJwsclGenericFirewallException);
+    {[2B2288BC-7905-46F2-0116-A0183067E63D]}
 
-  EJwsclFirewallDelRuleException = class(EJwsclGenericFirewallException)
-    {[2B2288BC-7905-46F2-0117-A0183067E63D]};
+  EJwsclFirewallDelRuleException = class(EJwsclGenericFirewallException);
+    {[2B2288BC-7905-46F2-0117-A0183067E63D]}
 
-  EJwsclFirewallInactiveException = class(EJwsclGenericFirewallException)
-    {[2B2288BC-7905-46F2-0118-A0183067E63D]};
+  EJwsclFirewallInactiveException = class(EJwsclGenericFirewallException);
+    {[2B2288BC-7905-46F2-0118-A0183067E63D]}
 
-  EJwsclFirewallNoExceptionsException = class(EJwsclGenericFirewallException)
-    {[2B2288BC-7905-46F2-0119-A0183067E63D]};
+  EJwsclFirewallNoExceptionsException = class(EJwsclGenericFirewallException);
+    {[2B2288BC-7905-46F2-0119-A0183067E63D]}
 
 
 
-  EJwsclInvalidStartupInfo = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0120-A0183067E63D]};
+  EJwsclInvalidStartupInfo = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0120-A0183067E63D]}
 
   {<B>EJwsclVistaFeaturesDisabled</B> is raised if the JWSCL library
   was compiled with the compiler directive VISTA deactivated.
@@ -650,49 +653,49 @@ type
   includes\Jwscl.inc and make sure that you also compiled JwaWindows
   with at least WINVISTA or WIN2008 to enable Vista features.
   }
-  EJwsclVistaFeaturesDisabled = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0121-A0183067E63D]};
+  EJwsclVistaFeaturesDisabled = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0121-A0183067E63D]}
 
-  EJwsclCertApiException = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0122-A0183067E63D]};
+  EJwsclCertApiException = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0122-A0183067E63D]}
 
-  EJwsclElevateProcessException = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0123-A0183067E63D]};
+  EJwsclElevateProcessException = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0123-A0183067E63D]}
 
-  EJwsclSuRunErrorException = class(EJwsclElevateProcessException)
-    {[2B2288BC-7905-46F2-0124-A0183067E63D]};
+  EJwsclSuRunErrorException = class(EJwsclElevateProcessException);
+    {[2B2288BC-7905-46F2-0124-A0183067E63D]}
 
-  EJwsclAbortException = class(EJwsclElevateProcessException)
-    {[2B2288BC-7905-46F2-0125-A0183067E63D]};
+  EJwsclAbortException = class(EJwsclElevateProcessException);
+    {[2B2288BC-7905-46F2-0125-A0183067E63D]}
 
-  EJwsclElevationException = class(EJwsclElevateProcessException)
-    {[2B2288BC-7905-46F2-0126-A0183067E63D]};
+  EJwsclElevationException = class(EJwsclElevateProcessException);
+    {[2B2288BC-7905-46F2-0126-A0183067E63D]}
 
-  EJwsclShellExecuteException = class(EJwsclElevateProcessException)
-    {[2B2288BC-7905-46F2-0127-A0183067E63D]};
+  EJwsclShellExecuteException = class(EJwsclElevateProcessException);
+    {[2B2288BC-7905-46F2-0127-A0183067E63D]}
 
-  EJwsclJwShellExecuteException = class(EJwsclElevateProcessException)
-    {[2B2288BC-7905-46F2-0128-A0183067E63D]};
+  EJwsclJwShellExecuteException = class(EJwsclElevateProcessException);
+    {[2B2288BC-7905-46F2-0128-A0183067E63D]}
 
-  EJwsclPIDException = class(EJwsclElevateProcessException)
-    {[2B2288BC-7905-46F2-0129-A0183067E63D]};
+  EJwsclPIDException = class(EJwsclElevateProcessException);
+    {[2B2288BC-7905-46F2-0129-A0183067E63D]}
 
   {EJwsclUnsupportedException This exception is raised if an exception could
     not be interpreted as an JWSCL exception.}
-  EJwsclUnsupportedException = class(EJwsclElevateProcessException)
-    {[2B2288BC-7905-46F2-0130-A0183067E63D]};
+  EJwsclUnsupportedException = class(EJwsclElevateProcessException);
+    {[2B2288BC-7905-46F2-0130-A0183067E63D]}
 
   //<B>EJwsclDuplicateListEntryException</B> is raised if a SID was already added to a list
-  EJwsclInvalidSidStructureException = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0131-A0183067E63D]};
+  EJwsclInvalidSidStructureException = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F2-0131-A0183067E63D]}
 
-  EJwsclComException = class(EJwsclSecurityException)
-      {[2B2288BC-7905-46F2-0132-A0183067E63D]};
+  EJwsclComException = class(EJwsclSecurityException);
+      {[2B2288BC-7905-46F2-0132-A0183067E63D]}
 
-  EJwsclCoInitializeNotCalledException = class(EJwsclComException)
-        {[2B2288BC-7905-46F2-0133-A0183067E63D]};
-  EJwsclDuplicateComInitCallException = class(EJwsclComException)
-        {[2B2288BC-7905-46F2-0134-A0183067E63D]};
+  EJwsclCoInitializeNotCalledException = class(EJwsclComException);
+        {[2B2288BC-7905-46F2-0133-A0183067E63D]}
+  EJwsclDuplicateComInitCallException = class(EJwsclComException);
+        {[2B2288BC-7905-46F2-0134-A0183067E63D]}
 
 
 
