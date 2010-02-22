@@ -6,6 +6,7 @@ uses
   JwsclAuthCtx,
   JwsclCertificates,
   JwsclComUtils,
+  JwsclComSecurity,
   JwsclConstants,
   JwsclCredentials,
   JwsclCryptProvider,

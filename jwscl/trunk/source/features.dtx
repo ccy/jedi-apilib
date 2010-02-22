@@ -1,0 +1,67 @@
+﻿
+@@Features
+The following list is an overview of the features of JWSCL (Current date: 22th Febr. 2010).
+
+  * Windows Token management (TJwSecurityToken)
+    * Impersonation
+    * Supports LogonUser, LsaLogonUser
+  * Full support of Security ID (<extlink http://msdn.microsoft.com/en-us/library/aa379594%28VS.85%29.aspx>SID</extlink>)
+    (TJwSecurityId, TJwSecurityIdList)
+    * Also well known security IDs like Everyone (JwsclKnownSid.pas) are stored as simple to use variables.
+  * Full support of Access Control Lists (also <extlink http://msdn.microsoft.com/en-us/library/aa374857%28VS.85%29.aspx>ACCESS_ALLOWED_OBJECT_ACE</extlink>,
+    <extlink http://msdn.microsoft.com/en-us/library/aa374852%28VS.85%29.aspx>ACCESS_ALLOWED_CALLBACK_ACE</extlink>, <extlink http://msdn.microsoft.com/en-us/library/aa374854%28VS.85%29.aspx>ACCESS_ALLOWED_CALLBACK_OBJECT_ACE</extlink>)
+    * DACL, SACL (aka Audit ACL)
+  * Full support of Security Descriptor (<extlink http://msdn.microsoft.com/en-us/library/aa379561%28VS.85%29.aspx>SECURITY_DESCRIPTOR</extlink>)
+    (TJwSecurityDescriptor)
+    * DACL, SACL, Owner, Group
+    * Implements a simple to use Security Descriptor (TJwSimpleDescriptor)
+  * Security Rights Mapping; Maps Generic Rights to specific ones (JwsclMapping.pas)
+    * Conversion of Security Rights (DWORD) to Human Readable names (JwFormatAccessRights)
+  * Privileges (TJwPrivilege, TJwPrivilegeSet, JwsclPrivileges.pas)
+  * Windowstation and Desktops (TJwSecurityWindowStation, TJwSecurityDesktop)
+  * Local Security Authority Logon Sessions (TJwLsaLogonSession)
+  * Security of Windows objects; files, registry, handles (TJwSecureFileObject, TJwSecureFileObject,
+    TJwSecureGeneralObject)
+    * Support of Access Checking (AccessCheck)
+    * Supports Inheritance (by default only files and registry)
+  * Support of MS AuthZ API; Client Side Access Checks for custom Resources (JwsclAuthCtx.pas)
+  * Credentials GUI API (TJwCredentialsPrompt)
+  * MS Encryption and Protection API (TJwEncryptionApi, TJwEncryptMemory, TJwRandomDataGenerator)
+  * Windows Version Detection on remote or local client (TJwFileVersion, TJwServerInfo, TJwWindowsVersion)
+  * Security Descriptor GUI (TJwSecurityDescriptorDialog)
+  * Terminal Sessions (TJwTerminalServer)
+    * Server Management
+    * Sessions Management
+    * Processes Management
+  * Vista Elevation (JwShellExecute, JwElevateProcess, JwsclElevation.pas)
+    * Supports Kay Senf's SuRun (JwElevateProcess, JwCheckSuRunStatus)
+  * Vista Integrity Level (Built in)
+  * Firewall Administration (TJwsclFirewall)
+  * Builtin basic Smartpointer Support (TJwAutoLock)
+  * Job Object support (TJwJobObject) even with several sessions (TJwJobObjectSessionList)
+  * Process Handling that encapsulates support for different Windows Versions and bugs in API (functions
+    JwCreateProcessAsAdminUser, JwCreateProcessInSession, JwGetProcessSessionID, JwGetTokenFromProcess,
+    JwProcessIdToSessionId)
+  * Support Memory Mapped Objects (TJwFileStreamEx, TJwIPCStream, TJwVirtualStream)
+  * Extended Thread Support lile naming threads and WaitWithTimeOut (TJwThread)
+  * Hashing Support (TJwHash)
+    * For JWSCL classes (JwObjectHash)
+    * For files (JwCreateFileHash, JwCompareFileHash, JwDataHash, JwIntegerHash) in combination with fast Memory
+      Mapping.
+  * Easy to use WinAPI (Msg)WaitForMultipleObjects functions (JwMsgWaitForMultipleObjects,
+    JwMsgWaitForMultipleObjects)
+  * Multi Language Support of Resource Files (LoadLocalizedString)
+  * Ansi&#45; &amp; Unicode due to own Delphi compatible String type TJwString (JwsclStrings.pas)
+  * Mapping of Windows Constants to Delphi enumeration (TJwEnumMap)
+  * All errors are reported by exceptions using a derived class from EJwsclSecurityException. (JwsclExceptions.pas)
+  * Supports Bugreports with Eurekalog (JwsclEurekaLogUtils.pas)
+  * JWSCL is based on OOP
+  * DCOM support for Client and Server; CoInitializeSecurity (TJwComProcessSecurity), Authentication, Impersonation,
+    Proxy Security Blanket, (TJwComClientSecurity, TJwComServerSecurity) Access Control (TJwServerAccessControl), DCOM
+    Configuration (TJwComRegistrySecurity) of Global Configs and Class Security. (Current date: 22th Febr. 2010: This
+    implementation is only available in the development branch (trunk))
+
+To come (Current date: 22th Febr. 2010)
+  * Active Directory Support
+  * User Account Management
+\ \ 

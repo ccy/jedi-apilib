@@ -41,6 +41,7 @@ unit JwsclKnownSid;
 // Last modified: $Date: 2007-09-10 10:00:00 +0100 $
 {$INCLUDE ..\includes\Jwscl.inc}
 
+
 interface
 
 uses SysUtils, Classes,
@@ -1259,7 +1260,6 @@ begin
   if not Assigned(IntegrityLevelSIDs) then
   begin
     IntegrityLevelSIDs := TStringList.Create;
-    IntegrityLevelSIDs.OwnsObjects := true;
     IntegrityLevelSIDs.Sorted := true;
   end;
 
