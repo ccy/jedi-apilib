@@ -56621,121 +56621,154 @@ UseInheritedTopics=1
 UseInheritedUseUsing=0
 
 [External Topic Properties]
-Count=114
+Count=147
 ID0=!!SYMREF
 ID1=Compilers.inc
-ID10=JwsclAuthCtx.pas
-ID100=TJwTempResetEnum
-ID101=TJwTokenMandatoryPolicy
-ID102=TJwTreeSetType
-ID103=TJwUserDataCopy
-ID104=TJwWaitState
-ID105=TJwXMLAttribute
-ID106=TJwXMLAttrTag
-ID107=TJwXMLEventType
-ID108=TJwXMLLogTag
-ID109=TJwXMLTag
-ID11=JwsclComUtils, unit
-ID110=Topic1
-ID111=TThreadData
-ID112=TThreadMapRec
-ID113=TThreadNameInfo
-ID12=JwsclComUtils.pas
-ID13=JwsclConstants, unit
-ID14=JwsclConstants.pas
-ID15=TAce
-ID16=TAuthZSidContextFlag
-ID17=TFileVersionInfo
-ID18=TFNProgressRecord
-ID19=TInternalProcessData
+ID10=JwsclAuthCtx, unit
+ID100=TJwPrivilegeQueryType
+ID101=TJwPrivilegeSetType
+ID102=TJwProcessOutputInformation
+ID103=TJwProcessParameterType
+ID104=TJwProfileInfo
+ID105=TJwProfileMember
+ID106=TJwProgInvokeSetting
+ID107=TJwProtectMemoryFlag
+ID108=TJwReplyErrorEnum
+ID109=TJwRequestedTokenType
+ID11=JwsclAuthCtx.pas
+ID110=TJwRightsMapping
+ID111=TJwRightType
+ID112=TJwRootKeyEnum
+ID113=TJwRootRegKey
+ID114=TJwRootTuple
+ID115=TJwSecureObjectType
+ID116=TJwSecurityDescriptorControl
+ID117=TJwSecurityDesktopFlag
+ID118=TJwSecurityDialogFlag
+ID119=TJwSecurityInformationFlag
+ID12=JwsclComSecurity.pas
+ID120=TJwSecurityObjectInformation
+ID121=TJwSecurityObjectInformationFlag
+ID122=TJwSecurityPageType
+ID123=TJwSecurityResetType
+ID124=TJwShadowMode
+ID125=TJwShadowState
+ID126=TJwSharedHandle
+ID127=TJwShellExecuteFlag
+ID128=TJwSidAttribute
+ID129=TJwSidClassName
+ID13=JwsclComUtils, unit
+ID130=TJwSidInfoRecord
+ID131=TJwSidMap
+ID132=TJwSignalType
+ID133=TJwTempResetEnum
+ID134=TJwTokenMandatoryPolicy
+ID135=TJwTreeSetType
+ID136=TJwUserDataCopy
+ID137=TJwWaitState
+ID138=TJwXMLAttribute
+ID139=TJwXMLAttrTag
+ID14=JwsclComUtils.pas
+ID140=TJwXMLEventType
+ID141=TJwXMLLogTag
+ID142=TJwXMLTag
+ID143=Topic1
+ID144=TThreadData
+ID145=TThreadMapRec
+ID146=TThreadNameInfo
+ID15=JwsclConstants, unit
+ID16=JwsclConstants.pas
+ID17=JwsclCredentials.pas
+ID18=JwsclCryptProvider.pas
+ID19=JwsclDescriptor.pas
 ID2=conclusion.txt
-ID20=TIntTuple
-ID21=TJwAccessControlListType
-ID22=TJwAceFlag
-ID23=TJwAceType
-ID24=TJwACLProtection
-ID25=TJwACLProtectionState
-ID26=TJwAuthZResourceManagerFlag
-ID27=TJwCallbackData
-ID28=TJwCopyFlag
-ID29=TJwCreateProcessInfo
-ID3=introduction.txt
-ID30=TJwCreateProcessOut
-ID31=TJwCreateProcessParameters
-ID32=TJwCredentialFlag
-ID33=TJwCryptProtectFlag
-ID34=TJwCryptProtectOnPromptFlag
-ID35=TJwCSPCreationFlag
-ID36=TJwCSPType
-ID37=TJwDesktopCreationFlag
-ID38=TJwEncryptionAlgorithm
-ID39=TJwEnterType
-ID4=jedi.inc
-ID40=TJwEnumAlgorithmsEntry
-ID41=TJwEnumProviderEntry
-ID42=TJwEqualAceType
-ID43=TJwEventType
-ID44=TJwExceptionMapping
-ID45=TJwGetAccessCheckType
-ID46=TJwGetInheritFlagsType
-ID47=TJwGetMemBlob
-ID48=TJwHashAlgorithm
-ID49=TJwInheritedFromRecord
-ID5=Jwscl.inc
-ID50=TJwInheritFlag
-ID51=TJwIntegrityLabelType
-ID52=TJwJobLimit
-ID53=TJwJobMessage
-ID54=TJwJobTermination
-ID55=TJwJobUiLimit
-ID56=TJwKeyExportKind
-ID57=TJwKeyFlag
-ID58=TJwKeyPairType
-ID59=TJwLogType
-ID6=JwsclAccounts.pas
-ID60=TJwMandatoryPolicy
-ID61=TJwMemoryType
-ID62=TJwMemoryType.mtAlloc
-ID63=TJwMemoryType.mtDeAlloc
-ID64=TJwMsgRec
-ID65=TJwPointerType
-ID66=TJwPrivCheck
-ID67=TJwPrivilegeQueryType
-ID68=TJwPrivilegeSetType
-ID69=TJwProcessOutputInformation
-ID7=JwsclAcl, unit
-ID70=TJwProcessParameterType
-ID71=TJwProfileInfo
-ID72=TJwProfileMember
-ID73=TJwProgInvokeSetting
-ID74=TJwProtectMemoryFlag
-ID75=TJwReplyErrorEnum
-ID76=TJwRequestedTokenType
-ID77=TJwRightsMapping
-ID78=TJwRightType
-ID79=TJwRootKeyEnum
-ID8=JwsclAcl.pas
-ID80=TJwRootRegKey
-ID81=TJwRootTuple
-ID82=TJwSecureObjectType
-ID83=TJwSecurityDescriptorControl
-ID84=TJwSecurityDesktopFlag
-ID85=TJwSecurityDialogFlag
-ID86=TJwSecurityInformationFlag
-ID87=TJwSecurityObjectInformation
-ID88=TJwSecurityObjectInformationFlag
-ID89=TJwSecurityPageType
-ID9=JwsclAuthCtx, unit
-ID90=TJwSecurityResetType
-ID91=TJwShadowMode
-ID92=TJwShadowState
-ID93=TJwSharedHandle
-ID94=TJwShellExecuteFlag
-ID95=TJwSidAttribute
-ID96=TJwSidClassName
-ID97=TJwSidInfoRecord
-ID98=TJwSidMap
-ID99=TJwSignalType
+ID20=JwsclDesktops.pas
+ID21=JwsclElevation.pas
+ID22=JwsclEncryption.pas
+ID23=JwsclEnumerations.pas
+ID24=JwsclEurekaLogUtils.pas
+ID25=JwsclExceptionMappings.inc
+ID26=JwsclExceptions.pas
+ID27=JwsclFirewall.pas
+ID28=JwsclImpersonation.pas
+ID29=JwsclKnownSid.pas
+ID3=Features
+ID30=JwsclLogging.pas
+ID31=JwsclLsa.pas
+ID32=JwsclMapping.pas
+ID33=JwsclPrivileges.PAS
+ID34=JwsclProcess.pas
+ID35=JwsclResource.pas
+ID36=JwsclSecureObjects.pas
+ID37=JwsclSecurityDialogs.pas
+ID38=JwsclSid.pas
+ID39=JwsclSimpleDescriptor.pas
+ID4=introduction.txt
+ID40=JwsclStreams.pas
+ID41=JwsclStrings.pas
+ID42=JwsclTerminalServer.pas
+ID43=JwsclToken.pas
+ID44=JwsclTypes.pas
+ID45=JwsclUtils.pas
+ID46=JwsclVersion.pas
+ID47=JwsclWinStations.pas
+ID48=TAce
+ID49=TAuthZSidContextFlag
+ID5=jedi.inc
+ID50=TFileVersionInfo
+ID51=TFNProgressRecord
+ID52=TInternalProcessData
+ID53=TIntTuple
+ID54=TJwAccessControlListType
+ID55=TJwAceFlag
+ID56=TJwAceType
+ID57=TJwACLProtection
+ID58=TJwACLProtectionState
+ID59=TJwAuthZResourceManagerFlag
+ID6=Jwscl.inc
+ID60=TJwCallbackData
+ID61=TJwCopyFlag
+ID62=TJwCreateProcessInfo
+ID63=TJwCreateProcessOut
+ID64=TJwCreateProcessParameters
+ID65=TJwCredentialFlag
+ID66=TJwCryptProtectFlag
+ID67=TJwCryptProtectOnPromptFlag
+ID68=TJwCSPCreationFlag
+ID69=TJwCSPType
+ID7=JwsclAccounts.pas
+ID70=TJwDesktopCreationFlag
+ID71=TJwEncryptionAlgorithm
+ID72=TJwEnterType
+ID73=TJwEnumAlgorithmsEntry
+ID74=TJwEnumProviderEntry
+ID75=TJwEqualAceType
+ID76=TJwEventType
+ID77=TJwExceptionMapping
+ID78=TJwGetAccessCheckType
+ID79=TJwGetInheritFlagsType
+ID8=JwsclAcl, unit
+ID80=TJwGetMemBlob
+ID81=TJwHashAlgorithm
+ID82=TJwInheritedFromRecord
+ID83=TJwInheritFlag
+ID84=TJwIntegrityLabelType
+ID85=TJwJobLimit
+ID86=TJwJobMessage
+ID87=TJwJobTermination
+ID88=TJwJobUiLimit
+ID89=TJwKeyExportKind
+ID9=JwsclAcl.pas
+ID90=TJwKeyFlag
+ID91=TJwKeyPairType
+ID92=TJwLogType
+ID93=TJwMandatoryPolicy
+ID94=TJwMemoryType
+ID95=TJwMemoryType.mtAlloc
+ID96=TJwMemoryType.mtDeAlloc
+ID97=TJwMsgRec
+ID98=TJwPointerType
+ID99=TJwPrivCheck
 
 [External Topic Properties\!!SYMREF]
 Count=1
@@ -56752,6 +56785,13 @@ Count=1
 ETPCommand0=2
 ETPTopicOrder0=1
 
+[External Topic Properties\Features]
+Count=2
+ETPCommand0=2
+ETPCommand1=3
+ETPGroup1=introduction.txt
+ETPTopicOrder0=3
+
 [External Topic Properties\introduction.txt]
 Count=2
 ETPCommand0=2
@@ -56762,19 +56802,19 @@ ETPTopicOrder0=0
 [External Topic Properties\jedi.inc]
 Count=1
 ETPCommand0=2
-ETPTopicOrder0=2
+ETPTopicOrder0=0
 
 [External Topic Properties\Jwscl.inc]
 Count=2
 ETPCommand0=2
 ETPCommand1=3
 ETPGroup1=!!FILES
-ETPTopicOrder0=12
+ETPTopicOrder0=1
 
 [External Topic Properties\JwsclAccounts.pas]
 Count=1
 ETPCommand0=2
-ETPTopicOrder0=1
+ETPTopicOrder0=2
 
 [External Topic Properties\JwsclAcl, unit]
 Count=2
@@ -56786,7 +56826,7 @@ ETPTopicOrder0=5
 [External Topic Properties\JwsclAcl.pas]
 Count=1
 ETPCommand0=2
-ETPTopicOrder0=4
+ETPTopicOrder0=3
 
 [External Topic Properties\JwsclAuthCtx, unit]
 Count=2
@@ -56798,7 +56838,14 @@ ETPTopicOrder0=7
 [External Topic Properties\JwsclAuthCtx.pas]
 Count=1
 ETPCommand0=2
-ETPTopicOrder0=6
+ETPTopicOrder0=4
+
+[External Topic Properties\JwsclComSecurity.pas]
+Count=2
+ETPCommand0=2
+ETPCommand1=3
+ETPGroup1=!!FILES
+ETPTopicOrder0=5
 
 [External Topic Properties\JwsclComUtils, unit]
 Count=2
@@ -56810,7 +56857,7 @@ ETPTopicOrder0=9
 [External Topic Properties\JwsclComUtils.pas]
 Count=1
 ETPCommand0=2
-ETPTopicOrder0=8
+ETPTopicOrder0=6
 
 [External Topic Properties\JwsclConstants, unit]
 Count=2
@@ -56822,7 +56869,162 @@ ETPTopicOrder0=11
 [External Topic Properties\JwsclConstants.pas]
 Count=1
 ETPCommand0=2
+ETPTopicOrder0=7
+
+[External Topic Properties\JwsclCredentials.pas]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=8
+
+[External Topic Properties\JwsclCryptProvider.pas]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=9
+
+[External Topic Properties\JwsclDescriptor.pas]
+Count=1
+ETPCommand0=2
 ETPTopicOrder0=10
+
+[External Topic Properties\JwsclDesktops.pas]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=11
+
+[External Topic Properties\JwsclElevation.pas]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=12
+
+[External Topic Properties\JwsclEncryption.pas]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=13
+
+[External Topic Properties\JwsclEnumerations.pas]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=14
+
+[External Topic Properties\JwsclEurekaLogUtils.pas]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=15
+
+[External Topic Properties\JwsclExceptionMappings.inc]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=16
+
+[External Topic Properties\JwsclExceptions.pas]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=17
+
+[External Topic Properties\JwsclFirewall.pas]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=18
+
+[External Topic Properties\JwsclImpersonation.pas]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=19
+
+[External Topic Properties\JwsclKnownSid.pas]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=20
+
+[External Topic Properties\JwsclLogging.pas]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=21
+
+[External Topic Properties\JwsclLsa.pas]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=22
+
+[External Topic Properties\JwsclMapping.pas]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=23
+
+[External Topic Properties\JwsclPrivileges.PAS]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=24
+
+[External Topic Properties\JwsclProcess.pas]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=25
+
+[External Topic Properties\JwsclResource.pas]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=26
+
+[External Topic Properties\JwsclSecureObjects.pas]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=27
+
+[External Topic Properties\JwsclSecurityDialogs.pas]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=28
+
+[External Topic Properties\JwsclSid.pas]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=29
+
+[External Topic Properties\JwsclSimpleDescriptor.pas]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=30
+
+[External Topic Properties\JwsclStreams.pas]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=31
+
+[External Topic Properties\JwsclStrings.pas]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=32
+
+[External Topic Properties\JwsclTerminalServer.pas]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=33
+
+[External Topic Properties\JwsclToken.pas]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=34
+
+[External Topic Properties\JwsclTypes.pas]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=35
+
+[External Topic Properties\JwsclUtils.pas]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=36
+
+[External Topic Properties\JwsclVersion.pas]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=37
+
+[External Topic Properties\JwsclWinStations.pas]
+Count=1
+ETPCommand0=2
+ETPTopicOrder0=38
 
 [External Topic Properties\TAce]
 Count=1
@@ -58071,78 +58273,79 @@ ID9=9
 SavedValues=1
 
 [Source Files]
-Count=71
+Count=72
 File0=..\conclusion.dtx
 File1=MethodSnippet.dom-snippet
-File10=..\..\source\JwsclComSecurity.pas
-File11=..\..\source\JwsclComUtils.dtx
-File12=..\..\source\JwsclComUtils.pas
-File13=..\..\source\JwsclConstants.dtx
-File14=..\..\source\JwsclConstants.pas
-File15=..\..\source\JwsclCredentials.dtx
-File16=..\..\source\JwsclCredentials.pas
-File17=..\..\source\JwsclCryptProvider.dtx
-File18=..\..\source\JwsclCryptProvider.pas
-File19=..\..\source\JwsclDescriptor.dtx
+File10=..\..\source\JwsclComSecurity.dtx
+File11=..\..\source\JwsclComSecurity.pas
+File12=..\..\source\JwsclComUtils.dtx
+File13=..\..\source\JwsclComUtils.pas
+File14=..\..\source\JwsclConstants.dtx
+File15=..\..\source\JwsclConstants.pas
+File16=..\..\source\JwsclCredentials.dtx
+File17=..\..\source\JwsclCredentials.pas
+File18=..\..\source\JwsclCryptProvider.dtx
+File19=..\..\source\JwsclCryptProvider.pas
 File2=..\introduction.dtx
-File20=..\..\source\JwsclDescriptor.pas
-File21=..\..\source\JwsclDesktops.dtx
-File22=..\..\source\JwsclDesktops.pas
-File23=..\..\source\JwsclElevation.pas
-File24=..\..\source\JwsclEncryption.pas
-File25=..\..\source\JwsclEnumerations.pas
-File26=..\..\source\JwsclEurekaLogUtils.dtx
-File27=..\..\source\JwsclEurekaLogUtils.pas
-File28=..\..\source\JwsclExceptions.dtx
-File29=..\..\source\JwsclExceptions.pas
-File3=..\..\source\JwsclAccounts.dtx
-File30=..\..\source\JwsclFirewall.pas
-File31=..\..\source\JwsclImpersonation.dtx
-File32=..\..\source\JwsclImpersonation.pas
-File33=..\..\source\JwsclKnownSid.dtx
-File34=..\..\source\JwsclKnownSid.pas
-File35=..\..\source\JwsclLogging.dtx
-File36=..\..\source\JwsclLogging.pas
-File37=..\..\source\JwsclLsa.dtx
-File38=..\..\source\JwsclLsa.pas
-File39=..\..\source\JwsclMapping.dtx
-File4=..\..\source\JwsclAccounts.pas
-File40=..\..\source\JwsclMapping.pas
-File41=..\..\source\JwsclPrivileges.dtx
-File42=..\..\source\JwsclPrivileges.PAS
-File43=..\..\source\JwsclProcess.dtx
-File44=..\..\source\JwsclProcess.pas
-File45=..\..\source\JwsclResource.dtx
-File46=..\..\source\JwsclResource.pas
-File47=..\..\source\JwsclSecureObjects.dtx
-File48=..\..\source\JwsclSecureObjects.pas
-File49=..\..\source\JwsclSecurePrivateObjects.dtx
-File5=..\..\source\JwsclAcl.dtx
-File50=..\..\source\JwsclSecureUserObjects.dtx
-File51=..\..\source\JwsclSecurityDialogs.dtx
-File52=..\..\source\JwsclSecurityDialogs.pas
-File53=..\..\source\JwsclSid.dtx
-File54=..\..\source\JwsclSid.pas
-File55=..\..\source\JwsclSimpleDescriptor.pas
-File56=..\..\source\JwsclStreams.pas
-File57=..\..\source\JwsclStrings.dtx
-File58=..\..\source\JwsclStrings.pas
-File59=..\..\source\JwsclTerminalServer.dtx
-File6=..\..\source\JwsclAcl.pas
-File60=..\..\source\JwsclTerminalServer.pas
-File61=..\..\source\JwsclToken.dtx
-File62=..\..\source\JwsclToken.pas
-File63=..\..\source\JwsclTypes.dtx
-File64=..\..\source\JwsclTypes.pas
-File65=..\..\source\JwsclUtils.dtx
-File66=..\..\source\JwsclUtils.pas
-File67=..\..\source\JwsclVersion.dtx
-File68=..\..\source\JwsclVersion.pas
-File69=..\..\source\JwsclWinStations.dtx
-File7=..\..\source\JwsclAuthCtx.dtx
-File70=..\..\source\JwsclWinStations.pas
-File8=..\..\source\JwsclAuthCtx.pas
-File9=..\..\source\JwsclComSecurity.dtx
+File20=..\..\source\JwsclDescriptor.dtx
+File21=..\..\source\JwsclDescriptor.pas
+File22=..\..\source\JwsclDesktops.dtx
+File23=..\..\source\JwsclDesktops.pas
+File24=..\..\source\JwsclElevation.pas
+File25=..\..\source\JwsclEncryption.pas
+File26=..\..\source\JwsclEnumerations.pas
+File27=..\..\source\JwsclEurekaLogUtils.dtx
+File28=..\..\source\JwsclEurekaLogUtils.pas
+File29=..\..\source\JwsclExceptions.dtx
+File3=..\..\source\features.dtx
+File30=..\..\source\JwsclExceptions.pas
+File31=..\..\source\JwsclFirewall.pas
+File32=..\..\source\JwsclImpersonation.dtx
+File33=..\..\source\JwsclImpersonation.pas
+File34=..\..\source\JwsclKnownSid.dtx
+File35=..\..\source\JwsclKnownSid.pas
+File36=..\..\source\JwsclLogging.dtx
+File37=..\..\source\JwsclLogging.pas
+File38=..\..\source\JwsclLsa.dtx
+File39=..\..\source\JwsclLsa.pas
+File4=..\..\source\JwsclAccounts.dtx
+File40=..\..\source\JwsclMapping.dtx
+File41=..\..\source\JwsclMapping.pas
+File42=..\..\source\JwsclPrivileges.dtx
+File43=..\..\source\JwsclPrivileges.PAS
+File44=..\..\source\JwsclProcess.dtx
+File45=..\..\source\JwsclProcess.pas
+File46=..\..\source\JwsclResource.dtx
+File47=..\..\source\JwsclResource.pas
+File48=..\..\source\JwsclSecureObjects.dtx
+File49=..\..\source\JwsclSecureObjects.pas
+File5=..\..\source\JwsclAccounts.pas
+File50=..\..\source\JwsclSecurePrivateObjects.dtx
+File51=..\..\source\JwsclSecureUserObjects.dtx
+File52=..\..\source\JwsclSecurityDialogs.dtx
+File53=..\..\source\JwsclSecurityDialogs.pas
+File54=..\..\source\JwsclSid.dtx
+File55=..\..\source\JwsclSid.pas
+File56=..\..\source\JwsclSimpleDescriptor.pas
+File57=..\..\source\JwsclStreams.pas
+File58=..\..\source\JwsclStrings.dtx
+File59=..\..\source\JwsclStrings.pas
+File6=..\..\source\JwsclAcl.dtx
+File60=..\..\source\JwsclTerminalServer.dtx
+File61=..\..\source\JwsclTerminalServer.pas
+File62=..\..\source\JwsclToken.dtx
+File63=..\..\source\JwsclToken.pas
+File64=..\..\source\JwsclTypes.dtx
+File65=..\..\source\JwsclTypes.pas
+File66=..\..\source\JwsclUtils.dtx
+File67=..\..\source\JwsclUtils.pas
+File68=..\..\source\JwsclVersion.dtx
+File69=..\..\source\JwsclVersion.pas
+File7=..\..\source\JwsclAcl.pas
+File70=..\..\source\JwsclWinStations.dtx
+File71=..\..\source\JwsclWinStations.pas
+File8=..\..\source\JwsclAuthCtx.dtx
+File9=..\..\source\JwsclAuthCtx.pas
 
 [Source Include Directories]
 Count=0

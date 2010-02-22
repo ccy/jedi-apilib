@@ -5607,6 +5607,10 @@
       <target id="pdf">pdf://3046@JWSCL.pdf</target>
       <target id="winhelp">id_5152@JWSCL.hlp</target>
     </link>
+    <link topicid="Features" displaystring="Features">
+      <target id="html">../html/Features.html</target>
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/Features.html</target>
+    </link>
     <link topicid="FILE_DELETE" displaystring="FILE_DELETE Constant">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/FILE_DELETE.html</target>
       <target id="html">../html/FILE_DELETE.html</target>
