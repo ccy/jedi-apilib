@@ -53,12 +53,12 @@ procedure CheckThreadError(ErrCode: Integer); overload;
 procedure CheckThreadError(Err: Boolean); overload;
 {$ENDIF DELPHI7_UP}
 
-{$IFNDEF DELPHI7}
+{$IFNDEF DELPHI2009_UP}
 type
   IComparable = interface
     function CompareTo(Obj: TObject): Integer;
   end;
-{$ENDIF DELPHI7}
+{$ENDIF DELPHI2009_UP}
 
 implementation
 
