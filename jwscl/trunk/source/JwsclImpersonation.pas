@@ -52,6 +52,7 @@ uses ActiveX,
      JwsclLsa,
      JwsclResource,
      JwsclExceptions,
+     JwsclUtils,
      JwsclComUtils;
 
 type {<B>IJwImpersonation</B> defines an interface for TJwImpersonation. }
@@ -209,7 +210,7 @@ begin
   if Assigned(fToken) then
     fToken.RevertToSelf;
 
-  FreeAndNil(fToken);
+  JwFree(fToken);
   inherited;
 end;
 

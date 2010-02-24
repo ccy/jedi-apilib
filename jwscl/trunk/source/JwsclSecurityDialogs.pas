@@ -52,7 +52,8 @@ uses
   JwsclResource,
   JwsclTypes, JwsclExceptions, JwsclSid, JwsclAcl, JwsclToken,
   JwsclMapping, JwsclKnownSid, JwsclSecureObjects, JwsclComUtils,
-  JwsclVersion, JwsclConstants, JwsclDescriptor,
+  JwsclVersion, JwsclConstants, JwsclDescriptor, JwsclUtils,
+
   JwsclStrings; //JwsclStrings, must be at the end of uses list!!!
 {$ENDIF SL_OMIT_SECTIONS}
 
@@ -1370,14 +1371,14 @@ destructor TJwSecurityDescriptorDialog.Destroy;
       if sObjectName[i] <> nil then
         FreeMem(sObjectName[i]);
     end;
-    FreeAndNil(sObjectName);
+    JwFree(sObjectName);
   end;
 
 begin
   Mapping.FreeAccessNames(pTempAccess, iTempAccess);
-  FreeAndNil(fSD);
-  FreeAndNil(fInheritTypeList);
-  FreeAndNil(ProcList);
+  JwFree(fSD);
+  JwFree(fInheritTypeList);
+  JwFree(ProcList);
   SetLength(fObjectTypeList, 0);
 
   DoneStringPool;
@@ -1959,7 +1960,7 @@ begin
       FreeMem(p);
       fSidStrings[i] := nil;
     end;
-  FreeAndNil(fSidStrings);
+  JwFree(fSidStrings);
 
 
   inherited;

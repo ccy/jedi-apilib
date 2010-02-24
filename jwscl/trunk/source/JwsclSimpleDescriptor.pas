@@ -50,6 +50,7 @@ uses
   JwsclSid,
   JwsclTypes,
   JwsclAcl,
+  JwsclUtils,
   JwsclStrings;
 
 
@@ -262,7 +263,7 @@ end;
 
 destructor TJwSimpleDescriptor.Destroy;
 begin
-  FreeAndNil(fSD);
+  JwFree(fSD);
   TJwSecurityDescriptor.Free_SA(fSA);
   inherited;
 end;

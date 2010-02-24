@@ -464,9 +464,9 @@ begin
   if fDestroyWinSta then
     CloseWindowStation(Handle);
   fHandle := 0;
-  FreeAndNil(fOldWinStations);
-  FreeAndNil(fUserSid);
-  FreeAndNil(fSD);
+  JwFree(fOldWinStations);
+  JwFree(fUserSid);
+  JwFree(fSD);
 
   inherited;
 end;

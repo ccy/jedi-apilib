@@ -3044,10 +3044,10 @@ begin
   fHandle := 0;
 
 
-  FreeAndNil(fDAccessControlList);
-  FreeAndNil(fSAccessControlList);
-  FreeAndNil(fOwner);
-  FreeAndNil(fGroup);
+  JwFree(fDAccessControlList);
+  JwFree(fSAccessControlList);
+  JwFree(fOwner);
+  JwFree(fGroup);
 
   inherited;
 end;

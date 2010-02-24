@@ -707,7 +707,7 @@ end;
 destructor TJwSecurityDesktops.Destroy;
 begin
   Clear;
-  FreeAndNil(fDesktops);
+  JwFree(fDesktops);
   inherited Destroy;
 end;
 
@@ -1302,8 +1302,8 @@ begin
   if Assigned(OnDestroyDesktop) then
     OnDestroyDesktop(Self);
 
-  FreeAndNil(fSD);
-  FreeAndNil(fUserSID);
+  JwFree(fSD);
+  JwFree(fUserSID);
 
   if CloseOnDestroy then
     try

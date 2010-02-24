@@ -1499,7 +1499,7 @@ end;
 
 destructor TJwSecurityId.Destroy;
 begin
-  FreeSID(fSID);
+  JwFree(fSID);
 
   inherited Destroy;
 end;

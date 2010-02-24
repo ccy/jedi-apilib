@@ -2581,16 +2581,16 @@ begin
   end;
 
     // Free the SessionList
-    FreeAndNil(FSessions);
+    JwFree(FSessions);
 
     // Free the Statistics
-    FreeAndNil(FSessionStatistics);
+    JwFree(FSessionStatistics);
 
     // Free the ProcessList
-    FreeAndNil(FProcesses);
+    JwFree(FProcesses);
 
   // Free the Serverlist
-    FreeAndNil(FServers);
+    JwFree(FServers);
 
   // Terminate the Event Thread before closing the connection.
   if Assigned(FTerminalServerEventThread) then
@@ -4272,9 +4272,9 @@ end;
 
 destructor TJwWTSSession.Destroy;
 begin
-  FreeAndNil(FShadow);
-  FreeAndNil(FToken);
-  FreeAndNil(FUserSid);
+  JwFree(FShadow);
+  JwFree(FToken);
+  JwFree(FUserSid);
 
   inherited Destroy;
 end;
@@ -4424,8 +4424,8 @@ end;
 
 destructor TJwWTSProcess.Destroy;
 begin
-  FreeAndNil(FToken);
-  FreeAndNil(FUserSid);
+  JwFree(FToken);
+  JwFree(FUserSid);
   inherited;
 end;
 

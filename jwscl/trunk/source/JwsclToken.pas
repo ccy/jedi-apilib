@@ -2584,11 +2584,11 @@ destructor TJwPrivilegeSet.Destroy;
       end;
     end;
 
-    FreeAndNil(fPPrivilegesSetList);
+    JwFree(fPPrivilegesSetList);
   end;
 
 begin
-  FreeAndNil(fList);
+  JwFree(fList);
   ClearPrivilegeList;
   ClearPrivilegeSetList;
 
@@ -3293,12 +3293,10 @@ end;
 procedure TJwSecurityToken.Done;
 //[Hint] var i : Integer;
 begin
-  fPrivelegesList.Free;
-  fPrivelegesList := nil;
+  JwFree(fPrivelegesList);
 
   //!!hier noch privs zurückpopen
-  fStackPrivilegesList.Free;
-  fStackPrivilegesList := nil;
+  JwFree(fStackPrivilegesList);
 end;
 
 destructor TJwSecurityToken.Destroy;

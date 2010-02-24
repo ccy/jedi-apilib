@@ -1025,11 +1025,11 @@ begin
   fHandle := INVALID_HANDLE_VALUE;
   FreeMem(fCallbackData);
 
-  FreeAndNil(fUserSid);
+  JwFree(fUserSid);
 
-  FreeAndNil(fGroupSids);
-  FreeAndNil(fRestrictedSids);
-  FreeAndNil(fInfoPrivileges);
+  JwFree(fGroupSids);
+  JwFree(fRestrictedSids);
+  JwFree(fInfoPrivileges);
 end;
 
 
@@ -1516,7 +1516,7 @@ end;
 
 destructor TJwAuthZAccessRequest.Destroy;
 begin
-  FreeAndNil(fPrincipalSelfSid);
+  JwFree(fPrincipalSelfSid);
   fObjectTypeArray := nil;
 end;
 

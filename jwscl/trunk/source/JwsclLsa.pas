@@ -50,6 +50,7 @@ uses SysUtils,
   JwsclSid, JwsclToken,
   JwsclTypes, JwsclExceptions,
   JwsclVersion, JwsclConstants,
+  JwsclUtils,
   JwsclStrings; //JwsclStrings, must be at the end of uses list!!!
 {$ENDIF SL_OMIT_SECTIONS}
 
@@ -603,7 +604,7 @@ end;
 
 destructor TJwLsaLogonSessionData.Destroy;
 begin
-  FreeAndNil(fSid);
+  JwFree(fSid);
   inherited;
 end;
 

@@ -3209,7 +3209,7 @@ begin
 
   if fownSID and Assigned(fSID)
     and not fSID.IsStandardSID then
-    FreeAndNil(fSID);
+    JwFree(fSID);
 
   fUserData := nil;
 

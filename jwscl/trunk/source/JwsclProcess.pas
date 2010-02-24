@@ -2100,17 +2100,17 @@ begin
 
   fLock.BeginWrite;
   try
-    FreeAndNil(fDataList);
+    JwFree(fDataList);
   finally
     fLock.EndWrite;
   end;
-  FreeAndNil(fLock);
+  JwFree(fLock);
 
   if Assigned(fThread) then
   begin
     fThread.Terminate;
     fThread.WaitFor;
-    FreeAndNil(fThread);
+    JwFree(fThread);
   end;
 
   if (fHandle <> 0) then
@@ -2889,10 +2889,10 @@ begin
 
   fLock.BeginWrite;
   try
-    FreeAndNil(fList);
+    JwFree(fList);
   finally
     fLock.EndWrite;
-    FreeAndNil(fLock);
+    JwFree(fLock);
   end;
 
   inherited;

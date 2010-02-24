@@ -72,7 +72,7 @@ unit JwsclComSecurity;
 interface
 uses
   ActiveX,
-  JwaWinNT, //only TEMP
+
   //only temp
   JwaCOMSecurity,
 
@@ -302,7 +302,7 @@ type
 
     { MEMBERNAME% is used in two ways:
       <table 15c%>
-      Seite    Beschreibung
+      Side     Description
       -------  -----------------------------------------------------------------------------------------------------------------------------
       Client   The client defines the maximum impersonation level a server can use in a call to
                 TJwComServerSecurity.ImpersonateClient. However a server cannot impersonate a client if this value is <c>cilAnonymous.</c>or
@@ -1167,7 +1167,7 @@ type
   protected
     function GetToken: TJwSecurityToken;
     function GetUserName: TJwString;
-  private
+
     procedure SetAuthContext(const Value: TJwAuthContext);
     procedure SetAuthManager(const Value: TJwAuthResourceManager);
     function GetWinNTIdentity: TJwComWinNTIdentity;
@@ -2812,7 +2812,7 @@ end;
 
 destructor TJwComClientSecurity.Destroy;
 begin
-  FreeAndNil(fWinNTIdentity);
+  JwFree(fWinNTIdentity);
 
   inherited;
 end;
@@ -3086,11 +3086,11 @@ end;
 
 destructor TJwComServerSecurity.Destroy;
 begin
-  FreeAndNil(fToken);
-  FreeAndNil(fWinNTIdentity);
+  JwFree(fToken);
+  JwFree(fWinNTIdentity);
 
-  FreeAndNil(fAuthManager);
-  FreeAndNil(fAuthContext);
+  JwFree(fAuthManager);
+  JwFree(fAuthContext);
 
 
   case fImpersonationType of
@@ -3264,7 +3264,7 @@ end;
 destructor TJwComRegistrySecurity.Destroy;
 begin
   FreeCache;
-  FreeAndNil(Reg);
+  JwFree(Reg);
   inherited;
 end;
 
@@ -4619,7 +4619,7 @@ begin
   begin
     if Assigned(fWinNTIdentity) then
     begin
-      FreeAndNil(fWinNTIdentity);
+      JwFree(fWinNTIdentity);
     end
     else
     begin
@@ -4684,9 +4684,9 @@ end;
 
 destructor TJwServerAccessControl.Destroy;
 begin
-  FreeAndNil(fSD);
-  FreeAndNil(fAuthManager);
-  FreeAndNil(fCriticalSection);
+  JwFree(fSD);
+  JwFree(fAuthManager);
+  JwFree(fCriticalSection);
   inherited;
 end;
 

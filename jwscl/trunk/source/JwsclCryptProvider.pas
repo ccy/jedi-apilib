@@ -47,7 +47,7 @@ interface
 uses
   SysUtils, Classes,
   jwaWindows,
-  JwsclTypes, JwsclExceptions, JwsclResource,
+  JwsclTypes, JwsclExceptions, JwsclResource, JwsclUtils,
   JwsclStrings; //JwsclStrings, must be at the end of uses list!!!
 
 {$ENDIF SL_OMIT_SECTIONS}
@@ -844,7 +844,7 @@ begin
   if fHashHandle <> 0 then
     if not CryptDestroyHash(fHashHandle) then
       RaiseApiError('Destroy', 'CryptDestroyHash');
-  fProvider.Free;
+  JwFree(fProvider);
   inherited;
 end;
 

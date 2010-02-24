@@ -683,6 +683,17 @@ function JwCreateToString(const Values : array of const) : String;
                                                                                    }
 procedure JwZeroPassword(var S : TJwString);
 
+{<b>JwFree</> calls Free on an instance of TObject descendant.
+Parameters
+Obj:
+
+Remarks
+In DEBUG mode the parameter Obj will be set to an invalid value that is not nil.
+otherwise the instance is not touched at all.
+
+}
+procedure JwFree(var Obj);
+
 implementation
 uses SysUtils, Math, D5Impl, JwsclToken, JwsclKnownSid, JwsclDescriptor, JwsclAcl,
      JwsclSecureObjects, JwsclMapping, JwsclStreams, JwsclCryptProvider,
@@ -692,6 +703,17 @@ uses SysUtils, Math, D5Impl, JwsclToken, JwsclKnownSid, JwsclDescriptor, JwsclAc
 {$ENDIF JW_TYPEINFO}
       ;
 
+
+procedure JwFree(var Obj);
+var
+  Temp: TObject;
+begin
+  Temp := TObject(Obj);
+{$IFDEF DEBUG}
+  Pointer(Obj) := Pointer($C);
+{$ENDIF DEBUG}
+  Temp.Free;
+end;
 
 type
    TLStr = array[0..1] of AnsiChar;

@@ -51,7 +51,7 @@ uses
   JwaWindows, SysUtils, D5Impl,
   JwsclTypes, JwsclExceptions, JwsclAcl, JwsclMapping, JwsclSid,
   JwsclSecureObjects, JwsclResource,
-  JwsclVersion, JwsclConstants, JwsclDescriptor, JwsclToken,
+  JwsclVersion, JwsclConstants, JwsclDescriptor, JwsclToken, JwsclUtils,
   JwsclStrings; //JwsclStrings, must be at the end of uses list!!!
 {$ENDIF SL_OMIT_SECTIONS}
 
@@ -593,7 +593,7 @@ end;
 
 destructor TJwInterfacedPrivateSecurityInformation.Destroy;
 begin
-  FreeAndNil(fSecurityDescriptor);
+  JwFree(fSecurityDescriptor);
   inherited;
 end;
 
