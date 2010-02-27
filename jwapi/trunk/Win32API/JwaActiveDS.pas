@@ -69,15 +69,19 @@ type
   REFIID = GUID;
   {$NODEFINE REFIID}
 
-type
   // imports of a type library sometimes are missing a few decls, these are just
   // a few of them to make this file compile at all. I really should do all of
   // them one day.
+  //
+  // Edit Remko: missing types are added, left the few below for compatibility
 
+{$IFNDEF JWA_INCLUDEMODE}
+type
   PADSVALUE = ^_adsvalue;
   {$EXTERNALSYM PADSVALUE}
   PADS_ATTR_INFO = ^_ads_attr_info;
   {$EXTERNALSYM PADS_ATTR_INFO}
+{$ENDIF JWA_INCLUDEMODE}
 
 //  Contents:   Master include file for Ole Ds
 //
