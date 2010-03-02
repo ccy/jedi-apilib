@@ -3030,13 +3030,12 @@ type
     function GetObjectAttributes(pAttributeNames: PWideChar; dwNumberAttributes: LongWord;
                                  out ppAttributeEntries:  PADS_ATTR_INFO;
                                  out pdwNumAttributesReturned: LongWord): HResult; stdcall;
-    function SetObjectAttributes(pAttributeEntries: ADS_ATTR_INFO; dwNumAttributes: LongWord;
-                                 out pdwNumAttributesModified: LongWord): HResult; stdcall;
-    function CreateDSObject(pszRDNName: PWideChar; pAttributeEntries: ADS_ATTR_INFO;
+    function SetObjectAttributes(pAttributeEntries: PADS_ATTR_INFO; dwNumAttributes: LongWord;
+                                 out pdwNumAttributesModified: DWORD): HResult; stdcall;
+    function CreateDSObject(pszRDNName: PWideChar; pAttributeEntries: PADS_ATTR_INFO;
                             dwNumAttributes: LongWord; out ppObject: IDispatch): HResult; stdcall;
     function DeleteDSObject(pszRDNName: PWideChar): HResult; stdcall;
   end;
-
 // *********************************************************************//
 // Interface: IDirectorySearch
 // Flags:     (0)
