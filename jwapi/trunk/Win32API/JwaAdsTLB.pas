@@ -3027,8 +3027,8 @@ type
   IDirectoryObject = interface(IUnknown)
     ['{E798DE2C-22E4-11D0-84FE-00C04FD8D503}']
     function GetObjectInformation(var ppObjInfo: PADS_OBJECT_INFO): HResult; stdcall;
-    function GetObjectAttributes(pAttributeNames: PWideChar; dwNumberAttributes: LongWord;
-                                 out ppAttributeEntries:  PADS_ATTR_INFO;
+    function GetObjectAttributes(pAttributeNames: PPWideChar; dwNumberAttributes: LongWord;
+                                 out ppAttributeEntries: PADS_ATTR_INFO;
                                  out pdwNumAttributesReturned: LongWord): HResult; stdcall;
     function SetObjectAttributes(pAttributeEntries: PADS_ATTR_INFO; dwNumAttributes: LongWord;
                                  out pdwNumAttributesModified: DWORD): HResult; stdcall;
@@ -3036,6 +3036,7 @@ type
                             dwNumAttributes: LongWord; out ppObject: IDispatch): HResult; stdcall;
     function DeleteDSObject(pszRDNName: PWideChar): HResult; stdcall;
   end;
+
 // *********************************************************************//
 // Interface: IDirectorySearch
 // Flags:     (0)
@@ -3053,7 +3054,7 @@ type
     function  GetNextColumnName(hSearchHandle: ADS_SEARCH_HANDLE; out ppszColumnName: PWideChar): HResult; stdcall;
     function  GetColumn(hSearchResult: ADS_SEARCH_HANDLE; szColumnName: PWideChar;
                         var pSearchColumn: ADS_SEARCH_COLUMN): HResult; stdcall;
-    function  FreeColumn(var pSearchColumn: ADS_SEARCH_COLUMN): HResult; stdcall;
+    function  FreeColumn(pSearchColumn: PADS_SEARCH_COLUMN): HResult; stdcall;
     function  CloseSearchHandle(hSearchResult: ADS_SEARCH_HANDLE): HResult; stdcall;
   end;
 
