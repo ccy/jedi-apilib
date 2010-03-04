@@ -493,7 +493,7 @@ type
  EJwsclWinCallFailedException:  if the call to a winapi function failed
        @Seealso(GetAccountSidString);
        }
-    function GetAccountName(SystemName: TJwString): TJwString; virtual;
+    function GetAccountName(SystemName: TJwString = ''): TJwString; virtual;
 
     function GetCachedUserFromSid : WideString; virtual;
 
@@ -503,7 +503,7 @@ type
  EJwsclWinCallFailedException:  if the call to a winapi function failed
        @Seealso(GetAccountSidString);
        }
-    function GetAccountDomainName(SystemName: TJwString): TJwString; virtual;
+    function GetAccountDomainName(SystemName: TJwString = ''): TJwString; virtual;
 
       {<B>GetAccountNameUse</B> returns the account name use of the SID on the computer given in SystemName.
        For more information see the see also section.
@@ -511,7 +511,7 @@ type
  EJwsclWinCallFailedException:  if the call to a winapi function failed
        @Seealso(GetAccountSidString);
        }
-    function GetAccountNameUse(SystemName: TJwString): TSidNameUse; virtual;
+    function GetAccountNameUse(SystemName: TJwString = ''): TSidNameUse; virtual;
 
     {<B>CreateSidIdentifierAuthority</B> creates a TSidIdentifierAuthority structure from values.}
     class function CreateSidIdentifierAuthority(Value1, Value2,
