@@ -220,15 +220,15 @@ type
       jwaWindows.PSecurityDescriptor);
       overload;
 
-       {<B>Create</B> creates a new TJwSecurityDescriptor instance from a winapi security string.
+       {<B>Create</B> creates a new TJwSecurityDescriptor instance from a SDDL security string.
         For more information see http://msdn2.microsoft.com/en-us/library/aa379570.aspx
 
-        @param aSDString contains the string to be parsed into a sd.
+        @param SDDL contains the SDDL string to be parsed into a sd.
         raises
  EJwsclWinCallFailedException:  will be raised if the string could not be parsed correctly.
         }
 
-    constructor Create(const aSDString:
+    constructor Create(const SDDL:
  {$IFNDEF SL_OMIT_SECTIONS}JwsclStrings.{$ENDIF SL_OMIT_SECTIONS}TJwString);
       overload;
 
@@ -447,8 +447,8 @@ type
       const Flags: TJwSecurityInformationFlagSet): boolean;
 
     //see StringSD[SIFlags :TSecurityInformation] for more information
-    function GetSecurityDescriptorString(SIFlags: TSecurityInformation): TJwString; overload;
-    function GetSecurityDescriptorString(SIFlags: TJwSecurityInformationFlagSet): TJwString; overload;
+    function GetSDDLString(SIFlags: TSecurityInformation): TJwString; overload;
+    function GetSDDLString(SIFlags: TJwSecurityInformationFlagSet): TJwString; overload;
 
     {<B>ReplaceDescriptorElements</B> replaces the security descriptor elements given in SecurityInformationSet with
      the ones in SecurityDescriptor.
@@ -732,20 +732,13 @@ type
 
 
 
-(*       {<B>Text</B> creates a security string descriptor.
-        You can set flags to define which information is placed in the newly created string.
-        The following flags can be combined with OR:
-
-         #  OWNER_SECURITY_INFORMATION
-         #  GROUP_SECURITY_INFORMATION
-         #  DACL_SECURITY_INFORMATION
-         #  SACL_SECURITY_INFORMATION
-         #  LABEL_SECURITY_INFORMATION (only available in Vista; otherwise it is ignored)
-         #  ALL_SECURITY_INFORMATION - combines all flags above
-
-        }
-    property StringSD[SIFlags: TSecurityInformation]: TJwString
-      Read GetSecurityDescriptorString;   *)
+     {<B>SDDL</B> returns a security descriptor string (SDDL).
+      @param SIFlags defines a set of security flags that should be used to be included into the SDDL.
+          (siOwnerSecurityInformation, siGroupSecurityInformation, siDaclSecurityInformation, siSaclSecurityInformation,siLabelSecurityInformation)
+          This function automatically removes siLabelSecurityInformation in <= Windows XP.
+      }
+    property SDDL[SIFlags: TJwSecurityInformationFlagSet]: TJwString
+      Read GetSDDLString;
 
     {<B>Text</B> returns a text that descripes the security descriptor in a human readable format.}
     property Text: TJwString Read GetText;
@@ -1113,7 +1106,7 @@ begin
   end;
 end;
 
-constructor TJwSecurityDescriptor.Create(const aSDString:
+constructor TJwSecurityDescriptor.Create(const SDDL:
  {$IFNDEF SL_OMIT_SECTIONS}JwsclStrings.{$ENDIF SL_OMIT_SECTIONS}TJwString);
 var
   pSD: PSECURITY_DESCRIPTOR;
@@ -1129,7 +1122,7 @@ begin
   {$IFDEF UNICODE}ConvertStringSecurityDescriptorToSecurityDescriptorW{$ELSE}
     ConvertStringSecurityDescriptorToSecurityDescriptorA
 {$ENDIF}
-    (TJwPChar(aSDString), // LPCTSTR StringSecurityDescriptor,
+    (TJwPChar(SDDL), // LPCTSTR StringSecurityDescriptor,
     //(Windows.PWChar(ASDString),
     SDDL_REVISION_1, // DWORD StringSDRevision,
     jwaWindows_PSecurity_Descriptor(pSD),
@@ -1872,14 +1865,14 @@ begin
     fPrimaryGroup := aGroup;
 end;
 
-function TJwSecurityDescriptor.GetSecurityDescriptorString(
+function TJwSecurityDescriptor.GetSDDLString(
   SIFlags: TJwSecurityInformationFlagSet): TJwString;
 begin
-  result := GetSecurityDescriptorString(
+  result := GetSDDLString(
       TJwEnumMap.ConvertSecurityInformation(SIFlags));
 end;
 
-function TJwSecurityDescriptor.GetSecurityDescriptorString(
+function TJwSecurityDescriptor.GetSDDLString(
   SIFlags: TSecurityInformation): TJwString;
 var
   pSD: PSecurityDescriptor;
