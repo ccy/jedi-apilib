@@ -126,29 +126,54 @@ const
   RsRightStandard = '[Standard]';
   RsRightSpecific = '[Specific]';
 
+//Unit JwsclComSecurity.pas
+  RsAuthenticationMustBeWinNT = 'Only AuthenticationService = asWinNT and as GSSKerberos are supported.';
+  RsCOMImpersonatingPrivilegeNecessary = 'Impersonating another user for COM needs the SE_IMPERSONATE_NAME privileges. '+
+  'Otherwise all subsequent COM calls will fail (access denied).';
+  RsInvalidImpersonationLevel = 'The client does not have a token if ImpersonationLevel is cilAnonymous.';
+  RsAlreadyImpersonating = 'The call cannot be made with an impersonated token. Revert to self first.';
+  RsPropertyIsReadOnly = 'Property %0:s is readonly.';
+  RsKeyNotFoundOrZero = 'Key %0:s\%1:s not found or value has zero size';
+  RsInvalidParameter = 'Invalid Parameter';
+  RsInitializeSecurityInSharedProcess = 'InitializeSecurity cannot be called in a shared process with other COM servers.';
+  RsCoInitializeNotCalled = 'CoInitializeSecurity has been called already or CoInitialize has not been called at first. (HRESULT= RPC_E_TOO_LATE)';
+  RsInvalidAuthService = 'The value azsDefault is not allowed if used in the AuthenticationList and AuthenticationList[%0:d].AuthorizationService is asWinNT or asGSSKerberos. Use instead azsNone, azsDCE or azsName.';
+  RsInvalidComSecurityDescriptor = 'The supplied security descriptor does not allow COM to work properly. You need to add an allow ACE for SYSTEM.';
+  RsInvalidCombinationAccessControlAndAppID = 'acAccessControl and acAppId cannot be used at the same time in parameter Capabilities.';
+  RsInvalidAuthLevel = 'The parameter AuthenticationLevel cannot be calNone if a security information (AppID, IAccessControl or security descriptor) is supplied.';
+  RsAuthServiceMustNotBeDefault = 'The value azsDefault is not allowed if AuthorizationService is asWinNT or asGSSKerberos. Use instead azsNone, azsDCE or azsName.';
+  RsOnIsAccessAllowedFailed = 'Method assigned to OnIsAccessAllowed failed with %0:d';
+  RsTooSmallMemBlock = 'Memory block too small';
+  RsValidOnlyAllowDenyACE = 'The ACL must only contain Allow and Deny ACEs.';
+  RsIncompatibleCOMRight = 'The member Access of AccessEntry (PACTRL_ACCESS_ENTRYW) #%0:d is not conform to implementation of IAccessControl. Only COM_RIGHTS_EXECUTE is valid.';
+  RsIncompatibleCOMACETrusteeMember = 'The member Trustee of AccessEntry (PACTRL_ACCESS_ENTRYW) #%0:d is not compatible/valid to IAccessControl. ';
+  RsInvalidPAccessListParameter = 'The parameter pAccessList or one of its member is not valid.';
+  RsIncompatibleCOMTrusteeParameter = 'The member parameter %0:s is not compatible/valid to implementation of IAccessControl. (StrictACLVerify is true)';
+  RsInvalidPAccessList = 'The parameter pAccessList or one of its member is not valid.';
+  RsIncompatibleCOMOwnerOrGroup = 'Either pOwner or pGroup Trustee is not compatible/valid to MS implementation of IAccessControl. ';
+  RsInvalidDACLReadFromStream = 'The DACL read from stream is invalid.';
+  RsInvalidSDStreamSize = 'The stream size of the security descriptor is invalid. The size %d read from stream is either too big (%0:d) or too small (%1:d).';
+  RsInvalidSDReadFromStream = 'The security descriptor read from stream is invalid.';
+  RsInvalidSDMagicHeaderSize = 'Size of TMagicHeaderRecord and SD_HEADER_SIZE differs.';
+  RsStreamDataCopyingFailed = 'The stream data could not be copied to internal memory.';
+
 //Unit  JwsclCredentials.pas
 
 //
   RsCredentialsLocalName = 'local';
-  RsUNCredentialsInvalidParameters = 'One or more parameters of CredUIParseU' +
-  'serName are invalid!';
+  RsUNCredentialsInvalidParameters = 'One or more parameters of CredUIParseUserName are invalid!';
   RsUNCredentialsInvalidUserName = 'The user name is not valid.';
   RsUNCredentialsTooSmallBuffer = 'One of the buffers is too small.';
   RsUNCredentialsMessageTextDefault = 'Messagetext';
   RsUNCredentialsCaptionDefault = 'Caption';
   RsUNCredentialsLocalServerNameDefault = 'local';
-  RsUNCredentialsUnsupported = 'The operating system does not support creden' +
-  'tials prompt!';
+  RsUNCredentialsUnsupported = 'The operating system does not support credentials prompt!';
   RsUNCredentialsInvalidEmptyServerName = 'ServerName must not be empty!';
-  RsUNCredentialsInvalidUseOfCredFlags = 'The Flag cf_CREDUI_FLAGS_EXPECT_CO' +
-  'NFIRMATION is set but the property OnConfirmCredential is nil!';
-  RsUNCredentialsTooLongServerName = 'Length of property ServerName is to lo' +
-  'ng.!';
-  RsUNCredentialsEmptyServerName = 'Length of property ServerName must not b' +
-  'e zero.!';
+  RsUNCredentialsInvalidUseOfCredFlags = 'The Flag cf_CREDUI_FLAGS_EXPECT_CONFIRMATION is set but the property OnConfirmCredential is nil!';
+  RsUNCredentialsTooLongServerName = 'Length of property ServerName is to long.!';
+  RsUNCredentialsEmptyServerName = 'Length of property ServerName must not be zero.!';
   RsUNCredentialsInvalidPropertyFlags = 'The property Flags is invalid!';
-  RsUNCredentialsInvalidParametersCUIPFC = 'One or more parameters of CredUI' +
-  'PromptForCredentials are invalid!';
+  RsUNCredentialsInvalidParametersCUIPFC = 'One or more parameters of CredUIPromptForCredentials are invalid!';
   RsUNCredentialsInvalidLogonSession = 'There is no such logon session!';
 
 
@@ -259,12 +284,12 @@ const
     'Server Requires Windows Server 2008 or Windows Server 2003\r\n' +
     'Client Requires Windows Vista or Windows XP.';
   RsSecureObjectsNoCopyOfObjectHandle = 'Object handle could not be copied.';
-  RsSecureObjectsFileFolderNotFound = 'File or directory not found: %s';
+  RsSecureObjectsFileFolderNotFound = 'File or directory not found: %1:s';
   RsSecureObjectsInvalidFileNameHandle = 'Filename and handle is invalid';
   RsSecureObjectsDaclAdaptionFailed = 'The function failed to adapt the DACL of the secured object. You must have either WRITE_DAC access rights or be the owner.';
   RsSecureObjectsInvalidFileOrFolder = 'The instance must be created with a file or folder name. GetFileInheritanceSource cannot be used with a handle! ';
     RsSecureObjectsNilSdParameter = 'The security descriptor must not be nil. ' +
-    '(path: %s)';
+    '(path: %1:s)';
   RsSecureObjectsCallFailedRegSetKeySecurity = 'Call to RegSetKeySecurity fa' +
     'iled. Tried to get security information.';
   RsSecureObjectsRegOpenKeyEx = 'Call to RegOpenKeyEx failed. Could not open' +
@@ -278,7 +303,7 @@ const
   RsSecureObjectsMissingDaclOrSaclInSiParameter = 'Parameter aSecurityInfo m' +
     'ust be [siDaclSecurityInformation] or [siSaclSecurityInformation]' +
     '. ';
-  RsSecureObjectsEmptyRootKey = 'The KeyName "%s" does not contain a valid r' +
+  RsSecureObjectsEmptyRootKey = 'The KeyName "%1:s" does not contain a valid r' +
     'oot key (e.g. CURRENT_USER))! ';
   RsSecureObjectsInvalidKeyPathMissingRootElement = 'The key path "%s" is in' +
     'valid. Missing root element (e.h. current_user)';
@@ -436,12 +461,8 @@ const
     ':s\r\nCheckTokenAccessType called by %3:s'+#13#10+
     'Token access rights:\r%4:s\rYour requested rights:\r%5:s';
 
-  RsTokenStatisticsText = 'TokenID: %0:s\r\AuthenticationId: %1:s\r\nExpirat' +
-    'ionTime: %2:s\r\nToken type: %3:d\r\nImpersonation level: 0x%4:x\r\nDynam' +
-    'ic charged: 0x%5:x\r\nDynamic available: 0x%6:x\r\nGroup count: %7:d\r\nP' +
-    'rivilege count: %8:d\r\nModified ID: %9:s\r\n';
-  RsPrivilegeCallAdjustTokenFailed1 = 'Call to AdjustToken failed with privilege ' +
-    '%s.';
+  RsTokenStatisticsText = 'TokenID: %0:s\r\AuthenticationId: %1:s\r\nExpirationTime: %2:s\r\nToken type: %3:d\r\nImpersonation level: 0x%4:x\r\nDynamic charged: 0x%5:x\r\nDynamic available: 0x%6:x\r\nGroup count: %7:d\r\nPrivilege count: %8:d\r\nModified ID: %9:s\r\n';
+  RsPrivilegeCallAdjustTokenFailed1 = 'Call to AdjustToken failed with privilege %s.';
   RsPrivilegeLuidText = 'hi: 0x%0:x, lo: 0x%1:x (0x%2:x)';
   RsTokenInvalidClass = 'The token instance "%s" is not a TJwSecurityToken.';
   RsProcessNotFound = 'The process "%0:s" could not be found.';

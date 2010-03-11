@@ -123,9 +123,6 @@ implementation
 uses SysUtils, Math, D5Impl, JwsclToken, JwsclKnownSid,  JwsclAcl,
      JwsclSecureObjects, JwsclMapping, JwsclStreams, JwsclCryptProvider,
      JwsclConstants
-{$IFDEF JW_TYPEINFO}
-     ,TypInfo
-{$ENDIF JW_TYPEINFO}
       ;
 
 

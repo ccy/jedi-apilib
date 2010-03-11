@@ -1441,8 +1441,8 @@ begin
     LookupAccountNameA
 {$ENDIF}
     (TJwPChar(SystemName), TJwPChar(AccountName), nil, iSidSize,
-    nil, iDomainName, SidNameUse) and (GetLastError =
-    ERROR_INSUFFICIENT_BUFFER) then
+    nil, iDomainName, SidNameUse) and
+    (GetLastError() = ERROR_INSUFFICIENT_BUFFER) then
   begin
 
     tempSID := PSID(LocalAlloc(GMEM_FIXED or GMEM_ZEROINIT,
@@ -1499,7 +1499,7 @@ end;
 
 destructor TJwSecurityId.Destroy;
 begin
-  JwFree(fSID);
+  FreeSID(fSID);
 
   inherited Destroy;
 end;
@@ -1767,7 +1767,7 @@ begin
     LookupAccountSidA
 {$ENDIF}
     (TJwPChar(SystemName), Self.SID, nil, iSIDName, nil, iDomainName,
-    SidNameUse) and (GetLastError = ERROR_INSUFFICIENT_BUFFER) then
+    SidNameUse) and (GetLastError() = ERROR_INSUFFICIENT_BUFFER) then
   begin
     pSIDName := TJwPChar(LocalAlloc(GMEM_FIXED or GMEM_ZEROINIT,
       iSIDName * sizeof(TJwChar)));
@@ -1820,6 +1820,13 @@ begin
 
     LocalFree(Cardinal(pSIDName));
     LocalFree(Cardinal(pDomainName));
+  end
+  else
+  if (GetLastError() = ERROR_NONE_MAPPED) then
+  begin
+    raise EJwsclSidNotMappedException.CreateFmtEx(
+      'The SID %0:s could not be mapped to a name.',
+      'GetAccountSidString', ClassName, RsUNSid, 0, false, [Self.StringSID]);
   end
   else
   if not fDbgDisableException then

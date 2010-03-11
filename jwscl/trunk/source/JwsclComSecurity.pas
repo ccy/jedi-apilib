@@ -117,7 +117,7 @@ type
   {TJwComCustomSecurity is the base class for the JWSCL COM security implementation.
    Do not use it directly instead you can inherit from it to get access to the implementation.
   }
-  TJwComCustomSecurity = class(TInterfacedObject{, IJwBase})
+  TJwComCustomSecurity = class(TInterfacedObject, IJwBase)
   protected
     fUpdating,
     fReadOnly : Boolean;
@@ -150,6 +150,11 @@ type
     function GetCapabilites: TJwComAuthenticationCapabilities;
 
 
+  public
+    {IJwBase methods}
+    function Equals(Obj: TObject): Boolean; override;
+    function GetHashCode: Integer; override;
+    function ToString: String; override;
 
   protected
     { BeginUpdate is used to start a property update sequence. It must be called before any of the properties are called. }
@@ -168,6 +173,7 @@ type
       Exceptions
       EJwsclReadOnlyPropertyException :  A readonly exception occured.                                             }
     procedure CheckReadonly(const PropertyName : String);
+
 
     { The method %MEMBERNAME% wraps the COM API CoInitializeSecurity using converted parameters and exceptions. See the
       MSDN for more information.
@@ -1607,10 +1613,12 @@ type
     procedure FreeCache;
 
     {Returns a security descriptor of the DefaultLaunchPermission machine wide registry key.
+     If this default value does not exist, the return value is nil.
     }
     class function GetDefaultLaunchPermission : TJwSecurityDescriptor; virtual;
 
     {Returns a security descriptor of the DefaultAccessPermission machine wide registry key.
+     If this default value does not exist, the return value is nil.
     }
     class function GetDefaultAccessPermission : TJwSecurityDescriptor; virtual;
 
@@ -2183,7 +2191,14 @@ type
       
       The DACL will be set to an ACL with no entries at all and thus denies everyone access.                              }
     constructor Create; overload;
+
+    { TJwServerAccessControl creates an instance of %CLASSNAME% using an existing security descriptor.
+    Remarks
+    By default the property <link TJwServerAccessControl.GenericMapping, GenericMapping> is set to value TJwNullMapping
+    which means that generic access rights cannot be used to access this objects. You can define your own generic
+    mapping to specific access rights to allow such an access. However COM does not support it.                         }
     constructor Create(const SD : TJwSecurityDescriptor); overload;
+
     destructor Destroy; override;
 
     { CreateCOMImplementation returns an instance of a IAccessControl interface implemented by MS.
@@ -2592,6 +2607,7 @@ const
 
 implementation
 
+
 const AUTO_AUTHENTICATION_SERVICE = -1;
 
 
@@ -2703,7 +2719,8 @@ var hr : HRESULT;
 begin
   hr := {JwaWindows.}JwaCOMSecurity.CoCopyProxy(pProxy, ppCopy);
   if Failed(hr) then
-    raise EJwsclWinCallFailedException.CreateFmtEx('', 'CoCopyProxy', ClassName, 'JwsclComSecurity.pas', 0, ResultCode(hr), []);
+    raise EJwsclWinCallFailedException.CreateFmtEx(RsWinCallFailedWithNTStatus, 'CoCopyProxy', ClassName,
+      'JwsclComSecurity.pas', 0, ResultCode(hr), ['CoCopyProxy',hr]);
 end;
 
 class function TJwComClientSecurity.GetAuthenticationServices: TJwAuthenticationServiceInformationArray;
@@ -2721,8 +2738,8 @@ begin
   if Status <> S_OK then
   begin
     SetLastError(status);
-    raise EJwsclWinCallFailedException.CreateFmtEx('CoQueryAuthenticationServices failed with result %d.',
-        'GetGlobalAuthenticationServices', ClassName, 'JwsclComSecurity.pas', 0, Status, [Status]);
+    raise EJwsclWinCallFailedException.CreateFmtEx(RsWinCallFailedWithNTStatus,
+        'GetGlobalAuthenticationServices', ClassName, 'JwsclComSecurity.pas', 0, Status, ['CoQueryAuthenticationServices', Status]);
   end;
 
   try
@@ -2771,7 +2788,8 @@ begin
 
   if Failed(hr) then
   begin
-    raise EJwsclWinCallFailedException.CreateFmtEx('', 'CoQueryProxyBlanket', ClassName, 'JwsclComSecurity.pas', 0, ResultCode(hr), []);
+    raise EJwsclWinCallFailedException.CreateFmtEx(RsWinCallFailedWithNTStatus, 'CoQueryProxyBlanket',
+        ClassName, 'JwsclComSecurity.pas', 0, ResultCode(hr), ['CoQueryProxyBlanket', hr]);
   end;
 
   pServerPrincName := TJwString(WideString(S));
@@ -2847,15 +2865,15 @@ begin
      (fAuthenticationService <> asGSSKerberos) then
   begin
     raise EJwsclInvalidParameterException.CreateFmtEx
-      ('Only AuthenticationService = asWinNT and asGSSKerberos are supported.', 'SetWinNTIdentity', ClassName, 'JwsclComSecurity.pas', 0, false, []);
+      (RsAuthenticationMustBeWinNT, 'SetWinNTIdentity', ClassName, 'JwsclComSecurity.pas', 0, false, []);
   end;
 
   if ((fAuthenticationService = asWinNT) or
      (fAuthenticationService = asGSSKerberos)) and
     not JwIsPrivilegeSet(SE_IMPERSONATE_NAME, pqt_Enabled) then
     raise EJwsclPrivilegeNotFoundException.CreateFmtEx
-      ('Impersonating another user for COM needs the SE_IMPERSONATE_NAME privileges. '+
-      'Otherwise all subsequent COM calls will fail (access denied).', 'SetWinNTIdentity', ClassName, 'JwsclComSecurity.pas', 0, false, []);
+      (RsCOMImpersonatingPrivilegeNecessary
+      , 'SetWinNTIdentity', ClassName, 'JwsclComSecurity.pas', 0, false, []);
 
 
   BeginUpdate;
@@ -2913,7 +2931,7 @@ var
 begin
   if ImpersonationLevel < cilIdentify then
   begin
-    raise EJwsclNoThreadTokenAvailable.CreateFmtEx('The client does not have a token if ImpersionationLevel is cilAnonymous.',
+    raise EJwsclNoThreadTokenAvailable.CreateFmtEx(RsInvalidImpersonationLevel,
       'GetToken', ClassName, 'JwsclComSecurity.pas', 0, false, []);
     exit;
   end;
@@ -2978,7 +2996,7 @@ begin
 
   if Failed(hr) then
   begin
-    raise EJwsclWinCallFailedException.CreateFmtEx('', 'CoQueryClientBlanket', ClassName, 'JwsclComSecurity.pas', 0, ResultCode(hr), []);
+    raise EJwsclWinCallFailedException.CreateFmtEx(RsWinCallFailedWithNTStatus, 'CoQueryClientBlanket', ClassName, 'JwsclComSecurity.pas', 0, ResultCode(hr), ['CoQueryClientBlanket', hr]);
   end;
 
   pCapabilites := TJwEnumMap.ConvertComAuthenticationCapabilities(iCapabilites);
@@ -2996,7 +3014,7 @@ constructor TJwComServerSecurity.Create(const ImpersonationType: TJwServerImpers
 begin
   if TJwSecurityToken.HasThreadAToken then
   begin
-    raise EJwsclInvalidTokenHandle.CreateFmtEx('The call cannot be made with an impersonated token. Revert to self first.', 'Create', ClassName, 'JwsclComSecurity.pas', 0, false, []);
+    raise EJwsclInvalidTokenHandle.CreateFmtEx(RsAlreadyImpersonating, 'Create', ClassName, 'JwsclComSecurity.pas', 0, false, []);
   end;
 
   fImpersonationType := ImpersonationType;;
@@ -3125,7 +3143,7 @@ function TJwComServerSecurity.GetToken: TJwSecurityToken;
 begin
   if ImpersonationLevel < cilIdentify then
   begin
-    raise EJwsclNoThreadTokenAvailable.CreateFmtEx('The client does not have a token if ImpersionationLevel is cilAnonymous.',
+    raise EJwsclNoThreadTokenAvailable.CreateFmtEx(RsInvalidImpersonationLevel,
       'GetToken', ClassName, 'JwsclComSecurity.pas', 0, false, []);
     exit;
   end;
@@ -3182,7 +3200,7 @@ begin
 
   if Failed(hr) then
   begin
-    raise EJwsclWinCallFailedException.CreateFmtEx('', 'ImpersonateClient', ClassName, 'JwsclComSecurity.pas', 0, ResultCode(hr), []);
+    raise EJwsclWinCallFailedException.CreateFmtEx(RsWinCallFailedWithNTStatus, 'ImpersonateClient', ClassName, 'JwsclComSecurity.pas', 0, ResultCode(hr), ['CoImpersonateClient', hr]);
   end;
 end;
 
@@ -3208,8 +3226,8 @@ begin
   h := CoRevertToSelf();
 
   if Failed(h) then
-   raise EJwsclComException.CreateFmtEx('RevertToSelf failed: %d',
-    'RevertToSelf', ClassName, 'JwsclComSecurity.pas',0, DWORD(H), []);
+   raise EJwsclComException.CreateFmtEx(RsWinCallFailedWithNTStatus,
+    'RevertToSelf', ClassName, 'JwsclComSecurity.pas',0, DWORD(H), [CoRevertToSelf, h]);
 end;
 
 
@@ -3238,7 +3256,7 @@ procedure TJwComRegistrySecurity.CheckReadonly(const PropertyName : String);
 begin
   if fReadOnly then
   begin
-    raise EJwsclReadOnlyPropertyException.CreateFmtEx('Property %s is readonly.', 'Getter', ClassName, 'JwsclComSecurity.pas', 0, false, [PropertyName]);
+    raise EJwsclReadOnlyPropertyException.CreateFmtEx(RsPropertyIsReadOnly, 'Getter', ClassName, 'JwsclComSecurity.pas', 0, false, [PropertyName]);
   end;
 end;
 
@@ -3253,7 +3271,9 @@ begin
   if not Reg.OpenKey('AppID\'+GUIDToString(AppID), false) then
   begin
     Reg.Free;
-    raise Exception.Create('Appid not found');
+
+    //TODO: fix exception
+    raise ERegistryException.Create('Appid not found');
   end;
 
   fAppID := AppID;
@@ -3326,6 +3346,8 @@ begin
     if not Reg.ValueExists('DefaultAccessPermission') then
     begin
       //TODO: create SD with SYSTEM, Admin, SELF
+      result := nil;
+      exit;
     end;
 
 
@@ -3346,12 +3368,14 @@ begin
     if not Reg.OpenKey('Software\Microsoft\OLE', false) then
     begin
       //TODO: create SD with SYSTEM, Admin, Interactive
-      raise Exception.Create('Default Key not found');
+      raise ERegistryException.Create('Default Key not found');
     end;
 
     if not Reg.ValueExists('DefaultLaunchPermission') then
     begin
       //TODO: create SD with SYSTEM, Admin, SELF
+      result := nil;
+      exit;
     end;
 
     result := nil;
@@ -3380,8 +3404,8 @@ begin
   if status <> SEC_E_OK then
   begin
     SetLastError(status);
-    raise EJwsclWinCallFailedException.CreateFmtEx('EnumerateSecurityPackages failed with result %d.',
-        'GetGlobalAuthenticationServices', ClassName, 'JwsclComSecurity.pas', 0, status, [status]);
+    raise EJwsclWinCallFailedException.CreateFmtEx(RsWinCallFailedWithNTStatus,
+        'GetGlobalAuthenticationServices', ClassName, 'JwsclComSecurity.pas', 0, status, ['EnumerateSecurityPackages', status]);
   end;
 
   try
@@ -3570,7 +3594,7 @@ begin
 
     if (Size < 0) or (not Reg.ValueExists(KeyName)) then
     begin
-      raise ERegistryException.CreateFmt('Key %s\%s not found or value has zero size',[Reg.CurrentPath, KeyName]);
+      raise ERegistryException.CreateFmt(RsKeyNotFoundOrZero,[Reg.CurrentPath, KeyName]);
     end;
 
     GetMem(Buf, Size);
@@ -3766,7 +3790,7 @@ procedure TJwComCustomSecurity.CheckReadonly(const PropertyName: String);
 begin
   if fReadOnly then
   begin
-    raise EJwsclReadOnlyPropertyException.CreateFmtEx('Property %s is readonly.', 'Getter', ClassName, 'JwsclComSecurity.pas', 0, false, [PropertyName]);
+    raise EJwsclReadOnlyPropertyException.CreateFmtEx(RsPropertyIsReadOnly, 'Getter', ClassName, 'JwsclComSecurity.pas', 0, false, [PropertyName]);
   end;
 end;
 
@@ -3777,6 +3801,11 @@ begin
 end;
 
 
+
+function TJwComCustomSecurity.Equals(Obj: TObject): Boolean;
+begin
+  result := Self = Obj;
+end;
 
 class procedure TJwComCustomSecurity.CoInitializeSecurity(
         {__in_opt}  pSecDesc : {PSECURITY_DESCRIPTOR }Pointer;
@@ -3807,10 +3836,10 @@ begin
          ((dwAuthnLevel = calNone) and (acStaticCloaking in dwCapabilities)) or
          ((dwAuthnLevel <> calNone) and
            (cAuthSvc = 0))
-        ), 'Invalid Parameter');
+        ), RsInvalidParameter);
 
 
-  //todo if server, check for svchost process to disable this func
+  //if server, check for svchost process to disable this func
   if not IgnoreProcess and (Length(JwKnownComHostProcesses) > 0) and
     Assigned(@NtQueryInformationProcess) then
   begin
@@ -3856,7 +3885,7 @@ begin
             if (JwKnownComHostProcesses[i] <> '') and (CompareText(S, JwKnownComHostProcesses[I]) = 0) then
             begin
               raise EJwsclProcessNotFound.
-                CreateFmtEx('InitializeSecurity cannot be called in a shared process with other COM servers.',
+                CreateFmtEx(RsInitializeSecurityInSharedProcess,
                   'InitializeSecurity', ClassName, 'JwsclComSecurity.pas', 0, false, []);
             end;
           end;
@@ -3886,12 +3915,12 @@ begin
     case hRes of
       RPC_E_TOO_LATE :
         raise EJwsclCoInitializeNotCalledException.
-              CreateFmtEx('CoInitializeSecurity has been called already or CoInitialize has not been called at first. (HRESULT= RPC_E_TOO_LATE)',
+              CreateFmtEx(RsCoInitializeNotCalled,
                 'InitializeSecurity', ClassName, 'JwsclComSecurity.pas', 0, DWORD(hRes), []);
     else
       raise EJwsclComException.
-              CreateFmtEx('A call to %0:s failed.',
-                'InitializeSecurity', ClassName, 'JwsclComSecurity.pas', 0, DWORD(hRes), ['CoInitializeSecurity']);
+              CreateFmtEx(RsWinCallFailedWithNTStatus,
+                'InitializeSecurity', ClassName, 'JwsclComSecurity.pas', 0, DWORD(hRes), ['CoInitializeSecurity', hRes]);
     end;
   end;
 end;
@@ -3953,6 +3982,11 @@ begin
   fServerPrincipalName := Value;
 end;
 
+function TJwComCustomSecurity.ToString: String;
+begin
+  result := IJwBase_ToString(Self);
+end;
+
 function TJwComCustomSecurity.GetAuthenticationInfo: RPC_AUTH_IDENTITY_HANDLE;
 begin
   result := fAuthenticationInfo;
@@ -3976,6 +4010,11 @@ end;
 function TJwComCustomSecurity.GetCapabilites: TJwComAuthenticationCapabilities;
 begin
   result := fCapabilites;
+end;
+
+function TJwComCustomSecurity.GetHashCode: Integer;
+begin
+  result := IJwBase_GetHashCode(Self);
 end;
 
 function TJwComCustomSecurity.GetImpersonationLevel: TJwComImpersonationLevel;
@@ -4027,8 +4066,7 @@ class procedure TJwComProcessSecurity.Initialize(
           begin
             if AuthenticationList[i].AuthenticationService = asDefault then
                raise EJwsclInvalidParameterException.CreateFmtEx(
-                  'The value azsDefault is not allowed if used in the AuthenticationList and AuthenticationList[%d].AuthorizationService is asWinNT or asGSSKerberos.'+
-                  'Use instead azsNone, azsDCE or azsName.',
+                  RsInvalidAuthService,
                 'Create', ClassName, 'JwsclComSecurity.pas', 0, false, [I]);
           end;
         end;
@@ -4082,11 +4120,7 @@ class procedure TJwComProcessSecurity.Initialize(
         Auth := TJwAuthContext.CreateBySid(Manager, [], JwLocalSystemSID, 0, nil);
         try
           Request := TJwAuthZAccessRequest.Create(
-              COM_RIGHTS_EXECUTE or
-              COM_RIGHTS_EXECUTE_LOCAL or
-              COM_RIGHTS_EXECUTE_REMOTE or
-              COM_RIGHTS_ACTIVATE_LOCAL or
-              COM_RIGHTS_ACTIVATE_REMOTE,
+              COM_RIGHTS_EXECUTE,
               JwNullSID, nil, nil, shOwned);
           try
             Auth.AccessCheck(0, Request, 0, SecurityDescriptor, nil, nil, Reply, nil);
@@ -4095,7 +4129,7 @@ class procedure TJwComProcessSecurity.Initialize(
               if Reply.ErrorByType[0] <> reSuccess then
               begin
                 raise EJwsclAccessDenied.
-                  CreateFmtEx('The supplied security descriptor does not allow COM to work properly. You need to add an allow ACE for SYSTEM, Administrators or Authenticated Users.',
+                  CreateFmtEx(RsInvalidComSecurityDescriptor,
                     'Initialize (TJwSecurityDescriptor)',
                     ClassName, 'JwsclComSecurity.pas', 0, false, []);
               end;
@@ -4128,11 +4162,10 @@ class procedure TJwComProcessSecurity.Initialize(
        (acAppId in Capabilities) then
     begin
       raise EJwsclInvalidParameterException.
-              CreateFmtEx('acAccessControl and acAppId cannot be used at the same time in parameter Capabilities.',
+              CreateFmtEx(RsInvalidCombinationAccessControlAndAppID,
                 'Initialize',
                 ClassName, 'JwsclComSecurity.pas', 0, false, []);
     end;
-
 
     if SecurityData <> nil then
     begin
@@ -4179,7 +4212,7 @@ begin
   try
     if (SecInfo <> nil) and (AuthenticationLevel = calNone) then
       raise EJwsclInvalidParameterException.
-        CreateFmtEx('The parameter AuthenticationLevel cannot be calNone if a security information (AppID, IAccessControl or security descriptor) is supplied.',
+        CreateFmtEx(RsInvalidAuthLevel,
          'Initialize', ClassName, 'JwsclComSecurity.pas', 0, false, []);
 
 
@@ -4243,8 +4276,7 @@ var List : TJwAuthenticationInfoList;
 begin
   if AuthorizationService = azsDefault then
     raise EJwsclInvalidParameterException.CreateFmtEx(
-        'The value azsDefault is not allowed if AuthorizationService is asWinNT or asGSSKerberos.'+
-        'Use instead azsNone, azsDCE or azsName.', 'Create',
+        RsAuthServiceMustNotBeDefault, 'Create',
             ClassName, 'JwsclComSecurity.pas', 0, false, []);
 
   SetLength(List, {2}1);
@@ -4310,7 +4342,8 @@ begin
   result.Owner := JwAdministratorsSID;
   result.PrimaryGroup := JwAdministratorsSID;
 
-  result.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil, [], $FFFF, JwLocalSystemSID, false));
+  {TODO: add compatibility parameter to ensure correct COM rights here.}
+  result.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil, [], COM_RIGHTS_EXECUTE, JwLocalSystemSID, false));
   result.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil, [], $FFFF, JwAuthenticatedUserSID, false));
   result.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil, [], $FFFF, JwAdministratorsSID, false));
 
@@ -4377,7 +4410,7 @@ procedure TJwComWinNTIdentity.CheckReadonly(const PropertyName: String);
 begin
   if fReadOnly then
   begin
-    raise EJwsclReadOnlyPropertyException.CreateFmtEx('Property %s is readonly.', 'Getter', ClassName, 'JwsclComSecurity.pas', 0, false, [PropertyName]);
+    raise EJwsclReadOnlyPropertyException.CreateFmtEx(RsPropertyIsReadOnly, 'Getter', ClassName, 'JwsclComSecurity.pas', 0, false, [PropertyName]);
   end;
 end;
 constructor TJwComWinNTIdentity.Create;
@@ -4385,7 +4418,7 @@ begin
   fReadOnly := false;
   ZeroMemory(@fDataEx, sizeof(fDataEx));
 
-  {implicit set:
+  {implicitly set:
   Domain := '';
   PackageList := '';
   Password := '';
@@ -4501,7 +4534,15 @@ begin
   result := fDataEx.Version;
 end;
 
-procedure SetWideChar(var pch : PWideChar; out chLen : DWORD; S : WideString);
+{Allocates COM memory to a memory string location, returns it and its length.
+
+Parameters:
+  pch Receives a memory location for string allocated by CoTaskMemAlloc. If this value is not nil then CoTaskMemFree is used
+    to free the memory. The memory will contain two additional zero bytes at the end.
+  chLen Returns the length of the string.
+  S Receives the string to be copied to the memory location.
+}
+procedure SetWideChar(var pch : PWideChar; out chLen : DWORD; const S : WideString);
 var
   Size : Integer;
 begin
@@ -4514,7 +4555,7 @@ begin
   pch := CoTaskMemAlloc(Size);
 
   if pch = nil then
-    OutOfMemoryError;
+    JwRaiseOutOfMemoryException;
 
   ZeroMemory(pch, Size);
 
@@ -4586,6 +4627,8 @@ begin
   fAuthorizationService := AuthorizationService;
 
   fAutoDestroy := AutoDestroy;
+
+  inherited Create;
 end;
 
 constructor TJwAuthenticationInfo.Create(const AuthenticationService: TJwComAuthenticationService;
@@ -4595,7 +4638,7 @@ begin
      (AuthenticationService <> asGSSKerberos) then
   begin
     raise EJwsclInvalidParameterException.CreateFmtEx
-      ('Only AuthenticationService = asWinNT and asGSSKerberos are supported.', 'Create', ClassName, 'JwsclComSecurity.pas', 0, false, []);
+      (RsAuthenticationMustBeWinNT, 'Create', ClassName, 'JwsclComSecurity.pas', 0, false, []);
   end;
 
   fWinNTIdentity := AuthenticationInfo;
@@ -4603,6 +4646,8 @@ begin
   fAuthorizationService := AuthorizationService;
 
   fAutoDestroy := AutoDestroy;
+
+  inherited Create;
 end;
 
 constructor TJwAuthenticationInfo.CreateWinNT(const UserName, Domain, Password: TJwString; const AuthorizationService: TJwComAuthorizationService);
@@ -4611,6 +4656,8 @@ begin
   fAuthenticationInfo := Pointer(fWinNTIdentity.AuthorizationInfo);
   fAuthorizationService := AuthorizationService;
   fAuthenticationService := asWinNT;
+
+  inherited Create;
 end;
 
 destructor TJwAuthenticationInfo.Destroy;
@@ -4631,11 +4678,6 @@ begin
 end;
 
 
-{ TJwServerAccessControl creates an instance of %CLASSNAME% using an existing security descriptor.
-  Remarks
-  By default the property <link TJwServerAccessControl.GenericMapping, GenericMapping> is set to value TJwNullMapping
-  which means that generic access rights cannot be used to access this objects. You can define your own generic
-  mapping to specific access rights to allow such an access. However COM does not support it.                         }
 
 
 constructor TJwServerAccessControl.Create(const SD: TJwSecurityDescriptor);
@@ -4651,13 +4693,16 @@ begin
   OleCheck(HelperCreateAccessControl(Result));
 end;
 
+const
+  DEFAULT_FACILITY_CODE = $FE;
+
 constructor TJwServerAccessControl.Create;
 begin
   inherited;
 
   JwCheckInitKnownSid([JwSecurityProcessUserSID], ['JwSecurityProcessUserSID'], 'Create', ClassName, 'JwsclComSecurity.pas');
 
-  FacilityCode := $FE;
+  FacilityCode := DEFAULT_FACILITY_CODE;
   fAuthManager := TJwAuthResourceManager.Create('', [], nil, nil);
   fGenericMapping := TJwNullMapping; //prevents access when using generic access rights
   fCacheResult := 0;
@@ -4750,19 +4795,19 @@ begin
         Following a merge, the access rights on an object are ordered as follows:
 
          1. [New Access Denied]
-         2. [Old Access Denied]
+         2. [Old Access Denied]   |--- (DenyEntryCount) ^-- NewDenyCount
          3. [New Access Allowed]
          4. [Old Access Allowed]
 
         }
-        DenyEntryCount := 0;
+        DenyEntryCount := 0; //Count of deny entries. New allow entries are added behind
         for I := 0 to fSD.DACL.Count - 1 do
         begin
           if fSD.DACL[i] is TJwDiscretionaryAccessControlEntryDeny then
             Inc(DenyEntryCount);
         end;
 
-        NewDenyCount := 0;
+        NewDenyCount := 0; //newly added deny ACEs
         for I := 0 to AccessList.Count - 1 do
         begin
           ACE := AccessList[i].ClassType.Create as TJwSecurityAccessControlEntry;
@@ -4770,7 +4815,7 @@ begin
 
           if AccessList[i] is TJwDiscretionaryAccessControlEntryDeny then
           begin
-            fSD.DACL.Insert(NewDenyCount, ACE);
+            fSD.DACL.Insert(NewDenyCount, ACE); //Add deny ACE behind the last added (new) deny ACE
 
             Inc(DenyEntryCount);
             Inc(NewDenyCount);
@@ -4840,14 +4885,12 @@ begin
             ErrorCode //var ErrorCode : HRESULT) of object;
           );
           if Failed(ErrorCode) then
-            raise EOleSysError.Create(Format('Method assigned to OnIsAccessAllowed failed with %d',[ErrorCode]), ErrorCode, 0);
+            raise EOleSysError.Create(Format(RsOnIsAccessAllowedFailed,[ErrorCode]), ErrorCode, 0);
 
         end;
       finally
-
         FreeAndNil(Reply);
         FreeAndNil(Request);
-
       end;
     finally
       FreeAndNil(AuthContext);
@@ -4946,7 +4989,7 @@ end;
 //copies data into a memory block
 function SetPtrData(var Target : TPtrPointer; const Source : Pointer; const Size : Cardinal) : Pointer;
 begin
-  Assert((DWORD_PTR(Target.OffsetPtr) - DWORD_PTR(Target.StartPtr)) <=  Target.Size, 'Memory block too small');
+  Assert((DWORD_PTR(Target.OffsetPtr) - DWORD_PTR(Target.StartPtr)) <=  Target.Size, RsTooSmallMemBlock);
 
   result := Target.OffsetPtr;
   Target.OffsetPtr := Pointer(DWORD_PTR(Target.OffsetPtr) + Size);
@@ -5026,8 +5069,6 @@ begin
         ZeroMemory(@PropertyEntry, sizeof(PropertyEntry));
         ppAccessList.pPropertyAccessList :=
           SetPtrData(PtrPtr, @PropertyEntry, sizeof(PropertyEntry));
-
-
       end
       else
       begin
@@ -5042,7 +5083,7 @@ begin
           else
           begin
             raise EOleSysError.Create(
-             'The ACL must only contain Allow and Deny ACEs.',
+             RsValidOnlyAllowDenyACE,
               MAKE_HRESULT(1, FacilityCode, ERROR_INVALID_LIST_FORMAT), 0);
           end;
           Inc(SidLength, ACL.Items[I].SID.SIDLength);
@@ -5190,7 +5231,7 @@ begin
     fSD.Owner := JwNullSID;
     fSD.PrimaryGroup := JwNullSID;
 
-    Dirty := False;
+    Dirty := True;
   finally
     fCriticalSection.Leave;
   end;
@@ -5206,7 +5247,7 @@ var
   SID : TJwSecurityId;
 begin
   {!! Do not access property Security descriptor in this method unless
-   you secure it wiht fCriticalSection.Leave;}
+   you secure it with fCriticalSection.Leave;}
 
   P := pAccessList.pPropertyAccessList;
 
@@ -5230,14 +5271,14 @@ begin
         if pACE.Access and $FFFFFFFE <> 0 then
         begin
           raise EOleSysError.Create(
-               Format('The member Access of AccessEntry (PACTRL_ACCESS_ENTRYW) #%d is not conform to implementation of IAccessControl. Only COM_RIGHTS_EXECUTE is valid.', [i]),
+               Format(RsIncompatibleCOMRight, [i]),
                 MAKE_HRESULT(1, FacilityCode, ERROR_INVALID_ACCESS), 0);
         end;
 
         if not IsValidTrustee(@pACE.Trustee) then
         begin
           begin
-            raise EOleSysError.Create(Format('The member Trustee of AccessEntry (PACTRL_ACCESS_ENTRYW) #%d is not compatible/valid to IAccessControl. ', [i]),
+            raise EOleSysError.Create(Format(RsIncompatibleCOMACETrusteeMember, [i]),
                MAKE_HRESULT(1, FacilityCode, ERROR_INVALID_PARAMETER), 0);
           end;
         end;
@@ -5251,7 +5292,7 @@ begin
       else
         //ACTRL_AUDIT_SUCCESS,
         //ACTRL_AUDIT_FAILURE :
-          ACEClass := nil;
+          ACEClass := nil;   //ignores this ACE
       end;
 
       if Assigned(ACEClass) then
@@ -5284,7 +5325,7 @@ var
   ACL : TJwDAccessControlList;
 begin
   {!! Do not access property Security descriptor in this method unless
-   you secure it wiht fCriticalSection.Leave;}
+   you secure it with fCriticalSection.Leave;}
   try
     if StrictACLVerify and (
        (pAccessList = nil) or
@@ -5293,7 +5334,7 @@ begin
        (pAccessList.pPropertyAccessList.lpProperty <> nil) or
        (pAccessList.pPropertyAccessList.fListFlags <> 0)) then
     begin
-      raise EOleSysError.Create('The parameter pAccessList or one of its member is not valid.',
+      raise EOleSysError.Create(RsInvalidPAccessListParameter,
            MAKE_HRESULT(1, FacilityCode, ERROR_INVALID_PARAMETER), 0);
     end;
 
@@ -5349,7 +5390,7 @@ var
   b : Boolean;
 begin
   {!! Do not access property Security descriptor in this method unless
-   you secure it wiht fCriticalSection.Leave;}
+   you secure it with fCriticalSection.Leave;}
 
   try
     result := S_OK;
@@ -5360,7 +5401,7 @@ begin
        not IsValidTrustee(pTrustee) then
     begin
       begin
-        raise EOleSysError.Create('The member parameter pTrustee is not compatible/valid to implementation of IAccessControl. (StrictACLVerify is true)',
+        raise EOleSysError.Create(Format(RsIncompatibleCOMTrusteeParameter, ['pTrustee']),
            MAKE_HRESULT(1, FacilityCode, ERROR_INVALID_PARAMETER), 0);
       end;
     end;
@@ -5415,13 +5456,13 @@ begin
   result := S_OK;
 
   {!! Do not access property Security descriptor in this method unless
-   you secure it wiht fCriticalSection.Leave;}
+   you secure it with fCriticalSection.Leave;}
 
   if StrictACLVerify and
      not IsValidTrustee(prgTrustees) then
   begin
     begin
-      raise EOleSysError.Create('The member parameter prgTrustees is not compatible/valid to implementation of IAccessControl. ',
+      raise EOleSysError.Create(Format(RsIncompatibleCOMTrusteeParameter, [prgTrustees]),
          MAKE_HRESULT(1, FacilityCode, ERROR_INVALID_PARAMETER), 0);
     end;
   end;
@@ -5442,7 +5483,7 @@ begin
       begin
         if StrictACLVerify and not IsValidTrustee(prgTrustees) then
         begin
-          raise EOleSysError.Create(Format('The member Trustee of AccessEntry (PACTRL_ACCESS_ENTRYW) #%d is not compatible/valid to IAccessControl. ', [i]),
+          raise EOleSysError.Create(Format(RsIncompatibleCOMACETrusteeMember, [i]),
                MAKE_HRESULT(1, FacilityCode, ERROR_INVALID_PARAMETER), 0);
         end;
 
@@ -5490,7 +5531,7 @@ begin
   result := S_OK;
 
   {!! Do not access property Security descriptor in this method unless
-   you secure it wiht fCriticalSection.Leave;}
+   you secure it with fCriticalSection.Leave;}
 
   if StrictACLVerify and (
      (pAccessList = nil) or
@@ -5499,7 +5540,7 @@ begin
      (pAccessList.pPropertyAccessList.lpProperty <> nil) or
      (pAccessList.pPropertyAccessList.fListFlags <> 0)) then
   begin
-    raise EOleSysError.Create('The parameter pAccessList or one of its member is not valid.',
+    raise EOleSysError.Create(RsInvalidPAccessList,
          MAKE_HRESULT(1, FacilityCode, ERROR_INVALID_PARAMETER), 0);
   end;
 
@@ -5564,7 +5605,7 @@ begin
   end;
 
   {!! Do not access property Security descriptor in this method unless
-   you secure it wiht fCriticalSection.Leave;}
+   you secure it with fCriticalSection.Leave;}
 
   result := S_OK;
   try
@@ -5577,7 +5618,7 @@ begin
        ) then
     begin
       begin
-        raise EOleSysError.Create('Either pOwner or pGroup Trustee is not compatible/valid to MS implementation of IAccessControl. ',
+        raise EOleSysError.Create(RsIncompatibleCOMOwnerOrGroup,
            MAKE_HRESULT(1, FacilityCode, ERROR_INVALID_PARAMETER), 0);
       end;
     end;
@@ -5649,7 +5690,7 @@ function TJwServerAccessControl.Load(const stm: IStream): HRESULT;
     begin
       if not SD.DACL.IsValid then
       begin
-        raise EOleSysError.Create('The DACL read from stream is invalid.',
+        raise EOleSysError.Create(RsInvalidDACLReadFromStream,
            MakeResult(1, FacilityCode, ERROR_INVALID_ACL), 0);
       end;
     end;
@@ -5724,8 +5765,8 @@ begin
               if (cSize < sizeof(TSecurityDescriptor)) or
                  (cSize > MAX_SECURITY_DESCRIPTOR_SIZE) then
               begin
-                raise EOleSysError.Create(Format('The stream size of the security descriptor is invalid. '+
-                  'The size %d read from stream is either too big (%d) or too small (%d).', [cSize, MAX_SECURITY_DESCRIPTOR_SIZE, sizeof(TSecurityDescriptor)]),
+                raise EOleSysError.Create(Format(RsInvalidSDStreamSize,
+                [cSize, MAX_SECURITY_DESCRIPTOR_SIZE, sizeof(TSecurityDescriptor)]),
                   MakeResult(1, FacilityCode, ERROR_INVALID_BLOCK_LENGTH), 0);
               end;
 
@@ -5737,7 +5778,7 @@ begin
                 begin
                   if not IsValidSecurityDescriptor(pSD) then
                   begin
-                    raise EOleSysError.Create('The security descriptor read from stream is invalid.',
+                    raise EOleSysError.Create(RsInvalidSDReadFromStream,
                       MakeResult(1, FacilityCode, ERROR_INVALID_SECURITY_DESCR), 0);
                   end;
 
@@ -5762,7 +5803,7 @@ begin
           end;
         pstJwscl:
           begin
-            Assert(sizeof(TMagicHeaderRecord) <> SD_HEADER_SIZE, 'Size of TMagicHeaderRecord and SD_HEADER_SIZE differs.');
+            Assert(sizeof(TMagicHeaderRecord) <> SD_HEADER_SIZE, RsInvalidSDMagicHeaderSize);
 
             {We need to read the MAGIC header written by JWSCL
              Then we get the size of the SD.
@@ -5777,8 +5818,8 @@ begin
               if (JwHeader.Size < sizeof(TSecurityDescriptor)) or
                  (JwHeader.Size > MAX_SECURITY_DESCRIPTOR_SIZE) then
               begin
-                raise EOleSysError.Create(Format('The stream size of the security descriptor is invalid. '+
-                  'The size %d read from stream is either too big (%d) or too small (%d).', [JwHeader.Size, MAX_SECURITY_DESCRIPTOR_SIZE, sizeof(TSecurityDescriptor)]),
+                raise EOleSysError.Create(Format(RsInvalidSDStreamSize,
+                  [JwHeader.Size, MAX_SECURITY_DESCRIPTOR_SIZE, sizeof(TSecurityDescriptor)]),
                   MakeResult(1, FacilityCode, ERROR_INVALID_BLOCK_LENGTH), 0);
               end;
 
@@ -5791,7 +5832,7 @@ begin
 
                 if not b then
                 begin
-                  raise EOleSysError.Create('The stream data could not be copied to internal memory.',
+                  raise EOleSysError.Create(RsStreamDataCopyingFailed,
                       MakeResult(1, FacilityCode, ERROR_WRITE_FAULT), 0);
                 end;
 

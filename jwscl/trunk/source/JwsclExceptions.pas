@@ -802,6 +802,14 @@ type
   EJwsclDuplicateComInitCallException = class(EJwsclComException);
         {[2B2288BC-7905-46F2-0134-A0183067E63D]}
 
+  {Defines an out of memory exception.
+   Do not create exceptions from it using "raise". Instead use JwRaiseOutOfMemoryException}
+  EJwsclOutOfMemoryException = class(EJwsclSecurityException);
+        {2B2288BC-7905-46F2-FFFF-01AF091D11C6}
+
+  {A SID could not be translated to a name.}
+  EJwsclSidNotMappedException = class(EJwsclSecurityException);
+      {[2B2288BC-7905-46F2-0135-A0183067E63D]}
 
 
   JwGeneralExceptionClass = class of Exception;
@@ -883,6 +891,13 @@ procedure JwRaiseOnNilMemoryBlock(const P : Pointer;
 function JwCreateException(const Name : WideString) : JwGeneralExceptionClass;
 function JwMapException(Const Id : TGuid) : WideString; overload;
 function JwMapException(Const Name : WideString) : TGuid; overload;
+
+{Raises an EJwsclOutOfMemoryException exception.
+}
+procedure JwRaiseOutOfMemoryException;
+
+var
+  JwOutOfMemoryException : EJwsclOutOfMemoryException;
 
 {$ENDIF SL_IMPLEMENTATION_SECTION}
 
@@ -1401,6 +1416,16 @@ begin
 
   LocalFree(HLOCAL(s));
 end;
+
+procedure JwRaiseOutOfMemoryException;
+begin
+  raise JwOutOfMemoryException;
+end;
+
+initialization
+  JwOutOfMemoryException := EJwsclOutOfMemoryException.Create('Generic Out of Memory Exception by JWSCL methods.');
+finalization
+  FreeAndNil(JwOutOfMemoryException);
 
 {$ENDIF SL_INTERFACE_SECTION}
 
