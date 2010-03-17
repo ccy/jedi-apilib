@@ -552,12 +552,17 @@ type
   //general exception for Active Directory methods
   EJwsclAdException = class(EJwsclSecurityException)
     {[2B2288BC-7905-46F2-0079-A0183067E63D]};
+
   //Invalid Active Directory Search Filter
   EJwsclAdInvalidFilterException = class(EJwsclAdException)
     {[2B2288BC-7905-46F2-0079-A0183067E63D]};
+
   //Active Directory Search returned no results
   EJwsclAdNoResultException = class(EJwsclAdException)
     {[2B2288BC-7905-46F2-0079-A0183067E63D]};
+
+  // AdsGetObject returns no interface
+  EJwsclAdNoInterfaceException = class(EJwsclAdException);
 
   {general exception for terminal server methods}
   EJwsclTerminalServerException = class(EJwsclSecurityException);
