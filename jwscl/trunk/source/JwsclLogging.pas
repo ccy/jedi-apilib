@@ -41,8 +41,6 @@ unit JwsclLogging;
 {$INCLUDE ..\includes\Jwscl.inc}
 interface
 uses ActiveX,
-     ComServ,
-     ComObj,
      Classes,
      SyncObjs,
      SysUtils,
