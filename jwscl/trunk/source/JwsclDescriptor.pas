@@ -40,7 +40,6 @@
 {$IFNDEF SL_OMIT_SECTIONS}
 unit JwsclDescriptor;
 {$INCLUDE ..\includes\Jwscl.inc}
-// Last modified: $Date: 2007-09-10 10:00:00 +0100 $
 
 interface
 
@@ -74,8 +73,6 @@ type
        It is created on demand.
       }
   TJwSecurityDescriptor = class
-  private
-
   protected
     fSD: PSecurityDescriptor;
 
@@ -447,8 +444,8 @@ type
       const Flags: TJwSecurityInformationFlagSet): boolean;
 
     //see StringSD[SIFlags :TSecurityInformation] for more information
-    function GetSDDLString(SIFlags: TSecurityInformation): TJwString; overload;
-    function GetSDDLString(SIFlags: TJwSecurityInformationFlagSet): TJwString; overload;
+    function GetSDDLString2(SIFlags: TSecurityInformation): TJwString;
+    function GetSDDLString(SIFlags: TJwSecurityInformationFlagSet): TJwString;
 
     {<B>ReplaceDescriptorElements</B> replaces the security descriptor elements given in SecurityInformationSet with
      the ones in SecurityDescriptor.
@@ -488,6 +485,8 @@ type
     function GetPrivateObjectSecurity(const SecurityInformation
       : TJwSecurityInformationFlagSet) : TJwSecurityDescriptor; virtual;
 
+    {
+    }
     function GetTextMap(const Mapping: TJwSecurityGenericMappingClass =
       nil): TJwString;
 
@@ -1872,7 +1871,7 @@ begin
       TJwEnumMap.ConvertSecurityInformation(SIFlags));
 end;
 
-function TJwSecurityDescriptor.GetSDDLString(
+function TJwSecurityDescriptor.GetSDDLString2(
   SIFlags: TSecurityInformation): TJwString;
 var
   pSD: PSecurityDescriptor;

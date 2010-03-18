@@ -1769,9 +1769,9 @@ begin
     (TJwPChar(SystemName), Self.SID, nil, iSIDName, nil, iDomainName,
     SidNameUse) and (GetLastError() = ERROR_INSUFFICIENT_BUFFER) then
   begin
-    pSIDName := TJwPChar(LocalAlloc(GMEM_FIXED or GMEM_ZEROINIT,
+    pSIDName := TJwPChar(LocalAlloc(LPTR,
       iSIDName * sizeof(TJwChar)));
-    pDomainName := TJwPChar(LocalAlloc(GMEM_FIXED or GMEM_ZEROINIT,
+    pDomainName := TJwPChar(LocalAlloc(LPTR,
       iDomainName * sizeof(TJwChar)));
 
     if not JwaWindows.
