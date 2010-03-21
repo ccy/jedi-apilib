@@ -151,7 +151,7 @@ type
 
 
   public
-    {IJwBase methods}
+    {IJwBase methods als available in TObject}
     function Equals(Obj: TObject): Boolean; {$IFDEF DELPHI2009_UP}override;{$ELSE} virtual;{$ENDIF}
     function GetHashCode: Integer; {$IFDEF DELPHI2009_UP}override;{$ELSE} virtual;{$ENDIF}
     function ToString: String; {$IFDEF DELPHI2009_UP}override;{$ELSE} virtual;{$ENDIF}
@@ -161,7 +161,7 @@ type
     procedure BeginUpdate; virtual;
     { EndUpdate is used to end a property update sequence. Prior to the this call BeginUpdate must be called.
 
-      <code lang="c++">
+      <code lang="Delphi">
       .BeginUpdate
        ...
       .EndUpdate;
@@ -742,6 +742,8 @@ type
       MergeSD :  This parameter defines an additional security descriptor that is used to merge with the default security
                  applied by this method. Only the DACL is merged; other components (User, Group, SACL) are ignored.<p />Can
                  be nil.
+      StrictCOMCompatibility : This parameter sets whether the security descriptor will only contain rights that are
+                               compatible with IAccessControl (true) or all access rights (FullControl) are set (false).
       
       Returns
       \Returns a TJwSecurityDescriptor class that contains a merged version of both security descriptors. The caller is
@@ -758,7 +760,8 @@ type
       If parameter MergeSD is not nil the DACL in the new security descriptor is a still canonical. However, the function
       will not recognize additional access entries with an existing SID (e.g. SYSTEM). Instead you should consider
       adapting the existing entries.                                                                                        }
-    class function CreateMinimumCOMSecurityDescriptor(const MergeSD : TJwSecurityDescriptor = nil) : TJwSecurityDescriptor; virtual;
+    class function CreateMinimumCOMSecurityDescriptor(const MergeSD : TJwSecurityDescriptor = nil;
+          const StrictCOMCompatibility : Boolean = false) : TJwSecurityDescriptor; virtual;
 
     { Initialize is the main class procedure to initialize the process wide security settings for a client and server
       process using CoInitializeSecurity.
@@ -2612,6 +2615,25 @@ const
    );
 
 
+
+  {
+  Default Security Descriptor returned by
+    * TJwComRegistrySecurity.GetDefaultAccessPermission
+    * TJwComRegistrySecurity.GetDefaultAccessPermission
+  if the key could not be read.
+
+  Remarks
+  <pre>
+   Owner: BuiltInAdministrators
+   Group: BuiltInAdministrators
+   DACL:
+     Allow: BuiltInAdministrators, Interactive User, SYSTEM
+  <pre>
+  Access Rights: see ACE Rights : http://msdn.microsoft.com/en-us/library/aa374928%28VS.85%29.aspx
+
+  }
+  JwDefaultCOMSDDL = 'O:BAG:BAD:(A;;CCDCLCSWRP;;;BA)(A;;CCDCLCSWRP;;;IU)(A;;CCDCLCSWRP;;;SY)';
+
 implementation
 
 
@@ -3283,7 +3305,7 @@ begin
     Reg.Free;
 
     raise EJwsclInvalidRegistryPath
-      .CreateFmtEx('AppID "%s" could not be found.',
+      .CreateFmtEx(RsCOMAppIDNotFound,
       'Create', ClassName, 'JwsclComSecurity.pas', 0, false, [GUIDToString(AppID)]);
   end;
 
@@ -3343,7 +3365,8 @@ begin
 end;
 
 class function TJwComRegistrySecurity.GetDefaultAccessPermission: TJwSecurityDescriptor;
-var Reg : TRegistry;
+var
+  Reg : TRegistry;
 begin
   Reg := TRegistry.Create;
   try
@@ -3351,18 +3374,18 @@ begin
 
     if not Reg.OpenKey('Software\Microsoft\OLE', false) then
     begin
-      raise Exception.Create('Default Key not found');
+      raise EJwsclRegistryException
+              .CreateFmtEx(RsDefaultCOMKeyNotFound,
+              'GetDefaultAccessPermission', ClassName, 'JwsclComSecurity.pas', 0, false, []);
     end;
 
     if not Reg.ValueExists('DefaultAccessPermission') then
     begin
-      //TODO: create SD with SYSTEM, Admin, SELF
-      result := nil;
+      result := TJwSecurityDescriptor.Create(JwDefaultCOMSDDL);
       exit;
     end;
 
 
-    result := nil;
     result := ReadSD(Reg, 'DefaultAccessPermission', result);
   finally
     Reg.Free;
@@ -3370,7 +3393,8 @@ begin
 end;
 
 class function TJwComRegistrySecurity.GetDefaultLaunchPermission: TJwSecurityDescriptor;
-var Reg : TRegistry;
+var
+  Reg : TRegistry;
 begin
   Reg := TRegistry.Create;
   try
@@ -3378,14 +3402,14 @@ begin
 
     if not Reg.OpenKey('Software\Microsoft\OLE', false) then
     begin
-      //TODO: create SD with SYSTEM, Admin, Interactive
-      raise ERegistryException.Create('Default Key not found');
+      raise EJwsclRegistryException
+              .CreateFmtEx(RsDefaultCOMKeyNotFound,
+              'GetDefaultAccessPermission', ClassName, 'JwsclComSecurity.pas', 0, false, []);
     end;
 
     if not Reg.ValueExists('DefaultLaunchPermission') then
     begin
-      //TODO: create SD with SYSTEM, Admin, SELF
-      result := nil;
+      result := TJwSecurityDescriptor.Create(JwDefaultCOMSDDL);
       exit;
     end;
 
@@ -4347,16 +4371,22 @@ begin
           );
 end;
 
-class function TJwComProcessSecurity.CreateMinimumCOMSecurityDescriptor(const MergeSD: TJwSecurityDescriptor): TJwSecurityDescriptor;
+class function TJwComProcessSecurity.CreateMinimumCOMSecurityDescriptor(const MergeSD : TJwSecurityDescriptor = nil;
+          const StrictCOMCompatibility : Boolean = false) : TJwSecurityDescriptor;
+var Rights : DWORD;
 begin
   result := TJwSecurityDescriptor.Create;
   result.Owner := JwAdministratorsSID;
   result.PrimaryGroup := JwAdministratorsSID;
 
-  {TODO: add compatibility parameter to ensure correct COM rights here.}
-  result.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil, [], COM_RIGHTS_EXECUTE, JwLocalSystemSID, false));
-  result.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil, [], $FFFF, JwAuthenticatedUserSID, false));
-  result.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil, [], $FFFF, JwAdministratorsSID, false));
+  if StrictCOMCompatibility then
+    Rights := COM_RIGHTS_EXECUTE
+  else
+    Rights := $FFFF; //only specific rights set
+
+  result.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil, [], Rights, JwLocalSystemSID, false));
+  result.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil, [], Rights, JwAuthenticatedUserSID, false));
+  result.DACL.Add(TJwDiscretionaryAccessControlEntryAllow.Create(nil, [], Rights, JwAdministratorsSID, false));
 
   if Assigned(MergeSD) and Assigned(MergeSD.DACL) then
   begin
@@ -5724,6 +5754,7 @@ var
   IA : IAccessControl;
   PA : PACTRL_ACCESSW_ALLOCATE_ALL_NODES;
   pO, pG : PTRUSTEEW;
+  hr : HRESULT;
 const
   SIZE_LENGTH = sizeof(Cardinal);
 begin
@@ -5755,8 +5786,10 @@ begin
           OleCheck(IA.GetAllAccessRights(nil, PA, pO, pG));
           try
             OleCheck(Self.SetAccessRights(PA));
-            //TODO: Check Errors but ignore not impl
-            Self.SetOwner(pO, pG); //ignore result since pO = pG = nil
+
+            hr := IA.SetOwner(pO, pG);   //ignore result because it is not implemented currently
+            if hr <> E_NOTIMPL then
+              OleCheck(hr);
 
             result := S_OK;
           finally
@@ -5932,7 +5965,7 @@ var
   IA : IAccessControl;
   PA : PACTRL_ACCESSW_ALLOCATE_ALL_NODES;
   pO, pG : PTRUSTEEW;
-
+  hr : HRESULT;
 begin
   fCriticalSection.Enter;
   try
@@ -5957,8 +5990,10 @@ begin
           try
             IA := CreateCOMImplementation;
             OleCheck(IA.SetAccessRights(PA));
-            //TODO: Check Errors but ignore not impl
-            IA.SetOwner(pO, pG);   //ignore result because it is not implemented currently
+
+            hr := IA.SetOwner(pO, pG);   //ignore result because it is not implemented currently
+            if hr <> E_NOTIMPL then
+              OleCheck(hr);
 
             Stream := IA as IPersistStream;
             OleCheck(Stream.Save(stm, fClearDirty));
@@ -6087,6 +6122,7 @@ var
   IA : IAccessControl;
   PA : PACTRL_ACCESSW_ALLOCATE_ALL_NODES;
   pO, pG : PTRUSTEEW;
+  hr : HRESULT;
 
 begin
   fCriticalSection.Enter;
@@ -6108,8 +6144,10 @@ begin
             try
               IA := CreateCOMImplementation;
               OleCheck(IA.SetAccessRights(PA));
-              //TODO: Check Errors but ignore not impl
-              IA.SetOwner(pO, pG); //ignore result because it is not implemented currently
+
+              hr := IA.SetOwner(pO, pG);   //ignore result because it is not implemented currently
+              if hr <> E_NOTIMPL then
+                OleCheck(hr);
 
               Stream := IA as IPersistStream;
               OleCheck(Stream.GetSizeMax(cbSize));

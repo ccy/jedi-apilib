@@ -156,6 +156,9 @@ const
   RsInvalidSDReadFromStream = 'The security descriptor read from stream is invalid.';
   RsInvalidSDMagicHeaderSize = 'Size of TMagicHeaderRecord and SD_HEADER_SIZE differs.';
   RsStreamDataCopyingFailed = 'The stream data could not be copied to internal memory.';
+  RsDefaultCOMKeyNotFound = 'Default COM key not available/found.';
+  RsCOMAppIDNotFound = 'AppID "%0:s" could not be found.';
+
 
 //Unit  JwsclCredentials.pas
 
