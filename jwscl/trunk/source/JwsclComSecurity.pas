@@ -74,7 +74,7 @@ uses
   ActiveX,
 
   //only temp
-  JwaCOMSecurity,
+  //JwaCOMSecurity,
 
   JwaWindows,      //JEDI API unit
 
@@ -152,9 +152,9 @@ type
 
   public
     {IJwBase methods}
-    function Equals(Obj: TObject): Boolean; virtual;
-    function GetHashCode: Integer; virtual;
-    function ToString: String; virtual;
+    function Equals(Obj: TObject): Boolean; {$IFDEF DELPHI2009_UP}override;{$ELSE} virtual;{$ENDIF}
+    function GetHashCode: Integer; {$IFDEF DELPHI2009_UP}override;{$ELSE} virtual;{$ENDIF}
+    function ToString: String; {$IFDEF DELPHI2009_UP}override;{$ELSE} virtual;{$ENDIF}
 
   protected
     { BeginUpdate is used to start a property update sequence. It must be called before any of the properties are called. }
@@ -365,7 +365,9 @@ type
 
   protected
     fProxy: IInterface;
+{$IFDEF DEBUG}
     procedure AuthWinNT(const Domain, User, Password : string);
+{$ENDIF DEBUG}
 
 	{ The method %MEMBERNAME% calls the COM function with the same name but adds an exception in case of failure.
 	  Parameters
@@ -2621,7 +2623,7 @@ const AUTO_AUTHENTICATION_SERVICE = -1;
 }
 
 { TJwComClientSecurity }
-
+{$IFDEF DEBUG}
 procedure TJwComClientSecurity.AuthWinNT(const Domain, User, Password: string);
 {begin
      const UserName, DomainName, Psword: String; //-- User Account
@@ -2662,7 +2664,7 @@ begin
         @AuthIdent,//{__in_opt}  pAuthInfo : RPC_AUTH_IDENTITY_HANDLE;
         []//Capabilites//{__in}      dwCapabilities : TJwComAuthenticationCapabilities
         ); *)
-  hRes := JwaCOMSecurity.CoSetProxyBlanket(
+  hRes := JwaWindows. CoSetProxyBlanket(
     Proxy,//{__in} pProxy : IUnknown;
     RPC_C_AUTHN_DEFAULT,//{__in} dwAuthnSvc : DWORD;
     RPC_C_AUTHZ_NONE,//{__in} dwAuthzSvc  : DWORD;
@@ -2672,7 +2674,9 @@ begin
     @AuthIdent,//{__in_opt} pAuthInfo : RPC_AUTH_IDENTITY_HANDLE;
     DWORD(EOAC_NONE)//{__in} dwCapabilities : DWORD) : HRESULT; stdcall;
   );
+  OleCheck(hRes);
 end;
+{$ENDIF DEBUG}
 
 procedure TJwComClientSecurity.BeginUpdate;
 begin
@@ -2723,7 +2727,7 @@ end;
 class procedure TJwComClientSecurity.CoCopyProxy(pProxy: IInterface; out ppCopy: IInterface);
 var hr : HRESULT;
 begin
-  hr := {JwaWindows.}JwaCOMSecurity.CoCopyProxy(pProxy, ppCopy);
+  hr := JwaWindows.CoCopyProxy(pProxy, ppCopy);
   if Failed(hr) then
     raise EJwsclWinCallFailedException.CreateFmtEx(RsWinCallFailedWithNTStatus, 'CoCopyProxy', ClassName,
       'JwsclComSecurity.pas', 0, ResultCode(hr), ['CoCopyProxy',hr]);
@@ -2781,7 +2785,7 @@ var
 begin
   iCapabilites := TJwEnumMap.ConvertComAuthenticationCapabilities(pCapabilites);
 
-  hr := {JwaWindows.}JwaCOMSecurity.CoQueryProxyBlanket(
+  hr := JwaWindows.CoQueryProxyBlanket(
     pProxy,//{__in} pProxy : IUnknown;
     @pwAuthnSvc,//__out_opt  DWORD *pwAuthnSvc,
     @pAuthzSvc,//__out_opt  DWORD *pAuthzSvc,
@@ -2822,7 +2826,7 @@ begin
   else
     pServerName := nil;
 
-  hr := {JwaWindows.}JwaCOMSecurity.CoSetProxyBlanket(pProxy, DWORD(dwAuthnSvc), DWORD(dwAuthzSvc), pServerName,
+  hr := JwaWindows.CoSetProxyBlanket(pProxy, DWORD(dwAuthnSvc), DWORD(dwAuthzSvc), pServerName,
     DWORD(AuthnLevel), DWORD(dwImpLevel), pAuthInfo,
         TJwEnumMap.ConvertComAuthenticationCapabilities(dwCapabilities));
 
@@ -2990,7 +2994,7 @@ var
 begin
   iCapabilites := TJwEnumMap.ConvertComAuthenticationCapabilities(pCapabilites);
 
-  hr := {JwaWindows.}JwaCOMSecurity.CoQueryClientBlanket(
+  hr := JwaWindows.CoQueryClientBlanket(
       @pwAuthnSvc,//__out_opt    DWORD *pAuthnSvc,
       @pAuthzSvc,//__out_opt    DWORD *pAuthzSvc,
       @S,//__out_opt    OLECHAR **pServerPrincName,
@@ -3904,7 +3908,7 @@ begin
   end;
 
 
-  hRes := {JwaWindows.}JwaCOMSecurity.CoInitializeSecurity(
+  hRes := JwaWindows.CoInitializeSecurity(
       pSecDesc,//{__in_opt}pSecDesc : PSECURITY_DESCRIPTOR;
 
       cAuthSvc,//{__in} cAuthSvc : LONG;
