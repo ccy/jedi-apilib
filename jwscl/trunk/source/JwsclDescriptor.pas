@@ -1867,7 +1867,7 @@ end;
 function TJwSecurityDescriptor.GetSDDLString(
   SIFlags: TJwSecurityInformationFlagSet): TJwString;
 begin
-  result := GetSDDLString(
+  result := GetSDDLString2(
       TJwEnumMap.ConvertSecurityInformation(SIFlags));
 end;
 
