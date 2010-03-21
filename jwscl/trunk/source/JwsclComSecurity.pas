@@ -1597,6 +1597,9 @@ type
 
     Remarks
       The registry calls are made on the 64bit registry if the process is running in a Win64 environment.
+
+    Exceptions
+      EJwsclInvalidRegistryPath  This exception is raised if the AppID could not be found in the registry.
     }
     constructor Create(const AppID : TGuid; ReadOnly : Boolean);
     destructor Destroy; override;
@@ -2704,6 +2707,7 @@ end;
 
 constructor TJwComClientSecurity.Create(const Proxy: TJwComClientSecurity);
 begin
+  JwUNIMPLEMENTED;
   //TODO: !!
  { fProxy := Proxy;
   fReadOnly := false;
@@ -3274,8 +3278,9 @@ begin
   begin
     Reg.Free;
 
-    //TODO: fix exception
-    raise ERegistryException.Create('Appid not found');
+    raise EJwsclInvalidRegistryPath
+      .CreateFmtEx('AppID "%s" could not be found.',
+      'Create', ClassName, 'JwsclComSecurity.pas', 0, false, [GUIDToString(AppID)]);
   end;
 
   fAppID := AppID;

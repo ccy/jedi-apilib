@@ -657,9 +657,16 @@ type
   EJwsclEndOfStream = class(EJwsclSecurityException);
     {[2B2288BC-7905-46F2-0097-A0183067E63D]}
 
+
   {}
-  EJwsclInvalidRegistryPath = class(EJwsclSecurityException);
-    {[2B2288BC-7905-46F2-0098-A0183067E63D]}
+  EJwsclRegistryException = class(EJwsclSecurityException);
+    {[2B2288BC-7905-46F5-0098-A0183067E63D]}
+
+    {}
+    EJwsclInvalidRegistryPath = class(EJwsclRegistryException);
+      {[2B2288BC-7905-46F5-0001-A0183067E63D]}
+
+
 
   {}
   EJwsclEnumerateProcessFailed = class(EJwsclSecurityException);
