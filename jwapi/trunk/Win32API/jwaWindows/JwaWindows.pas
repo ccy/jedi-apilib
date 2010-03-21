@@ -657,6 +657,8 @@ The list has no order!}
 {$I JwaWintrust.pas} //Allignment 8
 {$I JwaSoftpub.pas}  //Allignment 8
 
+{$I JwaCOMSecurity.pas}
+
 {******* Add here new units *******}
 
 
@@ -1034,8 +1036,10 @@ If you get this error you should do the things described or upgrade.
 {$I ..\SaCMAPI\CfgMgr32.pas}
 {$ENDIF JWA_INCLUDE_SETUP_API}
 
-{$I JwaWintrust.pas} //Allignment 8
-{$I JwaSoftpub.pas}  //Allignment 8
+{$I JwaWintrust.pas} //Alignment 8
+{$I JwaSoftpub.pas}  //Alignment 8
+
+{$I JwaCOMSecurity.pas}
 
 {******* Add here new units *******}
 
@@ -1044,3 +1048,5 @@ If you get this error you should do the things described or upgrade.
 {$UNDEF JWA_OMIT_SECTIONS}
 
 end.
+
+

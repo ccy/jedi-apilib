@@ -233,6 +233,15 @@ function CoQueryAuthenticationServices(
     {__deref_out_ecount( pcAuthSvc)}
     var asAuthSvc : PSOLE_AUTHENTICATION_SERVICE) : HRESULT; stdcall;
 
+
+function CoSwitchCallContext(
+  {__in_opt}  pNewObject : IUnknown;
+  {__out} out ppOldObject : IUnknown
+) : HRESULT; stdcall;
+
+
+
+
 const COM_RIGHTS_EXECUTE = 1;
 const COM_RIGHTS_EXECUTE_LOCAL = 2;
 const COM_RIGHTS_EXECUTE_REMOTE = 4;
@@ -397,7 +406,7 @@ function CoQueryClientBlanket; external ole32 name 'CoQueryClientBlanket';
 function CoImpersonateClient; external ole32 name 'CoImpersonateClient';
 function CoRevertToSelf; external ole32 name 'CoRevertToSelf';
 function CoQueryAuthenticationServices; external ole32 name 'CoQueryAuthenticationServices';
-
+function CoSwitchCallContext; external ole32 name 'CoSwitchCallContext';
 
 {$ENDIF DYNAMIC_LINK}
 
