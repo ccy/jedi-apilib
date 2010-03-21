@@ -87,9 +87,7 @@ const
   IDXN_PasswordExpired = 501;
 
 type
-
   TJwUserAccount = class;
-
   {<B>TJwUserAccounts</B> is not implemented yet}
 
   TJwUserAccounts = class(TObjectList)
@@ -271,9 +269,6 @@ type
 
   public
 //    constructor Create(const ServerName : TJwString = '');
-
-
-
   end;
 
 

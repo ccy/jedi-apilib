@@ -1551,11 +1551,11 @@ type
   {IJwBase is the new base interface class for all JWSCL classes
   which want to implement basic methods.}
   IJwBase = interface
-{.$IFNDEF DELPHI2009_UP}
+{$IFNDEF DELPHI2009_UP}
     function Equals(Obj: TObject): Boolean;
     function GetHashCode: Integer;
     function ToString: String;
-{.$ENDIF DELPHI2009_UP}
+{$ENDIF DELPHI2009_UP}
   end;
 
   TJwComAuthenticationLevel = (

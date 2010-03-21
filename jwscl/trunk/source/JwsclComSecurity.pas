@@ -152,9 +152,9 @@ type
 
   public
     {IJwBase methods}
-    function Equals(Obj: TObject): Boolean; override;
-    function GetHashCode: Integer; override;
-    function ToString: String; override;
+    function Equals(Obj: TObject): Boolean; virtual;
+    function GetHashCode: Integer; virtual;
+    function ToString: String; virtual;
 
   protected
     { BeginUpdate is used to start a property update sequence. It must be called before any of the properties are called. }
