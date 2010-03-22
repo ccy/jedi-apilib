@@ -4103,6 +4103,11 @@ function GetSystemWow64Directory(lpBuffer: LPTSTR; uSize: UINT): UINT; stdcall;
 
 function Wow64EnableWow64FsRedirection(Wow64FsEnableRedirection: BOOL): BOOL; stdcall;
 {$EXTERNALSYM Wow64EnableWow64FsRedirection}
+function Wow64DisableWow64FsRedirection(out OldValue: PVOID): BOOL; stdcall;
+{$EXTERNALSYM Wow64DisableWow64FsRedirection}
+function Wow64RevertWow64FsRedirection(const OldValue: PVOID): BOOL; stdcall;
+{$EXTERNALSYM Wow64RevertWow64FsRedirection}
+
 
 //
 // for GetProcAddress
@@ -13576,6 +13581,32 @@ begin
 end;
 
 var
+  _Wow64DisableWow64FsRedirection: Pointer;
+
+function Wow64DisableWow64FsRedirection;
+begin
+  GetProcedureAddress(_Wow64DisableWow64FsRedirection, kernel32, 'Wow64DisableWow64FsRedirection');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_Wow64DisableWow64FsRedirection]
+  end;
+end;
+
+var
+  _Wow64RevertWow64FsRedirection: Pointer;
+
+function Wow64RevertWow64FsRedirection;
+begin
+  GetProcedureAddress(_Wow64RevertWow64FsRedirection, kernel32, 'Wow64RevertWow64FsRedirection');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_Wow64RevertWow64FsRedirection]
+  end;
+end;
+
+var
   _SetCurrentDirectoryA: Pointer;
 
 function SetCurrentDirectoryA;
@@ -19855,6 +19886,8 @@ function GetSystemWow64DirectoryA; external kernel32 name 'GetSystemWow64Directo
 function GetSystemWow64DirectoryW; external kernel32 name 'GetSystemWow64DirectoryW';
 function GetSystemWow64Directory; external kernel32 name 'GetSystemWow64Directory' + AWSuffix;
 function Wow64EnableWow64FsRedirection; external kernel32 name 'Wow64EnableWow64FsRedirection';
+function Wow64DisableWow64FsRedirection; external kernel32 name 'Wow64DisableWow64FsRedirection';
+function Wow64RevertWow64FsRedirection; external kernel32 name 'Wow64RevertWow64FsRedirection';
 function SetCurrentDirectoryA; external kernel32 name 'SetCurrentDirectoryA';
 function SetCurrentDirectoryW; external kernel32 name 'SetCurrentDirectoryW';
 function SetCurrentDirectory; external kernel32 name 'SetCurrentDirectory' + AWSuffix;
