@@ -127,7 +127,7 @@ type
      raises
  EJwsclInvalidPrimaryToken:  if primary user token is not SYSTEM. }
     procedure RaiseOnInvalidPrimaryToken(MethodName: TJwString);
-  public
+  protected
     {see TokenType }
     function GetTokenType: TOKEN_TYPE; virtual;
 
@@ -182,15 +182,10 @@ type
     function GetTokenUser: TJwSecurityId; virtual;
     function GetUserName : TJwString; virtual;
 
-    procedure GetTokenSource(out SourceName: ShortString;
-      out SourceLUID: TLuid);
-      overload; virtual;
-    function GetTokenSource: TTokenSource; overload; virtual;
-
     function GetTokenGroups: TJwSecurityIdList; virtual;
     procedure SetTokenGroups(List: TJwSecurityIdList); virtual;
 
-    function GetTokenGroupsEx: PTokenGroups;
+
 
     function GetTokenGroupsAttributesInt(Index: integer): TJwSidAttributeSet;
     procedure SetTokenGroupsAttributesInt(Index: integer;
@@ -217,7 +212,12 @@ type
     procedure SetTokenOrigin(const anOrigin: TLuid);
       virtual; //SE_TCB_NAME
 
+    {Obsolete
+    Use the property TokenOwner instead}
     function GetTokenOwner: TJwSecurityId; virtual;
+    {
+    Obsolete
+    Use the property TokenOwner instead}
     procedure SetTokenOwner(const anOwner: TJwSecurityId);
       virtual; //TOKEN_ADJUST_DEFAULT
 
@@ -251,8 +251,12 @@ type
 
     function GetMandatoryPolicy: TJwTokenMandatoryPolicies; virtual;
 
+    {Maps generic access rights of a token to specific access right.
+     A MAXIMUM_ALLOWED will result in the result of function call GetMaximumAllowed().
+    }
     function RetrieveSpecificAccessRights(const AccessMask : TJwAccessMask) : TJwAccessMask; virtual;
   protected
+
         {<B>CheckTokenHandle</B> checks the TokenHandle of this instance and raises EJwsclInvalidTokenHandle if the token is invalid; otherwise it does nothing
          @param aSourceProc defines the caller method
          raises
@@ -298,6 +302,13 @@ type
     function GetMaximumAllowed: TAccessMask;
 
 
+  public
+    {<B>GetTokenSource</B> returns the source name and ID of the token.}
+    procedure GetTokenSource(out SourceName: ShortString;
+      out SourceLUID: TLuid); overload; virtual;
+
+    {<B>GetTokenSource</B> returns the source name and ID of the token in a TTokenSource structure.}
+    function GetTokenSource: TTokenSource; overload; virtual;
   public
     {<B>Create</B> TBD.
      Using this constructor is stronly discouraged!
@@ -4244,7 +4255,7 @@ var
   groups: PTOKEN_GROUPS;
   temp:   cardinal;
 begin
-  CheckTokenHandle('GetTokenGroupsEx');
+  CheckTokenHandle('SetTokenGroups');
 
   if not Assigned(List) then
     raise EJwsclNILParameterException.CreateFmtEx(
@@ -4296,20 +4307,6 @@ begin
     HeapFree(JwProcessHeap, 0, pGroups);
   end;
 end;
-
-function TJwSecurityToken.GetTokenGroupsEx: PTokenGroups;
-  //var pGroups : PTOKEN_GROUPS;
-begin
-  CheckTokenHandle('GetTokenGroupsEx');
-
-  GetTokenInformation(fTokenHandle,
-(*{$IFDEF SL_OMIT_SECTIONS}JwsclLibrary.{$ELSE}
-    JwsclTypes.
-{$ENDIF}*)
-    JwaWindows.TokenGroups, Pointer(Result));
-end;
-
-
 
 
 function TJwSecurityToken.GetTokenRestrictedSids: TJwSecurityIdList;

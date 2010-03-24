@@ -895,20 +895,33 @@ function JwGetLogonSID(aToken: TJwSecurityToken): TJwSecurityId;
 var
   i: integer;
   ptg: TJwSecurityIdList;
+  ownToken : Boolean;
 begin
   Result := nil;
-  ptg := aToken.GetTokenGroups;
 
-  // Loop through the groups to find the logon SID.
-  for i := 0 to ptg.Count - 1 do
+  ownToken := false;
+  if not Assigned(aToken) then
   begin
-    if (ptg[i].Attributes and SE_GROUP_LOGON_ID) = SE_GROUP_LOGON_ID then
+    aToken := TJwSecurityToken.CreateTokenEffective(TOKEN_READ or TOKEN_QUERY);
+    ownToken := true;
+  end;
+  try
+    ptg := aToken.TokenGroups;
+
+    // Loop through the groups to find the logon SID.
+    for i := 0 to ptg.Count - 1 do
     begin
-      // Found the logon SID; make a copy of it.
-      Result := TJwSecurityId.Create(ptg[i].CreateCopyOfSID);
-      Result.AttributesType := [sidaGroupLogonId];
-      Break;
+      if (ptg[i].Attributes and SE_GROUP_LOGON_ID) = SE_GROUP_LOGON_ID then
+      begin
+        // Found the logon SID; make a copy of it.
+        Result := TJwSecurityId.Create(ptg[i].CreateCopyOfSID);
+        Result.AttributesType := [sidaGroupLogonId];
+        Break;
+      end;
     end;
+  finally
+    if ownToken then
+      FreeAndNil(aToken);
   end;
 end;
 
@@ -975,13 +988,15 @@ begin
   fIsStandard := false;
 
   token := TJwSecurityToken.CreateTokenEffective(TOKEN_ALL_ACCESS);
-  S := nil;
   try
-    S := token.GetTokenUser;
-    inherited Create(S);
+    S := token.TokenUser;
+    try
+      inherited Create(S);
+    finally
+      S.Free;
+    end;
   finally
     token.Free;
-    S.Free;
   end;
 end;
 

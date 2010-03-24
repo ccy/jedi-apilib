@@ -10180,9 +10180,9 @@ begin
   try
     Result := TJwSecurityIdList.Create(True);
 
-    groups := token.GetTokenGroups;
+    groups := token.TokenGroups;
     try
-      Result.add(token.GetTokenOwner);
+      Result.add(token.TokenOwner);
 
       for i := 0 to groups.Count - 1 do
       begin

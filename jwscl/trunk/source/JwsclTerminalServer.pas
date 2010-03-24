@@ -4310,7 +4310,7 @@ begin
   if Assigned(FToken) then
   begin
     try
-      FUserSid := FToken.GetTokenUser;
+      FUserSid := FToken.TokenUser;
     except
       on E : EJwsclSecurityException do
         FUserSid := nil;
@@ -4460,7 +4460,7 @@ begin
   if Assigned(FToken) then
   begin
     try
-      FUserSid := FToken.GetTokenUser;
+      FUserSid := FToken.TokenUser;
     except
       on E : EJwsclSecurityException do
         FUserSid := nil;

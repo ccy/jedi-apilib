@@ -184,6 +184,7 @@ type
     elements as if a securable object (like mutex) is created without a SD.
     @param DefaultToken defines a user defined token to be used. It must be of type
             TJwSecurityToken. (because of unit dependings it cannot be the correct type)
+    @param IgnoreLogonSid If set to true, removes the LogonSID from the DACL.
     @param RequestedTokenType defines which token should be used for the new SD.
            If parameter DefaultToken is not nil, RequestedTokenType will be ignored.
           The following values are possible.
@@ -203,7 +204,9 @@ type
      EJwsclNoThreadTokenAvailable: will be raised if parameter RequestedTokenType
        defines rttTokenImpersonation and no thread token is available
     }
-    constructor CreateDefaultByToken(const DefaultToken : TObject = nil;
+    constructor CreateDefaultByToken(
+        const DefaultToken : TObject = nil;
+        const IgnoreLogonSid : Boolean = true;
         const RequestedTokenType: TJwRequestedTokenType = rttAuto);
 
        {<B>Create</B> create a new TJwSecurityDescriptor instance from a security descriptor.
@@ -791,6 +794,7 @@ uses Math,
      JwsclEnumerations,
      JwsclPrivileges,
      JwsclSecureObjects,
+     JwsclKnownSid,
      JwsclToken;
 
 
@@ -920,10 +924,14 @@ end;
 
 constructor TJwSecurityDescriptor.CreateDefaultByToken(
   const DefaultToken : TObject = nil;
+  const IgnoreLogonSid : Boolean = true;  
   const RequestedTokenType: TJwRequestedTokenType = rttAuto);
 
-var OwnToken : Boolean;
-    Token : TJwSecurityToken;
+var
+  OwnToken : Boolean;
+  Token : TJwSecurityToken;
+  i : Integer;
+  LogonSID : TJwSecurityId;
 begin
   Init(false); //init but creates no empty DACL
 
@@ -968,6 +976,18 @@ begin
     Self.OwnPrimaryGroup := false;
     Self.PrimaryGroup := Token.PrimaryGroup;
     Self.OwnPrimaryGroup := true;
+
+    if IgnoreLogonSid then
+    begin
+      LogonSID := JwGetLogonSID(Token);
+      try
+        i := Self.DACL.FindSID(LogonSID);
+        if i >= 0 then
+          Self.DACL.Delete(i);
+      finally
+        LogonSID.Free
+      end;
+    end;
 
   finally
     if OwnToken then

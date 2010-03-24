@@ -450,6 +450,7 @@ type
 {$ENDIF}
 
   {<B>TJwSecurityDescriptorControl</B> defines control flags which defines a security descriptor.
+  http://msdn.microsoft.com/en-us/library/cc230366%28PROT.10%29.aspx
   }
   TJwSecurityDescriptorControl =
     (sdcOwnerDefaulted,
