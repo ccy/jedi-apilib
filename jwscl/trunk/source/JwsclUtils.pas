@@ -694,6 +694,39 @@ otherwise the instance is not touched at all.
 }
 procedure JwFree(var Obj);
 
+
+type
+  TJwFormatMessageFlag = (
+    fmfIngoreInserts  //FORMAT_MESSAGE_IGNORE_INSERTS  = $00000200;
+  );
+  TJwFormatMessageFlags = set of TJwFormatMessageFlag;
+
+//FORMAT_MESSAGE_FROM_SYSTEM
+function JwFormatMessage(
+  const Flags : TJwFormatMessageFlags;
+  const MessageID, LanguageID : Cardinal;
+  const Arguments : array of const
+
+) : TJwString; overload;
+
+
+//FORMAT_MESSAGE_FROM_STRING
+function JwFormatMessage(
+  const MessageString : TJwString;
+  const Flags : TJwFormatMessageFlags;
+  const Arguments : array of const
+
+) : TJwString; overload;
+
+//FORMAT_MESSAGE_FROM_HMODULE
+function JwFormatMessage(
+  const Module : HMODULE;
+  const Flags : TJwFormatMessageFlags;
+  const MessageID, LanguageID : Cardinal;
+  const Arguments : array of const
+) : TJwString; overload;
+
+
 implementation
 uses SysUtils, Math, D5Impl, JwsclToken, JwsclKnownSid, JwsclDescriptor, JwsclAcl,
      JwsclSecureObjects, JwsclMapping, JwsclStreams, JwsclCryptProvider,
@@ -703,6 +736,155 @@ uses SysUtils, Math, D5Impl, JwsclToken, JwsclKnownSid, JwsclDescriptor, JwsclAc
 {$ENDIF JW_TYPEINFO}
       ;
 
+function GetMaxInserts(const S : string) : Cardinal;
+var
+  I,MaxS : Integer;
+  Value : Cardinal;
+  C : String;
+begin
+  result := 0;
+  I := 1;
+  MaxS := Length(S);
+  while I <= MaxS - 1 do
+  begin
+    if S[I] = '%' then
+    begin
+      Inc(I);
+
+      if CharInSet(S[I], ['1'..'9']) then
+      begin
+        C := S[I];
+        Inc(I);
+
+        if (I <= MaxS) and CharInSet(S[I], ['0'..'9']) then
+        begin
+          C := C + S[I];
+        end;
+
+        Value := StrToInt(C);
+        if Value > result then
+          result := Value;
+      end;
+    end;
+    Inc(I);
+  end;
+end;
+
+function FormatMessageFlagsInternal(
+  const Source : Pointer;
+  const Flags : DWORD; const MessageID, LanguageID : Cardinal;
+  Arguments : array of const
+  ) : TJwString;
+var
+  MsgStr : TJwPChar;
+begin
+  if (
+{$IFDEF UNICODE}
+    FormatMessageW(
+{$ELSE}
+    FormatMessageA(
+{$ENDIF}
+      Flags or FORMAT_MESSAGE_ALLOCATE_BUFFER, // DWORD dwFlags,
+      Source,  //LPCVOID lpSource,
+      MessageID,  //DWORD dwMessageId,
+      LanguageID, //DWORD dwLanguageId,
+      TJwPChar(@MsgStr), //LPTSTR lpBuffer,
+      0,             //DWORD nSize,
+      @Arguments[0]) = 0) then    // va_list *Arguments
+  begin
+    RaiseLastOSError;
+  end;
+
+  try
+    Result := MsgStr;
+  finally
+    LocalFree(HLOCAL(MsgStr));
+  end;
+end;
+
+function FormatMessageInternal(
+  const Source : Pointer;
+  FlagsEx : Cardinal;
+  const Flags : TJwFormatMessageFlags;
+  const MessageID, LanguageID : Cardinal;
+  Arguments : array of const
+) : TJwString; overload;
+var
+  MaxInserts : Cardinal;
+  i : Integer;
+begin
+  result := FormatMessageFlagsInternal(Source,
+        FlagsEx or FORMAT_MESSAGE_IGNORE_INSERTS,
+        MessageID, LanguageID, Arguments);
+  if fmfIngoreInserts in Flags then
+    exit;
+
+  MaxInserts := GetMaxInserts(Result);
+  if MaxInserts > Cardinal(Length(Arguments)) then
+  begin
+    raise Exception.Create('');
+  end;
+
+  for i := Low(Arguments) to High(Arguments) do
+  begin
+    case Arguments[i].VType  of
+      vtInt64, vtExtended: raise Exception.Create('');
+    end;
+  end;
+
+  {if fmfIngoreInserts in Flags then //never happens but remains as example
+    SourceFlags := SourceFlags or FORMAT_MESSAGE_IGNORE_INSERTS;
+  }
+  result := FormatMessageFlagsInternal(Source, FlagsEx, MessageID, LanguageID, Arguments);
+end;
+
+function JwFormatMessage(
+  const Flags : TJwFormatMessageFlags;
+  const MessageID, LanguageID : Cardinal;
+  const Arguments : array of const
+) : TJwString; overload;
+begin
+  result := FormatMessageInternal(
+    nil,
+    FORMAT_MESSAGE_FROM_SYSTEM,
+    Flags,
+    MessageID,
+    LanguageID,
+    Arguments);
+end;
+
+//FORMAT_MESSAGE_FROM_STRING
+function JwFormatMessage(
+  const MessageString : TJwString;
+  const Flags : TJwFormatMessageFlags;
+  const Arguments : array of const
+) : TJwString; overload;
+begin
+  result := FormatMessageInternal(
+    TJwPChar(@MessageString[1]),
+    FORMAT_MESSAGE_FROM_STRING,
+    Flags,
+    0,
+    0,
+    Arguments);
+end;
+
+//FORMAT_MESSAGE_FROM_HMODULE
+function JwFormatMessage(
+  const Module : HMODULE;
+  const Flags : TJwFormatMessageFlags;
+  const MessageID, LanguageID : Cardinal;
+  const Arguments : array of const
+) : TJwString; overload;
+begin
+  result := FormatMessageInternal(
+    @Module,
+    FORMAT_MESSAGE_FROM_HMODULE,
+    Flags,
+    MessageID,
+    LanguageID,
+    Arguments);
+end;
 
 procedure JwFree(var Obj);
 var

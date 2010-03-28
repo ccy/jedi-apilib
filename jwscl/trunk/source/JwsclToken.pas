@@ -323,12 +323,13 @@ type
         {
         CreateTokenByProcess creates a new instances and opens a process token.
 
+        Remarks:
         To open a token of another session rather than the current session
         the current process token must be the SYSTEM token. Only the access right
         TOKEN_READ can be used with an admin token.
 
         If parameter aDesiredAccess is MAXIMUM_ALLOWED and the right READ_CONTROL
-        is not granted the value of the property AccessMask is zero. Otherwise
+        is not granted, the value of the property AccessMask is zero. Otherwise
         it contains all granted rights for the token.
 
         If you do not specify TOKEN_DUPLICATE, you will get direct access to
