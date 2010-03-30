@@ -736,7 +736,10 @@ uses SysUtils, Math, D5Impl, JwsclToken, JwsclKnownSid, JwsclDescriptor, JwsclAc
 {$ENDIF JW_TYPEINFO}
       ;
 
-function GetMaxInserts(const S : string) : Cardinal;
+type
+  TInsertType = array of array of AnsiChar;
+
+function GetMaxInserts(const S : string; out Types : TInsertType) : Cardinal;
 var
   I,MaxS : Integer;
   Value : Cardinal;
@@ -751,7 +754,7 @@ begin
     begin
       Inc(I);
 
-      if CharInSet(S[I], ['1'..'9']) then
+      if CharInSet(S[I], ['1'..'9']) then //%0 is a special case that avoids breaks
       begin
         C := S[I];
         Inc(I);
@@ -759,9 +762,28 @@ begin
         if (I <= MaxS) and CharInSet(S[I], ['0'..'9']) then
         begin
           C := C + S[I];
+          Inc(I);
         end;
-
         Value := StrToInt(C);
+
+        {if (I <= MaxS) and (S[i] = '!') then
+        begin
+          Inc(I);
+          while (I < MaxS) and (S[I] <> '!') do
+          begin
+            if S[I] = '*' then
+              Inc(Value);
+
+            if S[I+1] = '!' then
+            begin
+
+            end;
+            //Types
+            Inc(I);
+          end;
+        end;}
+
+
         if Value > result then
           result := Value;
       end;
@@ -777,21 +799,33 @@ function FormatMessageFlagsInternal(
   ) : TJwString;
 var
   MsgStr : TJwPChar;
+  Res : Cardinal;
+  P : array of Pointer;
+  I: Integer;
 begin
-  if (
+  SetLength(P, Length(Arguments));
+  for I := 0 to High(P) do
+  begin
+    P[I] := (Arguments[I].VPointer);
+  end;
+
+
+  Res :=
 {$IFDEF UNICODE}
     FormatMessageW(
 {$ELSE}
     FormatMessageA(
 {$ENDIF}
-      Flags or FORMAT_MESSAGE_ALLOCATE_BUFFER, // DWORD dwFlags,
+      Flags or FORMAT_MESSAGE_ALLOCATE_BUFFER or FORMAT_MESSAGE_ARGUMENT_ARRAY, // DWORD dwFlags,
       Source,  //LPCVOID lpSource,
       MessageID,  //DWORD dwMessageId,
       LanguageID, //DWORD dwLanguageId,
       TJwPChar(@MsgStr), //LPTSTR lpBuffer,
       0,             //DWORD nSize,
-      @Arguments[0]) = 0) then    // va_list *Arguments
+      @P[0]);
+  if (Res = 0) then    // va_list *Arguments
   begin
+    //ERROR_RESOURCE_LANG_NOT_FOUND
     RaiseLastOSError;
   end;
 
@@ -830,7 +864,7 @@ begin
     case Arguments[i].VType  of
       vtInt64, vtExtended: raise Exception.Create('');
     end;
-  end;
+  end; 
 
   {if fmfIngoreInserts in Flags then //never happens but remains as example
     SourceFlags := SourceFlags or FORMAT_MESSAGE_IGNORE_INSERTS;
