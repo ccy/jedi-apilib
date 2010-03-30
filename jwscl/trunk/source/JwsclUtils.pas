@@ -739,7 +739,7 @@ uses SysUtils, Math, D5Impl, JwsclToken, JwsclKnownSid, JwsclDescriptor, JwsclAc
 type
   TInsertType = array of array of AnsiChar;
 
-function GetMaxInserts(const S : string; out Types : TInsertType) : Cardinal;
+function GetMaxInserts(const S : string{; out Types : TInsertType}) : Cardinal;
 var
   I,MaxS : Integer;
   Value : Cardinal;
@@ -822,8 +822,8 @@ begin
       LanguageID, //DWORD dwLanguageId,
       TJwPChar(@MsgStr), //LPTSTR lpBuffer,
       0,             //DWORD nSize,
-      @P[0]);
-  if (Res = 0) then    // va_list *Arguments
+      @P[0]);// va_list *Arguments
+  if (Res = 0) then    
   begin
     //ERROR_RESOURCE_LANG_NOT_FOUND
     RaiseLastOSError;
