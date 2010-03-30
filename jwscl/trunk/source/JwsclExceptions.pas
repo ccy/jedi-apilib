@@ -550,27 +550,28 @@ type
     {[2B2288BC-7905-46F2-0078-A0183067E63D]}
 
   //general exception for Active Directory methods
-  EJwsclAdException = class(EJwsclSecurityException)
-    {[2B2288BC-7905-46F2-0079-A0183067E63D]};
+  EJwsclAdException = class(EJwsclSecurityException);
+    {[59C4243D-5B3D-4E10-9121-FA870879B66E]}
 
   //Active Directory Search Exception
   EJwsclAdSearchException = class(EJwsclAdException)
-    {[2B2288BC-7905-46FF-0079-A0183067E63D]};
+    {[C54ED1C1-AF7E-4A69-8F32-51FFE0D58C36]};
 
-    //Invalid Active Directory Search Filter
-    EJwsclAdInvalidFilterException = class(EJwsclAdException)
-      {[2B2288BC-7905-46F3-0079-A0183067E63D]};
+  //Invalid Active Directory Search Filter
+  EJwsclAdInvalidFilterException = class(EJwsclAdException)
+   {[06051D28-F88D-4D9C-B641-30F004320B28]};
 
-    //Active Directory Search returned no results
-    EJwsclAdNoResultException = class(EJwsclAdException)
-      {[2B2288BC-7905-46F3-0079-A0183067E63D]};
+  //Active Directory Search returned no results
+  EJwsclAdNoResultException = class(EJwsclAdException)
+   {[E5EB6A51-20F3-417C-8CEB-6FC30D4FA90D]};
 
-    // AdsGetObject returns no interface
-    EJwsclAdNoInterfaceException = class(EJwsclAdException)
-     {[2B2288BC-7905-46F3-0079-A0183067E63D]};
+  // AdsGetObject returns no interface
+  EJwsclAdNoInterfaceException = class(EJwsclAdException)
+   {[4600058D-C29B-4875-A12D-325816DC8677]};
 
   // Raised in TJwAdBase.SetAsxxx functions
   EJwsclAdSetPropertyException = class(EJwsclAdException);
+    {[16DE9A67-D47F-424E-95DC-40E38E8B1AEC]}
 
   {general exception for terminal server methods}
   EJwsclTerminalServerException = class(EJwsclSecurityException);
