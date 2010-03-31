@@ -29,6 +29,8 @@ type
     procedure TestGlobalAllocMem;
     procedure TestMakeGlobalAllocLeak;
     procedure TestCheckAdministratorAccess;
+    procedure TestJwFormatMessage;
+
 
     procedure TestSetThreadName;
   end;
@@ -72,6 +74,41 @@ begin
 
   JwGlobalFreeMem(Mem);
 
+end;
+
+
+
+
+procedure TestUnitUtils.TestJwFormatMessage;
+var
+ R : String;
+ i64 : Int64;
+begin
+  i64 := High(Int64);
+  R := JwFormatMessage(
+    'Hallo %1',//const MessageString : TJwString;
+    [],//const Flags : TJwFormatMessageFlags;
+    ['123']//const Arguments : array of const
+  );
+  //replace type int64 to int32
+  R := JwFormatMessage(
+    'Hallo %1!I64x!',//const MessageString : TJwString;
+    [],//const Flags : TJwFormatMessageFlags;
+    [Variant(1),High(int64)]//const Arguments : array of const
+  );
+ // ShowMessage(R );
+
+ { R := JwFormatMessage(
+    'Hallo %1!*.*s!',//const MessageString : TJwString;
+    [],//const Flags : TJwFormatMessageFlags;
+    [123,345, PAnsiChar(AnsiString('123'))]//const Arguments : array of const
+  );    }
+ { R := JwFormatMessage(
+    'Hallo %1!*.*d! %2',//const MessageString : TJwString;
+    [],//const Flags : TJwFormatMessageFlags;
+    ['123']//const Arguments : array of const
+  );  }
+  ShowMessage(R );
 end;
 
 procedure TestUnitUtils.TestLocalAllocMem;
