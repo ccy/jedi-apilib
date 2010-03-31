@@ -737,58 +737,156 @@ uses SysUtils, Math, D5Impl, JwsclToken, JwsclKnownSid, JwsclDescriptor, JwsclAc
       ;
 
 type
-  TInsertType = array of array of AnsiChar;
+  TInsertType = array of record
+    TypeValue : Char;
+    TypeSize  : Byte;
+    Flags : Char;
+    Width, Precision : Integer;
 
-function GetMaxInserts(const S : string{; out Types : TInsertType}) : Cardinal;
+    TextPos,
+    TypeSizePos,
+
+    TextLen,
+    TypeSizeLen : Integer;
+  end;
+
+function GetMaxInserts(const S : string; out Types : TInsertType) : Cardinal; //internal
+const TypeSizeArray : array[1..6] of record
+        name : string;
+        Size : Integer;
+      end =
+       (
+       (name: 'I64';Size: 8),
+       (name: 'I32';Size: 4),
+       (name: 'I';Size: {$IFDEF WIN64}8{$ELSE}4{$ENDIF WIN64}),
+       (name: 'll';Size: 8),
+       (name: 'l';Size: 4),
+       (name: 'h';Size: TJwCharSize)
+       );
+
 var
-  I,MaxS : Integer;
+  Start,
+  FieldWidth, FieldPrec,
+  I, I2, p, MaxS,
+  TypeSizePos, TypeSizeLen : Integer;
+  FieldSize : Byte;
   Value : Cardinal;
-  C : String;
+  FieldType : Char;
+  FieldSizeS : String;
+  FieldFlag, C : String;
 begin
   result := 0;
   I := 1;
   MaxS := Length(S);
-  while I <= MaxS - 1 do
+
+  while I < MaxS do
   begin
     if S[I] = '%' then
     begin
+      Start := I;
       Inc(I);
 
       if CharInSet(S[I], ['1'..'9']) then //%0 is a special case that avoids breaks
       begin
+        //found an insert e.g. "%1xxxxxxxxx"
+        Inc(result);
+        SetLength(Types, Result);
+
         C := S[I];
         Inc(I);
 
+        //get the full numbers
         if (I <= MaxS) and CharInSet(S[I], ['0'..'9']) then
         begin
           C := C + S[I];
           Inc(I);
         end;
-        Value := StrToInt(C);
 
-        {if (I <= MaxS) and (S[i] = '!') then
+
+        FieldSize := 0;
+        FieldType := #0;
+        TypeSizePos := 0;
+        TypeSizeLen := 0;
+
+        //read the parameters of an inserts between ! and !
+
+        {
+          ![flags] [width] [.precision] [h | l  | ll | I | I32  | I64]type!
+          e.g. "!*.*I64d!"
+        }
+        if (I <= MaxS) and (S[i] = '!') then
         begin
           Inc(I);
+
+          FieldFlag := #0;
+          FieldWidth := -2;
+          FieldPrec := -2;
+
+          //enumerate all chars until last parameter bracket (!) was found
           while (I < MaxS) and (S[I] <> '!') do
           begin
+         {   if (FieldFlag = #0) and CharInSet(S[I], ['-','+','0',' ', '#']) then
+              FieldFlag := S[I]
+            else    }
             if S[I] = '*' then
-              Inc(Value);
-
-            if S[I+1] = '!' then
             begin
-
+              //found placeholder and increase Types array
+              Inc(result);
             end;
-            //Types
+          {  else
+            if S[I] = '.' then
+            begin
+            end;  }
+
             Inc(I);
           end;
-        end;}
 
+          if (I <= MaxS) then
+          begin
+            //find substrings from biggest length to smallest
+            FieldSizeS := Copy(S, I-1-3, 3);  //
+            FieldSize := 0;
 
-        if Value > result then
-          result := Value;
+            I2 := Low(TypeSizeArray);
+            p := -1;
+
+            //search for insert type size e.g. I64, I, ll, l, h
+            while (I2 <= High(TypeSizeArray)) and (p = -1) do
+            begin
+              p := Pos(TypeSizeArray[I2].name, FieldSizeS);
+
+              if p >= 1 then
+              begin
+                //store type, pos and length of insert type size
+                FieldSize := TypeSizeArray[I2].Size;
+                TypeSizePos := I-2-3+p;
+                TypeSizeLen := Length(TypeSizeArray[I2].name);
+              end;
+
+              Inc(I2);
+            end;
+
+            FieldType := S[I-1]; //store field type (s, d, x ...)
+          end;
+
+          //store the data into the array
+          SetLength(Types, Result);
+          Types[Result-1].TypeValue := FieldType;
+          Types[Result-1].TypeSize := FieldSize;
+
+          Types[Result-1].TextPos := Start;
+          Types[Result-1].TextLen := I - Start + 1;
+          Types[Result-1].TypeSizePos := TypeSizePos;
+          Types[Result-1].TypeSizeLen := TypeSizeLen;
+        end
+        else  //no parameter for insert
+        begin
+          FieldType := 's'; //defaults to string
+          Types[Result-1].TypeValue := FieldType;
+        end;
       end;
     end;
-    Inc(I);
+    Inc(I); //next char
   end;
 end;
 
@@ -796,7 +894,7 @@ function FormatMessageFlagsInternal(
   const Source : Pointer;
   const Flags : DWORD; const MessageID, LanguageID : Cardinal;
   Arguments : array of const
-  ) : TJwString;
+  ) : TJwString; //internal
 var
   MsgStr : TJwPChar;
   Res : Cardinal;
@@ -806,7 +904,7 @@ begin
   SetLength(P, Length(Arguments));
   for I := 0 to High(P) do
   begin
-    P[I] := (Arguments[I].VPointer);
+    P[I] := Arguments[I].VPointer;
   end;
 
 
@@ -823,7 +921,7 @@ begin
       TJwPChar(@MsgStr), //LPTSTR lpBuffer,
       0,             //DWORD nSize,
       @P[0]);// va_list *Arguments
-  if (Res = 0) then    
+  if (Res = 0) then
   begin
     //ERROR_RESOURCE_LANG_NOT_FOUND
     RaiseLastOSError;
@@ -836,43 +934,171 @@ begin
   end;
 end;
 
+{$IFNDEF DELPHI2009_UP}
+type
+  TACharSet = set of AnsiChar;
+
+function CharInSet(C: AnsiChar; const CharSet: TACharSet): Boolean; //internal
+begin
+  Result := C in CharSet;
+end;
+{$ENDIF DELPHI2009_UP}
+
 function FormatMessageInternal(
   const Source : Pointer;
   FlagsEx : Cardinal;
   const Flags : TJwFormatMessageFlags;
   const MessageID, LanguageID : Cardinal;
   Arguments : array of const
-) : TJwString; overload;
+) : TJwString; overload; //internal
+
+const
+  vtNames : array[0..18] of String = (
+      'vtInteger',
+      'vtBoolean',
+      'vtChar',
+      'vtExtended',
+      'vtString',
+      'vtPointer',
+{$IFDEF DELPHI2009_UP}
+      'vtPChar (PAnsiChar)',
+{$ELSE}
+      'vtPChar (Ansicode)',
+{$ENDIF DELPHI2009_UP}
+      'vtObject',
+      'vtClass',
+      'vtWideChar',
+      'vtPWideChar',
+      'vtAnsiString',
+      'vtCurrency',
+      'vtVariant',
+      'vtInterface',
+      'vtWideString',
+      'vtInt64',
+      'vtUnicodeString',
+      '(unknown)');
+
 var
   MaxInserts : Cardinal;
   i : Integer;
+  Types : TInsertType;
+  S : String;
 begin
   result := FormatMessageFlagsInternal(Source,
         FlagsEx or FORMAT_MESSAGE_IGNORE_INSERTS,
         MessageID, LanguageID, Arguments);
+
   if fmfIngoreInserts in Flags then
     exit;
 
-  MaxInserts := GetMaxInserts(Result);
+  //Returns the number of inserts
+  // and more information about them
+  //The Types array is a direct mapping to the arguments
+  //Placeholders (star "*") are mapped to an extra entry in the Types array but remain empty (0)
+  //So %1!*.*d! maps to Types[0..1] = 0 and Types[2].TypeValue = 'd'
+  MaxInserts := GetMaxInserts(Result, Types);
+
+  //check for more inserts than arguments given
   if MaxInserts > Cardinal(Length(Arguments)) then
   begin
-    raise Exception.Create('');
+    raise Exception.CreateFmt('There were %0:d insert(s) (with possible placeholders "*") found but only %1:d argument(s) given.',
+       [MaxInserts, Length(Arguments)]);
   end;
 
-  for i := Low(Arguments) to High(Arguments) do
+  for i := Low(Types) to High(Types) do
   begin
-    case Arguments[i].VType  of
-      vtInt64, vtExtended: raise Exception.Create('');
+    //check if an insert has a 8 byte size specified (int64)
+    if Types[i].TypeSize = 8 then
+    begin
+      //if the argument has also int64 then replace it
+      if Arguments[i].VType = vtInt64 then
+      begin
+        System.Delete(Result, Types[i].TextPos, Types[i].TextLen);
+
+        //replace int64 with a hex value
+        if CharInSet(Types[i].TypeValue, ['x', 'X']) then
+        begin
+          S := IntToHex(Arguments[i].VInt64^, 8);
+
+          if Types[i].TypeValue = 'x' then
+            S := LowerCase(S); //IntToHex produces capital letters
+        end
+        else
+        begin
+          //write decimal (ignore octacal forw now)
+          S := IntToStr(Arguments[i].VInt64^);
+        end;
+
+        System.Insert(S, Result, Types[i].TextPos);
+      end
+      else
+      begin
+        //replace insert type size (e.g. I64) with a long size type
+        System.Delete(Result, Types[i].TypeSizePos, Types[i].TypeSizeLen);
+        System.Insert('l', Result, Types[i].TypeSizePos);
+      end;
     end;
-  end; 
+  end;
+
+  for i := Low(Arguments) to min(High(Arguments), High(Types)) do
+  begin
+    //check for invalid argument types
+    case Arguments[i].VType  of
+      vtExtended,
+      vtVariant
+            : raise Exception.CreateFmt('The argument %0:d contains an unsupported type: %1:s',
+                        [i, vtNames[min(Arguments[i].VType, High(vtNames))]]);
+    end;
+
+    //if TypeValue is 0 then it is a placeholder (*)
+    if Types[i].TypeValue <> #0 then
+    begin
+      //If we have a string insert...
+      if CharInSet(Types[i].TypeValue, ['S', 's']) then
+      begin
+        //...but the argument is not a string, then error
+        if      (Arguments[i].VType <> vtString)
+            and (Arguments[i].VType <> vtPWideChar)
+            and (Arguments[i].VType <> vtPChar)
+            and (Arguments[i].VType <> vtAnsiString)
+{$IFDEF DELPHI2009_UP}
+            and (Arguments[i].VType <> vtUnicodeString)
+{$ENDIF DELPHI2009_UP}
+        then
+        begin
+           raise Exception.CreateFmt('Parameter %0:d has type %1:s but it should have been a string.',
+             [i, vtNames[min(Arguments[i].VType, High(vtNames))]]);
+        end;
+
+        //Check for mismatch of unicode and ansicode arguments and inserts
+{$IFDEF UNICODE}
+        if (Arguments[i].VType = vtAnsiString) or
+           (Arguments[i].VType = vtPChar) then
+{$ELSE}
+        if
+{$IFDEF DELPHI2009_UP}
+           (Arguments[i].VType = vtUnicodeString) or
+{$ENDIF DELPHI2009_UP}
+           (Arguments[i].VType = vtPWideChar) then
+{$ENDIF UNICODE}
+        begin
+          raise Exception.CreateFmt('Parameter %0:d has type %1:s but it should have been a %2:s string.',
+             [i, vtNames[min(Arguments[i].VType, High(vtNames))],
+ {$IFDEF UNICODE}'Unicode' {$ELSE}'Ansicode'{$ENDIF UNICODE}]);
+        end;
+      end;
+    end;
+  end;
+
 
   {if fmfIngoreInserts in Flags then //never happens but remains as example
     SourceFlags := SourceFlags or FORMAT_MESSAGE_IGNORE_INSERTS;
   }
-  result := FormatMessageFlagsInternal(Source, FlagsEx, MessageID, LanguageID, Arguments);
+  result := FormatMessageFlagsInternal(Pointer(result), FlagsEx, MessageID, LanguageID, Arguments);
 end;
 
-function JwFormatMessage(
+function
+JwFormatMessage(
   const Flags : TJwFormatMessageFlags;
   const MessageID, LanguageID : Cardinal;
   const Arguments : array of const
