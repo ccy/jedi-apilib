@@ -658,6 +658,8 @@ The list has no order!}
 {$I JwaSoftpub.pas}  //Allignment 8
 
 {$I JwaCOMSecurity.pas}
+{$I JwaTaskDialog.pas}
+
 
 {******* Add here new units *******}
 
@@ -1040,6 +1042,7 @@ If you get this error you should do the things described or upgrade.
 {$I JwaSoftpub.pas}  //Alignment 8
 
 {$I JwaCOMSecurity.pas}
+{$I JwaTaskDialog.pas}
 
 {******* Add here new units *******}
 

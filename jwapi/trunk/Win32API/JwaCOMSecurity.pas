@@ -46,14 +46,13 @@
 {$IFNDEF JWA_OMIT_SECTIONS}
 unit JwaCOMSecurity;
 {$ENDIF JWA_OMIT_SECTIONS}
-
 {.$HPPEMIT ''}
 {.$HPPEMIT '#include "xxxx.h"'}
 {.$HPPEMIT ''}
 
-{$I ..\Includes\JediAPILib.inc}
-
 {$IFNDEF JWA_OMIT_SECTIONS}
+
+{$I ..\Includes\JediAPILib.inc}
 
 interface
 

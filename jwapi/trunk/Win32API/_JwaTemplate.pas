@@ -40,14 +40,14 @@ This unit is a template! Adapt it for new JEDI API units. Don't override it.
 
 {$IFNDEF JWA_OMIT_SECTIONS}
 unit Jwa_UnitName;
+{$ENDIF JWA_OMIT_SECTIONS}
 
 {$HPPEMIT ''}
 {$HPPEMIT '#include "xxxx.h"'}
 {$HPPEMIT ''}
 
-{$I ..\Includes\JediAPILib.inc}
 {$IFNDEF JWA_OMIT_SECTIONS}
-
+{$I ..\Includes\JediAPILib.inc}
 
 interface
 
