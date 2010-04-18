@@ -20,7 +20,7 @@
   
   For more information about the LGPL: http://www.gnu.org/copyleft/lesser.html
   Note
-  The Original Code is JwsclCOM.pas.
+  The Original Code is JwsclCOMSecurity.pas.
   
   The Initial Developer of the Original Code is Christian Wimmer.
   TODO

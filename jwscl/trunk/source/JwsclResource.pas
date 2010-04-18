@@ -180,7 +180,17 @@ const
   RsUNCredentialsInvalidLogonSession = 'There is no such logon session!';
 
 
+//Unit JwsclExceptions.pas
 
+  RSConfirmation = 'Confirmation';
+  RSConfirmOpeningUrl = 'Do you want to open the URL "%0:s" in your browser?';
+  RSExceptionDialogTitle = 'Exception Dialog';
+  RSJwsclExceptionRaised = 'The JWSCL Exception "%0:s" was raised with the following message';
+  RSHideDetails = 'Click to hide details';
+  RSShowDetails = 'Click for more details';
+  RSVisitJwscl = 'Visit <a href="http://blog.delphi-jedi.net">JWSCL</a> at home.'#13#10'Press Ctrl+C to copy content to clipboard.';
+  RSExceptionDetailInfo =
+  'Source Information:\r\n  Procedure: %0:s\r\n  Class : %1:s\r\n  File: %2:s\r\n  Line: %3:d\r\nWin32 Error Information:\r\n  Function: %4:s\r\n  LastError: %5:d [$%5:x] (%6:s)';
 
 //Unit JwsclTypes.pas
 

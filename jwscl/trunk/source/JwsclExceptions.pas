@@ -43,19 +43,21 @@ Remarks
 Warning: Only use Delphi 7 syntax!
 
 TODO:
-  1. 
+  1.
 
 }
 
 {$IFNDEF SL_OMIT_SECTIONS}
 unit JwsclExceptions;
 {$INCLUDE ..\includes\Jwscl.inc}
+{$I ..\Includes\JediAPILib.inc}
 // Last modified: $Date: 2007-09-10 10:00:00 +0100 $
 
 interface
 
 uses SysUtils, Classes,
-  jwaWindows, D5impl,
+  D5impl,
+  JwaWindows,
   JwsclResource,
   JwsclTypes, JwsclStrings;
 
@@ -114,6 +116,8 @@ type
     fStackTrace : TJwString;
 
     procedure DoFormatExceptionMessage(ConstructorType : TJwExceptionConstructorType);
+
+    class procedure OnApplicationShowException(E: Exception);
   public
     constructor Create(const Msg: String); overload;
            {<B>CreateFmtEx</B> creates an instance of the @classname exception.
@@ -933,15 +937,48 @@ function JwMapException(Const Name : WideString) : TGuid; overload;
 }
 procedure JwRaiseOutOfMemoryException;
 
+
+{JwShowJwsclException displays a dialog presenting a JWSCL exception with detailed information.
+On Windows Vista or newer the new TaskDialog is used if the JEDI API source was compiled with
+WIN2008_UP or WINVISTA_UP; otherwise a simple message dialog is shown.
+
+}
+procedure JwShowJwsclException(const E : EJwsclSecurityException);
+
+{
+JwHandleJwsclException displays a dialog presenting a JWSCL exception with detailed information.
+This dialog is only shown if parameter E is a JWSCL exception.
+
+Return Value
+  Returns true if the parameter E is an JWSCL exception. In this case a dialog is shown.
+  If the supplied exception is not an JWSCL exception the return value is false and no dialog is shown.
+
+Source
+  You can show the JWSCL Task Exception Dialog in a VCL application using the TApplicationEvents
+  component and declaring the event OnException in the following way:
+  <code>
+    procedure TForm.ApplicationEvents1Exception(Sender: TObject; E: Exception);
+    begin
+      if not JwHandleJwsclException(E) then
+        Application.ShowException(E);
+    end;
+  </code>
+
+
+}
+function JwHandleJwsclException(const E : TObject) : Boolean;
+
 var
   JwOutOfMemoryException : EJwsclOutOfMemoryException;
+  JwExceptionShowDetails : Boolean = false;
+
 
 {$ENDIF SL_IMPLEMENTATION_SECTION}
 
 {$IFNDEF SL_OMIT_SECTIONS}
 implementation
 
-uses JwsclConstants, JwsclDescriptor
+uses JwsclConstants, JwsclDescriptor, JwsclVersion
 {$IFDEF SM_JCLDEBUG}
   ,jclDebug, JwsclStrings
 {$ENDIF}
@@ -950,6 +987,126 @@ uses JwsclConstants, JwsclDescriptor
 
 {$ENDIF SL_OMIT_SECTIONS}
 
+
+//The JWSCL Task Exception Dialog can only be used with JEDI API compiled with WINVISTA_UP or WIN2008_UP compiler switch (JediAPILib.inc)
+{$UNDEF SUPPORT_TASK_DIALOG}
+{$IFDEF WIN2008_UP}
+  {$DEFINE SUPPORT_TASK_DIALOG}
+{$ENDIF WIN2008_UP}
+
+{$IFDEF WINVISTA_UP}
+  {$DEFINE SUPPORT_TASK_DIALOG}
+{$ENDIF WINVISTA_UP}
+
+{$IFDEF SUPPORT_TASK_DIALOG}
+
+type
+  TTaskDlgData = record
+    ShowDetails : Boolean;
+  end;
+  PTaskDlgData = ^TTaskDlgData;
+
+function TaskDlgCallback({__in} hwnd : HWND; {__in} msg : UINT;
+      {__in} wParam : WPARAM; {__in} lParam : LPARAM;
+      {__in} lpRefData : LONG_PTR) : HRESULT; stdcall;
+var
+  URL : PWideChar;
+  TaskDlgData : PTaskDlgData;
+begin
+  case msg of
+    TDN_HYPERLINK_CLICKED :
+      begin
+        URL := PWideChar(lParam);
+        if URL <> nil then
+        begin
+          if MessageBoxW(hwnd, PWideChar(Format(RSConfirmOpeningUrl,
+            [WideString(URL)])), RSConfirmation, MB_YESNO) = IDYES then
+            ShellExecute(0, 'open', URL, '', '', SW_SHOWNORMAL);
+        end;
+
+        result := S_FALSE;
+      end;
+    TDN_EXPANDO_BUTTON_CLICKED :
+      begin
+        TaskDlgData := PTaskDlgData(lpRefData);
+        TaskDlgData.ShowDetails := Boolean(wParam);
+      end;
+
+  else
+    result := S_OK;
+  end;
+end;
+{$ENDIF SUPPORT_TASK_DIALOG}
+
+procedure JwShowJwsclException(const E : EJwsclSecurityException);
+const sTitle = 'JEDI Windows Security Code Library - ';
+
+procedure InternalBox;
+begin
+  MessageBoxW(0, PWideChar(WideString(E.Message)), sTitle + RSExceptionDialogTitle, MB_ICONHAND or MB_OK);
+end;
+
+{$IFDEF SUPPORT_TASK_DIALOG}
+var
+  TaskConfig : TASKDIALOGCONFIG;
+  DialogResult : Integer;
+
+  ExpandedInformation : WideString;
+  TaskDlgData : TTaskDlgData;
+begin
+  if TJwWindowsVersion.IsWindowsVista(True) or
+     TJwWindowsVersion.IsWindows2008(True)
+  then
+  begin
+    ZeroMemory(@TaskConfig, sizeof(TaskConfig));
+
+    TaskConfig.cbSize := sizeof(TaskConfig);
+    TaskConfig.hwndParent := 0;
+    TaskConfig.hInstance := 0;
+    TaskConfig.pfCallback := @TaskDlgCallback;
+    TaskConfig.lpCallbackData := @TaskDlgData;
+
+    TaskConfig.dwFlags := TDF_ENABLE_HYPERLINKS or TDF_EXPAND_FOOTER_AREA;
+    if JwExceptionShowDetails then
+      TaskConfig.dwFlags := TaskConfig.dwFlags or TDF_EXPANDED_BY_DEFAULT;
+
+    TaskConfig.dwCommonButtons := TDCBF_CLOSE_BUTTON;
+    TaskConfig.pszMainIcon := TD_ERROR_ICON;
+
+    TaskConfig.pszWindowTitle := sTitle + RSExceptionDialogTitle;
+    TaskConfig.pszMainInstruction := PWideChar(WideString(Format(RSJwsclExceptionRaised,[E.ClassName])));
+    TaskConfig.pszContent := PWideChar(WideString(E.SimpleMessage));
+    TaskConfig.pszExpandedControlText := RSHideDetails;
+    TaskConfig.pszCollapsedControlText := RSShowDetails;
+    TaskConfig.pszFooterText := RSVisitJwscl;
+
+    ExpandedInformation := (JwFormatString(RSExceptionDetailInfo,
+            [E.SourceProc, E.SourceClass, E.SourceFile, E.SourceLine, E.WinCallName, E.LastError, SysErrorMessage(E.LastError)]));
+    TaskConfig.pszExpandedInformation := PWideChar(ExpandedInformation);
+
+    TaskDialogIndirect(TaskConfig, @DialogResult, nil, nil);
+    JwExceptionShowDetails := TaskDlgData.ShowDetails;
+  end
+  else
+  begin
+    InternalBox;
+  end;
+end;
+{$ELSE}
+begin
+  InternalBox;
+end;
+{$ENDIF SUPPORT_TASK_DIALOG}
+
+function JwHandleJwsclException(const E : TObject) : Boolean;
+begin
+  result := E is EJwsclSecurityException;
+
+  if result then
+  begin
+    JwShowJwsclException(E as EJwsclSecurityException);
+  end;
+end;
 
 procedure JwRaiseLastOSError(const FailedWin32FunctionName,
   Method, ClassName, FileName : TJwString);
@@ -1088,8 +1245,7 @@ constructor EJwsclSecurityException.Create(
 begin
   inherited Create(anException.Message);
 
-  fSimpleMessage := anException.Message;
-
+  fSimpleMessage := anException.fSimpleMessage;
   fLastError := anException.fLastError;
   fSourceProc := anException.fSourceProc;
   fsSourceClass := anException.fsSourceClass;
@@ -1125,7 +1281,8 @@ begin
   fiSourceLine := fiSourceLine;
   ZeroMemory(@fGuid, sizeof(fGuid));
 
-  fSimpleMessage := MessageString;
+  fSimpleMessage := JwFormatString(MessageString,Args);
+
 
   if Length(MessageString) > 0 then
   begin
@@ -1218,7 +1375,7 @@ begin
 
   ZeroMemory(@fGuid, sizeof(fGuid));
 
-  fSimpleMessage := MessageString;
+  fSimpleMessage := JwFormatString(MessageString,Args);
 
 
   if Length(MessageString) > 0 then
@@ -1459,9 +1616,57 @@ begin
   raise JwOutOfMemoryException;
 end;
 
+type
+  TNewExceptHandler = procedure(ExceptObject: TObject; ExceptAddr: Pointer);
+  TShowApplicationException = procedure (E: Exception) of object;
+
+var
+  OldExceptProc : Pointer;
+  OldShowAppException : TShowApplicationException;
+
+
+procedure JwsclExceptHandler(ExceptObject: TObject; ExceptAddr: Pointer); far;
+begin
+  if ExceptObject is EJwsclSecurityException then
+  begin
+    JwShowJwsclException(ExceptObject as EJwsclSecurityException);
+  end
+  else
+  if OldExceptProc <> nil then
+    TNewExceptHandler(OldExceptProc)(ExceptObject, ExceptAddr);
+end;
+
+class procedure EJwsclSecurityException.OnApplicationShowException(E: Exception);
+begin
+  if ExceptObject is EJwsclSecurityException then
+  begin
+    JwShowJwsclException(E as EJwsclSecurityException);
+  end
+  else
+  begin
+    if Assigned(OldShowAppException) then
+      OldShowAppException(E);
+  end;
+end;
+
 initialization
   JwOutOfMemoryException := EJwsclOutOfMemoryException.Create('Generic Out of Memory Exception by JWSCL methods.');
+
+{$IFDEF JWSCL_USE_TASK_EXCEPTION_DIALOGS}
+  OldExceptProc := ExceptProc;
+  ExceptProc := @JwsclExceptHandler;
+
+  OldShowAppException := ApplicationShowException;
+  ApplicationShowException := EJwsclSecurityException.OnApplicationShowException;
+{$ENDIF JWSCL_USE_TASK_EXCEPTION_DIALOGS}
+
 finalization
+{$IFDEF JWSCL_USE_TASK_EXCEPTION_DIALOGS}
+  ExceptProc := OldExceptProc;
+
+  ApplicationShowException := OldShowAppException;
+{$ENDIF JWSCL_USE_TASK_EXCEPTION_DIALOGS}
+
   FreeAndNil(JwOutOfMemoryException);
 
 {$ENDIF SL_INTERFACE_SECTION}

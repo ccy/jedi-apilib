@@ -46,11 +46,25 @@ Warning #2: If the JEDI API headers are used with a directive WIN_XP or lower
 
 //Use cache mechanism for
 // * TJwSecurityID.GetAccountSidString and property AccountName
-{$DEFINE JWSCL_USE_CACHES}
+{.$DEFINE JWSCL_USE_CACHES}
+
+//Define this switch to allow showing a JWSCL task dialog when an exception is raised.
+//In this way the default Delphi exception dialog is replaced.
+//However, the VCL exception handling is not catched though. Instead, read the
+//documentation of JwsclException.pas::JwHandleJwsclException and find out
+//how to show the JWSCL dialog with VCL.
+//The task dialog is only shown if the JEDI API source was compiled with compiler switch
+//WIN2008 or WINVISTA and the running system is a Vista/2008 or newer.
+{.$DEFINE JWSCL_USE_TASK_EXCEPTION_DIALOGS}
 
 {$IFDEF JWSCL_USE_CACHES}
   {$DEFINE JWSCL_SIDCACHE}
 {$ENDIF JWSCL_USE_CACHES}
+
+//If JW_TYPEINFO is set, JWSCL uses the unit TypInfo
+//See JWSCLUtils.pas GetUnitName
+{$DEFINE JW_TYPEINFO}
+
 
 {$IFDEF DELPHI2010_UP}
 {$IFNDEF DEBUG}

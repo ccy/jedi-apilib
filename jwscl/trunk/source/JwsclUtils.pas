@@ -893,7 +893,6 @@ var
   MsgStr : TJwPChar;
   Res : Cardinal;
   P : array of Pointer;
-  Temp : array of TJwString;
   I : Integer;
 begin
   P := nil;

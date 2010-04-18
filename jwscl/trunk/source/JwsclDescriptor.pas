@@ -742,7 +742,7 @@ type
     property SDDL[SIFlags: TJwSecurityInformationFlagSet]: TJwString
       Read GetSDDLString;
 
-    {<B>Text</B> returns a text that descripes the security descriptor in a human readable format.}
+    {<B>Text</B> returns a text that describes the security descriptor in a human readable format.}
     property Text: TJwString Read GetText;
 
        {<B>OnHashCodeMethod</B> sets or gets the stream hash function used by SavetoStream and LoadFromStream
