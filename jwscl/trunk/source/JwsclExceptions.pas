@@ -1053,6 +1053,8 @@ var
 
   ExpandedInformation : WideString;
   TaskDlgData : TTaskDlgData;
+
+  Redirect : Pointer;
 begin
   if TJwWindowsVersion.IsWindowsVista(True) or
      TJwWindowsVersion.IsWindows2008(True)
@@ -1084,7 +1086,15 @@ begin
             [E.SourceProc, E.SourceClass, E.SourceFile, E.SourceLine, E.WinCallName, E.LastError, SysErrorMessage(E.LastError)]));
     TaskConfig.pszExpandedInformation := PWideChar(ExpandedInformation);
 
-    TaskDialogIndirect(TaskConfig, @DialogResult, nil, nil);
+    try
+      TaskDialogIndirect(TaskConfig, @DialogResult, nil, nil);
+    except
+      //this exception occurs if there is no vista theme manifest in the binary so the window manager uses old school libraries
+      on E : EJwaGetProcAddressError do
+        InternalBox;
+    else
+      raise;
+    end;
     JwExceptionShowDetails := TaskDlgData.ShowDetails;
   end
   else
