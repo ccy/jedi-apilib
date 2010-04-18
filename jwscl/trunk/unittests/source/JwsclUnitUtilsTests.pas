@@ -80,35 +80,94 @@ end;
 
 
 procedure TestUnitUtils.TestJwFormatMessage;
-var
- R : String;
- i64 : Int64;
-begin
-  i64 := High(Int64);
-  R := JwFormatMessage(
-    'Hallo %1',//const MessageString : TJwString;
-    [],//const Flags : TJwFormatMessageFlags;
-    ['123']//const Arguments : array of const
-  );
-  //replace type int64 to int32
-  R := JwFormatMessage(
-    'Hallo %1!I64x!',//const MessageString : TJwString;
-    [],//const Flags : TJwFormatMessageFlags;
-    [Variant(1),High(int64)]//const Arguments : array of const
-  );
- // ShowMessage(R );
+type
+{$IFDEF UNICODE}
+  TLChar = AnsiChar;
+  TLPChar = PAnsiChar;
+  TLString = AnsiString;
+{$ELSE}
+  TLChar = WideChar;
+  TLPChar = PWideChar;
+  TLString = WideString;
+{$ENDIF UNICODE}
 
- { R := JwFormatMessage(
-    'Hallo %1!*.*s!',//const MessageString : TJwString;
-    [],//const Flags : TJwFormatMessageFlags;
-    [123,345, PAnsiChar(AnsiString('123'))]//const Arguments : array of const
-  );    }
- { R := JwFormatMessage(
-    'Hallo %1!*.*d! %2',//const MessageString : TJwString;
-    [],//const Flags : TJwFormatMessageFlags;
-    ['123']//const Arguments : array of const
-  );  }
-  ShowMessage(R );
+
+var
+  S, S1, S2, S3, S4 : String;
+begin
+  S := '%1';
+  S1 := JwFormatMessage(
+    S,                 //const MessageString : TJwString;
+    [fmfIngoreInserts],//const Flags : TJwFormatMessageFlags;
+    []      //const Arguments : array of const
+  );
+
+
+  try
+    S1 := JwFormatMessage(
+      S,                 //const MessageString : TJwString;
+      [],//const Flags : TJwFormatMessageFlags;
+      [High(Int64)]      //const Arguments : array of const
+    );
+  except
+    on E : Exception do
+      CheckIs(E, EJwsclUnsupportedInsertParameterTypeException);
+  end;
+
+  try
+    S1 := JwFormatMessage(
+      S,                 //const MessageString : TJwString;
+      [],//const Flags : TJwFormatMessageFlags;
+      [Variant(1)]      //const Arguments : array of const
+    );
+  except
+    on E : Exception do
+      CheckIs(E, EJwsclUnsupportedInsertParameterTypeException);
+  end;
+
+   try
+    S1 := JwFormatMessage(
+      S,                 //const MessageString : TJwString;
+      [],//const Flags : TJwFormatMessageFlags;
+      [1.1]      //const Arguments : array of const
+    );
+  except
+    on E : Exception do
+      CheckIs(E, EJwsclUnsupportedInsertParameterTypeException);
+  end;
+
+  try
+    S1 := JwFormatMessage(
+      S,                 //const MessageString : TJwString;
+      [],//const Flags : TJwFormatMessageFlags;
+      [TLChar('a')]      //const Arguments : array of const
+    );
+  except
+    on E : Exception do
+      CheckIs(E, EJwsclInvalidInsertParameterTypeException);
+  end;
+
+  try
+    S1 := JwFormatMessage(
+      S,                 //const MessageString : TJwString;
+      [],//const Flags : TJwFormatMessageFlags;
+      [TLString('test')]      //const Arguments : array of const
+    );
+  except
+    on E : Exception do
+      CheckIs(E, EJwsclInvalidInsertParameterTypeException);
+  end;
+
+  try
+    S1 := JwFormatMessage(
+      S,                 //const MessageString : TJwString;
+      [],//const Flags : TJwFormatMessageFlags;
+      [TLChar('a')]      //const Arguments : array of const
+    );
+  except
+    on E : Exception do
+      CheckIs(E, EJwsclInvalidInsertParameterTypeException);
+  end;
 end;
 
 procedure TestUnitUtils.TestLocalAllocMem;

@@ -2103,7 +2103,7 @@ type
       E_NOTIMPL                       The function is disabled due to setting property SupportIPersistStream to false.
       E_UNEXPECTED                    An exception occured that is not an EOleSysError exception.
       MakeResult(1,                   The stored size value in the stream is not between sizeof(TSecurityDescriptor) and
-       FacilityCode,                   MAX_SECURITY_DESCRIPTOR_SIZE ($200FF).
+       FacilityCode,                   MAX_SECURITY_DESCRIPTOR_SIZE.
        ERROR_INVALID_BLOCK_LENGTH)     
       MakeResult(1,                   The stream data could not be copied to internal memory. This is because a stream
        FacilityCode,                   function failed usually due to out of memory.
@@ -5716,9 +5716,6 @@ begin
     result := nil;
   end;
 end;
-
-const
-  MAX_SECURITY_DESCRIPTOR_SIZE = 2 * $10000 {MAX_ACL_SIZE} + $FFF {2* SID + Header + security space};
 
 type
   TMagicHeaderRecord = packed record

@@ -697,20 +697,98 @@ procedure JwFree(var Obj);
 
 type
   TJwFormatMessageFlag = (
+    {If set, all inserts are ignored and the resulting string is not touched.}
     fmfIngoreInserts  //FORMAT_MESSAGE_IGNORE_INSERTS  = $00000200;
   );
   TJwFormatMessageFlags = set of TJwFormatMessageFlag;
 
-//FORMAT_MESSAGE_FROM_SYSTEM
+
+{ <b>JwFormatMessage</b> formats a message using WinAPI FormatMessage. This overloaded function uses the System
+  Message Table to format a message specified by its message id.
+  Parameters
+  MessageID :   The id of the message retrieved from the System Message Table.
+  Flags :       A set of flags that the function supports. Currently only fmfIngoreInserts is supported.
+  LanguageID :  The id of the language to be used. Set parameter to zero (0) to use a neutral, thread, user or system
+                language.
+  Arguments\ :  Receives a list of values to be supplied to the inserts. The number of arguments must be the same as
+                the number of inserts. Be aware that some inserts may contain of up to three arguments. If the number
+                of arguments is smaller than the number of inserts, the results are unpredictable.
+  Remarks
+  JwFormatMessage ignores inserts (like %1) if the length of parameter Arguments is zero. The resulting string
+  contains all inserts unchanged.
+  
+  JwFormatMessage does not support Int64 as Arguments because FormatMessage does not support them when passing
+  \arguments as pointers (This may change with 64bit support). If you intend to use Int64 for messages, you should
+  consider using Delphi Format function (and this %d) instead.
+  
+  JwFormatMessage only supports one type of strings or char. Either unicode or ansicode depending on the compiler
+  switch UNICODE. If the function was compiled with the UNICODE switch, only unicode strings (PWideChar,
+  UnicodeString, WideString) and chars (WideChar, PWideChar) are allowed. The contrary goes for if the UNICODE switch
+  is not defined.
+  
+  <b>JwFormatMessage does not check whether the number of inserts (like %1) is the same as the supplied entries in
+  parameter Arguments. If the number of arguments is smaller than the number of inserts, the results are
+  unpredictable.</b>
+  Exceptions
+  EJwsclResourceLanguageNotFound :                 A message could not be retrieved for the supplied Language ID.
+  EJwsclResourceNotFound :                         A message table could not be found in the given module.
+  EJwsclWinCallFailedException :                   FormatMessage failed. See property LastError for more information
+                                                   about the error (GetLastError).
+  EJwsclUnsupportedInsertParameterTypeException :  The parameter Arguments contains a value that is not supported
+                                                   (vtExtended, vtVariant, vtInt64)
+  EJwsclInvalidInsertParameterTypeException :      JwFormatMessage was compiled with either Unicode or AnsiCode
+                                                   support. However, an argument contains a string or char type that is
+                                                   contrary. E.g. You cannot pass a WideString to the function if it
+                                                   was not compiled with UnicodeSupport. Doing so would create
+                                                   unpredictable results. To do even so, you need to explicitly cast
+                                                   the string beforehand.                                               }
 function JwFormatMessage(
+  const MessageID : Cardinal;
   const Flags : TJwFormatMessageFlags;
-  const MessageID, LanguageID : Cardinal;
+  const LanguageID : Cardinal;
   const Arguments : array of const
 
 ) : TJwString; overload;
 
 
-//FORMAT_MESSAGE_FROM_STRING
+
+{ <b>JwFormatMessage</b> formats a message using WinAPI FormatMessage. This overloaded function formats a supplied
+  user defined string.
+  Parameters
+  MessageString :  A string to be formatted.
+  Flags :          A set of flags that the function supports. Currently only fmfIngoreInserts is supported.
+  Arguments\ :     Receives a list of values to be supplied to the inserts. The number of arguments must be the same as
+                   the number of inserts. Be aware that some inserts may contain of up to three arguments. If the
+                   number of arguments is smaller than the number of inserts, the results are unpredictable.
+  Remarks
+  JwFormatMessage ignores inserts (like %1) if the length of parameter Arguments is zero. The resulting string
+  contains all inserts unchanged.
+  
+  JwFormatMessage does not support Int64 as Arguments because FormatMessage does not support them when passing
+  \arguments as pointers (This may change with 64bit support). If you intend to use Int64 for messages, you should
+  consider using Delphi Format function (and this %d) instead.
+  
+  JwFormatMessage only supports one type of strings or char. Either unicode or ansicode depending on the compiler
+  switch UNICODE. If the function was compiled with the UNICODE switch, only unicode strings (PWideChar,
+  UnicodeString, WideString) and chars (WideChar, PWideChar) are allowed. The contrary goes for if the UNICODE switch
+  is not defined.
+  
+  <b>JwFormatMessage does not check whether the number of inserts (like %1) is the same as the supplied entries in
+  parameter Arguments. If the number of arguments is smaller than the number of inserts, the results are
+  unpredictable.</b>
+  Exceptions
+  EJwsclResourceLanguageNotFound :                 A message could not be retrieved for the supplied Language ID.
+  EJwsclResourceNotFound :                         A message table could not be found in the given module.
+  EJwsclWinCallFailedException :                   FormatMessage failed. See property LastError for more information
+                                                   about the error (GetLastError).
+  EJwsclUnsupportedInsertParameterTypeException :  The parameter Arguments contains a value that is not supported
+                                                   (vtExtended, vtVariant, vtInt64)
+  EJwsclInvalidInsertParameterTypeException :      JwFormatMessage was compiled with either Unicode or AnsiCode
+                                                   support. However, an argument contains a string or char type that is
+                                                   contrary. E.g. You cannot pass a WideString to the function if it
+                                                   was not compiled with UnicodeSupport. Doing so would create
+                                                   unpredictable results. To do even so, you need to explicitly cast
+                                                   the string beforehand.                                               }
 function JwFormatMessage(
   const MessageString : TJwString;
   const Flags : TJwFormatMessageFlags;
@@ -718,11 +796,52 @@ function JwFormatMessage(
 
 ) : TJwString; overload;
 
-//FORMAT_MESSAGE_FROM_HMODULE
+
+{
+<b>JwFormatMessage</b> formats a message using WinAPI FormatMessage.
+This overloaded function uses a used defined message table supplied through a HMODULE handle.
+
+Parameters
+
+  Module
+  MessageID : The id of the message retrieved from the System Message Table.
+  Flags : A set of flags that the function supports. Currently only fmfIngoreInserts is supported.
+  LanguageID : The id of the language to be used. Set parameter to zero (0) to use a neutral, thread, user or system language.
+  Arguments\ : Receives a list of values to be supplied to the inserts. The number of arguments must be the same as
+        the number of inserts. Be aware that some inserts may contain of up to three arguments.
+        If the number of arguments is smaller than the number of inserts, the results are unpredictable.
+
+Remarks
+  JwFormatMessage ignores inserts (like %1) if the length of parameter Arguments is zero. The resulting string
+  contains all inserts unchanged.
+
+  JwFormatMessage does not support Int64 as Arguments because FormatMessage does not support them when passing arguments
+  as pointers (This may change with 64bit support). If you intend to use Int64 for messages, you should consider using
+  Delphi Format function (and this %d) instead.
+
+  JwFormatMessage only supports one type of strings or char. Either unicode or ansicode depending on the compiler switch UNICODE.
+  If the function was compiled with the UNICODE switch, only unicode strings (PWideChar, UnicodeString, WideString) and chars (WideChar, PWideChar)
+  are allowed. The contrary goes for if the UNICODE switch is not defined.
+
+  <b>JwFormatMessage does not check whether the number of inserts (like %1) is the same as the supplied entries in parameter
+  Arguments. If the number of arguments is smaller than the number of inserts, the results are unpredictable.</b>
+
+
+Exceptions
+EJwsclResourceLanguageNotFound : A message could not be retrieved for the supplied Language ID.
+EJwsclResourceNotFound : A message table could not be found in the given module.
+EJwsclWinCallFailedException : FormatMessage failed. See property LastError for more information about the error (GetLastError).
+EJwsclUnsupportedInsertParameterTypeException : The parameter Arguments contains a value that is not supported (vtExtended, vtVariant, vtInt64)
+EJwsclInvalidInsertParameterTypeException : JwFormatMessage was compiled with either Unicode or AnsiCode support. However, an argument
+      contains a string or char type that is contrary. E.g. You cannot pass a WideString to the function if it was not compiled with
+      UnicodeSupport. Doing so would create unpredictable results.
+      To do even so, you need to explicitly cast the string beforehand.
+}
 function JwFormatMessage(
   const Module : HMODULE;
+  const MessageID : Cardinal;
   const Flags : TJwFormatMessageFlags;
-  const MessageID, LanguageID : Cardinal;
+  const LanguageID : Cardinal;
   const Arguments : array of const
 ) : TJwString; overload;
 
@@ -736,221 +855,13 @@ uses SysUtils, Math, D5Impl, JwsclToken, JwsclKnownSid, JwsclDescriptor, JwsclAc
 {$ENDIF JW_TYPEINFO}
       ;
 
-type
-  TInsertType = array of record
-    TypeValue : Char;
-    TypeSize  : Byte;
-    Flags : Char;
-    Width, Precision : Integer;
 
-    TextPos,
-    TypeSizePos,
-
-    TextLen,
-    TypeSizeLen : Integer;
-  end;
-
-function GetMaxInserts(const S : string; out Types : TInsertType) : Cardinal; //internal
-const TypeSizeArray : array[1..6] of record
-        name : string;
-        Size : Integer;
-      end =
-       (
-       (name: 'I64';Size: 8),
-       (name: 'I32';Size: 4),
-       (name: 'I';Size: {$IFDEF WIN64}8{$ELSE}4{$ENDIF WIN64}),
-       (name: 'll';Size: 8),
-       (name: 'l';Size: 4),
-       (name: 'h';Size: TJwCharSize)
-       );
-
-var
-  Start,
-  FieldWidth, FieldPrec,
-  I, I2, p, MaxS,
-  TypeSizePos, TypeSizeLen : Integer;
-  FieldSize : Byte;
-  Value : Cardinal;
-  FieldType : Char;
-  FieldSizeS : String;
-  FieldFlag, C : String;
-begin
-  result := 0;
-  I := 1;
-  MaxS := Length(S);
-
-  while I < MaxS do
-  begin
-    if S[I] = '%' then
-    begin
-      Start := I;
-      Inc(I);
-
-      if CharInSet(S[I], ['1'..'9']) then //%0 is a special case that avoids breaks
-      begin
-        //found an insert e.g. "%1xxxxxxxxx"
-        Inc(result);
-        SetLength(Types, Result);
-
-        C := S[I];
-        Inc(I);
-
-        //get the full numbers
-        if (I <= MaxS) and CharInSet(S[I], ['0'..'9']) then
-        begin
-          C := C + S[I];
-          Inc(I);
-        end;
-
-
-        FieldSize := 0;
-        FieldType := #0;
-        TypeSizePos := 0;
-        TypeSizeLen := 0;
-
-        //read the parameters of an inserts between ! and !
-
-        {
-          ![flags] [width] [.precision] [h | l  | ll | I | I32  | I64]type!
-          e.g. "!*.*I64d!"
-        }
-        if (I <= MaxS) and (S[i] = '!') then
-        begin
-          Inc(I);
-
-          FieldFlag := #0;
-          FieldWidth := -2;
-          FieldPrec := -2;
-
-          //enumerate all chars until last parameter bracket (!) was found
-          while (I < MaxS) and (S[I] <> '!') do
-          begin
-         {   if (FieldFlag = #0) and CharInSet(S[I], ['-','+','0',' ', '#']) then
-              FieldFlag := S[I]
-            else    }
-            if S[I] = '*' then
-            begin
-              //found placeholder and increase Types array
-              Inc(result);
-            end;
-          {  else
-            if S[I] = '.' then
-            begin
-            end;  }
-
-            Inc(I);
-          end;
-
-          if (I <= MaxS) then
-          begin
-            //find substrings from biggest length to smallest
-            FieldSizeS := Copy(S, I-1-3, 3);  //
-            FieldSize := 0;
-
-            I2 := Low(TypeSizeArray);
-            p := -1;
-
-            //search for insert type size e.g. I64, I, ll, l, h
-            while (I2 <= High(TypeSizeArray)) and (p = -1) do
-            begin
-              p := Pos(TypeSizeArray[I2].name, FieldSizeS);
-
-              if p >= 1 then
-              begin
-                //store type, pos and length of insert type size
-                FieldSize := TypeSizeArray[I2].Size;
-                TypeSizePos := I-2-3+p;
-                TypeSizeLen := Length(TypeSizeArray[I2].name);
-              end;
-
-              Inc(I2);
-            end;
-
-            FieldType := S[I-1]; //store field type (s, d, x ...)
-          end;
-
-          //store the data into the array
-          SetLength(Types, Result);
-          Types[Result-1].TypeValue := FieldType;
-          Types[Result-1].TypeSize := FieldSize;
-
-          Types[Result-1].TextPos := Start;
-          Types[Result-1].TextLen := I - Start + 1;
-          Types[Result-1].TypeSizePos := TypeSizePos;
-          Types[Result-1].TypeSizeLen := TypeSizeLen;
-        end
-        else  //no parameter for insert
-        begin
-          FieldType := 's'; //defaults to string
-          Types[Result-1].TypeValue := FieldType;
-        end;
-      end;
-    end;
-    Inc(I); //next char
-  end;
-end;
-
-function FormatMessageFlagsInternal(
-  const Source : Pointer;
-  const Flags : DWORD; const MessageID, LanguageID : Cardinal;
-  Arguments : array of const
-  ) : TJwString; //internal
-var
-  MsgStr : TJwPChar;
-  Res : Cardinal;
-  P : array of Pointer;
-  I: Integer;
-begin
-  SetLength(P, Length(Arguments));
-  for I := 0 to High(P) do
-  begin
-    P[I] := Arguments[I].VPointer;
-  end;
-
-
-  Res :=
-{$IFDEF UNICODE}
-    FormatMessageW(
-{$ELSE}
-    FormatMessageA(
-{$ENDIF}
-      Flags or FORMAT_MESSAGE_ALLOCATE_BUFFER or FORMAT_MESSAGE_ARGUMENT_ARRAY, // DWORD dwFlags,
-      Source,  //LPCVOID lpSource,
-      MessageID,  //DWORD dwMessageId,
-      LanguageID, //DWORD dwLanguageId,
-      TJwPChar(@MsgStr), //LPTSTR lpBuffer,
-      0,             //DWORD nSize,
-      @P[0]);// va_list *Arguments
-  if (Res = 0) then
-  begin
-    //ERROR_RESOURCE_LANG_NOT_FOUND
-    RaiseLastOSError;
-  end;
-
-  try
-    Result := MsgStr;
-  finally
-    LocalFree(HLOCAL(MsgStr));
-  end;
-end;
-
-{$IFNDEF DELPHI2009_UP}
-type
-  TACharSet = set of AnsiChar;
-
-function CharInSet(C: AnsiChar; const CharSet: TACharSet): Boolean; //internal
-begin
-  Result := C in CharSet;
-end;
-{$ENDIF DELPHI2009_UP}
-
-function FormatMessageInternal(
-  const Source : Pointer;
-  FlagsEx : Cardinal;
-  const Flags : TJwFormatMessageFlags;
-  const MessageID, LanguageID : Cardinal;
-  Arguments : array of const
-) : TJwString; overload; //internal
+//internal
+function FormatMessageAPICall(
+            const Source : Pointer;
+            Flags : DWORD; const MessageID, LanguageID : Cardinal;
+            Arguments : array of const
+            ) : TJwString;
 
 const
   vtNames : array[0..18] of String = (
@@ -979,128 +890,130 @@ const
       '(unknown)');
 
 var
-  MaxInserts : Cardinal;
-  i : Integer;
-  Types : TInsertType;
-  S : String;
+  MsgStr : TJwPChar;
+  Res : Cardinal;
+  P : array of Pointer;
+  Temp : array of TJwString;
+  I : Integer;
 begin
-  result := FormatMessageFlagsInternal(Source,
-        FlagsEx or FORMAT_MESSAGE_IGNORE_INSERTS,
-        MessageID, LanguageID, Arguments);
+  P := nil;
 
-  if fmfIngoreInserts in Flags then
-    exit;
-
-  //Returns the number of inserts
-  // and more information about them
-  //The Types array is a direct mapping to the arguments
-  //Placeholders (star "*") are mapped to an extra entry in the Types array but remain empty (0)
-  //So %1!*.*d! maps to Types[0..1] = 0 and Types[2].TypeValue = 'd'
-  MaxInserts := GetMaxInserts(Result, Types);
-
-  //check for more inserts than arguments given
-  if MaxInserts > Cardinal(Length(Arguments)) then
+  if ((Flags and FORMAT_MESSAGE_IGNORE_INSERTS) <> FORMAT_MESSAGE_IGNORE_INSERTS) then
   begin
-    raise Exception.CreateFmt('There were %0:d insert(s) (with possible placeholders "*") found but only %1:d argument(s) given.',
-       [MaxInserts, Length(Arguments)]);
-  end;
+    SetLength(P, Length(Arguments));
 
-  for i := Low(Types) to High(Types) do
-  begin
-    //check if an insert has a 8 byte size specified (int64)
-    if Types[i].TypeSize = 8 then
+    for I := 0 to High(P) do
     begin
-      //if the argument has also int64 then replace it
-      if Arguments[i].VType = vtInt64 then
-      begin
-        System.Delete(Result, Types[i].TextPos, Types[i].TextLen);
+      case Arguments[I].VType of
+        vtExtended,
+        vtVariant,
+        vtInt64 :
+          begin
+            raise EJwsclUnsupportedInsertParameterTypeException.CreateFmtEx(
+                   RsUnsupportedFormatMessageArgumentType,
+                   'JwFormatMessage', '', RsUNUtils, 0, false,
+                   [i, vtNames[min(Arguments[i].VType, High(vtNames))]]);
+          end;
 
-        //replace int64 with a hex value
-        if CharInSet(Types[i].TypeValue, ['x', 'X']) then
-        begin
-          S := IntToHex(Arguments[i].VInt64^, 8);
 
-          if Types[i].TypeValue = 'x' then
-            S := LowerCase(S); //IntToHex produces capital letters
-        end
-        else
-        begin
-          //write decimal (ignore octacal forw now)
-          S := IntToStr(Arguments[i].VInt64^);
-        end;
-
-        System.Insert(S, Result, Types[i].TextPos);
-      end
+      //FormatMessage will produce unpredictable results
+      //if a unicode string or char is used in the AnsiVersion, and vice versa.
+  {$IFDEF UNICODE}
+        vtChar,
+        vtAnsiString,
+        vtPChar
+  {$ELSE}
+        vtPWideChar,
+        vtWideChar,
+        vtWideString
+    {$IFDEF DELPHI2009_UP}
+        ,vtUnicodeString
+    {$ENDIF}
+  {$ENDIF UNICODE}:
+         raise EJwsclInvalidInsertParameterTypeException.CreateFmtEx(
+              RsInvalidFormatMessageArgumentType,
+              'JwFormatMessage', '', RsUNUtils, 0, false,
+               [i, vtNames[min(Arguments[i].VType, High(vtNames))],
+               {$IFDEF UNICODE}'Unicode' {$ELSE}'Ansicode'{$ENDIF UNICODE}]);
       else
-      begin
-        //replace insert type size (e.g. I64) with a long size type
-        System.Delete(Result, Types[i].TypeSizePos, Types[i].TypeSizeLen);
-        System.Insert('l', Result, Types[i].TypeSizePos);
+        P[I] := Arguments[I].VPointer;
       end;
     end;
-  end;
 
-  for i := Low(Arguments) to min(High(Arguments), High(Types)) do
+    Flags := Flags or FORMAT_MESSAGE_ARGUMENT_ARRAY;
+  end
+  else
   begin
-    //check for invalid argument types
-    case Arguments[i].VType  of
-      vtExtended,
-      vtVariant
-            : raise Exception.CreateFmt('The argument %0:d contains an unsupported type: %1:s',
-                        [i, vtNames[min(Arguments[i].VType, High(vtNames))]]);
-    end;
+    Flags := Flags and not FORMAT_MESSAGE_ARGUMENT_ARRAY;
+  end;
 
-    //if TypeValue is 0 then it is a placeholder (*)
-    if Types[i].TypeValue <> #0 then
-    begin
-      //If we have a string insert...
-      if CharInSet(Types[i].TypeValue, ['S', 's']) then
-      begin
-        //...but the argument is not a string, then error
-        if      (Arguments[i].VType <> vtString)
-            and (Arguments[i].VType <> vtPWideChar)
-            and (Arguments[i].VType <> vtPChar)
-            and (Arguments[i].VType <> vtAnsiString)
-{$IFDEF DELPHI2009_UP}
-            and (Arguments[i].VType <> vtUnicodeString)
-{$ENDIF DELPHI2009_UP}
-        then
-        begin
-           raise Exception.CreateFmt('Parameter %0:d has type %1:s but it should have been a string.',
-             [i, vtNames[min(Arguments[i].VType, High(vtNames))]]);
-        end;
+  if (Length(Arguments) = 0) then
+  begin
+    Flags := Flags or FORMAT_MESSAGE_IGNORE_INSERTS;
+  end;
 
-        //Check for mismatch of unicode and ansicode arguments and inserts
+  Res :=
 {$IFDEF UNICODE}
-        if (Arguments[i].VType = vtAnsiString) or
-           (Arguments[i].VType = vtPChar) then
+    FormatMessageW(
 {$ELSE}
-        if
-{$IFDEF DELPHI2009_UP}
-           (Arguments[i].VType = vtUnicodeString) or
-{$ENDIF DELPHI2009_UP}
-           (Arguments[i].VType = vtPWideChar) then
-{$ENDIF UNICODE}
-        begin
-          raise Exception.CreateFmt('Parameter %0:d has type %1:s but it should have been a %2:s string.',
-             [i, vtNames[min(Arguments[i].VType, High(vtNames))],
- {$IFDEF UNICODE}'Unicode' {$ELSE}'Ansicode'{$ENDIF UNICODE}]);
-        end;
-      end;
+    FormatMessageA(
+{$ENDIF}
+      Flags or FORMAT_MESSAGE_ALLOCATE_BUFFER, // DWORD dwFlags,
+      Source,  //LPCVOID lpSource,
+      MessageID,  //DWORD dwMessageId,
+      LanguageID, //DWORD dwLanguageId,
+      TJwPChar(@MsgStr), //LPTSTR lpBuffer,
+      0,             //DWORD nSize,
+      @P[0]);// va_list *Arguments
+
+  if (Res = 0) then  //Error
+  begin
+    case GetLastError() of
+      ERROR_RESOURCE_LANG_NOT_FOUND :
+        raise EJwsclResourceLanguageNotFound.CreateFmtEx(
+          RsInvalidResourceLanguage,
+          'JwFormatMessage', '', RsUNUtils, 0, true,
+            [LanguageID]);
+      ERROR_RESOURCE_TYPE_NOT_FOUND :
+        raise EJwsclResourceNotFound.CreateFmtEx(
+          RsMessageTableNotFound,
+          'JwFormatMessage', '', RsUNUtils, 0, true,
+            []);
+    else
+      raise EJwsclWinCallFailedException.CreateFmtEx(
+        RsWinCallFailed,
+        'JwFormatMessage', '', RsUNUtils, 0, true,
+          ['FormatMessage']);
     end;
   end;
 
-
-  {if fmfIngoreInserts in Flags then //never happens but remains as example
-    SourceFlags := SourceFlags or FORMAT_MESSAGE_IGNORE_INSERTS;
-  }
-  result := FormatMessageFlagsInternal(Pointer(result), FlagsEx, MessageID, LanguageID, Arguments);
+  try
+    Result := MsgStr;
+  finally
+    LocalFree(HLOCAL(MsgStr));
+  end;
 end;
 
-function
-JwFormatMessage(
+function FormatMessageInternal(
+  const Source : Pointer;
+  FlagsEx : Cardinal;
   const Flags : TJwFormatMessageFlags;
   const MessageID, LanguageID : Cardinal;
+  Arguments : array of const
+) : TJwString; overload; //internal
+begin
+  if fmfIngoreInserts in Flags then
+    FlagsEx := FlagsEx or FORMAT_MESSAGE_IGNORE_INSERTS;
+
+  result := FormatMessageAPICall(Source,
+        FlagsEx,
+        MessageID, LanguageID, Arguments);
+end;
+
+function JwFormatMessage(
+  const MessageID : Cardinal;
+  const Flags : TJwFormatMessageFlags;
+  const LanguageID : Cardinal;
   const Arguments : array of const
 ) : TJwString; overload;
 begin
@@ -1132,8 +1045,9 @@ end;
 //FORMAT_MESSAGE_FROM_HMODULE
 function JwFormatMessage(
   const Module : HMODULE;
+  const MessageID : Cardinal;
   const Flags : TJwFormatMessageFlags;
-  const MessageID, LanguageID : Cardinal;
+  const LanguageID : Cardinal;
   const Arguments : array of const
 ) : TJwString; overload;
 begin

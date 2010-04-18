@@ -522,6 +522,11 @@ const
   RsInvalidGlobalPointer = 'Given pointer was not created by JwGlobalAllocMem.';
   RsInvalidClassType = 'The given class type %0:s is invalid. Should be %1:s or derivates.';
 
+  RsInvalidFormatMessageArgumentType = 'Parameter %0:d has type %1:s but it should have been %2:s.';
+  RsUnsupportedFormatMessageArgumentType = 'The argument %0:d contains an unsupported type: %1:s';
+  RsInvalidResourceLanguage = 'The given resource language id %0:d could not be found in the message table.';
+  RsMessageTableNotFound = 'A message table could not be found it the given module.';
+
 //Unit JwsclEncryption.pas
 
 //

@@ -1555,6 +1555,19 @@ const
   FW_AUTHORIZEDAPPLICATION_CLASS_NAME = 'HNetCfg.FwAuthorizedApplication';
   FW_OPENPORT_CLASS = 'HNetCfg.FWOpenPort';
 
+  //Maximum size of an ACL, officially documented but not defined
+  MAX_ACL_SIZE = $10000; //64k
+
+  //Maximum size of a relative security descriptor unofficial and not defined
+  MAX_SECURITY_DESCRIPTOR_SIZE =
+    SizeOf(SECURITY_DESCRIPTOR_RELATIVE)  //revision, control and such
+      - 4 * sizeof(DWORD) //2*SID + 2*DACL dword entries in the SD_relative structure replaced by actual data
+    + 2 * MAX_ACL_SIZE  //2 * 64k
+    + 2 * MAX_SID_SIZE; //2 * FF
+  //20 - 16 + 2 * 65536 + 2 * 256 = $20204 = 131588 bytes
+
+
+
 {<B>JwInitLocalizedMappings</B> translate all the rights mapping arrays using the resource.
 
  user language or neutral if not found
@@ -1770,12 +1783,6 @@ begin
     IgnoreEJwsclResourceNotFound,//const UseDefaultOnError : Boolean = true;
     Inst//ModuleInstance : HINST = 0
   );
-
-
-
-
-
-
 end;
 
 initialization

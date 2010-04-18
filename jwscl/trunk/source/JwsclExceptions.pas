@@ -525,6 +525,10 @@ type
   EJwsclResourceNotFound = class(EJwsclResourceException);
     {[2B2288BC-7905-46F2-0072-A0183067E63D]}
 
+   {}
+  EJwsclResourceLanguageNotFound = class(EJwsclResourceException);
+    {[2B2288BC-7905-5422-0072-A0183067E63D]}
+
   {}
   EJwsclResourceUnequalCount = class(EJwsclResourceException);
     {[2B2288BC-7905-46F2-0073-A0183067E63D]}
@@ -832,6 +836,18 @@ type
   EJwsclSidNotMappedException = class(EJwsclSecurityException);
       {[2B2288BC-7905-46F2-0135-A0183067E63D]}
 
+  EJwsclFormatMessageException = class(EJwsclSecurityException);
+      {[2B2288BC-7905-46F2-0136-A0183067E63D]}
+
+
+  EJwsclInvalidInsertParameterTypeException = class(EJwsclFormatMessageException);
+      {[2B2288BC-7905-46F3-0137-A0183067E63D]}
+    EJwsclExpectedStringInsertParameterTypeException = class(EJwsclFormatMessageException);
+      {[2B2288BC-7905-46F3-0138-A0183067E63D]}
+    EJwsclUnsupportedInsertParameterTypeException = class(EJwsclFormatMessageException);
+      {[2B2288BC-7905-46F3-0139-A0183067E63D]}
+    EJwsclMissingArgumentsException = class(EJwsclFormatMessageException);
+      {[2B2288BC-7905-46F3-0140-A0183067E63D]}
 
   JwGeneralExceptionClass = class of Exception;
 
