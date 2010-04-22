@@ -1072,6 +1072,7 @@ end;
 
 type
    TLStr = array[0..1] of AnsiChar;
+   PLStr = ^TLStr;
 
 procedure JwZeroPassword(var S : TJwString);
 {$IFOPT O+}
@@ -1081,7 +1082,7 @@ procedure JwZeroPassword(var S : TJwString);
 {$ENDIF}
 {$O-}
 var i : Integer;
-      Data : ^TLStr;
+      Data : PLStr;
       len : Integer;
 begin
   if Length(S) = 0 then
@@ -1096,7 +1097,9 @@ begin
     {$IFOPT O+}
      Error //: this procedure must not be compiled with optimization
     {$ENDIF}
+{$IFNDEF CODECHECKER} //Some code checker fail here
     Data^[i] := AnsiChar(Random(255));
+{$ENDIF CODECHECKER}
   end;
   ZeroMemory(Data, len);
   SetLength(S, 0);
