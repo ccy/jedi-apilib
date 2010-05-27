@@ -1706,10 +1706,9 @@ begin
   ZeroMemory(@VersionInfo, SizeOf(VersionInfo));
   VersionInfo.dwOSVersionInfoSize := SizeOf(VersionInfo);
   GetVersionEx(@VersionInfo);
-  // Are we running Vista RTM?
+  // Are we running Windows 7/2008R2 or Higher
   Result := (VersionInfo.dwMajorVersion >= 6) and
-    (VersionInfo.dwMinorVersion >= 1) and
-    (VersionInfo.wProductType = VER_NT_WORKSTATION);
+    (VersionInfo.dwMinorVersion >= 1);
 end;
 
 // This function is not exported
