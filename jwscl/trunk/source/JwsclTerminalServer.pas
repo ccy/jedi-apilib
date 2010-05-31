@@ -815,7 +815,7 @@ type
       </table>                                                                                 }
     procedure Shutdown(AShutdownFlag: DWORD);
 
-    property Statistics: TJwWTSSessionStatistics read GetSessionStatistics;
+    property Statistics: TJwWTSSessionStatistics read GetSessionStatistics write FSessionStatistics;
 
     {<B>SystemUserName</B> returns the (localised) name of the system user}
     property SystemUserName: TJwString read GetSystemUserName;
@@ -2799,7 +2799,7 @@ begin
     // (we use StrConnectState api to localise)
     pwConnectState := StrConnectState(WTSIdle, False);
     Result := Format('(%s)', [pwConnectState]);
-    LocalFree(Cardinal(pwConnectState));
+//    LocalFree(Cardinal(pwConnectState));
   end;
 end;
 
@@ -2919,6 +2919,8 @@ begin
   try
     if Result then
     begin
+      FProcesses.FCPUTime := 0;
+
       for i := 0 to Count-1 do
       begin
         strUsername := '';
@@ -2985,7 +2987,6 @@ begin
 
             // Set Parent Process Id
             FParentProcessId := InheritedFromUniqueProcessId;
-
             // Calculate Process Age
             CalculateElapsedTime(@CreateTime, DiffTime);
 
