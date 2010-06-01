@@ -160,6 +160,10 @@ const
   {$EXTERNALSYM ALG_SID_DSS_PKCS}
   ALG_SID_DSS_DMS  = 2;
   {$EXTERNALSYM ALG_SID_DSS_DMS}
+{$IFDEF WINVISTA_UP}
+  ALG_SID_ECDSA    = 3;
+  {$EXTERNALSYM ALG_SID_ECDSA}
+{$ENDIF}
 
 // Block cipher sub ids
 // DES sub_ids
@@ -240,6 +244,10 @@ const
   {$EXTERNALSYM ALG_SID_AGREED_KEY_ANY}
   ALG_SID_KEA            = 4;
   {$EXTERNALSYM ALG_SID_KEA}
+{$IFDEF WINVISTA_UP}
+  ALG_SID_ECDH           = 5;
+  {$EXTERNALSYM ALG_SID_ECDH}
+{$ENDIF}
 
 // Hash sub ids
 
@@ -296,6 +304,11 @@ const
   {$EXTERNALSYM ALG_SID_TLS1_MASTER}
   ALG_SID_SCHANNEL_ENC_KEY     = 7;
   {$EXTERNALSYM ALG_SID_SCHANNEL_ENC_KEY}
+{$IFDEF WINVISTA_UP}
+  // misc ECC sub ids
+  ALG_SID_ECMQV                 = 1;
+  {$EXTERNALSYM ALG_SID_ECMQV}
+{$ENDIF}
 
 // Our silly example sub-id
 
