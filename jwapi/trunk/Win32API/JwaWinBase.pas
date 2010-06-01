@@ -2712,7 +2712,7 @@ type
   PTimeZoneInformation = PTIME_ZONE_INFORMATION;
 
 function SystemTimeToTzSpecificLocalTime(lpTimeZoneInformation: LPTIME_ZONE_INFORMATION;
-  var lpUniversalTime, lpLocalTime: SYSTEMTIME): BOOL; stdcall;
+  lpUniversalTime; var lpLocalTime: SYSTEMTIME): BOOL; stdcall;
 {$EXTERNALSYM SystemTimeToTzSpecificLocalTime}
 
 function TzSpecificLocalTimeToSystemTime(const lpTimeZoneInformation: TIME_ZONE_INFORMATION;
