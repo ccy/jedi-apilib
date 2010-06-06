@@ -1086,6 +1086,40 @@ type
     class function GetThreadToken(const aDesiredAccess: TJwAccessMask;
       const anOpenAsSelf: boolean): TJwSecurityToken; virtual;
 
+    (*
+    LookupPrivilegeValue wraps LookupPrivilegeValueW which tends to fail with ERROR_IO_PENDING.
+
+    Parameters
+      lpDefaultLuid Defines a LUID that is used if the LookupPrivilegeValueW fails up to iTryCount with error ERROR_IO_PENDING.
+          On ERROR_IO_PENDING the value lpDefaultLuid will be copied to lpLuid if lpDefaultLuid is not DEFAULT_LUID_NULL. In this
+        case the function will still fail but the error code will be ERROR_NO_DATA.
+        This value can be DEFAULT_LUID_NULL and lpLuid will not be touched.
+      iTryCount Defines the number of times the function LookupPrivilegeValueW may fail with ERROR_IO_PENDING.
+        This value must be greater than zero. It is set to 1 automatically for values smaller than 1.
+
+    Remarks
+
+    LookupPrivilegeValue calls LookupPrivilegeValueW but also checks for the RPC timeout error
+    ERROR_IO_PENDING. This error happens when data could not be returned within the call of LookupPrivilegeValueW.
+    Data may be returned to a later time (overlapped transfer).
+    However, the returned data may be invalid so we call LookupPrivilegeValueW up to the value of iTryCount times.
+
+    Return values
+    LookupPrivilegeValue returns the return value and error of LookupPrivilegeValueW (HRESULT_CODE(GetLastError()). However,
+    if LookupPrivilegeValueW still fails with ERROR_IO_PENDING after iTryCount times, the return value will be
+    HRESULT_CODE(ERROR_NO_SUCH_PRIVILEGE). Subsequently the return value code changes to HRESULT_CODE(ERROR_NO_DATA)
+    if lpDefaultLuid is not DEFAULT_LUID_NULL.
+    The return value will be HRESULT_FROM_WIN32(ERROR_NO_SUCH_PRIVILEGE) but without the error flag if LookupPrivilegeValueW was
+    called iTryCount times and the last call returned a LUID between 0 and $FF (loword).
+
+    *)
+    class function LookupPrivilegeValue(
+      {__in_opt} const lpSystemName : TJwString;
+      {__in}     const lpName : TJwString;
+      {__out}    out lpLuid : TLuid;
+      {__in}     const lpDefaultLuid : TLUID;
+      {__in}     iTryCount : Integer = DEFAULT_LUID_TRY_COUNT) : HRESULT;
+
     {<B>GetTokenUserName</B> returns the username of the token user.}
     function GetTokenUserName : TJwString;
 
@@ -2917,15 +2951,14 @@ end;
 function TJwPrivilegeSet.AddPrivilege(PrivName: TJwString): integer;
 var
   aLUID: Luid;
+  hRes : HRESULT;
 begin
-  if not
-  {$IFDEF UNICODE}LookupPrivilegeValueW{$ELSE}
-    LookupPrivilegeValueA
-{$ENDIF}
-    ((''), TJwPChar(PrivName), aLUID) then
+  hRes := TJwSecurityToken.LookupPrivilegeValue('', PrivName, aLUID, DEFAULT_LUID_NULL);
+
+  if FAILED(hRes) then
     raise EJwsclPrivilegeNotFoundException.CreateFmtEx(
       RsTokenCallLookUpPrivilegeValueFailed, 'AddPrivilege',
-      ClassName, RsUNToken, 0, True, [PrivName]);
+      ClassName, RsUNToken, 0, HRESULT_CODE(hRes), [PrivName]);
   Result := AddPrivilege(aLUID);
 end;
 
@@ -3090,18 +3123,16 @@ end;
 
 class function TJwPrivilege.TextToLUID(const Name: TJwString;
   const SystemName: TJwString = ''): TLuid;
+var
+  hRes : HRESULT;
 begin
   Result := LUID_INVALID;
-  if not
-{$IFDEF UNICODE}LookupPrivilegeValueW{$ELSE}
-    LookupPrivilegeValueA
-{$ENDIF}
-    (TJwPChar(SystemName), TJwPChar(Name), Result) then
+  hRes := TJwSecurityToken.LookupPrivilegeValue(SystemName, Name, Result, DEFAULT_LUID_NULL);
 
+  if FAILED(hRes) then
     raise EJwsclWinCallFailedException.CreateFmtEx(
       RsWinCallFailed, 'TextToLUID', ClassName, RsUNToken, 0,
-      True, ['LookupPrivilegeValue']);
-
+      HRESULT_CODE(hRes), ['LookupPrivilegeValue']);
 end;
 
 class function TJwPrivilege.LUIDtoText(aLUID: LUID): TJwString;
@@ -3205,6 +3236,10 @@ begin
 
   Fillchar(prevState, sizeof(prevState), 0);
   preLen := 0;
+  (*
+  BUGBUG:
+    Parameter 3 should be sizeof(prevState)
+  *)
   if (not AdjustTokenPrivileges(Owner.Owner.TokenHandle, False,
     @privs, sizeof(privs), @prevState, @preLen)) then
   begin
@@ -3371,7 +3406,7 @@ end;}
 
 procedure TJwSecurityToken.CheckTokenHandle(sSourceProc: TJwString);
 begin
-  //TODO: check also non null tokens
+  //TODO: check also none null tokens
   if fTokenHandle = 0 then
     raise EJwsclInvalidTokenHandle.CreateFmtEx(
       RsTokenInvalidTokenHandle, sSourceProc, ClassName, RsUNToken,
@@ -3401,7 +3436,10 @@ begin
 
 
   except
-    //Make sure that the given token has enough access rights
+    //TODO: Check for correct exception
+	//on E : EJwscl...
+	
+	//Make sure that the given token has enough access rights
     //to get the DACL
     //Strangely enough, XP needs TOKEN_DUPLICATE to work correctly
 
@@ -5561,6 +5599,72 @@ begin
   if not jwaWindows.ImpersonateSelf(anImpersonationLevel) then
     raise EJwsclSecurityException.CreateFmtEx(RsTokenFailedImpSelf,
       'ImpersonateSelf', ClassName, RsUNToken, 0, True, []);
+end;
+
+class function TJwSecurityToken.LookupPrivilegeValue(const lpSystemName,
+  lpName: TJwString; out lpLuid: TLuid; const lpDefaultLuid: TLUID;
+  iTryCount: Integer): HRESULT;
+var
+  iRetries : Integer;
+	bSuccess : Boolean;
+	aLuid : LUID;
+begin
+  result := ERROR_SUCCESS;
+
+	if (iTryCount < 1) then
+		iTryCount := 1;
+
+	//Try several times to get the value
+	//LookupPrivilegeValue may fail with ERROR_IO_PENDING which
+	//then should be retried (never happened to me, CW)
+	iRetries := iTryCount;
+	repeat
+		aLuid.LowPart  := 0;
+		aLuid.HighPart := 0;
+
+		bSuccess :=
+     {$IFDEF UNICODE}LookupPrivilegeValueW{$ELSE}LookupPrivilegeValueA{$ENDIF}
+        (TJwPChar(lpSystemName), TJwPChar(lpName), lpLuid);
+
+		if (not bSuccess and (GetLastError() = ERROR_IO_PENDING)) then
+    begin
+			Sleep(500);
+    end;
+
+		Dec(iRetries);
+	until ((iRetries <= 0) or (bSuccess or (GetLastError() <> ERROR_IO_PENDING)));
+  //while ((iRetries > 0) && !bSuccess && (GetLastError() == ERROR_IO_PENDING));
+
+	if (not bSuccess) then
+  begin
+    result := HRESULT_FROM_WIN32(GetLastError);
+
+		Sleep(500); //wait for the aLuid value to be written - just guessing
+
+		if ((GetLastError() = ERROR_IO_PENDING) and
+			((aLuid.LowPart <> 0) and (aLuid.LowPart < $FF)) //Make some assumptions about the low part since the value may be incorrect
+			) then
+    begin
+			//we got a LUID
+
+      result := HRESULT_FROM_WIN32(ERROR_NO_SUCH_PRIVILEGE) or not $80000000; //this is a SUCCESS hresult with error info
+      //'Could not get LUID for privilege but assume it is %d.%d.',aLuid.HighPart, aLuid.LowPart);
+    end
+		else
+		begin
+			//A privilege name could not be resolved to a LUID.
+
+			//use default value
+			if (lpDefaultLuid.LowPart <> DEFAULT_LUID_NULL.LowPart) and
+         (lpDefaultLuid.HighPart <> DEFAULT_LUID_NULL.HighPart) then
+			begin
+				lpLuid := lpDefaultLuid;
+        result := HRESULT_FROM_WIN32(ERROR_NO_DATA);
+			end;
+		end;
+	end;
+
+  //In Delphi sometimes the last error value is reset beyond the last end; so we use HRESULT
 end;
 
 class procedure TJwSecurityToken.RevertToSelf;

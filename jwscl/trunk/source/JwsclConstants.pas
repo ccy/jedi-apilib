@@ -1567,6 +1567,11 @@ const
   //20 - 16 + 2 * 65536 + 2 * 256 = $20204 = 131588 bytes
 
 
+  {Default value of how many times TJwSecurityToken.LookupPrivilegeValue will retry before it fails.
+   This value must be greater than 0.
+  }
+  DEFAULT_LUID_TRY_COUNT = 5;
+  DEFAULT_LUID_NULL : TLUID = (LowPart:0;HighPart:0);
 
 {<B>JwInitLocalizedMappings</B> translate all the rights mapping arrays using the resource.
 

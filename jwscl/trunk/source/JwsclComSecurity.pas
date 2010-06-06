@@ -3911,6 +3911,7 @@ begin
         begin
           S := JwUnicodeStringToJwString(US^);
 
+		  //Find the last \ in path
           i := Length(S);
           while (i > 0) and (S[i] <> '\') do
           begin

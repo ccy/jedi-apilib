@@ -124,9 +124,21 @@ type
         Size : Cardinal;
         PointerType : TJwPointerType) : IJwAutoPointer; overload;
 
+    {Wrap wraps a windows handle and closes it using CloseHandle.
+	
+	 Parameters 
+	   ShowLastError Defines whether the exception EJwsclInvalidHandle will
+	     include the last error value (true) or not (false).
+	   
+	 Raises
+	   EJwsclInvalidHandle The handle was invalid (0 or INVALID_HANDLE_VALUE).	 
+	}
     class function Wrap(const Handle : THandle; const
        ShowLastError : Boolean = false) : IJwAutoPointer; overload;
 
+    {WrapCOM wraps a COM memory allocation with CoTaskMemAlloc.
+	 The pointer will be freed using CoTaskMemFree.
+	}
     class function WrapCOM(const Ptr : Pointer) : IJwAutoPointer;
 
     {<B>CreateInstance</B> creates a new auto pointer class instance and also
