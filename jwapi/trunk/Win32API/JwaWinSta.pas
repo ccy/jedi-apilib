@@ -1990,8 +1990,26 @@ var WinstaUserToken: _WINSTA_USER_TOKEN;
   bWasPrivEnabled: Boolean;
   Res: NTSTATUS;
 begin
+  LUID.LowPart := 0;
+  LUID.HighPart := 0;
   // Enable SeTcbPrivilege (system account has this enabled by default)
-  LookupPrivilegeValue(nil, SE_TCB_NAME, LUID);
+  //Fail on all errors but ERROR_IO_PENDING
+  //This error is not a real error and LUID may contain correct results
+  if not LookupPrivilegeValue(nil, SE_TCB_NAME, LUID) and (GetLastError() <> ERROR_IO_PENDING) then
+  begin
+    SetLastError(ERROR_NO_SUCH_PRIVILEGE);
+    result := false;
+    exit;
+  end;
+
+  //check result for correctness
+  if (Luid.LowPart > $FF) then
+  begin
+    SetLastError(ERROR_NO_SUCH_PRIVILEGE);
+    result := false;
+    exit;
+  end;
+
   Res := RtlAdjustPrivilege(LUID.LowPart, True, False, @bWasPrivEnabled);
 
   // Initialize structure
@@ -2005,7 +2023,9 @@ begin
     // System account (else ACCESS_DENIED is returned)
     Result := WinStationQueryInformationW(hServer, SessionId, WinStationUserToken,
       @WinstaUserToken, SizeOf(WinstaUserToken), dwReturnLength);
-    hToken := WinStaUserToken.TokenHandle;
+
+    if Result then
+      hToken := WinStaUserToken.TokenHandle;
 
     // Restore state of SeTcbPrivilege
     RtlAdjustPrivilege(LUID.LowPart, bWasPrivEnabled, False, @bWasPrivEnabled);
