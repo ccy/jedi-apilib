@@ -1118,10 +1118,27 @@ type
       {__in}     const lpName : TJwString;
       {__out}    out lpLuid : TLuid;
       {__in}     const lpDefaultLuid : TLUID;
-      {__in}     iTryCount : Integer = DEFAULT_LUID_TRY_COUNT) : HRESULT;
+      {__in}     iTryCount : Integer = DEFAULT_LUID_TRY_COUNT) : HRESULT; virtual;
 
+   {IsTokenLinkedForMappedDrives checks whether a system group policy was defined
+    that allows an Administrator in Vista and newer with UAC enabled to access a
+    mapped netzwork drive to be accessible by both tokens: the standard user token
+    and its elevated copy.
+
+    Returns
+      The function returns true if the system was configured to allow tokens and
+      its elevated version to access the same mapped drive. If UAC is disabled or
+      the policy was not configured the return value is false.
+
+    Raises
+      EJwsclWinCallFailedException This exception is raised if the policy could not be opened for reading
+        or the value could not be read. If the policy value does not exist, no exception
+    is raised, instead the return value is false. }
+    class function IsTokenLinkedForMappedDrives : Boolean; virtual;
+
+  public
     {<B>GetTokenUserName</B> returns the username of the token user.}
-    function GetTokenUserName : TJwString;
+    function GetTokenUserName : TJwString;  virtual;
 
     {<B>GetSecurityDescriptor</B> gets the security descriptor.
      The caller is responsible to free the returned instance.
@@ -2130,7 +2147,7 @@ function JwCreateRestrictedToken(
 implementation
 
 uses JwsclKnownSid, JwsclMapping, JwsclSecureObjects, JwsclProcess,
-     JwsclTerminalServer, JwsclLsa, TypInfo,
+     JwsclTerminalServer, JwsclLsa,  TypInfo,
       JwsclPrivileges, Math, D5impl;
 
 {$ENDIF SL_OMIT_SECTIONS}
@@ -6178,6 +6195,51 @@ begin
   end;
 end;
 
+
+
+class function TJwSecurityToken.IsTokenLinkedForMappedDrives: Boolean;
+  function CheckReg() : DWORD;
+  var
+    Access : TJwAccessMask;
+    dwSize : DWORD;
+    res : Integer;
+    sErrSrc : String;
+    key : HKEY;
+  begin
+    Access := KEY_READ;
+    result := 0;
+
+    if not TJwWindowsVersion.IsWindows2000(false) and
+      TJwWindowsVersion.IsWindows64 then
+      Access := Access or KEY_WOW64_64KEY;
+
+    res := RegOpenKeyExW(HKEY_LOCAL_MACHINE,
+      'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System', 0, Access, key);
+    sErrSrc := 'RegOpenKeyExW';
+
+    if res = {ERROR_SUCCESS}0 then
+    begin
+      dwSize := sizeof(result);
+      res := RegQueryValueExW(key, 'EnableLinkedConnections', nil, nil, @result, @dwSize);
+      sErrSrc := 'RegQueryValueExW';
+
+      if res = {ERROR_FILE_NOT_FOUND}2 then
+      begin
+        result := 0; //default value is off
+        res := ERROR_SUCCESS;
+      end;
+
+      RegCloseKey(key);
+    end;
+
+    if res <> {ERROR_SUCCESS}0 then
+      raise EJwsclWinCallFailedException.CreateFmtEx(
+        RsWinCallFailed, 'IsTokenLinkedForMappedDrives', ClassName, RsUNToken,
+        0, res, [sErrSrc]);
+  end;
+begin
+  result := not JwIsUACEnabled or (CheckReg() = 1);
+end;
 
 function TJwSecurityToken.IsTokenType(index: Integer): Boolean;
 begin
