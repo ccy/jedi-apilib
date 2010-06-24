@@ -437,7 +437,7 @@ type
     class function IsTerminalServiceRunning : Boolean; virtual;
 
     // <B>GetNativeProcessorArchitecture</B> returns processor architecture of the current Windows version
-    class function GetNativeProcessorArchitecture : Cardinal; virtual;
+    class function GetNativeProcessorArchitecture : TJwProcessorArchitecture; virtual;
 
     // <B>IsWindowsX64</B> returns true if the process is running on a Windows x64 version
     class function IsWindowsX64 : boolean; virtual;
@@ -447,6 +447,7 @@ type
 
     // <B>IsWindows64</B> returns true if the process is running on any 64 bit Windows version
     class function IsWindows64 : boolean; virtual;
+
 
 
     {<B>IsUACEnabled</B> returns true if the system has UAC enabled.
@@ -487,6 +488,49 @@ type
       EJwsclUnsupportedWindowsVersionException Only Windows XP and newer support this call.}
     class function IsShuttingDown : Boolean; virtual;
 
+    {GetSystemDEPPolicy returns the SYSTEM DEP Policy Flag.
+
+     Return value
+      The function returns a value of TJwDEPSystemPolicy or
+        spUnsupported if the system does not support DEP.
+    }
+    class function GetSystemDEPPolicy : TJwDEPSystemPolicy; virtual;
+
+    {GetProcessDEPPolicy sets the Data Execution Prevention (DEP) flag of the current process.
+
+    Parameters
+      ProcessHandle Defines a process handle which is used to retrieve DEP information.
+
+    Return value
+      The return value can be depDisabled or a combination of depEnabled, depATLDisableThunkEmulation and depPermanent.
+
+    Remarks
+      On a Windows XP prior to SP3 or in a 64bit process the function returns [depUnsupported].
+
+    Exceptions
+      EJwsclWinCallFailedException The call GetProcessDEPPolicy failed.
+    }
+    class function GetProcessDEPPolicy(ProcessHandle : DWORD = 0) : TJwDEPProcessPolicy; virtual;
+
+    {SetProcessDEPPolicy sets the Data Execution Prevention (DEP) flag of the current process.
+
+    Parameters
+      NewPolicy Defines a set of flags that apply to the DEP flag of the current process.
+        The following values can be used depDisabled, depEnabled (only with depPermanent), depATLDisableThunkEmulation,
+
+    Remarks
+      If Parameter NewPolicy contains depEnabled, it also must contain depPermanent.
+
+      On a Windows XP prior to SP3 or in a 64bit process the function does nothing.
+
+    Exceptions
+      EJwsclInvalidParameterException If Parameter NewPolicy contains depEnabled, it also must contain depPermanent.
+    }
+    class procedure SetProcessDEPPolicy(NewPolicy : TJwDEPProcessPolicy); virtual;
+
+    {GetProcessorFeatures returns a set of available processor features.}
+    class function GetProcessorFeatures : TJwProcessorFeatures;
+
     {<B>IsProcess64</B> checks if a process is 64 bit.
      param ProcessHandle Defines the process to be checked for 64 bit. If this parameter is zero
      the current process is used instead.
@@ -498,6 +542,8 @@ type
          Vista: ROCESS_QUERY_INFORMATION and PROCESS_QUERY_LIMITED_INFORMATION
     }
     class function IsProcess64(ProcessHandle : DWORD = 0) : boolean;
+
+    class function IsWOWProcess64(ProcessHandle : DWORD = 0) : boolean;
   end;
 
 
@@ -840,6 +886,17 @@ begin
     (fWindowsType > iVer));
 end;
 
+class function TJwWindowsVersion.IsWOWProcess64(ProcessHandle: DWORD): boolean;
+var res : BOOL;
+begin
+  if ProcessHandle = 0 then
+    ProcessHandle := GetCurrentProcess();
+  if IsWow64Process(ProcessHandle, res) then
+    result := res
+  else
+    result := false;
+end;
+
 class function TJwWindowsVersion.IsWindowsVista(bOrHigher: boolean = False)
 : boolean;
 const
@@ -996,7 +1053,7 @@ begin
   end;
 end;
 
-class function TJwWindowsVersion.GetNativeProcessorArchitecture : Cardinal;
+class function TJwWindowsVersion.GetNativeProcessorArchitecture : TJwProcessorArchitecture;
 var
   SystemInfo : SYSTEM_INFO;
   // only available on Windows >= 5.1 so we have to link it dynamically
@@ -1007,22 +1064,80 @@ begin
     then
       begin
         GetNativeSystemInfo(@SystemInfo);
-        result := SystemInfo.wProcessorArchitecture;
+        result := TJwProcessorArchitecture(SystemInfo.wProcessorArchitecture);
       end
     else
-      result := PROCESSOR_ARCHITECTURE_INTEL;
+      result := paINTEL;
 end;
 
 
+
+
+class function TJwWindowsVersion.GetProcessDEPPolicy(
+  ProcessHandle: DWORD): TJwDEPProcessPolicy;
+var
+  _GetProcessDEPPolicy : function (hProcess : HANDLE; out lpFlags : DWORD; out lpPermanent : BOOL) : BOOL; stdcall;
+  Flags : DWORD;
+  Permanent : BOOL;
+begin
+  result := [depUnsupported];
+
+  if IsWindowsXP(true) and not IsProcess64() then
+  begin
+    _GetProcessDEPPolicy := GetProcAddress(GetModuleHandle('kernel32.dll'), 'GetProcessDEPPolicy');
+    if @_GetProcessDEPPolicy <> nil then
+    begin
+      if (ProcessHandle = 0) then
+        ProcessHandle := GetCurrentProcess;
+
+      if not _GetProcessDEPPolicy(ProcessHandle, Flags, Permanent) then
+        raise EJwsclWinCallFailedException.CreateFmtWinCall(
+          RsWinCallFailed,
+          'GetProcessDEPPolicy',                                //sSourceProc
+          ClassName,                                //sSourceClass
+          RSUnVersion,                          //sSourceFile
+          0,                                           //iSourceLine
+          True,                                  //bShowLastError
+          'GetProcessDEPPolicy',                   //sWinCall
+          ['GetProcessDEPPolicy']);                                  //const Args: array of const
+
+      result := [];
+
+      if (Flags and PROCESS_DEP_ENABLE) = PROCESS_DEP_ENABLE then
+        result := result + [depEnabled];
+      if (Flags and PROCESS_DEP_DISABLE_ATL_THUNK_EMULATION) = PROCESS_DEP_DISABLE_ATL_THUNK_EMULATION then
+        result := result + [depATLDisableThunkEmulation];
+
+      if Flags = 0 then
+        result := [depDisabled];
+
+      if Permanent then
+        result := result + [depPermanent];
+    end;
+  end;
+end;
+
+class function TJwWindowsVersion.GetProcessorFeatures: TJwProcessorFeatures;
+var
+  I : TJwProcessorFeature;
+begin
+  result := [];
+  for I := low(TJwProcessorFeature) to high(TJwProcessorFeature) do
+  begin
+    if IsProcessorFeaturePresent(DWORD(I)) then
+      result := result + [I];
+  end;
+end;
+
 class function TJwWindowsVersion.IsWindowsX64 : boolean;
 begin
-  result := GetNativeProcessorArchitecture = PROCESSOR_ARCHITECTURE_AMD64;
+  result := GetNativeProcessorArchitecture = paAMD64;
 end;
 
 
 class function TJwWindowsVersion.IsWindowsIA64 : boolean;
 begin
-  result := GetNativeProcessorArchitecture = PROCESSOR_ARCHITECTURE_IA64;
+  result := GetNativeProcessorArchitecture = paIA64;
 end;
 
 
@@ -1110,6 +1225,53 @@ begin
   fIsServer  := Server;
 end;
 
+
+class procedure TJwWindowsVersion.SetProcessDEPPolicy(NewPolicy: TJwDEPProcessPolicy);
+var
+  _SetProcessDEPPolicy : function (Flags : DWORD) : BOOL; stdcall;
+  Flags : DWORD;
+begin
+  if IsWindowsXP(true) and not IsProcess64() then
+  begin
+    _SetProcessDEPPolicy := GetProcAddress(GetModuleHandle('kernel32.dll'), 'SetProcessDEPPolicy');
+    if @_SetProcessDEPPolicy <> nil then
+    begin
+      Flags := 0;
+
+      if depDisabled in NewPolicy then
+        Flags := 0;
+
+      if depEnabled in NewPolicy then
+      begin
+        if not (depPermanent in NewPolicy) then
+           raise EJwsclInvalidParameterException.CreateFmtEx(
+            'If Parameter NewPolicy contains "depEnabled", it also must contain "depPermanent".',
+            'SetProcessDEPPolicy',
+            ClassName,
+            RsUNVersion,
+            0,
+            false,
+            []);
+        Flags := Flags or PROCESS_DEP_ENABLE;
+      end;
+
+      if depATLDisableThunkEmulation in NewPolicy then
+        Flags := Flags or PROCESS_DEP_DISABLE_ATL_THUNK_EMULATION;
+
+      if not _SetProcessDEPPolicy(Flags) then
+        raise EJwsclWinCallFailedException.CreateFmtWinCall(
+          RsWinCallFailed,
+          'GetProcessDEPPolicy',                                //sSourceProc
+          ClassName,                                //sSourceClass
+          RSUnVersion,                          //sSourceFile
+          0,                                           //iSourceLine
+          True,                                  //bShowLastError
+          'GetProcessDEPPolicy',                   //sWinCall
+          ['GetProcessDEPPolicy']);                                 //const Args: array of const
+    end;
+  end;
+end;
+
 class function TJwWindowsVersion.GetSystemBootType: TJwSystemBootType;
 var value : DWORD;
 begin
@@ -1129,10 +1291,21 @@ begin
 
 end;
 
-{$ENDIF SL_INTERFACE_SECTION}
+class function TJwWindowsVersion.GetSystemDEPPolicy: TJwDEPSystemPolicy;
+var
+  _GetSystemDEPPolicy : function () : BOOL; stdcall;
+begin
+  result := spUnsupported;
 
-{$IFNDEF SL_OMIT_SECTIONS}
-
+  if IsWindowsXP(true) and not IsProcess64() then
+  begin
+    _GetSystemDEPPolicy := GetProcAddress(GetModuleHandle('kernel32.dll'), 'GetSystemDEPPolicy');
+    if @_GetSystemDEPPolicy <> nil then
+    begin
+      result := TJwDEPSystemPolicy(_GetSystemDEPPolicy());
+    end;
+  end;
+end;
 
 class function TJwWindowsVersion.IsWindows7(bOrHigher: Boolean): Boolean;
 const
@@ -1140,6 +1313,10 @@ const
 begin
   Result := (FWindowsType = iVer) or (bOrHigher and (FWindowsType > iVer));
 end;
+
+{$ENDIF SL_INTERFACE_SECTION}
+
+{$IFNDEF SL_OMIT_SECTIONS}
 
 initialization
 {$ENDIF SL_OMIT_SECTIONS}

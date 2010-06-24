@@ -1706,6 +1706,66 @@ type
     sbtFailSafe = 1,
     sbtFailSafeNetwork = 2);
 
+  TJwProcessorArchitecture = (
+    paINTEL = 0,
+    paIA64 = 6,
+    paAMD64 = 9,
+    paUnknown = $FFFF
+  );
+
+  //http://msdn.microsoft.com/en-us/library/bb736298%28VS.85%29.aspx
+  TJwDEPSystemPolicy = (
+    spAlwaysOff = 0,
+    spAlwaysOn = 1,
+    spOptIn = 2,
+    spOptOut = 3,
+    spUnsupported = $FFFF
+  );
+
+  TJwDEPPolicy = (
+    depUnsupported,
+    depDisabled,
+    depEnabled,
+    depATLDisableThunkEmulation,
+    depPermanent
+  );
+
+  TJwDEPProcessPolicy = set of TJwDEPPolicy;
+
+
+  TJwProcessorFeature = (
+    pfFloatingPointPrecisionErrate = 0,
+    pfFloatingPointEmulated = 1,
+    pfCompareExchangeDouble = 2,
+    pfMMXInstructionsAvailable = 3,
+    pfPPCMoveMem_64BitOK = 4,
+    pfAlphaByteInstructions = 5,
+    pfXMMIInstructionsAvailable = 6,
+    pf3DNOWInstructionsAvailable = 7,
+    pfRDTSCInstructionAvailable = 8,
+    pfPAEEnabled                     = 9,
+    pfXMMI64InstructionsAvailable = 10,
+    pfSSEDAZModeAvailable = 11,
+    pfNXEnabled                     = 12,
+    pfSSE3InstructionsAvailable = 13,
+    pfCompareExchange128 = 14,
+    pfCompare64Exchange128 = 15,
+    pfChannelsEnabled = 16
+  );
+
+  TJwProcessorFeatures = set of TJwProcessorFeature;
+
+  TJwVersion = record
+    Major, Minor : DWORD;
+  end;
+
+  TJwWindowsProductInfo = record
+    OSVersion,
+    ServicePackVersion : TJwVersion;
+
+
+  end;
+
 {IJwBase_Equals implements IJwBase.Equals and always returns false.}
 function IJwBase_Equals(Obj: TObject): Boolean;
 
