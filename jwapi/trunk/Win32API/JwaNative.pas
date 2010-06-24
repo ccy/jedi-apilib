@@ -3626,6 +3626,14 @@ type
   _PEB = Pointer;
   {$ENDIF WIN2008}
 
+  {$IFDEF WIN7}
+  _PEB = Pointer;
+  {$ENDIF WIN7}
+
+  {$IFDEF WIN2008R2}
+  _PEB = Pointer;
+  {$ENDIF WIN2008R2}
+
 
   PEB = _PEB;
   PPEB = ^_PEB;
