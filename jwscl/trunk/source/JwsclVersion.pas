@@ -1113,7 +1113,7 @@ end;
 class function TJwWindowsVersion.GetSystemBootType: TJwSystemBootType;
 var value : DWORD;
 begin
-  value := GetSystemMetrics(SM_CLEANBOOT) + 10;
+  value := GetSystemMetrics(SM_CLEANBOOT);
   if value <= DWORD(high(TJwSystemBootType)) then
     result := TJwSystemBootType(value)
   else
