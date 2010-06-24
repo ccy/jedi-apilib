@@ -265,6 +265,7 @@ type
     class function GetCachedWindowsType: integer;
     class function SetCachedWindowsType(const WindowsType : Integer; Server : Boolean = False) : Integer; virtual;
     class procedure ResetCachedWindowsType; virtual;
+
       {<B>IsWindows95</B> checks if the system has the version given in the function name.
        @param bOrHigher defines if the return value should also be <B>true</B> if the system
               is better/higher than the requested system version.
@@ -433,23 +434,58 @@ type
         Even if TS is not running you can safely call any WTS function. So
         you just need to check for Windows 7 and ignore the result of IsTerminalServiceRunning.
     }
-    class function IsTerminalServiceRunning : Boolean;
+    class function IsTerminalServiceRunning : Boolean; virtual;
 
     // <B>GetNativeProcessorArchitecture</B> returns processor architecture of the current Windows version
-    class function GetNativeProcessorArchitecture : Cardinal;
+    class function GetNativeProcessorArchitecture : Cardinal; virtual;
 
     // <B>IsWindowsX64</B> returns true if the process is running on a Windows x64 version
-    class function IsWindowsX64 : boolean;
+    class function IsWindowsX64 : boolean; virtual;
 
     // <B>IsWindowsIA64</B> returns true if the process is running on a Windows IA64 version
-    class function IsWindowsIA64 : boolean;
+    class function IsWindowsIA64 : boolean; virtual;
 
     // <B>IsWindows64</B> returns true if the process is running on any 64 bit Windows version
-    class function IsWindows64 : boolean;
-
-    class function IsUACEnabled : Boolean;
+    class function IsWindows64 : boolean; virtual;
 
 
+    {<B>IsUACEnabled</B> returns true if the system has UAC enabled.
+
+     Exceptions
+      ERegistryException This exception is thrown on a Windows that is older than Vista.
+      EJwsclWinCallFailedException Usually this exception occurrs if a registry key could not be read.
+    }
+    class function IsUACEnabled : Boolean; virtual;
+
+
+    {IsRemoteSession returns true if the current session is a remote session (RDP); otherwise false.}
+    class function IsRemoteSession : Boolean; virtual;
+
+    {IsConsoleSession returns true if the current session is the console session; otherwise false.}
+    class function IsConsoleSession : Boolean; virtual;
+
+    {IsShadowedSession returns true if the current session is shadowed; otherwise false.}
+    class function IsShadowedSession : Boolean; virtual;
+
+    {GetConsoleSessionId returns the ID of the current console session.}
+    class function GetConsoleSessionId: TJwSessionId; virtual;
+
+    {GetSystemBootType returns the boot type of Windows. (normal, fail safe, fail safe with network)
+
+    Exceptions
+      EJwsclInvalidIndex The boot type could not be determined. Read property LastError of the exception
+           to get the boot type value returned by GetSysteMetrics.
+    }
+    class function GetSystemBootType : TJwSystemBootType; virtual;
+
+    {IsStarterEdition returns true if the current Windows is a Starter Edition.}
+    class function IsStarterEdition : Boolean; virtual;
+
+    {IsShuttingDown returns true if the system is shutting down.
+
+    Exceptions
+      EJwsclUnsupportedWindowsVersionException Only Windows XP and newer support this call.}
+    class function IsShuttingDown : Boolean; virtual;
 
     {<B>IsProcess64</B> checks if a process is 64 bit.
      param ProcessHandle Defines the process to be checked for 64 bit. If this parameter is zero
@@ -827,6 +863,31 @@ begin
   Result := fIsServer;
 end;
 
+class function TJwWindowsVersion.IsShadowedSession: Boolean;
+begin
+  result := GetSystemMetrics(SM_REMOTECONTROL) <> 0;
+end;
+
+class function TJwWindowsVersion.IsShuttingDown: Boolean;
+begin
+  if IsWindowsXP(true) then
+    result := GetSystemMetrics(SM_SHUTTINGDOWN) <> 0
+  else
+    raise EJwsclUnsupportedWindowsVersionException.CreateFmtEx(
+        'The current Windows version does not support this call.',
+        'IsShuttingDown',                                //sSourceProc
+        ClassName,                                //sSourceClass
+        RSUnVersion,                          //sSourceFile
+        0,                                           //iSourceLine
+        false,                                  //bShowLastError
+        []);                                  //const Args: array of const
+end;
+
+class function TJwWindowsVersion.IsStarterEdition: Boolean;
+begin
+  result := GetSystemMetrics(SM_SERVERR2) <> 0;
+end;
+
 class function TJwWindowsVersion.GetWindowsType: integer;
 var
   osVerInfo:
@@ -971,6 +1032,11 @@ begin
 end;
 
 
+class function TJwWindowsVersion.IsConsoleSession: Boolean;
+begin
+  result := not IsRemoteSession;
+end;
+
 class function TJwWindowsVersion.IsProcess64(ProcessHandle : DWORD = 0) : boolean;
 var
   RunningInsideWOW64 : BOOL;
@@ -1004,6 +1070,16 @@ end;
 
 
 
+class function TJwWindowsVersion.IsRemoteSession: Boolean;
+begin
+  result := GetSystemMetrics(SM_REMOTESESSION) <> 0;
+end;
+
+class function TJwWindowsVersion.GetConsoleSessionId: TJwSessionId;
+asm
+  mov eax, [$7ffe02d8];
+end;
+
 class function TJwWindowsVersion.GetCachedWindowsType: integer;
 begin
   result := fWindowsType;
@@ -1032,6 +1108,25 @@ begin
   result := fWindowsType; //returns previous value
   fWindowsType := WindowsType;
   fIsServer  := Server;
+end;
+
+class function TJwWindowsVersion.GetSystemBootType: TJwSystemBootType;
+var value : DWORD;
+begin
+  value := GetSystemMetrics(SM_CLEANBOOT) + 10;
+  if value <= DWORD(high(TJwSystemBootType)) then
+    result := TJwSystemBootType(value)
+  else
+    raise EJwsclInvalidIndex.CreateFmtEx(
+        'The GetSystemMetrics value %0:d could not be converted to a TJwSystemBootType enum. The value %0:d is not supported by JWSCL. '+
+          'Furthermore, it was stored in the LastError property of this exception.',
+        'SystemBootType',                                //sSourceProc
+        ClassName,                                //sSourceClass
+        RSUnVersion,                          //sSourceFile
+        0,                                           //iSourceLine
+        value,                                  //bShowLastError
+        [value]);                                  //const Args: array of const
+
 end;
 
 {$ENDIF SL_INTERFACE_SECTION}

@@ -1053,8 +1053,6 @@ var
 
   ExpandedInformation : WideString;
   TaskDlgData : TTaskDlgData;
-
-  Redirect : Pointer;
 begin
   if TJwWindowsVersion.IsWindowsVista(True) or
      TJwWindowsVersion.IsWindows2008(True)

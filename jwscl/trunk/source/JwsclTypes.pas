@@ -1701,6 +1701,11 @@ type
 
   TJwValidObjectTypes = set of TJwValidObjectType;
 
+  TJwSystemBootType = (
+    sbtNormal = 0,
+    sbtFailSafe = 1,
+    sbtFailSafeNetwork = 2);
+
 {IJwBase_Equals implements IJwBase.Equals and always returns false.}
 function IJwBase_Equals(Obj: TObject): Boolean;
 

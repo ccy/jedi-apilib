@@ -108,10 +108,7 @@ const
 
   JwAllSecurityAccess = READ_CONTROL or WRITE_DAC or WRITE_OWNER or SYNCHRONIZE;
 
-    {<B>SM_SERVERR2</B> is used as an additional constant for GetSystemMetrics
-     to detect the second release of Win2003
-    }
-  SM_SERVERR2 = 98;
+
 
 
   { operating system (OS)constants }
