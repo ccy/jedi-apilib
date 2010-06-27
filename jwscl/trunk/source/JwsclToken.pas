@@ -3747,7 +3747,7 @@ begin
   end
   else
     TSRunning := TJwWindowsVersion.IsWindows7(True) or //On Win7 WTS calls are always valid
-      TJwWindowsVersion.IsTerminalServiceRunning;
+      TJwSystemInformation.IsTerminalServiceRunning;
 
   if (not TSRunning) then
     raise EJwsclTerminalServiceNecessary.CreateFmtEx(

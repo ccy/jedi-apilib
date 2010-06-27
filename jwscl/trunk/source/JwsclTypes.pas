@@ -1549,14 +1549,6 @@ type
     var lpStartupInfo: TStartupInfoW)  of object;
 
 
-  {IJwBase is the new base interface class for all JWSCL classes
-  which want to implement basic methods.}
-  IJwBase = interface
-    function Equals(Obj: TObject): Boolean;
-    function GetHashCode: Integer;
-    function ToString: String;
-  end;
-
   TJwComAuthenticationLevel = (
     calInvalid = -1,
     calDefault = 0,
@@ -1692,6 +1684,7 @@ type
   }
   TJwSecurityPackageInformationArray = array of TJwSecurityPackageInformation;
 
+  //This enum defines the available types of objects
   TJwValidObjectType = (
     otType,
     otTypeGuid,
@@ -1699,13 +1692,16 @@ type
     otTypeInheritedName
   );
 
+  //This set defines the types of valid object.
   TJwValidObjectTypes = set of TJwValidObjectType;
 
+  //This enumeration defines the possible boot states
   TJwSystemBootType = (
     sbtNormal = 0,
     sbtFailSafe = 1,
     sbtFailSafeNetwork = 2);
 
+  //This enumeration defines possible processor architectures
   TJwProcessorArchitecture = (
     paINTEL = 0,
     paIA64 = 6,
@@ -1713,6 +1709,7 @@ type
     paUnknown = $FFFF
   );
 
+  //This enumeration defines the DEP status of the system
   //http://msdn.microsoft.com/en-us/library/bb736298%28VS.85%29.aspx
   TJwDEPSystemPolicy = (
     spAlwaysOff = 0,
@@ -1722,6 +1719,7 @@ type
     spUnsupported = $FFFF
   );
 
+  //This record defines the possible DEP flags
   TJwDEPPolicy = (
     depUnsupported,
     depDisabled,
@@ -1730,9 +1728,10 @@ type
     depPermanent
   );
 
+  //This set defines the state of the DEP status
   TJwDEPProcessPolicy = set of TJwDEPPolicy;
 
-
+  //This enumeration defines the available processor features
   TJwProcessorFeature = (
     pfFloatingPointPrecisionErrate = 0,
     pfFloatingPointEmulated = 1,
@@ -1753,18 +1752,34 @@ type
     pfChannelsEnabled = 16
   );
 
+  //This set contains the available features of a processor
   TJwProcessorFeatures = set of TJwProcessorFeature;
 
+  //This record contains a version information: Major and Minor Version
   TJwVersion = record
     Major, Minor : DWORD;
   end;
 
-  TJwWindowsProductInfo = record
+  //This record contains a name and version information about a Windows Service Pack
+  TJwServicePackVersion = record
+    Version : TJwVersion;
+    Name : TJwString;
+  end;
+
+  {TJwWindowsProductInfo = record
     OSVersion,
     ServicePackVersion : TJwVersion;
+  end;}
 
 
+  {IJwBase is the new base interface class for all JWSCL classes
+  which want to implement basic methods.}
+  IJwBase = interface
+    function Equals(Obj: TObject): Boolean;
+    function GetHashCode: Integer;
+    function ToString: String;
   end;
+
 
 {IJwBase_Equals implements IJwBase.Equals and always returns false.}
 function IJwBase_Equals(Obj: TObject): Boolean;

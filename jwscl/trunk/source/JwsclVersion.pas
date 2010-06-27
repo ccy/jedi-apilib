@@ -233,14 +233,131 @@ type
   end;
 
 
-    {<B>TJwWindowsVersion</B> provides methods to detect the windows version and product type.
-     All methods are class methods so there is no need for an instance of <B>TJwWindowsVersion</B>.
-     }
-  TJwWindowsVersion = class(TObject)
-  private
-  protected
+
+
+  {<B>TJwSystemInformation</B> provides methods to retrieve information about
+   Windows (UAC, TS, Session, Processes) and the system it is running on.
+   To get the Windows Version (also 64/32bit, ServicePack, Edition) call a method from class TJwWindowsVersion.
+   }
+  TJwSystemInformation = class
   public
-      {<B>GetWindowsType</B> returns a constant that defines the windows version the process is running.
+    {<B>IsTerminalServiceRunning</B> checks the status of the terminal service.
+
+     Return
+        Returns true if the terminal service is running; otherwise false.
+     Remarks
+        On Windows 7 (Workstation) the function returns in most cases false because
+        of a changed Windows TS architecture.
+        Even if TS is not running you can safely call any WTS function. So
+        you just need to check for Windows 7 and ignore the result of IsTerminalServiceRunning.
+    }
+    class function IsTerminalServiceRunning : Boolean; virtual;
+
+    // <B>GetNativeProcessorArchitecture</B> returns processor architecture of the current Windows version
+    class function GetNativeProcessorArchitecture : TJwProcessorArchitecture; virtual;
+
+
+    {<B>IsUACEnabled</B> returns true if the system has UAC enabled.
+
+     Exceptions
+      ERegistryException This exception is thrown on a Windows that is older than Vista.
+      EJwsclWinCallFailedException Usually this exception occurrs if a registry key could not be read.
+    }
+    class function IsUACEnabled : Boolean; virtual;
+
+
+    {IsRemoteSession returns true if the current session is a remote session (RDP); otherwise false.}
+    class function IsRemoteSession : Boolean; virtual;
+
+    {IsConsoleSession returns true if the current session is the console session; otherwise false.}
+    class function IsConsoleSession : Boolean; virtual;
+
+    {IsShadowedSession returns true if the current session is shadowed; otherwise false.}
+    class function IsShadowedSession : Boolean; virtual;
+
+    {GetConsoleSessionId returns the ID of the current console session.}
+    class function GetConsoleSessionId: TJwSessionId; virtual;
+
+    {GetSystemBootType returns the boot type of Windows. (normal, fail safe, fail safe with network)
+
+    Exceptions
+      EJwsclInvalidIndex The boot type could not be determined. Read property LastError of the exception
+           to get the boot type value returned by GetSysteMetrics.
+    }
+    class function GetSystemBootType : TJwSystemBootType; virtual;
+
+    {IsShuttingDown returns true if the system is shutting down.
+
+    Exceptions
+      EJwsclUnsupportedWindowsVersionException Only Windows XP and newer support this call.}
+    class function IsShuttingDown : Boolean; virtual;
+
+    {GetSystemDEPPolicy returns the SYSTEM DEP Policy Flag.
+
+     Return value
+      The function returns a value of TJwDEPSystemPolicy or
+        spUnsupported if the system does not support DEP.
+    }
+    class function GetSystemDEPPolicy : TJwDEPSystemPolicy; virtual;
+
+    {GetProcessDEPPolicy sets the Data Execution Prevention (DEP) flag of the current process.
+
+    Parameters
+      ProcessHandle Defines a process handle which is used to retrieve DEP information.
+
+    Return value
+      The return value can be depDisabled or a combination of depEnabled, depATLDisableThunkEmulation and depPermanent.
+
+    Remarks
+      On a Windows XP prior to SP3 or in a 64bit process the function returns [depUnsupported].
+
+    Exceptions
+      EJwsclWinCallFailedException The call GetProcessDEPPolicy failed.
+    }
+    class function GetProcessDEPPolicy(ProcessHandle : DWORD = 0) : TJwDEPProcessPolicy; virtual;
+
+    {SetProcessDEPPolicy sets the Data Execution Prevention (DEP) flag of the current process.
+
+    Parameters
+      NewPolicy Defines a set of flags that apply to the DEP flag of the current process.
+        The following values can be used depDisabled, depEnabled (only with depPermanent), depATLDisableThunkEmulation,
+
+    Remarks
+      If Parameter NewPolicy contains depEnabled, it also must contain depPermanent.
+
+      On a Windows XP prior to SP3 or in a 64bit process the function does nothing.
+
+    Exceptions
+      EJwsclInvalidParameterException If Parameter NewPolicy contains depEnabled, it also must contain depPermanent.
+    }
+    class procedure SetProcessDEPPolicy(NewPolicy : TJwDEPProcessPolicy); virtual;
+
+    {GetProcessorFeatures returns a set of available processor features.}
+    class function GetProcessorFeatures : TJwProcessorFeatures;
+
+    {<B>IsProcess64</B> checks if a process is 64 bit.
+     param ProcessHandle Defines the process to be checked for 64 bit. If this parameter is zero
+     the current process is used instead.
+     return Returns true if the given process is a 64bit process.
+
+     raises
+       EJwsclWinCallFailedException This exception will be raised if the process handle has not the following rights
+         XP/2003 : PROCESS_QUERY_INFORMATION
+         Vista: PROCESS_QUERY_INFORMATION and PROCESS_QUERY_LIMITED_INFORMATION
+    }
+    class function IsProcess64(ProcessHandle : DWORD = 0) : boolean;
+
+    //IsWOWProcess64 checks whether the current or a given process is running under WOW64
+    class function IsWOWProcess64(ProcessHandle : DWORD = 0) : boolean;
+  end;
+
+
+  {<B>TJwSystemInformation</B> provides methods to detect the windows version and product type.
+   All methods are class methods so there is no need for an instance of <B>TJwWindowsVersion</B>.
+   }
+  TJwWindowsVersion = class(TJwSystemInformation)
+  public
+   {<B>GetWindowsType</B> returns a constant that defines the windows version the process is running.
        @return The return value can be one of these constants defined in JwsclConstants
         Currently these items are supported
 
@@ -260,7 +377,8 @@ type
 
        }
 
-    class function GetWindowsType: integer; virtual;
+    class function GetWindowsType(
+          out osVerInfo: {$IFDEF UNICODE}TOSVersionInfoExW{$ELSE}TOSVersionInfoExA{$ENDIF}): integer; virtual;
 
     class function GetCachedWindowsType: integer;
     class function SetCachedWindowsType(const WindowsType : Integer; Server : Boolean = False) : Integer; virtual;
@@ -424,126 +542,27 @@ type
       bOrHigher: boolean; SourceProc, SourceClass, SourceFile: TJwString;
       SourcePos: Cardinal); virtual;
 
-    {<B>IsTerminalServiceRunning</B> checks the status of the terminal service.
-
-     Return
-        Returns true if the terminal service is running; otherwise false.
-     Remarks
-        On Windows 7 (Workstation) the function returns in most cases false because
-        of a changed Windows TS architecture.
-        Even if TS is not running you can safely call any WTS function. So
-        you just need to check for Windows 7 and ignore the result of IsTerminalServiceRunning.
+    {<B>IsWindowsX64</B> returns true if the process is running on a Windows (AMD) x64 version
+      Remarks
+      Call IsWindows64 to check for general 64bit Windows.
     }
-    class function IsTerminalServiceRunning : Boolean; virtual;
-
-    // <B>GetNativeProcessorArchitecture</B> returns processor architecture of the current Windows version
-    class function GetNativeProcessorArchitecture : TJwProcessorArchitecture; virtual;
-
-    // <B>IsWindowsX64</B> returns true if the process is running on a Windows x64 version
     class function IsWindowsX64 : boolean; virtual;
 
-    // <B>IsWindowsIA64</B> returns true if the process is running on a Windows IA64 version
+    {<B>IsWindowsIA64</B> returns true if the process is running on a Windows IA64 version
+
+    Remarks
+      Call IsWindows64 to check for general 64bit Windows.
+    }
     class function IsWindowsIA64 : boolean; virtual;
 
     // <B>IsWindows64</B> returns true if the process is running on any 64 bit Windows version
     class function IsWindows64 : boolean; virtual;
 
-
-
-    {<B>IsUACEnabled</B> returns true if the system has UAC enabled.
-
-     Exceptions
-      ERegistryException This exception is thrown on a Windows that is older than Vista.
-      EJwsclWinCallFailedException Usually this exception occurrs if a registry key could not be read.
-    }
-    class function IsUACEnabled : Boolean; virtual;
-
-
-    {IsRemoteSession returns true if the current session is a remote session (RDP); otherwise false.}
-    class function IsRemoteSession : Boolean; virtual;
-
-    {IsConsoleSession returns true if the current session is the console session; otherwise false.}
-    class function IsConsoleSession : Boolean; virtual;
-
-    {IsShadowedSession returns true if the current session is shadowed; otherwise false.}
-    class function IsShadowedSession : Boolean; virtual;
-
-    {GetConsoleSessionId returns the ID of the current console session.}
-    class function GetConsoleSessionId: TJwSessionId; virtual;
-
-    {GetSystemBootType returns the boot type of Windows. (normal, fail safe, fail safe with network)
-
-    Exceptions
-      EJwsclInvalidIndex The boot type could not be determined. Read property LastError of the exception
-           to get the boot type value returned by GetSysteMetrics.
-    }
-    class function GetSystemBootType : TJwSystemBootType; virtual;
+    //<b>GetServicePackVersion</b> returns the name and the version of the installed Windows Service Pack
+    class function GetServicePackVersion : TJwServicePackVersion;
 
     {IsStarterEdition returns true if the current Windows is a Starter Edition.}
     class function IsStarterEdition : Boolean; virtual;
-
-    {IsShuttingDown returns true if the system is shutting down.
-
-    Exceptions
-      EJwsclUnsupportedWindowsVersionException Only Windows XP and newer support this call.}
-    class function IsShuttingDown : Boolean; virtual;
-
-    {GetSystemDEPPolicy returns the SYSTEM DEP Policy Flag.
-
-     Return value
-      The function returns a value of TJwDEPSystemPolicy or
-        spUnsupported if the system does not support DEP.
-    }
-    class function GetSystemDEPPolicy : TJwDEPSystemPolicy; virtual;
-
-    {GetProcessDEPPolicy sets the Data Execution Prevention (DEP) flag of the current process.
-
-    Parameters
-      ProcessHandle Defines a process handle which is used to retrieve DEP information.
-
-    Return value
-      The return value can be depDisabled or a combination of depEnabled, depATLDisableThunkEmulation and depPermanent.
-
-    Remarks
-      On a Windows XP prior to SP3 or in a 64bit process the function returns [depUnsupported].
-
-    Exceptions
-      EJwsclWinCallFailedException The call GetProcessDEPPolicy failed.
-    }
-    class function GetProcessDEPPolicy(ProcessHandle : DWORD = 0) : TJwDEPProcessPolicy; virtual;
-
-    {SetProcessDEPPolicy sets the Data Execution Prevention (DEP) flag of the current process.
-
-    Parameters
-      NewPolicy Defines a set of flags that apply to the DEP flag of the current process.
-        The following values can be used depDisabled, depEnabled (only with depPermanent), depATLDisableThunkEmulation,
-
-    Remarks
-      If Parameter NewPolicy contains depEnabled, it also must contain depPermanent.
-
-      On a Windows XP prior to SP3 or in a 64bit process the function does nothing.
-
-    Exceptions
-      EJwsclInvalidParameterException If Parameter NewPolicy contains depEnabled, it also must contain depPermanent.
-    }
-    class procedure SetProcessDEPPolicy(NewPolicy : TJwDEPProcessPolicy); virtual;
-
-    {GetProcessorFeatures returns a set of available processor features.}
-    class function GetProcessorFeatures : TJwProcessorFeatures;
-
-    {<B>IsProcess64</B> checks if a process is 64 bit.
-     param ProcessHandle Defines the process to be checked for 64 bit. If this parameter is zero
-     the current process is used instead.
-     return Returns true if the given process is a 64bit process.
-
-     raises
-       EJwsclWinCallFailedException This exception will be raised if the process handle has not the following rights
-         XP/2003 : ROCESS_QUERY_INFORMATION
-         Vista: ROCESS_QUERY_INFORMATION and PROCESS_QUERY_LIMITED_INFORMATION
-    }
-    class function IsProcess64(ProcessHandle : DWORD = 0) : boolean;
-
-    class function IsWOWProcess64(ProcessHandle : DWORD = 0) : boolean;
   end;
 
 
@@ -567,6 +586,7 @@ uses SysConst, Registry;
 var
   fWindowsType: integer;
   fIsServer: boolean;
+  fOSVerInfo: {$IFDEF UNICODE}TOSVersionInfoExW{$ELSE}TOSVersionInfoExA{$ENDIF};
 
 
 class function TJwFileVersion.GetFileInfo(const Filename: TJwString;
@@ -886,7 +906,7 @@ begin
     (fWindowsType > iVer));
 end;
 
-class function TJwWindowsVersion.IsWOWProcess64(ProcessHandle: DWORD): boolean;
+class function TJwSystemInformation.IsWOWProcess64(ProcessHandle: DWORD): boolean;
 var res : BOOL;
 begin
   if ProcessHandle = 0 then
@@ -920,14 +940,14 @@ begin
   Result := fIsServer;
 end;
 
-class function TJwWindowsVersion.IsShadowedSession: Boolean;
+class function TJwSystemInformation.IsShadowedSession: Boolean;
 begin
   result := GetSystemMetrics(SM_REMOTECONTROL) <> 0;
 end;
 
-class function TJwWindowsVersion.IsShuttingDown: Boolean;
+class function TJwSystemInformation.IsShuttingDown: Boolean;
 begin
-  if IsWindowsXP(true) then
+  if TJwWindowsVersion.IsWindowsXP(true) then
     result := GetSystemMetrics(SM_SHUTTINGDOWN) <> 0
   else
     raise EJwsclUnsupportedWindowsVersionException.CreateFmtEx(
@@ -945,13 +965,10 @@ begin
   result := GetSystemMetrics(SM_SERVERR2) <> 0;
 end;
 
-class function TJwWindowsVersion.GetWindowsType: integer;
+class function TJwWindowsVersion.GetWindowsType(
+    out osVerInfo: {$IFDEF UNICODE}TOSVersionInfoExW{$ELSE}TOSVersionInfoExA{$ENDIF}
+  ): integer;
 var
-  osVerInfo:
-{$IFDEF UNICODE}TOSVersionInfoExW{$ELSE}
-  TOSVersionInfoExA
-{$ENDIF}
-  ;
   majorVer, minorVer: integer;
 begin
   //  Result := cOsUnknown;
@@ -1019,14 +1036,14 @@ begin
     Result := cOsUnknown;
 end;
 
-class function TJwWindowsVersion.IsTerminalServiceRunning: Boolean;
+class function TJwSystemInformation.IsTerminalServiceRunning: Boolean;
 begin
   result := JwaWindows.IsTerminalServiceRunning;
 end;
 
 
 
-class function TJwWindowsVersion.IsUACEnabled: Boolean;
+class function TJwSystemInformation.IsUACEnabled: Boolean;
 var R : TRegistry;
 begin
   result := false;
@@ -1053,7 +1070,7 @@ begin
   end;
 end;
 
-class function TJwWindowsVersion.GetNativeProcessorArchitecture : TJwProcessorArchitecture;
+class function TJwSystemInformation.GetNativeProcessorArchitecture : TJwProcessorArchitecture;
 var
   SystemInfo : SYSTEM_INFO;
   // only available on Windows >= 5.1 so we have to link it dynamically
@@ -1073,7 +1090,7 @@ end;
 
 
 
-class function TJwWindowsVersion.GetProcessDEPPolicy(
+class function TJwSystemInformation.GetProcessDEPPolicy(
   ProcessHandle: DWORD): TJwDEPProcessPolicy;
 var
   _GetProcessDEPPolicy : function (hProcess : HANDLE; out lpFlags : DWORD; out lpPermanent : BOOL) : BOOL; stdcall;
@@ -1082,7 +1099,7 @@ var
 begin
   result := [depUnsupported];
 
-  if IsWindowsXP(true) and not IsProcess64() then
+  if TJwWindowsVersion.IsWindowsXP(true) and not TJwWindowsVersion.IsProcess64() then
   begin
     _GetProcessDEPPolicy := GetProcAddress(GetModuleHandle('kernel32.dll'), 'GetProcessDEPPolicy');
     if @_GetProcessDEPPolicy <> nil then
@@ -1117,7 +1134,7 @@ begin
   end;
 end;
 
-class function TJwWindowsVersion.GetProcessorFeatures: TJwProcessorFeatures;
+class function TJwSystemInformation.GetProcessorFeatures: TJwProcessorFeatures;
 var
   I : TJwProcessorFeature;
 begin
@@ -1131,13 +1148,13 @@ end;
 
 class function TJwWindowsVersion.IsWindowsX64 : boolean;
 begin
-  result := GetNativeProcessorArchitecture = paAMD64;
+  result := TJwSystemInformation.GetNativeProcessorArchitecture = paAMD64;
 end;
 
 
 class function TJwWindowsVersion.IsWindowsIA64 : boolean;
 begin
-  result := GetNativeProcessorArchitecture = paIA64;
+  result := TJwSystemInformation.GetNativeProcessorArchitecture = paIA64;
 end;
 
 
@@ -1147,12 +1164,12 @@ begin
 end;
 
 
-class function TJwWindowsVersion.IsConsoleSession: Boolean;
+class function TJwSystemInformation.IsConsoleSession: Boolean;
 begin
   result := not IsRemoteSession;
 end;
 
-class function TJwWindowsVersion.IsProcess64(ProcessHandle : DWORD = 0) : boolean;
+class function TJwSystemInformation.IsProcess64(ProcessHandle : DWORD = 0) : boolean;
 var
   RunningInsideWOW64 : BOOL;
 begin
@@ -1160,7 +1177,7 @@ begin
     ProcessHandle := GetCurrentProcess();
 
   // If we are on a 64 bit Windows but NOT inside WOW64 we are running natively
-  if IsWindows64 then
+  if TJwWindowsVersion.IsWindows64 then
   begin
     if IsWow64Process(ProcessHandle, RunningInsideWOW64) then
       result := not RunningInsideWOW64
@@ -1185,12 +1202,12 @@ end;
 
 
 
-class function TJwWindowsVersion.IsRemoteSession: Boolean;
+class function TJwSystemInformation.IsRemoteSession: Boolean;
 begin
   result := GetSystemMetrics(SM_REMOTESESSION) <> 0;
 end;
 
-class function TJwWindowsVersion.GetConsoleSessionId: TJwSessionId;
+class function TJwSystemInformation.GetConsoleSessionId: TJwSessionId;
 asm
   mov eax, [$7ffe02d8];
 end;
@@ -1203,7 +1220,8 @@ end;
 class procedure TJwWindowsVersion.ResetCachedWindowsType;
 var Srv : TJwServerInfo;
 begin
-  fWindowsType := GetWindowsType;
+  fWindowsType := GetWindowsType(fOSVerInfo);
+
 
   try
     Srv := TJwServerInfo.Create('');
@@ -1226,12 +1244,12 @@ begin
 end;
 
 
-class procedure TJwWindowsVersion.SetProcessDEPPolicy(NewPolicy: TJwDEPProcessPolicy);
+class procedure TJwSystemInformation.SetProcessDEPPolicy(NewPolicy: TJwDEPProcessPolicy);
 var
   _SetProcessDEPPolicy : function (Flags : DWORD) : BOOL; stdcall;
   Flags : DWORD;
 begin
-  if IsWindowsXP(true) and not IsProcess64() then
+  if TJwWindowsVersion.IsWindowsXP(true) and not TJwWindowsVersion.IsProcess64() then
   begin
     _SetProcessDEPPolicy := GetProcAddress(GetModuleHandle('kernel32.dll'), 'SetProcessDEPPolicy');
     if @_SetProcessDEPPolicy <> nil then
@@ -1272,7 +1290,14 @@ begin
   end;
 end;
 
-class function TJwWindowsVersion.GetSystemBootType: TJwSystemBootType;
+class function TJwWindowsVersion.GetServicePackVersion: TJwServicePackVersion;
+begin
+  result.Version.Major :=  fOSVerInfo.wServicePackMajor;
+  result.Version.Minor :=  fOSVerInfo.wServicePackMinor;
+  result.Name := TJwString(fOSVerInfo.szCSDVersion);
+end;
+
+class function TJwSystemInformation.GetSystemBootType: TJwSystemBootType;
 var value : DWORD;
 begin
   value := GetSystemMetrics(SM_CLEANBOOT);
@@ -1291,13 +1316,13 @@ begin
 
 end;
 
-class function TJwWindowsVersion.GetSystemDEPPolicy: TJwDEPSystemPolicy;
+class function TJwSystemInformation.GetSystemDEPPolicy: TJwDEPSystemPolicy;
 var
   _GetSystemDEPPolicy : function () : BOOL; stdcall;
 begin
   result := spUnsupported;
 
-  if IsWindowsXP(true) and not IsProcess64() then
+  if TJwWindowsVersion.IsWindowsXP(true) and not TJwWindowsVersion.IsProcess64() then
   begin
     _GetSystemDEPPolicy := GetProcAddress(GetModuleHandle('kernel32.dll'), 'GetSystemDEPPolicy');
     if @_GetSystemDEPPolicy <> nil then
