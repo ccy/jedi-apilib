@@ -1291,42 +1291,47 @@ begin
         //
         Log.Log('Calling CreateProcessAsUser...');
 
+        //Impersonate the given user so CPAU uses the security context of this user to access the file
+        UserToken.ImpersonateLoggedOnUser;
+        try
+          i := 1; //first try
+          repeat
+            SetLastError(0);
+            CPAUResult := {$IFDEF UNICODE}CreateProcessAsUserW{$ELSE}CreateProcessAsUserA{$ENDIF}(
+                UserToken.TokenHandle,//HANDLE hToken,
+                AppName,//__in_opt     LPCTSTR lpApplicationName,
+                CmdLine, //__inout_opt  LPTSTR lpCommandLine,
+                LPSECURITY_ATTRIBUTES(lpProcAttr),//__in_opt     LPSECURITY_ATTRIBUTES lpProcessAttributes,
+                LPSECURITY_ATTRIBUTES(lpThreadAttr),//LPSECURITY_ATTRIBUTES(InVars.Parameters.lpThreadAttributes),//__in_opt     LPSECURITY_ATTRIBUTES lpThreadAttributes,
+                InVars.Parameters.bInheritHandles,//__in         BOOL bInheritHandles,
+                InVars.Parameters.dwCreationFlags,//__in         DWORD dwCreationFlags,
+                OutVars.EnvironmentBlock,//__in_opt     LPVOID lpEnvironment,
+                CurrentDirectory,//'',//TJwPChar(InVars.Parameters.lpCurrentDirectory),//__in_opt     LPCTSTR lpCurrentDirectory,
+                StartupInfo,//__in         LPSTARTUPINFO lpStartupInfo,
+                OutVars.ProcessInfo //__out        LPPROCESS_INFORMATION lpProcessInformation
+               );
 
-        i := 1; //first try
-        repeat
-          SetLastError(0);
-          CPAUResult := {$IFDEF UNICODE}CreateProcessAsUserW{$ELSE}CreateProcessAsUserA{$ENDIF}(
-              UserToken.TokenHandle,//HANDLE hToken,
-              AppName,//__in_opt     LPCTSTR lpApplicationName,
-              CmdLine, //__inout_opt  LPTSTR lpCommandLine,
-              LPSECURITY_ATTRIBUTES(lpProcAttr),//__in_opt     LPSECURITY_ATTRIBUTES lpProcessAttributes,
-              LPSECURITY_ATTRIBUTES(lpThreadAttr),//LPSECURITY_ATTRIBUTES(InVars.Parameters.lpThreadAttributes),//__in_opt     LPSECURITY_ATTRIBUTES lpThreadAttributes,
-              InVars.Parameters.bInheritHandles,//__in         BOOL bInheritHandles,
-              InVars.Parameters.dwCreationFlags,//__in         DWORD dwCreationFlags,
-              OutVars.EnvironmentBlock,//__in_opt     LPVOID lpEnvironment,
-              CurrentDirectory,//'',//TJwPChar(InVars.Parameters.lpCurrentDirectory),//__in_opt     LPCTSTR lpCurrentDirectory,
-              StartupInfo,//__in         LPSTARTUPINFO lpStartupInfo,
-              OutVars.ProcessInfo //__out        LPPROCESS_INFORMATION lpProcessInformation
-             );
+            {Check for a known XP bug
+            The pipe is not available at some time
+            so wait for it
+            }
+            if GetLastError() = ERROR_PIPE_NOT_CONNECTED then
+            begin
+              if (InVars.MaximumTryCount >= 0) and (i >= InVars.MaximumTryCount) then
+                Break;
 
-          {Check for a known XP bug
-          The pipe is not available at some time
-          so wait for it
-          }
-          if GetLastError() = ERROR_PIPE_NOT_CONNECTED then
-          begin
-            if (InVars.MaximumTryCount >= 0) and (i >= InVars.MaximumTryCount) then
-              Break;
+              if (InVars.BusyPipeSleep < 100) or (InVars.BusyPipeSleep > 60* 100) then
+                 Sleep(InVars.BusyPipeSleep)
+              else
+                 Sleep(5* 1000); //default 5sec
 
-            if (InVars.BusyPipeSleep < 100) or (InVars.BusyPipeSleep > 60* 100) then
-               Sleep(InVars.BusyPipeSleep)
-            else
-               Sleep(5* 1000); //default 5sec
+              Inc(i);
+            end;
+          until (GetLastError() <> ERROR_PIPE_NOT_CONNECTED);
+        finally
+          TJwSecurityToken.RevertToSelf;
+        end;
 
-            Inc(i);
-          end;
-        until (GetLastError() <> ERROR_PIPE_NOT_CONNECTED);
-        
         if not CPAUResult then
         begin
           Log.Log('Call to CreateProcessAsUser succeeded. Returning.');
@@ -1801,23 +1806,29 @@ begin
       if not CreateEnvironmentBlock(@Output.EnvBlock, Output.UserToken.TokenHandle, false) then
         Log.Log(lsMessage, 'CreateEnvironmentBlock failed: '+IntToStr(GetLastError));
 
-      Log.Log(lsMessage, 'Call CreateProcessAsUser');
-      if not {$IFDEF UNICODE}CreateProcessAsUserW{$ELSE}CreateProcessAsUserA{$ENDIF}(
-        Output.UserToken.TokenHandle,//HANDLE hToken,
-        lpApplicationName,//__in_opt     LPCTSTR lpApplicationName,
-        lpCommandLine, //__inout_opt  LPTSTR lpCommandLine,
-        nil,//__in_opt     LPSECURITY_ATTRIBUTES lpProcessAttributes,
-        nil,//__in_opt     LPSECURITY_ATTRIBUTES lpThreadAttributes,
-        false,//__in         BOOL bInheritHandles,
-        CreationFlags or CREATE_UNICODE_ENVIRONMENT,//__in         DWORD dwCreationFlags,
-        Output.EnvBlock,//__in_opt     LPVOID lpEnvironment,
-        lpCurrentDirectory,//__in_opt     LPCTSTR lpCurrentDirectory,
-        StartupInfo,//__in         LPSTARTUPINFO lpStartupInfo,
-        Output.ProcessInfo //__out        LPPROCESS_INFORMATION lpProcessInformation
-      ) then
-      begin
-        Log.Log(lsMessage,'Failed CreateProcessAsUser.');
-        RaiseLastOSError;
+      //Impersonate the given user so CPAU uses the security context of this user to access the file
+      Output.UserToken.ImpersonateLoggedOnUser;
+      try
+        Log.Log(lsMessage, 'Call CreateProcessAsUser');
+        if not {$IFDEF UNICODE}CreateProcessAsUserW{$ELSE}CreateProcessAsUserA{$ENDIF}(
+          Output.UserToken.TokenHandle,//HANDLE hToken,
+          lpApplicationName,//__in_opt     LPCTSTR lpApplicationName,
+          lpCommandLine, //__inout_opt  LPTSTR lpCommandLine,
+          nil,//__in_opt     LPSECURITY_ATTRIBUTES lpProcessAttributes,
+          nil,//__in_opt     LPSECURITY_ATTRIBUTES lpThreadAttributes,
+          false,//__in         BOOL bInheritHandles,
+          CreationFlags or CREATE_UNICODE_ENVIRONMENT,//__in         DWORD dwCreationFlags,
+          Output.EnvBlock,//__in_opt     LPVOID lpEnvironment,
+          lpCurrentDirectory,//__in_opt     LPCTSTR lpCurrentDirectory,
+          StartupInfo,//__in         LPSTARTUPINFO lpStartupInfo,
+          Output.ProcessInfo //__out        LPPROCESS_INFORMATION lpProcessInformation
+        ) then
+        begin
+          Log.Log(lsMessage,'Failed CreateProcessAsUser.');
+          RaiseLastOSError;
+        end;
+      finally
+        TJwSecurityToken.RevertToSelf;
       end;
 
       if WaitForProcess then
