@@ -908,16 +908,20 @@ begin
   try
     ptg := aToken.TokenGroups;
 
-    // Loop through the groups to find the logon SID.
-    for i := 0 to ptg.Count - 1 do
-    begin
-      if (ptg[i].Attributes and SE_GROUP_LOGON_ID) = SE_GROUP_LOGON_ID then
+    try
+      // Loop through the groups to find the logon SID.
+      for i := 0 to ptg.Count - 1 do
       begin
-        // Found the logon SID; make a copy of it.
-        Result := TJwSecurityId.Create(ptg[i].CreateCopyOfSID);
-        Result.AttributesType := [sidaGroupLogonId];
-        Break;
+        if (ptg[i].Attributes and SE_GROUP_LOGON_ID) = SE_GROUP_LOGON_ID then
+        begin
+          // Found the logon SID; make a copy of it.
+          Result := TJwSecurityId.Create(ptg[i]);
+          Result.AttributesType := [sidaGroupLogonId];
+          Break;
+        end;
       end;
+    finally
+      FreeAndNil(ptg);
     end;
   finally
     if ownToken then
