@@ -52,7 +52,7 @@ uses
   SysUtils, Contnrs, Classes,
   JwaWindows, JwsclUtils, JwsclResource,
   JwsclTypes, JwsclExceptions, JwsclEnumerations,
-  JwsclVersion, JwsclConstants,
+  JwsclConstants,
   JwsclStrings; //JwsclStrings, must be at the end of uses list!!!
 {$ENDIF SL_OMIT_SECTIONS}
 
@@ -988,6 +988,7 @@ procedure JwInitSidNameCache;
 
 {$IFNDEF SL_OMIT_SECTIONS}
 implementation
+uses JwsclVersion;
 
 {$ENDIF SL_OMIT_SECTIONS}
 

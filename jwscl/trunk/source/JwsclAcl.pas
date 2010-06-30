@@ -59,7 +59,7 @@ uses
   JwsclResource, JwsclUtils,
 
   JwsclTypes, JwsclExceptions, JwsclMapping,
-  JwsclVersion, JwsclConstants, JwsclSid,
+  JwsclConstants, JwsclSid,
   JwsclStrings; //JwsclStrings, must be at the end of uses list!!!
 {$ENDIF SL_OMIT_SECTIONS}
 
@@ -1776,7 +1776,7 @@ type
 {$IFNDEF SL_OMIT_SECTIONS}
 implementation
 
-uses Math, JwsclEnumerations;
+uses Math, JwsclVersion, JwsclEnumerations;
 
 
 

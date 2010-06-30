@@ -46,7 +46,7 @@ interface
 
 uses SysUtils,
   JwsclUtils, JwsclResource,
-  jwaWindows, JwsclConstants, JwsclExceptions, JwsclTypes,
+  jwaWindows, JwsclConstants, JwsclExceptions, JwsclTypes, JwsclToken,
   JwsclStrings;
 
 {$ENDIF SL_OMIT_SECTIONS}
@@ -253,11 +253,11 @@ type
     }
     class function IsTerminalServiceRunning : Boolean; virtual;
 
-    // <B>GetNativeProcessorArchitecture</B> returns processor architecture of the current Windows version
+    // <B>GetNativeProcessorArchitecture</B> returns processor architecture of the system
     class function GetNativeProcessorArchitecture : TJwProcessorArchitecture; virtual;
 
 
-    {<B>IsUACEnabled</B> returns true if the system has UAC enabled.
+    {<B>IsUACEnabled</B> returns true if the Windows system has UAC enabled.
 
      Exceptions
       ERegistryException This exception is thrown on a Windows that is older than Vista.
@@ -349,6 +349,19 @@ type
 
     //IsWOWProcess64 checks whether the current or a given process is running under WOW64
     class function IsWOWProcess64(ProcessHandle : DWORD = 0) : boolean;
+
+//    class function GetNumberOfProcessors : Cardinal;
+  end;
+
+  TJwShellInformation = class(TJwSystemInformation)
+  public
+    {<b>GetShellRestrictions</b> returns all restrictions an administrator placed in the system.
+
+    }
+    class function GetShellRestrictions : TJwShellRestrictions; virtual;
+
+    class function GetFolderPath(const OwnerWindow : HWND; Folder : Integer;
+        Token : TJwSecurityToken; const FolderType : TJwShellFolderType) : TJwString;
   end;
 
 
@@ -565,6 +578,13 @@ type
     class function IsStarterEdition : Boolean; virtual;
   end;
 
+const
+  {<b>JwDefaultUserPseudoToken</b> defines a pseudo user token object
+   for use only with TJwShellInformation.GetFolderPath.
+   Do not use it directly.
+   }
+  JwDefaultUserPseudoToken : TJwSecurityToken = TJwSecurityToken(-1);
+
 
 
 {$ENDIF SL_IMPLEMENTATION_SECTION}
@@ -572,7 +592,7 @@ type
 {$IFNDEF SL_OMIT_SECTIONS}
 implementation
 
-uses SysConst, Registry;
+uses SysConst, Registry, JwsclEnumerations;
 
 
 {$ENDIF SL_OMIT_SECTIONS}
@@ -1295,6 +1315,127 @@ begin
   result.Version.Major :=  fOSVerInfo.wServicePackMajor;
   result.Version.Minor :=  fOSVerInfo.wServicePackMinor;
   result.Name := TJwString(fOSVerInfo.szCSDVersion);
+end;
+
+
+{
+Remarks
+  The thread won't necessarily be impersonated after the call.
+
+}
+class function TJwShellInformation.GetFolderPath(const OwnerWindow: HWND;
+  Folder: Integer; Token: TJwSecurityToken;
+  const FolderType: TJwShellFolderType): TJwString;
+
+  procedure RaiseError(ErrorMsg : TJwString; Error : HRESULT );
+  begin
+    SetLastError(HRESULT_CODE(Error));
+    raise EJwsclWinCallFailedException.CreateFmtWinCall(
+            RsWinCallFailedWithNTStatus + #13#10 + ErrorMsg,
+            'GetFolderPath',                                //sSourceProc
+            ClassName,                                //sSourceClass
+            RSUnVersion,                          //sSourceFile
+            0,                                           //iSourceLine
+            true,                                  //bShowLastError
+            'GetProcessDEPPolicy',                   //sWinCall
+            ['SHGetFolderPath', Error]);                                 //const Args: array of const
+  end;
+
+var
+  pPath : array[0..MAX_PATH] of TJwChar;
+  hToken : HANDLE;
+  ProfileInfo : TJwProfileInfo;
+  bProfilLoaded, bImpersonated : Boolean;
+  hr : HRESULT;
+  Key : HKEY;
+begin
+  hToken := 0;
+  bProfilLoaded := false;
+  bImpersonated := false;
+
+  if Assigned(Token) and TJwWindowsVersion.IsWindowsXP(true) then
+  begin
+    if Token = JwDefaultUserPseudoToken then
+    begin
+      hToken := HANDLE(-1);
+    end
+    else
+    begin
+      Token.CheckTokenAccessType(TOKEN_QUERY or TOKEN_IMPERSONATE, 'TOKEN_QUERY or TOKEN_IMPERSONATE', 'TJwShellInformation.GetFolderPath');
+
+      //The function may need a loaded user profile
+      if JwIsPrivilegeSet(SE_RESTORE_NAME) then
+      begin
+        ZeroMemory(@ProfileInfo, sizeof(ProfileInfo));
+        try
+          Token.LoadUserProfile(ProfileInfo, []);
+          bProfilLoaded := true;
+        except
+          on E: EJwsclWinCallFailedException do ; //ignore and call the function do it anyway
+        end;
+      end;
+
+      hToken := Token.TokenHandle;
+    end;
+  end;
+
+  hr := {$IFDEF UNICODE}SHGetFolderPathW{$ELSE}SHGetFolderPathA{$ENDIF}(OwnerWindow, Folder,
+    hToken, Cardinal(FolderType), pPath) ;
+
+  //this happens because the current process does not have the right to retrieve it
+  //and because the token must have TOKEN_IMPERSONATE, we can impersonate it and get the path anyway
+  if (HRESULT_CODE(hr) = ERROR_ACCESS_DENIED) and
+     Assigned(Token) and (Token <> JwDefaultUserPseudoToken) and
+     TJwWindowsVersion.IsWindowsXP(true) then
+  begin
+    Token.ImpersonateLoggedOnUser;
+    bImpersonated := true;
+
+    hr := {$IFDEF UNICODE}SHGetFolderPathW{$ELSE}SHGetFolderPathA{$ENDIF}(OwnerWindow, Folder,
+    hToken, Cardinal(FolderType), pPath) ;
+  end;
+
+  try
+    case hr of
+      S_OK         : result := TJwString(pPath);
+      S_FALSE,
+        E_FAIL     : RaiseError('The CSIDL is correct but the folder does not exist.',hr);
+      E_INVALIDARG : RaiseError('The supplied CSIDL is not valid.',hr);
+    else
+      RaiseError('',hr);
+    end;
+  finally
+    if bImpersonated then
+    begin
+      try
+        TJwSecurityToken.RevertToSelf;
+      except
+        on E: EJwsclSecurityException do ; //ignore
+      end;
+    end;
+
+    if bProfilLoaded then
+      Token.UnLoadUserProfile(ProfileInfo);
+  end;
+end;
+
+class function TJwShellInformation.GetShellRestrictions: TJwShellRestrictions;
+var
+  i : TJwShellRestriction;
+  Rest : Cardinal;
+begin
+  result := [];
+  if (TJwWindowsVersion.IsWindowsXP(true) and (TJwWindowsVersion.GetServicePackVersion.Version.Major >= 2))
+    or
+    TJwWindowsVersion.IsWindows2003(true) then
+  begin
+    for  I := low(i) to high(i) do
+    begin
+      Rest := TJwEnumMap.ConvertShellRestrictions([i]);
+      if SHRestricted(Rest) <> 0 then
+        Include(result, i);
+    end;
+  end;
 end;
 
 class function TJwSystemInformation.GetSystemBootType: TJwSystemBootType;

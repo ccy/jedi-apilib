@@ -470,9 +470,10 @@ const
   RsTokenFailedRevertSelf = 'Could not revert to self.';
   RsTokenFailedImpPipe = 'Could not impersonate pipe client.';
   RsTokenCheckAccessTypeText = 'The desired access mask is not included in t' +
-    'he token access mask!\r\nyour  mask: \r\ntoken mask: \r\n%0:s (%1:s)\r\%2' +
-    ':s\r\nCheckTokenAccessType called by %3:s'+#13#10+
-    'Token access rights:\r%4:s\rYour requested rights:\r%5:s';
+    'he token access mask!'+
+    '\r\nCheckTokenAccessType called by %3:s\r\n\r\n:'+
+    '\r\nDesired Access Mask: \r\nActual Token access Mask: \r\n%0:s (%1:s)\r\n%2:s'+
+    '\rDesired Access Mask:\r%5:s\r\nActual Token access Mask:\r%4:s';
 
   RsTokenStatisticsText = 'TokenID: %0:s\r\AuthenticationId: %1:s\r\nExpirationTime: %2:s\r\nToken type: %3:d\r\nImpersonation level: 0x%4:x\r\nDynamic charged: 0x%5:x\r\nDynamic available: 0x%6:x\r\nGroup count: %7:d\r\nPrivilege count: %8:d\r\nModified ID: %9:s\r\n';
   RsPrivilegeCallAdjustTokenFailed1 = 'Call to AdjustToken failed with privilege %s.';

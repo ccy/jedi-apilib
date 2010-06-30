@@ -52,6 +52,9 @@ type
 
     procedure TestPrivilegeCheck;
 
+    procedure TestExpandEnvironmentStrings;
+    procedure GetUserProfileDirectory;
+
    { procedure TestDestroy;
     procedure TestCheckTokenHandle;
     procedure TestCheckTokenAccessType;
@@ -186,7 +189,7 @@ uses Classes;
 
 { TSecurityTokenTests }
 
-{$I Compilers.inc}
+{.$I Compilers.inc}
 
 { TPrivilegeTests }
 
@@ -498,6 +501,20 @@ end;
 
 { TSecurityTokenTests }
 
+procedure TSecurityTokenTests.GetUserProfileDirectory;
+var
+  Token : TJwSecurityToken;
+  S : TJwString;
+begin
+  Token := TJwSecurityToken.CreateTokenEffective(TOKEN_QUERY);
+  try
+    S := Token.UserProfileDirectory;
+  finally
+    Token.Free;
+  end;
+end;
+
+
 procedure TSecurityTokenTests.SetUp;
 begin
   inherited;
@@ -521,6 +538,18 @@ begin
     Token.Free;
   end;
 end;
+
+procedure TSecurityTokenTests.TestExpandEnvironmentStrings;
+var Token : TJwSecurityToken;
+begin
+  Token := TJwSecurityToken.CreateTokenEffective(TOKEN_IMPERSONATE or TOKEN_QUERY or TOKEN_DUPLICATE);
+  try
+    Token.ExpandEnvironmentStrings('');
+  finally
+    Token.Free;
+  end;
+end;
+
 
 procedure TSecurityTokenTests.TestGetCurrentUserRegKey;
 var Token : TJwSecurityToken;
@@ -556,7 +585,7 @@ var Token : TJwSecurityToken;
 begin
   Token := TJwSecurityToken.CreateTokenEffective(TOKEN_READ or TOKEN_QUERY);
   try
-    IntLevel := Token.GetIntegrityLevel;
+    IntLevel := Token.TokenIntegrityLevel;
     try
       ShowMessageForm(IntLevel.GetText(true));
     finally
@@ -594,7 +623,7 @@ begin
     LinkedToken.SetThreadToken(MAXIMUM_ALLOWED);
     ShellExecuteA(0,'open','cmd.exe','','',SW_SHOW);}
 
-    IntLevel := LinkedToken.GetIntegrityLevel;
+    IntLevel := LinkedToken.TokenIntegrityLevel;
     try
       ShowMessageForm(IntLevel.GetText(true));
     finally
@@ -623,7 +652,7 @@ var Token : TJwSecurityToken;
 begin
   Token := TJwSecurityToken.CreateTokenEffective(TOKEN_READ or TOKEN_QUERY);
   try
-    Pol := Token.GetMandatoryPolicy;
+    Pol := Token.MandatoryPolicy;
 
     P := TJwEnumMap.ConvertTokenMandatoryPolicyFlags(Pol);
     Pol2 := TJwEnumMap.ConvertTokenMandatoryPolicyFlags(P);

@@ -331,7 +331,7 @@ type
       Remarks
       This property is connected to WinNTIdentity if the authentication service is WinNT or Kerberos. In this way the
       property  %MEMBERNAME% will receive the AuthenticationInfo handle
-      
+
       provided by TJwAuthenticationInfo.AuthorizationInfo when created with SetWinNTIdentity.
       
 
@@ -973,6 +973,16 @@ type
           out AuthenticationLevel : TJwComAuthenticationLevel;
           out ImpersonationLevel : TJwComImpersonationLevel;
           out Capabilities : TJwComAuthenticationCapabilities);
+
+    {<b>IsExternalCOMCall</b> checks whether the current COM call is from a local or remote client.
+
+     Returns
+      The function returns true if the current call is from a remote client; otherwise false (local client).
+
+     Exceptions
+      EJwsclComExceptio This exception is raised if CoGetCallContext fails. See LastError of exception propery for more information.
+    }
+    class function IsExternalCOMCall : Boolean; virtual;
   end;
 
 
@@ -2637,8 +2647,9 @@ const
 implementation
 
 
-const AUTO_AUTHENTICATION_SERVICE = -1;
-
+const
+  AUTO_AUTHENTICATION_SERVICE = -1;
+  IID_IServerSecurity : TGUID = '{0000013E-0000-0000-C000-000000000046}';
 
 {
 
@@ -3051,6 +3062,7 @@ begin
   end;
 
   fImpersonationType := ImpersonationType;;
+
 
   (*
   //this is one way to obtain the client,
@@ -4330,6 +4342,24 @@ begin
 end;
 
 
+
+class function TJwComProcessSecurity.IsExternalCOMCall: Boolean;
+var
+  p : IServerSecurity;
+  hr : HRESULT;
+begin
+  p := nil;
+  hr := CoGetCallContext(IID_IServerSecurity, @p);
+
+  if Succeeded(hr) then
+    result := true
+  else
+  if hr = E_NOINTERFACE then
+    result := false
+  else
+    raise EJwsclComException.CreateFmtEx(RsWinCallFailedWithNTStatus,
+      'IsExternalCOMCall', ClassName, 'JwsclComSecurity.pas',0, DWORD(hr), ['CoGetCallContext', hr]);
+end;
 
 class procedure TJwComProcessSecurity.Initialize(SecurityDescriptor: TJwSecurityDescriptor; AuthenticationLevel: TJwComAuthenticationLevel;
   ImpersonationLevel: TJwComImpersonationLevel; Capabilities: TJwComAuthenticationCapabilities);

@@ -46,7 +46,7 @@ interface
 uses SysUtils, Classes,
   JwaWindows, JwsclResource, JwsclMapping,
   JwsclTypes, JwsclExceptions, JwsclSid, JwsclAcl,
-  JwsclVersion, JwsclConstants,
+  JwsclConstants,
   JwsclStrings; //JwsclStrings, must be at the end of uses list!!!
 
 {$ENDIF SL_OMIT_SECTIONS}
@@ -795,6 +795,7 @@ uses Math,
      JwsclPrivileges,
      JwsclSecureObjects,
      JwsclKnownSid,
+     JwsclVersion,
      JwsclToken;
 
 

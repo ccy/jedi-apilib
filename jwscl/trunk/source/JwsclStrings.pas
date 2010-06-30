@@ -91,7 +91,7 @@ type
 
 const
   {<B>TJwCharSize</B> defines the size of an char in an ansi- or unicode compilation. }
-  TJwCharSize = SizeOf(TJwChar);
+  TJwCharSize = SizeOf({$IFDEF UNICODE}WideChar{$ELSE}AnsiChar{$ENDIF UNICODE});
 
 
 { JwCompareString compare two TJwString values using ANSICODE or UNICODE settings
@@ -548,6 +548,13 @@ end;
 {$ENDIF SL_INTERFACE_SECTION}
 
 {$IFNDEF SL_OMIT_SECTIONS}
+initialization
+{$IFDEF UNICODE}
+ASSERT(TJwCharSize >= 2,'JWSCL ASSERT: Charsize in Unicode is wrong. Must be >= 2. Make a rebuild of your project!');
+{$ELSE}
+ASSERT(TJwCharSize = 1,'JWSCL ASSERT: Charsize in Ansicode is wrong. Must be = 1. Make a rebuild of your project!');
+{$ENDIF}
+
 
 end.
 

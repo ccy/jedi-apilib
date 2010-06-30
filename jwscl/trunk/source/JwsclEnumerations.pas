@@ -240,6 +240,11 @@ type
     class function ConvertSecurityPackageCapabilities(
       const FlagBits: Cardinal): TJwSecurityPackageCapabilities; overload;
 
+     class function ConvertShellRestrictions(
+      const FlagSet: TJwShellRestrictions): Cardinal; overload;
+    class function ConvertShellRestrictions(
+      const FlagBits: Cardinal): TJwShellRestrictions; overload;
+
   end;
 
 //Single values to be converted
@@ -661,6 +666,179 @@ const
     {spcNone},SECPKG_ID_NONE// = $FFFF;
   );
 
+  JwShellRestrictions : array[TJwShellRestriction] of Cardinal = (
+    REST_NONE                        {= $00000000},
+    REST_NORUN                       {= $00000001},
+    REST_NOCLOSE                     {= $00000002},
+    REST_NOSAVESET                   {= $00000004},
+    REST_NOFILEMENU                  {= $00000008},
+    REST_NOSETFOLDERS                {= $00000010},
+    REST_NOSETTASKBAR                {= $00000020},
+    REST_NODESKTOP                   {= $00000040},
+    REST_NOFIND                      {= $00000080},
+    REST_NODRIVES                    {= $00000100},
+    REST_NODRIVEAUTORUN              {= $00000200},
+    REST_NODRIVETYPEAUTORUN          {= $00000400},
+    REST_NONETHOOD                   {= $00000800},
+    REST_STARTBANNER                 {= $00001000},
+    REST_RESTRICTRUN                 {= $00002000},
+    REST_NOPRINTERTABS               {= $00004000},
+    REST_NOPRINTERDELETE             {= $00008000},
+    REST_NOPRINTERADD                {= $00010000},
+    REST_NOSTARTMENUSUBFOLDERS       {= $00020000},
+    REST_MYDOCSONNET                 {= $00040000},
+    REST_NOEXITTODOS                 {= $00080000},
+    REST_ENFORCESHELLEXTSECURITY     {= $00100000},
+    REST_LINKRESOLVEIGNORELINKINFO   {= $00200000},
+    REST_NOCOMMONGROUPS              {= $00400000},
+    REST_SEPARATEDESKTOPPROCESS      {= $00800000},
+    REST_NOWEB                       {= $01000000},
+    REST_NOTRAYCONTEXTMENU           {= $02000000},
+    REST_NOVIEWCONTEXTMENU           {= $04000000},
+    REST_NONETCONNECTDISCONNECT      {= $08000000},
+    REST_STARTMENULOGOFF             {= $10000000},
+    REST_NOSETTINGSASSIST            {= $20000000},
+    REST_NOINTERNETICON              {= $40000001},
+    REST_NORECENTDOCSHISTORY         {= $40000002},
+    REST_NORECENTDOCSMENU            {= $40000003},
+    REST_NOACTIVEDESKTOP             {= $40000004},
+    REST_NOACTIVEDESKTOPCHANGES      {= $40000005},
+    REST_NOFAVORITESMENU             {= $40000006},
+    REST_CLEARRECENTDOCSONEXIT       {= $40000007},
+    REST_CLASSICSHELL                {= $40000008},
+    REST_NOCUSTOMIZEWEBVIEW          {= $40000009},
+    REST_NOHTMLWALLPAPER             {= $40000010},
+    REST_NOCHANGINGWALLPAPER         {= $40000011},
+    REST_NODESKCOMP                  {= $40000012},
+    REST_NOADDDESKCOMP               {= $40000013},
+    REST_NODELDESKCOMP               {= $40000014},
+    REST_NOCLOSEDESKCOMP             {= $40000015},
+    REST_NOCLOSE_DRAGDROPBAND        {= $40000016},
+    REST_NOMOVINGBAND                {= $40000017},
+    REST_NOEDITDESKCOMP              {= $40000018},
+    REST_NORESOLVESEARCH             {= $40000019},
+    REST_NORESOLVETRACK              {= $4000001A},
+    REST_FORCECOPYACLWITHFILE        {= $4000001B},
+    REST_NOLOGO3CHANNELNOTIFY        {= $4000001C},
+    REST_NOFORGETSOFTWAREUPDATE      {= $4000001D},
+    REST_NOSETACTIVEDESKTOP          {= $4000001E},
+    REST_NOUPDATEWINDOWS             {= $4000001F},
+    REST_NOCHANGESTARMENU            {= $40000020},
+    REST_NOFOLDEROPTIONS             {= $40000021},
+    REST_HASFINDCOMPUTERS            {= $40000022},
+    REST_INTELLIMENUS                {= $40000023},
+    REST_RUNDLGMEMCHECKBOX           {= $40000024},
+    REST_ARP_ShowPostSetup           {= $40000025},
+    REST_NOCSC                       {= $40000026},
+    REST_NOCONTROLPANEL              {= $40000027},
+    REST_ENUMWORKGROUP               {= $40000028},
+    REST_ARP_NOARP                   {= $40000029},
+    REST_ARP_NOREMOVEPAGE            {= $4000002A},
+    REST_ARP_NOADDPAGE               {= $4000002B},
+    REST_ARP_NOWINSETUPPAGE          {= $4000002C},
+    REST_GREYMSIADS                  {= $4000002D},
+    REST_NOCHANGEMAPPEDDRIVELABEL    {= $4000002E},
+    REST_NOCHANGEMAPPEDDRIVECOMMENT  {= $4000002F},
+    REST_MaxRecentDocs               {= $40000030},
+    REST_NONETWORKCONNECTIONS        {= $40000031},
+    REST_FORCESTARTMENULOGOFF        {= $40000032},
+    REST_NOWEBVIEW                   {= $40000033},
+    REST_NOCUSTOMIZETHISFOLDER       {= $40000034},
+    REST_NOENCRYPTION                {= $40000035},
+    REST_DONTSHOWSUPERHIDDEN         {= $40000037},
+    REST_NOSHELLSEARCHBUTTON         {= $40000038},
+    REST_NOHARDWARETAB               {= $40000039},
+    REST_NORUNASINSTALLPROMPT        {= $4000003A},
+    REST_PROMPTRUNASINSTALLNETPATH   {= $4000003B},
+    REST_NOMANAGEMYCOMPUTERVERB      {= $4000003C},
+    REST_NORECENTDOCSNETHOOD         {= $4000003D},
+    REST_DISALLOWRUN                 {= $4000003E},
+    REST_NOWELCOMESCREEN             {= $4000003F},
+    REST_RESTRICTCPL                 {= $40000040},
+    REST_DISALLOWCPL                 {= $40000041},
+    REST_NOSMBALLOONTIP              {= $40000042},
+    REST_NOSMHELP                    {= $40000043},
+    REST_NOWINKEYS                   {= $40000044},
+    REST_NOENCRYPTONMOVE             {= $40000045},
+    REST_NOLOCALMACHINERUN           {= $40000046},
+    REST_NOCURRENTUSERRUN            {= $40000047},
+    REST_NOLOCALMACHINERUNONCE       {= $40000048},
+    REST_NOCURRENTUSERRUNONCE        {= $40000049},
+    REST_FORCEACTIVEDESKTOPON        {= $4000004A},
+    REST_NOCOMPUTERSNEARME           {= $4000004B},
+    REST_NOVIEWONDRIVE               {= $4000004C},
+    REST_NONETCRAWL                  {= $4000004D},
+    REST_NOSHAREDDOCUMENTS           {= $4000004E},
+    REST_NOSMMYDOCS                  {= $4000004F},
+    REST_NOSMMYPICS                  {= $40000050},
+    REST_ALLOWBITBUCKDRIVES          {= $40000051},
+    REST_NONLEGACYSHELLMODE          {= $40000052},
+    REST_NOCONTROLPANELBARRICADE     {= $40000053},
+    REST_NOSTARTPAGE                 {= $40000054},
+    REST_NOAUTOTRAYNOTIFY            {= $40000055},
+    REST_NOTASKGROUPING              {= $40000056},
+    REST_NOCDBURNING                 {= $40000057},
+    REST_MYCOMPNOPROP                {= $40000058},
+    REST_MYDOCSNOPROP                {= $40000059},
+    REST_NOSTARTPANEL                {= $4000005A},
+    REST_NODISPLAYAPPEARANCEPAGE     {= $4000005B},
+    REST_NOTHEMESTAB                 {= $4000005C},
+    REST_NOVISUALSTYLECHOICE         {= $4000005D},
+    REST_NOSIZECHOICE                {= $4000005E},
+    REST_NOCOLORCHOICE               {= $4000005F},
+    REST_SETVISUALSTYLE              {= $40000060},
+    REST_STARTRUNNOHOMEPATH          {= $40000061},
+    REST_NOUSERNAMEINSTARTPANEL      {= $40000062},
+    REST_NOMYCOMPUTERICON            {= $40000063},
+    REST_NOSMNETWORKPLACES           {= $40000064},
+    REST_NOSMPINNEDLIST              {= $40000065},
+    REST_NOSMMYMUSIC                 {= $40000066},
+    REST_NOSMEJECTPC                 {= $40000067},
+    REST_NOSMMOREPROGRAMS            {= $40000068},
+    REST_NOSMMFUPROGRAMS             {= $40000069},
+    REST_NOTRAYITEMSDISPLAY          {= $4000006A},
+    REST_NOTOOLBARSONTASKBAR         {= $4000006B},
+    REST_NOSMCONFIGUREPROGRAMS       {= $4000006F},
+    REST_HIDECLOCK                   {= $40000070},
+    REST_NOLOWDISKSPACECHECKS        {= $40000071},
+    REST_NOENTIRENETWORK             {= $40000072},
+    REST_NODESKTOPCLEANUP            {= $40000073},
+    REST_BITBUCKNUKEONDELETE         {= $40000074},
+    REST_BITBUCKCONFIRMDELETE        {= $40000075},
+    REST_BITBUCKNOPROP               {= $40000076},
+    REST_NODISPBACKGROUND            {= $40000077},
+    REST_NODISPSCREENSAVEPG          {= $40000078},
+    REST_NODISPSETTINGSPG            {= $40000079},
+    REST_NODISPSCREENSAVEPREVIEW     {= $4000007A},
+    REST_NODISPLAYCPL                {= $4000007B},
+    REST_HIDERUNASVERB               {= $4000007C},
+    REST_NOTHUMBNAILCACHE            {= $4000007D},
+    REST_NOSTRCMPLOGICAL             {= $4000007E},
+    REST_NOPUBLISHWIZARD             {= $4000007F},
+    REST_NOONLINEPRINTSWIZARD        {= $40000080},
+    REST_NOWEBSERVICES               {= $40000081},
+    REST_ALLOWUNHASHEDWEBVIEW        {= $40000082},
+    REST_ALLOWLEGACYWEBVIEW          {= $40000083},
+    REST_REVERTWEBVIEWSECURITY       {= $40000084},
+    REST_INHERITCONSOLEHANDLES       {= $40000086},
+    REST_SORTMAXITEMCOUNT            {= $40000087},
+    REST_NOREMOTERECURSIVEEVENTS     {= $40000089},
+    REST_NOREMOTECHANGENOTIFY        {= $40000091},
+    REST_NOSIMPLENETIDLIST           {= $40000092},
+    REST_NOENUMENTIRENETWORK         {= $40000093},
+    REST_NODETAILSTHUMBNAILONNETWORK {= $40000094},
+    REST_NOINTERNETOPENWITH          {= $40000095},
+    REST_ALLOWLEGACYLMZBEHAVIOR      {= $4000009A},
+    REST_DONTRETRYBADNETNAME         {= $4000009B},
+    REST_ALLOWFILECLSIDJUNCTIONS     {= $4000009C},
+    REST_NOUPNPINSTALL               {= $4000009D},
+    REST_NODISCONNECT                {= $41000001},
+    REST_NOSECURITY                  {= $41000002},
+    REST_NOFILEASSOCIATE             {= $41000003},
+    REST_ALLOWCOMMENTTOGGLE          {= $41000004},
+    REST_USEDESKTOPINICACHE          {= $41000005}
+  );
+
 
 
 { TJwEnumMap }
@@ -794,6 +972,30 @@ begin
 end;
 
 
+
+class function TJwEnumMap.ConvertShellRestrictions(
+  const FlagSet: TJwShellRestrictions): Cardinal;
+var I : TJwShellRestriction;
+begin
+  result := 0;
+  for I := Low(TJwShellRestriction) to High(TJwShellRestriction) do
+  begin
+    if I in FlagSet then
+      result := result or JwShellRestrictions[I];
+  end;
+end;
+
+class function TJwEnumMap.ConvertShellRestrictions(
+  const FlagBits: Cardinal): TJwShellRestrictions;
+var I : TJwShellRestriction;
+begin
+  result := [];
+  for I := Low(TJwShellRestriction) to High(TJwShellRestriction) do
+  begin
+    if (FlagBits and JwShellRestrictions[I]) = JwShellRestrictions[I] then
+      Include(result, I);
+  end;
+end;
 
 class function TJwEnumMap.ConvertSecurityControl(
   const ControlSet: TJwSecurityDescriptorControlSet): jwaWindows.TSecurityDescriptorControl;

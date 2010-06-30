@@ -50,7 +50,7 @@ uses SysUtils, Contnrs, Classes,
   JwsclResource, JwsclUtils,
   JwsclTypes, JwsclExceptions, JwsclSid, JwsclAcl,
   JwsclDescriptor, JwsclEnumerations,
-  JwsclVersion, JwsclConstants,
+  JwsclConstants,
   JwsclStrings; //JwsclStrings, must be at the end of uses list!!!
 {$ENDIF SL_OMIT_SECTIONS}
 
@@ -251,16 +251,23 @@ type
 
     function GetMandatoryPolicy: TJwTokenMandatoryPolicies; virtual;
 
+    function GetUserProfileDirectory : TJwString; virtual;
+
+
     {Maps generic access rights of a token to specific access right.
      A MAXIMUM_ALLOWED will result in the result of function call GetMaximumAllowed().
     }
     function RetrieveSpecificAccessRights(const AccessMask : TJwAccessMask) : TJwAccessMask; virtual;
-  protected
+  public
 
         {<B>CheckTokenHandle</B> checks the TokenHandle of this instance and raises EJwsclInvalidTokenHandle if the token is invalid; otherwise it does nothing
          @param aSourceProc defines the caller method
          raises
- EJwsclInvalidTokenHandle:  is raised if the property TokenHandle is invalid. }
+           EJwsclInvalidTokenHandle:  is raised if the property TokenHandle is invalid.
+         Remarks
+            Use this procedure to check the token properties and raise an exception if they are not met.
+
+         }
     procedure CheckTokenHandle(sSourceProc: TJwString); virtual;
 
         {<B>CheckTokenAccessType</B> checks if the given token was opened with the desired access mask.
@@ -270,6 +277,8 @@ type
          @param SourceProc contains the method name of the caller method.
          raises
  EJwsclAccessTypeException:  will be raised if a desired access flag could not be found in the access mask of the token
+        Remarks
+            Use this procedure to check the token properties and raise an exception if they are not met.
          }
     procedure CheckTokenAccessType(aDesiredAccessMask: TJwAccessMask;
       StringMask, SourceProc: TJwString);
@@ -280,10 +289,13 @@ type
         @param Privileges contains all privileges names that the token must held
         raises
  EJwsclPrivilegeCheckException:  will be raised if one privilege was not found
+
+         Remarks
+            Use this procedure to check the token properties and raise an exception if they are not met.
         }
 
     procedure CheckTokenPrivileges(Privileges: array of TJwString);
-
+  protected
         {<B>IsPrivilegeAvailable</B> checks if one token holds a privilege.
          The privilege names are compared case sensitive.
          @param Priv contains the privilege name to be checked for
@@ -999,12 +1011,42 @@ type
     }
     function GetCurrentUserRegKey(const DesiredAccess: TJwAccessMask): HKEY;
 
+    {<b>ExpandEnvironmentStrings</b> expands the environment variables of the
+    token user.
+
+    Parameters
+      EnvString Receives a string which contains environment variable placeholders like %user%, %windir% etc.
+
+    Returns
+      The return value is a string where all environment variables placeholders are replaced.
+
+    Exceptions
+      EJwsclInvalidTokenHandle The current token handle is invalid.
+      EJwsclAccessTypeException The function needs some access rights in the token access mask that are not there. See Remarks for more information.
+      EJwsclWinCallFailedException A windows function failed.
+
+    Remarks
+      This function simulates the WinAPI function ExpandEnvironmentStringsForUser but does not use
+      string variables static in length.
+
+      The token must have TOKEN_IMPERSONATE and TOKEN_QUERY access rights. In addition Windows 7
+      needs TOKEN_DUPLICATE.
+
+      In a 32bit Process on a Windows 64 bit (WOW64) the environment variables are replaced by their
+      32bit counterparts. E.g. %ProgramFiles% will expand to "C:\Program Files (x86)"
+      If you need a 64bit folder, use %ProgramW6432% to access "C:\Program Files" instead.
+
+      Disabling Wo64 Redirection does not affect this function because file system layer is not accessed.
+    }
+    function ExpandEnvironmentStrings(const EnvString : TJwString) : TJwString; virtual;
+
+
     {<B>LoadUserProfile</B> loads the user profile of the current token instance.
      It also uses the roaming profile if possible.
 
      @param ProfileInfo defines parameter for supplying to winapi LoadUserProfile.
         You must set a flag in parameter ProfileMembers for each member of this record
-        you want to set.
+        you want to set. You can use [] in Parameter ProfileMembers to use no member of the profile info record.
         See MSDN for more information.
         The method returns a registry key handle in member Profile of structure.
         Call UnLoadUserProfile to unload this key if finished.
@@ -1013,11 +1055,10 @@ type
      @param ProfileMembers defines which member of ProfileInfo is set by
       the user. All other parameters are set to default values.
 
-      # pmFlags xclude this value if you want to let the method
+      # pmFlags exclude this value if you want to let the method
           set PI_NOUI
       # pmUserName Exclude this value if you want to let the method
           set the correct user name
-
       # pmProfilePath Exclude this value if you want to let the method
         get the roaming profile.
 
@@ -1396,6 +1437,7 @@ type
 
      Remarks
        This function only works in Windows Vista and newer.
+
        The caller is responsible for freeing the resulting TJwSecurityIdList.
 
        If the compiler directive VISTA (jwscl.inc) is not defined, an exception
@@ -1518,6 +1560,10 @@ type
      is a thread token; otherwise false; Same as IsImpersonationToken.}
     property IsThreadToken : Boolean index 2 read IsTokenType;
 
+    {<b>UserProfileDirectory</b> returns the path to the token user's profile directory.
+    The token must have the TOKEN_QUERY access right to succeed.
+    EJwsclWinCallFailedException will be raised in case of an error. }
+    property UserProfileDirectory : TJwString read GetUserProfileDirectory;
   end;
 
      {<B>TJwSecurityTokenStatistics</B> is a class that holds information about a token.
@@ -2147,7 +2193,7 @@ function JwCreateRestrictedToken(
 implementation
 
 uses JwsclKnownSid, JwsclMapping, JwsclSecureObjects, JwsclProcess,
-     JwsclTerminalServer, JwsclLsa,  TypInfo,
+     JwsclTerminalServer, JwsclLsa,  JwsclVersion, TypInfo,
       JwsclPrivileges, Math, D5impl;
 
 {$ENDIF SL_OMIT_SECTIONS}
@@ -5840,10 +5886,13 @@ begin
   if (Self.AccessMask and aDesiredAccessMask) <> aDesiredAccessMask then
     raise EJwsclAccessTypeException.CreateFmtEx(
       RsTokenCheckAccessTypeText, SourceProc, ClassName, RsUNToken,
-      0, False, [IntToBin(aDesiredAccessMask), StringMask,
-      IntToBin(AccessMask), SourceProc,
-      JwFormatAccessRights(aDesiredAccessMask, TokenMapping),
-      JwFormatAccessRights(AccessMask, TokenMapping)
+      0, False,
+      [
+      IntToBin(aDesiredAccessMask), StringMask,
+      IntToBin(AccessMask),
+      SourceProc,
+      JwFormatAccessRights(AccessMask, TokenMapping),
+      JwFormatAccessRights(aDesiredAccessMask, TokenMapping)
       ]);
 end;
 
@@ -6257,6 +6306,151 @@ begin
   result := IsEqual(Obj as TJwSecurityToken);
 end;
 
+function TJwSecurityToken.GetUserProfileDirectory : TJwString;
+var
+  pProfileDir : TJwPChar;
+  dwLen : DWORD;
+begin
+  CheckTokenHandle('GetUserProfileDirectory');
+  CheckTokenAccessType(TOKEN_QUERY,
+                        'TOKEN_QUERY', 'GetUserProfileDirectory');
+
+  if not
+    JwaWindows.
+    {$IFDEF UNICODE}GetUserProfileDirectoryW{$ELSE}GetUserProfileDirectoryA{$ENDIF UNICODE}
+      (fTokenHandle, nil, dwLen)
+     and (GetLastError() <> ERROR_INSUFFICIENT_BUFFER) then
+
+    raise EJwsclWinCallFailedException.CreateFmtWinCall(
+        RsWinCallFailed, //const sMsg: TJwString;
+        'ExpandEnvironmentStrings',//sSourceProc,
+        ClassName, //sSourceClass,
+        RsUNToken,//sSourceFile: TJwString; iSourceLine:
+        0,
+        true,//Cardinal; bShowLastError: boolean;
+        'GetUserProfileDirectoryW',//sWinCall: TJwString;
+        ['GetUserProfileDirectoryW']//const Args: array of const
+    );
+
+  GetMem(pProfileDir, (dwLen) * TJwCharSize);
+  try
+    if not
+      JwaWindows.
+      {$IFDEF UNICODE}GetUserProfileDirectoryW{$ELSE}GetUserProfileDirectoryA{$ENDIF UNICODE}
+        (fTokenHandle, pProfileDir, dwLen) then
+
+      raise EJwsclWinCallFailedException.CreateFmtWinCall(
+          RsWinCallFailed, //const sMsg: TJwString;
+          'ExpandEnvironmentStrings',//sSourceProc,
+          ClassName, //sSourceClass,
+          RsUNToken,//sSourceFile: TJwString; iSourceLine:
+          0,
+          true,//Cardinal; bShowLastError: boolean;
+          'GetUserProfileDirectoryW',//sWinCall: TJwString;
+          ['GetUserProfileDirectoryW']//const Args: array of const
+      );
+
+    result := pProfileDir;
+  finally
+    FreeMem(pProfileDir);
+  end;
+
+end;
+
+function TJwSecurityToken.ExpandEnvironmentStrings(
+  const EnvString: TJwString): TJwString;
+var
+  pEnv : Pointer;
+  SrcU, DestU : UNICODE_STRING;
+  ulReqLen : Cardinal;
+  Status : NTSTATUS;
+begin
+  result := '';
+
+  CheckTokenHandle('ExpandEnvironmentStrings');
+  //Windows 7 needs the  TOKEN_DUPLICATE in addition
+  if TJwWindowsVersion.IsWindows7(true) then
+    CheckTokenAccessType(TOKEN_IMPERSONATE or TOKEN_QUERY or TOKEN_DUPLICATE,
+                        'TOKEN_IMPERSONATE or TOKEN_QUERY or TOKEN_DUPLICATE', 'ExpandEnvironmentStrings')
+  else
+    CheckTokenAccessType(TOKEN_IMPERSONATE or TOKEN_QUERY,
+                        'TOKEN_IMPERSONATE or TOKEN_QUERY', 'ExpandEnvironmentStrings');
+
+  //first get the env block
+  if not CreateEnvironmentBlock(@pEnv, fTokenHandle, false) then
+    raise EJwsclWinCallFailedException.CreateFmtWinCall(
+        RsWinCallFailed, //const sMsg: TJwString;
+        'ExpandEnvironmentStrings',//sSourceProc,
+        ClassName, //sSourceClass,
+        RsUNToken,//sSourceFile: TJwString; iSourceLine:
+        0,
+        true,//Cardinal; bShowLastError: boolean;
+        'CreateEnvironmentBlock',//sWinCall: TJwString;
+        ['CreateEnvironmentBlock']//const Args: array of const
+    );
+  try
+    SrcU := JwCreateTUnicodeString(WideString(EnvString));
+    DestU := JwCreateTUnicodeString('');
+
+    if (SrcU.Length = 0) or (SrcU.Buffer = nil) then //RtlExpandEnvironmentStrings_U fails with AV if input string is empty
+      exit;
+
+    try
+      //ask the function how much space is necessary
+      Status := RtlExpandEnvironmentStrings_U(pEnv, @SrcU, @DestU, @ulReqLen);
+      if Status <> STATUS_BUFFER_TOO_SMALL then
+      begin
+        SetLastError(RtlNtStatusToDosError(Status));
+
+        raise EJwsclWinCallFailedException.CreateFmtWinCall(
+          RsWinCallFailed, //const sMsg: TJwString;
+          'ExpandEnvironmentStrings',//sSourceProc,
+          ClassName, //sSourceClass,
+          RsUNToken,//sSourceFile: TJwString; iSourceLine:
+          0,
+          true,//Cardinal; bShowLastError: boolean;
+          'RtlExpandEnvironmentStrings_U',//sWinCall: TJwString;
+          ['RtlExpandEnvironmentStrings_U']//const Args: array of const
+        );
+      end;
+
+      RtlFreeUnicodeString(@DestU);
+
+      SetLength(result, ulReqLen);
+      DestU := JwCreateTUnicodeString(WideString(result));
+
+      if (DestU.Length = 0) or (DestU.Buffer = nil) then //RtlExpandEnvironmentStrings_U fails with AV if input string is empty
+        exit;
+
+      //expand the vars
+      Status := RtlExpandEnvironmentStrings_U(pEnv, @SrcU, @DestU, @ulReqLen);
+      if Status <> ERROR_SUCCESS then
+      begin
+        SetLastError(RtlNtStatusToDosError(Status));
+        raise EJwsclWinCallFailedException.CreateFmtWinCall(
+          RsWinCallFailed, //const sMsg: TJwString;
+          'ExpandEnvironmentStrings',//sSourceProc,
+          ClassName, //sSourceClass,
+          RsUNToken,//sSourceFile: TJwString; iSourceLine:
+          0,
+          true,//Cardinal; bShowLastError: boolean;
+          'RtlExpandEnvironmentStrings_U',//sWinCall: TJwString;
+          ['RtlExpandEnvironmentStrings_U']//const Args: array of const
+        );
+      end;
+
+      result := TJwString(DestU.Buffer);
+    finally
+      RtlFreeUnicodeString(@SrcU);
+      RtlFreeUnicodeString(@DestU);
+    end;
+
+
+  finally
+    DestroyEnvironmentBlock(pEnv);
+  end;
+end;
+
 function TJwSecurityToken.GetHashCode: Integer;
 var
   P : Pointer;
@@ -6375,6 +6569,7 @@ initialization
   JwProcessHeap := GetProcessHeap;
   //add code from here
   //...
+
 {$ENDIF SL_INITIALIZATION_SECTION}
 
 
