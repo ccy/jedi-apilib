@@ -917,18 +917,6 @@ begin
   //problem with direct use of Result in this procedure!
   GetProcedureAddress(R, LibName, ProcName);
   Result := R;
-
- { LibHandle := LoadLibraryA(PAnsiChar(LibName));
-  if LibHandle = 0 then
-    Result := nil
-  else
-  begin
-    try
-      Result := GetProcAddress(LibHandle, PAnsiChar(ProcName));
-    finally
-      FreeLibrary(LibHandle); // Free Memory Allocated for the DLL
-    end;
-  end;}
 end;
 
 
@@ -1332,7 +1320,7 @@ begin
           TJwSecurityToken.RevertToSelf;
         end;
 
-        if not CPAUResult then
+        if CPAUResult then
         begin
           Log.Log('Call to CreateProcessAsUser succeeded. Returning.');
         end
@@ -1548,8 +1536,7 @@ begin
       Log.Log(lsMessage, 'Proc count: ' + IntToStr(TSrv.Processes.Count));
       for i := 0 to TSrv.Processes.Count-1 do
       begin
-        Log.Log(lsMessage, Format('Proc: %d, Name= %s SessionID: %d',[TSrv.Processes[i].ProcessId,
-          TSrv.Processes[i].ProcessName, TSrv.Processes[i].SessionId]));
+        Log.Log(lsMessage, Format('Proc: %d, Name= %s SessionID: %d',[TSrv.Processes[i].ProcessId, TSrv.Processes[i].ProcessName, TSrv.Processes[i].SessionId]));
 
 
         Cancel := true;
