@@ -784,6 +784,15 @@ type {<B>TJwCreateProcessParameters</B> contains information supplied to CreateP
        {<B>ProfInfo</B> receives the profile information from LoadUserProfile.
        Call TJwSecurityToken.UnloadUserProfile to unload the profile when
        process finished.
+
+       Example
+
+       <code>
+         var
+           OutVars : TJwCreateProcessOut;
+         ...
+         OutVars.UserToken.UnloadUserProfile(OutVars.Profinfo);
+       </code>
        }
        ProfInfo: TJwProfileInfo; //LoadUserProfile output -> UnloadUserProfile
 
