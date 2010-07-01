@@ -1342,9 +1342,9 @@ begin
         end
         else
         begin
-
           Log.Log(lsError,'CreateProcessAsUser failed: '+ EJwsclSecurityException.GetLastErrorMessage(LastError));
 
+          SetLastError(LastError);
           raise EJwsclCreateProcessFailed.CreateFmtEx(
              'CreateProcessAsUser failed.',
              'CreateProcessAsAdminUser', '', '0',
