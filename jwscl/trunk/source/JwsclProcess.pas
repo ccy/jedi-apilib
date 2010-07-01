@@ -1186,6 +1186,8 @@ begin
       Log.Log('...successfully.');
       FreeAndNil(Groups);
 
+
+
       //
       // On Vista or server 2008 LsaLogonUser creates a duplicate token
       // if it encounters the administrator group.
@@ -1206,6 +1208,12 @@ begin
           OutVars.LinkedToken := nil;
           UserToken := OutVars.UserToken;
         end;
+      end;
+
+      //The token may be an impersonation token
+      if UserToken.IsThreadToken then
+      begin
+        UserToken.ConvertToPrimaryToken(MAXIMUM_ALLOWED);
       end;
 
       StartupInfo := InVars.StartupInfo;
@@ -1283,8 +1291,11 @@ begin
         //
         Log.Log('Calling CreateProcessAsUser...');
 
+        JwEnablePrivilege(SE_ASSIGNPRIMARYTOKEN_NAME, pst_EnableIfAvail);
+
         //Impersonate the given user so CPAU uses the security context of this user to access the file
         UserToken.ImpersonateLoggedOnUser;
+
         try
           i := 1; //first try
           repeat
@@ -1296,13 +1307,14 @@ begin
                 LPSECURITY_ATTRIBUTES(lpProcAttr),//__in_opt     LPSECURITY_ATTRIBUTES lpProcessAttributes,
                 LPSECURITY_ATTRIBUTES(lpThreadAttr),//LPSECURITY_ATTRIBUTES(InVars.Parameters.lpThreadAttributes),//__in_opt     LPSECURITY_ATTRIBUTES lpThreadAttributes,
                 InVars.Parameters.bInheritHandles,//__in         BOOL bInheritHandles,
-                InVars.Parameters.dwCreationFlags,//__in         DWORD dwCreationFlags,
+                InVars.Parameters.dwCreationFlags or CREATE_UNICODE_ENVIRONMENT,//__in         DWORD dwCreationFlags,
                 OutVars.EnvironmentBlock,//__in_opt     LPVOID lpEnvironment,
                 CurrentDirectory,//'',//TJwPChar(InVars.Parameters.lpCurrentDirectory),//__in_opt     LPCTSTR lpCurrentDirectory,
                 StartupInfo,//__in         LPSTARTUPINFO lpStartupInfo,
                 OutVars.ProcessInfo //__out        LPPROCESS_INFORMATION lpProcessInformation
                );
 
+            LastError := GetLastError();
             {Check for a known XP bug
             The pipe is not available at some time
             so wait for it
@@ -1330,7 +1342,7 @@ begin
         end
         else
         begin
-          LastError := GetLastError();
+
           Log.Log(lsError,'CreateProcessAsUser failed: '+ EJwsclSecurityException.GetLastErrorMessage(LastError));
 
           raise EJwsclCreateProcessFailed.CreateFmtEx(
