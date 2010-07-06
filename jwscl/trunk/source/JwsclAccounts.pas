@@ -269,10 +269,14 @@ type
 
   public
 //    constructor Create(const ServerName : TJwString = '');
+
+
+
   end;
 
 
-{TODO: do testing!}
+{TODO: do testing!} 
+
 {!<B>JwHasAccountPassword</B> checks whether a given account on a given computer or domain
 has an empty password.
 
@@ -569,7 +573,7 @@ var
   end;
 begin
   fServerName := '';
-  fUserName := 'Christian';
+  fUserName := '';
 
   if NetUserGetInfo(
     PWideChar(WideString(fServerName)),//__in   LPCWSTR servername,
