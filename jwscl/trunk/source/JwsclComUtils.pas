@@ -66,38 +66,134 @@ const
 type
   IJwAutoPointer = interface;
 
+  {The interface IJwAutoLock is returned by the Lock method of IJwAutoPointer.}
   IJwAutoLock = interface
   [IIDIJwAutoLock]
     function GetAutoPointer : IJwAutoPointer;
+    {This method returns the data as Pointer type.
+	 
+	 Returns
+		The function returns the value of the stored pointer.
+		The property Pointertype must be ptNew, ptLocalAlloc, 
+		ptGetMem or ptCOMPointer; otherwise the return value is undefined.
+	}
     function GetPointer   : Pointer;
-    function GetInstance  : TObject;
+    {This method returns the data as object type.
+	 
+	 Returns
+		The property Pointertype must be ptClass; 
+		otherwise the return value is undefined.
+	}
+	function GetInstance  : TObject;
+	{This method returns the pointer as Pointer type.
+	 
+	 Returns
+	   The method returns the type of stored pointer.
+	   Any value of TJwPointerType may be returned.
+	}
     function GetPointerType : TJwPointerType;
+	
+	{This method returns the data as object type.
+
+	 Returns
+		The property Pointertype must be ptCOMPointer; 
+		otherwise the return value is undefined.
+	}
     function GetHandle : THandle;
 
+    {The method UnLock removes the exclusive lock on the data;
+	
+     Remarks 	
+	   Do not use this method. Instead destroy the interface by setting
+	   all references to nil. 
+	}
     procedure UnLock;
 
+	//See method GetPointer for more information
     property Pointer   : Pointer read GetPointer;
+	//See method Instance for more information
     property Instance  : TObject read GetInstance;
+	//See method PointerType for more information
     property PointerType  : TJwPointerType read GetPointerType;
   end;
 
+  {The interface <b>IJwAutoPointer</b> is returned by any of
+   the TJwAutoPointer wrap methods.
+   
+   The interface does not provide reference counting on the data.
+  }
   IJwAutoPointer = interface
   [IIDIJwAutoPointer]
+    {This method returns the data as Pointer type.
+	
+ Remarks
+	   Use the Get methods of the interface IJwAutoLock retunred by Lock 
+	   in a multithread environment.
+	   
+	 Returns
+		The function returns the value of the stored pointer.
+		The property Pointertype must be ptNew, ptLocalAlloc, 
+		ptGetMem or ptCOMPointer; otherwise the return value is undefined.
+	}
     function GetPointer   : Pointer;
-    function GetInstance  : TObject;
+    {This method returns the data as object type.
+	
+     Remarks
+	   Use the Get methods of the interface IJwAutoLock retunred by Lock 
+	   in a multithread environment.
+	 
+	 Returns
+		The property Pointertype must be ptClass; 
+		otherwise the return value is undefined.
+	}
+	function GetInstance  : TObject;
+	{This method returns the pointer as Pointer type.
+	 
+	 Remarks
+	   Use the Get methods of the interface IJwAutoLock retunred by Lock 
+	   in a multithread environment.
+	 
+	 Returns
+	   The method returns the type of stored pointer.
+	   Any value of TJwPointerType may be returned.
+	}
     function GetPointerType : TJwPointerType;
+	
+	{This method returns the data as object type.
+
+	 Remarks
+	   Use the Get methods of the interface IJwAutoLock retunred by Lock 
+	   in a multithread environment.
+ 
+	 Returns
+		The property Pointertype must be ptCOMPointer; 
+		otherwise the return value is undefined.
+	}
     function GetHandle : THandle;
 
+	//See method GetPointer for more information
     property Pointer   : Pointer read GetPointer;
+	//See method Instance for more information
     property Instance  : TObject read GetInstance;
+	//See method PointerType for more information
     property PointerType  : TJwPointerType read GetPointerType;
 
+	{The method Lock joins an exclusive lock and stops
+	 further access to the data using this function.
+	 
+	 Remarks
+	   Only this function makes sure that the pointer is accessed
+	   exclusively. Calling any Get method without Lock
+	   has unpredictable results.
+	}
     function Lock : IJwAutoLock;
   end;
 
 
   {<B>TJwAutoPointer</B> implements tool functions for creating new and wrapping existing
-   pointers and classes for auto destruction. }
+   pointers and classes for auto destruction.
+   The class does not provide reference counting on the data.
+  }
   TJwAutoPointer = class
   public
     {<B>Wrap</B> wraps an existing class instance for auto pointer desctruction.

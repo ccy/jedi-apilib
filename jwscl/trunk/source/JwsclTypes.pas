@@ -1211,7 +1211,7 @@ type
   {<b>TJwPointerType</b> is used by IJwAutoLock to determine the
    type of stored pointer.}
   TJwPointerType = (
-    {The pointer type is unknown.}
+    {The pointer type is unknown. This value is not used currently.}
     ptUnknown,
     {The pointer was created by New function}
     ptNew,
