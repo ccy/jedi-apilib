@@ -99,6 +99,7 @@ type
   {<B>TJwAutoPointer</B> implements tool functions for creating new and wrapping existing
    pointers and classes for auto destruction. }
   TJwAutoPointer = class
+  public
     {<B>Wrap</B> wraps an existing class instance for auto pointer desctruction.
      When the returned auto pointer interface goes out of scope the
      given instance will be destroyed.
