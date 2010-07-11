@@ -531,7 +531,7 @@ type
          to call CreateProcessAsUser to lunch a process in the given terminal session.
 
          @param SessionID defines the session which is used to obtain the token.
-               If set to INVALID_HANDLE_VALUE, the function does the following steps:
+               If set to INVALID_HANDLE_VALUE (-1),  the function does the following steps:
 
                 1. Try to open the token of the current console session. Using WtsGetActiveConsoleSessionID to obtain the session ID.
                 2. Try to open the token of the current session using the session ID WTS_CURRENT_SESSION
@@ -738,8 +738,6 @@ type
       dwLogonProvider: cardinal  // specifies the logon provider
       ); overload; virtual;
 
-    //constructor CreateLogonUser(.....
-    //constructor CreateLSALogonUser(....
   public
     {<B>ConvertToImpersonatedToken</B> converts the token into an impersonated token. For this purpose
      the token will be converted and the old TokenHandle will be closed. The
@@ -2113,19 +2111,16 @@ function JwGetPrivilegesText(
   const DisplayPrivileges: array of TJwString): TJwString;
   overload;
 
-{<B>JwIsMemberOfAdministratorsGroup</B> checks if the user is a direct member of the Administrators group
-and this group is enabled for access checking. Therefore if this group has the flag use-for-deny-only
-the returned value is false. This usually happens if the user is an Administrator in Windows Vista with
-activated UAC.
+{<B>JwIsMemberOfAdministratorsGroup</B> checks if the user has administrative rights.
 
 @return Returns true if the user is a member of the administrators group; otherwise false.
 
 Remarks
-This function uses the Windows API function CheckTokenMembership and thus only checks whether the user
-is a member of the administrator group. However it does not check if the user belongs to a group that
-is a member of the administrators group.
+  Same as JwIsMemberOfAdministratorsGroup.
 
-If you just intend to check for any administrator use JwCheckAdministratorAccess instead.
+Source description
+  This function calls CheckTokenMembership API and works in Vista and newer with UAC activated.
+
 }
 function JwIsMemberOfAdministratorsGroup: boolean;
 
@@ -2134,13 +2129,15 @@ function JwIsMemberOfAdministratorsGroup: boolean;
 @return Returns true if the user has administrative access; otherwise false.
 
 Remarks
-This function works also in Windows Vista and later if UAC is enabled. If the current process is not elevated
-the return value is false even if the token contains the administrators group (which is disabled then).
-This function detects a group membership in the administrator group which means that the user don't need
-to be in the administrators group directly instead a group can be a member of the administrators group.
+  This function works also in Windows Vista and later if UAC is enabled.
+  If the current process is not elevated the return value is false even if the token
+  contains the administrators group (which is disabled then).
+
+Same as JwIsMemberOfAdministratorsGroup.
 
 Source description
-Uses WinAPI AccessCheck.
+  This code does the same as CheckTokenMembership and calls WinAPI AccessCheck. You may
+  regard it as a simple example how to use AccessCheck in JWSCL.
 }
 function JwCheckAdministratorAccess: boolean;
 
@@ -2163,6 +2160,9 @@ support UAC the return value is false.
 
 Remarks
 On Windows Systems that do not support UAC the return value is always false.
+
+Exceptions
+  EJwsclWinCallFailedException Usually this exception occurrs if a registry key could not be read.
  }
 function JwIsUACEnabled: Boolean;
 
@@ -2379,10 +2379,19 @@ function JwIsUACEnabled: Boolean;
           FreeMem(Data);
         end;
       end;
+      //else: result := false;
       RegCloseKey(Key);
     end
     else
-    RaiseLastOSError;
+      raise EJwsclWinCallFailedException.CreateFmtWinCall(
+        RsWinCallFailed,
+        'JwIsUACEnabled',                                //sSourceProc
+        '',                                //sSourceClass
+        RSUnVersion,                          //sSourceFile
+        0,                                           //iSourceLine
+        True,                                  //bShowLastError
+        'RegOpenKeyExW',                   //sWinCall
+        ['RegOpenKeyExW']);                                  //const Args: array of const
   end;
 
 begin
@@ -2435,7 +2444,7 @@ begin
 
   SD := TJwSecurityDescriptor.Create;
   try
-    SD.PrimaryGroup := JwNullSID;
+    SD.PrimaryGroup := JwNullSID; //Usually not used
     SD.Owner   := JwAdministratorsSID;
     SD.OwnDACL := True;
 

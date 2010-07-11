@@ -257,15 +257,6 @@ type
     class function GetNativeProcessorArchitecture : TJwProcessorArchitecture; virtual;
 
 
-    {<B>IsUACEnabled</B> returns true if the Windows system has UAC enabled.
-
-     Exceptions
-      ERegistryException This exception is thrown on a Windows that is older than Vista.
-      EJwsclWinCallFailedException Usually this exception occurrs if a registry key could not be read.
-    }
-    class function IsUACEnabled : Boolean; virtual;
-
-
     {IsRemoteSession returns true if the current session is a remote session (RDP); otherwise false.}
     class function IsRemoteSession : Boolean; virtual;
 
@@ -353,15 +344,110 @@ type
 //    class function GetNumberOfProcessors : Cardinal;
   end;
 
+  {This class provides methods about the Windows shell}
   TJwShellInformation = class(TJwSystemInformation)
+  protected
+    {This method returns a token handle (the internal from TJwSecurityToken) and may try to
+     load the profile.
+
+     Parameters
+       Token Defines a token that is used to retrieve the folder. May be nil.
+        You can use the pseudo class instance <b>JwDefaultUserPseudoToken</b> here to
+        retrieve the folders of the default user. Do not access any method or property
+        of JwDefaultUserPseudoToken since it is not a valid instance.
+       TokenHandle Returns the token handle. It will be INVALID_HANDLE_VALUE if Parameter Token
+          is JwDefaultUserPseudoToken.
+       bProfilLoaded Returns true if a user profile for the token was loaded and must be
+          unloaded afterwards. Use Parameter ProfileInfo to unload the profile.
+       ProfileInfo Returns profile information on how to unload the profile. This information
+          is undefined if bProfilLoaded is false.
+
+     Remarks
+       bProfilLoaded will be always false if Parameter Token is invalid (nil or JwDefaultUserPseudoToken).
+    }
+    class procedure GetTokenHandle(const Token: TJwSecurityToken;
+                      out TokenHandle : TJwTokenHandle; out bProfilLoaded : boolean;
+                      out ProfileInfo : TJwProfileInfo);
   public
     {<b>GetShellRestrictions</b> returns all restrictions an administrator placed in the system.
 
     }
     class function GetShellRestrictions : TJwShellRestrictions; virtual;
 
+    {<b>GetFolderPath</b> retrieves a known folder path from the system.
+
+    Parameters
+      Token Defines a token that is used to retrieve the folder. May be nil.
+      You can use the pseudo class instance <b>JwDefaultUserPseudoToken</b> here to
+      retrieve the folders of the default user. Do not access any method or property
+      of JwDefaultUserPseudoToken since it is not a valid instance.
+
+    Exceptions
+      EJwsclWinCallFailedException: A call to SHGetFolderPath failed. To get error information
+          you can read LastError property of exception.
+
+      EJwsclAccessTypeException: The supplied token has not enough access rights to be used here.
+
+    Remarks
+      This method calls SHGetFolderPath. For more information on its parameters
+      refer to MSDN.
+    }
     class function GetFolderPath(const OwnerWindow : HWND; Folder : Integer;
         Token : TJwSecurityToken; const FolderType : TJwShellFolderType) : TJwString;
+
+{$IFDEF WINVISTA_UP}
+    {
+    <b>GetKnownFolderPath</b> retrieves a folder path from the system on Vista and newer.
+
+    Parameters
+      Token Defines a token that is used to retrieve the folder. May be nil.
+      You can use the pseudo class instance <b>JwDefaultUserPseudoToken</b> here to
+      retrieve the folders of the default user. Do not access any method or property
+      of JwDefaultUserPseudoToken since it is not a valid instance.
+
+    Remarks
+      This method calls SHGetKnownFolderPath. For more information on its parameters
+      refer to MSDN
+    }
+    class procedure GetKnownFolderPath(const FolderId : KNOWNFOLDERID;
+        out Path : TJwWideString;
+        const KnownFolderFlags : DWORD = 0;
+        const Token : TJwSecurityToken = nil);
+
+    {
+    <b>SetKnownFolderPath</b> sets a folder path of the system on Vista and newer.
+
+    Parameters
+      Token Defines a token that is used to retrieve the folder. May be nil.
+      You can use the pseudo class instance <b>JwDefaultUserPseudoToken</b> here to
+      retrieve the folders of the default user. Do not access any method or property
+      of JwDefaultUserPseudoToken since it is not a valid instance.
+
+    Remarks
+      This method calls SHGetKnownFolderPath. For more information on its parameters
+      refer to MSDN
+    }
+    class procedure SetKnownFolderPath(const FolderId : KNOWNFOLDERID;
+            const Path : TJwWideString;
+            const KnownFolderFlags : DWORD = 0;
+            const Token : TJwSecurityToken = nil);
+{$ENDIF WINVISTA_UP}
+
+
+    {<B>IsUACEnabled</B> returns true if the Windows system has UAC enabled.
+
+     Remarks
+       This method calls the function JwsclToken.JwIsUACEnabled
+
+    }
+    class function IsUACEnabled : Boolean; virtual;
+
+    {<b>IsUserAdmin</b> checks whether the current user has administrative rights.
+
+    Remarks
+      The method calls the function JwsclToken.JwIsMemberOfAdministratorsGroup
+    }
+    class function IsUserAdmin : Boolean; virtual;
   end;
 
 
@@ -592,7 +678,7 @@ const
 {$IFNDEF SL_OMIT_SECTIONS}
 implementation
 
-uses SysConst, Registry, JwsclEnumerations;
+uses SysConst, Registry, JwsclEnumerations, ActiveX;
 
 
 {$ENDIF SL_OMIT_SECTIONS}
@@ -1063,32 +1149,6 @@ end;
 
 
 
-class function TJwSystemInformation.IsUACEnabled: Boolean;
-var R : TRegistry;
-begin
-  result := false;
-
-  R := TRegistry.Create;
-  try
-    R.RootKey := HKEY_LOCAL_MACHINE;
-    if R.OpenKeyReadOnly('SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System') then
-    begin
-      result := R.ReadInteger('EnableLUA') = 1;
-    end
-    else
-      raise EJwsclWinCallFailedException.CreateFmtWinCall(
-      RsWinCallFailed,
-      'IsUACEnabled',                                //sSourceProc
-      ClassName,                                //sSourceClass
-      RSUnVersion,                          //sSourceFile
-      0,                                           //iSourceLine
-      True,                                  //bShowLastError
-      'OpenKeyReadOnly',                   //sWinCall
-      ['OpenKeyReadOnly']);                                  //const Args: array of const
-  finally
-    R.Free;
-  end;
-end;
 
 class function TJwSystemInformation.GetNativeProcessorArchitecture : TJwProcessorArchitecture;
 var
@@ -1317,6 +1377,40 @@ begin
   result.Name := TJwString(fOSVerInfo.szCSDVersion);
 end;
 
+//bProfilLoaded will be true only if Token is a valid instance
+class procedure TJwShellInformation.GetTokenHandle(const Token: TJwSecurityToken;
+    out TokenHandle : TJwTokenHandle; out bProfilLoaded : boolean;
+    out ProfileInfo : TJwProfileInfo);
+begin
+  TokenHandle := 0;
+  bProfilLoaded := false;
+
+  if Assigned(Token) and TJwWindowsVersion.IsWindowsXP(true) then
+  begin
+    if Token = JwDefaultUserPseudoToken then
+    begin
+      TokenHandle := INVALID_HANDLE_VALUE;
+    end
+    else
+    begin
+      Token.CheckTokenAccessType(TOKEN_QUERY or TOKEN_IMPERSONATE, 'TOKEN_QUERY or TOKEN_IMPERSONATE', 'TJwShellInformation.GetFolderPath');
+
+      //The function may need a loaded user profile
+      if JwIsPrivilegeSet(SE_RESTORE_NAME) then
+      begin
+        ZeroMemory(@ProfileInfo, sizeof(ProfileInfo));
+        try
+          Token.LoadUserProfile(ProfileInfo, []);
+          bProfilLoaded := true;
+        except
+          on E: EJwsclWinCallFailedException do ; //ignore and call the function do it anyway
+        end;
+      end;
+
+      TokenHandle := Token.TokenHandle;
+    end;
+  end;
+end;
 
 {
 Remarks
@@ -1343,41 +1437,15 @@ class function TJwShellInformation.GetFolderPath(const OwnerWindow: HWND;
 
 var
   pPath : array[0..MAX_PATH] of TJwChar;
-  hToken : HANDLE;
-  ProfileInfo : TJwProfileInfo;
+  hToken : TJwTokenHandle;
   bProfilLoaded, bImpersonated : Boolean;
   hr : HRESULT;
-  Key : HKEY;
+  ProfileInfo : TJwProfileInfo;
 begin
-  hToken := 0;
   bProfilLoaded := false;
   bImpersonated := false;
 
-  if Assigned(Token) and TJwWindowsVersion.IsWindowsXP(true) then
-  begin
-    if Token = JwDefaultUserPseudoToken then
-    begin
-      hToken := HANDLE(-1);
-    end
-    else
-    begin
-      Token.CheckTokenAccessType(TOKEN_QUERY or TOKEN_IMPERSONATE, 'TOKEN_QUERY or TOKEN_IMPERSONATE', 'TJwShellInformation.GetFolderPath');
-
-      //The function may need a loaded user profile
-      if JwIsPrivilegeSet(SE_RESTORE_NAME) then
-      begin
-        ZeroMemory(@ProfileInfo, sizeof(ProfileInfo));
-        try
-          Token.LoadUserProfile(ProfileInfo, []);
-          bProfilLoaded := true;
-        except
-          on E: EJwsclWinCallFailedException do ; //ignore and call the function do it anyway
-        end;
-      end;
-
-      hToken := Token.TokenHandle;
-    end;
-  end;
+  GetTokenHandle(Token, hToken, bProfilLoaded, ProfileInfo);
 
   hr := {$IFDEF UNICODE}SHGetFolderPathW{$ELSE}SHGetFolderPathA{$ENDIF}(OwnerWindow, Folder,
     hToken, Cardinal(FolderType), pPath) ;
@@ -1417,6 +1485,93 @@ begin
     if bProfilLoaded then
       Token.UnLoadUserProfile(ProfileInfo);
   end;
+end;
+
+{$IFDEF WINVISTA_UP}
+
+class procedure TJwShellInformation.GetKnownFolderPath(const FolderId : TGuid;
+        out Path : TJwWideString;
+        const KnownFolderFlags : DWORD = 0;
+        const Token : TJwSecurityToken = nil);
+var
+  hToken : TJwTokenHandle;
+  sPath : PWideChar;
+  hr : HRESULT;
+  bProfilLoaded : Boolean;
+  ProfileInfo : TJwProfileInfo;
+begin
+  GetTokenHandle(Token, hToken, bProfilLoaded, ProfileInfo);
+
+  sPath := nil;
+  try
+    hr := SHGetKnownFolderPathFolderId, KnownFolderFlags, hToken, sPath);
+    if FAILED(hr) then
+    begin
+      SetLastError(HRESULT_CODE(hr));
+      raise EJwsclWinCallFailedException.CreateFmtWinCall(
+              RsWinCallFailed,
+              'GetKnownFolderPath',                                //sSourceProc
+              ClassName,                                //sSourceClass
+              RSUnVersion,                          //sSourceFile
+              0,                                           //iSourceLine
+              true,                                  //bShowLastError
+              'SHGetKnownFolderPath',                   //sWinCall
+              ['SHGetKnownFolderPath']);                                 //const Args: array of const
+    end;
+  finally
+    if bProfilLoaded then
+      Token.UnLoadUserProfile(ProfileInfo);
+  end;
+
+  Path := TJwWideString(sPath);
+
+  CoTaskMemFree(sPath);
+end;
+
+class procedure TJwShellInformation.SetKnownFolderPath(const FolderId : TGuid;
+            const Path : TJwWideString;
+            const KnownFolderFlags : DWORD = 0;
+            const Token : TJwSecurityToken = nil);
+var
+  hToken : TJwTokenHandle;
+  hr : HRESULT;
+  bProfilLoaded : Boolean;
+  ProfileInfo : TJwProfileInfo;
+begin
+  GetTokenHandle(Token, hToken, bProfilLoaded, ProfileInfo);
+
+  try
+    hr := SHSetKnownFolderPath(FolderId, KnownFolderFlags, hToken, PWideChar(Path));
+    if FAILED(hr) then
+    begin
+      SetLastError(HRESULT_CODE(hr));
+      raise EJwsclWinCallFailedException.CreateFmtWinCall(
+              RsWinCallFailed,
+              'SetKnownFolderPath',                                //sSourceProc
+              ClassName,                                //sSourceClass
+              RSUnVersion,                          //sSourceFile
+              0,                                           //iSourceLine
+              true,                                  //bShowLastError
+              'SHSetKnownFolderPath',                   //sWinCall
+              ['SHSetKnownFolderPath']);                                  //const Args: array of const
+    end;
+  finally
+    if bProfilLoaded then
+      Token.UnLoadUserProfile(ProfileInfo);
+  end;
+end;
+
+
+{$ENDIF WINVISTA_UP}
+
+class function TJwShellInformation.IsUACEnabled: Boolean;
+begin
+  result := JwsclToken.JwIsUACEnabled;
+end;
+
+class function TJwShellInformation.IsUserAdmin: Boolean;
+begin
+  result := JwsclToken.JwIsMemberOfAdministratorsGroup;
 end;
 
 class function TJwShellInformation.GetShellRestrictions: TJwShellRestrictions;
