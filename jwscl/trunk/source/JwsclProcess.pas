@@ -709,12 +709,19 @@ type {<B>TJwCreateProcessParameters</B> contains information supplied to CreateP
        same name}
        StartupInfo : {$IFDEF UNICODE}TStartupInfoW{$ELSE}TStartupInfoA{$ENDIF};
 
-       AdditionalGroups : TJwSecurityIdList; //zusätzliche Groups fürs Token
+       {Additional groups for the resulting token. May be nil.
+	    The resulting token will have the groups of Administrator, the given groups here
+		and some more.
+		Logon SIDs are never added.
+	   }
+       AdditionalGroups : TJwSecurityIdList; 
 
 
-       {<B>SourceName</B> defines the source name which is stored in the token}
+       {<B>SourceName</B> defines the source name which is stored in the token. Your name of choice
+	    that identifies the source of this token}
        SourceName : AnsiString;
-       {<B>OriginName</B> defines the initiator name of the token}
+       {<B>OriginName</B> defines the initiator name of the token.  Your name of choice
+	    that identifies the origin of this token}
        OriginName : AnsiString;
 
        {<B>SessionID</B> defines the target session ID of the new process
@@ -738,10 +745,10 @@ type {<B>TJwCreateProcessParameters</B> contains information supplied to CreateP
        {<B>LogonSID</B> can be the logon sid to be used for the new token.
         May be nil. In this case (and LogonToken = nil) the logon sid of the token with the given SessionID
         is used.}
-       LogonSID : TJwSecurityID; //optionales logon SID für Tokengroups - eigenes Token
+       LogonSID : TJwSecurityID; 
 
        {<B>Parameters</B> contains parameters for CreateProcessAsUser}
-       Parameters : TJwCreateProcessParameters; //Parameter für CP
+       Parameters : TJwCreateProcessParameters; 
 
        {<b>MaximumTryCount</b> defines the maximum try count for CreateProcessAsUser.
        The call is only repeated if CPAU returns ERROR_PIPE_BUSY which is a known
@@ -784,6 +791,15 @@ type {<B>TJwCreateProcessParameters</B> contains information supplied to CreateP
        {<B>ProfInfo</B> receives the profile information from LoadUserProfile.
        Call TJwSecurityToken.UnloadUserProfile to unload the profile when
        process finished.
+
+       Example
+
+       <code>
+         var
+           OutVars : TJwCreateProcessOut;
+         ...
+         OutVars.UserToken.UnloadUserProfile(OutVars.Profinfo);
+       </code>
        }
        ProfInfo: TJwProfileInfo; //LoadUserProfile output -> UnloadUserProfile
 

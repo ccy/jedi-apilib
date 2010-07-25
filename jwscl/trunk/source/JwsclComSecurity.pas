@@ -3895,56 +3895,59 @@ begin
     Assigned(@NtQueryInformationProcess) then
   begin
     hProc := OpenProcess(GENERIC_READ, False, GetCurrentProcessId);
+    try
+      US := nil;
 
-    US := nil;
+      Status := NtQueryInformationProcess(
+        hProc,//__in       HANDLE ProcessHandle,
+        ProcessImageFileName,//__in       PROCESSINFOCLASS ProcessInformationClass,
+        US,//__out      PVOID ProcessInformation,
+        0,//__in       ULONG ProcessInformationLength,
+        @Len//__out_opt  PULONG ReturnLength
+      );
 
-    Status := NtQueryInformationProcess(
-      hProc,//__in       HANDLE ProcessHandle,
-      ProcessImageFileName,//__in       PROCESSINFOCLASS ProcessInformationClass,
-      US,//__out      PVOID ProcessInformation,
-      0,//__in       ULONG ProcessInformationLength,
-      @Len//__out_opt  PULONG ReturnLength
-    );
+      if (Status = STATUS_INFO_LENGTH_MISMATCH) then
+      begin
+        US := JwCreateUnicodeStringSelfRelative(Len);
 
-    if (Status = STATUS_INFO_LENGTH_MISMATCH) then
-    begin
-      US := JwCreateUnicodeStringSelfRelative(Len);
+        try
+          Status := NtQueryInformationProcess(
+            hProc,//__in       HANDLE ProcessHandle,
+            ProcessImageFileName,//__in       PROCESSINFOCLASS ProcessInformationClass,
+            US,//__out      PVOID ProcessInformation,
+            Len,//__in       ULONG ProcessInformationLength,
+            @Len//__out_opt  PULONG ReturnLength
+          );
 
-      try
-        Status := NtQueryInformationProcess(
-          hProc,//__in       HANDLE ProcessHandle,
-          ProcessImageFileName,//__in       PROCESSINFOCLASS ProcessInformationClass,
-          US,//__out      PVOID ProcessInformation,
-          Len,//__in       ULONG ProcessInformationLength,
-          @Len//__out_opt  PULONG ReturnLength
-        );
-
-        if Status = STATUS_SUCCESS then
-        begin
-          S := JwUnicodeStringToJwString(US^);
-
-		  //Find the last \ in path
-          i := Length(S);
-          while (i > 0) and (S[i] <> '\') do
+          if Status = STATUS_SUCCESS then
           begin
-            Dec(i);
-          end;
-          S := Copy(S, i + 1, Length(S) - i);
+            S := JwUnicodeStringToJwString(US^);
 
-
-          for I := Low(JwKnownComHostProcesses) to High(JwKnownComHostProcesses) do
-          begin
-            if (JwKnownComHostProcesses[i] <> '') and (CompareText(S, JwKnownComHostProcesses[I]) = 0) then
+        //Find the last \ in path
+            i := Length(S);
+            while (i > 0) and (S[i] <> '\') do
             begin
-              raise EJwsclProcessNotFound.
-                CreateFmtEx(RsInitializeSecurityInSharedProcess,
-                  'InitializeSecurity', ClassName, 'JwsclComSecurity.pas', 0, false, []);
+              Dec(i);
+            end;
+            S := Copy(S, i + 1, Length(S) - i);
+
+
+            for I := Low(JwKnownComHostProcesses) to High(JwKnownComHostProcesses) do
+            begin
+              if (JwKnownComHostProcesses[i] <> '') and (CompareText(S, JwKnownComHostProcesses[I]) = 0) then
+              begin
+                raise EJwsclProcessNotFound.
+                  CreateFmtEx(RsInitializeSecurityInSharedProcess,
+                    'InitializeSecurity', ClassName, 'JwsclComSecurity.pas', 0, false, []);
+              end;
             end;
           end;
+        finally
+          FreeMem(US);
         end;
-      finally
-        FreeMem(US);
       end;
+    finally
+      CloseHandle(hProc);
     end;
   end;
 

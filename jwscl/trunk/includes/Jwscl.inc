@@ -7,7 +7,7 @@ Do not add DocOMatic comments into this file!}
 //use JEDI Component Library
 {.$DEFINE JCL}
 
-{Activate VISTA functions calls.
+{Activate VISTA and newer functions calls.
 If this definition is set and the application is compiled with
 static linked jwaVista.pas the binary application will fail
 on pre Vista Windows versions!!
@@ -30,8 +30,8 @@ Warning #2: If the JEDI API headers are used with a directive WIN_XP or lower
 
 //This is for compability reasons only!
 //On of them should work. However the second one is standard and supported.
-{.$I .\jedi.inc}
-{$I ..\Includes\jedi.inc}
+{.$I .\JediAPILib.inc}
+{$I ..\Includes\JediAPILib.inc}
 
 
 {$IFDEF FPC}
@@ -85,6 +85,25 @@ Warning #2: If the JEDI API headers are used with a directive WIN_XP or lower
 //variable length structures (like PSID) that fool Delphi
 //See: http://stackoverflow.com/questions/1913460/delphi-rangecheckerror-in-jedi-wscl/1914245
 {$R-}
+
+//If this compiler directive is set, the JWSCL exception EJwsclProcNotFound will
+//correspond to EJwaGetProcAddressError; otherwise EExternalException .
+//This is necessary if the JWA functions are loaded dynamically and a function
+//is not available in the current Windows version. In this case JWA throws
+//EJwaGetProcAddressError.
+//However, in case of JWA is compiled with Delphi delayed feature, Delphi will
+//throw an EExternalException.
+//In this way JWSCL doesn't need to check everywhere for both exception types.
+//
+//If you don't like to use EExternalException you can activate JWSCL_USE_DELAYED.
+{$DEFINE JWSCL_PROCNOTFOUND_EXCEPTION}
+
+//JWSCL can hook the Delphi delayed feature, so in case of errors the exception EExternalException
+//is converted to EJwaGetProcAddressError or EJwaLoadLibraryError.
+//To allow JWSCL to hook the delayed feature, you need to call JwsclExceptions.pas::JwInitDelayedFunctionHook
+//This call should be in a unit that is included on top of your uses clause in your main project file.
+{$DEFINE JWSCL_USE_DELAYED}
+
 
 //the following line must be at the end of this file!!
 {Warning: This line is printed because an identifier has no pasdoc comment. This error must be fixed.}

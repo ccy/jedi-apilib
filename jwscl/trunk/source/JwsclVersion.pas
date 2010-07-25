@@ -323,7 +323,11 @@ type
     }
     class procedure SetProcessDEPPolicy(NewPolicy : TJwDEPProcessPolicy); virtual;
 
-    {GetProcessorFeatures returns a set of available processor features.}
+    {GetProcessorFeatures returns a set of available processor features.
+
+    Remarks
+      This function does not fail.
+    }
     class function GetProcessorFeatures : TJwProcessorFeatures;
 
     {<B>IsProcess64</B> checks if a process is 64 bit.
@@ -341,7 +345,29 @@ type
     //IsWOWProcess64 checks whether the current or a given process is running under WOW64
     class function IsWOWProcess64(ProcessHandle : DWORD = 0) : boolean;
 
-//    class function GetNumberOfProcessors : Cardinal;
+    {<b>GetNumberOfProcessors</b> returns the number of logical or physical available
+     processors in the system.
+
+     Parameters
+       ProcessorType Defines the type of processor to be returned. See TJwProcessorCountType.
+
+     Returns
+      Returns the number of available logical or physical processors.
+
+     Remarks
+      The numbers of available logical processors may depend on the Windows version and architecture type.
+       On Windows prior to 7, the return value may be less than 32 for 32bit processes. On Windows 7
+       a 32bit process can retrieve more than 64 bit processors but may not be able to use them.
+
+      The number of physical processors should not depend on Windows version and architecture but not
+       all physical processors may be available to the system.
+
+      The function ignores the affinity mask set for the process.
+    }
+    class function GetNumberOfProcessors(ProcessorType :  TJwProcessorCountType = pctLogicalProcessors) : Cardinal;
+
+	//TBD
+    class function GetModuleFileName(ProcessHandle : THandle = INVALID_HANDLE_VALUE) : TJwString;
   end;
 
   {This class provides methods about the Windows shell}
@@ -455,6 +481,36 @@ type
    All methods are class methods so there is no need for an instance of <B>TJwWindowsVersion</B>.
    }
   TJwWindowsVersion = class(TJwSystemInformation)
+  protected
+     {This method returns a constant cOsXXXX from JwsclTypes by
+      iterating the constant array SupportedWindowVersions using the
+      current Windows version.
+     }
+     class function GetCurrentWindowsTypeInternal(
+        out osVerInfo: {$IFDEF UNICODE}TOSVersionInfoExW{$ELSE}TOSVersionInfoExA{$ENDIF};
+        out IsServer : Boolean): integer; virtual;
+
+     {This method returns a constant cOsXXXX from JwsclTypes by
+      iterating the constant array SupportedWindowVersions using the
+      OS Version Info from OSVerInfo.
+
+      Not all information may be gathered from OSVerInfo because SupportedWindowVersions
+      may use callbacks that use other location.
+     }
+     class function GetCurrentSupportedWindowsVersion(const
+        OSVerInfo: {$IFDEF UNICODE}TOSVersionInfoExW{$ELSE}TOSVersionInfoExA{$ENDIF}) : Integer; overload;
+
+     //callback functions for array: SupportedWindowVersions
+
+     //
+     class function _IsServer2003R2(osVerInfo: {$IFDEF UNICODE}TOSVersionInfoExW{$ELSE}TOSVersionInfoExA{$ENDIF};
+         Definition : PJwWindowsVersionDefinition) : Boolean;
+     class function _IsWin98SE(osVerInfo: {$IFDEF UNICODE}TOSVersionInfoExW{$ELSE}TOSVersionInfoExA{$ENDIF};
+         Definition : PJwWindowsVersionDefinition) : Boolean;
+
+     class function _IsNewUnknown(osVerInfo: {$IFDEF UNICODE}TOSVersionInfoExW{$ELSE}TOSVersionInfoExA{$ENDIF};
+         Definition : PJwWindowsVersionDefinition) : Boolean;
+
   public
    {<B>GetWindowsType</B> returns a constant that defines the windows version the process is running.
        @return The return value can be one of these constants defined in JwsclConstants
@@ -470,9 +526,10 @@ type
          #  cOsXP      = running on Windows XP
          #  cOS2003    = running on Windows 2003
          #  cOS2003R2  = running on Windows 2003 Release 2
-         #  cOSXP64    = running on Windows XP 64 Edition (not supported at the moment)
          #  cOsVista   = running on Windows Vista
          #  cOsWin2008 = running on Windows 2008 (tested on rc)
+         #  cOsWin7    = running on Windows 7
+         #  cOsWin2008R2 = running on Windows 2008R2
 
        }
 
@@ -611,6 +668,22 @@ type
     class function IsWindows2008(bOrHigher: boolean = False): boolean;
       virtual;
 
+   class function IsWindows2008R2(bOrHigher: boolean = False): boolean;
+      virtual;
+
+      {<B>IsWindows7</B> checks if the system has the version given in the function name.
+
+       Currently the parameter bOrHigher has no meaning in this function!
+
+       @param bOrHigher defines if the return value should also be <B>true</B> if the system
+              is better/higher than the requested system version.
+       @return <B>IsWindows7</B> returns <B>true</B> if the system is the requested version (or higher if bOrHigher is true);
+               otherwise <B>false</B>.
+               If bOrHigher is <B>true</B> the return value is the result of
+                <B>true</B> if (bOrHigher and (GetWindowsType > iVer)) is true;
+                <B>false</B> if GetWindowsType < (requested version)
+
+       }
     class function IsWindows7(bOrHigher: Boolean = False): Boolean; virtual;
 
 
@@ -693,6 +766,164 @@ var
   fWindowsType: integer;
   fIsServer: boolean;
   fOSVerInfo: {$IFDEF UNICODE}TOSVersionInfoExW{$ELSE}TOSVersionInfoExA{$ENDIF};
+
+
+const
+  FlagMajorMinorServer = [wvdfMajorVersion, wvdfMinorVersion, wvdfIsServer, wvdfPlatform];
+  FlagMajorMinor = [wvdfMajorVersion, wvdfMinorVersion, wvdfPlatform];
+  FlagUseOnlyCallback = [];
+
+
+  SupportedWindowVersionCount = 12 + 1;
+
+  {By JWSCL supported (known) Windows versions.
+   See also TJwWindowsVersionDefinitionCallback for information about callbacks.
+  }
+  SupportedWindowVersions : array[0..SupportedWindowVersionCount-1] of TJwWindowsVersionDefinition = (
+    (WinConst     : cOsWin95;
+     MajorVersion : 4;
+     MinorVersion : 0;
+     PlatformID   : VER_PLATFORM_WIN32_WINDOWS;
+     Flags        : FlagMajorMinor;
+     ),
+    (WinConst     : cOsWin98;
+     MajorVersion : 4;
+     MinorVersion : 10;
+     PlatformID   : VER_PLATFORM_WIN32_WINDOWS;
+     Flags        : FlagMajorMinorServer;
+     Callback     : TJwWindowsVersion._IsWin98SE;
+     ),
+    (WinConst     : cOsWin98SE;
+     MajorVersion : 4;
+     MinorVersion : 10;
+     PlatformID   : VER_PLATFORM_WIN32_WINDOWS;
+     Flags        : FlagMajorMinor;
+     Callback     : TJwWindowsVersion._IsWin98SE
+     ),
+    (WinConst     : cOsWinME;
+     MajorVersion : 4;
+     MinorVersion : 90;
+     PlatformID   : VER_PLATFORM_WIN32_WINDOWS;
+     Flags        : FlagMajorMinor;
+     ),
+
+
+    (WinConst     : cOsWin2000;
+     MajorVersion : 5;
+     MinorVersion : 0;
+     PlatformID   : VER_PLATFORM_WIN32_NT;
+     IsServer     : False;
+     Flags        : FlagMajorMinorServer;
+     ),
+    (WinConst     : cOsXP;
+     MajorVersion : 5;
+     MinorVersion : 1;
+     PlatformID   : VER_PLATFORM_WIN32_NT;
+     IsServer     : False;
+     Flags        : FlagMajorMinorServer;
+     Callback     : TJwWindowsVersion._IsServer2003R2;
+     ),
+    (WinConst     : cOS2003;
+     MajorVersion : 5;
+     MinorVersion : 1;
+     PlatformID   : VER_PLATFORM_WIN32_NT;
+     IsServer     : True;
+     Flags        : FlagMajorMinorServer;
+     Callback     : TJwWindowsVersion._IsServer2003R2;
+     ),
+    (WinConst     : cOS2003R2;
+     MajorVersion : 5;
+     MinorVersion : 1;
+     PlatformID   : VER_PLATFORM_WIN32_NT;
+     IsServer     : True;
+     Flags        : FlagMajorMinorServer;
+     Callback     : TJwWindowsVersion._IsServer2003R2;
+     ),
+    (WinConst     : cOsVista;
+     MajorVersion : 6;
+     MinorVersion : 0;
+     PlatformID   : VER_PLATFORM_WIN32_NT;
+     IsServer     : False;
+     Flags        : FlagMajorMinorServer;
+     ),
+    (WinConst     : cOsWin2008;
+     MajorVersion : 6;
+     MinorVersion : 0;
+     PlatformID   : VER_PLATFORM_WIN32_NT;
+     IsServer     : True;
+     Flags        : FlagMajorMinorServer;
+     ),
+    (WinConst     : cOsWin7;
+     MajorVersion : 6;
+     MinorVersion : 1;
+     PlatformID   : VER_PLATFORM_WIN32_NT;
+     IsServer     : False;
+     Flags        : FlagMajorMinorServer;
+     ),
+    (WinConst     : cOsWin2008R2;
+     MajorVersion : 6;
+     MinorVersion : 1;
+     IsServer     : True;
+     Flags        : FlagMajorMinorServer;
+     ),
+
+    //always set LAST
+    //The callback is called last and checks whether the Windows Version
+    //is newer than JWSCL supports. If so, JWSCL returns cOsWinUnknownNew.
+    (WinConst     : cOsWinUnknownNew;
+     MajorVersion : 0;
+     MinorVersion : 0;
+     IsServer     : false;
+     Flags        : []; //always execute Callback
+     Callback     : TJwWindowsVersion._IsNewUnknown;
+     )
+     //do not add new entries here.
+    );
+
+
+
+class function TJwWindowsVersion.GetCurrentSupportedWindowsVersion(const
+    OSVerInfo: {$IFDEF UNICODE}TOSVersionInfoExW{$ELSE}TOSVersionInfoExA{$ENDIF}) : Integer;
+
+  function CompareVersion(
+      const OSVerInfo: {$IFDEF UNICODE}TOSVersionInfoExW{$ELSE}TOSVersionInfoExA{$ENDIF};
+      const Definition : TJwWindowsVersionDefinition) : boolean;
+  begin
+    if (Definition.Flags = []) and Assigned(Definition.Callback) then
+    begin
+      result := Definition.Callback(OSVerInfo, @Definition);
+    end
+    else
+    begin
+      result := true;
+      if wvdfMajorVersion in Definition.Flags then
+        result := result and (OSVerInfo.dwMajorVersion = Definition.MajorVersion);
+      if wvdfMinorVersion in Definition.Flags then
+        result := result and (OSVerInfo.dwMinorVersion = Definition.MinorVersion);
+      if (wvdfIsServer in Definition.Flags) and Definition.IsServer then
+        result := result and (OSVerInfo.wProductType <> VER_NT_WORKSTATION)
+      else
+        result := result and (OSVerInfo.wProductType = VER_NT_WORKSTATION);
+
+      if result and Assigned(Definition.Callback) then
+        result := result and Definition.Callback(OSVerInfo, @Definition);
+    end;
+  end;
+
+var i : Integer;
+begin
+  result := cOsUnknown;
+  for I := low(SupportedWindowVersions) to high(SupportedWindowVersions) do
+  begin
+    if CompareVersion(OSVerInfo, SupportedWindowVersions[i]) then
+    begin
+      result := SupportedWindowVersions[i].WinConst;
+      exit;
+    end;
+  end;
+end;
+
+
 
 
 class function TJwFileVersion.GetFileInfo(const Filename: TJwString;
@@ -862,7 +1093,11 @@ begin
   begin
     Result := cOsVista;
   end
-  else if (FMajorVersion = 6) and (FMinorVersion = 1) then
+  else if (FMajorVersion = 6) and (FMinorVersion = 1) and (fIsServer) then
+  begin
+    Result := cOsWin2008R2;
+  end
+  else if (FMajorVersion = 6) and (FMinorVersion = 1) and (not fIsServer) then
   begin
     Result := cOsWin7;
   end
@@ -1041,9 +1276,71 @@ begin
     (fWindowsType > iVer));
 end;
 
+class function TJwWindowsVersion.IsWindows2008R2(bOrHigher: boolean): boolean;
+const
+  iVer = cOsWin2008R2;
+begin
+  Result := ((fWindowsType = iVer) or (bOrHigher and
+    (fWindowsType > iVer)));
+end;
+
 class function TJwWindowsVersion.IsServer: boolean;
 begin
   Result := fIsServer;
+end;
+
+class function TJwWindowsVersion._IsNewUnknown(osVerInfo: TOSVersionInfoExW;
+  Definition: PJwWindowsVersionDefinition): Boolean;
+var
+  I : Integer;
+  MajorVer, MinorVer : Integer;
+begin
+  result := false;
+
+  if Definition.WinConst <> cOsWinUnknownNew then
+    exit;
+
+  MajorVer := 0;
+  MinorVer := 0;
+
+  //get highest known version
+  for I := low(SupportedWindowVersions) to high(SupportedWindowVersions) do
+  begin
+    if (SupportedWindowVersions[I].PlatformID = osVerInfo.dwPlatformId) then
+    begin
+      if (SupportedWindowVersions[I].MajorVersion > MajorVer) or
+         ((SupportedWindowVersions[I].MajorVersion = MajorVer) and
+         (SupportedWindowVersions[I].MinorVersion > MinorVer)) then
+      begin
+        MajorVer := SupportedWindowVersions[I].MajorVersion;
+        MinorVer := SupportedWindowVersions[I].MinorVersion;
+      end;
+    end;
+  end;
+
+  if I = -1 then
+    exit;
+
+  if (osVerInfo.dwMajorVersion > MajorVer) or
+     ((osVerInfo.dwMajorVersion = MajorVer) and
+      (osVerInfo.dwMinorVersion > MinorVer)) then
+  begin
+    result := true;
+  end;
+end;
+
+class function TJwWindowsVersion._IsServer2003R2(osVerInfo: TOSVersionInfoExW;
+  Definition: PJwWindowsVersionDefinition): Boolean;
+begin
+  //return false for all other win constants
+  result := (Definition.WinConst = cOS2003R2) and Boolean(GetSystemMetrics(SM_SERVERR2));
+end;
+
+class function TJwWindowsVersion._IsWin98SE(osVerInfo: TOSVersionInfoExW;
+  Definition: PJwWindowsVersionDefinition): Boolean;
+begin
+  //return false for all other win constants
+  Result := (Definition.WinConst = cOsWin98SE) and (osVerInfo.szCSDVersion[1] = 'A');
 end;
 
 class function TJwSystemInformation.IsShadowedSession: Boolean;
@@ -1071,11 +1368,18 @@ begin
   result := GetSystemMetrics(SM_SERVERR2) <> 0;
 end;
 
+
 class function TJwWindowsVersion.GetWindowsType(
     out osVerInfo: {$IFDEF UNICODE}TOSVersionInfoExW{$ELSE}TOSVersionInfoExA{$ENDIF}
   ): integer;
-var
-  majorVer, minorVer: integer;
+var dummy : Boolean;
+begin
+  result := GetCurrentWindowsTypeInternal(osVerInfo, dummy);
+end;
+
+class function TJwWindowsVersion.GetCurrentWindowsTypeInternal(
+    out osVerInfo: {$IFDEF UNICODE}TOSVersionInfoExW{$ELSE}TOSVersionInfoExA{$ENDIF};
+    out IsServer : Boolean): integer;
 begin
   //  Result := cOsUnknown;
 
@@ -1087,60 +1391,13 @@ begin
 {$ENDIF}
     (@osVerInfo) then
   begin
-    majorVer  := osVerInfo.dwMajorVersion;
-    minorVer  := osVerInfo.dwMinorVersion;
-    fIsServer := osVerInfo.wProductType <> VER_NT_WORKSTATION;
-
-    case osVerInfo.dwPlatformId of
-      VER_PLATFORM_WIN32_NT: { Windows NT/2000 }
-      begin
-        if majorVer <= 4 then
-          Result := cOsWinNT
-        else if (majorVer = 5) and (minorVer = 0) then
-          Result := cOsWin2000
-        else if (majorVer = 5) and (minorVer = 1) then
-          Result := cOsXP
-        else if (majorVer = 5) and (minorVer = 2) then
-        begin
-          if boolean(GetSystemMetrics(SM_SERVERR2)) then
-            Result := cOS2003R2
-          else
-            Result := cOS2003;
-        end
-        else if (majorVer = 6) and (minorVer = 0) and (not fIsServer) then
-          Result := cOsVista
-        else if (majorVer = 6) and (minorVer = 0) and (fIsServer) then
-          Result := cOsWin2008
-        else if (majorVer = 6) and (minorVer = 1) then
-          Result := cOsWin7
-        else if (majorVer = 6) and (minorVer = 1) then
-          Result := cOsWin7
-        else
-          Result := cOsUnknown;
-      end;
-      VER_PLATFORM_WIN32_WINDOWS:  { Windows 9x/ME }
-      begin
-        if (majorVer = 4) and (minorVer = 0) then
-          Result := cOsWin95
-        else if (majorVer = 4) and (minorVer = 10) then
-        begin
-          if osVerInfo.szCSDVersion[1] = 'A' then
-            Result := cOsWin98SE
-          else
-            Result := cOsWin98;
-        end
-        else if (majorVer = 4) and (minorVer = 90) then
-          Result := cOsWinME
-        else
-          Result := cOsUnknown;
-      end;
-      else
-        Result := cOsUnknown;
-    end;
+    result := GetCurrentSupportedWindowsVersion(osVerInfo);
   end
   else
     Result := cOsUnknown;
 end;
+
+
 
 class function TJwSystemInformation.IsTerminalServiceRunning: Boolean;
 begin
@@ -1149,6 +1406,103 @@ end;
 
 
 
+
+
+class function TJwSystemInformation.GetModuleFileName(
+  ProcessHandle: THandle = INVALID_HANDLE_VALUE): TJwString;
+var
+  hProc : THandle;
+  Len : Cardinal;
+  S : WideString;
+  US : PUnicodeString;
+  Status : NTSTATUS;
+begin
+  if (ProcessHandle = 0) or (ProcessHandle = INVALID_HANDLE_VALUE) then
+  begin
+    hProc := OpenProcess(PROCESS_QUERY_INFORMATION, False, GetCurrentProcessId);
+  end
+  else
+    hProc := ProcessHandle;
+  try
+    US := nil;
+
+    try
+      Status := NtQueryInformationProcess(
+        hProc,//__in       HANDLE ProcessHandle,
+        ProcessImageFileName,//__in       PROCESSINFOCLASS ProcessInformationClass,
+        US,//__out      PVOID ProcessInformation,
+        0,//__in       ULONG ProcessInformationLength,
+        @Len//__out_opt  PULONG ReturnLength
+      );
+    except
+      on E : EJwsclProcNotFound do
+      begin
+        raise;
+      end;
+    end;
+
+    if (Status = STATUS_INFO_LENGTH_MISMATCH) then
+    begin
+      US := JwCreateUnicodeStringSelfRelative(Len);
+
+      try
+        Status := NtQueryInformationProcess(
+          hProc,//__in       HANDLE ProcessHandle,
+          ProcessImageFileName,//__in       PROCESSINFOCLASS ProcessInformationClass,
+          US,//__out      PVOID ProcessInformation,
+          Len,//__in       ULONG ProcessInformationLength,
+          @Len//__out_opt  PULONG ReturnLength
+        );
+
+        if Status = STATUS_SUCCESS then
+        begin
+          S := JwUnicodeStringToJwString(US^);
+          S := JwDeviceToDosDrive(S);
+          exit;
+        end
+      finally
+        FreeMem(US);
+      end;
+    end;
+
+    if Status <> STATUS_SUCCESS then
+    begin
+      SetLastError(RtlNtStatusToDosError(Status));
+      raise EJwsclWinCallFailedException.CreateFmtWinCall(
+          RsWinCallFailed,
+          'GetModuleFileName',                                //sSourceProc
+          ClassName,                                //sSourceClass
+          RSUnVersion,                          //sSourceFile
+          0,                                           //iSourceLine
+          true,                                  //bShowLastError
+          'GetModuleFileName',                   //sWinCall
+          ['GetModuleFileName']);                                  //const Args: array of const
+    end;
+  finally
+    if hProc <> ProcessHandle then
+      CloseHandle(hProc);
+  end;
+ { if TJwWindowsVersion.IsWindows2000(false) then
+  begin
+  end
+  else
+  if TJwWindowsVersion.IsWindowsXP(false) then
+  begin
+
+  end
+  else
+  if TJwWindowsVersion.IsWindowsVista(false) then
+  begin
+
+  end
+  else
+  if TJwWindowsVersion.IsWindows7(true) then
+  begin
+
+  end;     }
+
+  JwUNIMPLEMENTED;
+end;
 
 class function TJwSystemInformation.GetNativeProcessorArchitecture : TJwProcessorArchitecture;
 var
@@ -1169,6 +1523,135 @@ end;
 
 
 
+
+class function TJwSystemInformation.GetNumberOfProcessors(
+  ProcessorType: TJwProcessorCountType): Cardinal;
+
+  function GetActiveProcessors(Mask : DWORD) : DWORD;
+  var I : Integer;
+  begin
+    result := 0;
+    for I := 0 to (sizeof(Mask) * 8)-1 do
+    begin
+      if ((1 shl I) and Mask) = (1 shl I) then
+        Inc(Result);
+    end;
+  end;
+
+
+type
+  TBufArray = array[0..0] of SYSTEM_LOGICAL_PROCESSOR_INFORMATION;
+  //TODO: move to jwa
+  TGetActiveProcessorCount = function ({__in} GroupNumber : Word) : DWORD; stdcall;
+
+const
+  ALL_PROCESSOR_GROUPS = $FFFF;
+
+
+var
+  SysInfo : TSystemInfo;
+  Size, Len,
+  LogicalCount : Cardinal;
+  Buf : ^TBufArray;
+  Res : Boolean;
+  I : Integer;
+
+  GetActiveProcessorCount : TGetActiveProcessorCount;
+begin
+  if ProcessorType = pctLogicalProcessors then
+  begin
+    if TJwWindowsVersion.IsWindows7(true) or
+      TJwWindowsVersion.IsWindows2008R2(true) then
+    begin
+      //on newer windows version we can get the real active processor count
+      try
+        GetActiveProcessorCount := nil;
+        JwaWindows.GetProcedureAddress(@GetActiveProcessorCount, kernel32, 'GetActiveProcessorCount');
+        result := GetActiveProcessorCount(ALL_PROCESSOR_GROUPS);
+        exit;
+      except
+        on E : EJwsclProcNotFound do; //skip next
+      end;
+    end;
+
+    try
+      {GetLogicalProcessorInformation is present only on
+       Windows Vista, Windows XP Professional x64 Edition, Windows XP with SP3
+       This is a little bit complicated, so we just call it
+      }
+      Len := 0;
+      Res := GetLogicalProcessorInformation(nil, @Len);
+    except
+      on E : EJwsclProcNotFound do
+      begin
+        //function not implemented on this system... return to pyhsical cpu count
+        Res := FALSE;
+        SetLastError(0);
+      end;
+    end;
+
+    if not Res and (GetLastError() = ERROR_INSUFFICIENT_BUFFER) then
+    begin
+      GetMem(Buf, Len);
+      try
+        {
+          für win7
+          + GetActiveProcessorCount
+
+          http://msdn.microsoft.com/en-us/library/ms683194%28VS.85%29.aspx
+
+          1.
+          On systems with more than 64 logical processors, the GetLogicalProcessorInformation
+          function retrieves logical processor information about processors in the processor
+          group to which the calling thread is currently assigned. Use the GetLogicalProcessorInformationEx
+          function to retrieve information about processors in all processor groups on the system.
+
+          2.
+          Windows Server 2003, Windows XP Professional x64 Edition, and Windows XP with SP3:
+            This code reports the number of physical processors rather than the number of active processor cores.
+        }
+        Res := GetLogicalProcessorInformation(@Buf[0], @Len);
+        if not Res then
+          RaiseLastOSError;
+
+        Size := Len div sizeof(SYSTEM_LOGICAL_PROCESSOR_INFORMATION);
+
+        LogicalCount := 0;
+        //PhysicalCount := 0;
+
+        {$R-}
+        for I := 0 to Size - 1 do
+        begin
+          case Buf[I].Relationship of
+            RelationProcessorCore :
+              begin
+                //Inc(PhysicalCount);
+                Inc(LogicalCount, GetActiveProcessors(Buf[I].ProcessorMask));
+              end;
+          end;
+        end;
+      finally
+        FreeMem(Buf);
+      end;
+
+      result := LogicalCount;
+    end
+    else
+    if (GetLastError() <> 0) then
+      RaiseLastOSError
+    else
+      ProcessorType := pctPhysicalProcessors;
+  end;
+
+  if ProcessorType = pctPhysicalProcessors then
+  begin
+    if IsWOWProcess64 then
+      GetNativeSystemInfo(@SysInfo)
+    else
+      GetSystemInfo(SysInfo);
+    result := SysInfo.dwNumberOfProcessors;
+  end;
+end;
 
 class function TJwSystemInformation.GetProcessDEPPolicy(
   ProcessHandle: DWORD): TJwDEPProcessPolicy;
@@ -1298,21 +1781,8 @@ begin
 end;
 
 class procedure TJwWindowsVersion.ResetCachedWindowsType;
-var Srv : TJwServerInfo;
 begin
-  fWindowsType := GetWindowsType(fOSVerInfo);
-
-
-  try
-    Srv := TJwServerInfo.Create('');
-    try
-      fIsServer := Srv.IsServer;
-    finally
-      Srv.Free;
-    end;
-  except
-    fIsServer := False;
-  end;
+  fWindowsType := GetCurrentWindowsTypeInternal(fOSVerInfo, fIsServer);
 end;
 
 class function TJwWindowsVersion.SetCachedWindowsType(
@@ -1504,7 +1974,7 @@ begin
 
   sPath := nil;
   try
-    hr := SHGetKnownFolderPathFolderId, KnownFolderFlags, hToken, sPath);
+    hr := SHGetKnownFolderPath(FolderId, KnownFolderFlags, hToken, sPath);
     if FAILED(hr) then
     begin
       SetLastError(HRESULT_CODE(hr));

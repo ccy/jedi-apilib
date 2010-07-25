@@ -1952,6 +1952,135 @@ type
     sftDefault = SHGFP_TYPE_DEFAULT
   );
 
+  {Type of processor used by
+    TJwSystemInformation.GetNumberOfProcessors }
+  TJwProcessorCountType = (
+    //returns physical processors
+    pctPhysicalProcessors,
+    //returns logical processors
+    pctLogicalProcessors
+  );
+
+  {Defines a set of flags that are
+   used for record  TJwWindowsVersionDefinition
+  }
+  TJwWindowsVersionDefinitionFlag = (
+    //The member MajorVersion is valid
+    wvdfMajorVersion,
+    //The member MinorVersion is valid
+    wvdfMinorVersion,
+    //The member IsServer is valid
+    wvdfIsServer,
+    //The member PlatformID is valid
+    wvdfPlatform
+    );
+
+  {Defines a set of TJwWindowsVersionDefinitionFlag for
+   record TJwWindowsVersionDefinition
+  }
+  TJwWindowsVersionDefinitionFlags = set of TJwWindowsVersionDefinitionFlag;
+
+  PJwWindowsVersionDefinition = ^TJwWindowsVersionDefinition;
+
+  {TJwWindowsVersionDefinitionCallback is used by TJwWindowsVersionDefinition
+   and is called to dynamically determine whether the given Windows version
+   is equal to the given Windows version Definition.
+
+
+  Parameters
+    osVerInfo Receives an OS version structure to be used for the computation.
+    Definition A pointer to a TJwWindowsVersionDefinition record.
+  Returns
+
+  Implementation
+    The function should compare the osVerInfo data with the given Definition
+    of a Windows version. However, it may also use external input like GetSystemMetrics,
+    although this will only work on the local system and also may be influenced
+    by the Windows compatibility layer.
+
+    E.g. To determine the Windows 2003 Second Release (R2), a function is called
+    that calls GetSystemMetrics(SM_SERVERR2).
+
+    To make the return value more reliable, you must check the member WinConst of
+    parameter Definition for your target Windows Version.
+
+    <code>
+    result := (Definition.WinConst = cOS2003R2) and Boolean(GetSystemMetrics(SM_SERVERR2));
+    </code>
+
+    Furthermore, you must define the same callback function within TJwWindowsVersionDefinition
+    for every array index which are equal for the other members in TJwWindowsVersionDefinition.
+    Otherwise it would be possible that a Windows Definition is used falsely.
+
+    Incorrect example:
+    <code>
+    (WinConst     : cOS2003;
+     MajorVersion : 5;
+     MinorVersion : 1;
+     PlatformID   : VER_PLATFORM_WIN32_NT;
+     IsServer     : True;
+     Flags        : FlagMajorMinorServer;
+     Callback     : nil; //TJwWindowsVersion._IsServer2003R2;
+     ),
+    (WinConst     : cOS2003R2;
+     MajorVersion : 5;
+     MinorVersion : 1;
+     PlatformID   : VER_PLATFORM_WIN32_NT;
+     IsServer     : True;
+     Flags        : FlagMajorMinorServer;
+     Callback     : TJwWindowsVersion._IsServer2003R2;
+     ),
+    </code>
+
+    On a Windows 2003 R2, the constant cOS2003 will be returned by JWSCL
+    because it is the first match.
+    Instead set the same callback for cOS2003 to complete the logic level.
+  }
+  TJwWindowsVersionDefinitionCallback = function
+    (osVerInfo: {$IFDEF UNICODE}TOSVersionInfoExW{$ELSE}TOSVersionInfoExA{$ENDIF};
+     Definition : PJwWindowsVersionDefinition) : Boolean of object;
+
+  {The record <b>TJwWindowsVersionDefinition</b> is used by an <b>internal</b>
+   variable SupportedWindowVersions defined within the implementation section of
+   JwsclVersion.pas
+  }
+  TJwWindowsVersionDefinition = record
+    {This member contains one of the windows constants cOsXXX (e.g. cOsWin95)
+     It is mandatory.}
+    WinConst : Integer;
+
+    {Defines the major Windows version like TOSVersionInfoEx.dwMajorVersion.
+     This member is only valid if member Flags contains wvdfMajorVersion.}
+    MajorVersion,
+    {Defines the minor Windows version like TOSVersionInfoEx.dwMinorVersion.
+     This member is only valid if member Flags contains wvdfMinorVersion.}
+    MinorVersion : DWORD;
+    {Defines the platform type of Windows like TOSVersionInfoEx.dwPlatformId.
+     This member is only valid if member Flags contains wvdfPlatform.}
+    PlatformID : DWORD;
+    {Defines whether Windows is a server version (true) or workstation (false).
+     This member is only valid if member Flags contains wvdfIsServer.}
+    IsServer : Boolean;
+    {Defines a set of flags that determines which members of TJwWindowsVersionDefinition
+     are used by the Windows version checking process.
+     If the set is empty and Callback is a valid function pointer, all members
+      are ignored and Callback is called instead.
+     If the set is empty and Callback is nil, the version checking immediately returns true
+      and you will probably get an incorrect Windows version.
+    }
+    Flags : TJwWindowsVersionDefinitionFlags;
+
+    {Defines a callback function that is called to influence the Windows checking
+     process.
+     If member Flags is not empty, the result of the version checking (using
+     the rest of the members of TJwWindowsVersionDefinition) is combined with
+     the result of the callback using the AND operator.
+
+     For more information see member Flags of TJwWindowsVersionDefinition.
+    }
+    Callback : TJwWindowsVersionDefinitionCallback;
+  end;
+
 
 {**************** ADD HERE NEW DEFS ************** }
 

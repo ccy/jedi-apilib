@@ -855,6 +855,17 @@ type
 
   JwGeneralExceptionClass = class of Exception;
 
+  {We define this exception which corresponds to the same exception
+   as JWA defines (EJwaGetProcAddressError).
+  }
+{$IF defined(JWSCL_PROCNOTFOUND_EXCEPTION) or defined(JWSCL_USE_DELAYED)}
+  //
+  EJwsclProcNotFound = EJwaGetProcAddressError;
+{$ELSE}
+  //
+  EJwsclProcNotFound = EExternalException ;
+{$IFEND}
+
 
 type
    TJwExceptionMapping = record
@@ -963,13 +974,35 @@ Source
         Application.ShowException(E);
     end;
   </code>
-
-
 }
 function JwHandleJwsclException(const E : TObject) : Boolean;
 
+{<b>JwInitDelayedFunctionHook</b> replaces the delayed hook mechanism by Delphi.
+If a winapi function is implemented using the delayed feature, and the feature is not available
+the errors are converted to JWA exceptions (EJwaLoadLibraryError and EJwaLoadLibraryError).
+
+Remarks
+  This function only works if compiler directive JWSCL_USE_DELAYED is set in Jwscl.inc.
+
+  This call should be in a unit that is included on top of your uses clause in your main project file.
+    In this way hooking is enabled as soon as possible.
+  Do not call this function in your main project file because initialization sections
+    of units are called before the main project source is executed.
+}
+procedure JwInitDelayedFunctionHook;
+
 var
+  {This variable is allocated by JWSCL to make sure that
+   an out of memory exception can be raised even in case of lack of memory.
+
+   Do not use this variable, instead
+   use procedure JwRaiseOutOfMemoryException.
+   }
   JwOutOfMemoryException : EJwsclOutOfMemoryException;
+
+  {In case of TaskDialog (only >= Vista) for exception (JwShowJwsclException).
+   The dialog will be shown with details as default.
+  }
   JwExceptionShowDetails : Boolean = false;
 
 
@@ -997,6 +1030,42 @@ uses JwsclConstants, JwsclDescriptor, JwsclVersion
 {$IFDEF WINVISTA_UP}
   {$DEFINE SUPPORT_TASK_DIALOG}
 {$ENDIF WINVISTA_UP}
+
+{$IFDEF JWSCL_USE_DELAYED}
+function DelayedFailureHook(dliNotify: dliNotification; pdli: PDelayLoadInfo): Pointer; stdcall;
+begin
+  case dliNotify of
+    dliNoteStartProcessing: ;
+    dliNotePreLoadLibrary: ;
+    dliNotePreGetProcAddress: ;
+    dliFailLoadLibrary   :
+      raise EJwaLoadLibraryError.CreateFmt(
+        'Failed to load library "%0:s".'#13#10' Error (%1:d) %2:s',[AnsiString(pdli.szDll),
+          pdli.dwLastError, SysErrorMessage(pdli.dwLastError)]);
+    dliFailGetProcAddress:
+      if pdli.dlp.fImportByName then
+        raise EJwaGetProcAddressError.CreateFmt(
+            'Failed to load function "%0:s" from "%1:s"'#13#10' Error (%2:d) %3:s',[
+           AnsiString(pdli.dlp.szProcName), AnsiString(pdli.szDll),
+          pdli.dwLastError, SysErrorMessage(pdli.dwLastError)])
+      else
+        raise EJwaGetProcAddressError.CreateFmt(
+            'Failed to load function #%0:d from "%1:s"'#13#10' Error (%2:d) %3:s',[
+           pdli.dlp.dwOrdinal, AnsiString(pdli.szDll),
+          pdli.dwLastError, SysErrorMessage(pdli.dwLastError)]);
+
+    dliNoteEndProcessing: ;
+  end;
+end;
+{$ENDIF}
+
+procedure JwInitDelayedFunctionHook;
+begin
+{$IFDEF JWSCL_USE_DELAYED}
+  SetDliFailureHook(DelayedFailureHook);
+{$ENDIF}
+end;
+
 
 {$IFDEF SUPPORT_TASK_DIALOG}
 

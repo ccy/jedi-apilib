@@ -845,10 +845,12 @@ function JwFormatMessage(
   const Arguments : array of const
 ) : TJwString; overload;
 
+function JwDeviceToDosDrive(Device : WideString) : WideString;
 
 implementation
 uses SysUtils, Math, D5Impl, JwsclToken, JwsclKnownSid, JwsclDescriptor, JwsclAcl,
      JwsclSecureObjects, JwsclMapping, JwsclStreams, JwsclCryptProvider,
+     ComObj,
      JwsclConstants
 {$IFDEF JW_TYPEINFO}
      ,TypInfo
@@ -990,6 +992,146 @@ begin
     Result := MsgStr;
   finally
     LocalFree(HLOCAL(MsgStr));
+  end;
+end;
+
+
+
+function JwDeviceToDosDrive(Device : WideString) : WideString;
+
+  function _QueryDosDevice(Device : WideString) : WideString;
+  var
+    dwResult, dwSize : DWORD;
+    pwszFileName : PWideChar;
+  begin
+    result := '';
+    if Device = '' then
+      exit;
+
+    if Device[Length(Device)] = '\' then
+      SetLength(Device, Length(Device) - 1);
+
+    dwResult := ERROR_INSUFFICIENT_BUFFER;
+    dwSize := MAX_PATH {Length(Device)} * sizeof(WChar);
+    GetMem(pwszFileName, dwSize);
+    try
+      while dwResult = ERROR_INSUFFICIENT_BUFFER do
+      begin
+        dwResult := QueryDosDeviceW(
+            PWideChar(Device),
+            pwszFileName, dwSize);
+
+        if dwResult = 0 then
+        begin
+          if GetLastError() = ERROR_INSUFFICIENT_BUFFER  then
+          begin
+            dwSize := dwSize * 2;
+            ReallocMem(pwszFileName, dwSize);
+          end
+          else
+          if GetLastError() <> 0 then
+            RaiseLastOSError;
+        end;
+      end;
+      result := pwszFileName;
+    finally
+      FreeMem(pwszFileName);
+    end;
+  end;
+
+type
+  PDrivesArray = ^TDrivesArray;
+  TDrivesArray = array[0..0] of record
+             Drive : array[0..2] of WideChar;
+             Null : WideChar;
+           end;
+
+var
+  I, Count, dwSize, dwLen, DelimiterPos, DelimiterCount : Integer;
+  P : array[0..MAX_PATH] of WideChar;
+  sDosDevice, oldDevice : WideString;
+  szDevice : PWideChar;
+  Drives : PDrivesArray;
+
+begin
+  result := '';
+  Count := GetLogicalDriveStringsW(MAX_PATH, @P);
+
+  if Count = 0 then
+    RaiseLastOSError;
+
+  if Device = '' then
+    exit;
+
+  Count := Count div 4;
+  {$R-}
+  //create an array from the zero terminated string list
+  Drives := PDrivesArray(@P);
+
+  oldDevice := Device;
+  //deliberately put a slash at the end so we can find it
+  //if the 3rd slash is missing in Device
+  if Device[Length(Device)] <> '\' then
+    Device := Device + '\';
+
+
+  //find the slash behind the device name (3rd slash)
+  // \device\xxx\
+  DelimiterCount := 0;
+  DelimiterPos   := 1;
+  while (DelimiterPos <= Length(Device)) and (DelimiterCount < 3) do
+  begin
+    if (Device[DelimiterPos] = '\') then
+      Inc(DelimiterCount);
+
+    Inc(DelimiterPos);
+  end;
+
+  //
+  dwSize := TJwCharSize * (DelimiterPos);
+  szDevice := SysAllocMem(dwSize + TJwCharSize);
+  try
+    //create a device string that only contains device name without slash
+    //like \device\xxx
+    OleCheck(
+      StringCchCopyNW(szDevice, DelimiterPos, PWideChar(Device), DelimiterPos - 2)
+      );
+
+    //query all dos devices and compare their device names with szDevice
+    for I := 0 to Count - 1 do
+    begin
+      sDosDevice := _QueryDosDevice(Drives[I].Drive);
+      if WideCompareText(szDevice, sDosDevice) = 0 then
+      begin
+        result := Drives[I].Drive;
+        break;
+      end;
+    end;
+  finally
+    FreeMem(szDevice);
+  end;
+
+  //could not find the given Device
+  if result = '' then
+  begin
+    SetLastError(ERROR_PATH_NOT_FOUND);
+    RaiseLastOSError;
+  end;
+
+  dwSize := Length(result);
+  dwLen := Length(result) + Length(Device) - DelimiterPos + 1;
+  SetLength(result, dwLen);
+
+  //the user put some additional path or filename to the Device String
+  if dwLen > dwSize then
+  begin
+    //add the rest of Device string (anything behind the 3rd slash) to the drive string
+    OleCheck(
+       StringCchCopyNW(PWideChar(@result[dwSize + 1]), dwLen, PWideChar(@Device[DelimiterPos]),
+          Length(Device) - DelimiterPos)
+       );
+    //StringCxxx routines put an additional #0 at the end which is removed here
+    SetLength(result, dwLen - 1);
   end;
 end;
 

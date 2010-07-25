@@ -2365,7 +2365,7 @@ function JwIsUACEnabled: Boolean;
     Size : DWORD;
     Data : Pointer;
   begin
-    result := false;
+    //result := false;
     if RegOpenKeyExW(HKEY_LOCAL_MACHINE, 'Software\Microsoft\Windows\CurrentVersion\Policies\System', 0, KEY_READ, Key) = HRESULT(ERROR_SUCCESS) then
     begin
       Result := RegQueryValueExW(Key, 'EnableLUA', nil, nil, nil, @Size) = HRESULT(ERROR_SUCCESS);
