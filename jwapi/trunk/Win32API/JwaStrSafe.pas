@@ -751,7 +751,7 @@ Return Value:
 --}
 function StringCbCopyExA(
     {__out_bcount(cbDest)}pszDest : STRSAFE_LPSTR;
-    {__in}cchDest : size_t;
+    {__in}cbDest : size_t;
     {__in}const pszSrc : STRSAFE_LPCSTR;
     {__deref_opt_out_bcount(pcbRemaining^)}ppszDestEnd : PSTRSAFE_LPSTR;
     {__out_opt}pcbRemaining : PSize_t;
@@ -759,7 +759,7 @@ function StringCbCopyExA(
 
 function StringCbCopyExW(
     {__out_bcount(cbDest)}pszDest : STRSAFE_LPWSTR;
-    {__in}cchDest : size_t;
+    {__in}cbDest : size_t;
     {__in}const pszSrc : STRSAFE_LPCWSTR;
     {__deref_opt_out_bcount(pcbRemaining^)}ppszDestEnd : PSTRSAFE_LPWSTR;
     {__out_opt}pcbRemaining : PSize_t;
@@ -767,7 +767,7 @@ function StringCbCopyExW(
 
 function StringCbCopyEx(
     {__out_bcount(cbDest)}pszDest : STRSAFE_LPTSTR;
-    {__in}cchDest : size_t;
+    {__in}cbDest : size_t;
     {__in}const pszSrc : STRSAFE_LPCTSTR;
     {__deref_opt_out_bcount(pcbRemaining^)}ppszDestEnd : PSTRSAFE_LPTSTR;
     {__out_opt}pcbRemaining : PSize_t;
@@ -930,21 +930,21 @@ Return Value:
 
 function StringCbCopyNA(
     {__out_bcount(cbDest)}pszDest : STRSAFE_LPSTR;
-    {__in}cchDest : size_t;
+    {__in}cbDest : size_t;
     {__in}const pszSrc : STRSAFE_LPCSTR;
-    {__in}cchToCopy : size_t) : HRESULT; stdcall; forward; external;
+    {__in}cbToCopy : size_t) : HRESULT; stdcall; forward; external;
 
 function StringCbCopyNW(
     {__out_bcount(cbDest)}pszDest : STRSAFE_LPWSTR;
-    {__in}cchDest : size_t;
+    {__in}cbDest : size_t;
     {__in}const pszSrc : STRSAFE_LPCWSTR;
-    {__in}cchToCopy : size_t) : HRESULT; stdcall; forward; external;
+    {__in}cbToCopy : size_t) : HRESULT; stdcall; forward; external;
 
 function StringCbCopyN(
     {__out_bcount(cbDest)}pszDest : STRSAFE_LPTSTR;
-    {__in}cchDest : size_t;
+    {__in}cbDest : size_t;
     {__in}const pszSrc : STRSAFE_LPCTSTR;
-    {__in}cchToCopy : size_t) : HRESULT; stdcall;
+    {__in}cbToCopy : size_t) : HRESULT; stdcall;
 
 
 {++
@@ -1176,29 +1176,29 @@ Return Value:
 --}
 function StringCbCopyNExA(
     {__out_bcount(cbDest) }pszDest : STRSAFE_LPSTR;
-    {__in}cchDest : size_t;
+    {__in}cbDest : size_t;
     {__in_bcount(cbToCopy) }const pszSrc : STRSAFE_LPCSTR;
-    {__in}cchToCopy : size_t;
+    {__in}cbToCopy : size_t;
     {__deref_opt_out_bcount(pcbRemaining^)}ppszDestEnd : PSTRSAFE_LPSTR;
-    {__out_opt}pcchRemaining : PSize_t;
+    {__out_opt}pcbRemaining : PSize_t;
     {__in}dwFlags : Cardinal)  : HRESULT; stdcall; forward; external;
 
 function StringCbCopyNExW(
     {__out_bcount(cbDest) }pszDest : STRSAFE_LPWSTR;
-    {__in}cchDest : size_t;
+    {__in}cbDest : size_t;
     {__in_bcount(cbToCopy) }const pszSrc : STRSAFE_LPCWSTR;
-    {__in}cchToCopy : size_t;
+    {__in}cbToCopy : size_t;
     {__deref_opt_out_bcount(pcbRemaining^)}ppszDestEnd : PSTRSAFE_LPWSTR;
-    {__out_opt}pcchRemaining : PSize_t;
+    {__out_opt}pcbRemaining : PSize_t;
     {__in}dwFlags : Cardinal)  : HRESULT; stdcall; forward; external;
 
 function StringCbCopyNEx(
     {__out_bcount(cbDest) }pszDest : STRSAFE_LPTSTR;
-    {__in}cchDest : size_t;
+    {__in}cbDest : size_t;
     {__in_bcount(cbToCopy) }const pszSrc : STRSAFE_LPCTSTR;
-    {__in}cchToCopy : size_t;
+    {__in}cbToCopy : size_t;
     {__deref_opt_out_bcount(pcbRemaining^)}ppszDestEnd : PSTRSAFE_LPTSTR;
-    {__out_opt}pcchRemaining : PSize_t;
+    {__out_opt}pcbRemaining : PSize_t;
     {__in}dwFlags : Cardinal)  : HRESULT; stdcall;
 
 
@@ -1338,7 +1338,7 @@ Return Value:
 
 function StringCbCatA(
     {__inout_bcount(cbDest)}pszDest : STRSAFE_LPSTR;
-    {__in}cchDest : size_t;
+    {__in}cbDest : size_t;
     {__in}const pszSrc : STRSAFE_LPCSTR) : HRESULT; stdcall; forward; external;
 
 
@@ -1567,26 +1567,26 @@ Return Value:
 --}
 function StringCbCatExA(
     {__inout_bcount(cbDest)}pszDest : STRSAFE_LPSTR;
-    {__in}cchDest : size_t;
+    {__in}cbDest : size_t;
     {__in}const pszSrc : STRSAFE_LPCSTR;
     {__deref_opt_out_bcount(pcbRemaining^)}ppszDestEnd : PSTRSAFE_LPSTR;
-    {__out_opt} pcchRemaining : PSize_t;
+    {__out_opt} pcbRemaining : PSize_t;
     {__in}dwFlags : Cardinal) : HRESULT; stdcall; forward; external;
 
 function StringCbCatExW(
     {__inout_bcount(cbDest)}pszDest : STRSAFE_LPWSTR;
-    {__in}cchDest : size_t;
+    {__in}cbDest : size_t;
     {__in}const pszSrc : STRSAFE_LPCWSTR;
     {__deref_opt_out_bcount(pcbRemaining^)}ppszDestEnd : PSTRSAFE_LPWSTR;
-    {__out_opt} pcchRemaining : PSize_t;
+    {__out_opt} pcbRemaining : PSize_t;
     {__in}dwFlags : Cardinal) : HRESULT; stdcall; forward; external;
 
 function StringCbCatEx(
     {__inout_bcount(cbDest)}pszDest : STRSAFE_LPTSTR;
-    {__in}cchDest : size_t;
+    {__in}cbDest : size_t;
     {__in}const pszSrc : STRSAFE_LPCTSTR;
     {__deref_opt_out_bcount(pcbRemaining^)}ppszDestEnd : PSTRSAFE_LPTSTR;
-    {__out_opt} pcchRemaining : PSize_t;
+    {__out_opt} pcbRemaining : PSize_t;
     {__in}dwFlags : Cardinal) : HRESULT; stdcall;
 
 {++
@@ -1739,21 +1739,21 @@ Return Value:
 --}
 function StringCbCatNA(
     {__inout_bcount(cbDest)}pszDest : STRSAFE_LPSTR;
-    {__in}cchDest : size_t;
+    {__in}cbDest : size_t;
     {__in_bcount(cbToAppend)}const pszSrc : STRSAFE_LPCSTR;
-    {__in}cchToAppend : Cardinal) : HRESULT; stdcall; forward; external;
+    {__in}cbToAppend : Cardinal) : HRESULT; stdcall; forward; external;
 
 function StringCbCatNW(
     {__inout_bcount(cbDest)}pszDest : STRSAFE_LPWSTR;
-    {__in}cchDest : size_t;
+    {__in}cbDest : size_t;
     {__in_bcount(cbToAppend)}const pszSrc : STRSAFE_LPCWSTR;
-    {__in}cchToAppend : Cardinal) : HRESULT; stdcall; forward; external;
+    {__in}cbToAppend : Cardinal) : HRESULT; stdcall; forward; external;
 
 function StringCbCatN(
     {__inout_bcount(cbDest)}pszDest : STRSAFE_LPTSTR;
-    {__in}cchDest : size_t;
+    {__in}cbDest : size_t;
     {__in_bcount(cbToAppend)}const pszSrc : STRSAFE_LPCTSTR;
-    {__in}cchToAppend : Cardinal) : HRESULT; stdcall;
+    {__in}cbToAppend : Cardinal) : HRESULT; stdcall;
 
 {++
 
@@ -1889,7 +1889,7 @@ StringCbCatNEx(
     IN     LPCTSTR pszSrc          OPTIONAL,
     IN     size_t  cbToAppend,
     OUT    LPTSTR* ppszDestEnd     OPTIONAL,
-    OUT    size_t* pcchRemaining   OPTIONAL,
+    OUT    size_t* pcbRemaining   OPTIONAL,
     IN     DWORD   dwFlags
     );
 
@@ -1980,29 +1980,29 @@ Return Value:
 --}
 function StringCbCatNExA(
     {__inout_bcount(cbDest)}pszDest : STRSAFE_LPSTR;
-    {__in}cchDest : size_t;
+    {__in}cbDest : size_t;
     {__in_bcount(cbToAppend)}const pszSrc : STRSAFE_LPCSTR;
-    {__in}cchToAppend : Cardinal;
+    {__in}cbToAppend : Cardinal;
     {__deref_opt_out_bcount(pcbRemaining^)}ppszDestEnd : PSTRSAFE_LPSTR;
-    {__out_opt}pcchRemaining : PSize_t;
+    {__out_opt}pcbRemaining : PSize_t;
     {__in}dwFlags : Cardinal) : HRESULT; stdcall; forward; external;
 
 function StringCbCatNExW(
     {__inout_bcount(cbDest)}pszDest : STRSAFE_LPWSTR;
-    {__in}cchDest : size_t;
+    {__in}cbDest : size_t;
     {__in_bcount(cbToAppend)}const pszSrc : STRSAFE_LPCWSTR;
-    {__in}cchToAppend : Cardinal;
+    {__in}cbToAppend : Cardinal;
     {__deref_opt_out_bcount(pcbRemaining^)}ppszDestEnd : PSTRSAFE_LPWSTR;
-    {__out_opt}pcchRemaining : PSize_t;
+    {__out_opt}pcbRemaining : PSize_t;
     {__in}dwFlags : Cardinal) : HRESULT; stdcall; forward; external;
 
 function StringCbCatNEx(
     {__inout_bcount(cbDest)}pszDest : STRSAFE_LPTSTR;
-    {__in}cchDest : size_t;
+    {__in}cbDest : size_t;
     {__in_bcount(cbToAppend)}const pszSrc : STRSAFE_LPCTSTR;
-    {__in}cchToAppend : Cardinal;
+    {__in}cbToAppend : Cardinal;
     {__deref_opt_out_bcount(pcbRemaining^)}ppszDestEnd : PSTRSAFE_LPTSTR;
-    {__out_opt}pcchRemaining : PSize_t;
+    {__out_opt}pcbRemaining : PSize_t;
     {__in}dwFlags : Cardinal) : HRESULT; stdcall;
 
 {++
@@ -2268,7 +2268,7 @@ end;
 var _StringCbCopyEx : Pointer;
 function StringCbCopyEx(
     {__out_bcount(cbDest)} pszDest : STRSAFE_LPTSTR;
-    {__in}cchDest : size_t;
+    {__in}cbDest : size_t;
     {__in}const pszSrc : STRSAFE_LPCTSTR;
     {__deref_opt_out_bcount(pcbRemaining^)}ppszDestEnd : PSTRSAFE_LPTSTR;
     {__out_opt}pcbRemaining : PSize_t;
@@ -2305,9 +2305,9 @@ end;
 var _StringCbCopyN : Pointer;
 function StringCbCopyN(
     {__out_bcount(cbDest)} pszDest : STRSAFE_LPTSTR;
-    {__in}cchDest : size_t;
+    {__in}cbDest : size_t;
     {__in}const pszSrc : STRSAFE_LPCTSTR;
-    {__in}cchToCopy : size_t) : HRESULT; stdcall;
+    {__in}cbToCopy : size_t) : HRESULT; stdcall;
 begin
   result := ERROR_SEVERITY_SUCCESS;
   _StringCbCopyN :=
@@ -2344,11 +2344,11 @@ end;
 var _StringCbCopyNEx : Pointer;
 function StringCbCopyNEx(
     {__out_bcount(cbDest) } pszDest : STRSAFE_LPTSTR;
-    {__in}cchDest : size_t;
+    {__in}cbDest : size_t;
     {__in_bcount(cbToCopy) }const pszSrc : STRSAFE_LPCTSTR;
-    {__in}cchToCopy : size_t;
+    {__in}cbToCopy : size_t;
     {__deref_opt_out_bcount(pcbRemaining^)}ppszDestEnd : PSTRSAFE_LPTSTR;
-    {__out_opt}pcchRemaining : PSize_t;
+    {__out_opt}pcbRemaining : PSize_t;
     {__in}dwFlags : Cardinal)  : HRESULT; stdcall;
 begin
   result := ERROR_SEVERITY_SUCCESS;
@@ -2419,10 +2419,10 @@ end;
 var _StringCbCatEx : Pointer;
 function StringCbCatEx(
     {__inout_bcount(cbDest)} pszDest : STRSAFE_LPTSTR;
-    {__in}cchDest : size_t;
+    {__in}cbDest : size_t;
     {__in}const pszSrc : STRSAFE_LPCTSTR;
     {__deref_opt_out_bcount(pcbRemaining^)}ppszDestEnd : PSTRSAFE_LPTSTR;
-    {__out_opt} pcchRemaining : PSize_t;
+    {__out_opt} pcbRemaining : PSize_t;
     {__in}dwFlags : Cardinal) : HRESULT; stdcall;
 begin
   result := ERROR_SEVERITY_SUCCESS;
@@ -2457,9 +2457,9 @@ end;
 var _StringCbCatN : Pointer;
 function StringCbCatN(
     {__inout_bcount(cbDest)} pszDest : STRSAFE_LPTSTR;
-    {__in}cchDest : size_t;
+    {__in}cbDest : size_t;
     {__in_bcount(cbToAppend)}const pszSrc : STRSAFE_LPCTSTR;
-    {__in}cchToAppend : Cardinal) : HRESULT; stdcall;
+    {__in}cbToAppend : Cardinal) : HRESULT; stdcall;
 begin
   result := ERROR_SEVERITY_SUCCESS;
   _StringCbCatN :=
@@ -2498,11 +2498,11 @@ end;
 var _StringCbCatNEx : Pointer;
 function StringCbCatNEx(
     {__inout_bcount(cbDest)} pszDest : STRSAFE_LPTSTR;
-    {__in}cchDest : size_t;
+    {__in}cbDest : size_t;
     {__in_bcount(cbToAppend)}const pszSrc : STRSAFE_LPCTSTR;
-    {__in}cchToAppend : Cardinal;
+    {__in}cbToAppend : Cardinal;
     {__deref_opt_out_bcount(pcbRemaining^)}ppszDestEnd : PSTRSAFE_LPTSTR;
-    {__out_opt}pcchRemaining : PSize_t;
+    {__out_opt}pcbRemaining : PSize_t;
     {__in}dwFlags : Cardinal) : HRESULT; stdcall;
 begin
   result := ERROR_SEVERITY_SUCCESS;
