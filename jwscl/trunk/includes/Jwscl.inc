@@ -102,8 +102,10 @@ Warning #2: If the JEDI API headers are used with a directive WIN_XP or lower
 //is converted to EJwaGetProcAddressError or EJwaLoadLibraryError.
 //To allow JWSCL to hook the delayed feature, you need to call JwsclExceptions.pas::JwInitDelayedFunctionHook
 //This call should be in a unit that is included on top of your uses clause in your main project file.
+//This feature is available in Delphi2010 and newer only
+{$IFDEF DELPHI2010_UP}
 {$DEFINE JWSCL_USE_DELAYED}
-
+{$ENDIF DELPHI2010_UP}
 
 //the following line must be at the end of this file!!
 {Warning: This line is printed because an identifier has no pasdoc comment. This error must be fixed.}

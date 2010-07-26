@@ -497,6 +497,8 @@ type
     class function IsUserAdmin : Boolean; virtual;
   end;
 
+  TOSVersionInfoEx =
+    {$IFDEF UNICODE}TOSVersionInfoExW{$ELSE}TOSVersionInfoExA{$ENDIF};
 
   {<B>TJwSystemInformation</B> provides methods to detect the windows version and product type.
    All methods are class methods so there is no need for an instance of <B>TJwWindowsVersion</B>.
@@ -519,17 +521,17 @@ type
       may use callbacks that use other location.
      }
      class function GetCurrentSupportedWindowsVersion(const
-        OSVerInfo: {$IFDEF UNICODE}TOSVersionInfoExW{$ELSE}TOSVersionInfoExA{$ENDIF}) : Integer; overload;
+        OSVerInfo: TOSVersionInfoEx) : Integer; overload;
 
      //callback functions for array: SupportedWindowVersions
 
      //
-     class function _IsServer2003R2(osVerInfo: {$IFDEF UNICODE}TOSVersionInfoExW{$ELSE}TOSVersionInfoExA{$ENDIF};
+     class function _IsServer2003R2(osVerInfo: TOSVersionInfoEx;
          Definition : PJwWindowsVersionDefinition) : Boolean;
-     class function _IsWin98SE(osVerInfo: {$IFDEF UNICODE}TOSVersionInfoExW{$ELSE}TOSVersionInfoExA{$ENDIF};
+     class function _IsWin98SE(osVerInfo: TOSVersionInfoEx;
          Definition : PJwWindowsVersionDefinition) : Boolean;
 
-     class function _IsNewUnknown(osVerInfo: {$IFDEF UNICODE}TOSVersionInfoExW{$ELSE}TOSVersionInfoExA{$ENDIF};
+     class function _IsNewUnknown(osVerInfo: ;
          Definition : PJwWindowsVersionDefinition) : Boolean;
 
   public
@@ -555,7 +557,7 @@ type
        }
 
     class function GetWindowsType(
-          out osVerInfo: {$IFDEF UNICODE}TOSVersionInfoExW{$ELSE}TOSVersionInfoExA{$ENDIF}): integer; virtual;
+          out osVerInfo: TOSVersionInfoEx): integer; virtual;
 
     class function GetCachedWindowsType: integer;
     class function SetCachedWindowsType(const WindowsType : Integer; Server : Boolean = False) : Integer; virtual;
@@ -786,7 +788,7 @@ uses SysConst, Registry, JwsclEnumerations, ActiveX;
 var
   fWindowsType: integer;
   fIsServer: boolean;
-  fOSVerInfo: {$IFDEF UNICODE}TOSVersionInfoExW{$ELSE}TOSVersionInfoExA{$ENDIF};
+  fOSVerInfo: TOSVersionInfoEx;
 
 
 const
@@ -904,10 +906,10 @@ const
 
 
 class function TJwWindowsVersion.GetCurrentSupportedWindowsVersion(const
-    OSVerInfo: {$IFDEF UNICODE}TOSVersionInfoExW{$ELSE}TOSVersionInfoExA{$ENDIF}) : Integer;
+    OSVerInfo: TOSVersionInfoEx) : Integer;
 
   function CompareVersion(
-      const OSVerInfo: {$IFDEF UNICODE}TOSVersionInfoExW{$ELSE}TOSVersionInfoExA{$ENDIF};
+      const OSVerInfo: TOSVersionInfoEx;
       const Definition : TJwWindowsVersionDefinition) : boolean;
   begin
     if (Definition.Flags = []) and Assigned(Definition.Callback) then
@@ -1391,7 +1393,7 @@ end;
 
 
 class function TJwWindowsVersion.GetWindowsType(
-    out osVerInfo: {$IFDEF UNICODE}TOSVersionInfoExW{$ELSE}TOSVersionInfoExA{$ENDIF}
+    out osVerInfo: TOSVersionInfoEx
   ): integer;
 var dummy : Boolean;
 begin
@@ -1399,7 +1401,7 @@ begin
 end;
 
 class function TJwWindowsVersion.GetCurrentWindowsTypeInternal(
-    out osVerInfo: {$IFDEF UNICODE}TOSVersionInfoExW{$ELSE}TOSVersionInfoExA{$ENDIF};
+    out osVerInfo: TOSVersionInfoEx;
     out IsServer : Boolean): integer;
 begin
   //  Result := cOsUnknown;

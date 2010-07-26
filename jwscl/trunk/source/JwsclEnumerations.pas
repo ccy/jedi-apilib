@@ -49,8 +49,6 @@ interface
 uses
   SysUtils,
   jwaWindows,
-  //********** WARNING: DO NOT COMMIT THIS FILE until JwaCOMSecurity is integrated
-  JwaCOMSecurity,
   //**********
   JwsclTypes,
   JwsclConstants

@@ -1103,7 +1103,11 @@ begin
   I := 1;
   while (I <= Length(Device)) and (I <= Length(DevicePreFix)) do
   begin
+{$IFDEF UNICODE}
     if (DevicePreFix[I] <> UpCase(Device[I])) then
+{$ELSE}
+    if (AnsiChar(DevicePreFix[I]) <> UpCase(AnsiChar(Device[I]))) then
+{$ENDIF UNICODE}
     begin
       SetLastError(ERROR_INVALID_NAME);
       raise EJwsclInvalidParameterException.CreateFmtEx(
@@ -1146,7 +1150,8 @@ begin
 
 
   dwSize := TJwCharSize * (DelimiterPos);
-  szDevice := SysAllocMem(dwSize + TJwCharSize); //CW: Using SetLength makes StringCchCopyNW fail with invalid parameter
+  szDevice := AllocMem(dwSize + TJwCharSize); //CW: Using SetLength makes StringCchCopyNW fail with invalid parameter
+
   try
     //create a device string that only contains device name without slash
     //like \device\xxx

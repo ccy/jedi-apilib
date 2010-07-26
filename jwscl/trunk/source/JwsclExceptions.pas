@@ -1095,7 +1095,7 @@ begin
         begin
           if MessageBoxW(hwnd, PWideChar(Format(RSConfirmOpeningUrl,
             [WideString(URL)])), RSConfirmation, MB_YESNO) = IDYES then
-            ShellExecute(0, 'open', URL, '', '', SW_SHOWNORMAL);
+            ShellExecuteW(0, 'open', URL, '', '', SW_SHOWNORMAL);
         end;
 
         result := S_FALSE;
