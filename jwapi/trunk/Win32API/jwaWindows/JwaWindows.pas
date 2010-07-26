@@ -130,7 +130,7 @@ the one of the project.
 
   {Opens up Windows Vista (and above) declarations.
    See jediapilib.inc for more declarations}
-  {$DEFINE WINVISTA}
+  {.$DEFINE WINVISTA} //now defined in JediAPILib.inc
 
 
   {.$DEFINE JWA_NEW_WINSTA}

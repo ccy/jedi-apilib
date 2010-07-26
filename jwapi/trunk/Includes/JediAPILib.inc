@@ -113,7 +113,19 @@ Standalone compiling would be useless!
 {$ENDIF DELPHI7_UP}
 {$ENDIF DEBUG}
 
-
+//remove defs
+{$UNDEF WIN95}
+{$UNDEF WIN98}
+{$UNDEF WIN98SE}
+{$UNDEF WIN98ME}
+{$UNDEF WINNT4}
+{$UNDEF WIN2000}
+{$UNDEF WINXP}
+{$UNDEF WIN2003}
+{$UNDEF WINVISTA}
+{$UNDEF WIN2008}
+{$UNDEF WIN2008R2}
+{$UNDEF WIN7}
 
 // Global switch for the Windows version the files are compatible with
 // ONLY A SINGLE ONE IS ALLOWED TO BE ACTIVATED BY CHANGING THE DOT TO A DOLLAR SIGN!
@@ -202,7 +214,7 @@ Standalone compiling would be useless!
  {$DEFINE WIN2003_UP}
  {$DEFINE WINVISTA_UP}
  {$DEFINE WIN7_UP}
-{$ENDIF WINVISTA}
+{$ENDIF WIN7}
 
 {$IFDEF WINVISTA}
  {$DEFINE WIN95_UP}
