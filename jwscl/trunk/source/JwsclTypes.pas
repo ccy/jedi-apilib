@@ -1990,7 +1990,11 @@ type
   Parameters
     osVerInfo Receives an OS version structure to be used for the computation.
     Definition A pointer to a TJwWindowsVersionDefinition record.
+    ResultValue
   Returns
+     The return value defines whether the parameter ResultValue should be used with
+     the AND operator in the calculation. If the return value is false, the
+     result of the callback will be ignored.
 
   Implementation
     The function should compare the osVerInfo data with the given Definition
@@ -2001,14 +2005,7 @@ type
     E.g. To determine the Windows 2003 Second Release (R2), a function is called
     that calls GetSystemMetrics(SM_SERVERR2).
 
-    To make the return value more reliable, you must check the member WinConst of
-    parameter Definition for your target Windows Version.
-
-    <code>
-    result := (Definition.WinConst = cOS2003R2) and Boolean(GetSystemMetrics(SM_SERVERR2));
-    </code>
-
-    Furthermore, you must define the same callback function within TJwWindowsVersionDefinition
+    You must define the same callback function within TJwWindowsVersionDefinition
     for every array index which are equal for the other members in TJwWindowsVersionDefinition.
     Otherwise it would be possible that a Windows Definition is used falsely.
 
@@ -2038,7 +2035,8 @@ type
   }
   TJwWindowsVersionDefinitionCallback = function
     (osVerInfo: {$IFDEF UNICODE}TOSVersionInfoExW{$ELSE}TOSVersionInfoExA{$ENDIF};
-     Definition : PJwWindowsVersionDefinition) : Boolean of object;
+     Definition : PJwWindowsVersionDefinition;
+     var ResultValue : Boolean) : Boolean of object;
 
   {The record <b>TJwWindowsVersionDefinition</b> is used by an <b>internal</b>
    variable SupportedWindowVersions defined within the implementation section of

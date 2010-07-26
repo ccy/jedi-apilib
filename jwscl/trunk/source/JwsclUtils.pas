@@ -1070,9 +1070,11 @@ function JwDeviceToDosDrive(Device : WideString) : WideString;
                 RsUNUtils, 0, true, ['QueryDosDeviceW']);
         end;
       end;
-      result := pwszFileName;
+      result := WideString(pwszFileName);
+      UniqueString(result);
     finally
       FreeMem(pwszFileName);
+      pwszFileName := nil;
     end;
   end;
 
@@ -1149,8 +1151,9 @@ begin
   end;
 
 
-  dwSize := TJwCharSize * (DelimiterPos);
-  szDevice := AllocMem(dwSize + TJwCharSize); //CW: Using SetLength makes StringCchCopyNW fail with invalid parameter
+  dwSize := sizeof(WideChar) * (DelimiterPos);
+  //szDevice := AllocMem(dwSize + TJwCharSize); //CW: Using SetLength makes StringCchCopyNW fail with invalid parameter
+  GetMem(szDevice, dwSize + sizeof(WideChar));
 
   try
     //create a device string that only contains device name without slash
@@ -1163,7 +1166,7 @@ begin
     for I := 0 to Count - 1 do
     begin
       sDosDevice := _QueryDosDevice(Drives[I].Drive);
-      if WideCompareText(szDevice, sDosDevice) = 0 then
+      if WideCompareText(WideString(szDevice), WideString(sDosDevice)) = 0 then
       begin
         result := Drives[I].Drive;
         break;

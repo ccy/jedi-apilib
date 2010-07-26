@@ -527,12 +527,15 @@ type
 
      //
      class function _IsServer2003R2(osVerInfo: TOSVersionInfoEx;
-         Definition : PJwWindowsVersionDefinition) : Boolean;
+         Definition : PJwWindowsVersionDefinition;
+          var ResultValue : Boolean) : Boolean;
      class function _IsWin98SE(osVerInfo: TOSVersionInfoEx;
-         Definition : PJwWindowsVersionDefinition) : Boolean;
+         Definition : PJwWindowsVersionDefinition;
+          var ResultValue : Boolean) : Boolean;
 
-     class function _IsNewUnknown(osVerInfo: ;
-         Definition : PJwWindowsVersionDefinition) : Boolean;
+     class function _IsNewUnknown(osVerInfo: TOSVersionInfoEx;
+         Definition : PJwWindowsVersionDefinition;
+          var ResultValue : Boolean) : Boolean;
 
   public
    {<B>GetWindowsType</B> returns a constant that defines the windows version the process is running.
@@ -911,10 +914,12 @@ class function TJwWindowsVersion.GetCurrentSupportedWindowsVersion(const
   function CompareVersion(
       const OSVerInfo: TOSVersionInfoEx;
       const Definition : TJwWindowsVersionDefinition) : boolean;
+  var bRes : Boolean;
   begin
     if (Definition.Flags = []) and Assigned(Definition.Callback) then
     begin
-      result := Definition.Callback(OSVerInfo, @Definition);
+      if not Definition.Callback(OSVerInfo, @Definition, result) then
+        result := false;
     end
     else
     begin
@@ -929,7 +934,12 @@ class function TJwWindowsVersion.GetCurrentSupportedWindowsVersion(const
         result := result and (OSVerInfo.wProductType = VER_NT_WORKSTATION);
 
       if result and Assigned(Definition.Callback) then
-        result := result and Definition.Callback(OSVerInfo, @Definition);
+      begin
+        bRes := false;
+
+        if Definition.Callback(OSVerInfo, @Definition, bRes) then
+          result := result and bRes;
+      end;
     end;
   end;
 
@@ -1312,8 +1322,9 @@ begin
   Result := fIsServer;
 end;
 
-class function TJwWindowsVersion._IsNewUnknown(osVerInfo: TOSVersionInfoExW;
-  Definition: PJwWindowsVersionDefinition): Boolean;
+class function TJwWindowsVersion._IsNewUnknown(osVerInfo: TOSVersionInfoEx;
+  Definition: PJwWindowsVersionDefinition;
+     var ResultValue : Boolean): Boolean;
 var
   I : Integer;
   MajorVer, MinorVer : Integer;
@@ -1349,21 +1360,24 @@ begin
       (osVerInfo.dwMinorVersion > MinorVer)) then
   begin
     result := true;
+    ResultValue := True;
   end;
 end;
 
-class function TJwWindowsVersion._IsServer2003R2(osVerInfo: TOSVersionInfoExW;
-  Definition: PJwWindowsVersionDefinition): Boolean;
+class function TJwWindowsVersion._IsServer2003R2(osVerInfo: TOSVersionInfoEx;
+  Definition: PJwWindowsVersionDefinition;
+     var ResultValue : Boolean): Boolean;
 begin
-  //return false for all other win constants
-  result := (Definition.WinConst = cOS2003R2) and Boolean(GetSystemMetrics(SM_SERVERR2));
+  ResultValue := Boolean(GetSystemMetrics(SM_SERVERR2));
+  result := (Definition.WinConst = cOsWin2008R2);
 end;
 
-class function TJwWindowsVersion._IsWin98SE(osVerInfo: TOSVersionInfoExW;
-  Definition: PJwWindowsVersionDefinition): Boolean;
+class function TJwWindowsVersion._IsWin98SE(osVerInfo: TOSVersionInfoEx;
+  Definition: PJwWindowsVersionDefinition;
+     var ResultValue : Boolean): Boolean;
 begin
-  //return false for all other win constants
-  Result := (Definition.WinConst = cOsWin98SE) and (osVerInfo.szCSDVersion[1] = 'A');
+  ResultValue := (osVerInfo.szCSDVersion[1] = 'A');
+  result := (Definition.WinConst = cOsWin98SE);
 end;
 
 class function TJwSystemInformation.IsShadowedSession: Boolean;
@@ -1480,7 +1494,7 @@ begin
         if Status = STATUS_SUCCESS then
         begin
           S := JwUnicodeStringToJwString(US^);
-          S := JwDeviceToDosDrive(S);
+          result := JwDeviceToDosDrive(S);
           exit;
         end
       finally
@@ -1993,6 +2007,17 @@ var
   bProfilLoaded : Boolean;
   ProfileInfo : TJwProfileInfo;
 begin
+  if not TJwWindowsVersion.IsWindowsVista(true) then
+    raise EJwsclUnsupportedWindowsVersionException.CreateFmtWinCall(
+            'The Windows version is not supported',
+            'GetKnownFolderPath',                                //sSourceProc
+            ClassName,                                //sSourceClass
+            RSUnVersion,                          //sSourceFile
+            0,                                           //iSourceLine
+            false,                                  //bShowLastError
+            '',                   //sWinCall
+            []);                                 //const Args: array of const
+
   GetTokenHandle(Token, hToken, bProfilLoaded, ProfileInfo);
 
   sPath := nil;

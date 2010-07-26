@@ -2462,6 +2462,8 @@ function JwIsMemberOfAdministratorsGroup: boolean;
 var
   Token: TJwSecurityToken;
 begin
+  JwCheckInitKnownSid([JwAdministratorsSID], ['JwAdministratorsSID'], 'JwIsMemberOfAdministratorsGroup', '', RsUNToken);
+
   Token := TJwSecurityToken.CreateTokenEffective(TOKEN_READ or
     TOKEN_DUPLICATE);
   try
