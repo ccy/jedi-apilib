@@ -16,7 +16,7 @@ uses
   SysUtils;
 
 var
-  Path : WideString;
+  Path : TJwWideString;
   B : Boolean;
   F : TJwShellRestrictions;
   Pack : TJwServicePackVersion;
