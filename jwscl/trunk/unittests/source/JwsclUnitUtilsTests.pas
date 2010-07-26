@@ -31,6 +31,7 @@ type
     procedure TestCheckAdministratorAccess;
     procedure TestJwFormatMessage;
 
+    procedure TestDeviceToDosDrive;
 
     procedure TestSetThreadName;
   end;
@@ -65,6 +66,31 @@ begin
     Check(false,'Test failure is normal: User has not Administrator rights')
   else
     Check(false,'Test failure is normal: User has Administrator rights');
+end;
+
+procedure TestUnitUtils.TestDeviceToDosDrive;
+const
+  DriveA = 'A:';
+  DeviceA = 'floppy0';
+
+  DriveC = 'C:';
+  DeviceC = 'Harddisk0\Partition0';
+
+  FileTest = 'test123.txt';
+
+begin
+  CheckEquals('', JwDeviceToDosDrive(''));
+//  CheckEquals(DriveC+'\', JwDeviceToDosDrive('\device\'+DeviceC));
+  CheckEquals(DriveA+'\', JwDeviceToDosDrive('\device\'+DeviceA+''));
+  CheckEquals(DriveA+'\', JwDeviceToDosDrive('\device\'+DeviceA+'\'));
+
+  try
+    CheckEquals(DriveA+'\'+FileTest, JwDeviceToDosDrive('\device\test123'));
+  except
+    on E : EOSError do;
+  end;
+  //CheckEquals(DriveA+'\'+FileTest, JwDeviceToDosDrive('\device\'+DeviceA+'\'+FileTest));
+
 end;
 
 procedure TestUnitUtils.TestGlobalAllocMem;
