@@ -845,7 +845,7 @@ function JwFormatMessage(
   const Arguments : array of const
 ) : TJwString; overload;
 
-{<b>JwDeviceToDosDrive</b> converts a device path to a dos path.
+{<b>JwDeviceToDosDrive</b> converts a device path to a DOS path.
 
 Parameters
   Device A device name to be converted. The string must start with \device\

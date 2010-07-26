@@ -366,7 +366,24 @@ type
     }
     class function GetNumberOfProcessors(ProcessorType :  TJwProcessorCountType = pctLogicalProcessors) : Cardinal;
 
-	//TBD
+	  {<b>GetModuleFileName</b> returns the absolute file path of a process.
+
+    Parameters
+      ProcessHandle Defines the process handle of a process whose file path is to be retrieved.
+         Set to 0 or INVALID_HANDLE_VALUE to use the current process.
+         The process handle must have the PROCESS_QUERY_INFORMATION access right.
+    Returns
+      The function returns the process file path (e.g. C:\Windows\Process.exe)
+
+    Remarks
+      Currently, the function will fail with exception EJwsclProcNotFound if the implementation
+      is not supported on Windows. Newer implementation may cure this.
+
+    Exceptions
+      EJwsclProcNotFound This function is not supported by Windows. See remarks section.
+      EJwsclWinCallFailedException A winapi call failed.
+      EJwsclSecurityException More exceptions may be raised by JwDeviceToDosDrive.
+    }
     class function GetModuleFileName(ProcessHandle : THandle = INVALID_HANDLE_VALUE) : TJwString;
   end;
 
