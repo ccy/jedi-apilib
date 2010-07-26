@@ -328,7 +328,7 @@ type
     Remarks
       This function does not fail.
     }
-    class function GetProcessorFeatures : TJwProcessorFeatures;
+    class function GetProcessorFeatures : TJwProcessorFeatures; virtual;
 
     {<B>IsProcess64</B> checks if a process is 64 bit.
      param ProcessHandle Defines the process to be checked for 64 bit. If this parameter is zero
@@ -340,10 +340,10 @@ type
          XP/2003 : PROCESS_QUERY_INFORMATION
          Vista: PROCESS_QUERY_INFORMATION and PROCESS_QUERY_LIMITED_INFORMATION
     }
-    class function IsProcess64(ProcessHandle : DWORD = 0) : boolean;
+    class function IsProcess64(ProcessHandle : DWORD = 0) : boolean; virtual;
 
     //IsWOWProcess64 checks whether the current or a given process is running under WOW64
-    class function IsWOWProcess64(ProcessHandle : DWORD = 0) : boolean;
+    class function IsWOWProcess64(ProcessHandle : DWORD = 0) : boolean; virtual;
 
     {<b>GetNumberOfProcessors</b> returns the number of logical or physical available
      processors in the system.
@@ -364,7 +364,7 @@ type
 
       The function ignores the affinity mask set for the process.
     }
-    class function GetNumberOfProcessors(ProcessorType :  TJwProcessorCountType = pctLogicalProcessors) : Cardinal;
+    class function GetNumberOfProcessors(ProcessorType :  TJwProcessorCountType = pctLogicalProcessors) : Cardinal; virtual;
 
 	  {<b>GetModuleFileName</b> returns the absolute file path of a process.
 
@@ -384,14 +384,18 @@ type
       EJwsclWinCallFailedException A winapi call failed.
       EJwsclSecurityException More exceptions may be raised by JwDeviceToDosDrive.
     }
-    class function GetModuleFileName(ProcessHandle : THandle = INVALID_HANDLE_VALUE) : TJwString;
+    class function GetModuleFileName(ProcessHandle : THandle = INVALID_HANDLE_VALUE) : TJwString; virtual;
+
+    //class function GetAvailableMemory : Int64;
   end;
 
   {This class provides methods about the Windows shell}
   TJwShellInformation = class(TJwSystemInformation)
   protected
-    {This method returns a token handle (the internal from TJwSecurityToken) and may try to
-     load the profile.
+    {Only for internal usage!
+
+     This method returns a token handle (the internal from TJwSecurityToken) and may try to
+     load the user profile.
 
      Parameters
        Token Defines a token that is used to retrieve the folder. May be nil.
@@ -399,7 +403,7 @@ type
         retrieve the folders of the default user. Do not access any method or property
         of JwDefaultUserPseudoToken since it is not a valid instance.
        TokenHandle Returns the token handle. It will be INVALID_HANDLE_VALUE if Parameter Token
-          is JwDefaultUserPseudoToken.
+          is JwDefaultUserPseudoToken. This value will be 0 if Windows is not XP or newer.
        bProfilLoaded Returns true if a user profile for the token was loaded and must be
           unloaded afterwards. Use Parameter ProfileInfo to unload the profile.
        ProfileInfo Returns profile information on how to unload the profile. This information
