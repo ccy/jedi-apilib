@@ -872,6 +872,8 @@ Remarks
   The function tries to replace the device name with the dos drive. All sub folders
   and a possible filename is kept.
 
+  The function does not validate the string whether the device, path or file exists.
+
 Example
   The following code converts the first floppy device to a DOS Path
   <code>
@@ -1093,7 +1095,11 @@ const
 begin
   result := '';
 
+  if Device = '' then
+    exit;
+
   //Make sure that input string starts with \DEVICE\ (case insensitive)
+  //otherwise the following code fails
   I := 1;
   while (I <= Length(Device)) and (I <= Length(DevicePreFix)) do
   begin
@@ -1113,9 +1119,6 @@ begin
 
   if Count = 0 then
     RaiseLastOSError;
-
-  if Device = '' then
-    exit;
 
   Count := Count div 4;
   {$R-}
@@ -1141,9 +1144,9 @@ begin
     Inc(DelimiterPos);
   end;
 
-  //
+
   dwSize := TJwCharSize * (DelimiterPos);
-  szDevice := SysAllocMem(dwSize + TJwCharSize);
+  szDevice := SysAllocMem(dwSize + TJwCharSize); //CW: Using SetLength makes StringCchCopyNW fail with invalid parameter
   try
     //create a device string that only contains device name without slash
     //like \device\xxx
