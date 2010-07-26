@@ -845,6 +845,40 @@ function JwFormatMessage(
   const Arguments : array of const
 ) : TJwString; overload;
 
+{<b>JwDeviceToDosDrive</b> converts a device path to a dos path.
+
+Parameters
+  Device A device name to be converted. The string must start with \device\
+         and also must contain the name of device (like floppy0).
+         The device name is replaced by the dos drive and the rest of string is
+         added to the drive.
+
+Returns
+  The return value is a fully qualified DOS path. (e.g. C:\ or C:\Windows)
+  If parameter Device is empty, the return value will also be empty.
+
+Exceptions
+  EJwsclInvalidParameterException This exception is raised if the given device string
+    does not start with \device\
+  EJwsclPathNotFoundException The given device name is not linked to a dos drive.
+  EJwsclWinCallFailedException An internal winapi function failed.
+  EOleSysError An internal error occurred while string manipulation. A Safe String routine failed.
+
+Remarks
+  A device path starts with \device\ and continues with a device name (like
+   floppy0 or a partition HardDiskVolume0). The path is converted to a dos
+  path that contains a drive instead of device name.
+
+  The function tries to replace the device name with the dos drive. All sub folders
+  and a possible filename is kept.
+
+Example
+  The following code converts the first floppy device to a DOS Path
+  <code>
+     S := JwDeviceToDosDrive('\device\floppy0\test.txt');
+     S = 'A:\test.txt';
+  </code>
+}
 function JwDeviceToDosDrive(Device : WideString) : WideString;
 
 implementation
@@ -995,8 +1029,6 @@ begin
   end;
 end;
 
-
-
 function JwDeviceToDosDrive(Device : WideString) : WideString;
 
   function _QueryDosDevice(Device : WideString) : WideString;
@@ -1012,7 +1044,7 @@ function JwDeviceToDosDrive(Device : WideString) : WideString;
       SetLength(Device, Length(Device) - 1);
 
     dwResult := ERROR_INSUFFICIENT_BUFFER;
-    dwSize := MAX_PATH {Length(Device)} * sizeof(WChar);
+    dwSize := MAX_PATH * sizeof(WChar); //start with minimum size
     GetMem(pwszFileName, dwSize);
     try
       while dwResult = ERROR_INSUFFICIENT_BUFFER do
@@ -1030,7 +1062,10 @@ function JwDeviceToDosDrive(Device : WideString) : WideString;
           end
           else
           if GetLastError() <> 0 then
-            RaiseLastOSError;
+            raise EJwsclWinCallFailedException.CreateFmtEx(
+                RsWincallFailed,
+                'JwDeviceToDosDrive', '',
+                RsUNUtils, 0, true, ['QueryDosDeviceW']);
         end;
       end;
       result := pwszFileName;
@@ -1053,8 +1088,27 @@ var
   szDevice : PWideChar;
   Drives : PDrivesArray;
 
+const
+  DevicePreFix = '\DEVICE\';
 begin
   result := '';
+
+  //Make sure that input string starts with \DEVICE\ (case insensitive)
+  I := 1;
+  while (I <= Length(Device)) and (I <= Length(DevicePreFix)) do
+  begin
+    if (DevicePreFix[I] <> UpCase(Device[I])) then
+    begin
+      SetLastError(ERROR_INVALID_NAME);
+      raise EJwsclInvalidParameterException.CreateFmtEx(
+                'The supplied device path "%0:s" is invalid. Is must start with "\DEVICE\"',
+                'JwDeviceToDosDrive', '',
+                RsUNUtils, 0, true, [Device]);
+    end;
+    Inc(I);
+  end;
+
+  //get a list of drives
   Count := GetLogicalDriveStringsW(MAX_PATH, @P);
 
   if Count = 0 then
@@ -1115,7 +1169,11 @@ begin
   if result = '' then
   begin
     SetLastError(ERROR_PATH_NOT_FOUND);
-    RaiseLastOSError;
+
+    raise EJwsclPathNotFoundException.CreateFmtEx(
+                'The supplied device path "%0:s" has no link to a dos device and thus cannot be converted."',
+                'JwDeviceToDosDrive', '',
+                RsUNUtils, 0, true, [Device]);
   end;
 
   dwSize := Length(result);

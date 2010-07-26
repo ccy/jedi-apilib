@@ -853,6 +853,11 @@ type
     EJwsclMissingArgumentsException = class(EJwsclFormatMessageException);
       {[2B2288BC-7905-46F3-0140-A0183067E63D]}
 
+  EJwsclFileSystemException = class(EJwsclSecurityException);
+      {[2B2288BC-7905-46F2-0141-A0183067E63D]}
+    EJwsclPathNotFoundException = class(EJwsclFileSystemException);
+        {[2B2288BC-7905-46F2-0142-A0183067E63D]}
+
   JwGeneralExceptionClass = class of Exception;
 
   {We define this exception which corresponds to the same exception
