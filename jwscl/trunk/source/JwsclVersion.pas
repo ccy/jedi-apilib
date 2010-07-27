@@ -370,7 +370,7 @@ type
     }
     class function GetNumberOfProcessors(ProcessorType :  TJwProcessorCountType = pctLogicalProcessors) : Cardinal; virtual;
 
-	  {<b>GetModuleFileName</b> returns the absolute file path of a process.
+	  {<b>GetProcessFileName</b> returns the absolute file path of a process.
 
     Parameters
       ProcessHandle Defines the process handle of a process whose file path is to be retrieved.
@@ -388,7 +388,7 @@ type
       EJwsclWinCallFailedException A winapi call failed.
       EJwsclSecurityException More exceptions may be raised by JwDeviceToDosDrive.
     }
-    class function GetModuleFileName(ProcessHandle : THandle = INVALID_HANDLE_VALUE) : TJwString; virtual;
+    class function GetProcessFileName(ProcessHandle : THandle = INVALID_HANDLE_VALUE) : TJwString; virtual;
 
     //class function GetAvailableMemory : Int64;
   end;
@@ -1449,7 +1449,7 @@ end;
 
 
 
-class function TJwSystemInformation.GetModuleFileName(
+class function TJwSystemInformation.GetProcessFileName(
   ProcessHandle: THandle = INVALID_HANDLE_VALUE): TJwString;
 var
   hProc : THandle;
