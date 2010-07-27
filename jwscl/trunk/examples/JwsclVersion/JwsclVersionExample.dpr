@@ -76,7 +76,7 @@ begin
   Writeln(' IsWOWProcess64: ',                 TJwSystemInformation.IsWOWProcess64());
   Writeln(' GetNumberOfProcessors phys: ',     TJwSystemInformation.GetNumberOfProcessors(pctPhysicalProcessors));
   Writeln(' GetNumberOfProcessors log: ',      TJwSystemInformation.GetNumberOfProcessors(pctLogicalProcessors));
-  Writeln(' GetModuleFileName: ',              TJwSystemInformation.GetModuleFileName());
+  Writeln(' GetProcessFileName: ',              TJwSystemInformation.GetProcessFileName());
 
   Writeln;
   Writeln('TJwShellInformation.');
