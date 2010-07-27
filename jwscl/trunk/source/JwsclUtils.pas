@@ -698,7 +698,7 @@ procedure JwFree(var Obj);
 type
   TJwFormatMessageFlag = (
     {If set, all inserts are ignored and the resulting string is not touched.}
-    fmfIngoreInserts  //FORMAT_MESSAGE_IGNORE_INSERTS  = $00000200;
+    fmfIgnoreInserts  //FORMAT_MESSAGE_IGNORE_INSERTS  = $00000200;
   );
   TJwFormatMessageFlags = set of TJwFormatMessageFlag;
 
@@ -707,7 +707,7 @@ type
   Message Table to format a message specified by its message id.
   Parameters
   MessageID :   The id of the message retrieved from the System Message Table.
-  Flags :       A set of flags that the function supports. Currently only fmfIngoreInserts is supported.
+  Flags :       A set of flags that the function supports. Currently only fmfIgnoreInserts is supported.
   LanguageID :  The id of the language to be used. Set parameter to zero (0) to use a neutral, thread, user or system
                 language.
   Arguments\ :  Receives a list of values to be supplied to the inserts. The number of arguments must be the same as
@@ -756,7 +756,7 @@ function JwFormatMessage(
   user defined string.
   Parameters
   MessageString :  A string to be formatted.
-  Flags :          A set of flags that the function supports. Currently only fmfIngoreInserts is supported.
+  Flags :          A set of flags that the function supports. Currently only fmfIgnoreInserts is supported.
   Arguments\ :     Receives a list of values to be supplied to the inserts. The number of arguments must be the same as
                    the number of inserts. Be aware that some inserts may contain of up to three arguments. If the
                    number of arguments is smaller than the number of inserts, the results are unpredictable.
@@ -805,7 +805,7 @@ Parameters
 
   Module
   MessageID : The id of the message retrieved from the System Message Table.
-  Flags : A set of flags that the function supports. Currently only fmfIngoreInserts is supported.
+  Flags : A set of flags that the function supports. Currently only fmfIgnoreInserts is supported.
   LanguageID : The id of the language to be used. Set parameter to zero (0) to use a neutral, thread, user or system language.
   Arguments\ : Receives a list of values to be supplied to the inserts. The number of arguments must be the same as
         the number of inserts. Be aware that some inserts may contain of up to three arguments.
@@ -854,13 +854,13 @@ Parameters
          added to the drive.
 
 Returns
-  The return value is a fully qualified DOS path. (e.g. C:\ or C:\Windows)
+  The return value is a fully qualified DOS path (e.g. C:\ or C:\Windows) or
+   a UNC path (\\server\path).
   If parameter Device is empty, the return value will also be empty.
 
 Exceptions
   EJwsclInvalidParameterException This exception is raised if the given device string
     does not start with \device\
-  EJwsclPathNotFoundException The given device name is not linked to a dos drive.
   EJwsclWinCallFailedException An internal winapi function failed.
   EOleSysError An internal error occurred while string manipulation. A Safe String routine failed.
 
@@ -874,11 +874,20 @@ Remarks
 
   The function does not validate the string whether the device, path or file exists.
 
+  If the device name does not link to a DOS drive, the function removes the device name
+  and puts \\ in front of it. E.g. \device\rdpdr\tsclient\path resolves to \\tsclient\path .
+
 Example
   The following code converts the first floppy device to a DOS Path
   <code>
      S := JwDeviceToDosDrive('\device\floppy0\test.txt');
      S = 'A:\test.txt';
+  </code>
+
+  This code converts a RDP drive mapping:
+   <code>
+     S := JwDeviceToDosDrive('\device\rdpdr\tsclient\a\test.txt');
+     S = '\\tsclient\a\test.txt';
   </code>
 }
 function JwDeviceToDosDrive(Device : WideString) : WideString;
@@ -1179,12 +1188,10 @@ begin
   //could not find the given Device
   if result = '' then
   begin
-    SetLastError(ERROR_PATH_NOT_FOUND);
-
-    raise EJwsclPathNotFoundException.CreateFmtEx(
-                'The supplied device path "%0:s" has no link to a dos device and thus cannot be converted."',
-                'JwDeviceToDosDrive', '',
-                RsUNUtils, 0, true, [Device]);
+    //this usually happens on a remote path
+    // like \\server\path
+    //also frequently happens on
+    result := '\\';
   end;
 
   dwSize := Length(result);
@@ -1212,7 +1219,7 @@ function FormatMessageInternal(
   Arguments : array of const
 ) : TJwString; overload; //internal
 begin
-  if fmfIngoreInserts in Flags then
+  if fmfIgnoreInserts in Flags then
     FlagsEx := FlagsEx or FORMAT_MESSAGE_IGNORE_INSERTS;
 
   result := FormatMessageAPICall(Source,

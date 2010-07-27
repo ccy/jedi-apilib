@@ -351,6 +351,7 @@ type
      Parameters
        ProcessorType Defines the type of processor to be returned. See TJwProcessorCountType.
 
+
      Returns
       Returns the number of available logical or physical processors.
 
@@ -361,6 +362,9 @@ type
 
       The number of physical processors should not depend on Windows version and architecture but not
        all physical processors may be available to the system.
+      Furthermore, on a system with hyper threading technology the returned number of physical processors
+      may not be the correct number. Instead the number of logical processors is returned.
+
 
       The function ignores the affinity mask set for the process.
     }
