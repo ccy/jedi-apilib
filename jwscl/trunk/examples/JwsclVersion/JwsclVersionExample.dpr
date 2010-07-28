@@ -74,8 +74,9 @@ begin
   Writeln(' GetProcessorFeatures: ',           Integer(TJwSystemInformation.GetProcessorFeatures()));
   Writeln(' IsProcess64: ',                    TJwSystemInformation.IsProcess64());
   Writeln(' IsWOWProcess64: ',                 TJwSystemInformation.IsWOWProcess64());
-  Writeln(' GetNumberOfProcessors phys: ',     TJwSystemInformation.GetNumberOfProcessors(pctPhysicalProcessors));
-  Writeln(' GetNumberOfProcessors log: ',      TJwSystemInformation.GetNumberOfProcessors(pctLogicalProcessors));
+  Writeln(' GetNumberOfProcessors phys    : ',     TJwSystemInformation.GetNumberOfProcessors(pctPhysicalProcessors));
+  Writeln(' GetNumberOfProcessors cores   : ',     TJwSystemInformation.GetNumberOfProcessors(pctCoreProcessors));
+  Writeln(' GetNumberOfProcessors logical : ',      TJwSystemInformation.GetNumberOfProcessors(pctLogicalProcessors));
   Writeln(' GetProcessFileName: ',              TJwSystemInformation.GetProcessFileName());
 
   Writeln;
