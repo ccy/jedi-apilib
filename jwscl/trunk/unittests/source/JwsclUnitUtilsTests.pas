@@ -32,6 +32,7 @@ type
     procedure TestJwFormatMessage;
 
     procedure TestDeviceToDosDrive;
+    procedure TestDeviceToDosDriveUNC;
 
     procedure TestSetThreadName;
   end;
@@ -93,6 +94,12 @@ begin
 
 end;
 
+procedure TestUnitUtils.TestDeviceToDosDriveUNC;
+begin
+  //CheckEquals('', JwDeviceToDosDrive('\\?\Device\floppy0\'));
+  CheckEquals('\\server\path', JwDeviceToDosDrive('\device\mup\server\path'));
+end;
+
 procedure TestUnitUtils.TestGlobalAllocMem;
 var Mem : HGLOBAL;
 begin
@@ -124,7 +131,7 @@ begin
   S := '%1';
   S1 := JwFormatMessage(
     S,                 //const MessageString : TJwString;
-    [fmfIngoreInserts],//const Flags : TJwFormatMessageFlags;
+    [fmfIgnoreInserts],//const Flags : TJwFormatMessageFlags;
     []      //const Arguments : array of const
   );
 
