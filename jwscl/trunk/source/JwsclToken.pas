@@ -911,7 +911,11 @@ type
 
     {<B>CheckTokenMembership</B> checks whether a given SID is member of the token.
      It returns true if the SID could be found in the list ignoring
-     whether the SID is enabled or not; otherwise it returns false.}
+     whether the SID is enabled or not; otherwise it returns false.
+
+     Exceptions
+      EJwsclWinCallFailedException This exception is thrown if winapi call CheckTokenMembership failed.
+    }
     function CheckTokenMembership(aSidToCheck: TJwSecurityId): boolean;
 
         {<B>IsEqual</B> compares the token instance with a second one.
@@ -2468,7 +2472,7 @@ begin
     TOKEN_DUPLICATE);
   try
     Token.ConvertToImpersonatedToken(SecurityImpersonation, MAXIMUM_ALLOWED);
-    Result := Token.CheckTokenMembership(JwAdministratorsSID)
+    Result := Token.CheckTokenMembership(JwAdministratorsSID);
   finally
     FreeAndNil(Token);
   end;
@@ -5149,7 +5153,12 @@ begin
   CheckTokenHandle('CheckTokenMembership');
 
   bRes := True;
-  jwaWindows.CheckTokenMembership(Self.TokenHandle, @aSidToCheck.SID, bRes);
+  if not jwaWindows.CheckTokenMembership(Self.TokenHandle, aSidToCheck.SID,
+    bRes) then
+    raise EJwsclWinCallFailedException.CreateFmtEx(
+      RsWinCallFailed, 'CheckTokenMembership',
+      ClassName, RsUNToken, 0, True, ['CheckTokenMembership']);
+
   Result := bRes;
 end;
 
