@@ -1958,7 +1958,9 @@ type
     //returns physical processors
     pctPhysicalProcessors,
     //returns logical processors
-    pctLogicalProcessors
+    pctLogicalProcessors,
+    //returns processor cores
+    pctCoreProcessors
   );
 
   {Defines a set of flags that are

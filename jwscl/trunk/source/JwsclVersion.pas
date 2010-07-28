@@ -365,6 +365,7 @@ type
       Furthermore, on a system with hyper threading technology the returned number of physical processors
       may not be the correct number. Instead the number of logical processors is returned.
 
+      On Windows 2000, XP with SP1 or SP2 HyperThreading is not recognized here.
 
       The function ignores the affinity mask set for the process.
     }
@@ -1592,7 +1593,7 @@ const
 var
   SysInfo : TSystemInfo;
   Size, Len,
-  LogicalCount : Cardinal;
+  LogicalCount, CoreCount, PhysicalCount : Cardinal;
   Buf : ^TBufArray;
   Res : Boolean;
   I : Integer;
@@ -1604,7 +1605,7 @@ begin
     if TJwWindowsVersion.IsWindows7(true) or
       TJwWindowsVersion.IsWindows2008R2(true) then
     begin
-      //on newer windows version we can get the real active processor count
+      //on newer windows version we can get the real active processor count (> 64)
       try
         GetActiveProcessorCount := nil;
         JwaWindows.GetProcedureAddress(@GetActiveProcessorCount, kernel32, 'GetActiveProcessorCount');
@@ -1614,6 +1615,7 @@ begin
         on E : EJwsclProcNotFound do; //skip next
       end;
     end;
+  end;
 
     try
       {GetLogicalProcessorInformation is present only on
@@ -1653,12 +1655,21 @@ begin
         }
         Res := GetLogicalProcessorInformation(@Buf[0], @Len);
         if not Res then
-          RaiseLastOSError;
+          raise EJwsclWinCallFailedException.CreateFmtWinCall(
+            RsWinCallFailed,
+            'GetNumberOfProcessors',                                //sSourceProc
+            ClassName,                                //sSourceClass
+            RSUnVersion,                          //sSourceFile
+            0,                                           //iSourceLine
+            True,                                  //bShowLastError
+            'GetLogicalProcessorInformation #2',                   //sWinCall
+            ['GetLogicalProcessorInformation']);                                  //const Args: array of const
 
         Size := Len div sizeof(SYSTEM_LOGICAL_PROCESSOR_INFORMATION);
 
         LogicalCount := 0;
-        //PhysicalCount := 0;
+        CoreCount := 0;
+        PhysicalCount := 0;
 
         {$R-}
         for I := 0 to Size - 1 do
@@ -1666,8 +1677,13 @@ begin
           case Buf[I].Relationship of
             RelationProcessorCore :
               begin
-                //Inc(PhysicalCount);
+                Inc(CoreCount);
+
                 Inc(LogicalCount, GetActiveProcessors(Buf[I].ProcessorMask));
+              end;
+            RelationProcessorPackage :
+              begin
+                Inc(PhysicalCount);
               end;
           end;
         end;
@@ -1675,23 +1691,33 @@ begin
         FreeMem(Buf);
       end;
 
-      result := LogicalCount;
+      case ProcessorType of
+        pctCoreProcessors     : result := CoreCount;
+        pctPhysicalProcessors : result := PhysicalCount;
+        pctLogicalProcessors  : result := LogicalCount;
+      end;
+      exit;
     end
     else
     if (GetLastError() <> 0) then
-      RaiseLastOSError
-    else
-      ProcessorType := pctPhysicalProcessors;
-  end;
+      raise EJwsclWinCallFailedException.CreateFmtWinCall(
+          RsWinCallFailed,
+          'GetNumberOfProcessors',                                //sSourceProc
+          ClassName,                                //sSourceClass
+          RSUnVersion,                          //sSourceFile
+          0,                                           //iSourceLine
+          True,                                  //bShowLastError
+          'GetLogicalProcessorInformation #1',                   //sWinCall
+          ['GetLogicalProcessorInformation']);                                  //const Args: array of const
 
-  if ProcessorType = pctPhysicalProcessors then
-  begin
-    if IsWOWProcess64 then
-      GetNativeSystemInfo(@SysInfo)
-    else
-      GetSystemInfo(SysInfo);
-    result := SysInfo.dwNumberOfProcessors;
-  end;
+  //otherwise get physical number instead
+  //this happens on Win 2000 and Windows XP SP1, SP2
+
+  if IsWOWProcess64 then
+    GetNativeSystemInfo(@SysInfo)
+  else
+    GetSystemInfo(SysInfo);
+  result := SysInfo.dwNumberOfProcessors;
 end;
 
 class function TJwSystemInformation.GetProcessDEPPolicy(
