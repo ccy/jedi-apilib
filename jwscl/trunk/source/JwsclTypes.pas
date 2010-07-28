@@ -1771,7 +1771,9 @@ type
     ServicePackVersion : TJwVersion;
   end;}
 
-
+ {<b>TJwShellRestriction</b> maps the winapi
+  RESTRICTIONS Enumeration
+  See MSDN http://msdn.microsoft.com/en-us/library/bb762534%28VS.85%29.aspx}
  TJwShellRestriction = (
     srNone                        {= $00000000},
     srNoRun                       {= $00000001},
