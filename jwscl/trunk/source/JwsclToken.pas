@@ -1013,33 +1013,20 @@ type
     }
     function GetCurrentUserRegKey(const DesiredAccess: TJwAccessMask): HKEY;
 
-    {<b>ExpandEnvironmentStrings</b> expands the environment variables of the
-    token user.
-
-    Parameters
-      EnvString Receives a string which contains environment variable placeholders like %user%, %windir% etc.
-
-    Returns
+    { <b>ExpandEnvironmentStrings</b> expands the environment variables of the token user.
+      Returns
       The return value is a string where all environment variables placeholders are replaced.
-
-    Exceptions
-      EJwsclInvalidTokenHandle The current token handle is invalid.
-      EJwsclAccessTypeException The function needs some access rights in the token access mask that are not there. See Remarks for more information.
-      EJwsclWinCallFailedException A windows function failed.
-
-    Remarks
-      This function simulates the WinAPI function ExpandEnvironmentStringsForUser but does not use
-      string variables static in length.
-
-      The token must have TOKEN_IMPERSONATE and TOKEN_QUERY access rights. In addition Windows 7
-      needs TOKEN_DUPLICATE.
-
-      In a 32bit Process on a Windows 64 bit (WOW64) the environment variables are replaced by their
-      32bit counterparts. E.g. %ProgramFiles% will expand to "C:\Program Files (x86)"
-      If you need a 64bit folder, use %ProgramW6432% to access "C:\Program Files" instead.
-
-      Disabling Wo64 Redirection does not affect this function because file system layer is not accessed.
-    }
+      Remarks
+      This function simulates the WinAPI function ExpandEnvironmentStringsForUser but does not use string variables static
+      in length.
+      
+      The token must have TOKEN_IMPERSONATE and TOKEN_QUERY access rights. In addition Windows 7 needs TOKEN_DUPLICATE.
+      
+      In a 32bit Process on a Windows 64 bit (WOW64) the environment variables are replaced by their 32bit counterparts.
+      E.g. % ProgramFiles% will expand to "C:\\Program Files (x86)" If you need a 64bit folder, use % ProgramW6432% to
+      access "C:\\Program Files" instead.
+      
+      Disabling Wo64 Redirection does not affect this function because file system layer is not accessed.                  }
     function ExpandEnvironmentStrings(const EnvString : TJwString) : TJwString; virtual;
 
 
@@ -1113,9 +1100,18 @@ type
     //see equivalent msdn function for more information
     class procedure ImpersonateSelf(
       const anImpersonationLevel: SECURITY_IMPERSONATION_LEVEL); virtual;
-    //see equivalent msdn function for more information
+    {see equivalent msdn function for more information
+
+     Notes
+       The exception was changed from EJwsclSecurityException to EJwsclWinCallFailedException.
+    }
     class procedure RevertToSelf; virtual;
-    //see equivalent msdn function for more information
+
+    {see equivalent msdn function for more information
+
+    Notes
+       The exception was changed from EJwsclSecurityException to EJwsclWinCallFailedException.
+    }
     class procedure ImpersonateNamedPipeClient(hNamedPipe: THandle); virtual;
 
         {<B>HasThreadAToken</B> returns whether the current thread has a token or not.
@@ -4767,10 +4763,7 @@ in \includes\jediapilib.inc.
     JwaWindows.TTokenInformationClass(JwaWindows.TokenLinkedToken), Pointer(Data));
 
   try
-    {TODO: Warning:
-     I do not really know whether the LinkedToken is safe to be shared or
-      must be destroyed.}
-    Result := TJwSecurityToken.Create(Data^.LinkedToken, shShared,
+    Result := TJwSecurityToken.Create(Data^.LinkedToken, shOwned,
       MAXIMUM_ALLOWED);
   finally
     HeapFree(GetProcessHeap, 0, Data);
@@ -5441,10 +5434,11 @@ begin
     JwsclTypes.
 {$ENDIF}*)
     JwaWindows.TokenStatistics, Pointer(stat));
-
-  Result := TJwSecurityTokenStatistics.Create(stat^);
-
-  HeapFree(GetProcessHeap, 0, stat);
+  try
+    Result := TJwSecurityTokenStatistics.Create(stat^);
+  finally
+    HeapFree(GetProcessHeap, 0, stat);
+  end;
 end;
 
 //function LsaGetUserName(const UserName, DomainName : PUNICODE_STRING) : NTSTATUS; stdcall; external 'advapi32';
@@ -5747,13 +5741,13 @@ begin
 		end;
 	end;
 
-  //In Delphi sometimes the last error value is reset beyond the last end; so we use HRESULT
+  //I got this problem: In Delphi sometimes the last error value is reset beyond the last end; so we use HRESULT
 end;
 
 class procedure TJwSecurityToken.RevertToSelf;
 begin
   if not jwaWindows.RevertToSelf then
-    raise EJwsclSecurityException.CreateFmtEx(RsTokenFailedRevertSelf,
+    raise EJwsclWinCallFailedException.CreateFmtEx(RsTokenFailedRevertSelf,
       'RevertToSelf', ClassName, RsUNToken, 0, True, []);
 end;
 
@@ -5761,7 +5755,7 @@ class procedure TJwSecurityToken.ImpersonateNamedPipeClient(
   hNamedPipe: THandle);
 begin
   if not jwaWindows.ImpersonateNamedPipeClient(hNamedPipe) then
-    raise EJwsclSecurityException.CreateFmtEx(
+    raise EJwsclWinCallFailedException.CreateFmtEx(
       RsTokenFailedImpPipe, 'ImpersonateNamedPipeClient',
       ClassName, RsUNToken, 0, True, []);
 end;
@@ -5775,6 +5769,11 @@ begin
 
   if not result then
     result := OpenThreadToken(GetCurrentThread, TOKEN_QUERY or TOKEN_READ, true, Handle);
+
+  if not result then
+    raise EJwsclWinCallFailedException.CreateFmtEx(
+      RsWinCallFailed, 'HasThreadAToken',
+      ClassName, RsUNToken, 0, True, ['OpenThreadToken']);
 
   if Handle <> INVALID_HANDLE_VALUE then
     CloseHandle(Handle);

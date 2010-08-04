@@ -401,7 +401,7 @@ CValue_9=7872391
 
 [Configurations]
 Count=6
-Current=0
+Current=4
 Name0=Configuration 1
 Name1=Configuration 2
 Name2=Configuration 3
@@ -9847,7 +9847,7 @@ HTMLFileExtension=.html
 HTMLFilenaming=0
 HTMLFileTemplate=
 InsertCustomHEADCode=0
-OutputDir=bin\html
+OutputDir=E:\Temp\JWSCL DOC\HTML
 OutputOptions=14
 OutputTOCLevels=0
 PrintFlagsInIndex=0
@@ -12424,7 +12424,7 @@ BodySourceUseAutolinking=0
 BodySourceUseSyntaxHighlight=0
 
 [Configurations\Configuration 1\Disabled Topics]
-Count=74
+Count=81
 ID0=!!MEMBERTYPE_Fields_TJwComClientSecurity
 ID1=!!MEMBERTYPE_Fields_TJwComCustomSecurity
 ID10=IJwComServerSecurity.GetAuthenticationLevel
@@ -12497,7 +12497,14 @@ ID70=TJwSecureRegistryKey.Dummy
 ID71=TJwSecureRegistryKey.TreeRegKeySetNamedSecurityInfo_Execute@Pointer
 ID72=TJwServerAccessControl.Destroy
 ID73=TJwSessionsEnumerator.Create@TJwWTSSessionList
+ID74=TJwWindowsVersion._IsNewUnknown@TOSVersionInfoEx@PJwWindowsVersionDefinition@Boolean
+ID75=TJwWindowsVersion._IsServer2003R2@TOSVersionInfoEx@PJwWindowsVersionDefinition@Boolean
+ID76=TJwWindowsVersion._IsWin98SE@TOSVersionInfoEx@PJwWindowsVersionDefinition@Boolean
+ID77=TJwWindowsVersion.GetCachedWindowsType
+ID78=TJwWindowsVersion.ResetCachedWindowsType
+ID79=TJwWindowsVersion.SetCachedWindowsType@Integer@Boolean
 ID8=IJwComServerSecurity.GetAuthContext
+ID80=TJwWTSSessionStatistics
 ID9=IJwComServerSecurity.GetAuthenticationInfo
 
 [Configurations\Configuration 1\Enabled Topics]
@@ -12992,8 +12999,8 @@ ID5=TJwSecureRegistryKey.TreeRegKeySetNamedSecurityInfo_Execute@Pointer
 [Configurations\Configuration 1\Output Options]
 AdditionalInformationFormatStr=%NAME% %NUMBER%
 AddVisibilitySpecifierForCppPascal=0
-Author=
-AuthorEmail=
+Author=JEDI WSCL Authors
+AuthorEmail=mail@delphi-jedi.net
 AutoDocText0=The following tables list the members exposed by %NAME%.
 AutoDocText1=The %CATEGORYL% of the %NAME% class are listed here.
 AutoDocText2=The %CATEGORYL% members of the %NAME% class are listed here.
@@ -13006,7 +13013,7 @@ ClassHierarchyTextLayoutFlatSeparator='    |'
 ClassHierarchyTextLayoutHangingIndent='    '
 ClassHierarchyTextLayoutOptions=2
 ContextIndexOptions=2595
-Copyright=
+Copyright=%COPYRIGHT%. This help was created by Doc-O-Matic which is sponsored by <a href="http://toolsfactory.com/">toolsfactory software inc.</a>
 CreateContentForFoldersGlobals=1
 CreateContentForFoldersMembers=1
 CustomBuildStepApp=
@@ -13043,7 +13050,7 @@ TableWidthLegend=20
 TableWidthNavigation=100
 TableWidthParameters=100
 TableWidthReports=100
-Title=
+Title=JEDI Windows Security Code Library Help
 UseInheritedPropertyDetails=1
 
 [Configurations\Configuration 1\Output Options\Indicator Images]
@@ -23069,7 +23076,7 @@ HTMLFileExtension=.html
 HTMLFilenaming=0
 HTMLFileTemplate=
 InsertCustomHEADCode=0
-OutputDir=bin\chm
+OutputDir=E:\Temp\JWSCL DOC\HTML Help\
 OutputOptions=6
 OutputTOCLevels=0
 PrintFlagsInIndex=0
@@ -23109,7 +23116,7 @@ HelpCompiler=E:\Programme\HTML Help Workshop\hhc.exe
 HelpProjectFileAutomatic=1
 HTMLHelp2Filename=
 HTMLHelpDisplayFontScaleButton=0
-HTMLHelpFilename=
+HTMLHelpFilename=E:\Temp\JWSCL DOC\HTML Help\Bin\JWSCL.chm
 SaveUserPosition=1
 SupportEnhancedDecompilation=0
 WindowPosition_Bottom=0
@@ -25678,7 +25685,7 @@ BodySourceUseAutolinking=0
 BodySourceUseSyntaxHighlight=0
 
 [Configurations\Configuration 2\Disabled Topics]
-Count=74
+Count=81
 ID0=!!MEMBERTYPE_Fields_TJwComClientSecurity
 ID1=!!MEMBERTYPE_Fields_TJwComCustomSecurity
 ID10=IJwComServerSecurity.GetAuthenticationLevel
@@ -25751,7 +25758,14 @@ ID70=TJwSecureRegistryKey.Dummy
 ID71=TJwSecureRegistryKey.TreeRegKeySetNamedSecurityInfo_Execute@Pointer
 ID72=TJwServerAccessControl.Destroy
 ID73=TJwSessionsEnumerator.Create@TJwWTSSessionList
+ID74=TJwWindowsVersion._IsNewUnknown@TOSVersionInfoEx@PJwWindowsVersionDefinition@Boolean
+ID75=TJwWindowsVersion._IsServer2003R2@TOSVersionInfoEx@PJwWindowsVersionDefinition@Boolean
+ID76=TJwWindowsVersion._IsWin98SE@TOSVersionInfoEx@PJwWindowsVersionDefinition@Boolean
+ID77=TJwWindowsVersion.GetCachedWindowsType
+ID78=TJwWindowsVersion.ResetCachedWindowsType
+ID79=TJwWindowsVersion.SetCachedWindowsType@Integer@Boolean
 ID8=IJwComServerSecurity.GetAuthContext
+ID80=TJwWTSSessionStatistics
 ID9=IJwComServerSecurity.GetAuthenticationInfo
 
 [Configurations\Configuration 2\Enabled Topics]
@@ -26246,8 +26260,8 @@ ID5=TJwSecureRegistryKey.TreeRegKeySetNamedSecurityInfo_Execute@Pointer
 [Configurations\Configuration 2\Output Options]
 AdditionalInformationFormatStr=%NAME% %NUMBER%
 AddVisibilitySpecifierForCppPascal=0
-Author=
-AuthorEmail=
+Author=JEDI WSCL Authors
+AuthorEmail=mail@delphi-jedi.net
 AutoDocText0=The following tables list the members exposed by %NAME%.
 AutoDocText1=The %CATEGORYL% of the %NAME% class are listed here.
 AutoDocText2=The %CATEGORYL% members of the %NAME% class are listed here.
@@ -26260,7 +26274,7 @@ ClassHierarchyTextLayoutFlatSeparator='    |'
 ClassHierarchyTextLayoutHangingIndent='    '
 ClassHierarchyTextLayoutOptions=2
 ContextIndexOptions=2595
-Copyright=
+Copyright=%COPYRIGHT%. This help was created by Doc-O-Matic which is sponsored by <a href="http://toolsfactory.com/">toolsfactory software inc.</a>
 CreateContentForFoldersGlobals=1
 CreateContentForFoldersMembers=1
 CustomBuildStepApp=
@@ -26297,7 +26311,7 @@ TableWidthLegend=20
 TableWidthNavigation=100
 TableWidthParameters=100
 TableWidthReports=100
-Title=
+Title=JEDI Windows Security Code Library Help
 UseInheritedPropertyDetails=1
 
 [Configurations\Configuration 2\Output Options\Indicator Images]
@@ -36323,7 +36337,7 @@ HTMLFileExtension=.html
 HTMLFilenaming=0
 HTMLFileTemplate=
 InsertCustomHEADCode=0
-OutputDir=bin\xhs
+OutputDir=E:\temp\JWSCL DOC\HELP 2
 OutputOptions=6
 OutputTOCLevels=0
 PrintFlagsInIndex=0
@@ -36348,7 +36362,7 @@ CustomHelpProjectFile=
 DontIncludeFolders=0
 Help2AdditionalXMLData=
 Help2Collection=
-Help2Compiler=e:\proggen\Visual Studio 2005 SDK\2007.02\VisualStudioIntegration\Archive\HelpIntegration\hxcomp.exe
+Help2Compiler=E:\Programme\HelpIntegration\hxcomp.exe
 Help2CompileResult=0
 Help2Dexplore=
 Help2GenericInfoType=kbRef
@@ -38900,7 +38914,7 @@ BodySourceUseAutolinking=0
 BodySourceUseSyntaxHighlight=0
 
 [Configurations\Configuration 3\Disabled Topics]
-Count=74
+Count=81
 ID0=!!MEMBERTYPE_Fields_TJwComClientSecurity
 ID1=!!MEMBERTYPE_Fields_TJwComCustomSecurity
 ID10=IJwComServerSecurity.GetAuthenticationLevel
@@ -38973,7 +38987,14 @@ ID70=TJwSecureRegistryKey.Dummy
 ID71=TJwSecureRegistryKey.TreeRegKeySetNamedSecurityInfo_Execute@Pointer
 ID72=TJwServerAccessControl.Destroy
 ID73=TJwSessionsEnumerator.Create@TJwWTSSessionList
+ID74=TJwWindowsVersion._IsNewUnknown@TOSVersionInfoEx@PJwWindowsVersionDefinition@Boolean
+ID75=TJwWindowsVersion._IsServer2003R2@TOSVersionInfoEx@PJwWindowsVersionDefinition@Boolean
+ID76=TJwWindowsVersion._IsWin98SE@TOSVersionInfoEx@PJwWindowsVersionDefinition@Boolean
+ID77=TJwWindowsVersion.GetCachedWindowsType
+ID78=TJwWindowsVersion.ResetCachedWindowsType
+ID79=TJwWindowsVersion.SetCachedWindowsType@Integer@Boolean
 ID8=IJwComServerSecurity.GetAuthContext
+ID80=TJwWTSSessionStatistics
 ID9=IJwComServerSecurity.GetAuthenticationInfo
 
 [Configurations\Configuration 3\Enabled Topics]
@@ -39468,8 +39489,8 @@ ID5=TJwSecureRegistryKey.TreeRegKeySetNamedSecurityInfo_Execute@Pointer
 [Configurations\Configuration 3\Output Options]
 AdditionalInformationFormatStr=%NAME% %NUMBER%
 AddVisibilitySpecifierForCppPascal=0
-Author=
-AuthorEmail=
+Author=JEDI WSCL Authors
+AuthorEmail=mail@delphi-jedi.net
 AutoDocText0=The following tables list the members exposed by %NAME%.
 AutoDocText1=The %CATEGORYL% of the %NAME% class are listed here.
 AutoDocText2=The %CATEGORYL% members of the %NAME% class are listed here.
@@ -39482,7 +39503,7 @@ ClassHierarchyTextLayoutFlatSeparator='    |'
 ClassHierarchyTextLayoutHangingIndent='    '
 ClassHierarchyTextLayoutOptions=2
 ContextIndexOptions=2595
-Copyright=
+Copyright=%COPYRIGHT%. This help was created by Doc-O-Matic which is sponsored by <a href="http://toolsfactory.com/">toolsfactory software inc.</a>
 CreateContentForFoldersGlobals=1
 CreateContentForFoldersMembers=1
 CustomBuildStepApp=
@@ -39519,7 +39540,7 @@ TableWidthLegend=20
 TableWidthNavigation=100
 TableWidthParameters=100
 TableWidthReports=100
-Title=
+Title=JEDI Windows Security Code Library Help
 UseInheritedPropertyDetails=1
 
 [Configurations\Configuration 3\Output Options\Indicator Images]
@@ -40139,7 +40160,7 @@ Links_NoSameTitleText=1
 Links_SuppressLinksFormatInCode=1
 List_Bullets_Symbol=1
 MaxContentLevel=4
-OutputDir=$(USRDOCSOUTPUT)
+OutputDir=E:\temp\JWSCL DOC\PDF
 OutputFilename=
 OverviewColumns=2
 ShowOptions=243
@@ -49044,7 +49065,7 @@ BodySourceUseAutolinking=0
 BodySourceUseSyntaxHighlight=0
 
 [Configurations\Configuration 4\Disabled Topics]
-Count=74
+Count=81
 ID0=!!MEMBERTYPE_Fields_TJwComClientSecurity
 ID1=!!MEMBERTYPE_Fields_TJwComCustomSecurity
 ID10=IJwComServerSecurity.GetAuthenticationLevel
@@ -49117,7 +49138,14 @@ ID70=TJwSecureRegistryKey.Dummy
 ID71=TJwSecureRegistryKey.TreeRegKeySetNamedSecurityInfo_Execute@Pointer
 ID72=TJwServerAccessControl.Destroy
 ID73=TJwSessionsEnumerator.Create@TJwWTSSessionList
+ID74=TJwWindowsVersion._IsNewUnknown@TOSVersionInfoEx@PJwWindowsVersionDefinition@Boolean
+ID75=TJwWindowsVersion._IsServer2003R2@TOSVersionInfoEx@PJwWindowsVersionDefinition@Boolean
+ID76=TJwWindowsVersion._IsWin98SE@TOSVersionInfoEx@PJwWindowsVersionDefinition@Boolean
+ID77=TJwWindowsVersion.GetCachedWindowsType
+ID78=TJwWindowsVersion.ResetCachedWindowsType
+ID79=TJwWindowsVersion.SetCachedWindowsType@Integer@Boolean
 ID8=IJwComServerSecurity.GetAuthContext
+ID80=TJwWTSSessionStatistics
 ID9=IJwComServerSecurity.GetAuthenticationInfo
 
 [Configurations\Configuration 4\Enabled Topics]
@@ -49626,7 +49654,7 @@ ClassHierarchyTextLayoutFlatSeparator='    |'
 ClassHierarchyTextLayoutHangingIndent='    '
 ClassHierarchyTextLayoutOptions=2
 ContextIndexOptions=2595
-Copyright=
+Copyright=%COPYRIGHT%. This help was created by Doc-O-Matic which is sponsored by <a href="http://toolsfactory.com/">toolsfactory software inc.</a>
 CreateContentForFoldersGlobals=1
 CreateContentForFoldersMembers=0
 CustomBuildStepApp=
@@ -50253,9 +50281,9 @@ Value2.9=%NSSYM% %TYPEL%
 
 [Configurations\Configuration 5\{C81B476F-5DE3-416C-A73A-9674B8ECC110}\Basic]
 CreatePrintableDocumentation=0
-HelpCompiler=
+HelpCompiler=E:\Proggen\Help Workshop\hcrtf.exe
 HLPFilename=
-OutputFile=
+OutputFile=E:\temp\JWSCL DOC\HLP\bin
 
 [Configurations\Configuration 5\{C81B476F-5DE3-416C-A73A-9674B8ECC110}\Common Layout Options]
 DisplayShowAllAboveHeader=1
@@ -51612,8 +51640,8 @@ ShowDocumentation=1
 [Configurations\Configuration 5\{C81B476F-5DE3-416C-A73A-9674B8ECC110}\Help Project]
 CompressHelp=1
 CreateContentFile=1
-CreateDualHelpSupportFiles=1
-CreateMapFiles=1
+CreateDualHelpSupportFiles=0
+CreateMapFiles=0
 CustomHelpProjectFile=
 HelpProjectFileAutomatic=1
 WindowColorAddInfoContent=16777215
@@ -54068,7 +54096,7 @@ BodySourceUseAutolinking=0
 BodySourceUseSyntaxHighlight=0
 
 [Configurations\Configuration 5\Disabled Topics]
-Count=74
+Count=81
 ID0=!!MEMBERTYPE_Fields_TJwComClientSecurity
 ID1=!!MEMBERTYPE_Fields_TJwComCustomSecurity
 ID10=IJwComServerSecurity.GetAuthenticationLevel
@@ -54141,7 +54169,14 @@ ID70=TJwSecureRegistryKey.Dummy
 ID71=TJwSecureRegistryKey.TreeRegKeySetNamedSecurityInfo_Execute@Pointer
 ID72=TJwServerAccessControl.Destroy
 ID73=TJwSessionsEnumerator.Create@TJwWTSSessionList
+ID74=TJwWindowsVersion._IsNewUnknown@TOSVersionInfoEx@PJwWindowsVersionDefinition@Boolean
+ID75=TJwWindowsVersion._IsServer2003R2@TOSVersionInfoEx@PJwWindowsVersionDefinition@Boolean
+ID76=TJwWindowsVersion._IsWin98SE@TOSVersionInfoEx@PJwWindowsVersionDefinition@Boolean
+ID77=TJwWindowsVersion.GetCachedWindowsType
+ID78=TJwWindowsVersion.ResetCachedWindowsType
+ID79=TJwWindowsVersion.SetCachedWindowsType@Integer@Boolean
 ID8=IJwComServerSecurity.GetAuthContext
+ID80=TJwWTSSessionStatistics
 ID9=IJwComServerSecurity.GetAuthenticationInfo
 
 [Configurations\Configuration 5\Enabled Topics]
@@ -54636,8 +54671,8 @@ ID5=TJwSecureRegistryKey.TreeRegKeySetNamedSecurityInfo_Execute@Pointer
 [Configurations\Configuration 5\Output Options]
 AdditionalInformationFormatStr=%NAME% %NUMBER%
 AddVisibilitySpecifierForCppPascal=0
-Author=
-AuthorEmail=
+Author=JEDI WSCL Authors
+AuthorEmail=mail@delphi-jedi.net
 AutoDocText0=The following tables list the members exposed by %NAME%.
 AutoDocText1=The %CATEGORYL% of the %NAME% class are listed here.
 AutoDocText2=The %CATEGORYL% members of the %NAME% class are listed here.
@@ -54687,7 +54722,7 @@ TableWidthLegend=20
 TableWidthNavigation=100
 TableWidthParameters=100
 TableWidthReports=100
-Title=
+Title=JEDI Windows Security Code Library Help
 UseInheritedPropertyDetails=1
 
 [Configurations\Configuration 5\Output Options\Indicator Images]
@@ -55279,7 +55314,7 @@ Value2.9=%NSSYM% %TYPEL%
 Encoding=UTF-8
 GenerateSymbolStructure=1
 GenerateTopicStructure=1
-OutputDir=bin\xml
+OutputDir=E:\temp\JWSCL DOC\XML
 OutputFilename=
 ShowDocumentation=1
 UseXMLDocTags=1
@@ -55361,7 +55396,7 @@ BodySourceUseAutolinking=0
 BodySourceUseSyntaxHighlight=0
 
 [Configurations\Configuration 6\Disabled Topics]
-Count=74
+Count=81
 ID0=!!MEMBERTYPE_Fields_TJwComClientSecurity
 ID1=!!MEMBERTYPE_Fields_TJwComCustomSecurity
 ID10=IJwComServerSecurity.GetAuthenticationLevel
@@ -55434,7 +55469,14 @@ ID70=TJwSecureRegistryKey.Dummy
 ID71=TJwSecureRegistryKey.TreeRegKeySetNamedSecurityInfo_Execute@Pointer
 ID72=TJwServerAccessControl.Destroy
 ID73=TJwSessionsEnumerator.Create@TJwWTSSessionList
+ID74=TJwWindowsVersion._IsNewUnknown@TOSVersionInfoEx@PJwWindowsVersionDefinition@Boolean
+ID75=TJwWindowsVersion._IsServer2003R2@TOSVersionInfoEx@PJwWindowsVersionDefinition@Boolean
+ID76=TJwWindowsVersion._IsWin98SE@TOSVersionInfoEx@PJwWindowsVersionDefinition@Boolean
+ID77=TJwWindowsVersion.GetCachedWindowsType
+ID78=TJwWindowsVersion.ResetCachedWindowsType
+ID79=TJwWindowsVersion.SetCachedWindowsType@Integer@Boolean
 ID8=IJwComServerSecurity.GetAuthContext
+ID80=TJwWTSSessionStatistics
 ID9=IJwComServerSecurity.GetAuthenticationInfo
 
 [Configurations\Configuration 6\Enabled Topics]
@@ -55929,8 +55971,8 @@ ID5=TJwSecureRegistryKey.TreeRegKeySetNamedSecurityInfo_Execute@Pointer
 [Configurations\Configuration 6\Output Options]
 AdditionalInformationFormatStr=%NAME% %NUMBER%
 AddVisibilitySpecifierForCppPascal=0
-Author=
-AuthorEmail=
+Author=JEDI WSCL Authors
+AuthorEmail=mail@delphi-jedi.net
 AutoDocText0=The following tables list the members exposed by %NAME%.
 AutoDocText1=The %CATEGORYL% of the %NAME% class are listed here.
 AutoDocText2=The %CATEGORYL% members of the %NAME% class are listed here.
@@ -55943,7 +55985,7 @@ ClassHierarchyTextLayoutFlatSeparator='    |'
 ClassHierarchyTextLayoutHangingIndent='    '
 ClassHierarchyTextLayoutOptions=2
 ContextIndexOptions=2595
-Copyright=
+Copyright=%COPYRIGHT%. This help was created by Doc-O-Matic which is sponsored by <a href="http://toolsfactory.com/">toolsfactory software inc.</a>
 CreateContentForFoldersGlobals=1
 CreateContentForFoldersMembers=1
 CustomBuildStepApp=
@@ -55980,7 +56022,7 @@ TableWidthLegend=20
 TableWidthNavigation=100
 TableWidthParameters=100
 TableWidthReports=100
-Title=
+Title=JEDI Windows Security Code Library Help
 UseInheritedPropertyDetails=1
 
 [Configurations\Configuration 6\Output Options\Indicator Images]
@@ -56621,7 +56663,7 @@ UseInheritedTopics=1
 UseInheritedUseUsing=0
 
 [External Topic Properties]
-Count=147
+Count=148
 ID0=!!SYMREF
 ID1=Compilers.inc
 ID10=JwsclAuthCtx, unit
@@ -56655,27 +56697,28 @@ ID124=TJwShadowMode
 ID125=TJwShadowState
 ID126=TJwSharedHandle
 ID127=TJwShellExecuteFlag
-ID128=TJwSidAttribute
-ID129=TJwSidClassName
+ID128=TJwShellInformation.GetKnownFolderPath@KNOWNFOLDERID@TJwWideString@DWORD@TJwSecurityToken
+ID129=TJwSidAttribute
 ID13=JwsclComUtils, unit
-ID130=TJwSidInfoRecord
-ID131=TJwSidMap
-ID132=TJwSignalType
-ID133=TJwTempResetEnum
-ID134=TJwTokenMandatoryPolicy
-ID135=TJwTreeSetType
-ID136=TJwUserDataCopy
-ID137=TJwWaitState
-ID138=TJwXMLAttribute
-ID139=TJwXMLAttrTag
+ID130=TJwSidClassName
+ID131=TJwSidInfoRecord
+ID132=TJwSidMap
+ID133=TJwSignalType
+ID134=TJwTempResetEnum
+ID135=TJwTokenMandatoryPolicy
+ID136=TJwTreeSetType
+ID137=TJwUserDataCopy
+ID138=TJwWaitState
+ID139=TJwXMLAttribute
 ID14=JwsclComUtils.pas
-ID140=TJwXMLEventType
-ID141=TJwXMLLogTag
-ID142=TJwXMLTag
-ID143=Topic1
-ID144=TThreadData
-ID145=TThreadMapRec
-ID146=TThreadNameInfo
+ID140=TJwXMLAttrTag
+ID141=TJwXMLEventType
+ID142=TJwXMLLogTag
+ID143=TJwXMLTag
+ID144=Topic1
+ID145=TThreadData
+ID146=TThreadMapRec
+ID147=TThreadNameInfo
 ID15=JwsclConstants, unit
 ID16=JwsclConstants.pas
 ID17=JwsclCredentials.pas
@@ -57430,6 +57473,11 @@ Count=1
 ETPCommand0=2
 ETPTopicOrder0=77
 
+[External Topic Properties\TJwShellInformation.GetKnownFolderPath@KNOWNFOLDERID@TJwWideString@DWORD@TJwSecurityToken]
+Count=1
+ETPCommand0=13
+ETPContentsEntry0=0
+
 [External Topic Properties\TJwSidAttribute]
 Count=1
 ETPCommand0=2
@@ -57641,9 +57689,11 @@ UseParameterListInlineComments=1
 WallCharacters="#$%&'*+-/=@[\]^_`{|}~
 
 [Parsing\ConditionalDefines]
-Count=2
+Count=4
 Define_0=UNICODE
 Define_1=VISTA
+Define_2=WINVISTA_UP
+Define_3=WIN7
 HandleConditionalDefines=1
 
 [Parsing\Excluded Source Files]

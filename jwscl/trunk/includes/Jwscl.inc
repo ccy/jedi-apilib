@@ -107,5 +107,25 @@ Warning #2: If the JEDI API headers are used with a directive WIN_XP or lower
 {$DEFINE JWSCL_USE_DELAYED}
 {$ENDIF DELPHI2010_UP}
 
+//Uses taskdialog when a JWSCL exception occurs in Delphi
+//This needs Vista or newer and a manifest specifying Common Control Version 6 (or newer)
+//<code>
+//     <dependency>
+//        <dependentAssembly>
+//            <assemblyIdentity
+//                type="win32"
+//                name="Microsoft.Windows.Common-Controls"
+//                version="6.0.0.0"
+//                processorArchitecture="*"
+//                publicKeyToken="6595b64144ccf1df"
+//                language="*"
+//        />
+//        </dependentAssembly>
+//    </dependency>
+//</code>
+//
+//
+{$DEFINE JWSCL_USE_TASK_EXCEPTION_DIALOGS}
+
 //the following line must be at the end of this file!!
 {Warning: This line is printed because an identifier has no pasdoc comment. This error must be fixed.}

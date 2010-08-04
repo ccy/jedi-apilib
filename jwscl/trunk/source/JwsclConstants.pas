@@ -117,6 +117,8 @@ const
    The constants are in order of the appearance of Windows, so
    the greater operator can be used easily.
    Also make sure that server versions succeed workstations.
+
+   cOsWinXXX  = cOsWin7; //use this to set proper name for this OS!
   }
   cOsUnknown = -1; //The system is unknown
   cOsWin95   = 0;  //The system is a Windows 95
@@ -133,7 +135,10 @@ const
   cOsWin2008 = 11; //The system is a 2008 Server (tested with RC)
   cOsWin7    = 12; //The system is a Win7
   cOsWin2008R2 = 13; //The system is a 2008 R2 Server (untested)
-  //cOsWinXXX  = cOsWin7; //use this to set proper name for this OS!
+
+
+
+
 
   {This value defines an unknown but new Windows version.
    It is computed by JWSCL by making sure that the current windows version

@@ -2638,7 +2638,7 @@ const
    Group: BuiltInAdministrators
    DACL:
      Allow: BuiltInAdministrators, Interactive User, SYSTEM
-  <pre>
+  </pre>
   Access Rights: see ACE Rights : http://msdn.microsoft.com/en-us/library/aa374928%28VS.85%29.aspx
 
   }

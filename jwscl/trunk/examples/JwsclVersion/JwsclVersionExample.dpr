@@ -12,6 +12,7 @@ uses
   JwsclTypes,
   JwsclStrings,
   JwsclKnownSid,
+  JwsclProcess,
   Dialogs,
   SysUtils;
 

@@ -917,7 +917,7 @@ end;
 
 
 
-threadvar ResultValue : HRESULT;
+threadvar ResultValue : HRESULT;  //TODO: CW huh????
 
 function JwCoCreateInstanceAsEx(
   const MonikerSequence : WideString;

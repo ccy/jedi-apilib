@@ -291,36 +291,27 @@ type
     }
     class function GetSystemDEPPolicy : TJwDEPSystemPolicy; virtual;
 
-    {GetProcessDEPPolicy sets the Data Execution Prevention (DEP) flag of the current process.
-
-    Parameters
-      ProcessHandle Defines a process handle which is used to retrieve DEP information.
-
-    Return value
+    { GetProcessDEPPolicy returns the Data Execution Prevention (DEP) flag of a process.
+      
+      
+      Parameters
+      ProcessHandle :  ProcessHandle defines a handle to a process which DEP is to be returned. Set to 0 or \-1 to retrieve
+                       DEP status of the current process.
+      Returns
       The return value can be depDisabled or a combination of depEnabled, depATLDisableThunkEmulation and depPermanent.
-
-    Remarks
-      On a Windows XP prior to SP3 or in a 64bit process the function returns [depUnsupported].
-
-    Exceptions
-      EJwsclWinCallFailedException The call GetProcessDEPPolicy failed.
-    }
+      Remarks
+      On a Windows XP prior to SP3 or in a 64bit process the function returns [depUnsupported].                             }
     class function GetProcessDEPPolicy(ProcessHandle : DWORD = 0) : TJwDEPProcessPolicy; virtual;
 
-    {SetProcessDEPPolicy sets the Data Execution Prevention (DEP) flag of the current process.
-
-    Parameters
-      NewPolicy Defines a set of flags that apply to the DEP flag of the current process.
-        The following values can be used depDisabled, depEnabled (only with depPermanent), depATLDisableThunkEmulation,
-
-    Remarks
+    { SetProcessDEPPolicy sets the Data Execution Prevention (DEP) flag of the current process.
+      
+      
+      Parameters
+      NewPolicy :  NewPolicy defines the kind of DEP policy to be set.
+      Remarks
       If Parameter NewPolicy contains depEnabled, it also must contain depPermanent.
-
-      On a Windows XP prior to SP3 or in a 64bit process the function does nothing.
-
-    Exceptions
-      EJwsclInvalidParameterException If Parameter NewPolicy contains depEnabled, it also must contain depPermanent.
-    }
+      
+      On a Windows XP prior to SP3 or in a 64bit process the function does nothing.             }
     class procedure SetProcessDEPPolicy(NewPolicy : TJwDEPProcessPolicy); virtual;
 
     {GetProcessorFeatures returns a set of available processor features.
@@ -330,65 +321,58 @@ type
     }
     class function GetProcessorFeatures : TJwProcessorFeatures; virtual;
 
-    {<B>IsProcess64</B> checks if a process is 64 bit.
-     param ProcessHandle Defines the process to be checked for 64 bit. If this parameter is zero
-     the current process is used instead.
-     return Returns true if the given process is a 64bit process.
-
-     raises
-       EJwsclWinCallFailedException This exception will be raised if the process handle has not the following rights
-         XP/2003 : PROCESS_QUERY_INFORMATION
-         Vista: PROCESS_QUERY_INFORMATION and PROCESS_QUERY_LIMITED_INFORMATION
-    }
+    { <b>IsProcess64</b> checks if a process is 64 bit. param ProcessHandle Defines the process to be checked for 64 bit.
+      If this parameter is zero the current process is used instead. return Returns true if the given process is a 64bit
+      process.
+      Parameters
+      ProcessHandle :  ProcessHandle defines a handle to a process. Set to 0 or \-1 to use the current process.
+      Remarks
+      The process must have the following access rights:
+      <table>
+      XP/2003           PROCESS_QUERY_INFORMATION
+      Vista and newer   PROCESS_QUERY_INFORMATION and PROCESS_QUERY_LIMITED_INFORMATION
+      </table>                                                                                                            }
     class function IsProcess64(ProcessHandle : DWORD = 0) : boolean; virtual;
 
-    //IsWOWProcess64 checks whether the current or a given process is running under WOW64
+    { IsWOWProcess64 checks whether the current or a given process is running under WOW64.
+      
+      
+      Parameters
+      ProcessHandle :  ProcessHandle defines a handle to a process. Set to 0 or \-1 to use the current process. }
     class function IsWOWProcess64(ProcessHandle : DWORD = 0) : boolean; virtual;
 
-    {<b>GetNumberOfProcessors</b> returns the number of logical or physical available
-     processors in the system.
-
-     Parameters
-       ProcessorType Defines the type of processor to be returned. See TJwProcessorCountType.
-
-
-     Returns
-      Returns the number of available logical or physical processors.
-
-     Remarks
-      The numbers of available logical processors may depend on the Windows version and architecture type.
-       On Windows prior to 7, the return value may be less than 32 for 32bit processes. On Windows 7
-       a 32bit process can retrieve more than 64 bit processors but may not be able to use them.
-
-      The number of physical processors should not depend on Windows version and architecture but not
-       all physical processors may be available to the system.
-      Furthermore, on a system with hyper threading technology the returned number of physical processors
-      may not be the correct number. Instead the number of logical processors is returned.
-
+    { <b>GetNumberOfProcessors</b> returns the number of logical or physical available processors in the system.
+      
+      
+      Parameters
+      ProcessorType :  Defines the kind of processor which count is to be returned. See TJwProcessorCountType for more
+                       information.
+      Returns
+      \Returns the number of available logical or physical processors.
+      Remarks
+      The numbers of available logical processors may depend on the Windows version and architecture type. On Windows
+      prior to 7, the return value may be less than 32 for 32bit processes. On Windows 7 a 32bit process can retrieve more
+      than 64 bit processors but may not be able to use them.
+      
+      The number of physical processors should not depend on Windows version and architecture but not all physical
+      processors may be available to the system. Furthermore, on a system with hyper threading technology the returned
+      number of physical processors may not be the correct number. Instead the number of logical processors is returned.
+      
       On Windows 2000, XP with SP1 or SP2 HyperThreading is not recognized here.
-
+      
       The function ignores the affinity mask set for the process.
-    }
+                                                                                                                           }
     class function GetNumberOfProcessors(ProcessorType :  TJwProcessorCountType = pctLogicalProcessors) : Cardinal; virtual;
 
-	  {<b>GetProcessFileName</b> returns the absolute file path of a process.
-
-    Parameters
-      ProcessHandle Defines the process handle of a process whose file path is to be retrieved.
-         Set to 0 or INVALID_HANDLE_VALUE to use the current process.
-         The process handle must have the PROCESS_QUERY_INFORMATION access right.
-    Returns
-      The function returns the process file path (e.g. C:\Windows\Process.exe)
-
-    Remarks
-      Currently, the function will fail with exception EJwsclProcNotFound if the implementation
-      is not supported on Windows. Newer implementation may cure this.
-
-    Exceptions
-      EJwsclProcNotFound This function is not supported by Windows. See remarks section.
-      EJwsclWinCallFailedException A winapi call failed.
-      EJwsclSecurityException More exceptions may be raised by JwDeviceToDosDrive.
-    }
+	  { <b>GetProcessFileName</b> returns the absolute file path of a process.
+	    Parameters
+	    ProcessHandle :  ProcessHandle defines a handle to a process which filename is to be returned. Set to 0 or \-1 to
+	                     retrieve the name of the current process.
+	    Returns
+	    The function returns the process file path (e.g. C:\\Windows\\Process.exe)
+	    Remarks
+	    Currently, the function will fail with exception EJwsclProcNotFound if the implementation is not supported on
+	    Windows. Newer implementation may cure this.                                                                      }
     class function GetProcessFileName(ProcessHandle : THandle = INVALID_HANDLE_VALUE) : TJwString; virtual;
 
     //class function GetAvailableMemory : Int64;
@@ -426,24 +410,25 @@ type
     }
     class function GetShellRestrictions : TJwShellRestrictions; virtual;
 
-    {<b>GetFolderPath</b> retrieves a known folder path from the system.
-
-    Parameters
-      Token Defines a token that is used to retrieve the folder. May be nil.
-      You can use the pseudo class instance <b>JwDefaultUserPseudoToken</b> here to
-      retrieve the folders of the default user. Do not access any method or property
-      of JwDefaultUserPseudoToken since it is not a valid instance.
-
-    Exceptions
-      EJwsclWinCallFailedException: A call to SHGetFolderPath failed. To get error information
-          you can read LastError property of exception.
-
-      EJwsclAccessTypeException: The supplied token has not enough access rights to be used here.
-
-    Remarks
-      This method calls SHGetFolderPath. For more information on its parameters
-      refer to MSDN.
-    }
+    { <b>GetFolderPath</b> retrieves a known folder path from the system.
+      Parameters
+      OwnerWindow :  Set to 0.
+      Folder :       A CSIDL value of a folder to be retrieved. See CSIDL_xxxx values in MSDN (e.g. CSIDL_ADMINTOOLS).
+      Token :        A token of a user which is used to retrieve the folder path. The returned path will point to the
+                     user's folder. If this value is nil the current user is used.<p />The parameter can be the constant
+                     JwDefaultUserPseudoToken to retrieve the folders of the "default user" profile.
+      FolderType :   Type of folder\: Current (currently set) or default (preconfigured by Windows).
+      Exceptions
+      EJwsclWinCallFailedException :  A call to SHGetFolderPath failed. To get error information you can read LastError
+                                      property of exception.<p />
+      EJwsclAccessTypeException :     The supplied token has not enough access rights to be used here.
+      Remarks
+      This method calls SHGetFolderPath. For more information on its parameters refer to MSDN.
+      
+      
+      
+      The calling thread won't necessarily be impersonated after the call.
+                                                                                                                         }
     class function GetFolderPath(const OwnerWindow : HWND; Folder : Integer;
         Token : TJwSecurityToken; const FolderType : TJwShellFolderType) : TJwString;
 
@@ -494,14 +479,19 @@ type
     }
     class function IsUACEnabled : Boolean; virtual;
 
-    {<b>IsUserAdmin</b> checks whether the current user has administrative rights.
-
-    Remarks
+    { <b>IsUserAdmin</b> checks whether the current user has administrative rights.
+      Remarks
       The method calls the function JwsclToken.JwIsMemberOfAdministratorsGroup
-    }
+      
+      If User Account Control (UAC) is activated the function returns FALSE if the process is not elevated; otherwise
+      true.                                                                                                           }
     class function IsUserAdmin : Boolean; virtual;
   end;
 
+  { This structure maps either to the Ansi- or Unicodeversion of the Winapi OS information structure.
+    
+    Source Description
+    <c lang="Delphi">TOSVersionInfoEx = {$IFDEF UNICODE&#125;TOSVersionInfoExW{$ELSE&#125;TOSVersionInfoExA{$ENDIF&#125;;</c> }
   TOSVersionInfoEx =
     {$IFDEF UNICODE}TOSVersionInfoExW{$ELSE}TOSVersionInfoExA{$ENDIF};
 
@@ -699,6 +689,18 @@ type
     class function IsWindows2008(bOrHigher: boolean = False): boolean;
       virtual;
 
+   { <b>IsWindows2008 R2</b> checks if the system has the version given in the function name.
+     
+     Currently the parameter bOrHigher has no meaning in this function!
+     
+     
+     Parameters
+     bOrHigher :  defines if the return value should also be <b>true</b> if the system is better/higher than the requested
+                  system version. 
+     Returns
+     <b>IsWindows2008 R2</b> returns <b>true</b> if the system is the requested version (or higher if bOrHigher is true);
+     otherwise <b>false</b>. If bOrHigher is <b>true</b> the return value is the result of <b>true</b> if (bOrHigher and
+     (GetWindowsType \> iVer)) is true; <b>false</b> if GetWindowsType \< (requested version)                              }
    class function IsWindows2008R2(bOrHigher: boolean = False): boolean;
       virtual;
 

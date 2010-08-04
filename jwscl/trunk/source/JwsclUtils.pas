@@ -845,51 +845,32 @@ function JwFormatMessage(
   const Arguments : array of const
 ) : TJwString; overload;
 
-{<b>JwDeviceToDosDrive</b> converts a device path to a DOS path.
-
-Parameters
-  Device A device name to be converted. The string must start with \device\
-         and also must contain the name of device (like floppy0).
-         The device name is replaced by the dos drive and the rest of string is
-         added to the drive.
-
-Returns
-  The return value is a fully qualified DOS path (e.g. C:\ or C:\Windows) or
-   a UNC path (\\server\path).
-  If parameter Device is empty, the return value will also be empty.
-
-Exceptions
-  EJwsclInvalidParameterException This exception is raised if the given device string
-    does not start with \device\
-  EJwsclWinCallFailedException An internal winapi function failed.
-  EOleSysError An internal error occurred while string manipulation. A Safe String routine failed.
-
-Remarks
-  A device path starts with \device\ and continues with a device name (like
-   floppy0 or a partition HardDiskVolume0). The path is converted to a dos
-  path that contains a drive instead of device name.
-
-  The function tries to replace the device name with the dos drive. All sub folders
-  and a possible filename is kept.
-
+{ <b>JwDeviceToDosDrive</b> converts a device path to a DOS path.
+  Returns
+  The return value is a fully qualified DOS path (e.g. C:\\ or C:\\Windows) or a UNC path (\\\\server\\path). If
+  parameter Device is empty, the return value will also be empty.
+  Remarks
+  A device path starts with device and continues with a device name (like floppy0 or a partition HardDiskVolume0). The
+  path is converted to a dos path that contains a drive instead of device name.
+  
+  The function tries to replace the device name with the dos drive. All sub folders and a possible filename is kept.
+  
   The function does not validate the string whether the device, path or file exists.
-
-  If the device name does not link to a DOS drive, the function removes the device name
-  and puts \\ in front of it. E.g. \device\rdpdr\tsclient\path resolves to \\tsclient\path .
-
-Example
+  
+  If the device name does not link to a DOS drive, the function removes the device name and puts \\ in front of it.
+  E.g. \\device\\rdpdr\\tsclient\\path resolves to \\\\tsclient\\path .
+  Example
   The following code converts the first floppy device to a DOS Path
   <code>
-     S := JwDeviceToDosDrive('\device\floppy0\test.txt');
-     S = 'A:\test.txt';
+     S := JwDeviceToDosDrive('\\device\\floppy0\\test.txt');
+     S = 'A:\\test.txt';
   </code>
-
+  
   This code converts a RDP drive mapping:
-   <code>
-     S := JwDeviceToDosDrive('\device\rdpdr\tsclient\a\test.txt');
-     S = '\\tsclient\a\test.txt';
-  </code>
-}
+  <code>
+    S := JwDeviceToDosDrive('\\device\\rdpdr\\tsclient\\a\\test.txt');
+    S = '\\\\tsclient\\a\\test.txt';
+  </code>                                                                                                              }
 function JwDeviceToDosDrive(Device : WideString) : WideString;
 
 implementation
