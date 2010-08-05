@@ -6252,11 +6252,11 @@ const
   function GetNamedPipeClientSessionId(Pipe : HANDLE; out ClientSessionId : ULONG) : Boolean; stdcall;
   {$EXTERNALSYM GetNamedPipeClientSessionId}
 
-  function GetNamedPipeClientComputerName(Pipe : HANDLE; out ClientComputerName : LPTSTR; ClientComputerNameLength : ULONG) : Boolean; stdcall;
+  function GetNamedPipeClientComputerName(Pipe : HANDLE; {out} ClientComputerName : LPTSTR; ClientComputerNameLength : ULONG) : Boolean; stdcall;
   {$EXTERNALSYM GetNamedPipeClientComputerName}
-  function GetNamedPipeClientComputerNameA(Pipe : HANDLE; out ClientComputerName : LPSTR; ClientComputerNameLength : ULONG) : Boolean; stdcall;
+  function GetNamedPipeClientComputerNameA(Pipe : HANDLE; {out} ClientComputerName : LPSTR; ClientComputerNameLength : ULONG) : Boolean; stdcall;
   {$EXTERNALSYM GetNamedPipeClientComputerNameA}
-  function GetNamedPipeClientComputerNameW(Pipe : HANDLE; out ClientComputerName : LPWSTR; ClientComputerNameLength : ULONG) : Boolean; stdcall;
+  function GetNamedPipeClientComputerNameW(Pipe : HANDLE; {out} ClientComputerName : LPWSTR; ClientComputerNameLength : ULONG) : Boolean; stdcall;
   {$EXTERNALSYM GetNamedPipeClientComputerNameA}
 {$ENDIF WINVISTA_UP}
 
