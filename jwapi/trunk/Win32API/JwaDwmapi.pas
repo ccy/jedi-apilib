@@ -93,6 +93,9 @@ type
                         DWMWA_FORCE_ICONIC_REPRESENTATION,  // [set] Force this window to display iconic thumbnails.
                         DWMWA_FLIP3D_POLICY,                // [set] Designates how Flip3D will treat the window.
                         DWMWA_EXTENDED_FRAME_BOUNDS,        // [get] Gets the extended frame bounds rectangle in screen space
+                        DWMWA_HAS_ICONIC_BITMAP,            // [set] Indicates an available bitmap when there is no better thumbnail representation.
+                        DWMWA_DISALLOW_PEEK,                // [set] Don't invoke Peek on the window.
+                        DWMWA_EXCLUDED_FROM_PEEK,           // [set] LivePreview exclusion information
                         DWMWA_LAST);
   {$EXTERNALSYM DWMWINDOWATTRIBUTE}
 
@@ -409,7 +412,7 @@ const
   {$EXTERNALSYM DwmSetDxFrameDuration}
   function DwmSetPresentParameters(hWnd : HWND; var pPresentParams : DWM_PRESENT_PARAMETERS) : HRESULT; stdcall;
   {$EXTERNALSYM DwmSetPresentParameters}
-  function DwmSetWindowAttribute(hWnd : HWND; dwAttribute : DWORD; pvAttribute : LPCVOID; cbAttribute : DWORD) : HRESULT; stdcall;
+  function DwmSetWindowAttribute(hWnd : HWND; dwAttribute : DWMWINDOWATTRIBUTE; pvAttribute : LPCVOID; cbAttribute : DWORD) : HRESULT; stdcall;
   {$EXTERNALSYM DwmSetWindowAttribute}
   function DwmUnregisterThumbnail(hThumbnailId : HTHUMBNAIL) : HRESULT; stdcall;
   {$EXTERNALSYM DwmUnregisterThumbnail}
