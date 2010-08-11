@@ -3146,6 +3146,8 @@ type
                           dwReserved : DWORD) : HRESULT; stdcall;
     function ThumbBarAddButtons(hwnd : HWND; cButtons : UINT;
                                 pButton : LPTHUMBBUTTON) : HRESULT; stdcall;
+    function ThumbBarUpdateButtons(hwnd : HWND; cButtons : UINT;
+                                   pButton : LPTHUMBBUTTON) : HRESULT; stdcall;
     function ThumbBarSetImageList(hwnd : HWND;
                                   himl : HIMAGELIST) : HRESULT; stdcall;
     function SetOverlayIcon(hwnd : HWND; hIcon : HICON;
