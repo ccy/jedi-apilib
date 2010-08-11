@@ -415,6 +415,19 @@ const
   {$EXTERNALSYM DwmUnregisterThumbnail}
   function DwmUpdateThumbnailProperties(hThumbnailId : HTHUMBNAIL; const ptnProperties : DWM_THUMBNAIL_PROPERTIES) : HRESULT; stdcall;
   {$EXTERNALSYM DwmUpdateThumbnailProperties}
+
+{$IFDEF WIN7_UP}
+  const
+    DWM_SIT_DISPLAYFRAME = $00000001;  // Display a window frame around the provided bitmap
+
+  function DwmSetIconicThumbnail(hwnd : HWND; hbmp : HBITMAP; dwSITFlags : DWORD) : HRESULT; stdcall;
+  {$EXTERNALSYM DwmSetIconicThumbnail}
+  function DwmSetIconicLivePreviewBitmap(hwnd : HWND; hbmp : HBITMAP; pptClient : PPoint; dwSITFlags : DWORD) : HRESULT; stdcall;
+  {$EXTERNALSYM DwmSetIconicLivePreviewBitmap}
+  function DwmInvalidateIconicBitmaps(hwnd : HWND) : HRESULT; stdcall;
+  {$EXTERNALSYM DwmInvalidateIconicBitmaps}
+{$ENDIF}
+
   function DwmAttachMilContent(hWnd : HWND) : HRESULT; stdcall;
   {$EXTERNALSYM DwmAttachMilContent}
   function DwmDetachMilContent(hWnd : HWND) : HRESULT; stdcall;
@@ -679,6 +692,47 @@ begin
   end;
 end;
 
+{$IFDEF WIN7_UP}
+var
+  _DwmSetIconicThumbnail: Pointer;
+
+function DwmSetIconicThumbnail;
+begin
+  GetProcedureAddress(_DwmSetIconicThumbnail, dwmlib, 'DwmSetIconicThumbnail');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_DwmSetIconicThumbnail]
+  end;
+end;
+
+var
+  _DwmSetIconicLivePreviewBitmap: Pointer;
+
+function DwmSetIconicLivePreviewBitmap;
+begin
+  GetProcedureAddress(_DwmSetIconicLivePreviewBitmap, dwmlib, 'DwmSetIconicLivePreviewBitmap');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_DwmSetIconicLivePreviewBitmap]
+  end;
+end;
+
+var
+  _DwmInvalidateIconicBitmaps: Pointer;
+
+function DwmInvalidateIconicBitmaps;
+begin
+  GetProcedureAddress(_DwmInvalidateIconicBitmaps, dwmlib, 'DwmInvalidateIconicBitmaps');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_DwmInvalidateIconicBitmaps]
+  end;
+end;
+{$ENDIF}
+
 var
   _DwmAttachMilContent: Pointer;
 
@@ -791,6 +845,11 @@ function DwmSetPresentParameters; external dwmlib name 'DwmSetPresentParameters'
 function DwmSetWindowAttribute; external dwmlib name 'DwmSetWindowAttribute';
 function DwmUnregisterThumbnail; external dwmlib name 'DwmUnregisterThumbnail';
 function DwmUpdateThumbnailProperties; external dwmlib name 'DwmUpdateThumbnailProperties';
+{$IFDEF WIN7_UP}
+function DwmSetIconicThumbnail; external dwmlib name 'DwmSetIconicThumbnail';
+function DwmSetIconicLivePreviewBitmap; external dwmlib name 'DwmSetIconicLivePreviewBitmap';
+function DwmInvalidateIconicBitmaps; external dwmlib name 'DwmInvalidateIconicBitmaps';
+{$ENDIF}
 function DwmAttachMilContent; external dwmlib name 'DwmAttachMilContent';
 function DwmDetachMilContent; external dwmlib name 'DwmDetachMilContent';
 function DwmFlush; external dwmlib name 'DwmFlush';
