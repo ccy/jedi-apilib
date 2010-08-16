@@ -901,7 +901,7 @@ begin
     if {$IFDEF UNICODE}ShellExecuteExW{$ELSE}ShellExecuteExA{$ENDIF}(shExecInfo) then
       result := shExecInfo.hProcess
     else
-      raise EJwsclWinCallFailedException.CreateFmtWinCall(RsWinCallFailed,'src','',RsUNElevation,0,
+      raise EJwsclWinCallFailedException.CreateFmtWinCall(RsWinCallFailed,'JwShellExecute','',RsUNElevation,0,
             true,'ShellExecuteEx',['ShellExecuteEx']);
 
     if (result <> 0) and not (sefNoClosehProcess in Flags) then

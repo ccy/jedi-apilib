@@ -768,6 +768,20 @@ type
 
     {IsStarterEdition returns true if the current Windows is a Starter Edition.}
     class function IsStarterEdition : Boolean; virtual;
+
+    {<b>GetProductType</b> returns the product type of the current OS and maps
+     the type supported by the specified version.
+
+     Return Value
+       The supported product type.
+       Currently, on XP or older the return value is ptUNDEFINED. }
+    class function GetProductType(Version : TOSVersionInfoEx) : TJwProductType; overload; virtual;
+
+    {<b>GetProductType</b> returns the current product type of Windows.
+     Return Value
+       The supported product type.
+       Currently, on XP or older the return value is ptUNDEFINED. }
+    class function GetProductType : TJwProductType; overload; virtual;
   end;
 
 const
@@ -1441,6 +1455,45 @@ begin
     Result := cOsUnknown;
 end;
 
+
+
+class function TJwWindowsVersion.GetProductType(Version: TOSVersionInfoEx): TJwProductType;
+type
+  TGetProductInfo = function(
+      {__in}   dwOSMajorVersion,
+      {__in}   dwOSMinorVersion,
+      {__in}   dwSpMajorVersion,
+      {__in}   dwSpMinorVersion : DWORD;
+      {__out}  pdwReturnedProductType : PDWORD) : BOOL; stdcall;
+
+var
+  GetProductInfo : TGetProductInfo;
+begin
+  if TJwWindowsVersion.IsWindowsVista(true) or TJwWindowsVersion.IsWindows2008(true) then
+  begin
+    GetProcedureAddress(@GetProductInfo, kernel32, 'GetProductInfo');
+
+    if not GetProductInfo(Version.dwMajorVersion, Version.dwMinorVersion,
+                   Version.wServicePackMajor, Version.wServicePackMinor,
+                   @TJwProductType(result)) then
+    begin
+      //TODO: also check for K SKUS
+      //http://msdn.microsoft.com/en-us/library/aa965835%28VS.85%29.aspx
+      //http://msdn.microsoft.com/en-us/library/ms724358%28VS.85%29.aspx
+      raise EJwsclInvalidParameterException.Create('One or more values in parameter Version are not supported.');
+    end;
+  end
+  else
+  begin
+    //TODO: use WIM ?
+    result := ptUNDEFINED;
+  end;
+end;
+
+class function TJwWindowsVersion.GetProductType: TJwProductType;
+begin
+  result := GetProductType(fOSVerInfo);
+end;
 
 
 class function TJwSystemInformation.IsTerminalServiceRunning: Boolean;

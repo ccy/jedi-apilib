@@ -1120,6 +1120,8 @@ type
 
   {<b>TJwCardinalArray</b> is a utility type that defines a dynamic array of cardinal values.}
   TJwCardinalArray = array of Cardinal;
+  {<b>TJwIntegerArray</b> is a utility type that defines a dynamic array of integer values.}
+  TJwIntegerArray = array of Integer;
 
 
   {<b>TJwSecurityDescriptor.CreateDefaultByToken</b> is used by TJwRequestedTokenType.CreateDefaultByToken
@@ -2082,6 +2084,62 @@ type
     }
     Callback : TJwWindowsVersionDefinitionCallback;
   end;
+
+
+  TJwProductType = (
+    ptUnlicensed = $ABCDABCD,
+    ptUNDEFINED = $00000000, //An unknown product
+    ptBUSINESS = $00000006, //Business
+    ptBUSINESS_N = $00000010, //Business N
+    ptCLUSTER_SERVER = $00000012, //HPC Edition
+    ptDATACENTER_SERVER = $00000008 , //Server Datacenter (full installation)
+    ptDATACENTER_SERVER_CORE = $0000000C, //Server Datacenter (core installation)
+    ptDATACENTER_SERVER_CORE_V = $00000027, //Server Datacenter without Hyper-V (core installation)
+    ptDATACENTER_SERVER_V = $00000025, //Server Datacenter without Hyper-V (full installation)
+    ptENTERPRISE = $00000004, //Enterprise
+    ptENTERPRISE_E = $00000046, //Not supported
+    ptENTERPRISE_N = $0000001B, //Enterprise N
+    ptENTERPRISE_SERVER = $0000000A, //Server Enterprise (full installation)
+    ptENTERPRISE_SERVER_CORE = $0000000E, //Server Enterprise (core installation)
+    ptENTERPRISE_SERVER_CORE_V = $00000029, //Server Enterprise without Hyper-V (core installation)
+    ptENTERPRISE_SERVER_IA64 = $0000000F, //Server Enterprise for Itanium-based Systems
+    ptENTERPRISE_SERVER_V = $00000026, //Server Enterprise without Hyper-V (full installation)
+    ptHOME_BASIC = $00000002, //Home Basic
+    ptHOME_BASIC_E = $00000043, //Not supported
+    ptHOME_BASIC_N = $00000005, //Home Basic N
+    ptHOME_PREMIUM = $00000003, //Home Premium
+    ptHOME_PREMIUM_E = $00000044, //Not supported
+    ptHOME_PREMIUM_N = $0000001A, //Home Premium N
+    ptHYPERV = $0000002A, //Microsoft Hyper-V Server
+    ptMEDIUMBUSINESS_SERVER_MANAGEMENT = $0000001E, //Windows Essential Business Server Management Server
+    ptMEDIUMBUSINESS_SERVER_MESSAGING = $00000020, //Windows Essential Business Server Messaging Server
+    ptMEDIUMBUSINESS_SERVER_SECURITY = $0000001F, //Windows Essential Business Server Security Server
+    ptPROFESSIONAL = $00000030, //Professional
+    ptPROFESSIONAL_E = $00000045, //Not supported
+    ptPROFESSIONAL_N = $00000031, //Professional N
+    ptSERVER_FOR_SMALLBUSINESS = $00000018, //Windows Server 2008 for Windows Essential Server Solutions
+    ptSERVER_FOR_SMALLBUSINESS_V = $00000023, //Windows Server 2008 without Hyper-V for Windows Essential Server Solutions
+    ptSERVER_FOUNDATION = $00000021, //Server Foundation
+    ptSMALLBUSINESS_SERVER = $00000009, //Windows Small Business Server
+    ptSOLUTION_EMBEDDEDSERVER = $00000038, //Windows MultiPoint Server
+    ptSTANDARD_SERVER = $00000007, //Server Standard (full installation)
+    ptSTANDARD_SERVER_CORE = $0000000D, //Server Standard (core installation)
+    ptSTANDARD_SERVER_CORE_V = $00000028, //Server Standard without Hyper-V (core installation)
+    ptSTANDARD_SERVER_V = $00000024, //Server Standard without Hyper-V (full installation)
+    ptSTARTER = $0000000B, //Starter
+    ptSTARTER_E = $00000042, //Not supported
+    ptSTARTER_N = $0000002F, //Starter N
+    ptSTORAGE_ENTERPRISE_SERVER = $00000017, //Storage Server Enterprise
+    ptSTORAGE_EXPRESS_SERVER = $00000014, //Storage Server Express
+    ptSTORAGE_STANDARD_SERVER = $00000015, //Storage Server Standard
+    ptSTORAGE_WORKGROUP_SERVER = $00000016, //Storage Server Workgroup
+
+    ptULTIMATE = $00000001, //Ultimate
+    ptULTIMATE_E = $00000047, //Not supported
+    ptULTIMATE_N = $0000001C, //Ultimate N
+    ptWEB_SERVER = $00000011, //Web Server (full installation)
+    ptWEB_SERVER_CORE = $0000001D //Web Server (core installation)
+  );
 
 
 {**************** ADD HERE NEW DEFS ************** }
