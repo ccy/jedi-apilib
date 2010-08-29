@@ -34,6 +34,17 @@ The Initial Developer of the Original Code is Christian Wimmer.
 Portions created by Christian Wimmer are Copyright (C) Christian Wimmer. All rights reserved.
 
 Requirement: Delphi 2009 or newer
+
+Version
+The following values are automatically injected by Subversion on commit.
+<table>
+\Description                                                        Value
+------------------------------------------------------------------  ------------
+Last known date the file has changed in the repository              \$Date$
+Last known revision number the file has changed in the repository   \$Revision$
+Last known author who changed the file in the repository.           \$Author$
+Full URL to the latest version of the file in the repository.       \$HeadURL$
+</table>
 }
 unit JwsclPathSimulation;
 {$INCLUDE ..\includes\Jwscl.inc}

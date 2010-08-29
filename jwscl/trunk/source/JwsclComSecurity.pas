@@ -1,80 +1,89 @@
-{ Description
-  Project JEDI Windows Security Code Library (JWSCL)
-  
-  This unit provides classes and methods to support COM security initialization.
-  Author
-  Christian Wimmer
-  License
-  The contents of this file are subject to the Mozilla Public License Version 1.1 (the "License"); you may not use
-  this file except in compliance with the License. You may obtain a copy of the License at http://www.mozilla.org/MPL/
-  
-  Software distributed under the License is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either
-  express or implied. See the License for the specific language governing rights and limitations under the License.
-  
-  Alternatively, the contents of this file may be used under the terms of the GNU Lesser General Public License (the
-  "LGPL License"), in which case the provisions of the LGPL License are applicable instead of those above. If you wish
-  to allow use of your version of this file only under the terms of the LGPL License and not to allow others to use
-  your version of this file under the MPL, indicate your decision by deleting the provisions above and replace them
-  with the notice and other provisions required by the LGPL License. If you do not delete the provisions above, a
-  recipient may use your version of this file under either the MPL or the LGPL License.
-  
-  For more information about the LGPL: http://www.gnu.org/copyleft/lesser.html
-  Note
-  The Original Code is JwsclCOMSecurity.pas.
-  
-  The Initial Developer of the Original Code is Christian Wimmer.
-  TODO
-    1. CoCreateInstance and Integrity Levels http://msdn.microsoft.com/en-us/ms679687%28VS.85%29.aspx
-    2. Implement CoCreateInstanceEx with impersonation
-    3. impl. LegacySecureReferences (S390)
-    4. impl LegacyMutualAuthentication
-    5. add feature to read appido from HKEY_LOCAL_MACHINESOFTWAREClassesAppID, inst. HKCRK
-    6. add dllsurrogate to reg class
-    7. RunAs für Services usw (Vista kein pass, \< : leeres pass)
-    8. Test dllsurrgotate with several com servers in dllhost.exe
-  Remarks
-  The following issues happened to me:
-  
-    1. Call to CreateComObject/CoCreateInstance fails with EOleSysError "Failed to start server". An out of process
-       COM server (usually) uses the identity given by the caller's process token. However if you impersonate the current
-       thread and then call CoCreateInstance or CreateComObject, the server is created using the given thread token. In
-       some circumstances this may fail with an error "Failed to start server" and a Windows log event "Invalid parameter".
-       This happened to me because I used LOGON32_LOGON_INTERACTIVE in a LogonUser call. Instead use LOGON32_LOGON_BATCH to
-       solve this problem.
-    2. What is cAuthSvc in CoInitializeSecurity? cAuthSvc defines an array of by the server supported authentication
-       services. It is an array of SOLE_AUTHENTICATION_SERVICE in where you define which authentication services your
-       server supports. E.g. you can support e.g. RPC_C_AUTHN_GSS_KERBEROS and RPC_C_AUTHN_WINNT to allow users to be
-       impersonated by the server. The dwAuthzSvc member is ignored by those two services. COM uses RPC_C_AUTHN_WINNT with
-       all members left set to empty or 0. (WinVista)
-  Conditions
-  Here are some rules you should consider when using COM
-  
-    1. You need to define an authentication service if you want to get information about the client. Using
-       RPC_C_AUTHN_NONE will prevent you from calling ImpersonateClient or getting the client's context
-       (CoGetClientContext).
-    2. If you set the member pPrincipalName only the client running with the principal's identity can get a class from
-       the server. The client can impersonate before it creates the class (CreateComObject/CoCreateInstance). Use an empty
-       string to allow everyone to use this service. a) For WinNT/Kerberos authentication level, the pPrincipalName cannot
-       be a group. b) The supplied credentials in pAuthList of CoInitializeSecurity are not used, at least on my Win2008
-       Server.
-    3. Usually dwAuthnLevel (in CoInitializeSecurity) defines two different things for Client and Server. Server: It
-       defines the lowest authentication level allowed to connect to the server. Lower levels are rejected. Client: It
-       defines the authentication level wished to be used by the client. If it is higher than the auth level set by the
-       server, the client's level is used. The higher the better. However, on my Win2008 and RPC_C_AUTHN_WINNT, the highest
-       available level (RPC_C_AUTHN_LEVEL_PKT_PRIVACY) was used by default. Even if set a level too low in a call to
-       CoInitializeSecurity, this high level was used. I could not make it smaller by setting a proxy on the interface.
-       Only RPC_C_AUTHN_LEVEL_NONE turns off all authentication.                                                            }
-unit JwsclComSecurity;
+{ 
+Description
+Project JEDI Windows Security Code Library (JWSCL)
 
+This unit provides classes and methods to support COM security initialization.
+Author
+Christian Wimmer
+License
+The contents of this file are subject to the Mozilla Public License Version 1.1 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the License at http://www.mozilla.org/MPL/
+
+Software distributed under the License is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either
+express or implied. See the License for the specific language governing rights and limitations under the License.
+
+Alternatively, the contents of this file may be used under the terms of the GNU Lesser General Public License (the
+"LGPL License"), in which case the provisions of the LGPL License are applicable instead of those above. If you wish
+to allow use of your version of this file only under the terms of the LGPL License and not to allow others to use
+your version of this file under the MPL, indicate your decision by deleting the provisions above and replace them
+with the notice and other provisions required by the LGPL License. If you do not delete the provisions above, a
+recipient may use your version of this file under either the MPL or the LGPL License.
+
+For more information about the LGPL: http://www.gnu.org/copyleft/lesser.html
+Note
+The Original Code is JwsclCOMSecurity.pas.
+
+The Initial Developer of the Original Code is Christian Wimmer.
+TODO
+1. CoCreateInstance and Integrity Levels http://msdn.microsoft.com/en-us/ms679687%28VS.85%29.aspx
+2. Implement CoCreateInstanceEx with impersonation
+3. impl. LegacySecureReferences (S390)
+4. impl LegacyMutualAuthentication
+5. add feature to read appido from HKEY_LOCAL_MACHINE\\SOFTWARE\\ClassesAppID, inst. HKCRK
+6. add dllsurrogate to reg class
+7. RunAs für Services usw (Vista kein pass, \< : leeres pass)
+8. Test dllsurrgotate with several com servers in dllhost.exe
+Remarks
+The following issues happened to me:
+
+1. Call to CreateComObject/CoCreateInstance fails with EOleSysError "Failed to start server". An out of process
+   COM server (usually) uses the identity given by the caller's process token. However if you impersonate the current
+   thread and then call CoCreateInstance or CreateComObject, the server is created using the given thread token. In
+   some circumstances this may fail with an error "Failed to start server" and a Windows log event "Invalid parameter".
+   This happened to me because I used LOGON32_LOGON_INTERACTIVE in a LogonUser call. Instead use LOGON32_LOGON_BATCH to
+   solve this problem.
+2. What is cAuthSvc in CoInitializeSecurity? cAuthSvc defines an array of by the server supported authentication
+   services. It is an array of SOLE_AUTHENTICATION_SERVICE in where you define which authentication services your
+   server supports. E.g. you can support e.g. RPC_C_AUTHN_GSS_KERBEROS and RPC_C_AUTHN_WINNT to allow users to be
+   impersonated by the server. The dwAuthzSvc member is ignored by those two services. COM uses RPC_C_AUTHN_WINNT with
+   all members left set to empty or 0. (WinVista)
+Conditions
+Here are some rules you should consider when using COM
+
+1. You need to define an authentication service if you want to get information about the client. Using
+   RPC_C_AUTHN_NONE will prevent you from calling ImpersonateClient or getting the client's context
+   (CoGetClientContext).
+2. If you set the member pPrincipalName only the client running with the principal's identity can get a class from
+   the server. The client can impersonate before it creates the class (CreateComObject/CoCreateInstance). Use an empty
+   string to allow everyone to use this service. a) For WinNT/Kerberos authentication level, the pPrincipalName cannot
+   be a group. b) The supplied credentials in pAuthList of CoInitializeSecurity are not used, at least on my Win2008
+   Server.
+3. Usually dwAuthnLevel (in CoInitializeSecurity) defines two different things for Client and Server. Server: It
+   defines the lowest authentication level allowed to connect to the server. Lower levels are rejected. Client: It
+   defines the authentication level wished to be used by the client. If it is higher than the auth level set by the
+   server, the client's level is used. The higher the better. However, on my Win2008 and RPC_C_AUTHN_WINNT, the highest
+   available level (RPC_C_AUTHN_LEVEL_PKT_PRIVACY) was used by default. Even if set a level too low in a call to
+   CoInitializeSecurity, this high level was used. I could not make it smaller by setting a proxy on the interface.
+   Only RPC_C_AUTHN_LEVEL_NONE turns off all authentication.                                                          
+
+Version
+The following values are automatically injected by Subversion on commit.
+<table>
+\Description                                                        Value
+------------------------------------------------------------------  ------------
+Last known date the file has changed in the repository              \$Date$
+Last known revision number the file has changed in the repository   \$Revision$
+Last known author who changed the file in the repository.           \$Author$
+Full URL to the latest version of the file in the repository.       \$HeadURL$
+</table>
+}
+unit JwsclComSecurity;
 {$INCLUDE ..\includes\Jwscl.inc}
 
 
 interface
 uses
   ActiveX,
-
-  //only temp
-  //JwaCOMSecurity,
 
   JwaWindows,      //JEDI API unit
 
@@ -5821,7 +5830,7 @@ begin
       case PersistStreamType of
         pstIAccessControl:
         begin
-          //let do the real MS interface do the work
+          //let the real MS interface do the work
           IA := CreateCOMImplementation;
 
           Stream := IA as IPersistStream;
@@ -5852,7 +5861,7 @@ begin
             if Succeeded(result) then
             begin
               //size of descriptor is invalid
-              //If the stream wasn't written compatibly
+              //If the stream wasn't written correctly
               //then it is highly possible that the read value is out of bounds
               if (cSize < sizeof(TSecurityDescriptor)) or    //csize = sizeo(TS) means an empty SD
                  (cSize > MAX_SECURITY_DESCRIPTOR_SIZE) then
@@ -5938,7 +5947,7 @@ begin
                  [19..cSize]  security descriptor
 
                  See TJwSecurityDescriptor.SaveToStream
-                 }
+                 } //TODO: Win64 check
                 result := stm.Read(Pointer(DWORD_PTR(Mem.Memory) + SD_HEADER_SIZE), JwHeader.Size - SD_HEADER_SIZE, nil);
 
                 if Succeeded(result) then

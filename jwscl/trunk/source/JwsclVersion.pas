@@ -40,7 +40,6 @@
 {$IFNDEF SL_OMIT_SECTIONS}
 unit JwsclVersion;
 {$INCLUDE ..\includes\Jwscl.inc}
-// Last modified: $Date$
 
 interface
 

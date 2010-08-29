@@ -38,11 +38,21 @@ Portions created by Christian Wimmer are Copyright (C) Christian Wimmer. All rig
 Link List
 Secure object types:
   http://msdn2.microsoft.com/en-us/library/aa379593.aspx
+  
+Version
+The following values are automatically injected by Subversion on commit.
+<table>
+\Description                                                        Value
+------------------------------------------------------------------  ------------
+Last known date the file has changed in the repository              \$Date$
+Last known revision number the file has changed in the repository   \$Revision$
+Last known author who changed the file in the repository.           \$Author$
+Full URL to the latest version of the file in the repository.       \$HeadURL$
+</table>
 }
 {$IFNDEF SL_OMIT_SECTIONS}
 unit JwsclSecurityDialogs;
 {$INCLUDE ..\includes\Jwscl.inc}
-// Last modified: $Date: 2007-09-10 10:00:00 +0100 $
 
 interface
 
@@ -679,7 +689,7 @@ begin
   //
   // If you find strange chars there too, this must be changed too.
   //
-  // Of course we could also just recylcle the last pointer
+  // Of course we could also just recycle the last pointer
   // but this cannot be used with GetMem imho.
   sObjectName.Add(pObjectInfo.pszObjectName);
 
@@ -907,10 +917,13 @@ begin
             if (SIDInfoList[i].sClass <> scnNone) then
             begin
               case SIDInfoList[i].sClass of
-                scnComputer: s := 'Computer'; //Do not localize!!
-                scnUser: s  := 'User';        //Do not localize!!
-                scnGroup: s := 'Group';       //Do not localize!!
-                scnUnknown:
+                scnComputer  : s := 'Computer'; //Do not localize!!
+                scnUser      : s := 'User';        //Do not localize!!
+                scnGroup     : s := 'Group';       //Do not localize!!
+                scnDomain    : s := 'Group';       //Do not localize!!
+                scnAlias     : s := 'Alias';       //Do not localize!!
+                scnWellKnown : s := 'WellKnown';       //Do not localize!!
+                scnUnknown   :
                 begin
                   s := 'Unknown'; //Do not localize!!
                   //Not working!
@@ -1920,7 +1933,7 @@ begin
     p2 := aPSidList.aSidInfo[i].pwzClass;
   end;}
 
-  GlobalUnLock(medium.hGlobal); //TODO: 1st Sept 2008@CW : is this necessary?
+  //GlobalUnLock(medium.hGlobal);
 
   Result := S_OK;
 end;
@@ -1972,6 +1985,7 @@ end;
 function TJwSidInfoDataObject.GetDataHere(const formatetc: TFormatEtc;
   out medium: TStgMedium): HRESULT; stdcall;
 begin
+  ZeroMemory(@medium, SizeOf(medium));
   Result := E_NOTIMPL;
 end;
 
@@ -1984,18 +1998,21 @@ end;
 function TJwSidInfoDataObject.GetCanonicalFormatEtc(const formatetc: TFormatEtc;
   out formatetcOut: TFormatEtc): HRESULT; stdcall;
 begin
+  ZeroMemory(@formatetcOut, SizeOf(formatetcOut));
   Result := E_NOTIMPL;
 end;
 
 function TJwSidInfoDataObject.SetData(const formatetc: TFormatEtc;
   var medium: TStgMedium; fRelease: BOOL): HRESULT; stdcall;
 begin
+  ZeroMemory(@medium, SizeOf(medium));
   Result := E_NOTIMPL;
 end;
 
 function TJwSidInfoDataObject.EnumFormatEtc(dwDirection: {$IFDEF FPC}DWORD{$ELSE}Longint{$ENDIF FPC};
   out enumFormatEtc: IEnumFORMATETC): HRESULT; stdcall;
 begin
+  enumFormatEtc := nil;
   Result := E_NOTIMPL;
 end;
 
@@ -2003,6 +2020,7 @@ function TJwSidInfoDataObject.DAdvise(const formatetc: TFormatEtc;
   advf: {$IFDEF FPC}DWORD{$ELSE}Longint{$ENDIF FPC}; const advSink: IAdviseSink;
   out dwConnection: {$IFDEF FPC}DWORD{$ELSE}Longint{$ENDIF FPC}): HRESULT; stdcall;
 begin
+  dwConnection := 0;
   Result := E_NOTIMPL;
 end;
 
@@ -2015,6 +2033,7 @@ end;
 function TJwSidInfoDataObject.EnumDAdvise(
   out enumAdvise: IEnumSTATDATA): HRESULT; stdcall;
 begin
+  enumAdvise := nil;
   Result := E_NOTIMPL;
 end;
 
@@ -2030,9 +2049,6 @@ end;
 initialization
 {$ENDIF SL_OMIT_SECTIONS}
 {$IFNDEF SL_INITIALIZATION_SECTION}
-
-
-  //x := TJwSidInfoDataObject.Create();
 
 {$ENDIF SL_INITIALIZATION_SECTION}
 

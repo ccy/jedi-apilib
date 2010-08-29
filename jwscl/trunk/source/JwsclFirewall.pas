@@ -33,7 +33,16 @@ The Original Code is JwsclFirewall.pas.
 
 The Initial Developer of the Original Code is Heiko Adams
 
-
+Version
+The following values are automatically injected by Subversion on commit.
+<table>
+\Description                                                        Value
+------------------------------------------------------------------  ------------
+Last known date the file has changed in the repository              \$Date$
+Last known revision number the file has changed in the repository   \$Revision$
+Last known author who changed the file in the repository.           \$Author$
+Full URL to the latest version of the file in the repository.       \$HeadURL$
+</table>
 }
 unit JwsclFirewall;
 {$INCLUDE ..\includes\Jwscl.inc}

@@ -35,31 +35,19 @@ The Original Code is JwsclUtils.pas.
 The Initial Developer of the Original Code is Christian Wimmer.
 Portions created by Christian Wimmer are Copyright (C) Christian Wimmer. All rights reserved.
 
-Todo
-
-1. Extend TJwRegistry to support security.
-
+Version
+The following values are automatically injected by Subversion on commit.
+<table>
+\Description                                                        Value
+------------------------------------------------------------------  ------------
+Last known date the file has changed in the repository              \$Date$
+Last known revision number the file has changed in the repository   \$Revision$
+Last known author who changed the file in the repository.           \$Author$
+Full URL to the latest version of the file in the repository.       \$HeadURL$
+</table>
 }
 unit JwsclUtils;
 {$INCLUDE ..\includes\Jwscl.inc}
-// Last modified: $Date: 2007-09-10 10:00:00 +0100 $
-
-
-//Check for FastMM4
-{$IFDEF FASTMM4}
-  //and also activate debug mode (leak detection for Local-/GlobalAlloc)
-  {$DEFINE FullDebugMode}
-{$ENDIF FASTMM4}
-{.$UNDEF FullDebugMode}
-
-//check for Eurekalog
-{$IFDEF EUREKALOG}
-  {$DEFINE FullDebugMode}
-{to see if this memory manager catches Local/Global leaks}
-  {.$UNDEF FASTMM4}
-  {.$UNDEF MEMCHECK}
-  {.$UNDEF FullDebugMode}
-{$ENDIF EUREKALOG}
 
 interface
 
@@ -67,10 +55,6 @@ uses
   Classes,
   Registry,
   JwaWindows,
-{$IFDEF JCL}
-  JclWideFormat,
-  JclWideStrings,
-{$ENDIF}
   JwsclTypes,
   JwsclExceptions,
   JwsclResource,

@@ -1,65 +1,78 @@
-{ Description
-  Project JEDI Windows Security Code Library (JWSCL)
+{ 
+Description
+Project JEDI Windows Security Code Library (JWSCL)
 
-  This unit provides access to Terminal Server api functions through it's key
-  object TJwTerminalServer
-  Author
-  Remko Weijnen
-  License
-  The contents of this file are subject to the Mozilla Public License Version 1.1
-  (the "License"); you may not use this file except in compliance with the
-  \License. You may obtain a copy of the License at http://www.mozilla.org/MPL/
+This unit provides access to Terminal Server api functions through it's key
+object TJwTerminalServer
+Author
+Remko Weijnen
+License
+The contents of this file are subject to the Mozilla Public License Version 1.1
+(the "License"); you may not use this file except in compliance with the
+\License. You may obtain a copy of the License at http://www.mozilla.org/MPL/
 
-  Software distributed under the License is distributed on an "AS IS" basis,
-  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for the
-  specific language governing rights and limitations under the License.
+Software distributed under the License is distributed on an "AS IS" basis,
+WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for the
+specific language governing rights and limitations under the License.
 
-  Alternatively, the contents of this file may be used under the terms of the GNU
-  Lesser General Public License (the "LGPL License"), in which case the provisions
-  of the LGPL License are applicable instead of those above. If you wish to allow
-  use of your version of this file only under the terms of the LGPL License and
-  not to allow others to use your version of this file under the MPL, indicate
-  your decision by deleting the provisions above and replace them with the notice
-  and other provisions required by the LGPL License. If you do not delete the
-  provisions above, a recipient may use your version of this file under either the
-  MPL or the LGPL License.
+Alternatively, the contents of this file may be used under the terms of the GNU
+Lesser General Public License (the "LGPL License"), in which case the provisions
+of the LGPL License are applicable instead of those above. If you wish to allow
+use of your version of this file only under the terms of the LGPL License and
+not to allow others to use your version of this file under the MPL, indicate
+your decision by deleting the provisions above and replace them with the notice
+and other provisions required by the LGPL License. If you do not delete the
+provisions above, a recipient may use your version of this file under either the
+MPL or the LGPL License.
 
-  For more information about the LGPL: http://www.gnu.org/copyleft/lesser.html
-  Note
-  The Original Code is JwsclTerminalServer.pas.
+For more information about the LGPL: http://www.gnu.org/copyleft/lesser.html
+Note
+The Original Code is JwsclTerminalServer.pas.
 
-  The Initial Developer of the Original Code is Remko Weijnen. Portions created by
-  Remko Weijnen are Copyright (C) Remko Weijnen. All rights reserved.
+The Initial Developer of the Original Code is Remko Weijnen. Portions created by
+Remko Weijnen are Copyright (C) Remko Weijnen. All rights reserved.
 
-  The central object of the JwsclTerminalServer unit is the TJwTerminalServer
-  object. It represents a Terminal Server, the connection to this server and holds
-  the session- and processlist.
+The central object of the JwsclTerminalServer unit is the TJwTerminalServer
+object. It represents a Terminal Server, the connection to this server and holds
+the session- and processlist.
 
-  Some Key functions of TJwTerminalServer are:
+Some Key functions of TJwTerminalServer are:
 
-    * TJwTerminalServer.EnumerateSessions enumerates all Terminal Server
-  sessions into a TJwSessionList which can be accessed by the Sessions property.
-    * TJwTerminalServer.EnumerateProcesses enumerates all Terminal Server
-  processes into a TJwProcessList which can be accessed by the Processes property.
-    * TJwTerminalServer.EnumerateServers enumerates all Terminal Servers in a
-  domain.
-    * TJwTerminalServer.Shutdown Shuts down and optionally restarts the specified
-  Terminal Server.
+* TJwTerminalServer.EnumerateSessions enumerates all Terminal Server
+sessions into a TJwSessionList which can be accessed by the Sessions property.
+* TJwTerminalServer.EnumerateProcesses enumerates all Terminal Server
+processes into a TJwProcessList which can be accessed by the Processes property.
+* TJwTerminalServer.EnumerateServers enumerates all Terminal Servers in a
+domain.
+* TJwTerminalServer.Shutdown Shuts down and optionally restarts the specified
+Terminal Server.
 
-  TJwTerminalServer also offers Events to monitor Terminal Server activity such as
-  OnSessionConnect, OnSessionCreate, OnSessionLogon and OnSessionLogoff.
+TJwTerminalServer also offers Events to monitor Terminal Server activity such as
+OnSessionConnect, OnSessionCreate, OnSessionLogon and OnSessionLogoff.
 
-  A unique feature of TJwTerminalServer is that it's able to return detailled
-  information about Terminal Server, Sessions and Processes that is not available
-  using the normal Terminal Server API's or Microsoft Tools! This includes
-  detailled process memory usage information and extended session information such
-  as ShadowMode, ShadowState and Remote Address.
+A unique feature of TJwTerminalServer is that it's able to return detailled
+information about Terminal Server, Sessions and Processes that is not available
+using the normal Terminal Server API's or Microsoft Tools! This includes
+detailled process memory usage information and extended session information such
+as ShadowMode, ShadowState and Remote Address.
 
-  The schema belows shows the relations between TJwTerminalServer, the
-  TJwWTSSessionList with TJwWTSSessions and the TJwWTSProcessList with
-  TjwWTSSessions.
+The schema belows shows the relations between TJwTerminalServer, the
+TJwWTSSessionList with TJwWTSSessions and the TJwWTSProcessList with
+TjwWTSSessions.
 
-  <image TJwTerminalServer-Hierarchy>                                              }
+<image TJwTerminalServer-Hierarchy>                                              
+  
+Version
+The following values are automatically injected by Subversion on commit.
+<table>
+\Description                                                        Value
+------------------------------------------------------------------  ------------
+Last known date the file has changed in the repository              \$Date$
+Last known revision number the file has changed in the repository   \$Revision$
+Last known author who changed the file in the repository.           \$Author$
+Full URL to the latest version of the file in the repository.       \$HeadURL$
+</table>  
+}
 
 {$IFNDEF SL_OMIT_SECTIONS}
 unit JwsclTerminalServer;

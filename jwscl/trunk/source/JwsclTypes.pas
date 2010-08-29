@@ -34,10 +34,20 @@ The Original Code is JwsclTypes.pas.
 The Initial Developer of the Original Code is Christian Wimmer.
 Portions created by Christian Wimmer are Copyright (C) Christian Wimmer. All rights reserved.
 
+
+Version
+The following values are automatically injected by Subversion on commit.
+<table>
+\Description                                                        Value
+------------------------------------------------------------------  ------------
+Last known date the file has changed in the repository              \$Date$
+Last known revision number the file has changed in the repository   \$Revision$
+Last known author who changed the file in the repository.           \$Author$
+Full URL to the latest version of the file in the repository.       \$HeadURL$
+</table>
 }
 
 unit JwsclTypes;
-// Last modified: $Date: 2007-09-10 10:00:00 +0100 $
 {$INCLUDE ..\includes\Jwscl.inc}
 
 
@@ -632,7 +642,7 @@ type
   TJwAccessMaskArray     = array of TJwAccessMask;
   TJwObjectTypeArray = array of TObjectTypeList;
 
-  TJwSidClassName = (scnNone, scnComputer, scnUser, scnGroup,
+  TJwSidClassName = (scnNone, scnComputer, scnUser, scnGroup, scnDomain, scnAlias, scnwellKnown,
     scnUnknown);
 
   {<B>TJwSidInfoRecord</B> provides information about a SID that could not be
