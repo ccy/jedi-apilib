@@ -42,7 +42,11 @@
 // It defines several mutually exclusive IFDEFs which determine
 // the Windows version the API conversion is usable with.
 
+{$IFDEF JWSCL}
+{$I ..\includes\jwa\jproject\jedi.inc}
+{$ELSE}
 {$I jproject\jedi.inc}
+{$ENDIF}
 
 {$IFNDEF JEDI_INC}
 ALERT_jedi_inc_incompatible
