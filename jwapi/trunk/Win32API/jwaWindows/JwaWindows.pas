@@ -177,7 +177,6 @@ packages}
 
 
 //extra compiler options
-{$I ..\Includes\jedi.inc}
 {$I ..\Includes\JediAPILib.inc} //add "..\..\includes" to source path if not found
 
 
