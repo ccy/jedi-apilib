@@ -68,8 +68,9 @@ Warning #2: If the JEDI API headers are used with a directive WIN_XP or lower
 //This is for compability reasons only!
 //On of them should work. However the second one is standard and supported.
 {.$I .\JediAPILib.inc}
-{$DEFINE JWSCL}
+{$DEFINE JWSCL_INC}
 {$I ..\includes\jwa\JediAPILib.inc}
+{$UNDEF JWSCL_INC}
 
 
 {$IFDEF FPC}
