@@ -56,7 +56,7 @@ unit JwaIpHlpApi;
 
 {$IFNDEF JWA_OMIT_SECTIONS}
 {$I ..\Includes\JediAPILib.inc}
-{$I ..\Includes\jedi.inc} //used for D5 compiling
+
 
 interface
 

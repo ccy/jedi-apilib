@@ -6261,6 +6261,22 @@ const
 {$ENDIF WINVISTA_UP}
 
 
+{$IF defined(WIN7_UP) or
+     (defined(WINXP)   and defined(SERVICEPACK_2)) or
+     (defined(WIN2003) and defined(SERVICEPACK_1))}
+  {$DEFINE JWENABLE_SETSEARCHPATHMODE}
+{$IFEND}
+
+{$IFDEF JWENABLE_SETSEARCHPATHMODE}
+const
+  BASE_SEARCH_PATH_ENABLE_SAFE_SEARCHMODE     = $00000001;
+  BASE_SEARCH_PATH_DISABLE_SAFE_SEARCHMODE    = $00010000;
+  BASE_SEARCH_PATH_PERMANENT                  = $00008000;
+
+  function SetSearchPathMode({__in} Flags : DWORD) : BOOL; stdcall;
+{$ENDIF}
+
+
 
 {$ENDIF JWA_IMPLEMENTATIONSECTION}
 
@@ -19334,6 +19350,21 @@ end;
 
 {$ENDIF WINVISTA_UP}
 
+{$IFDEF JWENABLE_SETSEARCHPATHMODE}
+var
+  _SetSearchPathMode: Pointer;
+
+function SetSearchPathMode;
+begin
+  GetProcedureAddress(_SetSearchPathMode, kernel32, 'SetSearchPathMode');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_SetSearchPathMode]
+  end;
+end;
+{$ENDIF}
+
 {$ELSE}
 
 
@@ -20334,6 +20365,10 @@ function GetNamedPipeClientComputerName; external kernel32 name 'GetNamedPipeCli
 function GetNamedPipeClientComputerNameA; external kernel32 name 'GetNamedPipeClientComputerNameA';
 function GetNamedPipeClientComputerNameW; external kernel32 name 'GetNamedPipeClientComputerNameW';
 {$ENDIF WINVISTA_UP}
+
+{$IFDEF JWENABLE_SETSEARCHPATHMODE}
+function SetSearchPathMode; external kernel32 name 'SetSearchPathMode';
+{$ENDIF}
 
 
 {$ENDIF DYNAMIC_LINK}
