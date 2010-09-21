@@ -86,6 +86,9 @@
       <target id="html">../HTML/!!MEMBEROVERVIEW_IJwWriterClass.html</target>
       <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!MEMBEROVERVIEW_IJwWriterClass.html</target>
     </link>
+    <link topicid="!!MEMBEROVERVIEW_ISafeLoadLibrarySection" displaystring="ISafeLoadLibrarySection Members">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!MEMBEROVERVIEW_ISafeLoadLibrarySection.html</target>
+    </link>
     <link topicid="!!MEMBEROVERVIEW_ISecurityObjectTypeInfoW" displaystring="ISecurityObjectTypeInfoW Members">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/!!MEMBEROVERVIEW_ISecurityObjectTypeInfoW.html</target>
       <target id="html">../HTML/!!MEMBEROVERVIEW_ISecurityObjectTypeInfoW.html</target>
@@ -353,6 +356,9 @@
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/!!MEMBEROVERVIEW_TJwProcessEnumerator.html</target>
       <target id="html">../HTML/!!MEMBEROVERVIEW_TJwProcessEnumerator.html</target>
       <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!MEMBEROVERVIEW_TJwProcessEnumerator.html</target>
+    </link>
+    <link topicid="!!MEMBEROVERVIEW_TJwProcessUtilities" displaystring="TJwProcessUtilities Members">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!MEMBEROVERVIEW_TJwProcessUtilities.html</target>
     </link>
     <link topicid="!!MEMBEROVERVIEW_TJwRandomDataGenerator" displaystring="TJwRandomDataGenerator Members">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/!!MEMBEROVERVIEW_TJwRandomDataGenerator.html</target>
@@ -686,7 +692,6 @@
     <link topicid="!!MEMBEROVERVIEW_TJwWTSSessionStatistics" displaystring="TJwWTSSessionStatistics Members">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/!!MEMBEROVERVIEW_TJwWTSSessionStatistics.html</target>
       <target id="html">../HTML/!!MEMBEROVERVIEW_TJwWTSSessionStatistics.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!MEMBEROVERVIEW_TJwWTSSessionStatistics.html</target>
     </link>
     <link topicid="!!MEMBERTYPE_Constants_EJwsclAdSearchException" displaystring="EJwsclAdSearchException Constants">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/!!MEMBERTYPE_Constants_EJwsclAdSearchException.html</target>
@@ -1040,7 +1045,6 @@
     </link>
     <link topicid="!!MEMBERTYPE_Fields_TJwWTSSessionStatistics" displaystring="TJwWTSSessionStatistics Fields">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/!!MEMBERTYPE_Fields_TJwWTSSessionStatistics.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!MEMBERTYPE_Fields_TJwWTSSessionStatistics.html</target>
       <target id="pdf">pdf://3179@JWSCL.pdf</target>
     </link>
     <link topicid="!!MEMBERTYPE_Methods_EJwsclAdSearchException" displaystring="EJwsclAdSearchException Methods">
@@ -1102,6 +1106,9 @@
       <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!MEMBERTYPE_Methods_IJwWriterClass.html</target>
       <target id="pdf">pdf://3210@JWSCL.pdf</target>
     </link>
+    <link topicid="!!MEMBERTYPE_Methods_ISafeLoadLibrarySection" displaystring="ISafeLoadLibrarySection Methods">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!MEMBERTYPE_Methods_ISafeLoadLibrarySection.html</target>
+    </link>
     <link topicid="!!MEMBERTYPE_Methods_ISecurityObjectTypeInfoW" displaystring="ISecurityObjectTypeInfoW Methods">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/!!MEMBERTYPE_Methods_ISecurityObjectTypeInfoW.html</target>
       <target id="html">../HTML/!!MEMBERTYPE_Methods_ISecurityObjectTypeInfoW.html</target>
@@ -1142,6 +1149,9 @@
       <target id="html">../HTML/!!MEMBERTYPE_Methods_TJwAutoPointerImpl.html</target>
       <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!MEMBERTYPE_Methods_TJwAutoPointerImpl.html</target>
       <target id="pdf">pdf://610@JWSCL.pdf</target>
+    </link>
+    <link topicid="!!MEMBERTYPE_Methods_TJwBaseAccount" displaystring="TJwBaseAccount Methods">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!MEMBERTYPE_Methods_TJwBaseAccount.html</target>
     </link>
     <link topicid="!!MEMBERTYPE_Methods_TJwComClientSecurity" displaystring="TJwComClientSecurity Methods">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/!!MEMBERTYPE_Methods_TJwComClientSecurity.html</target>
@@ -1386,6 +1396,9 @@
       <target id="html">../HTML/!!MEMBERTYPE_Methods_TJwProcessEnumerator.html</target>
       <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!MEMBERTYPE_Methods_TJwProcessEnumerator.html</target>
       <target id="pdf">pdf://1651@JWSCL.pdf</target>
+    </link>
+    <link topicid="!!MEMBERTYPE_Methods_TJwProcessUtilities" displaystring="TJwProcessUtilities Methods">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!MEMBERTYPE_Methods_TJwProcessUtilities.html</target>
     </link>
     <link topicid="!!MEMBERTYPE_Methods_TJwRandomDataGenerator" displaystring="TJwRandomDataGenerator Methods">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/!!MEMBERTYPE_Methods_TJwRandomDataGenerator.html</target>
@@ -1772,7 +1785,6 @@
     <link topicid="!!MEMBERTYPE_Methods_TJwWTSSessionStatistics" displaystring="TJwWTSSessionStatistics Methods">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/!!MEMBERTYPE_Methods_TJwWTSSessionStatistics.html</target>
       <target id="html">../HTML/!!MEMBERTYPE_Methods_TJwWTSSessionStatistics.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!MEMBERTYPE_Methods_TJwWTSSessionStatistics.html</target>
       <target id="pdf">pdf://3180@JWSCL.pdf</target>
     </link>
     <link topicid="!!MEMBERTYPE_Nested Types_EJwsclAdSearchException" displaystring="EJwsclAdSearchException Nested Types">
@@ -1852,6 +1864,9 @@
       <target id="html">../HTML/!!MEMBERTYPE_Properties_TJwAuthZAccessRequest.html</target>
       <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!MEMBERTYPE_Properties_TJwAuthZAccessRequest.html</target>
       <target id="pdf">pdf://552@JWSCL.pdf</target>
+    </link>
+    <link topicid="!!MEMBERTYPE_Properties_TJwBaseAccount" displaystring="TJwBaseAccount Properties">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!MEMBERTYPE_Properties_TJwBaseAccount.html</target>
     </link>
     <link topicid="!!MEMBERTYPE_Properties_TJwComClientSecurity" displaystring="TJwComClientSecurity Properties">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/!!MEMBERTYPE_Properties_TJwComClientSecurity.html</target>
@@ -2191,7 +2206,6 @@
     <link topicid="!!MEMBERTYPE_Properties_TJwWTSSessionStatistics" displaystring="TJwWTSSessionStatistics Properties">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/!!MEMBERTYPE_Properties_TJwWTSSessionStatistics.html</target>
       <target id="html">../HTML/!!MEMBERTYPE_Properties_TJwWTSSessionStatistics.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!MEMBERTYPE_Properties_TJwWTSSessionStatistics.html</target>
       <target id="pdf">pdf://3181@JWSCL.pdf</target>
     </link>
     <link topicid="!!MEMBERTYPE_Records_EJwsclAdSearchException" displaystring="EJwsclAdSearchException Records">
@@ -2698,6 +2712,9 @@
       <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!OVERLOADED_GetAttributeString_TJwSecurityId.html</target>
       <target id="pdf">pdf://2286@JWSCL.pdf</target>
     </link>
+    <link topicid="!!OVERLOADED_GetDateHour_TJwBaseAccount" displaystring="GetDateHour Method">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!OVERLOADED_GetDateHour_TJwBaseAccount.html</target>
+    </link>
     <link topicid="!!OVERLOADED_GetEffectiveRights_TJwSecurityAccessControlList" displaystring="GetEffectiveRights Method">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/!!OVERLOADED_GetEffectiveRights_TJwSecurityAccessControlList.html</target>
       <target id="html">../HTML/!!OVERLOADED_GetEffectiveRights_TJwSecurityAccessControlList.html</target>
@@ -2726,6 +2743,9 @@
       <target id="html">../HTML/!!OVERLOADED_GetNamedSecurityInfo_TJwSecureGeneralObject.html</target>
       <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!OVERLOADED_GetNamedSecurityInfo_TJwSecureGeneralObject.html</target>
       <target id="pdf">pdf://1869@JWSCL.pdf</target>
+    </link>
+    <link topicid="!!OVERLOADED_GetProductType_TJwWindowsVersion" displaystring="GetProductType Method">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!OVERLOADED_GetProductType_TJwWindowsVersion.html</target>
     </link>
     <link topicid="!!OVERLOADED_GetSecurityInfo_TJwSecureBaseClass" displaystring="GetSecurityInfo Method">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/!!OVERLOADED_GetSecurityInfo_TJwSecureBaseClass.html</target>
@@ -2815,6 +2835,9 @@
       <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!OVERLOADED_RemoveInheritanceFlow_TJwSecureRegistryKey.html</target>
       <target id="pdf">pdf://1934@JWSCL.pdf</target>
     </link>
+    <link topicid="!!OVERLOADED_ResetLogonHours_TJwBaseAccount" displaystring="ResetLogonHours Method">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!OVERLOADED_ResetLogonHours_TJwBaseAccount.html</target>
+    </link>
     <link topicid="!!OVERLOADED_RestoreInheritanceFlow_TJwSecureFileObject" displaystring="RestoreInheritanceFlow Method">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/!!OVERLOADED_RestoreInheritanceFlow_TJwSecureFileObject.html</target>
       <target id="html">../HTML/!!OVERLOADED_RestoreInheritanceFlow_TJwSecureFileObject.html</target>
@@ -2838,6 +2861,9 @@
       <target id="html">../HTML/!!OVERLOADED_SaferComputeTokenFromLevel_TJwSecurityToken.html</target>
       <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!OVERLOADED_SaferComputeTokenFromLevel_TJwSecurityToken.html</target>
       <target id="pdf">pdf://2526@JWSCL.pdf</target>
+    </link>
+    <link topicid="!!OVERLOADED_SetDateHour_TJwBaseAccount" displaystring="SetDateHour Method">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/!!OVERLOADED_SetDateHour_TJwBaseAccount.html</target>
     </link>
     <link topicid="!!OVERLOADED_SetIntegrityLevel_TJwSecurityToken" displaystring="SetIntegrityLevel Method">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/!!OVERLOADED_SetIntegrityLevel_TJwSecurityToken.html</target>
@@ -6878,6 +6904,12 @@
       <target id="pdf">pdf://3625@JWSCL.pdf</target>
       <target id="winhelp">id_5388@bin.hlp</target>
     </link>
+    <link topicid="ISafeLoadLibrarySection" displaystring="ISafeLoadLibrarySection Interface">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/ISafeLoadLibrarySection.html</target>
+    </link>
+    <link topicid="ISafeLoadLibrarySection.LeaveSafeLoadLibrary" displaystring="ISafeLoadLibrarySection.LeaveSafeLoadLibrary Method">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/ISafeLoadLibrarySection_LeaveSafeLoadLibrary.html</target>
+    </link>
     <link topicid="ISecurityObjectTypeInfoW" displaystring="ISecurityObjectTypeInfoW Interface">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/ISecurityObjectTypeInfoW.html</target>
       <target id="html">../HTML/ISecurityObjectTypeInfoW.html</target>
@@ -6940,6 +6972,9 @@
       <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/JEDI_WebFieldsRequestNotify@TEurekaExceptionRecord@TStrings.html</target>
       <target id="pdf">pdf://3227@JWSCL.pdf</target>
       <target id="winhelp">id_4991@bin.hlp</target>
+    </link>
+    <link topicid="JediAPILib.inc" displaystring="JediAPILib.inc">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/JediAPILib_inc.html</target>
     </link>
     <link topicid="jlACTIVEPROCESS" displaystring="jlACTIVEPROCESS">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwJobLimit.html</target>
@@ -8278,6 +8313,12 @@
       <target id="pdf">pdf://3312@JWSCL.pdf</target>
       <target id="winhelp">id_5091@bin.hlp</target>
     </link>
+    <link topicid="JwSafeDLLDirectory" displaystring="JwSafeDLLDirectory Constant">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/JwSafeDLLDirectory.html</target>
+    </link>
+    <link topicid="JwSafeSearchDLLFlags" displaystring="JwSafeSearchDLLFlags Constant">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/JwSafeSearchDLLFlags.html</target>
+    </link>
     <link topicid="JwSaveHashToRegistry@Cardinal@String@String@String@TJwFileHashData" displaystring="JwSaveHashToRegistry Function">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/JwSaveHashToRegistry@Cardinal@String@String@String@TJwFileHashData.html</target>
       <target id="html">../HTML/JwSaveHashToRegistry@Cardinal@String@String@String@TJwFileHashData.html</target>
@@ -8999,6 +9040,12 @@
       <target id="pdf">pdf://859@JWSCL.pdf</target>
       <target id="winhelp">id_1821@bin.hlp</target>
     </link>
+    <link topicid="LastLibCurrDir" displaystring="LastLibCurrDir Variable">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/LastLibCurrDir.html</target>
+    </link>
+    <link topicid="LoadLibCS" displaystring="LoadLibCS Variable">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/LoadLibCS.html</target>
+    </link>
     <link topicid="LoadLocalizedString@Cardinal@Word@Word@HInst" displaystring="LoadLocalizedString Function">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/LoadLocalizedString@Cardinal@Word@Word@HInst.html</target>
       <target id="html">../HTML/LoadLocalizedString@Cardinal@Word@Word@HInst.html</target>
@@ -9026,6 +9073,9 @@
       <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/Log@TJwString@TJwLogType.html</target>
       <target id="pdf">pdf://3323@JWSCL.pdf</target>
       <target id="winhelp">id_5104@bin.hlp</target>
+    </link>
+    <link topicid="LOGONHOURSSIZE" displaystring="LOGONHOURSSIZE Constant">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/LOGONHOURSSIZE.html</target>
     </link>
     <link topicid="lsError" displaystring="lsError">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwLogType.html</target>
@@ -10077,6 +10127,12 @@
       <target id="pdf">pdf://3451@JWSCL.pdf</target>
       <target id="winhelp">id_5220@bin.hlp</target>
     </link>
+    <link topicid="ptBUSINESS" displaystring="ptBUSINESS">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwProductType.html</target>
+    </link>
+    <link topicid="ptBUSINESS_N" displaystring="ptBUSINESS_N">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwProductType.html</target>
+    </link>
     <link topicid="ptClass" displaystring="ptClass">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwPointerType.html</target>
       <target id="html">../HTML/TJwPointerType.html</target>
@@ -10084,12 +10140,51 @@
       <target id="pdf">pdf://575@JWSCL.pdf</target>
       <target id="winhelp">id_1448@bin.hlp</target>
     </link>
+    <link topicid="ptCLUSTER_SERVER" displaystring="ptCLUSTER_SERVER">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwProductType.html</target>
+    </link>
     <link topicid="ptCOMPointer" displaystring="ptCOMPointer">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwPointerType.html</target>
       <target id="html">../HTML/TJwPointerType.html</target>
       <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwPointerType.html</target>
       <target id="pdf">pdf://575@JWSCL.pdf</target>
       <target id="winhelp">id_1448@bin.hlp</target>
+    </link>
+    <link topicid="ptDATACENTER_SERVER" displaystring="ptDATACENTER_SERVER">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwProductType.html</target>
+    </link>
+    <link topicid="ptDATACENTER_SERVER_CORE" displaystring="ptDATACENTER_SERVER_CORE">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwProductType.html</target>
+    </link>
+    <link topicid="ptDATACENTER_SERVER_CORE_V" displaystring="ptDATACENTER_SERVER_CORE_V">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwProductType.html</target>
+    </link>
+    <link topicid="ptDATACENTER_SERVER_V" displaystring="ptDATACENTER_SERVER_V">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwProductType.html</target>
+    </link>
+    <link topicid="ptENTERPRISE" displaystring="ptENTERPRISE">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwProductType.html</target>
+    </link>
+    <link topicid="ptENTERPRISE_E" displaystring="ptENTERPRISE_E">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwProductType.html</target>
+    </link>
+    <link topicid="ptENTERPRISE_N" displaystring="ptENTERPRISE_N">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwProductType.html</target>
+    </link>
+    <link topicid="ptENTERPRISE_SERVER" displaystring="ptENTERPRISE_SERVER">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwProductType.html</target>
+    </link>
+    <link topicid="ptENTERPRISE_SERVER_CORE" displaystring="ptENTERPRISE_SERVER_CORE">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwProductType.html</target>
+    </link>
+    <link topicid="ptENTERPRISE_SERVER_CORE_V" displaystring="ptENTERPRISE_SERVER_CORE_V">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwProductType.html</target>
+    </link>
+    <link topicid="ptENTERPRISE_SERVER_IA64" displaystring="ptENTERPRISE_SERVER_IA64">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwProductType.html</target>
+    </link>
+    <link topicid="ptENTERPRISE_SERVER_V" displaystring="ptENTERPRISE_SERVER_V">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwProductType.html</target>
     </link>
     <link topicid="ptGetMem" displaystring="ptGetMem">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwPointerType.html</target>
@@ -10105,12 +10200,33 @@
       <target id="pdf">pdf://575@JWSCL.pdf</target>
       <target id="winhelp">id_1448@bin.hlp</target>
     </link>
+    <link topicid="ptHOME_BASIC" displaystring="ptHOME_BASIC">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwProductType.html</target>
+    </link>
+    <link topicid="ptHOME_BASIC_E" displaystring="ptHOME_BASIC_E">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwProductType.html</target>
+    </link>
+    <link topicid="ptHOME_BASIC_N" displaystring="ptHOME_BASIC_N">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwProductType.html</target>
+    </link>
+    <link topicid="ptHOME_PREMIUM" displaystring="ptHOME_PREMIUM">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwProductType.html</target>
+    </link>
+    <link topicid="ptHOME_PREMIUM_E" displaystring="ptHOME_PREMIUM_E">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwProductType.html</target>
+    </link>
+    <link topicid="ptHOME_PREMIUM_N" displaystring="ptHOME_PREMIUM_N">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwProductType.html</target>
+    </link>
     <link topicid="PThreadData" displaystring="PThreadData Type">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/PThreadData.html</target>
       <target id="html">../HTML/PThreadData.html</target>
       <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/PThreadData.html</target>
       <target id="pdf">pdf://3452@JWSCL.pdf</target>
       <target id="winhelp">id_5221@bin.hlp</target>
+    </link>
+    <link topicid="ptHYPERV" displaystring="ptHYPERV">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwProductType.html</target>
     </link>
     <link topicid="ptLocalAlloc" displaystring="ptLocalAlloc">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwPointerType.html</target>
@@ -10119,6 +10235,15 @@
       <target id="pdf">pdf://575@JWSCL.pdf</target>
       <target id="winhelp">id_1448@bin.hlp</target>
     </link>
+    <link topicid="ptMEDIUMBUSINESS_SERVER_MANAGEMENT" displaystring="ptMEDIUMBUSINESS_SERVER_MANAGEMENT">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwProductType.html</target>
+    </link>
+    <link topicid="ptMEDIUMBUSINESS_SERVER_MESSAGING" displaystring="ptMEDIUMBUSINESS_SERVER_MESSAGING">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwProductType.html</target>
+    </link>
+    <link topicid="ptMEDIUMBUSINESS_SERVER_SECURITY" displaystring="ptMEDIUMBUSINESS_SERVER_SECURITY">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwProductType.html</target>
+    </link>
     <link topicid="ptNew" displaystring="ptNew">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwPointerType.html</target>
       <target id="html">../HTML/TJwPointerType.html</target>
@@ -10126,12 +10251,90 @@
       <target id="pdf">pdf://575@JWSCL.pdf</target>
       <target id="winhelp">id_1448@bin.hlp</target>
     </link>
+    <link topicid="ptPROFESSIONAL" displaystring="ptPROFESSIONAL">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwProductType.html</target>
+    </link>
+    <link topicid="ptPROFESSIONAL_E" displaystring="ptPROFESSIONAL_E">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwProductType.html</target>
+    </link>
+    <link topicid="ptPROFESSIONAL_N" displaystring="ptPROFESSIONAL_N">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwProductType.html</target>
+    </link>
+    <link topicid="ptSERVER_FOR_SMALLBUSINESS" displaystring="ptSERVER_FOR_SMALLBUSINESS">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwProductType.html</target>
+    </link>
+    <link topicid="ptSERVER_FOR_SMALLBUSINESS_V" displaystring="ptSERVER_FOR_SMALLBUSINESS_V">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwProductType.html</target>
+    </link>
+    <link topicid="ptSERVER_FOUNDATION" displaystring="ptSERVER_FOUNDATION">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwProductType.html</target>
+    </link>
+    <link topicid="ptSMALLBUSINESS_SERVER" displaystring="ptSMALLBUSINESS_SERVER">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwProductType.html</target>
+    </link>
+    <link topicid="ptSOLUTION_EMBEDDEDSERVER" displaystring="ptSOLUTION_EMBEDDEDSERVER">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwProductType.html</target>
+    </link>
+    <link topicid="ptSTANDARD_SERVER" displaystring="ptSTANDARD_SERVER">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwProductType.html</target>
+    </link>
+    <link topicid="ptSTANDARD_SERVER_CORE" displaystring="ptSTANDARD_SERVER_CORE">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwProductType.html</target>
+    </link>
+    <link topicid="ptSTANDARD_SERVER_CORE_V" displaystring="ptSTANDARD_SERVER_CORE_V">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwProductType.html</target>
+    </link>
+    <link topicid="ptSTANDARD_SERVER_V" displaystring="ptSTANDARD_SERVER_V">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwProductType.html</target>
+    </link>
+    <link topicid="ptSTARTER" displaystring="ptSTARTER">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwProductType.html</target>
+    </link>
+    <link topicid="ptSTARTER_E" displaystring="ptSTARTER_E">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwProductType.html</target>
+    </link>
+    <link topicid="ptSTARTER_N" displaystring="ptSTARTER_N">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwProductType.html</target>
+    </link>
+    <link topicid="ptSTORAGE_ENTERPRISE_SERVER" displaystring="ptSTORAGE_ENTERPRISE_SERVER">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwProductType.html</target>
+    </link>
+    <link topicid="ptSTORAGE_EXPRESS_SERVER" displaystring="ptSTORAGE_EXPRESS_SERVER">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwProductType.html</target>
+    </link>
+    <link topicid="ptSTORAGE_STANDARD_SERVER" displaystring="ptSTORAGE_STANDARD_SERVER">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwProductType.html</target>
+    </link>
+    <link topicid="ptSTORAGE_WORKGROUP_SERVER" displaystring="ptSTORAGE_WORKGROUP_SERVER">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwProductType.html</target>
+    </link>
+    <link topicid="ptULTIMATE" displaystring="ptULTIMATE">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwProductType.html</target>
+    </link>
+    <link topicid="ptULTIMATE_E" displaystring="ptULTIMATE_E">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwProductType.html</target>
+    </link>
+    <link topicid="ptULTIMATE_N" displaystring="ptULTIMATE_N">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwProductType.html</target>
+    </link>
+    <link topicid="ptUNDEFINED" displaystring="ptUNDEFINED">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwProductType.html</target>
+    </link>
     <link topicid="ptUnknown" displaystring="ptUnknown">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwPointerType.html</target>
       <target id="html">../HTML/TJwPointerType.html</target>
       <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwPointerType.html</target>
       <target id="pdf">pdf://575@JWSCL.pdf</target>
       <target id="winhelp">id_1448@bin.hlp</target>
+    </link>
+    <link topicid="ptUnlicensed" displaystring="ptUnlicensed">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwProductType.html</target>
+    </link>
+    <link topicid="ptWEB_SERVER" displaystring="ptWEB_SERVER">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwProductType.html</target>
+    </link>
+    <link topicid="ptWEB_SERVER_CORE" displaystring="ptWEB_SERVER_CORE">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwProductType.html</target>
     </link>
     <link topicid="reAccessDenied" displaystring="reAccessDenied">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwReplyErrorEnum.html</target>
@@ -13108,12 +13311,18 @@
       <target id="pdf">pdf://3389@JWSCL.pdf</target>
       <target id="winhelp">id_5167@bin.hlp</target>
     </link>
+    <link topicid="scnAlias" displaystring="scnAlias">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSidClassName.html</target>
+    </link>
     <link topicid="scnComputer" displaystring="scnComputer">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwSidClassName.html</target>
       <target id="html">../HTML/TJwSidClassName.html</target>
       <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSidClassName.html</target>
       <target id="pdf">pdf://3382@JWSCL.pdf</target>
       <target id="winhelp">id_5157@bin.hlp</target>
+    </link>
+    <link topicid="scnDomain" displaystring="scnDomain">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSidClassName.html</target>
     </link>
     <link topicid="scNegotiable" displaystring="scNegotiable">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwSecurityCapability.html</target>
@@ -13149,6 +13358,9 @@
       <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSidClassName.html</target>
       <target id="pdf">pdf://3382@JWSCL.pdf</target>
       <target id="winhelp">id_5157@bin.hlp</target>
+    </link>
+    <link topicid="scnwellKnown" displaystring="scnwellKnown">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwSidClassName.html</target>
     </link>
     <link topicid="scPrivacy" displaystring="scPrivacy">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwSecurityCapability.html</target>
@@ -15726,6 +15938,9 @@
       <target id="pdf">pdf://3420@JWSCL.pdf</target>
       <target id="winhelp">id_5132@bin.hlp</target>
     </link>
+    <link topicid="TDateHour" displaystring="TDateHour Record">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TDateHour.html</target>
+    </link>
     <link topicid="TFNProgressRecord" displaystring="TFNProgressRecord Record">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TFNProgressRecord.html</target>
       <target id="html">../HTML/TFNProgressRecord.html</target>
@@ -15736,7 +15951,6 @@
     <link topicid="THammer" displaystring="THammer Type">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/THammer.html</target>
       <target id="html">../HTML/THammer.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/THammer.html</target>
       <target id="pdf">pdf://3453@JWSCL.pdf</target>
       <target id="winhelp">id_5222@bin.hlp</target>
     </link>
@@ -16944,6 +17158,24 @@
       <target id="pdf">pdf://172@JWSCL.pdf</target>
       <target id="winhelp">id_1496@bin.hlp</target>
     </link>
+    <link topicid="TJwBaseAccount.AddGmt@TDateHour@Integer" displaystring="TJwBaseAccount.AddGmt Method">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwBaseAccount_AddGmt@TDateHour@Integer.html</target>
+    </link>
+    <link topicid="TJwBaseAccount.BitToDateHour@PBYTE@Byte" displaystring="TJwBaseAccount.BitToDateHour Method">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwBaseAccount_BitToDateHour@PBYTE@Byte.html</target>
+    </link>
+    <link topicid="TJwBaseAccount.Create" displaystring="TJwBaseAccount.Create Constructor">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwBaseAccount_Create.html</target>
+    </link>
+    <link topicid="TJwBaseAccount.DateHourToBit@TDateHour" displaystring="TJwBaseAccount.DateHourToBit Method">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwBaseAccount_DateHourToBit@TDateHour.html</target>
+    </link>
+    <link topicid="TJwBaseAccount.DateTimeToUnixTime@TDateTime" displaystring="TJwBaseAccount.DateTimeToUnixTime Method">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwBaseAccount_DateTimeToUnixTime@TDateTime.html</target>
+    </link>
+    <link topicid="TJwBaseAccount.Destroy" displaystring="TJwBaseAccount.Destroy Destructor">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwBaseAccount_Destroy.html</target>
+    </link>
     <link topicid="TJwBaseAccount.fAccountExpires" displaystring="TJwBaseAccount.fAccountExpires Field">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwBaseAccount_fAccountExpires.html</target>
       <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwBaseAccount_fAccountExpires.html</target>
@@ -16997,6 +17229,9 @@
       <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwBaseAccount_fFullName.html</target>
       <target id="pdf">pdf://620@JWSCL.pdf</target>
       <target id="winhelp">id_1510@bin.hlp</target>
+    </link>
+    <link topicid="TJwBaseAccount.fGMT" displaystring="TJwBaseAccount.fGMT Field">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwBaseAccount_fGMT.html</target>
     </link>
     <link topicid="TJwBaseAccount.fHomeDirDrive" displaystring="TJwBaseAccount.fHomeDirDrive Field">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwBaseAccount_fHomeDirDrive.html</target>
@@ -17129,6 +17364,60 @@
       <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwBaseAccount_fWorkstations.html</target>
       <target id="pdf">pdf://642@JWSCL.pdf</target>
       <target id="winhelp">id_1532@bin.hlp</target>
+    </link>
+    <link topicid="TJwBaseAccount.GetByteToBit@Byte@PByte" displaystring="TJwBaseAccount.GetByteToBit Method">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwBaseAccount_GetByteToBit@Byte@PByte.html</target>
+    </link>
+    <link topicid="TJwBaseAccount.GetDateHour@PBYTE@TDateHour@ShortInt" displaystring="TJwBaseAccount.GetDateHour Method (PBYTE, TDateHour, ShortInt)">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwBaseAccount_GetDateHour@PBYTE@TDateHour@ShortInt.html</target>
+    </link>
+    <link topicid="TJwBaseAccount.GetDateHour@PBYTE@TJwWeekDay@Byte@ShortInt" displaystring="TJwBaseAccount.GetDateHour Method (PBYTE, TJwWeekDay, Byte, ShortInt)">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwBaseAccount_GetDateHour@PBYTE@TJwWeekDay@Byte@ShortInt.html</target>
+    </link>
+    <link topicid="TJwBaseAccount.GetGMT" displaystring="TJwBaseAccount.GetGMT Method">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwBaseAccount_GetGMT.html</target>
+    </link>
+    <link topicid="TJwBaseAccount.GetLogonHour@TJwWeekDay@TJwHour" displaystring="TJwBaseAccount.GetLogonHour Method">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwBaseAccount_GetLogonHour@TJwWeekDay@TJwHour.html</target>
+    </link>
+    <link topicid="TJwBaseAccount.GMT" displaystring="TJwBaseAccount.GMT Property">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwBaseAccount_GMT.html</target>
+    </link>
+    <link topicid="TJwBaseAccount.LogonHours" displaystring="TJwBaseAccount.LogonHours Property">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwBaseAccount_LogonHours.html</target>
+    </link>
+    <link topicid="TJwBaseAccount.RaiseOnInvalidLogonHours" displaystring="TJwBaseAccount.RaiseOnInvalidLogonHours Method">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwBaseAccount_RaiseOnInvalidLogonHours.html</target>
+    </link>
+    <link topicid="TJwBaseAccount.ResetLogonHours@Boolean" displaystring="TJwBaseAccount.ResetLogonHours Method (Boolean)">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwBaseAccount_ResetLogonHours@Boolean.html</target>
+    </link>
+    <link topicid="TJwBaseAccount.ResetLogonHours@Byte" displaystring="TJwBaseAccount.ResetLogonHours Method (Byte)">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwBaseAccount_ResetLogonHours@Byte.html</target>
+    </link>
+    <link topicid="TJwBaseAccount.ResetLogonHours@TJwLogonHours" displaystring="TJwBaseAccount.ResetLogonHours Method (TJwLogonHours)">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwBaseAccount_ResetLogonHours@TJwLogonHours.html</target>
+    </link>
+    <link topicid="TJwBaseAccount.SetByteToBit@Byte@PByte@Boolean" displaystring="TJwBaseAccount.SetByteToBit Method">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwBaseAccount_SetByteToBit@Byte@PByte@Boolean.html</target>
+    </link>
+    <link topicid="TJwBaseAccount.SetDateHour@PBYTE@TDateHour@ShortInt@Boolean" displaystring="TJwBaseAccount.SetDateHour Method (PBYTE, TDateHour, ShortInt, Boolean)">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwBaseAccount_SetDateHour@PBYTE@TDateHour@ShortInt@Boolean.html</target>
+    </link>
+    <link topicid="TJwBaseAccount.SetDateHour@PBYTE@TJwWeekDay@Byte@ShortInt@Boolean" displaystring="TJwBaseAccount.SetDateHour Method (PBYTE, TJwWeekDay, Byte, ShortInt, Boolean)">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwBaseAccount_SetDateHour@PBYTE@TJwWeekDay@Byte@ShortInt@Boolean.html</target>
+    </link>
+    <link topicid="TJwBaseAccount.SetGMT@TJwGMT" displaystring="TJwBaseAccount.SetGMT Method">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwBaseAccount_SetGMT@TJwGMT.html</target>
+    </link>
+    <link topicid="TJwBaseAccount.SetLogonHour@TJwWeekDay@TJwHour@Boolean" displaystring="TJwBaseAccount.SetLogonHour Method">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwBaseAccount_SetLogonHour@TJwWeekDay@TJwHour@Boolean.html</target>
+    </link>
+    <link topicid="TJwBaseAccount.UnixTimeToDateTime@DWORD" displaystring="TJwBaseAccount.UnixTimeToDateTime Method">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwBaseAccount_UnixTimeToDateTime@DWORD.html</target>
+    </link>
+    <link topicid="TJwBaseAccount.UpdateLogonHoursProperty@PByte" displaystring="TJwBaseAccount.UpdateLogonHoursProperty Method">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwBaseAccount_UpdateLogonHoursProperty@PByte.html</target>
     </link>
     <link topicid="TJwByteSet" displaystring="TJwByteSet Type">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwByteSet.html</target>
@@ -18708,7 +18997,6 @@
     <link topicid="TJwDayHours" displaystring="TJwDayHours Type">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwDayHours.html</target>
       <target id="html">../HTML/TJwDayHours.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwDayHours.html</target>
       <target id="pdf">pdf://3457@JWSCL.pdf</target>
       <target id="winhelp">id_5223@bin.hlp</target>
     </link>
@@ -19766,6 +20054,9 @@
       <target id="pdf">pdf://982@JWSCL.pdf</target>
       <target id="winhelp">id_2073@bin.hlp</target>
     </link>
+    <link topicid="TJwGMT" displaystring="TJwGMT Type">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwGMT.html</target>
+    </link>
     <link topicid="TJwGroupAccount" displaystring="TJwGroupAccount Class">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwGroupAccount.html</target>
       <target id="html">../HTML/TJwGroupAccount.html</target>
@@ -19949,6 +20240,9 @@
       <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwHashHandle.html</target>
       <target id="pdf">pdf://1141@JWSCL.pdf</target>
       <target id="winhelp">id_2248@bin.hlp</target>
+    </link>
+    <link topicid="TJwHour" displaystring="TJwHour Type">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwHour.html</target>
     </link>
     <link topicid="TJwImpersonation" displaystring="TJwImpersonation Class">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwImpersonation.html</target>
@@ -20153,6 +20447,9 @@
       <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwInheritTypeList_Put@integer@PSiInheritType.html</target>
       <target id="pdf">pdf://1173@JWSCL.pdf</target>
       <target id="winhelp">id_2298@bin.hlp</target>
+    </link>
+    <link topicid="TJwIntegerArray" displaystring="TJwIntegerArray Type">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwIntegerArray.html</target>
     </link>
     <link topicid="TJwIntegrityLabelType" displaystring="TJwIntegrityLabelType Enumeration">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwIntegrityLabelType.html</target>
@@ -21062,12 +21359,27 @@
       <target id="pdf">pdf://205@JWSCL.pdf</target>
       <target id="winhelp">id_2572@bin.hlp</target>
     </link>
+    <link topicid="TJwLibraryUtilities.EnterSafeLoadLibrary" displaystring="TJwLibraryUtilities.EnterSafeLoadLibrary Method">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwLibraryUtilities_EnterSafeLoadLibrary.html</target>
+    </link>
+    <link topicid="TJwLibraryUtilities.InitSafeLoadLibrary" displaystring="TJwLibraryUtilities.InitSafeLoadLibrary Method">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwLibraryUtilities_InitSafeLoadLibrary.html</target>
+    </link>
+    <link topicid="TJwLibraryUtilities.IsFunctionAvailable@String@AnsiString" displaystring="TJwLibraryUtilities.IsFunctionAvailable Method">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwLibraryUtilities_IsFunctionAvailable@String@AnsiString.html</target>
+    </link>
+    <link topicid="TJwLibraryUtilities.LeaveSafeLoadLibrary" displaystring="TJwLibraryUtilities.LeaveSafeLoadLibrary Method">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwLibraryUtilities_LeaveSafeLoadLibrary.html</target>
+    </link>
     <link topicid="TJwLibraryUtilities.LoadLibProc@AnsiString@AnsiString" displaystring="TJwLibraryUtilities.LoadLibProc Method">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwLibraryUtilities_LoadLibProc@AnsiString@AnsiString.html</target>
       <target id="html">../HTML/TJwLibraryUtilities_LoadLibProc@AnsiString@AnsiString.html</target>
       <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwLibraryUtilities_LoadLibProc@AnsiString@AnsiString.html</target>
       <target id="pdf">pdf://1395@JWSCL.pdf</target>
       <target id="winhelp">id_2577@bin.hlp</target>
+    </link>
+    <link topicid="TJwLibraryUtilities.SecureDLLSearchPath" displaystring="TJwLibraryUtilities.SecureDLLSearchPath Method">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwLibraryUtilities_SecureDLLSearchPath.html</target>
     </link>
     <link topicid="TJwLogClientImpl" displaystring="TJwLogClientImpl Class">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwLogClientImpl.html</target>
@@ -22637,6 +22949,15 @@
       <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwProcessParameterType.html</target>
       <target id="pdf">pdf://3340@JWSCL.pdf</target>
       <target id="winhelp">id_5061@bin.hlp</target>
+    </link>
+    <link topicid="TJwProcessUtilities" displaystring="TJwProcessUtilities Class">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwProcessUtilities.html</target>
+    </link>
+    <link topicid="TJwProcessUtilities.GetCommandLineArguments" displaystring="TJwProcessUtilities.GetCommandLineArguments Method">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwProcessUtilities_GetCommandLineArguments.html</target>
+    </link>
+    <link topicid="TJwProductType" displaystring="TJwProductType Enumeration">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwProductType.html</target>
     </link>
     <link topicid="TJwProfileInfo" displaystring="TJwProfileInfo Record">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwProfileInfo.html</target>
@@ -29933,6 +30254,9 @@
       <target id="pdf">pdf://2710@JWSCL.pdf</target>
       <target id="winhelp">id_4247@bin.hlp</target>
     </link>
+    <link topicid="TJwShellInformation.GetKnownFolderPath@KNOWNFOLDERID@TJwWideString@DWORD@TJwSecurityToken" displaystring="TJwShellInformation.GetKnownFolderPath Method">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwShellInformation_GetKnownFolderPath@KNOWNFOLDERID@TJwWideString@DWORD@TJwSecurityToken.html</target>
+    </link>
     <link topicid="TJwShellInformation.GetShellRestrictions" displaystring="TJwShellInformation.GetShellRestrictions Method">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwShellInformation_GetShellRestrictions.html</target>
       <target id="html">../HTML/TJwShellInformation_GetShellRestrictions.html</target>
@@ -29959,6 +30283,9 @@
       <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwShellInformation_IsUserAdmin.html</target>
       <target id="pdf">pdf://2714@JWSCL.pdf</target>
       <target id="winhelp">id_4251@bin.hlp</target>
+    </link>
+    <link topicid="TJwShellInformation.SetKnownFolderPath@KNOWNFOLDERID@TJwWideString@DWORD@TJwSecurityToken" displaystring="TJwShellInformation.SetKnownFolderPath Method">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwShellInformation_SetKnownFolderPath@KNOWNFOLDERID@TJwWideString@DWORD@TJwSecurityToken.html</target>
     </link>
     <link topicid="TJwShellRestriction" displaystring="TJwShellRestriction Enumeration">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwShellRestriction.html</target>
@@ -31443,19 +31770,16 @@
     </link>
     <link topicid="TJwWindowsVersion._IsNewUnknown@TOSVersionInfoEx@PJwWindowsVersionDefinition@Boolean" displaystring="TJwWindowsVersion._IsNewUnknown Method">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwWindowsVersion__IsNewUnknown@TOSVersionInfoEx@PJwWindowsVersionDefinition@Boolean.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwWindowsVersion__IsNewUnknown@TOSVersionInfoEx@PJwWindowsVersionDefinition@Boolean.html</target>
       <target id="pdf">pdf://2897@JWSCL.pdf</target>
       <target id="winhelp">id_4532@bin.hlp</target>
     </link>
     <link topicid="TJwWindowsVersion._IsServer2003R2@TOSVersionInfoEx@PJwWindowsVersionDefinition@Boolean" displaystring="TJwWindowsVersion._IsServer2003R2 Method">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwWindowsVersion__IsServer2003R2@TOSVersionInfoEx@PJwWindowsVersionDefinition@Boolean.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwWindowsVersion__IsServer2003R2@TOSVersionInfoEx@PJwWindowsVersionDefinition@Boolean.html</target>
       <target id="pdf">pdf://2898@JWSCL.pdf</target>
       <target id="winhelp">id_4533@bin.hlp</target>
     </link>
     <link topicid="TJwWindowsVersion._IsWin98SE@TOSVersionInfoEx@PJwWindowsVersionDefinition@Boolean" displaystring="TJwWindowsVersion._IsWin98SE Method">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwWindowsVersion__IsWin98SE@TOSVersionInfoEx@PJwWindowsVersionDefinition@Boolean.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwWindowsVersion__IsWin98SE@TOSVersionInfoEx@PJwWindowsVersionDefinition@Boolean.html</target>
       <target id="pdf">pdf://2899@JWSCL.pdf</target>
       <target id="winhelp">id_4534@bin.hlp</target>
     </link>
@@ -31469,7 +31793,6 @@
     <link topicid="TJwWindowsVersion.GetCachedWindowsType" displaystring="TJwWindowsVersion.GetCachedWindowsType Method">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwWindowsVersion_GetCachedWindowsType.html</target>
       <target id="html">../HTML/TJwWindowsVersion_GetCachedWindowsType.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwWindowsVersion_GetCachedWindowsType.html</target>
       <target id="pdf">pdf://2901@JWSCL.pdf</target>
       <target id="winhelp">id_4536@bin.hlp</target>
     </link>
@@ -31484,6 +31807,12 @@
       <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwWindowsVersion_GetCurrentWindowsTypeInternal@TOSVersionInfoExW@Boolean.html</target>
       <target id="pdf">pdf://2904@JWSCL.pdf</target>
       <target id="winhelp">id_4539@bin.hlp</target>
+    </link>
+    <link topicid="TJwWindowsVersion.GetProductType" displaystring="TJwWindowsVersion.GetProductType Method ()">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwWindowsVersion_GetProductType.html</target>
+    </link>
+    <link topicid="TJwWindowsVersion.GetProductType@TOSVersionInfoEx" displaystring="TJwWindowsVersion.GetProductType Method (TOSVersionInfoEx)">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwWindowsVersion_GetProductType@TOSVersionInfoEx.html</target>
     </link>
     <link topicid="TJwWindowsVersion.GetServicePackVersion" displaystring="TJwWindowsVersion.GetServicePackVersion Method">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwWindowsVersion_GetServicePackVersion.html</target>
@@ -31614,14 +31943,12 @@
     <link topicid="TJwWindowsVersion.ResetCachedWindowsType" displaystring="TJwWindowsVersion.ResetCachedWindowsType Method">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwWindowsVersion_ResetCachedWindowsType.html</target>
       <target id="html">../HTML/TJwWindowsVersion_ResetCachedWindowsType.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwWindowsVersion_ResetCachedWindowsType.html</target>
       <target id="pdf">pdf://2923@JWSCL.pdf</target>
       <target id="winhelp">id_4558@bin.hlp</target>
     </link>
     <link topicid="TJwWindowsVersion.SetCachedWindowsType@Integer@Boolean" displaystring="TJwWindowsVersion.SetCachedWindowsType Method">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwWindowsVersion_SetCachedWindowsType@Integer@Boolean.html</target>
       <target id="html">../HTML/TJwWindowsVersion_SetCachedWindowsType@Integer@Boolean.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwWindowsVersion_SetCachedWindowsType@Integer@Boolean.html</target>
       <target id="pdf">pdf://2924@JWSCL.pdf</target>
       <target id="winhelp">id_4559@bin.hlp</target>
     </link>
@@ -33067,143 +33394,122 @@
     <link topicid="TJwWTSSessionStatistics" displaystring="TJwWTSSessionStatistics Class">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwWTSSessionStatistics.html</target>
       <target id="html">../HTML/TJwWTSSessionStatistics.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwWTSSessionStatistics.html</target>
       <target id="pdf">pdf://286@JWSCL.pdf</target>
       <target id="winhelp">id_4450@bin.hlp</target>
     </link>
     <link topicid="TJwWTSSessionStatistics.Create@TJwTerminalServer" displaystring="TJwWTSSessionStatistics.Create Constructor">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwWTSSessionStatistics_Create@TJwTerminalServer.html</target>
       <target id="html">../HTML/TJwWTSSessionStatistics_Create@TJwTerminalServer.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwWTSSessionStatistics_Create@TJwTerminalServer.html</target>
       <target id="pdf">pdf://3159@JWSCL.pdf</target>
       <target id="winhelp">id_4877@bin.hlp</target>
     </link>
     <link topicid="TJwWTSSessionStatistics.CurrentActiveSessions" displaystring="TJwWTSSessionStatistics.CurrentActiveSessions Property">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwWTSSessionStatistics_CurrentActiveSessions.html</target>
       <target id="html">../HTML/TJwWTSSessionStatistics_CurrentActiveSessions.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwWTSSessionStatistics_CurrentActiveSessions.html</target>
       <target id="pdf">pdf://3165@JWSCL.pdf</target>
       <target id="winhelp">id_4886@bin.hlp</target>
     </link>
     <link topicid="TJwWTSSessionStatistics.CurrentDisconnectedSessions" displaystring="TJwWTSSessionStatistics.CurrentDisconnectedSessions Property">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwWTSSessionStatistics_CurrentDisconnectedSessions.html</target>
       <target id="html">../HTML/TJwWTSSessionStatistics_CurrentDisconnectedSessions.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwWTSSessionStatistics_CurrentDisconnectedSessions.html</target>
       <target id="pdf">pdf://3166@JWSCL.pdf</target>
       <target id="winhelp">id_4887@bin.hlp</target>
     </link>
     <link topicid="TJwWTSSessionStatistics.CurrentLoggedOnSessions" displaystring="TJwWTSSessionStatistics.CurrentLoggedOnSessions Property">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwWTSSessionStatistics_CurrentLoggedOnSessions.html</target>
       <target id="html">../HTML/TJwWTSSessionStatistics_CurrentLoggedOnSessions.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwWTSSessionStatistics_CurrentLoggedOnSessions.html</target>
       <target id="pdf">pdf://3167@JWSCL.pdf</target>
       <target id="winhelp">id_4888@bin.hlp</target>
     </link>
     <link topicid="TJwWTSSessionStatistics.CurrentTerminatingSessions" displaystring="TJwWTSSessionStatistics.CurrentTerminatingSessions Property">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwWTSSessionStatistics_CurrentTerminatingSessions.html</target>
       <target id="html">../HTML/TJwWTSSessionStatistics_CurrentTerminatingSessions.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwWTSSessionStatistics_CurrentTerminatingSessions.html</target>
       <target id="pdf">pdf://3168@JWSCL.pdf</target>
       <target id="winhelp">id_4889@bin.hlp</target>
     </link>
     <link topicid="TJwWTSSessionStatistics.Data" displaystring="TJwWTSSessionStatistics.Data Property">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwWTSSessionStatistics_Data.html</target>
       <target id="html">../HTML/TJwWTSSessionStatistics_Data.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwWTSSessionStatistics_Data.html</target>
       <target id="pdf">pdf://3169@JWSCL.pdf</target>
       <target id="winhelp">id_4890@bin.hlp</target>
     </link>
     <link topicid="TJwWTSSessionStatistics.FLoadIndicatorData" displaystring="TJwWTSSessionStatistics.FLoadIndicatorData Field">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwWTSSessionStatistics_FLoadIndicatorData.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwWTSSessionStatistics_FLoadIndicatorData.html</target>
       <target id="pdf">pdf://3160@JWSCL.pdf</target>
       <target id="winhelp">id_4879@bin.hlp</target>
     </link>
     <link topicid="TJwWTSSessionStatistics.FOwner" displaystring="TJwWTSSessionStatistics.FOwner Field">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwWTSSessionStatistics_FOwner.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwWTSSessionStatistics_FOwner.html</target>
       <target id="pdf">pdf://3161@JWSCL.pdf</target>
       <target id="winhelp">id_4880@bin.hlp</target>
     </link>
     <link topicid="TJwWTSSessionStatistics.GetCounterValue@Integer" displaystring="TJwWTSSessionStatistics.GetCounterValue Method">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwWTSSessionStatistics_GetCounterValue@Integer.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwWTSSessionStatistics_GetCounterValue@Integer.html</target>
       <target id="pdf">pdf://3163@JWSCL.pdf</target>
       <target id="winhelp">id_4883@bin.hlp</target>
     </link>
     <link topicid="TJwWTSSessionStatistics.LoadIndicatorData" displaystring="TJwWTSSessionStatistics.LoadIndicatorData Property">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwWTSSessionStatistics_LoadIndicatorData.html</target>
       <target id="html">../HTML/TJwWTSSessionStatistics_LoadIndicatorData.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwWTSSessionStatistics_LoadIndicatorData.html</target>
       <target id="pdf">pdf://3170@JWSCL.pdf</target>
       <target id="winhelp">id_4891@bin.hlp</target>
     </link>
     <link topicid="TJwWTSSessionStatistics.PendingSessions" displaystring="TJwWTSSessionStatistics.PendingSessions Property">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwWTSSessionStatistics_PendingSessions.html</target>
       <target id="html">../HTML/TJwWTSSessionStatistics_PendingSessions.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwWTSSessionStatistics_PendingSessions.html</target>
       <target id="pdf">pdf://3171@JWSCL.pdf</target>
       <target id="winhelp">id_4892@bin.hlp</target>
     </link>
     <link topicid="TJwWTSSessionStatistics.TotalConsoleLogons" displaystring="TJwWTSSessionStatistics.TotalConsoleLogons Property">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwWTSSessionStatistics_TotalConsoleLogons.html</target>
       <target id="html">../HTML/TJwWTSSessionStatistics_TotalConsoleLogons.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwWTSSessionStatistics_TotalConsoleLogons.html</target>
       <target id="pdf">pdf://3172@JWSCL.pdf</target>
       <target id="winhelp">id_4893@bin.hlp</target>
     </link>
     <link topicid="TJwWTSSessionStatistics.TotalLocalLogons" displaystring="TJwWTSSessionStatistics.TotalLocalLogons Property">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwWTSSessionStatistics_TotalLocalLogons.html</target>
       <target id="html">../HTML/TJwWTSSessionStatistics_TotalLocalLogons.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwWTSSessionStatistics_TotalLocalLogons.html</target>
       <target id="pdf">pdf://3173@JWSCL.pdf</target>
       <target id="winhelp">id_4894@bin.hlp</target>
     </link>
     <link topicid="TJwWTSSessionStatistics.TotalLogons" displaystring="TJwWTSSessionStatistics.TotalLogons Property">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwWTSSessionStatistics_TotalLogons.html</target>
       <target id="html">../HTML/TJwWTSSessionStatistics_TotalLogons.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwWTSSessionStatistics_TotalLogons.html</target>
       <target id="pdf">pdf://3174@JWSCL.pdf</target>
       <target id="winhelp">id_4895@bin.hlp</target>
     </link>
     <link topicid="TJwWTSSessionStatistics.TotalRemoteLogons" displaystring="TJwWTSSessionStatistics.TotalRemoteLogons Property">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwWTSSessionStatistics_TotalRemoteLogons.html</target>
       <target id="html">../HTML/TJwWTSSessionStatistics_TotalRemoteLogons.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwWTSSessionStatistics_TotalRemoteLogons.html</target>
       <target id="pdf">pdf://3175@JWSCL.pdf</target>
       <target id="winhelp">id_4896@bin.hlp</target>
     </link>
     <link topicid="TJwWTSSessionStatistics.TotalSessionsCreated" displaystring="TJwWTSSessionStatistics.TotalSessionsCreated Property">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwWTSSessionStatistics_TotalSessionsCreated.html</target>
       <target id="html">../HTML/TJwWTSSessionStatistics_TotalSessionsCreated.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwWTSSessionStatistics_TotalSessionsCreated.html</target>
       <target id="pdf">pdf://3176@JWSCL.pdf</target>
       <target id="winhelp">id_4897@bin.hlp</target>
     </link>
     <link topicid="TJwWTSSessionStatistics.TotalSessionsDisconnected" displaystring="TJwWTSSessionStatistics.TotalSessionsDisconnected Property">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwWTSSessionStatistics_TotalSessionsDisconnected.html</target>
       <target id="html">../HTML/TJwWTSSessionStatistics_TotalSessionsDisconnected.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwWTSSessionStatistics_TotalSessionsDisconnected.html</target>
       <target id="pdf">pdf://3177@JWSCL.pdf</target>
       <target id="winhelp">id_4898@bin.hlp</target>
     </link>
     <link topicid="TJwWTSSessionStatistics.TotalSessionsReconnected" displaystring="TJwWTSSessionStatistics.TotalSessionsReconnected Property">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwWTSSessionStatistics_TotalSessionsReconnected.html</target>
       <target id="html">../HTML/TJwWTSSessionStatistics_TotalSessionsReconnected.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwWTSSessionStatistics_TotalSessionsReconnected.html</target>
       <target id="pdf">pdf://3178@JWSCL.pdf</target>
       <target id="winhelp">id_4899@bin.hlp</target>
     </link>
     <link topicid="TJwWTSSessionStatistics.TSCounterArray" displaystring="TJwWTSSessionStatistics.TSCounterArray Field">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwWTSSessionStatistics_TSCounterArray.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwWTSSessionStatistics_TSCounterArray.html</target>
       <target id="pdf">pdf://3162@JWSCL.pdf</target>
       <target id="winhelp">id_4881@bin.hlp</target>
     </link>
     <link topicid="TJwWTSSessionStatistics.UpdateCounters" displaystring="TJwWTSSessionStatistics.UpdateCounters Method">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/TJwWTSSessionStatistics_UpdateCounters.html</target>
       <target id="html">../HTML/TJwWTSSessionStatistics_UpdateCounters.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/TJwWTSSessionStatistics_UpdateCounters.html</target>
       <target id="pdf">pdf://3164@JWSCL.pdf</target>
       <target id="winhelp">id_4884@bin.hlp</target>
     </link>
@@ -34210,6 +34516,9 @@
       <method name="StartWriteMultipleTags"></method>
       <method name="WriteSingleTag"></method>
     </class>
+    <class name="ISafeLoadLibrarySection" language="0" type="1" using="Classes,JwaWindows,JwsclComUtils,JwsclDescriptor,JwsclEnumerations,JwsclLogging,JwsclLsa,JwsclResource,JwsclSecureObjects,JwsclSid,JwsclStrings,JwsclTerminalServer,JwsclToken,JwsclTypes,JwsclUtils,SyncObjs,SysUtils">
+      <method name="LeaveSafeLoadLibrary"></method>
+    </class>
     <class name="ISecurityObjectTypeInfoW" language="0" type="1" using="ActiveX,Classes,JwaWindows,JwsclAcl,JwsclComUtils,JwsclConstants,JwsclDescriptor,JwsclExceptions,JwsclKnownSid,JwsclMapping,JwsclResource,JwsclSecureObjects,JwsclSid,JwsclStrings,JwsclToken,JwsclTypes,JwsclUtils,JwsclVersion,SysUtils">
       <ancestor name="IUnknown"></ancestor>
       <method name="GetInheritSource"></method>
@@ -34230,12 +34539,17 @@
       <field name="SessionId"></field>
       <field name="Username"></field>
     </class>
+    <class name="TDateHour" language="0" type="5" using="Classes,Contnrs,jwaWindows,JwsclAcl,JwsclConstants,JwsclExceptions,JwsclSid,JwsclStrings,JwsclTypes,JwsclVersion,SysUtils">
+      <field name="Day"></field>
+      <field name="DayI"></field>
+      <field name="Hour"></field>
+    </class>
     <class name="TFNProgressRecord" language="0" type="5" using="Classes,Contnrs,Dialogs,jwaWindows,JwsclAcl,JwsclConstants,JwsclDescriptor,JwsclExceptions,JwsclKnownSid,JwsclMapping,JwsclResource,JwsclSid,JwsclStrings,JwsclToken,JwsclTypes,JwsclUtils,JwsclVersion,Registry,SysUtils">
       <field name="FNProgressMethod"></field>
       <field name="FNProgressProcedure"></field>
       <field name="ProgressUserData"></field>
     </class>
-    <class name="TInternalProcessData" language="0" type="5" using="Classes,JwaWindows,JwsclComUtils,JwsclDescriptor,JwsclEnumerations,JwsclLogging,JwsclLsa,JwsclResource,JwsclSecureObjects,JwsclSid,JwsclStrings,JwsclTerminalServer,JwsclToken,JwsclTypes,JwsclUtils,SysUtils">
+    <class name="TInternalProcessData" language="0" type="5" using="Classes,JwaWindows,JwsclComUtils,JwsclDescriptor,JwsclEnumerations,JwsclLogging,JwsclLsa,JwsclResource,JwsclSecureObjects,JwsclSid,JwsclStrings,JwsclTerminalServer,JwsclToken,JwsclTypes,JwsclUtils,SyncObjs,SysUtils">
       <field name="SessionID"></field>
     </class>
     <class name="TIntTuple" language="0" type="5" using="Classes,JwaWindows,JwsclExceptions,JwsclResource,JwsclStrings,JwsclTypes,Registry">
@@ -34463,6 +34777,7 @@
       <field name="fCountryCode"></field>
       <field name="fFlags"></field>
       <field name="fFullName"></field>
+      <field name="fGMT"></field>
       <field name="fHomeDirDrive"></field>
       <field name="fHomeDirectory"></field>
       <field name="fLastLogoff"></field>
@@ -34485,6 +34800,30 @@
       <field name="fUserComment"></field>
       <field name="fUserName"></field>
       <field name="fWorkstations"></field>
+      <property name="GMT" info="TJwGMT"></property>
+      <property name="LogonHours" info="Boolean"></property>
+      <method name="AddGmt"></method>
+      <method name="BitToDateHour"></method>
+      <method name="Create"></method>
+      <method name="DateHourToBit"></method>
+      <method name="DateTimeToUnixTime"></method>
+      <method name="Destroy"></method>
+      <method name="GetByteToBit"></method>
+      <method name="GetDateHour"></method>
+      <method name="GetDateHour"></method>
+      <method name="GetGMT"></method>
+      <method name="GetLogonHour"></method>
+      <method name="RaiseOnInvalidLogonHours"></method>
+      <method name="ResetLogonHours"></method>
+      <method name="ResetLogonHours"></method>
+      <method name="ResetLogonHours"></method>
+      <method name="SetByteToBit"></method>
+      <method name="SetDateHour"></method>
+      <method name="SetDateHour"></method>
+      <method name="SetGMT"></method>
+      <method name="SetLogonHour"></method>
+      <method name="UnixTimeToDateTime"></method>
+      <method name="UpdateLogonHoursProperty"></method>
     </class>
     <class name="TJwCallbackData" language="0" type="5" using="jwaWindows,JwsclACL,JwsclConstants,JwsclDescriptor,JwsclEnumerations,JwsclExceptions,JwsclMapping,JwsclResource,JwsclSid,JwsclStrings,JwsclToken,JwsclTypes,JwsclUtils,JwsclVersion,SysUtils">
       <field name="Context"></field>
@@ -34779,7 +35118,7 @@
       <field name="cfCopyInstance"></field>
       <field name="cfPointAtInstance"></field>
     </class>
-    <class name="TJwCreateProcessInfo" language="0" type="5" using="Classes,JwaWindows,JwsclComUtils,JwsclDescriptor,JwsclEnumerations,JwsclLogging,JwsclLsa,JwsclResource,JwsclSecureObjects,JwsclSid,JwsclStrings,JwsclTerminalServer,JwsclToken,JwsclTypes,JwsclUtils,SysUtils">
+    <class name="TJwCreateProcessInfo" language="0" type="5" using="Classes,JwaWindows,JwsclComUtils,JwsclDescriptor,JwsclEnumerations,JwsclLogging,JwsclLsa,JwsclResource,JwsclSecureObjects,JwsclSid,JwsclStrings,JwsclTerminalServer,JwsclToken,JwsclTypes,JwsclUtils,SyncObjs,SysUtils">
       <field name="AdditionalGroups"></field>
       <field name="BusyPipeSleep"></field>
       <field name="DefaultDesktop"></field>
@@ -34794,7 +35133,7 @@
       <field name="StartupInfo"></field>
       <field name="UseSessionID"></field>
     </class>
-    <class name="TJwCreateProcessOut" language="0" type="5" using="Classes,JwaWindows,JwsclComUtils,JwsclDescriptor,JwsclEnumerations,JwsclLogging,JwsclLsa,JwsclResource,JwsclSecureObjects,JwsclSid,JwsclStrings,JwsclTerminalServer,JwsclToken,JwsclTypes,JwsclUtils,SysUtils">
+    <class name="TJwCreateProcessOut" language="0" type="5" using="Classes,JwaWindows,JwsclComUtils,JwsclDescriptor,JwsclEnumerations,JwsclLogging,JwsclLsa,JwsclResource,JwsclSecureObjects,JwsclSid,JwsclStrings,JwsclTerminalServer,JwsclToken,JwsclTypes,JwsclUtils,SyncObjs,SysUtils">
       <field name="EnvironmentBlock"></field>
       <field name="IsLinked"></field>
       <field name="LinkedToken"></field>
@@ -34809,7 +35148,7 @@
       <field name="TokenLuid"></field>
       <field name="UserToken"></field>
     </class>
-    <class name="TJwCreateProcessParameters" language="0" type="5" using="Classes,JwaWindows,JwsclComUtils,JwsclDescriptor,JwsclEnumerations,JwsclLogging,JwsclLsa,JwsclResource,JwsclSecureObjects,JwsclSid,JwsclStrings,JwsclTerminalServer,JwsclToken,JwsclTypes,JwsclUtils,SysUtils">
+    <class name="TJwCreateProcessParameters" language="0" type="5" using="Classes,JwaWindows,JwsclComUtils,JwsclDescriptor,JwsclEnumerations,JwsclLogging,JwsclLsa,JwsclResource,JwsclSecureObjects,JwsclSid,JwsclStrings,JwsclTerminalServer,JwsclToken,JwsclTypes,JwsclUtils,SyncObjs,SysUtils">
       <field name="bInheritHandles"></field>
       <field name="bProcInheritHandles"></field>
       <field name="bThreadInheritHandles"></field>
@@ -35093,7 +35432,7 @@
       <field name="ProtocolNum"></field>
       <field name="ShortName"></field>
     </class>
-    <class name="TJwEnumMap" language="0" type="0" using="jwaWindows,JwsclConstants,JwsclTypes,SysUtils">
+    <class name="TJwEnumMap" language="0" type="0" using="JwaWindows,JwsclConstants,JwsclTypes,SysUtils">
       <method name="ConvertAceFlags"></method>
       <method name="ConvertAceFlags"></method>
       <method name="ConvertAceType"></method>
@@ -35365,7 +35704,7 @@
       <method name="IsLowerThan"></method>
       <method name="IsStandardSID"></method>
     </class>
-    <class name="TJwInternalJobObjectIOCompletitionThread" language="0" type="0" using="Classes,JwaWindows,JwsclComUtils,JwsclDescriptor,JwsclEnumerations,JwsclLogging,JwsclLsa,JwsclResource,JwsclSecureObjects,JwsclSid,JwsclStrings,JwsclTerminalServer,JwsclToken,JwsclTypes,JwsclUtils,SysUtils">
+    <class name="TJwInternalJobObjectIOCompletitionThread" language="0" type="0" using="Classes,JwaWindows,JwsclComUtils,JwsclDescriptor,JwsclEnumerations,JwsclLogging,JwsclLsa,JwsclResource,JwsclSecureObjects,JwsclSid,JwsclStrings,JwsclTerminalServer,JwsclToken,JwsclTypes,JwsclUtils,SyncObjs,SysUtils">
       <ancestor name="TJwThread"></ancestor>
       <field name="fIOHandle"></field>
       <field name="fJwJobObject"></field>
@@ -35430,7 +35769,7 @@
       <field name="jmsgPROCESSMEMORYLIMIT"></field>
       <field name="jmsgUnknown"></field>
     </class>
-    <class name="TJwJobObject" language="0" type="0" using="Classes,JwaWindows,JwsclComUtils,JwsclDescriptor,JwsclEnumerations,JwsclLogging,JwsclLsa,JwsclResource,JwsclSecureObjects,JwsclSid,JwsclStrings,JwsclTerminalServer,JwsclToken,JwsclTypes,JwsclUtils,SysUtils">
+    <class name="TJwJobObject" language="0" type="0" using="Classes,JwaWindows,JwsclComUtils,JwsclDescriptor,JwsclEnumerations,JwsclLogging,JwsclLsa,JwsclResource,JwsclSecureObjects,JwsclSid,JwsclStrings,JwsclTerminalServer,JwsclToken,JwsclTypes,JwsclUtils,SyncObjs,SysUtils">
       <field name="fAccessMask"></field>
       <field name="fDataList"></field>
       <field name="fHandle"></field>
@@ -35492,7 +35831,7 @@
       <method name="TerminateJobObject"></method>
       <method name="WaitForAllotedCPUTimeSignal"></method>
     </class>
-    <class name="TJwJobObjectSessionList" language="0" type="0" using="Classes,JwaWindows,JwsclComUtils,JwsclDescriptor,JwsclEnumerations,JwsclLogging,JwsclLsa,JwsclResource,JwsclSecureObjects,JwsclSid,JwsclStrings,JwsclTerminalServer,JwsclToken,JwsclTypes,JwsclUtils,SysUtils">
+    <class name="TJwJobObjectSessionList" language="0" type="0" using="Classes,JwaWindows,JwsclComUtils,JwsclDescriptor,JwsclEnumerations,JwsclLogging,JwsclLsa,JwsclResource,JwsclSecureObjects,JwsclSid,JwsclStrings,JwsclTerminalServer,JwsclToken,JwsclTypes,JwsclUtils,SyncObjs,SysUtils">
       <field name="fList"></field>
       <field name="fLock"></field>
       <field name="fOnNewJobObject"></field>
@@ -35552,8 +35891,13 @@
       <field name="kptSignature"></field>
       <field name="kptUnknown"></field>
     </class>
-    <class name="TJwLibraryUtilities" language="0" type="0" using="Classes,JwaWindows,JwsclComUtils,JwsclDescriptor,JwsclEnumerations,JwsclLogging,JwsclLsa,JwsclResource,JwsclSecureObjects,JwsclSid,JwsclStrings,JwsclTerminalServer,JwsclToken,JwsclTypes,JwsclUtils,SysUtils">
+    <class name="TJwLibraryUtilities" language="0" type="0" using="Classes,JwaWindows,JwsclComUtils,JwsclDescriptor,JwsclEnumerations,JwsclLogging,JwsclLsa,JwsclResource,JwsclSecureObjects,JwsclSid,JwsclStrings,JwsclTerminalServer,JwsclToken,JwsclTypes,JwsclUtils,SyncObjs,SysUtils">
+      <method name="EnterSafeLoadLibrary"></method>
+      <method name="InitSafeLoadLibrary"></method>
+      <method name="IsFunctionAvailable"></method>
+      <method name="LeaveSafeLoadLibrary"></method>
       <method name="LoadLibProc"></method>
+      <method name="SecureDLLSearchPath"></method>
     </class>
     <class name="TJwLogClientImpl" language="0" type="0" using="ActiveX,Classes,JwsclStrings,SyncObjs,SysUtils">
       <ancestor name="TInterfacedObject"></ancestor>
@@ -35859,7 +36203,7 @@
       <field name="pfXMMI64InstructionsAvailable"></field>
       <field name="pfXMMIInstructionsAvailable"></field>
     </class>
-    <class name="TJwProcessOutputInformation" language="0" type="5" using="Classes,JwaWindows,JwsclComUtils,JwsclDescriptor,JwsclEnumerations,JwsclLogging,JwsclLsa,JwsclResource,JwsclSecureObjects,JwsclSid,JwsclStrings,JwsclTerminalServer,JwsclToken,JwsclTypes,JwsclUtils,SysUtils">
+    <class name="TJwProcessOutputInformation" language="0" type="5" using="Classes,JwaWindows,JwsclComUtils,JwsclDescriptor,JwsclEnumerations,JwsclLogging,JwsclLsa,JwsclResource,JwsclSecureObjects,JwsclSid,JwsclStrings,JwsclTerminalServer,JwsclToken,JwsclTypes,JwsclUtils,SyncObjs,SysUtils">
       <field name="EnvBlock"></field>
       <field name="ProcessInfo"></field>
       <field name="ProfileInfo"></field>
@@ -35868,6 +36212,62 @@
     <class name="TJwProcessParameterType" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="pptHandle"></field>
       <field name="pptID"></field>
+    </class>
+    <class name="TJwProcessUtilities" language="0" type="0" using="Classes,JwaWindows,JwsclComUtils,JwsclDescriptor,JwsclEnumerations,JwsclLogging,JwsclLsa,JwsclResource,JwsclSecureObjects,JwsclSid,JwsclStrings,JwsclTerminalServer,JwsclToken,JwsclTypes,JwsclUtils,SyncObjs,SysUtils">
+      <method name="GetCommandLineArguments"></method>
+    </class>
+    <class name="TJwProductType" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
+      <field name="ptBUSINESS"></field>
+      <field name="ptBUSINESS_N"></field>
+      <field name="ptCLUSTER_SERVER"></field>
+      <field name="ptDATACENTER_SERVER"></field>
+      <field name="ptDATACENTER_SERVER_CORE"></field>
+      <field name="ptDATACENTER_SERVER_CORE_V"></field>
+      <field name="ptDATACENTER_SERVER_V"></field>
+      <field name="ptENTERPRISE"></field>
+      <field name="ptENTERPRISE_E"></field>
+      <field name="ptENTERPRISE_N"></field>
+      <field name="ptENTERPRISE_SERVER"></field>
+      <field name="ptENTERPRISE_SERVER_CORE"></field>
+      <field name="ptENTERPRISE_SERVER_CORE_V"></field>
+      <field name="ptENTERPRISE_SERVER_IA64"></field>
+      <field name="ptENTERPRISE_SERVER_V"></field>
+      <field name="ptHOME_BASIC"></field>
+      <field name="ptHOME_BASIC_E"></field>
+      <field name="ptHOME_BASIC_N"></field>
+      <field name="ptHOME_PREMIUM"></field>
+      <field name="ptHOME_PREMIUM_E"></field>
+      <field name="ptHOME_PREMIUM_N"></field>
+      <field name="ptHYPERV"></field>
+      <field name="ptMEDIUMBUSINESS_SERVER_MANAGEMENT"></field>
+      <field name="ptMEDIUMBUSINESS_SERVER_MESSAGING"></field>
+      <field name="ptMEDIUMBUSINESS_SERVER_SECURITY"></field>
+      <field name="ptPROFESSIONAL"></field>
+      <field name="ptPROFESSIONAL_E"></field>
+      <field name="ptPROFESSIONAL_N"></field>
+      <field name="ptSERVER_FOR_SMALLBUSINESS"></field>
+      <field name="ptSERVER_FOR_SMALLBUSINESS_V"></field>
+      <field name="ptSERVER_FOUNDATION"></field>
+      <field name="ptSMALLBUSINESS_SERVER"></field>
+      <field name="ptSOLUTION_EMBEDDEDSERVER"></field>
+      <field name="ptSTANDARD_SERVER"></field>
+      <field name="ptSTANDARD_SERVER_CORE"></field>
+      <field name="ptSTANDARD_SERVER_CORE_V"></field>
+      <field name="ptSTANDARD_SERVER_V"></field>
+      <field name="ptSTARTER"></field>
+      <field name="ptSTARTER_E"></field>
+      <field name="ptSTARTER_N"></field>
+      <field name="ptSTORAGE_ENTERPRISE_SERVER"></field>
+      <field name="ptSTORAGE_EXPRESS_SERVER"></field>
+      <field name="ptSTORAGE_STANDARD_SERVER"></field>
+      <field name="ptSTORAGE_WORKGROUP_SERVER"></field>
+      <field name="ptULTIMATE"></field>
+      <field name="ptULTIMATE_E"></field>
+      <field name="ptULTIMATE_N"></field>
+      <field name="ptUNDEFINED"></field>
+      <field name="ptUnlicensed"></field>
+      <field name="ptWEB_SERVER"></field>
+      <field name="ptWEB_SERVER_CORE"></field>
     </class>
     <class name="TJwProfileInfo" language="0" type="5" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="DefaultPath"></field>
@@ -37354,10 +37754,12 @@
     <class name="TJwShellInformation" language="0" type="0" using="jwaWindows,JwsclConstants,JwsclExceptions,JwsclResource,JwsclStrings,JwsclToken,JwsclTypes,JwsclUtils,SysUtils">
       <ancestor name="TJwSystemInformation"></ancestor>
       <method name="GetFolderPath"></method>
+      <method name="GetKnownFolderPath"></method>
       <method name="GetShellRestrictions"></method>
       <method name="GetTokenHandle"></method>
       <method name="IsUACEnabled"></method>
       <method name="IsUserAdmin"></method>
+      <method name="SetKnownFolderPath"></method>
     </class>
     <class name="TJwShellRestriction" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
       <field name="srAllowBitbuckDrives"></field>
@@ -37550,11 +37952,14 @@
       <field name="sidaUnknown"></field>
     </class>
     <class name="TJwSidClassName" language="0" type="7" using="JwaWindows,JwsclResource,JwsclStrings,SysUtils">
+      <field name="scnAlias"></field>
       <field name="scnComputer"></field>
+      <field name="scnDomain"></field>
       <field name="scnGroup"></field>
       <field name="scnNone"></field>
       <field name="scnUnknown"></field>
       <field name="scnUser"></field>
+      <field name="scnwellKnown"></field>
     </class>
     <class name="TJwSidInfoDataObject" language="0" type="0" using="ActiveX,Classes,JwaWindows,JwsclAcl,JwsclComUtils,JwsclConstants,JwsclDescriptor,JwsclExceptions,JwsclKnownSid,JwsclMapping,JwsclResource,JwsclSecureObjects,JwsclSid,JwsclStrings,JwsclToken,JwsclTypes,JwsclUtils,JwsclVersion,SysUtils">
       <ancestor name="TInterfacedObject"></ancestor>
@@ -37798,6 +38203,7 @@
     </class>
     <class name="TJwUserAccount" language="0" type="0" using="Classes,Contnrs,jwaWindows,JwsclAcl,JwsclConstants,JwsclExceptions,JwsclSid,JwsclStrings,JwsclTypes,JwsclVersion,SysUtils">
       <ancestor name="TJwBaseAccount"></ancestor>
+      <method name="Apply"></method>
       <method name="Create"></method>
       <method name="Update"></method>
     </class>
@@ -37839,7 +38245,7 @@
       <method name="SetDataSize"></method>
       <method name="SetMemory"></method>
     </class>
-    <class name="TJwWaitState" language="0" type="7" using="Classes,JwaWindows,JwsclComUtils,JwsclDescriptor,JwsclEnumerations,JwsclLogging,JwsclLsa,JwsclResource,JwsclSecureObjects,JwsclSid,JwsclStrings,JwsclTerminalServer,JwsclToken,JwsclTypes,JwsclUtils,SysUtils">
+    <class name="TJwWaitState" language="0" type="7" using="Classes,JwaWindows,JwsclComUtils,JwsclDescriptor,JwsclEnumerations,JwsclLogging,JwsclLsa,JwsclResource,JwsclSecureObjects,JwsclSid,JwsclStrings,JwsclTerminalServer,JwsclToken,JwsclTypes,JwsclUtils,SyncObjs,SysUtils">
       <field name="wsNonSignaled"></field>
       <field name="wsSignaled"></field>
       <field name="wsTimeOut"></field>
@@ -37862,6 +38268,8 @@
       <method name="GetCachedWindowsType"></method>
       <method name="GetCurrentSupportedWindowsVersion"></method>
       <method name="GetCurrentWindowsTypeInternal"></method>
+      <method name="GetProductType"></method>
+      <method name="GetProductType"></method>
       <method name="GetServicePackVersion"></method>
       <method name="GetWindowsType"></method>
       <method name="IsServer"></method>

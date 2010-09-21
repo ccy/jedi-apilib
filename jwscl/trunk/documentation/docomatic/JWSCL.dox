@@ -8,20 +8,20 @@ MasterFile=
 Empty=0
 Saved=1
 Text0=This is unknown %SYMBOLNAME%.
-Text1=This is class %SYMBOLNAME%.
-Text10=This is file %SYMBOLNAME%.
-Text11=This is record %SYMBOLNAME%.
-Text12=This is %SYMBOLNAME%.
-Text13=This is nested type %SYMBOLNAME%.
-Text14=This is namespace %SYMBOLNAME%.
-Text2=This is %MEMBERNAME%, a member of class %CLASSNAME%.
-Text3=This is %MEMBERNAME%, a member of class %CLASSNAME%.
-Text4=This is %MEMBERNAME%, a member of class %CLASSNAME%.
-Text5=This is function %SYMBOLNAME%.
-Text6=This is type %SYMBOLNAME%.
-Text7=This is variable %SYMBOLNAME%.
-Text8=This is constant %SYMBOLNAME%.
-Text9=This is macro %SYMBOLNAME%.
+Text1=This is class %SYMBOLNAME%.\nThis symbol is not documented! If you find it, please let us know about it.
+Text10=This is file %SYMBOLNAME%. This symbol is not documented! If you find it, please let us know about it.
+Text11=This is record %SYMBOLNAME%. This symbol is not documented! If you find it, please let us know about it.
+Text12=This is %SYMBOLNAME%. This symbol is not documented! If you find it, please let us know about it.
+Text13=This is nested type %SYMBOLNAME%. This symbol is not documented! If you find it, please let us know about it.
+Text14=This is namespace %SYMBOLNAME%. This symbol is not documented! If you find it, please let us know about it.
+Text2=This is %MEMBERNAME%, a member of class %CLASSNAME%. This symbol is not documented! If you find it, please let us know about it.
+Text3=This is %MEMBERNAME%, a member of class %CLASSNAME%. This symbol is not documented! If you find it, please let us know about it.
+Text4=This is %MEMBERNAME%, a member of class %CLASSNAME%. This symbol is not documented! If you find it, please let us know about it.
+Text5=This is function %SYMBOLNAME%. This symbol is not documented! If you find it, please let us know about it.
+Text6=This is type %SYMBOLNAME%. This symbol is not documented! If you find it, please let us know about it.
+Text7=This is variable %SYMBOLNAME%. This symbol is not documented! If you find it, please let us know about it.
+Text8=This is constant %SYMBOLNAME%. This symbol is not documented! If you find it, please let us know about it.
+Text9=This is macro %SYMBOLNAME%. This symbol is not documented! If you find it, please let us know about it.
 
 [Class Hierarchy]
 Count=1
@@ -401,7 +401,7 @@ CValue_9=7872391
 
 [Configurations]
 Count=6
-Current=4
+Current=1
 Name0=Configuration 1
 Name1=Configuration 2
 Name2=Configuration 3
@@ -13013,7 +13013,7 @@ ClassHierarchyTextLayoutFlatSeparator='    |'
 ClassHierarchyTextLayoutHangingIndent='    '
 ClassHierarchyTextLayoutOptions=2
 ContextIndexOptions=2595
-Copyright=%COPYRIGHT%. This help was created by Doc-O-Matic which is sponsored by <a href="http://toolsfactory.com/">toolsfactory software inc.</a>
+Copyright=
 CreateContentForFoldersGlobals=1
 CreateContentForFoldersMembers=1
 CustomBuildStepApp=
@@ -26274,7 +26274,7 @@ ClassHierarchyTextLayoutFlatSeparator='    |'
 ClassHierarchyTextLayoutHangingIndent='    '
 ClassHierarchyTextLayoutOptions=2
 ContextIndexOptions=2595
-Copyright=%COPYRIGHT%. This help was created by Doc-O-Matic which is sponsored by <a href="http://toolsfactory.com/">toolsfactory software inc.</a>
+Copyright=
 CreateContentForFoldersGlobals=1
 CreateContentForFoldersMembers=1
 CustomBuildStepApp=
@@ -39503,7 +39503,7 @@ ClassHierarchyTextLayoutFlatSeparator='    |'
 ClassHierarchyTextLayoutHangingIndent='    '
 ClassHierarchyTextLayoutOptions=2
 ContextIndexOptions=2595
-Copyright=%COPYRIGHT%. This help was created by Doc-O-Matic which is sponsored by <a href="http://toolsfactory.com/">toolsfactory software inc.</a>
+Copyright=
 CreateContentForFoldersGlobals=1
 CreateContentForFoldersMembers=1
 CustomBuildStepApp=
@@ -49654,7 +49654,7 @@ ClassHierarchyTextLayoutFlatSeparator='    |'
 ClassHierarchyTextLayoutHangingIndent='    '
 ClassHierarchyTextLayoutOptions=2
 ContextIndexOptions=2595
-Copyright=%COPYRIGHT%. This help was created by Doc-O-Matic which is sponsored by <a href="http://toolsfactory.com/">toolsfactory software inc.</a>
+Copyright=
 CreateContentForFoldersGlobals=1
 CreateContentForFoldersMembers=0
 CustomBuildStepApp=
@@ -54685,7 +54685,7 @@ ClassHierarchyTextLayoutFlatSeparator='    |'
 ClassHierarchyTextLayoutHangingIndent='    '
 ClassHierarchyTextLayoutOptions=2
 ContextIndexOptions=2595
-Copyright=%COPYRIGHT%. This help was created by Doc-O-Matic which is sponsored by <a href="http://toolsfactory.com/">toolsfactory software inc.</a>
+Copyright=
 CreateContentForFoldersGlobals=0
 CreateContentForFoldersMembers=0
 CustomBuildStepApp=
@@ -55985,7 +55985,7 @@ ClassHierarchyTextLayoutFlatSeparator='    |'
 ClassHierarchyTextLayoutHangingIndent='    '
 ClassHierarchyTextLayoutOptions=2
 ContextIndexOptions=2595
-Copyright=%COPYRIGHT%. This help was created by Doc-O-Matic which is sponsored by <a href="http://toolsfactory.com/">toolsfactory software inc.</a>
+Copyright=
 CreateContentForFoldersGlobals=1
 CreateContentForFoldersMembers=1
 CustomBuildStepApp=
