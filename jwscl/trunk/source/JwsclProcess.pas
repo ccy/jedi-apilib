@@ -35,6 +35,10 @@ The Original Code is JwsclProcess.pas.
 The Initial Developer of the Original Code is Christian Wimmer.
 Portions created by Christian Wimmer are Copyright (C) Christian Wimmer. All rights reserved.
 
+Remarks
+  If JWSCL_GLOBAL_SAFE_LOAD_LIBRARY is set (within Jwscl.inc) this unit should be included as early as possible
+  in the main project file.
+
 Version
 The following values are automatically injected by Subversion on commit.
 <table>
@@ -53,7 +57,7 @@ unit JwsclProcess;
 
 interface
 
-uses SysUtils, Classes,
+uses SysUtils, Classes, SyncObjs,
   JwaWindows,
   JwsclTypes, JwsclToken, JwsclSid, JwsclTerminalServer, JwsclUtils,
   JwsclSecureObjects, JwsclResource,
@@ -71,20 +75,158 @@ const
   IOJOBNAME = 'IOJobCompletion\';
 
 type
-  {<B>TJwLibraryUtilities</B> contains methods related to libraries.}
+  { ISafeLoadLibrarySection is an interface used by TJwLibraryUtilities.EnterSafeLoadLibrary to retain a section for a
+    safe way of loading a library. Its only intention is to clean up the setup made by EnterSafeLoadLibrary on
+    destruction.                                                                                                       }
+  ISafeLoadLibrarySection = interface
+  ['{CE0185B5-C0CB-4084-BA22-54F504CCA082}']
+    { LeaveSafeLoadLibrary will undo a safe section created by TJwLibraryUtilities.EnterSafeLoadLibrary. All subsequent
+      calls to LoadLibrary may no more be safe to call.
+      Remarks
+      Instead of calling this method you can also destroy the interface directly.
+      
+      For more information see TJwLibraryUtilities.EnterSafeLoadLibrary.                                                }
+    procedure LeaveSafeLoadLibrary;
+  end;
+
+  { <b>TJwLibraryUtilities</b> contains methods related to libraries.
+    
+    Most of the functions are class methods so you don't need to create an instance of this class. }
   TJwLibraryUtilities = class
   private
   protected
+    { LeaveSafeLoadLibrary will undo a safe section created by EnterSafeLoadLibrary. All subsequent calls to LoadLibrary
+      may no more be safe to call.
+      Remarks
+      The function is internal and instead the method with the same name in ISafeLoadLibrarySection should be called. This
+      interface is returned by EnterSafeLoadLibrary.                                                                       }
+    class procedure LeaveSafeLoadLibrary; virtual;
   public
-    {<B>LoadLibProc</B> tries to get a pointer to a function within a DLL.
-     @return Return value is a function pointer to the specified function.
+    { <b>SecureDLLSearchPath</b> initiates actions to turn off unsecure searching for DLL files wiht LoadLibrary.
+      Remarks
+      This call should be called as early as possible in the process.
+      
+      Microsoft has added functions to secure the searching for DLL files. However, the system must be patched. On an
+      unpatched system the function only sets the current working directory to Windows system. Otherwise it tries to call
+      SetDllDirectoryW and SetSearchPathMode.
+      
+      If the compiler directive <b>JWSCL_LOCAL_SAFE_LOAD_LIBRARY</b> is set, the function will be called by the
+      initialization section of this unit. Make sure you include the unit JwsclProcess.pas as early as possible.
+      
+      
+      
+      Using this method makes calls to EnterSafeLoadLibrary unnecessary but the calls are still valid.                    }
+    class procedure SecureDLLSearchPath;
 
-     raise
-      EJwaLoadLibraryError This exception is raised if the given library name could not be found.
-      EJwaGetProcAddressError This exception is raised if the given function name could not be found.
-    }
+    { <b>IsFunctionAvailable</b> checks whether a function in a library exists.
+
+      Parameters
+      LibName :       A path to a library (DLL file).
+      FunctionName :  A function name to look for in the library.
+
+      Returns
+      \Returns <b>true</b> if the function could be found in the library; otherwise <b>false</b>.
+
+      Remarks
+      This function uses a safe LoadLibrary call if the compiler switch <b>JWSCL_LOCAL_SAFE_LOAD_LIBRARY</b> is active. }
+    class function IsFunctionAvailable(const LibName : String; const FunctionName : AnsiString) : Boolean;
+
+    { InitSafeLoadLibrary initializes the safe load library algorithm used by the metdho EnterSafeLoadLibrary.
+      
+      
+      Remarks
+      This function doesn't do anything if the compiler switch <b>JWSCL_LOCAL_SAFE_LOAD_LIBRARY</b> isn't enabled. }
+    class procedure InitSafeLoadLibrary; virtual;
+    { <b>EnterSafeLoadLibrary</b> creates a section for loading a library in a safe way.
+      Returns
+      The function returns an interface that can be used to leave the the section of loading a library the safe way.
+      Remarks
+      <b>EnterSafeLoadLibrary</b> can be used to create a section of code to load libraries in a safe way. A call to this
+      function makes sure that all subsequent calls to LoadLibrary will use a safe way of location the library itself.
+      
+      Several nested calls have the intended effect of only the first call will do the work. All other nested calls will
+      do nothing.
+      
+      The function works on the current thread in a thread safe way. Thus the function can be called from different
+      threads safely.
+      
+      This function does nothing if the compiler switch <b>JWSCL_LOCAL_SAFE_LOAD_LIBRARY</b> isn't enabled.
+      
+      You should call this method only when needed and for a short time. Creating a big section will not result in safety
+      because your program may change the environment after the method was called. Furthermore the method will create a
+      section that is only valid for the current thread. If you call this function in your main project in the beginning,
+      other calls to this function in different threads will immediately block their execution and thus create a race
+      condition.
+      Example
+      You can use the function in different way, depending on how long the sections shall last.
+      
+      In this example the section will last until the function has ended.
+      <code lang="delphi">
+      procedure ProcName;
+      begin
+        TJwLibraryUtilities.EnterSafeLoadLibrary;
+        //safe calls to LoadLibrary
+      end;
+      </code>
+      
+      In this example the section will last until the the interface has been destroyed.
+      <code lang="delphi">
+      procedure ProcName;
+      var
+        SafeSection : ISafeLoadLibrarySection;
+      begin
+        SafeSection := TJwLibraryUtilities.EnterSafeLoadLibrary;
+        //safe calls to LoadLibrary
+        SafeSection := nil;
+        //unsafe calls to LoadLibrary
+      end;
+      </code>
+      
+      In this example the section will last until the interface method <link ISafeLoadLibrarySection.LeaveSafeLoadLibrary, LeaveSafeLoadLibrary>
+      has been called.
+      <code lang="delphi">
+      procedure ProcName;
+      var
+        SafeSection : ISafeLoadLibrarySection;
+      begin
+        SafeSection := TJwLibraryUtilities.EnterSafeLoadLibrary;
+        //calls to LoadLibrary
+        SafeSection.LeaveSafeLoadLibrary;
+        //unsafe calls to LoadLibrary
+      end;
+      </code>
+      Although, there might be an exception, it is safe to not use try/finally here (but of course you can use it). The
+      interface will be destroyed in a case of an exception though.                                                                              }
+
+    class function EnterSafeLoadLibrary : ISafeLoadLibrarySection; virtual;
+
+    { <b>LoadLibProc</b> tries to get a pointer to a function within a DLL.
+      Returns
+      \Return value is a function pointer to the specified function.
+      Exceptions
+      EJwaLoadLibraryError :     This exception is raised if the given library name could not be found.
+      EJwaGetProcAddressError :  This exception is raised if the given function name could not be found.
+      Remarks
+      This function uses a safe LoadLibrary call if the compiler switch <b>JWSCL_LOCAL_SAFE_LOAD_LIBRARY</b> is active.
+                                                                                                                        }
     class function LoadLibProc(const LibName: AnsiString;
       const ProcName: AnsiString): Pointer;
+  end;
+
+  {TJwProcessUtilities provides methods to get or set information of a process.
+   Remarks
+      Some methods that provide information about the projess can also be found in class TJwSystemInformation of
+      unit JwsclVersion.pas .
+  }
+  TJwProcessUtilities = class
+  public
+    {GetCommandLineArguments returns all arguments of the application supplied through the command line.
+
+    Remarks
+       The function uses CommandLineToArgvW (http://msdn.microsoft.com/en-us/library/bb776391%28VS.85%29.aspx)
+       and its special parsing.
+    }
+    class function GetCommandLineArguments() : TStrings;
   end;
 {
   IJwJobObject = interface
@@ -103,6 +245,8 @@ BOOL WINAPI TerminateJobObject(HANDLE hJob, UINT uExitCode);
 
   end;
  }
+
+  {TJwProcessList is an array of process IDs. (DWORD)}
   TJwProcessList = array of TJwProcessId;
 
 
@@ -885,6 +1029,44 @@ uses Math, D5impl, JwsclExceptions,
 
 {$IFNDEF SL_INTERFACE_SECTION}
 
+
+{$IFDEF JWSCL_GLOBAL_SAFE_LOAD_LIBRARY}
+  {$UNDEF JWSCL_LOCAL_SAFE_LOAD_LIBRARY}
+{$ENDIF}
+
+{$IFDEF JWSCL_LOCAL_SAFE_LOAD_LIBRARY}
+type
+  TSafeLoadLibrarySectionImpl = class(TInterfacedObject, ISafeLoadLibrarySection)
+  protected
+    Count : Integer;
+  public
+    constructor Create;
+    destructor Destroy; override;
+    procedure LeaveSafeLoadLibrary; virtual;
+  end;
+
+constructor TSafeLoadLibrarySectionImpl.Create;
+begin
+  Count := 1;
+end;
+
+destructor TSafeLoadLibrarySectionImpl.Destroy;
+begin
+  LeaveSafeLoadLibrary;
+end;
+
+procedure TSafeLoadLibrarySectionImpl.LeaveSafeLoadLibrary;
+var Value : Integer;
+begin
+  Value := InterlockedDecrement(Count);
+  ASSERT(Value = 0, Format('TSafeLoadLibrarySectionImpl.LeaveSafeLoadLibrary was called with invalid count value %d.', [Value]));
+
+  if Value = 0 then
+    TJwLibraryUtilities.LeaveSafeLoadLibrary;
+end;
+{$ENDIF JWSCL_LOCAL_SAFE_LOAD_LIBRARY}
+
+
 function JwProcessIdToSessionId(const ProcessID : TJwProcessId) : TJwSessionId;
 begin
   if TJwWindowsVersion.IsWindowsVista(true) and
@@ -935,18 +1117,144 @@ begin
 end;
 
 
+var
+  //Critical section for  TJwLibraryUtilities.EnterSafeLoadLibrary
+  LoadLibCS : SyncObjs.TCriticalSection = nil;
+
+  //current dir before LoadLibrary was called
+  LastLibCurrDir : PChar = nil;
+
+class procedure TJwLibraryUtilities.InitSafeLoadLibrary;
+begin
+{$IFDEF JWSCL_LOCAL_SAFE_LOAD_LIBRARY}
+  LoadLibCS := SyncObjs.TCriticalSection.Create;
+{$ENDIF}
+end;
+
+class function TJwLibraryUtilities.EnterSafeLoadLibrary : ISafeLoadLibrarySection;
+{$IFDEF JWSCL_LOCAL_SAFE_LOAD_LIBRARY}
+var
+  Len : DWORD;
+  SystemDir : TJwString;
+{$ENDIF JWSCL_LOCAL_SAFE_LOAD_LIBRARY}
+begin
+  result := nil;
+{$IFDEF JWSCL_LOCAL_SAFE_LOAD_LIBRARY}
+  Assert(Assigned(LoadLibCS),'TJwLibraryUtilities.LoadLibProc was called before the critical section was initialized. Make sure JwsclProcess '+
+     'is included at first or TJwLibraryUtilities.JwInitSafeLoadLibrary was called before.');
+
+  LoadLibCS.Enter;
+  try
+    if LastLibCurrDir <> nil then
+      exit; //nested call
+
+    Len := GetCurrentDirectory(0, nil);
+    if Len = 0 then
+      JwRaiseLastOSError('GetCurrentDirectory', 'LoadLibProc', ClassName, RsUNProcess);
+
+    GetMem(LastLibCurrDir, (Len+2) * TJwCharSize);
+    try
+      Len := GetCurrentDirectory(Len, LastLibCurrDir);
+      if Len = 0 then
+        JwRaiseLastOSError('GetCurrentDirectory', 'LoadLibProc', ClassName, RsUNProcess);
+
+      SystemDir := TJwShellInformation.GetFolderPath(0, CSIDL_SYSTEM, nil, sftCurrent);
+      {$IFDEF UNICODE}SetCurrentDirectoryW(PWideChar(SystemDir));{$ELSE}SetCurrentDirectoryW(PAnsiChar(SystemDir));{$ENDIF}
+
+      result := TSafeLoadLibrarySectionImpl.Create();
+    except
+      FreeMem(LastLibCurrDir);
+      LastLibCurrDir := nil;
+      raise;
+    end;
+  except
+    LoadLibCS.Leave;
+    raise;
+  end;
+{$ENDIF}
+end;
+
+class procedure TJwLibraryUtilities.LeaveSafeLoadLibrary;
+begin
+{$IFDEF JWSCL_LOCAL_SAFE_LOAD_LIBRARY}
+  try
+    if LastLibCurrDir <> nil then
+    begin
+      if not SetCurrentDirectory(LastLibCurrDir) then
+        {$IFDEF DEBUG}RaiseLastOSError{$ENDIF};
+      FreeMem(LastLibCurrDir);
+      LastLibCurrDir := nil;
+    end;
+  finally
+    LoadLibCS.Leave;
+  end;
+{$ENDIF}
+end;
+
+
 class function TJwLibraryUtilities.LoadLibProc(const LibName: AnsiString; const ProcName: AnsiString): Pointer;
 var
   R : Pointer;
 begin
-  R := nil;
-  //problem with direct use of Result in this procedure!
-  GetProcedureAddress(R, LibName, ProcName);
-  Result := R;
+  EnterSafeLoadLibrary;
+  try
+    R := nil;
+    //problem with direct use of Result in this procedure!
+    GetProcedureAddress(R, LibName, ProcName);
+    Result := R;
+  finally
+    LeaveSafeLoadLibrary;
+  end;
 end;
 
 
+class function TJwLibraryUtilities.IsFunctionAvailable(const LibName : String; const FunctionName : AnsiString) : Boolean;
+var 
+  hLib : HANDLE;
+  P : Pointer;
+begin
+  result := false;
+  
+  EnterSafeLoadLibrary;
 
+  hLib := LoadLibrary(PChar(LibName));
+  try
+    if hLib = 0 then
+    begin
+      exit;
+    end;
+
+    P := GetProcAddress(hLib, PAnsiChar(FunctionName));
+    result := P <> nil;
+  finally
+    FreeLibrary(hLib);
+  end;
+  //auto destruct: LeaveSafeLoadLibrary
+end;
+
+
+class procedure TJwLibraryUtilities.SecureDLLSearchPath;
+var
+  SystemDir : TJwString;
+begin
+  //>= Windows 2000
+  SystemDir := TJwShellInformation.GetFolderPath(0, CSIDL_SYSTEM, nil, sftCurrent);
+  {$IFDEF UNICODE}SetCurrentDirectoryW(PWideChar(SystemDir));{$ELSE}SetCurrentDirectoryW(PAnsiChar(SystemDir));{$ENDIF}
+
+  //>= Vista or >= XP SP1
+  if IsFunctionAvailable(kernel32, 'SetDllDirectoryW') then
+  begin
+    if not SetDllDirectoryW(PWideChar(JwSafeDLLDirectory)) then
+      {$IFDEF DEBUG}RaiseLastOSError{$ENDIF};
+  end;
+
+  //>= Windows 7 or >= XP SP1
+  if IsFunctionAvailable(kernel32, 'SetSearchPathMode') then
+  begin
+    if not SetSearchPathMode(JwSafeSearchDLLFlags) then
+      {$IFDEF DEBUG}RaiseLastOSError{$ENDIF};
+  end;
+end;
 
 procedure JwCreateProcessAsAdminUser(
    const UserName, Domain, Password : TJwString;
@@ -3006,6 +3314,54 @@ end;
 
 
 
+{ TJwProcessUtilities }
+
+class function TJwProcessUtilities.GetCommandLineArguments: TStrings;
+type
+  PWideStrings = ^TWideStrings;
+  TWideStrings = array[0..0] of PWideChar;
+var
+  ArgsCount : Integer;
+  Args: PWideStrings;
+  I : Integer;
+begin
+  result := TStringList.Create;
+
+  Args := PWideStrings(CommandLineToArgvW(GetCommandLineW(), ArgsCount));
+  if Args = nil then
+     raise EJwsclWinCallFailedException.CreateFmtWinCall(
+          '',
+          'GetCommandLineArguments',                                //sSourceProc
+          ClassName,                                //sSourceClass
+          '',                          //sSourceFile
+          0,                                           //iSourceLine
+          True,                                  //bShowLastError
+          'CommandLineToArgvW',                   //sWinCall
+          ['CommandLineToArgvW']);
+
+
+  try
+    for I := 0 to ArgsCount - 1 do
+    begin
+      result.Add(String(PChar(Args[i])));
+    end;
+  finally
+    LocalFree(LONG_PTR(Args));
+  end;
+end;
+
+initialization
+{$IFDEF JWSCL_GLOBAL_SAFE_LOAD_LIBRARY}
+  TJwLibraryUtilities.SecureDLLSearchPath;
+{$ENDIF}
+
+{$IFDEF JWSCL_LOCAL_SAFE_LOAD_LIBRARY}
+  TJwLibraryUtilities.InitSafeLoadLibrary;
+{$ENDIF}
+finalization
+{$IFDEF JWSCL_LOCAL_SAFE_LOAD_LIBRARY}
+  FreeAndNil(LoadLibCS);
+{$ENDIF}
 
 {$ENDIF SL_INTERFACE_SECTION}
 

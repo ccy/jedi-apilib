@@ -1469,6 +1469,7 @@ type
 
 var
   GetProductInfo : TGetProductInfo;
+  ProdType : DWORD;
 begin
   if TJwWindowsVersion.IsWindowsVista(true) or TJwWindowsVersion.IsWindows2008(true) then
   begin
@@ -1476,13 +1477,22 @@ begin
 
     if not GetProductInfo(Version.dwMajorVersion, Version.dwMinorVersion,
                    Version.wServicePackMajor, Version.wServicePackMinor,
-                   @TJwProductType(result)) then
+                   @ProdType) then
     begin
       //TODO: also check for K SKUS
       //http://msdn.microsoft.com/en-us/library/aa965835%28VS.85%29.aspx
       //http://msdn.microsoft.com/en-us/library/ms724358%28VS.85%29.aspx
       raise EJwsclInvalidParameterException.Create('One or more values in parameter Version are not supported.');
     end;
+
+    //$ABCDABCD has the highest bit set and thus is recognized as negative by Delphi
+    //  which, in return, will produce an warning at TJwProductType
+    //Using a value without this last bit as ptUnlicensed makes it necessary
+    //  to distinguish it here.
+    if ProdType = $ABCDABCD then
+      result := ptUnlicensed
+    else
+      result := TJwProductType(ProdType);
   end
   else
   begin
@@ -1608,7 +1618,7 @@ var
   // only available on Windows >= 5.1 so we have to link it dynamically
   GetNativeSystemInfo : procedure (lpSystemInfo: LPSYSTEM_INFO); stdcall;
 begin
-  GetNativeSystemInfo := GetProcAddress(GetModuleHandle('kernel32.dll'), 'GetNativeSystemInfo');
+  GetNativeSystemInfo := GetProcAddress(GetModuleHandle(kernel32), 'GetNativeSystemInfo');
   if @GetNativeSystemInfo <> nil
     then
       begin
@@ -1787,7 +1797,7 @@ begin
 
   if TJwWindowsVersion.IsWindowsXP(true) and not TJwWindowsVersion.IsProcess64() then
   begin
-    _GetProcessDEPPolicy := GetProcAddress(GetModuleHandle('kernel32.dll'), 'GetProcessDEPPolicy');
+    _GetProcessDEPPolicy := GetProcAddress(GetModuleHandle(kernel32), 'GetProcessDEPPolicy');
     if @_GetProcessDEPPolicy <> nil then
     begin
       if (ProcessHandle = 0) then
@@ -1924,7 +1934,7 @@ var
 begin
   if TJwWindowsVersion.IsWindowsXP(true) and not TJwWindowsVersion.IsProcess64() then
   begin
-    _SetProcessDEPPolicy := GetProcAddress(GetModuleHandle('kernel32.dll'), 'SetProcessDEPPolicy');
+    _SetProcessDEPPolicy := GetProcAddress(GetModuleHandle(kernel32), 'SetProcessDEPPolicy');
     if @_SetProcessDEPPolicy <> nil then
     begin
       Flags := 0;
@@ -2224,7 +2234,7 @@ begin
 
   if TJwWindowsVersion.IsWindowsXP(true) and not TJwWindowsVersion.IsProcess64() then
   begin
-    _GetSystemDEPPolicy := GetProcAddress(GetModuleHandle('kernel32.dll'), 'GetSystemDEPPolicy');
+    _GetSystemDEPPolicy := GetProcAddress(GetModuleHandle(kernel32), 'GetSystemDEPPolicy');
     if @_GetSystemDEPPolicy <> nil then
     begin
       result := TJwDEPSystemPolicy(_GetSystemDEPPolicy());

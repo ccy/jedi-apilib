@@ -147,7 +147,26 @@ type
     var ObjectTypeList: TJwObjectTypeArray;
     var GrantedAccessList: TJwAccessMaskArray): Cardinal of object;
 
-  {Not supported}
+  {<B>TJwOnLookupSIDs</B> defines a callback event that is called by
+	TJwSecurityDescriptorDialog.LookupSids for all SIDs that are unknown to Windows.
+	You can set OnLookupSIDs to call back a function for retrieving the names of a list of SIDs.
+	
+	Parameters
+	  Sender : Class instance of TJwSecurityDescriptorDialog which called the method. 
+	  SIDList : A list of SIDs that corresponds to the array stored in parameter SIDInfoList.
+	  SIDInfoList : A list of information about the SIDs in parameter SIDList. You can change its information
+				but you must not add to, delete from or free the list or otherwise TJwSecurityDescriptorDialog.LookupSids will fail. 
+	
+	Remarks
+	  By default (If you don't setup the event or leave alone SIDInfoList) JWSCL will format the display name of an unknown SID in the format "SIDName (S-1-XXXXX)" (without quotes).
+	  The display name is stored in the member sCommonName of the TJwSidInfoRecord  structure.
+	  The member pSID (TObject) of TJwSidInfoRecord will contain a reference to the TJwSecurityID instance stored in SIDList. Do not free it.
+	  
+	  Because JWSCL tries to find the name of a SID, this process may fail with an exception that won't be shown (since it is catched). This information is available
+	  through the member Exception of TJwSidInfoRecord. It contains a copy of the exception raised by JWSCL methods TJwSecurityID.AccountName or TJwSecurityID.StringSID .
+	  By examining this member you can act accordingly. If not error occured, the value will be nil.	  
+	  	
+  }
   TJwOnLookupSIDs = function(Sender: TJwSecurityDescriptorDialog;
     const SIDList: TJwSecurityIdList;
     var SIDInfoList: TJwSidInfoRecordArray): Cardinal of object;

@@ -2982,8 +2982,7 @@ type
 {$IFNDEF SL_OMIT_SECTIONS}
 implementation
 
-uses TypInfo,
-     JwsclProcess,
+uses JwsclProcess,
      JwsclPrivileges,
      JwsclEnumerations;
 

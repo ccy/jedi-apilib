@@ -350,11 +350,11 @@ raises
 procedure JwCheckInitKnownSid(const MethodName, ClassName, FileName : TJwString);
 
 
-{$IFDEF JW_TYPEINFO}
+{$IFDEF JWSCL_TYPEINFO}
 {<B>GetUnitName</B> returns the name of unit where the given objects was defined in source code.
 }
 function GetUnitName(argObject: TObject): AnsiString;
-{$ENDIF JW_TYPEINFO}
+{$ENDIF JWSCL_TYPEINFO}
 
 {<B>JwSetThreadName</B> names a thread. A debugger can use this name to display a human readably
 identifier for a thread.
@@ -862,9 +862,9 @@ uses SysUtils, Math, D5Impl, JwsclToken, JwsclKnownSid, JwsclDescriptor, JwsclAc
      JwsclSecureObjects, JwsclMapping, JwsclStreams, JwsclCryptProvider,
      ComObj,
      JwsclConstants
-{$IFDEF JW_TYPEINFO}
+{$IFDEF JWSCL_TYPEINFO}
      ,TypInfo
-{$ENDIF JW_TYPEINFO}
+{$ENDIF JWSCL_TYPEINFO}
       ;
 
 
@@ -1571,7 +1571,7 @@ begin
   end;
 end;
 
-{$IFDEF JW_TYPEINFO}
+{$IFDEF JWSCL_TYPEINFO}
 function GetUnitName(argObject: TObject): AnsiString;
 var
   ptrTypeData: PTypeData;
@@ -1582,7 +1582,7 @@ begin
     Result := ptrTypeData.UnitName;
   end;
 end;
-{$ENDIF JW_TYPEINFO}
+{$ENDIF JWSCL_TYPEINFO}
 
 
 function JwIsHandleValid(const Handle : THandle) : Boolean;

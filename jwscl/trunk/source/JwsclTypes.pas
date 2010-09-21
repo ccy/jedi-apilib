@@ -2097,7 +2097,7 @@ type
 
 
   TJwProductType = (
-    ptUnlicensed = $ABCDABCD,
+    ptUnlicensed = $2BCDABCD, //$ABCDABCD
     ptUNDEFINED = $00000000, //An unknown product
     ptBUSINESS = $00000006, //Business
     ptBUSINESS_N = $00000010, //Business N

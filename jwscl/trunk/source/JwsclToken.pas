@@ -2199,8 +2199,12 @@ function JwCreateRestrictedToken(
 implementation
 
 uses JwsclKnownSid, JwsclMapping, JwsclSecureObjects, JwsclProcess,
-     JwsclTerminalServer, JwsclLsa,  JwsclVersion, TypInfo,
-      JwsclPrivileges, Math, D5impl;
+     JwsclTerminalServer, JwsclLsa,  JwsclVersion,
+     JwsclPrivileges, Math,
+     {$IFDEF JWSCL_TYPEINFO}
+     TypInfo,
+     {$ENDIF JWSCL_TYPEINFO}
+     D5impl;
 
 {$ENDIF SL_OMIT_SECTIONS}
 
@@ -4160,24 +4164,24 @@ begin
   iTC := cardinal(aTokenInformationClass);
   TokenClass := JwaWindows._TOKEN_INFORMATION_CLASS(iTC);
 
-  //GetTokenInformation should always return ERROR_INSUFFICIENT_BUFFER
+  //GetTokenInformation should always return ERROR_INSUFFICIENT_BUFFER or ERROR_BAD_LENGTH
   if not jwaWindows.GetTokenInformation(hTokenHandle, TokenClass,
     ptrTokenType, 0, Result) then
   begin
     iError := GetLastError;
-    if (iError <> HRESULT(ERROR_INSUFFICIENT_BUFFER)) and (iError <> 24) then
-      Result := 0;
-    if iError = 24 then
+   
+    if (iError <> HRESULT(ERROR_INSUFFICIENT_BUFFER)) and (iError <> ERROR_BAD_LENGTH) then
+	  Result := 0; //something else happened
+
+    //this case happens on token classes with DWORD type (e.g. TokenSessionId)  
+    if iError = ERROR_BAD_LENGTH then
     begin
-      {on XP, this size of the following classtypes
-       returns 0.
-       We fix that here
-      }
       case aTokenInformationClass of
         JwaWindows.TokenSessionId : result := SizeOf(DWORD);
       end;
     end;
   end;
+  //else the caller must check for zero return
 end;
 
 procedure TJwSecurityToken.GetTokenInformation(hTokenHandle: TJwTokenHandle;
@@ -4206,6 +4210,7 @@ begin
       'GetTokenInformation')
   else
     CheckTokenAccessType(TOKEN_QUERY, 'TOKEN_QUERY', 'GetTokenInformation');
+  
 
   tokLen := Self.GetTokenInformationLength(hTokenHandle,
     TokenInformationClass);
@@ -4215,7 +4220,7 @@ begin
 
   TokenInformation := HeapAlloc(JwProcessHeap, HEAP_ZERO_MEMORY, tokLen);
 
-  if (TokenInformation = nil) then
+  if (TokenInformation = nil) then //TODO: BUGBUG : On not enough Memory this will fail
     doRaiseError(EJwsclNotEnoughMemory,
       RsTokenNotEnoughMemoryTokenSave);
 
@@ -4236,7 +4241,7 @@ begin
   if not Result then
   begin
     HeapFree(JwProcessHeap, 0, TokenInformation);
-    doRaiseError(nil, RsTokenUnableGetTokenInformation);
+    doRaiseError(nil, RsTokenUnableGetTokenInformation); //TODO: BUG, duplicate use of same exception class for different errors
   end;
 end;
 
@@ -6539,7 +6544,11 @@ begin
      'PrimaryGroup',PrimaryGroup.ToString,
      'TokenUserName',sUserName,
      'UserName',UserName,
+     {$IFDEF JWSCL_TYPEINFO}
      'TokenType', GetEnumName(TypeInfo(TOKEN_TYPE), integer(TokenType)),
+     {$ELSE}
+     'TokenType', 'Unavailable value!! JWSCL_TYPEINFO is not defined.',
+     {$ENDIF JWSCL_TYPEINFO}
      'Shared', Shared,
      'Origin',Format('%d.%d',[TokenOrigin.HighPart, TokenOrigin.LowPart]),
      'Groups', Groups.Count,

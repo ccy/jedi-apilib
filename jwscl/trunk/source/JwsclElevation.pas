@@ -773,11 +773,9 @@ var
     end;
 
     CloseHandle(lpProcessInformation.hThread);
-    try
-      result := {localcall}GetProcessId(lpProcessInformation.hProcess);
-    finally
-      CloseHandle(lpProcessInformation.hProcess);
-    end;
+    CloseHandle(lpProcessInformation.hProcess);
+
+    result := lpProcessInformation.dwProcessId;
   end;
 
 

@@ -1655,6 +1655,20 @@ const
   }
   E_CLASS_IS_NOT_SETUPint = 23;
 
+  {JwSafeSearchDLLFlags is used by
+     TJwLibraryUtilities.SecureDLLSearchPath()
+   to be put into the call of SetSearchPathMode.
+  }
+  JwSafeSearchDLLFlags : DWORD = BASE_SEARCH_PATH_ENABLE_SAFE_SEARCHMODE or BASE_SEARCH_PATH_PERMANENT;
+
+  {JwSafeDLLDirectory is used by
+    TJwLibraryUtilities.SecureDLLSearchPath()
+   to be put into the call of SetDllDirectoryW
+
+   Defaults to empty string.
+   }
+  JwSafeDLLDirectory : WideString = '';
+
 {$ENDIF SL_IMPLEMENTATION_SECTION}
 
 {$IFNDEF SL_OMIT_SECTIONS}
