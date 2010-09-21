@@ -67,10 +67,13 @@ Warning #2: If the JEDI API headers are used with a directive WIN_XP or lower
 
 //This is for compability reasons only!
 //On of them should work. However the second one is standard and supported.
-{.$I .\JediAPILib.inc}
-{$DEFINE JWSCL_INC}
+
+//JediAPILib.inc is included from an external svn repo
+//Infact this repo is the JEDI API svn repo which
+//contains includes\JediAPILib.inc . So there it points to.
+//If this does not work, you forgot to add \jwscl\trunk\source to your LIBRARY path.
 {$I ..\includes\jwa\JediAPILib.inc}
-{$UNDEF JWSCL_INC}
+
 
 
 {$IFDEF FPC}
@@ -143,7 +146,7 @@ Warning #2: If the JEDI API headers are used with a directive WIN_XP or lower
 //This call should be in a unit that is included on top of your uses clause in your main project file.
 //This feature is available in Delphi2010 and newer only
 {$IFDEF DELPHI2010_UP}
-{$DEFINE JWSCL_USE_DELAYED}
+  {$DEFINE JWSCL_USE_DELAYED}
 {$ENDIF DELPHI2010_UP}
 
 //Uses taskdialog when a JWSCL exception occurs in Delphi
@@ -165,6 +168,25 @@ Warning #2: If the JEDI API headers are used with a directive WIN_XP or lower
 //
 //
 {$DEFINE JWSCL_USE_TASK_EXCEPTION_DIALOGS}
+
+// If JWSCL_LOCAL_SAFE_LOAD_LIBRARY is set
+//   TJwLibraryUtilities.LoadLibProc will load libraries in a safe way.
+// Furthermore the function TJwLibraryUtilities.EnterSafeLoadLibrary will be enabled.
+// In this way the current directory will be set to the system directory.
+{$DEFINE JWSCL_LOCAL_SAFE_LOAD_LIBRARY}
+
+// If JWSCL_GLOBAL_SAFE_LOAD_LIBRARY is set
+//  the unit initialization JwsclProcess will call TJwLibraryUtilities.SecureDLLSearchPath;
+// and secure all calls to LoadLibrary and CreateProcess
+//  I.e. the current directory and the process directory will be searched last for exe, dll, sys and
+//    such after system dirs. The current folder of process will be set to the system directory.
+//
+// JWSCL_LOCAL_SAFE_LOAD_LIBRARY makes define JWSCL_LOCAL_SAFE_LOAD_LIBRARY unnecessary.
+//
+// You can call TJwLibraryUtilities.SecureDLLSearchPath; manually which should be done as early as possible
+//   and in favour of this definition.
+{.$DEFINE JWSCL_GLOBAL_SAFE_LOAD_LIBRARY}
+
 
 //the following line must be at the end of this file!!
 {Warning: This line is printed because an identifier has no pasdoc comment. This error must be fixed.}
