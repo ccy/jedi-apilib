@@ -103,9 +103,9 @@ Warning #2: If the JEDI API headers are used with a directive WIN_XP or lower
   {$DEFINE JWSCL_SIDCACHE}
 {$ENDIF JWSCL_USE_CACHES}
 
-//If JW_TYPEINFO is set, JWSCL uses the unit TypInfo
+//If JWSCL_TYPEINFO is set, JWSCL uses the unit TypInfo
 //See JWSCLUtils.pas GetUnitName
-{$DEFINE JW_TYPEINFO}
+{.$DEFINE JWSCL_TYPEINFO}
 
 
 {$IFDEF DELPHI2010_UP}
@@ -187,6 +187,9 @@ Warning #2: If the JEDI API headers are used with a directive WIN_XP or lower
 //   and in favour of this definition.
 {.$DEFINE JWSCL_GLOBAL_SAFE_LOAD_LIBRARY}
 
+//This include must be at the end of include definitions
+//If this does not work, you forgot to add jwscl source folder to your LIBRARY path.
+{$INCLUDE ..\includes\jwsclAdditionals.inc}
 
 //the following line must be at the end of this file!!
 {Warning: This line is printed because an identifier has no pasdoc comment. This error must be fixed.}
