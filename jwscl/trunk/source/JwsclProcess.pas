@@ -1159,7 +1159,7 @@ begin
         JwRaiseLastOSError('GetCurrentDirectory', 'LoadLibProc', ClassName, RsUNProcess);
 
       SystemDir := TJwShellInformation.GetFolderPath(0, CSIDL_SYSTEM, nil, sftCurrent);
-      {$IFDEF UNICODE}SetCurrentDirectoryW(PWideChar(SystemDir));{$ELSE}SetCurrentDirectoryW(PAnsiChar(SystemDir));{$ENDIF}
+      {$IFDEF UNICODE}SetCurrentDirectoryW(PWideChar(SystemDir));{$ELSE}SetCurrentDirectoryA(PAnsiChar(SystemDir));{$ENDIF}
 
       result := TSafeLoadLibrarySectionImpl.Create();
     except
@@ -1239,7 +1239,7 @@ var
 begin
   //>= Windows 2000
   SystemDir := TJwShellInformation.GetFolderPath(0, CSIDL_SYSTEM, nil, sftCurrent);
-  {$IFDEF UNICODE}SetCurrentDirectoryW(PWideChar(SystemDir));{$ELSE}SetCurrentDirectoryW(PAnsiChar(SystemDir));{$ENDIF}
+  {$IFDEF UNICODE}SetCurrentDirectoryW(PWideChar(SystemDir));{$ELSE}SetCurrentDirectoryA(PAnsiChar(SystemDir));{$ENDIF}
 
   //>= Vista or >= XP SP1
   if IsFunctionAvailable(kernel32, 'SetDllDirectoryW') then
