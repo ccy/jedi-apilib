@@ -31,7 +31,7 @@ type
      procedure OnNewJobObject(Sender : TJwJobObjectSessionList;
         ProcessHandle : TJwProcessHandle;
         ProcessSessionID,
-        CurrentSessionID : Cardinal;
+        CurrentSessionID : TJwSessionId;
         var NewJobObject : TJwJobObject);
      procedure OnJobNotification(Sender : TJwJobObject; ProcessId : TJwProcessId;
         JobMessages : TJwJobMessages; Data : Pointer);
@@ -78,7 +78,7 @@ begin
 end;
 
 procedure TSENSTestService.OnNewJobObject(Sender: TJwJobObjectSessionList;
-  ProcessHandle: TJwProcessHandle; ProcessSessionID, CurrentSessionID: Cardinal;
+  ProcessHandle: TJwProcessHandle; ProcessSessionID, CurrentSessionID: TJwSessionId;
   var NewJobObject: TJwJobObject);
 var Name : TJwString;
 begin

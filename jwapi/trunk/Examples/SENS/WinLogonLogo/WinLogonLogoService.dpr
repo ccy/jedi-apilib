@@ -28,7 +28,7 @@ begin
   if not Application.DelayInitialize or Application.Installing then
     Application.Initialize;
   Application.CreateForm(TSENSTestService, SENSTestService);
-{$IFDEF LIVE_DEBUG}
+  {$IFDEF LIVE_DEBUG}
   SENSTestService.ServiceCreate(nil);
   B := true;
   SENSTestService.ServiceStart(nil, B);
