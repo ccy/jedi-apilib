@@ -378,18 +378,18 @@ type
   PWinStationClientW = PWINSTATION_CLIENTW;}
 
   TWinStationClientFlags = Set Of (
-	  fTextOnly,                                         //: 1
- 	  fDisableCtrlAltDel,                                //: 1
- 	  fMouse,                                            //: 1
- 	  fDoubleClickDetect,                                //: 1
- 	  fINetClient,                                       //: 1
- 	  fWinStationClientPromptForPassword,                //: 1
- 	  fMaximizeShell,                                    //: 1
- 	  fEnableWindowsKey,                                 //: 1
- 	  fRemoteConsoleAudio,                               //: 1
- 	  fWinStationClientPasswordIsScPin,                  //: 1
- 	  fNoAudioPlayback,                                  //: 1
- 	  fUsingSavedCreds,                                  //: 1
+    fTextOnly,                                         //: 1
+    fDisableCtrlAltDel,                                //: 1
+    fMouse,                                            //: 1
+    fDoubleClickDetect,                                //: 1
+    fINetClient,                                       //: 1
+    fWinStationClientPromptForPassword,                //: 1
+    fMaximizeShell,                                    //: 1
+    fEnableWindowsKey,                                 //: 1
+    fRemoteConsoleAudio,                               //: 1
+    fWinStationClientPasswordIsScPin,                  //: 1
+    fNoAudioPlayback,                                  //: 1
+    fUsingSavedCreds,                                  //: 1
 {$IFDEF DELPHI6_UP}
     _TWinStationClientFlagsAlign = al32Bit
 {$ELSE}
@@ -675,7 +675,7 @@ type
   end {_TSHARE_CACHE};
   TSHARE_CACHE = _TSHARE_CACHE;
   PTSHARE_CACHE = ^_TSHARE_CACHE;
-  
+
   CACHE_STATISTICS = packed record
     ProtocolType: USHORT;
     case Length: USHORT of
@@ -683,7 +683,7 @@ type
       2: (TShareCacheStats: TSHARE_CACHE);
       3: (Reserved: Array[0..19] of ULONG);
   end {CACHE_STATISTICS};
-  
+
   _PROTOCOLSTATUS = packed record
     Output: PROTOCOLCOUNTERS;
     Input: PROTOCOLCOUNTERS;
@@ -921,7 +921,7 @@ function WinStationBroadcastSystemMessage(hServer: HANDLE;
   _lParam: LPARAM; pResponse: LONGINT): LONGINT; stdcall;
 
 function WinStationCallBack(hServer:HANDLE; SessionId: DWORD;
-	pPhoneNumber: LPWSTR): BOOL; stdcall;
+  pPhoneNumber: LPWSTR): BOOL; stdcall;
 
 procedure WinStationCloseServer(hServer: HANDLE); stdcall;
 
@@ -1699,18 +1699,16 @@ begin
 end;
 {$ENDIF DYNAMIC_LINK}
 
-function IsWindows7Beta: boolean;
+function IsWindows61OrHigher: boolean;
 var VersionInfo: TOSVersionInfoEx;
 begin
   // Zero Memory and set structure size
   ZeroMemory(@VersionInfo, SizeOf(VersionInfo));
   VersionInfo.dwOSVersionInfoSize := SizeOf(VersionInfo);
   GetVersionEx(@VersionInfo);
-  // Are we running Vista RTM?
-  Result := (VersionInfo.dwMajorVersion = 6) and
-    (VersionInfo.dwMinorVersion = 1) and
-    (VersionInfo.wProductType = VER_NT_WORKSTATION) and
-    (VersionInfo.dwBuildNumber = 7000);
+  // Are we running Windows 7/2008R2 or Higher
+  Result := (VersionInfo.dwMajorVersion >= 6) and
+    (VersionInfo.dwMinorVersion >= 1);
 end;
 
 // This function is not exported
@@ -1781,7 +1779,7 @@ begin
   ZeroMemory(lpBuffer, cchDest * SizeOf(WCHAR));
 
  // Are we running Vista?
-  if IsVistaRTM or IsWindows7Beta then
+  if IsVistaRTM or IsWindows61OrHigher then
   begin
     // Vista version
     Result := DateTimeStringVistaRTM(DateTime, lpBuffer, cchDest);
@@ -1837,7 +1835,7 @@ begin
   ZeroMemory(lpElapsedTime, cchDest * SizeOf(WCHAR));
 
  // Are we running Vista?
-  if IsVistaRTM or IsWindows7Beta then
+  if IsVistaRTM or IsWindows61OrHigher then
   begin
     hr := ElapsedTimeStringVistaRTM(DiffTime, bShowSeconds, lpElapsedTime,
       cchDest);
@@ -1848,7 +1846,7 @@ begin
     else begin
       Result := 0;
     end;
-   
+
   end
   else begin
     Result := ElapsedTimeString(DiffTime, bShowSeconds, lpElapsedTime);
@@ -1992,8 +1990,26 @@ var WinstaUserToken: _WINSTA_USER_TOKEN;
   bWasPrivEnabled: Boolean;
   Res: NTSTATUS;
 begin
+  LUID.LowPart := 0;
+  LUID.HighPart := 0;
   // Enable SeTcbPrivilege (system account has this enabled by default)
-  LookupPrivilegeValue(nil, SE_TCB_NAME, LUID);
+  //Fail on all errors but ERROR_IO_PENDING
+  //This error is not a real error and LUID may contain correct results
+  if not LookupPrivilegeValue(nil, SE_TCB_NAME, LUID) and (GetLastError() <> ERROR_IO_PENDING) then
+  begin
+    SetLastError(ERROR_NO_SUCH_PRIVILEGE);
+    result := false;
+    exit;
+  end;
+
+  //check result for correctness
+  if (Luid.LowPart > $FF) then
+  begin
+    SetLastError(ERROR_NO_SUCH_PRIVILEGE);
+    result := false;
+    exit;
+  end;
+
   Res := RtlAdjustPrivilege(LUID.LowPart, True, False, @bWasPrivEnabled);
 
   // Initialize structure
@@ -2007,7 +2023,9 @@ begin
     // System account (else ACCESS_DENIED is returned)
     Result := WinStationQueryInformationW(hServer, SessionId, WinStationUserToken,
       @WinstaUserToken, SizeOf(WinstaUserToken), dwReturnLength);
-    hToken := WinStaUserToken.TokenHandle;
+
+    if Result then
+      hToken := WinStaUserToken.TokenHandle;
 
     // Restore state of SeTcbPrivilege
     RtlAdjustPrivilege(LUID.LowPart, bWasPrivEnabled, False, @bWasPrivEnabled);
@@ -2025,4 +2043,3 @@ end;
 {$IFNDEF JWA_OMIT_SECTIONS}
 end.
 {$ENDIF JWA_OMIT_SECTIONS}
-
