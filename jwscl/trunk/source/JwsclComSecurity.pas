@@ -3321,6 +3321,10 @@ begin
 
   if TJwWindowsVersion.IsWindows64 then
     Reg.Access := Reg.Access or KEY_WOW64_64KEY;
+  //TODO:  http://msdn.microsoft.com/en-us/library/aa384235%28VS.85%29.aspx
+  // not all keys are in 32bit section of 64bit registry
+  //For HKEY_LOCAL_MACHINE\Software\Classes\Appid and HKEY_CURRENT_USER\Software\Classes\Appid, the 
+  //  DllSurrogate and DllSurrogateExecutable registry values are not reflected if their value is an empty string.
 
   if not Reg.OpenKey('AppID\'+GUIDToString(AppID), false) then
   begin
@@ -5430,6 +5434,7 @@ begin
        (pAccessList.pPropertyAccessList.lpProperty <> nil) or
        (pAccessList.pPropertyAccessList.fListFlags <> 0)) then
     begin
+	  //TODO: use error result instead of raise
       raise EOleSysError.Create(RsInvalidPAccessListParameter,
            MAKE_HRESULT(1, FacilityCode, ERROR_INVALID_PARAMETER), 0);
     end;
@@ -5498,6 +5503,7 @@ begin
        not IsValidTrustee(pTrustee) then
     begin
       begin
+	    //TODO: use error result instead of raise
         raise EOleSysError.Create(Format(RsIncompatibleCOMTrusteeParameter, ['pTrustee']),
            MAKE_HRESULT(1, FacilityCode, ERROR_INVALID_PARAMETER), 0);
       end;
@@ -5560,6 +5566,7 @@ begin
      not IsValidTrustee(prgTrustees) then
   begin
     begin
+	  //TODO: use error result instead of raise
       raise EOleSysError.Create(Format(RsIncompatibleCOMTrusteeParameter, [prgTrustees]),
          MAKE_HRESULT(1, FacilityCode, ERROR_INVALID_PARAMETER), 0);
     end;
@@ -5639,6 +5646,7 @@ begin
      (pAccessList.pPropertyAccessList.lpProperty <> nil) or
      (pAccessList.pPropertyAccessList.fListFlags <> 0)) then
   begin
+    //TODO: use error result instead of raise
     raise EOleSysError.Create(RsInvalidPAccessList,
          MAKE_HRESULT(1, FacilityCode, ERROR_INVALID_PARAMETER), 0);
   end;
@@ -5718,6 +5726,7 @@ begin
        ) then
     begin
       begin
+	    //TODO: use error result instead of raise
         raise EOleSysError.Create(RsIncompatibleCOMOwnerOrGroup,
            MAKE_HRESULT(1, FacilityCode, ERROR_INVALID_PARAMETER), 0);
       end;
