@@ -56,7 +56,7 @@ uses SysUtils,
   Graphics {includes Windows, SysUtils, Classes},
   jwaWindows,
   JwsclResource,
-  JwsclTypes, JwsclExceptions, JwsclSid, JwsclAcl, JwsclUtils,
+  JwsclTypes, JwsclExceptions, JwsclSid, JwsclAcl,
   JwsclVersion, JwsclConstants,
   JwsclStrings; //JwsclStrings, must be at the end of uses list!!!
 
@@ -212,9 +212,11 @@ type
          Returns
          <b>ShowModal</b> returns true if the credential prompt was closed by OK; otherwise false. If OnConfirmCredential is
          not nil, the parameter bConfirm will be used as the result.
+         The method will also return false if CommandLine is true, property Flags contains cfFlagsRequireSmartCard (also implicitly :
+          see Remarks) and there are no smartcards in the system.
          Remarks
          MaxUserNameLength and MaxPasswordLength are obsolete and are ignored. For more information see Bugs section.
-         
+
          
          
          If parameter CommandLine is true, the property Flags must contain either cfFlagsRequireSmartCard or
@@ -249,7 +251,7 @@ type
 
 {$IFNDEF SL_OMIT_SECTIONS}
 implementation
-uses JwsclEnumerations;
+uses JwsclEnumerations, JwsclUtils, JwsclComUtils;
 
 
 {$ENDIF SL_OMIT_SECTIONS}
@@ -430,6 +432,8 @@ begin
       ClassName, RsUNCredentials, 0, False, []);
 
   GetMem(pUser, CRED_MAX_USERNAME_LENGTH * sizeof(TJwChar));
+  //release point automatically and overwrite it with zeroes
+  TJwAutoPointer.Wrap(pUser, CRED_MAX_USERNAME_LENGTH * sizeof(TJwChar), ptGetMem);
 
   hRes := {$IFDEF UNICODE}StringCchCopyW{$ELSE}StringCchCopyA{$ENDIF}
     (pUser, CRED_MAX_USERNAME_LENGTH, TJwPChar(fUserName));
@@ -442,6 +446,8 @@ begin
   end;
 
   GetMem(pPass, CREDUI_MAX_PASSWORD_LENGTH * sizeof(TJwChar));
+  //release point automatically and overwrite it with zeroes
+  TJwAutoPointer.Wrap(pPass, CREDUI_MAX_PASSWORD_LENGTH * sizeof(TJwChar), ptGetMem);
 
   hRes := {$IFDEF UNICODE}StringCchCopyW{$ELSE}StringCchCopyA{$ENDIF}
     (pPass, CREDUI_MAX_PASSWORD_LENGTH, TJwPChar(fPassword));
@@ -513,11 +519,10 @@ begin
 
   if (lResult <> NO_ERROR) then
   begin
-    FreeMem(pUser);
-    FreeMem(pPass);
     SetLastError(lResult);
 
     case lResult of
+      ERROR_CANCELLED: ;
       ERROR_INVALID_FLAGS:
         raise EJwsclInvalidFlagsException.CreateFmtEx(
           RsUNCredentialsInvalidPropertyFlags, 'ShowModal', ClassName, RsUNCredentials,
@@ -540,12 +545,6 @@ begin
   begin
     fUserName := TJwString(pUser);
     fPassword := TJwString(pPass);
-
-    ZeroMemory(pUser, CRED_MAX_USERNAME_LENGTH * SizeOf(TJwChar));
-    ZeroMemory(pPass, CREDUI_MAX_PASSWORD_LENGTH * SizeOf(TJwChar));
-
-    FreeMem(pUser);
-    FreeMem(pPass);
   end;
 
   fSaveCheck := aBool;
