@@ -393,43 +393,94 @@ function JwIsHandleValid(const Handle : THandle) : Boolean;
 {<B>JwCheckBitMask</B> Checks if (Bitmask and Check) = Check}
 function JwCheckBitMask(const Bitmask: Integer; const Check: Integer): Boolean;
 
-{<B>JwMsgWaitForMultipleObjects</B> encapsulates MsgWaitForMultipleObjects using an open array
-parameter. The function should be used to make sure that window messages are processed. In this way
-windows are responsible. This function returns if such a message is received.
-
-@param Handles This parameter receives an array of Handles. You can be either create an array type of THandle
-  or use set operators "[" and "]" containing a comma separated list of handle variables.
-@param bWaitAll Set to true to let the function wait for all given handles until it returns; otherwise it returns
-  as soon as at least one handle state is signaled.
-@param dwMilliseconds Defines a timeout interval that exits the function when elapsed. Set to constant INFINITE (-1)
-  to ignore timeouts.
-@param dwWakeMask See MsgWaitForMultipleObjects (http://msdn.microsoft.com/en-us/library/ms684242.aspx) in MSDN for more information.
-
-@return Returns a status code. See MsgWaitForMultipleObjects (http://msdn.microsoft.com/en-us/library/ms684242.aspx) in MSDN for more information.
-}
-function JwMsgWaitForMultipleObjects(const Handles: array of THandle; bWaitAll: LongBool;
+{ <b>JwMsgWaitForMultipleObjects</b> encapsulates MsgWaitForMultipleObjects using an open array parameter. The
+  function should be used to make sure that window messages are processed. In this way windows are responsible. This
+  function returns if such a message is received.
+  
+  If you need to create a dynamic array of handles, use the other <link JwMsgWaitForMultipleObjects@TJwHandles@LongBool@DWord@DWord, JwMsgWaitForMultipleObjects>
+  function.
+  Parameters
+  Handles :         This parameter receives an array of Handles. This parameter also supports other type of values. For
+                    more information see Remarks
+  bWaitAll :        Set to true to let the function wait for all given handles until it returns; otherwise it returns
+                    as soon as at least one handle state is signaled.
+  dwMilliseconds :  Defines a timeout interval that exits the function when elapsed. Set to constant INFINITE (\-1) to
+                    ignore timeouts.
+  dwWakeMask :      See MsgWaitForMultipleObjects (http\://msdn.microsoft.com/en\-us/library/ms684242.aspx) in MSDN for
+                    more information.<p />
+  Returns
+  \Returns a status code. See MsgWaitForMultipleObjects (http://msdn.microsoft.com/en-us/library/ms684242.aspx) in
+  MSDN for more information.
+  Remarks
+  Parameter Handles supports different types of values.
+  <table>
+  Type              \Description
+  ----------------  ----------------------------------------
+  THandle (DWORD)   A handle value
+  THandleObject     Classes like TEvent, TMutex, TSemaphore
+  TThread           A thread class, also TJwThread
+  </table>                                                                                                                                                        }
+function JwMsgWaitForMultipleObjects(const Handles: array of const; bWaitAll: LongBool;
            dwMilliseconds: DWord; dwWakeMask: DWord): DWord; overload;
 
+{ <b>JwMsgWaitForMultipleObjects</b> encapsulates MsgWaitForMultipleObjects using an open array parameter. The
+  function should be used to make sure that window messages are processed. In this way windows are responsible. This
+  function returns if such a message is received.
+  
+  Use this function if you intend to create a list of handles at runtime; otherwise use <link JwMsgWaitForMultipleObjects@array of const@LongBool@DWord@DWord, JwMsgWaitForMultipleObjects with const array>.
+  Parameters
+  Handles :         This parameter receives an array of Handles. (TJwHandles)
+  bWaitAll :        Set to true to let the function wait for all given handles until it returns; otherwise it returns
+                    as soon as at least one handle state is signaled.
+  dwMilliseconds :  Defines a timeout interval that exits the function when elapsed. Set to constant INFINITE (\-1) to
+                    ignore timeouts.
+  dwWakeMask :      See MsgWaitForMultipleObjects (http\://msdn.microsoft.com/en\-us/library/ms684242.aspx) in MSDN for
+                    more information.<p />
+  Returns
+  \Returns a status code. See MsgWaitForMultipleObjects (http://msdn.microsoft.com/en-us/library/ms684242.aspx) in
+  MSDN for more information.                                                                                                                                                                                  }
 function JwMsgWaitForMultipleObjects(const Handles: TJwHandles; bWaitAll: LongBool;
            dwMilliseconds: DWord; dwWakeMask: DWord): DWord; overload;
 
-{<B>JwWaitForMultipleObjects</B> encapsulates WaitForMultipleObjects using an open array
-parameter.
-
-@param Handles This parameter receives an array of Handles. You can be either create an array type of THandle
-  or use set operators "[" and "]" containing a comma separated list of handle variables.
-@param bWaitAll Set to true to let the function wait for all given handles until it returns; otherwise it returns
-  as soon as at least one handle state is signaled.
-@param dwMilliseconds Defines a timeout interval that exits the function when elapsed. Set to constant INFINITE (-1)
-  to ignore timeouts.
-
-@return Returns a status code. See WaitForMultipleObjects (http://msdn.microsoft.com/en-us/library/aa931008.aspx) in MSDN for more information.
-}
-function JwWaitForMultipleObjects(const Handles: array of THandle; bWaitAll: LongBool;
+{ <b>JwWaitForMultipleObjects</b> encapsulates WaitForMultipleObjects using an open array parameter.
+  
+  If you need to create a dynamic array of handles, use the other <link JwWaitForMultipleObjects@TJwHandles@LongBool@DWord, JwWaitForMultipleObjects>
+  function.
+  Parameters
+  Handles :         This parameter receives an array of Handles. This parameter also supports other type of values. For
+                    more information see Remarks
+  bWaitAll :        Set to true to let the function wait for all given handles until it returns; otherwise it returns
+                    as soon as at least one handle state is signaled.
+  dwMilliseconds :  Defines a timeout interval that exits the function when elapsed. Set to constant INFINITE (\-1) to
+                    ignore timeouts.<p />
+  Returns
+  \Returns a status code. See WaitForMultipleObjects (http://msdn.microsoft.com/en-us/library/aa931008.aspx) in MSDN
+  for more information.
+  Remarks
+  Parameter Handles supports different types of values.
+  <table>
+  Type              \Description
+  ----------------  ----------------------------------------
+  THandle (DWORD)   A handle value
+  THandleObject     Classes like TEvent, TMutex, TSemaphore
+  TThread           A thread class, also TJwThread
+  </table>                                                                                                                                            }
+function JwWaitForMultipleObjects(const Handles: array of const; bWaitAll: LongBool;
            dwMilliseconds: DWord): DWord; overload;
 
 
-
+{ <b>JwWaitForMultipleObjects</b> encapsulates WaitForMultipleObjects using an open array parameter.
+  
+  Use this function if you intend to create a list of handles at runtime; otherwise use <link JwWaitForMultipleObjects@array of const@LongBool@DWord, JwWaitForMultipleObjects with const array>.
+  Parameters
+  Handles :         This parameter receives an array of Handles. (TJwHandles)
+  bWaitAll :        Set to true to let the function wait for all given handles until it returns; otherwise it returns
+                    as soon as at least one handle state is signaled.
+  dwMilliseconds :  Defines a timeout interval that exits the function when elapsed. Set to constant INFINITE (\-1) to
+                    ignore timeouts.<p />
+  Returns
+  \Returns a status code. See WaitForMultipleObjects (http://msdn.microsoft.com/en-us/library/aa931008.aspx) in MSDN
+  for more information.                                                                                                                                                                           }
 function JwWaitForMultipleObjects(const Handles: TJwHandles; bWaitAll: LongBool;
            dwMilliseconds: DWord): DWord; overload;
 
@@ -583,6 +634,7 @@ function JwLoadHashFromRegistry(const Hive: Cardinal;
    const Key, HashName, SizeName : String) : TJwFileHashData;
 
 
+{<b>JwAccessMaskToBits</b> creates a bit pattern from an access right value.}
 function JwAccessMaskToBits(const Access : DWORD) : TJwString;
 
 {<B>JwCheckVISTACompilerSwitch</B> raises an exception EJwsclVistaFeaturesDisabled
@@ -704,7 +756,7 @@ type
   JwFormatMessage does not support Int64 as Arguments because FormatMessage does not support them when passing
   \arguments as pointers (This may change with 64bit support). If you intend to use Int64 for messages, you should
   consider using Delphi Format function (and this %d) instead.
-  
+
   JwFormatMessage only supports one type of strings or char. Either unicode or ansicode depending on the compiler
   switch UNICODE. If the function was compiled with the UNICODE switch, only unicode strings (PWideChar,
   UnicodeString, WideString) and chars (WideChar, PWideChar) are allowed. The contrary goes for if the UNICODE switch
@@ -860,7 +912,7 @@ function JwDeviceToDosDrive(Device : WideString) : WideString;
 implementation
 uses SysUtils, Math, D5Impl, JwsclToken, JwsclKnownSid, JwsclDescriptor, JwsclAcl,
      JwsclSecureObjects, JwsclMapping, JwsclStreams, JwsclCryptProvider,
-     ComObj,
+     ComObj, SyncObjs,
      JwsclConstants
 {$IFDEF JWSCL_TYPEINFO}
      ,TypInfo
@@ -1005,6 +1057,40 @@ begin
   end;
 end;
 
+
+function HandlesConstToHandles(const Handles : Array of const) : TJwHandles;
+var
+  I: Integer;
+begin
+  for I := low(Handles) to High(Handles) do
+  begin
+    case Handles[i].VType of
+      vtInteger :
+        begin
+          SetLength(result, max(1, Length(result)+1));
+          result[High(result)] := Handles[i].VInteger;
+        end;
+      vtObject :
+        begin
+          SetLength(result, max(1, Length(result)+1));
+
+          if Handles[i].VObject is THandleObject then
+            result[High(result)] := (Handles[i].VObject as THandleObject).Handle
+          else
+          if Handles[i].VObject is TThread then
+            result[High(result)] := (Handles[i].VObject as TThread).Handle
+          else
+          if Handles[i].VObject <> nil then
+            Assert(false, Format(RsInvalidObjectTypeAtIndex,[Handles[i].VObject.ClassName, i]))
+          else
+            Assert(false, Format(RsInvalidObjectValueNilTypeAtIndex,[Handles[i].VObject.ClassName, i]))
+        end;
+    else
+      Assert(false, Format(RsInvalidHandleTypeAtIndex,[Handles[i].VType, i]));
+    end;
+  end;
+end;
+
 function JwDeviceToDosDrive(Device : WideString) : WideString;
 
   function _QueryDosDevice(Device : WideString) : WideString;
@@ -1055,9 +1141,9 @@ function JwDeviceToDosDrive(Device : WideString) : WideString;
 type
   PDrivesArray = ^TDrivesArray;
   TDrivesArray = array[0..0] of record
-             Drive : array[0..2] of WideChar;
-             Null : WideChar;
-           end;
+    Drive : array[0..2] of WideChar;
+    Null : WideChar;
+  end;
 
 var
   I, Count, dwSize, dwLen, DelimiterPos, DelimiterCount : Integer;
@@ -1087,7 +1173,7 @@ begin
     begin
       SetLastError(ERROR_INVALID_NAME);
       raise EJwsclInvalidParameterException.CreateFmtEx(
-                'The supplied device path "%0:s" is invalid. Is must start with "\DEVICE\"',
+                RsInvalidDevicePath,
                 'JwDeviceToDosDrive', '',
                 RsUNUtils, 0, true, [Device]);
     end;
@@ -1544,7 +1630,7 @@ begin
       end;
     end
     else
-      raise ERegistryException.CreateFmt('Key %s not found/accessible.',[Key]);
+      raise ERegistryException.CreateFmt(RsKeyNotFoundAccessible,[Key]);
   finally
     Reg.Free;
   end;
@@ -1735,7 +1821,7 @@ end;
 procedure JwUNIMPLEMENTED;
 begin
   raise EJwsclUnimplemented.CreateFmtEx(
-    'This function is not implemented.',
+    RsUnimplemented,
     '', '', '', 0, false, []);
 end;
 
@@ -1743,7 +1829,7 @@ procedure JwUNIMPLEMENTED_DEBUG;
 begin
 {$IFNDEF DEBUG}
   raise EJwsclUnimplemented.CreateFmtEx(
-    'This function is not implemented.',
+    RsUnimplemented,
     '', '', '', 0, false, []);
 {$ENDIF DEBUG}
 end;
@@ -1859,10 +1945,11 @@ begin
   end;
 end;
 
-function JwMsgWaitForMultipleObjects(const Handles: array of THandle; bWaitAll: LongBool;
+function JwMsgWaitForMultipleObjects(const Handles: array of const; bWaitAll: LongBool;
            dwMilliseconds: DWord; dwWakeMask: DWord): DWord;
 begin
-  Result := MsgWaitForMultipleObjects(Length(Handles), @Handles[0], bWaitAll, dwMilliseconds, dwWakeMask);
+  Result := JwMsgWaitForMultipleObjects(HandlesConstToHandles(Handles), bWaitAll, dwMilliseconds, dwWakeMask);
+  //Result := MsgWaitForMultipleObjects(Length(Handles), @Handles[0], bWaitAll, dwMilliseconds, dwWakeMask);
 end;
 
 function JwMsgWaitForMultipleObjects(const Handles: TJwHandles; bWaitAll: LongBool;
@@ -1871,11 +1958,7 @@ begin
   Result := MsgWaitForMultipleObjects(Length(Handles), @Handles[0], bWaitAll, dwMilliseconds, dwWakeMask);
 end;
 
-function JwWaitForMultipleObjects(const Handles: array of THandle; bWaitAll: LongBool;
-           dwMilliseconds: DWord): DWord;
-begin
-  Result := WaitForMultipleObjects(Length(Handles), @Handles[0], bWaitAll, dwMilliseconds);
-end;
+
 
 function JwHandlesArray(const Handles: array of THandle) : TJwHandles;
 var i : Integer;
@@ -1906,6 +1989,12 @@ begin
   end;
 end;
 
+function JwWaitForMultipleObjects(const Handles: array of const; bWaitAll: LongBool;
+           dwMilliseconds: DWord): DWord;
+begin
+  //Result := WaitForMultipleObjects(Length(Handles), @Handles[0], bWaitAll, dwMilliseconds);
+  Result := JwWaitForMultipleObjects(HandlesConstToHandles(Handles), bWaitAll, dwMilliseconds);
+end;
 
 function JwWaitForMultipleObjects(const Handles: TJwHandles; bWaitAll: LongBool;
            dwMilliseconds: DWord): DWord;
@@ -1916,14 +2005,15 @@ end;
 
 {$IFDEF FullDebugMode}
 type
-     PMemTuple = ^TMemTuple;
-     TMemTuple = record
-       GetMemPointer : Pointer;
-       case MemType : Boolean of
-         true : (LocalData : HLOCAL);
-         false: (GlobalData : HGLOBAL);
-      end;
-var InternalMemArray : TList {=nil};
+  PMemTuple = ^TMemTuple;
+  TMemTuple = record
+    GetMemPointer : Pointer;
+    case MemType : Boolean of
+      true : (LocalData : HLOCAL);
+      false: (GlobalData : HGLOBAL);
+  end;
+var
+  InternalMemArray : TList {=nil};
 {$ENDIF}
 
 
@@ -2083,14 +2173,6 @@ begin
 end;
 {$ENDIF}
 
-
-{var S : TJwString;
-    SA : TResourceTStringArray;
-    Indexes : TResourceIndexArray;
-    i : Integer;     }
-
-
-
 { TJwIntTupleList }
 
 type
@@ -2138,7 +2220,7 @@ begin
     end;
   end;
 
-  raise ERangeError.CreateFmt('Value %d not found',[Index]);
+  raise ERangeError.CreateFmt(RsValueIntNotFound,[Index]);
 end;
 
 
@@ -2166,7 +2248,7 @@ begin
     end;
   end;
 
-  raise ERangeError.CreateFmt('Value %d not found',[Index]);
+  raise ERangeError.CreateFmt(RsValueIntNotFound,[Index]);
 end;
 
 procedure TJwIntTupleList.SetItem(Index : DWORD; Value: Pointer);
@@ -2181,7 +2263,7 @@ begin
     end;
   end;
 
-  raise ERangeError.CreateFmt('Value %d not found',[Index]);
+  raise ERangeError.CreateFmt(RsValueIntNotFound,[Index]);
 end;
 
 function JwCreateWaitableTimer(
@@ -2263,7 +2345,8 @@ function JwCreateWaitableTimerAbs(
       const SuspendResume : Boolean = false;
       const SecurityAttributes : TObject = nil) : THandle; overload;
 begin
-  raise EJwsclUnimplemented.Create('JwCreateWaitableTimer is not implemented.');
+  JwUNIMPLEMENTED;
+  //raise EJwsclUnimplemented.Create('JwCreateWaitableTimer is not implemented.');
   (*
   // Declare our local variables.
 HANDLE hTimer;
@@ -2328,7 +2411,7 @@ begin
         {Okay, we could just have used the builtin timeout support.
         But that's too easy
         }
-        if MsgLoop then
+       if MsgLoop then
           WaitResult := JwMsgWaitForMultipleObjects([Handle, {$IFDEF DELPHI7_UP}SyncEvent,{$ENDIF} hTimer], False, INFINITE, QS_SENDMESSAGE)
         else
           WaitResult := JwWaitForMultipleObjects([Handle, {$IFDEF DELPHI7_UP}SyncEvent,{$ENDIF} hTimer], False, INFINITE);

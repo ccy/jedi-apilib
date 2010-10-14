@@ -320,7 +320,7 @@ begin
     SetLastError(res);
     raise EJwsclWinCallFailedException.CreateFmtWinCall(
       RsWinCallFailed,
-      'CreateUntrusted', ClassName, 'JwsclLsa.pas',
+      'CreateUntrusted', ClassName, RsUNLSA,
       0, True, 'LsaConnectUntrusted',
       ['LsaRegisterLogonProcess']);
   end;
@@ -349,7 +349,7 @@ begin
     SetLastError(res);
     raise EJwsclWinCallFailedException.CreateFmtWinCall(
       RsWinCallFailed,
-      'Create', ClassName, 'JwsclLsa.pas',
+      'Create', ClassName, RsUNLSA,
       0, True, 'LsaRegisterLogonProcess',
       ['LsaRegisterLogonProcess']);
   end;
@@ -437,7 +437,7 @@ begin
     SetLastError(res);
     raise EJwsclWinCallFailedException.CreateFmtWinCall(
       RsWinCallFailed,
-      'Create', ClassName, 'JwsclLsa.pas',
+      'Create', ClassName, RsUNLSA,
       0, True, 'LsaLookupAuthenticationPackage',
       ['LsaRegisterLogonProcess']);
   end;
@@ -484,14 +484,13 @@ begin
     SetLastError(res);
     raise EJwsclWinCallFailedException.CreateFmtWinCall(
       RsLSALogonUserFailedSubStatus,
-      'Create', ClassName, 'JwsclLsa.pas',
+      'Create', ClassName, RsUNLSA,
       0, True, 'LsaLogonUser', [SubStatus]);
   end;
 
   aToken := nil;
   if (hToken <> 0) and (hToken <> INVALID_HANDLE_VALUE) then
     aToken := TJwSecurityToken.Create(hToken, shOwned, TOKEN_ALL_ACCESS);
-
 end;
 
 { TJwLsaLogonSession }
@@ -510,7 +509,7 @@ begin
     SetLastError(LsaNtStatusToWinError(res));
     raise EJwsclWinCallFailedException.CreateFmtWinCall(
       RsWinCallFailedWithNTStatus,
-      'GetSessionData', ClassName, 'JwsclLsa.pas',
+      'GetSessionData', ClassName, RsUNLSA,
       0, True, 'LsaGetLogonSessionData', ['LsaGetLogonSessionData', res]);
   end;
 
@@ -520,10 +519,11 @@ begin
 end;
 
 class function TJwLsaLogonSession.GetSessions: TJwLogonSessionArray;
-var List,
-    LuidPtr : PLuid;
-    Count : ULONG;
-    res : NTSTATUS;
+var
+  List,
+  LuidPtr : PLuid;
+  Count : ULONG;
+  res : NTSTATUS;
   I: Integer;
 begin
   List := nil;
@@ -535,7 +535,7 @@ begin
     SetLastError(LsaNtStatusToWinError(res));
     raise EJwsclWinCallFailedException.CreateFmtWinCall(
       RsWinCallFailedWithNTStatus,
-      'GetSessionData', ClassName, 'JwsclLsa.pas',
+      'GetSessionData', ClassName, RsUNLSA,
       0, True, 'LsaEnumerateLogonSessions', ['LsaEnumerateLogonSessions', res]);
   end;
 
@@ -619,7 +619,7 @@ begin
     SetLastError(LsaNtStatusToWinError(ntsResult));
     raise EJwsclWinCallFailedException.CreateFmtWinCall(
       RsWinCallFailed,
-      'EnumerateAccountRights', ClassName, 'JwsclLsa.pas',
+      'EnumerateAccountRights', ClassName, RsUNLSA,
       0, True, 'LsaOpenPolicy',
       ['LsaOpenPolicy']);
   end;
@@ -669,7 +669,7 @@ begin
     SetLastError(LsaNtStatusToWinError(ntsResult));
     raise EJwsclWinCallFailedException.CreateFmtWinCall(
       RsWinCallFailed,
-      'CreateAndOpenPolicy', ClassName, 'JwsclLsa.pas',
+      'CreateAndOpenPolicy', ClassName, RsUNLSA,
       0, True, 'LsaOpenPolicy',
       ['LsaOpenPolicy']);
   end;
@@ -713,7 +713,7 @@ begin
       SetLastError(LsaNtStatusToWinError(ntsResult));
       raise EJwsclWinCallFailedException.CreateFmtWinCall(
         RsWinCallFailed,
-        'CreateAndOpenPolicy', ClassName, 'JwsclLsa.pas',
+        'CreateAndOpenPolicy', ClassName, RsUNLSA,
         0, True, 'LsaAddAccountRights',
         ['LsaAddAccountRights']);
     end;
@@ -778,7 +778,7 @@ begin
       SetLastError(LsaNtStatusToWinError(ntsResult));
       raise EJwsclWinCallFailedException.CreateFmtWinCall(
         RsWinCallFailed,
-        'RemoveAccountRights', ClassName, 'JwsclLsa.pas',
+        'RemoveAccountRights', ClassName, RsUNLSA,
         0, True, 'LsaRemoveAccountRights',
         ['LsaRemoveAccountRights']);
     end;
@@ -835,7 +835,7 @@ begin
       SetLastError(LsaNtStatusToWinError(ntsResult));
       raise EJwsclWinCallFailedException.CreateFmtWinCall(
         RsWinCallFailed,
-        'RemoveAccountRights', ClassName, 'JwsclLsa.pas',
+        'RemoveAccountRights', ClassName, RsUNLSA,
         0, True, 'LsaRemoveAccountRights',
         ['LsaRemoveAccountRights']);
     end;
@@ -870,7 +870,7 @@ begin
       SetLastError(LsaNtStatusToWinError(ntsResult));
       raise EJwsclWinCallFailedException.CreateFmtWinCall(
         RsWinCallFailed,
-        'RemoveAccountRights', ClassName, 'JwsclLsa.pas',
+        'RemoveAccountRights', ClassName, RsUNLSA,
         0, True, 'LsaRemoveAccountRights',
         ['LsaRemoveAccountRights']);
     end;

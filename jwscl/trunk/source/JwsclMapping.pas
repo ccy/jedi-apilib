@@ -653,7 +653,7 @@ begin
     else
       raise EJwsclInvalidGenericAccessMask.CreateFmtEx(
         RsMappingNotAGenericMask,
-        'Map', ClassName, 'JwsclMapping.pas', 0, False, []);
+        'Map', ClassName, RsUNMapping, 0, False, []);
   end;
 end;
 
@@ -1094,7 +1094,7 @@ class function TJwNullMapping.GetAccessNames(out iCount: Cardinal): PSI_ACCESS;
 begin
   raise EJwsclNotImplementedException.CreateFmtEx(
         RsUnapplicableGetAccessName,
-        'GetAccessNames', ClassName, 'JwsclMapping.pas', 0, False, []);
+        'GetAccessNames', ClassName, RsUNMapping, 0, False, []);
 end;
 
 

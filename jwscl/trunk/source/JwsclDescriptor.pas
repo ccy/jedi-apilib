@@ -1486,41 +1486,17 @@ end;
 
 function TJwSecurityDescriptor.Create_SD(out ipSDSize: Cardinal;
   bRelative: boolean {= true}): PSecurityDescriptor;
-var //[Hint] aOwnerTrustee,
-  //[Hint] aGroupTrustee : {$IFDEF UNICODE}TTrusteeW{$ELSE}TTrusteeA{$ENDIF};
-  //[Hint] aPOwnerTrustee,
-  //[Hint] aPGroupTrustee : {$IFDEF UNICODE}PTrusteeW{$ELSE}PTrusteeA{$ENDIF};
-
-  //[Hint] aOwnerSID,
-  //[Hint] aGroupSID : PSid;
-
-  //[Hint] aAccessACL,
-  //[Hint] aAuditACL     : {$IFDEF UNICODE}TExplicitAccessW{$ELSE}TExplicitAccessA{$ENDIF};
-  //[Hint] aPAccessACL,
-  //[Hint] aPAuditACL     : {$IFDEF UNICODE}PExplicitAccessW{$ELSE}PExplicitAccessA{$ENDIF};
-
-  //[Hint] iSACL,
-  //[Hint] iDACL,
-  //[Hint] iNewSDSize,
-  //[Hint] iError : Cardinal;
-
+var
   pSD: jwaWindows.PSECURITY_DESCRIPTOR;
 
   aDACL, aSACL: PACL;
 
   Control2 : TJwSecurityDescriptorControlSet;
-
-  //aAccessArray : TJwExplicitAccessArray;
-
-  //[Hint] iOwner,
-  //[Hint] iGroup: Cardinal;
-  //tempCtrl : TJwSecurityDescriptorControlSet;
 begin
   ipSDSize := 0;
 
   if bRelative then
   begin
-    //[Hint] result := nil;
     pSD := Create_SD(False);
     //pSD^.Control := pSD^.Control or SE_SELF_RELATIVE;
 
@@ -1569,7 +1545,7 @@ begin
   else
   begin
     ipSDSize := sizeof(jwaWindows.TSecurityDescriptor);
-//    result := PSecurityDescriptor(LocalAlloc(LMEM_FIXED or LMEM_ZEROINIT,sizeof(jwaWindows.TSecurityDescriptor)));
+
     GetMem(Result, sizeof(jwaWindows.TSecurityDescriptor));
 
     //Result.Control := RMControl; Warning: GetRMControl not implemented!!
@@ -2251,7 +2227,7 @@ begin
       ReturnLen//__out         PDWORD ReturnLength
       ) then
        raise EJwsclWinCallFailedException.CreateFmtWinCall(
-        '',
+        RsWinCallFailed,
         'GetPrivateObjectSecurity',                                //sSourceProc
         ClassName,                                //sSourceClass
         RsUNDescriptor,                          //sSourceFile
@@ -2370,7 +2346,7 @@ begin
       TokenHandle//__in_opt      HANDLE Token
       ) then
        raise EJwsclWinCallFailedException.CreateFmtWinCall(
-        '',
+        RsWinCallFailed,
         'SetPrivateObjectSecurity',                                //sSourceProc
         ClassName,                                //sSourceClass
         RsUNDescriptor,                          //sSourceFile
@@ -2436,91 +2412,7 @@ begin
          Exclude(fControl, sdcSaclProtected);
   end;
 end;
-
-
-
 {$ENDIF SL_INTERFACE_SECTION}
-
 {$IFNDEF SL_OMIT_SECTIONS}
-
-
-
 end.
-{$ENDIF SL_OMIT_SECTIONS}(*
-    aPOwnerTrustee := nil;
-    aPGroupTrustee := nil;
-    aPAccessACL    := nil;
-    aPAuditACL     := nil;
-    aOwnerSID      := nil;
-    aGroupSID      := nil;
-    iDACL          := 0;
-    iSACL          := 0;
-
-
-    //create owner trustee
-    if Assigned(Owner) then
-    begin
-      //indeed GetExplicitEntriesFromAcl also returns such a trustee
-      FillChar(aOwnerTrustee, sizeof(aOwnerTrustee), 0);
-
-      aOwnerTrustee.MultipleTrusteeOperation := NO_MULTIPLE_TRUSTEE;
-      aOwnerTrustee.TrusteeForm := TRUSTEE_IS_SID;
-      aOwnerTrustee.TrusteeType := TRUSTEE_IS_UNKNOWN;
-      aOwnerTrustee.ptstrName   := PWideChar(Owner.SID);
-
-      aPOwnerTrustee := @aOwnerTrustee;
-    end;
-
-    if Assigned(PrimaryGroup) then
-    begin
-      FillChar(aGroupTrustee, sizeof(aGroupTrustee), 0);
-
-      aGroupTrustee.MultipleTrusteeOperation := NO_MULTIPLE_TRUSTEE;
-      aGroupTrustee.TrusteeForm := TRUSTEE_IS_SID;
-      aGroupTrustee.TrusteeType := TRUSTEE_IS_GROUP;
-      aGroupTrustee.ptstrName   := TJwPChar(PrimaryGroup.SID);
-
-      aPGroupTrustee := @aGroupTrustee;
-    end;
-
-    if Assigned(DACL) then
-    begin
-      aAccessArray := DACL.GetExplicitAccessArray;
-
-      iDACL := DACL.Count;
-      if iDACL > 0 then
-        aPAccessACL := {$IFDEF UNICODE}PExplicitAccessW{$ELSE}PExplicitAccessA{$ENDIF}(aAccessArray);
-    end;
-
-    {
-    }
-    if Assigned(AuditACL) and (AuditACL.Count > 0) then
-    begin
-      aAccessArray := AuditACL.GetExplicitAccessArray;
-
-      iSACL := Length(aAccessArray);
-
-      if iSACL > 0 then
-        aPAuditACL := {$IFDEF UNICODE}PExplicitAccessW{$ELSE}PExplicitAccessA{$ENDIF}(aAccessArray);
-
-
-    end;
-
-
-    iNewSDSize := 0;
-    pSD := nil;
-
-   (* iError :=
-    {$IFDEF UNICODE}BuildSecurityDescriptorW{$ELSE}BuildSecurityDescriptorA{$ENDIF}
-     (aPOwnerTrustee,aPGroupTrustee,
-      iDACL,aPAccessACL,
-      iSACL,aPAuditACL,
-      nil,
-      iNewSDSize, pSD);
-
-
-
-    if iError <> ERROR_SUCCESS then
-      raise EJwsclWinCallFailedException.CreateFmtEx('Call to BuildSecurityDescriptor failed. NTError: %d', 'Create_SD',ClassName,RsUNDescriptor, 0,true,[iError]);
-
-    *)//    result := jwaWindows.PSECURITY_DESCRIPTOR(pSD);
+{$ENDIF SL_OMIT_SECTIONS}

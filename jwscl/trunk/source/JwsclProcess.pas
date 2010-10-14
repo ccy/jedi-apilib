@@ -1059,7 +1059,7 @@ procedure TSafeLoadLibrarySectionImpl.LeaveSafeLoadLibrary;
 var Value : Integer;
 begin
   Value := InterlockedDecrement(Count);
-  ASSERT(Value = 0, Format('TSafeLoadLibrarySectionImpl.LeaveSafeLoadLibrary was called with invalid count value %d.', [Value]));
+  ASSERT(Value = 0, Format(RsLeaveSafeLoadLibraryInvalidCountValue, [Value]));
 
   if Value = 0 then
     TJwLibraryUtilities.LeaveSafeLoadLibrary;
@@ -1074,7 +1074,7 @@ begin
   begin
     if ProcessIdToSessionId(ProcessID, DWORD(result)) then
       raise EJwsclWinCallFailedException.CreateFmtWinCall(
-          '',
+          RsWinCallFailed,
           'JwProcessIdToSessionId',                                //sSourceProc
           '',                                //sSourceClass
           '',                          //sSourceFile
@@ -1140,8 +1140,7 @@ var
 begin
   result := nil;
 {$IFDEF JWSCL_LOCAL_SAFE_LOAD_LIBRARY}
-  Assert(Assigned(LoadLibCS),'TJwLibraryUtilities.LoadLibProc was called before the critical section was initialized. Make sure JwsclProcess '+
-     'is included at first or TJwLibraryUtilities.JwInitSafeLoadLibrary was called before.');
+  Assert(Assigned(LoadLibCS),RsLoadLibProcUninitialized);
 
   LoadLibCS.Enter;
   try
@@ -2276,7 +2275,7 @@ begin
     if (GetLastError() <> 0) and (fHandle <> 0) then
       CloseHandle(fHandle);
     raise EJwsclWinCallFailedException.CreateFmtWinCall(
-      '',
+      RsWinCallFailed,
       'Create',                                //sSourceProc
       ClassName,                                //sSourceClass
       '',                          //sSourceFile
@@ -2347,7 +2346,7 @@ begin
     if (GetLastError() <> 0) and (fHandle <> 0) then
       CloseHandle(fHandle);
     raise EJwsclWinCallFailedException.CreateFmtWinCall(
-      '',
+      RsWinCallFailed,
       'Create',                                //sSourceProc
       ClassName,                                //sSourceClass
       '',                          //sSourceFile
@@ -2387,7 +2386,7 @@ begin
     if fHandle <> 0 then
       CloseHandle(fHandle);
     raise EJwsclWinCallFailedException.CreateFmtWinCall(
-      '',
+      RsWinCallFailed,
       'Create',                                //sSourceProc
       ClassName,                                //sSourceClass
       '',                          //sSourceFile
@@ -2463,9 +2462,6 @@ begin
 
   if (fHandle <> 0) then
     CloseHandle(fHandle);
-
-
-
 end;
 
 function TJwJobObject.GetAllotedCPUTimeSignalState : Boolean;
@@ -2506,7 +2502,7 @@ begin
       @rlen//__out_opt  LPDWORD lpReturnLength
       ) then
      raise EJwsclWinCallFailedException.CreateFmtWinCall(
-          '',
+          RsWinCallFailed,
           'GetJobObjectInformation',                                //sSourceProc
           ClassName,                                //sSourceClass
           '',                          //sSourceFile
@@ -2555,7 +2551,7 @@ begin
       nil//__out_opt  LPDWORD lpReturnLength
       ) then
      raise EJwsclWinCallFailedException.CreateFmtWinCall(
-          '',
+          RsWinCallFailed,
           'GetBasicInformation',                                //sSourceProc
           ClassName,                                //sSourceClass
           '',                          //sSourceFile
@@ -2582,7 +2578,7 @@ begin
       nil//__out_opt  LPDWORD lpReturnLength
       ) then
      raise EJwsclWinCallFailedException.CreateFmtWinCall(
-          '',
+          RsWinCallFailed,
           'GetBasicLimitInformation',                                //sSourceProc
           ClassName,                                //sSourceClass
           '',                          //sSourceFile
@@ -2611,7 +2607,7 @@ begin
       nil//__out_opt  LPDWORD lpReturnLength
       ) then
      raise EJwsclWinCallFailedException.CreateFmtWinCall(
-          '',
+          RsWinCallFailed,
           'GetBasicUIRestrictions',                                //sSourceProc
           ClassName,                                //sSourceClass
           '',                          //sSourceFile
@@ -2633,7 +2629,7 @@ begin
       sizeof(Info)//__in  DWORD cbJobObjectInfoLength
     ) then
      raise EJwsclWinCallFailedException.CreateFmtWinCall(
-          '',
+          RsWinCallFailed,
           'GetBasicUIRestrictions',                                //sSourceProc
           ClassName,                                //sSourceClass
           '',                          //sSourceFile
@@ -2652,7 +2648,7 @@ begin
       sizeof(Info)//__in  DWORD cbJobObjectInfoLength
     ) then
      raise EJwsclWinCallFailedException.CreateFmtWinCall(
-          '',
+          RsWinCallFailed,
           'GetBasicUIRestrictions',                                //sSourceProc
           ClassName,                                //sSourceClass
           '',                          //sSourceFile
@@ -2679,7 +2675,7 @@ begin
       nil//__out_opt  LPDWORD lpReturnLength
       ) then
      raise EJwsclWinCallFailedException.CreateFmtWinCall(
-          '',
+          RsWinCallFailed,
           'GetBasicUIRestrictions',                                //sSourceProc
           ClassName,                                //sSourceClass
           '',                          //sSourceFile
@@ -2720,7 +2716,7 @@ begin
       len//__in  DWORD cbJobObjectInfoLength
     ) then
      raise EJwsclWinCallFailedException.CreateFmtWinCall(
-          '',
+          RsWinCallFailed,
           'SetObjectAssociateCompletionPortInformation',                                //sSourceProc
           ClassName,                                //sSourceClass
           '',                          //sSourceFile
@@ -2747,7 +2743,7 @@ begin
       nil//__out_opt  LPDWORD lpReturnLength
       ) then
      raise EJwsclWinCallFailedException.CreateFmtWinCall(
-          '',
+          RsWinCallFailed,
           'GetBasicUIRestrictions',                                //sSourceProc
           ClassName,                                //sSourceClass
           '',                          //sSourceFile
@@ -2770,7 +2766,7 @@ begin
       i//__in  DWORD cbJobObjectInfoLength
     ) then
      raise EJwsclWinCallFailedException.CreateFmtWinCall(
-          '',
+          RsWinCallFailed,
           'SetExtendedLimitInformation',                                //sSourceProc
           ClassName,                                //sSourceClass
           '',                          //sSourceFile
@@ -2820,7 +2816,7 @@ begin
         and (GetLastError <> ERROR_MORE_DATA) then
 
        raise EJwsclWinCallFailedException.CreateFmtWinCall(
-            '',
+            RsWinCallFailed,
             'GetJobObjectInformationLength',                                //sSourceProc
             ClassName,                                //sSourceClass
             '',                          //sSourceFile
@@ -2872,7 +2868,7 @@ begin
     @rlen//__out_opt  LPDWORD lpReturnLength
     ) then
    raise EJwsclWinCallFailedException.CreateFmtWinCall(
-        '',
+        RsWinCallFailed,
         'GetJobObjectInformation',                                //sSourceProc
         ClassName,                                //sSourceClass
         '',                          //sSourceFile
@@ -2888,7 +2884,7 @@ begin
   LB := false;
   if not JwaWindows.IsProcessInJob(hProcess, fHandle, LB) then
      raise EJwsclWinCallFailedException.CreateFmtWinCall(
-        '',
+        RsWinCallFailed,
         'IsProcessInJob',                                //sSourceProc
         ClassName,                                //sSourceClass
         '',                          //sSourceFile
@@ -2908,7 +2904,7 @@ begin
     try
       if not JwaWindows.AssignProcessToJobObject(fHandle, hProcess) then
          raise EJwsclWinCallFailedException.CreateFmtWinCall(
-            '',
+            RsWinCallFailed,
             'AssignProcessToJobObject',                                //sSourceProc
             ClassName,                                //sSourceClass
             '',                          //sSourceFile
@@ -2929,7 +2925,7 @@ procedure TJwJobObject.TerminateJobObject(const ExitCode : DWORD);
 begin
   if not JwaWindows.TerminateJobObject(fHandle, ExitCode) then
      raise EJwsclWinCallFailedException.CreateFmtWinCall(
-        '',
+        RsWinCallFailed,
         'TerminateJobObject',                                //sSourceProc
         ClassName,                                //sSourceClass
         '',                          //sSourceFile
@@ -3330,7 +3326,7 @@ begin
   Args := PWideStrings(CommandLineToArgvW(GetCommandLineW(), ArgsCount));
   if Args = nil then
      raise EJwsclWinCallFailedException.CreateFmtWinCall(
-          '',
+          RsWinCallFailed,
           'GetCommandLineArguments',                                //sSourceProc
           ClassName,                                //sSourceClass
           '',                          //sSourceFile

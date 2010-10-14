@@ -152,8 +152,6 @@ type
     }
     function Create_PACL: PACL;
 
-    {Deprecated. Do not use.}
-    function Create_PACL_Deprecated: PACL;
 
     {<B>Free_PACL</B> frees an access control list created by Create_PACL.
 
@@ -2232,117 +2230,6 @@ begin
       Self.Insert(i, E)
     else
       Self.Add(E);
-  end;
-end;
-
-
-function TJwSecurityAccessControlList.Create_PACL_Deprecated: PACL;
-var
-  c, i: integer;
-  //[Hint] aPSID: PSID;
-
-  aAudit:  TJwAuditAccessControlEntry;
-  Mandatory : TJwSystemMandatoryAccessControlEntry;
-  bResult: boolean;
-
-  iSize: Cardinal;
-begin
-  for i := 0 to Count - 1 do
-  begin
-    if not Assigned(Items[i].SID) or
-      (Assigned(Items[i].SID) and (Items[i].SID.SID = nil)) then
-      raise EJwsclInvalidSIDException.CreateFmtEx(
-        RsACLClassNilSid,
-        'Create_PACL', ClassName, RsUNAcl, 0, True, [i]);
-  end;
-
-  c := max(1, Count);
-
-  //determining the size comes from http://msdn2.microsoft.com/en-US/library/aa378853.aspx
-  iSize := sizeof(TACL) + (sizeof(ACCESS_ALLOWED_ACE) -
-    sizeof(Cardinal)) * c;
-
-  for i := 0 to Count - 1 do
-  begin
-    if Assigned(Items[i].SID) and (Items[i].SID.SID <> nil) then
-      try
-        Inc(iSize, Items[i].SID.SIDLength); //can throw exception!
-      except
-        on E: EJwsclSecurityException do
-        begin
-          raise EJwsclInvalidSIDException.CreateFmtEx(
-            RsACLClassNilSid, 'Create_PACL', ClassName, RsUNAcl,
-            0, True, [i]);
-        end;
-      end;
-  end;
-
-  Result := PACL(GlobalAlloc(GMEM_FIXED or GMEM_ZEROINIT, iSize));
-
-  if Result = nil then
-    raise EJwsclNotEnoughMemory.CreateFmtEx(
-      RsACLClassNewAclNotEnoughMemory,
-      'Create_PACL', ClassName, RsUNAcl, 0, True, []);
-
-  // InitializeAcl(Result,GlobalSize(Cardinal(Result)),ACL_REVISION);
-  InitializeAcl(Result, iSize, ACL_REVISION);
-
-  //Add...ex functions only Windows 2000 or higher
-  for i := 0 to Count - 1 do
-  begin
-    if Assigned(Items[i].SID) and (Items[i].SID.SID <> nil) then
-    begin
-      if Items[i] is TJwDiscretionaryAccessControlEntryAllow then
-        bResult := AddAccessAllowedAceEx(Result, ACL_REVISION,
-          TJwEnumMap.ConvertAceFlags(
-          Items[i].Flags), Items[i].AccessMask, Items[i].SID.SID)
-      else
-      if Items[i] is TJwDiscretionaryAccessControlEntryDeny then
-        bResult := AddAccessDeniedAceEx(Result, ACL_REVISION,
-          TJwEnumMap.ConvertAceFlags(
-          Items[i].Flags), Items[i].AccessMask, Items[i].SID.SID)
-      else
-      if Items[i] is TJwAuditAccessControlEntry then
-      begin
-        aAudit  := (Items[i] as TJwAuditAccessControlEntry);
-        bResult := AddAuditAccessAce(Result, ACL_REVISION,
-          Items[i].AccessMask, Items[i].SID.SID,
-          aAudit.AuditSuccess,
-          aAudit.AuditFailure);
-      end
-      else
-{$IFDEF VISTA}
-      if Items[i] is TJwSystemMandatoryAccessControlEntry then
-      begin
-        Mandatory := (Items[i] as TJwSystemMandatoryAccessControlEntry);
-        bResult := AddMandatoryAce(
-              Result,//PACL pAcl,
-              ACL_REVISION,//DWORD dwAceRevision,
-              TJwEnumMap.ConvertAceFlags(Items[i].Flags),//DWORD AceFlags,
-              Mandatory.AccessMask,//DWORD MandatoryPolicy,
-              Items[i].SID.SID//PSID pLabelSid
-            );
-      end
-      else
-{$ENDIF}
-      begin //class is not supported
-        GlobalFree(HRESULT(Result));
-
-        raise EJwsclUnsupportedACE.CreateFmtEx(
-          RsACLClassUnknownAccessAce,
-          'Create_PACL', ClassName, RsUNAcl, 0, True, [Items[i].ClassName,i]);
-      end;
-
-      if not bResult then
-      begin
-        GlobalFree(HRESULT(Result));
-
-        raise EJwsclFailedAddACE.CreateFmtEx(
-          RsACLClassAddXAccessAceFailed,
-          'Create_PACL', ClassName, RsUNAcl, 0, True, [i]);
-      end;
-    end;
-
   end;
 end;
 

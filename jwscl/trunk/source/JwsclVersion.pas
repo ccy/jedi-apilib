@@ -436,8 +436,8 @@ type
     <b>GetKnownFolderPath</b> retrieves a folder path from the system on Vista and newer.
 
     Parameters
-      FolderID Defines a GUID that identifies the folder. Use the FOLDERID_xxx constants from JEDI API.
-      Token Defines a token that is used to retrieve the folder. May be nil.
+      FolderID : Defines a GUID that identifies the folder. Use the FOLDERID_xxx constants from JEDI API.
+      Token : Defines a token that is used to retrieve the folder. May be nil.
       You can use the pseudo class instance <b>JwDefaultUserPseudoToken</b> here to
       retrieve the folders of the default user. Do not access any method or property
       of JwDefaultUserPseudoToken since it is not a valid instance.
@@ -451,6 +451,7 @@ type
         out Path : TJwWideString;
         const KnownFolderFlags : DWORD = 0;
         const Token : TJwSecurityToken = nil);
+
 
     {
     <b>SetKnownFolderPath</b> sets a folder path of the system on Vista and newer.
@@ -509,6 +510,7 @@ type
         out osVerInfo: {$IFDEF UNICODE}TOSVersionInfoExW{$ELSE}TOSVersionInfoExA{$ENDIF};
         out IsServer : Boolean): integer; virtual;
 
+  public
      {This method returns a constant cOsXXXX from JwsclTypes by
       iterating the constant array SupportedWindowVersions using the
       OS Version Info from OSVerInfo.
@@ -516,12 +518,32 @@ type
       Not all information may be gathered from OSVerInfo because SupportedWindowVersions
       may use callbacks that use other location.
      }
-     class function GetCurrentSupportedWindowsVersion(const
+     class function GetCurrentSupportedWindowsVersionCOSIndex(const
         OSVerInfo: TOSVersionInfoEx) : Integer; overload;
 
-     //callback functions for array: SupportedWindowVersions
+     class function GetCurrentSupportedWindowsVersionCOSIndex(const HiVersion,
+        LoVersion : DWORD; IsServer : Boolean) : Integer; overload;
 
-     //
+
+     class function GetCurrentSupportedWindowsVersion(const
+        OSVerInfo: TOSVersionInfoEx) : TJwWindowsVersionDefinition; overload;
+
+     class function GetCurrentSupportedWindowsVersion(const HiVersion,
+        LoVersion : DWORD; IsServer : Boolean) : TJwWindowsVersionDefinition; overload;
+
+     {GetSupportedOSVersion returns a copy of a JWSCL Windows Version information by an Index.
+
+      Parameters
+        Index : Receives an index of a supported Windows Version. The bounds can be determined by GetSupportedOSVersionBoundary.
+      }
+     class function GetSupportedOSVersion(const Index : Integer) : TJwWindowsVersionDefinition;
+
+     {GetSupportedOSVersionBoundary returns the high and low boundary used for GetSupportedOSVersion}
+     class function GetSupportedOSVersionBoundary : TJwArrayBounds;
+
+     class function GetSupportedOSByGuid(const IsAWinGUID : Boolean; ID : TGuid) : TJwWindowsVersionDefinition;
+  protected
+     //callback functions for array: SupportedWindowVersions
      class function _IsServer2003R2(osVerInfo: TOSVersionInfoEx;
          Definition : PJwWindowsVersionDefinition;
           var ResultValue : Boolean) : Boolean;
@@ -826,19 +848,35 @@ const
 
   {By JWSCL supported (known) Windows versions.
    See also TJwWindowsVersionDefinitionCallback for information about callbacks.
+
+   Real Windows definition entries start at 0 and end at high-1 .
+
+   Be aware that the cOsXXX values are not compatible with the array index.
   }
-  SupportedWindowVersions : array[0..SupportedWindowVersionCount-1] of TJwWindowsVersionDefinition = (
+  SupportedWindowVersions : array[-1..SupportedWindowVersionCount-1] of TJwWindowsVersionDefinition = (
+    (WinConst     : cOsUnknown;
+     MajorVersion : 0;
+     MinorVersion : 0;
+     PlatformID   : 0;
+     Flags        : [wvdIgnore];
+     WinGUID      : '{00000000-0000-0000-0000-000000000000}';
+     ID           : '{415EAD5E-EBD6-4676-853C-C1A4F3458C4D}';
+     ),
     (WinConst     : cOsWin95;
      MajorVersion : 4;
      MinorVersion : 0;
      PlatformID   : VER_PLATFORM_WIN32_WINDOWS;
      Flags        : FlagMajorMinor;
+     WinGUID      : '{00000000-0000-0000-0000-000000000000}';
+     ID           : '{274E9F7A-0E58-420A-8600-C2625BB68D9C}';
      ),
     (WinConst     : cOsWin98;
      MajorVersion : 4;
      MinorVersion : 10;
      PlatformID   : VER_PLATFORM_WIN32_WINDOWS;
      Flags        : FlagMajorMinorServer;
+     WinGUID      : '{00000000-0000-0000-0000-000000000000}';
+     ID           : '{B0E0D019-6298-465E-BD1E-92A5C2598E23}';
      Callback     : TJwWindowsVersion._IsWin98SE;
      ),
     (WinConst     : cOsWin98SE;
@@ -846,6 +884,8 @@ const
      MinorVersion : 10;
      PlatformID   : VER_PLATFORM_WIN32_WINDOWS;
      Flags        : FlagMajorMinor;
+     WinGUID      : '{00000000-0000-0000-0000-000000000000}';
+     ID           : '{6D372256-25C7-47CA-925A-0D5AF99B9FF1}';
      Callback     : TJwWindowsVersion._IsWin98SE
      ),
     (WinConst     : cOsWinME;
@@ -853,6 +893,8 @@ const
      MinorVersion : 90;
      PlatformID   : VER_PLATFORM_WIN32_WINDOWS;
      Flags        : FlagMajorMinor;
+     WinGUID      : '{00000000-0000-0000-0000-000000000000}';
+     ID           : '{5BEF1DD9-7ACB-47B5-9AC2-F6776B9F59A1}';
      ),
 
 
@@ -862,6 +904,8 @@ const
      PlatformID   : VER_PLATFORM_WIN32_NT;
      IsServer     : False;
      Flags        : FlagMajorMinorServer;
+     WinGUID      : '{00000000-0000-0000-0000-000000000000}';
+     ID           : '{1303B749-E0D3-4A33-A655-7BF586B29E61}';
      ),
     (WinConst     : cOsXP;
      MajorVersion : 5;
@@ -869,6 +913,8 @@ const
      PlatformID   : VER_PLATFORM_WIN32_NT;
      IsServer     : False;
      Flags        : FlagMajorMinorServer;
+     WinGUID      : '{00000000-0000-0000-0000-000000000000}';
+     ID           : '{31E94B1E-2E66-4681-AA5C-98327A901869}';
      Callback     : TJwWindowsVersion._IsServer2003R2;
      ),
     (WinConst     : cOS2003;
@@ -877,6 +923,8 @@ const
      PlatformID   : VER_PLATFORM_WIN32_NT;
      IsServer     : True;
      Flags        : FlagMajorMinorServer;
+     WinGUID      : '{00000000-0000-0000-0000-000000000000}';
+     ID           : '{1BE531CD-FAB1-4B4A-8930-D0DBEB0D2330}';
      Callback     : TJwWindowsVersion._IsServer2003R2;
      ),
     (WinConst     : cOS2003R2;
@@ -885,6 +933,8 @@ const
      PlatformID   : VER_PLATFORM_WIN32_NT;
      IsServer     : True;
      Flags        : FlagMajorMinorServer;
+     WinGUID      : '{00000000-0000-0000-0000-000000000000}';
+     ID           : '{9C5B14E7-FE24-4FF6-932F-E3E3AAD7DC8F}';
      Callback     : TJwWindowsVersion._IsServer2003R2;
      ),
     (WinConst     : cOsVista;
@@ -893,6 +943,8 @@ const
      PlatformID   : VER_PLATFORM_WIN32_NT;
      IsServer     : False;
      Flags        : FlagMajorMinorServer;
+     WinGUID      : '{e2011457-1546-43c5-a5fe-008deee3d3f0}';
+     ID           : '{3144E57A-062B-439A-A17C-84A1126B586F}';
      ),
     (WinConst     : cOsWin2008;
      MajorVersion : 6;
@@ -900,6 +952,8 @@ const
      PlatformID   : VER_PLATFORM_WIN32_NT;
      IsServer     : True;
      Flags        : FlagMajorMinorServer;
+     WinGUID      : '{e2011457-1546-43c5-a5fe-008deee3d3f0}';
+     ID           : '{245E0BFD-DD36-4351-A1B0-47CB2CC16E0E}';
      ),
     (WinConst     : cOsWin7;
      MajorVersion : 6;
@@ -907,12 +961,16 @@ const
      PlatformID   : VER_PLATFORM_WIN32_NT;
      IsServer     : False;
      Flags        : FlagMajorMinorServer;
+     WinGUID      : '{35138b9a-5d96-4fbd-8e2d-a2440225f93a}';
+     ID           : '{3FD28992-6528-40DD-8602-976E67E502CE}';
      ),
     (WinConst     : cOsWin2008R2;
      MajorVersion : 6;
      MinorVersion : 1;
      IsServer     : True;
      Flags        : FlagMajorMinorServer;
+     WinGUID      : '{35138b9a-5d96-4fbd-8e2d-a2440225f93a}';
+     ID           : '{094D42E8-C979-4C24-9823-DA57CE71C318}';
      ),
 
     //always set LAST
@@ -923,15 +981,32 @@ const
      MinorVersion : 0;
      IsServer     : false;
      Flags        : []; //always execute Callback
+     ID           : '{64CE430E-3919-4080-A4F2-476EB16BF73B}';
      Callback     : TJwWindowsVersion._IsNewUnknown;
      )
      //do not add new entries here.
     );
 
 
+class function TJwWindowsVersion.GetCurrentSupportedWindowsVersion(const HiVersion,
+  LoVersion : DWORD; IsServer : Boolean) : TJwWindowsVersionDefinition;
+var OSInfo : TOSVersionInfoEx;
+begin
+  ZeroMemory(@OSInfo, sizeof(OSInfo));
+
+  OSInfo.dwMajorVersion := HiVersion;
+  OSInfo.dwMinorVersion := LoVersion;
+  if IsServer then
+    OSInfo.wProductType := VER_NT_SERVER
+  else
+    OSInfo.wProductType := VER_NT_WORKSTATION;
+
+  result := GetCurrentSupportedWindowsVersion(OSInfo);
+end;
+
 
 class function TJwWindowsVersion.GetCurrentSupportedWindowsVersion(const
-    OSVerInfo: TOSVersionInfoEx) : Integer;
+    OSVerInfo: TOSVersionInfoEx) : TJwWindowsVersionDefinition;
 
   function CompareVersion(
       const OSVerInfo: TOSVersionInfoEx;
@@ -945,6 +1020,12 @@ class function TJwWindowsVersion.GetCurrentSupportedWindowsVersion(const
     end
     else
     begin
+      if wvdIgnore in Definition.Flags then
+      begin
+        Result := false;
+        exit;
+      end;
+
       result := true;
       if wvdfMajorVersion in Definition.Flags then
         result := result and (OSVerInfo.dwMajorVersion = Definition.MajorVersion);
@@ -967,18 +1048,29 @@ class function TJwWindowsVersion.GetCurrentSupportedWindowsVersion(const
 
 var i : Integer;
 begin
-  result := cOsUnknown;
+  result := SupportedWindowVersions[-1]; //cOsUnknown
   for I := low(SupportedWindowVersions) to high(SupportedWindowVersions) do
   begin
     if CompareVersion(OSVerInfo, SupportedWindowVersions[i]) then
     begin
-      result := SupportedWindowVersions[i].WinConst;
+      result := SupportedWindowVersions[i];
       exit;
     end;
   end;
 end;
 
 
+class function TJwWindowsVersion.GetCurrentSupportedWindowsVersionCOSIndex(const
+    OSVerInfo: TOSVersionInfoEx) : Integer;
+begin
+  result := GetCurrentSupportedWindowsVersion(OSVerInfo).WinConst;
+end;
+
+class function TJwWindowsVersion.GetCurrentSupportedWindowsVersionCOSIndex(const HiVersion,
+    LoVersion : DWORD; IsServer : Boolean) : Integer;
+begin
+  result := GetCurrentSupportedWindowsVersion(HiVersion, LoVersion, IsServer).WinConst;
+end;
 
 
 class function TJwFileVersion.GetFileInfo(const Filename: TJwString;
@@ -1093,10 +1185,10 @@ begin
   if nStatus = NERR_Success then
   begin
     FServer := ServerInfoPtr^.sv101_name;
-    {Specifies, in the least significant 4 bits of the byte, the major release
-     version number of the operating system. The most significant 4 bits of the
-     byte specifies the server type. The mask MAJOR_VERSION_MASK should be used
-     to ensure correct results.}
+//    Specifies, in the least significant 4 bits of the byte, the major release
+//     version number of the operating system. The most significant 4 bits of the
+//     byte specifies the server type. The mask MAJOR_VERSION_MASK should be used
+//     to ensure correct results.
     FMajorVersion  := ServerInfoPtr^.sv101_version_major and MAJOR_VERSION_MASK;
     FMinorVersion  := ServerInfoPtr^.sv101_version_minor;
     FIsServer :=
@@ -1112,6 +1204,7 @@ begin
   end
   else begin
     raise EJwsclWinCallFailedException.CreateFmtEx(
+//TODO: make ressource string
       RsWinCallFailedWithNTStatus+#13#10+'Server: %2:s', 'DisableAllPrivileges', ClassName,
       RsUNVersion, 0, True, ['NetServerGetInfo', nStatus,FServer]);
   end;
@@ -1408,18 +1501,24 @@ begin
 end;
 
 class function TJwSystemInformation.IsShuttingDown: Boolean;
+var
+  VerInfo : TJwWindowsVersionDefinition;
 begin
   if TJwWindowsVersion.IsWindowsXP(true) then
     result := GetSystemMetrics(SM_SHUTTINGDOWN) <> 0
   else
+  begin
+    VerInfo := TJwWindowsVersion.GetCurrentSupportedWindowsVersion(5,1, False);
+
     raise EJwsclUnsupportedWindowsVersionException.CreateFmtEx(
-        'The current Windows version does not support this call.',
+        RsUnsupportedCallByWindowsVersionWithMinVersion,
         'IsShuttingDown',                                //sSourceProc
         ClassName,                                //sSourceClass
         RSUnVersion,                          //sSourceFile
         0,                                           //iSourceLine
         false,                                  //bShowLastError
-        []);                                  //const Args: array of const
+        [VerInfo.MajorVersion, VerInfo.MinorVersion, JwGetOsVerString(VerInfo.WinConst)]);                                  //const Args: array of const
+  end;
 end;
 
 class function TJwWindowsVersion.IsStarterEdition: Boolean;
@@ -1450,7 +1549,7 @@ begin
 {$ENDIF}
     (@osVerInfo) then
   begin
-    result := GetCurrentSupportedWindowsVersion(osVerInfo);
+    result := GetCurrentSupportedWindowsVersionCOSIndex(osVerInfo);
   end
   else
     Result := cOsUnknown;
@@ -1482,7 +1581,7 @@ begin
       //TODO: also check for K SKUS
       //http://msdn.microsoft.com/en-us/library/aa965835%28VS.85%29.aspx
       //http://msdn.microsoft.com/en-us/library/ms724358%28VS.85%29.aspx
-      raise EJwsclInvalidParameterException.Create('One or more values in parameter Version are not supported.');
+      raise EJwsclInvalidParameterException.Create(RsInvalidValueInVersionParameter);
     end;
 
     //$ABCDABCD has the highest bit set and thus is recognized as negative by Delphi
@@ -1590,24 +1689,6 @@ begin
     if hProc <> ProcessHandle then
       CloseHandle(hProc);
   end;
- { if TJwWindowsVersion.IsWindows2000(false) then
-  begin
-  end
-  else
-  if TJwWindowsVersion.IsWindowsXP(false) then
-  begin
-
-  end
-  else
-  if TJwWindowsVersion.IsWindowsVista(false) then
-  begin
-
-  end
-  else
-  if TJwWindowsVersion.IsWindows7(true) then
-  begin
-
-  end;     }
 
   JwUNIMPLEMENTED;
 end;
@@ -1683,98 +1764,98 @@ begin
     end;
   end;
 
-    try
-      {GetLogicalProcessorInformation is present only on
-       Windows Vista, Windows XP Professional x64 Edition, Windows XP with SP3
-       This is a little bit complicated, so we just call it
-      }
-      Len := 0;
-      Res := GetLogicalProcessorInformation(nil, @Len);
-    except
-      on E : EJwsclProcNotFound do
-      begin
-        //function not implemented on this system... return to pyhsical cpu count
-        Res := FALSE;
-        SetLastError(0);
-      end;
-    end;
+  try
+//    GetLogicalProcessorInformation is present only on
+//    Windows Vista, Windows XP Professional x64 Edition, Windows XP with SP3
+//    This is a little bit complicated, so we just call it
 
-    if not Res and (GetLastError() = ERROR_INSUFFICIENT_BUFFER) then
+    Len := 0;
+    Res := GetLogicalProcessorInformation(nil, @Len);
+  except
+    on E : EJwsclProcNotFound do
     begin
-      GetMem(Buf, Len);
-      try
-        {
-          für win7
-          + GetActiveProcessorCount
+      //function not implemented on this system... return to pyhsical cpu count
+      Res := FALSE;
+      SetLastError(0);
+    end;
+  end;
 
-          http://msdn.microsoft.com/en-us/library/ms683194%28VS.85%29.aspx
+  if not Res and (GetLastError() = ERROR_INSUFFICIENT_BUFFER) then
+  begin
+    GetMem(Buf, Len);
+    try
+//
+//        für win7
+//        + GetActiveProcessorCount
+//
+//        http://msdn.microsoft.com/en-us/library/ms683194%28VS.85%29.aspx
+//
+//        1.
+//        On systems with more than 64 logical processors, the GetLogicalProcessorInformation
+//        function retrieves logical processor information about processors in the processor
+//        group to which the calling thread is currently assigned. Use the GetLogicalProcessorInformationEx
+//        function to retrieve information about processors in all processor groups on the system.
+//
+//        2.
+//        Windows Server 2003, Windows XP Professional x64 Edition, and Windows XP with SP3:
+//          This code reports the number of physical processors rather than the number of active processor cores.
 
-          1.
-          On systems with more than 64 logical processors, the GetLogicalProcessorInformation
-          function retrieves logical processor information about processors in the processor
-          group to which the calling thread is currently assigned. Use the GetLogicalProcessorInformationEx
-          function to retrieve information about processors in all processor groups on the system.
-
-          2.
-          Windows Server 2003, Windows XP Professional x64 Edition, and Windows XP with SP3:
-            This code reports the number of physical processors rather than the number of active processor cores.
-        }
-        Res := GetLogicalProcessorInformation(@Buf[0], @Len);
-        if not Res then
-          raise EJwsclWinCallFailedException.CreateFmtWinCall(
-            RsWinCallFailed,
-            'GetNumberOfProcessors',                                //sSourceProc
-            ClassName,                                //sSourceClass
-            RSUnVersion,                          //sSourceFile
-            0,                                           //iSourceLine
-            True,                                  //bShowLastError
-            'GetLogicalProcessorInformation #2',                   //sWinCall
-            ['GetLogicalProcessorInformation']);                                  //const Args: array of const
-
-        Size := Len div sizeof(SYSTEM_LOGICAL_PROCESSOR_INFORMATION);
-
-        LogicalCount := 0;
-        CoreCount := 0;
-        PhysicalCount := 0;
-
-        {$R-}
-        for I := 0 to Size - 1 do
-        begin
-          case Buf[I].Relationship of
-            RelationProcessorCore :
-              begin
-                Inc(CoreCount);
-
-                Inc(LogicalCount, GetActiveProcessors(Buf[I].ProcessorMask));
-              end;
-            RelationProcessorPackage :
-              begin
-                Inc(PhysicalCount);
-              end;
-          end;
-        end;
-      finally
-        FreeMem(Buf);
-      end;
-
-      case ProcessorType of
-        pctCoreProcessors     : result := CoreCount;
-        pctPhysicalProcessors : result := PhysicalCount;
-        pctLogicalProcessors  : result := LogicalCount;
-      end;
-      exit;
-    end
-    else
-    if (GetLastError() <> 0) then
-      raise EJwsclWinCallFailedException.CreateFmtWinCall(
+      Res := GetLogicalProcessorInformation(@Buf[0], @Len);
+      if not Res then
+        raise EJwsclWinCallFailedException.CreateFmtWinCall(
           RsWinCallFailed,
           'GetNumberOfProcessors',                                //sSourceProc
           ClassName,                                //sSourceClass
           RSUnVersion,                          //sSourceFile
           0,                                           //iSourceLine
           True,                                  //bShowLastError
-          'GetLogicalProcessorInformation #1',                   //sWinCall
+          'GetLogicalProcessorInformation #2',                   //sWinCall
           ['GetLogicalProcessorInformation']);                                  //const Args: array of const
+
+      Size := Len div sizeof(SYSTEM_LOGICAL_PROCESSOR_INFORMATION);
+
+      LogicalCount := 0;
+      CoreCount := 0;
+      PhysicalCount := 0;
+
+      {$R-}
+      for I := 0 to Size - 1 do
+      begin
+        case Buf[I].Relationship of
+          RelationProcessorCore :
+            begin
+              Inc(CoreCount);
+
+              Inc(LogicalCount, GetActiveProcessors(Buf[I].ProcessorMask));
+            end;
+          RelationProcessorPackage :
+            begin
+              Inc(PhysicalCount);
+            end;
+        end;
+      end;
+    finally
+      FreeMem(Buf);
+    end;
+
+    case ProcessorType of
+      pctCoreProcessors     : result := CoreCount;
+      pctPhysicalProcessors : result := PhysicalCount;
+      pctLogicalProcessors  : result := LogicalCount;
+    end;
+    exit;
+  end
+  else
+  if (GetLastError() <> 0) then
+    raise EJwsclWinCallFailedException.CreateFmtWinCall(
+        RsWinCallFailed,
+        'GetNumberOfProcessors',                                //sSourceProc
+        ClassName,                                //sSourceClass
+        RSUnVersion,                          //sSourceFile
+        0,                                           //iSourceLine
+        True,                                  //bShowLastError
+        'GetLogicalProcessorInformation #1',                   //sWinCall
+        ['GetLogicalProcessorInformation']);                                  //const Args: array of const
 
   //otherwise get physical number instead
   //this happens on Win 2000 and Windows XP SP1, SP2
@@ -1946,13 +2027,13 @@ begin
       begin
         if not (depPermanent in NewPolicy) then
            raise EJwsclInvalidParameterException.CreateFmtEx(
-            'If Parameter NewPolicy contains "depEnabled", it also must contain "depPermanent".',
-            'SetProcessDEPPolicy',
-            ClassName,
-            RsUNVersion,
-            0,
-            false,
-            []);
+              RsDepEnabledRequiresPermanent,
+              'SetProcessDEPPolicy',
+              ClassName,
+              RsUNVersion,
+              0,
+              false,
+              []);
         Flags := Flags or PROCESS_DEP_ENABLE;
       end;
 
@@ -1978,6 +2059,45 @@ begin
   result.Version.Major :=  fOSVerInfo.wServicePackMajor;
   result.Version.Minor :=  fOSVerInfo.wServicePackMinor;
   result.Name := TJwString(fOSVerInfo.szCSDVersion);
+end;
+
+class function TJwWindowsVersion.GetSupportedOSByGuid(const IsAWinGUID: Boolean; ID : TGuid): TJwWindowsVersionDefinition;
+var
+  I: Integer;
+  B : TJwArrayBounds;
+begin
+  B := GetSupportedOSVersionBoundary;
+  for I := B.Low to B.High do
+  begin
+    if  (IsAWinGUID and
+        CompareMem(@SupportedWindowVersions[I].WinGUID, @ID, sizeof(TGUID))) or
+        (not IsAWinGUID and
+        CompareMem(@SupportedWindowVersions[I].ID, @ID, sizeof(TGUID))) then
+    begin
+      result := SupportedWindowVersions[I];
+      exit;
+    end;
+  end;
+  raise EJwsclInvalidIndex.CreateFmtEx(
+            'The given Guid was not found',
+            'GetSupportedOSByGuid',                                //sSourceProc
+            ClassName,                                //sSourceClass
+            RSUnVersion,                          //sSourceFile
+            0,
+            false,                                    //iSourceLine
+            []);                                 //const Args: array of const
+end;
+
+class function TJwWindowsVersion.GetSupportedOSVersion(const Index: Integer): TJwWindowsVersionDefinition;
+begin
+  result := SupportedWindowVersions[Index];
+end;
+
+class function TJwWindowsVersion.GetSupportedOSVersionBoundary: TJwArrayBounds;
+begin
+  //only return bounds that deliver real windows version info
+  result.High := High(SupportedWindowVersions)-1;
+  result.Low := 0;
 end;
 
 //bProfilLoaded will be true only if Token is a valid instance
@@ -2070,8 +2190,9 @@ begin
     case hr of
       S_OK         : result := TJwString(pPath);
       S_FALSE,
-        E_FAIL     : RaiseError('The CSIDL is correct but the folder does not exist.',hr);
-      E_INVALIDARG : RaiseError('The supplied CSIDL is not valid.',hr);
+
+      E_FAIL       : RaiseError(RsCsidlCorrectButFolderNotFound,hr);
+      E_INVALIDARG : RaiseError(RsInvalidCSIDLPath,hr);
     else
       RaiseError('',hr);
     end;
@@ -2105,6 +2226,7 @@ var
 begin
   if not TJwWindowsVersion.IsWindowsVista(true) then
     raise EJwsclUnsupportedWindowsVersionException.CreateFmtWinCall(
+//TODO: make ressource string
             'The Windows version is not supported',
             'GetKnownFolderPath',                                //sSourceProc
             ClassName,                                //sSourceClass
@@ -2215,8 +2337,7 @@ begin
     result := TJwSystemBootType(value)
   else
     raise EJwsclInvalidIndex.CreateFmtEx(
-        'The GetSystemMetrics value %0:d could not be converted to a TJwSystemBootType enum. The value %0:d is not supported by JWSCL. '+
-          'Furthermore, it was stored in the LastError property of this exception.',
+        RsInvalidSystemMetric,
         'SystemBootType',                                //sSourceProc
         ClassName,                                //sSourceClass
         RSUnVersion,                          //sSourceFile

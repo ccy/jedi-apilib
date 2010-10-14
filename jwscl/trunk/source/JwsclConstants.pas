@@ -143,9 +143,6 @@ const
   cOsWin2008R2 = 13; //The system is a 2008 R2 Server (untested)
 
 
-
-
-
   {This value defines an unknown but new Windows version.
    It is computed by JWSCL by making sure that the current windows version
    has a version than the highest supported one.
@@ -158,11 +155,13 @@ const
   Be aware that on newer and thus unknown Windows versions
   the value could be cOsWinUnknownNew. However, it is out of range
   so you need to convert it to -2 first.
+
+  Instead of using this constant, use the function JwGetOsVerString.
   }
   sOSVerString: array[-2..15] of TJwString =
     (
-    'New unknown Windows',
-    'Unknown',
+    RsNewUnknownWindows, //'New unknown Windows',
+    RsUnknownWindows, //'Unknown',
     'Windows 95',
     'Windows 98',
     'Windows 98 Second Edition',
@@ -180,9 +179,15 @@ const
     '',
     ''
     );
+{<b>JwGetOsVerString</b> converts a cOSxxxx constant to a human readable string.
 
+Remarks
+  This function supports cOsWinUnknownNew.
+  This function return sOSVerString[-1] ("Unknown") if the index is not supported by sOSVerString.
+}
+function JwGetOsVerString(OSIndex : Integer) : TJwString;
 
-
+const
 
   {<B>ALL_SECURITY_INFORMATION</B> can be used in TJwSecurityDescriptor.getStringSid as the parameter value to
    get all SID information at once.
@@ -1833,12 +1838,22 @@ begin
   );
 end;
 
+function JwGetOsVerString(OSIndex : Integer) : TJwString;
+begin
+  if OSIndex = cOsWinUnknownNew then
+    OSIndex := -2
+  else
+  if (OSIndex < Low(sOSVerString)) or (OSIndex > high(sOSVerString)) then
+    OSIndex := -1;
+
+  result := sOSVerString[OSIndex];
+end;
+
 initialization
 
 // user language or neutral if not found
 // JwInitLocalizedMappings(PRIMARYLANGID(GetUserDefaultUILanguage),
 //   SUBLANGID(GetUserDefaultUILanguage));
-
 
 
 {$IFDEF JWSCL_INCLUDE_RES}

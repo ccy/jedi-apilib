@@ -6573,10 +6573,9 @@ function TJwSecurityToken.RetrieveSpecificAccessRights(
   const AccessMask: TJwAccessMask): TJwAccessMask;
 begin
   try
-    //TODO: GENERICS hier noch!
     if AccessMask = MAXIMUM_ALLOWED then
       result := GetMaximumAllowed
-    else
+    else //convert generic bits to specific ones
       result := TJwSecurityTokenMapping.GenericMap(AccessMask)
   except
     //if GetMaximumAllowed does not have the READ_CONTROL flag

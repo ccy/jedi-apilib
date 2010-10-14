@@ -502,9 +502,19 @@ const
 
 //
   RsVersionOrHigher = 'or higher';
-  RsVersionUnsupportedVersion = 'Unsupported version "%0:s". Need "%1:s" %2:' +
-    's';
+  RsVersionUnsupportedVersion = 'Unsupported version "%0:s". Need "%1:s" %2:s';
   RsUnknownSuppliedOS = '(The supplied WindowsVersion to CheckWindowsVersion is unknown. Add it to JwsclResource.pas::sOSVerString)';
+
+  RsInvalidSystemMetric = 'The GetSystemMetrics value %0:d could not be converted to a TJwSystemBootType enum. The value %0:d is not supported by JWSCL. '+
+          'Furthermore, it was stored in the LastError property of this exception.';
+
+  RsCsidlCorrectButFolderNotFound = 'The CSIDL is correct but the folder does not exist.';
+  RsInvalidCSIDLPath = 'The supplied CSIDL is not valid.';
+  RsDepEnabledRequiresPermanent = 'If Parameter NewPolicy contains "depEnabled", it also must contain "depPermanent".';
+  RsInvalidValueInVersionParameter = 'One or more values in parameter Version are not supported.';
+
+  RsUnsupportedCallByWindowsVersion = 'The current Windows version does not support this call.';
+  RsUnsupportedCallByWindowsVersionWithMinVersion = 'The current Windows version does not support this call. Minimum Version must be equal or greater to %0:d.%1:d (%2:s)';
 
 //Unit JwsclDesktop.pas
 
@@ -547,6 +557,17 @@ const
   RsInvalidResourceLanguage = 'The given resource language id %0:d could not be found in the message table.';
   RsMessageTableNotFound = 'A message table could not be found it the given module.';
 
+  RsUnimplemented = 'This function is not implemented.';
+
+  RsInvalidObjectTypeAtIndex = 'Invalid object type %0:d at index %1:d';
+  RsInvalidObjectValueNilTypeAtIndex  = 'Invalid object type value (nil) at index %0:d';
+  RsInvalidHandleTypeAtIndex = 'Invalid handle type %0:d at index %1:d';
+
+  RsInvalidDevicePath = 'The supplied device path "%0:s" is invalid. Is must start with "\DEVICE\"';
+  RsKeyNotFoundAccessible = 'Key %0:s not found/accessible.';
+  RsValueIntNotFound = 'Value %0:d not found';
+
+
 //Unit JwsclEncryption.pas
 
 //
@@ -583,6 +604,7 @@ const
 //Unit JwsclKnownSid.pas
 
   RsInvalidLevelSIDPrefix = 'The given SID "%s" is not a integrity label.';
+  RsInitMappingMustBeCalled = 'JwInitMapping must be called.';
 
 //Unit JwsclComUtils.pas
 
@@ -655,6 +677,14 @@ const
   RsEnumerateProcessesFailed = 'The enumeration of processes failed. ';
   RsInvalidStartupInfo = 'The given Startupinfo must be initialized!';
 
+  RsLoadLibProcUninitialized = 'TJwLibraryUtilities.LoadLibProc was called before the critical section was initialized. Make sure JwsclProcess '+
+     'is included at first or TJwLibraryUtilities.JwInitSafeLoadLibrary was called before.';
+  RsLeaveSafeLoadLibraryInvalidCountValue = 'TSafeLoadLibrarySectionImpl.LeaveSafeLoadLibrary was called with invalid count value %0:d.';
+
+// JwsclConstants.pas
+  RsNewUnknownWindows = 'New unknown Windows';
+  RsUnknownWindows = 'Unknown';
+
 // Unit names - do not localize
 // use these constants in the source parameter of any JWSCL Exception.
 
@@ -666,6 +696,7 @@ const
   RsUNAuthZCtx           = 'JwsclAuthCtx.pas';
   RsUNCertificates       = 'JwsclCertificates.pas';
   RsUNComUtils           = 'JwsclComUtils.pas';
+  RsUNComSecurity        = 'JwsclComSecurity.pas';
   RsUNConstants          = 'JwsclConstants.pas';
   RsUNCredentials        = 'JwsclCredentials.pas';
   RsUNCryptProvider      = 'JwsclCryptProvider.pas';

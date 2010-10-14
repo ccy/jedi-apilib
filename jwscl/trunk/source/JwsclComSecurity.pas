@@ -1,4 +1,4 @@
-{ 
+{
 Description
 Project JEDI Windows Security Code Library (JWSCL)
 
@@ -382,7 +382,7 @@ type
 	  Parameters
 	  pProxy :  Receives an interface to change to copy its security information
 	  ppCopy :  Receives a copy of the security information
-	  
+
 	  Exceptions
 	  EJwsclWinCallFailedException :  This exception is raised if the call to CoCopyProxy failed. See exception member
 									  ErrorCode for more information.                                                  }
@@ -798,7 +798,7 @@ type
           SaveInitProc := InitProc;
           InitProc := @InitComServer;
       </pre>
-      
+
       In this way the call to CoInitializeSecurity is made before VCL inits COM.
       
       For more information see
@@ -1455,7 +1455,7 @@ type
     { The property %MEMBERNAME% define when authentication is done. This value is from type TJwComAuthenticationLevel.
       Remarks
       <c>calDefault</c> uses default COM authentication.
-      
+
       <c>calInvalid</c> is not a valid level and cannot be used as input to functions.
       Source Description
       <code>
@@ -1839,7 +1839,7 @@ type
       <c>TRUSTEE.MultipleTrusteeOperation = 0</c>
       
       <c>TRUSTEE.TrusteeForm = 0 or 1</c>
-      
+
       <c>TRUSTEE.TrusteeType = 1 or 2</c>
       
       <c>TRUSTEE.ptstrName \<\> nil</c>                                                                                 }
@@ -2656,10 +2656,13 @@ const
 implementation
 
 
+
+
 const
   AUTO_AUTHENTICATION_SERVICE = -1;
   IID_IServerSecurity : TGUID = '{0000013E-0000-0000-C000-000000000046}';
 
+  RegKeySoftwareMicrosoftOle = '\SOFTWARE\Microsoft\Ole';
 {
 
 }
@@ -2772,7 +2775,7 @@ begin
   hr := JwaWindows.CoCopyProxy(pProxy, ppCopy);
   if Failed(hr) then
     raise EJwsclWinCallFailedException.CreateFmtEx(RsWinCallFailedWithNTStatus, 'CoCopyProxy', ClassName,
-      'JwsclComSecurity.pas', 0, ResultCode(hr), ['CoCopyProxy',hr]);
+      RsUNComSecurity, 0, ResultCode(hr), ['CoCopyProxy',hr]);
 end;
 
 class function TJwComClientSecurity.GetAuthenticationServices: TJwAuthenticationServiceInformationArray;
@@ -2794,7 +2797,7 @@ begin
   begin
     SetLastError(status);
     raise EJwsclWinCallFailedException.CreateFmtEx(RsWinCallFailedWithNTStatus,
-        'GetGlobalAuthenticationServices', ClassName, 'JwsclComSecurity.pas', 0, Status, ['CoQueryAuthenticationServices', Status]);
+        'GetGlobalAuthenticationServices', ClassName, RsUNComSecurity, 0, Status, ['CoQueryAuthenticationServices', Status]);
   end;
 
   try
@@ -2842,7 +2845,7 @@ begin
   if Failed(hr) then
   begin
     raise EJwsclWinCallFailedException.CreateFmtEx(RsWinCallFailedWithNTStatus, 'CoQueryProxyBlanket',
-        ClassName, 'JwsclComSecurity.pas', 0, ResultCode(hr), ['CoQueryProxyBlanket', hr]);
+        ClassName, RsUNComSecurity, 0, ResultCode(hr), ['CoQueryProxyBlanket', hr]);
   end;
 
   pServerPrincName := TJwString(WideString(S));
@@ -2875,7 +2878,7 @@ begin
 
   if Failed(hr) then
   begin
-    raise EJwsclWinCallFailedException.CreateFmtEx(RsWinCallFailed, 'CoSetProxyBlanket', ClassName, 'JwsclComSecurity.pas', 0, ResultCode(hr), ['CoSetProxyBlanket']);
+    raise EJwsclWinCallFailedException.CreateFmtEx(RsWinCallFailed, 'CoSetProxyBlanket', ClassName, RsUNComSecurity, 0, ResultCode(hr), ['CoSetProxyBlanket']);
   end;
 end;
 
@@ -2918,7 +2921,7 @@ begin
      (fAuthenticationService <> asGSSKerberos) then
   begin
     raise EJwsclInvalidParameterException.CreateFmtEx
-      (RsAuthenticationMustBeWinNT, 'SetWinNTIdentity', ClassName, 'JwsclComSecurity.pas', 0, false, []);
+      (RsAuthenticationMustBeWinNT, 'SetWinNTIdentity', ClassName, RsUNComSecurity, 0, false, []);
   end;
 
   if ((fAuthenticationService = asWinNT) or
@@ -2926,7 +2929,7 @@ begin
     not JwIsPrivilegeSet(SE_IMPERSONATE_NAME, pqt_Enabled) then
     raise EJwsclPrivilegeNotFoundException.CreateFmtEx
       (RsCOMImpersonatingPrivilegeNecessary
-      , 'SetWinNTIdentity', ClassName, 'JwsclComSecurity.pas', 0, false, []);
+      , 'SetWinNTIdentity', ClassName, RsUNComSecurity, 0, false, []);
 
 
   BeginUpdate;
@@ -2985,7 +2988,7 @@ begin
   if ImpersonationLevel < cilIdentify then
   begin
     raise EJwsclNoThreadTokenAvailable.CreateFmtEx(RsInvalidImpersonationLevel,
-      'GetToken', ClassName, 'JwsclComSecurity.pas', 0, false, []);
+      'GetToken', ClassName, RsUNComSecurity, 0, false, []);
     exit;
   end;
 
@@ -3049,7 +3052,7 @@ begin
 
   if Failed(hr) then
   begin
-    raise EJwsclWinCallFailedException.CreateFmtEx(RsWinCallFailedWithNTStatus, 'CoQueryClientBlanket', ClassName, 'JwsclComSecurity.pas', 0, ResultCode(hr), ['CoQueryClientBlanket', hr]);
+    raise EJwsclWinCallFailedException.CreateFmtEx(RsWinCallFailedWithNTStatus, 'CoQueryClientBlanket', ClassName, RsUNComSecurity, 0, ResultCode(hr), ['CoQueryClientBlanket', hr]);
   end;
 
   pCapabilites := TJwEnumMap.ConvertComAuthenticationCapabilities(iCapabilites);
@@ -3067,7 +3070,7 @@ constructor TJwComServerSecurity.Create(const ImpersonationType: TJwServerImpers
 begin
   if TJwSecurityToken.HasThreadAToken then
   begin
-    raise EJwsclInvalidTokenHandle.CreateFmtEx(RsAlreadyImpersonating, 'Create', ClassName, 'JwsclComSecurity.pas', 0, false, []);
+    raise EJwsclInvalidTokenHandle.CreateFmtEx(RsAlreadyImpersonating, 'Create', ClassName, RsUNComSecurity, 0, false, []);
   end;
 
   fImpersonationType := ImpersonationType;;
@@ -3082,7 +3085,7 @@ begin
 
   if Failed(hr) then
   begin
-    raise EJwsclWinCallFailedException.CreateFmtEx('', 'CoGetCallContext', ClassName, 'JwsclComSecurity.pas', 0, ResultCode(hr), []);
+    raise EJwsclWinCallFailedException.CreateFmtEx('', 'CoGetCallContext', ClassName, RsUNComSecurity, 0, ResultCode(hr), []);
   end;
 
 
@@ -3098,7 +3101,7 @@ begin
 
   if Failed(hr) then
   begin
-    raise EJwsclWinCallFailedException.CreateFmtEx('', 'QueryBlanket', ClassName, 'JwsclComSecurity.pas', 0, ResultCode(hr), []);
+    raise EJwsclWinCallFailedException.CreateFmtEx('', 'QueryBlanket', ClassName, RsUNComSecurity, 0, ResultCode(hr), []);
   end;
 
   //SiMain.LogPWideChar('User', PSecWinNTAuthIdentityW(@fAuthenticationInfo)^.User);
@@ -3198,7 +3201,7 @@ begin
   if ImpersonationLevel < cilIdentify then
   begin
     raise EJwsclNoThreadTokenAvailable.CreateFmtEx(RsInvalidImpersonationLevel,
-      'GetToken', ClassName, 'JwsclComSecurity.pas', 0, false, []);
+      'GetToken', ClassName, RsUNComSecurity, 0, false, []);
     exit;
   end;
 
@@ -3254,7 +3257,7 @@ begin
 
   if Failed(hr) then
   begin
-    raise EJwsclWinCallFailedException.CreateFmtEx(RsWinCallFailedWithNTStatus, 'ImpersonateClient', ClassName, 'JwsclComSecurity.pas', 0, ResultCode(hr), ['CoImpersonateClient', hr]);
+    raise EJwsclWinCallFailedException.CreateFmtEx(RsWinCallFailedWithNTStatus, 'ImpersonateClient', ClassName, RsUNComSecurity, 0, ResultCode(hr), ['CoImpersonateClient', hr]);
   end;
 end;
 
@@ -3281,7 +3284,7 @@ begin
 
   if Failed(h) then
    raise EJwsclComException.CreateFmtEx(RsWinCallFailedWithNTStatus,
-    'RevertToSelf', ClassName, 'JwsclComSecurity.pas',0, DWORD(H), [CoRevertToSelf, h]);
+    'RevertToSelf', ClassName, RsUNComSecurity,0, DWORD(H), [CoRevertToSelf, h]);
 end;
 
 
@@ -3310,7 +3313,7 @@ procedure TJwComRegistrySecurity.CheckReadonly(const PropertyName : String);
 begin
   if fReadOnly then
   begin
-    raise EJwsclReadOnlyPropertyException.CreateFmtEx(RsPropertyIsReadOnly, 'Getter', ClassName, 'JwsclComSecurity.pas', 0, false, [PropertyName]);
+    raise EJwsclReadOnlyPropertyException.CreateFmtEx(RsPropertyIsReadOnly, 'Getter', ClassName, RsUNComSecurity, 0, false, [PropertyName]);
   end;
 end;
 
@@ -3332,7 +3335,7 @@ begin
 
     raise EJwsclInvalidRegistryPath
       .CreateFmtEx(RsCOMAppIDNotFound,
-      'Create', ClassName, 'JwsclComSecurity.pas', 0, false, [GUIDToString(AppID)]);
+      'Create', ClassName, RsUNComSecurity, 0, false, [GUIDToString(AppID)]);
   end;
 
   fAppID := AppID;
@@ -3398,11 +3401,11 @@ begin
   try
     Reg.RootKey := HKEY_LOCAL_MACHINE;
 
-    if not Reg.OpenKey('Software\Microsoft\OLE', false) then
+    if not Reg.OpenKey(RegKeySoftwareMicrosoftOle, false) then
     begin
       raise EJwsclRegistryException
               .CreateFmtEx(RsDefaultCOMKeyNotFound,
-              'GetDefaultAccessPermission', ClassName, 'JwsclComSecurity.pas', 0, false, []);
+              'GetDefaultAccessPermission', ClassName, RsUNComSecurity, 0, false, []);
     end;
 
     if not Reg.ValueExists('DefaultAccessPermission') then
@@ -3426,11 +3429,11 @@ begin
   try
     Reg.RootKey := HKEY_LOCAL_MACHINE;
 
-    if not Reg.OpenKey('Software\Microsoft\OLE', false) then
+    if not Reg.OpenKey(RegKeySoftwareMicrosoftOle, false) then
     begin
       raise EJwsclRegistryException
               .CreateFmtEx(RsDefaultCOMKeyNotFound,
-              'GetDefaultAccessPermission', ClassName, 'JwsclComSecurity.pas', 0, false, []);
+              'GetDefaultAccessPermission', ClassName, RsUNComSecurity, 0, false, []);
     end;
 
     if not Reg.ValueExists('DefaultLaunchPermission') then
@@ -3469,7 +3472,7 @@ begin
   begin
     SetLastError(status);
     raise EJwsclWinCallFailedException.CreateFmtEx(RsWinCallFailedWithNTStatus,
-        'GetGlobalAuthenticationServices', ClassName, 'JwsclComSecurity.pas', 0, status, ['EnumerateSecurityPackages', status]);
+        'GetGlobalAuthenticationServices', ClassName, RsUNComSecurity, 0, status, ['EnumerateSecurityPackages', status]);
   end;
 
   try
@@ -3591,7 +3594,7 @@ begin
   Reg.RootKey := HKEY_LOCAL_MACHINE;
 
   try
-    if Reg.OpenKey('\SOFTWARE\Microsoft\Ole', false) then
+    if Reg.OpenKey(RegKeySoftwareMicrosoftOle, false) then
     begin
       Value := Reg.ReadString('EnableDCOM');
       result := (Value = 'Y') or (Value = 'y');
@@ -3613,7 +3616,7 @@ begin
   Reg.RootKey := HKEY_LOCAL_MACHINE;
 
   try
-    if Reg.OpenKey('\SOFTWARE\Microsoft\Ole', false) then
+    if Reg.OpenKey(RegKeySoftwareMicrosoftOle, false) then
     begin
       Value := Reg.ReadInteger('LegacyAuthenticationLevel');
       result := TJwComAuthenticationLevel(Value);
@@ -3635,7 +3638,7 @@ begin
   Reg.RootKey := HKEY_LOCAL_MACHINE;
 
   try
-    if Reg.OpenKey('\SOFTWARE\Microsoft\Ole', false) then
+    if Reg.OpenKey(RegKeySoftwareMicrosoftOle, false) then
     begin
       Value := Reg.ReadInteger('LegacyImpersonationLevel');
       result := TJwComImpersonationLevel(Value);
@@ -3854,7 +3857,7 @@ procedure TJwComCustomSecurity.CheckReadonly(const PropertyName: String);
 begin
   if fReadOnly then
   begin
-    raise EJwsclReadOnlyPropertyException.CreateFmtEx(RsPropertyIsReadOnly, 'Getter', ClassName, 'JwsclComSecurity.pas', 0, false, [PropertyName]);
+    raise EJwsclReadOnlyPropertyException.CreateFmtEx(RsPropertyIsReadOnly, 'Getter', ClassName, RsUNComSecurity, 0, false, [PropertyName]);
   end;
 end;
 
@@ -3951,7 +3954,7 @@ begin
               begin
                 raise EJwsclProcessNotFound.
                   CreateFmtEx(RsInitializeSecurityInSharedProcess,
-                    'InitializeSecurity', ClassName, 'JwsclComSecurity.pas', 0, false, []);
+                    'InitializeSecurity', ClassName, RsUNComSecurity, 0, false, []);
               end;
             end;
           end;
@@ -3984,11 +3987,11 @@ begin
       RPC_E_TOO_LATE :
         raise EJwsclCoInitializeNotCalledException.
               CreateFmtEx(RsCoInitializeNotCalled,
-                'InitializeSecurity', ClassName, 'JwsclComSecurity.pas', 0, DWORD(hRes), []);
+                'InitializeSecurity', ClassName, RsUNComSecurity, 0, DWORD(hRes), []);
     else
       raise EJwsclComException.
               CreateFmtEx(RsWinCallFailedWithNTStatus,
-                'InitializeSecurity', ClassName, 'JwsclComSecurity.pas', 0, DWORD(hRes), ['CoInitializeSecurity', hRes]);
+                'InitializeSecurity', ClassName, RsUNComSecurity, 0, DWORD(hRes), ['CoInitializeSecurity', hRes]);
     end;
   end;
 end;
@@ -4135,7 +4138,7 @@ class procedure TJwComProcessSecurity.Initialize(
             if AuthenticationList[i].AuthenticationService = asDefault then
                raise EJwsclInvalidParameterException.CreateFmtEx(
                   RsInvalidAuthService,
-                'Create', ClassName, 'JwsclComSecurity.pas', 0, false, [I]);
+                'Create', ClassName, RsUNComSecurity, 0, false, [I]);
           end;
         end;
         AuthInfoI.dwAuthnSvc := DWORD(AuthenticationList[i].AuthenticationService);
@@ -4199,7 +4202,7 @@ class procedure TJwComProcessSecurity.Initialize(
                 raise EJwsclAccessDenied.
                   CreateFmtEx(RsInvalidComSecurityDescriptor,
                     'Initialize (TJwSecurityDescriptor)',
-                    ClassName, 'JwsclComSecurity.pas', 0, false, []);
+                    ClassName, RsUNComSecurity, 0, false, []);
               end;
             finally
               Reply.Free;
@@ -4232,7 +4235,7 @@ class procedure TJwComProcessSecurity.Initialize(
       raise EJwsclInvalidParameterException.
               CreateFmtEx(RsInvalidCombinationAccessControlAndAppID,
                 'Initialize',
-                ClassName, 'JwsclComSecurity.pas', 0, false, []);
+                ClassName, RsUNComSecurity, 0, false, []);
     end;
 
     if SecurityData <> nil then
@@ -4281,7 +4284,7 @@ begin
     if (SecInfo <> nil) and (AuthenticationLevel = calNone) then
       raise EJwsclInvalidParameterException.
         CreateFmtEx(RsInvalidAuthLevel,
-         'Initialize', ClassName, 'JwsclComSecurity.pas', 0, false, []);
+         'Initialize', ClassName, RsUNComSecurity, 0, false, []);
 
 
     PrepareAuthInfo(AuthenticationList, {Out}List);
@@ -4301,7 +4304,7 @@ class procedure TJwComProcessSecurity.Initialize(var AuthenticationList: TJwAuth
   Capabilities: TJwComAuthenticationCapabilities;
   const AutoDestroy : Boolean);
 begin
-  JwRaiseOnNilParameter(Pointer(AuthenticationList), 'AuthenticationList', 'Initialize (TJwAuthenticationInfoList)', ClassName, 'JwsclComSecurity.pas');
+  JwRaiseOnNilParameter(Pointer(AuthenticationList), 'AuthenticationList', 'Initialize (TJwAuthenticationInfoList)', ClassName, RsUNComSecurity);
 
   Exclude(Capabilities, acAppId);
   Exclude(Capabilities, acAccessControl);
@@ -4345,7 +4348,7 @@ begin
   if AuthorizationService = azsDefault then
     raise EJwsclInvalidParameterException.CreateFmtEx(
         RsAuthServiceMustNotBeDefault, 'Create',
-            ClassName, 'JwsclComSecurity.pas', 0, false, []);
+            ClassName, RsUNComSecurity, 0, false, []);
 
   SetLength(List, {2}1);
   List[0] := TJwAuthenticationInfo.CreateWinNT(UserName, Domain, Password, AuthorizationService);
@@ -4374,7 +4377,7 @@ begin
     result := false
   else
     raise EJwsclComException.CreateFmtEx(RsWinCallFailedWithNTStatus,
-      'IsExternalCOMCall', ClassName, 'JwsclComSecurity.pas',0, DWORD(hr), ['CoGetCallContext', hr]);
+      'IsExternalCOMCall', ClassName, RsUNComSecurity,0, DWORD(hr), ['CoGetCallContext', hr]);
 end;
 
 class procedure TJwComProcessSecurity.Initialize(SecurityDescriptor: TJwSecurityDescriptor; AuthenticationLevel: TJwComAuthenticationLevel;
@@ -4451,7 +4454,7 @@ var
   SecurityData : TJwSecurityInitializationData;
   AuthenticationList : TJwAuthenticationInfoList;
 begin
-  JwRaiseOnNilParameter(Pointer(AccessControl), 'AccessControl', 'Initialize (IAccessControl)', ClassName, 'JwsclComSecurity.pas');
+  JwRaiseOnNilParameter(Pointer(AccessControl), 'AccessControl', 'Initialize (IAccessControl)', ClassName, RsUNComSecurity);
 
 
   Include(Capabilities, acAccessControl);
@@ -4502,7 +4505,7 @@ procedure TJwComWinNTIdentity.CheckReadonly(const PropertyName: String);
 begin
   if fReadOnly then
   begin
-    raise EJwsclReadOnlyPropertyException.CreateFmtEx(RsPropertyIsReadOnly, 'Getter', ClassName, 'JwsclComSecurity.pas', 0, false, [PropertyName]);
+    raise EJwsclReadOnlyPropertyException.CreateFmtEx(RsPropertyIsReadOnly, 'Getter', ClassName, RsUNComSecurity, 0, false, [PropertyName]);
   end;
 end;
 constructor TJwComWinNTIdentity.Create;
@@ -4730,7 +4733,7 @@ begin
      (AuthenticationService <> asGSSKerberos) then
   begin
     raise EJwsclInvalidParameterException.CreateFmtEx
-      (RsAuthenticationMustBeWinNT, 'Create', ClassName, 'JwsclComSecurity.pas', 0, false, []);
+      (RsAuthenticationMustBeWinNT, 'Create', ClassName, RsUNComSecurity, 0, false, []);
   end;
 
   fWinNTIdentity := AuthenticationInfo;
@@ -4794,7 +4797,7 @@ constructor TJwServerAccessControl.Create;
 begin
   inherited;
 
-  JwCheckInitKnownSid([JwSecurityProcessUserSID], ['JwSecurityProcessUserSID'], 'Create', ClassName, 'JwsclComSecurity.pas');
+  JwCheckInitKnownSid([JwSecurityProcessUserSID], ['JwSecurityProcessUserSID'], 'Create', ClassName, RsUNComSecurity);
 
   FacilityCode := DEFAULT_FACILITY_CODE;
   fAuthManager := TJwAuthResourceManager.Create('', [], nil, nil);

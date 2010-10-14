@@ -1981,6 +1981,8 @@ type
    used for record  TJwWindowsVersionDefinition
   }
   TJwWindowsVersionDefinitionFlag = (
+    //The current version definition must be ignored
+    wvdIgnore,
     //The member MajorVersion is valid
     wvdfMajorVersion,
     //The member MinorVersion is valid
@@ -2084,6 +2086,11 @@ type
     }
     Flags : TJwWindowsVersionDefinitionFlags;
 
+    {WinGUID defines a guid that identifies the Windows version. It comes from MS.
+    }
+    WinGUID : TGUID;
+    {ID defines a guid that identifies the Windows version. It comes from JWSCL}
+    ID : TGUID;
     {Defines a callback function that is called to influence the Windows checking
      process.
      If member Flags is not empty, the result of the version checking (using
@@ -2151,6 +2158,10 @@ type
     ptWEB_SERVER_CORE = $0000001D //Web Server (core installation)
   );
 
+  {A storage for boundary of an array.}
+  TJwArrayBounds = record
+    High, Low : Integer;
+  end;
 
 {**************** ADD HERE NEW DEFS ************** }
 

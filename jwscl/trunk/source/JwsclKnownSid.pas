@@ -673,7 +673,7 @@ end;
 procedure JwAddMapSid(const Name : TJwString; const Sid : TJwSecurityID);
 var Map : PJwSidMap;
 begin
-  JwRaiseOnNilParameter(SidMaps, 'JwInitMapping must be called.', 'JwAddMapSid','', RsUNKnownSid);
+  JwRaiseOnNilParameter(SidMaps, RsInitMappingMustBeCalled, 'JwAddMapSid','', RsUNKnownSid);
   JwRaiseOnNilParameter(Sid, 'Sid', 'JwAddMapSid','', RsUNKnownSid);
 
   New(Map);
@@ -686,7 +686,7 @@ function JwSidMap(const Name : TJwString) : TJwSecurityID;
 var i : Integer;
     //Map : PJwSidMap;
 begin
-  JwRaiseOnNilParameter(SidMaps, 'JwInitMapping must be called.', 'JwAddMapSid','', RsUNKnownSid);
+  JwRaiseOnNilParameter(SidMaps, RsInitMappingMustBeCalled, 'JwAddMapSid','', RsUNKnownSid);
 
   for i := 0 to SidMaps.Count-1 do
   begin
