@@ -1,0 +1,660 @@
+<?xml version="1.0" encoding="utf-8"?>
+<nodeSet version="1.0">
+  <view uin="m7ks2sago8l_v">
+    <property name="$defaultDiagram" value="true" />
+    <property name="$metaclass" value="Package Diagram" />
+    <property name="$name" value="default" />
+    <reference referencedUin="design:view:::2v8n3ajobqi_v">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="10,10,159,228" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclUtils.TLStr" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclUtils.TJwIntTupleList" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclUtils.TThreadNameInfo" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclUtils.TIntTuple" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclUtils.TJwThread" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclUtils.PIntTuple" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclUtils.TJwFormatMessageFlags" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclUtils.PLStr" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclUtils.@unitclass" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclUtils.TJwFormatMessageFlag" />
+    </reference>
+    <reference referencedUin="design:view:::us90a04n52t_v">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="188,1,176,196" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclKnownSid.TJwSidMap" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclKnownSid.TJwSecurityThreadUserSID" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclKnownSid.PJwSidMap" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclKnownSid.TJwIntegrityLevelSID" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclKnownSid.@unitclass" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclKnownSid.TJwSecurityKnownSID" />
+    </reference>
+    <reference referencedUin="design:view:::t0vg2wz0ntm_v">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="188,216,169,151" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclEurekaLogUtils.TJwEurekaLogNotify" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclEurekaLogUtils.@unitclass" />
+    </reference>
+    <reference referencedUin="design:view:::p2micdpcusl_v">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="19,257,161,181" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclCryptProvider.TJwCryptProvider" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclCryptProvider.TJwHash" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclCryptProvider.TJwCryptKey" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclCryptProvider.@unitclass" />
+    </reference>
+    <reference referencedUin="design:view:::6gy7x2773fp_v">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="402,1,124,134" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclStrings.TJwChar" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclStrings.TJwString" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclStrings.TJwTJwStringArray" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclStrings.TJwWideStringArray" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclStrings.TJwWideString" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclStrings.@unitclass" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclStrings.TJwAnsiString" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclStrings.TJwPChar" />
+    </reference>
+    <reference referencedUin="design:view:::7jl3ocj0zyo_v">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="402,154,162,198" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclCredentials.TJwCredentialsPrompt" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclCredentials.@unitclass" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclCredentials.TJwCredentialsTools" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclCredentials.TJwOnConfirmCredential" />
+    </reference>
+    <reference referencedUin="design:view:::8f6t7iojlan_v">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="602,1,180,151" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclSimpleDescriptor.TJwSimpleDescriptor" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclSimpleDescriptor.@unitclass" />
+    </reference>
+    <reference referencedUin="design:view:::fdge4yk6vzk_v">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="602,171,179,166" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclWinStations.TJwSecurityWindowStations" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclWinStations.@unitclass" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclWinStations.TJwSecurityWindowStation" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclWinStations.TJwSecurityWindowStationArray" />
+    </reference>
+    <reference referencedUin="design:view:::rg81wyqtgom_v">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="383,371,259,290" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclToken.TWtsGetActiveConsoleSessionID" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclToken.TJwPrivilege" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclToken.@unitclass" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclToken.TJwPrivilegeQueryType" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclToken.TJwSecurityToken" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclToken.TJwPrivilegeSet" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclToken.TJwSecurityTokenStatistics" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclToken.TJwPrivilegeSetType" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclToken.TJwSaferComputeTokenResult" />
+    </reference>
+    <reference referencedUin="design:view:::prd8e6ptkcm_v">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="244,476,136,213" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclComUtils.@unitclass" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclComUtils.IJwAutoLock" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclComUtils.IJwAutoPointer" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclComUtils.TJwAutoPointer" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclComUtils.TJwAutoLock" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclComUtils.TJwAutoPointerImpl" />
+    </reference>
+    <reference referencedUin="design:view:::5wlq0lc077o_v">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="85,476,150,198" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclDesktops.TJwSecurityDesktops" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclDesktops.TJwSecurityDesktop" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclDesktops.TJwOnDestroyDesktop" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclDesktops.@unitclass" />
+    </reference>
+    <reference referencedUin="design:view:::29379f1b8rn_v">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="680,356,210,335" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclExceptions.TTaskDlgData" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclExceptions.TNewExceptHandler" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclExceptions.TJwExceptionConstructorType" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclExceptions.@unitclass" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclExceptions.EJwsclInvalidKnownSIDException" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclExceptions.PTaskDlgData" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclExceptions.EJwsclSecurityException" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclExceptions.EJwsclExceptionClass" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclExceptions.EJwsclSecurityExceptionClass" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclExceptions.TJwOnFormatExceptionMessage" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclExceptions.TJwExceptionMapping" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclExceptions.JwGeneralExceptionClass" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclExceptions.EJwsclProcNotFound" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclExceptions.TShowApplicationException" />
+    </reference>
+    <reference referencedUin="design:view:::1nf0xsfa2gp_v">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="680,710,213,211" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclSid.TSidAndAttributesArrayRecord" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclSid.TSidAndAttributesArrayTopRecord" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclSid.TStringRec" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclSid.PStringRec" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclSid.TJwSecurityIdList" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclSid.PSidAndAttributesArrayRecord" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclSid.@unitclass" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclSid.TJwSubAuthorityArray" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclSid.TJwSecurityId" />
+    </reference>
+    <reference referencedUin="design:view:::vxtke2ljkjq_v">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="501,727,176,183" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclDescriptor.TJwSecurityDescriptorArray" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclDescriptor.TJwSecurityDescriptor" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclDescriptor.TJwHashCodeMethod" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclDescriptor.@unitclass" />
+    </reference>
+    <reference referencedUin="design:view:::txalvs7qfah_v">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="322,727,173,196" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclStreams.TJwFileStreamEx" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclStreams.@unitclass" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclStreams.TJwIPCStream" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclStreams.TJwVirtualStream" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclStreams.TJwCustomMappedStream" />
+    </reference>
+    <reference referencedUin="design:view:::0p0ygfqxrwq_v">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="173,727,139,168" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclPrivileges.TJwPrivilegeScope" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclPrivileges.@unitclass" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclPrivileges.IJwPrivilegeScope" />
+    </reference>
+    <reference referencedUin="design:view:::sh0bvv54mwe_v">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="931,1,340,421" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclAcl.TJwDiscretionaryAccessControlEntryCallbackDeny" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclAcl.TJwAuditAccessControlEntry" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclAcl.TJwDiscretionaryAccessControlEntryDeny" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclAcl.TJwAuditAccessControlEntryCallback" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclAcl.TJwSecurityAccessControlEntryClass" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclAcl.TJwDiscretionaryAccessControlEntryAllow" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclAcl.TJwDAccessControlList" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclAcl.TJwSecurityACLPropertyArray" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclAcl.TJwDiscretionaryAccessControlEntryObjectDeny" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclAcl.TJwDiscretionaryAccessControlEntryObjectAllow" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclAcl.TJwSAccessControlList" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclAcl.TJwDiscretionaryAccessControlEntryCallbackAllow" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclAcl.TJwSystemMandatoryAccessControlEntry" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclAcl.TJwDiscretionaryAccessControlEntryCallbackObjectAllow" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclAcl.TJwAuditAccessControlEntryObject" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclAcl.TJwSecurityAccessControlEntry" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclAcl.TJwSecurityACLPropertyArrayItem" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclAcl.TJwAuditAccessControlEntryCallbackObject" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclAcl.@unitclass" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclAcl.TJwDiscretionaryAccessControlEntryCallbackObjectDeny" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclAcl.TJwSecurityAccessControlList" />
+    </reference>
+    <reference referencedUin="design:view:::h3arprhdagn_v">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="820,940,264,412" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclProcess.@unitclass" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclProcess.TJwOnNoActiveProcesses" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclProcess.TJwInternalJobObjectIOCompletitionThread" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclProcess.TJwLibraryUtilities" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclProcess.TJwCreateProcessParameters" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclProcess.ISafeLoadLibrarySection" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclProcess.PInternalProcessData" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclProcess.TJwProcessList" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclProcess.TJwProcessUtilities" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclProcess.TJwOnNewJobObject" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclProcess.TJwJobObject" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclProcess.TJwWaitState" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclProcess.TJwJobObjectSessionList" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclProcess.TInternalProcessData" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclProcess.TJwProcessOutputInformation" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclProcess.TSafeLoadLibrarySectionImpl" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclProcess.TJwCreateProcessInfo" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclProcess.TJwCreateProcessOut" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclProcess.TJwOnJobNotification" />
+    </reference>
+    <reference referencedUin="design:view:::rmzd47j0qj_v">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="24,727,147,151" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclCertificates.@unitclass" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclCertificates.TJwCertificate" />
+    </reference>
+    <reference referencedUin="design:view:::rf2nkmpg0rh_v">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="533,929,130,457" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclLogging.TJwXMLEventType" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclLogging.TJwMemoryType" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclLogging.TJwEventType" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclLogging.TJwLogServerImpl" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclLogging.TJwXMLAttributes" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclLogging.TJwLogWriter" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclLogging.TJwEnterType" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclLogging.TJwEventTypes" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclLogging.TJwLogType" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclLogging.TJwLogClientImpl" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclLogging.TThreadMapRecs" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclLogging.TJwSignalType" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclLogging.IJwWriterClass" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclLogging.TJwOnXMLWriting" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclLogging.TJwOnXMLWrite" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclLogging.TJwXMLAttribute" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclLogging.IJwLogServer" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclLogging.TJwXMLAttrTag" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclLogging.TJwXMLLogTag" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclLogging.TJwXMLTag" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclLogging.IJwLogClient" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclLogging.@unitclass" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclLogging.TThreadMapRec" />
+    </reference>
+    <reference referencedUin="design:view:::ifjjnpur2ij_v">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="820,1371,228,513" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclMapping.TJwSecurityGenericMappingClass" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclMapping.TJwSecurityServiceManagerMapping" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclMapping.TJwSecurityProcessMapping" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclMapping.TJwSecurityMutexMapping" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclMapping.TJwSecurityGenericMapping" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclMapping.TJwSecurityServiceMapping" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclMapping.TJwSecurityTokenMapping" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclMapping.TJwSecurityFileMapMapping" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclMapping.TJwSecurityEventMapping" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclMapping.TJwSecurityFileMapping" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclMapping.TJwSecurityPrinterMapping" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclMapping.TJwNullMapping" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclMapping.TJwSecurityUserMapping" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclMapping.TJwSecurityRegistryMapping" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclMapping.TJwSecurityThreadMapping" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclMapping.TJwSecurityTimerMapping" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclMapping.TJwSecuritySemaphoreMapping" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclMapping.TJwSecurityFileFolderMapping" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclMapping.TJwSecurityPipeMapping" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclMapping.TJwSecurityWinStationMapping" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclMapping.TJwSecurityDesktopMapping" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclMapping.@unitclass" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclMapping.TJwSecurityShareMapping" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclMapping.TJwOnGetAccessText" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclMapping.TJwSecurityJobMapping" />
+    </reference>
+    <reference referencedUin="design:view:::za82n56jljq_v">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="1309,1,232,258" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclAuthCtx.TJwCallbackData" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclAuthCtx.TJwOnAuthzComputeGroupsCallback" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclAuthCtx.TJwAuthZAccessReply" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclAuthCtx.TJwAuthResourceManager" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclAuthCtx.TJwOnAuthzAccessCheckCallback" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclAuthCtx.@unitclass" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclAuthCtx.TJwAuthContext" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclAuthCtx.PJwCallbackData" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclAuthCtx.TJwAuthZAccessRequest" />
+    </reference>
+    <reference referencedUin="design:view:::cqlgi8tpirp_v">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="931,441,162,151" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclEnumerations.@unitclass" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclEnumerations.TJwEnumMap" />
+    </reference>
+    <reference referencedUin="design:view:::y0zjnwc7mk_v">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="931,611,149,211" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclVersion.TJwSystemInformation" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclVersion.TJwServerInfo" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclVersion.TJwFileVersion" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclVersion.TJwWindowsVersion" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclVersion.@unitclass" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclVersion.TJwShellInformation" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclVersion.TOSVersionInfoEx" />
+    </reference>
+    <reference referencedUin="design:view:::cv0c3311erk_v">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="33,914,286,1702" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwWindowsVersionDefinitionCallback" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwSiAccessArray" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwProtectMemoryFlagSet" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwEqualAceType" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwValidObjectTypes" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwSecurityDialogFlags" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwProcessId" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwTempResetEnum" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwProcessorFeature" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwSidAttributeSet" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwSecurityCapabilities" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwProfileInfo" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwElevationProcessFlags" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TCardinalE" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwLastError" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwValidObjectType" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwAceFlag" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwOnElevationGetCredentials" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwFileHashData" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwKeyHandle" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwSessionId" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TAuthZSidContextFlag" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.PJwWindowsVersionDefinition" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.PAce" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwExclusionFlags" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwAceType" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwSecurityInformationFlagSet" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwJobMessage" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.jwaWindows_PACL" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwAuthenticationServiceInformation" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwCopyFlag" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwIntegerArray" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwCredentialFlag" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwAuthZResourceManagerFlags" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwSharedHandle" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwCardinalArray" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwComAuthenticationService" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwPrivCheck" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwJobUiLimits" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwState" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwComRotFlag" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwSecurityDesktopFlag" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwServicePackVersion" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwComAuthenticationCapability" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwShellRestriction" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwProcessorFeatures" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwExclusionFlag" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwAccessMaskArray" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TTrusteeEx" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwIntegrityLabelType" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwTokenHandle" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwSecurityResetType" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwCredentialFlagSet" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwEnumAlgorithmsEntry" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwDEPProcessPolicy" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwRootKeyEnum" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwSecurityDescriptorControlSet" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwSecurityPackageCapabilities" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwSidInfoRecord" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwAceFlags" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwEnumAlgorithms" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwShellFolderType" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwAuthenticationServiceInformationArray" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwObjectTypeArray" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwAccessControlListType" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.@unitclass" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwArrayBounds" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwCryptProtectFlagSet" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwRootTuple" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwTempResetEnumSet" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwSaferLevelId" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwComImpersonationLevel" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwWindowsVersionDefinitionFlag" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwHashAlgorithm" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TAuthZSidContextFlags" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwMandatoryPolicyFlagSet" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwCSPCreationFlag" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwGetMemBlob" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwDEPSystemPolicy" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwSecurityObjectInformationFlag" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwSecurityDescriptorControl" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwInclusionFlag" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwInheritedFromArrayEx" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwSidInfoRecordArray" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwSecurityResetTypes" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwGetInheritFlagsType" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwEncryptionAlgorithm" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwComAuthenticationLevel" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TAce" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwShellExecuteFlag" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwHandles" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwJobLimits" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwProtectMemoryFlag" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwComRotFlags" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwVersion" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwReplyErrorEnum" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwGetAccessCheckType" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwInclusionFlags" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwSecurityObjectInformationFlagSet" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwCSPCreationFlagSet" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwSecurityDialogFlag" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.PJwGetMemBlob" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwSidAttributesStringArray" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwComAppIdRegFlags" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwReplyErrorEnumArray" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwACLProtection" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwProcessParameterType" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwAccessMask" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwExplicitAccess" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwDEPPolicy" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwTokenMandatoryPolicy" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwStringArray" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.jwaWindows_PSecurity_Descriptor" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwSecurityObjectInformation" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwCryptProtectOnPromptFlag" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwKeyExportKind" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwRightType" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwPointerType" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TWellKnownSidTypeSet" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwEqualAceTypeSet" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwGetAccessCheckTypeSet" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwCryptProtectOnPromptFlagSet" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwSecurityPageType" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwKeyFlagSet" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwMemoryType" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwInheritedFromRecord" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwHashHandle" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwSecurityPackageInformation" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwRootRegKey" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwSecurityInformationFlag" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwCSPType" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwProductType" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwLuidArray" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwFileVersionInfo" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwProfileMembers" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwRightsMapping" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwRequestedTokenType" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.IJwBase" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwExplicitAccessArray" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwTokenMandatoryPolicies" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwCSPHandle" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwCryptProtectFlag" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwSecurityPackageCapability" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwSystemBootType" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwShellRestrictions" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwKeyPairType" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwProfileMember" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwKeyRootTupleArray" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwSecurityDesktopFlags" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwMandatoryPolicy" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwGuidArray" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwWindowsVersionDefinitionFlags" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwSidAttribute" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwAuthZResourceManagerFlag" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwEnumProviderEntry" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwProcessorArchitecture" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwInheritedFromArray" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwComAuthenticationCapabilities" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.jwaWindows_PSID" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwTokenAccessMask" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwSecurityPackageInformationArray" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwDesktopCreationFlag" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwWindowsVersionDefinition" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwShellExecuteFlags" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwACLProtectionState" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwInheritFlagSet" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwJobLimit" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwJobTermination" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwProcessHandle" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwInheritFlag" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwComAuthorizationService" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwJobUiLimit" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwSidClassName" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwComAppIdRegFlag" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwProgInvokeSetting" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwElevationProcessFlag" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwKeyFlag" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwSecurityCapability" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwEnumProviderArray" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwTreeSetType" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwThreadHandle" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwSuRunStatus" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwJobMessages" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwUserDataCopy" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTypes.TJwProcessorCountType" />
+    </reference>
+    <reference referencedUin="design:view:::hu64c0u59cm_v">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="1309,278,314,380" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclSecureObjects.PThreadData" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclSecureObjects.TJwFnProgressProcedure" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclSecureObjects.TJwSecureGeneralObject" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclSecureObjects.TJwSecureObjectType" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclSecureObjects.TJwSecureFileObject" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclSecureObjects.TThreadData" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclSecureObjects.PFNProgressRecord" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclSecureObjects.TJwTagThread" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclSecureObjects.TWow64RevertWow64FsRedirection" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclSecureObjects.TJwOnGetNamedSecurityInfo" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclSecureObjects.TJwSecureBaseClass" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclSecureObjects.TWow64DisableWow64FsRedirection" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclSecureObjects.TFNProgressRecord" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclSecureObjects.TJwSecureRegistryKey" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclSecureObjects.TJwOnThreadExecute" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclSecureObjects.@unitclass" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclSecureObjects.TJwFnProgressMethod" />
+    </reference>
+    <reference referencedUin="design:view:::0x5oi01mddi_v">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="681,961,138,134" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclResource.@unitclass" />
+    </reference>
+    <reference referencedUin="design:view:::x4a3hp96b0r_v">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="354,961,169,151" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclElevation.@unitclass" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclElevation.TJwElevationClassFactory" />
+    </reference>
+    <reference referencedUin="design:view:::69hof0ytorp_v">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="1122,677,187,410" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTerminalServer.PJwWTSSessionInfoAArray" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTerminalServer.TJwWTSSessionInfoAArray" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTerminalServer.TJwWTSSessionShadow" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTerminalServer.TJwWtsServerInfoAArray" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTerminalServer.TJwWTSSessionList" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTerminalServer.TJwWtsServerInfoWArray" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTerminalServer.TJwWTSProcessList" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTerminalServer.TJwSessionsEnumerator" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTerminalServer.TJwWTSEventThread" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTerminalServer.PJwWtsServerInfoAArray" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTerminalServer.TJwWTSSession" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTerminalServer.TJwWTSProcess" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTerminalServer.PJwWTSSession" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTerminalServer.PJwTerminalServerList" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTerminalServer.PJwWTSProcessInfoAArray" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTerminalServer.PJwWTSSessionList" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTerminalServer.TJwTerminalServerList" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTerminalServer.TJwWTSSessionStatistics" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTerminalServer.TJwShadowMode" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTerminalServer.TJwWTSSessionInfoWArray" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTerminalServer.PJwWtsServerInfoWArray" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTerminalServer.TJwTerminalServer" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTerminalServer.TJwWTSEnumServersThread" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTerminalServer.PJwWTSProcessList" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTerminalServer.@unitclass" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTerminalServer.PJwWTSProcessInfoWArray" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTerminalServer.TCachedUser" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTerminalServer.PJwWTSSessionInfoWArray" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTerminalServer.TJwProcessEnumerator" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTerminalServer.TJwWTSProcessInfoAArray" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTerminalServer.PJwTerminalServer" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTerminalServer.TJwShadowState" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTerminalServer.TJwOnProcessFound" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclTerminalServer.TJwWTSProcessInfoWArray" />
+    </reference>
+    <reference referencedUin="design:view:::dc14xzfnbjk_v">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="1309,1106,128,151" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclFirewall.TJwsclFirewall" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclFirewall.@unitclass" />
+    </reference>
+    <reference referencedUin="design:view:::c533tg1g3ql_v">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="1122,1276,188,412" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclComSecurity.TJwComProcessSecurity" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclComSecurity.TJwComRegistrySecurity" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclComSecurity.TJwComCustomSecurity" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclComSecurity.TJwCOMSecuritySettings" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclComSecurity.TJwComServerSecurity" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclComSecurity.TJwFacilityType" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclComSecurity.TJwIsAccessAllowed" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclComSecurity.@unitclass" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclComSecurity.IJwComServerSecurity" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclComSecurity.TJwAuthenticationInfo" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclComSecurity.TJwComWinNTIdentity" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclComSecurity.TJwServerAccessControl" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclComSecurity.TJwComClientSecurity" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclComSecurity.PJwSecurityInitializationData" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclComSecurity.TJwAuthenticationInfoList" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclComSecurity.TJwServerImpersonationType" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclComSecurity.TMagicHeaderRecord" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclComSecurity.TJwPersistStreamType" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclComSecurity.TJwSecurityInitializationData" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclComSecurity.TPtrPointer" />
+    </reference>
+    <reference referencedUin="design:view:::pi3zwtrbe5i_v">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="1309,1707,164,168" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclImpersonation.IJwImpersonation" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclImpersonation.TJwImpersonation" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclImpersonation.@unitclass" />
+    </reference>
+    <reference referencedUin="design:view:::dcbyuose70k_v">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="931,1903,170,196" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclLsa.TJwLsaLogonSessionData" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclLsa.TJwEnumerationInformation" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclLsa.TJwLsaPolicy" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclLsa.TJwSecurityLsa" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclLsa.TJwAccountRightStringW" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclLsa.TJwLsaLogonSession" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclLsa.@unitclass" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclLsa.TJwLogonSessionArray" />
+    </reference>
+    <reference referencedUin="design:view:::b1jj0i2ngzm_v">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="1309,1894,131,151" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclRegistry.@unitclass" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclRegistry.TJwRegistry" />
+    </reference>
+    <reference referencedUin="design:view:::7kio8muymal_v">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="1309,2064,112,134" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclMain.@unitclass" />
+    </reference>
+    <reference referencedUin="design:view:::i0n24vmp6kj_v">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="1309,2217,247,380" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclSecurityDialogs.ISecurityObjectTypeInfoW" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclSecurityDialogs.PJwMsgRec" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclSecurityDialogs.TJwOnSetSecurity" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclSecurityDialogs.TJwOnInitSecurityPageDestroy" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclSecurityDialogs.TJwOnInitSecurityDialog" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclSecurityDialogs.TJwOnGetInheriteSource" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclSecurityDialogs.TJwSecurityDescriptorDialog" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclSecurityDialogs.TOnJwIsDaclCanonical" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclSecurityDialogs.TJwOnInitSecurityPageCreate" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclSecurityDialogs.@unitclass" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclSecurityDialogs.TJwMsgRec" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclSecurityDialogs.TJwSidInfoDataObject" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclSecurityDialogs.TJwInheritTypeList" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclSecurityDialogs.TJwOnLookupSIDs" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclSecurityDialogs.TJwOnGetEffectivePermissions" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclSecurityDialogs.TJwOnGetSecurity" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclSecurityDialogs.TJwOnWindowProcCallBack" />
+    </reference>
+    <reference referencedUin="design:view:::yidgsb20e7h_v">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="931,2118,174,196" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclEncryption.TJwEncryptData" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclEncryption.@unitclass" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclEncryption.TJwEncryptionApi" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclEncryption.TJwRandomDataGenerator" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclEncryption.TJwEncryptMemory" />
+    </reference>
+    <reference referencedUin="design:view:::xlvqetrcwjh_v">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="1309,2616,141,134" />
+      <reference referencedUin="delphi:e_class:src:JwsclMain:JwsclConstants.@unitclass" />
+    </reference>
+  </view>
+</nodeSet>

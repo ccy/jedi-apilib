@@ -48,6 +48,8 @@ Full URL to the latest version of the file in the repository.       \$HeadURL$
 unit JwsclEurekaLogUtils;
 {$INCLUDE ..\includes\Jwscl.inc}
 
+{$WARNINGS ON}
+
 interface
 uses
   Classes,
@@ -220,7 +222,7 @@ begin
     end;
   except
     on E : Exception do
-      OutputDebugStringA(PChar('Could not get version information: '+E.Message));
+      OutputDebugStringA(PAnsiChar(AnsiString('Could not get version information: '+E.Message)));
   end;
 end;
 

@@ -1,49 +1,68 @@
-{ Description
-  Project JEDI Windows Security Code Library (JWSCL)
+{
+Description
+Project JEDI Windows Security Code Library (JWSCL)
 
-  Contains Windows account control classes - Not implemented yet
+Contains Windows account control classes - Not implemented yet
 
-  <b>Not implemented yet</b>
-  Author
-  Christian Wimmer
-  License
-  The contents of this file are subject to the Mozilla Public License Version 1.1
-  (the "License"); you may not use this file except in compliance with the
-  \License. You may obtain a copy of the License at http://www.mozilla.org/MPL
+<b>Not implemented yet</b>
+Author
+Christian Wimmer
+License
+The contents of this file are subject to the Mozilla Public License Version 1.1
+(the "License"); you may not use this file except in compliance with the
+\License. You may obtain a copy of the License at http://www.mozilla.org/MPL
 
-  Software distributed under the License is distributed on an "AS IS" basis,
-  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for the
-  specific language governing rights and limitations under the License.
+Software distributed under the License is distributed on an "AS IS" basis,
+WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for the
+specific language governing rights and limitations under the License.
 
-  Alternatively, the contents of this file may be used under the terms of the GNU
-  Lesser General Public License (the "LGPL License"), in which case the provisions
-  of the LGPL License are applicable instead of those above. If you wish to allow
-  use of your version of this file only under the terms of the LGPL License and
-  not to allow others to use your version of this file under the MPL, indicate
-  your decision by deleting the provisions above and replace them with the notice
-  and other provisions required by the LGPL License. If you do not delete the
-  provisions above, a recipient may use your version of this file under either the
-  MPL or the LGPL License.
+Alternatively, the contents of this file may be used under the terms of the GNU
+Lesser General Public License (the "LGPL License"), in which case the provisions
+of the LGPL License are applicable instead of those above. If you wish to allow
+use of your version of this file only under the terms of the LGPL License and
+not to allow others to use your version of this file under the MPL, indicate
+your decision by deleting the provisions above and replace them with the notice
+and other provisions required by the LGPL License. If you do not delete the
+provisions above, a recipient may use your version of this file under either the
+MPL or the LGPL License.
 
-  For more information about the LGPL: <i>http://www.gnu.org/copyleft/lesser.html</i>
+For more information about the LGPL: <i>http://www.gnu.org/copyleft/lesser.html</i>
 
 
-  Note
-  The Original Code is JwsclAccounts.pas.
+Note
+The Original Code is JwsclAccounts.pas.
 
-  The Initial Developer of the Original Code is Christian Wimmer. Portions created
-  by Christian Wimmer are Copyright (C) Christian Wimmer. All rights reserved.
-                                                                                      }
+The Initial Developer of the Original Code is Christian Wimmer. Portions created
+by Christian Wimmer are Copyright (C) Christian Wimmer. All rights reserved.
+
+Version
+The following values are automatically injected by Subversion on commit.
+<table>
+\Description                                                        Value
+------------------------------------------------------------------  ------------
+Last known date the file has changed in the repository              \$Date$
+Last known revision number the file has changed in the repository   \$Revision$
+Last known author who changed the file in the repository.           \$Author$
+Full URL to the latest version of the file in the repository.       \$HeadURL$
+</table>
+}
 {$IFNDEF SL_OMIT_SECTIONS}
 unit JwsclAccounts;
 {$INCLUDE ..\includes\Jwscl.inc}
-// Last modified: $Date: 2007-09-10 10:00:00 +0100 $
-//do not move header comment from above unit declaration!
+
+{$WARNINGS ON}
+
+{$IFNDEF DEBUG}
+  {$MESSAGE FAIL 'File JwsclAccounts.pas is not intended for usage. It is under development'}
+{$ELSE}
+  {$MESSAGE WARN 'File JwsclAccounts.pas is not intended for usage. It is under development'}
+{$ENDIF}
+
 
 interface
 
 uses
-  SysUtils, Contnrs,
+  SysUtils, Contnrs, Classes,
   jwaWindows,
   JwsclTypes, JwsclExceptions, JwsclAcl, JwsclSid,
   JwsclVersion, JwsclConstants,
@@ -53,38 +72,6 @@ uses
 
 {$IFNDEF SL_IMPLEMENTATION_SECTION}
 
-const
-  IDXN_Name     = 1;
-  IDXN_FullName = 2;
-  IDXN_Comment   = 3;
-  IDXN_HomeDirectory = 4;
-  IDXN_Parameters   = 5;
-  IDXN_LogonServer = 6;
-  IDXN_ProfilePath = 7;
-  IDXN_HomeDirDrive = 8;
-  IDXN_UserComment = 9;
-  IDXN_ScriptPath = 10;
-
-  IDXN_Flags = 101;
-  IDXN_PrivilegeLevel = 102;
-  IDXN_AuthFlagLevel = 102;
-
-
-  IDXN_BadPasswordCount = 201;
-  IDXN_LogonCount       = 202;
-  IDXN_CountryCode      = 203;
-  IDXN_MaxStorage       = 204;
-  IDXN_UnitsPerWeek     = 205;
-  IDXN_CodePage         = 206;
-
-  IDXN_PrimaryGroupdSid = 301;
-  IDXN_SID              = 302;
-
-  IDXN_PasswordAge      = 401;
-  IDXN_LastLogoff       = 402;
-  IDXN_AccountExpires   = 403;
-
-  IDXN_PasswordExpired = 501;
 
 type
   TJwUserAccount = class;
@@ -133,25 +120,32 @@ type
     uatInterDomainTrust//UF_INTERDOMAIN_TRUST_ACCOUNT
     );
 
+  TJwPrivilegeLevel = (
+     plGuest = USER_PRIV_GUEST,
+     plUser,
+     plAdmin
+    );
+
   TJwWorkStations = array of WideString;
 
-  TJwWeekDay = (wdMonday, wdTuesday, wdWednesday, wdThursday, wdFriday, wdSaturday, wdSunday);
+  TJwWeekDay = (wdMonday = 1, wdTuesday, wdWednesday, wdThursday, wdFriday, wdSaturday, wdSunday);
+  TJwGMT = -12..12;
+  TJwHour = 0..23;
+  TJwLogonHours = array[0..20] of Byte;
 
-  TJwLogonHours = array[TJwWeekDay, 0..24] of Boolean;
 
   TJwUserInfoLevel = Byte;
   TJwByteSet = set of TJwUserInfoLevel;
 
+  TDateHour = record
+    Hour : ShortInt;
+    case Boolean of
+      true  : (Day : TJwWeekDay);
+      false : (DayI : Integer);
+  end;
 
-
-  {<B>TJwUserAccount</B> is not implemented yet}
-  TJwUserAccount = class(TObject)
-  private
-
-  public
-  //protected
-    fLevel : TJwUserInfoLevel; //level für infos
-
+  TJwBaseAccount = class
+{$IFDEF UNITTEST}public{$ELSE}protected{$ENDIF}
     fUserName,
     fServerName : TJwString;
 
@@ -165,7 +159,7 @@ type
     fSID : TJwSecurityID;
 
     //11
-    fPrivilegeLevel : DWORD; //  DWORD usri11_priv;
+    fPrivilegeLevel : TJwPrivilegeLevel; //  DWORD usri11_priv;
     fAuthFlagLevel : DWORD; // DWORD usri11_auth_flags;
     fPasswordAge : TDateTime;// DWORD usri11_password_age;
     fHomeDirectory : TJwString; // LPWSTR usri11_home_dir;
@@ -179,10 +173,9 @@ type
     fWorkstations : TJwWorkStations; //LPWSTR usri11_workstations;
     fMaxStorage : DWORD; //DWORD usri11_max_storage;
     fUnitsPerWeek : DWORD; // DWORD usri11_units_per_week;
-    fLogonHours : TJwLogonHours; //PBYTE usri11_logon_hours;
+    fLogonHours : PByte; //PBYTE usri11_logon_hours;
     fCodePage : DWORD; //DWORD usri11_code_page;
     fScriptPath : TJwString; //usri1_script_path;
-
 
     //4
     fAccountExpires : TDateTime; //DWORD usri4_acct_expires;
@@ -191,64 +184,116 @@ type
     //DWORD usri4_country_code;
     //DWORD usri4_code_page;
     //PSID usri4_user_sid;
-    fPrimaryGroupdSid : TJwSecurityId; //DWORD usri4_primary_group_id;
+    fPrimaryGroupdSid : Cardinal; //DWORD usri4_primary_group_id;
     fProfilePath : TJwString; //LPWSTR usri4_profile;
     fHomeDirDrive : TJwString;//LPWSTR usri4_home_dir_drive;
     fPasswordExpired : Boolean; //DWORD usri4_password_expired;
 
-    function GetSID(Index : Integer) : TJwSecurityID;
-    function GetDWORD(Index : Integer) : DWORD;
-    function GetBoolean(Index : Integer) : Boolean;
-    function GetDateTime(Index : Integer) : TDateTime;
-    function GetString(Index : Integer) : TJwString;
-    function GetWorkStations(Index : Integer) : TJwWorkStations;
-    function GetLogonHours(Index : Integer) : TJwLogonHours;
-    function GetAccountType(Index : Integer) : TJwUserAccountType;
+    fGMT : TJwGMT;
+
+{$IFDEF UNITTEST}public{$ELSE}protected{$ENDIF}
+    //converts bit number (0..167) to (date, hour) tuple
+    function BitToDateHour(Bits : PBYTE; BitNo : Byte) : TDateHour;
+    //converts (date, hour) tuple to bit number (0..167)
+    function DateHourToBit(DateHour : TDateHour) : Byte;
+
+    //returns bit from Bits at position BitNo (0..167)
+    function GetByteToBit(BitNo : Byte; Bits : PByte) : Boolean;
+    //sets bit in Bits at position BitNo (0..167) and returns previous value
+    function SetByteToBit(BitNo : Byte; var Bits : PByte; Value : Boolean) : Boolean;
+
+    //adds (or subtracts) a GMT to a (date, hour) tuple. GMT can be negative
+    Function AddGmt(DateHour : TDateHour; Gmt: Integer): TDateHour;
+
+    //returns bit value in Bits for a (date, hour) tuple and additional GMT
+    function GetDateHour(Bits : PBYTE; DateHour : TDateHour; Gmt : ShortInt) : Boolean; overload;
+    function GetDateHour(Bits : PBYTE; Day : TJwWeekDay; Hour : Byte; Gmt : ShortInt) : Boolean; overload;
+
+    //Sets bit value in Bits for a (date, hour) tuple and additional GMT and returns previous value
+    function SetDateHour(Bits : PBYTE; DateHour : TDateHour; Gmt : ShortInt; Value : Boolean) : Boolean; overload;
+    function SetDateHour(Bits : PBYTE; Day : TJwWeekDay; Hour : Byte; Gmt : ShortInt; Value : Boolean) : Boolean; overload;
+
+    //returns bit value from fLogonHours for a (date, hour) tuple and GMT property
+    //fLogonHours must be SAM_HOURS_PER_WEEK; otherwise raises EJwsclUnsupportedException
+    function GetLogonHour(Day: TJwWeekDay; Hour: TJwHour): Boolean;
+    //Sets bit value in fLogonHours for a (date, hour) tuple and GMT property
+    //fLogonHours must be SAM_HOURS_PER_WEEK; otherwise raises EJwsclUnsupportedException
+    procedure SetLogonHour(Day: TJwWeekDay; Hour: TJwHour; const Value: Boolean);
+
+    procedure UpdateLogonHoursProperty(logon_hours : PByte);
+
+    function GetGMT: TJwGMT;
+    procedure SetGMT(const Value: TJwGMT);
+
+    function UnixTimeToDateTime(const Seconds : DWORD) : TDateTime;
+    function DateTimeToUnixTime(const Time : TDateTime) : DWORD;
+
+    procedure RaiseOnInvalidLogonHours;
+
+
+
   public
     constructor Create;
+    destructor Destroy; override;
 
-    procedure Update(const Level : TJwUserInfoLevel = 0);
-
-    property Level : TJwUserInfoLevel read fLevel;
-    property Name : TJwString     index IDXN_Name read GetString;
-    property FullName : TJwString index IDXN_FullName read GetString;
-    property Comment : TJwString  index IDXN_Comment read GetString;
-    property UserComment : TJwString  index IDXN_UserComment read GetString;
+  public
+    procedure ResetLogonHours(const Pattern : Byte); overload;
+    procedure ResetLogonHours(const Value : TJwLogonHours); overload;
+    procedure ResetLogonHours(const Allowed : Boolean); overload;
 
 
-    property HomeDirectory : TJwString  index IDXN_HomeDirectory read GetString;
-    property Parameters : TJwString  index IDXN_Parameters read GetString;
-    property LogonServer : TJwString  index IDXN_LogonServer read GetString;
-    property ProfilePath : TJwString  index IDXN_ProfilePath read GetString;
-    property HomeDirDrive : TJwString  index IDXN_HomeDirDrive read GetString;
+    property LogonHours[Day : TJwWeekDay; Hour : TJwHour] : Boolean read GetLogonHour write SetLogonHour;
+    property GMT : TJwGMT read GetGMT write SetGMT;
 
-    property Flags : DWORD index IDXN_Flags read GetDWORD;
-    property PrivilegeLevel : DWORD index IDXN_PrivilegeLevel read GetDWORD;
-    property AuthFlagLevel : DWORD index IDXN_AuthFlagLevel read GetDWORD;
 
-    property BadPasswordCount : DWORD index IDXN_BadPasswordCount read GetDWORD;
-    property LogonCount : DWORD index IDXN_LogonCount read GetDWORD;
-    property CountryCode : DWORD index IDXN_CountryCode read GetDWORD;
-    property MaxStorage : DWORD index IDXN_MaxStorage read GetDWORD;
-    property UnitsPerWeek : DWORD index IDXN_UnitsPerWeek read GetDWORD;
-    property CodePage : DWORD index IDXN_CodePage read GetDWORD;
-
-    property SID : TJwSecurityID index IDXN_Sid read GetSID;
-    property PrimaryGroupdSid : TJwSecurityID index IDXN_PrimaryGroupdSid read GetSID;
-
-    property PasswordAge : TDateTime index IDXN_PasswordAge read GetDateTime;
-    property LastLogoff : TDateTime index IDXN_LastLogoff read GetDateTime;
-    property AccountExpires : TDateTime index IDXN_AccountExpires read GetDateTime;
-
-    property PasswordExpired : Boolean index IDXN_PasswordExpired read GetBoolean;
-
-    property ScriptPath : TJwString index IDXN_ScriptPath read GetString;
-
+//  protected
+//    property UserName : TJwString read fUserName write fUserName;
+//    property ServerName : TJwString read fServerName write fServerName;
+//
+//    property Name : TJwString read fName write fName;
+//    property Comment : TJwString read fComment write fComment;
+//    property UserComment : TJwString read fUserComment write fUserComment;
+//    property FullName : TJwString read fFullName write fFullName;
+//
+//    property Flags : DWORD read fFlags write fFlags;
+//    property AccountType : TJwUserAccountType read fAccountType write fAccountType;
+//    property SID : TJwSecurityID read fSID write fSID;
+//
+//    //11
+//    property PrivilegeLevel : TJwPrivilegeLevel read fPrivilegeLevel write fPrivilegeLevel;//  DWORD usri11_priv;
+//    property AuthFlagLevel : DWORD read fAuthFlagLevel write fAuthFlagLevel; // DWORD usri11_auth_flags;
+//    property PasswordAge : TDateTime read fPasswordAge write fPasswordAge;// DWORD usri11_password_age;
+//    property HomeDirectory : TJwString read fHomeDirectory write fHomeDirectory; // LPWSTR usri11_home_dir;
+//    property Parameters : TJwString read fParameters write fParameters; // LPWSTR usri11_parms;
+//    property LastLogon : TDateTime read fLastLogon write fLastLogon; //DWORD usri11_last_logon;
+//    property LastLogoff : TDateTime read fLastLogoff write fLastLogoff; //DWORD usri11_last_logoff;
+//    property BadPasswordCount : DWORD read fBadPasswordCount write fBadPasswordCount; //  DWORD usri11_bad_pw_count;
+//    property LogonCount : DWORD read fLogonCount write fLogonCount; //DWORD usri11_num_logons;
+//    property LogonServer : TJwString read fLogonServer write fLogonServer; // LPWSTR usri11_logon_server;
+//    property CountryCode : DWORD read fCountryCode write fCountryCode; //DWORD usri11_country_code;
+//    property Workstations : TJwWorkStations read fWorkstations write fWorkstations; //LPWSTR usri11_workstations;
+//    property MaxStorage : DWORD read fMaxStorage write fMaxStorage; //DWORD usri11_max_storage;
+//    property UnitsPerWeek : DWORD read fUnitsPerWeek write fUnitsPerWeek; // DWORD usri11_units_per_week;
+//    property LogonHours : TJwLogonHours read fLogonHours write fLogonHours; //PBYTE usri11_logon_hours;
+//    property CodePage : DWORD read fCodePage write fCodePage; //DWORD usri11_code_page;
+//    property ScriptPath : TJwString read fScriptPath write fScriptPath; //usri1_script_path;
+//
+//    //4
+//    property AccountExpires : TDateTime read fAccountExpires write fAccountExpires; //DWORD usri4_acct_expires;
+//    //DWORD usri4_num_logons;
+//    //LPWSTR usri4_logon_server;
+//    //DWORD usri4_country_code;
+//    //DWORD usri4_code_page;
+//    //PSID usri4_user_sid;
+//    property PrimaryGroupdSid : Cardinal read fPrimaryGroupdSid write fPrimaryGroupdSid; //DWORD usri4_primary_group_id;
+//    property ProfilePath : TJwString read fProfilePath write fProfilePath; //LPWSTR usri4_profile;
+//    property HomeDirDrive : TJwString read fHomeDirDrive write fHomeDirDrive;//LPWSTR usri4_home_dir_drive;
+//    property PasswordExpired : Boolean read fPasswordExpired write fPasswordExpired; //DWORD usri4_password_expired;       }
   end;
 
 
 
-type
+
   {<B>TJwGroupAccount</B> is not implemented yet}
   TJwGroupAccount = class(TObject)
   public
@@ -274,8 +319,17 @@ type
 
   end;
 
+  {<B>TJwUserAccount</B> is not implemented yet}
+  TJwUserAccount = class(TJwBaseAccount)
+  private
+    procedure Update;
+    procedure Apply;
+  public
+    constructor Create(const ServerName, UserName : TJwString);
+  end;
 
-{TODO: do testing!} 
+
+{TODO: do testing!}
 
 {!<B>JwHasAccountPassword</B> checks whether a given account on a given computer or domain
 has an empty password.
@@ -299,12 +353,14 @@ function JwHasAccountPassword(
 {$IFNDEF SL_OMIT_SECTIONS}
 implementation
 
-uses Variants;
+uses Variants, Math;
 
 {$ENDIF SL_OMIT_SECTIONS}
 
 {$IFNDEF SL_INTERFACE_SECTION}
 
+const
+  LOGONHOURSSIZE = sizeof(TJwLogonHours);
 
 {
 Level Table for available TJwUserAccount properties
@@ -369,229 +425,403 @@ end;
 {$IFNDEF SL_OMIT_SECTIONS}
 { TJwUserAccount }
 
-procedure CheckSupportedLevels(const Level : TJwUserInfoLevel; const Str : String; const SupportLevels : TJwByteSet);
+
+constructor TJwUserAccount.Create(const ServerName, UserName : TJwString);
 begin
-  if not (Level in SupportLevels) then
-    raise Exception.CreateFmt('Current Level %d does not support "%s" property',[Integer(Level), Str]);
+  fUserName := UserName;
+  fServerName := ServerName;
+
+  Update();
 end;
 
-function GetVal(const Level : TJwUserInfoLevel; Index : Integer; const B : array of const) : Variant;
-var i,i2 : Integer;
-  S : TJwByteSet;
-  Str : String;
-begin
-  if B[Low(B)].VVariant <> nil then
-    result := B[Low(B)].VVariant^
-  else
-    result := Null;
+procedure TJwUserAccount.Update();
 
-
-  i := Low(B)+1;
-  while i < High(B) do
+  function ByteToBit(BitNo : Byte; Bits : PByte) : Boolean;
+  var I : Byte;
   begin
-    begin
-      //get a set of allowed levels
-      S := [];
-      i2 := i+2;
-      while (i2 < High(B)) and (B[i2].VType = vtInteger) and (B[i2].VInteger >= 0) do
-      begin
-        Include(S, TJwUserInfoLevel(B[i2].VInteger));
-        Inc(i2);
-      end;
-
-      //get in here only if the index is correct
-      if (i2 <= High(B)) and (B[i2].VType in [vtString, vtAnsiString]) and
-         (B[i].VInteger = Index) then
-      begin
-        if not (Level in S) then
-        begin
-          case B[i2].VType of
-            vtAnsiString : Str := AnsiString(B[i2].VAnsiString);
-            vtWideString : Str := WideString(B[i2].VWideString);
-            vtString : Str := B[i2].VString^;
-          else
-            Str := 'unknown';
-          end;
-
-          CheckSupportedLevels(Level, Str, S);
-        end;
-
-        {case B[i+1].VType of
-          vtAnsiString : result := AnsiString(B[i+1].VAnsiString);
-          vtWideString : result := WideString(B[i+1].VWideString);
-          vtString : result := B[i+1].VString^;
-        end;  }
-        result := B[i+1].VVariant^;
-      end;
-
-      if B[i].VInteger = Index then
-        Break
-      else
-        i := i2+1; //get to the index after the property name index
-    end;
+    I := Byte(BitNo div 8);
+    Inc(Bits, I);
+    BitNo := BitNo - (I*8);
+    result := (Bits^ and (1 shl BitNo)) = (1 shl BitNo);
   end;
 
-  if result = null then
-    raise Exception.CreateFmt('Could not find property for index %d',[Index]);
-end;
+  function ResultDateTime(const Seconds : DWORD) : TDateTime;
+  begin
+    if Seconds = 0 then
+      result := NaN
+    else
+      result := UnixTimeToDateTime(Seconds);
+  end;
 
+  function IsAccount(const Value, Bit : DWORD) : Boolean;
+  begin 
+    result := (Value and Bit) = Bit;    
+  end;
 
-constructor TJwUserAccount.Create;
-begin
-  fLevel := 4;
-  fName := 'fName';
-  fFullName := 'fFullName';
-  fComment := 'fComment';
-  fFlags := 2;
-  fPrivilegeLevel := 3;
-  //fPrimaryGroupdSid := TJwSecurityId.Create('','Christian');
-  fLastLogoff := Now;
-end;
-
-function TJwUserAccount.GetAccountType(Index: Integer): TJwUserAccountType;
-begin
-  CheckSupportedLevels(Level, 'AccountType', [1,2,3,4,20,22,23]);
-  result := fAccountType;
-end;
-
-function TJwUserAccount.GetBoolean(Index: Integer): Boolean;
-begin
-  result := GetVal(Level, Index,
-    [Variant(false),
-     IDXN_PasswordExpired,    Variant(fPasswordExpired), 3,4, 'PasswordExpired'
-    ]);
-end;
-
-function TJwUserAccount.GetDateTime(Index: Integer): TDateTime;
-var N : TDateTime;
-begin
-  N := Now;
-  result := GetVal(Level, Index,
-    [Variant(N),
-     IDXN_PasswordAge,    Variant(fPasswordAge),     1,2,3,4,11,22, 'PasswordAge',
-     IDXN_LastLogoff,     Variant(fLastLogoff),      2,3,4,11,22, 'LastLogoff',
-     IDXN_AccountExpires, Variant(fAccountExpires),  2,3,4,22, 'AccountExpires'
-    ]);
-end;
-
-function TJwUserAccount.GetDWORD(Index: Integer): DWORD;
-begin
-  result := GetVal(Level, Index,
-    [Variant(0),
-     IDXN_Flags,            Variant(fFlags),            1,2,3,4,20,22,23, 'Flags',
-     IDXN_PrivilegeLevel,   Variant(fPrivilegeLevel),   1,2,3,4,11,22, 'PrivilegeLevel',
-     IDXN_AuthFlagLevel,    Variant(fAuthFlagLevel),    2,3,4,11,22, 'AuthFlagLevel',
-     IDXN_BadPasswordCount, Variant(fBadPasswordCount), 2,3,4,11,22, 'BadPasswordCount',
-     IDXN_LogonCount,       Variant(fLogonCount),       2,3,4,11,22, 'LogonCount',
-     IDXN_CountryCode,      Variant(fCountryCode),      2,3,4,11,22, 'CountryCode',
-     IDXN_MaxStorage,       Variant(fMaxStorage),       2,3,4,11,22, 'MaxStorage',
-     IDXN_UnitsPerWeek,     Variant(fUnitsPerWeek),     2,3,4,11,22, 'UnitsPerWeek',
-     IDXN_CodePage,         Variant(fCodePage),         2,3,4,11,22, 'CodePage'
-    ]);
-end;
-
-function TJwUserAccount.GetLogonHours(Index: Integer): TJwLogonHours;
-begin
-  CheckSupportedLevels(Level, 'LogonHours', [2,3,4,11,22]);
-  result := fLogonHours;
-end;
-
-function TJwUserAccount.GetSID(Index: Integer): TJwSecurityID;
-var V : Variant;
-begin
-  V := GetVal(Level, Index,
-    [nil,
-     IDXN_Sid,              Variant(Integer(@fSID)),              3,4,20,23, 'SID',
-     IDXN_PrimaryGroupdSid, Variant(Integer(@fPrimaryGroupdSid)), 3,4, 'PrimaryGroupdSid'
-    ]);
-  result := TJwSecurityId(Pointer(Integer(V))^);
-end;
-
-function TJwUserAccount.GetString(Index: Integer): TJwString;
-begin
-  result := GetVal(Level, Index,
-    [Variant(''),
-     IDXN_Name,          Variant(fName),          0,1,2,3,4,10,11,20,22,23, 'Name',
-     IDXN_FullName,      Variant(fFullName),      2,3,4,10,11,20,22,23, 'FullName',
-     IDXN_Comment,       Variant(fComment),       2,3,4,10,11,20,22,23, 'Comment',
-     IDXN_UserComment,   Variant(fUserComment),   1,2,3,4,10,11,22, 'UserComment',
-
-
-     IDXN_HomeDirectory, Variant(fHomeDirectory), 1,2,3,4,11,22, 'HomeDirectory',
-     IDXN_Parameters,    Variant(fParameters),    2,3,4,11,22, 'Parameters',
-     IDXN_LogonServer,   Variant(fLogonServer),   2,3,4,11,22, 'LogonServer',
-     IDXN_ProfilePath,   Variant(fProfilePath),   3,4, 'ProfilePath',
-     IDXN_HomeDirDrive,  Variant(fHomeDirDrive),  3,4, 'HomeDirDrive',
-
-     IDXN_ScriptPath, Variant(fScriptPath),       1,3,20,22, 'ScriptPath'
-    ]);
-end;
-
-function TJwUserAccount.GetWorkStations(Index: Integer): TJwWorkStations;
-begin
-  CheckSupportedLevels(Level, 'Workstations', [2,3,4,11,22]);
-  result := fWorkstations;
-end;
-
-
-procedure TJwUserAccount.Update(const Level: TJwUserInfoLevel);
 var
   P : PByte;
+  Status : NET_API_STATUS;
+  LastError : DWORD;
+  Level : DWORD;
+  Info4 : PUserInfo4 absolute P;
+  List : TStringList;
+  I: Integer;
 
-  Info0  : PUserInfo0 absolute P;
-  Info1  : PUserInfo1 absolute P;
-  Info2  : PUserInfo2 absolute P;
-  Info3  : PUserInfo3 absolute P;
-  Info4  : PUserInfo4 absolute P;
-  Info10 : PUserInfo10 absolute P;
-  Info11 : PUserInfo11 absolute P;
-  Info20 : PUserInfo20 absolute P;
-  Info23 : PUserInfo23 absolute P;
-
-  procedure Copy0;
-  begin
-    fName := TJwString(Info0.usri0_name);
-  end;
-
-  procedure Copy1;
-  begin
-    with Info1^ do
-    begin
-      fName := TJwString(usri1_name);
-
-      //usri1_password_age: DWORD;
-      fPrivilegeLevel := usri1_priv;
-      fHomeDirectory := TJwString(usri1_home_dir);
-      fComment := TJwString(usri1_comment);
-      fFlags := usri1_flags;
-      //fAccountType
-
-      fScriptPath := TJwString(usri1_script_path);
-    end;
-
-
-  end;
+//  LogonHours : array[0..20] of Byte;
 begin
-  fServerName := '';
-  fUserName := '';
-
-  if NetUserGetInfo(
+  Level := 4;
+  Status := NetUserGetInfo(
     PWideChar(WideString(fServerName)),//__in   LPCWSTR servername,
     PWideChar(WideString(fUserName)),//__in   LPCWSTR username,
     Level,//__in   DWORD level,
     P//__out  LPBYTE *bufptr
-  ) <> 0 then;
+  );
 
-  fLevel := Level;
-  try
-    case Level of
-      0 : Copy0;
-      1 : Copy1;
+  if Status <> NERR_Success then
+  begin
+    case Status of
+      ERROR_ACCESS_DENIED,
+      ERROR_BAD_NETPATH,
+      ERROR_INVALID_LEVEL :
+          LastError := Status;
+      NERR_InvalidComputer :
+          LastError := ERROR_INVALID_COMPUTERNAME;
+      NERR_UserNotFound :
+          LastError := ERROR_NO_SUCH_USER;
+    else
+      LastError := Status;
     end;
+
+    SetLastError(LastError);
+    RaiseLastOSError;
+  end;
+
+  try
+    fName := TJwString(Info4.usri4_name);
+    fComment := Info4.usri4_comment;
+    fUserComment := Info4.usri4_usr_comment;
+    fFullName := Info4.usri4_full_name;
+
+    if IsAccount(Info4.usri4_priv, UF_NORMAL_ACCOUNT) then
+      fAccountType := uatNormal
+    else
+    if IsAccount(Info4.usri4_priv, UF_TEMP_DUPLICATE_ACCOUNT) then
+      fAccountType := uatTempDuplicate
+    else
+    if IsAccount(Info4.usri4_priv, UF_WORKSTATION_TRUST_ACCOUNT) then
+      fAccountType := uatWorkstationTrust
+    else
+    if IsAccount(Info4.usri4_priv, UF_SERVER_TRUST_ACCOUNT) then
+      fAccountType := uatServerTrust
+    else
+    if IsAccount(Info4.usri4_priv, UF_INTERDOMAIN_TRUST_ACCOUNT) then
+      fAccountType := uatInterDomainTrust
+    else
+      fAccountType := uatUnknown;
+
+    fPrivilegeLevel := TJwPrivilegeLevel(Info4.usri4_priv);
+    fSID := TJwSecurityID.Create(Info4.usri4_user_sid);
+
+    //11
+    fAuthFlagLevel := Info4.usri4_auth_flags; // : DWORD; // DWORD usri11_auth_flags;
+    fPasswordAge := ResultDateTime(Info4.usri4_password_age);  //  fPasswordAge :=  TDateTime;// DWORD usri11_password_age;
+
+    fHomeDirectory := Info4.usri4_home_dir; // TJwString; // LPWSTR usri11_home_dir;
+    fParameters := Info4.usri4_parms; //TJwString; // LPWSTR usri11_parms;
+    fLastLogon := ResultDateTime(Info4.usri4_last_logon); //DWORD usri11_last_logon;
+    fLastLogoff := ResultDateTime(Info4.usri4_last_logoff); // TDateTime; //DWORD usri11_last_logoff;
+
+    fBadPasswordCount := Info4.usri4_bad_pw_count; // : DWORD; //  DWORD usri11_bad_pw_count;
+    fLogonCount := Info4.usri4_num_logons; //: DWORD; //DWORD usri11_num_logons;
+    fLogonServer := Info4.usri4_logon_server;// : TJwString; // LPWSTR usri11_logon_server;
+    fCountryCode  := Info4.usri4_country_code; //: DWORD; //DWORD usri11_country_code;
+
+    List := TStringList.Create;
+    try
+      List.CommaText := WideString(Info4.usri4_workstations);
+
+      SetLength(fWorkstations, List.Count);
+      for I := 0 to List.Count - 1 do
+        fWorkstations[I] := List[I]; //: TJwWorkStations; //LPWSTR usri11_workstations;
+    finally
+      FreeAndNil(List);
+    end;
+
+    fMaxStorage := Info4.usri4_max_storage;  //DWORD; //DWORD usri11_max_storage;
+    fUnitsPerWeek := Info4.usri4_units_per_week; //: DWORD; // DWORD usri11_units_per_week;
+
+    //fLogonHours := Info4.usri4_logon_hours; // : TJwLogonHours; //PBYTE usri11_logon_hours;
+    if fUnitsPerWeek = SAM_HOURS_PER_WEEK then //don't support anything else than hours
+      UpdateLogonHoursProperty(Info4.usri4_logon_hours)
+    else
+      fLogonHours := nil;
+
+    fCodePage := Info4.usri4_code_page; //: DWORD; //DWORD usri11_code_page;
+    fScriptPath := TJwString(Info4.usri4_script_path);
+
+    fPrimaryGroupdSid := Info4.usri4_primary_group_id; //: TJwSecurityId; //DWORD usri4_primary_group_id;
+    fProfilePath := Info4.usri4_profile;  // : TJwString; //LPWSTR usri4_profile;
+    fHomeDirDrive := Info4.usri4_home_dir_drive; // TJwString;//LPWSTR usri4_home_dir_drive;
+    fPasswordExpired := Info4.usri4_password_expired <> 0; // : Boolean; //DWORD usri4_password_expired;
   finally
     NetApiBufferFree(P);
   end;
+end;
 
+procedure TJwUserAccount.Apply;
+begin
+
+end;
+
+{ TJwBaseAccount }
+
+function TJwBaseAccount.AddGmt(DateHour: TDateHour; Gmt: Integer): TDateHour;
+Begin
+  If gmt > 0 Then Begin
+    DateHour.Hour := DateHour.Hour + gmt;
+    While DateHour.Hour > 23 Do Begin
+      DateHour.Hour := DateHour.Hour - 24;
+      DateHour.DayI := (DateHour.DayI + 1) Mod 7;
+    End;
+  End
+  Else If gmt < 0 Then Begin
+    DateHour.Hour := DateHour.Hour + gmt;
+    While DateHour.Hour < 0 Do Begin
+      DateHour.Hour := DateHour.Hour + 24;
+      DateHour.DayI := (DateHour.DayI + 6) Mod 7;
+    End;
+  End;
+  if DateHour.Day < Low(DateHour.Day) then
+    DateHour.Day := High(DateHour.Day)
+  else
+  if DateHour.Day > High(DateHour.Day) then
+    DateHour.Day := low(DateHour.Day);
+
+  result.DayI := DateHour.DayI;
+  result.Hour := DateHour.Hour;
+End;
+
+function TJwBaseAccount.BitToDateHour(Bits: PBYTE; BitNo: Byte): TDateHour;
+begin
+  Assert(BitNo <= 167, 'BitNo must be smaller than 168');
+  result.DayI := 1 + BitNo div 24;
+
+  if BitNo < 24 then  //If BitNo < 24 (Sunday) assume input is on Monday
+  begin
+    Inc(BitNo, 24);
+  end
+  else
+  if BitNo > (168-24) then //If BitNo > 144 (Saturday) assume input is Sunday
+  begin
+    Dec(BitNo, 168-24);
+    result.Day := wdSunday;
+  end;
+
+  result.Hour := BitNo - ((BitNo div 24) * 24);
+end;
+
+constructor TJwBaseAccount.Create;
+begin
+  fLogonHours := nil;
+end;
+
+function TJwBaseAccount.DateHourToBit(DateHour: TDateHour): Byte;
+begin
+  if (DateHour.Day = wdSunday) then
+    DateHour.DayI := 0;
+
+  result := (DateHour.DayI * 24) + DateHour.Hour;
+end;
+
+
+destructor TJwBaseAccount.Destroy;
+begin
+  if fLogonHours <> nil then
+    FreeMem(fLogonHours);
+
+  inherited;
+end;
+
+function TJwBaseAccount.GetByteToBit(BitNo: Byte; Bits: PByte): Boolean;
+var I : Byte;
+begin
+  I := Byte(BitNo div 8);
+  Inc(Bits, I);
+  BitNo := BitNo - (I*8);
+  result := (Bits^ and (1 shl BitNo)) = (1 shl BitNo);
+end;
+
+function TJwBaseAccount.SetByteToBit(BitNo: Byte; var Bits: PByte; Value: Boolean): Boolean;
+var
+  I,Val : Byte;
+  P : PByte;
+begin
+  I := Byte(BitNo div 8);
+  P := Bits; //dont mess with Bits directly
+  Inc(P, I);
+  BitNo := BitNo - (I*8);
+  result := (P^ and (1 shl BitNo)) = (1 shl BitNo);
+
+  if Value then
+  begin
+    Val := 1 shl BitNo;
+    P^ := P^ or Val;
+  end
+  else
+  begin
+    Val := not (1 shl BitNo);
+    P^ := P^ and Val;
+  end;
+end;
+
+function TJwBaseAccount.GetDateHour(Bits: PBYTE; DateHour: TDateHour; Gmt: ShortInt): Boolean;
+begin
+  Assert(DateHour.Hour < 24, 'Hour must be smaller than 24');
+  Assert(DateHour.Hour >= 0, 'Hour must be greater than or equal to 0');
+  Assert((Gmt <= 24) and (Gmt >= -24), 'Gmt must between 24 and -24');
+
+  DateHour := AddGmt(DateHour, Gmt);
+
+  result := GetByteToBit(DateHourToBit(DateHour), Bits);
+end;
+
+function TJwBaseAccount.GetDateHour(Bits: PBYTE; Day: TJwWeekDay; Hour: Byte; Gmt: ShortInt): Boolean;
+var DateHour : TDateHour;
+begin
+  DateHour.Hour := Hour;
+  DateHour.Day := Day;
+  Result := GetDateHour(Bits, DateHour, Gmt);
+end;
+
+
+
+function TJwBaseAccount.GetGMT: TJwGMT;
+begin
+  result := fGMT;
+end;
+
+function TJwBaseAccount.GetLogonHour(Day: TJwWeekDay; Hour: TJwHour): Boolean;
+begin
+  RaiseOnInvalidLogonHours;
+
+  if fLogonHours = nil then
+  begin
+    result := true;
+    exit;
+  end;
+
+  result := GetDateHour(fLogonHours, Day, Hour, fGMT);
+end;
+
+procedure TJwBaseAccount.ResetLogonHours(const Pattern: Byte);
+var Value : TJwLogonHours;
+begin
+  FillChar(Value, sizeof(Value), Pattern);
+  ResetLogonHours(Value);
+end;
+
+procedure TJwBaseAccount.ResetLogonHours(const Value: TJwLogonHours);
+begin
+  RaiseOnInvalidLogonHours;
+
+  UpdateLogonHoursProperty(@Value);
+end;
+
+procedure TJwBaseAccount.RaiseOnInvalidLogonHours;
+begin
+  if fUnitsPerWeek <> SAM_HOURS_PER_WEEK then
+  begin
+    raise EJwsclUnsupportedException.CreateFmtEx('The logon hours size (%d) is not supported (must be %d).',
+      'LogonHours Property', ClassName, 'JwsclAccount.pas', 0, False, [fUnitsPerWeek, SAM_HOURS_PER_WEEK]);
+  end;
+end;
+
+procedure TJwBaseAccount.ResetLogonHours(const Allowed: Boolean);
+Var B : Byte;
+begin
+  if Allowed then
+    B := $FF
+  else
+    B := 0;
+
+  ResetLogonHours(B);
+end;
+
+//http://www.delphipraxis.net/4278-datetime-unixtimestamp-und-zurueck.html
+function TJwBaseAccount.UnixTimeToDateTime(const Seconds: DWORD): TDateTime;
+begin
+  Result := ((Seconds + 7200) / 86400) + 25569;
+end;
+
+//http://www.delphipraxis.net/4278-datetime-unixtimestamp-und-zurueck.html
+function TJwBaseAccount.DateTimeToUnixTime(const Time: TDateTime): DWORD;
+begin
+  Result := ((Trunc(Time) - 25569) * 86400) +
+            Trunc(86400 * (Time - Trunc(Time))) - 7200;
+end;
+
+
+procedure TJwBaseAccount.UpdateLogonHoursProperty(logon_hours : PByte);
+const
+  Arr : TJwLogonHours =
+     ($FF,$FF,$FF,$FF,$FF,
+      $FF,$FF,$FF,$FF,$FF,
+      $FF,$FF,$FF,$FF,$FF,
+      $FF,$FF,$FF,$FF,$FF, $FF);
+begin
+  if (logon_hours = nil) or
+     (CompareMem(@Arr, logon_hours, LOGONHOURSSIZE)) then  //is the logon allowed completely?
+  begin
+    if fLogonHours <> nil then
+      FreeMem(fLogonHours);
+    fLogonHours := nil;
+  end
+  else
+  begin
+    RaiseOnInvalidLogonHours;
+
+    GetMem(fLogonHours, LOGONHOURSSIZE);
+    CopyMemory(fLogonHours, logon_hours, LOGONHOURSSIZE);
+  end;
+end;
+
+function TJwBaseAccount.SetDateHour(Bits: PBYTE; DateHour: TDateHour; Gmt: ShortInt; Value: Boolean): Boolean;
+begin
+  Assert(DateHour.Hour < 24, 'Hour must be smaller than 24');
+  Assert(DateHour.Hour >= 0, 'Hour must be greater than or equal to 0');
+  Assert((Gmt <= 24) and (Gmt >= -24), 'Gmt must between 24 and -24');
+
+  DateHour := AddGmt(DateHour, Gmt);
+
+  result := SetByteToBit(DateHourToBit(DateHour), Bits, Value);
+end;
+
+function TJwBaseAccount.SetDateHour(Bits: PBYTE; Day: TJwWeekDay; Hour: Byte; Gmt: ShortInt; Value: Boolean): Boolean;
+var DateHour : TDateHour;
+begin
+  DateHour.Hour := Hour;
+  DateHour.Day := Day;
+  Result := SetDateHour(Bits, DateHour, Gmt, Value);
+end;
+
+procedure TJwBaseAccount.SetGMT(const Value: TJwGMT);
+begin
+  fGMT := Value;
+end;
+
+
+
+procedure TJwBaseAccount.SetLogonHour(Day: TJwWeekDay; Hour: TJwHour; const Value: Boolean);
+begin
+  RaiseOnInvalidLogonHours;
+
+  if fLogonHours = nil then
+  begin
+    GetMem(fLogonHours, LOGONHOURSSIZE);
+    FillChar(fLogonHours^, LOGONHOURSSIZE, $FF);
+  end;
+
+  SetDateHour(fLogonHours, Day, Hour, fGMT, Value);
 end;
 
 initialization

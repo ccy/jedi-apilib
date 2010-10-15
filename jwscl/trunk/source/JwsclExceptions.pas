@@ -61,7 +61,6 @@ unit JwsclExceptions;
 interface
 
 uses SysUtils, Classes,
-  D5impl,
   JwaWindows,
   JwsclResource,
   JwsclTypes, JwsclStrings;

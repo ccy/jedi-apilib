@@ -49,8 +49,19 @@ Full URL to the latest version of the file in the repository.       \$HeadURL$
 unit JwsclPathSimulation;
 {$INCLUDE ..\includes\Jwscl.inc}
 
+
+{$WARNINGS ON}
+
 {$IFNDEF DELPHI2009_UP}
-ERROR: This file is only for Delphi 2009 and newer
+  {$MESSAGE WARN 'This file is only for Delphi 2009 and newer'}
+{$ENDIF}
+
+
+
+{$IFNDEF DEBUG}
+  {$MESSAGE FAIL 'File JwsclPathSimulation.pas is not intended for production. It is intended for simulation security descriptor inheritance.'}
+{$ELSE}
+  {$MESSAGE WARN 'File JwsclPathSimulation.pas is not intended for production. It is intended for simulation security descriptor inheritance.'}
 {$ENDIF}
 
 interface
@@ -68,6 +79,7 @@ uses
   Classes,
   SysUtils;
 
+{$IFDEF DELPHI2009_UP}
 type
   {TJwInheritancePath splits the entries of a path into
    the root drive and its folder.
@@ -88,10 +100,12 @@ type
     property Path : String read fPath;
   end;
 
+{$ENDIF DELPHI2009_UP}
 implementation
 
 { TJwInheritancePath }
 
+{$IFDEF DELPHI2009_UP}
 constructor TJwInheritancePath.Create(const Path: string);
   function ReversStr(const S : string) : String;
   var i : Integer;
@@ -137,5 +151,7 @@ function TJwInheritancePath.GetSDIdx(Index: Integer): TJwSecurityDescriptor;
 begin
   result :=  TJwSecurityDescriptor(fSD.Objects[Index])
 end;
+
+{$ENDIF DELPHI2009_UP}
 
 end.

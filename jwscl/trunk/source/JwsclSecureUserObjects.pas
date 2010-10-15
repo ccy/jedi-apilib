@@ -48,6 +48,14 @@ Full URL to the latest version of the file in the repository.       \$HeadURL$
 unit JwsclSecureUserObjects;
 {$INCLUDE ..\includes\Jwscl.inc}
 
+{$WARNINGS ON}
+
+{$IFNDEF DEBUG}
+  {$MESSAGE FAIL 'File JwsclSecureUserObjects.pas is not intended for usage. It is under development'}
+{$ELSE}
+  {$MESSAGE WARN 'File JwsclSecureUserObjects.pas is not intended for usage. It is under development'}
+{$ENDIF}
+
 interface
 
 uses

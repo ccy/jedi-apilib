@@ -2200,11 +2200,12 @@ implementation
 
 uses JwsclKnownSid, JwsclMapping, JwsclSecureObjects, JwsclProcess,
      JwsclTerminalServer, JwsclLsa,  JwsclVersion,
-     JwsclPrivileges, Math,
+     JwsclPrivileges,
      {$IFDEF JWSCL_TYPEINFO}
      TypInfo,
      {$ENDIF JWSCL_TYPEINFO}
-     D5impl;
+     Math
+     ;
 
 {$ENDIF SL_OMIT_SECTIONS}
 

@@ -592,7 +592,7 @@ var //JwStrNewLine : AnsiString = #13#10;
 
 
 implementation
-uses JwaWindows, JwsclExceptions, JwsclUtils, D5impl;
+uses JwaWindows, JwsclExceptions, JwsclUtils;
 
 
 type TJwLogServerImpl = class;

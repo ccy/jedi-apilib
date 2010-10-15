@@ -74,7 +74,7 @@ type
   TJwRegistry = class(TRegistry)
   private
     fSecurityInformationFlags: TJwSecurityInformationFlagSet;
-    function GetSD(KeyName: String): TJwSecurityDescriptor;
+    function GetSD(KeyName: TJwString): TJwSecurityDescriptor;
   protected
     fSD : TJwSecurityDescriptor;
     fLastKeyName : TJwString;
@@ -110,7 +110,7 @@ type
 
 
 implementation
-uses SysUtils, Math, D5Impl, JwsclToken, JwsclKnownSid,  JwsclAcl,
+uses SysUtils, Math, JwsclToken, JwsclKnownSid,  JwsclAcl,
      JwsclSecureObjects, JwsclMapping, JwsclStreams, JwsclCryptProvider,
      JwsclConstants
       ;
@@ -124,16 +124,16 @@ begin
   fSecurityInformationFlags := [siOwnerSecurityInformation, siGroupSecurityInformation, siDaclSecurityInformation];
 end;
 
-function TJwRegistry.GetSD(KeyName: String): TJwSecurityDescriptor;
+function TJwRegistry.GetSD(KeyName: TJwString): TJwSecurityDescriptor;
 begin
   if (fLastKeyName <> '') and Assigned(fSD) and
-    JwCompareString(KeyName, fLastKeyName, true) then
+    (JwCompareString(KeyName, fLastKeyName, true) = 0) then
   begin
     Result := fSD;
   end
   else
   begin
-    TJwSecureRegistryKey.GetSecurityDescriptorEx(CurrentP  ath, fSecurityInformationFlags, false)
+    TJwSecureRegistryKey.GetSecurityDescriptorEx(CurrentPath, fSecurityInformationFlags, false)
   end;
 end;
 

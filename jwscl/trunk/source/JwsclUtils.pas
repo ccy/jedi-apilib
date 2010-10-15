@@ -910,7 +910,7 @@ function JwFormatMessage(
 function JwDeviceToDosDrive(Device : WideString) : WideString;
 
 implementation
-uses SysUtils, Math, D5Impl, JwsclToken, JwsclKnownSid, JwsclDescriptor, JwsclAcl,
+uses SysUtils, Math, JwsclToken, JwsclKnownSid, JwsclDescriptor, JwsclAcl,
      JwsclSecureObjects, JwsclMapping, JwsclStreams, JwsclCryptProvider,
      ComObj, SyncObjs,
      JwsclConstants

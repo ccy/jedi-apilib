@@ -378,6 +378,8 @@ begin
   Result := Wrap(classReference.Create());
 end;
 
+
+
 class function TJwAutoPointer.CreateInstance(
   const ClassReference : TComponentClass;
   const Owner : TComponent): IJwAutoPointer;

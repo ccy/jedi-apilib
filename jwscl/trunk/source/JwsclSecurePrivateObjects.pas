@@ -52,11 +52,19 @@ Full URL to the latest version of the file in the repository.       \$HeadURL$
 unit JwsclSecurePrivateObjects;
 {$INCLUDE ..\includes\Jwscl.inc}
 
+{$WARNINGS ON}
+
+{$IFNDEF DEBUG}
+  {$MESSAGE FAIL 'File JwsclSecurePrivateObjects.pas is not intended for usage. It is under development'}
+{$ELSE}
+  {$MESSAGE WARN 'File JwsclSecurePrivateObjects.pas is not intended for usage. It is under development'}
+{$ENDIF}
+
 interface
 
 
 uses
-  JwaWindows, SysUtils, D5Impl,
+  JwaWindows, SysUtils, 
   JwsclTypes, JwsclExceptions, JwsclAcl, JwsclMapping, JwsclSid,
   JwsclSecureObjects, JwsclResource,
   JwsclVersion, JwsclConstants, JwsclDescriptor, JwsclToken, JwsclUtils,
