@@ -383,6 +383,17 @@ type
       override;
   end;
 
+  {<B>TJwSecurityPipeMapping</B> defines a generic mapping for file access rights}
+  TJwSecurityWTSMapping = class(TJwSecurityGenericMapping)
+  public
+    {<B>GetMapping</B> returns the generic mapping for file objects.}
+    class function GetMapping: TGenericMapping; override;
+    class function MapAccessMaskToString(Access: TJwAccessMask): TJwString;
+      override;
+    class function GetAccessNames(out iCount: Cardinal): PSI_ACCESS;
+      override;
+  end;
+
 
 
 
@@ -1109,11 +1120,28 @@ begin
   result := '';
 end;
 
+{ TJwSecurityWTSMapping }
+
+class function TJwSecurityWTSMapping.GetAccessNames(
+  out iCount: Cardinal): PSI_ACCESS;
+begin
+  Result := GetAccessNamesEx(iCount, WTSMapping);
+end;
+
+class function TJwSecurityWTSMapping.GetMapping: TGenericMapping;
+begin
+  Result := TJwSecurityUserMapping.GetMapping(WTSGenericMapping);
+end;
+
+class function TJwSecurityWTSMapping.MapAccessMaskToString(
+  Access: TJwAccessMask): TJwString;
+begin
+  Result := TJwSecurityUserMapping.MapAccessMaskToString(Access, WTSMapping);
+end;
 {$ENDIF SL_INTERFACE_SECTION}
 
 
 {$IFNDEF SL_OMIT_SECTIONS}
-
 
 end.
 {$ENDIF SL_OMIT_SECTIONS}
