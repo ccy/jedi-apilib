@@ -97,12 +97,13 @@ type
     function IsStandardSID: boolean;  override;
   end;
 
+{$IFDEF DEBUG}
   {TJwIntegrityLevelSID provides methods to use fine grained integrity levels.
 
    This class is subject to change and to be investigated
    and therefore should not be used!!
   }
-  TJwIntegrityLevelSID = class(TJwSecurityKnownSID, IComparable)
+  TJwIntegrityLevelSID = class(TJwSecurityKnownSID{$IFDEF DELPHI2007_UP}, IComparable{$ENDIF})
   private
     fMandatoryPolicy: TJwTokenMandatoryPolicies;
   protected
@@ -137,6 +138,7 @@ type
     property Level : Cardinal read fLevel;
     property MandatoryPolicy : TJwTokenMandatoryPolicies read fMandatoryPolicy;
   end;
+{$ENDIF DEBUG}
 
 
 
@@ -1216,7 +1218,7 @@ begin
       MethodName, ClassName, FileName, 0, false, [Errors]);
 end;
 
-
+{$IFDEF DEBUG}
 constructor TJwIntegrityLevelSID.Create(const Level: Cardinal; IsStandardSID: Boolean);
 const
   LevelTypes : array[TJwIntegrityLabelType] of Cardinal =
@@ -1336,7 +1338,6 @@ begin
 end;
 
 function TJwIntegrityLevelSID.CreateIncrement(Increment: Integer; AsStandardSID: Boolean): TJwIntegrityLevelSID;
-{$WARNINGS off}
 begin
   if (Increment < 0) and (Level < -Increment) then
     Increment := -Integer(Level)
@@ -1348,7 +1349,6 @@ begin
     result := TJwIntegrityLevelSID.GetIL(Cardinal(Level + Increment))
   else
     result := TJwIntegrityLevelSID.Create(Cardinal(Level + Increment));
-{$WARNINGS on}
 end;
 
 class procedure TJwIntegrityLevelSID.FreeIntegrityLevelSIDs;
@@ -1399,6 +1399,7 @@ function TJwIntegrityLevelSID.IsStandardSID: boolean;
 begin
   result := fIsStandard;
 end;
+{$ENDIF DEBUG}
 
 {$ENDIF SL_INTERFACE_SECTION}
 
