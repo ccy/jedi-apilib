@@ -5391,7 +5391,7 @@ const
 
   {<B>SM_SERVERR2</B> is used as an additional constant for GetSystemMetrics
    to detect the second release of Win2003}
-  SM_SERVERR2 = 98;
+  SM_SERVERR2 = 89;
   {$EXTERNALSYM SM_SERVERR2}
 
   SM_REMOTESESSION = $1000;
