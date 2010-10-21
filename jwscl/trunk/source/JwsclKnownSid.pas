@@ -97,16 +97,17 @@ type
     function IsStandardSID: boolean;  override;
   end;
 
-{$IFDEF DEBUG}
   {TJwIntegrityLevelSID provides methods to use fine grained integrity levels.
 
    This class is subject to change and to be investigated
    and therefore should not be used!!
+
+   This class is used by TJwSecurityToken.
   }
   TJwIntegrityLevelSID = class(TJwSecurityKnownSID{$IFDEF DELPHI2007_UP}, IComparable{$ENDIF})
-  private
-    fMandatoryPolicy: TJwTokenMandatoryPolicies;
   protected
+    fMandatoryPolicy: TJwTokenMandatoryPolicies;
+
     fLabelType: TJwIntegrityLabelType;
     fLevel: Cardinal;
     fIsStandard : Boolean;
@@ -114,12 +115,17 @@ type
     constructor Create(const Level : Cardinal; IsStandardSID : Boolean); overload;
 
     class procedure FreeIntegrityLevelSIDs;
+  private
+{$IFNDEF DEBUG} //make private for release
+    property Level : Cardinal read fLevel;
+{$ENDIF DEBUG}
   public
+    constructor Create(const SecurityID: TJwSecurityId); overload;
+
+{$IFDEF DEBUG}
     constructor Create(const Level : Cardinal); overload;
     constructor Create(const IL : TJwIntegrityLevelSID); overload;
-    constructor Create(const SecurityID: TJwSecurityId); overload;
     constructor Create(const SIDString: TJwString); overload;
-
 
     class function GetIL(const Level : Cardinal) : TJwIntegrityLevelSID; virtual;
     class function GetEffectiveIL() : TJwIntegrityLevelSID; virtual;
@@ -128,17 +134,17 @@ type
 
     function IsStandardSID: boolean;  override;
 
-    function CompareTo(Obj: TObject): Integer; virtual;
-
     function IsEqual(IL : TJwIntegrityLevelSID; CompareLevel : Boolean = false) : Boolean; virtual;
     function IsHigherThan(IL : TJwIntegrityLevelSID; CompareLevel : Boolean = false) : Boolean; virtual;
     function IsLowerThan(IL : TJwIntegrityLevelSID; CompareLevel : Boolean = false) : Boolean; virtual;
-
-    property LabelType : TJwIntegrityLabelType read fLabelType;
+{$ENDIF DEBUG}
+    function CompareTo(Obj: TObject): Integer; virtual;
+{$IFDEF DEBUG}
     property Level : Cardinal read fLevel;
     property MandatoryPolicy : TJwTokenMandatoryPolicies read fMandatoryPolicy;
-  end;
 {$ENDIF DEBUG}
+    property LabelType : TJwIntegrityLabelType read fLabelType;
+  end;
 
 
 
@@ -1218,7 +1224,27 @@ begin
       MethodName, ClassName, FileName, 0, false, [Errors]);
 end;
 
-{$IFDEF DEBUG}
+constructor TJwIntegrityLevelSID.Create(const SecurityID: TJwSecurityId);
+var
+  Prefix : TJwSecurityId;
+  Level : Integer;
+begin
+  JwRaiseOnNilParameter(SecurityID, 'ILSID', 'Create', ClassName, RsUNKnownSid);
+
+  Prefix := TJwSecurityId.Create(JwLowIL);
+  try
+    if not SecurityID.EqualPrefixSid(Prefix) then
+      raise EJwsclInvalidKnownSIDException.CreateFmtEx(
+          RsInvalidLevelSIDPrefix, 'CreateNewToken', ClassName, RsUNKnownSid,
+          0, True, [SecurityID.StringSID]);
+  finally
+    Prefix.Free;
+  end;
+
+  Level := SecurityID.SubAuthority[SecurityID.SubAuthorityCount-1];
+  Create(Level, false);
+end;
+
 constructor TJwIntegrityLevelSID.Create(const Level: Cardinal; IsStandardSID: Boolean);
 const
   LevelTypes : array[TJwIntegrityLabelType] of Cardinal =
@@ -1241,11 +1267,15 @@ begin
     Inc(fLabelType);
 end;
 
+
 function TJwIntegrityLevelSID.CompareTo(Obj: TObject): Integer;
 begin
   result := (Obj as TJwIntegrityLevelSID).Level - Level;
 end;
 
+var IntegrityLevelSIDs : TStringList = nil;
+
+{$IFDEF DEBUG}
 constructor TJwIntegrityLevelSID.Create(const Level: Cardinal);
 begin
   Create(Level, false);
@@ -1258,8 +1288,6 @@ begin
 
   Create(IL.Level);
 end;
-
-var IntegrityLevelSIDs : TStringList = nil;
 
 class function TJwIntegrityLevelSID.GetEffectiveIL: TJwIntegrityLevelSID;
 var
@@ -1303,26 +1331,7 @@ begin
   end;
 end;
 
-constructor TJwIntegrityLevelSID.Create(const SecurityID: TJwSecurityId);
-var
-  Prefix : TJwSecurityId;
-  Level : Integer;
-begin
-  JwRaiseOnNilParameter(SecurityID, 'ILSID', 'Create', ClassName, RsUNKnownSid);
 
-  Prefix := TJwSecurityId.Create(JwLowIL);
-  try
-    if not SecurityID.EqualPrefixSid(Prefix) then
-      raise EJwsclInvalidKnownSIDException.CreateFmtEx(
-          RsInvalidLevelSIDPrefix, 'CreateNewToken', ClassName, RsUNKnownSid,
-          0, True, [SecurityID.StringSID]);
-  finally
-    Prefix.Free;
-  end;
-
-  Level := SecurityID.SubAuthority[SecurityID.SubAuthorityCount-1];
-  Create(Level);
-end;
 
 
 constructor TJwIntegrityLevelSID.Create(const SIDString: TJwString);
@@ -1351,20 +1360,6 @@ begin
     result := TJwIntegrityLevelSID.Create(Cardinal(Level + Increment));
 end;
 
-class procedure TJwIntegrityLevelSID.FreeIntegrityLevelSIDs;
-var i : Integer;
-begin
-  if not Assigned(IntegrityLevelSIDs) then
-    exit;
-
-  for I := 0 to IntegrityLevelSIDs.Count - 1 do
-  begin
-    IntegrityLevelSIDs.Objects[I].Free;
-    IntegrityLevelSIDs.Objects[I] := nil;
-  end;
-
-  FreeAndNil(IntegrityLevelSIDs);
-end;
 
 function TJwIntegrityLevelSID.IsEqual(IL: TJwIntegrityLevelSID; CompareLevel: Boolean): Boolean;
 begin
@@ -1399,7 +1394,24 @@ function TJwIntegrityLevelSID.IsStandardSID: boolean;
 begin
   result := fIsStandard;
 end;
+
 {$ENDIF DEBUG}
+
+
+class procedure TJwIntegrityLevelSID.FreeIntegrityLevelSIDs;
+var i : Integer;
+begin
+  if not Assigned(IntegrityLevelSIDs) then
+    exit;
+
+  for I := 0 to IntegrityLevelSIDs.Count - 1 do
+  begin
+    IntegrityLevelSIDs.Objects[I].Free;
+    IntegrityLevelSIDs.Objects[I] := nil;
+  end;
+
+  FreeAndNil(IntegrityLevelSIDs);
+end;
 
 {$ENDIF SL_INTERFACE_SECTION}
 
