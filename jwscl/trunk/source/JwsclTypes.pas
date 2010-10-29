@@ -720,6 +720,10 @@ type
 
   TJwStringArray = array of TJwString;
 
+  {
+
+  Do not make changes without adapting JwIntegrityLabelSID from JwsclKnownSid.pas
+  }
   TJwIntegrityLabelType = (
     iltNone,
     iltLow,

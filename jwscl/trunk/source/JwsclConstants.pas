@@ -1728,6 +1728,15 @@ const
    }
   JwSafeDLLDirectory : WideString = '';
 
+
+  JwLowIL = 'S-1-16-4096';
+  JwMediumIL = 'S-1-16-8192';
+  JwHighIL = 'S-1-16-12288';
+  JwSystemIL = 'S-1-16-16384';
+  JwProtectedProcessIL = 'S-1-16-20480';
+  JwIntegrityLevel = 'S-1-16-%u';
+
+
 {$ENDIF SL_IMPLEMENTATION_SECTION}
 
 {$IFNDEF SL_OMIT_SECTIONS}

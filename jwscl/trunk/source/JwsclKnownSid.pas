@@ -34,6 +34,11 @@ The Original Code is JwsclKnownSid.pas.
 The Initial Developer of the Original Code is Christian Wimmer.
 Portions created by Christian Wimmer are Copyright (C) Christian Wimmer. All rights reserved.
 
+Remarks
+The variables JwXXXXXSid (e.g. JwAdministratorsSID) has been changed to functions
+that always return the same instance of the SID. JwInitWellKnownSIDs is
+no more necessary to be called and is deprecated.
+
 Version
 The following values are automatically injected by Subversion on commit.
 <table>
@@ -148,213 +153,7 @@ type
 
 
 
-const JwLowIL = 'S-1-16-4096';
-      JwMediumIL = 'S-1-16-8192';
-      JwHighIL = 'S-1-16-12288';
-      JwSystemIL = 'S-1-16-16384';
-      JwProtectedProcessIL = 'S-1-16-20480';
-      JwIntegrityLevel = 'S-1-16-%u';
 var
-   JwIntegrityLabelSID : array[TJwIntegrityLabelType] of TJwSecurityKnownSID;
-
-    {<B>JwAuthenticatedUserSID</B> defines the current user SID that started the process.
-     You need to call JwInitWellknownSIDs before accessing this variable!
-     Use:
-     <code lang="Delphi">
-      SD : TJwSecurityDescriptor;
-      ...
-      SD.OwnOwner := false;
-      SD.Owner := JwAuthenticatedUserSID;
-      ...
-      SD.DACL.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil,[],FILE_EXECUTE,JwAuthenticatedUserSID, false)); //see?: false
-    </code>
-    }
-  JwAuthenticatedUserSID,
-
-    {<B>JwPrincipalSid</B> defines the current user SID that started the process.
-     You need to call JwInitWellknownSIDs before accessing this variable!
-     Use:
-     <code lang="Delphi">
-      SD : TJwSecurityDescriptor;
-      ...
-      SD.OwnOwner := false;
-      SD.Owner := JwSecurityProcessUserSID;
-      ...
-      SD.DACL.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil,[],FILE_EXECUTE,JwSecurityProcessUserSID, false)); //see?: false
-    </code>
-    }
-  JwSecurityProcessUserSID,
-
-
-    {<B>JwPrincipalSid</B> defines the local administrator group
-     Do not free!!
-     You need to call JwInitWellknownSIDs before accessing this variable!
-
-     Use:
-     <code lang="Delphi">
-      SD : TJwSecurityDescriptor;
-      ...
-      SD.OwnOwner := false;
-      SD.Owner := JwAdministratorsSID;
-      ...
-      SD.DACL.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil,[],FILE_EXECUTE,JwAdministratorsSID, false)); //see?: false
-     </code>
-    }
-  JwAdministratorsSID,
-    {<B>JwPrincipalSid</B> defines the local user group
-     You need to call JwInitWellknownSIDs before accessing this variable!
-
-     Use:
-     <code lang="Delphi">
-      SD : TJwSecurityDescriptor;
-      ...
-      SD.OwnOwner := false;
-      SD.Owner := JwUsersSID;
-      SD.DACL.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil,[],FILE_EXECUTE,JwUsersSID, false)); //see?: false
-     </code>
-    }
-  JwUsersSID,
-    {<B>JwPrincipalSid</B> defines the local power user group - legacy in Vista
-     You need to call JwInitWellknownSIDs before accessing this variable!
-
-     Use:
-     <code lang="Delphi">
-      SD : TJwSecurityDescriptor;
-      ...
-      SD.OwnOwner := false;
-      SD.Owner := JwPowerUsersSID;
-      SD.DACL.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil,[],FILE_EXECUTE,JwPowerUsersSID, false)); //see?: false
-     </code>
-    }
-  JwPowerUsersSID,
-    {<B>JwPrincipalSid</B> defines the local guest group
-     You need to call JwInitWellknownSIDs before accessing this variable!
-
-     Use:
-     <code lang="Delphi">
-      SD : TJwSecurityDescriptor;
-      ...
-      SD.OwnOwner := false;
-      SD.Owner := JwGuestsSID;
-      SD.DACL.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil,[],FILE_EXECUTE,JwGuestsSID, false)); //see?: false
-     </code>
-    }
-  JwGuestsSID,
-    {<B>JwPrincipalSid</B> defines the local system account
-     You need to call JwInitWellknownSIDs before accessing this variable!
-
-     Use:
-     <code lang="Delphi">
-      SD : TJwSecurityDescriptor;
-      ...
-      SD.OwnOwner := false;
-      SD.Owner := JwLocalSystemSID;
-      SD.DACL.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil,[],FILE_EXECUTE,JwLocalSystemSID, false)); //see?: false
-     </code>
-    }
-  JwLocalSystemSID,
-    {<B>JwRemoteInteractiveLogonSID</B> defines the group that allows remote interaction with the machine
-     You need to call JwInitWellknownSIDs before accessing this variable!
-
-    Use:
-     <code lang="Delphi">
-      SD : TJwSecurityDescriptor;
-      ...
-      SD.OwnOwner := false;
-      SD.Owner := JwRemoteInteractiveLogonSID;
-      SD.DACL.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil,[],FILE_EXECUTE,JwRemoteInteractiveLogonSID, false)); //see?: false
-     </code>
-    }
-  JwRemoteInteractiveLogonSID,
-
-    {<B>JwRestrictedCodeSID</B> defines the group that diminishes write access of XP process.
-     You need to call JwInitWellknownSIDs before accessing this variable!
-
-
-     Remarks:
-       Used in Windows XP and is obsolte in Windows Vista.
-    }
-  JwRestrictedCodeSID,
-
-    {<B>JwWriteRestrictedSID</B> defines the write restricted SID
-     You need to call JwInitWellknownSIDs before accessing this variable!
-
-     Remarks:
-      New in Windows Vista: http://blogs.technet.com/voy/archive/2007/04/01/write-restricted-token.aspx
-      This object is nil on older than Windows Vista.
-    }
-  JwWriteRestrictedSID,
-
-    {<B>JwNullSID</B> defines the NULL Logon SID
-     You need to call JwInitWellknownSIDs before accessing this variable!
-
-     Use:
-     <code lang="Delphi">
-      SD : TJwSecurityDescriptor;
-      ...
-      SD.OwnOwner := false;
-      SD.Owner := JwNullSID;
-      SD.DACL.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil,[],FILE_EXECUTE,JwNullSID, false)); //see?: false
-     </code>
-    }
-  JwNullSID,
-    {<B>JwPrincipalSid</B> defines the Everybody group
-     You need to call JwInitWellknownSIDs before accessing this variable!
-
-     Use:
-     <code lang="Delphi">
-      SD : TJwSecurityDescriptor;
-      ...
-      SD.OwnOwner := false;
-      SD.Owner := JwWorldSID;
-      SD.DACL.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil,[],FILE_EXECUTE,JwWorldSID, false)); //see?: false
-     </code>
-    }
-  JwWorldSID,
-    {<B>JwPrincipalSid</B> defines the local group
-     You need to call JwInitWellknownSIDs before accessing this variable!
-
-     Use:
-     <code lang="Delphi">
-      SD : TJwSecurityDescriptor;
-      ...
-      SD.OwnOwner := false;
-      SD.Owner := JwLocalGroupSID;
-      SD.DACL.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil,[],FILE_EXECUTE,JwLocalGroupSID, false)); //see?: false
-     </code>
-    }
-  JwLocalGroupSID,
-
-  {<B>JwPrincipalSid</B> defines the network service group
-     You need to call JwInitWellknownSIDs before accessing this variable!
-
-    Use:
-     <code lang="Delphi">
-      SD : TJwSecurityDescriptor;
-      ...
-      SD.OwnOwner := false;
-      SD.Owner := JwLocalGroupSID;
-      SD.DACL.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil,[],FILE_EXECUTE,JwNetworkServiceSID, false)); //see?: false
-     </code>
-    }
-  JwNetworkServiceSID,
-
-  {<B>JwPrincipalSid</B> defines the local service group
-     You need to call JwInitWellknownSIDs before accessing this variable!
-
-    Use:
-     <code lang="Delphi">
-      SD : TJwSecurityDescriptor;
-      ...
-      SD.OwnOwner := false;
-      SD.Owner := JwLocalGroupSID;
-      SD.DACL.Add(TJwDiscretionaryAccessControlEntryDeny.Create(nil,[],FILE_EXECUTE,JwLocalServiceSID, false)); //see?: false
-     </code>
-    }
-  JwLocalServiceSID,
-
-  JwPrincipalSid    : TJwSecurityKnownSID;
-
   {<B>JwKnownSid</B> contains a set of known sids. It is (partly) initialized
    by a call to JwInitWellKnownSIDsEx.
 
@@ -363,8 +162,143 @@ var
   }
   JwKnownSid : array[TWellKnownSidType] of TJwSecurityKnownSID;
 
+{This function returns an integrity label SID.
 
-//    LocalAdministratorSID : TJwSecurityKnownSID;
+ Return value
+  The returned instance must not be freed and is cached by the function.
+}
+function JwIntegrityLabelSID(LabelType : TJwIntegrityLabelType) : TJwSecurityKnownSID;
+
+{This function returns a well known SID.
+
+ Return value
+  The returned instance must not be freed and is cached by the function.
+}
+function JwAuthenticatedUserSID : TJwSecurityKnownSID;
+
+{This function returns a well known SID.
+
+ Return value
+  The returned instance must not be freed and is cached by the function.
+}
+function JwSecurityProcessUserSID : TJwSecurityKnownSID;
+
+{This function returns a well known SID.
+
+ Return value
+  The returned instance must not be freed and is cached by the function.
+}
+function JwAdministratorsSID : TJwSecurityKnownSID;
+
+{This function returns a well known SID.
+
+ Return value
+  The returned instance must not be freed and is cached by the function.
+}
+function JwUsersSID : TJwSecurityKnownSID;
+
+{This function returns a well known SID.
+
+ Return value
+  The returned instance must not be freed and is cached by the function.
+}
+function JwPowerUsersSID : TJwSecurityKnownSID;
+
+{This function returns a well known SID.
+
+ Return value
+  The returned instance must not be freed and is cached by the function.
+}
+function JwGuestsSID : TJwSecurityKnownSID;
+
+{This function returns a well known SID.
+
+ Return value
+  The returned instance must not be freed and is cached by the function.
+}
+function JwLocalSystemSID : TJwSecurityKnownSID;
+
+{This function returns a well known SID.
+
+ Return value
+  The returned instance must not be freed and is cached by the function.
+}
+function JwRemoteInteractiveLogonSID : TJwSecurityKnownSID;
+
+{This function returns a well known SID.
+
+ Return value
+  The returned instance must not be freed and is cached by the function.
+}
+function JwRestrictedCodeSID : TJwSecurityKnownSID;
+
+{This function returns a well known SID.
+
+ Return value
+  The returned instance must not be freed and is cached by the function.
+}
+function JwWriteRestrictedSID : TJwSecurityKnownSID;
+
+{This function returns a well known SID.
+
+ Return value
+  The returned instance must not be freed and is cached by the function.
+}
+function JwNullSID : TJwSecurityKnownSID;
+
+{This function returns a well known SID.
+
+ Return value
+  The returned instance must not be freed and is cached by the function.
+}
+function JwWorldSID : TJwSecurityKnownSID;
+
+{This function returns a well known SID.
+
+ Return value
+  The returned instance must not be freed and is cached by the function.
+}
+function JwLocalGroupSID : TJwSecurityKnownSID;
+
+{This function returns a well known SID.
+
+ Return value
+  The returned instance must not be freed and is cached by the function.
+}
+function JwNetworkServiceSID : TJwSecurityKnownSID;
+
+{This function returns a well known SID.
+
+ Return value
+  The returned instance must not be freed and is cached by the function.
+}
+function JwLocalServiceSID : TJwSecurityKnownSID;
+
+{This function returns a well known SID.
+
+ Return value
+  The returned instance must not be freed and is cached by the function.
+}
+function JwPrincipalSelfSID : TJwSecurityKnownSID;
+
+{This function returns a well known SID.
+
+ Return value
+  The returned instance must not be freed and is cached by the function.
+}
+function JwCreatorOwnerGroupSID : TJwSecurityKnownSID;
+
+{This function returns a well known SID.
+
+ Return value
+  The returned instance must not be freed and is cached by the function.
+}
+function JwPrimaryGroupSID : TJwSecurityKnownSID;
+
+
+{JwInitWellKnownSIDs is obsolete and does nothing.}
+procedure JwInitWellKnownSIDs; deprecated;
+
 
 {<B>JwSecurityCurrentThreadUserSID</B> gets the current process user or impersonated thread user of the current thread
 that is used to call this function.
@@ -427,16 +361,6 @@ raises
 }
 function JwGetMachineSid(const ComputerOrDNS : WideString = '') : TJwSecurityId;
 
-{const
-  AllWellKnownSid : TWellKnownSidTypeSet = ($FFFF);}
-
-{<B>JwInitWellKnownSIDs</B> initializes the WellKnownSID variables.
- This function should not be called during initialization of
- a Jwscl-unit since it indirectly accesses various global variables,
- e.g. JwProcessHeap, which might not have been initialized yet.
-}
-procedure JwInitWellKnownSIDs;
-
 {<B>JwInitWellKnownSIDsEx</B> works like JwInitWellKnownSIDs  but also inits the array
 JwKnownSid for additional known SIDs. It calls JwInitWellKnownSIDs automatically.
 
@@ -469,7 +393,7 @@ raises
 procedure JwCheckInitKnownSid(
   const Sids : array of TJwSecurityKnownSID;
   const SidNames : array of TJwString;
-  const MethodName, ClassName, FileName : TJwString);
+  const MethodName, ClassName, FileName : TJwString); deprecated;
 
 
 
@@ -566,15 +490,6 @@ var {<B>JwSidMapDef</B> defines a list of mapped known Sids which are used
     }
     JwSidMapDefErrors : TList;
 
-var
-  {<B>JwInitWellKnownSidStatus</B> shows the status of the
-   well known sid variables. It is set to true if
-   JwInitWellKnownSIDs was called.
-
-   Only read this value. Never set it!
-  }
-  JwInitWellKnownSidStatus : Boolean = false;
-
 {$ENDIF SL_IMPLEMENTATION_SECTION}
 
 {$IFNDEF SL_OMIT_SECTIONS}
@@ -584,6 +499,12 @@ uses IniFiles;
 {$ENDIF SL_OMIT_SECTIONS}
 
 {$IFNDEF SL_INTERFACE_SECTION}
+
+
+var
+  _JwIntegrityLabelSID : array[TJwIntegrityLabelType] of TJwSecurityKnownSID;
+  _JwSecurityProcessUserSID : TJwSecurityThreadUserSID;
+
 
 
 var SidMaps : TList;
@@ -704,7 +625,7 @@ begin
     end;
   end;
 
-  raise EJwsclIndexOutOfBoundsException.Create('');
+  raise EJwsclIndexOutOfBoundsException.Create(''); //TODO: exception
 end;
 
 
@@ -903,7 +824,6 @@ end;
 
 var
   OnFinalization: boolean = False;
-//fSecurityCurrentThreadUserSID : TJwSecurityThreadUserSID = nil;
 
 
 function JwGetLogonSID(aToken: TJwSecurityToken): TJwSecurityId;
@@ -989,11 +909,6 @@ end;
 
 function JwSecurityCurrentThreadUserSID: TJwSecurityThreadUserSID;
 begin
-  //if Assigned(fSecurityCurrentThreadUserSID) then
-  //  fSecurityCurrentThreadUserSID.Free;
-
-  //fSecurityCurrentThreadUserSID := TJwSecurityThreadUserSID.Create;
-  //result := fSecurityCurrentThreadUserSID;
   Result := TJwSecurityThreadUserSID.Create;
 end;
 
@@ -1021,9 +936,6 @@ end;
 
 procedure TJwSecurityThreadUserSID.Free;
 begin
-  //if (not OnFinalization) and (JwSecurityProcessUserSID = Self) then
-  //  raise EJwsclSecurityException.CreateFmtEx('Call to Free failed, because the var JwSecurityProcessUserSID cannot be freed manually.','Free',ClassName,'JwsclKnownSid.pas',0,false,[]);
-
   inherited;
 end;
 
@@ -1036,7 +948,15 @@ end;
 
 procedure TJwSecurityKnownSID.Free;
 begin
-  inherited;
+{$IFDEF DEBUG}
+  //In debug mode raise an exception. Somebody freed the instance manually
+  if (not OnFinalization) then
+   raise EJwsclSecurityException.CreateFmtEx('Call to Free failed, because this is a commonly used SID and is automatically freed.','Free',
+      ClassName,'JwsclKnownSid.pas',0,false,[]);
+{$ENDIF}
+
+  if (OnFinalization) then
+    inherited;
 end;
 
 function TJwSecurityKnownSID.IsStandardSIDEx(const aSID: TJwSecurityId): boolean;
@@ -1049,8 +969,6 @@ end;
 procedure JwInitWellKnownSIDsExAll();
 var i : TWellKnownSidType;
 begin
-  JwInitWellKnownSIDs;
-
   for i := low(TWellKnownSidType) to high(TWellKnownSidType) do
   begin
     try
@@ -1067,8 +985,6 @@ end;
 procedure JwInitWellKnownSIDsEx(const Sids : TWellKnownSidTypeSet);
 var i : TWellKnownSidType;
 begin
-  JwInitWellKnownSIDs;
-
   for i := low(TWellKnownSidType) to high(TWellKnownSidType) do
   begin
     if i in Sids then
@@ -1080,102 +996,14 @@ begin
   end;
 end;
 
-procedure JwInitWellKnownSIDs;
-begin
-  if not Assigned(JwAdministratorsSID) then
-    JwAdministratorsSID := TJwSecurityKnownSID.Create('S-1-5-32-544');
-  if not Assigned(JwUsersSID) then
-    JwUsersSID := TJwSecurityKnownSID.Create('S-1-5-32-545');
-  if not Assigned(JwGuestsSID) then
-    JwGuestsSID := TJwSecurityKnownSID.Create('S-1-5-32-546');
-  if not Assigned(JwPowerUsersSID) then
-    JwPowerUsersSID := TJwSecurityKnownSID.Create('S-1-5-32-547');
-  if not Assigned(JwLocalSystemSID) then
-    JwLocalSystemSID := TJwSecurityKnownSID.Create('S-1-5-18');
-  if not Assigned(JwRemoteInteractiveLogonSID) then
-    JwRemoteInteractiveLogonSID := TJwSecurityKnownSID.Create('S-1-5-14');
-
-  if not Assigned(JwWriteRestrictedSID) and
-    TJwWindowsVersion.IsWindowsVista(true) then
-    JwWriteRestrictedSID := TJwSecurityKnownSID.Create('S-1-5-33');
-
-
-
-  if not Assigned(JwAuthenticatedUserSID) then
-    JwAuthenticatedUserSID := TJwSecurityKnownSID.Create('S-1-5-11');
-
-  if not Assigned(JwRestrictedCodeSID) then
-    JwRestrictedCodeSID := TJwSecurityKnownSID.Create('S-1-5-12');
-
-  if not Assigned(JwNullSID) then
-    JwNullSID := TJwSecurityKnownSID.Create('S-1-0-0');
-  if not Assigned(JwWorldSID) then
-    JwWorldSID := TJwSecurityKnownSID.Create('S-1-1-0');
-  if not Assigned(JwLocalGroupSID) then
-    JwLocalGroupSID := TJwSecurityKnownSID.Create('S-1-2-0');
-  if not Assigned(JwNetworkServiceSID) then
-    JwNetworkServiceSID := TJwSecurityKnownSID.Create('S-1-5-20');
-  if not Assigned(JwLocalServiceSID) then
-    JwLocalServiceSID := TJwSecurityKnownSID.Create('S-1-5-19');
-  if not Assigned(JwPrincipalSid) then
-    JwPrincipalSid := TJwSecurityKnownSID.Create('S-1-5-10');
-
-
-
-
-
-
-  if not Assigned(JwSecurityProcessUserSID) then
-    JwSecurityProcessUserSID := TJwSecurityThreadUserSID.Create;
-  (JwSecurityProcessUserSID as TJwSecurityThreadUserSID).fIsStandard := true;
-
-  JwIntegrityLabelSID[iltNone]       := nil;
-  if not Assigned(JwIntegrityLabelSID[iltLow]) then
-    JwIntegrityLabelSID[iltLow]       := TJwSecurityKnownSID.Create(JwLowIL);
-  if not Assigned(JwIntegrityLabelSID[iltMedium]) then
-    JwIntegrityLabelSID[iltMedium]    := TJwSecurityKnownSID.Create(JwMediumIL);
-  if not Assigned(JwIntegrityLabelSID[iltHigh]) then
-    JwIntegrityLabelSID[iltHigh]      := TJwSecurityKnownSID.Create(JwHighIL);
-  if not Assigned(JwIntegrityLabelSID[iltSystem]) then
-    JwIntegrityLabelSID[iltSystem]    := TJwSecurityKnownSID.Create(JwSystemIL);
-  if not Assigned(JwIntegrityLabelSID[iltProtected]) then
-    JwIntegrityLabelSID[iltProtected] := TJwSecurityKnownSID.Create(JwProtectedProcessIL);
-
-  JwInitWellKnownSidStatus := true;
-end;
-
 procedure DoneWellKnownSIDs;
 var ilts : TJwIntegrityLabelType;
     i : TWellKnownSidType;
 begin
-  JwInitWellKnownSidStatus := false;
-
-
-  FreeAndNil(JwAuthenticatedUserSID);
-  FreeAndNil(JwAdministratorsSID);
-  FreeAndNil(JwUsersSID);
-  FreeAndNil(JwGuestsSID);
-  FreeAndNil(JwPowerUsersSID);
-  FreeAndNil(JwLocalSystemSID);
-  FreeAndNil(JwWriteRestrictedSID);
-  FreeAndNil(JwRemoteInteractiveLogonSID);
-  FreeAndNil(JwRestrictedCodeSID);
-  FreeAndNil(JwNullSID);
-  FreeAndNil(JwWorldSID);
-  FreeAndNil(JwLocalGroupSID);
-  FreeAndNil(JwNetworkServiceSID);
-  FreeAndNil(JwLocalServiceSID);
-  FreeAndNil(JwSecurityProcessUserSID);
-  FreeAndNil(JwPrincipalSid);
-
-  FreeAndNil(JwRestrictedCodeSID);
-  FreeAndNil(JwPrincipalSid);
-
-  //  FreeAndNil(fSecurityCurrentThreadUserSID);
-
   for ilts := low(TJwIntegrityLabelType) to high(TJwIntegrityLabelType) do
-    FreeAndNil(JwIntegrityLabelSID[ilts]);
+    FreeAndNil(_JwIntegrityLabelSID[ilts]);
 
+  FreeAndNil(_JwSecurityProcessUserSID);
 
   for i := low(TWellKnownSidType) to high(TWellKnownSidType) do
   begin
@@ -1223,6 +1051,137 @@ begin
       RsInitWellKnownNotCalled2,
       MethodName, ClassName, FileName, 0, false, [Errors]);
 end;
+
+
+function GetWellKnownSid(SidType : TWellKnownSidType) : TJwSecurityKnownSID;
+begin
+  if OnFinalization then
+   raise EJwsclSecurityException.CreateFmtEx('Could not allocate a JwXXXxSID because they are already freed for good.','GetWellKnownSid',
+      '','JwsclKnownSid.pas',0,false,[]);
+
+
+  if not Assigned(JwKnownSid[SidType]) then
+    JwKnownSid[SidType] := TJwSecurityKnownSID.CreateWellKnownSid(SidType);
+
+  result := JwKnownSid[SidType];
+end;
+
+function JwSecurityProcessUserSID : TJwSecurityKnownSID;
+begin
+  if not Assigned(_JwSecurityProcessUserSID) then
+  begin
+    _JwSecurityProcessUserSID := TJwSecurityThreadUserSID.Create;
+    _JwSecurityProcessUserSID.fIsStandard := true;
+  end;
+
+  result := _JwSecurityProcessUserSID;
+end;
+
+function JwAuthenticatedUserSID : TJwSecurityKnownSID;
+begin
+  result := GetWellKnownSid(WinAuthenticatedUserSid);
+end;
+
+function JwAdministratorsSID : TJwSecurityKnownSID;
+begin
+  result := GetWellKnownSid(WinBuiltinAdministratorsSid);
+end;
+
+function JwUsersSID : TJwSecurityKnownSID;
+begin
+  result := GetWellKnownSid(WinBuiltinUsersSid);
+end;
+
+function JwPowerUsersSID : TJwSecurityKnownSID;
+begin
+  result := GetWellKnownSid(WinBuiltinPowerUsersSid);
+end;
+
+function JwGuestsSID : TJwSecurityKnownSID;
+begin
+  result := GetWellKnownSid(WinBuiltinGuestsSid);
+end;
+
+function JwLocalSystemSID : TJwSecurityKnownSID;
+begin
+  result := GetWellKnownSid(WinLocalSystemSid);
+end;
+
+function JwRemoteInteractiveLogonSID : TJwSecurityKnownSID;
+begin
+  result := GetWellKnownSid(WinRemoteLogonIdSid);
+end;
+
+function JwRestrictedCodeSID : TJwSecurityKnownSID;
+begin
+  result := GetWellKnownSid(WinRestrictedCodeSid);
+end;
+
+function JwWriteRestrictedSID : TJwSecurityKnownSID;
+begin
+  result := GetWellKnownSid(WinWriteRestrictedCodeSid);
+end;
+
+function JwNullSID : TJwSecurityKnownSID;
+begin
+  result := GetWellKnownSid(WinNullSid);
+end;
+
+function JwWorldSID : TJwSecurityKnownSID;
+begin
+  result := GetWellKnownSid(WinWorldSid);
+end;
+
+function JwLocalGroupSID : TJwSecurityKnownSID;
+begin
+  result := GetWellKnownSid(WinLocalSid);
+end;
+
+function JwNetworkServiceSID : TJwSecurityKnownSID;
+begin
+  result := GetWellKnownSid(WinNetworkServiceSid);
+end;
+
+function JwLocalServiceSID : TJwSecurityKnownSID;
+begin
+  result := GetWellKnownSid(WinLocalServiceSid);
+end;
+
+function JwPrincipalSelfSID : TJwSecurityKnownSID;
+begin
+  result := GetWellKnownSid(WinSelfSid);
+end;
+
+function JwCreatorOwnerGroupSID : TJwSecurityKnownSID;
+begin
+  result := GetWellKnownSid(WinCreatorOwnerSid);
+end;
+
+function JwPrimaryGroupSID : TJwSecurityKnownSID;
+begin
+  result := GetWellKnownSid(WinCreatorGroupSid);
+end;
+
+
+function JwIntegrityLabelSID(LabelType : TJwIntegrityLabelType) : TJwSecurityKnownSID;
+const
+   SidStr : array[TJwIntegrityLabelType] of String =
+      (
+      {iltNone =} 'S-1-16-0',
+      {JwLowIL =} 'S-1-16-4096',
+      {JwMediumIL =} 'S-1-16-8192',
+      {JwHighIL =} 'S-1-16-12288',
+      {JwSystemIL =} 'S-1-16-16384',
+      {JwProtectedProcessIL =} 'S-1-16-20480'
+      );
+
+begin
+  if not Assigned(_JwIntegrityLabelSID[LabelType]) then
+    _JwIntegrityLabelSID[LabelType] := TJwSecurityKnownSID.Create(SidStr[LabelType]);
+
+  result := _JwIntegrityLabelSID[LabelType];
+end;
+
 
 constructor TJwIntegrityLevelSID.Create(const SecurityID: TJwSecurityId);
 var
@@ -1397,7 +1356,6 @@ end;
 
 {$ENDIF DEBUG}
 
-
 class procedure TJwIntegrityLevelSID.FreeIntegrityLevelSIDs;
 var i : Integer;
 begin
@@ -1413,6 +1371,16 @@ begin
   FreeAndNil(IntegrityLevelSIDs);
 end;
 
+
+procedure JwInitWellKnownSIDs;
+begin
+{$IFDEF DEBUG}
+  raise EJwsclUnsupportedException.Create('The function JwInitWellKnownSIDs is obsolete. This exception only occurs in debug mode.');
+{$ENDIF}
+  //Nothing to do here
+end;
+
+
 {$ENDIF SL_INTERFACE_SECTION}
 
 {$IFNDEF SL_OMIT_SECTIONS}
@@ -1424,20 +1392,7 @@ initialization
 {$ENDIF SL_OMIT_SECTIONS}
 
 {$IFNDEF SL_INITIALIZATION_SECTION}
-  JwSecurityProcessUserSID := nil;
-  JwAdministratorsSID := nil;
-  JwUsersSID := nil;
-  JwPowerUsersSID := nil;
-  JwGuestsSID := nil;
-  JwLocalSystemSID := nil;
-  JwRemoteInteractiveLogonSID := nil;
-  JwNullSID  := nil;
-  JwWorldSID := nil;
-  JwLocalGroupSID := nil;
-  JwNetworkServiceSID := nil;
-  JwLocalServiceSID := nil;
-  JwPrincipalSid := nil;
-
+  JwSecurityProcessUserSID; //preinit this value now
   NilWellKnownSid;
 
 {$ENDIF SL_INITIALIZATION_SECTION}

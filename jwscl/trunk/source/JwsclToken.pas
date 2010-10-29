@@ -2224,9 +2224,6 @@ function JwCreateRestrictedToken(
   var
     SD: TJwSecurityDescriptor;
   begin
-    if not Assigned(JwAdministratorsSID) then
-      JwInitWellKnownSIDs;
-
     SD := TJwSecurityDescriptor.Create;
     try
       SD.PrimaryGroup := JwNullSID;
@@ -2450,9 +2447,6 @@ function JwCheckAdministratorAccess: boolean;
 var
   SD: TJwSecurityDescriptor;
 begin
-  if not Assigned(JwAdministratorsSID) then
-    JwInitWellKnownSIDs;
-
   SD := TJwSecurityDescriptor.Create;
   try
     SD.PrimaryGroup := JwNullSID; //Usually not used
@@ -2885,6 +2879,9 @@ begin
   if Count = 0 then
     exit;
 
+  if JwProcessHeap = 0 then
+    JwProcessHeap := GetProcessHeap;
+
   Result := HeapAlloc(JwProcessHeap, HEAP_ZERO_MEMORY,
     sizeof(TLuidAndAttributes) * Count);
 
@@ -2939,6 +2936,9 @@ var
   size, i: integer;
 
 begin
+  if JwProcessHeap = 0 then
+    JwProcessHeap := GetProcessHeap;
+
   size   := sizeof(jwaWindows.PTOKEN_PRIVILEGES) +
     sizeof(TLuidAndAttributes) * Count;
   Result := HeapAlloc(JwProcessHeap, HEAP_ZERO_MEMORY, size);
@@ -2959,6 +2959,9 @@ function TJwPrivilegeSet.Create_PPRIVILEGE_SET: jwaWindows.PPRIVILEGE_SET;
 var
   i: integer;
 begin
+  if JwProcessHeap = 0 then
+    JwProcessHeap := GetProcessHeap;
+
   Result := HeapAlloc(JwProcessHeap, HEAP_ZERO_MEMORY,
     sizeof(jwaWindows.TPrivilegeSet) - sizeof(TLuidAndAttributes) +
     sizeof(TLuidAndAttributes) * Count);
@@ -3114,6 +3117,9 @@ constructor TJwPrivilege.Create(anOwner: TJwPrivilegeSet;
 {$ENDIF}
     ('', LUID, '', len);
 
+    if JwProcessHeap = 0 then
+      JwProcessHeap := GetProcessHeap;
+
     sName := HeapAlloc(JwProcessHeap, HEAP_ZERO_MEMORY, (len + 1) *
       sizeof(TJwChar));
 
@@ -3148,6 +3154,9 @@ constructor TJwPrivilege.Create(anOwner: TJwPrivilegeSet;
     LookupPrivilegeDisplayNameA
 {$ENDIF}
     ('', TJwPChar(aName), '', len, aLanguageID);
+
+    if JwProcessHeap = 0 then
+      JwProcessHeap := GetProcessHeap;
 
     sName := HeapAlloc(JwProcessHeap, HEAP_ZERO_MEMORY, (len + 1) *
       sizeof(TJwChar));
@@ -4219,6 +4228,9 @@ begin
   if tokLen <= 0 then
     doRaiseError(nil, RsTokenUnableTokenInformationLength);
 
+  if JwProcessHeap = 0 then
+    JwProcessHeap := GetProcessHeap;
+
   TokenInformation := HeapAlloc(JwProcessHeap, HEAP_ZERO_MEMORY, tokLen);
 
   if (TokenInformation = nil) then //TODO: BUGBUG : On not enough Memory this will fail
@@ -4792,7 +4804,7 @@ var
   Labels: TJwIntegrityLabelType;
 begin
   for Labels := low(TJwIntegrityLabelType) to high(TJwIntegrityLabelType) do
-    if (Labels <> iltNone) and not Assigned(JwIntegrityLabelSID[Labels]) then
+    if (Labels <> iltNone) and not Assigned(JwIntegrityLabelSID(Labels)) then
       raise EJwsclInitWellKnownException.CreateFmtEx(
         RsInitWellKnownNotCalled, 'GetIntegrityLevelType',
         RsTokenGlobalClassName, RsUNToken, 0, False, []);
@@ -4866,12 +4878,12 @@ procedure TJwSecurityToken.SetIntegrityLevel(
   const Attributes: TJwSidAttributeSet = [sidaGroupMandatory]);
 begin
   if (LabelType <> iltNone) and not
-    Assigned(JwIntegrityLabelSID[LabelType]) then
+    Assigned(JwIntegrityLabelSID(LabelType)) then
     raise EJwsclInitWellKnownException.CreateFmtEx(
       RsInitWellKnownNotCalled, 'SetIntegrityLevel',
       RsTokenGlobalClassName, RsUNToken, 0, False, []);
 
-  SetIntegrityLevel(JwIntegrityLabelSID[LabelType], Attributes);
+  SetIntegrityLevel(JwIntegrityLabelSID(LabelType), Attributes);
 end;
 
 
@@ -6257,8 +6269,6 @@ var
   Token: TJwSecurityToken;
   Sid:   TJwSecurityID;
 begin
-  JwInitWellKnownSIDs; //loads JwLocalSystemSID if not already done
-
   Token := TJwSecurityToken.CreateTokenByProcess(0, TOKEN_READ or TOKEN_QUERY);
   try
     Sid := Token.GetTokenUser;
