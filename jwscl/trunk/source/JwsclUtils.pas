@@ -331,24 +331,6 @@ procedure JwUNIMPLEMENTED_DEBUG;
 {<B>JwUNIMPLEMENTED</B> raises exception EJwsclUnimplemented}
 procedure JwUNIMPLEMENTED;
 
-{<B>JwCheckInitKnownSid</B> checks for the call of JwInitWellKnownSIDs
-and raises EJwsclInitWellKnownException if it was not called.
-
-There is a more detailed procedure JwsclKnownSid.JwCheckInitKnownSid
-which can be used to check for special well known SID variables from
-unit JwsclKnownSid.
-
-@param MethodName defines the name of the method this parameter belongs to
-@param ClassName defines the name of the class the method belongs to. Can be
-  empty if the method does not belong to a class
-@param FileName defines the source file of the call to this procedure.
-raises
- EJwsclInitWellKnownException This exception will be raised if JwInitWellKnownSIDs
-  was not called.
-}
-
-procedure JwCheckInitKnownSid(const MethodName, ClassName, FileName : TJwString);
-
 
 {$IFDEF JWSCL_TYPEINFO}
 {<B>GetUnitName</B> returns the name of unit where the given objects was defined in source code.
@@ -1762,15 +1744,6 @@ begin
 end;
 
 
-
-
-procedure JwCheckInitKnownSid(const MethodName, ClassName, FileName : TJwString);
-begin
-  if not JwInitWellKnownSidStatus then
-    raise EJwsclInitWellKnownException.CreateFmtEx(
-      RsInitWellKnownNotCalled,
-      MethodName, ClassName, FileName, 0, false, []);
-end;
 
 
 function JwCheckArray(const Objs : TJwObjectTypeArray; out Index : Integer) : Boolean;
