@@ -5,8 +5,8 @@
 { Obtained through: Joint Endeavour of Delphi Innovators (Project JEDI)        }
 {                                                                              }
 { Author(s): Christian Wimmer                                                  }
-{ Creation date: 24th October 2008                                             }
-{ Last modification date: 24th October 2008                                    }
+{ Creation date: 6th October 2010                                              }
+{ Last modification date: 6th October 2010                                     }
 {                                                                              }
 { Description: Shows how to use the IFileIsInUse API to retrieve an owner of   }
 {              a locked file.                                                  }
