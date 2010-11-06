@@ -35,10 +35,7 @@ type
   TFormMain = class(TForm, IUnknown, IFileIsInUse, IDropTarget)
     btnOpen: TButton;
     btnClose: TButton;
-    rg1: TRadioGroup;
-    RadioButton1: TRadioButton;
     Label1: TLabel;
-    RadioButton2: TRadioButton;
     OpenDialog1: TOpenDialog;
     edtFileName: TEdit;
     procedure FormDestroy(Sender: TObject);

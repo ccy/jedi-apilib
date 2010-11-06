@@ -40,37 +40,13 @@ object FormMain: TFormMain
     TabOrder = 1
     OnClick = btnCloseClick
   end
-  object rg1: TRadioGroup
-    Left = 16
-    Top = 120
-    Width = 193
-    Height = 81
-    Caption = 'Current integrity level'
-    TabOrder = 2
-  end
-  object RadioButton1: TRadioButton
-    Left = 32
-    Top = 144
-    Width = 113
-    Height = 17
-    Caption = 'High'
-    TabOrder = 3
-  end
-  object RadioButton2: TRadioButton
-    Left = 32
-    Top = 167
-    Width = 113
-    Height = 17
-    Caption = 'Low'
-    TabOrder = 4
-  end
   object edtFileName: TEdit
     Left = 16
     Top = 91
     Width = 401
     Height = 21
     ReadOnly = True
-    TabOrder = 5
+    TabOrder = 2
   end
   object OpenDialog1: TOpenDialog
     Filter = '*.*'
