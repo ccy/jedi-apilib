@@ -2612,11 +2612,11 @@ const
    DACL:
       1.
       ACE-Type: Allow
-      AccessMask : 0x1FFFFFF (0000 000 1 11111111 1111111111111111)
+      AccessMask : 0x000B defines COM_RIGHTS_EXECUTE (1), COM_RIGHTS_EXECUTE_LOCAL (2) and COM_RIGHTS_ACTIVATE_LOCAL (8).
       SID: Local System
       2.
       ACE-Type: Allow
-      AccessMask : 0x1FFFFFF (0000 000 1 11111111 1111111111111111)
+      AccessMask : 0x000B defines COM_RIGHTS_EXECUTE (1), COM_RIGHTS_EXECUTE_LOCAL (2) and COM_RIGHTS_ACTIVATE_LOCAL (8).
       SID: Builtin Administrators
 
    acDisableActivateAsActivator
@@ -2625,9 +2625,11 @@ const
      Do not load unnecessary DLLs.
    acDynamicCloaking
      Use thread token on outgoing COM calls.
+
+
   }
   JwTightCOMSecuritySettings : TJwCOMSecuritySettings = (
-    SDDL: 'O:LAG:BAD:(A;;0x1FFFFFF;;;SY)(A;;0x1FFFFFF;;;BA)';
+    SDDL: 'O:LAG:BAD:(A;;0x000B;;;SY)(A;;0x000B;;;BA)';
     AuthenticationLevel: calPktPrivacy;
     ImpersonationLevel: cilIdentify;
     Capabilities : [acDisableActivateAsActivator, acNoCustomMarshal, acDynamicCloaking];
@@ -2648,10 +2650,13 @@ const
    DACL:
      Allow: BuiltInAdministrators, Interactive User, SYSTEM
   </pre>
+
+  0x000B defines COM_RIGHTS_EXECUTE (1), COM_RIGHTS_EXECUTE_LOCAL (2) and COM_RIGHTS_ACTIVATE_LOCAL (8).
+
   Access Rights: see ACE Rights : http://msdn.microsoft.com/en-us/library/aa374928%28VS.85%29.aspx
 
   }
-  JwDefaultCOMSDDL = 'O:BAG:BAD:(A;;CCDCLCSWRP;;;BA)(A;;CCDCLCSWRP;;;IU)(A;;CCDCLCSWRP;;;SY)';
+  JwDefaultCOMSDDL = 'O:BAG:BAD:(A;;0x000B;;;BA)(A;;0x000B;;;IU)(A;;0x000B;;;SY)';
 
 implementation
 
@@ -3331,7 +3336,7 @@ begin
 
   if not Reg.OpenKey('AppID\'+GUIDToString(AppID), false) then
   begin
-    Reg.Free;
+    FreeAndNil(Reg);
 
     raise EJwsclInvalidRegistryPath
       .CreateFmtEx(RsCOMAppIDNotFound,
