@@ -129,13 +129,15 @@ const
     'OF_CAP_CANSWITCHTO ($0001) or OF_CAP_CANCLOSE ($0002)'
   );
 
+  WM_FILEINUSE_CLOSEFILE = WM_USER + 1;
 var
   FileInUse : IFileIsInUse;
   pAppName : PWidechar;
   Usage : TFileUsageType;
   Caps : Cardinal;
   WindowHandle : HWND;
-  S : String;
+  Msg, S : String;
+  Buttons : Integer;
 begin
   CoInitialize(nil);
 
@@ -154,9 +156,31 @@ begin
     OleCheck(FileInUse.GetCapabilities(Caps));
     OleCheck(FileInUse.GetSwitchToHWND(WindowHandle));
 
-    S := Format('AppName: %s'#13#10'Usage: %s'#13#10'Caps: %s'#13#10'Hwnd: %d',
+    Buttons := MB_OK;
+
+    if (Caps and OF_CAP_CANSWITCHTO = OF_CAP_CANSWITCHTO) then
+    begin
+      Msg := 'YES = Switch to Window? NO = Send close file; Cancel= Do nothing';
+      Buttons := MB_YESNOCANCEL;
+    end;
+
+
+    S := Format('AppName: %s'#13#10'Usage: %s'#13#10'Caps: %s'#13#10'Hwnd: %d'#13#10+Msg,
       [WideString(pAppName), TFileUsageTypeStr[Usage], CapStr[Caps], WindowHandle]);
 
-    MessageBox(0, PChar(S), '', MB_ICONINFORMATION or MB_OK);
+    case MessageBox(0, PChar(S), '', MB_ICONINFORMATION or Buttons) of
+      IDYES:
+      begin
+        SetForegroundWindow(WindowHandle);
+        Sleep(2000); //allows the window to be displayed in front; otherwise IDE will be shown
+      end;
+      IDNO:
+      begin
+        //Actually this Window message is only implemented by the MSDN FileIsInUse example
+        SendMessage(WindowHandle, WM_FILEINUSE_CLOSEFILE, 0,0);
+      end;
+    end;
+
+    CoTaskMemFree(pAppName);
   end;
 end.
