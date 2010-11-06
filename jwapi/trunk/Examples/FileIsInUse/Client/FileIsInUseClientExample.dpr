@@ -129,7 +129,7 @@ const
     'OF_CAP_CANSWITCHTO ($0001) or OF_CAP_CANCLOSE ($0002)'
   );
 
-  WM_FILEINUSE_CLOSEFILE = WM_USER + 1;
+
 var
   FileInUse : IFileIsInUse;
   pAppName : PWidechar;
@@ -176,8 +176,7 @@ begin
       end;
       IDNO:
       begin
-        //Actually this Window message is only implemented by the MSDN FileIsInUse example
-        SendMessage(WindowHandle, WM_FILEINUSE_CLOSEFILE, 0,0);
+        OleCheck(FileInUse.CloseFile);
       end;
     end;
 
