@@ -1555,6 +1555,8 @@ type
     property AuthContext : TJwAuthContext read GetAuthContext write SetAuthContext;
   end;
 
+
+
   {TJwComRegistrySecurity provides functionality to retrieve
    COM related security information from registry.
 
@@ -1622,10 +1624,15 @@ type
     Remarks
       The registry calls are made on the 64bit registry if the process is running in a Win64 environment.
 
+      Not all keys are reflected. Have a look at this table:
+        http://msdn.microsoft.com/en-us/library/aa384253%28v=VS.85%29.aspx#redirected__shared__and_reflected_keys_under_wow64
     Exceptions
+      EJwsclInvalidParameterException The parameter hive is invalid. Only rhAuto, rhLocal and rhCurrentUser are valid.
       EJwsclInvalidRegistryPath  This exception is raised if the AppID could not be found in the registry.
     }
-    constructor Create(const AppID : TGuid; ReadOnly : Boolean);
+    constructor Create(const AppID: TGuid; ReadOnly: Boolean;
+     Hive : TJwRegistryHive;
+     COMRegistryPlatform : TJwPlatformType);
     destructor Destroy; override;
 
     {Frees all internal variables and sets them to nil
@@ -1660,6 +1667,8 @@ type
     class function GetLegacyImpersonationLevel : TJwComImpersonationLevel; virtual;
 
     class function GetGlobalAuthenticationServices : TJwSecurityPackageInformationArray;
+
+    class function CheckROTAnyClientPermission(const APPID : TGUID) : Boolean;
 
     //properties
 
@@ -3322,16 +3331,75 @@ begin
   end;
 end;
 
-constructor TJwComRegistrySecurity.Create(const AppID: TGuid; ReadOnly: Boolean);
-begin
-  Reg := TRegistry.Create();
-  Reg.RootKey := HKEY_CLASSES_ROOT;
 
-  if TJwWindowsVersion.IsWindows64 then
-    Reg.Access := Reg.Access or KEY_WOW64_64KEY;
+class function TJwComRegistrySecurity.CheckROTAnyClientPermission(
+  const APPID: TGUID): Boolean;
+var P : TJwComRegistrySecurity;
+begin
+  result := false;
+  try
+    P := TJwComRegistrySecurity.Create(APPID, true, rhLocal, ptAuto);
+    P.Free;
+    result := true;
+  except
+    on E : EJwsclInvalidRegistryPath do;
+    on E : Exception do
+      raise;
+  end;
+end;
+
+constructor TJwComRegistrySecurity.Create(const AppID: TGuid; ReadOnly: Boolean;
+     Hive : TJwRegistryHive;
+     COMRegistryPlatform : TJwPlatformType);
+
+begin
+  fReadOnly := ReadOnly;
+
+  if ReadOnly then
+    Reg := TRegistry.Create(KEY_READ)
+  else
+    Reg := TRegistry.Create(KEY_ALL_ACCESS);
+
+  case Hive of
+    rhAuto:
+      begin
+        Reg.RootKey := HKEY_LOCAL_MACHINE;
+      end;
+    rhLocal:
+      Reg.RootKey := HKEY_LOCAL_MACHINE;
+    rhCurrentUser :
+      Reg.RootKey := HKEY_CLASSES_ROOT;
+  else
+    begin
+      FreeAndNil(Reg);
+
+      raise EJwsclInvalidParameterException
+        .CreateFmtEx('Type of Hive is invalid',
+        'Create', ClassName, RsUNComSecurity, 0, false, []);
+    end;
+  end;
+
+  case COMRegistryPlatform of
+    ptAuto:
+      if TJwWindowsVersion.IsWindows64 then
+      begin
+        Reg.Access := Reg.Access or KEY_WOW64_64KEY;
+        if not Reg.KeyExists('AppID\'+GUIDToString(AppID)) then
+          Reg.Access := Reg.Access or KEY_WOW64_32KEY;
+      end
+      else
+      begin
+        Reg.Access := Reg.Access or KEY_WOW64_32KEY
+      end;
+
+    pt32: Reg.Access := Reg.Access or KEY_WOW64_32KEY;
+    pt64: Reg.Access := Reg.Access or KEY_WOW64_64KEY;
+  end;
+
+
   //TODO:  http://msdn.microsoft.com/en-us/library/aa384235%28VS.85%29.aspx
   // not all keys are in 32bit section of 64bit registry
-  //For HKEY_LOCAL_MACHINE\Software\Classes\Appid and HKEY_CURRENT_USER\Software\Classes\Appid, the 
+  //For HKEY_LOCAL_MACHINE\Software\Classes\Appid and HKEY_CURRENT_USER\Software\Classes\Appid, the
   //  DllSurrogate and DllSurrogateExecutable registry values are not reflected if their value is an empty string.
 
   if not Reg.OpenKey('AppID\'+GUIDToString(AppID), false) then
@@ -5442,7 +5510,6 @@ begin
        (pAccessList.pPropertyAccessList.lpProperty <> nil) or
        (pAccessList.pPropertyAccessList.fListFlags <> 0)) then
     begin
-	  //TODO: use error result instead of raise
       raise EOleSysError.Create(RsInvalidPAccessListParameter,
            MAKE_HRESULT(1, FacilityCode, ERROR_INVALID_PARAMETER), 0);
     end;
@@ -5511,7 +5578,6 @@ begin
        not IsValidTrustee(pTrustee) then
     begin
       begin
-	    //TODO: use error result instead of raise
         raise EOleSysError.Create(Format(RsIncompatibleCOMTrusteeParameter, ['pTrustee']),
            MAKE_HRESULT(1, FacilityCode, ERROR_INVALID_PARAMETER), 0);
       end;
@@ -5569,28 +5635,27 @@ begin
 
   {!! Do not access property SecurityDescriptor in this method unless
    you secure it with fCriticalSection}
-
-  if StrictACLVerify and
-     not IsValidTrustee(prgTrustees) then
-  begin
-    begin
-	  //TODO: use error result instead of raise
-      raise EOleSysError.Create(Format(RsIncompatibleCOMTrusteeParameter, [prgTrustees]),
-         MAKE_HRESULT(1, FacilityCode, ERROR_INVALID_PARAMETER), 0);
-    end;
-  end;
-
-  if prgTrustees = nil then
-  begin
-    result := E_INVALIDARG;
-    exit;
-  end;
-
-  if cTrustees = 0 then
-    exit;
-
-  SIDs := TJwSecurityIdList.Create(true);
   try
+    if StrictACLVerify and
+       not IsValidTrustee(prgTrustees) then
+    begin
+      begin
+        raise EOleSysError.Create(Format(RsIncompatibleCOMTrusteeParameter, [prgTrustees]),
+           MAKE_HRESULT(1, FacilityCode, ERROR_INVALID_PARAMETER), 0);
+      end;
+    end;
+
+    if prgTrustees = nil then
+    begin
+      result := E_INVALIDARG;
+      exit;
+    end;
+
+    if cTrustees = 0 then
+      exit;
+
+    SIDs := TJwSecurityIdList.Create(true);
+
     try
       for I := 0 to cTrustees - 1 do
       begin
@@ -5646,26 +5711,24 @@ begin
 
   {!! Do not access property SecurityDescriptor in this method unless
    you secure it with fCriticalSection}
-
-  if StrictACLVerify and (
-     (pAccessList = nil) or
-     (pAccessList.pPropertyAccessList = nil) or
-     (pAccessList.cEntries = 0) or
-     (pAccessList.pPropertyAccessList.lpProperty <> nil) or
-     (pAccessList.pPropertyAccessList.fListFlags <> 0)) then
-  begin
-    //TODO: use error result instead of raise
-    raise EOleSysError.Create(RsInvalidPAccessList,
-         MAKE_HRESULT(1, FacilityCode, ERROR_INVALID_PARAMETER), 0);
-  end;
-
-  if (pAccessList = nil) or (pAccessList.pPropertyAccessList = nil) then
-  begin
-    result := E_INVALIDARG;
-    exit;
-  end;
-
   try
+    if StrictACLVerify and (
+       (pAccessList = nil) or
+       (pAccessList.pPropertyAccessList = nil) or
+       (pAccessList.cEntries = 0) or
+       (pAccessList.pPropertyAccessList.lpProperty <> nil) or
+       (pAccessList.pPropertyAccessList.fListFlags <> 0)) then
+    begin
+      raise EOleSysError.Create(RsInvalidPAccessList,
+           MAKE_HRESULT(1, FacilityCode, ERROR_INVALID_PARAMETER), 0);
+    end;
+
+    if (pAccessList = nil) or (pAccessList.pPropertyAccessList = nil) then
+    begin
+      result := E_INVALIDARG;
+      exit;
+    end;
+
     //Grant full access to everyone
     if pAccessList.pPropertyAccessList = nil then
     begin
@@ -5733,11 +5796,8 @@ begin
         not IsValidTrustee(pGroup)
        ) then
     begin
-      begin
-	    //TODO: use error result instead of raise
-        raise EOleSysError.Create(RsIncompatibleCOMOwnerOrGroup,
+      raise EOleSysError.Create(RsIncompatibleCOMOwnerOrGroup,
            MAKE_HRESULT(1, FacilityCode, ERROR_INVALID_PARAMETER), 0);
-      end;
     end;
 
     if pOwner <> nil then

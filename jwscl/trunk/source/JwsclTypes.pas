@@ -2167,6 +2167,11 @@ type
     High, Low : Integer;
   end;
 
+  TJwPlatformType = (ptAuto, pt32, pt64);
+
+  TJwRegistryHive = (rhAuto, rhClasses, rhLocal, rhCurrentUser, rhUsers, rhConfig);
+
+
 {**************** ADD HERE NEW DEFS ************** }
 
   {IJwBase is the new base interface class for all JWSCL classes
