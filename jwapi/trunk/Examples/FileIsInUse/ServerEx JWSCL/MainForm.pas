@@ -21,6 +21,7 @@ uses
   JwsclConstants,
   JwsclExceptions,
   JwsclVersion,
+  JwsclElevation,
   JwsclSecureObjects,
   JwsclKnownSid,
   JwsclMapping,
@@ -124,6 +125,7 @@ type
 
     procedure RegisterAppID;
     procedure UnRegisterAppID;
+    function RunMeElevated(Parameters : string) : Boolean;
   end;
 
 var
@@ -176,7 +178,6 @@ procedure TFormMain.OnSetSecurity(Sender: TJwSecurityDescriptorDialog;
   MergedSecurityDescriptor: TJwSecurityDescriptor; var bSuccess: boolean);
 var i : Integer;
 begin
-  //
   bSuccess := true;
 
   if Assigned(NewSecurityDescriptor) and Assigned(NewSecurityDescriptor.DACL) then
@@ -187,12 +188,16 @@ begin
       case MessageDlg('Do you really want to open the process COM security to the world? I could change it at least to authenticated users?', mtConfirmation, [mbYes, mbNo, mbCancel], 0) of
         mrYes:
           begin
+            //the SID class is not automatically freed
+            //Altough it seems to be a well known SID, this is a separate new instance
+            // which is not derived from TJwSecurityKnownSID
+            //and even if yes, then TJwSecurityKnownSID would not let itself be freed anyway.
             MergedSecurityDescriptor.DACL[i].SID.Free;
             MergedSecurityDescriptor.DACL[i].SID := JwAuthenticatedUserSID;
           end;
       end;
-
     end;
+
     for i := 0 to NewSecurityDescriptor.DACL.Count-1 do
     begin
       if NewSecurityDescriptor.DACL[i].AccessMask <> COM_RIGHTS_EXECUTE then
@@ -221,10 +226,8 @@ begin
       case MessageDlg('Could not open App key in registry for write access. Do you want to restart with administrative rights?', mtConfirmation, [mbYes, mbNo, mbCancel], 0) of
         mrYes:
           begin
-            if ShellExecute(Handle, 'runas', PChar(ParamStr(0)), '', '', SW_SHOWNORMAL) <= 32 then
-              MessageDlg('Could not elevate.', mtError, [mbOK], 0)
-            else
-              Application.Terminate;
+            RunMeElevated('');
+
             exit;
           end;
         mrCancel : exit;
@@ -293,10 +296,8 @@ begin
       case MessageDlg('Could not open App key in registry for write access. Do you want to restart with administrative rights?', mtConfirmation, [mbYes, mbNo, mbCancel], 0) of
         mrYes:
           begin
-            if ShellExecute(Handle, 'runas', PChar(ParamStr(0)), '', '', SW_SHOWNORMAL) <= 32 then
-              MessageDlg('Could not elevate.', mtError, [mbOK], 0)
-            else
-              Application.Terminate;
+            RunMeElevated('');
+
             exit;
           end;
         mrCancel : exit;
@@ -490,8 +491,7 @@ var
 begin
   if not JwCheckAdministratorAccess and TJwWindowsVersion.IsWindowsVista(true) then
   begin
-    if ShellExecute(Handle, 'runas', PChar(ParamStr(0)), PChar(PARAM_REGISTER), '', SW_SHOWNORMAL) <= 32 then
-      MessageDlg('Could not elevate.', mtError, [mbOK], 0);
+    RunMeElevated(PARAM_REGISTER);
     exit;
   end;
 
@@ -516,8 +516,7 @@ var
 begin
   if not JwCheckAdministratorAccess and TJwWindowsVersion.IsWindowsVista(true) then
   begin
-    if ShellExecute(Handle, 'runas', PChar(ParamStr(0)), PChar(PARAM_UNREGISTER), '', SW_SHOWNORMAL) <= 32 then
-      MessageDlg('Could not elevate.', mtError, [mbOK], 0);
+    RunMeElevated(PARAM_UNREGISTER);
     exit;
   end;
 
@@ -598,6 +597,21 @@ function TFormMain.RevokeAccessRights(lpProperty: LPWSTR; cTrustees: ULONG;
 begin
   mmoLog.Lines.Add(Logging('RevokeAccessRights'));
   result := E_ACCESSDENIED; //don't allow external write access to security descriptor
+end;
+
+function TFormMain.RunMeElevated(Parameters : string) : Boolean;
+begin
+  result := true;
+  try
+    JwShellExecute(Handle, ParamStr(0), Parameters, '', SW_SHOWNORMAL, []);
+    Application.Terminate;
+  except
+    on e : EJwsclWinCallFailedException do
+    begin
+      MessageDlg('Could not elevate. '+SysErrorMessage(E.LastError), mtError, [mbOK], 0);
+      result := false;
+    end;
+  end;
 end;
 
 function TFormMain.SetAccessRights(pAccessList: PACTRL_ACCESSW): HRESULT;
