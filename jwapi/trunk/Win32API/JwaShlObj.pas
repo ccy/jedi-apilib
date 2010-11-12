@@ -215,6 +215,7 @@ uses
 {$HPPEMIT 'interface DECLSPEC_UUID("596A9A94-013E-11D1-8D34-00A0C90F2719") IBanneredBar;'}
 {$HPPEMIT 'interface DECLSPEC_UUID("2047E320-F2A9-11CE-AE65-08002B2E1262") IShellFolderViewCB;'}
 {$HPPEMIT 'interface DECLSPEC_UUID("FB700430-952C-11D1-946F-000000000000") INamedPropertyBag;'}
+{$HPPEMIT 'interface DECLSPEC_UUID("64a1cbf0-3a1a-4461-9158-376969693950") IFileIsInUse;'}
 
 {$HPPEMIT 'typedef System::DelphiInterface<IDefViewID> _di_IDefViewID;'}
 {$HPPEMIT 'typedef System::DelphiInterface<IPersistFolder> _di_IPersistFolder;'}
@@ -347,6 +348,7 @@ uses
 {$HPPEMIT 'typedef System::DelphiInterface<IBanneredBar> _di_IBanneredBar;'}
 {$HPPEMIT 'typedef System::DelphiInterface<IShellFolderViewCB> _di_IShellFolderViewCB;'}
 {$HPPEMIT 'typedef System::DelphiInterface<INamedPropertyBag> _di_INamedPropertyBag;'}
+{$HPPEMIT 'typedef System::DelphiInterface<IFileIsInUse> _di_IFileIsInUse;'}
 {$ENDIF JWA_OMIT_SECTIONS}
 {$IFNDEF JWA_IMPLEMENTATIONSECTION}
 //===========================================================================
@@ -10042,6 +10044,44 @@ function DoPrivacyDlg(hwndParent: HWND; pszUrl: POleStr;
   const pPrivacyEnum; fReportAllSites: BOOL): HResult; stdcall;
 
 procedure InitShellStateSizes;
+
+{$IFDEF WINVISTA_UP}
+const
+  {$EXTERNALSYM IID_IFileIsInUse}
+  IID_IFileIsInUse: TGUID = (
+    D1:$64a1cbf0; D2:$3a1a; D3:$4461; D4:($91,$58,$37,$69,$69,$69,$39,$50));
+
+type
+  tagFILE_USAGE_TYPE = (
+    FUT_PLAYING = 0,
+    FUT_EDITING = 1,
+    FUT_GENERIC = 2
+  );
+  {$EXTERNALSYM tagFILE_USAGE_TYPE}
+  FILE_USAGE_TYPE = tagFILE_USAGE_TYPE;
+  {$EXTERNALSYM FILE_USAGE_TYPE}
+  TFileUsageType = FILE_USAGE_TYPE;
+
+const
+  {$EXTERNALSYM OF_CAP_CANSWITCHTO}
+  OF_CAP_CANSWITCHTO     = $0001;
+  {$EXTERNALSYM OF_CAP_CANCLOSE}
+  OF_CAP_CANCLOSE        = $0002;
+
+type
+  {$EXTERNALSYM IFileIsInUse}
+  IFileIsInUse = interface(IUnknown)
+    ['{64a1cbf0-3a1a-4461-9158-376969693950}']
+    function GetAppName(out ppszName: LPWSTR) : HRESULT; stdcall;
+    function GetUsage(out pfut : FILE_USAGE_TYPE) : HRESULT; stdcall;
+    function GetCapabilities(out pdwCapFlags : DWORD) : HRESULT; stdcall;
+    function GetSwitchToHWND(out phwnd : HWND) : HRESULT; stdcall;
+    function CloseFile() : HRESULT; stdcall;
+  end;
+
+{$ENDIF WINVISTA_UP}
+
+
 
 {$ENDIF JWA_IMPLEMENTATIONSECTION}
 

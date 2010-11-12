@@ -463,6 +463,16 @@ type
   end;
   {$EXTERNALSYM IDataObject}
 
+  IDropTarget = interface(IUnknown)
+    ['{00000122-0000-0000-C000-000000000046}']
+    function DragEnter(const dataObj: IDataObject; grfKeyState: DWORD; pt: TPoint; var dwEffect: DWORD): HResult; stdcall;
+    function DragOver(grfKeyState: DWORD; pt: TPoint; var dwEffect: DWORD): HResult; stdcall;
+    function DragLeave: HResult; stdcall;
+    function Drop(const dataObj: IDataObject; grfKeyState: DWORD; pt: TPoint; var dwEffect: DWORD): HResult; stdcall;
+  end;
+  {$EXTERNALSYM IDropTarget}
+
+
   IEnumConnectionPoints = interface
     ['{B196B285-BAB4-101A-B69C-00AA00341D07}']
     function Next(celt: Longint; out elt; pceltFetched: PLongint): HRESULT; stdcall;
@@ -840,6 +850,10 @@ function CoGetObject(pszName: PWideChar; pBindOptions: PBindOpts;
 {$EXTERNALSYM CoGetObject}
 
 
+function RegisterDragDrop(wnd: HWnd; dropTarget: IDropTarget): HResult; stdcall;
+procedure ReleaseStgMedium(var medium: TStgMedium); stdcall;
+
+
 {$ENDIF JWA_IMPLEMENTATIONSECTION}
 
 
@@ -867,9 +881,39 @@ begin
         JMP     [_CoGetObject]
   end;
 end;
+
+var
+  _RegisterDragDrop: Pointer;
+function RegisterDragDrop(wnd: HWnd; dropTarget: IDropTarget): HResult;
+begin
+  GetProcedureAddress(_RegisterDragDrop, 'ole32.dll', 'RegisterDragDrop');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_RegisterDragDrop]
+  end;
+end;
+
+var
+  _ReleaseStgMedium: Pointer;
+procedure ReleaseStgMedium(var medium: TStgMedium);
+begin
+  GetProcedureAddress(_ReleaseStgMedium, 'ole32.dll', 'ReleaseStgMedium');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_ReleaseStgMedium]
+  end;
+end;
+
+
+
+
 {$ELSE}
   function CoGetObject(pszName: PWideChar; pBindOptions: PBindOpts;
      const iid: TIID; out ppv): HResult; stdcall; external 'ole32.dll' name 'CoGetObject';
+  function RegisterDragDrop(wnd: HWnd; dropTarget: IDropTarget): HResult; stdcall; external 'ole32.dll';
+  procedure ReleaseStgMedium(var medium: TStgMedium); stdcall; external 'ole32.dll';
 {$ENDIF DYNAMIC_LINK}
 
 
