@@ -110,6 +110,7 @@ function SHGetFolderPathW(hwnd: HWND; csidl: Integer; hToken: THandle; dwFlags: 
 function SHGetFolderPath(hwnd: HWND; csidl: Integer; hToken: THandle; dwFlags: DWORD; pszPath: PTSTR): HRESULT; stdcall;
 
 // protos so callers can GetProcAddress() from shfolder.dll
+// actually they are in shfolder.dll but we load them from shell32.dll because MSDN says so
 
 type
   {$EXTERNALSYM PFNSHGETFOLDERPATHA}
@@ -143,9 +144,9 @@ const
 
 {$IFNDEF DYNAMIC_LINK}
 
-function SHGetFolderPathA; external ShFolderDll name 'SHGetFolderPathA';
-function SHGetFolderPathW; external ShFolderDll name 'SHGetFolderPathW';
-function SHGetFolderPath; external ShFolderDll name 'SHGetFolderPath'+ AWSuffix;
+function SHGetFolderPathA; external shell32 name 'SHGetFolderPathA';
+function SHGetFolderPathW; external shell32 name 'SHGetFolderPathW';
+function SHGetFolderPath; external shell32 name 'SHGetFolderPath'+ AWSuffix;
 
 {$ELSE}
 var
@@ -153,7 +154,7 @@ var
 
 function SHGetFolderPathA;
 begin
-  GetProcedureAddress(_SHGetFolderPathA, ShFolderDll, 'SHGetFolderPathA');
+  GetProcedureAddress(_SHGetFolderPathA, shell32, 'SHGetFolderPathA');
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -166,7 +167,7 @@ var
 
 function SHGetFolderPathW;
 begin
-  GetProcedureAddress(_SHGetFolderPathW, ShFolderDll, 'SHGetFolderPathW');
+  GetProcedureAddress(_SHGetFolderPathW, shell32, 'SHGetFolderPathW');
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -179,7 +180,7 @@ var
 
 function SHGetFolderPath;
 begin
-  GetProcedureAddress(_SHGetFolderPath, ShFolderDll, 'SHGetFolderPath'+ AWSuffix);
+  GetProcedureAddress(_SHGetFolderPath, shell32, 'SHGetFolderPath'+ AWSuffix);
   asm
         MOV     ESP, EBP
         POP     EBP
