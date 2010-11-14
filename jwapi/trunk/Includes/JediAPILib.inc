@@ -407,5 +407,3 @@ Standalone compiling would be useless!
 //This include must be at the end of include definitions
 //If this does not work, you forgot to add JWA source folder to your LIBRARY path.
 {$INCLUDE ..\includes\jwaAdditionals.inc}
-
-

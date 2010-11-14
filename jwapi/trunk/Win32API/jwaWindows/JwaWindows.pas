@@ -1050,5 +1050,3 @@ If you get this error you should do the things described or upgrade.
 {$UNDEF JWA_OMIT_SECTIONS}
 
 end.
-
-

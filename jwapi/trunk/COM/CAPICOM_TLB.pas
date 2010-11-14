@@ -8,7 +8,7 @@
 // andere Typbibliothek) reimportiert wird oder wenn der Befehl
 // 'Aktualisieren' im Typbibliotheks-Editor während des Bearbeitens der
 // Typbibliothek aktiviert ist, wird der Inhalt dieser Datei neu generiert und
-// alle manuell vorgenommenen Änderungen gehen verloren.                                        
+// alle manuell vorgenommenen Änderungen gehen verloren.
 // ************************************************************************ //
 
 // $Rev: 17244 $
@@ -18,12 +18,12 @@
 // Typbib.: C:\Program Files (x86)\Common Files\Microsoft Shared\CAPICOM\CapiCom.dll (1)
 // LIBID: {BD26B198-EE42-4725-9B23-AFA912434229}
 // LCID: 0
-// Hilfedatei: 
+// Hilfedatei:
 // Hilfe-String: CAPICOM v2.1 Type Library
-// Liste der Abhäng.: 
+// Liste der Abhäng.:
 //   (1) v2.0 stdole, (C:\Windows\system32\stdole2.tlb)
 // ************************************************************************ //
-{$TYPEDADDRESS OFF} // Unit muss ohne Typüberprüfung für Zeiger compiliert werden.  
+{$TYPEDADDRESS OFF} // Unit muss ohne Typüberprüfung für Zeiger compiliert werden.
 {$WARN SYMBOL_PLATFORM OFF}
 {$WRITEABLECONST ON}
 {$VARPROPSETTER ON}
@@ -31,13 +31,13 @@
 interface
 
 uses Windows, ActiveX, Classes, Graphics, OleServer, StdVCL, Variants;
-  
+
 // *********************************************************************//
-// In der Typbibliothek deklarierte GUIDS. Die folgenden Präfixe werden verwendet:        
-//   Typbibliotheken      : LIBID_xxxx                                      
-//   CoClasses            : CLASS_xxxx                                      
-//   DISPInterfaces       : DIID_xxxx                                       
-//   Nicht-DISP-Interfaces: IID_xxxx                                        
+// In der Typbibliothek deklarierte GUIDS. Die folgenden Präfixe werden verwendet:
+//   Typbibliotheken      : LIBID_xxxx
+//   CoClasses            : CLASS_xxxx
+//   DISPInterfaces       : DIID_xxxx
+//   Nicht-DISP-Interfaces: IID_xxxx
 // *********************************************************************//
 const
   // Haupt- und Nebenversionen der Typbibliothek
@@ -138,7 +138,7 @@ const
   CLASS_Utilities: TGUID = '{22A85CE1-F011-4231-B9E4-7E7A0438F71B}';
 
 // *********************************************************************//
-// Deklaration von in der Typbibliothek definierten Aufzählungen                     
+// Deklaration von in der Typbibliothek definierten Aufzählungen
 // *********************************************************************//
 // Konstanten für enum CAPICOM_ERROR_CODE
 type
@@ -556,7 +556,7 @@ const
 type
 
 // *********************************************************************//
-// Forward-Deklaration von in der Typbibliothek definierten Typen                     
+// Forward-Deklaration von in der Typbibliothek definierten Typen
 // *********************************************************************//
   ISettings = interface;
   ISettingsDisp = dispinterface;
@@ -659,7 +659,7 @@ type
 
 // *********************************************************************//
 // Deklaration von in der Typbibliothek definierten CoClasses
-// (HINWEIS: Hier wird jede CoClass ihrem Standard-Interface zugewiesen)              
+// (HINWEIS: Hier wird jede CoClass ihrem Standard-Interface zugewiesen)
 // *********************************************************************//
   Settings = ISettings;
   EKU = IEKU;
@@ -702,7 +702,7 @@ type
 
 
 // *********************************************************************//
-// Deklaration von Strukturen, Unions und Aliasen.                          
+// Deklaration von Strukturen, Unions und Aliasen.
 // *********************************************************************//
   PUserType1 = ^_CRYPT_KEY_PROV_INFO; {*}
   PUserType2 = ^_CERT_KEY_CONTEXT; {*}
@@ -1177,10 +1177,10 @@ type
     procedure Set_PrivateKey(const pVal: IPrivateKey); safecall;
     function Extensions: IExtensions; safecall;
     function ExtendedProperties: IExtendedProperties; safecall;
-    procedure Load(const FileName: WideString; const Password: WideString; 
+    procedure Load(const FileName: WideString; const Password: WideString;
                    KeyStorageFlag: CAPICOM_KEY_STORAGE_FLAG; KeyLocation: CAPICOM_KEY_LOCATION); safecall;
-    procedure Save(const FileName: WideString; const Password: WideString; 
-                   SaveAs: CAPICOM_CERTIFICATE_SAVE_AS_TYPE; 
+    procedure Save(const FileName: WideString; const Password: WideString;
+                   SaveAs: CAPICOM_CERTIFICATE_SAVE_AS_TYPE;
                    IncludeOption: CAPICOM_CERTIFICATE_INCLUDE_OPTION); safecall;
     property Archived: WordBool read Get_Archived write Set_Archived;
     property PrivateKey: IPrivateKey read Get_PrivateKey write Set_PrivateKey;
@@ -1199,10 +1199,10 @@ type
     property PrivateKey: IPrivateKey dispid 22;
     function Extensions: IExtensions; dispid 23;
     function ExtendedProperties: IExtendedProperties; dispid 24;
-    procedure Load(const FileName: WideString; const Password: WideString; 
+    procedure Load(const FileName: WideString; const Password: WideString;
                    KeyStorageFlag: CAPICOM_KEY_STORAGE_FLAG; KeyLocation: CAPICOM_KEY_LOCATION); dispid 25;
-    procedure Save(const FileName: WideString; const Password: WideString; 
-                   SaveAs: CAPICOM_CERTIFICATE_SAVE_AS_TYPE; 
+    procedure Save(const FileName: WideString; const Password: WideString;
+                   SaveAs: CAPICOM_CERTIFICATE_SAVE_AS_TYPE;
                    IncludeOption: CAPICOM_CERTIFICATE_INCLUDE_OPTION); dispid 26;
     property Version: Integer readonly dispid 1;
     property SerialNumber: WideString readonly dispid 2;
@@ -1343,8 +1343,8 @@ type
     function IsRemovable: WordBool; safecall;
     function IsMachineKeyset: WordBool; safecall;
     function IsHardwareDevice: WordBool; safecall;
-    procedure Open(const ContainerName: WideString; const ProviderName: WideString; 
-                   ProviderType: CAPICOM_PROV_TYPE; KeySpec: CAPICOM_KEY_SPEC; 
+    procedure Open(const ContainerName: WideString; const ProviderName: WideString;
+                   ProviderType: CAPICOM_PROV_TYPE; KeySpec: CAPICOM_KEY_SPEC;
                    StoreLocation: CAPICOM_STORE_LOCATION; bCheckExistence: WordBool); safecall;
     procedure Delete; safecall;
     property ContainerName: WideString read Get_ContainerName;
@@ -1372,8 +1372,8 @@ type
     function IsRemovable: WordBool; dispid 8;
     function IsMachineKeyset: WordBool; dispid 9;
     function IsHardwareDevice: WordBool; dispid 10;
-    procedure Open(const ContainerName: WideString; const ProviderName: WideString; 
-                   ProviderType: CAPICOM_PROV_TYPE; KeySpec: CAPICOM_KEY_SPEC; 
+    procedure Open(const ContainerName: WideString; const ProviderName: WideString;
+                   ProviderType: CAPICOM_PROV_TYPE; KeySpec: CAPICOM_KEY_SPEC;
                    StoreLocation: CAPICOM_STORE_LOCATION; bCheckExistence: WordBool); dispid 11;
     procedure Delete; dispid 12;
   end;
@@ -1469,13 +1469,13 @@ type
 // *********************************************************************//
   ICertificates2 = interface(ICertificates)
     ['{7B57C04B-1786-4B30-A7B6-36235CD58A14}']
-    function Find(FindType: CAPICOM_CERTIFICATE_FIND_TYPE; varCriteria: OleVariant; 
+    function Find(FindType: CAPICOM_CERTIFICATE_FIND_TYPE; varCriteria: OleVariant;
                   bFindValidOnly: WordBool): ICertificates2; safecall;
     function Select(const Title: WideString; const DisplayString: WideString; bMultiSelect: WordBool): ICertificates2; safecall;
     procedure Add(const pVal: ICertificate2); safecall;
     procedure Remove(Index: OleVariant); safecall;
     procedure Clear; safecall;
-    procedure Save(const FileName: WideString; const Password: WideString; 
+    procedure Save(const FileName: WideString; const Password: WideString;
                    SaveAs: CAPICOM_CERTIFICATES_SAVE_AS_TYPE; ExportFlag: CAPICOM_EXPORT_FLAG); safecall;
   end;
 
@@ -1486,13 +1486,13 @@ type
 // *********************************************************************//
   ICertificates2Disp = dispinterface
     ['{7B57C04B-1786-4B30-A7B6-36235CD58A14}']
-    function Find(FindType: CAPICOM_CERTIFICATE_FIND_TYPE; varCriteria: OleVariant; 
+    function Find(FindType: CAPICOM_CERTIFICATE_FIND_TYPE; varCriteria: OleVariant;
                   bFindValidOnly: WordBool): ICertificates2; dispid 2;
     function Select(const Title: WideString; const DisplayString: WideString; bMultiSelect: WordBool): ICertificates2; dispid 3;
     procedure Add(const pVal: ICertificate2); dispid 4;
     procedure Remove(Index: OleVariant); dispid 5;
     procedure Clear; dispid 6;
-    procedure Save(const FileName: WideString; const Password: WideString; 
+    procedure Save(const FileName: WideString; const Password: WideString;
                    SaveAs: CAPICOM_CERTIFICATES_SAVE_AS_TYPE; ExportFlag: CAPICOM_EXPORT_FLAG); dispid 7;
     property Item[Index: Integer]: OleVariant readonly dispid 0; default;
     property Count: Integer readonly dispid 1;
@@ -1582,7 +1582,7 @@ type
   IStore = interface(IDispatch)
     ['{E860EF75-1B63-4254-AF47-960DAA3DD337}']
     function Get_Certificates: ICertificates; safecall;
-    procedure Open(StoreLocation: CAPICOM_STORE_LOCATION; const StoreName: WideString; 
+    procedure Open(StoreLocation: CAPICOM_STORE_LOCATION; const StoreName: WideString;
                    OpenMode: CAPICOM_STORE_OPEN_MODE); safecall;
     procedure Add(const pVal: ICertificate); safecall;
     procedure Remove(const pVal: ICertificate); safecall;
@@ -1599,7 +1599,7 @@ type
   IStoreDisp = dispinterface
     ['{E860EF75-1B63-4254-AF47-960DAA3DD337}']
     property Certificates: ICertificates readonly dispid 0;
-    procedure Open(StoreLocation: CAPICOM_STORE_LOCATION; const StoreName: WideString; 
+    procedure Open(StoreLocation: CAPICOM_STORE_LOCATION; const StoreName: WideString;
                    OpenMode: CAPICOM_STORE_OPEN_MODE); dispid 1;
     procedure Add(const pVal: ICertificate); dispid 2;
     procedure Remove(const pVal: ICertificate); dispid 3;
@@ -1614,7 +1614,7 @@ type
 // *********************************************************************//
   IStore2 = interface(IStore)
     ['{4DA6ABC4-BDCD-4317-B650-262075B93A9C}']
-    procedure Load(const FileName: WideString; const Password: WideString; 
+    procedure Load(const FileName: WideString; const Password: WideString;
                    KeyStorageFlag: CAPICOM_KEY_STORAGE_FLAG); safecall;
   end;
 
@@ -1625,10 +1625,10 @@ type
 // *********************************************************************//
   IStore2Disp = dispinterface
     ['{4DA6ABC4-BDCD-4317-B650-262075B93A9C}']
-    procedure Load(const FileName: WideString; const Password: WideString; 
+    procedure Load(const FileName: WideString; const Password: WideString;
                    KeyStorageFlag: CAPICOM_KEY_STORAGE_FLAG); dispid 6;
     property Certificates: ICertificates readonly dispid 0;
-    procedure Open(StoreLocation: CAPICOM_STORE_LOCATION; const StoreName: WideString; 
+    procedure Open(StoreLocation: CAPICOM_STORE_LOCATION; const StoreName: WideString;
                    OpenMode: CAPICOM_STORE_OPEN_MODE); dispid 1;
     procedure Add(const pVal: ICertificate); dispid 2;
     procedure Remove(const pVal: ICertificate); dispid 3;
@@ -1662,10 +1662,10 @@ type
     property Location: CAPICOM_STORE_LOCATION readonly dispid 8;
     function Delete: WordBool; dispid 9;
     procedure Close; dispid 10;
-    procedure Load(const FileName: WideString; const Password: WideString; 
+    procedure Load(const FileName: WideString; const Password: WideString;
                    KeyStorageFlag: CAPICOM_KEY_STORAGE_FLAG); dispid 6;
     property Certificates: ICertificates readonly dispid 0;
-    procedure Open(StoreLocation: CAPICOM_STORE_LOCATION; const StoreName: WideString; 
+    procedure Open(StoreLocation: CAPICOM_STORE_LOCATION; const StoreName: WideString;
                    OpenMode: CAPICOM_STORE_OPEN_MODE); dispid 1;
     procedure Add(const pVal: ICertificate); dispid 2;
     procedure Remove(const pVal: ICertificate); dispid 3;
@@ -1851,7 +1851,7 @@ type
     function Get_Certificates: ICertificates; safecall;
     function Sign(const pSigner: ISigner; bDetached: WordBool; EncodingType: CAPICOM_ENCODING_TYPE): WideString; safecall;
     function CoSign(const pSigner: ISigner; EncodingType: CAPICOM_ENCODING_TYPE): WideString; safecall;
-    procedure Verify(const SignedMessage: WideString; bDetached: WordBool; 
+    procedure Verify(const SignedMessage: WideString; bDetached: WordBool;
                      VerifyFlag: CAPICOM_SIGNED_DATA_VERIFY_FLAG); safecall;
     property Content: WideString read Get_Content write Set_Content;
     property Signers: ISigners read Get_Signers;
@@ -1870,7 +1870,7 @@ type
     property Certificates: ICertificates readonly dispid 2;
     function Sign(const pSigner: ISigner; bDetached: WordBool; EncodingType: CAPICOM_ENCODING_TYPE): WideString; dispid 3;
     function CoSign(const pSigner: ISigner; EncodingType: CAPICOM_ENCODING_TYPE): WideString; dispid 4;
-    procedure Verify(const SignedMessage: WideString; bDetached: WordBool; 
+    procedure Verify(const SignedMessage: WideString; bDetached: WordBool;
                      VerifyFlag: CAPICOM_SIGNED_DATA_VERIFY_FLAG); dispid 5;
   end;
 
@@ -2285,7 +2285,7 @@ type
 // Verfügung, um Instanzen des Standard-Interface ISettings, dargestellt
 // von CoClass Settings, zu erzeugen. Diese Funktionen können
 // von einem Client verwendet werden, der die CoClasses automatisieren
-// will, die von dieser Typbibliothek dargestellt werden.                                           
+// will, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoSettings = class
     class function Create: ISettings;
@@ -2297,7 +2297,7 @@ type
 // Verfügung, um Instanzen des Standard-Interface IEKU, dargestellt
 // von CoClass EKU, zu erzeugen. Diese Funktionen können
 // von einem Client verwendet werden, der die CoClasses automatisieren
-// will, die von dieser Typbibliothek dargestellt werden.                                           
+// will, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoEKU = class
     class function Create: IEKU;
@@ -2309,7 +2309,7 @@ type
 // Verfügung, um Instanzen des Standard-Interface IEKUs, dargestellt
 // von CoClass EKUs, zu erzeugen. Diese Funktionen können
 // von einem Client verwendet werden, der die CoClasses automatisieren
-// will, die von dieser Typbibliothek dargestellt werden.                                           
+// will, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoEKUs = class
     class function Create: IEKUs;
@@ -2321,7 +2321,7 @@ type
 // Verfügung, um Instanzen des Standard-Interface IKeyUsage, dargestellt
 // von CoClass KeyUsage, zu erzeugen. Diese Funktionen können
 // von einem Client verwendet werden, der die CoClasses automatisieren
-// will, die von dieser Typbibliothek dargestellt werden.                                           
+// will, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoKeyUsage = class
     class function Create: IKeyUsage;
@@ -2333,7 +2333,7 @@ type
 // Verfügung, um Instanzen des Standard-Interface IExtendedKeyUsage, dargestellt
 // von CoClass ExtendedKeyUsage, zu erzeugen. Diese Funktionen können
 // von einem Client verwendet werden, der die CoClasses automatisieren
-// will, die von dieser Typbibliothek dargestellt werden.                                           
+// will, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoExtendedKeyUsage = class
     class function Create: IExtendedKeyUsage;
@@ -2345,7 +2345,7 @@ type
 // Verfügung, um Instanzen des Standard-Interface IBasicConstraints, dargestellt
 // von CoClass BasicConstraints, zu erzeugen. Diese Funktionen können
 // von einem Client verwendet werden, der die CoClasses automatisieren
-// will, die von dieser Typbibliothek dargestellt werden.                                           
+// will, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoBasicConstraints = class
     class function Create: IBasicConstraints;
@@ -2357,7 +2357,7 @@ type
 // Verfügung, um Instanzen des Standard-Interface ICertificateStatus3, dargestellt
 // von CoClass CertificateStatus, zu erzeugen. Diese Funktionen können
 // von einem Client verwendet werden, der die CoClasses automatisieren
-// will, die von dieser Typbibliothek dargestellt werden.                                           
+// will, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoCertificateStatus = class
     class function Create: ICertificateStatus3;
@@ -2369,7 +2369,7 @@ type
 // Verfügung, um Instanzen des Standard-Interface ICertificate2, dargestellt
 // von CoClass Certificate, zu erzeugen. Diese Funktionen können
 // von einem Client verwendet werden, der die CoClasses automatisieren
-// will, die von dieser Typbibliothek dargestellt werden.                                           
+// will, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoCertificate = class
     class function Create: ICertificate2;
@@ -2381,7 +2381,7 @@ type
 // Verfügung, um Instanzen des Standard-Interface ICertificates2, dargestellt
 // von CoClass Certificates, zu erzeugen. Diese Funktionen können
 // von einem Client verwendet werden, der die CoClasses automatisieren
-// will, die von dieser Typbibliothek dargestellt werden.                                           
+// will, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoCertificates = class
     class function Create: ICertificates2;
@@ -2393,7 +2393,7 @@ type
 // Verfügung, um Instanzen des Standard-Interface IChain2, dargestellt
 // von CoClass Chain, zu erzeugen. Diese Funktionen können
 // von einem Client verwendet werden, der die CoClasses automatisieren
-// will, die von dieser Typbibliothek dargestellt werden.                                           
+// will, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoChain = class
     class function Create: IChain2;
@@ -2405,7 +2405,7 @@ type
 // Verfügung, um Instanzen des Standard-Interface IStore3, dargestellt
 // von CoClass Store, zu erzeugen. Diese Funktionen können
 // von einem Client verwendet werden, der die CoClasses automatisieren
-// will, die von dieser Typbibliothek dargestellt werden.                                           
+// will, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoStore = class
     class function Create: IStore3;
@@ -2417,7 +2417,7 @@ type
 // Verfügung, um Instanzen des Standard-Interface IAttribute, dargestellt
 // von CoClass Attribute, zu erzeugen. Diese Funktionen können
 // von einem Client verwendet werden, der die CoClasses automatisieren
-// will, die von dieser Typbibliothek dargestellt werden.                                           
+// will, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoAttribute = class
     class function Create: IAttribute;
@@ -2429,7 +2429,7 @@ type
 // Verfügung, um Instanzen des Standard-Interface IAttributes, dargestellt
 // von CoClass Attributes, zu erzeugen. Diese Funktionen können
 // von einem Client verwendet werden, der die CoClasses automatisieren
-// will, die von dieser Typbibliothek dargestellt werden.                                           
+// will, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoAttributes = class
     class function Create: IAttributes;
@@ -2441,7 +2441,7 @@ type
 // Verfügung, um Instanzen des Standard-Interface ISigner2, dargestellt
 // von CoClass Signer, zu erzeugen. Diese Funktionen können
 // von einem Client verwendet werden, der die CoClasses automatisieren
-// will, die von dieser Typbibliothek dargestellt werden.                                           
+// will, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoSigner = class
     class function Create: ISigner2;
@@ -2453,7 +2453,7 @@ type
 // Verfügung, um Instanzen des Standard-Interface ISigners, dargestellt
 // von CoClass Signers, zu erzeugen. Diese Funktionen können
 // von einem Client verwendet werden, der die CoClasses automatisieren
-// will, die von dieser Typbibliothek dargestellt werden.                                           
+// will, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoSigners = class
     class function Create: ISigners;
@@ -2465,7 +2465,7 @@ type
 // Verfügung, um Instanzen des Standard-Interface ISignedData, dargestellt
 // von CoClass SignedData, zu erzeugen. Diese Funktionen können
 // von einem Client verwendet werden, der die CoClasses automatisieren
-// will, die von dieser Typbibliothek dargestellt werden.                                           
+// will, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoSignedData = class
     class function Create: ISignedData;
@@ -2477,7 +2477,7 @@ type
 // Verfügung, um Instanzen des Standard-Interface IAlgorithm, dargestellt
 // von CoClass Algorithm, zu erzeugen. Diese Funktionen können
 // von einem Client verwendet werden, der die CoClasses automatisieren
-// will, die von dieser Typbibliothek dargestellt werden.                                           
+// will, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoAlgorithm = class
     class function Create: IAlgorithm;
@@ -2489,7 +2489,7 @@ type
 // Verfügung, um Instanzen des Standard-Interface IRecipients, dargestellt
 // von CoClass Recipients, zu erzeugen. Diese Funktionen können
 // von einem Client verwendet werden, der die CoClasses automatisieren
-// will, die von dieser Typbibliothek dargestellt werden.                                           
+// will, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoRecipients = class
     class function Create: IRecipients;
@@ -2501,7 +2501,7 @@ type
 // Verfügung, um Instanzen des Standard-Interface IEnvelopedData, dargestellt
 // von CoClass EnvelopedData, zu erzeugen. Diese Funktionen können
 // von einem Client verwendet werden, der die CoClasses automatisieren
-// will, die von dieser Typbibliothek dargestellt werden.                                           
+// will, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoEnvelopedData = class
     class function Create: IEnvelopedData;
@@ -2513,7 +2513,7 @@ type
 // Verfügung, um Instanzen des Standard-Interface IEncryptedData, dargestellt
 // von CoClass EncryptedData, zu erzeugen. Diese Funktionen können
 // von einem Client verwendet werden, der die CoClasses automatisieren
-// will, die von dieser Typbibliothek dargestellt werden.                                           
+// will, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoEncryptedData = class
     class function Create: IEncryptedData;
@@ -2525,7 +2525,7 @@ type
 // Verfügung, um Instanzen des Standard-Interface IOID, dargestellt
 // von CoClass OID, zu erzeugen. Diese Funktionen können
 // von einem Client verwendet werden, der die CoClasses automatisieren
-// will, die von dieser Typbibliothek dargestellt werden.                                           
+// will, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoOID = class
     class function Create: IOID;
@@ -2537,7 +2537,7 @@ type
 // Verfügung, um Instanzen des Standard-Interface IOIDs, dargestellt
 // von CoClass OIDs, zu erzeugen. Diese Funktionen können
 // von einem Client verwendet werden, der die CoClasses automatisieren
-// will, die von dieser Typbibliothek dargestellt werden.                                           
+// will, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoOIDs = class
     class function Create: IOIDs;
@@ -2549,7 +2549,7 @@ type
 // Verfügung, um Instanzen des Standard-Interface INoticeNumbers, dargestellt
 // von CoClass NoticeNumbers, zu erzeugen. Diese Funktionen können
 // von einem Client verwendet werden, der die CoClasses automatisieren
-// will, die von dieser Typbibliothek dargestellt werden.                                           
+// will, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoNoticeNumbers = class
     class function Create: INoticeNumbers;
@@ -2561,7 +2561,7 @@ type
 // Verfügung, um Instanzen des Standard-Interface IQualifier, dargestellt
 // von CoClass Qualifier, zu erzeugen. Diese Funktionen können
 // von einem Client verwendet werden, der die CoClasses automatisieren
-// will, die von dieser Typbibliothek dargestellt werden.                                           
+// will, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoQualifier = class
     class function Create: IQualifier;
@@ -2573,7 +2573,7 @@ type
 // Verfügung, um Instanzen des Standard-Interface IQualifiers, dargestellt
 // von CoClass Qualifiers, zu erzeugen. Diese Funktionen können
 // von einem Client verwendet werden, der die CoClasses automatisieren
-// will, die von dieser Typbibliothek dargestellt werden.                                           
+// will, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoQualifiers = class
     class function Create: IQualifiers;
@@ -2585,7 +2585,7 @@ type
 // Verfügung, um Instanzen des Standard-Interface IPolicyInformation, dargestellt
 // von CoClass PolicyInformation, zu erzeugen. Diese Funktionen können
 // von einem Client verwendet werden, der die CoClasses automatisieren
-// will, die von dieser Typbibliothek dargestellt werden.                                           
+// will, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoPolicyInformation = class
     class function Create: IPolicyInformation;
@@ -2597,7 +2597,7 @@ type
 // Verfügung, um Instanzen des Standard-Interface ICertificatePolicies, dargestellt
 // von CoClass CertificatePolicies, zu erzeugen. Diese Funktionen können
 // von einem Client verwendet werden, der die CoClasses automatisieren
-// will, die von dieser Typbibliothek dargestellt werden.                                           
+// will, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoCertificatePolicies = class
     class function Create: ICertificatePolicies;
@@ -2609,7 +2609,7 @@ type
 // Verfügung, um Instanzen des Standard-Interface IEncodedData, dargestellt
 // von CoClass EncodedData, zu erzeugen. Diese Funktionen können
 // von einem Client verwendet werden, der die CoClasses automatisieren
-// will, die von dieser Typbibliothek dargestellt werden.                                           
+// will, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoEncodedData = class
     class function Create: IEncodedData;
@@ -2621,7 +2621,7 @@ type
 // Verfügung, um Instanzen des Standard-Interface IExtension, dargestellt
 // von CoClass Extension, zu erzeugen. Diese Funktionen können
 // von einem Client verwendet werden, der die CoClasses automatisieren
-// will, die von dieser Typbibliothek dargestellt werden.                                           
+// will, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoExtension = class
     class function Create: IExtension;
@@ -2633,7 +2633,7 @@ type
 // Verfügung, um Instanzen des Standard-Interface IExtensions, dargestellt
 // von CoClass Extensions, zu erzeugen. Diese Funktionen können
 // von einem Client verwendet werden, der die CoClasses automatisieren
-// will, die von dieser Typbibliothek dargestellt werden.                                           
+// will, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoExtensions = class
     class function Create: IExtensions;
@@ -2645,7 +2645,7 @@ type
 // Verfügung, um Instanzen des Standard-Interface IExtendedProperty, dargestellt
 // von CoClass ExtendedProperty, zu erzeugen. Diese Funktionen können
 // von einem Client verwendet werden, der die CoClasses automatisieren
-// will, die von dieser Typbibliothek dargestellt werden.                                           
+// will, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoExtendedProperty = class
     class function Create: IExtendedProperty;
@@ -2657,7 +2657,7 @@ type
 // Verfügung, um Instanzen des Standard-Interface IExtendedProperties, dargestellt
 // von CoClass ExtendedProperties, zu erzeugen. Diese Funktionen können
 // von einem Client verwendet werden, der die CoClasses automatisieren
-// will, die von dieser Typbibliothek dargestellt werden.                                           
+// will, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoExtendedProperties = class
     class function Create: IExtendedProperties;
@@ -2669,7 +2669,7 @@ type
 // Verfügung, um Instanzen des Standard-Interface ITemplate, dargestellt
 // von CoClass Template, zu erzeugen. Diese Funktionen können
 // von einem Client verwendet werden, der die CoClasses automatisieren
-// will, die von dieser Typbibliothek dargestellt werden.                                           
+// will, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoTemplate = class
     class function Create: ITemplate;
@@ -2681,7 +2681,7 @@ type
 // Verfügung, um Instanzen des Standard-Interface IPublicKey, dargestellt
 // von CoClass PublicKey, zu erzeugen. Diese Funktionen können
 // von einem Client verwendet werden, der die CoClasses automatisieren
-// will, die von dieser Typbibliothek dargestellt werden.                                           
+// will, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoPublicKey = class
     class function Create: IPublicKey;
@@ -2693,7 +2693,7 @@ type
 // Verfügung, um Instanzen des Standard-Interface IPrivateKey, dargestellt
 // von CoClass PrivateKey, zu erzeugen. Diese Funktionen können
 // von einem Client verwendet werden, der die CoClasses automatisieren
-// will, die von dieser Typbibliothek dargestellt werden.                                           
+// will, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoPrivateKey = class
     class function Create: IPrivateKey;
@@ -2705,7 +2705,7 @@ type
 // Verfügung, um Instanzen des Standard-Interface ISignedCode, dargestellt
 // von CoClass SignedCode, zu erzeugen. Diese Funktionen können
 // von einem Client verwendet werden, der die CoClasses automatisieren
-// will, die von dieser Typbibliothek dargestellt werden.                                           
+// will, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoSignedCode = class
     class function Create: ISignedCode;
@@ -2717,7 +2717,7 @@ type
 // Verfügung, um Instanzen des Standard-Interface IHashedData, dargestellt
 // von CoClass HashedData, zu erzeugen. Diese Funktionen können
 // von einem Client verwendet werden, der die CoClasses automatisieren
-// will, die von dieser Typbibliothek dargestellt werden.                                           
+// will, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoHashedData = class
     class function Create: IHashedData;
@@ -2729,7 +2729,7 @@ type
 // Verfügung, um Instanzen des Standard-Interface IUtilities, dargestellt
 // von CoClass Utilities, zu erzeugen. Diese Funktionen können
 // von einem Client verwendet werden, der die CoClasses automatisieren
-// will, die von dieser Typbibliothek dargestellt werden.                                           
+// will, die von dieser Typbibliothek dargestellt werden.
 // *********************************************************************//
   CoUtilities = class
     class function Create: IUtilities;
