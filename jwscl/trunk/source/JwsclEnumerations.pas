@@ -34,7 +34,7 @@ The Original Code is JwsclEnumerations.pas.
 The Initial Developer of the Original Code is Christian Wimmer.
 Portions created by Christian Wimmer are Copyright (C) Christian Wimmer. All rights reserved.
 
-  
+
 Version
 The following values are automatically injected by Subversion on commit.
 <table>

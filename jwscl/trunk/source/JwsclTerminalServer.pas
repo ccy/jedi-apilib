@@ -1,4 +1,4 @@
-{ 
+{
 Description
 Project JEDI Windows Security Code Library (JWSCL)
 
@@ -60,8 +60,8 @@ The schema belows shows the relations between TJwTerminalServer, the
 TJwWTSSessionList with TJwWTSSessions and the TJwWTSProcessList with
 TjwWTSSessions.
 
-<image TJwTerminalServer-Hierarchy>                                              
-  
+<image TJwTerminalServer-Hierarchy>
+
 Version
 The following values are automatically injected by Subversion on commit.
 <table>
@@ -71,7 +71,7 @@ Last known date the file has changed in the repository              \$Date$
 Last known revision number the file has changed in the repository   \$Revision$
 Last known author who changed the file in the repository.           \$Author$
 Full URL to the latest version of the file in the repository.       \$HeadURL$
-</table>  
+</table>
 }
 
 {$IFNDEF SL_OMIT_SECTIONS}

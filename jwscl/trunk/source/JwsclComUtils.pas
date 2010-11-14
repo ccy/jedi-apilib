@@ -80,121 +80,121 @@ type
   [IIDIJwAutoLock]
     function GetAutoPointer : IJwAutoPointer;
     {This method returns the data as Pointer type.
-	 
-	 Returns
-		The function returns the value of the stored pointer.
-		The property Pointertype must be ptNew, ptLocalAlloc, 
-		ptGetMem or ptCOMPointer; otherwise the return value is undefined.
-	}
+
+   Returns
+    The function returns the value of the stored pointer.
+    The property Pointertype must be ptNew, ptLocalAlloc,
+    ptGetMem or ptCOMPointer; otherwise the return value is undefined.
+  }
     function GetPointer   : Pointer;
     {This method returns the data as object type.
-	 
-	 Returns
-		The property Pointertype must be ptClass; 
-		otherwise the return value is undefined.
-	}
-	function GetInstance  : TObject;
-	{This method returns the pointer as Pointer type.
-	 
-	 Returns
-	   The method returns the type of stored pointer.
-	   Any value of TJwPointerType may be returned.
-	}
-    function GetPointerType : TJwPointerType;
-	
-	{This method returns the data as object type.
 
-	 Returns
-		The property Pointertype must be ptCOMPointer; 
-		otherwise the return value is undefined.
-	}
+   Returns
+    The property Pointertype must be ptClass;
+    otherwise the return value is undefined.
+  }
+  function GetInstance  : TObject;
+  {This method returns the pointer as Pointer type.
+
+   Returns
+     The method returns the type of stored pointer.
+     Any value of TJwPointerType may be returned.
+  }
+    function GetPointerType : TJwPointerType;
+
+  {This method returns the data as object type.
+
+   Returns
+    The property Pointertype must be ptCOMPointer;
+    otherwise the return value is undefined.
+  }
     function GetHandle : THandle;
 
     {The method UnLock removes the exclusive lock on the data;
-	
-     Remarks 	
-	   Do not use this method. Instead destroy the interface by setting
-	   all references to nil. 
-	}
+
+     Remarks
+     Do not use this method. Instead destroy the interface by setting
+     all references to nil.
+  }
     procedure UnLock;
 
-	//See method GetPointer for more information
+  //See method GetPointer for more information
     property Pointer   : Pointer read GetPointer;
-	//See method Instance for more information
+  //See method Instance for more information
     property Instance  : TObject read GetInstance;
-	//See method PointerType for more information
+  //See method PointerType for more information
     property PointerType  : TJwPointerType read GetPointerType;
   end;
 
   {The interface <b>IJwAutoPointer</b> is returned by any of
    the TJwAutoPointer wrap methods.
-   
+
    The interface does not provide reference counting on the data.
   }
   IJwAutoPointer = interface
   [IIDIJwAutoPointer]
     {This method returns the data as Pointer type.
-	
+
  Remarks
-	   Use the Get methods of the interface IJwAutoLock retunred by Lock 
-	   in a multithread environment.
-	   
-	 Returns
-		The function returns the value of the stored pointer.
-		The property Pointertype must be ptNew, ptLocalAlloc, 
-		ptGetMem or ptCOMPointer; otherwise the return value is undefined.
-	}
+     Use the Get methods of the interface IJwAutoLock retunred by Lock
+     in a multithread environment.
+
+   Returns
+    The function returns the value of the stored pointer.
+    The property Pointertype must be ptNew, ptLocalAlloc,
+    ptGetMem or ptCOMPointer; otherwise the return value is undefined.
+  }
     function GetPointer   : Pointer;
     {This method returns the data as object type.
-	
-     Remarks
-	   Use the Get methods of the interface IJwAutoLock retunred by Lock 
-	   in a multithread environment.
-	 
-	 Returns
-		The property Pointertype must be ptClass; 
-		otherwise the return value is undefined.
-	}
-	function GetInstance  : TObject;
-	{This method returns the pointer as Pointer type.
-	 
-	 Remarks
-	   Use the Get methods of the interface IJwAutoLock retunred by Lock 
-	   in a multithread environment.
-	 
-	 Returns
-	   The method returns the type of stored pointer.
-	   Any value of TJwPointerType may be returned.
-	}
-    function GetPointerType : TJwPointerType;
-	
-	{This method returns the data as object type.
 
-	 Remarks
-	   Use the Get methods of the interface IJwAutoLock retunred by Lock 
-	   in a multithread environment.
- 
-	 Returns
-		The property Pointertype must be ptCOMPointer; 
-		otherwise the return value is undefined.
-	}
+     Remarks
+     Use the Get methods of the interface IJwAutoLock retunred by Lock
+     in a multithread environment.
+
+   Returns
+    The property Pointertype must be ptClass;
+    otherwise the return value is undefined.
+  }
+  function GetInstance  : TObject;
+  {This method returns the pointer as Pointer type.
+
+   Remarks
+     Use the Get methods of the interface IJwAutoLock retunred by Lock
+     in a multithread environment.
+
+   Returns
+     The method returns the type of stored pointer.
+     Any value of TJwPointerType may be returned.
+  }
+    function GetPointerType : TJwPointerType;
+
+  {This method returns the data as object type.
+
+   Remarks
+     Use the Get methods of the interface IJwAutoLock retunred by Lock
+     in a multithread environment.
+
+   Returns
+    The property Pointertype must be ptCOMPointer;
+    otherwise the return value is undefined.
+  }
     function GetHandle : THandle;
 
-	//See method GetPointer for more information
+  //See method GetPointer for more information
     property Pointer   : Pointer read GetPointer;
-	//See method Instance for more information
+  //See method Instance for more information
     property Instance  : TObject read GetInstance;
-	//See method PointerType for more information
+  //See method PointerType for more information
     property PointerType  : TJwPointerType read GetPointerType;
 
-	{The method Lock joins an exclusive lock and stops
-	 further access to the data using this function.
-	 
-	 Remarks
-	   Only this function makes sure that the pointer is accessed
-	   exclusively. Calling any Get method without Lock
-	   has unpredictable results.
-	}
+  {The method Lock joins an exclusive lock and stops
+   further access to the data using this function.
+
+   Remarks
+     Only this function makes sure that the pointer is accessed
+     exclusively. Calling any Get method without Lock
+     has unpredictable results.
+  }
     function Lock : IJwAutoLock;
   end;
 
@@ -231,20 +231,20 @@ type
         PointerType : TJwPointerType) : IJwAutoPointer; overload;
 
     {Wrap wraps a windows handle and closes it using CloseHandle.
-	
-	 Parameters 
-	   ShowLastError Defines whether the exception EJwsclInvalidHandle will
-	     include the last error value (true) or not (false).
-	   
-	 Raises
-	   EJwsclInvalidHandle The handle was invalid (0 or INVALID_HANDLE_VALUE).	 
-	}
+
+   Parameters
+     ShowLastError Defines whether the exception EJwsclInvalidHandle will
+       include the last error value (true) or not (false).
+
+   Raises
+     EJwsclInvalidHandle The handle was invalid (0 or INVALID_HANDLE_VALUE).
+  }
     class function Wrap(const Handle : THandle; const
        ShowLastError : Boolean = false) : IJwAutoPointer; overload;
 
     {WrapCOM wraps a COM memory allocation with CoTaskMemAlloc.
-	 The pointer will be freed using CoTaskMemFree.
-	}
+   The pointer will be freed using CoTaskMemFree.
+  }
     class function WrapCOM(const Ptr : Pointer) : IJwAutoPointer;
 
     {<B>CreateInstance</B> creates a new auto pointer class instance and also

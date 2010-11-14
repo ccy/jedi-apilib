@@ -217,20 +217,20 @@ type
          Remarks
          MaxUserNameLength and MaxPasswordLength are obsolete and are ignored. For more information see Bugs section.
 
-         
-         
+
+
          If parameter CommandLine is true, the property Flags must contain either cfFlagsRequireSmartCard or
          cfFlagsExcludeCertificates. If none is given, JWSCL will assume cfFlagsExcludeCertificates. If both flags are given,
          the flag cfFlagsExcludeCertificates will be removed for the call.
-         
-         
-         
+
+
+
          Be aware, if parameter CommandLine is true, that the Flags are constricted more. For more information read the
          \Remarks section of CredUICmdLinePromptForCredentials in MSDN.
          Bugs
          To the MSDN doc of CredUIPromptForCredentials (http://msdn.microsoft.com/en-us/library/aa375171%28VS.85%29.aspx) the
          function truncates the output string to the maximum given length.
-         
+
          However, in tests the function returned an error 87 (ERROR_INVALID_PARAMETER) in such a case instead. Thus the
          Username and Password properties can receive CRED_MAX_USERNAME_LENGTH and CREDUI_MAX_PASSWORD_LENGTH chars now.      }
     function ShowModal(const CommandLine: boolean = False): boolean;

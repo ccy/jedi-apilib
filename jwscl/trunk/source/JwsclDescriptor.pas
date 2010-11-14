@@ -1,4 +1,4 @@
-{ 
+{
 Description
 Project JEDI Windows Security Code Library (JWSCL)
 
@@ -935,7 +935,7 @@ end;
 
 constructor TJwSecurityDescriptor.CreateDefaultByToken(
   const DefaultToken : TObject = nil;
-  const IgnoreLogonSid : Boolean = true;  
+  const IgnoreLogonSid : Boolean = true;
   const RequestedTokenType: TJwRequestedTokenType = rttAuto);
 
 var

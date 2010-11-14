@@ -1025,13 +1025,13 @@ type
       Remarks
       This function simulates the WinAPI function ExpandEnvironmentStringsForUser but does not use string variables static
       in length.
-      
+
       The token must have TOKEN_IMPERSONATE and TOKEN_QUERY access rights. In addition Windows 7 needs TOKEN_DUPLICATE.
-      
+
       In a 32bit Process on a Windows 64 bit (WOW64) the environment variables are replaced by their 32bit counterparts.
       E.g. % ProgramFiles% will expand to "C:\\Program Files (x86)" If you need a 64bit folder, use % ProgramW6432% to
       access "C:\\Program Files" instead.
-      
+
       Disabling Wo64 Redirection does not affect this function because file system layer is not accessed.                  }
     function ExpandEnvironmentStrings(const EnvString : TJwString) : TJwString; virtual;
 
@@ -3531,9 +3531,9 @@ begin
 
   except
     //TODO: Check for correct exception
-	//on E : EJwscl...
-	
-	//Make sure that the given token has enough access rights
+  //on E : EJwscl...
+
+  //Make sure that the given token has enough access rights
     //to get the DACL
     //Strangely enough, XP needs TOKEN_DUPLICATE to work correctly
 
@@ -4179,11 +4179,11 @@ begin
     ptrTokenType, 0, Result) then
   begin
     iError := GetLastError;
-   
-    if (iError <> HRESULT(ERROR_INSUFFICIENT_BUFFER)) and (iError <> ERROR_BAD_LENGTH) then
-	  Result := 0; //something else happened
 
-    //this case happens on token classes with DWORD type (e.g. TokenSessionId)  
+    if (iError <> HRESULT(ERROR_INSUFFICIENT_BUFFER)) and (iError <> ERROR_BAD_LENGTH) then
+    Result := 0; //something else happened
+
+    //this case happens on token classes with DWORD type (e.g. TokenSessionId)
     if iError = ERROR_BAD_LENGTH then
     begin
       case aTokenInformationClass of
@@ -4220,7 +4220,7 @@ begin
       'GetTokenInformation')
   else
     CheckTokenAccessType(TOKEN_QUERY, 'TOKEN_QUERY', 'GetTokenInformation');
-  
+
 
   tokLen := Self.GetTokenInformationLength(hTokenHandle,
     TokenInformationClass);
@@ -5707,63 +5707,63 @@ class function TJwSecurityToken.LookupPrivilegeValue(const lpSystemName,
   iTryCount: Integer): HRESULT;
 var
   iRetries : Integer;
-	bSuccess : Boolean;
-	aLuid : LUID;
+  bSuccess : Boolean;
+  aLuid : LUID;
 begin
   result := ERROR_SUCCESS;
 
-	if (iTryCount < 1) then
-		iTryCount := 1;
+  if (iTryCount < 1) then
+    iTryCount := 1;
 
-	//Try several times to get the value
-	//LookupPrivilegeValue may fail with ERROR_IO_PENDING which
-	//then should be retried (never happened to me, CW)
-	iRetries := iTryCount;
-	repeat
-		aLuid.LowPart  := 0;
-		aLuid.HighPart := 0;
+  //Try several times to get the value
+  //LookupPrivilegeValue may fail with ERROR_IO_PENDING which
+  //then should be retried (never happened to me, CW)
+  iRetries := iTryCount;
+  repeat
+    aLuid.LowPart  := 0;
+    aLuid.HighPart := 0;
 
-		bSuccess :=
+    bSuccess :=
      {$IFDEF UNICODE}LookupPrivilegeValueW{$ELSE}LookupPrivilegeValueA{$ENDIF}
         (TJwPChar(lpSystemName), TJwPChar(lpName), lpLuid);
 
-		if (not bSuccess and (GetLastError() = ERROR_IO_PENDING)) then
+    if (not bSuccess and (GetLastError() = ERROR_IO_PENDING)) then
     begin
-			Sleep(500);
+      Sleep(500);
     end;
 
-		Dec(iRetries);
-	until ((iRetries <= 0) or (bSuccess or (GetLastError() <> ERROR_IO_PENDING)));
+    Dec(iRetries);
+  until ((iRetries <= 0) or (bSuccess or (GetLastError() <> ERROR_IO_PENDING)));
   //while ((iRetries > 0) && !bSuccess && (GetLastError() == ERROR_IO_PENDING));
 
-	if (not bSuccess) then
+  if (not bSuccess) then
   begin
     result := HRESULT_FROM_WIN32(GetLastError);
 
-		Sleep(500); //wait for the aLuid value to be written - just guessing
+    Sleep(500); //wait for the aLuid value to be written - just guessing
 
-		if ((GetLastError() = ERROR_IO_PENDING) and
-			((aLuid.LowPart <> 0) and (aLuid.LowPart < $FF)) //Make some assumptions about the low part since the value may be incorrect
-			) then
+    if ((GetLastError() = ERROR_IO_PENDING) and
+      ((aLuid.LowPart <> 0) and (aLuid.LowPart < $FF)) //Make some assumptions about the low part since the value may be incorrect
+      ) then
     begin
-			//we got a LUID
+      //we got a LUID
 
       result := HRESULT_FROM_WIN32(ERROR_NO_SUCH_PRIVILEGE) or not $80000000; //this is a SUCCESS hresult with error info
       //'Could not get LUID for privilege but assume it is %d.%d.',aLuid.HighPart, aLuid.LowPart);
     end
-		else
-		begin
-			//A privilege name could not be resolved to a LUID.
+    else
+    begin
+      //A privilege name could not be resolved to a LUID.
 
-			//use default value
-			if (lpDefaultLuid.LowPart <> DEFAULT_LUID_NULL.LowPart) and
+      //use default value
+      if (lpDefaultLuid.LowPart <> DEFAULT_LUID_NULL.LowPart) and
          (lpDefaultLuid.HighPart <> DEFAULT_LUID_NULL.HighPart) then
-			begin
-				lpLuid := lpDefaultLuid;
+      begin
+        lpLuid := lpDefaultLuid;
         result := HRESULT_FROM_WIN32(ERROR_NO_DATA);
-			end;
-		end;
-	end;
+      end;
+    end;
+  end;
 
   //I got this problem: In Delphi sometimes the last error value is reset beyond the last end; so we use HRESULT
 end;

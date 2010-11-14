@@ -98,7 +98,7 @@ type
 
   Remarks
     You can define JwOnFormatExceptionMessage to format the exception message.
-  
+
   }
   EJwsclSecurityException = class(Exception)
   {[2B2288BC-7905-46F2-0001-A0183067E63D]}
@@ -367,7 +367,7 @@ type
   {<B>EJwsclDuplicateListEntryException</B> is raised if a SID was already added to a list}
   EJwsclDuplicateListEntryException = class(EJwsclSecurityException);
     {[2B2288BC-7905-46F2-0035-A0183067E63D]}
-  
+
   {}
   EJwsclReadOnlyPropertyException = class(EJwsclSecurityException);
     {[2B2288BC-7905-46F2-0036-A0183067E63D]}
@@ -419,8 +419,8 @@ type
     {}
     EJwsclStreamSizeException = class(EJwsclStreamException);
       {[2B2288BC-7905-46F2-0048-A0183067E63D]}
-    
-	{}
+
+  {}
     EJwsclStreamInvalidMagicException = class(EJwsclStreamException);
       {[2B2288BC-7905-46F2-0049-A0183067E63D]}
 
@@ -475,44 +475,44 @@ type
   {}
   EJwsclAccessDenied = class(EJwsclSecurityException);
     {[2B2288BC-7905-46F2-0062-A0183067E63D]}
- 
+
     {}
     EJwsclSACLAccessDenied = class(EJwsclAccessDenied);
       {[2B2288BC-7905-46F2-0063-A0183067E63D]}
 
-	{
-	EDesktopException is the general exception that is raised if an error occurred
-	during desktop manipulation.
-	}
+  {
+  EDesktopException is the general exception that is raised if an error occurred
+  during desktop manipulation.
+  }
     EJwsclDesktopException = class(EJwsclSecurityException);
       {[2B2288BC-7905-46F2-0064-A0183067E63D]}
 
-	{EOpenDesktopException is raised if there was an error during opening a desktop.
-	Possible cases are :
-	1. Desktop does not exists
-	}
+  {EOpenDesktopException is raised if there was an error during opening a desktop.
+  Possible cases are :
+  1. Desktop does not exists
+  }
     EJwsclOpenDesktopException = class(EJwsclDesktopException);
       {[2B2288BC-7905-46F2-0065-A0183067E63D]}
 
-	{ECreateDesktopException is raised if there was an error during creating a new desktop.
-	Possible cases are :
-	1. Desktop already exists
-	2. Not enough rights}
+  {ECreateDesktopException is raised if there was an error during creating a new desktop.
+  Possible cases are :
+  1. Desktop already exists
+  2. Not enough rights}
     EJwsclCreateDesktopException = class(EJwsclDesktopException);
       {[2B2288BC-7905-46F2-1065-A0183067E63D]}
 
-	{ECloseDesktopException is raised if there was an error during closing a desktop.
-	Possible cases are :
-	1. Desktop handle is not valid
-	2. not enough rights
-	}
+  {ECloseDesktopException is raised if there was an error during closing a desktop.
+  Possible cases are :
+  1. Desktop handle is not valid
+  2. not enough rights
+  }
     EJwsclCloseDesktopException = class(EJwsclDesktopException);
       {[2B2288BC-7905-46F2-0066-A0183067E63D]}
 
   {}
   EJwsclWindowStationException = class(EJwsclSecurityException);
     {[2B2288BC-7905-46F2-0067-A0183067E63D]}
-  
+
   {}
   EJwsclOpenWindowStationException = class(EJwsclWindowStationException);
     {[2B2288BC-7905-46F2-0068-A0183067E63D]}
@@ -660,7 +660,7 @@ type
   {}
   EJwsclInvalidSession = class(EJwsclSecurityException);
     {[2B2288BC-7905-46F2-0093-A0183067E63D]}
-  
+
   {}
   EJwsclInvalidIndex = class(EJwsclSecurityException);
     {[2B2288BC-7905-46F2-0094-A0183067E63D]}
@@ -751,7 +751,7 @@ type
   {}
   EJwsclAddTcpPortToFirewallException = class(EJwsclGenericFirewallException);
     {[2B2288BC-7905-46F2-0115-A0183067E63D]}
-  
+
   {}
   EJwsclAddUdpPortToFirewallException = class(EJwsclGenericFirewallException);
     {[2B2288BC-7905-46F2-0116-A0183067E63D]}
@@ -830,7 +830,7 @@ type
   {}
   EJwsclCoInitializeNotCalledException = class(EJwsclComException);
         {[2B2288BC-7905-46F2-0133-A0183067E63D]}
-		
+
   {}
   EJwsclDuplicateComInitCallException = class(EJwsclComException);
         {[2B2288BC-7905-46F2-0134-A0183067E63D]}

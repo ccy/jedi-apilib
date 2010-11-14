@@ -64,7 +64,7 @@ interface
 
 
 uses
-  JwaWindows, SysUtils, 
+  JwaWindows, SysUtils,
   JwsclTypes, JwsclExceptions, JwsclAcl, JwsclMapping, JwsclSid,
   JwsclSecureObjects, JwsclResource,
   JwsclVersion, JwsclConstants, JwsclDescriptor, JwsclToken, JwsclUtils,

@@ -1,4 +1,4 @@
-{ 
+{
 Description
 Project JEDI Windows Security Code Library (JWSCL)
 
@@ -36,7 +36,7 @@ The Original Code is JwsclEncryption.pas.
 The Initial Developer of the Original Code is Christian Wimmer. Portions created
 by Christian Wimmer are Copyright (C) Christian Wimmer. All rights reserved.
 Portions created by Philip Dittmann are Copyright (C) Philip Dittmann. All
-rights reserved.                                                                 
+rights reserved.
 
 
 Version

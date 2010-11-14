@@ -1,31 +1,31 @@
 { Description
   Project JEDI Windows Security Code Library (JWSCL)
-  
+
   Contains types that are used by the units of JWSCL
   Author
   Christian Wimmer
   License
   The contents of this file are subject to the Mozilla Public License Version 1.1 (the "License"); you may not use
   this file except in compliance with the License. You may obtain a copy of the License at http://www.mozilla.org/MPL/
-  
+
   Software distributed under the License is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either
   express or implied. See the License for the specific language governing rights and limitations under the License.
-  
+
   Alternatively, the contents of this file may be used under the terms of the GNU Lesser General Public License (the
   "LGPL License"), in which case the provisions of the LGPL License are applicable instead of those above. If you wish
   to allow use of your version of this file only under the terms of the LGPL License and not to allow others to use
   your version of this file under the MPL, indicate your decision by deleting the provisions above and replace them
   with the notice and other provisions required by the LGPL License. If you do not delete the provisions above, a
   recipient may use your version of this file under either the MPL or the LGPL License.
-  
+
   For more information about the LGPL: http://www.gnu.org/copyleft/lesser.html
   Note
   The Original Code is JwsclVersion.pas.
-  
+
   The Initial Developer of the Original Code is Christian Wimmer. Portions created by Christian Wimmer are Copyright
   (C) Christian Wimmer. All rights reserved.
-  
-  
+
+
   Version
   The following values are automatically injected by Subversion on commit.
   <table>
@@ -291,8 +291,8 @@ type
     class function GetSystemDEPPolicy : TJwDEPSystemPolicy; virtual;
 
     { GetProcessDEPPolicy returns the Data Execution Prevention (DEP) flag of a process.
-      
-      
+
+
       Parameters
       ProcessHandle :  ProcessHandle defines a handle to a process which DEP is to be returned. Set to 0 or \-1 to retrieve
                        DEP status of the current process.
@@ -303,13 +303,13 @@ type
     class function GetProcessDEPPolicy(ProcessHandle : DWORD = 0) : TJwDEPProcessPolicy; virtual;
 
     { SetProcessDEPPolicy sets the Data Execution Prevention (DEP) flag of the current process.
-      
-      
+
+
       Parameters
       NewPolicy :  NewPolicy defines the kind of DEP policy to be set.
       Remarks
       If Parameter NewPolicy contains depEnabled, it also must contain depPermanent.
-      
+
       On a Windows XP prior to SP3 or in a 64bit process the function does nothing.             }
     class procedure SetProcessDEPPolicy(NewPolicy : TJwDEPProcessPolicy); virtual;
 
@@ -334,15 +334,15 @@ type
     class function IsProcess64(ProcessHandle : DWORD = 0) : boolean; virtual;
 
     { IsWOWProcess64 checks whether the current or a given process is running under WOW64.
-      
-      
+
+
       Parameters
       ProcessHandle :  ProcessHandle defines a handle to a process. Set to 0 or \-1 to use the current process. }
     class function IsWOWProcess64(ProcessHandle : DWORD = 0) : boolean; virtual;
 
     { <b>GetNumberOfProcessors</b> returns the number of logical or physical available processors in the system.
-      
-      
+
+
       Parameters
       ProcessorType :  Defines the kind of processor which count is to be returned. See TJwProcessorCountType for more
                        information.
@@ -352,26 +352,26 @@ type
       The numbers of available logical processors may depend on the Windows version and architecture type. On Windows
       prior to 7, the return value may be less than 32 for 32bit processes. On Windows 7 a 32bit process can retrieve more
       than 64 bit processors but may not be able to use them.
-      
+
       The number of physical processors should not depend on Windows version and architecture but not all physical
       processors may be available to the system. Furthermore, on a system with hyper threading technology the returned
       number of physical processors may not be the correct number. Instead the number of logical processors is returned.
-      
+
       On Windows 2000, XP with SP1 or SP2 HyperThreading is not recognized here.
-      
+
       The function ignores the affinity mask set for the process.
                                                                                                                            }
     class function GetNumberOfProcessors(ProcessorType :  TJwProcessorCountType = pctLogicalProcessors) : Cardinal; virtual;
 
-	  { <b>GetProcessFileName</b> returns the absolute file path of a process.
-	    Parameters
-	    ProcessHandle :  ProcessHandle defines a handle to a process which filename is to be returned. Set to 0 or \-1 to
-	                     retrieve the name of the current process.
-	    Returns
-	    The function returns the process file path (e.g. C:\\Windows\\Process.exe)
-	    Remarks
-	    Currently, the function will fail with exception EJwsclProcNotFound if the implementation is not supported on
-	    Windows. Newer implementation may cure this.                                                                      }
+    { <b>GetProcessFileName</b> returns the absolute file path of a process.
+      Parameters
+      ProcessHandle :  ProcessHandle defines a handle to a process which filename is to be returned. Set to 0 or \-1 to
+                       retrieve the name of the current process.
+      Returns
+      The function returns the process file path (e.g. C:\\Windows\\Process.exe)
+      Remarks
+      Currently, the function will fail with exception EJwsclProcNotFound if the implementation is not supported on
+      Windows. Newer implementation may cure this.                                                                      }
     class function GetProcessFileName(ProcessHandle : THandle = INVALID_HANDLE_VALUE) : TJwString; virtual;
 
     //class function GetAvailableMemory : Int64;
@@ -423,9 +423,9 @@ type
       EJwsclAccessTypeException :     The supplied token has not enough access rights to be used here.
       Remarks
       This method calls SHGetFolderPath. For more information on its parameters refer to MSDN.
-      
-      
-      
+
+
+
       The calling thread won't necessarily be impersonated after the call.
                                                                                                                          }
     class function GetFolderPath(const OwnerWindow : HWND; Folder : Integer;
@@ -484,14 +484,14 @@ type
     { <b>IsUserAdmin</b> checks whether the current user has administrative rights.
       Remarks
       The method calls the function JwsclToken.JwIsMemberOfAdministratorsGroup
-      
+
       If User Account Control (UAC) is activated the function returns FALSE if the process is not elevated; otherwise
       true.                                                                                                           }
     class function IsUserAdmin : Boolean; virtual;
   end;
 
   { This structure maps either to the Ansi- or Unicodeversion of the Winapi OS information structure.
-    
+
     Source Description
     <c lang="Delphi">TOSVersionInfoEx = {$IFDEF UNICODE&#125;TOSVersionInfoExW{$ELSE&#125;TOSVersionInfoExA{$ENDIF&#125;;</c> }
   TOSVersionInfoEx =
@@ -713,13 +713,13 @@ type
       virtual;
 
    { <b>IsWindows2008 R2</b> checks if the system has the version given in the function name.
-     
+
      Currently the parameter bOrHigher has no meaning in this function!
-     
-     
+
+
      Parameters
      bOrHigher :  defines if the return value should also be <b>true</b> if the system is better/higher than the requested
-                  system version. 
+                  system version.
      Returns
      <b>IsWindows2008 R2</b> returns <b>true</b> if the system is the requested version (or higher if bOrHigher is true);
      otherwise <b>false</b>. If bOrHigher is <b>true</b> the return value is the result of <b>true</b> if (bOrHigher and

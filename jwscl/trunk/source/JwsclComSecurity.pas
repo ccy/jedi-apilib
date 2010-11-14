@@ -64,7 +64,7 @@ Here are some rules you should consider when using COM
    server, the client's level is used. The higher the better. However, on my Win2008 and RPC_C_AUTHN_WINNT, the highest
    available level (RPC_C_AUTHN_LEVEL_PKT_PRIVACY) was used by default. Even if set a level too low in a call to
    CoInitializeSecurity, this high level was used. I could not make it smaller by setting a proxy on the interface.
-   Only RPC_C_AUTHN_LEVEL_NONE turns off all authentication.                                                          
+   Only RPC_C_AUTHN_LEVEL_NONE turns off all authentication.
 
 Version
 The following values are automatically injected by Subversion on commit.
@@ -232,17 +232,17 @@ type
       False :  All properties can be written to.                                             }
     property ReadOnlyProperties : Boolean read GetReadOnlyProperties;
 
-    
+
     { The property %MEMBERNAME% contains the authentication service. This is one of the enumerations listed in
       TJwComAuthenticationService.
       Remarks
       An authentication service defines how a server and client authenticate themselves.
-      
+
       JWSCL supports currently supports only asWinNT and asGSSKerberos. Other values must be implemented manually by using
       the TJwComCustomSecurity.AuthenticationInfo property.
       Source Description
       The following services are supported by JWSCL.
-      
+
       <code>
       TJwComAuthenticationService = (
           asNone = 0,//RPC_C_AUTHN_NONE
@@ -280,11 +280,11 @@ type
          azsDCE,
          azsDefault = $FFFFFFFF
         );
-      
+
       </code>
       Link List
       Authorization Constants:
-      
+
       http://msdn.microsoft.com/en-us/library/ms690276%28VS.85%29.aspx                               }
     property AuthorizationService : TJwComAuthorizationService read GetAuthorizationService write SetAuthorizationService;
     { The property %MEMBERNAME% defines the name defined in the first call to CoInitializeSecurity.
@@ -294,7 +294,7 @@ type
     { The property %MEMBERNAME% define when authentication is done. This value is from type TJwComAuthenticationLevel.
       Remarks
       <c>calDefault</c> uses default COM authentication.
-      
+
       <c>calInvalid</c> is not a valid level and cannot be used as input to functions.
       Source Description
       <code>
@@ -311,7 +311,7 @@ type
       </code>
       Link List
       Authentication Level Constants:
-      
+
       http://msdn.microsoft.com/en-us/library/ms678435%28VS.85%29.aspx                                    }
     property AuthenticationLevel : TJwComAuthenticationLevel read GetAuthenticationLevel write SetAuthenticationLevel;
 
@@ -342,11 +342,11 @@ type
       property  %MEMBERNAME% will receive the AuthenticationInfo handle
 
       provided by TJwAuthenticationInfo.AuthorizationInfo when created with SetWinNTIdentity.
-      
 
-      
+
+
       JWSCL supports only WinNT and Kerberos authentication services set by SetWinNTIdentity.
-      
+
       Do not write to this structure if authentication service is WinNT or Kerberos.
       Conditions
       This property cannot be changed if ReadOnlyProperties is true. Insteadn EJwsclReadOnlyPropertyException will be
@@ -378,14 +378,14 @@ type
     procedure AuthWinNT(const Domain, User, Password : string);
 {$ENDIF DEBUG}
 
-	{ The method %MEMBERNAME% calls the COM function with the same name but adds an exception in case of failure.
-	  Parameters
-	  pProxy :  Receives an interface to change to copy its security information
-	  ppCopy :  Receives a copy of the security information
+  { The method %MEMBERNAME% calls the COM function with the same name but adds an exception in case of failure.
+    Parameters
+    pProxy :  Receives an interface to change to copy its security information
+    ppCopy :  Receives a copy of the security information
 
-	  Exceptions
-	  EJwsclWinCallFailedException :  This exception is raised if the call to CoCopyProxy failed. See exception member
-									  ErrorCode for more information.                                                  }
+    Exceptions
+    EJwsclWinCallFailedException :  This exception is raised if the call to CoCopyProxy failed. See exception member
+                    ErrorCode for more information.                                                  }
     class procedure CoCopyProxy(
       {__in}   pProxy : IUnknown;
       {__out}  out ppCopy : IUnknown
@@ -417,10 +417,10 @@ type
 
   public
     { Create retrieves a proxy blanket of an interface.
-      
-      
+
+
       Parameters
-      ProxyInterface :  The interface used to retrieve the blanket. 
+      ProxyInterface :  The interface used to retrieve the blanket.
       MakeCopy :        If set to true the a proxy blanket is exclusively used for the given interface (instance);
                         ohterwise the blanket is retrieved for all interface types. In case of true the copy of the
                         interface is stored into the Proxy property.
@@ -436,9 +436,9 @@ type
     destructor Destroy; override;
 
     { BeginUpdate starts an updated sequence of one or more properties.
-      
+
       If you intend to change a property you need to call BeginUpdate prior to EndUpdate.
-      
+
       <code lang="delphi">
       begin
        BeginUpdate;
@@ -477,30 +477,30 @@ type
         var ComSec : TJwComClientSecurity;
         begin
           JwEnablePrivilege(SE_IMPERSONATE_NAME, pst_Enable);
-      
+
           ComSec := TJwComClientSecurity.Create(MyInterfacePointer, False);
           ComSec.AuthenticationService := asWinNT;
           ComSec.AuthenticationLevel := calDefault;
           ComSec.ImpersionationLevel := cilIdentify; //or cilImpersonate
           ComSec.AuthorizationService := azsDefault;
           ComSec.SetWinNTIdentity(TJwComWinNTIdentity.Create('Domain', 'User', 'Password'));
-      
+
           MyInterfacePointer.Call;
         end;
       </code>                                                                                                              }
     procedure SetWinNTIdentity(const Value: TJwComWinNTIdentity);
 
-    
+
     { MEMBERNAME% returns an array of queried authentication services using CoQueryAuthenticationServices.
       Return Value List
       The result will contain all registered security services supplied on a call to CoInitializeSecurity.
       TJwAuthenticationServiceInformationArray :  See TJwAuthenticationServiceInformationArray for more information
       Exceptions
       EJwsclWinCallFailedException :  CoQueryAuthenticationServices failed. See exception member ErrorCode more information.
-      
+
       Remarks
       The result is a pure Delphi type and must not be freed by COM methods (like CoTaskMemFree).
-      
+
       Use EnumerateSecurityPackages to get all security packages on the computer.                                            }
     class function GetAuthenticationServices : TJwAuthenticationServiceInformationArray;
 
@@ -525,12 +525,12 @@ type
       TJwComAuthenticationService.
       Remarks
       An authentication service defines how a server and client authenticate themselves.
-      
+
       JWSCL supports currently supports only asWinNT and asGSSKerberos. Other values must be implemented manually by using
       the TJwComCustomSecurity.AuthenticationInfo property.
       Source Description
       The following services are supported by JWSCL.
-      
+
       <code lang="delphi">
       TJwComAuthenticationService = (
           asNone = 0,//RPC_C_AUTHN_NONE
@@ -568,18 +568,18 @@ type
          azsDCE,
          azsDefault = $FFFFFFFF
         );
-      
+
       </code>
       Link List
       Authorization Constants:
-      
+
       http://msdn.microsoft.com/en-us/library/ms690276%28VS.85%29.aspx                               }
     property AuthorizationService;
     { The property %MEMBERNAME% defines the name defined in the first call to CoInitializeSecurity.
       Remarks
       As a server this value is not the client's username.                             }
     property ServerPrincipalName;
-    
+
     { The property %MEMBERNAME% define when authentication is done. This value is from type TJwComAuthenticationLevel.
       Remarks
       <c>calDefault</c> uses default COM authentication.
@@ -600,11 +600,11 @@ type
       </code>
       Link List
       Authentication Level Constants:
-      
+
       http://msdn.microsoft.com/en-us/library/ms678435%28VS.85%29.aspx                                    }
     property AuthenticationLevel;
 
-    
+
     { MEMBERNAME% is used in two ways:
       <table 15c%>
       Seite    Beschreibung
@@ -630,13 +630,13 @@ type
       Remarks
       This property is connected to WinNTIdentity if the authentication service is WinNT or Kerberos. In this way the
       property  %MEMBERNAME% will receive the AuthenticationInfo handle
-      
+
       provided by TJwAuthenticationInfo.AuthorizationInfo when created with SetWinNTIdentity.
-      
-      
-      
+
+
+
       JWSCL supports only WinNT and Kerberos authentication services set by SetWinNTIdentity.
-      
+
       Do not write to this structure if authentication service is WinNT or Kerberos.
       Conditions
       This property cannot be changed if ReadOnlyProperties is true. Insteadn EJwsclReadOnlyPropertyException will be
@@ -753,7 +753,7 @@ type
                  be nil.
       StrictCOMCompatibility : This parameter sets whether the security descriptor will only contain rights that are
                                compatible with IAccessControl (true) or all access rights (FullControl) are set (false).
-      
+
       Returns
       \Returns a TJwSecurityDescriptor class that contains a merged version of both security descriptors. The caller is
       responsible for freeing this instance.
@@ -765,7 +765,7 @@ type
           * Allow $FFFF (All specific access rights) to Administrators,
           * Allow $FFFF to SYSTEM
           * Allow $FFFF to Authenticated User
-      
+
       If parameter MergeSD is not nil the DACL in the new security descriptor is a still canonical. However, the function
       will not recognize additional access entries with an existing SID (e.g. SYSTEM). Instead you should consider
       adapting the existing entries.                                                                                        }
@@ -776,31 +776,31 @@ type
       process using CoInitializeSecurity.
       Remarks
       Use this call only for a COM Server that is also a COM client.
-      
+
       If you intend to use this function (effectively CoInitializeSecurity) in a service provided by VCL (TService) you
       need to call it in a different way:
         1. Application.DelayInitialize := true;
       or
         2. Use the demonstration code in your application as demonstrated at the end of this file:
-      
+
       <pre>
         var
           SaveInitProc: Pointer = nil;
-      
+
         procedure InitComServer;
         begin
           //In a service, add code to CoInitializeSecurity here
-      
+
           if SaveInitProc \<\> nil then TProcedure(SaveInitProc);
         end;
-      
+
         initialization
           SaveInitProc := InitProc;
           InitProc := @InitComServer;
       </pre>
 
       In this way the call to CoInitializeSecurity is made before VCL inits COM.
-      
+
       For more information see
       http://blog.delphi-jedi.net/2009/12/16/windows-2003-server-requires-startservicectrldispatcher/
       Exceptions
@@ -852,7 +852,7 @@ type
       Remarks
       Server only
       Exceptions
-      EJwsclInvalidParameterException :       This exception will be raised if<p />AuthenticationLevel is calNone 
+      EJwsclInvalidParameterException :       This exception will be raised if<p />AuthenticationLevel is calNone
       EJwsclAccessDenied :                    This exception will be raised if a security descriptor is supplied which does
                                               not allow SYSTEM full access. COM cannot work then.
       EJwsclProcessNotFound :                 This exception will be raised if IgnoreProcess is true and the current
@@ -1259,7 +1259,7 @@ type
           sitNoImpersonation
       );
       </code>
-      
+
       <table 38c%>
       Value                         \Description
       ----------------------------  -----------------------------------------------------------------------------------------
@@ -1318,7 +1318,7 @@ type
                             exception is thrown.
       GrantedAccessMask :   \Returns the amount of access rights granted. This value is only valid if no exception is
                             thrown.
-      
+
       Exceptions
       EJwsclNoThreadTokenAvailable :  The client's impersonation level is cilIdentify or cilAnonymous. These levels don't
                                       have any authentication and therefore the client cannot be impersonated.              }
@@ -1347,7 +1347,7 @@ type
       Remarks
       A cached access result is the same as comparing the desired access parameter with a previously calculated access
       check using MAXIMUM_ALLOWED access right. In this way the bits are compared using "and" operator.
-      
+
       However, this type of access check can only be done using the same client's identity. It is useful if several access
       checks must be done in different called sub functions (each of them does its own access check).
       Exceptions
@@ -1420,12 +1420,12 @@ type
       TJwComAuthenticationService.
       Remarks
       An authentication service defines how a server and client authenticate themselves.
-      
+
       JWSCL supports currently supports only asWinNT and asGSSKerberos. Other values must be implemented manually by using
       the TJwComCustomSecurity.AuthenticationInfo property.
       Source Description
       The following services are supported by JWSCL.
-      
+
       <code>
       TJwComAuthenticationService = (
           asNone = 0,//RPC_C_AUTHN_NONE
@@ -1463,11 +1463,11 @@ type
          azsDCE,
          azsDefault = $FFFFFFFF
         );
-      
+
       </code>
       Link List
       Authorization Constants:
-      
+
       http://msdn.microsoft.com/en-us/library/ms690276%28VS.85%29.aspx                               }
     property AuthorizationService;
     { The property %MEMBERNAME% define when authentication is done. This value is from type TJwComAuthenticationLevel.
@@ -1490,7 +1490,7 @@ type
       </code>
       Link List
       Authentication Level Constants:
-      
+
       http://msdn.microsoft.com/en-us/library/ms678435%28VS.85%29.aspx                                                 }
     property AuthenticationLevel;
     { MEMBERNAME% is used in two ways:
@@ -1519,13 +1519,13 @@ type
       Remarks
       This property is connected to WinNTIdentity if the authentication service is WinNT or Kerberos. In this way the
       property %MEMBERNAME% will receive the AuthenticationInfo handle
-      
+
       provided by TJwAuthenticationInfo.AuthorizationInfo when created with SetWinNTIdentity.
-      
-      
-      
+
+
+
       JWSCL supports only WinNT and Kerberos authentication services set by SetWinNTIdentity.
-      
+
       Do not write to this structure if authentication service is WinNT or Kerberos.
       Conditions
       This property cannot be changed if ReadOnlyProperties is true. Insteadn EJwsclReadOnlyPropertyException will be
@@ -1542,11 +1542,11 @@ type
          azsDCE,
          azsDefault = $FFFFFFFF
         );
-      
+
       </code>
       Link List
       Authorization Constants:
-      
+
       http://msdn.microsoft.com/en-us/library/ms690276%28VS.85%29.aspx                               }
     property Capabilites;
 
@@ -1783,11 +1783,11 @@ type
     Remarks
     This class implements the COM IAccessControl interface to support a security descriptor for server interfaces. It
     supports Owner, Group (in contrast to the MS implementation of IAccessControl) and DACL.
-    
+
     This object also supports streaming through IPersistStream.
-    
-    
-    
+
+
+
     All COM methods (the methods inherited by the interfaces) are exception proof. I.e. an arbitrary exception is
     resolved to the error value E_UNEXPECTED. However, the exception EOleSysError can be used to return any other COM
     error. On the other hand, in debug mode these COM methods raise an exception rather than returning a HRESULT value.
@@ -1820,10 +1820,10 @@ type
     { Creates an instance TJWSecurityID from a pointer to a TRUSTEEW structure.
       Parameters
       Trustee :  A pointer to a TRUSTEEW structure that shall be converted. Can be nil.
-      
+
       Returns
       \Returns an instance of TJwSecurityID.
-      
+
       If parameter Trustee is nil the return value is also nil.                         }
     function TrusteeToSid(const Trustee : PTrusteeW) : TJwSecurityId; virtual;
     { Converts a PACTRL_ACCESSW structure to the JWSCL class TJwDAccessControl.
@@ -1832,7 +1832,7 @@ type
       ACL :          Receives an already existing instance of TJwDAccessControl. This instance will be adapted or even freed
                      according to the parameter pAccessList.<p />It will be freed and set to nil if the member
                      pAccessEntryList of pAccessList is nil.<p />Must not be nil.
-      
+
       Returns
       This method returns an existing but adapted ACL in parameter ACL.
       Remarks
@@ -1848,29 +1848,29 @@ type
 
     { The method %MEMBERNAME% checks whether the given trustee structure is valid to be used for the MS IAccessControl
       implementation.
-      
-      
+
+
       Parameters
       Trustee :  A trustee to be validated. If this value is nil the method will return FALSE.
-      
+
       Returns
       \Returns TRUE if the trustee is valid in respect to the IAccessControl implementation of MS; otherwise it returns
       FALSE.
       Conditions
       The following conditions must be met to return TRUE.
-      
-      
+
+
 
       <c>TRUSTEE \<\> nil</c>
-      
+
       <c>TRUSTEE.pMultipleTrustee = nil</c>
-      
+
       <c>TRUSTEE.MultipleTrusteeOperation = 0</c>
-      
+
       <c>TRUSTEE.TrusteeForm = 0 or 1</c>
 
       <c>TRUSTEE.TrusteeType = 1 or 2</c>
-      
+
       <c>TRUSTEE.ptstrName \<\> nil</c>                                                                                 }
     function IsValidTrustee(const Trustee : PTrusteeW) : Boolean;
   public
@@ -1897,14 +1897,14 @@ type
       others                     There can be other errors coming from a EOleSysError. The value is the same as the value of
                                   the member ErrorCode of EOleSysError.
       </table>
-      
+
       This method behaves differently in a debug or release build. In a debug build an exception is returned to the
       caller. This can be useful in a debugging session.
       Remarks
       This method implements GrantAccessRights of IAccessControl.
-      
-      
-      
+
+
+
       This method sets the dirty flag (property Dirty) to true in case of success.
       Note
       This method is affected by property StrictACLVerify when set to True.                                                   }
@@ -1925,12 +1925,12 @@ type
                                   This error is not returned in case of StrictACLVerify is true.
       MAKE_HRESULT(1,            This error is only returned if property StrictACLVerify is true.<p />See <b>Conditions</b>
        FacilityCode,              section.
-       ERROR_INVALID_PARAMETER)   
+       ERROR_INVALID_PARAMETER)
       E_UNEXPECTED               An exception occured that is not an EOleSysError exception.
       others                     There can be other errors coming from a EOleSysError. The value is the same as the value of
                                   the member ErrorCode of EOleSysError.
       </table>
-      
+
       This method behaves differently in a debug or release build. In a debug build an exception is returned to the
       caller. This can be useful in a debugging session.
       Remarks
@@ -1940,15 +1940,15 @@ type
       This method implements the JWSCL version of the COM method with the same name.
       Conditions
       The following conditions must be met to allow AccessList to be passed when StrictACLVerify is true:
-      
+
       <c>(pAccessList \<\> <b>nil</b>)</c>
-      
+
       <c>(pAccessList.pPropertyAccessList \<\> <b>nil</b>)</c>
-      
+
       <c>(pAccessList.cEntries \<\> 0)</c>
-      
+
       <c>(pAccessList.pPropertyAccessList.lpProperty = <b>nil</b>)</c>
-      
+
       <c>(pAccessList.pPropertyAccessList.fListFlags = 0)</c>                                                                 }
     function SetAccessRights(pAccessList: PACTRL_ACCESSW): HRESULT; stdcall;
 
@@ -1967,12 +1967,12 @@ type
       E_INVALIDARG               Both parameters pOwner and pGroup are nil at the same time.
       MAKE_HRESULT(1,            Either pOwner or pGroup is not a valid trustee. See method IsValidTrustee for more
        FacilityCode,              information.
-       ERROR_INVALID_PARAMETER)   
+       ERROR_INVALID_PARAMETER)
       E_UNEXPECTED               An exception occured that is not an EOleSysError exception.
       others                     There can be other errors coming from a EOleSysError. The value is the same as the value of
                                   the member ErrorCode of EOleSysError.
       </table>
-      
+
       This method behaves differently in a debug or release build. In a debug build an exception is returned to the
       caller. This can be useful in a debugging session.
       Remarks
@@ -1998,32 +1998,32 @@ type
                                   <p />This error is not returned in case of StrictACLVerify is true.
       MAKE_HRESULT(1,            This error is only returned if property StrictACLVerify is true.
        FacilityCode,              * A Trustee member is invalid. See IsValidTrustee for more information.
-       ERROR_INVALID_PARAMETER)   
+       ERROR_INVALID_PARAMETER)
       MAKE_HRESULT(1,            The SID of the trustee structure could not be retrieved. Either it is invalid or it is nil.
-       FacilityCode,              
-       ERROR_INVALID_SID)         
+       FacilityCode,
+       ERROR_INVALID_SID)
       E_UNEXPECTED               An exception occured that is not an EOleSysError exception.
       others                     There can be other errors coming from a EOleSysError. The value is the same as the value of
                                   the member ErrorCode of EOleSysError.
       </table>
-      
+
       This method behaves differently in a debug or release build. In a debug build an exception is returned to the
       caller. This can be useful in a debugging session.
       Remarks
       All supplied SIDs are removed from the DACL. If a single SID is used several times in the DACL all occurences are
       removed.
-      
+
       The function is called by the interface method with the same name. Since the interface method returns a HRESULT
       value this version must raise an EOleSysError and supply the return value to EOleSysError constructor (ErrorCode).
       Use
       <code>
         raise EOleSysError.Create('text message', MAKE_HRESULT(1, FacilityCode, Win32_or_User_Code));
       </code>
-      
+
       This method implements RevokeAccessRights of IAccessControl.
-      
+
       This method is affected by property StrictACLVerify when set to True.
-      
+
       In case of StrictACLVerify is true parameter prgTrustees must be a user or group SID (without object).                  }
     function RevokeAccessRights(lpProperty: LPWSTR; cTrustees: ULONG; prgTrustees: PTRUSTEEW): HRESULT; stdcall;
 
@@ -2046,19 +2046,19 @@ type
       others         There can be other errors coming from a EOleSysError. The value is the same as the value of the member
                       ErrorCode of EOleSysError.
       </table>
-      
+
       This method behaves differently in a debug or release build. In a debug build an exception is returned to the
       caller. This can be useful in a debugging session.
       Remarks
       This method implements %SYMBOLNAME% of IAccessControl.
-      
+
       This method is affected by property StrictACLVerify when set to True. On the other hand if StrictACLVerify is false
       the function can produce incompatible results to IAccessControl.
 
       If SD.DACL is nil the result is incompatible with MS IAccessControl.implementation.
       Internal
       PACTRL_ACCESSW_ALLOCATE_ALL_NODES is a ACTRL_ACCESS structure which looks the following:
-      
+
       <image IAccessControl_GetAllAccessRights-structures>
       Note
       JWSCL implements this method as JwGrantAllAccessRights.                                                                }
@@ -2087,29 +2087,29 @@ type
                                   <p />This error is not returned in case of StrictACLVerify is true.
       MAKE_HRESULT(1,            This error is only returned if property StrictACLVerify is true.
        FacilityCode,              * A Trustee member is invalid. See IsValidTrustee for more information.
-       ERROR_INVALID_PARAMETER)   
+       ERROR_INVALID_PARAMETER)
       MAKE_HRESULT(1,            The SID of the trustee structure could not be retrieved. Either it is invalid or it is nil.
-       FacilityCode,              
-       ERROR_INVALID_SID)         
+       FacilityCode,
+       ERROR_INVALID_SID)
       E_UNEXPECTED               An exception occured that is not an EOleSysError exception.
       others                     There can be other errors coming from a EOleSysError. The value is the same as the value of
                                   the member ErrorCode of EOleSysError.
       </table>
-      
+
       This method behaves differently in a debug or release build. In a debug build an exception is returned to the
       caller. This can be useful in a debugging session.
       Remarks
       This method implements IsAccessAllowed of IAccessControl.
-      
+
       This method is affected by property StrictACLVerify when set to True.
-      
+
       In case of StrictACLVerify is true pTrustee must be a user or group SID (without object).                               }
     function IsAccessAllowed(pTrustee: PTRUSTEEW; lpProperty: LPWSTR; AccessRights: ACCESS_RIGHTS; var pfAccessAllowed: BOOL): HRESULT; stdcall;
 
     { This method GetClassID is used by COM to determine which implementation can stream this object. It implements the
       IPersist interface.
-      
-      
+
+
       Remarks
       This method implements %SYMBOLNAME% of IPersist.
 
@@ -2125,7 +2125,7 @@ type
       not.
       Returns
       \Returns S_OK to indicate a change; otherwise S_FALSE.
-      
+
       This method can return several, among others, these error codes:
       <table 30c%>
       Value       \Description
@@ -2136,7 +2136,7 @@ type
       </table>
       Remarks
       This method implements IsDirty of IPersistStream.
-      
+
       This method returns the value of property Dirty.                                                                     }
     function IsDirty: HRESULT; stdcall;
     { Loads a security descriptor from a stream.
@@ -2152,13 +2152,13 @@ type
       E_UNEXPECTED                    An exception occured that is not an EOleSysError exception.
       MakeResult(1,                   The stored size value in the stream is not between sizeof(TSecurityDescriptor) and
        FacilityCode,                   MAX_SECURITY_DESCRIPTOR_SIZE.
-       ERROR_INVALID_BLOCK_LENGTH)     
+       ERROR_INVALID_BLOCK_LENGTH)
       MakeResult(1,                   The stream data could not be copied to internal memory. This is because a stream
        FacilityCode,                   function failed usually due to out of memory.
-       ERROR_WRITE_FAULT)              
+       ERROR_WRITE_FAULT)
       MakeResult(1,                   The memory read from stream is not a valid security descriptor.
-       FacilityCode,                   
-       ERROR_INVALID_SECURITY_DESCR)   
+       FacilityCode,
+       ERROR_INVALID_SECURITY_DESCR)
       others                          There can be other errors coming from a EOleSysError. The value is the same as the
                                        value of the member ErrorCode of EOleSysError.<p />Also see IPersistStream.Load and
                                        IPersistStream.Store for more possible error values.
@@ -2170,7 +2170,7 @@ type
       PersistStreamType.
       <table 30c%>
       Values of type         \Description
-       TJwPersistStreamType   
+       TJwPersistStreamType
       ---------------------  -------------------------------------------------------------------------------------------
       pstPlain               Loads a security descriptor in the following format:
                               1. size (Cardinal)
@@ -2203,7 +2203,7 @@ type
       PersistStreamType.
       <table 30c%>
       Values of type         \Description
-       TJwPersistStreamType   
+       TJwPersistStreamType
       ---------------------  --------------------------------------------------------------------------------------------
       pstPlain               Stores a security descriptor in the following format:
                               1. size (Cardinal)
@@ -2228,12 +2228,12 @@ type
       others         There can be other errors coming from a EOleSysError. The value is the same as the value of the member
                       ErrorCode of EOleSysError.
       </table>
-      
+
       This method behaves differently in a debug or release build. In a debug build an exception is returned to the
       caller. This can be useful in a debugging session.
       Remarks
       This method implements %SYMBOLNAME% of IPersistStream.
-      
+
       Currently the function returns the actual size of the security descriptor.                                             }
     function GetSizeMax(out cbSize: Largeint): HRESULT; stdcall;
   public
@@ -2242,9 +2242,9 @@ type
       By default the property <link TJwServerAccessControl.GenericMapping, GenericMapping> is set to value TJwNullMapping
       which means that generic access rights cannot be used to access this objects. You can define your own generic
       mapping to specific access rights to allow such an access. However COM does not support it.
-      
-      
-      
+
+
+
       The DACL will be set to an ACL with no entries at all and thus denies everyone access.                              }
     constructor Create; overload;
 
@@ -2269,7 +2269,7 @@ type
                     IAccessControl.
       Exceptions
       EJwsclSecurityException :  This method can raise a JWSCL exception derived from EJwsclSecurityException.
-      
+
       Note
       This method implements the JWSCL version of the COM method with the same name.                                    }
     procedure JwGrantAccessRights(const AccessList: TJwDAccessControlList); virtual;
@@ -2314,7 +2314,7 @@ type
       Remarks
       All supplied SIDs are removed from the DACL. If a single SID is used several times in the DACL all occurences are
       removed.
-      
+
       The function is called by the interface method with the same name. Since the interface method returns a HRESULT
       value this version must raise an EOleSysError and supply the return value to EOleSysError constructor (ErrorCode).
       Use
@@ -2339,7 +2339,7 @@ type
       <code>
         raise EOleSysError.Create('text message', MAKE_HRESULT(1, FacilityCode, Win32_or_User_Code));
       </code>
-      
+
       Use CoTaskMemFree to free these values.
       <code>
         CoTaskMemFree(AccessList)
@@ -2359,7 +2359,7 @@ type
                        granted access; otherwise the access was denied.<p />In case of an error this value is set to FALSE.
       Remarks
       This function can be hooked by using property OnIsAccessAllowed.
-      
+
       The function is called by the interface method with the same name. Since the interface method returns a HRESULT
       value this version must raise an EOleSysError and supply the return value to EOleSysError constructor (ErrorCode).
       Use
@@ -2393,7 +2393,7 @@ type
     procedure LoadFromStream(const Stream : TStream); virtual;
 
     { This property defines the internal security descriptor used to do access managment. The class must not be freed.
-      
+
       If you intend to write or read from this class you need to do it thread safe since COM can access it from any
       thread.
       <code>
@@ -2413,9 +2413,9 @@ type
       Remarks
       COM is able to access the COM methods implemented by %CLASSNAME% from different threads .To avoid race conditions
       these methods are secured by a critical section.
-      
+
       If you access the property SecurityDescriptor directly.you need to use this critical section in this way:
-      
+
       <code lang="delphi">
       ...
         IA.CriticalSection.Enter;
@@ -2425,11 +2425,11 @@ type
           IA.CriticalSection.Leave;
         end;
       </code>
-      
-      The JwXXX functions and their COM sisters (like JwGrantAccessRights and GrantAccessRights) are thread safe.
-      
 
-      
+      The JwXXX functions and their COM sisters (like JwGrantAccessRights and GrantAccessRights) are thread safe.
+
+
+
       Do not free this property!                                                                                        }
     property CriticalSection : TCriticalSection read fCriticalSection;
 
@@ -2450,23 +2450,23 @@ type
       applied to AccessCheck. If you do not intend to use generic access rights in a desired access mask and security
       descriptor you can set this value to nil. However, AccessCheck will fail if such a generic access right is found
       because the generic access bits are not touched.
-      
+
       By default this value uses TJwNullMapping which maps all generic rights to 0. I.e. it prevents access to a resource
       if the desired access mask only contains generic access rights (So only specific access rights take effect). On the
       other hand, generic access rights have no effect in the DACL. They do not grant any access since they are 0.
-      
+
       COM does not use generic access rights and thus does not define such a generic mapping. In fact it currently only
       supports COM_RIGHTS_EXECUTE (being more precisely: the implementation of IAccessControl does support it).           }
     property GenericMapping: TJwSecurityGenericMappingClass read fGenericMapping write fGenericMapping;
 
     { Defines the facility code used in the HRESULT value in the faciltiy part. By default the value is $FE.
-      
+
       You can change the value to create your own custom code that is returned in case of errors as HRESULT. }
     property FacilityCode : TJwFacilityType read fFacilityCode write fFacilityCode;
 
     { PersistClassID is returned by GetClassID. It defines a registered COM class that provides the streaming methods for
       this object. A NULL_GUID defines that there is no class available. In this case the GetClassID returns E_FAIL.
-      
+
       You can register this class (TJwServerAccessControl) as an official COM object. To do so you need to provide the
       class in a COM dll that is registered properly.                                                                     }
     property PersistClassID : TGUID read fPersistClassID write fPersistClassID;
@@ -2491,9 +2491,9 @@ type
         [4..[size]] realtive security descriptor (as in memory representation)
       </pre>
       To get the layout in case of pstJWSCL check TJwSecurityDescriptor.SaveToStream
-      
+
       The layout in case of pstIAccessControl is unknown. Do not rely on its implementation. It is defined by MS and may change.
-      
+
       Be aware that this stream implementation is propably no compatible with the IAccessControl implementation of MS.     }
     property PersistStreamType : TJwPersistStreamType read fPersistStreamType write fPersistStreamType;
 
@@ -2522,7 +2522,7 @@ type
           * This method converts the internal security descriptor (TJwSecurityDescriptor) into a compatible version and
             \returns it.
           * Owner and Group are still supported (Implementation of IAccessControl always returns nil)
-      
+
       All methods which receives a trustee validates them. They return MAKE_HRESULT(1, FacilityCode, ERROR_INVALID_PARAMETER) if
       the trustee is not conform to IAccessControl implementation.
       Conditions
@@ -2533,16 +2533,16 @@ type
         \3. ACTRL_PROPERTY_ENTRY.lpProperty = nil
         \4. ACTRL_PROPERTY_ENTRY.fListFlags = 0
         \5. ACTRL_ACCESS_ENTRY_LIST.pAccessEntryList \<\> nil
-      
+
         \6. (ACTRL_ACCESS_ENTRY_LIST.cEntries \<\> 0) or
            (ACTRL_ACCESS_ENTRY_LIST.pAccessList \<\> nil)
-      
+
         \7. ACTRL_ACCESS_ENTRY.Access = 1 or 0
         \8. ACTRL_ACCESS_ENTRY.ProvSpecificAccess = 0
         \9. ACTRL_ACCESS_ENTRY.Inheritance = 0
         \10. ACTRL_ACCESS_ENTRY.lpInheritProperty = 0
         \11. ACTRL_ACCESS_ENTRY.fAccessFlags = 1 or 2
-      
+
         \12. TRUSTEE.pMultipleTrustee = nil
         \13. TRUSTEE.MultipleTrusteeOperation = 0
         \14. TRUSTEE.TrusteeForm = 0 or 1
@@ -2568,12 +2568,12 @@ var
     must not use CoInitializeSecurity (implemented by any of the Initialize methods of TJwComProcessSecurity).
     Remarks
     This array is ignored if JwIgnoreHostProcessesInServer is false.
-    
+
     You can set your own process name. The process name is case insensitive. JWSCL will check whether the current
     process name is one of the names in the array, and if yes the TJwComProcessSecurity.Initialize will fail.
-    
+
     Empty strings are ignored.
-    
+
     Currently only "dllhost.exe" is considered to be dangerous.
     Note
     There are 19 entries left to be used. The first 10 entries are considered to be used by JWSCL exclusively. You can
@@ -2584,7 +2584,7 @@ var
     </code>
     Conditions
     Custom start index: 11
-    
+
     Last index : 20
     See Also
     For more information see <link JwIgnoreHostProcessesInServer>.                                                     }
@@ -4570,7 +4570,7 @@ begin
   OldWinVer := UseCurrentWindowsVersion and not IsNewComWindowsVersion;
 
   FormatType := ftUndefined;
-  
+
   for i := 0 to SecurityDescriptor.DACL.Count-1 do
   begin
     //COM_RIGHTS_EXECUTE not defined

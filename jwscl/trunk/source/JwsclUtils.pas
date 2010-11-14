@@ -378,7 +378,7 @@ function JwCheckBitMask(const Bitmask: Integer; const Check: Integer): Boolean;
 { <b>JwMsgWaitForMultipleObjects</b> encapsulates MsgWaitForMultipleObjects using an open array parameter. The
   function should be used to make sure that window messages are processed. In this way windows are responsible. This
   function returns if such a message is received.
-  
+
   If you need to create a dynamic array of handles, use the other <link JwMsgWaitForMultipleObjects@TJwHandles@LongBool@DWord@DWord, JwMsgWaitForMultipleObjects>
   function.
   Parameters
@@ -408,7 +408,7 @@ function JwMsgWaitForMultipleObjects(const Handles: array of const; bWaitAll: Lo
 { <b>JwMsgWaitForMultipleObjects</b> encapsulates MsgWaitForMultipleObjects using an open array parameter. The
   function should be used to make sure that window messages are processed. In this way windows are responsible. This
   function returns if such a message is received.
-  
+
   Use this function if you intend to create a list of handles at runtime; otherwise use <link JwMsgWaitForMultipleObjects@array of const@LongBool@DWord@DWord, JwMsgWaitForMultipleObjects with const array>.
   Parameters
   Handles :         This parameter receives an array of Handles. (TJwHandles)
@@ -425,7 +425,7 @@ function JwMsgWaitForMultipleObjects(const Handles: TJwHandles; bWaitAll: LongBo
            dwMilliseconds: DWord; dwWakeMask: DWord): DWord; overload;
 
 { <b>JwWaitForMultipleObjects</b> encapsulates WaitForMultipleObjects using an open array parameter.
-  
+
   If you need to create a dynamic array of handles, use the other <link JwWaitForMultipleObjects@TJwHandles@LongBool@DWord, JwWaitForMultipleObjects>
   function.
   Parameters
@@ -452,7 +452,7 @@ function JwWaitForMultipleObjects(const Handles: array of const; bWaitAll: LongB
 
 
 { <b>JwWaitForMultipleObjects</b> encapsulates WaitForMultipleObjects using an open array parameter.
-  
+
   Use this function if you intend to create a list of handles at runtime; otherwise use <link JwWaitForMultipleObjects@array of const@LongBool@DWord, JwWaitForMultipleObjects with const array>.
   Parameters
   Handles :         This parameter receives an array of Handles. (TJwHandles)
@@ -734,7 +734,7 @@ type
   Remarks
   JwFormatMessage ignores inserts (like %1) if the length of parameter Arguments is zero. The resulting string
   contains all inserts unchanged.
-  
+
   JwFormatMessage does not support Int64 as Arguments because FormatMessage does not support them when passing
   \arguments as pointers (This may change with 64bit support). If you intend to use Int64 for messages, you should
   consider using Delphi Format function (and this %d) instead.
@@ -743,7 +743,7 @@ type
   switch UNICODE. If the function was compiled with the UNICODE switch, only unicode strings (PWideChar,
   UnicodeString, WideString) and chars (WideChar, PWideChar) are allowed. The contrary goes for if the UNICODE switch
   is not defined.
-  
+
   <b>JwFormatMessage does not check whether the number of inserts (like %1) is the same as the supplied entries in
   parameter Arguments. If the number of arguments is smaller than the number of inserts, the results are
   unpredictable.</b>
@@ -781,16 +781,16 @@ function JwFormatMessage(
   Remarks
   JwFormatMessage ignores inserts (like %1) if the length of parameter Arguments is zero. The resulting string
   contains all inserts unchanged.
-  
+
   JwFormatMessage does not support Int64 as Arguments because FormatMessage does not support them when passing
   \arguments as pointers (This may change with 64bit support). If you intend to use Int64 for messages, you should
   consider using Delphi Format function (and this %d) instead.
-  
+
   JwFormatMessage only supports one type of strings or char. Either unicode or ansicode depending on the compiler
   switch UNICODE. If the function was compiled with the UNICODE switch, only unicode strings (PWideChar,
   UnicodeString, WideString) and chars (WideChar, PWideChar) are allowed. The contrary goes for if the UNICODE switch
   is not defined.
-  
+
   <b>JwFormatMessage does not check whether the number of inserts (like %1) is the same as the supplied entries in
   parameter Arguments. If the number of arguments is smaller than the number of inserts, the results are
   unpredictable.</b>
@@ -870,11 +870,11 @@ function JwFormatMessage(
   Remarks
   A device path starts with device and continues with a device name (like floppy0 or a partition HardDiskVolume0). The
   path is converted to a dos path that contains a drive instead of device name.
-  
+
   The function tries to replace the device name with the dos drive. All sub folders and a possible filename is kept.
-  
+
   The function does not validate the string whether the device, path or file exists.
-  
+
   If the device name does not link to a DOS drive, the function removes the device name and puts \\ in front of it.
   E.g. \\device\\rdpdr\\tsclient\\path resolves to \\\\tsclient\\path .
   Example
@@ -883,7 +883,7 @@ function JwFormatMessage(
      S := JwDeviceToDosDrive('\\device\\floppy0\\test.txt');
      S = 'A:\\test.txt';
   </code>
-  
+
   This code converts a RDP drive mapping:
   <code>
     S := JwDeviceToDosDrive('\\device\\rdpdr\\tsclient\\a\\test.txt');

@@ -8180,10 +8180,12 @@
       <target id="pdf">pdf://3517@JWSCL.pdf</target>
       <target id="winhelp">id_5283@bin.hlp</target>
     </link>
+    <link topicid="JwMsgWaitForMultipleObjects@array of const@LongBool@DWord@DWord" displaystring="JwMsgWaitForMultipleObjects Function">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/JwMsgWaitForMultipleObjects@array_of_const@LongBool@DWord@DWord.html</target>
+    </link>
     <link topicid="JwMsgWaitForMultipleObjects@array of THandle@LongBool@DWord@DWord" displaystring="JwMsgWaitForMultipleObjects Function">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/JwMsgWaitForMultipleObjects@array_of_THandle@LongBool@DWord@DWord.html</target>
       <target id="html">../HTML/JwMsgWaitForMultipleObjects@array_of_THandle@LongBool@DWord@DWord.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/JwMsgWaitForMultipleObjects@array_of_THandle@LongBool@DWord@DWord.html</target>
       <target id="pdf">pdf://54@JWSCL.pdf</target>
       <target id="winhelp">id_55@bin.hlp</target>
     </link>
@@ -8339,6 +8341,9 @@
       <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/JwsclAcl_pas.html</target>
       <target id="pdf">pdf://380@JWSCL.pdf</target>
       <target id="winhelp">id_1142@bin.hlp</target>
+    </link>
+    <link topicid="jwsclAdditionals.inc" displaystring="jwsclAdditionals.inc">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/jwsclAdditionals_inc.html</target>
     </link>
     <link topicid="JwsclAuthCtx.pas" displaystring="JwsclAuthCtx.pas">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/JwsclAuthCtx_pas.html</target>
@@ -8809,10 +8814,12 @@
       <target id="pdf">pdf://3528@JWSCL.pdf</target>
       <target id="winhelp">id_5294@bin.hlp</target>
     </link>
+    <link topicid="JwWaitForMultipleObjects@array of const@LongBool@DWord" displaystring="JwWaitForMultipleObjects Function">
+      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/JwWaitForMultipleObjects@array_of_const@LongBool@DWord.html</target>
+    </link>
     <link topicid="JwWaitForMultipleObjects@array of THandle@LongBool@DWord" displaystring="JwWaitForMultipleObjects Function">
       <target id="help2">ms-help://JWSCL.HxS/JWSCL/JwWaitForMultipleObjects@array_of_THandle@LongBool@DWord.html</target>
       <target id="html">../HTML/JwWaitForMultipleObjects@array_of_THandle@LongBool@DWord.html</target>
-      <target id="htmlhelp">mk:@MSITStore:JWSCL.chm::/JwWaitForMultipleObjects@array_of_THandle@LongBool@DWord.html</target>
       <target id="pdf">pdf://3320@JWSCL.pdf</target>
       <target id="winhelp">id_5101@bin.hlp</target>
     </link>

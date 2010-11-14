@@ -454,8 +454,8 @@ procedure TJwUserAccount.Update();
   end;
 
   function IsAccount(const Value, Bit : DWORD) : Boolean;
-  begin 
-    result := (Value and Bit) = Bit;    
+  begin
+    result := (Value and Bit) = Bit;
   end;
 
 var

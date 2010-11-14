@@ -881,9 +881,9 @@ type
   TJwProtectMemoryFlagSet = set of TJwProtectMemoryFlag;
 
   { <b>TJwCopyFlag</b> defines the mechanism how an instance will be treated if added to a list.
-    
-    
-    
+
+
+
     If you use this flag you must also include this source (with comment) at every implementation.
     <code lang="delphi">
     (*

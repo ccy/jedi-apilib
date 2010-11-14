@@ -84,13 +84,13 @@ type
       calls to LoadLibrary may no more be safe to call.
       Remarks
       Instead of calling this method you can also destroy the interface directly.
-      
+
       For more information see TJwLibraryUtilities.EnterSafeLoadLibrary.                                                }
     procedure LeaveSafeLoadLibrary;
   end;
 
   { <b>TJwLibraryUtilities</b> contains methods related to libraries.
-    
+
     Most of the functions are class methods so you don't need to create an instance of this class. }
   TJwLibraryUtilities = class
   private
@@ -105,16 +105,16 @@ type
     { <b>SecureDLLSearchPath</b> initiates actions to turn off unsecure searching for DLL files wiht LoadLibrary.
       Remarks
       This call should be called as early as possible in the process.
-      
+
       Microsoft has added functions to secure the searching for DLL files. However, the system must be patched. On an
       unpatched system the function only sets the current working directory to Windows system. Otherwise it tries to call
       SetDllDirectoryW and SetSearchPathMode.
-      
+
       If the compiler directive <b>JWSCL_LOCAL_SAFE_LOAD_LIBRARY</b> is set, the function will be called by the
       initialization section of this unit. Make sure you include the unit JwsclProcess.pas as early as possible.
-      
-      
-      
+
+
+
       Using this method makes calls to EnterSafeLoadLibrary unnecessary but the calls are still valid.                    }
     class procedure SecureDLLSearchPath;
 
@@ -132,8 +132,8 @@ type
     class function IsFunctionAvailable(const LibName : String; const FunctionName : AnsiString) : Boolean;
 
     { InitSafeLoadLibrary initializes the safe load library algorithm used by the metdho EnterSafeLoadLibrary.
-      
-      
+
+
       Remarks
       This function doesn't do anything if the compiler switch <b>JWSCL_LOCAL_SAFE_LOAD_LIBRARY</b> isn't enabled. }
     class procedure InitSafeLoadLibrary; virtual;
@@ -143,15 +143,15 @@ type
       Remarks
       <b>EnterSafeLoadLibrary</b> can be used to create a section of code to load libraries in a safe way. A call to this
       function makes sure that all subsequent calls to LoadLibrary will use a safe way of location the library itself.
-      
+
       Several nested calls have the intended effect of only the first call will do the work. All other nested calls will
       do nothing.
-      
+
       The function works on the current thread in a thread safe way. Thus the function can be called from different
       threads safely.
-      
+
       This function does nothing if the compiler switch <b>JWSCL_LOCAL_SAFE_LOAD_LIBRARY</b> isn't enabled.
-      
+
       You should call this method only when needed and for a short time. Creating a big section will not result in safety
       because your program may change the environment after the method was called. Furthermore the method will create a
       section that is only valid for the current thread. If you call this function in your main project in the beginning,
@@ -159,7 +159,7 @@ type
       condition.
       Example
       You can use the function in different way, depending on how long the sections shall last.
-      
+
       In this example the section will last until the function has ended.
       <code lang="delphi">
       procedure ProcName;
@@ -168,7 +168,7 @@ type
         //safe calls to LoadLibrary
       end;
       </code>
-      
+
       In this example the section will last until the the interface has been destroyed.
       <code lang="delphi">
       procedure ProcName;
@@ -181,7 +181,7 @@ type
         //unsafe calls to LoadLibrary
       end;
       </code>
-      
+
       In this example the section will last until the interface method <link ISafeLoadLibrarySection.LeaveSafeLoadLibrary, LeaveSafeLoadLibrary>
       has been called.
       <code lang="delphi">
@@ -864,18 +864,18 @@ type {<B>TJwCreateProcessParameters</B> contains information supplied to CreateP
        StartupInfo : {$IFDEF UNICODE}TStartupInfoW{$ELSE}TStartupInfoA{$ENDIF};
 
        {Additional groups for the resulting token. May be nil.
-	    The resulting token will have the groups of Administrator, the given groups here
-		and some more.
-		Logon SIDs are never added.
-	   }
-       AdditionalGroups : TJwSecurityIdList; 
+      The resulting token will have the groups of Administrator, the given groups here
+    and some more.
+    Logon SIDs are never added.
+     }
+       AdditionalGroups : TJwSecurityIdList;
 
 
        {<B>SourceName</B> defines the source name which is stored in the token. Your name of choice
-	    that identifies the source of this token}
+      that identifies the source of this token}
        SourceName : AnsiString;
        {<B>OriginName</B> defines the initiator name of the token.  Your name of choice
-	    that identifies the origin of this token}
+      that identifies the origin of this token}
        OriginName : AnsiString;
 
        {<B>SessionID</B> defines the target session ID of the new process
@@ -899,10 +899,10 @@ type {<B>TJwCreateProcessParameters</B> contains information supplied to CreateP
        {<B>LogonSID</B> can be the logon sid to be used for the new token.
         May be nil. In this case (and LogonToken = nil) the logon sid of the token with the given SessionID
         is used.}
-       LogonSID : TJwSecurityID; 
+       LogonSID : TJwSecurityID;
 
        {<B>Parameters</B> contains parameters for CreateProcessAsUser}
-       Parameters : TJwCreateProcessParameters; 
+       Parameters : TJwCreateProcessParameters;
 
        {<b>MaximumTryCount</b> defines the maximum try count for CreateProcessAsUser.
        The call is only repeated if CPAU returns ERROR_PIPE_BUSY which is a known
@@ -1208,12 +1208,12 @@ end;
 
 
 class function TJwLibraryUtilities.IsFunctionAvailable(const LibName : String; const FunctionName : AnsiString) : Boolean;
-var 
+var
   hLib : HANDLE;
   P : Pointer;
 begin
   result := false;
-  
+
   EnterSafeLoadLibrary;
 
   hLib := LoadLibrary(PChar(LibName));

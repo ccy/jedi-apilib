@@ -52,7 +52,7 @@ Full URL to the latest version of the file in the repository.       \$HeadURL$
 
 {$IFNDEF SL_OMIT_SECTIONS}
 unit JwsclElevation;
-{$INCLUDE ..\includes\Jwscl.inc} 
+{$INCLUDE ..\includes\Jwscl.inc}
 
 {$ENDIF SL_OMIT_SECTIONS}
 
