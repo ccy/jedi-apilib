@@ -8,13 +8,12 @@
 { Creation date: 6th October 2010                                              }
 { Last modification date: 6th October 2010                                     }
 {                                                                              }
-{ Description: Shows how to use the IFileIsInUse API to retrieve an owner of   }
-{              a locked file.                                                  }
+{ Description: Shows how to use the IFileIsInUse API                           }
 {                                                                              }
 { Preparations: JWA must be ready to use.                                      }
 {               Requires at least Windows Vista                                }
 {                                                                              }
-{ Version history: 6th October 2010 initial release                            }
+{ Version history: 14th November 2010 initial release                          }
 {                                                                              }
 { No license. Use this example with no warranty at all and on your own risk.   }
 { This example is just for learning purposes and should not be used in         }
