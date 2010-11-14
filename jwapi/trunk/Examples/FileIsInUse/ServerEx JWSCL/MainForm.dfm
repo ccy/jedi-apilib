@@ -32,7 +32,6 @@ object FormMain: TFormMain
       'Sets the access and launch permission in the App registration in' +
       ' registry:'
     WordWrap = True
-    OnClick = Label2Click
   end
   object btnOpen: TButton
     Left = 16

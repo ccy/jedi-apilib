@@ -15,24 +15,13 @@ uses
   JwaWinUser,
   JwaShlObj,
   JwaShellAPI,
-  JwaActiveX,
+  JwaActiveX, //just make sure JwaActiveX is following ActiveX
   JwaStrSafe,
 
   StdCtrls, ExtCtrls;
 
 type
-  IDropTarget = interface(IUnknown)
-    ['{00000122-0000-0000-C000-000000000046}']
-    function DragEnter(const dataObj: JwaActiveX.IDataObject; grfKeyState: Longint;
-      pt: TPoint; var dwEffect: Longint): HResult; stdcall;
-    function DragOver(grfKeyState: Longint; pt: TPoint;
-      var dwEffect: Longint): HResult; stdcall;
-    function DragLeave: HResult; stdcall;
-    function Drop(const dataObj: JwaActiveX.IDataObject; grfKeyState: Longint; pt: TPoint;
-      var dwEffect: Longint): HResult; stdcall;
-  end;
-
-  TFormMain = class(TForm, IUnknown, IFileIsInUse, IDropTarget)
+  TFormMain = class(TForm, IFileIsInUse, IDropTarget)
     btnOpen: TButton;
     btnClose: TButton;
     Label1: TLabel;
@@ -49,6 +38,8 @@ type
     fDropHelper : IDropTargetHelper;
     ROTCookie : Integer;
   public
+    constructor Create(AOwner: TComponent); override;
+
     { Interface-Deklarationen }
 
     function GetAppName(out ppszName: LPWSTR) : HRESULT; stdcall;
@@ -57,14 +48,13 @@ type
     function GetSwitchToHWND(out phwnd : HWND) : HRESULT; stdcall;
     function CloseFile() : HRESULT; stdcall;
 
-    function DragEnter(const dataObj: JwaActiveX.IDataObject; grfKeyState: Longint;
-      pt: TPoint; var dwEffect: Longint): HResult; stdcall;
-
-    function DragOver(grfKeyState: Longint; pt: TPoint;
-      var dwEffect: Longint): HResult; reintroduce; stdcall;
+    function DragEnter(const dataObj: IDataObject; grfKeyState: DWORD;
+      pt: TPoint; var dwEffect: DWORD): HResult; stdcall;
+    function DragOver(grfKeyState: DWORD; pt: TPoint;
+      var dwEffect: DWORD): HResult; reintroduce; stdcall;
     function DragLeave: HResult; stdcall;
-    function Drop(const dataObj: JwaActiveX.IDataObject; grfKeyState: Longint; pt: TPoint;
-      var dwEffect: Longint): HResult; stdcall;
+    function Drop(const dataObj: IDataObject; grfKeyState: DWORD; pt: TPoint;
+      var dwEffect: DWORD): HResult; stdcall;
 
     function QueryInterface(const IID: TGUID; out Obj): HResult; override; stdcall;
     function _AddRef: Integer; stdcall;
@@ -82,82 +72,6 @@ implementation
 
 {$R *.dfm}
 
-function RegisterDragDrop(wnd: HWnd; dropTarget: IDropTarget): HResult; stdcall; external 'ole32.dll' name 'RegisterDragDrop';
-procedure ReleaseStgMedium(var medium: TStgMedium); stdcall; external 'ole32.dll';
-
-{ TForm3 }
-
-
-function TFormMain.DragEnter(const dataObj: JwaActiveX.IDataObject; grfKeyState: Integer;
-  pt: TPoint; var dwEffect: Integer): HResult;
-begin
-  result := fDropHelper.DragEnter(Handle, dataObj, pt, dwEffect or DROPEFFECT_COPY or DROPEFFECT_LINK or DROPEFFECT_MOVE);
-end;
-
-function TFormMain.DragLeave: HResult;
-begin
-  result := fDropHelper.DragLeave;
-end;
-
-function TFormMain.DragOver(grfKeyState: Integer; pt: TPoint;
-  var dwEffect: Integer): HResult;
-begin
-  result := fDropHelper.DragOver(pt, dwEffect);
-end;
-
-function TFormMain.Drop(const dataObj: JwaActiveX.IDataObject; grfKeyState: Integer;
-  pt: TPoint; var dwEffect: Integer): HResult;
-var
-  aFmtEtc   : TFORMATETC;
-  aStgMed   : TSTGMEDIUM;
-
-  szBuffer  : array[0..MAX_PATH] of Char;
-
-  i, iCount : Integer;
-begin
-  result := fDropHelper.Drop(dataObj, pt, dwEffect);
-
-  with aFmtEtc do
-  begin
-    cfFormat := CF_HDROP;
-    ptd      := nil;
-    dwAspect := DVASPECT_CONTENT;
-    lindex   := -1;
-    tymed    := TYMED_HGLOBAL;
-  end;
-
-  OleCheck(dataObj.GetData(aFmtEtc, aStgMed));
-  try
-    FillChar(szBuffer, SizeOf(szBuffer), #0);
-    iCount := DragQueryFile(aStgMed.hGlobal, $FFFFFFFF, @szBuffer, MAX_PATH);
-
-    DragQueryFile(aStgMed.hGlobal, 0, @szBuffer, MAX_PATH);
-
-    OpenFile(szBuffer);
-
-  finally
-    ReleaseStgMedium(aStgMed);
-  end;
-
-  Result := S_OK;
-end;
-
-function TFormMain.QueryInterface(const IID: TGUID; out Obj): HResult;
-begin
-  result := inherited;
-end;
-
-function TFormMain._AddRef: Integer;
-begin
-  Result := InterlockedIncrement(FRefCount);
-end;
-
-function TFormMain._Release: Integer;
-begin
-  Result := InterlockedDecrement(FRefCount);
-  if Result = 0 then
-    Destroy;
-end;
 
 
 procedure TFormMain.btnCloseClick(Sender: TObject);
@@ -186,6 +100,12 @@ begin
     ROT.Revoke(ROTCookie);
     ROTCookie := 0;
   end;
+end;
+
+constructor TFormMain.Create(AOwner: TComponent);
+begin
+  inherited;
+  FRefCount := 0;
 end;
 
 function TFormMain.CloseFile: HRESULT;
@@ -268,6 +188,83 @@ begin
   end
   else
     OleCheck(hres);
+end;
+
+
+
+// *** Implementation of IDropTarget
+
+function TFormMain.DragEnter(const dataObj: IDataObject; grfKeyState: DWORD;
+  pt: TPoint; var dwEffect: DWORD): HResult;
+begin
+  result := fDropHelper.DragEnter(Handle, dataObj, pt, dwEffect or DROPEFFECT_COPY or DROPEFFECT_LINK or DROPEFFECT_MOVE);
+end;
+
+function TFormMain.DragLeave: HResult;
+begin
+  result := fDropHelper.DragLeave;
+end;
+
+function TFormMain.DragOver(grfKeyState: DWORD; pt: TPoint;
+  var dwEffect: DWORD): HResult;
+begin
+  result := fDropHelper.DragOver(pt, dwEffect);
+end;
+
+function TFormMain.Drop(const dataObj: IDataObject; grfKeyState: DWORD;
+  pt: TPoint; var dwEffect: DWORD): HResult;
+var
+  aFmtEtc   : TFORMATETC;
+  aStgMed   : TSTGMEDIUM;
+
+  szBuffer  : array[0..MAX_PATH] of Char;
+
+begin
+  fDropHelper.Drop(dataObj, pt, dwEffect);
+
+  with aFmtEtc do
+  begin
+    cfFormat := CF_HDROP;
+    ptd      := nil;
+    dwAspect := DVASPECT_CONTENT;
+    lindex   := -1;
+    tymed    := TYMED_HGLOBAL;
+  end;
+
+  OleCheck(dataObj.GetData(aFmtEtc, aStgMed));
+  try
+    FillChar(szBuffer, SizeOf(szBuffer), #0);
+    DragQueryFile(aStgMed.hGlobal, $FFFFFFFF, @szBuffer, MAX_PATH);
+
+    DragQueryFile(aStgMed.hGlobal, 0, @szBuffer, MAX_PATH);
+
+    OpenFile(szBuffer);
+  finally
+    ReleaseStgMedium(aStgMed);
+  end;
+
+  Result := S_OK;
+end;
+
+
+
+// *** Implementation of IUnknown
+
+function TFormMain.QueryInterface(const IID: TGUID; out Obj): HResult;
+begin
+  result := inherited;
+end;
+
+function TFormMain._AddRef: Integer;
+begin
+  Result := InterlockedIncrement(FRefCount);
+end;
+
+function TFormMain._Release: Integer;
+begin
+  Result := InterlockedDecrement(FRefCount);
+  if Result = 0 then
+    Destroy;
 end;
 
 

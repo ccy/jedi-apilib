@@ -31,7 +31,7 @@ program FileIsInUseClientExample;
  the JEDI API units.
  Undefine it, to use it from the file here.
 }
-{$DEFINE JWA_BUILTIN_IFILEISINUSE}
+{.$DEFINE JWA_BUILTIN_IFILEISINUSE}
 
 uses
   ComObj,
@@ -45,6 +45,7 @@ uses
   ;
 
 {$IFNDEF JWA_BUILTIN_IFILEISINUSE}
+{$ALIGN 4}
 const
   IID_IFileIsInUse: TGUID = (
     D1:$64a1cbf0; D2:$3a1a; D3:$4461; D4:($91,$58,$37,$69,$69,$69,$39,$50));
@@ -99,7 +100,6 @@ begin
     begin
       OleCheck((EnumIndex as IMoniker).GetDisplayName(ctx, nil, sEnumIndex));
       OleCheck(mFile.GetDisplayName(ctx, nil, sFile));
-
 
       if Succeeded(mFile.CommonPrefixWith(enumIndex, Prefix)) and
          (mFile.IsEqual(Prefix) = S_OK) then

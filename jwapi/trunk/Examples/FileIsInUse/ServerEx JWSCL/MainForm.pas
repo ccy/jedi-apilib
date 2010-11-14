@@ -2,12 +2,6 @@ unit MainForm;
 
 interface
 
-{Define this switch to use the definition of the IFileIsInUse interface from
- the JEDI API units.
- Undefine it, to use it from the file here.
-}
-{$DEFINE JWA_BUILTIN_IFILEISINUSE}
-
 uses
   ActiveX, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, ComObj, StdCtrls, ExtCtrls, Registry,
@@ -70,7 +64,6 @@ type
     procedure btnRegisterClick(Sender: TObject);
     procedure btnRegisterRegSecurityClick(Sender: TObject);
     procedure btnUnRegisterRegSecurityClick(Sender: TObject);
-    procedure Label2Click(Sender: TObject);
   private
     { Private-Deklarationen }
     fFile : TFileStream;  //our file locking class
@@ -88,6 +81,7 @@ type
         : TJwSecurityDescriptor;
         var bSuccess: boolean);
   public
+    constructor Create(AOwner: TComponent); override;
     { Interface-Deklarationen }
 
     function GetAppName(out ppszName: LPWSTR) : HRESULT; stdcall;
@@ -98,7 +92,6 @@ type
 
     function DragEnter(const dataObj: IDataObject; grfKeyState: DWORD;
       pt: TPoint; var dwEffect: DWORD): HResult; stdcall;
-
     function DragOver(grfKeyState: DWORD; pt: TPoint;
       var dwEffect: DWORD): HResult; reintroduce; stdcall;
     function DragLeave: HResult; stdcall;
@@ -180,6 +173,16 @@ var i : Integer;
 begin
   bSuccess := true;
 
+  if not TJwComProcessSecurity.IsValidCOMSecurityDescriptor(NewSecurityDescriptor, true) then
+    case MessageDlg('One or more access rights are invalid. Please refer to TJwComProcessSecurity.IsValidCOMSecurityDescriptor.'#13#10' Continue?',
+          mtConfirmation, [mbYes, mbNo, mbCancel], 0) of
+      IDNO, IDCANCEL :
+        begin
+          bSuccess := false;
+          exit;
+        end;
+    end;
+
   if Assigned(NewSecurityDescriptor) and Assigned(NewSecurityDescriptor.DACL) then
   begin
     i := MergedSecurityDescriptor.DACL.FindSID(JwWorldSID);
@@ -197,18 +200,10 @@ begin
           end;
       end;
     end;
-
-    for i := 0 to NewSecurityDescriptor.DACL.Count-1 do
-    begin
-      if NewSecurityDescriptor.DACL[i].AccessMask <> COM_RIGHTS_EXECUTE then
-        bSuccess := false;
-    end;
-
-    if not bSuccess then
-      case MessageDlg('One or more Access Rights are different from COM_RIGHTS_EXECUTE. COM will fail if it finds another access right for the process. Continue?', mtConfirmation, [mbYes, mbNo, mbCancel], 0) of
-        IDYES : bSuccess := true;
-      end;
   end;
+
+  if bSuccess then
+    MessageDlg('The security descriptor is stored into registry only if you hit OK in the first security dialog.', mtInformation, [mbOK], 0);
 end;
 
 procedure TFormMain.btnRegisterRegSecurityClick(Sender: TObject);
@@ -243,7 +238,7 @@ begin
       try
         Dlg.PageTitle := GUIDToString(APP_ID);
         Dlg.ObjectName := Caption;
-        Dlg.Flags := [sdfAdvanced,sdfEditDacl, sdfEditOwner];
+        Dlg.Flags := [sdfAdvanced,sdfEditDacl, sdfEditOwner, sdfNoTreeApply];
         Dlg.Mapping := TJwSecurityCOMMapping;
         Dlg.OnSetSecurity := OnSetSecurity;
         try
@@ -336,6 +331,12 @@ begin
     ROT.Revoke(ROTCookie);
     ROTCookie := 0;
   end;
+end;
+
+constructor TFormMain.Create(AOwner: TComponent);
+begin
+  inherited;
+  FRefCount := 0;
 end;
 
 function TFormMain.CloseFile: HRESULT;
@@ -648,12 +649,6 @@ begin
   result := fAccess.IsAccessAllowed(pTrustee, lpProperty, AccessRights, pfAccessAllowed);
 end;
 
-
-
-procedure TFormMain.Label2Click(Sender: TObject);
-begin
-
-end;
 
 // *** Implementation of IDropTarget
 
