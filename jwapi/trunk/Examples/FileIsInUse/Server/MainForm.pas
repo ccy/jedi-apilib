@@ -155,8 +155,8 @@ end;
 
 function TFormMain.GetAppName(out ppszName: LPWSTR): HRESULT;
 begin
-  ppszName := LPWSTR(CoTaskMemAlloc(Length(Self.Caption) * sizeof(WCHAR)));
-  result := StringCchCopy(ppszName, Length(Self.Caption) * sizeof(WCHAR), PWideChar(Self.Caption));
+  ppszName := LPWSTR(CoTaskMemAlloc((Length(Self.Caption) +1) * sizeof(WCHAR)));
+  result := StringCchCopy(ppszName, Length(Self.Caption)+1, PWideChar(Self.Caption));
   if Failed(result) then
   begin
     CoTaskMemFree(ppszName);
