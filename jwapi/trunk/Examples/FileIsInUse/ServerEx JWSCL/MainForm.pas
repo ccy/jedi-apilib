@@ -17,6 +17,7 @@ uses
   JwsclVersion,
   JwsclElevation,
   JwsclSecureObjects,
+  JwsclSid,
   JwsclKnownSid,
   JwsclMapping,
   JwsclSecurityDialogs,
@@ -278,9 +279,6 @@ end;
 
 procedure TFormMain.btnUnRegisterRegSecurityClick(Sender: TObject);
 var
-  R : TJwComRegistrySecurity;
-  Dlg : TJwSecurityDescriptorDialog;
-  SD : TJwSecurityDescriptor;
   Key : TRegistry;
 begin
   Key := TRegistry.Create(KEY_ALL_ACCESS);
@@ -408,7 +406,8 @@ procedure TFormMain.FormCreate(Sender: TObject);
       end;
     end;
   end;
-var Token : TJwSecurityToken;
+var
+  Token : TJwSecurityToken;
 begin
   SetButtonsShields;
 

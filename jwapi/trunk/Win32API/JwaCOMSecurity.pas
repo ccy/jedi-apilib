@@ -34,21 +34,13 @@
 {                                                                              }
 { For more information about the LGPL: http://www.gnu.org/copyleft/lesser.html }
 {                                                                              }
-{ This unit declares some COM interfaces and Co-functions for                  }
-{ JwsclComSecurity.pas. Some of these declarations are already declared in     }
-{ e.g. JwaActiveX.pas                                                          }
-{ Currently this unit must not be added to JwaWindows.pas                      }
-{ TODO:                                                                        }
-{   1. Remove or exclude duplicate declarations to avoid errors with JwaWindows}
-{   2. What about BCC ?                                                        }
-{   3. What about Delphi >=5 ? Some of the declarations here could not work.   }
+{ This unit declares COM interfaces and Co-functions for                       }
+{ COM Security.                                                                }
 {******************************************************************************}
 {$IFNDEF JWA_OMIT_SECTIONS}
 unit JwaCOMSecurity;
 {$ENDIF JWA_OMIT_SECTIONS}
-{.$HPPEMIT ''}
-{.$HPPEMIT '#include "xxxx.h"'}
-{.$HPPEMIT ''}
+
 
 {$IFNDEF JWA_OMIT_SECTIONS}
 
@@ -69,15 +61,19 @@ interface
 
 
 type
+  {$EXTERNALSYM tagSOLE_AUTHENTICATION_SERVICE}
   tagSOLE_AUTHENTICATION_SERVICE = record
     dwAuthnSvc,
     dwAuthzSvc : DWORD;
     pPrincipalName : POleStr;
     hr : HRESULT;
   end;
+  {$EXTERNALSYM SOLE_AUTHENTICATION_SERVICE}
   SOLE_AUTHENTICATION_SERVICE = tagSOLE_AUTHENTICATION_SERVICE;
+  {$EXTERNALSYM PSOLE_AUTHENTICATION_SERVICE}
   PSOLE_AUTHENTICATION_SERVICE = ^SOLE_AUTHENTICATION_SERVICE;
 
+  {$EXTERNALSYM tagEOLE_AUTHENTICATION_CAPABILITIES}
   tagEOLE_AUTHENTICATION_CAPABILITIES = (
       EOAC_NONE               = 0,
       EOAC_MUTUAL_AUTH        = $1,
@@ -95,28 +91,38 @@ type
       EOAC_NO_CUSTOM_MARSHAL  = $2000,
       EOAC_DISABLE_AAA        = $1000
       );
+  {$EXTERNALSYM EOLE_AUTHENTICATION_CAPABILITIES}
   EOLE_AUTHENTICATION_CAPABILITIES = tagEOLE_AUTHENTICATION_CAPABILITIES;
 
-const COLE_DEFAULT_PRINCIPAL = PWideChar (-1);
-
-const COLE_DEFAULT_AUTHINFO = Pointer(-1);
+const
+  {$EXTERNALSYM COLE_DEFAULT_PRINCIPAL}
+  COLE_DEFAULT_PRINCIPAL = PWideChar (-1);
+  {$EXTERNALSYM COLE_DEFAULT_AUTHINFO}
+  COLE_DEFAULT_AUTHINFO = Pointer(-1);
 
 type
+  {$EXTERNALSYM tagSOLE_AUTHENTICATION_INFO}
   tagSOLE_AUTHENTICATION_INFO = record
     dwAuthnSvc,
     dwAuthzSvc : DWORD;
     pAuthInfo : Pointer;
   end;
+  {$EXTERNALSYM SOLE_AUTHENTICATION_INFO}
   SOLE_AUTHENTICATION_INFO = tagSOLE_AUTHENTICATION_INFO;
+  {$EXTERNALSYM PSOLE_AUTHENTICATION_INFO}
   PSOLE_AUTHENTICATION_INFO = ^tagSOLE_AUTHENTICATION_INFO;
 
+  {$EXTERNALSYM tagSOLE_AUTHENTICATION_LIST}
   tagSOLE_AUTHENTICATION_LIST = record
     cAuthInfo : DWORD;
     aAuthInfo : PSOLE_AUTHENTICATION_INFO;
   end;
+  {$EXTERNALSYM SOLE_AUTHENTICATION_LIST}
   SOLE_AUTHENTICATION_LIST = tagSOLE_AUTHENTICATION_LIST;
+  {$EXTERNALSYM PSOLE_AUTHENTICATION_LIST}
   PSOLE_AUTHENTICATION_LIST = ^tagSOLE_AUTHENTICATION_LIST;
 
+  {$EXTERNALSYM IClientSecurity}
   IClientSecurity = interface
   ['{0000013D-0000-0000-C000-000000000046}']
       function QueryBlanket(
@@ -144,6 +150,7 @@ type
           {__deref_out}  out ppCopy : IUnknown) : HRESULT; stdcall;
   end;
 
+  {$EXTERNALSYM IServerSecurity}
   IServerSecurity = interface
   ['{0000013E-0000-0000-C000-000000000046}']
       function QueryBlanket(
@@ -165,7 +172,7 @@ type
 
 
 
-
+{$EXTERNALSYM CoInitializeSecurity}
 function CoInitializeSecurity(
           {__in_opt}pSecDesc : PSECURITY_DESCRIPTOR;
           {__in} cAuthSvc : LONG;
@@ -178,12 +185,12 @@ function CoInitializeSecurity(
           {__in} dwCapabilities  : DWORD;
           {__in_opt} pReserved3 : Pointer) : HRESULT; stdcall;
 
-
+{$EXTERNALSYM CoGetCallContext}
 function CoGetCallContext(
           {__in} const riid : TIID;
           {__deref_out} ppInterface : Pointer) : HRESULT; stdcall;
 
-
+{$EXTERNALSYM CoQueryProxyBlanket}
 function CoQueryProxyBlanket(
     {__in} pProxy : IUnknown;
     {__out_opt} pwAuthnSvc : PDWORD;
@@ -194,7 +201,7 @@ function CoQueryProxyBlanket(
     {__out_opt} pAuthInfo : PRPC_AUTH_IDENTITY_HANDLE;
     {__out_opt} pCapabilites  : PDWORD) : HRESULT; stdcall;
 
-
+{$EXTERNALSYM CoSetProxyBlanket}
 function CoSetProxyBlanket(
     {__in} pProxy : IUnknown;
     {__in} dwAuthnSvc : DWORD;
@@ -205,12 +212,12 @@ function CoSetProxyBlanket(
     {__in_opt} pAuthInfo : RPC_AUTH_IDENTITY_HANDLE;
     {__in} dwCapabilities : DWORD) : HRESULT; stdcall;
 
-
+{$EXTERNALSYM CoCopyProxy}
 function CoCopyProxy(
     {__in} pProxy : IUnknown;
     {__deref_out} out ppCopy : IUnknown) : HRESULT; stdcall;
 
-
+{$EXTERNALSYM CoQueryClientBlanket}
 function CoQueryClientBlanket(
     {__out_opt} pAuthnSvc : PDWORD;
     {__out_opt} pAuthzSvc : PDWORD;
@@ -220,19 +227,19 @@ function CoQueryClientBlanket(
     {__out_opt} pPrivs : PRPC_AUTHZ_HANDLE;
     {__inout_opt} pCapabilities : PDWORD) : HRESULT; stdcall;
 
-
+{$EXTERNALSYM CoImpersonateClient}
 function CoImpersonateClient() : HRESULT; stdcall;
 
-
+{$EXTERNALSYM CoRevertToSelf}
 function CoRevertToSelf() : HRESULT; stdcall;
 
-
+{$EXTERNALSYM CoQueryAuthenticationServices}
 function CoQueryAuthenticationServices(
     {__out} out pcAuthSvc : DWORD;
     {__deref_out_ecount( pcAuthSvc)}
     var asAuthSvc : PSOLE_AUTHENTICATION_SERVICE) : HRESULT; stdcall;
 
-
+{$EXTERNALSYM CoSwitchCallContext}
 function CoSwitchCallContext(
   {__in_opt}  pNewObject : IUnknown;
   {__out} out ppOldObject : IUnknown
@@ -241,13 +248,21 @@ function CoSwitchCallContext(
 
 
 
-const COM_RIGHTS_EXECUTE = 1;
-const COM_RIGHTS_EXECUTE_LOCAL = 2;
-const COM_RIGHTS_EXECUTE_REMOTE = 4;
-const COM_RIGHTS_ACTIVATE_LOCAL = 8;
-const COM_RIGHTS_ACTIVATE_REMOTE = 16;
-{$ENDIF JWA_IMPLEMENTATIONSECTION}
+const
+  {$EXTERNALSYM COM_RIGHTS_EXECUTE}
+  COM_RIGHTS_EXECUTE = 1;
+  {$EXTERNALSYM COM_RIGHTS_EXECUTE_LOCAL}
+  COM_RIGHTS_EXECUTE_LOCAL = 2;
+  {$EXTERNALSYM COM_RIGHTS_EXECUTE_REMOTE}
+  COM_RIGHTS_EXECUTE_REMOTE = 4;
+  {$EXTERNALSYM COM_RIGHTS_ACTIVATE_LOCAL}
+  COM_RIGHTS_ACTIVATE_LOCAL = 8;
+  {$EXTERNALSYM COM_RIGHTS_ACTIVATE_REMOTE}
+  COM_RIGHTS_ACTIVATE_REMOTE = 16;
 
+
+
+{$ENDIF JWA_IMPLEMENTATIONSECTION}
 
 
 
