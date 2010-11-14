@@ -573,11 +573,11 @@ end;
 
 // **** Implementation of IFileIsInUse
 
+//Create COM memory to copy our name
 function TFormMain.GetAppName(out ppszName: LPWSTR): HRESULT;
 begin
-  //Create COM memory to copy our name
-  ppszName := LPWSTR(CoTaskMemAlloc(Length(Self.Caption) * sizeof(WCHAR)));
-  result := StringCchCopy(ppszName, Length(Self.Caption) * sizeof(WCHAR), PWideChar(Self.Caption));
+  ppszName := LPWSTR(CoTaskMemAlloc((Length(Self.Caption) +1) * sizeof(WCHAR)));
+  result := StringCchCopy(ppszName, Length(Self.Caption)+1, PWideChar(Self.Caption));
   if Failed(result) then
   begin
     CoTaskMemFree(ppszName);
