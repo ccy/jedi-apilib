@@ -62,7 +62,6 @@ Support for Delphi 5 and 6 has ceased.
 
 
 uses
-  FastMM4,
   JwaWindows,
   JwsclAcl in 'JwsclAcl.pas',
   JwsclAuthCtx in 'JwsclAuthCtx.pas',
