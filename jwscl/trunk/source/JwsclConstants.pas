@@ -1500,6 +1500,28 @@ var
     GenericAll: WTS_SECURITY_ALL_ACCESS;
     );
 
+  COMMapping: array[1..5] of TJwRightsMapping =
+    (
+    (Right: COM_RIGHTS_EXECUTE; Name: 'COM_RIGHTS_EXECUTE';
+    Flags: SI_ACCESS_SPECIFIC),
+    (Right: COM_RIGHTS_EXECUTE_LOCAL; Name: 'COM_RIGHTS_EXECUTE_LOCAL';
+    Flags: SI_ACCESS_SPECIFIC),
+    (Right: COM_RIGHTS_EXECUTE_REMOTE; Name: 'COM_RIGHTS_EXECUTE_REMOTE';
+    Flags: SI_ACCESS_SPECIFIC),
+    (Right: COM_RIGHTS_ACTIVATE_LOCAL; Name: 'COM_RIGHTS_ACTIVATE_LOCAL';
+    Flags: SI_ACCESS_SPECIFIC),
+    (Right: COM_RIGHTS_ACTIVATE_REMOTE; Name: 'COM_RIGHTS_ACTIVATE_REMOTE';
+    Flags: SI_ACCESS_SPECIFIC)
+  );
+
+  COMGenericMapping: TGenericMapping =
+    (GenericRead: 0;
+    GenericWrite: COM_RIGHTS_ACTIVATE_LOCAL or COM_RIGHTS_ACTIVATE_REMOTE;
+    GenericExecute: COM_RIGHTS_EXECUTE or COM_RIGHTS_EXECUTE_LOCAL or COM_RIGHTS_EXECUTE_REMOTE;
+    GenericAll: 0;
+    );
+
+
 
   JwNullSecurityAttributes: TSECURITYATTRIBUTES =
    (nLength: 0;

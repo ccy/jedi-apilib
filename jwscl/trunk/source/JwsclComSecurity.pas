@@ -981,8 +981,26 @@ type
           var SecurityDescriptor : TJwSecurityDescriptor;
           out AuthenticationLevel : TJwComAuthenticationLevel;
           out ImpersonationLevel : TJwComImpersonationLevel;
-          out Capabilities : TJwComAuthenticationCapabilities);
+          out Capabilities : TJwComAuthenticationCapabilities); virtual;
 
+    {<b>IsValidCOMSecurityDescriptor</b> checks whether the given security descirptor is valid to the COM rules of ACL.
+
+     Parameters
+       SecurityDescriptor A security which is to be checked.
+       UseCurrentWindowsVersion Defines whether the current Windows version is used (true) to check for the rules; otherwise the
+                          descriptor is validated against general rules. On an old Windows version
+                          only the access right COM_RIGHT_EXECUTE is allowed.
+     Returns
+      The function returns true if the security descriptor is valid to the COM rules.
+
+     Exceptions
+      EJwsclNILParameterException Parameter SecurityDescriptor is nil
+
+     Remarks
+      The COM rules are listed here: http://msdn.microsoft.com/en-us/library/ms693364%28VS.85%29.aspx
+
+    }
+    class function IsValidCOMSecurityDescriptor(const SecurityDescriptor : TJwSecurityDescriptor; const UseCurrentWindowsVersion : boolean = false) : Boolean; virtual;
     {<b>IsExternalCOMCall</b> checks whether the current COM call is from a local or remote client.
 
      Returns
@@ -1795,6 +1813,8 @@ type
     fGenericMapping: TJwSecurityGenericMappingClass;
     fCacheResult: TAuthZAccessCheckResultHandle;
 
+    fDefaultAuthContextFlags : TAuthZSidContextFlags;
+
     fIsDirty : Boolean;
 
     { Creates an instance TJWSecurityID from a pointer to a TRUSTEEW structure.
@@ -1840,7 +1860,7 @@ type
       The following conditions must be met to return TRUE.
       
       
-      
+
       <c>TRUSTEE \<\> nil</c>
       
       <c>TRUSTEE.pMultipleTrustee = nil</c>
@@ -2034,7 +2054,7 @@ type
       
       This method is affected by property StrictACLVerify when set to True. On the other hand if StrictACLVerify is false
       the function can produce incompatible results to IAccessControl.
-      
+
       If SD.DACL is nil the result is incompatible with MS IAccessControl.implementation.
       Internal
       PACTRL_ACCESSW_ALLOCATE_ALL_NODES is a ACTRL_ACCESS structure which looks the following:
@@ -2092,7 +2112,7 @@ type
       
       Remarks
       This method implements %SYMBOLNAME% of IPersist.
-      
+
       This class can host a COM interface that allows it to be available as a stream object to store and load a security
       descriptor. You need to register the class to COM to allow it to be registered.
       Returns
@@ -2324,7 +2344,7 @@ type
       <code>
         CoTaskMemFree(AccessList)
       </code>
-      
+
       Note
       This method implements the JWSCL version of the COM method with the same name.                                     }
     procedure JwGetAllAccessRights(const AProperty: TJwString; out AccessList: TJwDAccessControlList; out Owner, Group : TJwSecurityID); virtual;
@@ -2408,7 +2428,7 @@ type
       
       The JwXXX functions and their COM sisters (like JwGrantAccessRights and GrantAccessRights) are thread safe.
       
-      
+
       
       Do not free this property!                                                                                        }
     property CriticalSection : TCriticalSection read fCriticalSection;
@@ -2454,6 +2474,10 @@ type
     { SupportIPersistStream defines whether this object can be stored into and loaded from a stream. If this value is
       false all stream COM methods returns E_NOTIMPL and streaming is not supported.                                  }
     property SupportIPersistStream : Boolean read fSupportIPersistStream write fSupportIPersistStream;
+
+    {DefaultAuthContextFlags defines the defalt flags used in JwIsAccessAllowed. They are set in the
+     call to TJwAuthContext.CreateBySid to retrieve the users security attributes (mainly groups). }
+    property DefaultAuthContextFlags : TAuthZSidContextFlags read fDefaultAuthContextFlags write fDefaultAuthContextFlags;
 
     { This flag defines whether the object was changed in respect to the last save method call. Default value is false.
       This property is used by the interface method IsDirty                                                             }
@@ -2621,11 +2645,11 @@ const
    DACL:
       1.
       ACE-Type: Allow
-      AccessMask : 0x000B defines COM_RIGHTS_EXECUTE (1), COM_RIGHTS_EXECUTE_LOCAL (2) and COM_RIGHTS_ACTIVATE_LOCAL (8).
+      AccessMask : 0x1 defines COM_RIGHTS_EXECUTE (1)
       SID: Local System
       2.
       ACE-Type: Allow
-      AccessMask : 0x000B defines COM_RIGHTS_EXECUTE (1), COM_RIGHTS_EXECUTE_LOCAL (2) and COM_RIGHTS_ACTIVATE_LOCAL (8).
+      AccessMask : 0x1 defines COM_RIGHTS_EXECUTE (1)
       SID: Builtin Administrators
 
    acDisableActivateAsActivator
@@ -2635,10 +2659,15 @@ const
    acDynamicCloaking
      Use thread token on outgoing COM calls.
 
-
+   Remarks
+    The access rights are set to COM_RIGHTS_EXECUTE only because this security setting is available
+    on Windows XP prior to SP2 (2003 SP1). Other access rights are invalid on these systems.
+    On newer Windows version, COM_RIGHT_EXECUTE can be combined with any other access rights.
+    However, in this case, all entries must be a combination of COM_RIGHTS_EXECUTE with any other COM access
+    right. They must not stand alone. See http://msdn.microsoft.com/en-us/library/ms693364%28VS.85%29.aspx
   }
   JwTightCOMSecuritySettings : TJwCOMSecuritySettings = (
-    SDDL: 'O:LAG:BAD:(A;;0x000B;;;SY)(A;;0x000B;;;BA)';
+    SDDL: 'O:LAG:BAD:(A;;0x1;;;SY)(A;;0x1;;;BA)';
     AuthenticationLevel: calPktPrivacy;
     ImpersonationLevel: cilIdentify;
     Capabilities : [acDisableActivateAsActivator, acNoCustomMarshal, acDynamicCloaking];
@@ -2651,6 +2680,33 @@ const
     * TJwComRegistrySecurity.GetDefaultAccessPermission
     * TJwComRegistrySecurity.GetDefaultAccessPermission
   if the key could not be read.
+  This descriptor will be returned on Windows XP SP1, 2003 SP0.
+
+  Remarks
+  <pre>
+   Owner: BuiltInAdministrators
+   Group: BuiltInAdministrators
+   DACL:
+     Allow: BuiltInAdministrators, Interactive User, SYSTEM
+  </pre>
+
+  0x000B defines COM_RIGHTS_EXECUTE (1), COM_RIGHTS_EXECUTE_LOCAL (2) and COM_RIGHTS_ACTIVATE_LOCAL (8).
+
+  Access Rights: see ACE Rights : http://msdn.microsoft.com/en-us/library/aa374928%28VS.85%29.aspx
+
+    The access rights are set to COM_RIGHTS_EXECUTE only because this security setting is available
+    on Windows XP prior to SP2 (2003 SP1). Other access rights are invalid on these systems.
+    On newer Windows version, COM_RIGHT_EXECUTE can be combined with any other access rights.
+    However, in this case, all entries must be a combination of COM_RIGHTS_EXECUTE with any other COM access
+    right. They must not stand alone. See http://msdn.microsoft.com/en-us/library/ms693364%28VS.85%29.aspx
+  }
+  JwDefaultCOMSDDLOld = 'O:BAG:BAD:(A;;0x0001;;;BA)(A;;0x0001;;;IU)(A;;0x0001;;;SY)';
+
+  {Default Security Descriptor returned by
+    * TJwComRegistrySecurity.GetDefaultAccessPermission
+    * TJwComRegistrySecurity.GetDefaultAccessPermission
+  if the key could not be read.
+  This descriptor will be returned on newer Windows than XP SP1 and 2003 SP0.
 
   Remarks
   <pre>
@@ -2665,7 +2721,17 @@ const
   Access Rights: see ACE Rights : http://msdn.microsoft.com/en-us/library/aa374928%28VS.85%29.aspx
 
   }
-  JwDefaultCOMSDDL = 'O:BAG:BAD:(A;;0x000B;;;BA)(A;;0x000B;;;IU)(A;;0x000B;;;SY)';
+  JwDefaultCOMSDDLNew = 'O:BAG:BAD:(A;;0x000B;;;BA)(A;;0x000B;;;IU)(A;;0x000B;;;SY)';
+
+  {<b>JwDefaultCOMSDDL</b> returns the security descriptor depending on the current system.
+  The access rights must be set differently on Windows XP older than SP2 and 2003 SP1.
+  See http://msdn.microsoft.com/en-us/library/ms693364%28VS.85%29.aspx
+
+  Return Value
+    Returns either JwDefaultCOMSDDLNew or JwDefaultCOMSDDLOld depending on the Windows version.
+  }
+  function JwDefaultCOMSDDL() : String;
+
 
 implementation
 
@@ -2680,6 +2746,30 @@ const
 {
 
 }
+
+function IsNewComWindowsVersion : Boolean;
+begin
+  result := (TJwWindowsVersion.IsWindowsVista(true) or TJwWindowsVersion.IsWindows2008(true) or TJwWindowsVersion.IsWindows2003R2(true)) or
+     (TJwWindowsVersion.IsWindowsXP(False) and (TJwWindowsVersion.GetServicePackVersion.Version.Major >= 2)) or
+     (TJwWindowsVersion.IsWindows2003(False) and (TJwWindowsVersion.GetServicePackVersion.Version.Major >= 1));
+end;
+
+function JwDefaultCOMSDDL() : String;
+begin
+  {
+  Return old version on these:
+  Windows 2000 (not supported)
+  Windows XP Sp1, Sp0
+  Windows 2003 (Sp0)
+  }
+  if IsNewComWindowsVersion then
+  begin
+    result := JwDefaultCOMSDDLNew;
+    Exit;
+  end;
+
+  result := JwDefaultCOMSDDLOld;
+end;
 
 { TJwComClientSecurity }
 {$IFDEF DEBUG}
@@ -3334,13 +3424,17 @@ end;
 
 class function TJwComRegistrySecurity.CheckROTAnyClientPermission(
   const APPID: TGUID): Boolean;
+const KeyValue = 'Interactive User';
 var P : TJwComRegistrySecurity;
 begin
   result := false;
   try
     P := TJwComRegistrySecurity.Create(APPID, true, rhLocal, ptAuto);
-    P.Free;
-    result := true;
+    try
+      result := JwCompareString(P.RunAsString, KeyValue, true) = 0;
+    finally
+      P.Free;
+    end;
   except
     on E : EJwsclInvalidRegistryPath do;
     on E : Exception do
@@ -3352,6 +3446,7 @@ constructor TJwComRegistrySecurity.Create(const AppID: TGuid; ReadOnly: Boolean;
      Hive : TJwRegistryHive;
      COMRegistryPlatform : TJwPlatformType);
 
+const ClassesAppId = 'Software\Classes\AppID\';
 begin
   fReadOnly := ReadOnly;
 
@@ -3384,7 +3479,7 @@ begin
       if TJwWindowsVersion.IsWindows64 then
       begin
         Reg.Access := Reg.Access or KEY_WOW64_64KEY;
-        if not Reg.KeyExists('AppID\'+GUIDToString(AppID)) then
+        if not Reg.KeyExists(ClassesAppId+GUIDToString(AppID)) then
           Reg.Access := Reg.Access or KEY_WOW64_32KEY;
       end
       else
@@ -3402,7 +3497,7 @@ begin
   //For HKEY_LOCAL_MACHINE\Software\Classes\Appid and HKEY_CURRENT_USER\Software\Classes\Appid, the
   //  DllSurrogate and DllSurrogateExecutable registry values are not reflected if their value is an empty string.
 
-  if not Reg.OpenKey('AppID\'+GUIDToString(AppID), false) then
+  if not Reg.OpenKey(ClassesAppId+GUIDToString(AppID), false) then
   begin
     FreeAndNil(Reg);
 
@@ -4453,6 +4548,59 @@ begin
       'IsExternalCOMCall', ClassName, RsUNComSecurity,0, DWORD(hr), ['CoGetCallContext', hr]);
 end;
 
+class function TJwComProcessSecurity.IsValidCOMSecurityDescriptor(
+  const SecurityDescriptor: TJwSecurityDescriptor; const UseCurrentWindowsVersion : boolean = false): Boolean;
+var
+  FormatType : (ftUndefined, ftOld, ftNew);
+  i : Integer;
+  OldWinVer : Boolean;
+const
+  COM_ALL_EXECUTE = COM_RIGHTS_EXECUTE_LOCAL or COM_RIGHTS_EXECUTE_REMOTE or COM_RIGHTS_ACTIVATE_LOCAL or COM_RIGHTS_ACTIVATE_REMOTE;
+begin
+  JwRaiseOnNilParameter(SecurityDescriptor, 'SecurityDescriptor', 'IsValidCOMSecurityDescriptor', ClassName, RsUNComSecurity);
+
+  result := false;
+
+  if not Assigned(SecurityDescriptor.DACL) then
+  begin
+    result := true;
+    exit;
+  end;
+
+  OldWinVer := UseCurrentWindowsVersion and not IsNewComWindowsVersion;
+
+  FormatType := ftUndefined;
+  
+  for i := 0 to SecurityDescriptor.DACL.Count-1 do
+  begin
+    //COM_RIGHTS_EXECUTE not defined
+    if (SecurityDescriptor.DACL[i].AccessMask and COM_RIGHTS_EXECUTE <> COM_RIGHTS_EXECUTE) then
+    begin
+      exit;
+    end
+    else
+    //Only COM_RIGHTS_EXECUTE defined
+    if (SecurityDescriptor.DACL[i].AccessMask = COM_RIGHTS_EXECUTE) then
+    begin
+      if FormatType = ftNew then
+        exit
+      else
+        FormatType := ftOld;
+    end
+    else
+    //COM_RIGHTS_EXECUTE with a combination of other access rights
+    if (SecurityDescriptor.DACL[i].AccessMask > COM_RIGHTS_EXECUTE) then
+    begin
+      if (FormatType = ftOld) or OldWinVer then
+        exit
+      else
+        FormatType := ftNew;
+    end;
+  end;
+
+  result := true;
+end;
+
 class procedure TJwComProcessSecurity.Initialize(SecurityDescriptor: TJwSecurityDescriptor; AuthenticationLevel: TJwComAuthenticationLevel;
   ImpersonationLevel: TJwComImpersonationLevel; Capabilities: TJwComAuthenticationCapabilities);
 var
@@ -4490,7 +4638,7 @@ begin
   Initialize(
           @SecurityData,//SecurityData : PJwSecurityInitializationData;
           AuthenticationList,//var AuthenticationList : TJwAuthenticationInfoList;
-          calNone,//AuthenticationLevel: TJwComAuthenticationLevel;
+          calDefault,//AuthenticationLevel: TJwComAuthenticationLevel;
           cilIdentify,//ImpersonationLevel : TJwComImpersonationLevel;
           Capabilities,//Capabilities : TJwComAuthenticationCapabilities;
           false, //const AutoDestroy : Boolean
@@ -4895,6 +5043,8 @@ begin
   fCacheResult := 0;
 
   fCriticalSection := TCriticalSection.Create;
+
+  DefaultAuthContextFlags := [authZSF_Default];
 end;
 
 destructor TJwServerAccessControl.Destroy;
@@ -5026,7 +5176,7 @@ begin
     if not Assigned(Trustee) then
       Exit;
 
-    AuthContext := TJwAuthContext.CreateBySid(fAuthManager, [authZSF_ComputePrivileges], Trustee, 0, nil);
+    AuthContext := TJwAuthContext.CreateBySid(fAuthManager, DefaultAuthContextFlags, Trustee, 0, nil);
 
     try
       Request := TJwAuthZAccessRequest.Create(AccessRights,

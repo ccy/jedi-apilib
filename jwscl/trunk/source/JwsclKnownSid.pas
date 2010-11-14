@@ -950,12 +950,12 @@ procedure TJwSecurityKnownSID.Free;
 begin
 {$IFDEF DEBUG}
   //In debug mode raise an exception. Somebody freed the instance manually
-  if (not OnFinalization) then
+  if IsStandardSID and (not OnFinalization) then
    raise EJwsclSecurityException.CreateFmtEx('Call to Free failed, because this is a commonly used SID and is automatically freed.','Free',
       ClassName,'JwsclKnownSid.pas',0,false,[]);
 {$ENDIF}
 
-  if (OnFinalization) then
+  if (OnFinalization) or not IsStandardSID then
     inherited;
 end;
 
@@ -1215,7 +1215,6 @@ const
     20480); //iltProtected
 
 begin
-  Create(Format(JwIntegrityLevel, [Level]));
   fLevel := Level;
   fIsStandard := IsStandardSID;
 

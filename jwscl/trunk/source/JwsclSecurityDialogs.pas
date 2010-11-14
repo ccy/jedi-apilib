@@ -330,9 +330,9 @@ type
       @param SecurityResetTypes defines what parts the SD must be recursively assigned to the objects.
       @param Settings contains the SD control bits of the parameter NewSecurityDescriptor.
       @param NewSecurityDescriptor is the security descriptor which contains the security information
-               that was changed in the dialog
+               that was changed in the dialog. Be aware that the DACL of the SD can be nil.
       @param MergedSecurityDescriptor contains the merged security information from
-              NewSecurityDescriptor and the property SecurityDescriptor
+              NewSecurityDescriptor and the property SecurityDescriptor. Be aware that the DACL of the SD can be nil.
       @param bSuccess Defines whether the security information could be set. Its default value is false.
             If true, the property SecurityDescriptor is to MergedSecurityDescriptor and the ACL editor updates its data.
             If false the ACL editor resets its data.
@@ -543,7 +543,9 @@ type
     {see TJwOnInitSecurityPageDestroy }
     property OnInitSecurityPageDestroy: TJwOnInitSecurityPageDestroy
       Read fOnInitSecurityPageDestroy Write fOnInitSecurityPageDestroy;
-    {see TJwOnSetSecurity }
+    {see TJwOnSetSecurity.
+     You have to set this property; otherwise the user won't be able to hit the Ok button.
+     }
     property OnSetSecurity: TJwOnSetSecurity
       Read fOnSetSecurity Write fOnSetSecurity;
     {see TJwOnGetInheriteSource }

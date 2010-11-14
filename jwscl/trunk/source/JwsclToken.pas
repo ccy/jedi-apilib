@@ -5990,15 +5990,6 @@ function TJwSecurityTokenStatistics.GetText: TJwString;
   end;
 
 begin
-  Result := '';
-  {
-  RsTokenStatisticsText = 'TokenID: %0:s\r\AuthenticationId: %1:s\r\nExpirat' +
-    'ionTime: %2:s\r\nToken type: %3:d\r\nImpersonation level: 0x%4:x\r\nDynam' +
-    'ic charged: 0x%5:x\r\nDynamic available: 0x%6:x\r\nGroup count: %7:d\r\nP' +
-    'rivilege count: %8:d\r\nModified ID: %9:s\r\n';
-
-  }
-
   Result := JwFormatString(RsTokenStatisticsText,
     [TJwPrivilege.LUIDtoText(fTokenId), //0
     TJwPrivilege.LUIDtoText(fAuthenticationId), //1
@@ -6011,21 +6002,6 @@ begin
     fPrivilegeCount, //8
     TJwPrivilege.LUIDtoText(fModifiedId) //9
     ]);
-  {
-  Result := Result + 'TokenID: ' + TJwPrivilege.LUIDtoText(fTokenId) + #13#10;
-  Result := Result + 'AuthenticationId: ' + TJwPrivilege.LUIDtoText(
-    fAuthenticationId) + #13#10;
-
-  Result := Result + 'ExpirationTime: ' + GetExpirationTimeString + #13#10;
-  Result := Result + 'TOKEN_TYPE: 0x' + IntToHex(integer(fTOKEN_TYPE), 2) + #13#10;
-  Result := Result + 'SECURITY_IMPERSONATION_LEVEL: 0x' + IntToHex(
-    integer(fSECURITY_IMPERSONATION_LEVEL), 2) + #13#10;
-  Result := Result + 'DynamicCharged: 0x' + IntToHex(fDynamicCharged, 2) + #13#10;
-  Result := Result + 'DynamicAvailable: 0x' + IntToHex(
-    fDynamicAvailable, 2) + #13#10;
-  Result := Result + 'GroupCount: 0x' + IntToHex(fGroupCount, 2) + #13#10;
-  Result := Result + 'PrivilegeCount: 0x' + IntToHex(fPrivilegeCount, 2) + #13#10;
-  Result := Result + 'ModifiedId: ' + TJwPrivilege.LUIDtoText(fModifiedId) + #13#10;      }
 end;
 
 constructor TJwSecurityToken.CreateLogonUser(sUsername, sDomain,
