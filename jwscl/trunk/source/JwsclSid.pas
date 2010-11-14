@@ -1090,7 +1090,7 @@ begin
       begin
         if SplitAccountString(TJwString(PObjectsAndNameW(Trustee.ptstrName).ptstrName), Domain, User) then
         begin
-          Create(PSID(Trustee.ptstrName));
+          Create(Domain, User);
 
           if (PObjectsAndNameW(Trustee.ptstrName).ObjectsPresent and ACE_OBJECT_TYPE_PRESENT <> 0) then
           begin
@@ -1126,30 +1126,51 @@ var
   i : Integer;
   Len : DWORD;
   SampStr : PWideChar;
-  SamStr : TJwString;
+  SamStr, S : TJwString;
+  AtSign : boolean;
 begin
   result := false;
-  if not TranslateNameW(PWideChar(WideString(Str)), NameUnknown, NameSamCompatible, nil, Len) then
+  if not TranslateNameW(PWideChar(WideString(Str)), NameUnknown, NameSamCompatible, nil, Len) and (GetLastError <> ERROR_NO_SUCH_DOMAIN) then
     exit;
 
   Inc(Len, 2);
   GetMem(SampStr, Len * sizeof(WideChar));
   try
     if not TranslateNameW(PWideChar(WideString(Str)), NameUnknown, NameSamCompatible, SampStr, Len) then
-      exit;
+    begin
+      if (GetLastError <> ERROR_NO_SUCH_DOMAIN) then
+        exit
+      else
+      begin
+        //We will try to split domain and username
+        SamStr := Str;
+      end;
+    end
+    else
+      SamStr := TJwString(SampStr);
 
-    SamStr := TJwString(SampStr);
-
+    AtSign := false;
     i := Pos('\', SamStr);
+    if i = 0 then
+    begin
+      i := Pos('@', SamStr);
+      AtSign := true;
+    end;
     if i > 0 then
     begin
-      Domain := Copy(SamStr, 1, i);
+      Domain := Copy(SamStr, 1, i-1);
     end
     else
       i := 0;
 
     User := Copy(SamStr, i+1,  Length(SamStr));
 
+    if AtSign then
+    begin
+      S := User;
+      User := Domain;
+      Domain := S;
+    end;
     result := true;
   finally
     FreeMem(SampStr);
