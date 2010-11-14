@@ -1,0 +1,23 @@
+The following overview shows which paths are necessary to use JWA and JWSCL
+The Source paths are only necessary if you like to open the source files from IDE.
+
+Note:
+  This setting requires a precompiled JwaWindows.pas (i.e. JwaWindows.dcu) which is
+  stored in one of the sub folders or the packages folder.
+
+JWA
+  LibraryPaths:
+    <path>\jwapi\trunk\Packages\bds14\bin\release\dynamic    //e.g. uses JwaWindows.dcu 
+    <path>\jwapi\trunk\COM                                   //uses JWA COM API
+  Source:
+    <path>\jwapi\trunk\Win32API                              //allows to Ctrl+Enter open JwaXXX.pas 
+	<path>\jwapi\trunk\Win32API\jwaWindows                   //allows to Ctrl+Enter open JwaWindows.pas
+	
+in addition, JWSCL needs the following:
+
+JWSCL
+  LibraryPaths:
+    <path>\jwscl\trunk\source                                //uses JWSCL sources
+  Source:
+	<path>\jwscl\trunk\source                                //allows to Ctrl+Enter open JwsclXXXX.pas 
+	
