@@ -3055,27 +3055,27 @@ const
   {$EXTERNALSYM THBF_ENABLED}
   THBF_ENABLED        = 0;            //The button is active and available to the user.
   {$EXTERNALSYM THBF_DISABLED}
-  THBF_DISABLED	      = $1;           //The button is disabled. It is present, but has a visual state that
+  THBF_DISABLED       = $1;           //The button is disabled. It is present, but has a visual state that
                                       //indicates that it will not respond to user action.
   {$EXTERNALSYM THBF_DISMISSONCLICK}
-	THBF_DISMISSONCLICK	= $2;           //When the button is clicked, the taskbar button's flyout closes immediately.
+  THBF_DISMISSONCLICK = $2;           //When the button is clicked, the taskbar button's flyout closes immediately.
   {$EXTERNALSYM THBF_NOBACKGROUND}
-	THBF_NOBACKGROUND	  = $4;           //Do not draw a button border, use only the image.
+  THBF_NOBACKGROUND   = $4;           //Do not draw a button border, use only the image.
   {$EXTERNALSYM THBF_HIDDEN}
-	THBF_HIDDEN	        = $8;           //The button is not shown to the user.
+  THBF_HIDDEN         = $8;           //The button is not shown to the user.
   {$EXTERNALSYM THBF_NONINTERACTIVE}
-	THBF_NONINTERACTIVE = $10;          //The button is enabled but not interactive; no pressed button state is
+  THBF_NONINTERACTIVE = $10;          //The button is enabled but not interactive; no pressed button state is
                                       //drawn. This value is intended for instances where the button is used in
                                       //a notification.
 
   {$EXTERNALSYM THB_BITMAP}
   THB_BITMAP  = $1;           //The iBitmap member contains valid information.
   {$EXTERNALSYM THB_ICON}
-	THB_ICON	  = $2;           //The hIcon member contains valid information.
+  THB_ICON    = $2;           //The hIcon member contains valid information.
   {$EXTERNALSYM THB_TOOLTIP}
-	THB_TOOLTIP	= $4;           //The szTip member contains valid information.
+  THB_TOOLTIP = $4;           //The szTip member contains valid information.
   {$EXTERNALSYM THB_FLAGS}
-	THB_FLAGS	  = $8;           //The dwFlags member contains valid information.
+  THB_FLAGS   = $8;           //The dwFlags member contains valid information.
 
 type
   PThumbButton = ^TThumbButton;
@@ -3105,24 +3105,24 @@ const
                                     //Call this method with this flag to dismiss the progress bar when the
                                     //operation is complete or cancelled.
   {$EXTERNALSYM TBPF_INDETERMINATE}
-  TBPF_INDETERMINATE	= $1;         //The progress indicator does not grow in size, but cycles repeatedly
+  TBPF_INDETERMINATE  = $1;         //The progress indicator does not grow in size, but cycles repeatedly
                                     //along the length of the taskbar button. This indicates activity without
                                     //specifying what proportion of the progress is complete. Progress is
                                     //taking place, but there is no prediction as to how long the operation
                                     //will take.
   {$EXTERNALSYM TBPF_NORMAL}
-	TBPF_NORMAL	= $2;                 //The progress indicator grows in size from left to right in proportion
+  TBPF_NORMAL = $2;                 //The progress indicator grows in size from left to right in proportion
                                     //to the estimated amount of the operation completed. This is a determinate
                                     //progress indicator; a prediction is being made as to the duration of the
                                     //operation.
   {$EXTERNALSYM TBPF_ERROR}
-	TBPF_ERROR	= $4;                 //The progress indicator turns red to show that an error has occurred in one
+  TBPF_ERROR  = $4;                 //The progress indicator turns red to show that an error has occurred in one
                                     //of the windows that is broadcasting progress. This is a determinate state.
                                     //If the progress indicator is in the indeterminate state, it switches to a
                                     //red determinate display of a generic percentage not indicative of actual
                                     //progress.
   {$EXTERNALSYM TBPF_PAUSED}
-	TBPF_PAUSED	= $8;                 //The progress indicator turns yellow to show that progress is currently
+  TBPF_PAUSED = $8;                 //The progress indicator turns yellow to show that progress is currently
                                     //stopped in one of the windows but can be resumed by the user.
                                     //No error condition exists and nothing is preventing the progress
                                     //from continuing. This is a determinate state. If the progress indicator
@@ -3166,24 +3166,24 @@ const
                                                 //The default behavior is used: the tab window provides a
                                                 //thumbnail and peek image, either live or static as appropriate.
   {$EXTERNALSYM STPF_USEAPPTHUMBNAILALWAYS}
-  STPF_USEAPPTHUMBNAILALWAYS	    = $1;         //Always use the thumbnail provided by the main application frame
+  STPF_USEAPPTHUMBNAILALWAYS      = $1;         //Always use the thumbnail provided by the main application frame
                                                 //window rather than a thumbnail provided by the individual tab
                                                 //window. Do not combine this value with
                                                 //STPF_USEAPPTHUMBNAILWHENACTIVE; doing so will result in an error.
   {$EXTERNALSYM STPF_USEAPPTHUMBNAILWHENACTIVE}
-	STPF_USEAPPTHUMBNAILWHENACTIVE  = $2;         //When the application tab is active and a live representation of
+  STPF_USEAPPTHUMBNAILWHENACTIVE  = $2;         //When the application tab is active and a live representation of
                                                 //its window is available, use the main application frame window
                                                 //thumbnail. At other times, use the tab window thumbnail.
                                                 //Do not combine this value with STPF_USEAPPTHUMBNAILALWAYS;
                                                 //doing so will result in an error.
   {$EXTERNALSYM STPF_USEAPPPEEKALWAYS}
-	STPF_USEAPPPEEKALWAYS	          = $4;         //Always use the peek image provided by the main application
+  STPF_USEAPPPEEKALWAYS           = $4;         //Always use the peek image provided by the main application
                                                 //frame window rather than a peek image provided by the
                                                 //individual tab window. Do not combine this value with
                                                 //STPF_USEAPPPEEKWHENACTIVE; doing so will result in an error.
 
   {$EXTERNALSYM STPF_USEAPPPEEKWHENACTIVE}
-	STPF_USEAPPPEEKWHENACTIVE	      = $8;         //When the application tab is active and a live representation
+  STPF_USEAPPPEEKWHENACTIVE       = $8;         //When the application tab is active and a live representation
                                                 //of its window is available, show the main application frame
                                                 //in the peek feature. At other times, use the tab window.
                                                 //Do not combine this value with STPF_USEAPPPEEKALWAYS;

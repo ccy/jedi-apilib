@@ -5357,12 +5357,12 @@ const
   {$EXTERNALSYM SM_TABLETPC}
   SM_MEDIACENTER       = 87;
   {$EXTERNALSYM SM_MEDIACENTER}
-  
 
-  
 
-  
-  
+
+
+
+
 
 //#endif /* _WIN32_WINNT >= 0x0501 */
 
@@ -5377,7 +5377,7 @@ const
   {$ENDIF WIN98ME}
   {$ENDIF !WIN98ME_UP}
   {$EXTERNALSYM SM_CMETRICS}
-  
+
   SM_STARTER = 88;
   {$EXTERNALSYM SM_STARTER}
 

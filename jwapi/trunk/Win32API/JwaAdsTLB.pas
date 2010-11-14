@@ -26,7 +26,7 @@
 { Contributor(s):                                                 }
 {                                                                 }
 { Notes:                                                          }
-{ Remko 25-02-2010:  											  }
+{ Remko 25-02-2010:                                               }
 { This file is composed of the header Iads.h from the SDK 7.0 and }
 { the imported typelib from ActiveDs.Tlb. This was necessary      }
 { because the generated pas file from the tlb is incomplete and   }
@@ -384,7 +384,7 @@ type
   __MIDL___MIDL_itf_ads_0000_0000_0016 = ADS_DN_WITH_STRING;
   PADS_DN_WITH_STRING = ^ADS_DN_WITH_STRING;
 
-  // Remko@23.02.2010 - conversion: checked size : OK  
+  // Remko@23.02.2010 - conversion: checked size : OK
   ADSVALUE = packed record
   case Byte of  // Padding
     0: (
@@ -453,9 +453,9 @@ const
 
 
   ADS_ATTR_CLEAR = 1;
-  ADS_ATTR_UPDATE	= 2;
-  ADS_ATTR_APPEND	= 3;
-  ADS_ATTR_DELETE	= 4;
+  ADS_ATTR_UPDATE = 2;
+  ADS_ATTR_APPEND = 3;
+  ADS_ATTR_DELETE = 4;
 
 type
   ADS_OBJECT_INFO = record
@@ -569,7 +569,7 @@ const
 type
   ADS_SEARCHPREF = ADS_SEARCHPREF_ENUM;
 
-  // Remko@25.02.2010 - conversion: checked size : OK  
+  // Remko@25.02.2010 - conversion: checked size : OK
   ADS_SEARCHPREF_INFO = packed record
     dwSearchPref: ADS_SEARCHPREF;
     _Padding1: DWORD;
@@ -581,7 +581,7 @@ type
   LPADS_SEARCHPREF_INFO = ^ADS_SEARCHPREF_INFO;
 
 const
-	ADS_DIRSYNC_COOKIE: PWideChar = 'fc8cb04d-311d-406c-8cb9-1ae8b843b418';
+  ADS_DIRSYNC_COOKIE: PWideChar = 'fc8cb04d-311d-406c-8cb9-1ae8b843b418';
   ADS_VLV_RESPONSE: PWideChar = 'fc8cb04d-311d-406c-8cb9-1ae8b843b419';
 
 type
@@ -643,7 +643,7 @@ type
   PADS_VLV = ^_ADS_VLV;
 
 const
-  ADS_EXT_MINEXTDISPID	= 1;
+  ADS_EXT_MINEXTDISPID  = 1;
   ADS_EXT_MAXEXTDISPID = 16777215;
   ADS_EXT_INITCREDENTIALS = 1;
   ADS_EXT_INITIALIZE_COMPLETE = 2;
