@@ -5,8 +5,6 @@
 { Obtained through: Joint Endeavour of Delphi Innovators (Project JEDI)        }
 {                                                                              }
 { Author(s): Christian Wimmer                                                  }
-{ Creation date: 24th October 2008                                             }
-{ Last modification date: 24th October 2008                                    }
 {                                                                              }
 { Description: Shows how to use the IFileIsInUse interface.                    }
 {                                                                              }
