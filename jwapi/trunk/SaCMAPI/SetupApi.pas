@@ -39,7 +39,7 @@
 {$IFNDEF JWA_OMIT_SECTIONS}
 unit SetupApi;
 
-{$I jediapilib.inc}
+{$I ..\Includes\JediAPILib.inc}
 
 interface
 
@@ -826,7 +826,7 @@ type
 //
 // Define type for reference to device information set
 //
-  HDEVINFO = Pointer;
+  HDEVINFO = THandle;
   {$EXTERNALSYM HDEVINFO}
 
 //

@@ -39,7 +39,7 @@
 {$IFNDEF JWA_OMIT_SECTIONS}
 unit CfgMgr32;
 
-{$I jediapilib.inc}
+{$I ..\Includes\JediAPILib.inc}
 
 interface
 
