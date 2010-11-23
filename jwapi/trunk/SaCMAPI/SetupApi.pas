@@ -4372,7 +4372,7 @@ function SetupDiInstallInterfaceDevices(DeviceInfoSet: HDEVINFO;
 {$EXTERNALSYM SetupDiInstallInterfaceDevices}
 
 {$IFDEF WINXP_UP}
-function SetupDiSetDeviceInterfaceDefault(DeviceInfoSet: HDEVINFO
+function SetupDiSetDeviceInterfaceDefault(DeviceInfoSet: HDEVINFO;
   var DeviceInterfaceData: TSPDeviceInterfaceData; Flags: DWORD;
   Reserved: Pointer): BOOL; stdcall;
 {$EXTERNALSYM SetupDiSetDeviceInterfaceDefault}
@@ -8417,9 +8417,9 @@ function SetupInstallServicesFromInfSectionExA; external SetupApiModuleName name
 function SetupInstallServicesFromInfSectionExW; external SetupApiModuleName name 'SetupInstallServicesFromInfSectionExW';
 function SetupInstallServicesFromInfSectionEx; external SetupApiModuleName name 'SetupInstallServicesFromInfSectionEx' + NameSuffix;
 {$IFDEF WINXP_UP}
-function InstallHinfSectionA; external SetupApiModuleName name 'InstallHinfSectionA';
-function InstallHinfSectionW; external SetupApiModuleName name 'InstallHinfSectionW';
-function InstallHinfSection; external SetupApiModuleName name 'InstallHinfSection' + NameSuffix;
+procedure InstallHinfSectionA; external SetupApiModuleName name 'InstallHinfSectionA';
+procedure InstallHinfSectionW; external SetupApiModuleName name 'InstallHinfSectionW';
+procedure InstallHinfSection; external SetupApiModuleName name 'InstallHinfSection' + NameSuffix;
 {$ENDIF WINXP_UP}
 function SetupInitializeFileLogA; external SetupApiModuleName name 'SetupInitializeFileLogA';
 function SetupInitializeFileLogW; external SetupApiModuleName name 'SetupInitializeFileLogW';
@@ -8656,7 +8656,7 @@ function SetupEnumInfSectionsA; external SetupApiModuleName name 'SetupEnumInfSe
 function SetupEnumInfSectionsW; external SetupApiModuleName name 'SetupEnumInfSectionsW';
 function SetupEnumInfSections; external SetupApiModuleName name 'SetupEnumInfSections' + NameSuffix;
 function SetupVerifyInfFileA; external SetupApiModuleName name 'SetupVerifyInfFileA';
-function SetupVerifyInfFileW; external SetupApiModuleName name 'SetupVerifyInfFileW';;
+function SetupVerifyInfFileW; external SetupApiModuleName name 'SetupVerifyInfFileW';
 function SetupVerifyInfFile; external SetupApiModuleName name 'SetupVerifyInfFile' + NameSuffix;
 function SetupDiGetCustomDevicePropertyA; external SetupApiModuleName name 'SetupDiGetCustomDevicePropertyA';
 function SetupDiGetCustomDevicePropertyW; external SetupApiModuleName name 'SetupDiGetCustomDevicePropertyW';
