@@ -76,7 +76,6 @@ uses
   JwsclElevation in 'JwsclElevation.pas',
   JwsclEncryption in 'JwsclEncryption.pas',
   JwsclEnumerations in 'JwsclEnumerations.pas',
-  JwsclEurekaLogUtils in 'JwsclEurekaLogUtils.pas',
   JwsclExceptions in 'JwsclExceptions.pas',
   JwsclFirewall in 'JwsclFirewall.pas',
   JwsclImpersonation in 'JwsclImpersonation.pas',
