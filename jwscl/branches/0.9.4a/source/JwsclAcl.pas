@@ -3936,7 +3936,12 @@ begin
   if not Assigned(SID) then
     SidText := RsBracketNil
   else
-    SidText := Sid.GetText(True);
+  begin
+    if Sid.IsLogonSid then
+      SidText := JwFormatString(RsLogonSidNameText, [Sid.StringSID])
+    else
+      SidText := Sid.GetText(True);
+  end;
 
   result := JwFormatString(
     RsACLClassGetTextMap,

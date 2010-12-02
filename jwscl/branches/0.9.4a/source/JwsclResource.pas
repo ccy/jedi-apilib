@@ -167,7 +167,7 @@ const
   RsStreamDataCopyingFailed = 'The stream data could not be copied to internal memory.';
   RsDefaultCOMKeyNotFound = 'Default COM key not available/found.';
   RsCOMAppIDNotFound = 'AppID "%0:s" could not be found.';
-
+  RsLogonSidNameText = 'Logon SID (%0:s)';
 
 //Unit  JwsclCredentials.pas
 
