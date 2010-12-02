@@ -236,6 +236,17 @@ type
 
     MSDN on http://msdn2.microsoft.com/en-us/library/aa379594.aspx
                      http://msdn2.microsoft.com/en-us/library/aa379597.aspx
+
+    Remarks
+      JWSCL provides a cache implementation of its own. To use caching of SID names
+      retrieved by GetAccountSidString and GetAccountName enable compiler switch
+      JWSCL_USE_CACHES in Jwscl.inc . In this way the mapping of a SID String (S-1-xxx) to a name
+      (e.g. Joe) will be stored in a hashed list and calls to system functions will
+      be diminished which will result in faster calls.
+      A cache is available for one thread only. Each thread has a cache of its own but
+      the first cache is initialized automatically. For each new thread call
+      JwInitSidNameCache and JwFreeSidNameCache at its end. The cache for the first (main) thread
+      is automatically destroyed.
     }
   TJwSecurityId = class(TInterfacedObject, IJwBase)
   private
@@ -503,7 +514,26 @@ type
        }
     function GetAccountName(SystemName: TJwString = ''): TJwString; virtual;
 
+    {<b>GetCachedUserFromSid</b> returns a cached name of this SID.
+     This can improve performance of retrieving the name of a (domain) sid.
+
+     Remarks
+     For more information see property CachedUserFromSid.
+
+     JWSCL provides a cache implementation of its own. To use caching of SID names
+      retrieved by GetAccountSidString and GetAccountName enable compiler switch
+      JWSCL_USE_CACHES in Jwscl.inc . In this way the mapping of a SID String (S-1-xxx) to a name
+      (e.g. Joe) will be stored in a hashed list and calls to system functions will
+      be diminished which will result in faster calls.
+      A cache is available for one thread only. Each thread has a cache of its own but
+      the first cache is initialized automatically. For each new thread call
+      JwInitSidNameCache and JwFreeSidNameCache at its end. The cache for the first (main) thread
+      is automatically destroyed.
+     }
     function GetCachedUserFromSid : WideString; virtual;
+
+    {<b>IsLogonSid</b> returns true if the current SID instance is a logon SID (S-1-5-5-xxx); otherwise false.}
+    function IsLogonSid : Boolean; virtual;
 
       {<B>GetAccountDomainName</B> returns the domain account name of the SID on the computer given in SystemName.
        For more information see the see also section.
@@ -822,11 +852,15 @@ type
        @Seealso(GetAccountSidString);
 
        Remarks
-         If the compiler directive JWSCL_SIDCACHE or JWSCL_USE_CACHES is active
-         <b>GetAccountSidString</b> uses an caching algorithm per thread basis
-         to return the name. A new SID is stored in the global JwSidNameCache
-         variable (per thread) and used every time the same SID is returned.
-         A SID is determined by its SidString (property) and its System name.
+         JWSCL provides a cache implementation of its own. To use caching of SID names
+        retrieved by GetAccountSidString and GetAccountName enable compiler switch
+        JWSCL_USE_CACHES in Jwscl.inc . In this way the mapping of a SID String (S-1-xxx) to a name
+        (e.g. Joe) will be stored in a hashed list and calls to system functions will
+        be diminished which will result in faster calls.
+        A cache is available for one thread only. Each thread has a cache of its own but
+        the first cache is initialized automatically. For each new thread call
+        JwInitSidNameCache and JwFreeSidNameCache at its end. The cache for the first (main) thread
+        is automatically destroyed.
 
        COM: Also available as com method.
        }
@@ -837,7 +871,11 @@ type
     }
 
     {<B>CachedGetUserFromSid</B> uses an undocumented  function that is exported
-     by utildll.dll. It keeps a variable with this structure:
+     by utildll.dll.
+
+
+     Remarks
+     It keeps a variable with this structure:
      CACHED_USERNAME = record  // RW The structure probably has a different name
        cbUsername: DWORD;
        Crc16: WORD
@@ -861,6 +899,17 @@ type
      Windows 2003
      Windows Vista
      Windows 2008
+
+
+     JWSCL provides a cache implementation of its own. To use caching of SID names
+      retrieved by GetAccountSidString and GetAccountName enable compiler switch
+      JWSCL_USE_CACHES in Jwscl.inc . In this way the mapping of a SID String (S-1-xxx) to a name
+      (e.g. Joe) will be stored in a hashed list and calls to system functions will
+      be diminished which will result in faster calls.
+      A cache is available for one thread only. Each thread has a cache of its own but
+      the first cache is initialized automatically. For each new thread call
+      JwInitSidNameCache and JwFreeSidNameCache at its end. The cache for the first (main) thread
+      is automatically destroyed.
     }
     property CachedUserFromSid : WideString read GetCachedUserFromSid;
 
@@ -988,7 +1037,7 @@ procedure JwClearSidNameCache;
 It must be called only once for every thread. Multiple calls
 will create dangling pointers.
 
-This call is automatically done for the first thread!
+This call is automatically done for the first (main) thread!
 }
 procedure JwInitSidNameCache;
 
@@ -996,7 +1045,7 @@ procedure JwInitSidNameCache;
 
 {$IFNDEF SL_OMIT_SECTIONS}
 implementation
-uses JwsclVersion;
+uses JwsclVersion, JwsclKnownSid;
 
 {$ENDIF SL_OMIT_SECTIONS}
 
@@ -1915,6 +1964,17 @@ begin
   Result.Value[3] := Value4;
   Result.Value[4] := Value5;
   Result.Value[5] := Value6;
+end;
+
+function TJwSecurityId.IsLogonSid: Boolean;
+var aSid : TJwSecurityId;
+begin
+  aSid := JwGetLogonSID;
+  try
+    result := Self.EqualPrefixSid(aSid)
+  finally
+    aSid.Free;
+  end;
 end;
 
 function TJwSecurityId.IsStandardSID: boolean;

@@ -3125,8 +3125,20 @@ begin
 
   if Assigned(aSACL) then
   begin
-    if not (siSaclSecurityInformation in aSecurityInfo) then
-      Include(aSecurityInfo, siSaclSecurityInformation);
+    //also enable label security if mandatory label was found
+    if aSACL.HasMandatoryLabel then
+    begin
+      Include(aSecurityInfo, siLabelSecurityInformation);
+      //rest of ACL must be audit ACEs
+      if (aSACL.Count > 1) then
+        if not (siSaclSecurityInformation in aSecurityInfo) then
+          Include(aSecurityInfo, siSaclSecurityInformation);
+    end
+    else
+    begin
+      if not (siSaclSecurityInformation in aSecurityInfo) then
+        Include(aSecurityInfo, siSaclSecurityInformation);
+    end;
 
     pSACL := PACL(aSACL.Create_PACL);
   end;
@@ -4159,7 +4171,7 @@ begin
     aGroup := SD.PrimaryGroup;
   if siDaclSecurityInformation in aSecurityInfo then
     aDACL := SD.DACL;
-  if siSaclSecurityInformation in aSecurityInfo then
+  if (siSaclSecurityInformation in aSecurityInfo) or (siLabelSecurityInformation in aSecurityInfo) then
     aSACL := SD.SACL;
 end;
 
