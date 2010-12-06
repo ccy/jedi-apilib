@@ -148,7 +148,7 @@ var
   Log : IJwLogClient;
   Flags : Cardinal;
 begin
-  Sleep(10000);
+ // Sleep(10000);
 
   Log := uLogging.LogServer.Connect(etThread, '','Service Execute','RunAsSysService.pas','Entering service main thread');
 
