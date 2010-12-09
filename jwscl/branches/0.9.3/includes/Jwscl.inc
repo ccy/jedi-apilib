@@ -55,6 +55,10 @@ Warning #2: If the JEDI API headers are used with a directive WIN_XP or lower
 {$ENDIF DELPHI7_UP}
 {$ENDIF DEBUG}
 
+//Remove range check errors since we are using
+//variable length structures (like PSID) that fool Delphi
+//See: http://stackoverflow.com/questions/1913460/delphi-rangecheckerror-in-jedi-wscl/1914245
+{$R-}
 
 //the following line must be at the end of this file!!
 {Warning: This line is printed because an identifier has no pasdoc comment. This error must be fixed.}
