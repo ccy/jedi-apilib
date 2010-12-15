@@ -96,6 +96,8 @@ begin
     if MonikerType = MKSYS_FILEMONIKER then
     begin
       OleCheck((EnumIndex as IMoniker).GetDisplayName(ctx, nil, sEnumIndex));
+
+      sFile := CoTaskMemAlloc(MAX_PATH)
       OleCheck(mFile.GetDisplayName(ctx, nil, sFile));
 
       if Succeeded(mFile.CommonPrefixWith(enumIndex, Prefix)) and
