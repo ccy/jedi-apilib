@@ -25,7 +25,6 @@
 program FileIsInUseServerExampleJWSCL;
 
 uses
-  FastMM4,
   Forms,
   MainForm in 'MainForm.pas' {FormMain};
 
