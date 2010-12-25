@@ -245,8 +245,8 @@ begin
       case MessageDlg('Could not open App key in registry for write access. Do you want to restart with administrative rights?', mtConfirmation, [mbYes, mbNo, mbCancel], 0) of
         mrYes:
           begin
-            RunMeElevated('');
-
+            if RunMeElevated('') then
+              Close;
             exit;
           end;
         mrCancel : exit;
@@ -312,8 +312,8 @@ begin
       case MessageDlg('Could not open App key in registry for write access. Do you want to restart with administrative rights?', mtConfirmation, [mbYes, mbNo, mbCancel], 0) of
         mrYes:
           begin
-            RunMeElevated('');
-
+            if RunMeElevated('') then
+              Close;
             exit;
           end;
         mrCancel : exit;
@@ -381,7 +381,18 @@ begin
 {$IFDEF SECURITY_APPID}
 // Provides a security descriptor in the registry LOCAL_MACHINE\Software\Classes\AppID
 // otherwise default from COM
-  TJwComProcessSecurity.Initialize(APP_ID, []);
+  try
+    TJwComProcessSecurity.Initialize(APP_ID, []);
+  except
+    on E : EJwsclSecurityException do
+    begin
+      MessageDlg(Format('The COM security could not be initialized. The cause can be a missing registration information in the registry.'+#13+#10+
+        'The first time you have to write the security descriptor to the AppID. You can do this in the following dialog'+#13+#10+
+        'by clicking the button "Set app security in registry".'+#13+#10+
+        'A second reason may be the descriptors of access or launch in registry are invalid. For more information, please refer to TJwComProcessSecurity.IsValidCOMSecurityDescriptor '#13#10+
+        'Message: %s',[E.Message]), mtError, [mbOK], 0);
+    end;
+  end;
 {$ENDIF SECURITY_APPID}
 
 {$IFDEF SECURITY_SD}
@@ -448,6 +459,8 @@ begin
     UnRegisterAppID;
     Visible := false;
     Application.Terminate;
+    Halt(0);
+    exit;
   end
   else
   if ParamStr(1) = PARAM_REGISTER then
@@ -455,6 +468,8 @@ begin
     RegisterAppID;
     Visible := false;
     Application.Terminate;
+    Halt(0);
+    exit;
   end;
 
   try
@@ -627,7 +642,6 @@ begin
   result := true;
   try
     JwShellExecute(Handle, ParamStr(0), Parameters, '', SW_SHOWNORMAL, []);
-    Application.Terminate;
   except
     on e : EJwsclWinCallFailedException do
     begin
