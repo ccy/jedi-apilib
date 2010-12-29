@@ -196,16 +196,12 @@ begin
      }
       while Retries > 0 do
       begin
-        //RunAsSysSvc9.Name := 'RunAsSysSvc'+IntToStr(Random(100000));
-{        RunAsSysSvc8.DisplayName := 'This is a temporary RunAsSys service. ' + DateTimeToStr(Now) ;
-
- }
         RunAsSysSvc9.DisplayName := 'This is a temporary RunAsSys service. ' + DateTimeToStr(Now) ;
 
         try
           Log.Log('Registering service...');
           TServiceApplicationEx(SvcMgr.Application).RegisterServices(true, true);
-          Retries := 0;
+          break;
         except
           on E : EOSError do
           begin
