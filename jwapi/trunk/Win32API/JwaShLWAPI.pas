@@ -1619,7 +1619,7 @@ type
   end;
 
 {$EXTERNALSYM AssocCreate}
-function AssocCreate(clsid: TCLSID; riid: TIID; out ppv: Pointer): HResult; stdcall;
+function AssocCreate(clsid: TCLSID; const riid: TIID; ppv: PPointer): HResult; stdcall;
 
 //  wrappers for the interface
 {$EXTERNALSYM AssocQueryStringA}
