@@ -1397,7 +1397,7 @@ class function TJwLogWriter.FormatString(const Str: TJwString): TJwString;
 var i : Integer;
 begin
   result := Str;
-  for i := Length(Str) downto 0 do
+  for i := Length(Str) downto 1 do
   begin
     if result[i] = #10 then
       System.Delete(result, i,1)

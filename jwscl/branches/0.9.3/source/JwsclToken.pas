@@ -2247,6 +2247,7 @@ begin
 
   for i := 0 to PrivilegesPointer.PrivilegeCount - 1 do
   begin
+    //fails for range check errors {_R+}
     fList.Add(TJwPrivilege.Create(Self, PrivilegesPointer.Privileges[i]));
   end;
 end;
