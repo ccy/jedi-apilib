@@ -695,7 +695,7 @@ var
     Entropy : PDataBlob;
     EncryptionPrompt : Boolean;
   begin
-    UserName := 'Administrator';
+    UserName := 'Administrator'; //TODO: maybe read dynamically
     Password := '';
     Abort := false;
 
@@ -747,7 +747,9 @@ var
     if IsEncryptedPassword then
     begin
       DecryptedPassword := JwDecryptString(Password, EncryptionPrompt, Entropy);
-    end;
+    end
+	else
+	  DecryptedPassword := Password;
 
     try
       if not CreateProcessWithLogonW(
