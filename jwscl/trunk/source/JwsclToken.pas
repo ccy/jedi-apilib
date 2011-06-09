@@ -3654,8 +3654,6 @@ begin
 
   if not bResult then
   begin
-    Done;
-
     if GetLastError() = ERROR_NO_TOKEN then //no token available
     begin
       raise EJwsclNoThreadTokenAvailable.CreateFmtEx(
@@ -3932,24 +3930,20 @@ begin
   fTokenHandle := aTokenHandle;
   fAccessMask  := TOKEN_ALL_ACCESS;
 
-  try
-    //first convert the token to a thread token
-    //this method will do nothing if the token is already impersonated
 
-    ConvertToImpersonatedToken(DEFAULT_IMPERSONATION_LEVEL, aDesiredAccess);
-    //If the token handle differs we have a new token handle that
-    //is not shared.
-    if fTokenHandle <> aTokenHandle then
-      Shared := False;
+  //first convert the token to a thread token
+  //this method will do nothing if the token is already impersonated
 
-    //if we are here the token is an impersonated one in every case
-    ConvertToPrimaryToken(aDesiredAccess);
-
+  ConvertToImpersonatedToken(DEFAULT_IMPERSONATION_LEVEL, aDesiredAccess);
+  //If the token handle differs we have a new token handle that
+  //is not shared.
+  if fTokenHandle <> aTokenHandle then
     Shared := False;
-  except
-    Done; //free objects created by Self.Create;
-    raise;
-  end;
+
+  //if we are here the token is an impersonated one in every case
+  ConvertToPrimaryToken(aDesiredAccess);
+
+  Shared := False;
 end;
 
 constructor TJwSecurityToken.CreateDuplicateExistingToken(
@@ -6566,9 +6560,11 @@ begin
       result := TJwSecurityTokenMapping.GenericMap(AccessMask)
   except
     //if GetMaximumAllowed does not have the READ_CONTROL flag
-    //we may fail here, so just set access mask to zero
+    //we may fail here, so just set access mask to max access
+    //otherwise we couldn't access many function with CheckAccessType
+    //even if we have access.
     //many people don't even read it.
-    result := 0;
+    result := high(DWORD);
   end;
 end;
 
