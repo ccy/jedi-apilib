@@ -551,9 +551,11 @@ type
                                          security descriptors may be useless if a
                                          positive ACE could be found in the primary
                                          security descriptor.<p />
-      Reply :                            receives the results of the access check 
-      AuthzHandle :                      A handle to the cached results of the access
-                                         check.
+      Reply :                            receives the results of the access check
+      AuthzHandle :                      A pointer to a handle to the cached results of the access
+                                         check. Set to nil if not used.
+                                         Any created handle will be freed automatically when the instance
+                                         is freed.
       Exceptions
       EJwsclWinCallFailedException :  if a call to AuthzAccessCheck failed.
       EJwsclNILParameterException :   will be raised if parameter Request,
@@ -567,7 +569,7 @@ type
       const OptionalSecurityDescriptorArray : TJwSecurityDescriptorArray;
       const GenericMapping: TJwSecurityGenericMappingClass;
       out Reply : TJwAuthZAccessReply;
-      out AuthZHandle : TAuthZAccessCheckResultHandle
+      AuthZHandle: PAUTHZ_ACCESS_CHECK_RESULTS_HANDLE
       );
 
     {<B>AccessCheckCached</B> does a cached access check of an authentication context.
@@ -1103,7 +1105,7 @@ procedure TJwAuthContext.AccessCheck(Flags: Cardinal;
   const OptionalSecurityDescriptorArray: TJwSecurityDescriptorArray;
   const GenericMapping: TJwSecurityGenericMappingClass;
   out Reply: TJwAuthZAccessReply;
-  out AuthZHandle: TAuthZAccessCheckResultHandle);
+  AuthZHandle: PAUTHZ_ACCESS_CHECK_RESULTS_HANDLE);
 
 
 
@@ -1119,13 +1121,18 @@ var pRequest : AUTHZ_ACCESS_REQUEST;
     bTempSD : Boolean;
 
 begin
-  AuthZHandle := 0;
+  AuthZHandle := nil;
 
   JwRaiseOnNilParameter(Request, 'Request', 'AccessCheck',
       ClassName, RsUNAuthZCtx);
   JwRaiseOnNilParameter(SecurityDescriptor, 'SecurityDescriptor', 'AccessCheck',
       ClassName, RsUNAuthZCtx);
   JwRaiseOnNilParameter(Request.PrincipalSelfSid, 'Request.PrincipalSelfSid', 'AccessCheck',
+      ClassName, RsUNAuthZCtx);
+
+  JwRaiseOnNilParameter(SecurityDescriptor.Owner, 'SecurityDescriptor.Owner', 'AccessCheck',
+      ClassName, RsUNAuthZCtx);
+  JwRaiseOnNilParameter(SecurityDescriptor.PrimaryGroup, 'SecurityDescriptor.PrimaryGroup', 'AccessCheck',
       ClassName, RsUNAuthZCtx);
 
 
@@ -1242,7 +1249,7 @@ begin
           @pOSD[0],//__in_opt  PSECURITY_DESCRIPTOR* OptionalSecurityDescriptorArray,
           Length(OptionalSecurityDescriptorArray),//__in_opt  DWORD OptionalSecurityDescriptorCount,
           @pReply,//__inout   PAUTHZ_ACCESS_REPLY pReply,
-          @AuthZHandle //__out     PAUTHZ_ACCESS_CHECK_RESULTS_HANDLE pAuthzHandle
+          AuthZHandle //__out     PAUTHZ_ACCESS_CHECK_RESULTS_HANDLE pAuthzHandle
         ) then
           raise EJwsclWinCallFailedException.CreateFmtEx(
             RsWinCallFailed, 'AuthzAccessCheck', ClassName,
@@ -1254,7 +1261,7 @@ begin
         FreeMem(pReply.GrantedAccessMask);
         FreeMem(pReply.SaclEvaluationResults);
         FreeMem(pReply.Error);
-    
+
         TJwSecurityDescriptor.Free_SD(pSD);
 
 
