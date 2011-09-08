@@ -2172,11 +2172,11 @@ var
 
 function NotifyServiceStatusChangeA;
 begin
-  GetProcedureAddress(NotifyServiceStatusChangeA, advapi32, 'NotifyServiceStatusChangeA');
+  GetProcedureAddress(_NotifyServiceStatusChangeA, advapi32, 'NotifyServiceStatusChangeA');
   asm
         MOV     ESP, EBP
         POP     EBP
-        JMP     [NotifyServiceStatusChangeA]
+        JMP     [_NotifyServiceStatusChangeA]
   end;
 end;
 
