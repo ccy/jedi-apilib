@@ -453,6 +453,45 @@ type
   TCriticalSectionDebug = CRITICAL_SECTION_DEBUG;
   PCriticalSectionDebug = PCRITICAL_SECTION_DEBUG;
 
+  SRWLOCK = RTL_SRWLOCK;
+  {$EXTERNALSYM SRWLOCK}
+  PSRWLOCK = PRTL_SRWLOCK;
+  {$EXTERNALSYM PSRWLOCK}
+  TSrwLock = SRWLOCK;
+  //const SRWLOCK_INIT = RTL_SRWLOCK_INIT; //doesnt work
+
+type
+  CONDITION_VARIABLE = RTL_CONDITION_VARIABLE;
+  {$EXTERNALSYM CONDITION_VARIABLE}
+  PCONDITION_VARIABLE = ^CONDITION_VARIABLE;
+  {$EXTERNALSYM PCONDITION_VARIABLE}
+  TConditionVariable = CONDITION_VARIABLE;
+  PConditionVariable = PCONDITION_VARIABLE;
+
+  procedure InitializeConditionVariable(out ConditionVariable : CONDITION_VARIABLE); stdcall;
+  {$EXTERNALSYM InitializeConditionVariable}
+
+  procedure WakeConditionVariable(var ConditionVariable : CONDITION_VARIABLE); stdcall;
+  {$EXTERNALSYM WakeConditionVariable}
+
+  procedure WakeAllConditionVariable(var ConditionVariable : CONDITION_VARIABLE); stdcall;
+  {$EXTERNALSYM WakeAllConditionVariable}
+
+  function SleepConditionVariableCS(var ConditionVariable : CONDITION_VARIABLE;
+                                    var CriticalSection : CRITICAL_SECTION;
+                                    dwMilliseconds : DWORD) : BOOL; stdcall;
+  {$EXTERNALSYM SleepConditionVariableCS}
+
+  function SleepConditionVariableSRW(var ConditionVariable : CONDITION_VARIABLE;
+                                     var SRWLock : SRWLOCK;
+                                     dwMilliseconds : DWORD;
+                                     Flags : ULONG) : BOOL; stdcall;
+  {$EXTERNALSYM SleepConditionVariableSRW}
+
+const
+  CONDITION_VARIABLE_LOCKMODE_SHARED = RTL_CONDITION_VARIABLE_LOCKMODE_SHARED;
+
+type
   LPLDT_ENTRY = PLDT_ENTRY;
   {$EXTERNALSYM LPLDT_ENTRY}
 
@@ -19238,6 +19277,71 @@ begin
   end;
 end;
 
+var
+  _InitializeConditionVariable: Pointer;
+
+procedure InitializeConditionVariable;
+begin
+  GetProcedureAddress(_InitializeConditionVariable, kernel32, 'InitializeConditionVariable');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_InitializeConditionVariable]
+  end;
+end;
+
+var
+  _SleepConditionVariableCS: Pointer;
+
+function SleepConditionVariableCS;
+begin
+  GetProcedureAddress(_SleepConditionVariableCS, kernel32, 'SleepConditionVariableCS');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_SleepConditionVariableCS]
+  end;
+end;
+
+var
+  _SleepConditionVariableSRW: Pointer;
+
+function SleepConditionVariableSRW;
+begin
+  GetProcedureAddress(_SleepConditionVariableSRW, kernel32, 'SleepConditionVariableSRW');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_SleepConditionVariableSRW]
+  end;
+end;
+
+var
+  _WakeAllConditionVariable: Pointer;
+
+procedure WakeAllConditionVariable;
+begin
+  GetProcedureAddress(_WakeAllConditionVariable, kernel32, 'WakeAllConditionVariable');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_WakeAllConditionVariable]
+  end;
+end;
+
+var
+  _WakeConditionVariable: Pointer;
+
+procedure WakeConditionVariable;
+begin
+  GetProcedureAddress(_WakeConditionVariable, kernel32, 'WakeConditionVariable');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_WakeConditionVariable]
+  end;
+end;
+
 
 {$IFDEF WINVISTA_UP}
 var
@@ -20351,6 +20455,11 @@ function GetNumaHighestNodeNumber; external kernel32 name 'GetNumaHighestNodeNum
 function GetNumaProcessorNode; external kernel32 name 'GetNumaProcessorNode';
 function GetNumaNodeProcessorMask; external kernel32 name 'GetNumaNodeProcessorMask';
 function GetNumaAvailableMemoryNode; external kernel32 name 'GetNumaAvailableMemoryNode';
+procedure InitializeConditionVariable; external kernel32 name 'InitializeConditionVariable';
+function SleepConditionVariableCS; external kernel32 name 'SleepConditionVariableCS';
+function SleepConditionVariableSRW; external kernel32 name 'SleepConditionVariableSRW';
+procedure WakeAllConditionVariable; external kernel32 name 'WakeAllConditionVariable';
+procedure WakeConditionVariable; external kernel32 name 'WakeConditionVariable';
 
 
 {$IFDEF WINVISTA_UP}
