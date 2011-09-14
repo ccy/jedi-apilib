@@ -453,12 +453,41 @@ type
   TCriticalSectionDebug = CRITICAL_SECTION_DEBUG;
   PCriticalSectionDebug = PCRITICAL_SECTION_DEBUG;
 
+//
+// Define the slim r/w lock
+//
+
   SRWLOCK = RTL_SRWLOCK;
   {$EXTERNALSYM SRWLOCK}
   PSRWLOCK = PRTL_SRWLOCK;
   {$EXTERNALSYM PSRWLOCK}
   TSrwLock = SRWLOCK;
   //const SRWLOCK_INIT = RTL_SRWLOCK_INIT; //doesnt work
+
+  procedure InitializeSRWLock(var SRWLock : SRWLOCK); stdcall;
+  {$EXTERNALSYM InitializeSRWLock}
+
+  procedure ReleaseSRWLockExclusive(var SRWLock : SRWLOCK); stdcall;
+  {$EXTERNALSYM ReleaseSRWLockExclusive}
+
+  procedure ReleaseSRWLockShared(var SRWLock : SRWLOCK); stdcall;
+  {$EXTERNALSYM ReleaseSRWLockShared}
+
+  procedure AcquireSRWLockExclusive(var SRWLock : SRWLOCK); stdcall;
+  {$EXTERNALSYM AcquireSRWLockExclusive}
+
+  procedure AcquireSRWLockShared(var SRWLock : SRWLOCK); stdcall;
+  {$EXTERNALSYM AcquireSRWLockShared}
+
+  function TryAcquireSRWLockExclusive(var SRWLock : SRWLOCK) : BOOL; stdcall;
+  {$EXTERNALSYM TryAcquireSRWLockExclusive}
+
+  function TryAcquireSRWLockShared(var SRWLock : SRWLOCK) : BOOL; stdcall;
+  {$EXTERNALSYM TryAcquireSRWLockShared}
+
+//
+// Define condition variable
+//
 
 type
   CONDITION_VARIABLE = RTL_CONDITION_VARIABLE;
@@ -19342,6 +19371,99 @@ begin
   end;
 end;
 
+var
+  _InitializeSRWLock: Pointer;
+
+procedure InitializeSRWLock;
+begin
+  GetProcedureAddress(_InitializeSRWLock, kernel32, 'InitializeSRWLock');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_InitializeSRWLock]
+  end;
+end;
+
+var
+  _ReleaseSRWLockExclusive: Pointer;
+
+procedure ReleaseSRWLockExclusive;
+begin
+  GetProcedureAddress(_ReleaseSRWLockExclusive, kernel32, 'ReleaseSRWLockExclusive');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_ReleaseSRWLockExclusive]
+  end;
+end;
+
+var
+  _ReleaseSRWLockShared: Pointer;
+
+procedure ReleaseSRWLockShared;
+begin
+  GetProcedureAddress(_ReleaseSRWLockShared, kernel32, 'ReleaseSRWLockShared');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_ReleaseSRWLockShared]
+  end;
+end;
+
+var
+  _AcquireSRWLockExclusive: Pointer;
+
+procedure AcquireSRWLockExclusive;
+begin
+  GetProcedureAddress(_AcquireSRWLockExclusive, kernel32, 'AcquireSRWLockExclusive');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_AcquireSRWLockExclusive]
+  end;
+end;
+
+var
+  _AcquireSRWLockShared: Pointer;
+
+procedure AcquireSRWLockShared;
+begin
+  GetProcedureAddress(_AcquireSRWLockShared, kernel32, 'AcquireSRWLockShared');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_AcquireSRWLockShared]
+  end;
+end;
+
+var
+  _TryAcquireSRWLockExclusive: Pointer;
+
+function TryAcquireSRWLockExclusive;
+begin
+  GetProcedureAddress(_TryAcquireSRWLockExclusive, kernel32, 'TryAcquireSRWLockExclusive');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_TryAcquireSRWLockExclusive]
+  end;
+end;
+
+var
+  _TryAcquireSRWLockShared: Pointer;
+
+function TryAcquireSRWLockShared;
+begin
+  GetProcedureAddress(_TryAcquireSRWLockShared, kernel32, 'TryAcquireSRWLockShared');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_TryAcquireSRWLockShared]
+  end;
+end;
+
+
+
 
 {$IFDEF WINVISTA_UP}
 var
@@ -20460,7 +20582,13 @@ function SleepConditionVariableCS; external kernel32 name 'SleepConditionVariabl
 function SleepConditionVariableSRW; external kernel32 name 'SleepConditionVariableSRW';
 procedure WakeAllConditionVariable; external kernel32 name 'WakeAllConditionVariable';
 procedure WakeConditionVariable; external kernel32 name 'WakeConditionVariable';
-
+procedure InitializeSRWLock; external kernel32 name 'InitializeSRWLock';
+procedure ReleaseSRWLockExclusive; external kernel32 name 'ReleaseSRWLockExclusive';
+procedure ReleaseSRWLockShared; external kernel32 name 'ReleaseSRWLockShared';
+procedure AcquireSRWLockExclusive; external kernel32 name 'AcquireSRWLockExclusive';
+procedure AcquireSRWLockShared; external kernel32 name 'AcquireSRWLockShared';
+function TryAcquireSRWLockExclusive; external kernel32 name 'TryAcquireSRWLockExclusive';
+function TryAcquireSRWLockShared; external kernel32 name 'TryAcquireSRWLockShared';
 
 {$IFDEF WINVISTA_UP}
 function SetProcessDEPPolicy; external kernel32 name 'SetProcessDEPPolicy';
