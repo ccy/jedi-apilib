@@ -453,6 +453,8 @@ type
   TCriticalSectionDebug = CRITICAL_SECTION_DEBUG;
   PCriticalSectionDebug = PCRITICAL_SECTION_DEBUG;
 
+{$IFDEF WINVISTA_UP}
+
 //
 // Define the slim r/w lock
 //
@@ -519,6 +521,8 @@ type
 
 const
   CONDITION_VARIABLE_LOCKMODE_SHARED = RTL_CONDITION_VARIABLE_LOCKMODE_SHARED;
+  
+{$ENDIF WINVISTA_UP}
 
 type
   LPLDT_ENTRY = PLDT_ENTRY;
@@ -19306,6 +19310,8 @@ begin
   end;
 end;
 
+{$IFDEF WINVISTA_UP}
+
 var
   _InitializeConditionVariable: Pointer;
 
@@ -19463,9 +19469,6 @@ begin
 end;
 
 
-
-
-{$IFDEF WINVISTA_UP}
 var
   _SetProcessDEPPolicy: Pointer;
 
@@ -20577,11 +20580,14 @@ function GetNumaHighestNodeNumber; external kernel32 name 'GetNumaHighestNodeNum
 function GetNumaProcessorNode; external kernel32 name 'GetNumaProcessorNode';
 function GetNumaNodeProcessorMask; external kernel32 name 'GetNumaNodeProcessorMask';
 function GetNumaAvailableMemoryNode; external kernel32 name 'GetNumaAvailableMemoryNode';
+
+{$IFDEF WINVISTA_UP}
 procedure InitializeConditionVariable; external kernel32 name 'InitializeConditionVariable';
 function SleepConditionVariableCS; external kernel32 name 'SleepConditionVariableCS';
 function SleepConditionVariableSRW; external kernel32 name 'SleepConditionVariableSRW';
 procedure WakeAllConditionVariable; external kernel32 name 'WakeAllConditionVariable';
 procedure WakeConditionVariable; external kernel32 name 'WakeConditionVariable';
+
 procedure InitializeSRWLock; external kernel32 name 'InitializeSRWLock';
 procedure ReleaseSRWLockExclusive; external kernel32 name 'ReleaseSRWLockExclusive';
 procedure ReleaseSRWLockShared; external kernel32 name 'ReleaseSRWLockShared';
@@ -20590,7 +20596,6 @@ procedure AcquireSRWLockShared; external kernel32 name 'AcquireSRWLockShared';
 function TryAcquireSRWLockExclusive; external kernel32 name 'TryAcquireSRWLockExclusive';
 function TryAcquireSRWLockShared; external kernel32 name 'TryAcquireSRWLockShared';
 
-{$IFDEF WINVISTA_UP}
 function SetProcessDEPPolicy; external kernel32 name 'SetProcessDEPPolicy';
 function GetNamedPipeServerSessionId; external kernel32 name 'GetNamedPipeServerSessionId';
 function GetNamedPipeServerProcessId; external kernel32 name 'GetNamedPipeServerProcessId';
