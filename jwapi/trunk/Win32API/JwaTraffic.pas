@@ -886,30 +886,30 @@ end;
 
 {$ELSE}
 
-function TcRegisterClient; external trafficlib name 'TcRegisterClient';
-function TcEnumerateInterfaces; external trafficlib name 'TcEnumerateInterfaces';
-function TcOpenInterfaceA; external trafficlib name 'TcOpenInterfaceA';
-function TcOpenInterfaceW; external trafficlib name 'TcOpenInterfaceW';
-function TcCloseInterface; external trafficlib name 'TcCloseInterface';
-function TcQueryInterface; external trafficlib name 'TcQueryInterface';
-function TcSetInterface; external trafficlib name 'TcSetInterface';
-function TcQueryFlowA; external trafficlib name 'TcQueryFlowA';
-function TcQueryFlowW; external trafficlib name 'TcQueryFlowW';
-function TcSetFlowA; external trafficlib name 'TcSetFlowA';
-function TcSetFlowW; external trafficlib name 'TcSetFlowW';
-function TcAddFlow; external trafficlib name 'TcAddFlow';
-function TcGetFlowNameA; external trafficlib name 'TcGetFlowNameA';
-function TcGetFlowNameW; external trafficlib name 'TcGetFlowNameW';
-function TcModifyFlow; external trafficlib name 'TcModifyFlow';
-function TcAddFilter; external trafficlib name 'TcAddFilter';
-function TcDeregisterClient; external trafficlib name 'TcDeregisterClient';
-function TcDeleteFlow; external trafficlib name 'TcDeleteFlow';
-function TcDeleteFilter; external trafficlib name 'TcDeleteFilter';
-function TcEnumerateFlows; external trafficlib name 'TcEnumerateFlows';
-function TcOpenInterface; external trafficlib name 'TcOpenInterface' + AWSuffix;
-function TcQueryFlow; external trafficlib name 'TcQueryFlow' + AWSuffix;
-function TcSetFlow; external trafficlib name 'TcSetFlow' + AWSuffix;
-function TcGetFlowName; external trafficlib name 'TcGetFlowName' + AWSuffix;
+function TcRegisterClient; external trafficlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'TcRegisterClient';
+function TcEnumerateInterfaces; external trafficlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'TcEnumerateInterfaces';
+function TcOpenInterfaceA; external trafficlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'TcOpenInterfaceA';
+function TcOpenInterfaceW; external trafficlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'TcOpenInterfaceW';
+function TcCloseInterface; external trafficlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'TcCloseInterface';
+function TcQueryInterface; external trafficlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'TcQueryInterface';
+function TcSetInterface; external trafficlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'TcSetInterface';
+function TcQueryFlowA; external trafficlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'TcQueryFlowA';
+function TcQueryFlowW; external trafficlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'TcQueryFlowW';
+function TcSetFlowA; external trafficlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'TcSetFlowA';
+function TcSetFlowW; external trafficlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'TcSetFlowW';
+function TcAddFlow; external trafficlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'TcAddFlow';
+function TcGetFlowNameA; external trafficlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'TcGetFlowNameA';
+function TcGetFlowNameW; external trafficlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'TcGetFlowNameW';
+function TcModifyFlow; external trafficlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'TcModifyFlow';
+function TcAddFilter; external trafficlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'TcAddFilter';
+function TcDeregisterClient; external trafficlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'TcDeregisterClient';
+function TcDeleteFlow; external trafficlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'TcDeleteFlow';
+function TcDeleteFilter; external trafficlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'TcDeleteFilter';
+function TcEnumerateFlows; external trafficlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'TcEnumerateFlows';
+function TcOpenInterface; external trafficlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'TcOpenInterface' + AWSuffix;
+function TcQueryFlow; external trafficlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'TcQueryFlow' + AWSuffix;
+function TcSetFlow; external trafficlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'TcSetFlow' + AWSuffix;
+function TcGetFlowName; external trafficlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'TcGetFlowName' + AWSuffix;
 
 {$ENDIF DYNAMIC_LINK}
 

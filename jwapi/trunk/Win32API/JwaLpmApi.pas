@@ -1661,13 +1661,13 @@ end;
 
 {$ELSE}
 
-function LPM_Initialize; external lpmlib name 'LPM_Initialize';
-function LPM_Deinitialize; external lpmlib name 'LPM_Deinitialize';
-function LPM_AdmitRsvpMsg; external lpmlib name 'LPM_AdmitRsvpMsg';
-function LPM_GetRsvpObjects; external lpmlib name 'LPM_GetRsvpObjects';
-procedure LPM_DeleteState; external lpmlib name 'LPM_DeleteState';
-function LPM_IpAddressTable; external lpmlib name 'LPM_IpAddressTable';
-procedure LPM_CommitResv; external lpmlib name 'LPM_CommitResv';
+function LPM_Initialize; external lpmlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'LPM_Initialize';
+function LPM_Deinitialize; external lpmlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'LPM_Deinitialize';
+function LPM_AdmitRsvpMsg; external lpmlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'LPM_AdmitRsvpMsg';
+function LPM_GetRsvpObjects; external lpmlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'LPM_GetRsvpObjects';
+procedure LPM_DeleteState; external lpmlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'LPM_DeleteState';
+function LPM_IpAddressTable; external lpmlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'LPM_IpAddressTable';
+procedure LPM_CommitResv; external lpmlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'LPM_CommitResv';
 
 {$ENDIF DYNAMIC_LINK}
 {$ENDIF JWA_INTERFACESECTION}

@@ -388,21 +388,21 @@ const
   winberapi = 'wldap32.dll';
 {$ENDIF JWA_INCLUDEMODE}
 
-function ber_init; external winberapi name 'ber_init';
-procedure ber_free; external winberapi name 'ber_free';
+function ber_init; external winberapi {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'ber_init';
+procedure ber_free; external winberapi {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'ber_free';
 {$IFNDEF JWA_INCLUDEMODE}
-procedure ber_bvfree; external winberapi name 'ber_bvfree';
+procedure ber_bvfree; external winberapi {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'ber_bvfree';
 {$ENDIF JWA_INCLUDEMODE}
-procedure ber_bvecfree; external winberapi name 'ber_bvecfree';
-function ber_bvdup; external winberapi name 'ber_bvdup';
-function ber_alloc_t; external winberapi name 'ber_alloc_t';
-function ber_skip_tag; external winberapi name 'ber_skip_tag';
-function ber_peek_tag; external winberapi name 'ber_peek_tag';
-function ber_first_element; external winberapi name 'ber_first_element';
-function ber_next_element; external winberapi name 'ber_next_element';
-function ber_flatten; external winberapi name 'ber_flatten';
-//function ber_printf; external winberapi name 'ber_printf';
-//function ber_scanf; external winberapi name 'ber_scanf';
+procedure ber_bvecfree; external winberapi {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'ber_bvecfree';
+function ber_bvdup; external winberapi {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'ber_bvdup';
+function ber_alloc_t; external winberapi {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'ber_alloc_t';
+function ber_skip_tag; external winberapi {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'ber_skip_tag';
+function ber_peek_tag; external winberapi {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'ber_peek_tag';
+function ber_first_element; external winberapi {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'ber_first_element';
+function ber_next_element; external winberapi {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'ber_next_element';
+function ber_flatten; external winberapi {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'ber_flatten';
+//function ber_printf; external winberapi {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'ber_printf';
+//function ber_scanf; external winberapi {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'ber_scanf';
 
 {$ENDIF JWA_INTERFACESECTION}
 

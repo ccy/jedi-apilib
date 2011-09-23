@@ -1976,67 +1976,67 @@ end;
 
 {$ELSE}
 
-function StartTraceW; external advapi32 name 'StartTraceW';
-function StartTraceA; external advapi32 name 'StartTraceA';
-function StartTrace; external advapi32 name 'StartTrace'+AWSuffix;
+function StartTraceW; external advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'StartTraceW';
+function StartTraceA; external advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'StartTraceA';
+function StartTrace; external advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'StartTrace'+AWSuffix;
 
-function StopTraceW; external advapi32 name 'StopTraceW';
-function StopTraceA; external advapi32 name 'StopTraceA';
-function StopTrace; external advapi32 name 'StopTraceA'+AWSuffix;
+function StopTraceW; external advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'StopTraceW';
+function StopTraceA; external advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'StopTraceA';
+function StopTrace; external advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'StopTraceA'+AWSuffix;
 
 
-function QueryTraceW; external advapi32 name 'QueryTraceW';
-function QueryTraceA; external advapi32 name 'QueryTraceA';
-function QueryTrace; external advapi32 name 'QueryTrace'+AWSuffix;
+function QueryTraceW; external advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'QueryTraceW';
+function QueryTraceA; external advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'QueryTraceA';
+function QueryTrace; external advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'QueryTrace'+AWSuffix;
 
-function UpdateTraceW; external advapi32 name 'UpdateTraceW';
-function UpdateTraceA; external advapi32 name 'UpdateTraceA';
-function UpdateTrace; external advapi32 name 'UpdateTrace'+AWSuffix;
+function UpdateTraceW; external advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'UpdateTraceW';
+function UpdateTraceA; external advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'UpdateTraceA';
+function UpdateTrace; external advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'UpdateTrace'+AWSuffix;
 
 {$IFDEF WINXP_UP}
-function FlushTraceW; external advapi32 name 'FlushTraceW';
-function FlushTraceA; external advapi32 name 'FlushTraceA';
-function FlushTrace; external advapi32 name 'FlushTrace'+AWSuffix;
+function FlushTraceW; external advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'FlushTraceW';
+function FlushTraceA; external advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'FlushTraceA';
+function FlushTrace; external advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'FlushTrace'+AWSuffix;
 
 {$ENDIF WINXP_UP}
-function ControlTraceW; external advapi32 name 'ControlTraceW';
-function ControlTraceA; external advapi32 name 'ControlTraceA';
-function ControlTrace; external advapi32 name 'ControlTraceA'+AWSuffix;
+function ControlTraceW; external advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'ControlTraceW';
+function ControlTraceA; external advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'ControlTraceA';
+function ControlTrace; external advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'ControlTraceA'+AWSuffix;
 
-function QueryAllTracesW; external advapi32 name 'QueryAllTracesW';
-function QueryAllTracesA; external advapi32 name 'QueryAllTracesA';
-function QueryAllTraces; external advapi32 name 'QueryAllTraces'+AWSuffix;
+function QueryAllTracesW; external advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'QueryAllTracesW';
+function QueryAllTracesA; external advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'QueryAllTracesA';
+function QueryAllTraces; external advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'QueryAllTraces'+AWSuffix;
 
-function EnableTrace; external advapi32 name 'EnableTrace';
+function EnableTrace; external advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'EnableTrace';
 
 {$IFDEF WINVISTA_UP}
-function EnableTraceEx; external advapi32 name 'EnableTraceEx';
-function EnumerateTraceGuidsEx; external advapi32 name 'EnumerateTraceGuidsEx';
+function EnableTraceEx; external advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'EnableTraceEx';
+function EnumerateTraceGuidsEx; external advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'EnumerateTraceGuidsEx';
 {$ENDIF}
-function CreateTraceInstanceId; external advapi32 name 'CreateTraceInstanceId';
-function TraceEvent; external advapi32 name 'TraceEvent';
-function TraceEventInstance; external advapi32 name 'TraceEventInstance';
+function CreateTraceInstanceId; external advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'CreateTraceInstanceId';
+function TraceEvent; external advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'TraceEvent';
+function TraceEventInstance; external advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'TraceEventInstance';
 
-function RegisterTraceGuidsW; external advapi32 name 'RegisterTraceGuidsW';
-function RegisterTraceGuidsA; external advapi32 name 'RegisterTraceGuidsA';
-function RegisterTraceGuids; external advapi32 name 'RegisterTraceGuids'+AWSuffix;
+function RegisterTraceGuidsW; external advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'RegisterTraceGuidsW';
+function RegisterTraceGuidsA; external advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'RegisterTraceGuidsA';
+function RegisterTraceGuids; external advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'RegisterTraceGuids'+AWSuffix;
 {$IFDEF WINXP_UP}
-function EnumerateTraceGuids; external advapi32 name 'EnumerateTraceGuids';
+function EnumerateTraceGuids; external advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'EnumerateTraceGuids';
 {$ENDIF WINXP_UP}
-function UnregisterTraceGuids; external advapi32 name 'UnregisterTraceGuids';
-function GetTraceLoggerHandle; external advapi32 name 'GetTraceLoggerHandle';
-function GetTraceEnableLevel; external advapi32 name 'GetTraceEnableLevel';
-function GetTraceEnableFlags; external advapi32 name 'GetTraceEnableFlags';
+function UnregisterTraceGuids; external advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'UnregisterTraceGuids';
+function GetTraceLoggerHandle; external advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'GetTraceLoggerHandle';
+function GetTraceEnableLevel; external advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'GetTraceEnableLevel';
+function GetTraceEnableFlags; external advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'GetTraceEnableFlags';
 
-function OpenTraceA; external advapi32 name 'OpenTraceA';
-function OpenTraceW; external advapi32 name 'OpenTraceW';
-function OpenTrace; external advapi32 name 'OpenTrace'+AWSuffix;
+function OpenTraceA; external advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'OpenTraceA';
+function OpenTraceW; external advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'OpenTraceW';
+function OpenTrace; external advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'OpenTrace'+AWSuffix;
 
-function ProcessTrace; external advapi32 name 'ProcessTrace';
-function CloseTrace; external advapi32 name 'CloseTrace';
-function SetTraceCallback; external advapi32 name 'SetTraceCallback';
+function ProcessTrace; external advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'ProcessTrace';
+function CloseTrace; external advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'CloseTrace';
+function SetTraceCallback; external advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'SetTraceCallback';
 function RemoveTraceCallback ; external advapi32 name 'RemoveTraceCallback';
-function TraceMessageVa; external advapi32 name 'TraceMessageVa';
+function TraceMessageVa; external advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'TraceMessageVa';
 {$ENDIF DYNAMIC_LINK}
 
 {$ENDIF JWA_INTERFACESECTION}

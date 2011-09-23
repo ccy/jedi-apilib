@@ -171,7 +171,7 @@ implementation
 // todo cdecl function so no dynamic linking for the time being...
 
 {$IFDEF SUPPORTS_VARARGS}
-function RxRemoteApi; external netapi32 name 'RxRemoteApi';
+function RxRemoteApi; external netapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'RxRemoteApi';
 {$ENDIF SUPPORTS_VARARGS}
 
 {$IFDEF DYNAMIC_LINK}
@@ -204,8 +204,8 @@ end;
 
 {$ELSE}
 
-function NetRemoteTOD; external netapi32 name 'NetRemoteTOD';
-function NetRemoteComputerSupports; external netapi32 name 'NetRemoteComputerSupports';
+function NetRemoteTOD; external netapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NetRemoteTOD';
+function NetRemoteComputerSupports; external netapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NetRemoteComputerSupports';
 
 {$ENDIF DYNAMIC_LINK}
 

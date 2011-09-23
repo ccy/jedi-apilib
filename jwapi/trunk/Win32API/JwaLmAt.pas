@@ -226,10 +226,10 @@ end;
 
 {$ELSE}
 
-function NetScheduleJobAdd; external netapi32 name 'NetScheduleJobAdd';
-function NetScheduleJobDel; external netapi32 name 'NetScheduleJobDel';
-function NetScheduleJobEnum; external netapi32 name 'NetScheduleJobEnum';
-function NetScheduleJobGetInfo; external netapi32 name 'NetScheduleJobGetInfo';
+function NetScheduleJobAdd; external netapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NetScheduleJobAdd';
+function NetScheduleJobDel; external netapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NetScheduleJobDel';
+function NetScheduleJobEnum; external netapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NetScheduleJobEnum';
+function NetScheduleJobGetInfo; external netapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NetScheduleJobGetInfo';
 
 {$ENDIF DYNAMIC_LINK}
 

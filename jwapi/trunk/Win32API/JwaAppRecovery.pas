@@ -243,14 +243,14 @@ end;
 {$ELSE}
 
 
-function ApplicationRecoveryFinished;  external kernel32 Name 'ApplicationRecoveryFinished';
-function ApplicationRecoveryInProgress; external kernel32 Name 'ApplicationRecoveryInProgress';
-function GetApplicationRecoveryCallback; external kernel32 Name 'GetApplicationRecoveryCallback';
-function GetApplicationRestartSettings; external kernel32 Name 'GetApplicationRestartSettings';
-function RegisterApplicationRecoveryCallback; external kernel32 Name 'RegisterApplicationRecoveryCallback';
-function RegisterApplicationRestart; external kernel32 Name 'RegisterApplicationRestart';
-function UnregisterApplicationRecoveryCallback; external kernel32 Name 'UnregisterApplicationRecoveryCallback';
-function UnregisterApplicationRestart;  external kernel32 Name 'UnregisterApplicationRestart';
+function ApplicationRecoveryFinished;  external kernel32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} Name 'ApplicationRecoveryFinished';
+function ApplicationRecoveryInProgress; external kernel32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} Name 'ApplicationRecoveryInProgress';
+function GetApplicationRecoveryCallback; external kernel32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} Name 'GetApplicationRecoveryCallback';
+function GetApplicationRestartSettings; external kernel32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} Name 'GetApplicationRestartSettings';
+function RegisterApplicationRecoveryCallback; external kernel32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} Name 'RegisterApplicationRecoveryCallback';
+function RegisterApplicationRestart; external kernel32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} Name 'RegisterApplicationRestart';
+function UnregisterApplicationRecoveryCallback; external kernel32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} Name 'UnregisterApplicationRecoveryCallback';
+function UnregisterApplicationRestart;  external kernel32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} Name 'UnregisterApplicationRestart';
 
 
 {$ENDIF DYNAMIC_LINK}

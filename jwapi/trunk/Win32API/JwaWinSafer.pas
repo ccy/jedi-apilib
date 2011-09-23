@@ -708,16 +708,16 @@ end;
 
 {$ELSE}
 
-function SaferGetPolicyInformation; external advapi32 name 'SaferGetPolicyInformation';
-function SaferSetPolicyInformation; external advapi32 name 'SaferSetPolicyInformation';
-function SaferCreateLevel; external advapi32 name 'SaferCreateLevel';
-function SaferCloseLevel; external advapi32 name 'SaferCloseLevel';
-function SaferIdentifyLevel; external advapi32 name 'SaferIdentifyLevel';
-function SaferComputeTokenFromLevel; external advapi32 name 'SaferComputeTokenFromLevel';
-function SaferGetLevelInformation; external advapi32 name 'SaferGetLevelInformation';
-function SaferSetLevelInformation; external advapi32 name 'SaferSetLevelInformation';
-function SaferRecordEventLogEntry; external advapi32 name 'SaferRecordEventLogEntry';
-function SaferiIsExecutableFileType; external advapi32 name 'SaferiIsExecutableFileType';
+function SaferGetPolicyInformation; external advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'SaferGetPolicyInformation';
+function SaferSetPolicyInformation; external advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'SaferSetPolicyInformation';
+function SaferCreateLevel; external advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'SaferCreateLevel';
+function SaferCloseLevel; external advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'SaferCloseLevel';
+function SaferIdentifyLevel; external advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'SaferIdentifyLevel';
+function SaferComputeTokenFromLevel; external advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'SaferComputeTokenFromLevel';
+function SaferGetLevelInformation; external advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'SaferGetLevelInformation';
+function SaferSetLevelInformation; external advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'SaferSetLevelInformation';
+function SaferRecordEventLogEntry; external advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'SaferRecordEventLogEntry';
+function SaferiIsExecutableFileType; external advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'SaferiIsExecutableFileType';
 
 {$ENDIF DYNAMIC_LINK}
 

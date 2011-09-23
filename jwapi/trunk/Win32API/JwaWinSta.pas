@@ -1058,53 +1058,53 @@ const
 
 
 {$IFNDEF DYNAMIC_LINK}
-procedure CachedGetUserFromSid; external utildll name 'CachedGetUserFromSid';
-function CalculateDiffTime; external utildll name 'CalculateDiffTime';
-function CalculateElapsedTime; external utildll name 'CalculateElapsedTime';
-function CurrentDateTimeString; external utildll name 'CurrentDateTimeString';
-function DateTimeString; external utildll name 'DateTimeString';
-function DateTimeStringVistaRTM; external utildll name 'DateTimeString';
-function ElapsedTimeString; external utildll name 'ElapsedTimeString';
+procedure CachedGetUserFromSid; external utildll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'CachedGetUserFromSid';
+function CalculateDiffTime; external utildll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'CalculateDiffTime';
+function CalculateElapsedTime; external utildll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'CalculateElapsedTime';
+function CurrentDateTimeString; external utildll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'CurrentDateTimeString';
+function DateTimeString; external utildll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'DateTimeString';
+function DateTimeStringVistaRTM; external utildll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'DateTimeString';
+function ElapsedTimeString; external utildll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'ElapsedTimeString';
 // Vista version of ElapsedTimeString, exported name is ElapsedTimeString
 
-function ElapsedTimeStringVistaRTM; external utildll name 'ElapsedTimeString';
-function GetUnknownString; external utildll name 'GetUnknownString';
-function LogonIdFromWinStationNameA; external winstadll name 'LogonIdFromWinStationNameA';
-function LogonIdFromWinStationNameW; external winstadll name 'LogonIdFromWinStationNameW';
-function QueryCurrentWinStation; external utildll name 'QueryCurrentWinStation';
-function QueryCurrentWinStationVistaRTM; external utildll name 'QueryCurrentWinStation';
-function StrConnectState; external utildll name 'StrConnectState';
-function WinStationBroadcastSystemMessage; external winstadll name 'WinStationBroadcastSystemMessage';
-function WinStationCallBack; external winstadll name 'WinStationCallBack';
-procedure WinStationCloseServer; external winstadll name 'WinStationCloseServer';
-function WinStationConnectW; external winstadll name 'WinStationConnectW';
-function WinStationDisconnect; external winstadll name 'WinStationDisconnect';
-function WinStationEnumerateA; external winstadll name 'WinStationEnumerateA';
-function WinStationEnumerateW; external winstadll name 'WinStationEnumerateW';
-function WinStationFreeGAPMemory; external winstadll name 'WinStationFreeGAPMemory';
-function WinStationGetAllProcesses; external winstadll name 'WinStationGetAllProcesses';
-function WinStationGetLanAdapterNameW; external winstadll name 'WinStationGetLanAdapterNameW';
-function WinStationGetProcessSid; external winstadll name 'WinStationGetProcessSid';
-function WinStationGetTermSrvCountersValue; external winstadll name 'WinStationGetTermSrvCountersValue';
-function WinStationNameFromLogonIdA; external winstadll name 'WinStationNameFromLogonIdA';
-function WinStationNameFromLogonIdW; external winstadll name 'WinStationNameFromLogonIdW';
-function WinStationOpenServerA; external winstadll name 'WinStationOpenServerA';
-function WinStationOpenServerW; external winstadll name 'WinStationOpenServerW';
-function WinStationQueryLogonCredentialsW; external winstadll name 'WinStationQueryLogonCredentialsW';
-function WinStationRegisterConsoleNotification; external winstadll name 'WinStationRegisterConsoleNotification';
-function WinStationRenameA; external winstadll name 'WinStationRenameA';
-function WinStationRenameW; external winstadll name 'WinStationRenameW';
-function WinStationSendMessageA; external winstadll name 'WinStationSendMessageA';
-function WinStationSendMessageW; external winstadll name 'WinStationSendMessageW';
-function WinStationServerPing; external winstadll name 'WinStationServerPing';
-function WinStationSetInformationA; external winstadll name 'WinStationSetInformationA';
-function WinStationSetInformationW; external winstadll name 'WinStationSetInformationW';
-function WinStationShadow; external winstadll name 'WinStationShadow';
-function WinStationShadowStop; external winstadll name 'WinStationShadowStop';
-function WinStationShutDownSystem; external winstadll name 'WinStationShutDownSystem';
-function WinStationQueryInformationW; external winstadll name 'WinStationQueryInformationW';
-function WinStationTerminateProcess; external winstadll name 'WinStationTerminateProcess';
-function WinStationUnRegisterConsoleNotification; external winstadll name 'WinStationUnRegisterConsoleNotification';
+function ElapsedTimeStringVistaRTM; external utildll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'ElapsedTimeString';
+function GetUnknownString; external utildll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'GetUnknownString';
+function LogonIdFromWinStationNameA; external winstadll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'LogonIdFromWinStationNameA';
+function LogonIdFromWinStationNameW; external winstadll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'LogonIdFromWinStationNameW';
+function QueryCurrentWinStation; external utildll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'QueryCurrentWinStation';
+function QueryCurrentWinStationVistaRTM; external utildll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'QueryCurrentWinStation';
+function StrConnectState; external utildll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'StrConnectState';
+function WinStationBroadcastSystemMessage; external winstadll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'WinStationBroadcastSystemMessage';
+function WinStationCallBack; external winstadll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'WinStationCallBack';
+procedure WinStationCloseServer; external winstadll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'WinStationCloseServer';
+function WinStationConnectW; external winstadll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'WinStationConnectW';
+function WinStationDisconnect; external winstadll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'WinStationDisconnect';
+function WinStationEnumerateA; external winstadll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'WinStationEnumerateA';
+function WinStationEnumerateW; external winstadll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'WinStationEnumerateW';
+function WinStationFreeGAPMemory; external winstadll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'WinStationFreeGAPMemory';
+function WinStationGetAllProcesses; external winstadll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'WinStationGetAllProcesses';
+function WinStationGetLanAdapterNameW; external winstadll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'WinStationGetLanAdapterNameW';
+function WinStationGetProcessSid; external winstadll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'WinStationGetProcessSid';
+function WinStationGetTermSrvCountersValue; external winstadll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'WinStationGetTermSrvCountersValue';
+function WinStationNameFromLogonIdA; external winstadll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'WinStationNameFromLogonIdA';
+function WinStationNameFromLogonIdW; external winstadll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'WinStationNameFromLogonIdW';
+function WinStationOpenServerA; external winstadll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'WinStationOpenServerA';
+function WinStationOpenServerW; external winstadll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'WinStationOpenServerW';
+function WinStationQueryLogonCredentialsW; external winstadll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'WinStationQueryLogonCredentialsW';
+function WinStationRegisterConsoleNotification; external winstadll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'WinStationRegisterConsoleNotification';
+function WinStationRenameA; external winstadll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'WinStationRenameA';
+function WinStationRenameW; external winstadll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'WinStationRenameW';
+function WinStationSendMessageA; external winstadll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'WinStationSendMessageA';
+function WinStationSendMessageW; external winstadll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'WinStationSendMessageW';
+function WinStationServerPing; external winstadll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'WinStationServerPing';
+function WinStationSetInformationA; external winstadll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'WinStationSetInformationA';
+function WinStationSetInformationW; external winstadll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'WinStationSetInformationW';
+function WinStationShadow; external winstadll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'WinStationShadow';
+function WinStationShadowStop; external winstadll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'WinStationShadowStop';
+function WinStationShutDownSystem; external winstadll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'WinStationShutDownSystem';
+function WinStationQueryInformationW; external winstadll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'WinStationQueryInformationW';
+function WinStationTerminateProcess; external winstadll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'WinStationTerminateProcess';
+function WinStationUnRegisterConsoleNotification; external winstadll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'WinStationUnRegisterConsoleNotification';
 {$ELSE}
 
 var

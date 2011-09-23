@@ -708,9 +708,9 @@ end;
 
 {$ELSE}
 
-function NetAuditClear; external netapi32 name 'NetAuditClear';
-function NetAuditRead; external netapi32 name 'NetAuditRead';
-function NetAuditWrite; external netapi32 name 'NetAuditWrite';
+function NetAuditClear; external netapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NetAuditClear';
+function NetAuditRead; external netapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NetAuditRead';
+function NetAuditWrite; external netapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NetAuditWrite';
 
 {$ENDIF DYNAMIC_LINK}
 

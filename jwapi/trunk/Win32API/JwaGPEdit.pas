@@ -954,12 +954,12 @@ end;
 
 {$ELSE}
 
-function CreateGPOLink; external gpeditlib name 'CreateGPOLink';
-function DeleteGPOLink; external gpeditlib name 'DeleteGPOLink';
-function DeleteAllGPOLinks; external gpeditlib name 'DeleteAllGPOLinks';
-function BrowseForGPO; external gpeditlib name 'BrowseForGPO';
-function ImportRSoPData; external gpeditlib name 'ImportRSoPData';
-function ExportRSoPData; external gpeditlib name 'ExportRSoPData';
+function CreateGPOLink; external gpeditlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'CreateGPOLink';
+function DeleteGPOLink; external gpeditlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'DeleteGPOLink';
+function DeleteAllGPOLinks; external gpeditlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'DeleteAllGPOLinks';
+function BrowseForGPO; external gpeditlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'BrowseForGPO';
+function ImportRSoPData; external gpeditlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'ImportRSoPData';
+function ExportRSoPData; external gpeditlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'ExportRSoPData';
 
 {$ENDIF DYNAMIC_LINK}
 

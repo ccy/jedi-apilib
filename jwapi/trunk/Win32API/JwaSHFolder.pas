@@ -144,9 +144,9 @@ const
 
 {$IFNDEF DYNAMIC_LINK}
 
-function SHGetFolderPathA; external shell32 name 'SHGetFolderPathA';
-function SHGetFolderPathW; external shell32 name 'SHGetFolderPathW';
-function SHGetFolderPath; external shell32 name 'SHGetFolderPath'+ AWSuffix;
+function SHGetFolderPathA; external shell32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'SHGetFolderPathA';
+function SHGetFolderPathW; external shell32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'SHGetFolderPathW';
+function SHGetFolderPath; external shell32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'SHGetFolderPath'+ AWSuffix;
 
 {$ELSE}
 var

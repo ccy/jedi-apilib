@@ -452,13 +452,13 @@ end;
 
 {$ELSE}
 
-function DhcpCApiInitialize; external dhcpapi name 'DhcpCApiInitialize';
-procedure DhcpCApiCleanup; external dhcpapi name 'DhcpCApiCleanup';
-function DhcpRequestParams; external dhcpapi name 'DhcpRequestParams';
-function DhcpUndoRequestParams; external dhcpapi name 'DhcpUndoRequestParams';
-function DhcpRegisterParamChange; external dhcpapi name 'DhcpRegisterParamChange';
-function DhcpDeRegisterParamChange; external dhcpapi name 'DhcpDeRegisterParamChange';
-function DhcpRemoveDNSRegistrations; external dhcpapi name 'DhcpRemoveDNSRegistrations';
+function DhcpCApiInitialize; external dhcpapi {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'DhcpCApiInitialize';
+procedure DhcpCApiCleanup; external dhcpapi {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'DhcpCApiCleanup';
+function DhcpRequestParams; external dhcpapi {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'DhcpRequestParams';
+function DhcpUndoRequestParams; external dhcpapi {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'DhcpUndoRequestParams';
+function DhcpRegisterParamChange; external dhcpapi {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'DhcpRegisterParamChange';
+function DhcpDeRegisterParamChange; external dhcpapi {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'DhcpDeRegisterParamChange';
+function DhcpRemoveDNSRegistrations; external dhcpapi {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'DhcpRemoveDNSRegistrations';
 
 {$ENDIF DYNAMIC_LINK}
 

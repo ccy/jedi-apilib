@@ -1072,14 +1072,14 @@ end;
 
 {$ELSE}
 
-function NetWkstaGetInfo; external netapi32 name 'NetWkstaGetInfo';
-function NetWkstaSetInfo; external netapi32 name 'NetWkstaSetInfo';
-function NetWkstaUserGetInfo; external netapi32 name 'NetWkstaUserGetInfo';
-function NetWkstaUserSetInfo; external netapi32 name 'NetWkstaUserSetInfo';
-function NetWkstaUserEnum; external netapi32 name 'NetWkstaUserEnum';
-function NetWkstaTransportAdd; external netapi32 name 'NetWkstaTransportAdd';
-function NetWkstaTransportDel; external netapi32 name 'NetWkstaTransportDel';
-function NetWkstaTransportEnum; external netapi32 name 'NetWkstaTransportEnum';
+function NetWkstaGetInfo; external netapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NetWkstaGetInfo';
+function NetWkstaSetInfo; external netapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NetWkstaSetInfo';
+function NetWkstaUserGetInfo; external netapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NetWkstaUserGetInfo';
+function NetWkstaUserSetInfo; external netapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NetWkstaUserSetInfo';
+function NetWkstaUserEnum; external netapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NetWkstaUserEnum';
+function NetWkstaTransportAdd; external netapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NetWkstaTransportAdd';
+function NetWkstaTransportDel; external netapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NetWkstaTransportDel';
+function NetWkstaTransportEnum; external netapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NetWkstaTransportEnum';
 
 {$ENDIF DYNAMIC_LINK}
 

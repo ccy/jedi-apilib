@@ -123,8 +123,8 @@ end;
 
 {$ELSE}
 
-function WSCWriteProviderOrder; external sporderlib name 'WSCWriteProviderOrder';
-function WSCWriteNameSpaceOrder; external sporderlib name 'WSCWriteNameSpaceOrder';
+function WSCWriteProviderOrder; external sporderlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'WSCWriteProviderOrder';
+function WSCWriteNameSpaceOrder; external sporderlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'WSCWriteNameSpaceOrder';
 
 {$ENDIF DYNAMIC_LINK}
 

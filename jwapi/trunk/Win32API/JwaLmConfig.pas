@@ -221,11 +221,11 @@ end;
 
 {$ELSE}
 
-function NetConfigGet; external netapi32 name 'NetConfigGet';
-function NetConfigGetAll; external netapi32 name 'NetConfigGetAll';
-function NetConfigSet; external netapi32 name 'NetConfigSet';
-function NetRegisterDomainNameChangeNotification; external netapi32 name 'NetRegisterDomainNameChangeNotification';
-function NetUnregisterDomainNameChangeNotification; external netapi32 name 'NetUnregisterDomainNameChangeNotification';
+function NetConfigGet; external netapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NetConfigGet';
+function NetConfigGetAll; external netapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NetConfigGetAll';
+function NetConfigSet; external netapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NetConfigSet';
+function NetRegisterDomainNameChangeNotification; external netapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NetRegisterDomainNameChangeNotification';
+function NetUnregisterDomainNameChangeNotification; external netapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NetUnregisterDomainNameChangeNotification';
 
 {$ENDIF DYNAMIC_LINK}
 

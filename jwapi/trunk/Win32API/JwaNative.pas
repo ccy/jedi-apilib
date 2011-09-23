@@ -168,6 +168,12 @@
 unit JwaNative;
 
 interface
+
+// For native APIs we consider RTDL the better method of importing
+//moved up in front of "JediAPILib.inc" because "JediAPILib.inc" checks the DYNAMIC_LINK-define
+{.$DEFINE RTDL}
+{$IFDEF RTDL}{$DEFINE DYNAMIC_LINK}{$ENDIF}
+
 {$INCLUDE ..\Includes\JediAPILib.inc}
 
 uses
@@ -175,9 +181,6 @@ uses
 
 {$WEAKPACKAGEUNIT}
 
-// For native APIs we consider RTDL the better method of importing
-{.$DEFINE RTDL}
-{$IFDEF RTDL}{$DEFINE DYNAMIC_LINK}{$ENDIF}
 const
   ntdll = 'ntdll.dll';
 
@@ -4144,24 +4147,24 @@ function RtlpValidateUnicodeString2(UnicodeString: PUNICODE_STRING): NTSTATUS;
 
 //// BEGIN: Function prototypes
 // Compatibility: WXP, 2K3
-function  CsrGetProcessId(): DWORD; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+function  CsrGetProcessId(): DWORD; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: WXP, 2K3
 function  DbgQueryDebugFilterState(
     ComponentId : ULONG;
     Level : ULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: WXP, 2K3
 function  DbgSetDebugFilterState(
     ComponentId : ULONG;
     Level : ULONG;
     State : BOOLEAN
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Unknown return value, maybe NTSTATUS?
 // Compatibility: NT4, W2K, WXP, 2K3
-function  KiRaiseUserExceptionDispatcher(): ULONG; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+function  KiRaiseUserExceptionDispatcher(): ULONG; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  LdrAccessResource(
@@ -4169,15 +4172,15 @@ function  LdrAccessResource(
     ResourceDataEntry : PIMAGE_RESOURCE_DATA_ENTRY;
     Address : PPVOID;
     dwSize : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: W2K, WXP, 2K3
-function  LdrAlternateResourcesEnabled(): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+function  LdrAlternateResourcesEnabled(): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  LdrDisableThreadCalloutsForDll(
     hModule : HANDLE
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to GetModuleHandle() from Kernel32.dll.
 // Refer to the PSDK for additional information. Usually the same flags
@@ -4188,7 +4191,7 @@ function  LdrGetDllHandle(
     pReserved : PVOID;
     pusPath : PUNICODE_STRING;
     var phModule : HANDLE
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to GetProcAddress() from Kernel32.dll.
 // Refer to the PSDK for additional information. Usually the same flags
@@ -4199,7 +4202,7 @@ function  LdrGetProcedureAddress(
     dwOrdinal : ULONG;
     psName : PSTRING;
     var pProcedure : PVOID
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to LoadLibrary() from Kernel32.dll. Refer
 // to the PSDK for additional information. Usually the same flags apply.
@@ -4209,7 +4212,7 @@ function  LdrLoadDll(
     pdwFlags : PDWORD;
     pusPath : PUNICODE_STRING;
     var phModule : HANDLE
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  LdrQueryImageFileExecutionOptions(
@@ -4219,33 +4222,33 @@ function  LdrQueryImageFileExecutionOptions(
     pData : PVOID;
     dwSize : DWORD;
     pdwSize : PDWORD
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  LdrQueryProcessModuleInformation(
     psmi : PSYSTEM_MODULE_INFORMATION;
     dwSize : DWORD;
     pdwSize : PDWORD
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to TerminateProcess() from Kernel32.dll.
 // Refer to the PSDK for additional information. Usually the same flags
 // apply.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
-procedure LdrShutdownProcess(); stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+procedure LdrShutdownProcess(); stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to TerminateThread() from Kernel32.dll.
 // Refer to the PSDK for additional information. Usually the same flags
 // apply.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
-procedure LdrShutdownThread(); stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+procedure LdrShutdownThread(); stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to FreeLibrary() from Kernel32.dll. Refer
 // to the PSDK for additional information. Usually the same flags apply.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  LdrUnloadDll(
     hModule : HANDLE
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtAcceptConnectPort(
@@ -4255,8 +4258,8 @@ function  NtAcceptConnectPort(
     Accept : BOOLEAN;
     WriteSection : PPORT_SECTION_WRITE;
     ReadSection : PPORT_SECTION_READ
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwAcceptConnectPort(PortHandle: PHANDLE; PortIdentifier: ULONG; Message: PPORT_MESSAGE; Accept: BOOLEAN; WriteSection: PPORT_SECTION_WRITE; ReadSection: PPORT_SECTION_READ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwAcceptConnectPort(PortHandle: PHANDLE; PortIdentifier: ULONG; Message: PPORT_MESSAGE; Accept: BOOLEAN; WriteSection: PPORT_SECTION_WRITE; ReadSection: PPORT_SECTION_READ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};
    {$ENDIF}
 
 // This function is very similar to AccessCheck() from Advapi32.dll. Refer
@@ -4271,9 +4274,9 @@ function  NtAccessCheck(
     PrivilegeSetLength : PULONG;
     GrantedAccess : PACCESS_MASK;
     AccessStatus : PBOOLEAN
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 function  ZwAccessCheck(SecurityDescriptor: PSECURITY_DESCRIPTOR; TokenHandle: HANDLE; DesiredAccess: ACCESS_MASK; GenericMapping: PGENERIC_MAPPING; PrivilegeSet: PPRIVILEGE_SET; PrivilegeSetLength: PULONG; GrantedAccess: PACCESS_MASK;
-    AccessStatus: PBOOLEAN): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+    AccessStatus: PBOOLEAN): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to AccessCheckAndAuditAlarm() from
 // Advapi32.dll. Refer to the PSDK for additional information. Usually the
@@ -4291,9 +4294,9 @@ function  NtAccessCheckAndAuditAlarm(
     GrantedAccess : PACCESS_MASK;
     AccessStatus : PBOOLEAN;
     GenerateOnClose : PBOOLEAN
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 function  ZwAccessCheckAndAuditAlarm(SubsystemName: PUNICODE_STRING; HandleId: PVOID; ObjectTypeName: PUNICODE_STRING; ObjectName: PUNICODE_STRING; SecurityDescriptor: PSECURITY_DESCRIPTOR; DesiredAccess: ACCESS_MASK;
-    GenericMapping: PGENERIC_MAPPING; ObjectCreation: BOOLEAN; GrantedAccess: PACCESS_MASK; AccessStatus: PBOOLEAN; GenerateOnClose: PBOOLEAN): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+    GenericMapping: PGENERIC_MAPPING; ObjectCreation: BOOLEAN; GrantedAccess: PACCESS_MASK; AccessStatus: PBOOLEAN; GenerateOnClose: PBOOLEAN): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to AccessCheckByType() from Advapi32.dll.
 // Refer to the PSDK for additional information. Usually the same flags
@@ -4311,9 +4314,9 @@ function  NtAccessCheckByType(
     PrivilegeSetLength : PULONG;
     GrantedAccess : PACCESS_MASK;
     AccessStatus : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 function  ZwAccessCheckByType(SecurityDescriptor: PSECURITY_DESCRIPTOR; PrincipalSelfSid: PSID; TokenHandle: HANDLE; DesiredAccess: ACCESS_MASK; ObjectTypeList: POBJECT_TYPE_LIST; ObjectTypeListLength: ULONG;
-    GenericMapping: PGENERIC_MAPPING; PrivilegeSet: PPRIVILEGE_SET; PrivilegeSetLength: PULONG; GrantedAccess: PACCESS_MASK; AccessStatus: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+    GenericMapping: PGENERIC_MAPPING; PrivilegeSet: PPRIVILEGE_SET; PrivilegeSetLength: PULONG; GrantedAccess: PACCESS_MASK; AccessStatus: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to AccessCheckByTypeAndAuditAlarm() from
 // Advapi32.dll. Refer to the PSDK for additional information. Usually the
@@ -4336,10 +4339,10 @@ function  NtAccessCheckByTypeAndAuditAlarm(
     GrantedAccess : PACCESS_MASK;
     AccessStatus : PULONG;
     GenerateOnClose : PBOOLEAN
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 function  ZwAccessCheckByTypeAndAuditAlarm(SubsystemName: PUNICODE_STRING; HandleId: PVOID; ObjectTypeName: PUNICODE_STRING; ObjectName: PUNICODE_STRING; SecurityDescriptor: PSECURITY_DESCRIPTOR; PrincipalSelfSid: PSID;
     DesiredAccess: ACCESS_MASK; AuditType: AUDIT_EVENT_TYPE; Flags: ULONG; ObjectTypeList: POBJECT_TYPE_LIST; ObjectTypeListLength: ULONG; GenericMapping: PGENERIC_MAPPING; ObjectCreation: BOOLEAN; GrantedAccess: PACCESS_MASK;
-    AccessStatus: PULONG; GenerateOnClose: PBOOLEAN): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+    AccessStatus: PULONG; GenerateOnClose: PBOOLEAN): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to AccessCheckByTypeResultList() from
 // Advapi32.dll. Refer to the PSDK for additional information. Usually the
@@ -4357,9 +4360,9 @@ function  NtAccessCheckByTypeResultList(
     PrivilegeSetLength : PULONG;
     GrantedAccessList : PACCESS_MASK;
     AccessStatusList : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 function  ZwAccessCheckByTypeResultList(SecurityDescriptor: PSECURITY_DESCRIPTOR; PrincipalSelfSid: PSID; TokenHandle: HANDLE; DesiredAccess: ACCESS_MASK; ObjectTypeList: POBJECT_TYPE_LIST; ObjectTypeListLength: ULONG;
-    GenericMapping: PGENERIC_MAPPING; PrivilegeSet: PPRIVILEGE_SET; PrivilegeSetLength: PULONG; GrantedAccessList: PACCESS_MASK; AccessStatusList: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+    GenericMapping: PGENERIC_MAPPING; PrivilegeSet: PPRIVILEGE_SET; PrivilegeSetLength: PULONG; GrantedAccessList: PACCESS_MASK; AccessStatusList: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to
 // AccessCheckByTypeResultListAndAuditAlarm() from Advapi32.dll. Refer to
@@ -4382,10 +4385,10 @@ function  NtAccessCheckByTypeResultListAndAuditAlarm(
     GrantedAccessList : PACCESS_MASK;
     AccessStatusList : PULONG;
     GenerateOnClose : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 function  ZwAccessCheckByTypeResultListAndAuditAlarm(SubsystemName: PUNICODE_STRING; HandleId: PVOID; ObjectTypeName: PUNICODE_STRING; ObjectName: PUNICODE_STRING; SecurityDescriptor: PSECURITY_DESCRIPTOR; PrincipalSelfSid: PSID;
     DesiredAccess: ACCESS_MASK; AuditType: AUDIT_EVENT_TYPE; Flags: ULONG; ObjectTypeList: POBJECT_TYPE_LIST; ObjectTypeListLength: ULONG; GenericMapping: PGENERIC_MAPPING; ObjectCreation: BOOLEAN; GrantedAccessList: PACCESS_MASK;
-    AccessStatusList: PULONG; GenerateOnClose: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+    AccessStatusList: PULONG; GenerateOnClose: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to
 // AccessCheckByTypeResultListAndAuditAlarmByHandle() from Advapi32.dll.
@@ -4410,18 +4413,18 @@ function  NtAccessCheckByTypeResultListAndAuditAlarmByHandle(
     GrantedAccessList : PACCESS_MASK;
     AccessStatusList : PULONG;
     GenerateOnClose : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 function  ZwAccessCheckByTypeResultListAndAuditAlarmByHandle(SubsystemName: PUNICODE_STRING; HandleId: PVOID; TokenHandle: HANDLE; ObjectTypeName: PUNICODE_STRING; ObjectName: PUNICODE_STRING; SecurityDescriptor: PSECURITY_DESCRIPTOR;
     PrincipalSelfSid: PSID; DesiredAccess: ACCESS_MASK; AuditType: AUDIT_EVENT_TYPE; Flags: ULONG; ObjectTypeList: POBJECT_TYPE_LIST; ObjectTypeListLength: ULONG; GenericMapping: PGENERIC_MAPPING; ObjectCreation: BOOLEAN;
-    GrantedAccessList: PACCESS_MASK; AccessStatusList: PULONG; GenerateOnClose: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+    GrantedAccessList: PACCESS_MASK; AccessStatusList: PULONG; GenerateOnClose: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT4, W2K, WXP, 2K3
 function  NtAddAtom(
     Str : PWSTR;
     StringLength : ULONG;
     Atom : PUSHORT
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwAddAtom(Str: PWSTR; StringLength: ULONG; Atom: PUSHORT): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwAddAtom(Str: PWSTR; StringLength: ULONG; Atom: PUSHORT): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtAdjustGroupsToken(
@@ -4431,8 +4434,8 @@ function  NtAdjustGroupsToken(
     BufferLength : ULONG;
     PreviousState : PTOKEN_GROUPS;
     ReturnLength : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwAdjustGroupsToken(TokenHandle: HANDLE; ResetToDefault: BOOLEAN; NewState: PTOKEN_GROUPS; BufferLength: ULONG; PreviousState: PTOKEN_GROUPS; ReturnLength: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwAdjustGroupsToken(TokenHandle: HANDLE; ResetToDefault: BOOLEAN; NewState: PTOKEN_GROUPS; BufferLength: ULONG; PreviousState: PTOKEN_GROUPS; ReturnLength: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtAdjustPrivilegesToken(
@@ -4442,36 +4445,36 @@ function  NtAdjustPrivilegesToken(
     BufferLength : ULONG;
     PreviousState : PTOKEN_PRIVILEGES;
     ReturnLength : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 function  ZwAdjustPrivilegesToken(TokenHandle: HANDLE; DisableAllPrivileges: BOOLEAN; NewState: PTOKEN_PRIVILEGES; BufferLength: ULONG; PreviousState: PTOKEN_PRIVILEGES; ReturnLength: PULONG): NTSTATUS; stdcall;
-    {$IFNDEF RTDL}external ntdll;{$ENDIF}
+    {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtAlertResumeThread(
     ThreadHandle : HANDLE;
     PreviousSuspendCount : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwAlertResumeThread(ThreadHandle: HANDLE; PreviousSuspendCount: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwAlertResumeThread(ThreadHandle: HANDLE; PreviousSuspendCount: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtAlertThread(
     ThreadHandle : HANDLE
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwAlertThread(ThreadHandle: HANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwAlertThread(ThreadHandle: HANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtAllocateLocallyUniqueId(
     Luid : PLUID
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwAllocateLocallyUniqueId(Luid: PLUID): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwAllocateLocallyUniqueId(Luid: PLUID): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: W2K, WXP, 2K3
 function  NtAllocateUserPhysicalPages(
     ProcessHandle : HANDLE;
     NumberOfPages : PULONG;
     PageFrameNumbers : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwAllocateUserPhysicalPages(ProcessHandle: HANDLE; NumberOfPages: PULONG; PageFrameNumbers: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwAllocateUserPhysicalPages(ProcessHandle: HANDLE; NumberOfPages: PULONG; PageFrameNumbers: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtAllocateUuids(
@@ -4479,8 +4482,8 @@ function  NtAllocateUuids(
     UuidDeltaTime : PULONG;
     UuidSequenceNumber : PULONG;
     UuidSeed : PUCHAR
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwAllocateUuids(UuidLastTimeAllocated: PLARGE_INTEGER; UuidDeltaTime: PULONG; UuidSequenceNumber: PULONG; UuidSeed: PUCHAR): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwAllocateUuids(UuidLastTimeAllocated: PLARGE_INTEGER; UuidDeltaTime: PULONG; UuidSequenceNumber: PULONG; UuidSeed: PUCHAR): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtAllocateVirtualMemory(
@@ -4490,56 +4493,56 @@ function  NtAllocateVirtualMemory(
     AllocationSize : PULONG;
     AllocationType : ULONG;
     Protect : ULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwAllocateVirtualMemory(ProcessHandle: HANDLE; BaseAddress: PPVOID; ZeroBits: ULONG; AllocationSize: PULONG; AllocationType: ULONG; Protect: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwAllocateVirtualMemory(ProcessHandle: HANDLE; BaseAddress: PPVOID; ZeroBits: ULONG; AllocationSize: PULONG; AllocationType: ULONG; Protect: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: W2K, WXP, 2K3
 function  NtAreMappedFilesTheSame(
     Address1 : PVOID;
     Address2 : PVOID
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwAreMappedFilesTheSame(Address1: PVOID; Address2: PVOID): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwAreMappedFilesTheSame(Address1: PVOID; Address2: PVOID): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: W2K, WXP, 2K3
 function  NtAssignProcessToJobObject(
     JobHandle : HANDLE;
     ProcessHandle : HANDLE
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwAssignProcessToJobObject(JobHandle: HANDLE; ProcessHandle: HANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwAssignProcessToJobObject(JobHandle: HANDLE; ProcessHandle: HANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtCallbackReturn(
     Result_ : PVOID;
     ResultLength : ULONG;
     Status : NTSTATUS
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwCallbackReturn(Result_: PVOID; ResultLength: ULONG; Status: NTSTATUS): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwCallbackReturn(Result_: PVOID; ResultLength: ULONG; Status: NTSTATUS): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: W2K, WXP, 2K3
 function  NtCancelDeviceWakeupRequest(
     DeviceHandle : HANDLE
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwCancelDeviceWakeupRequest(DeviceHandle: HANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwCancelDeviceWakeupRequest(DeviceHandle: HANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtCancelIoFile(
     FileHandle : HANDLE;
     IoStatusBlock : PIO_STATUS_BLOCK
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwCancelIoFile(FileHandle: HANDLE; IoStatusBlock: PIO_STATUS_BLOCK): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwCancelIoFile(FileHandle: HANDLE; IoStatusBlock: PIO_STATUS_BLOCK): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtCancelTimer(
     TimerHandle : HANDLE;
     PreviousState : PBOOLEAN
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwCancelTimer(TimerHandle: HANDLE; PreviousState: PBOOLEAN): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwCancelTimer(TimerHandle: HANDLE; PreviousState: PBOOLEAN): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtClearEvent(
     EventHandle : HANDLE
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwClearEvent(EventHandle: HANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwClearEvent(EventHandle: HANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to CloseHandle() from Kernel32.dll. Refer
 // to the PSDK for additional information. Usually the same flags apply.
@@ -4548,24 +4551,24 @@ function  ZwClearEvent(EventHandle: HANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}ex
 {.$IFNDEF JWA_INCLUDEMODE}
 function  NtClose(
     Handle : HANDLE
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL} external ntdll; {$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL} external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF}; {$ENDIF}
 {.$ENDIF JWA_INCLUDEMODE}
 
-function  ZwClose(Handle: HANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+function  ZwClose(Handle: HANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtCloseObjectAuditAlarm(
     SubsystemName : PUNICODE_STRING;
     HandleId : PVOID;
     GenerateOnClose : BOOLEAN
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwCloseObjectAuditAlarm(SubsystemName: PUNICODE_STRING; HandleId: PVOID; GenerateOnClose: BOOLEAN): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwCloseObjectAuditAlarm(SubsystemName: PUNICODE_STRING; HandleId: PVOID; GenerateOnClose: BOOLEAN): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtCompleteConnectPort(
     PortHandle : HANDLE
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwCompleteConnectPort(PortHandle: HANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwCompleteConnectPort(PortHandle: HANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtConnectPort(
@@ -4577,16 +4580,16 @@ function  NtConnectPort(
     MaxMessageSize : PULONG;
     ConnectData : PVOID;
     ConnectDataLength : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 function  ZwConnectPort(PortHandle: PHANDLE; PortName: PUNICODE_STRING; SecurityQos: PSECURITY_QUALITY_OF_SERVICE; WriteSection: PPORT_SECTION_WRITE; ReadSection: PPORT_SECTION_READ; MaxMessageSize: PULONG; ConnectData: PVOID;
-    ConnectDataLength: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+    ConnectDataLength: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtContinue(
     Context : PCONTEXT;
     TestAlert : BOOLEAN
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwContinue(Context: PCONTEXT; TestAlert: BOOLEAN): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwContinue(Context: PCONTEXT; TestAlert: BOOLEAN): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Returns STATUS_NOT_IMPLEMENTED. Only MS knows the intention behind this.
 //
@@ -4595,8 +4598,8 @@ function  ZwContinue(Context: PCONTEXT; TestAlert: BOOLEAN): NTSTATUS; stdcall; 
 function  NtCreateChannel(
     ChannelHandle : PHANDLE;
     ObjectAttributes : POBJECT_ATTRIBUTES
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwCreateChannel(ChannelHandle: PHANDLE; ObjectAttributes: POBJECT_ATTRIBUTES): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwCreateChannel(ChannelHandle: PHANDLE; ObjectAttributes: POBJECT_ATTRIBUTES): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK as ZwCreateDirectoryObject().
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
@@ -4604,8 +4607,8 @@ function  NtCreateDirectoryObject(
     DirectoryHandle : PHANDLE;
     DesiredAccess : ACCESS_MASK;
     ObjectAttributes : POBJECT_ATTRIBUTES
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwCreateDirectoryObject(DirectoryHandle: PHANDLE; DesiredAccess: ACCESS_MASK; ObjectAttributes: POBJECT_ATTRIBUTES): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwCreateDirectoryObject(DirectoryHandle: PHANDLE; DesiredAccess: ACCESS_MASK; ObjectAttributes: POBJECT_ATTRIBUTES): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtCreateEvent(
@@ -4614,16 +4617,16 @@ function  NtCreateEvent(
     ObjectAttributes : POBJECT_ATTRIBUTES;
     EventType : EVENT_TYPE;
     InitialState : BOOLEAN
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwCreateEvent(EventHandle: PHANDLE; DesiredAccess: ACCESS_MASK; ObjectAttributes: POBJECT_ATTRIBUTES; EventType: EVENT_TYPE; InitialState: BOOLEAN): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwCreateEvent(EventHandle: PHANDLE; DesiredAccess: ACCESS_MASK; ObjectAttributes: POBJECT_ATTRIBUTES; EventType: EVENT_TYPE; InitialState: BOOLEAN): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtCreateEventPair(
     EventPairHandle : PHANDLE;
     DesiredAccess : ACCESS_MASK;
     ObjectAttributes : POBJECT_ATTRIBUTES
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwCreateEventPair(EventPairHandle: PHANDLE; DesiredAccess: ACCESS_MASK; ObjectAttributes: POBJECT_ATTRIBUTES): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwCreateEventPair(EventPairHandle: PHANDLE; DesiredAccess: ACCESS_MASK; ObjectAttributes: POBJECT_ATTRIBUTES): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 {.$IFNDEF JWA_INCLUDEMODE}
 // Documented in the DDK as ZwCreateFile().
@@ -4640,10 +4643,10 @@ function  NtCreateFile(
     CreateOptions : ULONG;
     EaBuffer : PVOID;
     EaLength : ULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 {.$ENDIF JWA_INCLUDEMODE}
 function  ZwCreateFile(FileHandle: PHANDLE; DesiredAccess: ACCESS_MASK; ObjectAttributes: POBJECT_ATTRIBUTES; IoStatusBlock: PIO_STATUS_BLOCK; AllocationSize: PLARGE_INTEGER; FileAttributes: ULONG; ShareAccess: ULONG;
-    CreateDisposition: ULONG; CreateOptions: ULONG; EaBuffer: PVOID; EaLength: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+    CreateDisposition: ULONG; CreateOptions: ULONG; EaBuffer: PVOID; EaLength: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtCreateIoCompletion(
@@ -4651,16 +4654,16 @@ function  NtCreateIoCompletion(
     DesiredAccess : ACCESS_MASK;
     ObjectAttributes : POBJECT_ATTRIBUTES;
     NumberOfConcurrentThreads : ULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwCreateIoCompletion(IoCompletionHandle: PHANDLE; DesiredAccess: ACCESS_MASK; ObjectAttributes: POBJECT_ATTRIBUTES; NumberOfConcurrentThreads: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwCreateIoCompletion(IoCompletionHandle: PHANDLE; DesiredAccess: ACCESS_MASK; ObjectAttributes: POBJECT_ATTRIBUTES; NumberOfConcurrentThreads: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: W2K, WXP, 2K3
 function  NtCreateJobObject(
     JobHandle : PHANDLE;
     DesiredAccess : ACCESS_MASK;
     ObjectAttributes : POBJECT_ATTRIBUTES
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwCreateJobObject(JobHandle: PHANDLE; DesiredAccess: ACCESS_MASK; ObjectAttributes: POBJECT_ATTRIBUTES): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwCreateJobObject(JobHandle: PHANDLE; DesiredAccess: ACCESS_MASK; ObjectAttributes: POBJECT_ATTRIBUTES): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK as ZwCreateKey().
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
@@ -4672,9 +4675,9 @@ function  NtCreateKey(
     Class_ : PUNICODE_STRING;
     CreateOptions : ULONG;
     Disposition : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 function  ZwCreateKey(KeyHandle: PHANDLE; DesiredAccess: ACCESS_MASK; ObjectAttributes: POBJECT_ATTRIBUTES; TitleIndex: ULONG; Class_: PUNICODE_STRING; CreateOptions: ULONG; Disposition: PULONG): NTSTATUS; stdcall;
-    {$IFNDEF RTDL}external ntdll;{$ENDIF}
+    {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtCreateMailslotFile(
@@ -4686,9 +4689,9 @@ function  NtCreateMailslotFile(
     Unknown : ULONG;
     MaxMessageSize : ULONG;
     ReadTimeout : PLARGE_INTEGER
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 function  ZwCreateMailslotFile(FileHandle: PHANDLE; DesiredAccess: ACCESS_MASK; ObjectAttributes: POBJECT_ATTRIBUTES; IoStatusBlock: PIO_STATUS_BLOCK; CreateOptions: ULONG; Unknown: ULONG; MaxMessageSize: ULONG;
-    ReadTimeout: PLARGE_INTEGER): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+    ReadTimeout: PLARGE_INTEGER): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtCreateMutant(
@@ -4696,8 +4699,8 @@ function  NtCreateMutant(
     DesiredAccess : ACCESS_MASK;
     ObjectAttributes : POBJECT_ATTRIBUTES;
     InitialOwner : BOOLEAN
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwCreateMutant(MutantHandle: PHANDLE; DesiredAccess: ACCESS_MASK; ObjectAttributes: POBJECT_ATTRIBUTES; InitialOwner: BOOLEAN): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwCreateMutant(MutantHandle: PHANDLE; DesiredAccess: ACCESS_MASK; ObjectAttributes: POBJECT_ATTRIBUTES; InitialOwner: BOOLEAN): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtCreateNamedPipeFile(
@@ -4715,9 +4718,9 @@ function  NtCreateNamedPipeFile(
     InBufferSize : ULONG;
     OutBufferSize : ULONG;
     DefaultTimeout : PLARGE_INTEGER
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 function  ZwCreateNamedPipeFile(FileHandle: PHANDLE; DesiredAccess: ACCESS_MASK; ObjectAttributes: POBJECT_ATTRIBUTES; IoStatusBlock: PIO_STATUS_BLOCK; ShareAccess: ULONG; CreateDisposition: ULONG; CreateOptions: ULONG;
-    TypeMessage: BOOLEAN; ReadmodeMessage: BOOLEAN; Nonblocking: BOOLEAN; MaxInstances: ULONG; InBufferSize: ULONG; OutBufferSize: ULONG; DefaultTimeout: PLARGE_INTEGER): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+    TypeMessage: BOOLEAN; ReadmodeMessage: BOOLEAN; Nonblocking: BOOLEAN; MaxInstances: ULONG; InBufferSize: ULONG; OutBufferSize: ULONG; DefaultTimeout: PLARGE_INTEGER): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtCreatePagingFile(
@@ -4725,8 +4728,8 @@ function  NtCreatePagingFile(
     InitialSize : PULARGE_INTEGER;
     MaximumSize : PULARGE_INTEGER;
     Reserved : ULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwCreatePagingFile(FileName: PUNICODE_STRING; InitialSize: PULARGE_INTEGER; MaximumSize: PULARGE_INTEGER; Reserved: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwCreatePagingFile(FileName: PUNICODE_STRING; InitialSize: PULARGE_INTEGER; MaximumSize: PULARGE_INTEGER; Reserved: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtCreatePort(
@@ -4735,8 +4738,8 @@ function  NtCreatePort(
     MaxDataSize : ULONG;
     MaxMessageSize : ULONG;
     Reserved : ULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwCreatePort(PortHandle: PHANDLE; ObjectAttributes: POBJECT_ATTRIBUTES; MaxDataSize: ULONG; MaxMessageSize: ULONG; Reserved: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwCreatePort(PortHandle: PHANDLE; ObjectAttributes: POBJECT_ATTRIBUTES; MaxDataSize: ULONG; MaxMessageSize: ULONG; Reserved: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtCreateProcess(
@@ -4748,9 +4751,9 @@ function  NtCreateProcess(
     SectionHandle : HANDLE;
     DebugPort : HANDLE;
     ExceptionPort : HANDLE
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 function  ZwCreateProcess(ProcessHandle: PHANDLE; DesiredAccess: ACCESS_MASK; ObjectAttributes: POBJECT_ATTRIBUTES; InheritFromProcessHandle: HANDLE; InheritHandles: BOOLEAN; SectionHandle: HANDLE; DebugPort: HANDLE;
-    ExceptionPort: HANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+    ExceptionPort: HANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtCreateProfile(
@@ -4763,9 +4766,9 @@ function  NtCreateProfile(
     BufferLength : ULONG;
     Source : KPROFILE_SOURCE;
     ProcessorMask : ULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 function  ZwCreateProfile(ProfileHandle: PHANDLE; ProcessHandle: HANDLE; Base: PVOID; Size: ULONG; BucketShift: ULONG; Buffer: PULONG; BufferLength: ULONG; Source: KPROFILE_SOURCE; ProcessorMask: ULONG): NTSTATUS; stdcall;
-    {$IFNDEF RTDL}external ntdll;{$ENDIF}
+    {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK as ZwCreateSection().
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
@@ -4777,9 +4780,9 @@ function  NtCreateSection(
     Protect : ULONG;
     Attributes : ULONG;
     FileHandle : HANDLE
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 function  ZwCreateSection(SectionHandle: PHANDLE; DesiredAccess: ACCESS_MASK; ObjectAttributes: POBJECT_ATTRIBUTES; SectionSize: PLARGE_INTEGER; Protect: ULONG; Attributes: ULONG; FileHandle: HANDLE): NTSTATUS; stdcall;
-    {$IFNDEF RTDL}external ntdll;{$ENDIF}
+    {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtCreateSemaphore(
@@ -4788,8 +4791,8 @@ function  NtCreateSemaphore(
     ObjectAttributes : POBJECT_ATTRIBUTES;
     InitialCount : LONG;
     MaximumCount : LONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwCreateSemaphore(SemaphoreHandle: PHANDLE; DesiredAccess: ACCESS_MASK; ObjectAttributes: POBJECT_ATTRIBUTES; InitialCount: LONG; MaximumCount: LONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwCreateSemaphore(SemaphoreHandle: PHANDLE; DesiredAccess: ACCESS_MASK; ObjectAttributes: POBJECT_ATTRIBUTES; InitialCount: LONG; MaximumCount: LONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtCreateSymbolicLinkObject(
@@ -4797,8 +4800,8 @@ function  NtCreateSymbolicLinkObject(
     DesiredAccess : ACCESS_MASK;
     ObjectAttributes : POBJECT_ATTRIBUTES;
     TargetName : PUNICODE_STRING
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwCreateSymbolicLinkObject(SymbolicLinkHandle: PHANDLE; DesiredAccess: ACCESS_MASK; ObjectAttributes: POBJECT_ATTRIBUTES; TargetName: PUNICODE_STRING): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwCreateSymbolicLinkObject(SymbolicLinkHandle: PHANDLE; DesiredAccess: ACCESS_MASK; ObjectAttributes: POBJECT_ATTRIBUTES; TargetName: PUNICODE_STRING): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtCreateThread(
@@ -4810,9 +4813,9 @@ function  NtCreateThread(
     ThreadContext : PCONTEXT;
     UserStack : PUSER_STACK;
     CreateSuspended : BOOLEAN
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 function  ZwCreateThread(ThreadHandle: PHANDLE; DesiredAccess: ACCESS_MASK; ObjectAttributes: POBJECT_ATTRIBUTES; ProcessHandle: HANDLE; ClientId: PCLIENT_ID; ThreadContext: PCONTEXT; UserStack: PUSER_STACK;
-    CreateSuspended: BOOLEAN): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+    CreateSuspended: BOOLEAN): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtCreateTimer(
@@ -4820,8 +4823,8 @@ function  NtCreateTimer(
     DesiredAccess : ACCESS_MASK;
     ObjectAttributes : POBJECT_ATTRIBUTES;
     TimerType : TIMER_TYPE
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwCreateTimer(TimerHandle: PHANDLE; DesiredAccess: ACCESS_MASK; ObjectAttributes: POBJECT_ATTRIBUTES; TimerType: TIMER_TYPE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwCreateTimer(TimerHandle: PHANDLE; DesiredAccess: ACCESS_MASK; ObjectAttributes: POBJECT_ATTRIBUTES; TimerType: TIMER_TYPE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtCreateToken(
@@ -4838,9 +4841,9 @@ function  NtCreateToken(
     PrimaryGroup : PTOKEN_PRIMARY_GROUP;
     DefaultDacl : PTOKEN_DEFAULT_DACL;
     Source : PTOKEN_SOURCE
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 function  ZwCreateToken(TokenHandle: PHANDLE; DesiredAccess: ACCESS_MASK; ObjectAttributes: POBJECT_ATTRIBUTES; Type_: TOKEN_TYPE; AuthenticationId: PLUID; ExpirationTime: PLARGE_INTEGER; User: PTOKEN_USER; Groups: PTOKEN_GROUPS;
-    Privileges: PTOKEN_PRIVILEGES; Owner: PTOKEN_OWNER; PrimaryGroup: PTOKEN_PRIMARY_GROUP; DefaultDacl: PTOKEN_DEFAULT_DACL; Source: PTOKEN_SOURCE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+    Privileges: PTOKEN_PRIVILEGES; Owner: PTOKEN_OWNER; PrimaryGroup: PTOKEN_PRIMARY_GROUP; DefaultDacl: PTOKEN_DEFAULT_DACL; Source: PTOKEN_SOURCE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: W2K, WXP, 2K3
 function  NtCreateWaitablePort(
@@ -4849,63 +4852,63 @@ function  NtCreateWaitablePort(
     MaxDataSize : ULONG;
     MaxMessageSize : ULONG;
     Reserved : ULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwCreateWaitablePort(PortHandle: PHANDLE; ObjectAttributes: POBJECT_ATTRIBUTES; MaxDataSize: ULONG; MaxMessageSize: ULONG; Reserved: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwCreateWaitablePort(PortHandle: PHANDLE; ObjectAttributes: POBJECT_ATTRIBUTES; MaxDataSize: ULONG; MaxMessageSize: ULONG; Reserved: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 
 
-function  NtCurrentTeb(): PTEB; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+function  NtCurrentTeb(): PTEB; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
-function  ZwCurrentTeb(): PTEB; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+function  ZwCurrentTeb(): PTEB; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: WXP, 2K3
 function  NtDebugActiveProcess(
     hProcess : HANDLE;
     hDebugObject : HANDLE
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwDebugActiveProcess(hProcess: HANDLE; hDebugObject: HANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwDebugActiveProcess(hProcess: HANDLE; hDebugObject: HANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtDelayExecution(
     Alertable : BOOLEAN;
     Interval : PLARGE_INTEGER
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwDelayExecution(Alertable: BOOLEAN; Interval: PLARGE_INTEGER): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwDelayExecution(Alertable: BOOLEAN; Interval: PLARGE_INTEGER): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT4, W2K, WXP, 2K3
 function  NtDeleteAtom(
     Atom : USHORT
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwDeleteAtom(Atom: USHORT): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwDeleteAtom(Atom: USHORT): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtDeleteFile(
     ObjectAttributes : POBJECT_ATTRIBUTES
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwDeleteFile(ObjectAttributes: POBJECT_ATTRIBUTES): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwDeleteFile(ObjectAttributes: POBJECT_ATTRIBUTES): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK as ZwDeleteKey().
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtDeleteKey(
     KeyHandle : HANDLE
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwDeleteKey(KeyHandle: HANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwDeleteKey(KeyHandle: HANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT4, W2K, WXP, 2K3
 function  NtDeleteObjectAuditAlarm(
     SubsystemName : PUNICODE_STRING;
     HandleId : PVOID;
     GenerateOnClose : BOOLEAN
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwDeleteObjectAuditAlarm(SubsystemName: PUNICODE_STRING; HandleId: PVOID; GenerateOnClose: BOOLEAN): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwDeleteObjectAuditAlarm(SubsystemName: PUNICODE_STRING; HandleId: PVOID; GenerateOnClose: BOOLEAN): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtDeleteValueKey(
     KeyHandle : HANDLE;
     ValueName : PUNICODE_STRING
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwDeleteValueKey(KeyHandle: HANDLE; ValueName: PUNICODE_STRING): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwDeleteValueKey(KeyHandle: HANDLE; ValueName: PUNICODE_STRING): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 {.$IFNDEF JWA_INCLUDEMODE}
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
@@ -4920,17 +4923,17 @@ function  NtDeviceIoControlFile(
     InputBufferLength : ULONG;
     OutputBuffer : PVOID;
     OutputBufferLength : ULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 {.$ENDIF JWA_INCLUDEMODE}
 
 function  ZwDeviceIoControlFile(FileHandle: HANDLE; Event: HANDLE; ApcRoutine: PIO_APC_ROUTINE; ApcContext: PVOID; IoStatusBlock: PIO_STATUS_BLOCK; IoControlCode: ULONG; InputBuffer: PVOID; InputBufferLength: ULONG; OutputBuffer: PVOID;
-    OutputBufferLength: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+    OutputBufferLength: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtDisplayString(
     Str : PUNICODE_STRING
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwDisplayString(Str: PUNICODE_STRING): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwDisplayString(Str: PUNICODE_STRING): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtDuplicateObject(
@@ -4941,9 +4944,9 @@ function  NtDuplicateObject(
     DesiredAccess : ACCESS_MASK;
     Attributes : ULONG;
     Options : ULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 function  ZwDuplicateObject(SourceProcessHandle: HANDLE; SourceHandle: HANDLE; TargetProcessHandle: HANDLE; TargetHandle: PHANDLE; DesiredAccess: ACCESS_MASK; Attributes: ULONG; Options: ULONG): NTSTATUS; stdcall;
-    {$IFNDEF RTDL}external ntdll;{$ENDIF}
+    {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtDuplicateToken(
@@ -4953,9 +4956,9 @@ function  NtDuplicateToken(
     EffectiveOnly : BOOLEAN;
     TokenType : TOKEN_TYPE;
     NewTokenHandle : PHANDLE
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 function  ZwDuplicateToken(ExistingTokenHandle: HANDLE; DesiredAccess: ACCESS_MASK; ObjectAttributes: POBJECT_ATTRIBUTES; EffectiveOnly: BOOLEAN; TokenType: TOKEN_TYPE; NewTokenHandle: PHANDLE): NTSTATUS; stdcall;
-    {$IFNDEF RTDL}external ntdll;{$ENDIF}
+    {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK as ZwEnumerateKey().
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
@@ -4966,8 +4969,8 @@ function  NtEnumerateKey(
     KeyInformation : PVOID;
     KeyInformationLength : ULONG;
     ResultLength : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwEnumerateKey(KeyHandle: HANDLE; Index: ULONG; KeyInformationClass: KEY_INFORMATION_CLASS; KeyInformation: PVOID; KeyInformationLength: ULONG; ResultLength: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwEnumerateKey(KeyHandle: HANDLE; Index: ULONG; KeyInformationClass: KEY_INFORMATION_CLASS; KeyInformation: PVOID; KeyInformationLength: ULONG; ResultLength: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK as ZwEnumerateValueKey().
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
@@ -4978,16 +4981,16 @@ function  NtEnumerateValueKey(
     KeyValueInformation : PVOID;
     KeyValueInformationLength : ULONG;
     ResultLength : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 function  ZwEnumerateValueKey(KeyHandle: HANDLE; Index: ULONG; KeyValueInformationClass: KEY_VALUE_INFORMATION_CLASS; KeyValueInformation: PVOID; KeyValueInformationLength: ULONG; ResultLength: PULONG): NTSTATUS; stdcall;
-    {$IFNDEF RTDL}external ntdll;{$ENDIF}
+    {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtExtendSection(
     SectionHandle : HANDLE;
     SectionSize : PLARGE_INTEGER
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwExtendSection(SectionHandle: HANDLE; SectionSize: PLARGE_INTEGER): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwExtendSection(SectionHandle: HANDLE; SectionSize: PLARGE_INTEGER): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: W2K, WXP, 2K3
 function  NtFilterToken(
@@ -4997,39 +5000,39 @@ function  NtFilterToken(
     PrivilegesToDelete : PTOKEN_PRIVILEGES;
     SidsToRestricted : PTOKEN_GROUPS;
     NewTokenHandle : PHANDLE
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 function  ZwFilterToken(ExistingTokenHandle: HANDLE; Flags: ULONG; SidsToDisable: PTOKEN_GROUPS; PrivilegesToDelete: PTOKEN_PRIVILEGES; SidsToRestricted: PTOKEN_GROUPS; NewTokenHandle: PHANDLE): NTSTATUS; stdcall;
-    {$IFNDEF RTDL}external ntdll;{$ENDIF}
+    {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT4, W2K, WXP, 2K3
 function  NtFindAtom(
     Str : PWSTR;
     StringLength : ULONG;
     Atom : PUSHORT
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwFindAtom(Str: PWSTR; StringLength: ULONG; Atom: PUSHORT): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwFindAtom(Str: PWSTR; StringLength: ULONG; Atom: PUSHORT): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtFlushBuffersFile(
     FileHandle : HANDLE;
     IoStatusBlock : PIO_STATUS_BLOCK
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwFlushBuffersFile(FileHandle: HANDLE; IoStatusBlock: PIO_STATUS_BLOCK): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwFlushBuffersFile(FileHandle: HANDLE; IoStatusBlock: PIO_STATUS_BLOCK): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtFlushInstructionCache(
     ProcessHandle : HANDLE;
     BaseAddress : PVOID;
     FlushSize : ULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwFlushInstructionCache(ProcessHandle: HANDLE; BaseAddress: PVOID; FlushSize: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwFlushInstructionCache(ProcessHandle: HANDLE; BaseAddress: PVOID; FlushSize: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK as ZwFlushKey().
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtFlushKey(
     KeyHandle : HANDLE
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwFlushKey(KeyHandle: HANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwFlushKey(KeyHandle: HANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtFlushVirtualMemory(
@@ -5037,20 +5040,20 @@ function  NtFlushVirtualMemory(
     BaseAddress : PPVOID;
     FlushSize : PULONG;
     IoStatusBlock : PIO_STATUS_BLOCK
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwFlushVirtualMemory(ProcessHandle: HANDLE; BaseAddress: PPVOID; FlushSize: PULONG; IoStatusBlock: PIO_STATUS_BLOCK): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwFlushVirtualMemory(ProcessHandle: HANDLE; BaseAddress: PPVOID; FlushSize: PULONG; IoStatusBlock: PIO_STATUS_BLOCK): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
-function  NtFlushWriteBuffer(): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwFlushWriteBuffer(): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+function  NtFlushWriteBuffer(): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwFlushWriteBuffer(): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: W2K, WXP, 2K3
 function  NtFreeUserPhysicalPages(
     ProcessHandle : HANDLE;
     NumberOfPages : PULONG;
     PageFrameNumbers : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwFreeUserPhysicalPages(ProcessHandle: HANDLE; NumberOfPages: PULONG; PageFrameNumbers: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwFreeUserPhysicalPages(ProcessHandle: HANDLE; NumberOfPages: PULONG; PageFrameNumbers: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtFreeVirtualMemory(
@@ -5058,8 +5061,8 @@ function  NtFreeVirtualMemory(
     BaseAddress : PPVOID;
     FreeSize : PULONG;
     FreeType : ULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwFreeVirtualMemory(ProcessHandle: HANDLE; BaseAddress: PPVOID; FreeSize: PULONG; FreeType: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwFreeVirtualMemory(ProcessHandle: HANDLE; BaseAddress: PPVOID; FreeSize: PULONG; FreeType: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtFsControlFile(
@@ -5073,27 +5076,27 @@ function  NtFsControlFile(
     InputBufferLength : ULONG;
     OutputBuffer : PVOID;
     OutputBufferLength : ULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 function  ZwFsControlFile(FileHandle: HANDLE; Event: HANDLE; ApcRoutine: PIO_APC_ROUTINE; ApcContext: PVOID; IoStatusBlock: PIO_STATUS_BLOCK; FsControlCode: ULONG; InputBuffer: PVOID; InputBufferLength: ULONG; OutputBuffer: PVOID;
-    OutputBufferLength: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+    OutputBufferLength: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtGetContextThread(
     ThreadHandle : HANDLE;
     Context : PCONTEXT
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwGetContextThread(ThreadHandle: HANDLE; Context: PCONTEXT): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwGetContextThread(ThreadHandle: HANDLE; Context: PCONTEXT): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: 2K3
-function  NtGetCurrentProcessorNumber(): ULONG; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwGetCurrentProcessorNumber(): ULONG; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+function  NtGetCurrentProcessorNumber(): ULONG; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwGetCurrentProcessorNumber(): ULONG; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: W2K, WXP, 2K3
 function  NtGetDevicePowerState(
     DeviceHandle : HANDLE;
     DevicePowerState : PDEVICE_POWER_STATE
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwGetDevicePowerState(DeviceHandle: HANDLE; DevicePowerState: PDEVICE_POWER_STATE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwGetDevicePowerState(DeviceHandle: HANDLE; DevicePowerState: PDEVICE_POWER_STATE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtGetPlugPlayEvent(
@@ -5101,12 +5104,12 @@ function  NtGetPlugPlayEvent(
     Reserved2 : ULONG;
     Buffer : PVOID;
     BufferLength : ULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwGetPlugPlayEvent(Reserved1: ULONG; Reserved2: ULONG; Buffer: PVOID; BufferLength: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwGetPlugPlayEvent(Reserved1: ULONG; Reserved2: ULONG; Buffer: PVOID; BufferLength: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, 2K3
-function  NtGetTickCount(): ULONG; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwGetTickCount(): ULONG; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+function  NtGetTickCount(): ULONG; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwGetTickCount(): ULONG; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: W2K, WXP, 2K3
 function  NtGetWriteWatch(
@@ -5117,35 +5120,35 @@ function  NtGetWriteWatch(
     Buffer : PULONG;
     BufferEntries : PULONG;
     Granularity : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwGetWriteWatch(ProcessHandle: HANDLE; Flags: ULONG; BaseAddress: PVOID; RegionSize: ULONG; Buffer: PULONG; BufferEntries: PULONG; Granularity: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwGetWriteWatch(ProcessHandle: HANDLE; Flags: ULONG; BaseAddress: PVOID; RegionSize: ULONG; Buffer: PULONG; BufferEntries: PULONG; Granularity: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: W2K, WXP, 2K3
 function  NtImpersonateAnonymousToken(
     ThreadHandle : HANDLE
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwImpersonateAnonymousToken(ThreadHandle: HANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwImpersonateAnonymousToken(ThreadHandle: HANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtImpersonateClientOfPort(
     PortHandle : HANDLE;
     Message : PPORT_MESSAGE
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwImpersonateClientOfPort(PortHandle: HANDLE; Message: PPORT_MESSAGE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwImpersonateClientOfPort(PortHandle: HANDLE; Message: PPORT_MESSAGE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtImpersonateThread(
     ThreadHandle : HANDLE;
     TargetThreadHandle : HANDLE;
     SecurityQos : PSECURITY_QUALITY_OF_SERVICE
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwImpersonateThread(ThreadHandle: HANDLE; TargetThreadHandle: HANDLE; SecurityQos: PSECURITY_QUALITY_OF_SERVICE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwImpersonateThread(ThreadHandle: HANDLE; TargetThreadHandle: HANDLE; SecurityQos: PSECURITY_QUALITY_OF_SERVICE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtInitializeRegistry(
     Setup : BOOLEAN
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwInitializeRegistry(Setup: BOOLEAN): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwInitializeRegistry(Setup: BOOLEAN): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: W2K, WXP, 2K3
 function  NtInitiatePowerAction(
@@ -5153,12 +5156,12 @@ function  NtInitiatePowerAction(
     MinSystemState : SYSTEM_POWER_STATE;
     Flags : ULONG;
     Asynchronous : BOOLEAN
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwInitiatePowerAction(SystemAction: POWER_ACTION; MinSystemState: SYSTEM_POWER_STATE; Flags: ULONG; Asynchronous: BOOLEAN): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwInitiatePowerAction(SystemAction: POWER_ACTION; MinSystemState: SYSTEM_POWER_STATE; Flags: ULONG; Asynchronous: BOOLEAN): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: W2K, WXP, 2K3
-function  NtIsSystemResumeAutomatic(): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwIsSystemResumeAutomatic(): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+function  NtIsSystemResumeAutomatic(): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwIsSystemResumeAutomatic(): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Returns STATUS_NOT_IMPLEMENTED. Only MS knows the intention behind this.
 //
@@ -5167,29 +5170,29 @@ function  ZwIsSystemResumeAutomatic(): BOOLEAN; stdcall; {$IFNDEF RTDL}external 
 function  NtListenChannel(
     x : PVOID;
     y : PVOID
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwListenChannel(x: PVOID; y: PVOID): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwListenChannel(x: PVOID; y: PVOID): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtListenPort(
     PortHandle : HANDLE;
     Message : PPORT_MESSAGE
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwListenPort(PortHandle: HANDLE; Message: PPORT_MESSAGE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwListenPort(PortHandle: HANDLE; Message: PPORT_MESSAGE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtLoadDriver(
     DriverServiceName : PUNICODE_STRING
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwLoadDriver(DriverServiceName: PUNICODE_STRING): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwLoadDriver(DriverServiceName: PUNICODE_STRING): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Relates to RegLoadKey().
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtLoadKey(
     KeyObjectAttributes : POBJECT_ATTRIBUTES;
     FileObjectAttributes : POBJECT_ATTRIBUTES
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwLoadKey(KeyObjectAttributes: POBJECT_ATTRIBUTES; FileObjectAttributes: POBJECT_ATTRIBUTES): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwLoadKey(KeyObjectAttributes: POBJECT_ATTRIBUTES; FileObjectAttributes: POBJECT_ATTRIBUTES): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Relates to RegLoadKey().
 // Compatibility: NT4, W2K, WXP, 2K3
@@ -5197,8 +5200,8 @@ function  NtLoadKey2(
     KeyObjectAttributes : POBJECT_ATTRIBUTES;
     FileObjectAttributes : POBJECT_ATTRIBUTES;
     Flags : ULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwLoadKey2(KeyObjectAttributes: POBJECT_ATTRIBUTES; FileObjectAttributes: POBJECT_ATTRIBUTES; Flags: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwLoadKey2(KeyObjectAttributes: POBJECT_ATTRIBUTES; FileObjectAttributes: POBJECT_ATTRIBUTES; Flags: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtLockFile(
@@ -5212,9 +5215,9 @@ function  NtLockFile(
     Key : ULONG;
     FailImmediately : BOOLEAN;
     ExclusiveLock : BOOLEAN
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 function  ZwLockFile(FileHandle: HANDLE; Event: HANDLE; ApcRoutine: PIO_APC_ROUTINE; ApcContext: PVOID; IoStatusBlock: PIO_STATUS_BLOCK; LockOffset: PULARGE_INTEGER; LockLength: PULARGE_INTEGER; Key: ULONG; FailImmediately: BOOLEAN;
-    ExclusiveLock: BOOLEAN): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+    ExclusiveLock: BOOLEAN): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtLockVirtualMemory(
@@ -5222,37 +5225,37 @@ function  NtLockVirtualMemory(
     BaseAddress : PPVOID;
     LockSize : PULONG;
     LockType : ULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwLockVirtualMemory(ProcessHandle: HANDLE; BaseAddress: PPVOID; LockSize: PULONG; LockType: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwLockVirtualMemory(ProcessHandle: HANDLE; BaseAddress: PPVOID; LockSize: PULONG; LockType: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: WXP, 2K3
 function  NtMakePermanentObject(
     Handle : HANDLE
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwMakePermanentObject(Handle: HANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwMakePermanentObject(Handle: HANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK as ZwMakeTemporaryObject().
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtMakeTemporaryObject(
     Handle : HANDLE
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwMakeTemporaryObject(Handle: HANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwMakeTemporaryObject(Handle: HANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: W2K, WXP, 2K3
 function  NtMapUserPhysicalPages(
     BaseAddress : PVOID;
     NumberOfPages : PULONG;
     PageFrameNumbers : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwMapUserPhysicalPages(BaseAddress: PVOID; NumberOfPages: PULONG; PageFrameNumbers: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwMapUserPhysicalPages(BaseAddress: PVOID; NumberOfPages: PULONG; PageFrameNumbers: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: W2K, WXP, 2K3
 function  NtMapUserPhysicalPagesScatter(
     BaseAddresses : PPVOID;
     NumberOfPages : PULONG;
     PageFrameNumbers : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwMapUserPhysicalPagesScatter(BaseAddresses: PPVOID; NumberOfPages: PULONG; PageFrameNumbers: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwMapUserPhysicalPagesScatter(BaseAddresses: PPVOID; NumberOfPages: PULONG; PageFrameNumbers: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK as ZwMapViewOfSection().
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
@@ -5267,9 +5270,9 @@ function  NtMapViewOfSection(
     InheritDisposition : SECTION_INHERIT;
     AllocationType : ULONG;
     Protect : ULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 function  ZwMapViewOfSection(SectionHandle: HANDLE; ProcessHandle: HANDLE; BaseAddress: PPVOID; ZeroBits: ULONG; CommitSize: ULONG; SectionOffset: PLARGE_INTEGER; ViewSize: PULONG; InheritDisposition: SECTION_INHERIT; AllocationType: ULONG;
-    Protect: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+    Protect: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtNotifyChangeDirectoryFile(
@@ -5282,9 +5285,9 @@ function  NtNotifyChangeDirectoryFile(
     BufferLength : ULONG;
     NotifyFilter : ULONG;
     WatchSubtree : BOOLEAN
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 function  ZwNotifyChangeDirectoryFile(FileHandle: HANDLE; Event: HANDLE; ApcRoutine: PIO_APC_ROUTINE; ApcContext: PVOID; IoStatusBlock: PIO_STATUS_BLOCK; Buffer: PFILE_NOTIFY_INFORMATION; BufferLength: ULONG; NotifyFilter: ULONG;
-    WatchSubtree: BOOLEAN): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+    WatchSubtree: BOOLEAN): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtNotifyChangeKey(
@@ -5298,9 +5301,9 @@ function  NtNotifyChangeKey(
     Buffer : PVOID;
     BufferLength : ULONG;
     Asynchronous : BOOLEAN
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 function  ZwNotifyChangeKey(KeyHandle: HANDLE; EventHandle: HANDLE; ApcRoutine: PIO_APC_ROUTINE; ApcContext: PVOID; IoStatusBlock: PIO_STATUS_BLOCK; NotifyFilter: ULONG; WatchSubtree: BOOLEAN; Buffer: PVOID; BufferLength: ULONG;
-    Asynchronous: BOOLEAN): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+    Asynchronous: BOOLEAN): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: W2K, WXP, 2K3
 function  NtNotifyChangeMultipleKeys(
@@ -5316,9 +5319,9 @@ function  NtNotifyChangeMultipleKeys(
     Buffer : PVOID;
     BufferLength : ULONG;
     Asynchronous : BOOLEAN
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 function  ZwNotifyChangeMultipleKeys(KeyHandle: HANDLE; Flags: ULONG; KeyObjectAttributes: POBJECT_ATTRIBUTES; EventHandle: HANDLE; ApcRoutine: PIO_APC_ROUTINE; ApcContext: PVOID; IoStatusBlock: PIO_STATUS_BLOCK; NotifyFilter: ULONG;
-    WatchSubtree: BOOLEAN; Buffer: PVOID; BufferLength: ULONG; Asynchronous: BOOLEAN): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+    WatchSubtree: BOOLEAN; Buffer: PVOID; BufferLength: ULONG; Asynchronous: BOOLEAN): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Returns STATUS_NOT_IMPLEMENTED. Only MS knows the intention behind this.
 //
@@ -5327,32 +5330,32 @@ function  ZwNotifyChangeMultipleKeys(KeyHandle: HANDLE; Flags: ULONG; KeyObjectA
 function  NtOpenChannel(
     ChannelHandle : PHANDLE;
     ObjectAttributes : POBJECT_ATTRIBUTES
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwOpenChannel(ChannelHandle: PHANDLE; ObjectAttributes: POBJECT_ATTRIBUTES): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwOpenChannel(ChannelHandle: PHANDLE; ObjectAttributes: POBJECT_ATTRIBUTES): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtOpenDirectoryObject(
     DirectoryHandle : PHANDLE;
     DesiredAccess : ACCESS_MASK;
     ObjectAttributes : POBJECT_ATTRIBUTES
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwOpenDirectoryObject(DirectoryHandle: PHANDLE; DesiredAccess: ACCESS_MASK; ObjectAttributes: POBJECT_ATTRIBUTES): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwOpenDirectoryObject(DirectoryHandle: PHANDLE; DesiredAccess: ACCESS_MASK; ObjectAttributes: POBJECT_ATTRIBUTES): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtOpenEvent(
     EventHandle : PHANDLE;
     DesiredAccess : ACCESS_MASK;
     ObjectAttributes : POBJECT_ATTRIBUTES
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwOpenEvent(EventHandle: PHANDLE; DesiredAccess: ACCESS_MASK; ObjectAttributes: POBJECT_ATTRIBUTES): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwOpenEvent(EventHandle: PHANDLE; DesiredAccess: ACCESS_MASK; ObjectAttributes: POBJECT_ATTRIBUTES): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtOpenEventPair(
     EventPairHandle : PHANDLE;
     DesiredAccess : ACCESS_MASK;
     ObjectAttributes : POBJECT_ATTRIBUTES
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwOpenEventPair(EventPairHandle: PHANDLE; DesiredAccess: ACCESS_MASK; ObjectAttributes: POBJECT_ATTRIBUTES): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwOpenEventPair(EventPairHandle: PHANDLE; DesiredAccess: ACCESS_MASK; ObjectAttributes: POBJECT_ATTRIBUTES): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 {.$IFNDEF JWA_INCLUDEMODE}
 // Documented in the DDK as ZwOpenFile().
@@ -5364,26 +5367,26 @@ function  NtOpenFile(
     IoStatusBlock : PIO_STATUS_BLOCK;
     ShareAccess : ULONG;
     OpenOptions : ULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 {.$ENDIF JWA_INCLUDEMODE}
 
-function  ZwOpenFile(FileHandle: PHANDLE; DesiredAccess: ACCESS_MASK; ObjectAttributes: POBJECT_ATTRIBUTES; IoStatusBlock: PIO_STATUS_BLOCK; ShareAccess: ULONG; OpenOptions: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+function  ZwOpenFile(FileHandle: PHANDLE; DesiredAccess: ACCESS_MASK; ObjectAttributes: POBJECT_ATTRIBUTES; IoStatusBlock: PIO_STATUS_BLOCK; ShareAccess: ULONG; OpenOptions: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtOpenIoCompletion(
     IoCompletionHandle : PHANDLE;
     DesiredAccess : ACCESS_MASK;
     ObjectAttributes : POBJECT_ATTRIBUTES
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwOpenIoCompletion(IoCompletionHandle: PHANDLE; DesiredAccess: ACCESS_MASK; ObjectAttributes: POBJECT_ATTRIBUTES): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwOpenIoCompletion(IoCompletionHandle: PHANDLE; DesiredAccess: ACCESS_MASK; ObjectAttributes: POBJECT_ATTRIBUTES): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: W2K, WXP, 2K3
 function  NtOpenJobObject(
     JobHandle : PHANDLE;
     DesiredAccess : ACCESS_MASK;
     ObjectAttributes : POBJECT_ATTRIBUTES
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwOpenJobObject(JobHandle: PHANDLE; DesiredAccess: ACCESS_MASK; ObjectAttributes: POBJECT_ATTRIBUTES): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwOpenJobObject(JobHandle: PHANDLE; DesiredAccess: ACCESS_MASK; ObjectAttributes: POBJECT_ATTRIBUTES): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK as ZwOpenKey().
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
@@ -5391,16 +5394,16 @@ function  NtOpenKey(
     KeyHandle : PHANDLE;
     DesiredAccess : ACCESS_MASK;
     ObjectAttributes : POBJECT_ATTRIBUTES
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwOpenKey(KeyHandle: PHANDLE; DesiredAccess: ACCESS_MASK; ObjectAttributes: POBJECT_ATTRIBUTES): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwOpenKey(KeyHandle: PHANDLE; DesiredAccess: ACCESS_MASK; ObjectAttributes: POBJECT_ATTRIBUTES): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtOpenMutant(
     MutantHandle : PHANDLE;
     DesiredAccess : ACCESS_MASK;
     ObjectAttributes : POBJECT_ATTRIBUTES
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwOpenMutant(MutantHandle: PHANDLE; DesiredAccess: ACCESS_MASK; ObjectAttributes: POBJECT_ATTRIBUTES): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwOpenMutant(MutantHandle: PHANDLE; DesiredAccess: ACCESS_MASK; ObjectAttributes: POBJECT_ATTRIBUTES): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtOpenObjectAuditAlarm(
@@ -5416,9 +5419,9 @@ function  NtOpenObjectAuditAlarm(
     ObjectCreation : BOOLEAN;
     AccessGranted : BOOLEAN;
     GenerateOnClose : PBOOLEAN
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 function  ZwOpenObjectAuditAlarm(SubsystemName: PUNICODE_STRING; HandleId: PPVOID; ObjectTypeName: PUNICODE_STRING; ObjectName: PUNICODE_STRING; SecurityDescriptor: PSECURITY_DESCRIPTOR; TokenHandle: HANDLE; DesiredAccess: ACCESS_MASK;
-    GrantedAccess: ACCESS_MASK; Privileges: PPRIVILEGE_SET; ObjectCreation: BOOLEAN; AccessGranted: BOOLEAN; GenerateOnClose: PBOOLEAN): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+    GrantedAccess: ACCESS_MASK; Privileges: PPRIVILEGE_SET; ObjectCreation: BOOLEAN; AccessGranted: BOOLEAN; GenerateOnClose: PBOOLEAN): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtOpenProcess(
@@ -5426,16 +5429,16 @@ function  NtOpenProcess(
     DesiredAccess : ACCESS_MASK;
     ObjectAttributes : POBJECT_ATTRIBUTES;
     ClientId : PCLIENT_ID
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwOpenProcess(ProcessHandle: PHANDLE; DesiredAccess: ACCESS_MASK; ObjectAttributes: POBJECT_ATTRIBUTES; ClientId: PCLIENT_ID): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwOpenProcess(ProcessHandle: PHANDLE; DesiredAccess: ACCESS_MASK; ObjectAttributes: POBJECT_ATTRIBUTES; ClientId: PCLIENT_ID): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtOpenProcessToken(
     ProcessHandle : HANDLE;
     DesiredAccess : ACCESS_MASK;
     TokenHandle : PHANDLE
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwOpenProcessToken(ProcessHandle: HANDLE; DesiredAccess: ACCESS_MASK; TokenHandle: PHANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwOpenProcessToken(ProcessHandle: HANDLE; DesiredAccess: ACCESS_MASK; TokenHandle: PHANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK as ZwOpenSection().
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
@@ -5443,16 +5446,16 @@ function  NtOpenSection(
     SectionHandle : PHANDLE;
     DesiredAccess : ACCESS_MASK;
     ObjectAttributes : POBJECT_ATTRIBUTES
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwOpenSection(SectionHandle: PHANDLE; DesiredAccess: ACCESS_MASK; ObjectAttributes: POBJECT_ATTRIBUTES): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwOpenSection(SectionHandle: PHANDLE; DesiredAccess: ACCESS_MASK; ObjectAttributes: POBJECT_ATTRIBUTES): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtOpenSemaphore(
     SemaphoreHandle : PHANDLE;
     DesiredAccess : ACCESS_MASK;
     ObjectAttributes : POBJECT_ATTRIBUTES
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwOpenSemaphore(SemaphoreHandle: PHANDLE; DesiredAccess: ACCESS_MASK; ObjectAttributes: POBJECT_ATTRIBUTES): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwOpenSemaphore(SemaphoreHandle: PHANDLE; DesiredAccess: ACCESS_MASK; ObjectAttributes: POBJECT_ATTRIBUTES): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK as ZwOpenSymbolicLinkObject().
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
@@ -5460,8 +5463,8 @@ function  NtOpenSymbolicLinkObject(
     SymbolicLinkHandle : PHANDLE;
     DesiredAccess : ACCESS_MASK;
     ObjectAttributes : POBJECT_ATTRIBUTES
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwOpenSymbolicLinkObject(SymbolicLinkHandle: PHANDLE; DesiredAccess: ACCESS_MASK; ObjectAttributes: POBJECT_ATTRIBUTES): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwOpenSymbolicLinkObject(SymbolicLinkHandle: PHANDLE; DesiredAccess: ACCESS_MASK; ObjectAttributes: POBJECT_ATTRIBUTES): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtOpenThread(
@@ -5469,8 +5472,8 @@ function  NtOpenThread(
     DesiredAccess : ACCESS_MASK;
     ObjectAttributes : POBJECT_ATTRIBUTES;
     ClientId : PCLIENT_ID
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwOpenThread(ThreadHandle: PHANDLE; DesiredAccess: ACCESS_MASK; ObjectAttributes: POBJECT_ATTRIBUTES; ClientId: PCLIENT_ID): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwOpenThread(ThreadHandle: PHANDLE; DesiredAccess: ACCESS_MASK; ObjectAttributes: POBJECT_ATTRIBUTES; ClientId: PCLIENT_ID): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtOpenThreadToken(
@@ -5478,24 +5481,24 @@ function  NtOpenThreadToken(
     DesiredAccess : ACCESS_MASK;
     OpenAsSelf : BOOLEAN;
     TokenHandle : PHANDLE
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwOpenThreadToken(ThreadHandle: HANDLE; DesiredAccess: ACCESS_MASK; OpenAsSelf: BOOLEAN; TokenHandle: PHANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwOpenThreadToken(ThreadHandle: HANDLE; DesiredAccess: ACCESS_MASK; OpenAsSelf: BOOLEAN; TokenHandle: PHANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtOpenTimer(
     TimerHandle : PHANDLE;
     DesiredAccess : ACCESS_MASK;
     ObjectAttributes : POBJECT_ATTRIBUTES
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwOpenTimer(TimerHandle: PHANDLE; DesiredAccess: ACCESS_MASK; ObjectAttributes: POBJECT_ATTRIBUTES): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwOpenTimer(TimerHandle: PHANDLE; DesiredAccess: ACCESS_MASK; ObjectAttributes: POBJECT_ATTRIBUTES): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtPlugPlayControl(
     ControlCode : ULONG;
     Buffer : PVOID;
     BufferLength : ULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwPlugPlayControl(ControlCode: ULONG; Buffer: PVOID; BufferLength: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwPlugPlayControl(ControlCode: ULONG; Buffer: PVOID; BufferLength: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: W2K, WXP, 2K3
 function  NtPowerInformation(
@@ -5504,8 +5507,8 @@ function  NtPowerInformation(
     InputBufferLength : ULONG;
     OutputBuffer : PVOID;
     OutputBufferLength : ULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwPowerInformation(PowerInformationLevel: POWER_INFORMATION_LEVEL; InputBuffer: PVOID; InputBufferLength: ULONG; OutputBuffer: PVOID; OutputBufferLength: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwPowerInformation(PowerInformationLevel: POWER_INFORMATION_LEVEL; InputBuffer: PVOID; InputBufferLength: ULONG; OutputBuffer: PVOID; OutputBufferLength: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to PrivilegeCheck() from Advapi32.dll.
 // Refer to the PSDK for additional information. Usually the same flags
@@ -5515,8 +5518,8 @@ function  NtPrivilegeCheck(
     TokenHandle : HANDLE;
     RequiredPrivileges : PPRIVILEGE_SET;
     Result_ : PBOOLEAN
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwPrivilegeCheck(TokenHandle: HANDLE; RequiredPrivileges: PPRIVILEGE_SET; Result_: PBOOLEAN): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwPrivilegeCheck(TokenHandle: HANDLE; RequiredPrivileges: PPRIVILEGE_SET; Result_: PBOOLEAN): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to PrivilegedServiceAuditAlarm() from
 // Advapi32.dll. Refer to the PSDK for additional information. Usually the
@@ -5528,8 +5531,8 @@ function  NtPrivilegedServiceAuditAlarm(
     TokenHandle : HANDLE;
     Privileges : PPRIVILEGE_SET;
     AccessGranted : BOOLEAN
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwPrivilegedServiceAuditAlarm(SubsystemName: PUNICODE_STRING; ServiceName: PUNICODE_STRING; TokenHandle: HANDLE; Privileges: PPRIVILEGE_SET; AccessGranted: BOOLEAN): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwPrivilegedServiceAuditAlarm(SubsystemName: PUNICODE_STRING; ServiceName: PUNICODE_STRING; TokenHandle: HANDLE; Privileges: PPRIVILEGE_SET; AccessGranted: BOOLEAN): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtPrivilegeObjectAuditAlarm(
@@ -5539,8 +5542,8 @@ function  NtPrivilegeObjectAuditAlarm(
     DesiredAccess : ACCESS_MASK;
     Privileges : PPRIVILEGE_SET;
     AccessGranted : BOOLEAN
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwPrivilegeObjectAuditAlarm(SubsystemName: PUNICODE_STRING; HandleId: PVOID; TokenHandle: HANDLE; DesiredAccess: ACCESS_MASK; Privileges: PPRIVILEGE_SET; AccessGranted: BOOLEAN): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwPrivilegeObjectAuditAlarm(SubsystemName: PUNICODE_STRING; HandleId: PVOID; TokenHandle: HANDLE; DesiredAccess: ACCESS_MASK; Privileges: PPRIVILEGE_SET; AccessGranted: BOOLEAN): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};
    {$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
@@ -5550,35 +5553,35 @@ function  NtProtectVirtualMemory(
     ProtectSize : PULONG;
     NewProtect : ULONG;
     OldProtect : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwProtectVirtualMemory(ProcessHandle: HANDLE; BaseAddress: PPVOID; ProtectSize: PULONG; NewProtect: ULONG; OldProtect: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwProtectVirtualMemory(ProcessHandle: HANDLE; BaseAddress: PPVOID; ProtectSize: PULONG; NewProtect: ULONG; OldProtect: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtPulseEvent(
     EventHandle : HANDLE;
     PreviousState : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwPulseEvent(EventHandle: HANDLE; PreviousState: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwPulseEvent(EventHandle: HANDLE; PreviousState: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtQueryAttributesFile(
     ObjectAttributes : POBJECT_ATTRIBUTES;
     FileInformation : PFILE_BASIC_INFORMATION
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwQueryAttributesFile(ObjectAttributes: POBJECT_ATTRIBUTES; FileInformation: PFILE_BASIC_INFORMATION): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwQueryAttributesFile(ObjectAttributes: POBJECT_ATTRIBUTES; FileInformation: PFILE_BASIC_INFORMATION): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtQueryDefaultLocale(
     ThreadOrSystem : BOOLEAN;
     Locale : PLCID
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwQueryDefaultLocale(ThreadOrSystem: BOOLEAN; Locale: PLCID): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwQueryDefaultLocale(ThreadOrSystem: BOOLEAN; Locale: PLCID): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: W2K, WXP, 2K3
 function  NtQueryDefaultUILanguage(
     LanguageId : PLANGID
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwQueryDefaultUILanguage(LanguageId: PLANGID): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwQueryDefaultUILanguage(LanguageId: PLANGID): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtQueryDirectoryFile(
@@ -5593,9 +5596,9 @@ function  NtQueryDirectoryFile(
     ReturnSingleEntry : BOOLEAN;
     FileName : PUNICODE_STRING;
     RestartScan : BOOLEAN
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 function  ZwQueryDirectoryFile(FileHandle: HANDLE; Event: HANDLE; ApcRoutine: PIO_APC_ROUTINE; ApcContext: PVOID; IoStatusBlock: PIO_STATUS_BLOCK; FileInformation: PVOID; FileInformationLength: ULONG;
-    FileInformationClass: FILE_INFORMATION_CLASS; ReturnSingleEntry: BOOLEAN; FileName: PUNICODE_STRING; RestartScan: BOOLEAN): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+    FileInformationClass: FILE_INFORMATION_CLASS; ReturnSingleEntry: BOOLEAN; FileName: PUNICODE_STRING; RestartScan: BOOLEAN): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtQueryDirectoryObject(
@@ -5606,8 +5609,8 @@ function  NtQueryDirectoryObject(
     RestartScan : BOOLEAN;
     Context : PULONG;
     ReturnLength : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwQueryDirectoryObject(DirectoryHandle: HANDLE; Buffer: PVOID; BufferLength: ULONG; ReturnSingleEntry: BOOLEAN; RestartScan: BOOLEAN; Context: PULONG; ReturnLength: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwQueryDirectoryObject(DirectoryHandle: HANDLE; Buffer: PVOID; BufferLength: ULONG; ReturnSingleEntry: BOOLEAN; RestartScan: BOOLEAN; Context: PULONG; ReturnLength: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};
    {$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
@@ -5621,9 +5624,9 @@ function  NtQueryEaFile(
     EaListLength : ULONG;
     EaIndex : PULONG;
     RestartScan : BOOLEAN
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 function  ZwQueryEaFile(FileHandle: HANDLE; IoStatusBlock: PIO_STATUS_BLOCK; Buffer: PFILE_FULL_EA_INFORMATION; BufferLength: ULONG; ReturnSingleEntry: BOOLEAN; EaList: PFILE_GET_EA_INFORMATION; EaListLength: ULONG; EaIndex: PULONG;
-    RestartScan: BOOLEAN): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+    RestartScan: BOOLEAN): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtQueryEvent(
@@ -5632,15 +5635,15 @@ function  NtQueryEvent(
     EventInformation : PVOID;
     EventInformationLength : ULONG;
     ResultLength : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwQueryEvent(EventHandle: HANDLE; EventInformationClass: EVENT_INFORMATION_CLASS; EventInformation: PVOID; EventInformationLength: ULONG; ResultLength: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwQueryEvent(EventHandle: HANDLE; EventInformationClass: EVENT_INFORMATION_CLASS; EventInformation: PVOID; EventInformationLength: ULONG; ResultLength: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT4, W2K, WXP, 2K3
 function  NtQueryFullAttributesFile(
     ObjectAttributes : POBJECT_ATTRIBUTES;
     FileInformation : PFILE_NETWORK_OPEN_INFORMATION
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwQueryFullAttributesFile(ObjectAttributes: POBJECT_ATTRIBUTES; FileInformation: PFILE_NETWORK_OPEN_INFORMATION): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwQueryFullAttributesFile(ObjectAttributes: POBJECT_ATTRIBUTES; FileInformation: PFILE_NETWORK_OPEN_INFORMATION): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT4, W2K, WXP, 2K3
 function  NtQueryInformationAtom(
@@ -5649,8 +5652,8 @@ function  NtQueryInformationAtom(
     AtomInformation : PVOID;
     AtomInformationLength : ULONG;
     ReturnLength : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwQueryInformationAtom(Atom: USHORT; AtomInformationClass: ATOM_INFORMATION_CLASS; AtomInformation: PVOID; AtomInformationLength: ULONG; ReturnLength: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwQueryInformationAtom(Atom: USHORT; AtomInformationClass: ATOM_INFORMATION_CLASS; AtomInformation: PVOID; AtomInformationLength: ULONG; ReturnLength: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK as ZwQueryInformationFile().
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
@@ -5660,8 +5663,8 @@ function  NtQueryInformationFile(
     FileInformation : PVOID;
     FileInformationLength : ULONG;
     FileInformationClass : FILE_INFORMATION_CLASS
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwQueryInformationFile(FileHandle: HANDLE; IoStatusBlock: PIO_STATUS_BLOCK; FileInformation: PVOID; FileInformationLength: ULONG; FileInformationClass: FILE_INFORMATION_CLASS): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwQueryInformationFile(FileHandle: HANDLE; IoStatusBlock: PIO_STATUS_BLOCK; FileInformation: PVOID; FileInformationLength: ULONG; FileInformationClass: FILE_INFORMATION_CLASS): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};
    {$ENDIF}
 
 // Compatibility: W2K, WXP, 2K3
@@ -5671,8 +5674,8 @@ function  NtQueryInformationJobObject(
     JobInformation : PVOID;
     JobInformationLength : ULONG;
     ReturnLength : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwQueryInformationJobObject(JobHandle: HANDLE; JobInformationClass: JOBOBJECTINFOCLASS; JobInformation: PVOID; JobInformationLength: ULONG; ReturnLength: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwQueryInformationJobObject(JobHandle: HANDLE; JobInformationClass: JOBOBJECTINFOCLASS; JobInformation: PVOID; JobInformationLength: ULONG; ReturnLength: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtQueryInformationPort(
@@ -5681,8 +5684,8 @@ function  NtQueryInformationPort(
     PortInformation : PVOID;
     PortInformationLength : ULONG;
     ReturnLength : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwQueryInformationPort(PortHandle: HANDLE; PortInformationClass: PORT_INFORMATION_CLASS; PortInformation: PVOID; PortInformationLength: ULONG; ReturnLength: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwQueryInformationPort(PortHandle: HANDLE; PortInformationClass: PORT_INFORMATION_CLASS; PortInformation: PVOID; PortInformationLength: ULONG; ReturnLength: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 {.$IFNDEF JWA_INCLUDEMODE} // drop JwaWinternal
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
@@ -5692,11 +5695,11 @@ function  NtQueryInformationProcess(
     ProcessInformation : PVOID;
     ProcessInformationLength : ULONG;
     ReturnLength : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 {.$ENDIF JWA_INCLUDEMODE}
 
 function  ZwQueryInformationProcess(ProcessHandle: HANDLE; ProcessInformationClass: PROCESSINFOCLASS; ProcessInformation: PVOID; ProcessInformationLength: ULONG; ReturnLength: PULONG): NTSTATUS; stdcall;
-  {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 {.$IFNDEF JWA_INCLUDEMODE}
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
@@ -5706,10 +5709,10 @@ function  NtQueryInformationThread(
     ThreadInformation : PVOID;
     ThreadInformationLength : ULONG;
     ReturnLength : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 {.$ENDIF JWA_INCLUDEMODE}
 
-function  ZwQueryInformationThread(ThreadHandle: HANDLE; ThreadInformationClass: THREADINFOCLASS; ThreadInformation: PVOID; ThreadInformationLength: ULONG; ReturnLength: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+function  ZwQueryInformationThread(ThreadHandle: HANDLE; ThreadInformationClass: THREADINFOCLASS; ThreadInformation: PVOID; ThreadInformationLength: ULONG; ReturnLength: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtQueryInformationToken(
@@ -5718,21 +5721,21 @@ function  NtQueryInformationToken(
     TokenInformation : PVOID;
     TokenInformationLength : ULONG;
     ReturnLength : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwQueryInformationToken(TokenHandle: HANDLE; TokenInformationClass: TOKEN_INFORMATION_CLASS; TokenInformation: PVOID; TokenInformationLength: ULONG; ReturnLength: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwQueryInformationToken(TokenHandle: HANDLE; TokenInformationClass: TOKEN_INFORMATION_CLASS; TokenInformation: PVOID; TokenInformationLength: ULONG; ReturnLength: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: W2K, WXP, 2K3
 function  NtQueryInstallUILanguage(
     LanguageId : PLANGID
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwQueryInstallUILanguage(LanguageId: PLANGID): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwQueryInstallUILanguage(LanguageId: PLANGID): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtQueryIntervalProfile(
     Source : KPROFILE_SOURCE;
     Interval : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwQueryIntervalProfile(Source: KPROFILE_SOURCE; Interval: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwQueryIntervalProfile(Source: KPROFILE_SOURCE; Interval: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtQueryIoCompletion(
@@ -5741,9 +5744,9 @@ function  NtQueryIoCompletion(
     IoCompletionInformation : PVOID;
     IoCompletionInformationLength : ULONG;
     ResultLength : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 function  ZwQueryIoCompletion(IoCompletionHandle: HANDLE; IoCompletionInformationClass: IO_COMPLETION_INFORMATION_CLASS; IoCompletionInformation: PVOID; IoCompletionInformationLength: ULONG; ResultLength: PULONG): NTSTATUS; stdcall;
-    {$IFNDEF RTDL}external ntdll;{$ENDIF}
+    {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK as ZwQueryKey().
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
@@ -5753,8 +5756,8 @@ function  NtQueryKey(
     KeyInformation : PVOID;
     KeyInformationLength : ULONG;
     ResultLength : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwQueryKey(KeyHandle: HANDLE; KeyInformationClass: KEY_INFORMATION_CLASS; KeyInformation: PVOID; KeyInformationLength: ULONG; ResultLength: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwQueryKey(KeyHandle: HANDLE; KeyInformationClass: KEY_INFORMATION_CLASS; KeyInformation: PVOID; KeyInformationLength: ULONG; ResultLength: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT4, W2K, WXP, 2K3
 function  NtQueryMultipleValueKey(
@@ -5764,8 +5767,8 @@ function  NtQueryMultipleValueKey(
     Buffer : PVOID;
     Length : PULONG;
     ReturnLength : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwQueryMultipleValueKey(KeyHandle: HANDLE; ValueList: PKEY_VALUE_ENTRY; NumberOfValues: ULONG; Buffer: PVOID; Length: PULONG; ReturnLength: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwQueryMultipleValueKey(KeyHandle: HANDLE; ValueList: PKEY_VALUE_ENTRY; NumberOfValues: ULONG; Buffer: PVOID; Length: PULONG; ReturnLength: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtQueryMutant(
@@ -5774,8 +5777,8 @@ function  NtQueryMutant(
     MutantInformation : PVOID;
     MutantInformationLength : ULONG;
     ResultLength : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwQueryMutant(MutantHandle: HANDLE; MutantInformationClass: MUTANT_INFORMATION_CLASS; MutantInformation: PVOID; MutantInformationLength: ULONG; ResultLength: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwQueryMutant(MutantHandle: HANDLE; MutantInformationClass: MUTANT_INFORMATION_CLASS; MutantInformation: PVOID; MutantInformationLength: ULONG; ResultLength: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtQueryObject(
@@ -5784,26 +5787,26 @@ function  NtQueryObject(
     ObjectInformation : PVOID;
     ObjectInformationLength : ULONG;
     ReturnLength : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwQueryObject(ObjectHandle: HANDLE; ObjectInformationClass: OBJECT_INFORMATION_CLASS; ObjectInformation: PVOID; ObjectInformationLength: ULONG; ReturnLength: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwQueryObject(ObjectHandle: HANDLE; ObjectInformationClass: OBJECT_INFORMATION_CLASS; ObjectInformation: PVOID; ObjectInformationLength: ULONG; ReturnLength: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: W2K, WXP, 2K3
 function  NtQueryOpenSubKeys(
     KeyObjectAttributes : POBJECT_ATTRIBUTES;
     NumberOfKey : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwQueryOpenSubKeys(KeyObjectAttributes: POBJECT_ATTRIBUTES; NumberOfKey: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwQueryOpenSubKeys(KeyObjectAttributes: POBJECT_ATTRIBUTES; NumberOfKey: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtQueryPerformanceCounter(
     PerformanceCount : PLARGE_INTEGER;
     PerformanceFrequency : PLARGE_INTEGER
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwQueryPerformanceCounter(PerformanceCount: PLARGE_INTEGER; PerformanceFrequency: PLARGE_INTEGER): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwQueryPerformanceCounter(PerformanceCount: PLARGE_INTEGER; PerformanceFrequency: PLARGE_INTEGER): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: WXP, 2K3
-function  NtQueryPortInformationProcess(): ULONG; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwQueryPortInformationProcess(): ULONG; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+function  NtQueryPortInformationProcess(): ULONG; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwQueryPortInformationProcess(): ULONG; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: W2K, WXP, 2K3
 function  NtQueryQuotaInformationFile(
@@ -5816,9 +5819,9 @@ function  NtQueryQuotaInformationFile(
     QuotaListLength : ULONG;
     ResumeSid : PSID;
     RestartScan : BOOLEAN
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 function  ZwQueryQuotaInformationFile(FileHandle: HANDLE; IoStatusBlock: PIO_STATUS_BLOCK; Buffer: PFILE_USER_QUOTA_INFORMATION; BufferLength: ULONG; ReturnSingleEntry: BOOLEAN; QuotaList: PFILE_QUOTA_LIST_INFORMATION;
-    QuotaListLength: ULONG; ResumeSid: PSID; RestartScan: BOOLEAN): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+    QuotaListLength: ULONG; ResumeSid: PSID; RestartScan: BOOLEAN): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtQuerySection(
@@ -5827,8 +5830,8 @@ function  NtQuerySection(
     SectionInformation : PVOID;
     SectionInformationLength : ULONG;
     ResultLength : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwQuerySection(SectionHandle: HANDLE; SectionInformationClass: SECTION_INFORMATION_CLASS; SectionInformation: PVOID; SectionInformationLength: ULONG; ResultLength: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwQuerySection(SectionHandle: HANDLE; SectionInformationClass: SECTION_INFORMATION_CLASS; SectionInformation: PVOID; SectionInformationLength: ULONG; ResultLength: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtQuerySecurityObject(
@@ -5837,8 +5840,8 @@ function  NtQuerySecurityObject(
     SecurityDescriptor : PSECURITY_DESCRIPTOR;
     SecurityDescriptorLength : ULONG;
     ReturnLength : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwQuerySecurityObject(Handle: HANDLE; RequestedInformation: SECURITY_INFORMATION; SecurityDescriptor: PSECURITY_DESCRIPTOR; SecurityDescriptorLength: ULONG; ReturnLength: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwQuerySecurityObject(Handle: HANDLE; RequestedInformation: SECURITY_INFORMATION; SecurityDescriptor: PSECURITY_DESCRIPTOR; SecurityDescriptorLength: ULONG; ReturnLength: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};
    {$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
@@ -5848,9 +5851,9 @@ function  NtQuerySemaphore(
     SemaphoreInformation : PVOID;
     SemaphoreInformationLength : ULONG;
     ResultLength : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 function  ZwQuerySemaphore(SemaphoreHandle: HANDLE; SemaphoreInformationClass: SEMAPHORE_INFORMATION_CLASS; SemaphoreInformation: PVOID; SemaphoreInformationLength: ULONG; ResultLength: PULONG): NTSTATUS; stdcall;
-    {$IFNDEF RTDL}external ntdll;{$ENDIF}
+    {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK as ZwQuerySymbolicLinkObject().
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
@@ -5858,8 +5861,8 @@ function  NtQuerySymbolicLinkObject(
     SymbolicLinkHandle : HANDLE;
     TargetName : PUNICODE_STRING;
     ReturnLength : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwQuerySymbolicLinkObject(SymbolicLinkHandle: HANDLE; TargetName: PUNICODE_STRING; ReturnLength: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwQuerySymbolicLinkObject(SymbolicLinkHandle: HANDLE; TargetName: PUNICODE_STRING; ReturnLength: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtQuerySystemEnvironmentValue(
@@ -5867,8 +5870,8 @@ function  NtQuerySystemEnvironmentValue(
     Value : PVOID;
     ValueLength : ULONG;
     ReturnLength : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwQuerySystemEnvironmentValue(Name: PUNICODE_STRING; Value: PVOID; ValueLength: ULONG; ReturnLength: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwQuerySystemEnvironmentValue(Name: PUNICODE_STRING; Value: PVOID; ValueLength: ULONG; ReturnLength: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 {.$IFNDEF JWA_INCLUDEMODE} //do include since we dropped JwaWinternl
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
@@ -5877,19 +5880,19 @@ function  NtQuerySystemInformation(
     SystemInformation : PVOID;
     SystemInformationLength : ULONG;
     ReturnLength : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 {.$ENDIF JWA_INCLUDEMODE}
 
-function  ZwQuerySystemInformation(SystemInformationClass: SYSTEM_INFORMATION_CLASS; SystemInformation: PVOID; SystemInformationLength: ULONG; ReturnLength: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+function  ZwQuerySystemInformation(SystemInformationClass: SYSTEM_INFORMATION_CLASS; SystemInformation: PVOID; SystemInformationLength: ULONG; ReturnLength: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 {.$IFNDEF JWA_INCLUDEMODE}
 function  NtQuerySystemTime(
     CurrentTime : PLARGE_INTEGER
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 {.$ENDIF JWA_INCLUDEMODE}
 
-function  ZwQuerySystemTime(CurrentTime: PLARGE_INTEGER): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+function  ZwQuerySystemTime(CurrentTime: PLARGE_INTEGER): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtQueryTimer(
@@ -5898,16 +5901,16 @@ function  NtQueryTimer(
     TimerInformation : PVOID;
     TimerInformationLength : ULONG;
     ResultLength : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwQueryTimer(TimerHandle: HANDLE; TimerInformationClass: TIMER_INFORMATION_CLASS; TimerInformation: PVOID; TimerInformationLength: ULONG; ResultLength: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwQueryTimer(TimerHandle: HANDLE; TimerInformationClass: TIMER_INFORMATION_CLASS; TimerInformation: PVOID; TimerInformationLength: ULONG; ResultLength: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtQueryTimerResolution(
     CoarsestResolution : PULONG;
     FinestResolution : PULONG;
     ActualResolution : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwQueryTimerResolution(CoarsestResolution: PULONG; FinestResolution: PULONG; ActualResolution: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwQueryTimerResolution(CoarsestResolution: PULONG; FinestResolution: PULONG; ActualResolution: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK as ZwQueryValueKey().
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
@@ -5918,9 +5921,9 @@ function  NtQueryValueKey(
     KeyValueInformation : PVOID;
     KeyValueInformationLength : ULONG;
     ResultLength : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 function  ZwQueryValueKey(KeyHandle: HANDLE; ValueName: PUNICODE_STRING; KeyValueInformationClass: KEY_VALUE_INFORMATION_CLASS; KeyValueInformation: PVOID; KeyValueInformationLength: ULONG; ResultLength: PULONG): NTSTATUS; stdcall;
-    {$IFNDEF RTDL}external ntdll;{$ENDIF}
+    {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtQueryVirtualMemory(
@@ -5930,9 +5933,9 @@ function  NtQueryVirtualMemory(
     MemoryInformation : PVOID;
     MemoryInformationLength : ULONG;
     ReturnLength : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 function  ZwQueryVirtualMemory(ProcessHandle: HANDLE; BaseAddress: PVOID; MemoryInformationClass: MEMORY_INFORMATION_CLASS; MemoryInformation: PVOID; MemoryInformationLength: ULONG; ReturnLength: PULONG): NTSTATUS; stdcall;
-    {$IFNDEF RTDL}external ntdll;{$ENDIF}
+    {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtQueryVolumeInformationFile(
@@ -5941,9 +5944,9 @@ function  NtQueryVolumeInformationFile(
     VolumeInformation : PVOID;
     VolumeInformationLength : ULONG;
     VolumeInformationClass : FS_INFORMATION_CLASS
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 function  ZwQueryVolumeInformationFile(FileHandle: HANDLE; IoStatusBlock: PIO_STATUS_BLOCK; VolumeInformation: PVOID; VolumeInformationLength: ULONG; VolumeInformationClass: FS_INFORMATION_CLASS): NTSTATUS; stdcall;
-    {$IFNDEF RTDL}external ntdll;{$ENDIF}
+    {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT4, W2K, WXP, 2K3
 function  NtQueueApcThread(
@@ -5952,16 +5955,16 @@ function  NtQueueApcThread(
     ApcContext : PVOID;
     Argument1 : PVOID;
     Argument2 : PVOID
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwQueueApcThread(ThreadHandle: HANDLE; ApcRoutine: PKNORMAL_ROUTINE; ApcContext: PVOID; Argument1: PVOID; Argument2: PVOID): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwQueueApcThread(ThreadHandle: HANDLE; ApcRoutine: PKNORMAL_ROUTINE; ApcContext: PVOID; Argument1: PVOID; Argument2: PVOID): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtRaiseException(
     ExceptionRecord : PEXCEPTION_RECORD;
     Context : PCONTEXT;
     SearchFrames : BOOLEAN
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwRaiseException(ExceptionRecord: PEXCEPTION_RECORD; Context: PCONTEXT; SearchFrames: BOOLEAN): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwRaiseException(ExceptionRecord: PEXCEPTION_RECORD; Context: PCONTEXT; SearchFrames: BOOLEAN): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtRaiseHardError(
@@ -5971,8 +5974,8 @@ function  NtRaiseHardError(
     Arguments : PULONG;
     MessageBoxType : ULONG;
     MessageBoxResult : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwRaiseHardError(Status: NTSTATUS; NumberOfArguments: ULONG; StringArgumentsMask: ULONG; Arguments: PULONG; MessageBoxType: ULONG; MessageBoxResult: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwRaiseHardError(Status: NTSTATUS; NumberOfArguments: ULONG; StringArgumentsMask: ULONG; Arguments: PULONG; MessageBoxType: ULONG; MessageBoxResult: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK as ZwReadFile().
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
@@ -5986,9 +5989,9 @@ function  NtReadFile(
     Length : ULONG;
     ByteOffset : PLARGE_INTEGER;
     Key : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 function  ZwReadFile(FileHandle: HANDLE; Event: HANDLE; ApcRoutine: PIO_APC_ROUTINE; ApcContext: PVOID; IoStatusBlock: PIO_STATUS_BLOCK; Buffer: PVOID; Length: ULONG; ByteOffset: PLARGE_INTEGER; Key: PULONG): NTSTATUS; stdcall;
-    {$IFNDEF RTDL}external ntdll;{$ENDIF}
+    {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT4, W2K, WXP, 2K3
 function  NtReadFileScatter(
@@ -6001,9 +6004,9 @@ function  NtReadFileScatter(
     Length : ULONG;
     ByteOffset : PLARGE_INTEGER;
     Key : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 function  ZwReadFileScatter(FileHandle: HANDLE; Event: HANDLE; ApcRoutine: PIO_APC_ROUTINE; ApcContext: PVOID; IoStatusBlock: PIO_STATUS_BLOCK; Buffer: PFILE_SEGMENT_ELEMENT; Length: ULONG; ByteOffset: PLARGE_INTEGER;
-    Key: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+    Key: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtReadRequestData(
@@ -6013,8 +6016,8 @@ function  NtReadRequestData(
     Buffer : PVOID;
     BufferLength : ULONG;
     ReturnLength : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwReadRequestData(PortHandle: HANDLE; Message: PPORT_MESSAGE; Index: ULONG; Buffer: PVOID; BufferLength: ULONG; ReturnLength: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwReadRequestData(PortHandle: HANDLE; Message: PPORT_MESSAGE; Index: ULONG; Buffer: PVOID; BufferLength: ULONG; ReturnLength: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtReadVirtualMemory(
@@ -6023,29 +6026,29 @@ function  NtReadVirtualMemory(
     Buffer : PVOID;
     BufferLength : ULONG;
     ReturnLength : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwReadVirtualMemory(ProcessHandle: HANDLE; BaseAddress: PVOID; Buffer: PVOID; BufferLength: ULONG; ReturnLength: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwReadVirtualMemory(ProcessHandle: HANDLE; BaseAddress: PVOID; Buffer: PVOID; BufferLength: ULONG; ReturnLength: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtRegisterThreadTerminatePort(
     PortHandle : HANDLE
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwRegisterThreadTerminatePort(PortHandle: HANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwRegisterThreadTerminatePort(PortHandle: HANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtReleaseMutant(
     MutantHandle : HANDLE;
     PreviousState : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwReleaseMutant(MutantHandle: HANDLE; PreviousState: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwReleaseMutant(MutantHandle: HANDLE; PreviousState: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtReleaseSemaphore(
     SemaphoreHandle : HANDLE;
     ReleaseCount : LONG;
     PreviousCount : PLONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwReleaseSemaphore(SemaphoreHandle: HANDLE; ReleaseCount: LONG; PreviousCount: PLONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwReleaseSemaphore(SemaphoreHandle: HANDLE; ReleaseCount: LONG; PreviousCount: PLONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtRemoveIoCompletion(
@@ -6054,30 +6057,30 @@ function  NtRemoveIoCompletion(
     CompletionValue : PULONG;
     IoStatusBlock : PIO_STATUS_BLOCK;
     Timeout : PLARGE_INTEGER
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwRemoveIoCompletion(IoCompletionHandle: HANDLE; CompletionKey: PULONG; CompletionValue: PULONG; IoStatusBlock: PIO_STATUS_BLOCK; Timeout: PLARGE_INTEGER): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwRemoveIoCompletion(IoCompletionHandle: HANDLE; CompletionKey: PULONG; CompletionValue: PULONG; IoStatusBlock: PIO_STATUS_BLOCK; Timeout: PLARGE_INTEGER): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: WXP, 2K3
 function  NtRemoveProcessDebug(
     hProcess : HANDLE;
     hDebugObject : HANDLE
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwRemoveProcessDebug(hProcess: HANDLE; hDebugObject: HANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwRemoveProcessDebug(hProcess: HANDLE; hDebugObject: HANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtReplaceKey(
     NewFileObjectAttributes : POBJECT_ATTRIBUTES;
     KeyHandle : HANDLE;
     OldFileObjectAttributes : POBJECT_ATTRIBUTES
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwReplaceKey(NewFileObjectAttributes: POBJECT_ATTRIBUTES; KeyHandle: HANDLE; OldFileObjectAttributes: POBJECT_ATTRIBUTES): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwReplaceKey(NewFileObjectAttributes: POBJECT_ATTRIBUTES; KeyHandle: HANDLE; OldFileObjectAttributes: POBJECT_ATTRIBUTES): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtReplyPort(
     PortHandle : HANDLE;
     ReplyMessage : PPORT_MESSAGE
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwReplyPort(PortHandle: HANDLE; ReplyMessage: PPORT_MESSAGE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwReplyPort(PortHandle: HANDLE; ReplyMessage: PPORT_MESSAGE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtReplyWaitReceivePort(
@@ -6085,8 +6088,8 @@ function  NtReplyWaitReceivePort(
     PortIdentifier : PULONG;
     ReplyMessage : PPORT_MESSAGE;
     Message : PPORT_MESSAGE
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwReplyWaitReceivePort(PortHandle: HANDLE; PortIdentifier: PULONG; ReplyMessage: PPORT_MESSAGE; Message: PPORT_MESSAGE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwReplyWaitReceivePort(PortHandle: HANDLE; PortIdentifier: PULONG; ReplyMessage: PPORT_MESSAGE; Message: PPORT_MESSAGE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: W2K, WXP, 2K3
 function  NtReplyWaitReceivePortEx(
@@ -6095,15 +6098,15 @@ function  NtReplyWaitReceivePortEx(
     ReplyMessage : PPORT_MESSAGE;
     Message : PPORT_MESSAGE;
     Timeout : PLARGE_INTEGER
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwReplyWaitReceivePortEx(PortHandle: HANDLE; PortIdentifier: PULONG; ReplyMessage: PPORT_MESSAGE; Message: PPORT_MESSAGE; Timeout: PLARGE_INTEGER): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwReplyWaitReceivePortEx(PortHandle: HANDLE; PortIdentifier: PULONG; ReplyMessage: PPORT_MESSAGE; Message: PPORT_MESSAGE; Timeout: PLARGE_INTEGER): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtReplyWaitReplyPort(
     PortHandle : HANDLE;
     ReplyMessage : PPORT_MESSAGE
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwReplyWaitReplyPort(PortHandle: HANDLE; ReplyMessage: PPORT_MESSAGE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwReplyWaitReplyPort(PortHandle: HANDLE; ReplyMessage: PPORT_MESSAGE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Returns STATUS_NOT_IMPLEMENTED. Only MS knows the intention behind this.
 //
@@ -6113,64 +6116,64 @@ function  NtReplyWaitSendChannel(
     x : PVOID;
     y : PVOID;
     z : PVOID
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwReplyWaitSendChannel(x: PVOID; y: PVOID; z: PVOID): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwReplyWaitSendChannel(x: PVOID; y: PVOID; z: PVOID): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: W2K, WXP, 2K3
 function  NtRequestDeviceWakeup(
     DeviceHandle : HANDLE
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwRequestDeviceWakeup(DeviceHandle: HANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwRequestDeviceWakeup(DeviceHandle: HANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtRequestPort(
     PortHandle : HANDLE;
     RequestMessage : PPORT_MESSAGE
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwRequestPort(PortHandle: HANDLE; RequestMessage: PPORT_MESSAGE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwRequestPort(PortHandle: HANDLE; RequestMessage: PPORT_MESSAGE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtRequestWaitReplyPort(
     PortHandle : HANDLE;
     RequestMessage : PPORT_MESSAGE;
     ReplyMessage : PPORT_MESSAGE
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwRequestWaitReplyPort(PortHandle: HANDLE; RequestMessage: PPORT_MESSAGE; ReplyMessage: PPORT_MESSAGE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwRequestWaitReplyPort(PortHandle: HANDLE; RequestMessage: PPORT_MESSAGE; ReplyMessage: PPORT_MESSAGE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: W2K, WXP, 2K3
 function  NtRequestWakeupLatency(
     Latency : LATENCY_TIME
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwRequestWakeupLatency(Latency: LATENCY_TIME): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwRequestWakeupLatency(Latency: LATENCY_TIME): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtResetEvent(
     EventHandle : HANDLE;
     PreviousState : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwResetEvent(EventHandle: HANDLE; PreviousState: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwResetEvent(EventHandle: HANDLE; PreviousState: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: W2K, WXP, 2K3
 function  NtResetWriteWatch(
     ProcessHandle : HANDLE;
     BaseAddress : PVOID;
     RegionSize : ULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwResetWriteWatch(ProcessHandle: HANDLE; BaseAddress: PVOID; RegionSize: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwResetWriteWatch(ProcessHandle: HANDLE; BaseAddress: PVOID; RegionSize: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtRestoreKey(
     KeyHandle : HANDLE;
     FileHandle : HANDLE;
     Flags : ULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwRestoreKey(KeyHandle: HANDLE; FileHandle: HANDLE; Flags: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwRestoreKey(KeyHandle: HANDLE; FileHandle: HANDLE; Flags: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: WXP, 2K3
 function  NtResumeProcess(
     hProcess : HANDLE
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwResumeProcess(hProcess: HANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwResumeProcess(hProcess: HANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to ResumeThread() from Kernel32.dll. Refer
 // to the PSDK for additional information. Usually the same flags apply.
@@ -6178,16 +6181,16 @@ function  ZwResumeProcess(hProcess: HANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}ex
 function  NtResumeThread(
     hThread : HANDLE;
     dwResumeCount : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwResumeThread(hThread: HANDLE; dwResumeCount: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwResumeThread(hThread: HANDLE; dwResumeCount: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Relates to RegSaveKey().
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtSaveKey(
     KeyHandle : HANDLE;
     FileHandle : HANDLE
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwSaveKey(KeyHandle: HANDLE; FileHandle: HANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwSaveKey(KeyHandle: HANDLE; FileHandle: HANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Relates to RegSaveKeyEx().
 // Compatibility: WXP, 2K3
@@ -6195,16 +6198,16 @@ function  NtSaveKeyEx(
     KeyHandle : HANDLE;
     FileHandle : HANDLE;
     Flags : DWORD
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwSaveKeyEx(KeyHandle: HANDLE; FileHandle: HANDLE; Flags: DWORD): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwSaveKeyEx(KeyHandle: HANDLE; FileHandle: HANDLE; Flags: DWORD): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: W2K, WXP, 2K3
 function  NtSaveMergedKeys(
     KeyHandle1 : HANDLE;
     KeyHandle2 : HANDLE;
     FileHandle : HANDLE
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwSaveMergedKeys(KeyHandle1: HANDLE; KeyHandle2: HANDLE; FileHandle: HANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwSaveMergedKeys(KeyHandle1: HANDLE; KeyHandle2: HANDLE; FileHandle: HANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: W2K, WXP, 2K3
 function  NtSecureConnectPort(
@@ -6217,9 +6220,9 @@ function  NtSecureConnectPort(
     MaxMessageSize : PULONG;
     ConnectData : PVOID;
     ConnectDataLength : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 function  ZwSecureConnectPort(PortHandle: PHANDLE; PortName: PUNICODE_STRING; SecurityQos: PSECURITY_QUALITY_OF_SERVICE; WriteSection: PPORT_SECTION_WRITE; ServerSid: PSID; ReadSection: PPORT_SECTION_READ; MaxMessageSize: PULONG;
-    ConnectData: PVOID; ConnectDataLength: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+    ConnectData: PVOID; ConnectDataLength: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Returns STATUS_NOT_IMPLEMENTED. Only MS knows the intention behind this.
 //
@@ -6230,8 +6233,8 @@ function  NtSendWaitReplyChannel(
     y : PVOID;
     z : PVOID;
     z2 : PVOID
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwSendWaitReplyChannel(x: PVOID; y: PVOID; z: PVOID; z2: PVOID): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwSendWaitReplyChannel(x: PVOID; y: PVOID; z: PVOID; z2: PVOID): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Returns STATUS_NOT_IMPLEMENTED. Only MS knows the intention behind this.
 //
@@ -6239,34 +6242,34 @@ function  ZwSendWaitReplyChannel(x: PVOID; y: PVOID; z: PVOID; z2: PVOID): NTSTA
 // Compatibility: NT4, W2K
 function  NtSetContextChannel(
     x : PVOID
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwSetContextChannel(x: PVOID): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwSetContextChannel(x: PVOID): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtSetContextThread(
     ThreadHandle : HANDLE;
     Context : PCONTEXT
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwSetContextThread(ThreadHandle: HANDLE; Context: PCONTEXT): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwSetContextThread(ThreadHandle: HANDLE; Context: PCONTEXT): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtSetDefaultHardErrorPort(
     PortHandle : HANDLE
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwSetDefaultHardErrorPort(PortHandle: HANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwSetDefaultHardErrorPort(PortHandle: HANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtSetDefaultLocale(
     ThreadOrSystem : BOOLEAN;
     Locale : LCID
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwSetDefaultLocale(ThreadOrSystem: BOOLEAN; Locale: LCID): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwSetDefaultLocale(ThreadOrSystem: BOOLEAN; Locale: LCID): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: W2K, WXP, 2K3
 function  NtSetDefaultUILanguage(
     LanguageId : LANGID
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwSetDefaultUILanguage(LanguageId: LANGID): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwSetDefaultUILanguage(LanguageId: LANGID): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtSetEaFile(
@@ -6274,31 +6277,31 @@ function  NtSetEaFile(
     IoStatusBlock : PIO_STATUS_BLOCK;
     Buffer : PFILE_FULL_EA_INFORMATION;
     BufferLength : ULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwSetEaFile(FileHandle: HANDLE; IoStatusBlock: PIO_STATUS_BLOCK; Buffer: PFILE_FULL_EA_INFORMATION; BufferLength: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwSetEaFile(FileHandle: HANDLE; IoStatusBlock: PIO_STATUS_BLOCK; Buffer: PFILE_FULL_EA_INFORMATION; BufferLength: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtSetEvent(
     EventHandle : HANDLE;
     PreviousState : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwSetEvent(EventHandle: HANDLE; PreviousState: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwSetEvent(EventHandle: HANDLE; PreviousState: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtSetHighEventPair(
     EventPairHandle : HANDLE
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwSetHighEventPair(EventPairHandle: HANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwSetHighEventPair(EventPairHandle: HANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtSetHighWaitLowEventPair(
     EventPairHandle : HANDLE
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwSetHighWaitLowEventPair(EventPairHandle: HANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwSetHighWaitLowEventPair(EventPairHandle: HANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4
-function  NtSetHighWaitLowThread(): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwSetHighWaitLowThread(): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+function  NtSetHighWaitLowThread(): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwSetHighWaitLowThread(): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK as ZwSetInformationFile().
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
@@ -6308,8 +6311,8 @@ function  NtSetInformationFile(
     FileInformation : PVOID;
     FileInformationLength : ULONG;
     FileInformationClass : FILE_INFORMATION_CLASS
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwSetInformationFile(FileHandle: HANDLE; IoStatusBlock: PIO_STATUS_BLOCK; FileInformation: PVOID; FileInformationLength: ULONG; FileInformationClass: FILE_INFORMATION_CLASS): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwSetInformationFile(FileHandle: HANDLE; IoStatusBlock: PIO_STATUS_BLOCK; FileInformation: PVOID; FileInformationLength: ULONG; FileInformationClass: FILE_INFORMATION_CLASS): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};
    {$ENDIF}
 
 // Compatibility: W2K, WXP, 2K3
@@ -6318,8 +6321,8 @@ function  NtSetInformationJobObject(
     JobInformationClass : JOBOBJECTINFOCLASS;
     JobInformation : PVOID;
     JobInformationLength : ULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwSetInformationJobObject(JobHandle: HANDLE; JobInformationClass: JOBOBJECTINFOCLASS; JobInformation: PVOID; JobInformationLength: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwSetInformationJobObject(JobHandle: HANDLE; JobInformationClass: JOBOBJECTINFOCLASS; JobInformation: PVOID; JobInformationLength: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtSetInformationKey(
@@ -6327,8 +6330,8 @@ function  NtSetInformationKey(
     KeyInformationClass : KEY_SET_INFORMATION_CLASS;
     KeyInformation : PVOID;
     KeyInformationLength : ULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwSetInformationKey(KeyHandle: HANDLE; KeyInformationClass: KEY_SET_INFORMATION_CLASS; KeyInformation: PVOID; KeyInformationLength: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwSetInformationKey(KeyHandle: HANDLE; KeyInformationClass: KEY_SET_INFORMATION_CLASS; KeyInformation: PVOID; KeyInformationLength: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtSetInformationObject(
@@ -6336,8 +6339,8 @@ function  NtSetInformationObject(
     ObjectInformationClass : OBJECT_INFORMATION_CLASS;
     ObjectInformation : PVOID;
     ObjectInformationLength : ULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwSetInformationObject(ObjectHandle: HANDLE; ObjectInformationClass: OBJECT_INFORMATION_CLASS; ObjectInformation: PVOID; ObjectInformationLength: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwSetInformationObject(ObjectHandle: HANDLE; ObjectInformationClass: OBJECT_INFORMATION_CLASS; ObjectInformation: PVOID; ObjectInformationLength: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtSetInformationProcess(
@@ -6345,8 +6348,8 @@ function  NtSetInformationProcess(
     ProcessInformationClass : PROCESSINFOCLASS;
     ProcessInformation : PVOID;
     ProcessInformationLength : ULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwSetInformationProcess(ProcessHandle: HANDLE; ProcessInformationClass: PROCESSINFOCLASS; ProcessInformation: PVOID; ProcessInformationLength: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwSetInformationProcess(ProcessHandle: HANDLE; ProcessInformationClass: PROCESSINFOCLASS; ProcessInformation: PVOID; ProcessInformationLength: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK as ZwSetInformationThread().
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
@@ -6355,8 +6358,8 @@ function  NtSetInformationThread(
     ThreadInformationClass : THREADINFOCLASS;
     ThreadInformation : PVOID;
     ThreadInformationLength : ULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwSetInformationThread(ThreadHandle: HANDLE; ThreadInformationClass: THREADINFOCLASS; ThreadInformation: PVOID; ThreadInformationLength: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwSetInformationThread(ThreadHandle: HANDLE; ThreadInformationClass: THREADINFOCLASS; ThreadInformation: PVOID; ThreadInformationLength: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtSetInformationToken(
@@ -6364,15 +6367,15 @@ function  NtSetInformationToken(
     TokenInformationClass : TOKEN_INFORMATION_CLASS;
     TokenInformation : PVOID;
     TokenInformationLength : ULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwSetInformationToken(TokenHandle: HANDLE; TokenInformationClass: TOKEN_INFORMATION_CLASS; TokenInformation: PVOID; TokenInformationLength: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwSetInformationToken(TokenHandle: HANDLE; TokenInformationClass: TOKEN_INFORMATION_CLASS; TokenInformation: PVOID; TokenInformationLength: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtSetIntervalProfile(
     Interval : ULONG;
     Source : KPROFILE_SOURCE
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwSetIntervalProfile(Interval: ULONG; Source: KPROFILE_SOURCE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwSetIntervalProfile(Interval: ULONG; Source: KPROFILE_SOURCE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtSetIoCompletion(
@@ -6381,8 +6384,8 @@ function  NtSetIoCompletion(
     CompletionValue : ULONG;
     Status : NTSTATUS;
     Information : ULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwSetIoCompletion(IoCompletionHandle: HANDLE; CompletionKey: ULONG; CompletionValue: ULONG; Status: NTSTATUS; Information: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwSetIoCompletion(IoCompletionHandle: HANDLE; CompletionKey: ULONG; CompletionValue: ULONG; Status: NTSTATUS; Information: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtSetLdtEntries(
@@ -6390,24 +6393,24 @@ function  NtSetLdtEntries(
     LdtEntry1 : LDT_ENTRY;
     Selector2 : ULONG;
     LdtEntry2 : LDT_ENTRY
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwSetLdtEntries(Selector1: ULONG; LdtEntry1: LDT_ENTRY; Selector2: ULONG; LdtEntry2: LDT_ENTRY): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwSetLdtEntries(Selector1: ULONG; LdtEntry1: LDT_ENTRY; Selector2: ULONG; LdtEntry2: LDT_ENTRY): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtSetLowEventPair(
     EventPairHandle : HANDLE
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwSetLowEventPair(EventPairHandle: HANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwSetLowEventPair(EventPairHandle: HANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtSetLowWaitHighEventPair(
     EventPairHandle : HANDLE
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwSetLowWaitHighEventPair(EventPairHandle: HANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwSetLowWaitHighEventPair(EventPairHandle: HANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4
-function  NtSetLowWaitHighThread(): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwSetLowWaitHighThread(): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+function  NtSetLowWaitHighThread(): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwSetLowWaitHighThread(): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: W2K, WXP, 2K3
 function  NtSetQuotaInformationFile(
@@ -6415,53 +6418,53 @@ function  NtSetQuotaInformationFile(
     IoStatusBlock : PIO_STATUS_BLOCK;
     Buffer : PFILE_USER_QUOTA_INFORMATION;
     BufferLength : ULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwSetQuotaInformationFile(FileHandle: HANDLE; IoStatusBlock: PIO_STATUS_BLOCK; Buffer: PFILE_USER_QUOTA_INFORMATION; BufferLength: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwSetQuotaInformationFile(FileHandle: HANDLE; IoStatusBlock: PIO_STATUS_BLOCK; Buffer: PFILE_USER_QUOTA_INFORMATION; BufferLength: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtSetSecurityObject(
     Handle : HANDLE;
     SecurityInformation : SECURITY_INFORMATION;
     SecurityDescriptor : PSECURITY_DESCRIPTOR
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwSetSecurityObject(Handle: HANDLE; SecurityInformation: SECURITY_INFORMATION; SecurityDescriptor: PSECURITY_DESCRIPTOR): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwSetSecurityObject(Handle: HANDLE; SecurityInformation: SECURITY_INFORMATION; SecurityDescriptor: PSECURITY_DESCRIPTOR): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtSetSystemEnvironmentValue(
     Name : PUNICODE_STRING;
     Value : PUNICODE_STRING
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwSetSystemEnvironmentValue(Name: PUNICODE_STRING; Value: PUNICODE_STRING): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwSetSystemEnvironmentValue(Name: PUNICODE_STRING; Value: PUNICODE_STRING): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtSetSystemInformation(
     SystemInformationClass : SYSTEM_INFORMATION_CLASS;
     SystemInformation : PVOID;
     SystemInformationLength : ULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwSetSystemInformation(SystemInformationClass: SYSTEM_INFORMATION_CLASS; SystemInformation: PVOID; SystemInformationLength: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwSetSystemInformation(SystemInformationClass: SYSTEM_INFORMATION_CLASS; SystemInformation: PVOID; SystemInformationLength: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtSetSystemPowerState(
     SystemAction : POWER_ACTION;
     MinSystemState : SYSTEM_POWER_STATE;
     Flags : ULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwSetSystemPowerState(SystemAction: POWER_ACTION; MinSystemState: SYSTEM_POWER_STATE; Flags: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwSetSystemPowerState(SystemAction: POWER_ACTION; MinSystemState: SYSTEM_POWER_STATE; Flags: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtSetSystemTime(
     NewTime : PLARGE_INTEGER;
     OldTime : PLARGE_INTEGER
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwSetSystemTime(NewTime: PLARGE_INTEGER; OldTime: PLARGE_INTEGER): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwSetSystemTime(NewTime: PLARGE_INTEGER; OldTime: PLARGE_INTEGER): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: W2K, WXP, 2K3
 function  NtSetThreadExecutionState(
     ExecutionState : EXECUTION_STATE;
     PreviousExecutionState : PEXECUTION_STATE
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwSetThreadExecutionState(ExecutionState: EXECUTION_STATE; PreviousExecutionState: PEXECUTION_STATE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwSetThreadExecutionState(ExecutionState: EXECUTION_STATE; PreviousExecutionState: PEXECUTION_STATE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtSetTimer(
@@ -6472,22 +6475,22 @@ function  NtSetTimer(
     Resume : BOOLEAN;
     Period : LONG;
     PreviousState : PBOOLEAN
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwSetTimer(TimerHandle: HANDLE; DueTime: PLARGE_INTEGER; TimerApcRoutine: PTIMER_APC_ROUTINE; TimerContext: PVOID; Resume: BOOLEAN; Period: LONG; PreviousState: PBOOLEAN): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwSetTimer(TimerHandle: HANDLE; DueTime: PLARGE_INTEGER; TimerApcRoutine: PTIMER_APC_ROUTINE; TimerContext: PVOID; Resume: BOOLEAN; Period: LONG; PreviousState: PBOOLEAN): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtSetTimerResolution(
     RequestedResolution : ULONG;
     Set_ : BOOLEAN;
     ActualResolution : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwSetTimerResolution(RequestedResolution: ULONG; Set_: BOOLEAN; ActualResolution: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwSetTimerResolution(RequestedResolution: ULONG; Set_: BOOLEAN; ActualResolution: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: W2K, WXP, 2K3
 function  NtSetUuidSeed(
     UuidSeed : PUCHAR
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwSetUuidSeed(UuidSeed: PUCHAR): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwSetUuidSeed(UuidSeed: PUCHAR): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK as ZwSetValueKey().
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
@@ -6498,8 +6501,8 @@ function  NtSetValueKey(
     Type_ : ULONG;
     Data : PVOID;
     DataSize : ULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwSetValueKey(KeyHandle: HANDLE; ValueName: PUNICODE_STRING; TitleIndex: ULONG; Type_: ULONG; Data: PVOID; DataSize: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwSetValueKey(KeyHandle: HANDLE; ValueName: PUNICODE_STRING; TitleIndex: ULONG; Type_: ULONG; Data: PVOID; DataSize: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtSetVolumeInformationFile(
@@ -6508,14 +6511,14 @@ function  NtSetVolumeInformationFile(
     Buffer : PVOID;
     BufferLength : ULONG;
     VolumeInformationClass : FS_INFORMATION_CLASS
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwSetVolumeInformationFile(FileHandle: HANDLE; IoStatusBlock: PIO_STATUS_BLOCK; Buffer: PVOID; BufferLength: ULONG; VolumeInformationClass: FS_INFORMATION_CLASS): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwSetVolumeInformationFile(FileHandle: HANDLE; IoStatusBlock: PIO_STATUS_BLOCK; Buffer: PVOID; BufferLength: ULONG; VolumeInformationClass: FS_INFORMATION_CLASS): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtShutdownSystem(
     Action : SHUTDOWN_ACTION
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwShutdownSystem(Action: SHUTDOWN_ACTION): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwShutdownSystem(Action: SHUTDOWN_ACTION): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT4, W2K, WXP, 2K3
 function  NtSignalAndWaitForSingleObject(
@@ -6523,26 +6526,26 @@ function  NtSignalAndWaitForSingleObject(
     HandleToWait : HANDLE;
     Alertable : BOOLEAN;
     Timeout : PLARGE_INTEGER
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwSignalAndWaitForSingleObject(HandleToSignal: HANDLE; HandleToWait: HANDLE; Alertable: BOOLEAN; Timeout: PLARGE_INTEGER): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwSignalAndWaitForSingleObject(HandleToSignal: HANDLE; HandleToWait: HANDLE; Alertable: BOOLEAN; Timeout: PLARGE_INTEGER): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtStartProfile(
     ProfileHandle : HANDLE
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwStartProfile(ProfileHandle: HANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwStartProfile(ProfileHandle: HANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtStopProfile(
     ProfileHandle : HANDLE
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwStopProfile(ProfileHandle: HANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwStopProfile(ProfileHandle: HANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: WXP, 2K3
 function  NtSuspendProcess(
     hProcess : HANDLE
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwSuspendProcess(hProcess: HANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwSuspendProcess(hProcess: HANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to SuspendThread() from Kernel32.dll.
 // Refer to the PSDK for additional information. Usually the same flags
@@ -6551,8 +6554,8 @@ function  ZwSuspendProcess(hProcess: HANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}e
 function  NtSuspendThread(
     hThread : HANDLE;
     dwLastResumeCount : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwSuspendThread(hThread: HANDLE; dwLastResumeCount: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwSuspendThread(hThread: HANDLE; dwLastResumeCount: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtSystemDebugControl(
@@ -6562,45 +6565,45 @@ function  NtSystemDebugControl(
     OutputBuffer : PVOID;
     OutputBufferLength : ULONG;
     ReturnLength : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwSystemDebugControl(ControlCode: DEBUG_CONTROL_CODE; InputBuffer: PVOID; InputBufferLength: ULONG; OutputBuffer: PVOID; OutputBufferLength: ULONG; ReturnLength: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwSystemDebugControl(ControlCode: DEBUG_CONTROL_CODE; InputBuffer: PVOID; InputBufferLength: ULONG; OutputBuffer: PVOID; OutputBufferLength: ULONG; ReturnLength: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: W2K, WXP, 2K3
 function  NtTerminateJobObject(
     JobHandle : HANDLE;
     ExitStatus : NTSTATUS
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwTerminateJobObject(JobHandle: HANDLE; ExitStatus: NTSTATUS): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwTerminateJobObject(JobHandle: HANDLE; ExitStatus: NTSTATUS): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtTerminateProcess(
     ProcessHandle : HANDLE;
     ExitStatus : NTSTATUS
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwTerminateProcess(ProcessHandle: HANDLE; ExitStatus: NTSTATUS): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwTerminateProcess(ProcessHandle: HANDLE; ExitStatus: NTSTATUS): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtTerminateThread(
     ThreadHandle : HANDLE;
     ExitStatus : NTSTATUS
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwTerminateThread(ThreadHandle: HANDLE; ExitStatus: NTSTATUS): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwTerminateThread(ThreadHandle: HANDLE; ExitStatus: NTSTATUS): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
-function  NtTestAlert(): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwTestAlert(): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+function  NtTestAlert(): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwTestAlert(): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtUnloadDriver(
     DriverServiceName : PUNICODE_STRING
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwUnloadDriver(DriverServiceName: PUNICODE_STRING): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwUnloadDriver(DriverServiceName: PUNICODE_STRING): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtUnloadKey(
     KeyObjectAttributes : POBJECT_ATTRIBUTES
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwUnloadKey(KeyObjectAttributes: POBJECT_ATTRIBUTES): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwUnloadKey(KeyObjectAttributes: POBJECT_ATTRIBUTES): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtUnlockFile(
@@ -6609,8 +6612,8 @@ function  NtUnlockFile(
     LockOffset : PULARGE_INTEGER;
     LockLength : PULARGE_INTEGER;
     Key : ULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwUnlockFile(FileHandle: HANDLE; IoStatusBlock: PIO_STATUS_BLOCK; LockOffset: PULARGE_INTEGER; LockLength: PULARGE_INTEGER; Key: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwUnlockFile(FileHandle: HANDLE; IoStatusBlock: PIO_STATUS_BLOCK; LockOffset: PULARGE_INTEGER; LockLength: PULARGE_INTEGER; Key: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtUnlockVirtualMemory(
@@ -6618,23 +6621,23 @@ function  NtUnlockVirtualMemory(
     BaseAddress : PPVOID;
     LockSize : PULONG;
     LockType : ULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwUnlockVirtualMemory(ProcessHandle: HANDLE; BaseAddress: PPVOID; LockSize: PULONG; LockType: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwUnlockVirtualMemory(ProcessHandle: HANDLE; BaseAddress: PPVOID; LockSize: PULONG; LockType: ULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK as ZwUnmapViewOfSection().
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtUnmapViewOfSection(
     ProcessHandle : HANDLE;
     BaseAddress : PVOID
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwUnmapViewOfSection(ProcessHandle: HANDLE; BaseAddress: PVOID): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwUnmapViewOfSection(ProcessHandle: HANDLE; BaseAddress: PVOID): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtVdmControl(
     ControlCode : ULONG;
     ControlData : PVOID
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwVdmControl(ControlCode: ULONG; ControlData: PVOID): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwVdmControl(ControlCode: ULONG; ControlData: PVOID): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3
 function  NtW32Call(
@@ -6643,8 +6646,8 @@ function  NtW32Call(
     ArgumentLength : ULONG;
     Result_ : PPVOID;
     ResultLength : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwW32Call(RoutineIndex: ULONG; Argument: PVOID; ArgumentLength: ULONG; Result_: PPVOID; ResultLength: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwW32Call(RoutineIndex: ULONG; Argument: PVOID; ArgumentLength: ULONG; Result_: PPVOID; ResultLength: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtWaitForMultipleObjects(
@@ -6653,8 +6656,8 @@ function  NtWaitForMultipleObjects(
     WaitType : WAIT_TYPE;
     Alertable : BOOLEAN;
     Timeout : PLARGE_INTEGER
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwWaitForMultipleObjects(HandleCount: ULONG; Handles: PHANDLE; WaitType: WAIT_TYPE; Alertable: BOOLEAN; Timeout: PLARGE_INTEGER): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwWaitForMultipleObjects(HandleCount: ULONG; Handles: PHANDLE; WaitType: WAIT_TYPE; Alertable: BOOLEAN; Timeout: PLARGE_INTEGER): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 {.$IFNDEF JWA_INCLUDEMODE}
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
@@ -6662,22 +6665,22 @@ function  NtWaitForSingleObject(
     Handle : HANDLE;
     Alertable : BOOLEAN;
     Timeout : PLARGE_INTEGER
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 {.$ENDIF JWA_INCLUDEMODE}
 
-function  ZwWaitForSingleObject(Handle: HANDLE; Alertable: BOOLEAN; Timeout: PLARGE_INTEGER): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+function  ZwWaitForSingleObject(Handle: HANDLE; Alertable: BOOLEAN; Timeout: PLARGE_INTEGER): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtWaitHighEventPair(
     EventPairHandle : HANDLE
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwWaitHighEventPair(EventPairHandle: HANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwWaitHighEventPair(EventPairHandle: HANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtWaitLowEventPair(
     EventPairHandle : HANDLE
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwWaitLowEventPair(EventPairHandle: HANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwWaitLowEventPair(EventPairHandle: HANDLE): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK as ZwWriteFile().
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
@@ -6691,9 +6694,9 @@ function  NtWriteFile(
     Length : ULONG;
     ByteOffset : PLARGE_INTEGER;
     Key : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 function  ZwWriteFile(FileHandle: HANDLE; Event: HANDLE; ApcRoutine: PIO_APC_ROUTINE; ApcContext: PVOID; IoStatusBlock: PIO_STATUS_BLOCK; Buffer: PVOID; Length: ULONG; ByteOffset: PLARGE_INTEGER; Key: PULONG): NTSTATUS; stdcall;
-    {$IFNDEF RTDL}external ntdll;{$ENDIF}
+    {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT4, W2K, WXP, 2K3
 function  NtWriteFileGather(
@@ -6706,9 +6709,9 @@ function  NtWriteFileGather(
     Length : ULONG;
     ByteOffset : PLARGE_INTEGER;
     Key : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 function  ZwWriteFileGather(FileHandle: HANDLE; Event: HANDLE; ApcRoutine: PIO_APC_ROUTINE; ApcContext: PVOID; IoStatusBlock: PIO_STATUS_BLOCK; Buffer: PFILE_SEGMENT_ELEMENT; Length: ULONG; ByteOffset: PLARGE_INTEGER;
-    Key: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+    Key: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtWriteRequestData(
@@ -6718,8 +6721,8 @@ function  NtWriteRequestData(
     Buffer : PVOID;
     BufferLength : ULONG;
     ReturnLength : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwWriteRequestData(PortHandle: HANDLE; Message: PPORT_MESSAGE; Index: ULONG; Buffer: PVOID; BufferLength: ULONG; ReturnLength: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwWriteRequestData(PortHandle: HANDLE; Message: PPORT_MESSAGE; Index: ULONG; Buffer: PVOID; BufferLength: ULONG; ReturnLength: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  NtWriteVirtualMemory(
@@ -6728,12 +6731,12 @@ function  NtWriteVirtualMemory(
     Buffer : PVOID;
     BufferLength : ULONG;
     ReturnLength : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwWriteVirtualMemory(ProcessHandle: HANDLE; BaseAddress: PVOID; Buffer: PVOID; BufferLength: ULONG; ReturnLength: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwWriteVirtualMemory(ProcessHandle: HANDLE; BaseAddress: PVOID; Buffer: PVOID; BufferLength: ULONG; ReturnLength: PULONG): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT4, W2K, WXP, 2K3
-function  NtYieldExecution(): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
-function  ZwYieldExecution(): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+function  NtYieldExecution(): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
+function  ZwYieldExecution(): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to MakeSelfRelativeSD() from Advapi32.dll.
 // Refer to the PSDK for additional information. Usually the same flags
@@ -6743,10 +6746,10 @@ function  RtlAbsoluteToSelfRelativeSD(
     pAbsoluteSD : PSECURITY_DESCRIPTOR;
     pSelfRelativeSD : PSECURITY_DESCRIPTOR;
     lpdwBufferLength : LPDWORD
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
-procedure RtlAcquirePebLock(); stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+procedure RtlAcquirePebLock(); stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to AddAccessAllowedAce() from
 // Advapi32.dll. Refer to the PSDK for additional information. Usually the
@@ -6757,7 +6760,7 @@ function  RtlAddAccessAllowedAce(
     dwAceRevision : DWORD;
     AccessMask : ACCESS_MASK;
     pSid : PSID
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to AddAccessAllowedAceEx() from
 // Advapi32.dll. Refer to the PSDK for additional information. Usually the
@@ -6769,7 +6772,7 @@ function  RtlAddAccessAllowedAceEx(
     AceFlags : DWORD;
     AccessMask : ACCESS_MASK;
     pSid : PSID
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to AddAccessDeniedAce() from Advapi32.dll.
 // Refer to the PSDK for additional information. Usually the same flags
@@ -6780,7 +6783,7 @@ function  RtlAddAccessDeniedAce(
     dwAceRevision : DWORD;
     AccessMask : ACCESS_MASK;
     pSid : PSID
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to AddAccessDeniedAceEx() from
 // Advapi32.dll. Refer to the PSDK for additional information. Usually the
@@ -6792,7 +6795,7 @@ function  RtlAddAccessDeniedAceEx(
     AceFlags : DWORD;
     AccessMask : ACCESS_MASK;
     pSid : PSID
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to AddAce() from Advapi32.dll. Refer to
 // the PSDK for additional information. Usually the same flags apply.
@@ -6803,7 +6806,7 @@ function  RtlAddAce(
     dwStartingAceIndex : DWORD;
     pAceList : PVOID;
     nAceListLength : DWORD
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to AddAuditAccessAce() from Advapi32.dll.
 // Refer to the PSDK for additional information. Usually the same flags
@@ -6816,7 +6819,7 @@ function  RtlAddAuditAccessAce(
     pSid : PSID;
     bAuditSuccess : BOOLEAN;
     bAuditFailure : BOOLEAN
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to AddAuditAccessAceEx() from
 // Advapi32.dll. Refer to the PSDK for additional information. Usually the
@@ -6830,7 +6833,7 @@ function  RtlAddAuditAccessAceEx(
     pSid : PSID;
     bAuditSuccess : BOOLEAN;
     bAuditFailure : BOOLEAN
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: W2K, WXP
 function  RtlAddRange(
@@ -6841,13 +6844,13 @@ function  RtlAddRange(
     Flags : ULONG;
     UserData : PVOID;
     Owner : PVOID
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: WXP, 2K3
 function  RtlAddVectoredExceptionHandler(
     FirstHandler : ULONG;
     VectoredHandler : PVECTORED_EXCEPTION_HANDLER
-  ): PVOID; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): PVOID; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlAdjustPrivilege(
@@ -6855,7 +6858,7 @@ function  RtlAdjustPrivilege(
     Enable : BOOLEAN;
     CurrentThread : BOOLEAN;
     Enabled : PBOOLEAN
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to AllocateAndInitializeSid() from
 // Advapi32.dll. Refer to the PSDK for additional information. Usually the
@@ -6873,7 +6876,7 @@ function  RtlAllocateAndInitializeSid(
     nSubAuthority6 : DWORD;
     nSubAuthority7 : DWORD;
     var pSid : PSID
-  ): BOOL; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): BOOL; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // The function HeapAlloc() from Kernel32.dll is an export forwarder to
 // this function. This means you can refer to the documentation of
@@ -6883,18 +6886,18 @@ function  RtlAllocateHeap(
     hHeap : HANDLE;
     dwFlags : ULONG;
     Size : ULONG
-  ): PVOID; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): PVOID; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlAnsiCharToUnicodeChar(
     AnsiChar : AnsiChar
-  ): WCHAR; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): WCHAR; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlAnsiStringToUnicodeSize(
     AnsiString : PANSI_STRING
-  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 {.$IFNDEF JWA_INCLUDEMODE}
 // Documented in the DDK.
@@ -6903,34 +6906,34 @@ function  RtlAnsiStringToUnicodeString(
     DestinationString : PUNICODE_STRING;
     SourceString : PANSI_STRING;
     AllocateDestinationString : BOOLEAN
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 {.$ENDIF JWA_INCLUDEMODE}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlAppendAsciizToString(
     DestinationString : PSTRING;
     AppendThisString : LPCSTR
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlAppendStringToString(
     DestinationString : PSTRING;
     AppendThisString : PSTRING
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlAppendUnicodeStringToString(
     DestinationString : PUNICODE_STRING;
     SourceString : PUNICODE_STRING
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlAppendUnicodeToString(
     Destination : PUNICODE_STRING;
     Source : LPCWSTR
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to AreAllAccessesGranted() from
 // Advapi32.dll. Refer to the PSDK for additional information. Usually the
@@ -6939,7 +6942,7 @@ function  RtlAppendUnicodeToString(
 function  RtlAreAllAccessesGranted(
     GrantedAccess : ACCESS_MASK;
     WantedAccess : ACCESS_MASK
-  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to AreAnyAccessesGranted() from
 // Advapi32.dll. Refer to the PSDK for additional information. Usually the
@@ -6948,7 +6951,7 @@ function  RtlAreAllAccessesGranted(
 function  RtlAreAnyAccessesGranted(
     GrantedAccess : ACCESS_MASK;
     WantedAccess : ACCESS_MASK
-  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
@@ -6956,7 +6959,7 @@ function  RtlAreBitsClear(
     BitMapHeader : PRTL_BITMAP;
     StartingIndex : ULONG;
     Length : ULONG
-  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
@@ -6964,7 +6967,7 @@ function  RtlAreBitsSet(
     BitMapHeader : PRTL_BITMAP;
     StartingIndex : ULONG;
     Length : ULONG
-  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Mentioned in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
@@ -6973,7 +6976,7 @@ procedure RtlAssert(
     FileName : PVOID;
     LineNumber : ULONG;
     Message : PAnsiChar
-  ); stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ); stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 {$IFNDEF JWA_INCLUDEMODE}
 // The function RtlCaptureContext() from Kernel32.dll is an export
 // forwarder to this function. This means you can refer to the
@@ -6981,7 +6984,7 @@ procedure RtlAssert(
 // Compatibility: WXP, 2K3
 procedure RtlCaptureContext(
     ContextRecord : PCONTEXT
-  ); stdcall;  {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ); stdcall;  {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 {$ENDIF JWA_INCLUDEMODE}
 
 {$IFNDEF JWA_INCLUDEMODE}
@@ -6991,7 +6994,7 @@ function  RtlCharToInteger(
     Str : PCSZ;
     Base : ULONG;
     Value : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 {$ENDIF JWA_INCLUDEMODE}
 
 
@@ -6999,20 +7002,20 @@ function  RtlCharToInteger(
 // Compatibility: W2K, WXP, 2K3
 procedure RtlCheckForOrphanedCriticalSections(
     hThread : HANDLE
-  ); stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ); stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlCheckRegistryKey(
     RelativeTo : ULONG;
     Path : PWSTR
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 procedure RtlClearAllBits(
     BitMapHeader : PRTL_BITMAP
-  ); stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ); stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
@@ -7020,7 +7023,7 @@ procedure RtlClearBits(
     BitMapHeader : PRTL_BITMAP;
     StartingIndex : ULONG;
     NumberToClear : ULONG
-  ); stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ); stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to HeapCompact() from Kernel32.dll. Refer
 // to the PSDK for additional information. Usually the same flags apply.
@@ -7028,7 +7031,7 @@ procedure RtlClearBits(
 function  RtlCompactHeap(
     hHeap : HANDLE;
     dwFlags : ULONG
-  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 {$IFNDEF JWA_INCLUDEMODE}
 // Documented in the DDK.
@@ -7037,7 +7040,7 @@ function  RtlCompareMemory(
     Source1 : PVOID;
     Source2 : PVOID;
     Length : SIZE_T
-  ): SIZE_T; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): SIZE_T; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 {$ENDIF JWA_INCLUDEMODE}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
@@ -7045,7 +7048,7 @@ function  RtlCompareMemoryUlong(
     Source : PVOID;
     Length : ULONG;
     Value : ULONG
-  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
@@ -7053,7 +7056,7 @@ function  RtlCompareString(
     String1 : PSTRING;
     String2 : PSTRING;
     CaseInsensitive : BOOLEAN
-  ): LONG; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): LONG; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
@@ -7061,13 +7064,13 @@ function  RtlCompareUnicodeString(
     String1 : PUNICODE_STRING;
     String2 : PUNICODE_STRING;
     CaseInsensitive : BOOLEAN
-  ): LONG; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): LONG; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlConvertLongToLargeInteger(
     SignedInteger : LONG
-  ): LARGE_INTEGER; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): LARGE_INTEGER; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 {.$IFNDEF JWA_INCLUDEMODE}
 // This function is very similar to ConvertSidToStringSid() from
@@ -7078,32 +7081,32 @@ function  RtlConvertSidToUnicodeString(
     UnicodeString : PUNICODE_STRING;
     Sid : PSID;
     AllocateDestinationString : BOOLEAN
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 {.$ENDIF JWA_INCLUDEMODE}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlConvertUlongToLargeInteger(
     UnsignedInteger : ULONG
-  ): LARGE_INTEGER; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): LARGE_INTEGER; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 procedure RtlCopyLuid(
     Destination : PLUID;
     Source : PLUID
-  ); stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ); stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: W2K, WXP
 function  RtlCopyRangeList(
     CopyRangeList : PRTL_RANGE_LIST;
     RangeList : PRTL_RANGE_LIST
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlCopySecurityDescriptor(
     Source : PSECURITY_DESCRIPTOR;
     var Destination : PSECURITY_DESCRIPTOR
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to CopySid() from Advapi32.dll. Refer to
 // the PSDK for additional information. Usually the same flags apply.
@@ -7112,21 +7115,21 @@ function  RtlCopySid(
     DestinationLength : ULONG;
     Destination : PSID;
     Source : PSID
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 procedure RtlCopyString(
     DestinationString : PSTRING;
     SourceString : PSTRING
-  ); stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ); stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 procedure RtlCopyUnicodeString(
     DestinationString : PUNICODE_STRING;
     SourceString : PUNICODE_STRING
-  ); stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ); stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to InitializeAcl() from Advapi32.dll.
 // Refer to the PSDK for additional information. Usually the same flags
@@ -7136,7 +7139,7 @@ function  RtlCreateAcl(
     pAcl : PACL;
     nAclLength : DWORD;
     dwAclRevision : DWORD
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to HeapCreate() from Kernel32.dll. Refer
 // to the PSDK for additional information. Usually the same flags apply.
@@ -7148,7 +7151,7 @@ function  RtlCreateHeap(
     dwInitialSize : SIZE_T;
     UnknownOptional1 : PVOID;
     UnknownOptional2 : PVOID
-  ): HANDLE; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): HANDLE; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlCreateProcessParameters(
@@ -7162,39 +7165,39 @@ function  RtlCreateProcessParameters(
     Desktop : PUNICODE_STRING;
     Reserved : PUNICODE_STRING;
     Reserved2 : PUNICODE_STRING
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlCreateQueryDebugBuffer(
     Size : ULONG;
     EventPair : BOOLEAN
-  ): PDEBUG_BUFFER; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): PDEBUG_BUFFER; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlCreateRegistryKey(
     RelativeTo : ULONG;
     Path : PWSTR
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlCreateSecurityDescriptor(
     SecurityDescriptor : PSECURITY_DESCRIPTOR;
     Revision : ULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlCreateUnicodeString(
     DestinationString : PUNICODE_STRING;
     SourceString : PWSTR
-  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlCreateUnicodeStringFromAsciiz(
     DestinationString : PUNICODE_STRING;
     SourceString : PAnsiChar
-  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlCreateUserProcess(
@@ -7208,7 +7211,7 @@ function  RtlCreateUserProcess(
     DebugPort : HANDLE;
     ExceptionPort : HANDLE;
     ProcessInfo : PRTL_PROCESS_INFORMATION
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlCreateUserThread(
@@ -7222,7 +7225,7 @@ function  RtlCreateUserThread(
     lpParameter : PVOID;
     phThread : PHANDLE;
     ClientId : PCLIENT_ID
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // #->REVIEW LAST PARAMETER
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
@@ -7231,7 +7234,7 @@ function  RtlCutoverTimeToSystemTime(
     Time : PLARGE_INTEGER;
     CurrentTime : PLARGE_INTEGER;
     bUnknown : BOOLEAN
-  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to DeleteAce() from Advapi32.dll. Refer to
 // the PSDK for additional information. Usually the same flags apply.
@@ -7239,7 +7242,7 @@ function  RtlCutoverTimeToSystemTime(
 function  RtlDeleteAce(
     pAcl : PACL;
     dwAceIndex : DWORD
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // The function DeleteCriticalSection() from Kernel32.dll is an export
 // forwarder to this function. This means you can refer to the
@@ -7247,13 +7250,13 @@ function  RtlDeleteAce(
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 procedure RtlDeleteCriticalSection(
     lpCriticalSection : PRTL_CRITICAL_SECTION
-  ); stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ); stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: W2K, WXP
 function  RtlDeleteOwnersRanges(
     RangeList : PRTL_RANGE_LIST;
     Owner : PVOID
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: W2K, WXP
 function  RtlDeleteRange(
@@ -7261,7 +7264,7 @@ function  RtlDeleteRange(
     Start : ULONGLONG;
     End_ : ULONGLONG;
     Owner : PVOID
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
@@ -7269,46 +7272,46 @@ function  RtlDeleteRegistryValue(
     RelativeTo : ULONG;
     Path : LPCWSTR;
     ValueName : LPCWSTR
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlDeNormalizeProcessParams(
     ProcessParameters : PRTL_USER_PROCESS_PARAMETERS
-  ): PRTL_USER_PROCESS_PARAMETERS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): PRTL_USER_PROCESS_PARAMETERS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to HeapDestroy() from Kernel32.dll. Refer
 // to the PSDK for additional information. Usually the same flags apply.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlDestroyHeap(
     HeapHandle : HANDLE
-  ): HANDLE; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): HANDLE; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlDestroyProcessParameters(
     ProcessParameters : PRTL_USER_PROCESS_PARAMETERS
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlDestroyQueryDebugBuffer(
     DebugBuffer : PDEBUG_BUFFER
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlDetermineDosPathNameType_U(
     wcsPathNameType : PWSTR
-  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: W2K, WXP, 2K3
 function  RtlDnsHostNameToComputerName(
     ComputerName : PUNICODE_STRING;
     DnsName : PUNICODE_STRING;
     AllocateComputerNameString : BOOLEAN
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlDoesFileExists_U(
     FileName : PWSTR
-  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlDosPathNameToNtPathName_U(
@@ -7316,7 +7319,7 @@ function  RtlDosPathNameToNtPathName_U(
     var NtName : UNICODE_STRING;
     DosFilePath : PPWSTR;
     NtFilePath : PUNICODE_STRING
-  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlDosSearchPath_U(
@@ -7326,19 +7329,19 @@ function  RtlDosSearchPath_U(
     cbBuf : ULONG;
     Buffer : PWSTR;
     var Shortname : PWSTR
-  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: WXP, 2K3
 function  RtlDowncaseUnicodeChar(
     Source : WCHAR
-  ): WCHAR; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): WCHAR; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT4, W2K, WXP, 2K3
 function  RtlDowncaseUnicodeString(
     DestinationString : PUNICODE_STRING;
     SourceString : PUNICODE_STRING;
     AllocateDestinationString : BOOLEAN
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // #->REVIEW First parameter must be 0..3, but details have to be
 // investigated!!!
@@ -7347,17 +7350,17 @@ function  RtlDuplicateUnicodeString(
     AddTerminatingZero : ULONG;
     Source : PUNICODE_STRING;
     Destination : PUNICODE_STRING
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: W2K, WXP, 2K3
-procedure RtlEnableEarlyCriticalSectionEventCreation(); stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+procedure RtlEnableEarlyCriticalSectionEventCreation(); stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlEnlargedIntegerMultiply(
     Multiplicand : LONG;
     Multiplier : LONG
-  ): LARGE_INTEGER; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): LARGE_INTEGER; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
@@ -7365,14 +7368,14 @@ function  RtlEnlargedUnsignedDivide(
     Dividend : ULARGE_INTEGER;
     Divisor : ULONG;
     Remainder : PULONG
-  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlEnlargedUnsignedMultiply(
     Multiplicand : ULONG;
     Multiplier : ULONG
-  ): LARGE_INTEGER; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): LARGE_INTEGER; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // The function EnterCriticalSection() from Kernel32.dll is an export
 // forwarder to this function. This means you can refer to the
@@ -7380,26 +7383,26 @@ function  RtlEnlargedUnsignedMultiply(
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 procedure RtlEnterCriticalSection(
     lpCriticalSection : PRTL_CRITICAL_SECTION
-  ); stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ); stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlEqualComputerName(
     String1 : PUNICODE_STRING;
     String2 : PUNICODE_STRING
-  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlEqualDomainName(
     String1 : PUNICODE_STRING;
     String2 : PUNICODE_STRING
-  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlEqualLuid(
     Luid1 : PLUID;
     Luid2 : PLUID
-  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to EqualPrefixSid() from Advapi32.dll.
 // Refer to the PSDK for additional information. Usually the same flags
@@ -7408,7 +7411,7 @@ function  RtlEqualLuid(
 function  RtlEqualPrefixSid(
     pSid1 : PSID;
     pSid2 : PSID
-  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to EqualSid() from Advapi32.dll. Refer to
 // the PSDK for additional information. Usually the same flags apply.
@@ -7416,7 +7419,7 @@ function  RtlEqualPrefixSid(
 function  RtlEqualSid(
     pSid1 : PSID;
     pSid2 : PSID
-  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
@@ -7424,7 +7427,7 @@ function  RtlEqualString(
     String1 : PSTRING;
     String2 : PSTRING;
     CaseInsensitive : BOOLEAN
-  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
@@ -7432,12 +7435,12 @@ function  RtlEqualUnicodeString(
     String1 : PUNICODE_STRING;
     String2 : PUNICODE_STRING;
     CaseInsensitive : BOOLEAN
-  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 procedure RtlEraseUnicodeString(
     Str : PUNICODE_STRING
-  ); stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ); stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlExpandEnvironmentStrings_U(
@@ -7445,14 +7448,14 @@ function  RtlExpandEnvironmentStrings_U(
     Source : PUNICODE_STRING;
     Destination : PUNICODE_STRING;
     ReturnedLength : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlExtendedIntegerMultiply(
     Multiplicand : LARGE_INTEGER;
     Multiplier : LONG
-  ): LARGE_INTEGER; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): LARGE_INTEGER; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
@@ -7460,7 +7463,7 @@ function  RtlExtendedLargeIntegerDivide(
     Dividend : LARGE_INTEGER;
     Divisor : ULONG;
     Remainder : PULONG
-  ): LARGE_INTEGER; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): LARGE_INTEGER; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
@@ -7468,7 +7471,7 @@ function  RtlExtendedMagicDivide(
     Dividend : LARGE_INTEGER;
     MagicDivisor : LARGE_INTEGER;
     ShiftCount : CCHAR
-  ): LARGE_INTEGER; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): LARGE_INTEGER; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // The function RtlFillMemory() from Kernel32.dll is an export forwarder to
 // this function. This means you can refer to the documentation of
@@ -7479,14 +7482,14 @@ procedure RtlFillMemory(
     Destination : PVOID;
     Length : SIZE_T;
     Fill : UCHAR
-  ); stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ); stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 procedure RtlFillMemoryUlong(
     Destination : PVOID;
     Length : ULONG;
     Fill : ULONG
-  ); stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ); stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Finds characters out of the set contained in CharactersToFind inside
 // UnicodeString - description of flags will follow. Only the lower 3 bits
@@ -7497,7 +7500,7 @@ function  RtlFindCharInUnicodeString(
     UnicodeString : PUNICODE_STRING;
     CharactersToFind : PUNICODE_STRING;
     Positions : PUSHORT
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
@@ -7505,7 +7508,7 @@ function  RtlFindClearBits(
     BitMapHeader : PRTL_BITMAP;
     NumberToFind : ULONG;
     HintIndex : ULONG
-  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
@@ -7513,7 +7516,7 @@ function  RtlFindClearBitsAndSet(
     BitMapHeader : PRTL_BITMAP;
     NumberToFind : ULONG;
     HintIndex : ULONG
-  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: W2K, WXP, 2K3
@@ -7521,25 +7524,25 @@ function  RtlFindLastBackwardRunClear(
     BitMapHeader : PRTL_BITMAP;
     FromIndex : ULONG;
     StartingRunIndex : PULONG
-  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: W2K, WXP, 2K3
 function  RtlFindLeastSignificantBit(
     Set_ : ULONGLONG
-  ): CCHAR; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): CCHAR; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlFindLongestRunClear(
     BitMapHeader : PRTL_BITMAP;
     StartingIndex : PULONG
-  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: W2K, WXP, 2K3
 function  RtlFindMostSignificantBit(
     Set_ : ULONGLONG
-  ): CCHAR; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): CCHAR; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: W2K, WXP, 2K3
@@ -7547,7 +7550,7 @@ function  RtlFindNextForwardRunClear(
     BitMapHeader : PRTL_BITMAP;
     FromIndex : ULONG;
     StartingRunIndex : PULONG
-  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: W2K, WXP
 function  RtlFindRange(
@@ -7561,7 +7564,7 @@ function  RtlFindRange(
     Context : PVOID;
     Callback : PRTL_CONFLICT_RANGE_CALLBACK;
     Start : PULONGLONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
@@ -7569,7 +7572,7 @@ function  RtlFindSetBits(
     BitMapHeader : PRTL_BITMAP;
     NumberToFind : ULONG;
     HintIndex : ULONG
-  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
@@ -7577,7 +7580,7 @@ function  RtlFindSetBitsAndClear(
     BitMapHeader : PRTL_BITMAP;
     NumberToFind : ULONG;
     HintIndex : ULONG
-  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to FindFirstFreeAce() from Advapi32.dll.
 // Refer to the PSDK for additional information. Usually the same flags
@@ -7586,18 +7589,18 @@ function  RtlFindSetBitsAndClear(
 function  RtlFirstFreeAce(
     pAcl : PACL;
     var pAce : PVOID
-  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlFormatCurrentUserKeyPath(
     CurrentUserKeyPath : PUNICODE_STRING
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 procedure RtlFreeAnsiString(
     AnsiString : PANSI_STRING
-  ); stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ); stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // The function HeapFree() from Kernel32.dll is an export forwarder to this
 // function. This means you can refer to the documentation of HeapFree()!
@@ -7606,30 +7609,30 @@ function  RtlFreeHeap(
     hHeap : HANDLE;
     dwFlags : ULONG;
     MemoryPointer : PVOID
-  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 procedure RtlFreeOemString(
     OemString : POEM_STRING
-  ); stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ); stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: W2K, WXP
 procedure RtlFreeRangeList(
     RangeList : PRTL_RANGE_LIST
-  ); stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ); stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to FreeSid() from Advapi32.dll. Refer to
 // the PSDK for additional information. Usually the same flags apply.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlFreeSid(
     pSid : PSID
-  ): PVOID; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): PVOID; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 procedure RtlFreeUnicodeString(
     UnicodeString : PUNICODE_STRING
-  ); stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ); stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to GetAce() from Advapi32.dll. Refer to
 // the PSDK for additional information. Usually the same flags apply.
@@ -7638,14 +7641,14 @@ function  RtlGetAce(
     pAcl : PACL;
     dwAceIndex : DWORD;
     var pAce : PVOID
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Mentioned in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 procedure RtlGetCallersAddress(
     CallersAddress : PPVOID;
     CallersCaller : PPVOID
-  ); stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ); stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to GetSecurityDescriptorControl() from
 // Advapi32.dll. Refer to the PSDK for additional information. Usually the
@@ -7655,16 +7658,16 @@ function  RtlGetControlSecurityDescriptor(
     pSecurityDescriptor : PSECURITY_DESCRIPTOR;
     var Control : SECURITY_DESCRIPTOR_CONTROL;
     var dwRevision : DWORD
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlGetCurrentDirectory_U(
     MaximumLength : ULONG;
     Buffer : PWSTR
-  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: WXP, 2K3
-function  RtlGetCurrentPeb(): PPEB; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+function  RtlGetCurrentPeb(): PPEB; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to GetSecurityDescriptorDacl() from
 // Advapi32.dll. Refer to the PSDK for additional information. Usually the
@@ -7675,14 +7678,14 @@ function  RtlGetDaclSecurityDescriptor(
     var bDaclPresent : BOOLEAN;
     var Dacl : PACL;
     var bDaclDefaulted : BOOLEAN
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: W2K, WXP
 function  RtlGetFirstRange(
     RangeList : PRTL_RANGE_LIST;
     Iterator : PRTL_RANGE_LIST_ITERATOR;
     var Range : PRTL_RANGE
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlGetFullPathName_U(
@@ -7690,7 +7693,7 @@ function  RtlGetFullPathName_U(
     Size : ULONG;
     Buf : PWSTR;
     var Shortname : PWSTR
-  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to GetSecurityDescriptorGroup() from
 // Advapi32.dll. Refer to the PSDK for additional information. Usually the
@@ -7700,28 +7703,28 @@ function  RtlGetGroupSecurityDescriptor(
     pSecurityDescriptor : PSECURITY_DESCRIPTOR;
     var pGroup : PSID;
     var bGroupDefaulted : BOOLEAN
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: WXP, 2K3
-function  RtlGetLastNtStatus(): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+function  RtlGetLastNtStatus(): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
-function  RtlGetLongestNtPathLength(): ULONG; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+function  RtlGetLongestNtPathLength(): ULONG; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: W2K, WXP
 function  RtlGetNextRange(
     Iterator : PRTL_RANGE_LIST_ITERATOR;
     var Range : PRTL_RANGE;
     MoveForwards : BOOLEAN
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
-function  RtlGetNtGlobalFlags(): ULONG; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+function  RtlGetNtGlobalFlags(): ULONG; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlGetNtProductType(
     var ProductType : ULONG
-  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // #->REVIEW LAST PARAMETER
 // Compatibility: WXP, 2K3
@@ -7729,7 +7732,7 @@ procedure RtlGetNtVersionNumbers(
     var dwMajorVersion : ULONG;
     var dwMinorVersion : ULONG;
     UnknownCanBeNull : PDWORD
-  ); stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ); stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to GetSecurityDescriptorOwner() from
 // Advapi32.dll. Refer to the PSDK for additional information. Usually the
@@ -7739,7 +7742,7 @@ function  RtlGetOwnerSecurityDescriptor(
     pSecurityDescriptor : PSECURITY_DESCRIPTOR;
     var pOwner : PSID;
     var OwnerDefaulted : BOOLEAN
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to GetProcessHeaps() from Kernel32.dll.
 // Refer to the PSDK for additional information. Usually the same flags
@@ -7748,7 +7751,7 @@ function  RtlGetOwnerSecurityDescriptor(
 function  RtlGetProcessHeaps(
     ArraySize : ULONG;
     HeapArray : PHANDLE
-  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to GetSecurityDescriptorSacl() from
 // Advapi32.dll. Refer to the PSDK for additional information. Usually the
@@ -7759,7 +7762,7 @@ function  RtlGetSaclSecurityDescriptor(
     var bSaclPresent : BOOLEAN;
     var Sacl : PACL;
     var bSaclDefaulted : BOOLEAN
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to GetVersionEx() from Kernel32.dll. Refer
 // to the PSDK for additional information. Usually the same flags apply.
@@ -7767,14 +7770,14 @@ function  RtlGetSaclSecurityDescriptor(
 // Compatibility: W2K, WXP, 2K3
 function  RtlGetVersion(
     lpVersionInformation : PRTL_OSVERSIONINFOW
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: W2K, WXP, 2K3
 function  RtlGUIDFromString(
     GuidString : PUNICODE_STRING;
     Guid : LPGUID
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to GetSidIdentifierAuthority() from
 // Advapi32.dll. Refer to the PSDK for additional information. Usually the
@@ -7782,7 +7785,7 @@ function  RtlGUIDFromString(
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlIdentifierAuthoritySid(
     Sid : PSID
-  ): PSID_IDENTIFIER_AUTHORITY; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): PSID_IDENTIFIER_AUTHORITY; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to ImageDirectoryEntryToData() from
 // Dbghelp.dll. Refer to the PSDK for additional information. Usually the
@@ -7793,14 +7796,14 @@ function  RtlImageDirectoryEntryToData(
     MappedAsImage : BOOLEAN;
     DirectoryEntry : USHORT;
     Size : PULONG
-  ): PVOID; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): PVOID; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to ImageNtHeader() from Dbghelp.dll. Refer
 // to the PSDK for additional information. Usually the same flags apply.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlImageNtHeader(
     ImageBase : HMODULE
-  ): PIMAGE_NT_HEADERS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): PIMAGE_NT_HEADERS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to ImageNtHeader() from Dbghelp.dll. Refer
 // to the PSDK for additional information. Usually the same flags apply.
@@ -7809,7 +7812,7 @@ function  RtlImageNtHeader(
 function  RtlImageNtHeaderEx(
     dwFlags : DWORD;
     ImageBase : HMODULE
-  ): PIMAGE_NT_HEADERS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): PIMAGE_NT_HEADERS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to ImageRvaToSection() from Dbghelp.dll.
 // Refer to the PSDK for additional information. Usually the same flags
@@ -7819,7 +7822,7 @@ function  RtlImageRvaToSection(
     NtHeaders : PIMAGE_NT_HEADERS;
     ImageBase : HMODULE;
     Rva : ULONG
-  ): PIMAGE_SECTION_HEADER; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): PIMAGE_SECTION_HEADER; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to ImageRvaToVa() from Dbghelp.dll. Refer
 // to the PSDK for additional information. Usually the same flags apply.
@@ -7829,7 +7832,7 @@ function  RtlImageRvaToVa(
     ImageBase : HMODULE;
     Rva : ULONG;
     var LastRvaSection : PIMAGE_SECTION_HEADER
-  ): PVOID; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): PVOID; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to ImpersonateSelf() from Advapi32.dll.
 // Refer to the PSDK for additional information. Usually the same flags
@@ -7837,20 +7840,20 @@ function  RtlImageRvaToVa(
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlImpersonateSelf(
     ImpersonationLevel : SECURITY_IMPERSONATION_LEVEL
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 procedure RtlInitAnsiString(
     DestinationString : PANSI_STRING;
     SourceString : PCSZ
-  ); stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ); stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: 2K3
 function  RtlInitAnsiStringEx(
     DestinationString : PANSI_STRING;
     SourceString : PCSZ
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
@@ -7858,23 +7861,23 @@ procedure RtlInitializeBitMap(
     BitMapHeader : PRTL_BITMAP;
     BitMapBuffer : PULONG;
     SizeOfBitMap : ULONG
-  ); stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ); stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlInitializeCriticalSection(
     lpCriticalSection : PRTL_CRITICAL_SECTION
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT4, W2K, WXP, 2K3
 function  RtlInitializeCriticalSectionAndSpinCount(
     lpCriticalSection : PRTL_CRITICAL_SECTION;
     dwSpinCount : ULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: W2K, WXP
 procedure RtlInitializeRangeList(
     RangeList : PRTL_RANGE_LIST
-  ); stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ); stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to InitializeSid() from Advapi32.dll.
 // Refer to the PSDK for additional information. Usually the same flags
@@ -7884,13 +7887,13 @@ function  RtlInitializeSid(
     pSid : PSID;
     pIdentifierAuthority : PSID_IDENTIFIER_AUTHORITY;
     nSubAuthorityCount : UCHAR
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 {$IFNDEF JWA_INCLUDEMODE}
 // Compatibility: WXP, 2K3
 procedure RtlInitializeSListHead(
     ListHead : PSLIST_HEADER
-  ); stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ); stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 {$ENDIF JWA_INCLUDEMODE}
 
 // Documented in the DDK.
@@ -7898,20 +7901,20 @@ procedure RtlInitializeSListHead(
 procedure RtlInitString(
     DestinationString : PSTRING;
     SourceString : PCSZ
-  ); stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ); stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 procedure RtlInitUnicodeString(
     DestinationString : PUNICODE_STRING;
     SourceString : LPCWSTR
-  ); stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ); stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: WXP, 2K3
 function  RtlInitUnicodeStringEx(
     DestinationString : PUNICODE_STRING;
     SourceString : LPCWSTR
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: W2K, WXP, 2K3
@@ -7919,7 +7922,7 @@ function  RtlInt64ToUnicodeString(
     Value : ULONGLONG;
     Base : ULONG;
     Str : PUNICODE_STRING
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlIntegerToChar(
@@ -7927,7 +7930,7 @@ function  RtlIntegerToChar(
     Base : ULONG;
     Length : ULONG;
     Str : PAnsiChar
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
@@ -7935,49 +7938,49 @@ function  RtlIntegerToUnicodeString(
     Value : ULONG;
     Base : ULONG;
     Str : PUNICODE_STRING
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 {$IFNDEF JWA_INCLUDEMODE}
 // Compatibility: WXP, 2K3
 function  RtlInterlockedFlushSList(
     ListHead : PSLIST_HEADER
-  ): PSLIST_ENTRY; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): PSLIST_ENTRY; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 
 // Compatibility: WXP, 2K3
 function  RtlInterlockedPopEntrySList(
     ListHead : PSLIST_HEADER
-  ): PSLIST_ENTRY; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): PSLIST_ENTRY; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 {$ENDIF JWA_INCLUDEMODE}
 // Compatibility: WXP, 2K3
 function  RtlInterlockedPushEntrySList(
     ListHead : PSLIST_HEADER;
     ListEntry : PSLIST_ENTRY
-  ): PSLIST_ENTRY; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): PSLIST_ENTRY; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 
 // Compatibility: W2K, WXP
 function  RtlInvertRangeList(
     InvertedRangeList : PRTL_RANGE_LIST;
     RangeList : PRTL_RANGE_LIST
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: WXP, 2K3
 function  RtlIpv4AddressToStringA(
     IP : PULONG;
     Buffer : LPSTR
-  ): LPSTR; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): LPSTR; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: WXP, 2K3
 function  RtlIpv4AddressToStringW(
     IP : PULONG;
     Buffer : LPWSTR
-  ): LPWSTR; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): LPWSTR; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlIsDosDeviceName_U(
     TestString : LPCWSTR
-  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 {.$IFNDEF JWA_INCLUDEMODE}
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
@@ -7985,7 +7988,7 @@ function  RtlIsNameLegalDOS8Dot3(
     Name : PUNICODE_STRING;
     OemName : POEM_STRING;
     NameContainsSpaces : PBOOLEAN
-  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 {.$ENDIF JWA_INCLUDEMODE}
 
 // Compatibility: W2K, WXP
@@ -7998,7 +8001,7 @@ function  RtlIsRangeAvailable(
     Context : PVOID;
     Callback : PRTL_CONFLICT_RANGE_CALLBACK;
     Available : PBOOLEAN
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to IsTextUnicode() from Advapi32.dll.
 // Refer to the PSDK for additional information. Usually the same flags
@@ -8008,21 +8011,21 @@ function  RtlIsTextUnicode(
     lpBuffer : PVOID;
     cb : Integer;
     lpi : LPINT
-  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlLargeIntegerAdd(
     Addend1 : LARGE_INTEGER;
     Addend2 : LARGE_INTEGER
-  ): LARGE_INTEGER; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): LARGE_INTEGER; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlLargeIntegerArithmeticShift(
     LargeInteger : LARGE_INTEGER;
     ShiftCount : CCHAR
-  ): LARGE_INTEGER; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): LARGE_INTEGER; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
@@ -8030,34 +8033,34 @@ function  RtlLargeIntegerDivide(
     Dividend : LARGE_INTEGER;
     Divisor : LARGE_INTEGER;
     Remainder : PLARGE_INTEGER
-  ): LARGE_INTEGER; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): LARGE_INTEGER; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlLargeIntegerNegate(
     NegateThis : LARGE_INTEGER
-  ): LARGE_INTEGER; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): LARGE_INTEGER; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlLargeIntegerShiftLeft(
     LargeInteger : LARGE_INTEGER;
     ShiftCount : CCHAR
-  ): LARGE_INTEGER; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): LARGE_INTEGER; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlLargeIntegerShiftRight(
     LargeInteger : LARGE_INTEGER;
     ShiftCount : CCHAR
-  ): LARGE_INTEGER; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): LARGE_INTEGER; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlLargeIntegerSubtract(
     Number : LARGE_INTEGER;
     Subtrahend : LARGE_INTEGER
-  ): LARGE_INTEGER; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): LARGE_INTEGER; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlLargeIntegerToChar(
@@ -8065,7 +8068,7 @@ function  RtlLargeIntegerToChar(
     Base : ULONG;
     BufferLength : ULONG;
     Buffer : PAnsiChar
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // The function LeaveCriticalSection() from Kernel32.dll is an export
 // forwarder to this function. This means you can refer to the
@@ -8073,7 +8076,7 @@ function  RtlLargeIntegerToChar(
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 procedure RtlLeaveCriticalSection(
     lpCriticalSection : PRTL_CRITICAL_SECTION
-  ); stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ); stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to GetSidLengthRequired() from
 // Advapi32.dll. Refer to the PSDK for additional information. Usually the
@@ -8081,7 +8084,7 @@ procedure RtlLeaveCriticalSection(
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlLengthRequiredSid(
     nSubAuthorityCount : ULONG
-  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to GetSecurityDescriptorLength() from
 // Advapi32.dll. Refer to the PSDK for additional information. Usually the
@@ -8090,21 +8093,21 @@ function  RtlLengthRequiredSid(
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlLengthSecurityDescriptor(
     SecurityDescriptor : PSECURITY_DESCRIPTOR
-  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to GetLengthSid() from Advapi32.dll. Refer
 // to the PSDK for additional information. Usually the same flags apply.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlLengthSid(
     pSid : PSID
-  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 {.$IFNDEF JWA_INCLUDEMODE}
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlLocalTimeToSystemTime(
     LocalTime : PLARGE_INTEGER;
     SystemTime : PLARGE_INTEGER
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 {.$ENDIF JWA_INCLUDEMODE}
 
 // This function is very similar to HeapLock() from Kernel32.dll. Refer to
@@ -8112,7 +8115,7 @@ function  RtlLocalTimeToSystemTime(
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlLockHeap(
     hHeap : PVOID
-  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to MakeSelfRelativeSD() from Advapi32.dll.
 // Refer to the PSDK for additional information. Usually the same flags
@@ -8122,7 +8125,7 @@ function  RtlMakeSelfRelativeSD(
     pAbsoluteSD : PSECURITY_DESCRIPTOR;
     pSelfRelativeSD : PSECURITY_DESCRIPTOR;
     lpdwBufferLength : LPDWORD
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to MapGenericMask() from Advapi32.dll.
 // Refer to the PSDK for additional information. Usually the same flags
@@ -8132,13 +8135,13 @@ function  RtlMakeSelfRelativeSD(
 procedure RtlMapGenericMask(
     AccessMask : PACCESS_MASK;
     GenericMapping : PGENERIC_MAPPING
-  ); stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ); stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Maps an error from the security subsystem to a native error status.
 // Compatibility: WXP, 2K3
 function  RtlMapSecurityErrorToNtStatus(
     SecurityError : DWORD
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: W2K, WXP
 function  RtlMergeRangeLists(
@@ -8146,7 +8149,7 @@ function  RtlMergeRangeLists(
     RangeList1 : PRTL_RANGE_LIST;
     RangeList2 : PRTL_RANGE_LIST;
     Flags : ULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
@@ -8154,47 +8157,47 @@ procedure RtlMoveMemory(
     Destination : PVOID;
     Source : PVOID;
     Length : SIZE_T
-  ); stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ); stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlNormalizeProcessParams(
     ProcessParameters : PRTL_USER_PROCESS_PARAMETERS
-  ): PRTL_USER_PROCESS_PARAMETERS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): PRTL_USER_PROCESS_PARAMETERS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlNtStatusToDosError(
     Status : NTSTATUS
-  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 
 // Compatibility: WXP, 2K3
 function  RtlNtStatusToDosErrorNoTeb(
     Status : NTSTATUS
-  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlNumberOfClearBits(
     BitMapHeader : PRTL_BITMAP
-  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlNumberOfSetBits(
     BitMapHeader : PRTL_BITMAP
-  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlOemStringToUnicodeSize(
     AnsiString : POEM_STRING
-  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlOemStringToUnicodeString(
     DestinationString : PUNICODE_STRING;
     SourceString : POEM_STRING;
     AllocateDestinationString : BOOLEAN
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlOemToUnicodeN(
@@ -8203,13 +8206,13 @@ function  RtlOemToUnicodeN(
     var ResultSize : ULONG;
     OemString : PAnsiChar;
     OemSize : ULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlOpenCurrentUser(
     samDesired : ACCESS_MASK;
     phkResult : PHKEY
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Either raises an exception of type STATUS_RESOURCE_NOT_OWNED or returns
 // a BOOLEAN value.
@@ -8217,7 +8220,7 @@ function  RtlOpenCurrentUser(
 // Compatibility: WXP, 2K3
 function  RtlpNotOwnerCriticalSection(
     lpCriticalSection : PRTL_CRITICAL_SECTION
-  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This is a private wrapper for NtCreateKey().
 // However, 2 of the parameters are not being used!
@@ -8229,7 +8232,7 @@ function  RtlpNtCreateKey(
     Unused1 : ULONG;
     Unused2 : ULONG;
     Disposition : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlpNtEnumerateSubKey(
@@ -8237,7 +8240,7 @@ function  RtlpNtEnumerateSubKey(
     SubKeyName : PUNICODE_STRING;
     Index : ULONG;
     Unused1 : ULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to NtCreateKey() from Ntdll.dll. Usually
 // the same or similar flags apply.
@@ -8245,7 +8248,7 @@ function  RtlpNtEnumerateSubKey(
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlpNtMakeTemporaryKey(
     KeyHandle : HANDLE
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlpNtOpenKey(
@@ -8253,7 +8256,7 @@ function  RtlpNtOpenKey(
     DesiredAccess : ACCESS_MASK;
     ObjectAttributes : POBJECT_ATTRIBUTES;
     Unused : ULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlpNtQueryValueKey(
@@ -8262,7 +8265,7 @@ function  RtlpNtQueryValueKey(
     Data : PVOID;
     DataSize : PULONG;
     Unused : ULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This is a private wrapper for NtSetValueKey().
 // The parameters of TitleIndex and ValueName are not being passed, that is
@@ -8273,14 +8276,14 @@ function  RtlpNtSetValueKey(
     Type_ : ULONG;
     Data : PVOID;
     DataSize : ULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlPrefixString(
     String1 : PANSI_STRING;
     String2 : PANSI_STRING;
     CaseInsensitive : BOOLEAN
-  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
@@ -8288,13 +8291,13 @@ function  RtlPrefixUnicodeString(
     String1 : PUNICODE_STRING;
     String2 : PUNICODE_STRING;
     CaseInsensitive : BOOLEAN
-  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 {$IFNDEF JWA_INCLUDEMODE}
 // Compatibility: WXP, 2K3
 function  RtlQueryDepthSList(
     ListHead : PSLIST_HEADER
-  ): USHORT; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): USHORT; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 {$ENDIF JWA_INCLUDEMODE}
 
 // VarValue has to have a buffer assigned big enough to hold the value.
@@ -8303,7 +8306,7 @@ function  RtlQueryEnvironmentVariable_U(
     Environment : PVOID;
     VarName : PUNICODE_STRING;
     VarValue : PUNICODE_STRING
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to GetAclInformation() from Advapi32.dll.
 // Refer to the PSDK for additional information. Usually the same flags
@@ -8314,14 +8317,14 @@ function  RtlQueryInformationAcl(
     pAclInformation : PVOID;
     nAclInformationLength : DWORD;
     dwAclInformationClass : ACL_INFORMATION_CLASS
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlQueryProcessDebugInformation(
     ProcessId : ULONG;
     DebugInfoClassMask : ULONG;
     DebugBuffer : PDEBUG_BUFFER
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
@@ -8331,22 +8334,22 @@ function  RtlQueryRegistryValues(
     QueryTable : PRTL_QUERY_REGISTRY_TABLE;
     Context : PVOID;
     Environment : PVOID
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 procedure RtlRaiseStatus(
     Status : NTSTATUS
-  ); stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ); stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlRandom(
     Seed : PULONG
-  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: WXP, 2K3
 function  RtlRandomEx(
     Seed : PULONG
-  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // The function HeapReAlloc() from Kernel32.dll is an export forwarder to
 // this function. This means you can refer to the documentation of
@@ -8357,26 +8360,26 @@ function  RtlReAllocateHeap(
     dwFlags : ULONG;
     lpMem : PVOID;
     dwBytes : SIZE_T
-  ): PVOID; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): PVOID; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
-procedure RtlReleasePebLock(); stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+procedure RtlReleasePebLock(); stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: WXP, 2K3
 function  RtlRemoveVectoredExceptionHandler(
     VectoredHandlerHandle : PVOID
-  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: WXP, 2K3
 procedure RtlRestoreLastWin32Error(
     dwErrCode : DWORD
-  ); stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ); stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 procedure RtlRunDecodeUnicodeString(
     CodeSeed : UCHAR;
     StringToDecode : PUNICODE_STRING
-  ); stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ); stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // If CodeSeed == 0 it will be assigned a value by the function. Use this
 // very value in a call to RtlRunDecodeUnicodeString()! To decode the
@@ -8385,19 +8388,19 @@ procedure RtlRunDecodeUnicodeString(
 procedure RtlRunEncodeUnicodeString(
     var CodeSeed : UCHAR;
     StringToEncode : PUNICODE_STRING
-  ); stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ); stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 procedure RtlSecondsSince1970ToTime(
     SecondsSince1970 : ULONG;
     Time : PLARGE_INTEGER
-  ); stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ); stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 procedure RtlSecondsSince1980ToTime(
     SecondsSince1980 : ULONG;
     Time : PLARGE_INTEGER
-  ); stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ); stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to MakeAbsoluteSD() from Advapi32.dll.
 // Refer to the PSDK for additional information. Usually the same flags
@@ -8415,13 +8418,13 @@ function  RtlSelfRelativeToAbsoluteSD(
     lpdwOwnerSize : LPDWORD;
     pPrimaryGroup : PSID;
     lpdwPrimaryGroupSize : LPDWORD
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 procedure RtlSetAllBits(
     BitMapHeader : PRTL_BITMAP
-  ); stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ); stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
@@ -8429,7 +8432,7 @@ procedure RtlSetBits(
     BitMapHeader : PRTL_BITMAP;
     StartingIndex : ULONG;
     NumberToSet : ULONG
-  ); stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ); stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to SetSecurityDescriptorControl() from
 // Advapi32.dll. Refer to the PSDK for additional information. Usually the
@@ -8439,7 +8442,7 @@ function  RtlSetControlSecurityDescriptor(
     pSecurityDescriptor : PSECURITY_DESCRIPTOR;
     ControlBitsOfInterest : SECURITY_DESCRIPTOR_CONTROL;
     ControlBitsToSet : SECURITY_DESCRIPTOR_CONTROL
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // The function SetCriticalSectionSpinCount() from Kernel32.dll is an
 // export forwarder to this function. This means you can refer to the
@@ -8448,12 +8451,12 @@ function  RtlSetControlSecurityDescriptor(
 function  RtlSetCriticalSectionSpinCount(
     lpCriticalSection : PRTL_CRITICAL_SECTION;
     dwSpinCount : ULONG
-  ): DWORD; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): DWORD; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlSetCurrentDirectory_U(
     NewCurrentDirectory : PUNICODE_STRING
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
@@ -8462,14 +8465,14 @@ function  RtlSetDaclSecurityDescriptor(
     DaclPresent : BOOLEAN;
     Dacl : PACL;
     DaclDefaulted : BOOLEAN
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlSetGroupSecurityDescriptor(
     pSecurityDescriptor : PSECURITY_DESCRIPTOR;
     pGroup : PSID;
     bGroupDefaulted : BOOLEAN
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to SetAclInformation() from Advapi32.dll.
 // Refer to the PSDK for additional information. Usually the same flags
@@ -8480,26 +8483,26 @@ function  RtlSetInformationAcl(
     pAclInformation : PVOID;
     nInformationLength : DWORD;
     dwAclInformationClass : ACL_INFORMATION_CLASS
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: WXP, 2K3
 function  RtlSetLastWin32ErrorAndNtStatusFromNtStatus(
     Status : NTSTATUS
-  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlSetOwnerSecurityDescriptor(
     pSecurityDescriptor : PSECURITY_DESCRIPTOR;
     pOwner : PSID;
     bOwnerDefaulted : BOOLEAN
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: WXP, 2K3
 function  RtlSetProcessIsCritical(
     bIsCritical : BOOLEAN;
     pbOldIsCriticalValue : PBOOLEAN;
     bUnknownCanBeFalse : BOOLEAN
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to SetSecurityDescriptorSacl() from
 // Advapi32.dll. Refer to the PSDK for additional information. Usually the
@@ -8510,14 +8513,14 @@ function  RtlSetSaclSecurityDescriptor(
     bSaclPresent : BOOLEAN;
     pSacl : PACL;
     SaclDefaulted : BOOLEAN
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: WXP, 2K3
 function  RtlSetThreadIsCritical(
     bIsCritical : BOOLEAN;
     pbOldIsCriticalValue : PBOOLEAN;
     bUnknownCanBeFalse : BOOLEAN
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // The function HeapSize() from Kernel32.dll is an export forwarder to this
 // function. This means you can refer to the documentation of HeapSize()!
@@ -8526,14 +8529,14 @@ function  RtlSizeHeap(
     hHeap : HANDLE;
     dwFlags : ULONG;
     lpMem : PVOID
-  ): SIZE_T; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): SIZE_T; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: W2K, WXP, 2K3
 function  RtlStringFromGUID(
     Guid : REFGUID;
     GuidString : PUNICODE_STRING
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to GetSidSubAuthorityCount() from
 // Advapi32.dll. Refer to the PSDK for additional information. Usually the
@@ -8541,7 +8544,7 @@ function  RtlStringFromGUID(
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlSubAuthorityCountSid(
     pSid : PSID
-  ): PUCHAR; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): PUCHAR; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to GetSidSubAuthority() from Advapi32.dll.
 // Refer to the PSDK for additional information. Usually the same flags
@@ -8550,47 +8553,47 @@ function  RtlSubAuthorityCountSid(
 function  RtlSubAuthoritySid(
     pSid : PSID;
     nSubAuthority : DWORD
-  ): PDWORD; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): PDWORD; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlSystemTimeToLocalTime(
     SystemTime : PLARGE_INTEGER;
     LocalTime : PLARGE_INTEGER
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlTimeFieldsToTime(
     TimeFields : PTIME_FIELDS;
     Time : PLARGE_INTEGER
-  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 procedure RtlTimeToElapsedTimeFields(
     Time : PLARGE_INTEGER;
     TimeFields : PTIME_FIELDS
-  ); stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ); stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 {.$IFNDEF JWA_INCLUDEMODE}
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlTimeToSecondsSince1970(
     Time : PLARGE_INTEGER;
     ElapsedSeconds : PULONG
-  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 {.$ENDIF JWA_INCLUDEMODE}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlTimeToSecondsSince1980(
     Time : PLARGE_INTEGER;
     ElapsedSeconds : PULONG
-  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 procedure RtlTimeToTimeFields(
     Time : PLARGE_INTEGER;
     TimeFields : PTIME_FIELDS
-  ); stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ); stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // The function TryEnterCriticalSection() from Kernel32.dll is an export
 // forwarder to this function. This means you can refer to the
@@ -8598,13 +8601,13 @@ procedure RtlTimeToTimeFields(
 // Compatibility: NT4, W2K, WXP, 2K3
 function  RtlTryEnterCriticalSection(
     lpCriticalSection : PRTL_CRITICAL_SECTION
-  ): BOOL; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): BOOL; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlUnicodeStringToAnsiSize(
     UnicodeString : PUNICODE_STRING
-  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
@@ -8613,7 +8616,7 @@ function  RtlUnicodeStringToAnsiString(
     DestinationString : PANSI_STRING;
     SourceString : PUNICODE_STRING;
     AllocateDestinationString : BOOLEAN
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 {.$ENDIF JWA_INCLUDEMODE}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
@@ -8621,7 +8624,7 @@ function  RtlUnicodeStringToCountedOemString(
     DestinationString : POEM_STRING;
     SourceString : PUNICODE_STRING;
     AllocateDestinationString : BOOLEAN
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
@@ -8629,12 +8632,12 @@ function  RtlUnicodeStringToInteger(
     Str : PUNICODE_STRING;
     Base : ULONG;
     Value : PULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlUnicodeStringToOemSize(
     UnicodeString : PUNICODE_STRING
-  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 {.$IFNDEF JWA_INCLUDEMODE}
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
@@ -8642,7 +8645,7 @@ function  RtlUnicodeStringToOemString(
     DestinationString : POEM_STRING;
     SourceString : PCUNICODE_STRING;
     AllocateDestinationString : BOOLEAN
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 {.$ENDIF JWA_INCLUDEMODE}
 
 {.$IFNDEF JWA_INCLUDEMODE}
@@ -8652,13 +8655,13 @@ function  RtlUnicodeToMultiByteSize(
     BytesInMultiByteString : PULONG;
     UnicodeString : PWSTR;
     BytesInUnicodeString : ULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlUniform(
     Seed : PULONG
-  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 {.$ENDIF JWA_INCLUDEMODE}
 
@@ -8671,13 +8674,13 @@ procedure RtlUnwind(
     TargetIp : PVOID;
     ExceptionRecord : PEXCEPTION_RECORD;
     ReturnValue : PVOID
-  ); stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ); stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlUpcaseUnicodeChar(
     SourceCharacter : WCHAR
-  ): WCHAR; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): WCHAR; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
@@ -8685,28 +8688,28 @@ function  RtlUpcaseUnicodeString(
     DestinationString : PUNICODE_STRING;
     SourceString : PUNICODE_STRING;
     AllocateDestinationString : BOOLEAN
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlUpcaseUnicodeStringToAnsiString(
     DestinationString : PSTRING;
     SourceString : PUNICODE_STRING;
     AllocateDestinationString : BOOLEAN
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlUpcaseUnicodeStringToCountedOemString(
     DestinationString : PSTRING;
     SourceString : PUNICODE_STRING;
     AllocateDestinationString : BOOLEAN
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlUpcaseUnicodeStringToOemString(
     DestinationString : PSTRING;
     SourceString : PUNICODE_STRING;
     AllocateDestinationString : BOOLEAN
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlUpcaseUnicodeToMultiByteN(
@@ -8715,7 +8718,7 @@ function  RtlUpcaseUnicodeToMultiByteN(
     var ResultSize : ULONG;
     UnicodeString : PWSTR;
     UnicodeSize : ULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlUpcaseUnicodeToOemN(
@@ -8724,26 +8727,26 @@ function  RtlUpcaseUnicodeToOemN(
     var ResultSize : ULONG;
     UnicodeString : PWSTR;
     UnicodeSize : ULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlUpperChar(
     Character : AnsiChar
-  ): AnsiChar; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): AnsiChar; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 procedure RtlUpperString(
     DestinationString : PSTRING;
     SourceString : PSTRING
-  ); stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ); stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // #->REVIEW NUMBER OF PARAMETERS
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlValidAcl(
     Acl : PACL
-  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // This function is very similar to HeapValidate() from Kernel32.dll. Refer
 // to the PSDK for additional information. Usually the same flags apply.
@@ -8752,32 +8755,32 @@ function  RtlValidateHeap(
     hHeap : HANDLE;
     dwFlags : ULONG;
     lpMem : LPCVOID
-  ): BOOL; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): BOOL; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: WXP, 2K3
 function  RtlValidateUnicodeString(
     dwMustBeNull : ULONG;
     ValidateThis : PUNICODE_STRING
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: W2K, WXP, 2K3
 function  RtlValidRelativeSecurityDescriptor(
     SecurityDescriptorInput : PSECURITY_DESCRIPTOR;
     SecurityDescriptorLength : ULONG;
     RequiredInformation : SECURITY_INFORMATION
-  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlValidSecurityDescriptor(
     SecurityDescriptor : PSECURITY_DESCRIPTOR
-  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // #->REVIEW NUMBER OF PARAMETERS; XREF: see IsValidSid()!
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlValidSid(
     pSid : PSID
-  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: W2K, WXP, 2K3
@@ -8785,13 +8788,13 @@ function  RtlVerifyVersionInfo(
     VersionInfo : PRTL_OSVERSIONINFOEXW;
     TypeMask : ULONG;
     ConditionMask : ULONGLONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 function  RtlVolumeDeviceToDosName(
     VolumeDeviceObject : PVOID;
     DosName : PUNICODE_STRING
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
@@ -8802,41 +8805,41 @@ function  RtlWriteRegistryValue(
     ValueType : ULONG;
     ValueData : PVOID;
     ValueLength : ULONG
-  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): NTSTATUS; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlxAnsiStringToUnicodeSize(
     AnsiString : PANSI_STRING
-  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlxOemStringToUnicodeSize(
     AnsiString : POEM_STRING
-  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlxUnicodeStringToAnsiSize(
     UnicodeString : PUNICODE_STRING
-  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlxUnicodeStringToOemSize(
     UnicodeString : PUNICODE_STRING
-  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): ULONG; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 function  RtlZeroHeap(
     hHeap : HANDLE;
     dwFlags : ULONG
-  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): BOOLEAN; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 // Documented in the DDK.
 // Compatibility: NT3, NT4, W2K, WXP, 2K3
 procedure RtlZeroMemory(
     Destination : PVOID;
     Length : SIZE_T
-  ); stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ); stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 
 {$IFNDEF JWA_INCLUDEMODE}
 // This function is very similar to VerSetConditionMask() from
@@ -8847,7 +8850,7 @@ function  VerSetConditionMask(
     ConditionMask : ULONGLONG;
     dwTypeMask : DWORD;
     Condition : BYTE
-  ): ULONGLONG; stdcall; {$IFNDEF RTDL}external ntdll;{$ENDIF}
+  ): ULONGLONG; stdcall; {$IFNDEF RTDL}external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF};{$ENDIF}
 {$ENDIF JWA_INCLUDEMODE}
 
 //// 810 automatically created prototype entries.

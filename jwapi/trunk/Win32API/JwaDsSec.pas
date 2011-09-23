@@ -182,7 +182,7 @@ end;
 
 {$ELSE}
 
-function DSCreateSecurityPage; external dssec name 'DSCreateSecurityPage';
+function DSCreateSecurityPage; external dssec {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'DSCreateSecurityPage';
 
 {$ENDIF DYNAMIC_LINK}
 

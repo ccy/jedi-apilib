@@ -866,7 +866,7 @@ begin
   end;
 end;
 {$ELSE}
-function WinVerifyTrust; external wintrust name 'WinVerifyTrust';
+function WinVerifyTrust; external wintrust {$IFDEF DELAYED_LINKING}delayed{$ENDIF} name 'WinVerifyTrust';
 
 {$ENDIF DYNAMIC_LINK}
 

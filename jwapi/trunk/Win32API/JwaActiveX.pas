@@ -911,9 +911,9 @@ end;
 
 {$ELSE}
   function CoGetObject(pszName: PWideChar; pBindOptions: PBindOpts;
-     const iid: TIID; out ppv): HResult; stdcall; external 'ole32.dll' name 'CoGetObject';
-  function RegisterDragDrop(wnd: HWnd; dropTarget: IDropTarget): HResult; stdcall; external 'ole32.dll';
-  procedure ReleaseStgMedium(var medium: TStgMedium); stdcall; external 'ole32.dll';
+     const iid: TIID; out ppv): HResult; stdcall; external 'ole32.dll' {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'CoGetObject';
+  function RegisterDragDrop(wnd: HWnd; dropTarget: IDropTarget): HResult; stdcall; external 'ole32.dll' {$IFDEF DELAYED_LOADING}delayed{$ENDIF};
+  procedure ReleaseStgMedium(var medium: TStgMedium); stdcall; external 'ole32.dll' {$IFDEF DELAYED_LOADING}delayed{$ENDIF};
 {$ENDIF DYNAMIC_LINK}
 
 

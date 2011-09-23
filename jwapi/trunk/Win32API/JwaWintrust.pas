@@ -498,14 +498,14 @@ end;
 
 {$ELSE}
 
-function WinVerifyTrust; external wintrust name 'WinVerifyTrust';
+function WinVerifyTrust; external wintrust {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'WinVerifyTrust';
 
-function WTHelperGetProvSignerFromChain; external wintrust name 'WTHelperGetProvSignerFromChain';
-function WTHelperGetProvCertFromChain; external wintrust name 'WTHelperGetProvCertFromChain';
-function WTHelperProvDataFromStateData; external wintrust name 'WTHelperProvDataFromStateData';
-function WTHelperGetProvPrivateDataFromChain; external wintrust name 'WTHelperGetProvPrivateDataFromChain';
-function WTHelperCertIsSelfSigned; external wintrust name 'WTHelperCertIsSelfSigned';
-function WTHelperCertCheckValidSignature; external wintrust name 'WTHelperCertCheckValidSignature';
+function WTHelperGetProvSignerFromChain; external wintrust {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'WTHelperGetProvSignerFromChain';
+function WTHelperGetProvCertFromChain; external wintrust {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'WTHelperGetProvCertFromChain';
+function WTHelperProvDataFromStateData; external wintrust {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'WTHelperProvDataFromStateData';
+function WTHelperGetProvPrivateDataFromChain; external wintrust {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'WTHelperGetProvPrivateDataFromChain';
+function WTHelperCertIsSelfSigned; external wintrust {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'WTHelperCertIsSelfSigned';
+function WTHelperCertCheckValidSignature; external wintrust {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'WTHelperCertCheckValidSignature';
 
 {$ENDIF DYNAMIC_LINK}
 

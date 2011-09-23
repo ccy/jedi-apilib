@@ -212,11 +212,11 @@ end;
 
 {$ELSE}
 
-function NetMessageNameAdd; external netapi32 name 'NetMessageNameAdd';
-function NetMessageNameEnum; external netapi32 name 'NetMessageNameEnum';
-function NetMessageNameGetInfo; external netapi32 name 'NetMessageNameGetInfo';
-function NetMessageNameDel; external netapi32 name 'NetMessageNameDel';
-function NetMessageBufferSend; external netapi32 name 'NetMessageBufferSend';
+function NetMessageNameAdd; external netapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NetMessageNameAdd';
+function NetMessageNameEnum; external netapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NetMessageNameEnum';
+function NetMessageNameGetInfo; external netapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NetMessageNameGetInfo';
+function NetMessageNameDel; external netapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NetMessageNameDel';
+function NetMessageBufferSend; external netapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NetMessageBufferSend';
 
 {$ENDIF DYNAMIC_LINK}
 

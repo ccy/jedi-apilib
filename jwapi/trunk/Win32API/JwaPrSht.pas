@@ -1055,13 +1055,13 @@ end;
 
 {$ELSE}
 
-function CreatePropertySheetPageA; external comctl32 name 'CreatePropertySheetPageA';
-function CreatePropertySheetPageW; external comctl32 name 'CreatePropertySheetPageW';
-function DestroyPropertySheetPage; external comctl32 name 'DestroyPropertySheetPage';
-function PropertySheetA; external comctl32 name 'PropertySheetA';
-function PropertySheetW; external comctl32 name 'PropertySheetW';
-function CreatePropertySheetPage; external comctl32 name 'CreatePropertySheetPage' + AWSuffix;
-function PropertySheet; external comctl32 name 'PropertySheet' + AWSuffix;
+function CreatePropertySheetPageA; external comctl32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'CreatePropertySheetPageA';
+function CreatePropertySheetPageW; external comctl32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'CreatePropertySheetPageW';
+function DestroyPropertySheetPage; external comctl32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'DestroyPropertySheetPage';
+function PropertySheetA; external comctl32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'PropertySheetA';
+function PropertySheetW; external comctl32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'PropertySheetW';
+function CreatePropertySheetPage; external comctl32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'CreatePropertySheetPage' + AWSuffix;
+function PropertySheet; external comctl32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'PropertySheet' + AWSuffix;
 
 {$ENDIF DYNAMIC_LINK}
 

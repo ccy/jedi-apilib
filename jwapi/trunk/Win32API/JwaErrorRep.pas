@@ -172,10 +172,10 @@ end;
 
 {$ELSE}
 
-function ReportFault; external faultreplib name 'ReportFault';
-function AddERExcludedApplicationA; external faultreplib name 'AddERExcludedApplicationA';
-function AddERExcludedApplicationW; external faultreplib name 'AddERExcludedApplicationW';
-function AddERExcludedApplication; external faultreplib name 'AddERExcludedApplication' + AWSuffix;
+function ReportFault; external faultreplib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'ReportFault';
+function AddERExcludedApplicationA; external faultreplib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'AddERExcludedApplicationA';
+function AddERExcludedApplicationW; external faultreplib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'AddERExcludedApplicationW';
+function AddERExcludedApplication; external faultreplib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'AddERExcludedApplication' + AWSuffix;
 
 {$ENDIF DYNAMIC_LINK}
 

@@ -765,9 +765,9 @@ end;
 
 {$ELSE}
 
-function getaddrinfo; external ws2tcpip name 'getaddrinfo';
-procedure freeaddrinfo; external ws2tcpip name 'freeaddrinfo';
-function getnameinfo; external ws2tcpip name 'getnameinfo';
+function getaddrinfo; external ws2tcpip {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'getaddrinfo';
+procedure freeaddrinfo; external ws2tcpip {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'freeaddrinfo';
+function getnameinfo; external ws2tcpip {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'getnameinfo';
 
 {$ENDIF DYNAMIC_LINK}
 

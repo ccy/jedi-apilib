@@ -691,49 +691,49 @@ end;
 
 {$ELSE}
 
-function CreateToolhelp32Snapshot; external kernel32 name 'CreateToolhelp32Snapshot';
-function Heap32ListFirst; external kernel32 name 'Heap32ListFirst';
-function Heap32ListNext; external kernel32 name 'Heap32ListNext';
-function Heap32First; external kernel32 name 'Heap32First';
-function Heap32Next; external kernel32 name 'Heap32Next';
-function Toolhelp32ReadProcessMemory; external kernel32 name 'Toolhelp32ReadProcessMemory';
-function Thread32First; external kernel32 name 'Thread32First';
-function Thread32Next; external kernel32 name 'Thread32Next';
+function CreateToolhelp32Snapshot; external kernel32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'CreateToolhelp32Snapshot';
+function Heap32ListFirst; external kernel32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'Heap32ListFirst';
+function Heap32ListNext; external kernel32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'Heap32ListNext';
+function Heap32First; external kernel32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'Heap32First';
+function Heap32Next; external kernel32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'Heap32Next';
+function Toolhelp32ReadProcessMemory; external kernel32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'Toolhelp32ReadProcessMemory';
+function Thread32First; external kernel32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'Thread32First';
+function Thread32Next; external kernel32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'Thread32Next';
 
 
 {$IFDEF UNICODE}
-function Process32First; external kernel32 name 'Process32FirstW';
+function Process32First; external kernel32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'Process32FirstW';
 {$ELSE}
-function Process32First; external kernel32 name 'Process32First';
+function Process32First; external kernel32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'Process32First';
 {$ENDIF}
-function Process32FirstW; external kernel32 name 'Process32FirstW';
-function Process32FirstA; external kernel32 name 'Process32First';
+function Process32FirstW; external kernel32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'Process32FirstW';
+function Process32FirstA; external kernel32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'Process32First';
 
 {$IFDEF UNICODE}
-function Process32Next; external kernel32 name 'Process32NextW';
+function Process32Next; external kernel32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'Process32NextW';
 {$ELSE}
-function Process32Next; external kernel32 name 'Process32Next';
+function Process32Next; external kernel32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'Process32Next';
 {$ENDIF}
-function Process32NextW; external kernel32 name 'Process32NextW';
-function Process32NextA; external kernel32 name 'Process32Next'; //ANSI
+function Process32NextW; external kernel32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'Process32NextW';
+function Process32NextA; external kernel32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'Process32Next'; //ANSI
 
 {$IFDEF UNICODE}
-function Module32First; external kernel32 name 'Module32FirstW';
+function Module32First; external kernel32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'Module32FirstW';
 {$ELSE}
-function Module32First; external kernel32 name 'Module32First';
+function Module32First; external kernel32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'Module32First';
 {$ENDIF}
-function Module32FirstA; external kernel32 name 'Module32First';
-function Module32FirstW; external kernel32 name 'Module32FirstW';
+function Module32FirstA; external kernel32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'Module32First';
+function Module32FirstW; external kernel32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'Module32FirstW';
 
 
 
 {$IFDEF UNICODE}
-function Module32Next; external kernel32 name 'Module32NextW';
+function Module32Next; external kernel32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'Module32NextW';
 {$ELSE}
-function Module32Next; external kernel32 name 'Module32Next';
+function Module32Next; external kernel32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'Module32Next';
 {$ENDIF}
-function Module32NextA; external kernel32 name 'Module32Next';
-function Module32NextW; external kernel32 name 'Module32NextW';
+function Module32NextA; external kernel32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'Module32Next';
+function Module32NextW; external kernel32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'Module32NextW';
 
 
 {$ENDIF DYNAMIC_LINK}

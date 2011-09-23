@@ -951,29 +951,29 @@ const
 
 {$ELSE}
 
-  function OpenVirtualDisk; external VirtDisklib name 'OpenVirtualDisk';
+  function OpenVirtualDisk; external VirtDisklib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'OpenVirtualDisk';
   {$EXTERNALSYM OpenVirtualDisk}
-  function AttachVirtualDisk; external VirtDisklib name 'AttachVirtualDisk';
+  function AttachVirtualDisk; external VirtDisklib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'AttachVirtualDisk';
   {$EXTERNALSYM AttachVirtualDisk}
-  function DetachVirtualDisk; external VirtDisklib name 'DetachVirtualDisk';
+  function DetachVirtualDisk; external VirtDisklib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'DetachVirtualDisk';
   {$EXTERNALSYM DetachVirtualDisk}
-  function GetVirtualDiskPhysicalPath; external VirtDisklib name 'GetVirtualDiskPhysicalPath';
+  function GetVirtualDiskPhysicalPath; external VirtDisklib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'GetVirtualDiskPhysicalPath';
   {$EXTERNALSYM GetVirtualDiskPhysicalPath}
-  function CreateVirtualDisk; external VirtDisklib name 'CreateVirtualDisk';
+  function CreateVirtualDisk; external VirtDisklib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'CreateVirtualDisk';
   {$EXTERNALSYM CreateVirtualDisk}
-  function GetStorageDependencyInformation; external VirtDisklib name 'GetStorageDependencyInformation';
+  function GetStorageDependencyInformation; external VirtDisklib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'GetStorageDependencyInformation';
   {$EXTERNALSYM GetStorageDependencyInformation}
-  function GetVirtualDiskInformation; external VirtDisklib name 'GetVirtualDiskInformation';
+  function GetVirtualDiskInformation; external VirtDisklib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'GetVirtualDiskInformation';
   {$EXTERNALSYM GetVirtualDiskInformation}
-  function SetVirtualDiskInformation; external VirtDisklib name 'SetVirtualDiskInformation';
+  function SetVirtualDiskInformation; external VirtDisklib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'SetVirtualDiskInformation';
   {$EXTERNALSYM SetVirtualDiskInformation}
-  function GetVirtualDiskOperationProgress; external VirtDisklib name 'GetVirtualDiskOperationProgress';
+  function GetVirtualDiskOperationProgress; external VirtDisklib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'GetVirtualDiskOperationProgress';
   {$EXTERNALSYM GetVirtualDiskOperationProgress}
-  function CompactVirtualDisk; external VirtDisklib name 'CompactVirtualDisk';
+  function CompactVirtualDisk; external VirtDisklib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'CompactVirtualDisk';
   {$EXTERNALSYM CompactVirtualDisk}
-  function MergeVirtualDisk; external VirtDisklib name 'MergeVirtualDisk';
+  function MergeVirtualDisk; external VirtDisklib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'MergeVirtualDisk';
   {$EXTERNALSYM MergeVirtualDisk}
-  function ExpandVirtualDisk; external VirtDisklib name 'ExpandVirtualDisk';
+  function ExpandVirtualDisk; external VirtDisklib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'ExpandVirtualDisk';
   {$EXTERNALSYM ExpandVirtualDisk}
 //ExpandVirtualDisk returns ERROR_INVALID_ARGUMENT if NewSize is <= actual size
 

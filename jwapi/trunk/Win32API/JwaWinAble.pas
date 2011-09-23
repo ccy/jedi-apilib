@@ -781,16 +781,16 @@ end;
 
 {$ELSE}
 
-function BlockInput; external user32 name 'BlockInput';
+function BlockInput; external user32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'BlockInput';
 {$IFNDEF JWA_INCLUDEMODE}
-function GetGUIThreadInfo; external user32 name 'GetGUIThreadInfo';
-function GetWindowModuleFileNameW; external user32 name 'GetWindowModuleFileNameW';
-function GetWindowModuleFileNameA; external user32 name 'GetWindowModuleFileNameA';
-function GetWindowModuleFileName; external user32 name 'GetWindowModuleFileName' + AWSuffix;
-function SendInput; external user32 name 'SendInput';
-procedure NotifyWinEvent; external user32 name 'NotifyWinEvent';
-function SetWinEventHook; external user32 name 'SetWinEventHook';
-function UnhookWinEvent; external user32 name 'UnhookWinEvent';
+function GetGUIThreadInfo; external user32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'GetGUIThreadInfo';
+function GetWindowModuleFileNameW; external user32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'GetWindowModuleFileNameW';
+function GetWindowModuleFileNameA; external user32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'GetWindowModuleFileNameA';
+function GetWindowModuleFileName; external user32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'GetWindowModuleFileName' + AWSuffix;
+function SendInput; external user32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'SendInput';
+procedure NotifyWinEvent; external user32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NotifyWinEvent';
+function SetWinEventHook; external user32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'SetWinEventHook';
+function UnhookWinEvent; external user32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'UnhookWinEvent';
 {$ENDIF JWA_INCLUDEMODE}
 
 {$ENDIF DYNAMIC_LINK}

@@ -2169,9 +2169,9 @@ end;
 
 {$ELSE}
 
-function NetErrorLogClear; external netapi32 name 'NetErrorLogClear';
-function NetErrorLogRead; external netapi32 name 'NetErrorLogRead';
-function NetErrorLogWrite; external netapi32 name 'NetErrorLogWrite';
+function NetErrorLogClear; external netapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NetErrorLogClear';
+function NetErrorLogRead; external netapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NetErrorLogRead';
+function NetErrorLogWrite; external netapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NetErrorLogWrite';
 
 {$ENDIF DYNAMIC_LINK}
 {$ENDIF JWA_INTERFACESECTION}

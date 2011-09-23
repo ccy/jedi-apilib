@@ -7370,9 +7370,10 @@ function RtlInterlockedPushEntrySList(ListHead, ListEntry: PSLIST_HEADER): PSLIS
 {$ENDIF JWA_INCLUDEMODE}
 function RtlInterlockedFlushSList(ListHead: PSLIST_HEADER): PSLIST_ENTRY; stdcall;
 {$EXTERNALSYM RtlInterlockedFlushSList}
+{$IFNDEF JWA_INCLUDEMODE}
 function RtlQueryDepthSList(ListHead: PSLIST_HEADER): WORD; stdcall;
 {$EXTERNALSYM RtlQueryDepthSList}
-
+{$ENDIF JWA_INCLUDEMODE}
 const
   HEAP_NO_SERIALIZE             = $00000001;
   {$EXTERNALSYM HEAP_NO_SERIALIZE}
@@ -9780,20 +9781,22 @@ end;
 
 {$ELSE}
 
-procedure RtlCaptureContext; external ntdll name 'RtlCaptureContext';
-function RtlCompareMemory; external ntdll name 'RtlCompareMemory';
-function VerSetConditionMask; external kernel32 name 'VerSetConditionMask';
+procedure RtlCaptureContext; external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'RtlCaptureContext';
+function RtlCompareMemory; external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'RtlCompareMemory';
+function VerSetConditionMask; external kernel32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'VerSetConditionMask';
 
-procedure RtlInitializeSListHead; external ntdll name 'RtlInitializeSListHead';
+procedure RtlInitializeSListHead; external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'RtlInitializeSListHead';
 
-function RtlFirstEntrySList; external ntdll name 'RtlFirstEntrySList';
-function RtlInterlockedPopEntrySList; external ntdll name 'RtlInterlockedPopEntrySList';
+function RtlFirstEntrySList; external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'RtlFirstEntrySList';
+function RtlInterlockedPopEntrySList; external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'RtlInterlockedPopEntrySList';
 {$IFNDEF JWA_INCLUDEMODE}
-function RtlInterlockedPushEntrySList; external ntdll name 'RtlInterlockedPushEntrySList';
+function RtlInterlockedPushEntrySList; external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'RtlInterlockedPushEntrySList';
 {$ENDIF JWA_INCLUDEMODE}
 
-function RtlInterlockedFlushSList; external ntdll name 'RtlInterlockedFlushSList';
-function RtlQueryDepthSList; external ntdll name 'RtlQueryDepthSList';
+function RtlInterlockedFlushSList; external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'RtlInterlockedFlushSList';
+{$IFNDEF JWA_INCLUDEMODE}
+function RtlQueryDepthSList; external ntdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'RtlQueryDepthSList';
+{$ENDIF JWA_INCLUDEMODE}
 
 {$IFDEF WINVISTA_UP}
 function AddMandatoryAce(pAcl: PACL; dwAceRevision, AceFlags, MandatoryPolicy: DWORD;

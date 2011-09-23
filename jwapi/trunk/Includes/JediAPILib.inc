@@ -401,6 +401,21 @@ Standalone compiling would be useless!
  {$DEFINE HTMLHELP11_UP}
 {$ENDIF HTMLHELP11}
 
+{$IFDEF SUPPORTS_DELAYED_LOADING} //if delayed linking is supported ...
+ {$IFDEF DYNAMIC_LINK}            //... and dynamic linking is supposed ...
+  {$IFDEF DELPHI16_UP}            //... and Delphi >= XE2, then ... 
+    {$DEFINE DELAYED_LOADING}     //... switch to delayed loading
+    {$UNDEF DYNAMIC_LINK}
+  {$ENDIF DELPHI16_UP}  
+ {$ENDIF DYNAMIC_LINK}
+{$ELSE}                           //if delayed loading is not supported ...
+ {$IFDEF DELAYED_LOADING}         //... but someone wants it ...
+  {$UNDEF DELAYED_LOADING}        //... then switch back to dynamic linking
+  {$DEFINE DYNAMIC_LINK}
+ {$ENDIF DELAYED_LOADING}
+{$ENDIF}
+
+
 {$ENDIF ~JEDIAPILIB_INC}
 
 

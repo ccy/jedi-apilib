@@ -602,8 +602,9 @@ The list has no order!}
   {$ENDIF}
 {$ENDIF}
 
+{$IFNDEF JWA_NO_STRSAFE}
 {$I JwaStrSafe.pas}
-
+{$ENDIF}
 
 {$IFDEF JWA_INCLUDE_SHELLAPI}
 {$I JwaUrlHist.pas}
@@ -987,8 +988,9 @@ The list has no order!}
   {$ENDIF}
 {$ENDIF}
 
+{$IFNDEF JWA_NO_STRSAFE}
 {$I JwaStrSafe.pas}
-
+{$ENDIF}
 
 {$IFDEF JWA_INCLUDE_SHELLAPI}
 {$I JwaUrlHist.pas}

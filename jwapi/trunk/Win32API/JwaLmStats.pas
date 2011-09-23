@@ -252,7 +252,7 @@ end;
 
 {$ELSE}
 
-function NetStatisticsGet; external netapi32 name 'NetStatisticsGet';
+function NetStatisticsGet; external netapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NetStatisticsGet';
 
 {$ENDIF DYNAMIC_LINK}
 {$ENDIF JWA_INTERFACESECTION}

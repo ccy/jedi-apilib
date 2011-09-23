@@ -354,8 +354,8 @@ end;
 {$ELSE}
 
 {$IFDEF SUPPORT_TASK_DIALOG}
-function TaskDialogIndirect; external comctl32 name 'TaskDialogIndirect';
-function TaskDialog; external comctl32 name 'TaskDialog';
+function TaskDialogIndirect; external comctl32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'TaskDialogIndirect';
+function TaskDialog; external comctl32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'TaskDialog';
 {$ENDIF SUPPORT_TASK_DIALOG}
 
 {$ENDIF DYNAMIC_LINK}

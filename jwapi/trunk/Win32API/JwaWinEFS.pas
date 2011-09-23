@@ -356,14 +356,14 @@ end;
 
 {$ELSE}
 
-function QueryUsersOnEncryptedFile; external advapi32 name 'QueryUsersOnEncryptedFile';
-function QueryRecoveryAgentsOnEncryptedFile; external advapi32 name 'QueryRecoveryAgentsOnEncryptedFile';
-function RemoveUsersFromEncryptedFile; external advapi32 name 'RemoveUsersFromEncryptedFile';
-function AddUsersToEncryptedFile; external advapi32 name 'AddUsersToEncryptedFile';
-function SetUserFileEncryptionKey; external advapi32 name 'SetUserFileEncryptionKey';
-procedure FreeEncryptionCertificateHashList; external advapi32 name 'FreeEncryptionCertificateHashList';
-function EncryptionDisable; external advapi32 name 'EncryptionDisable';
-function DuplicateEncryptionInfoFile; external advapi32 name 'DuplicateEncryptionInfoFile';
+function QueryUsersOnEncryptedFile; external advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'QueryUsersOnEncryptedFile';
+function QueryRecoveryAgentsOnEncryptedFile; external advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'QueryRecoveryAgentsOnEncryptedFile';
+function RemoveUsersFromEncryptedFile; external advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'RemoveUsersFromEncryptedFile';
+function AddUsersToEncryptedFile; external advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'AddUsersToEncryptedFile';
+function SetUserFileEncryptionKey; external advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'SetUserFileEncryptionKey';
+procedure FreeEncryptionCertificateHashList; external advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'FreeEncryptionCertificateHashList';
+function EncryptionDisable; external advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'EncryptionDisable';
+function DuplicateEncryptionInfoFile; external advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'DuplicateEncryptionInfoFile';
 
 {$ENDIF DYNAMIC_LINK}
 

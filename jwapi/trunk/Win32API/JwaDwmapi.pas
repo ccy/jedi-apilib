@@ -831,34 +831,34 @@ end;
 
 {$ELSE}
 
-function DwmDefWindowProc; external dwmlib name 'DwmDefWindowProc';
-function DwmEnableBlurBehindWindow; external dwmlib name 'DwmEnableBlurBehindWindow';
-function DwmEnableComposition; external dwmlib name 'DwmEnableComposition';
-function DwmEnableMMCSS; external dwmlib name 'DwmEnableMMCSS';
-function DwmExtendFrameIntoClientArea; external dwmlib name 'DwmExtendFrameIntoClientArea';
-function DwmGetColorizationColor; external dwmlib name 'DwmGetColorizationColor';
-function DwmGetCompositionTimingInfo; external dwmlib name 'DwmGetCompositionTimingInfo';
-function DwmGetWindowAttribute; external dwmlib name 'DwmGetWindowAttribute';
-function DwmIsCompositionEnabled; external dwmlib name 'DwmIsCompositionEnabled';
-function DwmModifyPreviousDxFrameDuration; external dwmlib name 'DwmModifyPreviousDxFrameDuration';
-function DwmQueryThumbnailSourceSize; external dwmlib name 'DwmQueryThumbnailSourceSize';
-function DwmRegisterThumbnail; external dwmlib name 'DwmRegisterThumbnail';
-function DwmSetDxFrameDuration; external dwmlib name 'DwmSetDxFrameDuration';
-function DwmSetPresentParameters; external dwmlib name 'DwmSetPresentParameters';
-function DwmSetWindowAttribute; external dwmlib name 'DwmSetWindowAttribute';
-function DwmUnregisterThumbnail; external dwmlib name 'DwmUnregisterThumbnail';
-function DwmUpdateThumbnailProperties; external dwmlib name 'DwmUpdateThumbnailProperties';
+function DwmDefWindowProc; external dwmlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'DwmDefWindowProc';
+function DwmEnableBlurBehindWindow; external dwmlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'DwmEnableBlurBehindWindow';
+function DwmEnableComposition; external dwmlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'DwmEnableComposition';
+function DwmEnableMMCSS; external dwmlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'DwmEnableMMCSS';
+function DwmExtendFrameIntoClientArea; external dwmlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'DwmExtendFrameIntoClientArea';
+function DwmGetColorizationColor; external dwmlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'DwmGetColorizationColor';
+function DwmGetCompositionTimingInfo; external dwmlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'DwmGetCompositionTimingInfo';
+function DwmGetWindowAttribute; external dwmlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'DwmGetWindowAttribute';
+function DwmIsCompositionEnabled; external dwmlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'DwmIsCompositionEnabled';
+function DwmModifyPreviousDxFrameDuration; external dwmlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'DwmModifyPreviousDxFrameDuration';
+function DwmQueryThumbnailSourceSize; external dwmlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'DwmQueryThumbnailSourceSize';
+function DwmRegisterThumbnail; external dwmlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'DwmRegisterThumbnail';
+function DwmSetDxFrameDuration; external dwmlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'DwmSetDxFrameDuration';
+function DwmSetPresentParameters; external dwmlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'DwmSetPresentParameters';
+function DwmSetWindowAttribute; external dwmlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'DwmSetWindowAttribute';
+function DwmUnregisterThumbnail; external dwmlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'DwmUnregisterThumbnail';
+function DwmUpdateThumbnailProperties; external dwmlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'DwmUpdateThumbnailProperties';
 {$IFDEF WIN7_UP}
-function DwmSetIconicThumbnail; external dwmlib name 'DwmSetIconicThumbnail';
-function DwmSetIconicLivePreviewBitmap; external dwmlib name 'DwmSetIconicLivePreviewBitmap';
-function DwmInvalidateIconicBitmaps; external dwmlib name 'DwmInvalidateIconicBitmaps';
+function DwmSetIconicThumbnail; external dwmlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'DwmSetIconicThumbnail';
+function DwmSetIconicLivePreviewBitmap; external dwmlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'DwmSetIconicLivePreviewBitmap';
+function DwmInvalidateIconicBitmaps; external dwmlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'DwmInvalidateIconicBitmaps';
 {$ENDIF}
-function DwmAttachMilContent; external dwmlib name 'DwmAttachMilContent';
-function DwmDetachMilContent; external dwmlib name 'DwmDetachMilContent';
-function DwmFlush; external dwmlib name 'DwmFlush';
-function DwmGetGraphicsStreamTransformHint; external dwmlib name 'DwmGetGraphicsStreamTransformHint';
-function DwmGetGraphicsStreamClient; external dwmlib name 'DwmGetGraphicsStreamClient';
-function DwmGetTransportAttributes; external dwmlib name 'DwmGetTransportAttributes';
+function DwmAttachMilContent; external dwmlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'DwmAttachMilContent';
+function DwmDetachMilContent; external dwmlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'DwmDetachMilContent';
+function DwmFlush; external dwmlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'DwmFlush';
+function DwmGetGraphicsStreamTransformHint; external dwmlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'DwmGetGraphicsStreamTransformHint';
+function DwmGetGraphicsStreamClient; external dwmlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'DwmGetGraphicsStreamClient';
+function DwmGetTransportAttributes; external dwmlib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'DwmGetTransportAttributes';
 
 
 {$ENDIF DYNAMIC_LINK}

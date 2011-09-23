@@ -199,9 +199,9 @@ const
 
 {$IFNDEF DYNAMIC_LINK}
 {$IFDEF WINVISTA_UP}
-function EventAccessControl; external advapi32 name 'EventAccessControl';
-function EventAccessQuery; external advapi32 name 'EventAccessQuery';
-function EventAccessRemove; external advapi32 name 'EventAccessRemove';
+function EventAccessControl; external advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'EventAccessControl';
+function EventAccessQuery; external advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'EventAccessQuery';
+function EventAccessRemove; external advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'EventAccessRemove';
 {$ENDIF WINVISTA_UP}
 {$ELSE}
 

@@ -443,9 +443,9 @@ end;
 
 {$ELSE}
 
-function UiCreatePatchPackageA; external patchwiz name 'UiCreatePatchPackageA';
-function UiCreatePatchPackageW; external patchwiz name 'UiCreatePatchPackageW';
-function UiCreatePatchPackage; external patchwiz name 'UiCreatePatchPackage' + AWSuffix;
+function UiCreatePatchPackageA; external patchwiz {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'UiCreatePatchPackageA';
+function UiCreatePatchPackageW; external patchwiz {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'UiCreatePatchPackageW';
+function UiCreatePatchPackage; external patchwiz {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'UiCreatePatchPackage' + AWSuffix;
 
 {$ENDIF DYNAMIC_LINK}
 

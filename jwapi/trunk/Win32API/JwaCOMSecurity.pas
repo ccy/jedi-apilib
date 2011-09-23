@@ -411,16 +411,16 @@ begin
 end;
 {$ELSE}
 
-function CoInitializeSecurity; external ole32 name 'CoInitializeSecurity';
-function CoGetCallContext; external ole32 name 'CoGetCallContext';
-function CoQueryProxyBlanket; external ole32 name 'CoQueryProxyBlanket';
-function CoSetProxyBlanket; external ole32 name 'CoSetProxyBlanket';
-function CoCopyProxy; external ole32 name 'CoCopyProxy';
-function CoQueryClientBlanket; external ole32 name 'CoQueryClientBlanket';
-function CoImpersonateClient; external ole32 name 'CoImpersonateClient';
-function CoRevertToSelf; external ole32 name 'CoRevertToSelf';
-function CoQueryAuthenticationServices; external ole32 name 'CoQueryAuthenticationServices';
-function CoSwitchCallContext; external ole32 name 'CoSwitchCallContext';
+function CoInitializeSecurity; external ole32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'CoInitializeSecurity';
+function CoGetCallContext; external ole32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'CoGetCallContext';
+function CoQueryProxyBlanket; external ole32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'CoQueryProxyBlanket';
+function CoSetProxyBlanket; external ole32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'CoSetProxyBlanket';
+function CoCopyProxy; external ole32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'CoCopyProxy';
+function CoQueryClientBlanket; external ole32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'CoQueryClientBlanket';
+function CoImpersonateClient; external ole32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'CoImpersonateClient';
+function CoRevertToSelf; external ole32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'CoRevertToSelf';
+function CoQueryAuthenticationServices; external ole32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'CoQueryAuthenticationServices';
+function CoSwitchCallContext; external ole32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'CoSwitchCallContext';
 
 {$ENDIF DYNAMIC_LINK}
 

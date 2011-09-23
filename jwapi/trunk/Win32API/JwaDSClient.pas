@@ -773,11 +773,11 @@ end;
 
 {$ELSE}
 
-function DsBrowseForContainerW; external dsuiext name 'DsBrowseForContainerW';
-function DsBrowseForContainerA; external dsuiext name 'DsBrowseForContainerA';
-function DsBrowseForContainer; external dsuiext name 'DsBrowseForContainer' + AWSuffix;
-function DsGetIcon; external dsuiext name 'DsGetIcon';
-procedure DsGetFriendlyClassName; external dsuiext name 'DsGetFriendlyClassName';
+function DsBrowseForContainerW; external dsuiext {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'DsBrowseForContainerW';
+function DsBrowseForContainerA; external dsuiext {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'DsBrowseForContainerA';
+function DsBrowseForContainer; external dsuiext {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'DsBrowseForContainer' + AWSuffix;
+function DsGetIcon; external dsuiext {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'DsGetIcon';
+procedure DsGetFriendlyClassName; external dsuiext {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'DsGetFriendlyClassName';
 
 {$ENDIF DYNAMIC_LINK}
 

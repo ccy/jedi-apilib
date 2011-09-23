@@ -306,10 +306,10 @@ end;
 
 {$ELSE}
 
-function SRSetRestorePointA; external srclient name 'SRSetRestorePointA';
-function SRSetRestorePointW; external srclient name 'SRSetRestorePointW';
-function SRSetRestorePoint; external srclient name 'SRSetRestorePointW' + AWSuffix;
-function SRRemoveRestorePoint; external srclient name 'SRRemoveRestorePoint';
+function SRSetRestorePointA; external srclient {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'SRSetRestorePointA';
+function SRSetRestorePointW; external srclient {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'SRSetRestorePointW';
+function SRSetRestorePoint; external srclient {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'SRSetRestorePointW' + AWSuffix;
+function SRRemoveRestorePoint; external srclient {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'SRRemoveRestorePoint';
 
 {$ENDIF DYNAMIC_LINK}
 

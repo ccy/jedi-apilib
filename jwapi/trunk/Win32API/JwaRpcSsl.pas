@@ -135,9 +135,9 @@ end;
 
 {$ELSE}
 
-function RpcCertGeneratePrincipalNameW; external rpclib name 'RpcCertGeneratePrincipalNameW';
-function RpcCertGeneratePrincipalNameA; external rpclib name 'RpcCertGeneratePrincipalNameA';
-function RpcCertGeneratePrincipalName; external rpclib name 'RpcCertGeneratePrincipalName' + AWSuffix;
+function RpcCertGeneratePrincipalNameW; external rpclib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'RpcCertGeneratePrincipalNameW';
+function RpcCertGeneratePrincipalNameA; external rpclib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'RpcCertGeneratePrincipalNameA';
+function RpcCertGeneratePrincipalName; external rpclib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'RpcCertGeneratePrincipalName' + AWSuffix;
 
 {$ENDIF DYNAMIC_LINK}
 

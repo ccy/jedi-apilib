@@ -468,13 +468,13 @@ const
 
 
 {$IFNDEF DYNAMIC_LINK}
-function InstallApplication; external Advapi32 name 'InstallApplication';
-function UninstallApplication; external Advapi32 name 'UninstallApplication';
-function CommandLineFromMsiDescriptor; external Advapi32 name 'CommandLineFromMsiDescriptor';
-function GetManagedApplications; external Advapi32 name 'GetManagedApplications';
-function GetLocalManagedApplications; external Advapi32 name 'GetLocalManagedApplications';
-procedure GetLocalManagedApplicationData; external Advapi32 name 'GetLocalManagedApplicationData';
-function GetManagedApplicationCategories; external Advapi32 name 'GetManagedApplicationCategories';
+function InstallApplication; external Advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'InstallApplication';
+function UninstallApplication; external Advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'UninstallApplication';
+function CommandLineFromMsiDescriptor; external Advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'CommandLineFromMsiDescriptor';
+function GetManagedApplications; external Advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'GetManagedApplications';
+function GetLocalManagedApplications; external Advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'GetLocalManagedApplications';
+procedure GetLocalManagedApplicationData; external Advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'GetLocalManagedApplicationData';
+function GetManagedApplicationCategories; external Advapi32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'GetManagedApplicationCategories';
 
 {$ELSE}
 

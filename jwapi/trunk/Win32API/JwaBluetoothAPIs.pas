@@ -2117,35 +2117,35 @@ end;
 
 {$ELSE}
 
-function BluetoothFindFirstRadio; external btapi name 'BluetoothFindFirstRadio';
-function BluetoothFindNextRadio; external btapi name 'BluetoothFindNextRadio';
-function BluetoothFindRadioClose; external btapi name 'BluetoothFindRadioClose';
-function BluetoothGetRadioInfo; external btapi name 'BluetoothGetRadioInfo';
-function BluetoothFindFirstDevice; external btapi name 'BluetoothFindFirstDevice';
-function BluetoothFindNextDevice; external btapi name 'BluetoothFindNextDevice';
-function BluetoothFindDeviceClose; external btapi name 'BluetoothFindDeviceClose';
-function BluetoothGetDeviceInfo; external btapi name 'BluetoothGetDeviceInfo';
-function BluetoothUpdateDeviceRecord; external btapi name 'BluetoothUpdateDeviceRecord';
-function BluetoothRemoveDevice; external btapi name 'BluetoothRemoveDevice';
-function BluetoothSelectDevices; external btapi name 'BluetoothSelectDevices';
-function BluetoothSelectDevicesFree; external btapi name 'BluetoothSelectDevicesFree';
-function BluetoothDisplayDeviceProperties; external btapi name 'BluetoothDisplayDeviceProperties';
-function BluetoothAuthenticateDevice; external btapi name 'BluetoothAuthenticateDevice';
-function BluetoothAuthenticateMultipleDevices; external btapi name 'BluetoothAuthenticateMultipleDevices';
-function BluetoothSetServiceState; external btapi name 'BluetoothSetServiceState';
-function BluetoothEnumerateInstalledServices; external btapi name 'BluetoothEnumerateInstalledServices';
-function BluetoothEnableDiscovery; external btapi name 'BluetoothEnableDiscovery';
-function BluetoothIsDiscoverable; external btapi name 'BluetoothIsDiscoverable';
-function BluetoothEnableIncomingConnections; external btapi name 'BluetoothEnableIncomingConnections';
-function BluetoothIsConnectable; external btapi name 'BluetoothIsConnectable';
-function BluetoothRegisterForAuthentication; external btapi name 'BluetoothRegisterForAuthentication';
-function BluetoothUnregisterAuthentication; external btapi name 'BluetoothUnregisterAuthentication';
-function BluetoothSendAuthenticationResponse; external btapi name 'BluetoothSendAuthenticationResponse';
-function BluetoothSdpGetElementData; external btapi name 'BluetoothSdpGetElementData';
-function BluetoothSdpGetContainerElementData; external btapi name 'BluetoothSdpGetContainerElementData';
-function BluetoothSdpGetAttributeValue; external btapi name 'BluetoothSdpGetAttributeValue';
-function BluetoothSdpGetString; external btapi name 'BluetoothSdpGetString';
-function BluetoothSdpEnumAttributes; external btapi name 'BluetoothSdpEnumAttributes';
+function BluetoothFindFirstRadio; external btapi {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'BluetoothFindFirstRadio';
+function BluetoothFindNextRadio; external btapi {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'BluetoothFindNextRadio';
+function BluetoothFindRadioClose; external btapi {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'BluetoothFindRadioClose';
+function BluetoothGetRadioInfo; external btapi {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'BluetoothGetRadioInfo';
+function BluetoothFindFirstDevice; external btapi {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'BluetoothFindFirstDevice';
+function BluetoothFindNextDevice; external btapi {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'BluetoothFindNextDevice';
+function BluetoothFindDeviceClose; external btapi {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'BluetoothFindDeviceClose';
+function BluetoothGetDeviceInfo; external btapi {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'BluetoothGetDeviceInfo';
+function BluetoothUpdateDeviceRecord; external btapi {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'BluetoothUpdateDeviceRecord';
+function BluetoothRemoveDevice; external btapi {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'BluetoothRemoveDevice';
+function BluetoothSelectDevices; external btapi {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'BluetoothSelectDevices';
+function BluetoothSelectDevicesFree; external btapi {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'BluetoothSelectDevicesFree';
+function BluetoothDisplayDeviceProperties; external btapi {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'BluetoothDisplayDeviceProperties';
+function BluetoothAuthenticateDevice; external btapi {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'BluetoothAuthenticateDevice';
+function BluetoothAuthenticateMultipleDevices; external btapi {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'BluetoothAuthenticateMultipleDevices';
+function BluetoothSetServiceState; external btapi {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'BluetoothSetServiceState';
+function BluetoothEnumerateInstalledServices; external btapi {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'BluetoothEnumerateInstalledServices';
+function BluetoothEnableDiscovery; external btapi {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'BluetoothEnableDiscovery';
+function BluetoothIsDiscoverable; external btapi {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'BluetoothIsDiscoverable';
+function BluetoothEnableIncomingConnections; external btapi {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'BluetoothEnableIncomingConnections';
+function BluetoothIsConnectable; external btapi {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'BluetoothIsConnectable';
+function BluetoothRegisterForAuthentication; external btapi {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'BluetoothRegisterForAuthentication';
+function BluetoothUnregisterAuthentication; external btapi {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'BluetoothUnregisterAuthentication';
+function BluetoothSendAuthenticationResponse; external btapi {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'BluetoothSendAuthenticationResponse';
+function BluetoothSdpGetElementData; external btapi {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'BluetoothSdpGetElementData';
+function BluetoothSdpGetContainerElementData; external btapi {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'BluetoothSdpGetContainerElementData';
+function BluetoothSdpGetAttributeValue; external btapi {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'BluetoothSdpGetAttributeValue';
+function BluetoothSdpGetString; external btapi {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'BluetoothSdpGetString';
+function BluetoothSdpEnumAttributes; external btapi {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'BluetoothSdpEnumAttributes';
 
 {$ENDIF DYNAMIC_LINK}
 

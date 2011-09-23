@@ -1139,41 +1139,41 @@ end;
 
 {$ELSE}
 (*
-function NtClose; external winternl_lib name 'NtClose';
-function NtCreateFile; external winternl_lib name 'NtCreateFile';
-function NtOpenFile; external winternl_lib name 'NtOpenFile';
-function NtDeviceIoControlFile; external winternl_lib name 'NtDeviceIoControlFile';
-function NtWaitForSingleObject; external winternl_lib name 'NtWaitForSingleObject';
-function RtlIsNameLegalDOS8Dot3; external winternl_lib name 'RtlIsNameLegalDOS8Dot3';
-function RtlNtStatusToDosError; external winternl_lib name 'RtlNtStatusToDosError';
-function NtQueryInformationProcess; external winternl_lib name 'NtQueryInformationProcess';
-function NtQueryInformationThread; external winternl_lib name 'NtQueryInformationThread';
-function NtQuerySystemInformation; external winternl_lib name 'NtQuerySystemInformation';
-function NtQuerySystemTime; external winternl_lib name 'NtQuerySystemTime';
-function RtlLocalTimeToSystemTime; external winternl_lib name 'RtlLocalTimeToSystemTime';
-function RtlTimeToSecondsSince1970; external winternl_lib name 'RtlTimeToSecondsSince1970';
+function NtClose; external winternl_lib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NtClose';
+function NtCreateFile; external winternl_lib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NtCreateFile';
+function NtOpenFile; external winternl_lib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NtOpenFile';
+function NtDeviceIoControlFile; external winternl_lib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NtDeviceIoControlFile';
+function NtWaitForSingleObject; external winternl_lib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NtWaitForSingleObject';
+function RtlIsNameLegalDOS8Dot3; external winternl_lib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'RtlIsNameLegalDOS8Dot3';
+function RtlNtStatusToDosError; external winternl_lib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'RtlNtStatusToDosError';
+function NtQueryInformationProcess; external winternl_lib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NtQueryInformationProcess';
+function NtQueryInformationThread; external winternl_lib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NtQueryInformationThread';
+function NtQuerySystemInformation; external winternl_lib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NtQuerySystemInformation';
+function NtQuerySystemTime; external winternl_lib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NtQuerySystemTime';
+function RtlLocalTimeToSystemTime; external winternl_lib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'RtlLocalTimeToSystemTime';
+function RtlTimeToSecondsSince1970; external winternl_lib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'RtlTimeToSecondsSince1970';
 *)
 
-procedure RtlFreeAnsiString; external winternl_lib name 'RtlFreeAnsiString';
-procedure RtlFreeUnicodeString; external winternl_lib name 'RtlFreeUnicodeString';
-procedure RtlFreeOemString; external winternl_lib name 'RtlFreeOemString';
-procedure RtlInitString; external winternl_lib name 'RtlInitString';
-procedure RtlInitAnsiString; external winternl_lib name 'RtlInitAnsiString';
-procedure RtlInitUnicodeString; external winternl_lib name 'RtlInitUnicodeString';
+procedure RtlFreeAnsiString; external winternl_lib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'RtlFreeAnsiString';
+procedure RtlFreeUnicodeString; external winternl_lib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'RtlFreeUnicodeString';
+procedure RtlFreeOemString; external winternl_lib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'RtlFreeOemString';
+procedure RtlInitString; external winternl_lib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'RtlInitString';
+procedure RtlInitAnsiString; external winternl_lib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'RtlInitAnsiString';
+procedure RtlInitUnicodeString; external winternl_lib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'RtlInitUnicodeString';
 
 (*
-{function RtlAnsiStringToUnicodeString; external winternl_lib name 'RtlAnsiStringToUnicodeString';
-function RtlUnicodeStringToAnsiString; external winternl_lib name 'RtlUnicodeStringToAnsiString';
-function RtlUnicodeStringToOemString; external winternl_lib name 'RtlUnicodeStringToOemString';
-function RtlUnicodeToMultiByteSize; external winternl_lib name 'RtlUnicodeToMultiByteSize';
-function RtlCharToInteger; external winternl_lib name 'RtlCharToInteger';}
+{function RtlAnsiStringToUnicodeString; external winternl_lib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'RtlAnsiStringToUnicodeString';
+function RtlUnicodeStringToAnsiString; external winternl_lib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'RtlUnicodeStringToAnsiString';
+function RtlUnicodeStringToOemString; external winternl_lib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'RtlUnicodeStringToOemString';
+function RtlUnicodeToMultiByteSize; external winternl_lib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'RtlUnicodeToMultiByteSize';
+function RtlCharToInteger; external winternl_lib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'RtlCharToInteger';}
 
-function RtlConvertSidToUnicodeString; external winternl_lib name 'RtlConvertSidToUnicodeString';
+function RtlConvertSidToUnicodeString; external winternl_lib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'RtlConvertSidToUnicodeString';
 
 *)
-procedure RtlUnwind; external winternl_lib name 'RtlUnwind';
+procedure RtlUnwind; external winternl_lib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'RtlUnwind';
 
-function RtlUniform; external winternl_lib name 'RtlUniform';
+function RtlUniform; external winternl_lib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'RtlUniform';
 
 {$ENDIF DYNAMIC_LINK}
 

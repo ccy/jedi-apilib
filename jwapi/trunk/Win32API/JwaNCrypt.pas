@@ -50,7 +50,7 @@ unit JwaNCrypt;
 {$A+}
 //Warning: Record alignment 4
 {$ENDIF DELPHI6_UP}
-
+{$I ..\Includes\JediAPILib.inc}
 interface
 
 uses
@@ -602,30 +602,30 @@ uses JwaWinDLLNames;
 {$IFNDEF JWA_INTERFACESECTION}
 
 {$IFNDEF DYNAMIC_LINK}
-function NCryptOpenStorageProvider; external ncryptdll name 'NCryptOpenStorageProvider';
-function NCryptEnumAlgorithms; external ncryptdll name 'NCryptEnumAlgorithms';
-function NCryptIsAlgSupported; external ncryptdll name 'NCryptIsAlgSupported';
-function NCryptEnumKeys; external ncryptdll name 'NCryptEnumKeys';
-function NCryptEnumStorageProviders; external ncryptdll name 'NCryptEnumStorageProviders';
-function NCryptFreeBuffer; external ncryptdll name 'NCryptFreeBuffer';
-function NCryptOpenKey; external ncryptdll name 'NCryptOpenKey';
-function NCryptCreatePersistedKey; external ncryptdll name 'NCryptCreatePersistedKey';
-function NCryptGetProperty; external ncryptdll name 'NCryptGetProperty';
-function NCryptSetProperty; external ncryptdll name 'NCryptSetProperty';
-function NCryptFinalizeKey; external ncryptdll name 'NCryptFinalizeKey';
-function NCryptEncrypt; external ncryptdll name 'NCryptEncrypt';
-function NCryptDecrypt; external ncryptdll name 'NCryptDecrypt';
-function NCryptImportKey; external ncryptdll name 'NCryptImportKey';
-function NCryptExportKey; external ncryptdll name 'NCryptExportKey';
-function NCryptSignHash; external ncryptdll name 'NCryptSignHash';
-function NCryptVerifySignature; external ncryptdll name 'NCryptVerifySignature';
-function NCryptDeleteKey; external ncryptdll name 'NCryptDeleteKey';
-function NCryptFreeObject; external ncryptdll name 'NCryptFreeObject';
-function NCryptIsKeyHandle; external ncryptdll name 'NCryptIsKeyHandle';
-function NCryptTranslateHandle; external ncryptdll name 'NCryptTranslateHandle';
-function NCryptNotifyChangeKey; external ncryptdll name 'NCryptNotifyChangeKey';
-function NCryptSecretAgreement; external ncryptdll name 'NCryptSecretAgreement';
-function NCryptDeriveKey; external ncryptdll name 'NCryptDeriveKey';
+function NCryptOpenStorageProvider; external ncryptdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NCryptOpenStorageProvider';
+function NCryptEnumAlgorithms; external ncryptdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NCryptEnumAlgorithms';
+function NCryptIsAlgSupported; external ncryptdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NCryptIsAlgSupported';
+function NCryptEnumKeys; external ncryptdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NCryptEnumKeys';
+function NCryptEnumStorageProviders; external ncryptdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NCryptEnumStorageProviders';
+function NCryptFreeBuffer; external ncryptdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NCryptFreeBuffer';
+function NCryptOpenKey; external ncryptdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NCryptOpenKey';
+function NCryptCreatePersistedKey; external ncryptdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NCryptCreatePersistedKey';
+function NCryptGetProperty; external ncryptdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NCryptGetProperty';
+function NCryptSetProperty; external ncryptdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NCryptSetProperty';
+function NCryptFinalizeKey; external ncryptdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NCryptFinalizeKey';
+function NCryptEncrypt; external ncryptdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NCryptEncrypt';
+function NCryptDecrypt; external ncryptdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NCryptDecrypt';
+function NCryptImportKey; external ncryptdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NCryptImportKey';
+function NCryptExportKey; external ncryptdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NCryptExportKey';
+function NCryptSignHash; external ncryptdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NCryptSignHash';
+function NCryptVerifySignature; external ncryptdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NCryptVerifySignature';
+function NCryptDeleteKey; external ncryptdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NCryptDeleteKey';
+function NCryptFreeObject; external ncryptdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NCryptFreeObject';
+function NCryptIsKeyHandle; external ncryptdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NCryptIsKeyHandle';
+function NCryptTranslateHandle; external ncryptdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NCryptTranslateHandle';
+function NCryptNotifyChangeKey; external ncryptdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NCryptNotifyChangeKey';
+function NCryptSecretAgreement; external ncryptdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NCryptSecretAgreement';
+function NCryptDeriveKey; external ncryptdll {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'NCryptDeriveKey';
 
 {$ELSE}
 

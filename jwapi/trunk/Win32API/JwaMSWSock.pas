@@ -655,10 +655,10 @@ end;
 
 {$ELSE}
 
-function WSARecvEx; external mswsocklib name 'WSARecvEx';
-function TransmitFile; external mswsocklib name 'TransmitFile';
-function AcceptEx; external mswsocklib name 'AcceptEx';
-procedure GetAcceptExSockaddrs; external mswsocklib name 'GetAcceptExSockaddrs';
+function WSARecvEx; external mswsocklib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'WSARecvEx';
+function TransmitFile; external mswsocklib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'TransmitFile';
+function AcceptEx; external mswsocklib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'AcceptEx';
+procedure GetAcceptExSockaddrs; external mswsocklib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'GetAcceptExSockaddrs';
 
 {$ENDIF DYNAMIC_LINK}
 

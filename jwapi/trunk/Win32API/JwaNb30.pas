@@ -523,7 +523,7 @@ end;
 
 {$ELSE}
 
-function Netbios; external 'netapi32.dll' name 'Netbios';
+function Netbios; external 'netapi32.dll' {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'Netbios';
 
 {$ENDIF DYNAMIC_LINK}
 

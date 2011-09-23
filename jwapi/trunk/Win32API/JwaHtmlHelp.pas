@@ -834,9 +834,9 @@ const
   hhctrl = 'hhctrl.ocx';
 {$ENDIF JWA_INCLUDEMODE}
 
-function HtmlHelpA; external hhctrl name 'HtmlHelpA';
-function HtmlHelpW; external hhctrl name 'HtmlHelpW';
-function HtmlHelp; external hhctrl name 'HtmlHelp' + AWSuffix;
+function HtmlHelpA; external hhctrl {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'HtmlHelpA';
+function HtmlHelpW; external hhctrl {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'HtmlHelpW';
+function HtmlHelp; external hhctrl {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'HtmlHelp' + AWSuffix;
 
 {$ENDIF DYNAMIC_LINK}
 

@@ -110,7 +110,7 @@ end;
 
 {$ELSE}
 
-function ConvertedFunction; external LIBConstantName_LIB name 'ConvertedFunction';
+function ConvertedFunction; external LIBConstantName_LIB {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'ConvertedFunction';
 
 {$ENDIF DYNAMIC_LINK}
 

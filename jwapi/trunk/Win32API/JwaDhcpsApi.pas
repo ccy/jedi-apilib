@@ -642,18 +642,18 @@ end;
 
 {$ELSE}
 
-function DhcpGetVersion; external dhcplib name 'DhcpGetVersion';
-function DhcpSetServerBindingInfo; external dhcplib name 'DhcpSetServerBindingInfo';
-function DhcpGetServerBindingInfo; external dhcplib name 'DhcpGetServerBindingInfo';
-function DhcpCreateClientInfo; external dhcplib name 'DhcpCreateClientInfo';
-function DhcpSetClientInfo; external dhcplib name 'DhcpSetClientInfo';
-function DhcpGetClientInfo; external dhcplib name 'DhcpGetClientInfo';
-function DhcpDeleteClientInfo; external dhcplib name 'DhcpDeleteClientInfo';
-function DhcpEnumSubnetClients; external dhcplib name 'DhcpEnumSubnetClients';
-function DhcpEnumSubnets; external dhcplib name 'DhcpEnumSubnets';
-function DhcpGetSubnetInfo; external dhcplib name 'DhcpGetSubnetInfo';
-function DhcpGetOptionValue; external dhcplib name 'DhcpGetOptionValue';
-procedure DhcpRpcFreeMemory; external dhcplib name 'DhcpRpcFreeMemory';
+function DhcpGetVersion; external dhcplib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'DhcpGetVersion';
+function DhcpSetServerBindingInfo; external dhcplib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'DhcpSetServerBindingInfo';
+function DhcpGetServerBindingInfo; external dhcplib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'DhcpGetServerBindingInfo';
+function DhcpCreateClientInfo; external dhcplib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'DhcpCreateClientInfo';
+function DhcpSetClientInfo; external dhcplib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'DhcpSetClientInfo';
+function DhcpGetClientInfo; external dhcplib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'DhcpGetClientInfo';
+function DhcpDeleteClientInfo; external dhcplib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'DhcpDeleteClientInfo';
+function DhcpEnumSubnetClients; external dhcplib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'DhcpEnumSubnetClients';
+function DhcpEnumSubnets; external dhcplib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'DhcpEnumSubnets';
+function DhcpGetSubnetInfo; external dhcplib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'DhcpGetSubnetInfo';
+function DhcpGetOptionValue; external dhcplib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'DhcpGetOptionValue';
+procedure DhcpRpcFreeMemory; external dhcplib {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'DhcpRpcFreeMemory';
 
 {$ENDIF DYNAMIC_LINK}
 

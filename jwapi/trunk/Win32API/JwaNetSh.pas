@@ -534,12 +534,12 @@ end;
 
 {$ELSE}
 
-function GetHostMachineInfo; external netsh name 'GetHostMachineInfo';
-function MatchEnumTag; external netsh name 'MatchEnumTag';
-function MatchToken; external netsh name 'MatchToken';
-function PreprocessCommand; external netsh name 'PreprocessCommand';
-function RegisterContext; external netsh name 'RegisterContext';
-function RegisterHelper; external netsh name 'RegisterHelper';
+function GetHostMachineInfo; external netsh {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'GetHostMachineInfo';
+function MatchEnumTag; external netsh {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'MatchEnumTag';
+function MatchToken; external netsh {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'MatchToken';
+function PreprocessCommand; external netsh {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'PreprocessCommand';
+function RegisterContext; external netsh {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'RegisterContext';
+function RegisterHelper; external netsh {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'RegisterHelper';
 
 {$ENDIF DYNAMIC_LINK}
 
