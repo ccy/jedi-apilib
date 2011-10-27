@@ -26,6 +26,7 @@ package JediApi_SingleUnits;
 {$DEFINE USE_DELPHI_TYPES}
 {$DEFINE DEBUG}
 {$DEFINE JW_SINGLE_UNITS_PACKAGE}
+{$DEFINE DYNAMIC_LINK}
 
 requires
   rtl,
@@ -268,6 +269,7 @@ contains
   JwaZMOUSE in '..\..\Win32API\JwaZMOUSE.pas',
   JwaRpcWinsta in '..\..\Win32API\JwaRpcWinsta.pas',
   JwaBitFields in '..\..\Win32API\JwaBitFields.pas',
-  JwaWabUtil in '..\..\win32api\JwaWabUtil.pas';
+  JwaWabUtil in '..\..\win32api\JwaWabUtil.pas',
+  JwaDwmapi in '..\..\Win32API\JwaDwmapi.pas';
 
 end.
