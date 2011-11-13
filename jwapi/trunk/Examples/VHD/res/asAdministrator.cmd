@@ -1,0 +1,1 @@
+@brcc32 asAdministrator.rc -fo..\userlevel.res

@@ -1101,11 +1101,16 @@ type
 
   PLongint = ^Longint; // TODO PLongint introduced in Delphi 6
 
+  //CW: Make sure you deactivate range checking when using this array
+  TAIWbemObjectAccess = array [0..ANYSIZE_ARRAY - 1] of IWbemObjectAccess; //manually inserted declaration; not part of windows header
+  PAIWbemObjectAccess = ^TAIWbemObjectAccess;  //manually inserted declaration; not part of windows header
+
   IWbemHiPerfEnum = interface(IUnknown)
   ['{2705C288-79AE-11d2-B348-00105A1F8177}']
     function AddObjects(lFlags: Longint; uNumObjects: ULONG; apIds: PLongint; apObj: PIWbemObjectAccess): HRESULT; stdcall;
     function RemoveObjects(lFlags: Longint; uNumObjects: ULONG; apIds: PLongint): HRESULT; stdcall;
-    function GetObjects(lFlags: Longint; uNumObjects: ULONG; out apObj: IWbemObjectAccess; out puReturned: ULONG): HRESULT; stdcall;
+    //CW@13/11/2011 : manually erplaced parameter declaration : "apObj: PAIWbemObjectAccess;" to allow return of array of interfaces
+    function GetObjects(lFlags: Longint; uNumObjects: ULONG; apObj: PAIWbemObjectAccess; out puReturned: ULONG): HRESULT; stdcall;
     function RemoveAll(lFlags: Longint): HRESULT; stdcall;
   end;
   {$EXTERNALSYM IWbemHiPerfEnum}
