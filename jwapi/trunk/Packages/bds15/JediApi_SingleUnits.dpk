@@ -268,6 +268,8 @@ contains
   JwaZMOUSE in '..\..\Win32API\JwaZMOUSE.pas',
   JwaRpcWinsta in '..\..\Win32API\JwaRpcWinsta.pas',
   JwaBitFields in '..\..\Win32API\JwaBitFields.pas',
-  JwaWabUtil in '..\..\win32api\JwaWabUtil.pas';
+  JwaWabUtil in '..\..\win32api\JwaWabUtil.pas',
+  JwaVirtDisk in '..\..\Win32API\JwaVirtDisk.pas',
+  JwaKtmW32 in '..\..\Win32API\JwaKtmW32.pas';
 
 end.

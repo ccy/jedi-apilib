@@ -418,6 +418,10 @@ Standalone compiling would be useless!
 
 {$ENDIF ~JEDIAPILIB_INC}
 
+// Define JWA_USE_INCORRECT_IDENTIFIERS to activate types, constants and so on
+// which don't exist in original headers. They may have been written incorrectly
+// and are now corrected but remain for backwards compatibility.
+{.$DEFINE JWA_USE_INCORRECT_IDENTIFIERS}
 
 //This include must be at the end of include definitions
 //If this does not work, you forgot to add JWA source folder to your LIBRARY path.

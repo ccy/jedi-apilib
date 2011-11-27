@@ -13195,6 +13195,25 @@ function CertStrToName(dwCertEncodingType: DWORD; pszX500: LPCTSTR;
 //      Subject Name field for the Email OID, "1.2.840.113549.1.9.1".
 //      If the rfc822Name or Email OID is found, returns the string. Otherwise,
 //      returns an empty string (returned character count is 1).
+//    CERT_NAME_DNS_TYPE
+//      If the certificate has a Subject Alternative Name extension (for
+//      issuer, Issuer Alternative Name), searches for first DNSName choice.
+//      If the DNSName choice isn't found in the extension, searches the
+//      Subject Name field for the CN OID, "2.5.4.3".
+//      If the DNSName or CN OID is found, returns the string. Otherwise,
+//      returns an empty string.
+//    CERT_NAME_URL_TYPE
+//      If the certificate has a Subject Alternative Name extension (for
+//      issuer, Issuer Alternative Name), searches for first URL choice.
+//      If the URL choice is found, returns the string. Otherwise,
+//      returns an empty string.
+//    CERT_NAME_UPN_TYPE
+//      If the certificate has a Subject Alternative Name extension,
+//      searches the OtherName choices looking for a
+//      pszObjId == szOID_NT_PRINCIPAL_NAME, "1.3.6.1.4.1.311.20.2.3".
+//      If the UPN OID is found, the blob is decoded as a
+//      X509_UNICODE_ANY_STRING and the decoded string is returned.
+//      Otherwise, returns an empty string.
 //    CERT_NAME_RDN_TYPE
 //      Converts the Subject Name blob by calling CertNameToStr. pvTypePara
 //      points to a DWORD containing the dwStrType passed to CertNameToStr.
@@ -13273,6 +13292,12 @@ const
   {$EXTERNALSYM CERT_NAME_SIMPLE_DISPLAY_TYPE}
   CERT_NAME_FRIENDLY_DISPLAY_TYPE = 5;
   {$EXTERNALSYM CERT_NAME_FRIENDLY_DISPLAY_TYPE}
+  CERT_NAME_DNS_TYPE              = 6;
+  {$EXTERNALSYM CERT_NAME_DNS_TYPE}
+  CERT_NAME_URL_TYPE              = 7;
+  {$EXTERNALSYM CERT_NAME_URL_TYPE}
+  CERT_NAME_UPN_TYPE              = 8;
+  {$EXTERNALSYM CERT_NAME_UPN_TYPE}
 
 //+-------------------------------------------------------------------------
 //  Certificate name flags

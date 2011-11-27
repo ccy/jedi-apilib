@@ -60,7 +60,7 @@ contains
   JwaBLBErr in '..\..\Win32API\JwaBLBErr.pas',
   JwaBluetoothAPIs in '..\..\Win32API\JwaBluetoothAPIs.pas',
   JwaBtHDef in '..\..\Win32API\JwaBtHDef.pas',
-  JWaBthSdpDef in '..\..\Win32API\JwaBthSdpDef.pas',
+  JwaBthSdpDef in '..\..\Win32API\JwaBthSdpDef.pas',
   JwaBugCodes in '..\..\Win32API\JwaBugCodes.pas',
   JwaCardErr in '..\..\Win32API\JwaCardErr.pas',
   JwaCdErr in '..\..\Win32API\JwaCdErr.pas',
@@ -145,7 +145,7 @@ contains
   JwaNb30 in '..\..\Win32API\JwaNb30.pas',
   JwaNCrypt in '..\..\Win32API\JwaNCrypt.pas',
   JwaNetSh in '..\..\Win32API\JwaNetSh.pas',
-  JwaNspAPI in '..\..\Win32API\JwaNspApi.pas',
+  JwaNspApi in '..\..\Win32API\JwaNspApi.pas',
   JwaNtDdPar in '..\..\Win32API\JwaNtDdPar.pas',
   JwaNtDsApi in '..\..\Win32API\JwaNtDsApi.pas',
   JwaNtDsbCli in '..\..\Win32API\JwaNtDsbCli.pas',
@@ -269,6 +269,7 @@ contains
   JwaBitFields in '..\..\Win32API\JwaBitFields.pas',
   JwaWintrust in '..\..\Win32API\JwaWintrust.pas',
   JwaSoftpub in '..\..\Win32API\JwaSoftpub.pas',
-  JwaWabUtil in '..\..\Win32API\JwaWabUtil.pas';
+  JwaWabUtil in '..\..\Win32API\JwaWabUtil.pas',
+  JwaCOMSecurity in '..\..\win32api\JwaCOMSecurity.pas';
 
 end.

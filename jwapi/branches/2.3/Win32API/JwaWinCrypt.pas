@@ -160,6 +160,10 @@ const
   {$EXTERNALSYM ALG_SID_DSS_PKCS}
   ALG_SID_DSS_DMS  = 2;
   {$EXTERNALSYM ALG_SID_DSS_DMS}
+{$IFDEF WINVISTA_UP}
+  ALG_SID_ECDSA    = 3;
+  {$EXTERNALSYM ALG_SID_ECDSA}
+{$ENDIF}
 
 // Block cipher sub ids
 // DES sub_ids
@@ -184,6 +188,19 @@ const
   {$EXTERNALSYM ALG_SID_CYLINK_MEK}
   ALG_SID_RC5        = 13;
   {$EXTERNALSYM ALG_SID_RC5}
+
+{$IFDEF WINXP_UP}
+  ALG_SID_AES_128    = 14;
+  {$EXTERNALSYM ALG_SID_AES_128}
+  ALG_SID_AES_192    = 15;
+  {$EXTERNALSYM ALG_SID_AES_192}
+  ALG_SID_AES_256    = 16;
+  {$EXTERNALSYM ALG_SID_AES_256}
+  ALG_SID_AES        = 17;
+  {$EXTERNALSYM ALG_SID_AES}
+{$ENDIF}
+
+
 
 // Fortezza sub-ids
 
@@ -227,6 +244,10 @@ const
   {$EXTERNALSYM ALG_SID_AGREED_KEY_ANY}
   ALG_SID_KEA            = 4;
   {$EXTERNALSYM ALG_SID_KEA}
+{$IFDEF WINVISTA_UP}
+  ALG_SID_ECDH           = 5;
+  {$EXTERNALSYM ALG_SID_ECDH}
+{$ENDIF}
 
 // Hash sub ids
 
@@ -253,6 +274,20 @@ const
   ALG_SID_TLS1PRF    = 10;
   {$EXTERNALSYM ALG_SID_TLS1PRF}
 
+{$IFDEF WINXP_UP}
+  ALG_SID_HASH_REPLACE_OWF = 11;
+  {$EXTERNALSYM ALG_SID_HASH_REPLACE_OWF}
+{$ENDIF}
+
+{$IFDEF WIN2003_UP}
+  ALG_SID_SHA_256          = 12;
+  {$EXTERNALSYM ALG_SID_SHA_256}
+  ALG_SID_SHA_384          = 13;
+  {$EXTERNALSYM ALG_SID_SHA_384}
+  ALG_SID_SHA_512          = 14;
+  {$EXTERNALSYM ALG_SID_SHA_512}
+{$ENDIF}
+
 // secure channel sub ids
 
   ALG_SID_SSL3_MASTER          = 1;
@@ -269,6 +304,11 @@ const
   {$EXTERNALSYM ALG_SID_TLS1_MASTER}
   ALG_SID_SCHANNEL_ENC_KEY     = 7;
   {$EXTERNALSYM ALG_SID_SCHANNEL_ENC_KEY}
+{$IFDEF WINVISTA_UP}
+  // misc ECC sub ids
+  ALG_SID_ECMQV                 = 1;
+  {$EXTERNALSYM ALG_SID_ECMQV}
+{$ENDIF}
 
 // Our silly example sub-id
 
@@ -352,6 +392,37 @@ const
   {$EXTERNALSYM CALG_HMAC}
   CALG_TLS1PRF              = ALG_CLASS_HASH or ALG_TYPE_ANY or ALG_SID_TLS1PRF;
   {$EXTERNALSYM CALG_TLS1PRF}
+
+{$IFDEF WINXP_UP}
+  CALG_HASH_REPLACE_OWF     = ALG_CLASS_HASH or ALG_TYPE_ANY or ALG_SID_HASH_REPLACE_OWF;
+  {$EXTERNALSYM CALG_HASH_REPLACE_OWF}
+  CALG_AES_128              = ALG_CLASS_DATA_ENCRYPT or ALG_TYPE_BLOCK or ALG_SID_AES_128;
+  {$EXTERNALSYM CALG_AES_128}
+  CALG_AES_192              = ALG_CLASS_DATA_ENCRYPT or ALG_TYPE_BLOCK or ALG_SID_AES_192;
+  {$EXTERNALSYM CALG_AES_192}
+  CALG_AES_256              = ALG_CLASS_DATA_ENCRYPT or ALG_TYPE_BLOCK or ALG_SID_AES_256;
+  {$EXTERNALSYM CALG_AES_256}
+  CALG_AES                  = ALG_CLASS_DATA_ENCRYPT or ALG_TYPE_BLOCK or ALG_SID_AES;
+  {$EXTERNALSYM CALG_AES}
+{$ENDIF}
+
+{$IFDEF WIN2003_UP}
+  CALG_SHA_256              = ALG_CLASS_HASH or ALG_TYPE_ANY or ALG_SID_SHA_256;
+  {$EXTERNALSYM CALG_SHA_256}
+  CALG_SHA_384              = ALG_CLASS_HASH or ALG_TYPE_ANY or ALG_SID_SHA_384;
+  {$EXTERNALSYM CALG_SHA_384}
+  CALG_SHA_512              = ALG_CLASS_HASH or ALG_TYPE_ANY or ALG_SID_SHA_512;
+  {$EXTERNALSYM CALG_SHA_512}
+{$ENDIF}
+
+{$IFDEF WINVISTA_UP}
+  CALG_ECDH                = ALG_CLASS_KEY_EXCHANGE or ALG_TYPE_DH or ALG_SID_ECDH;
+  {$EXTERNALSYM CALG_ECDH}
+  CALG_ECMQV               = ALG_CLASS_KEY_EXCHANGE or ALG_TYPE_ANY or ALG_SID_ECMQV;
+  {$EXTERNALSYM CALG_ECMQV}
+  CALG_ECDSA               = ALG_CLASS_SIGNATURE or ALG_TYPE_DSS or ALG_SID_ECDSA;
+  {$EXTERNALSYM CALG_ECDSA}
+{$ENDIF}
 
 // resource number for signatures in the CSP
 
@@ -831,10 +902,18 @@ const
   PROV_INTEL_SEC     = 22;
   {$EXTERNALSYM PROV_INTEL_SEC}
 
+{$IFDEF WINXP_UP}
+  PROV_REPLACE_OWF   = 23;
+  {$EXTERNALSYM PROV_REPLACE_OWF}
+  PROV_RSA_AES       = 24;
+  {$EXTERNALSYM PROV_RSA_AES}
+{$ENDIF}
+
 //
 // STT defined Providers
 //
 
+{$IFNDEF WIN2003_UP}
   PROV_STT_MER  = 7;
   {$EXTERNALSYM PROV_STT_MER}
   PROV_STT_ACQ  = 8;
@@ -845,6 +924,7 @@ const
   {$EXTERNALSYM PROV_STT_ROOT}
   PROV_STT_ISS  = 11;
   {$EXTERNALSYM PROV_STT_ISS}
+{$ENDIF}
 
 //
 // Provider friendly names
@@ -970,6 +1050,30 @@ const
   MS_SCARD_PROV = MS_SCARD_PROV_A;
   {$EXTERNALSYM MS_SCARD_PROV}
   {$ENDIF UNICODE}
+
+  {$IFDEF WIN2003_UP}
+  MS_ENH_RSA_AES_PROV_A = 'Microsoft Enhanced RSA and AES Cryptographic Provider';
+  {$EXTERNALSYM MS_ENH_RSA_AES_PROV_A}
+  MS_ENH_RSA_AES_PROV_W = 'Microsoft Enhanced RSA and AES Cryptographic Provider';
+  {$EXTERNALSYM MS_ENH_RSA_AES_PROV_W}
+  {$ELSE}
+     {$IFDEF WINXP}
+        MS_ENH_RSA_AES_PROV_A = 'Microsoft Enhanced RSA and AES Cryptographic Provider (Prototype)';
+        {$EXTERNALSYM MS_ENH_RSA_AES_PROV_A}
+        MS_ENH_RSA_AES_PROV_W = 'Microsoft Enhanced RSA and AES Cryptographic Provider (Prototype)';
+        {$EXTERNALSYM MS_ENH_RSA_AES_PROV_W}
+     {$ENDIF}
+  {$ENDIF}
+
+  {$IFDEF WINXP_UP}
+    {$IFDEF UNICODE}
+      MS_ENH_RSA_AES_PROV = MS_ENH_RSA_AES_PROV_W;
+      {$EXTERNALSYM MS_ENH_RSA_AES_PROV}
+    {$ELSE}
+      MS_ENH_RSA_AES_PROV = MS_ENH_RSA_AES_PROV_A;
+      {$EXTERNALSYM MS_ENH_RSA_AES_PROV}
+    {$ENDIF}
+  {$ENDIF}
 
   MAXUIDLEN = 64;
   {$EXTERNALSYM MAXUIDLEN}
@@ -1282,7 +1386,7 @@ type
   TCryptAttrBlob = CRYPT_ATTR_BLOB;
   PCRYPT_ATTR_BLOB = ^_CRYPTOAPI_BLOB;
   {$EXTERNALSYM PCRYPT_ATTR_BLOB}
-  PCryptAttrBlob = PCRYPT_ATTR_BLOB;  
+  PCryptAttrBlob = PCRYPT_ATTR_BLOB;
 
 // structure for use with CryptSetKeyParam for CMS keys
 
@@ -5871,7 +5975,7 @@ type
 //  private key is used. The hCryptProv and dwKeySpec specify the private key.
 //  The pSenderId identifies the certificate containing the sender's public key.
 //
-//  Currently, pvKeyEncryptionAuxInfo isn't used and must be set to NULL. 
+//  Currently, pvKeyEncryptionAuxInfo isn't used and must be set to NULL.
 //
 //  If KeyEncryptionAlgorithm.Parameters.cbData == 0, then, its Parameters
 //  are updated with the encoded KeyWrapAlgorithm.
@@ -8109,7 +8213,7 @@ type
   {$EXTERNALSYM PCCTL_CONTEXT}
   PPCCTL_CONTEXT = ^PCCTL_CONTEXT;
   {$EXTERNALSYM PPCCTL_CONTEXT}
-  
+
 //+-------------------------------------------------------------------------
 //  Certificate, CRL and CTL property IDs
 //
@@ -10293,7 +10397,7 @@ const
 //+-------------------------------------------------------------------------
 //  CRL_FIND_ISSUED_BY
 //
-//  Find CRL matching the specified issuer. 
+//  Find CRL matching the specified issuer.
 //
 //  pvFindPara is the PCCERT_CONTEXT of the CRL issuer.
 //
@@ -13091,6 +13195,25 @@ function CertStrToName(dwCertEncodingType: DWORD; pszX500: LPCTSTR;
 //      Subject Name field for the Email OID, "1.2.840.113549.1.9.1".
 //      If the rfc822Name or Email OID is found, returns the string. Otherwise,
 //      returns an empty string (returned character count is 1).
+//    CERT_NAME_DNS_TYPE
+//      If the certificate has a Subject Alternative Name extension (for
+//      issuer, Issuer Alternative Name), searches for first DNSName choice.
+//      If the DNSName choice isn't found in the extension, searches the
+//      Subject Name field for the CN OID, "2.5.4.3".
+//      If the DNSName or CN OID is found, returns the string. Otherwise,
+//      returns an empty string.
+//    CERT_NAME_URL_TYPE
+//      If the certificate has a Subject Alternative Name extension (for
+//      issuer, Issuer Alternative Name), searches for first URL choice.
+//      If the URL choice is found, returns the string. Otherwise,
+//      returns an empty string.
+//    CERT_NAME_UPN_TYPE
+//      If the certificate has a Subject Alternative Name extension,
+//      searches the OtherName choices looking for a
+//      pszObjId == szOID_NT_PRINCIPAL_NAME, "1.3.6.1.4.1.311.20.2.3".
+//      If the UPN OID is found, the blob is decoded as a
+//      X509_UNICODE_ANY_STRING and the decoded string is returned.
+//      Otherwise, returns an empty string.
 //    CERT_NAME_RDN_TYPE
 //      Converts the Subject Name blob by calling CertNameToStr. pvTypePara
 //      points to a DWORD containing the dwStrType passed to CertNameToStr.
@@ -13169,6 +13292,12 @@ const
   {$EXTERNALSYM CERT_NAME_SIMPLE_DISPLAY_TYPE}
   CERT_NAME_FRIENDLY_DISPLAY_TYPE = 5;
   {$EXTERNALSYM CERT_NAME_FRIENDLY_DISPLAY_TYPE}
+  CERT_NAME_DNS_TYPE              = 6;
+  {$EXTERNALSYM CERT_NAME_DNS_TYPE}
+  CERT_NAME_URL_TYPE              = 7;
+  {$EXTERNALSYM CERT_NAME_URL_TYPE}
+  CERT_NAME_UPN_TYPE              = 8;
+  {$EXTERNALSYM CERT_NAME_UPN_TYPE}
 
 //+-------------------------------------------------------------------------
 //  Certificate name flags
@@ -14285,7 +14414,7 @@ type
   CRYPT_BLOB_ARRAY = _CRYPT_BLOB_ARRAY;
   {$EXTERNALSYM CRYPT_BLOB_ARRAY}
   TCryptBlobArray = CRYPT_BLOB_ARRAY;
-  PCryptBlobArray = PCRYPT_BLOB_ARRAY;  
+  PCryptBlobArray = PCRYPT_BLOB_ARRAY;
 
   PCRYPT_CREDENTIALS = ^CRYPT_CREDENTIALS;
   {$EXTERNALSYM PCRYPT_CREDENTIALS}
@@ -14484,11 +14613,11 @@ function CryptRetrieveObjectByUrl(pszUrl: LPCTSTR; pszObjectOid: LPCSTR;
 //
 // Call back function to cancel object retrieval
 //
-// The function can be installed on a per thread basis.  
+// The function can be installed on a per thread basis.
 // If CryptInstallCancelRetrieval is called for multiple times, only the most recent
 // installation will be kept.
 //
-// This is only effective for http, https, gopher, and ftp protocol.  
+// This is only effective for http, https, gopher, and ftp protocol.
 // It is ignored by the rest of the protocols.
 
 type
@@ -16105,7 +16234,7 @@ const
   {$IFDEF UNICODE}
   AWSuffix = 'W';
   {$ELSE}
-  AWSuffix = 'A';   
+  AWSuffix = 'A';
   {$ENDIF UNICODE}
 {$ENDIF JWA_INCLUDEMODE}
 
@@ -19341,7 +19470,7 @@ end;
 var
   _CryptProtectData: Pointer;
 
-function CryptProtectData;              
+function CryptProtectData;
 begin
   GetProcedureAddress(_CryptProtectData, crypt32, 'CryptProtectData');
   asm
