@@ -1415,7 +1415,7 @@ function CryptAcquireContext(var phProv: HCRYPTPROV; pszContainer: LPCTSTR;
   pszProvider: LPCTSTR; dwProvType: DWORD; dwFlags: DWORD): BOOL; stdcall;
 {$EXTERNALSYM CryptAcquireContext}
 
-function CryptReleaseContext(hProv: HCRYPTPROV; dwFlags: ULONG_PTR): BOOL; stdcall;
+function CryptReleaseContext(hProv: HCRYPTPROV; dwFlags: DWORD): BOOL; stdcall;
 {$EXTERNALSYM CryptReleaseContext}
 
 function CryptGenKey(hProv: HCRYPTPROV; Algid: ALG_ID; dwFlags: DWORD;
