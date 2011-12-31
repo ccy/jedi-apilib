@@ -58,8 +58,8 @@ uses
 
   }
   Windows, ActiveX,
-  CommCtrl, {$IFDEF DELPHI6_UP}msxml,{$ENDIF DELPHI6_UP}
-  ShDocVw,
+  CommCtrl,
+  {$IFDEF DELPHI6_UP}msxml,{$ENDIF DELPHI6_UP}
   //
   JwaWinBase, JwaWinUser, JwaWinType, JwaActiveX, JwaWinInet,
   JwaShlDisp, JwaShellApi, JwaUrlMon;
