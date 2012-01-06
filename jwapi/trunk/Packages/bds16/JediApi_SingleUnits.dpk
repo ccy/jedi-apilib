@@ -1,4 +1,4 @@
-package JediApi_SingleUnits;
+package JediApi_SingleUnits_win64;
 
 {$R *.res}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
