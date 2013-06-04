@@ -1885,7 +1885,12 @@ end;
 
 procedure INLINE_WRITE_FLIPPED_DWORD(pout: PDWORD; In_: DWORD);
 begin
+  {$IFDEF DELPHIXE4_UP}
+  // Hard cast to make compile: in XE4 PDWORD is no long ^DWORD. In XE4 it is ^CppULongInt which is incompatible with ^DWORD.
+  INLINE_DWORD_FLIP(DWORD(pout^), In_);
+  {$ELSE ~DELPHIXE4_UP}
   INLINE_DWORD_FLIP(pout^, In_);
+  {$ENDIF ~DELPHIXE4_UP}
 end;
 
 function DNS_HEADER_FLAGS(pHead: PDNS_HEADER): WORD;
