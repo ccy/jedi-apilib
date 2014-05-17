@@ -620,7 +620,7 @@ The list has no order!}
 {$ENDIF}
 
 {$I JwaBCrypt.pas}
-{$I JwaNCrypt.pas}
+{$IFDEF JWA_INCLUDE_JWAADSTLB}{$I JwaNCrypt.pas}{$ENDIF}
 
 {$I JwaEventDefs.pas}
 {$I JwaEventTracing.pas}
@@ -657,7 +657,7 @@ The list has no order!}
 {$I JwaWintrust.pas} //Allignment 8
 {$I JwaSoftpub.pas}  //Allignment 8
 
-{$I JwaCOMSecurity.pas}
+{$IFDEF JWA_INCLUDE_JWAADSTLB}{$I JwaCOMSecurity.pas}{$ENDIF}
 {$I JwaTaskDialog.pas}
 
 
@@ -1005,7 +1005,7 @@ The list has no order!}
 {$ENDIF}
 
 {$I JwaBCrypt.pas}
-{$I JwaNCrypt.pas}
+{$IFDEF JWA_INCLUDE_JWAADSTLB}{$I JwaNCrypt.pas}{$ENDIF}
 
 {$I JwaEventDefs.pas}
 {$I JwaEventTracing.pas}
@@ -1042,7 +1042,7 @@ If you get this error you should do the things described or upgrade.
 {$I JwaWintrust.pas} //Alignment 8
 {$I JwaSoftpub.pas}  //Alignment 8
 
-{$I JwaCOMSecurity.pas}
+{$IFDEF JWA_INCLUDE_JWAADSTLB}{$I JwaCOMSecurity.pas}{$ENDIF}
 {$I JwaTaskDialog.pas}
 
 {******* Add here new units *******}
