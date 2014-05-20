@@ -16119,7 +16119,7 @@ const
 //--------------------------------------------------------------------------
 function CryptStringToBinaryA(pszString: LPCSTR; cchString: DWORD;
   dwFlags: DWORD; ppBinary: PBYTE; var ppcbBinary: DWORD;
-  ppdwSkip: PDWORD): BOOL; stdcall;
+  var ppdwSkip: DWORD; var dwFlags2: DWORD): BOOL; stdcall;
 {$EXTERNALSYM CryptStringToBinaryA}
 
 //+-------------------------------------------------------------------------
@@ -16133,13 +16133,13 @@ function CryptStringToBinaryA(pszString: LPCSTR; cchString: DWORD;
 //--------------------------------------------------------------------------
 
 function CryptStringToBinaryW(pszString: LPCWSTR; cchString: DWORD;
-  dwFlags: DWORD; ppBinary: BYTE; var ppcbBinary: DWORD;
-  ppdwSkip: DWORD): BOOL; stdcall;
+  dwFlags: DWORD; ppBinary: PBYTE; var ppcbBinary: DWORD;
+  var ppdwSkip: DWORD; var dwFlags2: DWORD): BOOL; stdcall;
 {$EXTERNALSYM CryptStringToBinaryW}
 
-function CryptStringToBinary(pszString: LPCSTR; cchString: DWORD;
-  dwFlags: DWORD; ppBinary: BYTE; var ppcbBinary: DWORD;
-  ppdwSkip: DWORD): BOOL; stdcall;
+function CryptStringToBinary(pszString: LPCTSTR; cchString: DWORD;
+  dwFlags: DWORD; ppBinary: PBYTE; var ppcbBinary: DWORD;
+  var ppdwSkip: DWORD; var dwFlags2: DWORD): BOOL; stdcall;
 {$EXTERNALSYM CryptStringToBinary}
 
 
@@ -19716,7 +19716,7 @@ end;
 var _CryptStringToBinary : Pointer;
 function CryptStringToBinary;
 begin
-  GetProcedureAddress(_CryptStringToBinary, advapi32, 'CryptStringToBinary' + AWSuffix);
+  GetProcedureAddress(_CryptStringToBinary, crypt32, 'CryptStringToBinary' + AWSuffix);
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -19727,7 +19727,7 @@ end;
 var _CryptBinaryToString : Pointer;
 function CryptBinaryToString;
 begin
-  GetProcedureAddress(_CryptBinaryToString, advapi32, 'CryptBinaryToString' + AWSuffix);
+  GetProcedureAddress(_CryptBinaryToString, crypt32, 'CryptBinaryToString' + AWSuffix);
   asm
         MOV     ESP, EBP
         POP     EBP
@@ -19998,9 +19998,9 @@ function CertVerifyCertificateChainPolicy; external crypt32 {$IFDEF DELAYED_LOAD
 function CryptBinaryToStringA; external crypt32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'CryptBinaryToStringA';
 function CryptBinaryToStringW; external crypt32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'CryptBinaryToStringW';
 function CryptBinaryToString; external crypt32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'CryptBinaryToString' + AWSuffix;
-function CryptStringToBinaryA; external crypt32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'CryptToStringBinaryA';
-function CryptStringToBinaryW; external crypt32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'CryptToStringBinaryW';
-function CryptStringToBinary; external crypt32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'CryptToStringBinary' + AWSuffix;
+function CryptStringToBinaryA; external crypt32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'CryptStringToBinaryA';
+function CryptStringToBinaryW; external crypt32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'CryptStringToBinaryW';
+function CryptStringToBinary; external crypt32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'CryptStringToBinary' + AWSuffix;
 
 {$ENDIF DYNAMIC_LINK}
 {$ENDIF JWA_INTERFACESECTION}
