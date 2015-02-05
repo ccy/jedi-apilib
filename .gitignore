@@ -1,0 +1,9 @@
+*.local
+*.identcache
+*.dsk
+*.tvsconfig
+*.dres
+*.tlb
+*.sds
+*Resource.rc
+bin/
