@@ -2767,17 +2767,56 @@ type
 // =================================================================
 // PROCESS ENVIRONMENT BLOCK (PEB)
 // =================================================================
+  PLDR_SERVICE_TAG_RECORD = ^TLDR_SERVICE_TAG_RECORD;
+  TLDR_SERVICE_TAG_RECORD = packed record
+    Next              : PLDR_SERVICE_TAG_RECORD;
+    ServiceTag        : ULONG;
+  end;
+
+  PLDRP_CSLIST = ^TLDRP_CSLIST;
+  TLDRP_CSLIST = packed record
+    Tail: PSINGLE_LIST_ENTRY;
+  end;
+
+  TLDR_DDAG_STATE = (
+    LdrModulesMerged = -5,
+    LdrModulesInitError = -4,
+    LdrModulesSnapError = -3,
+    LdrModulesUnloaded = -2,
+    LdrModulesUnloading = -1,
+    LdrModulesPlaceHolder = 0,
+    LdrModulesMapping = 1,
+    LdrModulesMapped = 2,
+    LdrModulesWaitingForDependencies = 3,
+    LdrModulesSnapping = 4,
+    LdrModulesSnapped = 5,
+    LdrModulesCondensed = 6,
+    LdrModulesReadyToInit = 7,
+    LdrModulesInitializing = 8,
+    LdrModulesReadyToRun = 9
+  );
+
+  PLDR_DDAG_NODE = ^TLDR_DDAG_NODE;
+  TLDR_DDAG_NODE = packed record
+    Modules             : TListEntry;
+    ServiceTagList      : PLDR_SERVICE_TAG_RECORD;
+    LoadCount           : ULONG;
+    ReferenceCount      : ULONG;
+    DependencyCount     : ULONG;
+    case Integer of
+      0: (Dependencies  : TLDRP_CSLIST);
+      1: (RemovalLink   : TSingleListEntry;
+    IncomingDependencies: TLDRP_CSLIST;
+    State               : TLDR_DDAG_STATE;
+    CondenseLink        : TSingleListEntry;
+    PreorderNumber      : ULONG;
+    LowestLink          : ULONG);
+  end;
 
 // Verified in XP using WinDbg
   _LDR_DATA_TABLE_ENTRY = record // not packed!
-    case Integer of
-  (*   *)0: (
-  (*000*)InLoadOrderLinks: LIST_ENTRY
-        );
-  (*   *)1: (
-  (*000*)InMemoryOrderLinks: LIST_ENTRY
-        );
-  (*   *)2: (
+  (*000*)InLoadOrderLinks: LIST_ENTRY;
+  (*000*)InMemoryOrderLinks: LIST_ENTRY;
   (*000*)InInitializationOrderLinks: LIST_ENTRY;
   (*008*)DllBase: PVOID;
   (*00c*)EntryPoint: PVOID;
@@ -2787,14 +2826,14 @@ type
   (*024*)Flags: ULONG;
   (*028*)LoadCount: USHORT;
   (*02a*)TlsIndex: USHORT;
-  (*02c*)HashLinks: LIST_ENTRY;
+//  (*02c*)HashLinks: LIST_ENTRY;
   (*034*)SectionPointer: PVOID;
   (*038*)CheckSum: ULONG;
-  (*03C*)TimeDateStamp: ULONG;
+//  (*03C*)TimeDateStamp: ULONG;
   (*040*)LoadedImports: PVOID;
   (*044*)EntryPointActivationContext: PVOID; // PACTIVATION_CONTEXT
   (*048*)PatchInformation: PVOID;
-        )
+    DdagNode: PLDR_DDAG_NODE;
   end;
   LDR_DATA_TABLE_ENTRY = _LDR_DATA_TABLE_ENTRY;
   PLDR_DATA_TABLE_ENTRY = ^_LDR_DATA_TABLE_ENTRY;
@@ -2977,7 +3016,7 @@ type
   end;
 
 // Verified in W2K, WXP and W2K3 using WinDbg
-  _PEB_WXP = packed record // packed!
+  _PEB_WXP = record // packed!
   (*000*)InheritedAddressSpace: BOOLEAN;
   (*001*)ReadImageFileExecOptions: BOOLEAN;
   (*002*)BeingDebugged: BOOLEAN;
