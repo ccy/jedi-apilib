@@ -5,5 +5,7 @@
 *.dres
 *.tlb
 *.sds
+*.stat
+*/*/Packages/*/*.res
 *Resource.rc
 bin/
