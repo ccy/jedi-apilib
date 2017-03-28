@@ -3589,7 +3589,7 @@ begin
   if hProcess = 0 then
     hProcess := GetCurrentProcess;
 
-  bResult := OpenProcessToken(hProcess, aDesiredAccess, fTokenHandle);
+  bResult := OpenProcessToken(HANDLE(hProcess), aDesiredAccess, HANDLE(fTokenHandle));
 
   if Duplicate and bResult then
   begin
@@ -3650,7 +3650,7 @@ begin
     hThread := GetCurrentThread;
 
   bResult := OpenThreadToken(hThread, aDesiredAccess, anOpenAsSelf,
-    fTokenHandle);
+    HANDLE(fTokenHandle));
 
   if not bResult then
   begin
@@ -3690,7 +3690,7 @@ begin
   end;*)
 
   bResult := OpenThreadToken(GetCurrentThread, aDesiredAccess,
-    True, hTokenHandle);
+    True, HANDLE(hTokenHandle));
   if bResult then
   begin
     Self.Create;
@@ -3844,16 +3844,16 @@ begin
   if SessionID = INVALID_HANDLE_VALUE then
   begin
     if not WinStationQueryUserToken(hServer, InternalWtsGetActiveConsoleSessionID,
-      fTokenHandle) then
+      HANDLE(fTokenHandle)) then
       if not WinStationQueryUserToken(hServer, WTS_CURRENT_SESSION,
-        fTokenHandle) then
+        HANDLE(fTokenHandle)) then
         raise EJwsclWinCallFailedException.CreateFmtEx(
           RsTokenCallWtsQueryUserTokenFailed, 'WinStationQueryUserToken',
           ClassName, RsUNToken, 0, True, [SessionID]);
   end
   else
   begin
-    if not WinStationQueryUserToken(hServer, SessionID, fTokenHandle) then
+    if not WinStationQueryUserToken(hServer, SessionID, HANDLE(fTokenHandle)) then
       raise EJwsclWinCallFailedException.CreateFmtEx(
         RsTokenCallWtsQueryUserTokenFailed, 'WinStationQueryUserToken',
         ClassName, RsUNToken, 0, True, [SessionID]);
@@ -3893,15 +3893,15 @@ begin
 
   if SessionID = INVALID_HANDLE_VALUE then
   begin
-    if not WTSQueryUserToken(InternalWtsGetActiveConsoleSessionID, fTokenHandle) then
-      if not WTSQueryUserToken(WTS_CURRENT_SESSION, fTokenHandle) then
+    if not WTSQueryUserToken(InternalWtsGetActiveConsoleSessionID, HANDLE(fTokenHandle)) then
+      if not WTSQueryUserToken(WTS_CURRENT_SESSION, HANDLE(fTokenHandle)) then
         raise EJwsclWinCallFailedException.CreateFmtEx(
           RsTokenCallWtsQueryUserTokenFailed, 'WTSQueryUserToken',
           ClassName, RsUNToken, 0, True, [SessionID]);
   end
   else
   begin
-    if not WTSQueryUserToken(SessionID, fTokenHandle) then
+    if not WTSQueryUserToken(SessionID, HANDLE(fTokenHandle)) then
       raise EJwsclWinCallFailedException.CreateFmtEx(
         RsTokenCallWtsQueryUserTokenFailed, 'WTSQueryUserToken',
         ClassName, RsUNToken, 0, True, [SessionID]);
@@ -4027,7 +4027,7 @@ begin
   //[Hint] bRes := false;
   try
     bRes := jwaWindows.CreateRestrictedToken(PrevTokenHandle, Flags,
-      cDisSids, pDisSids, cLuids, pLuids, cResSids, pResSids, fTokenHandle);
+      cDisSids, pDisSids, cLuids, pLuids, cResSids, pResSids, HANDLE(fTokenHandle));
   finally
     if Assigned(pDisSids) then
       SidsToDisable.Free_PSID_Array(PSidAndAttributesArray(pDisSids));
@@ -4090,7 +4090,7 @@ begin
 
   //create a copy of the token
   if DuplicateTokenEx(fTokenHandle, aDesiredAccess, nil, impLevel,
-    TokenImpersonation, hNewTokenHandle) then
+    TokenImpersonation, HANDLE(hNewTokenHandle)) then
   begin
     //we need to close the handle
     if not fShared then
@@ -4134,7 +4134,7 @@ begin
 
   //create a copy of the token
   if DuplicateTokenEx(fTokenHandle, aDesiredAccess, nil,
-    DEFAULT_IMPERSONATION_LEVEL, TokenPrimary, hNewTokenHandle) then
+    DEFAULT_IMPERSONATION_LEVEL, TokenPrimary, HANDLE(hNewTokenHandle)) then
   begin
     //we need to close the handle
     if not fShared then
@@ -5130,7 +5130,7 @@ begin
 
   if not jwaWindows.DuplicateTokenEx(TokenHandle, AccessMask,
     LPSECURITY_ATTRIBUTES(Security), GetImpersonationLevel,
-    GetTokenType, newTokenHandle) then
+    GetTokenType, HANDLE(newTokenHandle)) then
     EJwsclDuplicateTokenException.CreateFmtEx(
       RsWinCallFailed,
       'CreateDuplicateToken', ClassName, RsUNToken, 0, True,
@@ -5780,21 +5780,21 @@ end;
 
 class function TJwSecurityToken.HasThreadAToken(): boolean;
 var
-  Handle : DWORD;
+  OneHandle : HANDLE;
 begin
-  Handle := INVALID_HANDLE_VALUE;
-  result := OpenThreadToken(GetCurrentThread, TOKEN_QUERY or TOKEN_READ, false, Handle);
+  OneHandle := INVALID_HANDLE_VALUE;
+  result := OpenThreadToken(GetCurrentThread, TOKEN_QUERY or TOKEN_READ, false, OneHandle);
 
   if not result then
-    result := OpenThreadToken(GetCurrentThread, TOKEN_QUERY or TOKEN_READ, true, Handle);
+    result := OpenThreadToken(GetCurrentThread, TOKEN_QUERY or TOKEN_READ, true, OneHandle);
 
   if not result then
     raise EJwsclWinCallFailedException.CreateFmtEx(
       RsWinCallFailed, 'HasThreadAToken',
       ClassName, RsUNToken, 0, True, ['OpenThreadToken']);
 
-  if Handle <> INVALID_HANDLE_VALUE then
-    CloseHandle(Handle);
+  if OneHandle <> INVALID_HANDLE_VALUE then
+    CloseHandle(OneHandle);
 end;
 
 class function TJwSecurityToken.GetThreadToken(
@@ -6014,7 +6014,7 @@ begin
     LogonUserA
 {$ENDIF}
     (TJwPChar(sUserName), TJwPChar(sDomain), TJwPChar(sPassword),
-    dwLogonType, dwLogonProvider, fTokenHandle);
+    dwLogonType, dwLogonProvider, HANDLE(fTokenHandle));
 
   if (not bResult) then
     raise EJwsclWinCallFailedException.CreateFmtEx(RsWinCallFailed,

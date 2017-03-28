@@ -118,7 +118,7 @@ type
       out SubStatus: NTSTATUS);
 
 
-    property LsaHandle: Cardinal Read fLsaHandle;
+    property LsaHandle: THandle Read fLsaHandle;
 
   end;
 
@@ -467,7 +467,7 @@ begin
     aProfileBuffer,//PVOID* ProfileBuffer,
     aProfileBufferLength,//PULONG ProfileBufferLength,
     aTokenLuid,//PLUID LogonId,
-    hToken, //PHANDLE Token,
+    HANDLE(hToken), //PHANDLE Token,
     aQuotaLimits,//PQUOTA_LIMITS Quotas,
     SubStatus//PNTSTATUS SubStatus
     );

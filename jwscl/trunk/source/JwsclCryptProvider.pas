@@ -599,7 +599,7 @@ constructor TJwCryptProvider.Create(const KeyContainerName, CSPName: TJwString;
   CSPType: TJwCSPType; Flags: TJwCSPCreationFlagSet);
 begin
   inherited Create;
-  if not {$IFDEF UNICODE}CryptAcquireContextW{$ELSE}CryptAcquireContextA{$ENDIF UNICODE}(fCSPHandle, TJwPChar(KeyContainerName),
+  if not {$IFDEF UNICODE}CryptAcquireContextW{$ELSE}CryptAcquireContextA{$ENDIF UNICODE}(HCRYPTPROV(fCSPHandle), TJwPChar(KeyContainerName),
     TJwPChar(CSPName), TJwEnumMap.ConvertCSPType(CSPType),
     TJwEnumMap.ConvertCSPCreationFlags(Flags)) then
     RaiseApiError('Create', 'CryptAcquireContext');
@@ -624,7 +624,7 @@ end;
 class procedure TJwCryptProvider.DeleteKeyset(const KeysetName: TJwString);
 var DummyHandle: Cardinal;
 begin
-  if not {$IFDEF UNICODE}CryptAcquireContextW{$ELSE}CryptAcquireContextA{$ENDIF UNICODE}(DummyHandle,
+  if not {$IFDEF UNICODE}CryptAcquireContextW{$ELSE}CryptAcquireContextA{$ENDIF UNICODE}(HCRYPTPROV(DummyHandle),
     TJwPChar(KeysetName), nil, PROV_RSA_FULL, CRYPT_DELETEKEYSET) then
     RaiseApiError('DeleteKeyset', 'CryptAcquireContext');
 end;
@@ -845,7 +845,7 @@ begin
     KeyHandle := Key.Handle
   else
     KeyHandle := 0;
-  if not CryptCreateHash(fProvider.CSPHandle, TJwEnumMap.ConvertHashAlgorithm(Alg), KeyHandle, 0, fHashHandle) then
+  if not CryptCreateHash(fProvider.CSPHandle, TJwEnumMap.ConvertHashAlgorithm(Alg), KeyHandle, 0, HCRYPTHASH(fHashHandle)) then
     RaiseApiError('Create', 'CryptCreateHash');
 end;
 
@@ -979,7 +979,7 @@ end;
 constructor TJwCryptKey.Create(OldKey: TJwCryptKey);
 begin
   inherited Create;
-  if not CryptDuplicateKey(OldKey.Handle, nil, 0, fHandle) then
+  if not CryptDuplicateKey(OldKey.Handle, nil, 0, HCRYPTKEY(fHandle)) then
     RaiseApiError('Create', 'CryptDuplicateKey');
 end;
 
@@ -987,7 +987,7 @@ constructor TJwCryptKey.GetUserKey(CSP: TJwCryptProvider;
   Key: TJwKeyPairType);
 begin
   inherited Create;
-  if not CryptGetUserKey(CSP.CSPHandle, TJwEnumMap.ConvertKeyPairType(Key), fHandle) then
+  if not CryptGetUserKey(CSP.CSPHandle, TJwEnumMap.ConvertKeyPairType(Key), HCRYPTKEY(fHandle)) then
     RaiseApiError('GetUserKey', 'CryptGetUserKey');
 end;
 
@@ -1009,7 +1009,7 @@ begin
     Key := PubKey.Handle
   else
     Key := 0;
-  if not CryptImportKey(CSP.CSPHandle, Data, DataLen, Key, TJwEnumMap.ConvertKeyFlagSet(Flags), fHandle) then
+  if not CryptImportKey(CSP.CSPHandle, Data, DataLen, Key, TJwEnumMap.ConvertKeyFlagSet(Flags), HCRYPTKEY(fHandle)) then
     RaiseApiError('Import', 'CryptImportKey');
 end;
 
@@ -1027,7 +1027,7 @@ begin
       []);
 
   inherited Create;
-  if not CryptGenKey(CSP.CSPHandle, TJwEnumMap.ConvertEncryptionAlgorithm(Alg), TJwEnumMap.ConvertKeyFlagSet(Flags) or (Length shl 16), fHandle) then
+  if not CryptGenKey(CSP.CSPHandle, TJwEnumMap.ConvertEncryptionAlgorithm(Alg), TJwEnumMap.ConvertKeyFlagSet(Flags) or (Length shl 16), HCRYPTKEY(fHandle)) then
     RaiseApiError('Generate', 'CryptGenKey');
 end;
 
@@ -1043,7 +1043,7 @@ begin
       false,
       []);
   inherited Create;
-  if not CryptGenKey(CSP.CSPHandle, TJwEnumMap.ConvertKeyPairType(KeyPair), TJwEnumMap.ConvertKeyFlagSet(Flags) or (Length shl 16), fHandle) then
+  if not CryptGenKey(CSP.CSPHandle, TJwEnumMap.ConvertKeyPairType(KeyPair), TJwEnumMap.ConvertKeyFlagSet(Flags) or (Length shl 16), HCRYPTKEY(fHandle)) then
     RaiseApiError('Generate', 'CryptGenKey');
 end;
 
@@ -1060,7 +1060,7 @@ begin
       false,
       []);
   inherited Create;
-  if not CryptDeriveKey(CSP.CSPHandle, TJwEnumMap.ConvertEncryptionAlgorithm(Alg), BaseData.HashHandle, TJwEnumMap.ConvertKeyFlagSet(Flags) or(Length shl 16), fHandle) then
+  if not CryptDeriveKey(CSP.CSPHandle, TJwEnumMap.ConvertEncryptionAlgorithm(Alg), BaseData.HashHandle, TJwEnumMap.ConvertKeyFlagSet(Flags) or(Length shl 16), HCRYPTKEY(fHandle)) then
     RaiseApiError('Derive', 'CryptDeriveKey');
 end;
 

@@ -3062,8 +3062,8 @@ procedure TJwInternalJobObjectIOCompletitionThread.Execute;
   end;
 var
   pOV : POverlapped;
-  lpNumberOfBytes,
-  lpCompletionKey : Cardinal;
+  lpNumberOfBytes: DWORD;
+  lpCompletionKey : ULONG_PTR;
   Res : Boolean;
   L : DWORD;
   //ID : DWORD;

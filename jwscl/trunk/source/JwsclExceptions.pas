@@ -1071,7 +1071,7 @@ end;
 procedure JwInitDelayedFunctionHook;
 begin
 {$IFDEF JWSCL_USE_DELAYED}
-  SetDliFailureHook(DelayedFailureHook);
+  SetDliFailureHook2(DelayedFailureHook);
 {$ENDIF}
 end;
 
