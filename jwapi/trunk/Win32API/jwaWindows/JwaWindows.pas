@@ -195,8 +195,10 @@ uses
 {The following units may not be included because of problems}
 
 //OleUnits creates window handles that prevents SetThreadDesktop to work
+{$IFNDEF NOVCL}
   OleServer, //[warning] requires D5 or higher - required by jwaAdsTLB.pas
   OleCtrls,
+{$ENDIF}
 //JwaAdsTlb.pas and JwaDde.pas use these units and is therfore excluded
 {$ENDIF JWA_INCLUDE_JWAADSTLB}
 
