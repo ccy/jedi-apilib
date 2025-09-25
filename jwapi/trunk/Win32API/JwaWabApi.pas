@@ -270,11 +270,13 @@ function UnloadWabApi: Boolean;
 {$ENDIF}
 {$ENDIF JWA_INCLUDEMODE}
 
-var
-  WABOpen: TWABOpen = nil;
-  {$EXTERNALSYM WABOpen}
-  WABOpenEx: TWABOpenEx = nil;
-  {$EXTERNALSYM WABOpenEx}
+type
+  TJwaWabApi = class abstract
+    class var WABOpen: TWABOpen;
+    {.$EXTERNALSYM WABOpen}
+    class var WABOpenEx: TWABOpenEx;
+    {.$EXTERNALSYM WABOpenEx}
+  end;
 
 {$ENDIF JWA_IMPLEMENTATIONSECTION}
 
@@ -316,8 +318,8 @@ begin
   begin
     Result := FreeLibrary(LibHandle);
     LibHandle := 0;
-    @WabOpen := nil;
-    @WabOpenEx := nil;
+    @TJwaWabApi.WabOpen := nil;
+    @TJwaWabApi.WabOpenEx := nil;
   end else Result := True;
 end;
 
@@ -333,9 +335,9 @@ begin
     LibHandle := LoadLibraryW(W);//PAnsiChar(WabDllPath));
     if WabApiLoaded then
     begin
-      @WABOpen := GetProcAddress(LibHandle, 'WABOpen');
-      @WABOpenEx := GetProcAddress(LibHandle, 'WABOpenEx');
-      Result := Assigned(WABOpen) and Assigned(WABOpenEx);
+      @TJwaWabApi.WABOpen := GetProcAddress(LibHandle, 'WABOpen');
+      @TJwaWabApi.WABOpenEx := GetProcAddress(LibHandle, 'WABOpenEx');
+      Result := Assigned(TJwaWabApi.WABOpen) and Assigned(TJwaWabApi.WABOpenEx);
       if not Result then UnloadWabApi;
     end;
   end;

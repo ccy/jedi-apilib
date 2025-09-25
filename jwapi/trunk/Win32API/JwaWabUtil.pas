@@ -784,10 +784,11 @@ function UnloadWabUtil: Boolean;
 {$ENDIF JWA_INCLUDEMODE}
 {$ENDIF}
 
-var
-  WABCreateIProp: TWABCreateIProp = nil;
-{$EXTERNALSYM WABCreateIProp}
-
+type
+  TJwaWabUtil = class abstract
+    class var WABCreateIProp: TWABCreateIProp;
+    {.$EXTERNALSYM WABCreateIProp}
+  end;
 
 {$ENDIF JWA_IMPLEMENTATIONSECTION}
 
@@ -839,7 +840,7 @@ begin
   begin
     Result := FreeLibrary(WabLibHandle);
     WabLibHandle := 0;
-    @WABCreateIProp := nil;
+    @TJwaWabUtil.WABCreateIProp := nil;
   end else Result := True;
 end;
 
@@ -853,8 +854,8 @@ begin
     WabLibHandle := LoadLibraryW(PWideChar(WabDllPath));
     if WabUtilLoaded then
     begin
-      WABCreateIProp := GetProcAddress(WabLibHandle, 'WABCreateIProp');
-      Result := Assigned(WABCreateIProp);
+      TJwaWabUtil.WABCreateIProp := GetProcAddress(WabLibHandle, 'WABCreateIProp');
+      Result := Assigned(TJwaWabUtil.WABCreateIProp);
       if not Result then UnloadWabUtil;
     end;
   end;
