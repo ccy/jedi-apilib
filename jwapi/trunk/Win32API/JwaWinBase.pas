@@ -2804,20 +2804,26 @@ function SetTimeZoneInformation(const lpTimeZoneInformation: TIME_ZONE_INFORMATI
 function SystemTimeToFileTime(const lpSystemTime: SYSTEMTIME; var lpFileTime: FILETIME): BOOL; stdcall;
 {$EXTERNALSYM SystemTimeToFileTime}
 
-function FileTimeToLocalFileTime(const lpFileTime: FILETIME; var lpLocalFileTime: FILETIME): BOOL; stdcall;
+function FileTimeToLocalFileTime(const lpFileTime: FILETIME; var lpLocalFileTime: FILETIME): BOOL; inline; overload;
+function FileTimeToLocalFileTime(lpFileTime: PFILETIME; var lpLocalFileTime: FILETIME): BOOL; overload; stdcall;
 {$EXTERNALSYM FileTimeToLocalFileTime}
 
-function LocalFileTimeToFileTime(const lpLocalFileTime: FILETIME; var lpFileTime: FILETIME): BOOL; stdcall;
+function LocalFileTimeToFileTime(const lpLocalFileTime: FILETIME; var lpFileTime: FILETIME): BOOL; inline; overload;
+function LocalFileTimeToFileTime(lpLocalFileTime: PFILETIME; var lpFileTime: FILETIME): BOOL; overload; stdcall;
 {$EXTERNALSYM LocalFileTimeToFileTime}
 
-function FileTimeToSystemTime(const lpFileTime: FILETIME; var lpSystemTime: SYSTEMTIME): BOOL; stdcall;
+function FileTimeToSystemTime(const lpFileTime: FILETIME; var lpSystemTime: SYSTEMTIME): BOOL; inline; overload;
+function FileTimeToSystemTime(lpFileTime: PFILETIME; var lpSystemTime: SYSTEMTIME): BOOL; overload; stdcall;
 {$EXTERNALSYM FileTimeToSystemTime}
 
-function CompareFileTime(const lpFileTime1, lpFileTime2: FILETIME): LONG; stdcall;
+function CompareFileTime(const lpFileTime1, lpFileTime2: FILETIME): LONG; inline; overload;
+function CompareFileTime(lpFileTime1, lpFileTime2: PFILETIME): LONG; overload; stdcall;
 {$EXTERNALSYM CompareFileTime}
 
 function FileTimeToDosDateTime(const lpFileTime: FILETIME; var lpFatDate,
-  lpFatTime: WORD): BOOL; stdcall;
+  lpFatTime: WORD): BOOL; inline; overload;
+function FileTimeToDosDateTime(lpFileTime: PFILETIME; var lpFatDate,
+  lpFatTime: WORD): BOOL; overload; stdcall;
 {$EXTERNALSYM FileTimeToDosDateTime}
 
 function DosDateTimeToFileTime(wFatDate, wFatTime: WORD; var lpFileTime: FILETIME): BOOL; stdcall;
@@ -19866,11 +19872,38 @@ function TzSpecificLocalTimeToSystemTime; external kernel32 {$IFDEF DELAYED_LOAD
 function GetTimeZoneInformation; external kernel32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'GetTimeZoneInformation';
 function SetTimeZoneInformation; external kernel32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'SetTimeZoneInformation';
 function SystemTimeToFileTime; external kernel32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'SystemTimeToFileTime';
-function FileTimeToLocalFileTime; external kernel32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'FileTimeToLocalFileTime';
-function LocalFileTimeToFileTime; external kernel32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'LocalFileTimeToFileTime';
-function FileTimeToSystemTime; external kernel32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'FileTimeToSystemTime';
-function CompareFileTime; external kernel32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'CompareFileTime';
-function FileTimeToDosDateTime; external kernel32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'FileTimeToDosDateTime';
+
+function FileTimeToLocalFileTime(lpFileTime: PFILETIME; var lpLocalFileTime: FILETIME): BOOL; external kernel32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'FileTimeToLocalFileTime';
+function FileTimeToLocalFileTime(const lpFileTime: FILETIME; var lpLocalFileTime: FILETIME): BOOL;
+begin
+  Result := FileTimeToLocalFileTime(PFileTime(@lpFileTime), lpLocalFileTime);
+end;
+
+function LocalFileTimeToFileTime(lpLocalFileTime: PFILETIME; var lpFileTime: FILETIME): BOOL; external kernel32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'LocalFileTimeToFileTime';
+function LocalFileTimeToFileTime(const lpLocalFileTime: FILETIME; var lpFileTime: FILETIME): BOOL;
+begin
+  Result := LocalFileTimeToFileTime(PFileTime(@lpLocalFileTime), lpFileTime);
+end;
+
+function FileTimeToSystemTime(lpFileTime: PFILETIME; var lpSystemTime: SYSTEMTIME): BOOL; external kernel32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'FileTimeToSystemTime';
+function FileTimeToSystemTime(const lpFileTime: FILETIME; var lpSystemTime: SYSTEMTIME): BOOL;
+begin
+  Result := FileTimeToSystemTime(PFILETIME(@lpFileTime), lpSystemTime);
+end;
+
+function CompareFileTime(lpFileTime1, lpFileTime2: PFILETIME): LONG; external kernel32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'CompareFileTime';
+function CompareFileTime(const lpFileTime1, lpFileTime2: FILETIME): LONG;
+begin
+  Result := CompareFileTime(PFILETIME(@lpFileTime1), PFILETIME(@lpFileTime2));
+end;
+
+function FileTimeToDosDateTime(lpFileTime: PFILETIME; var lpFatDate, lpFatTime: WORD): BOOL; external kernel32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'FileTimeToDosDateTime';
+function FileTimeToDosDateTime(const lpFileTime: FILETIME; var lpFatDate,
+  lpFatTime: WORD): BOOL;
+begin
+  Result := FileTimeToDosDateTime(PFILETIME(@lpFileTime), lpFatDate, lpFatTime);
+end;
+
 function DosDateTimeToFileTime; external kernel32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'DosDateTimeToFileTime';
 function GetTickCount; external kernel32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'GetTickCount';
 function SetSystemTimeAdjustment; external kernel32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'SetSystemTimeAdjustment';
