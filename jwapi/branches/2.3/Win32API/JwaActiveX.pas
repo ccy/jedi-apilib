@@ -500,7 +500,7 @@ type
 
   PPropVariant = ^TPropVariant;
 
-  CAUB = packed record
+  CAUB = record
     cElems: ULONG;
     pElems: PByte;
   end;
@@ -508,7 +508,7 @@ type
   PCAUB = ^TCAUB;
   TCAUB = CAUB;
 
-  CAI = packed record
+  CAI = record
     cElems: ULONG;
     pElems: PShortInt;
   end;
@@ -516,7 +516,7 @@ type
   PCAI = ^TCAI;
   TCAI = CAI;
 
-  CAUI = packed record
+  CAUI = record
     cElems: ULONG;
     pElems: PWord;
   end;
@@ -524,7 +524,7 @@ type
   PCAUI = ^TCAUI;
   TCAUI = CAUI;
 
-  CAL = packed record
+  CAL = record
     cElems: ULONG;
     pElems: PLongint;
   end;
@@ -532,7 +532,7 @@ type
   PCAL = ^TCAL;
   TCAL = CAL;
 
-  CAUL = packed record
+  CAUL = record
     cElems: ULONG;
     pElems: PULONG;
   end;
@@ -540,7 +540,7 @@ type
   PCAUL = ^TCAUL;
   TCAUL = CAUL;
 
-  CAFLT = packed record
+  CAFLT = record
     cElems: ULONG;
     pElems: PSingle;
   end;
@@ -548,7 +548,7 @@ type
   PCAFLT = ^TCAFLT;
   TCAFLT = CAFLT;
 
-  CADBL = packed record
+  CADBL = record
     cElems: ULONG;
     pElems: PDouble;
   end;
@@ -556,7 +556,7 @@ type
   PCADBL = ^TCADBL;
   TCADBL = CADBL;
 
-  CACY = packed record
+  CACY = record
     cElems: ULONG;
     pElems: PCurrency;
   end;
@@ -564,7 +564,7 @@ type
   PCACY = ^TCACY;
   TCACY = CACY;
 
-  CADATE = packed record
+  CADATE = record
     cElems: ULONG;
     pElems: POleDate;
   end;
@@ -572,7 +572,7 @@ type
   PCADATE = ^TCADATE;
   TCADATE = CADATE;
 
-  CABSTR = packed record
+  CABSTR = record
     cElems: ULONG;
     pElems: PBSTR;
   end;
@@ -580,7 +580,7 @@ type
   PCABSTR = ^TCABSTR;
   TCABSTR = CABSTR;
 
-  CABOOL = packed record
+  CABOOL = record
     cElems: ULONG;
     pElems: POleBool;
   end;
@@ -588,7 +588,7 @@ type
   PCABOOL = ^TCABOOL;
   TCABOOL = CABOOL;
 
-  CASCODE = packed record
+  CASCODE = record
     cElems: ULONG;
     pElems: PSCODE;
   end;
@@ -596,7 +596,7 @@ type
   PCASCODE = ^TCASCODE;
   TCASCODE = CASCODE;
 
-  CAPROPVARIANT = packed record
+  CAPROPVARIANT = record
     cElems: ULONG;
     pElems: PPropVariant;
   end;
@@ -604,7 +604,7 @@ type
   PCAPROPVARIANT = ^TCAPROPVARIANT;
   TCAPROPVARIANT = CAPROPVARIANT;
 
-  CAH = packed record
+  CAH = record
     cElems: ULONG;
     pElems: PLargeInteger;
   end;
@@ -612,7 +612,7 @@ type
   PCAH = ^TCAH;
   TCAH = CAH;
 
-  CAUH = packed record
+  CAUH = record
     cElems: ULONG;
     pElems: PULargeInteger;
   end;
@@ -620,7 +620,7 @@ type
   PCAUH = ^TCAUH;
   TCAUH = CAUH;
 
-  CALPSTR = packed record
+  CALPSTR = record
     cElems: ULONG;
     pElems: PLPSTR;
   end;
@@ -628,7 +628,7 @@ type
   PCALPSTR = ^TCALPSTR;
   TCALPSTR = CALPSTR;
 
-  CALPWSTR = packed record
+  CALPWSTR = record
     cElems: ULONG;
     pElems: PLPWSTR;
   end;
@@ -636,7 +636,7 @@ type
   PCALPWSTR = ^TCALPWSTR;
   TCALPWSTR = CALPWSTR;
 
-  CAFILETIME = packed record
+  CAFILETIME = record
     cElems: ULONG;
     pElems: PFileTime;
   end;
@@ -644,7 +644,7 @@ type
   PCAFILETIME = ^TCAFILETIME;
   TCAFILETIME = CAFILETIME;
 
-  CACLIPDATA = packed record
+  CACLIPDATA = record
     cElems: ULONG;
     pElems: PClipData;
   end;
@@ -652,7 +652,7 @@ type
   PCACLIPDATA = ^TCACLIPDATA;
   TCACLIPDATA = CACLIPDATA;
 
-  CACLSID = packed record
+  CACLSID = record
     cElems: ULONG;
     pElems: PCLSID;
   end;
@@ -660,7 +660,7 @@ type
   PCACLSID = ^TCACLSID;
   TCACLSID = CACLSID;
 
-  PROPVARIANT = packed record
+  PROPVARIANT = record
     vt: TVarType;
     wReserved1: Word;
     wReserved2: Word;
@@ -713,7 +713,7 @@ type
   {$EXTERNALSYM PROPVARIANT}
   TPropVariant = PROPVARIANT;
 
-  PROPSPEC = packed record
+  PROPSPEC = record
     ulKind: ULONG;
     case Integer of
       0: (propid: TPropID);
@@ -732,7 +732,7 @@ type
   PStatPropStg = ^TStatPropStg;
   TStatPropStg = STATPROPSTG;
 
-  STATPROPSETSTG = packed record
+  STATPROPSETSTG = record
     fmtid: TFmtID;
     clsid: TClsID;
     grfFlags: DWORD;

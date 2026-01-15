@@ -305,7 +305,7 @@ type
   TCreateVirtualDiskVersion = CREATE_VIRTUAL_DISK_VERSION;
   PCreateVirtualDiskVersion = PCREATE_VIRTUAL_DISK_VERSION;
 
-  __CREATE_VIRTUAL_DISK_VERSION1 = packed record
+  __CREATE_VIRTUAL_DISK_VERSION1 = record
     /////////////////////////////////////////
     // Unique identifier to assign to the virtual disk object.
     // If this member is set to zero, a unique identifier is
@@ -342,7 +342,7 @@ type
   end;
   TCreateVirtualDiskVersion1 = __CREATE_VIRTUAL_DISK_VERSION1;
 
-  _CREATE_VIRTUAL_DISK_PARAMETERS = packed record
+  _CREATE_VIRTUAL_DISK_PARAMETERS = record
     Version: _CREATE_VIRTUAL_DISK_VERSION;
     case Union:DWORD of
          0: (Version1: __CREATE_VIRTUAL_DISK_VERSION1);
@@ -675,7 +675,7 @@ type
   TExpandVirtualDiskVersion = EXPAND_VIRTUAL_DISK_VERSION;
 
 // Versioned parameter structure for ExpandVirtualDisk
-  _EXPAND_VIRTUAL_DISK_PARAMETERS = packed record
+  _EXPAND_VIRTUAL_DISK_PARAMETERS = record
     Version: EXPAND_VIRTUAL_DISK_VERSION;
     case Union:DWORD of
          0: (NewSize: ULONGLONG);

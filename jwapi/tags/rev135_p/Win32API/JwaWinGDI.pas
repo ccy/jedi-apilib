@@ -925,7 +925,7 @@ type
 // #include <pshpack1.h>
 
   PRgbTriple = ^TRgbTriple;
-  tagRGBTRIPLE = packed record
+  tagRGBTRIPLE = record
     rgbtBlue: BYTE;
     rgbtGreen: BYTE;
     rgbtRed: BYTE;
@@ -1282,7 +1282,7 @@ type
 // #include <pshpack2.h>
 
   PBitmapFileHeader = ^TBitmapFileHeader;
-  tagBITMAPFILEHEADER = packed record
+  tagBITMAPFILEHEADER = record
     bfType: WORD;
     bfSize: DWORD;
     bfReserved1: WORD;
@@ -1396,7 +1396,7 @@ type
 // #include <pshpack2.h>
 
   PMetaHeader = ^TMetaHeader;
-  tagMETAHEADER = packed record
+  tagMETAHEADER = record
     mtType: WORD;
     mtHeaderSize: WORD;
     mtVersion: WORD;

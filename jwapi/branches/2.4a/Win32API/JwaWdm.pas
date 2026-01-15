@@ -117,14 +117,14 @@ type
   { Port and Memory below have the same layout as (unused) Generic }
   { Note: these RDD records need to be Packed to arrive unalligned in }
   { the variant record CM_PARTIAL_RESOURCE_DESCRIPTOR }
-  RDD_Generic = packed record
+  RDD_Generic = record
     Start: PHYSICAL_ADDRESS;
     Length: ULONG;
   end;
   PRDD_Generic = ^RDD_Generic;
 
   // This is for x64
-  RDD_GENERIC_EX = packed record
+  RDD_GENERIC_EX = record
     Start: PHYSICAL_ADDRESS;
     Length: ULONGLONG;
   end;
@@ -147,7 +147,7 @@ type
 
   { IRQL and vector. Should be same values as were passed to }
   { HalGetInterruptVector(). }
-  RDD_INTERRUPT = packed record
+  RDD_INTERRUPT = record
     Level: ULONG;
     Vector: ULONG;
     Affinity: ULONG;
@@ -155,7 +155,7 @@ type
   PRDD_INTERRUPT = ^RDD_INTERRUPT;
 
   // This is for x64
-  RDD_INTERRUPT_EX = packed record
+  RDD_INTERRUPT_EX = record
     Level: ULONG;
     Vector: ULONG;
     Affinity: ULONG;
@@ -164,7 +164,7 @@ type
 
 
   { Physical DMA channel. }
-  RDD_DMA = packed record
+  RDD_DMA = record
     Channel: ULONG;
     Port: ULONG;
     Reserved1: ULONG;
@@ -174,13 +174,13 @@ type
 
   { Device driver private data, usually used to help it figure }
   { what the resource assignments decisions that were made. }
-  RDD_DevicePrivate = packed record
+  RDD_DevicePrivate = record
     Data: array[0..2] of ULONG;
   end;
   PRDD_DevicePrivate = ^RDD_DevicePrivate;
 
   { Bus Number information. }
-  RDD_BusNumber = packed record
+  RDD_BusNumber = record
     Start: ULONG;
     Length: ULONG;
     Reserved: ULONG;
@@ -192,7 +192,7 @@ type
   { The DataSize field indicates the size of the data in bytes. The }
   { data is located immediately after the DeviceSpecificData field in }
   { the structure. }
-  RDD_DeviceSpecificData = packed record
+  RDD_DeviceSpecificData = record
     DataSize: ULONG;
     Reserved1: ULONG;
     Reserved2: ULONG;
@@ -200,7 +200,7 @@ type
   PRDD_DeviceSpecificData = ^RDD_DeviceSpecificData;
 
 
-  CM_PARTIAL_RESOURCE_DESCRIPTOR = packed record
+  CM_PARTIAL_RESOURCE_DESCRIPTOR = record
     ResType: UCHAR;
     ShareDisposition: CM_SHARE_DISPOSITION; // has UCHAR = Byte size
     Flags: USHORT;
@@ -217,7 +217,7 @@ type
   PCM_PARTIAL_RESOURCE_DESCRIPTOR = ^CM_PARTIAL_RESOURCE_DESCRIPTOR;
 
   // This is for x64
-  CM_PARTIAL_RESOURCE_DESCRIPTOR_EX = packed record
+  CM_PARTIAL_RESOURCE_DESCRIPTOR_EX = record
     ResType: UCHAR;
     ShareDisposition: CM_SHARE_DISPOSITION; // has UCHAR = Byte size
     Flags: USHORT;
@@ -233,7 +233,7 @@ type
   end;
   PCM_PARTIAL_RESOURCE_DESCRIPTOR_EX = ^CM_PARTIAL_RESOURCE_DESCRIPTOR_EX;
 
-  CM_PARTIAL_RESOURCE_LIST = packed record
+  CM_PARTIAL_RESOURCE_LIST = record
     Version: USHORT;
     Revision: USHORT;
     Count: ULONG;
@@ -241,14 +241,14 @@ type
   end;
   PCM_PARTIAL_RESOURCE_LIST = ^CM_PARTIAL_RESOURCE_LIST;
 
-  CM_FULL_RESOURCE_DESCRIPTOR = packed record
+  CM_FULL_RESOURCE_DESCRIPTOR = record
     InterfaceType: ULONG;//INTERFACE_TYPE;
     BusNumber: ULONG;
     PartialResourceList: CM_PARTIAL_RESOURCE_LIST;
   end;
   PCM_FULL_RESOURCE_DESCRIPTOR = ^CM_FULL_RESOURCE_DESCRIPTOR;
 
-  CM_RESOURCE_LIST = packed record
+  CM_RESOURCE_LIST = record
     Count: ULONG;
     List: array[0..ANYSIZE_ARRAY-1] of CM_FULL_RESOURCE_DESCRIPTOR;
   end;

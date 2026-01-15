@@ -293,7 +293,7 @@ const
 //
 
 type
-  _DNS_HEADER = packed record
+  _DNS_HEADER = record
     Xid: WORD;
     Flags: Byte;
     //BYTE    RecursionDesired : 1;
@@ -369,7 +369,7 @@ const
 type
   PDNS_WIRE_QUESTION = ^DNS_WIRE_QUESTION;
   {$EXTERNALSYM PDNS_WIRE_QUESTION}
-  _DNS_WIRE_QUESTION = packed record
+  _DNS_WIRE_QUESTION = record
     //  Preceded by question name
     QuestionType: WORD;
     QuestionClass: WORD;
@@ -386,7 +386,7 @@ type
 
   PDNS_WIRE_RECORD = ^DNS_WIRE_RECORD;
   {$EXTERNALSYM PDNS_WIRE_RECORD}
-  _DNS_WIRE_RECORD = packed record
+  _DNS_WIRE_RECORD = record
     //  Preceded by record owner name
     RecordType: WORD;
     RecordClass: WORD;

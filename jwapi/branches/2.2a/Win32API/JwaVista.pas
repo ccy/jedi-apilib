@@ -382,7 +382,7 @@ const
 
 
 type
-  BIND_OPTS3 = packed record
+  BIND_OPTS3 = record
     cbStruct:            DWORD;
     grfFlags:            DWORD;
     grfMode:             DWORD;

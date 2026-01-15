@@ -117,7 +117,7 @@ type
 
   PBCryptOID = ^TBCryptOID;
   {$EXTERNALSYM _BCRYPT_OID}
-  _BCRYPT_OID = packed record
+  _BCRYPT_OID = record
     cbOID: ULONG;
     pbOID: PUCHAR;
   end;
@@ -127,7 +127,7 @@ type
 
   PBCryptOIDList = ^TBCryptOIDList;
   {$EXTERNALSYM _BCRYPT_OID_LIST}
-  _BCRYPT_OID_LIST = packed record
+  _BCRYPT_OID_LIST = record
     dwOIDCount: ULONG;
     pOIDs: PBCryptOID;
   end;

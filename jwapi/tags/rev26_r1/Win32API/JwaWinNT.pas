@@ -2995,7 +2995,7 @@ const
 
 type
   PEXCEPTION_REGISTRATION_RECORD = ^EXCEPTION_REGISTRATION_RECORD;
-  _EXCEPTION_REGISTRATION_RECORD = packed record
+  _EXCEPTION_REGISTRATION_RECORD = record
     pNext: PEXCEPTION_REGISTRATION_RECORD;
     pfnHandler: FARPROC;
   end;
@@ -5563,7 +5563,7 @@ type
   {$EXTERNALSYM IMAGE_AUX_SYMBOL_TYPE}
   TImageAuxSymbolType = IMAGE_AUX_SYMBOL_TYPE;
 
-  IMAGE_AUX_SYMBOL_TOKEN_DEF = packed record
+  IMAGE_AUX_SYMBOL_TOKEN_DEF = record
     bAuxType: BYTE;                  // IMAGE_AUX_SYMBOL_TYPE
     bReserved: BYTE;                 // Must be 0
     SymbolTableIndex: DWORD;

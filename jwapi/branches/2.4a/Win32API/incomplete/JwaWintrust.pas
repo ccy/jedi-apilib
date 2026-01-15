@@ -109,7 +109,7 @@ type
   PWintrustData = ^TWintrustData;
   PWINTRUST_DATA = ^WINTRUST_DATA;
   {$EXTERNALSYM _WINTRUST_DATA}
-  _WINTRUST_DATA = packed record
+  _WINTRUST_DATA = record
     cbStruct: DWORD;
     pPolicyCallbackData: Pointer;
     pSIPClientData: Pointer;
@@ -138,7 +138,7 @@ type
 }
   PWINTRUST_FILE_INFO = ^WINTRUST_FILE_INFO_;
   {$EXTERNALSYM WINTRUST_FILE_INFO_}
-  WINTRUST_FILE_INFO_ = packed record
+  WINTRUST_FILE_INFO_ = record
     cbStruct: DWORD;
     pcwszFilePath: LPCWSTR;
     hFile: THandle;
@@ -152,7 +152,7 @@ type
   file.}
   PWINTRUST_CATALOG_INFO = ^WINTRUST_CATALOG_INFO_;
   {$EXTERNALSYM WINTRUST_CATALOG_INFO_}
-  WINTRUST_CATALOG_INFO_ = packed record
+  WINTRUST_CATALOG_INFO_ = record
     cbStruct: DWORD;
     dwCatalogVersion: DWORD;
     pcwszCatalogFilePath: LPCWSTR;
@@ -171,7 +171,7 @@ type
 }
   PWINTRUST_BLOB_INFO = ^WINTRUST_BLOB_INFO_;
   {$EXTERNALSYM WINTRUST_BLOB_INFO_}
-  WINTRUST_BLOB_INFO_ = packed record
+  WINTRUST_BLOB_INFO_ = record
     cbStruct: DWORD;
     gSubject: TGUID;
     pcwszDisplayName: LPCWSTR;
@@ -188,7 +188,7 @@ type
 }
   PWINTRUST_SGNR_INFO = ^WINTRUST_SGNR_INFO_;
   {$EXTERNALSYM WINTRUST_SGNR_INFO_}
-  WINTRUST_SGNR_INFO_ = packed record
+  WINTRUST_SGNR_INFO_ = record
     cbStruct: DWORD;
     pcwszDisplayName: LPCWSTR;
     psSignerInfo: PCMSG_SIGNER_INFO;
@@ -202,7 +202,7 @@ type
   {$EXTERNALSYM PWINTRUST_CERT_INFO}
   PWINTRUST_CERT_INFO = ^WINTRUST_CERT_INFO_;
   {$EXTERNALSYM WINTRUST_CERT_INFO_}
-  WINTRUST_CERT_INFO_ = packed record
+  WINTRUST_CERT_INFO_ = record
     cbStruct: DWORD;
     pcwszDisplayName: LPCWSTR;
     psCertContext: PCERT_CONTEXT;
@@ -416,7 +416,7 @@ type
 
 
 
-  _CRYPT_PROVIDER_PRIVDATA = packed record
+  _CRYPT_PROVIDER_PRIVDATA = record
     cbStruct: DWORD;
     gProviderID: GUID;
     cbProvData: DWORD;
@@ -425,7 +425,7 @@ type
   CRYPT_PROVIDER_PRIVDATA = _CRYPT_PROVIDER_PRIVDATA;
 
 
-  _PROVDATA_SIP = packed record
+  _PROVDATA_SIP = record
     cbStruct: DWORD;
     gSubject: GUID;
 
@@ -439,7 +439,7 @@ type
   end;
   PROVDATA_SIP = _PROVDATA_SIP;
 
-  _CRYPT_PROVIDER_CERT = packed record
+  _CRYPT_PROVIDER_CERT = record
     cbStruct: DWORD;
     pCert: PCCERT_CONTEXT;
     fCommercial: BOOL;
@@ -458,7 +458,7 @@ type
   end;
   CRYPT_PROVIDER_CERT = _CRYPT_PROVIDER_CERT;
 
-  _CRYPT_PROVIDER_SGNR = packed record
+  _CRYPT_PROVIDER_SGNR = record
     cbStruct: DWORD;
     sftVerifyAsOf: FILETIME;
     csCertChain: PCRYPT_PROVIDER_CERT;
@@ -471,7 +471,7 @@ type
   end;
   CRYPT_PROVIDER_SGNR = _CRYPT_PROVIDER_SGNR;
 
-  _CRYPT_PROVIDER_DATA = packed record
+  _CRYPT_PROVIDER_DATA = record
     cbStruct: DWORD;
     pWintrustData: PWINTRUST_DATA;
     fOpenedFile: BOOL;

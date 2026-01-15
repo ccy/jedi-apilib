@@ -473,7 +473,7 @@ type
       1: (hRemote: Integer);
   end;
 
-  _RemotableHandle = packed record
+  _RemotableHandle = record
     fContext: Integer;
     u: __MIDL_IWinTypes_0009;
   end;

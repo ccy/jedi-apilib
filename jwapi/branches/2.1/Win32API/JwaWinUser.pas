@@ -4396,7 +4396,7 @@ const
 //
 
 type
-  DLGTEMPLATE = packed record
+  DLGTEMPLATE = record
     style: DWORD;
     dwExtendedStyle: DWORD;
     cdit: WORD;
@@ -4434,7 +4434,7 @@ type
 // 32 bit Dialog item template.
 //
 
-  DLGITEMTEMPLATE = packed record
+  DLGITEMTEMPLATE = record
     style: DWORD;
     dwExtendedStyle: DWORD;
     x: short;

@@ -121,7 +121,7 @@ const
 //
 
 type
-  dn_naddr = packed record
+  dn_naddr = record
     a_len: Word;                               // length of address
     a_addr: array [0..DN_MAXADDL - 1] of Byte; // address as bytes
   end;
@@ -137,7 +137,7 @@ type
 //  DECnet socket address structure
 //
 
-  sockaddr_dn = packed record
+  sockaddr_dn = record
     sdn_family: Word;       // AF_DECnet
     sdn_flags: Byte;        // flags
     sdn_objnum: Byte;       // object number
@@ -180,7 +180,7 @@ const
 //
 
 type
-  nodeent_f = packed record
+  nodeent_f = record
     n_name: PAnsiChar;      // name of node
     n_addrtype: Word;   // node address type
     n_length: Word;     // address length
@@ -200,7 +200,7 @@ type
 //  DECnet set/get DSO_CONDATA, DSO_DISDATA (optional data) structure
 //
 
-  optdata_dn = packed record
+  optdata_dn = record
     opt_status: Word;             // extended status return
     opt_optl: Word;               // user data length
     opt_data: array [0..DN_MAXOPTL - 1] of Byte; // user data
@@ -217,7 +217,7 @@ type
 //  DECnet set/get DSO_CONACCESS access (control data) structure
 //
 
-  accessdata_dn = packed record
+  accessdata_dn = record
     acc_accl: Word;                          // account string length
     acc_acc: array [0..DN_MAXACCL] of Byte;  // account string
     acc_passl: Word;                         // password string length
@@ -237,7 +237,7 @@ type
 //  DECnet call data structure (concatenated access and optional data)
 //
 
-  calldata_dn = packed record
+  calldata_dn = record
     optdata_dn: optdata_dn;
     accessdata_dn: accessdata_dn;
   end;
@@ -253,7 +253,7 @@ type
 //  DECnet incoming access control structure
 //
 
-  dnet_accent = packed record
+  dnet_accent = record
     dac_status: Byte;      // Reserved
     dac_type: Byte;        // DN_NONE, etc.
     dac_username: array [0..DN_MAXACCL] of AnsiChar;
@@ -280,7 +280,7 @@ const
 // DECnet logical link information structure
 
 type
-  linkinfo_dn = packed record
+  linkinfo_dn = record
     idn_segsize: Word;   // segment size for link
     idn_linkstate: Byte; // logical link state
   end;

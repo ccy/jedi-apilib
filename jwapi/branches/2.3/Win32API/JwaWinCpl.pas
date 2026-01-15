@@ -121,7 +121,7 @@ type
 
   LPCPLINFO = ^CPLINFO;
   {$EXTERNALSYM LPCPLINFO}
-  tagCPLINFO = packed record
+  tagCPLINFO = record
     idIcon: Integer; // icon resource id, provided by CPlApplet()
     idName: Integer; // name string res. id, provided by CPlApplet()
     idInfo: Integer; // info string res. id, provided by CPlApplet()
@@ -135,7 +135,7 @@ type
 
   LPNEWCPLINFOA = ^NEWCPLINFOA;
   {$EXTERNALSYM LPNEWCPLINFOA}
-  tagNEWCPLINFOA = packed record
+  tagNEWCPLINFOA = record
     dwSize: DWORD;                       // similar to the commdlg
     dwFlags: DWORD;
     dwHelpContext: DWORD;                // help context to use
@@ -153,7 +153,7 @@ type
 
   LPNEWCPLINFOW = ^NEWCPLINFOW;
   {$EXTERNALSYM LPNEWCPLINFOW}
-  tagNEWCPLINFOW = packed record
+  tagNEWCPLINFOW = record
     dwSize: DWORD;                       // similar to the commdlg
     dwFlags: DWORD;
     dwHelpContext: DWORD;                // help context to use

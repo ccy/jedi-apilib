@@ -182,7 +182,7 @@ TYPE
   {$EXTERNALSYM TASKDIALOG_NOTIFICATIONS}
 
 type
-  _TASKDIALOG_BUTTON = packed record
+  _TASKDIALOG_BUTTON = record
     nButtonID : Integer;
     pszButtonText : PWideChar;
   end;
@@ -249,7 +249,7 @@ type
   {$EXTERNALSYM TASKDIALOG_COMMON_BUTTON_FLAGS}
 
 type
-  TASKDIALOGCONFIG = packed record
+  TASKDIALOGCONFIG = record
     cbSize : UINT;
     hwndParent : HWND;
     hInstance : HINST;

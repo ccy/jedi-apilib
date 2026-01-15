@@ -622,13 +622,13 @@ type
   WINSTATIONNAMEW = Array[0..WINSTATIONNAME_LENGTH] of WCHAR;
   WINSTATIONNAMEA = Array[0..WINSTATIONNAME_LENGTH] of AnsiChar;
 
-  _TSHARE_COUNTERS = packed record
+  _TSHARE_COUNTERS = record
     Reserved: ULONG;
   end {_TSHARE_COUNTERS};
   TSHARE_COUNTERS = _TSHARE_COUNTERS;
   PTSHARE_COUNTERS = ^_TSHARE_COUNTERS;
 
-  _PROTOCOLCOUNTERS = packed record
+  _PROTOCOLCOUNTERS = record
     WdBytes: ULONG;
     WdFrames: ULONG;
     WaitForOutBuf: ULONG;
@@ -652,7 +652,7 @@ type
   PPROTOCOLCOUNTERS = ^_PROTOCOLCOUNTERS;
   TProtocolCounters = _PROTOCOLCOUNTERS;
 
-  _THINWIRECACHE = packed record
+  _THINWIRECACHE = record
     CacheReads: ULONG;
     CacheHits: ULONG;
   end {_THINWIRECACHE};
@@ -664,19 +664,19 @@ const
 
 type
 
- _RESERVED_CACHE = packed record
+ _RESERVED_CACHE = record
     ThinWireCache: Array[0..MAX_THINWIRECACHE-1] of THINWIRECACHE;
   end {_RESERVED_CACHE};
   RESERVED_CACHE = _RESERVED_CACHE;
   PRESERVED_CACHE = ^_RESERVED_CACHE;
 
-  _TSHARE_CACHE = packed record
+  _TSHARE_CACHE = record
     Reserved: ULONG;
   end {_TSHARE_CACHE};
   TSHARE_CACHE = _TSHARE_CACHE;
   PTSHARE_CACHE = ^_TSHARE_CACHE;
 
-  CACHE_STATISTICS = packed record
+  CACHE_STATISTICS = record
     ProtocolType: USHORT;
     case Length: USHORT of
       1: (ReservedCacheStats: RESERVED_CACHE);
@@ -684,7 +684,7 @@ type
       3: (Reserved: Array[0..19] of ULONG);
   end {CACHE_STATISTICS};
 
-  _PROTOCOLSTATUS = packed record
+  _PROTOCOLSTATUS = record
     Output: PROTOCOLCOUNTERS;
     Input: PROTOCOLCOUNTERS;
     Cache: CACHE_STATISTICS;

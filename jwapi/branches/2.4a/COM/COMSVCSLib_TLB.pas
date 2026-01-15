@@ -600,12 +600,12 @@ type
   PUserType9 = ^tagBIND_OPTS2; {*}
   PUserType10 = ^_FILETIME; {*}
 
-  tagBLOB = packed record
+  tagBLOB = record
     cbSize: LongWord;
     pBlobData: ^Byte;
   end;
 
-  tagCrmLogRecordRead = packed record
+  tagCrmLogRecordRead = record
     dwCrmFlags: LongWord;
     dwSequenceNumber: LongWord;
     blobUserData: tagBLOB;
@@ -613,11 +613,11 @@ type
 
   Error_Constants = __MIDL___MIDL_itf_autosvcs_0000_0129_0001;
 
-  BOID = packed record
+  BOID = record
     rgb: array[0..15] of Byte;
   end;
 
-  XACTTRANSINFO = packed record
+  XACTTRANSINFO = record
     uow: BOID;
     isoLevel: Integer;
     isoFlags: LongWord;
@@ -630,7 +630,7 @@ type
   LockModes = __MIDL___MIDL_itf_autosvcs_0000_0129_0002;
   ReleaseModes = __MIDL___MIDL_itf_autosvcs_0000_0129_0003;
 
-  __MIDL___MIDL_itf_autosvcs_0000_0015_0001 = packed record
+  __MIDL___MIDL_itf_autosvcs_0000_0015_0001 = record
     cbSize: LongWord;
     dwPid: LongWord;
     lTime: Int64;
@@ -643,7 +643,7 @@ type
   COMSVCSEVENTINFO = __MIDL___MIDL_itf_autosvcs_0000_0015_0001;
   ULONG_PTR = LongWord;
 
-  _RECYCLE_INFO = packed record
+  _RECYCLE_INFO = record
     guidCombaseProcessIdentifier: TGUID;
     ProcessStartTime: Int64;
     dwRecycleLifetimeLimit: LongWord;
@@ -653,7 +653,7 @@ type
 
   RECYCLE_INFO = _RECYCLE_INFO;
 
-  CAppStatistics = packed record
+  CAppStatistics = record
     m_cTotalCalls: LongWord;
     m_cTotalInstances: LongWord;
     m_cTotalClasses: LongWord;
@@ -662,7 +662,7 @@ type
 
   APPSTATISTICS = CAppStatistics;
 
-  CCLSIDData2 = packed record
+  CCLSIDData2 = record
     m_clsid: TGUID;
     m_appid: TGUID;
     m_partid: TGUID;
@@ -680,7 +680,7 @@ type
 
   CLSIDDATA2 = CCLSIDData2;
 
-  CAppData = packed record
+  CAppData = record
     m_idApp: LongWord;
     m_szAppGuid: array[0..39] of Word;
     m_dwAppProcessId: LongWord;
@@ -689,7 +689,7 @@ type
 
   appData = CAppData;
 
-  CCLSIDData = packed record
+  CCLSIDData = record
     m_clsid: TGUID;
     m_cReferences: LongWord;
     m_cBound: LongWord;
@@ -702,20 +702,20 @@ type
 
   CLSIDDATA = CCLSIDData;
 
-  _LARGE_INTEGER = packed record
+  _LARGE_INTEGER = record
     QuadPart: Int64;
   end;
 
-  _ULARGE_INTEGER = packed record
+  _ULARGE_INTEGER = record
     QuadPart: Largeuint;
   end;
 
-  _FILETIME = packed record
+  _FILETIME = record
     dwLowDateTime: LongWord;
     dwHighDateTime: LongWord;
   end;
 
-  tagSTATSTG = packed record
+  tagSTATSTG = record
     pwcsName: PWideChar;
     type_: LongWord;
     cbSize: _ULARGE_INTEGER;
@@ -729,7 +729,7 @@ type
     reserved: LongWord;
   end;
 
-  _COAUTHIDENTITY = packed record
+  _COAUTHIDENTITY = record
     User: ^Word;
     UserLength: LongWord;
     Domain: ^Word;
@@ -739,7 +739,7 @@ type
     Flags: LongWord;
   end;
 
-  _COAUTHINFO = packed record
+  _COAUTHINFO = record
     dwAuthnSvc: LongWord;
     dwAuthzSvc: LongWord;
     pwszServerPrincName: PWideChar;
@@ -749,14 +749,14 @@ type
     dwCapabilities: LongWord;
   end;
 
-  _COSERVERINFO = packed record
+  _COSERVERINFO = record
     dwReserved1: LongWord;
     pwszName: PWideChar;
     pAuthInfo: ^_COAUTHINFO;
     dwReserved2: LongWord;
   end;
 
-  tagBIND_OPTS2 = packed record
+  tagBIND_OPTS2 = record
     cbStruct: LongWord;
     grfFlags: LongWord;
     grfMode: LongWord;

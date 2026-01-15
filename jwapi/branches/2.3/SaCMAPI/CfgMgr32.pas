@@ -222,7 +222,7 @@ type
 
   PCONFLICT_DETAILS_A = ^CONFLICT_DETAILS_A;
   {$EXTERNALSYM PCONFLICT_DETAILS_A}
-  CONFLICT_DETAILS_A = packed record
+  CONFLICT_DETAILS_A = record
     CD_ulSize: ULONG;                   // size of structure, ie: sizeof(CONFLICT_DETAILS)
     CD_ulMask: ULONG;                   // indicates what information is required/valid
     CD_dnDevInst: DEVINST;              // filled with DevInst of conflicting device if CM_CDMASK_DEVINST set
@@ -234,7 +234,7 @@ type
 
   PCONFLICT_DETAILS_W = ^CONFLICT_DETAILS_W;
   {$EXTERNALSYM PCONFLICT_DETAILS_W}
-  CONFLICT_DETAILS_W = packed record
+  CONFLICT_DETAILS_W = record
     CD_ulSize: ULONG;                   // size of structure, ie: sizeof(CONFLICT_DETAILS)
     CD_ulMask: ULONG;                   // indicates what information is required/valid
     CD_dnDevInst: DEVINST;              // filled with DevInst of conflicting device if CM_CDMASK_DEVINST set
@@ -347,7 +347,7 @@ type
   //
   PMEM_RANGE = ^MEM_RANGE;
   {$EXTERNALSYM PMEM_RANGE}
-  MEM_RANGE = packed record
+  MEM_RANGE = record
     MR_Align: DWORDLONG;     // specifies mask for base alignment
     MR_nBytes: ULONG;        // specifies number of bytes required
     MR_Min: DWORDLONG;       // specifies minimum address of the range
@@ -362,7 +362,7 @@ type
   //
   PMEM_DES = ^MEM_DES;
   {$EXTERNALSYM PMEM_DES}
-  MEM_DES = packed record
+  MEM_DES = record
     MD_Count: DWORD;            // number of MEM_RANGE structs in MEM_RESOURCE
     MD_Type: DWORD;             // size (in bytes) of MEM_RANGE (MType_Range)
     MD_Alloc_Base: DWORDLONG;   // base memory address of range allocated
@@ -377,7 +377,7 @@ type
   //
   PMEM_RESOURCE = ^MEM_RESOURCE;
   {$EXTERNALSYM PMEM_RESOURCE}
-  MEM_RESOURCE = packed record
+  MEM_RESOURCE = record
     MEM_Header: MEM_DES;                  // info about memory range list
     MEM_Data: array [0..0] of MEM_RANGE;  // list of memory ranges
   end;
@@ -439,7 +439,7 @@ type
   //
   PIO_RANGE = ^IO_RANGE;
   {$EXTERNALSYM PIO_RANGE}
-  IO_RANGE = packed record
+  IO_RANGE = record
     IOR_Align: DWORDLONG;      // mask for base alignment
     IOR_nPorts: DWORD;         // number of ports
     IOR_Min: DWORDLONG;        // minimum port address
@@ -454,7 +454,7 @@ type
   //
   PIO_DES = ^IO_DES;
   {$EXTERNALSYM PIO_DES}
-  IO_DES = packed record
+  IO_DES = record
     IOD_Count: DWORD;          // number of IO_RANGE structs in IO_RESOURCE
     IOD_Type: DWORD;           // size (in bytes) of IO_RANGE (IOType_Range)
     IOD_Alloc_Base: DWORDLONG; // base of allocated port range
@@ -468,7 +468,7 @@ type
   //
   PIO_RESOURCE = ^IO_RESOURCE;
   {$EXTERNALSYM PIO_RESOURCE}
-  IO_RESOURCE = packed record
+  IO_RESOURCE = record
     IO_Header: IO_DES;                 // info about I/O port range list
     IO_Data: array [0..0] of IO_RANGE; // list of I/O port ranges
   end;
@@ -529,7 +529,7 @@ type
   //
   PDMA_RANGE = ^DMA_RANGE;
   {$EXTERNALSYM PDMA_RANGE}
-  DMA_RANGE = packed record
+  DMA_RANGE = record
     DR_Min: ULONG;     // minimum DMA port in the range
     DR_Max: ULONG;     // maximum DMA port in the range
     DR_Flags: ULONG;   // flags describing the range (fDD flags)
@@ -541,7 +541,7 @@ type
   //
   PDMA_DES = ^DMA_DES;
   {$EXTERNALSYM PDMA_DES}
-  DMA_DES = packed record
+  DMA_DES = record
     DD_Count: DWORD;       // number of DMA_RANGE structs in DMA_RESOURCE
     DD_Type: DWORD;        // size (in bytes) of DMA_RANGE struct (DType_Range)
     DD_Flags: DWORD;       // Flags describing DMA channel (fDD flags)
@@ -554,7 +554,7 @@ type
   //
   PDMA_RESOURCE = ^DMA_RESOURCE;
   {$EXTERNALSYM PDMA_RESOURCE}
-  DMA_RESOURCE = packed record
+  DMA_RESOURCE = record
     DMA_Header: DMA_DES;                  // info about DMA channel range list
     DMA_Data: array [0..0] of DMA_RANGE;  // list of DMA ranges
   end;
@@ -607,7 +607,7 @@ type
   //
   PIRQ_RANGE = ^IRQ_RANGE;
   {$EXTERNALSYM PIRQ_RANGE}
-  IRQ_RANGE = packed record
+  IRQ_RANGE = record
     IRQR_Min: ULONG;      // minimum IRQ in the range
     IRQR_Max: ULONG;      // maximum IRQ in the range
     IRQR_Flags: ULONG;    // flags describing the range (fIRQD flags)
@@ -619,7 +619,7 @@ type
   //
   PIRQ_DES_32 = ^IRQ_DES_32;
   {$EXTERNALSYM PIRQ_DES_32}
-  IRQ_DES_32 = packed record
+  IRQ_DES_32 = record
     IRQD_Count: DWORD;       // number of IRQ_RANGE structs in IRQ_RESOURCE
     IRQD_Type: DWORD;        // size (in bytes) of IRQ_RANGE (IRQType_Range)
     IRQD_Flags: DWORD;       // flags describing the IRQ (fIRQD flags)
@@ -630,7 +630,7 @@ type
 
   PIRQ_DES_64 = ^IRQ_DES_64;
   {$EXTERNALSYM PIRQ_DES_64}
-  IRQ_DES_64 = packed record
+  IRQ_DES_64 = record
     IRQD_Count: DWORD;       // number of IRQ_RANGE structs in IRQ_RESOURCE
     IRQD_Type: DWORD;        // size (in bytes) of IRQ_RANGE (IRQType_Range)
     IRQD_Flags: DWORD;       // flags describing the IRQ (fIRQD flags)
@@ -654,7 +654,7 @@ type
   //
   PIRQ_RESOURCE_32 = ^IRQ_RESOURCE_32;
   {$EXTERNALSYM PIRQ_RESOURCE_32}
-  IRQ_RESOURCE_32 = packed record
+  IRQ_RESOURCE_32 = record
     IRQ_Header: IRQ_DES_32;               // info about IRQ range list
     IRQ_Data: array [0..0] of IRQ_RANGE;  // list of IRQ ranges
   end;
@@ -662,7 +662,7 @@ type
 
   PIRQ_RESOURCE_64 = ^IRQ_RESOURCE_64;
   {$EXTERNALSYM PIRQ_RESOURCE_64}
-  IRQ_RESOURCE_64 = packed record
+  IRQ_RESOURCE_64 = record
     IRQ_Header: IRQ_DES_64;               // info about IRQ range list
     IRQ_Data: array [0..0] of IRQ_RANGE;  // list of IRQ ranges
   end;
@@ -708,7 +708,7 @@ type
   //
   PDEVPRIVATE_RANGE = ^DEVPRIVATE_RANGE;
   {$EXTERNALSYM PDEVPRIVATE_RANGE}
-  DEVPRIVATE_RANGE = packed record
+  DEVPRIVATE_RANGE = record
     PR_Data1: DWORD;     // mask for base alignment
     PR_Data2: DWORD;     // number of bytes
     PR_Data3: DWORD;     // minimum address
@@ -720,7 +720,7 @@ type
   //
   PDEVPRIVATE_DES = ^DEVPRIVATE_DES;
   {$EXTERNALSYM PDEVPRIVATE_DES}
-  DEVPRIVATE_DES = packed record
+  DEVPRIVATE_DES = record
     PD_Count: DWORD;
     PD_Type: DWORD;
     PD_Data1: DWORD;
@@ -735,7 +735,7 @@ type
   //
   PDEVPRIVATE_RESOURCE = ^DEVPRIVATE_RESOURCE;
   {$EXTERNALSYM PDEVPRIVATE_RESOURCE}
-  DEVPRIVATE_RESOURCE = packed record
+  DEVPRIVATE_RESOURCE = record
     PRV_Header: DEVPRIVATE_DES;
     PRV_Data: array [0..0] of DEVPRIVATE_RANGE;
   end;
@@ -755,7 +755,7 @@ const
 type
   PCS_DES = ^CS_DES;
   {$EXTERNALSYM PCS_DES}
-  CS_DES = packed record
+  CS_DES = record
     CSD_SignatureLength: DWORD;
     CSD_LegacyDataOffset: DWORD;
     CSD_LegacyDataSize: DWORD;
@@ -767,7 +767,7 @@ type
 
   PCS_RESOURCE = ^CS_RESOURCE;
   {$EXTERNALSYM PCS_RESOURCE}
-  CS_RESOURCE = packed record
+  CS_RESOURCE = record
     CS_Header: CS_DES;
   end;
   {$EXTERNALSYM CS_RESOURCE}
@@ -869,7 +869,7 @@ const
 type
   PPCCARD_DES = ^PCCARD_DES;
   {$EXTERNALSYM PPCCARD_DES}
-  PCCARD_DES = packed record
+  PCCARD_DES = record
     PCD_Count: DWORD;
     PCD_Type: DWORD;
     PCD_Flags: DWORD;
@@ -885,7 +885,7 @@ type
 
   PPCCARD_RESOURCE = ^PCCARD_RESOURCE;
   {$EXTERNALSYM PPCCARD_RESOURCE}
-  PCCARD_RESOURCE = packed record
+  PCCARD_RESOURCE = record
     PcCard_Header: PCCARD_DES;
   end;
   {$EXTERNALSYM PCCARD_RESOURCE}
@@ -903,7 +903,7 @@ const
 type
   PMFCARD_DES = ^MFCARD_DES;
   {$EXTERNALSYM PMFCARD_DES}
-  MFCARD_DES = packed record
+  MFCARD_DES = record
     PMF_Count: DWORD;
     PMF_Type: DWORD;
     PMF_Flags: DWORD;
@@ -916,7 +916,7 @@ type
 
   PMFCARD_RESOURCE = ^MFCARD_RESOURCE;
   {$EXTERNALSYM PMFCARD_RESOURCE}
-  MFCARD_RESOURCE = packed record
+  MFCARD_RESOURCE = record
     MfCard_Header: MFCARD_DES;
   end;
   {$EXTERNALSYM MFCARD_RESOURCE}
@@ -938,7 +938,7 @@ type
   //
   PBUSNUMBER_RANGE = ^BUSNUMBER_RANGE;
   {$EXTERNALSYM PBUSNUMBER_RANGE}
-  BUSNUMBER_RANGE = packed record
+  BUSNUMBER_RANGE = record
     BUSR_Min: ULONG;          // minimum Bus Number in the range
     BUSR_Max: ULONG;          // maximum Bus Number in the range
     BUSR_nBusNumbers: ULONG;  // specifies number of buses required
@@ -951,7 +951,7 @@ type
   //
   PBUSNUMBER_DES = ^BUSNUMBER_DES;
   {$EXTERNALSYM PBUSNUMBER_DES}
-  BUSNUMBER_DES = packed record
+  BUSNUMBER_DES = record
     BUSD_Count: DWORD;       // number of BUSNUMBER_RANGE structs in BUSNUMBER_RESOURCE
     BUSD_Type: DWORD;        // size (in bytes) of BUSNUMBER_RANGE (BusNumberType_Range)
     BUSD_Flags: DWORD;       // flags describing the range (currently unused)
@@ -965,7 +965,7 @@ type
   //
   PBUSNUMBER_RESOURCE = ^BUSNUMBER_RESOURCE;
   {$EXTERNALSYM PBUSNUMBER_RESOURCE}
-  BUSNUMBER_RESOURCE = packed record
+  BUSNUMBER_RESOURCE = record
     BusNumber_Header: BUSNUMBER_DES;                  // info about Bus Number range list
     BusNumber_Data: array [0..0] of BUSNUMBER_RANGE;  // list of Bus Number ranges
   end;
@@ -999,14 +999,14 @@ type
   //
   // (rom) added CM_ prefix to solve conflict with JwaWinBase.pas
   PCM_HWPROFILEINFO_A = ^CM_HWPROFILEINFO_A;
-  CM_HWPROFILEINFO_A = packed record
+  CM_HWPROFILEINFO_A = record
     HWPI_ulHWProfile: ULONG;                      // handle of hw profile
     HWPI_szFriendlyName: array [0..MAX_PROFILE_LEN-1] of Char;  // friendly name of hw profile
     HWPI_dwFlags: DWORD;                          // profile flags (CM_HWPI_*)
   end;
 
   PCM_HWPROFILEINFO_W = ^CM_HWPROFILEINFO_W;
-  CM_HWPROFILEINFO_W = packed record
+  CM_HWPROFILEINFO_W = record
     HWPI_ulHWProfile: ULONG;                      // handle of hw profile
     HWPI_szFriendlyName: array [0..MAX_PROFILE_LEN-1] of Char;  // friendly name of hw profile
     HWPI_dwFlags: DWORD;                          // profile flags (CM_HWPI_*)

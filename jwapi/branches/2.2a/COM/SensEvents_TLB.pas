@@ -87,7 +87,7 @@ type
 // *********************************************************************//
   PUserType1 = ^SENS_QOCINFO; {*}
 
-  SENS_QOCINFO = packed record
+  SENS_QOCINFO = record
     dwSize: LongWord;
     dwFlags: LongWord;
     dwOutSpeed: LongWord;

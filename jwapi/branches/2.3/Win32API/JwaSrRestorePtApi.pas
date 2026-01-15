@@ -136,7 +136,7 @@ const
 //
 
 type
-  _RESTOREPTINFOA = packed record
+  _RESTOREPTINFOA = record
     dwEventType: DWORD;                // Type of Event - Begin or End
     dwRestorePtType: DWORD;            // Type of Restore Point - App install/uninstall
     llSequenceNumber: Int64;           // Sequence Number - 0 for begin
@@ -149,7 +149,7 @@ type
   {$EXTERNALSYM PRESTOREPOINTINFOA}
   TRestorePointInfoA = RESTOREPOINTINFOA;
 
-  _RESTOREPTINFOW = packed record
+  _RESTOREPTINFOW = record
     dwEventType: DWORD;                // Type of Event - Begin or End
     dwRestorePtType: DWORD;            // Type of Restore Point - App install/uninstall
     llSequenceNumber: Int64;           // Sequence Number - 0 for begin

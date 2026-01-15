@@ -1425,7 +1425,7 @@ const
 type
   PSHItemID = ^TSHItemID;
   {$EXTERNALSYM _SHITEMID}
-  _SHITEMID = packed record
+  _SHITEMID = record
     cb: Word;
     abID: array[0..0] of Byte;
   end;
@@ -1438,7 +1438,7 @@ type
 //
   PItemIDList = ^TItemIDList;
   {$EXTERNALSYM _ITEMIDLIST}
-  _ITEMIDLIST = packed record
+  _ITEMIDLIST = record
     mkid: TSHItemID;
   end;
   {$EXTERNALSYM ITEMIDLIST}
@@ -1516,7 +1516,7 @@ type
 //
   PShellDetails = ^TShellDetails;
   {$EXTERNALSYM _SHELLDETAILS}
-  _SHELLDETAILS = packed record
+  _SHELLDETAILS = record
     fmt: Integer;
     cxChar: Integer;
     str: TStrRet;
@@ -3560,7 +3560,7 @@ type
 
   PDelegateItemID = ^TDelegateItemID;
   {$EXTERNALSYM tagDELEGATEITEMID}
-  tagDELEGATEITEMID = packed record
+  tagDELEGATEITEMID = record
     cbSize: Word;
     wOuter: Word;
     cbInner: Word;
@@ -7089,7 +7089,7 @@ const
 type
   PSHColumnInfo = ^TSHColumnInfo;
   {$EXTERNALSYM SHCOLUMNINFO}
-  SHCOLUMNINFO = packed record
+  SHCOLUMNINFO = record
     scid: TSHColumnID;          // OUT the unique identifier of this column
     vt: TVARTYPE;                // OUT the native type of the data returned
     fmt: DWORD;                 // OUT this listview format (LVCFMT_LEFT, usually)

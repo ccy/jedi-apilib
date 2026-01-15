@@ -95,20 +95,20 @@ type
   PPWideChar1 = ^PWideChar; {*}
   PByte1 = ^Byte; {*}
 
-  _FILETIME = packed record
+  _FILETIME = record
     dwLowDateTime: LongWord;
     dwHighDateTime: LongWord;
   end;
 
-  _LARGE_INTEGER = packed record
+  _LARGE_INTEGER = record
     QuadPart: Int64;
   end;
 
-  _ULARGE_INTEGER = packed record
+  _ULARGE_INTEGER = record
     QuadPart: Largeuint;
   end;
 
-  tagSTATSTG = packed record
+  tagSTATSTG = record
     pwcsName: PWideChar;
     type_: LongWord;
     cbSize: _ULARGE_INTEGER;

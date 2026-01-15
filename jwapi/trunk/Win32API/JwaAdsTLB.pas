@@ -241,7 +241,7 @@ type
   PADS_NT_SECURITY_DESCRIPTOR = ^ADS_NT_SECURITY_DESCRIPTOR;
 
 {$IFNDEF JWA_INCLUDEMODE}
-  SYSTEMTIME = packed record
+  SYSTEMTIME = record
     wYear: Word;
     wMonth: Word;
     wDayOfWeek: Word;
@@ -253,7 +253,7 @@ type
   end;
   _SYSTEMTIME = SYSTEMTIME;
 
-  LARGE_INTEGER = packed record
+  LARGE_INTEGER = record
     QuadPart: Int64;
   end;
   _LARGE_INTEGER = LARGE_INTEGER;
@@ -385,7 +385,7 @@ type
   PADS_DN_WITH_STRING = ^ADS_DN_WITH_STRING;
 
   // Remko@23.02.2010 - conversion: checked size : OK
-  ADSVALUE = packed record
+  ADSVALUE = record
   case Byte of  // Padding
     0: (
       dwType: ADSTYPE;
@@ -570,7 +570,7 @@ type
   ADS_SEARCHPREF = ADS_SEARCHPREF_ENUM;
 
   // Remko@25.02.2010 - conversion: checked size : OK
-  ADS_SEARCHPREF_INFO = packed record
+  ADS_SEARCHPREF_INFO = record
     dwSearchPref: ADS_SEARCHPREF;
     _Padding1: DWORD;
     vValue: ADSVALUE;

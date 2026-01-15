@@ -2768,13 +2768,13 @@ type
 // PROCESS ENVIRONMENT BLOCK (PEB)
 // =================================================================
   PLDR_SERVICE_TAG_RECORD = ^TLDR_SERVICE_TAG_RECORD;
-  TLDR_SERVICE_TAG_RECORD = packed record
+  TLDR_SERVICE_TAG_RECORD = record
     Next              : PLDR_SERVICE_TAG_RECORD;
     ServiceTag        : ULONG;
   end;
 
   PLDRP_CSLIST = ^TLDRP_CSLIST;
-  TLDRP_CSLIST = packed record
+  TLDRP_CSLIST = record
     Tail: PSINGLE_LIST_ENTRY;
   end;
 
@@ -2797,7 +2797,7 @@ type
   );
 
   PLDR_DDAG_NODE = ^TLDR_DDAG_NODE;
-  TLDR_DDAG_NODE = packed record
+  TLDR_DDAG_NODE = record
     Modules             : TListEntry;
     ServiceTagList      : PLDR_SERVICE_TAG_RECORD;
     LoadCount           : ULONG;
@@ -2953,7 +2953,7 @@ type
   PPebFreeBlock = ^_PEB_FREE_BLOCK;
 
 // Verified in W2K, WXP and W2K3 using WinDbg
-  _PEB_W2K = packed record // packed!
+  _PEB_W2K = record // packed!
   (*000*)InheritedAddressSpace: BOOLEAN;
   (*001*)ReadImageFileExecOptions: BOOLEAN;
   (*002*)BeingDebugged: BOOLEAN;
@@ -3087,7 +3087,7 @@ type
   end;
 
 // Verified in W2K, WXP and W2K3 using WinDbg
-  _PEB_2K3 = packed record // packed!
+  _PEB_2K3 = record // packed!
   (*000*)InheritedAddressSpace: BOOLEAN;
   (*001*)ReadImageFileExecOptions: BOOLEAN;
   (*002*)BeingDebugged: BOOLEAN;
@@ -3756,7 +3756,7 @@ type
   PPGDI_TEB_BATCH = ^PGDI_TEB_BATCH;
 
 // Verified in XP using WinDbg
-  _Wx86ThreadState = packed record // packed!
+  _Wx86ThreadState = record // packed!
   (*000*)CallBx86Eip: PULONG;
   (*004*)DeallocationCpu: PVOID;
   (*008*)UseKnownWx86Dll: BOOLEAN;

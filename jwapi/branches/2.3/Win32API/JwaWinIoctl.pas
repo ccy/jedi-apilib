@@ -2272,7 +2272,7 @@ type
 
   LPGETVERSIONINPARAMS = ^GETVERSIONINPARAMS;
   {$EXTERNALSYM LPGETVERSIONINPARAMS}
-  _GETVERSIONINPARAMS = packed record
+  _GETVERSIONINPARAMS = record
     bVersion: BYTE;                    // Binary driver version.
     bRevision: BYTE;                   // Binary driver revision.
     bReserved: BYTE;                   // Not used.
@@ -2309,7 +2309,7 @@ const
 type
   LPIDEREGS = ^IDEREGS;
   {$EXTERNALSYM LPIDEREGS}
-  _IDEREGS = packed record
+  _IDEREGS = record
     bFeaturesReg: BYTE;     // Used for specifying SMART "commands".
     bSectorCountReg: BYTE;  // IDE sector count register
     bSectorNumberReg: BYTE; // IDE sector number register
@@ -2360,7 +2360,7 @@ const
 type
   LPSENDCMDINPARAMS = ^SENDCMDINPARAMS;
   {$EXTERNALSYM LPSENDCMDINPARAMS}
-  _SENDCMDINPARAMS = packed record
+  _SENDCMDINPARAMS = record
     cBufferSize: DWORD;   // Buffer size in bytes
     irDriveRegs: IDEREGS; // Structure with drive register values.
     bDriveNumber: BYTE;   // Physical drive number to send
@@ -2385,7 +2385,7 @@ type
 
   LPDRIVERSTATUS = ^DRIVERSTATUS;
   {$EXTERNALSYM LPDRIVERSTATUS}
-  _DRIVERSTATUS = packed record
+  _DRIVERSTATUS = record
     bDriverError: BYTE; // Error code from driver,
                         // or 0 if no error.
     bIDEError: BYTE;    // Contents of IDE Error register.
@@ -2453,7 +2453,7 @@ const
 type
   LPSENDCMDOUTPARAMS = ^SENDCMDOUTPARAMS;
   {$EXTERNALSYM LPSENDCMDOUTPARAMS}
-  _SENDCMDOUTPARAMS = packed record
+  _SENDCMDOUTPARAMS = record
     cBufferSize: DWORD;            // Size of bBuffer in bytes
     DriverStatus: DRIVERSTATUS;    // Driver status structure.
     bBuffer: array [0..0] of BYTE; // Buffer of arbitrary length in which to store the data read from the                                                                                  // drive.

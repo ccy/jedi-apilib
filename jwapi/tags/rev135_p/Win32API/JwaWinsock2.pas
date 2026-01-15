@@ -442,17 +442,17 @@ const
 //
 
 type
-  SunB = packed record
+  SunB = record
     s_b1, s_b2, s_b3, s_b4: u_char;
   end;
   {$EXTERNALSYM SunB}
 
-  SunC = packed record
+  SunC = record
     s_c1, s_c2, s_c3, s_c4: Char;
   end;
   {$NODEFINE SunC}
 
-  SunW = packed record
+  SunW = record
     s_w1, s_w2: u_short;
   end;
   {$EXTERNALSYM SunW}

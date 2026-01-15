@@ -127,7 +127,7 @@ function ExtractIcon(hInst: THandle; lpszExeFileName: PTSTR; nIconIndex: UINT): 
 type
   PDragInfoA = ^TDragInfoA;
   {$EXTERNALSYM _DRAGINFOA}
-  _DRAGINFOA = packed record
+  _DRAGINFOA = record
     uSize: UINT;                 { init with sizeof(DRAGINFO) }
     pt: TPoint;
     fNC: BOOL;
@@ -140,7 +140,7 @@ type
 
   PDragInfoW = ^TDragInfoW;
   {$EXTERNALSYM _DRAGINFOW}
-  _DRAGINFOW = packed record
+  _DRAGINFOW = record
     uSize: UINT;                 { init with sizeof(DRAGINFO) }
     pt: TPoint;
     fNC: BOOL;
@@ -214,7 +214,7 @@ const
 type
   PAppBarData = ^TAppBarData;
   {$EXTERNALSYM _AppBarData}
-  _AppBarData = packed record
+  _AppBarData = record
     cbSize: DWORD;
     hWnd: HWND;
     uCallbackMessage: UINT;
@@ -336,7 +336,7 @@ type
 type
   PSHFileOpStructA = ^TSHFileOpStructA;
   {$EXTERNALSYM _SHFILEOPSTRUCTA}
-  _SHFILEOPSTRUCTA = packed record
+  _SHFILEOPSTRUCTA = record
     hwnd: HWND;
     wFunc: UINT;
     pFrom: PAnsiChar;
@@ -352,7 +352,7 @@ type
 
   PSHFileOpStructW = ^TSHFileOpStructW;
   {$EXTERNALSYM _SHFILEOPSTRUCTW}
-  _SHFILEOPSTRUCTW = packed record
+  _SHFILEOPSTRUCTW = record
     hwnd: HWND;
     wFunc: UINT;
     pFrom: PWideChar;
@@ -383,7 +383,7 @@ procedure SHFreeNameMappings(hNameMappings: THandle); stdcall;
 type
   PSHNameMappingA = ^TSHNameMappingA;
   {$EXTERNALSYM _SHNAMEMAPPINGA}
-  _SHNAMEMAPPINGA = packed record
+  _SHNAMEMAPPINGA = record
     pszOldPath: PAnsiChar;
     pszNewPath: PAnsiChar;
     cchOldPath: Integer;
@@ -395,7 +395,7 @@ type
 
   PSHNameMappingW = ^TSHNameMappingW;
   {$EXTERNALSYM _SHNAMEMAPPINGW}
-  _SHNAMEMAPPINGW = packed record
+  _SHNAMEMAPPINGW = record
     pszOldPath: PWideChar;
     pszNewPath: PWideChar;
     cchOldPath: Integer;
@@ -494,7 +494,7 @@ const
 type
   PShellExecuteInfoA = ^TShellExecuteInfoA;
   {$EXTERNALSYM _SHELLEXECUTEINFOA}
-  _SHELLEXECUTEINFOA = packed record
+  _SHELLEXECUTEINFOA = record
     cbSize: DWORD;
     fMask: ULONG;
     hwnd: HWND;
@@ -522,7 +522,7 @@ type
 
   PShellExecuteInfoW = ^TShellExecuteInfoW;
   {$EXTERNALSYM _SHELLEXECUTEINFOW}
-  _SHELLEXECUTEINFOW = packed record
+  _SHELLEXECUTEINFOW = record
     cbSize: DWORD;
     fMask: ULONG;
     hwnd: HWND;
@@ -575,7 +575,7 @@ var
 type
   PSHCreateProcessInfoW = ^TSHCreateProcessInfoW;
   {$EXTERNALSYM _SHCREATEPROCESSINFOW}
-  _SHCREATEPROCESSINFOW = packed record
+  _SHCREATEPROCESSINFOW = record
     cbSize: DWORD;
     fMask: ULONG;
     hwnd: HWND;
@@ -611,7 +611,7 @@ function SHCreateProcessAsUserW(var pscpi: TSHCreateProcessInfoW): BOOL; stdcall
 type
   PSHQueryRBInfo = ^TSHQueryRBInfo;
   {$EXTERNALSYM _SHQUERYRBINFO}
-  _SHQUERYRBINFO = packed record
+  _SHQUERYRBINFO = record
     cbSize: DWORD;
     i64Size: Int64;
     i64NumItems: Int64;
@@ -655,7 +655,7 @@ function SHEmptyRecycleBin(hwnd: HWND; pszRootPath: PTSTR; dwFlags: DWORD): HRES
 type
   PNotifyIconDataA = ^TNotifyIconDataA;
   {$EXTERNALSYM _NOTIFYICONDATAA}
-  _NOTIFYICONDATAA = packed record
+  _NOTIFYICONDATAA = record
     cbSize: DWORD;
     hWnd: HWND;
     uID: UINT;
@@ -681,7 +681,7 @@ type
 
   PNotifyIcondataW = ^TNotifyIconDataW;
   {$EXTERNALSYM _NOTIFYICONDATAW}
-  _NOTIFYICONDATAW = packed record
+  _NOTIFYICONDATAW = record
     cbSize: DWORD;
     hWnd: HWND;
     uID: UINT;
@@ -814,7 +814,7 @@ function Shell_NotifyIcon(dwMessage: DWORD; lpData: PNOTIFYICONDATA): BOOL; stdc
 type
   PSHFileInfoA = ^TSHFileInfoA;
   {$EXTERNALSYM _SHFILEINFOA}
-  _SHFILEINFOA = packed record
+  _SHFILEINFOA = record
     hIcon: HICON;                                      // out: icon
     iIcon: Integer;                                    // out: icon index
     dwAttributes: DWORD;                               // out: SFGAO_ flags
@@ -827,7 +827,7 @@ type
 
   PSHFileInfoW = ^TSHFileInfoW;
   {$EXTERNALSYM _SHFILEINFOW}
-  _SHFILEINFOW = packed record
+  _SHFILEINFOW = record
     hIcon: HICON;                                      // out: icon
     iIcon: Integer;                                    // out: icon index
     dwAttributes: DWORD;                               // out: SFGAO_ flags

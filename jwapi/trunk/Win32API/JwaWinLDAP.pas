@@ -569,7 +569,7 @@ type
 
   PLDAPTimeVal = ^TLDAPTimeVal;
   {$EXTERNALSYM l_timeval}
-  l_timeval = packed record
+  l_timeval = record
     tv_sec: Longint;
     tv_usec: Longint;
   end;
@@ -2078,13 +2078,13 @@ type
   {$EXTERNALSYM PLDAPSortKey}
   PLDAPSortKey = PLDAPSortKeyA;
   {$EXTERNALSYM LDAPSortKeyA}
-  LDAPSortKeyA = packed record
+  LDAPSortKeyA = record
     sk_attrtype: PAnsiChar;
     sk_matchruleoid: PAnsiChar;
     sk_reverseorder: ByteBool;
   end;
   {$EXTERNALSYM LDAPSortKeyW}
-  LDAPSortKeyW = packed record
+  LDAPSortKeyW = record
     sk_attrtype: PWideChar;
     sk_matchruleoid: PWideChar;
     sk_reverseorder: ByteBool;
@@ -2426,7 +2426,7 @@ type
 
   PLDAPReferralCallback = ^TLDAPReferralCallback;
   {$EXTERNALSYM LdapReferralCallback}
-  LdapReferralCallback = packed record
+  LdapReferralCallback = record
     SizeOfCallbacks: ULONG;        // set to sizeof( LDAP_REFERRAL_CALLBACK )
     QueryForConnection: QUERYFORCONNECTION;
     NotifyRoutine: NOTIFYOFNEWCONNECTION;

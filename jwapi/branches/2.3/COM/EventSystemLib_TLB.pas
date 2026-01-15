@@ -121,7 +121,7 @@ type
 
   EOC_ChangeType = __MIDL_IEventObjectChange_0001; 
 
-  __MIDL___MIDL_itf_EventSys_0000_0009_0001 = packed record
+  __MIDL___MIDL_itf_EventSys_0000_0009_0001 = record
     cbSize: LongWord;
     changeType: __MIDL_IEventObjectChange_0001;
     objectID: WideString;
