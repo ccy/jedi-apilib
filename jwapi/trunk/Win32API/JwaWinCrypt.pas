@@ -1699,7 +1699,8 @@ const
   {$EXTERNALSYM szOID_RSA_SMIMECapabilities}
   szOID_RSA_preferSignedData  = '1.2.840.113549.1.9.15.1';
   {$EXTERNALSYM szOID_RSA_preferSignedData}
-
+  szOID_RFC3161_counterSign   = '1.3.6.1.4.1.311.3.3.1';
+  {$EXTERNALSYM szOID_RFC3161_counterSign}
   szOID_RSA_SMIMEalg            = '1.2.840.113549.1.9.16.3';
   {$EXTERNALSYM szOID_RSA_SMIMEalg}
   szOID_RSA_SMIMEalgESDH        = '1.2.840.113549.1.9.16.3.5';
@@ -3317,6 +3318,8 @@ const
   X942_OTHER_INFO = LPCSTR(52);
   {$EXTERNALSYM X942_OTHER_INFO}
 
+  X509_OBJECT_IDENTIFIER = LPCSTR(73);
+  {$EXTERNALSYM X509_OBJECT_IDENTIFIER}
 //+-------------------------------------------------------------------------
 //  Predefined PKCS #7 data structures that can be encoded / decoded.
 //--------------------------------------------------------------------------
