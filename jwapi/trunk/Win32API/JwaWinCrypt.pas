@@ -6335,6 +6335,64 @@ type
   PCmsgStreamInfo = PCMSG_STREAM_INFO;
 
 //+-------------------------------------------------------------------------
+// CRYPT_TIMESTAMP_ACCURACY
+//+-------------------------------------------------------------------------
+  PCryptTimestampAccuracy = ^TCryptTimestampAccuracy;
+  _CRYPT_TIMESTAMP_ACCURACY = record
+    dwSeconds: DWORD;
+    dwMillis: DWORD;
+    dwMicros: DWORD;
+  end;
+  {$EXTERNALSYM _CRYPT_TIMESTAMP_ACCURACY}
+  CRYPT_TIMESTAMP_ACCURACY = _CRYPT_TIMESTAMP_ACCURACY;
+  {$EXTERNALSYM CRYPT_TIMESTAMP_ACCURACY}
+  TCryptTimestampAccuracy  = _CRYPT_TIMESTAMP_ACCURACY;
+  PCRYPT_TIMESTAMP_ACCURACY = PCryptTimestampAccuracy;
+  {$EXTERNALSYM PCRYPT_TIMESTAMP_ACCURACY}
+
+//+-------------------------------------------------------------------------
+// CRYPT_TIMESTAMP_INFO
+//+-------------------------------------------------------------------------
+  PCryptTimestampInfo = ^TCryptTimestampInfo;
+  _CRYPT_TIMESTAMP_INFO = record
+    dwVersion: DWORD;
+    pszTSAPolicyId: LPSTR;
+    HashAlgorithm: TCryptAlgorithmIdentifier;
+    HashedMessage: TCryptDERBlob;
+    SerialNumber: TCryptIntegerBlob;
+    ftTime: TFileTime;
+    pvAccuracy: PCryptTimestampAccuracy;
+    fOrdering: BOOL;
+    Nonce: TCryptDERBlob;
+    Tsa: TCryptDERBlob;
+    cExtension: DWORD;
+    rgExtension: PCertExtension;
+  end;
+  {$EXTERNALSYM _CRYPT_TIMESTAMP_INFO}
+  CRYPT_TIMESTAMP_INFO = _CRYPT_TIMESTAMP_INFO;
+  {$EXTERNALSYM CRYPT_TIMESTAMP_INFO}
+  TCryptTimestampInfo = _CRYPT_TIMESTAMP_INFO;
+  PCRYPT_TIMESTAMP_INFO = PCryptTimestampInfo;
+  {$EXTERNALSYM PCRYPT_TIMESTAMP_INFO}
+
+//+-------------------------------------------------------------------------
+// CRYPT_TIMESTAMP_CONTEXT
+//+-------------------------------------------------------------------------
+  PCryptTimestampContext = ^TCryptTimestampContext;
+  _CRYPT_TIMESTAMP_CONTEXT = record
+    cbEncoded: DWORD;
+    pbEncoded: PByte;
+    pTimeStamp: PCryptTimestampInfo;
+  end;
+  {$EXTERNALSYM _CRYPT_TIMESTAMP_CONTEXT}
+  CRYPT_TIMESTAMP_CONTEXT = _CRYPT_TIMESTAMP_CONTEXT;
+  {$EXTERNALSYM CRYPT_TIMESTAMP_CONTEXT}
+  TCryptTimestampContext = _CRYPT_TIMESTAMP_CONTEXT;
+  PCRYPT_TIMESTAMP_CONTEXT = PCryptTimestampContext;
+  {$EXTERNALSYM PCRYPT_TIMESTAMP_CONTEXT}
+  PPCryptTimestampContext = ^PCryptTimestampContext;
+  
+//+-------------------------------------------------------------------------
 //  Open dwFlags
 //--------------------------------------------------------------------------
 
@@ -16182,6 +16240,10 @@ function CryptBinaryToString(const pBinary: PBYTE; cbBinary: DWORD;
   dwFlags: DWORD; pszString: LPSTR; var pchString: DWORD): BOOL; stdcall;
 {$EXTERNALSYM CryptBinaryToString}
 
+function CryptVerifyTimeStampSignature(pbTSContentInfo: PByte; cbTSContentInfo: DWORD; pbData: LPByte; cbData: DWORD; hAdditionalStore: HCERTSTORE;
+  var ppTsContext: PCRYPT_TIMESTAMP_CONTEXT; var ppTsSigner: PCCERT_CONTEXT; var phStore: HCERTSTORE): BOOL; stdcall;
+{$EXTERNALSYM CryptVerifyTimeStampSignature}
+
 // dwFlags has the following defines
 const
   CRYPT_STRING_BASE64HEADER                 = $00000000;
@@ -19750,6 +19812,16 @@ begin
   end;
 end;
 
+var _CryptVerifyTimeStampSignature : Pointer;
+function CryptVerifyTimeStampSignature;
+begin
+  GetProcedureAddress(_CryptVerifyTimeStampSignature, crypt32, 'CryptVerifyTimeStampSignature');
+  asm
+        MOV     ESP, EBP
+        POP     EBP
+        JMP     [_CryptVerifyTimeStampSignature]
+  end;
+end;
 
 {$ELSE}
 
@@ -20016,6 +20088,7 @@ function CryptBinaryToString; external crypt32 {$IFDEF DELAYED_LOADING}delayed{$
 function CryptStringToBinaryA; external crypt32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'CryptStringToBinaryA';
 function CryptStringToBinaryW; external crypt32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'CryptStringToBinaryW';
 function CryptStringToBinary; external crypt32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'CryptStringToBinary' + AWSuffix;
+function CryptVerifyTimeStampSignature; external crypt32 {$IFDEF DELAYED_LOADING}delayed{$ENDIF} name 'CryptVerifyTimeStampSignature';
 
 {$ENDIF DYNAMIC_LINK}
 {$ENDIF JWA_INTERFACESECTION}
